@@ -88,7 +88,7 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 
 		for (Iterator<Location> j = cfg.locationIterator(); j.hasNext();) {
 			Location location = j.next();
-			visitLocation(location, methodGen, dataflow);
+			visitLocation(classContext, location, methodGen, dataflow);
 		}
 	}
 
@@ -115,7 +115,7 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 		return lockCount >= 2 && sawWait;
 	}
 
-	public void visitLocation(Location location, MethodGen methodGen, LockDataflow dataflow) throws DataflowAnalysisException {
+	public void visitLocation(ClassContext classContext, Location location, MethodGen methodGen, LockDataflow dataflow) throws DataflowAnalysisException {
 		ConstantPoolGen cpg = methodGen.getConstantPool();
 		
 		if (Hierarchy.isMonitorWait(location.getHandle().getInstruction(), cpg)) {
@@ -126,7 +126,7 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 				bugReporter.reportBug(new BugInstance(this, "TLW_TWO_LOCK_WAIT", NORMAL_PRIORITY)
 						.addClass(javaClass)
 						.addMethod(methodGen, sourceFile)
-						.addSourceLine(methodGen, sourceFile, location.getHandle()));
+						.addSourceLine(classContext, methodGen, sourceFile, location.getHandle()));
 			}
 		}
 	}

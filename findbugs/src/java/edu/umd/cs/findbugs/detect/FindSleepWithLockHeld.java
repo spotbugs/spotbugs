@@ -114,7 +114,7 @@ public class FindSleepWithLockHeld implements Detector {
 				String sourceFile = classContext.getJavaClass().getSourceFileName();
 				bugReporter.reportBug(new BugInstance("SWL_SLEEP_WITH_LOCK_HELD", NORMAL_PRIORITY)
 						.addClassAndMethod(mg, sourceFile)
-						.addSourceLine(mg, sourceFile, location.getHandle()));
+						.addSourceLine(classContext, mg, sourceFile, location.getHandle()));
 			}
 		}
 	}

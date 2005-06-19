@@ -37,6 +37,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -946,12 +947,32 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 * Note that if the method does not have line number information, then
 	 * no source line annotation will be added.
 	 *
-	 * @param visitor a BetterVisitor that is currently visiting the method
+	 * @param visitor a BytecodeScanningDetector that is currently visiting the method
 	 * @param pc      bytecode offset of the instruction
 	 * @return this object
 	 */
-	public BugInstance addSourceLine(PreorderVisitor visitor, int pc) {
-		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(visitor, pc);
+	public BugInstance addSourceLine(BytecodeScanningDetector visitor, int pc) {
+		SourceLineAnnotation sourceLineAnnotation =
+			SourceLineAnnotation.fromVisitedInstruction(visitor.getClassContext(), visitor, pc);
+		if (sourceLineAnnotation != null)
+			add(sourceLineAnnotation);
+		return this;
+	}
+
+	/**
+	 * Add a source line annotation for instruction whose PC is given
+	 * in the method that the given visitor is currently visiting.
+	 * Note that if the method does not have line number information, then
+	 * no source line annotation will be added.
+	 *
+	 * @param classContext the ClassContext
+	 * @param visitor a PreorderVisitor that is currently visiting the method
+	 * @param pc      bytecode offset of the instruction
+	 * @return this object
+	 */
+	public BugInstance addSourceLine(ClassContext classContext, PreorderVisitor visitor, int pc) {
+		SourceLineAnnotation sourceLineAnnotation =
+			SourceLineAnnotation.fromVisitedInstruction(classContext, visitor, pc);
 		if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);
 		return this;
@@ -962,13 +983,15 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 * Note that if the method does not have line number information, then
 	 * no source line annotation will be added.
 	 *
+	 * @param classContext the ClassContext
 	 * @param methodGen  the method being visited
 	 * @param sourceFile source file the method is defined in
 	 * @param handle     the InstructionHandle containing the visited instruction
 	 * @return this object
 	 */
-	public BugInstance addSourceLine(MethodGen methodGen, String sourceFile, InstructionHandle handle) {
-		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(methodGen, sourceFile, handle);
+	public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile, InstructionHandle handle) {
+		SourceLineAnnotation sourceLineAnnotation =
+			SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
 		if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);
 		return this;
@@ -977,20 +1000,22 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	/**
 	 * Add a source line annotation describing a range of instructions.
 	 *
+	 * @param classContext the ClassContext
 	 * @param methodGen  the method
 	 * @param sourceFile source file the method is defined in
 	 * @param start      the start instruction in the range
 	 * @param end        the end instruction in the range (inclusive)
 	 * @return this object
 	 */
-	public BugInstance addSourceLine(MethodGen methodGen, String sourceFile, InstructionHandle start, InstructionHandle end) {
+	public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile, InstructionHandle start, InstructionHandle end) {
 		// Make sure start and end are really in the right order.
 		if (start.getPosition() > end.getPosition()) {
 			InstructionHandle tmp = start;
 			start = end;
 			end = tmp;
 		}
-		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(methodGen, sourceFile, start, end);
+		SourceLineAnnotation sourceLineAnnotation =
+			SourceLineAnnotation.fromVisitedInstructionRange(classContext, methodGen, sourceFile, start, end);
 		if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);
 		return this;
@@ -1008,8 +1033,30 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 * @param endPC   the bytecode offset of the end instruction in the range
 	 * @return this object
 	 */
-	public BugInstance addSourceLineRange(PreorderVisitor visitor, int startPC, int endPC) {
-		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstructionRange(visitor, startPC, endPC);
+	public BugInstance addSourceLineRange(BytecodeScanningDetector visitor, int startPC, int endPC) {
+		SourceLineAnnotation sourceLineAnnotation =
+			SourceLineAnnotation.fromVisitedInstructionRange(visitor.getClassContext(), visitor, startPC, endPC);
+		if (sourceLineAnnotation != null)
+			add(sourceLineAnnotation);
+		return this;
+	}
+
+	/**
+	 * Add a source line annotation describing the
+	 * source line numbers for a range of instructions in the method being
+	 * visited by the given visitor.
+	 * Note that if the method does not have line number information, then
+	 * no source line annotation will be added.
+	 *
+	 * @param classContext the ClassContext
+	 * @param visitor a BetterVisitor which is visiting the method
+	 * @param startPC the bytecode offset of the start instruction in the range
+	 * @param endPC   the bytecode offset of the end instruction in the range
+	 * @return this object
+	 */
+	public BugInstance addSourceLineRange(ClassContext classContext, PreorderVisitor visitor, int startPC, int endPC) {
+		SourceLineAnnotation sourceLineAnnotation =
+			SourceLineAnnotation.fromVisitedInstructionRange(classContext, visitor, startPC, endPC);
 		if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);
 		return this;
@@ -1021,11 +1068,13 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 * Note that if the method does not have line number information, then
 	 * no source line annotation will be added.
 	 *
-	 * @param visitor a DismantleBytecode visitor that is currently visiting the instruction
+	 * @param classContext the ClassContext
+	 * @param visitor a BytecodeScanningDetector visitor that is currently visiting the instruction
 	 * @return this object
 	 */
-	public BugInstance addSourceLine(DismantleBytecode visitor) {
-		SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(visitor);
+	public BugInstance addSourceLine(BytecodeScanningDetector visitor) {
+		SourceLineAnnotation sourceLineAnnotation =
+			SourceLineAnnotation.fromVisitedInstruction(visitor);
 		if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);
 		return this;

@@ -194,7 +194,7 @@ public class InfiniteRecursiveLoop2 implements Detector {
 			String sourceFile = javaClass.getSourceFileName();
 			BugInstance warning = new BugInstance("IL_INFINITE_RECURSIVE_LOOP", HIGH_PRIORITY)
 					.addClassAndMethod(javaClass, method)
-					.addSourceLine(classContext.getMethodGen(method), sourceFile, thrower);
+					.addSourceLine(classContext, classContext.getMethodGen(method), sourceFile, thrower);
 			bugReporter.reportBug(warning);
 		}
 	}
@@ -330,7 +330,7 @@ public class InfiniteRecursiveLoop2 implements Detector {
 				String sourceFile = javaClass.getSourceFileName();
 				BugInstance warning = new BugInstance("IL_CONTAINER_ADDED_TO_ITSELF", NORMAL_PRIORITY)
 					.addClassAndMethod(javaClass, method)
-					.addSourceLine(classContext.getMethodGen(method), sourceFile, thrower);
+					.addSourceLine(classContext, classContext.getMethodGen(method), sourceFile, thrower);
 				bugReporter.reportBug(warning);
 			}
 		}

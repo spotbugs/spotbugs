@@ -840,6 +840,25 @@ public class ClassContext {
 	public JavaClass getJavaClass() {
 		return jclass;
 	}
+	
+	/**
+	 * Look up the Method represented by given MethodGen.
+	 * 
+	 * @param methodGen a MethodGen
+	 * @return the Method represented by the MethodGen
+	 */
+	public Method getMethod(MethodGen methodGen) {
+		Method[] methodList = jclass.getMethods();
+		for (int i = 0; i < methodList.length; ++i) {
+			Method method = methodList[i];
+			if (method.getName().equals(methodGen.getName())
+					&& method.getSignature().equals(methodGen.getSignature())
+					&& method.getAccessFlags() == methodGen.getAccessFlags()) {
+				return method;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Get the AnalysisContext.

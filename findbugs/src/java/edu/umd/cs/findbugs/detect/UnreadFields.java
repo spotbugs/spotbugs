@@ -49,7 +49,7 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 	private static final boolean DEBUG = Boolean.getBoolean("unreadfields.debug");
 
 	static class ProgramPoint {
-		ProgramPoint(DismantleBytecode v) {
+		ProgramPoint(BytecodeScanningDetector v) {
 			method = MethodAnnotation.fromVisitedMethod(v);
 			sourceLine = SourceLineAnnotation
 				.fromVisitedInstruction(v,v.getPC());

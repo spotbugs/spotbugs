@@ -65,7 +65,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 	public abstract ResourceTrackerType getResourceTracker(ClassContext classContext, Method method)
 	        throws DataflowAnalysisException, CFGBuilderException;
 
-	public abstract void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
+	public abstract void inspectResult(ClassContext classContext, MethodGen methodGen, CFG cfg,
 	                                   Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow, Resource resource);
 
 	public void visitClassContext(ClassContext classContext) {
@@ -150,7 +150,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 			        new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
 
 			dataflow.execute();
-			inspectResult(classContext.getJavaClass(), methodGen, cfg, dataflow, resource);
+			inspectResult(classContext, methodGen, cfg, dataflow, resource);
 		}
 	}
 

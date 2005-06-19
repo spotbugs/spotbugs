@@ -308,7 +308,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 		        priority)
 		        .addClassAndMethod(methodGen, sourceFile)
 		        .addCalledMethod(methodGen, inv)
-		        .addSourceLine(methodGen, sourceFile, call));
+		        .addSourceLine(classContext, methodGen, sourceFile, call));
 	}
 
 	public static String extractPackageName(String className) {

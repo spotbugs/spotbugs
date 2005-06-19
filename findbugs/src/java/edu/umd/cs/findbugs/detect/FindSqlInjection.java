@@ -114,7 +114,7 @@ public class FindSqlInjection implements Detector {
 				 "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",  
 				 NORMAL_PRIORITY) 
 				.addClassAndMethod(methodGen, javaClass.getSourceFileName())
-				.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle()));
+				.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle()));
 
 
 

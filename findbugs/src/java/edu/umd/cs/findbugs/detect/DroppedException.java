@@ -39,6 +39,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	Set<String> causes = new HashSet<String>();
 	Set<String> checkedCauses = new HashSet<String>();
 	private BugReporter bugReporter;
+	private ClassContext classContext;
 
 	public DroppedException(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -46,6 +47,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 	}
 
 	public void visitClassContext(ClassContext classContext) {
+		this.classContext = classContext;
 		classContext.getJavaClass().accept(this);
 	}
 
@@ -230,7 +232,7 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 				int priority = NORMAL_PRIORITY;
 				if (exitInTryBlock) priority++;
 				SourceLineAnnotation srcLine
-				        = SourceLineAnnotation.fromVisitedInstruction(this, handled);
+				        = SourceLineAnnotation.fromVisitedInstruction(this.classContext, this, handled);
 				if (srcLine != null && LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS) {
 					if (catchBlockHasComment(srcLine))
 						return;

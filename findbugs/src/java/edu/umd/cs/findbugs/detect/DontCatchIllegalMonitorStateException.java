@@ -40,6 +40,7 @@ public class DontCatchIllegalMonitorStateException
 
 	BugReporter bugReporter;
 	Set<String> msgs = null;
+	ClassContext classContext;
 
 	public DontCatchIllegalMonitorStateException(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -73,11 +74,12 @@ public class DontCatchIllegalMonitorStateException
 		if (name.equals("java.lang.IllegalMonitorStateException"))
 			bugReporter.reportBug(new BugInstance(this, "IMSE_DONT_CATCH_IMSE", HIGH_PRIORITY)
 			        .addClassAndMethod(this)
-			        .addSourceLine(this, obj.getHandlerPC()));
+			        .addSourceLine(this.classContext, this, obj.getHandlerPC()));
 
 	}
 
 	public void visitClassContext(ClassContext classContext) {
+		this.classContext = classContext;
 		classContext.getJavaClass().accept(this);
 	}
 

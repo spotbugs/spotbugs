@@ -313,9 +313,11 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 				classContext.getIsNullValueDataflow(method));
 	}
 
-	public void inspectResult(JavaClass javaClass, MethodGen methodGen, CFG cfg,
+	public void inspectResult(ClassContext classContext, MethodGen methodGen, CFG cfg,
 	                          Dataflow<ResourceValueFrame, ResourceValueAnalysis<Lock>> dataflow, Lock resource) {
 
+		JavaClass javaClass = classContext.getJavaClass();
+		
 		ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 		int exitStatus = exitFrame.getStatus();
 
@@ -333,7 +335,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			String sourceFile = javaClass.getSourceFileName();
 			bugReporter.reportBug(new BugInstance(this, bugType, priority)
 			        .addClassAndMethod(methodGen, sourceFile)
-			        .addSourceLine(methodGen, sourceFile, resource.getLocation().getHandle()));
+			        .addSourceLine(classContext, methodGen, sourceFile, resource.getLocation().getHandle()));
 		}
 	}
 

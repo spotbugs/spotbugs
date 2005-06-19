@@ -135,7 +135,7 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 					
 					bugReporter.reportBug(new BugInstance(this, type, priority)
 					        .addClassAndMethod(methodGen, sourceFile)
-					        .addSourceLine(methodGen, sourceFile, handle));
+					        .addSourceLine(classContext, methodGen, sourceFile, handle));
 				}
 			}
 		}

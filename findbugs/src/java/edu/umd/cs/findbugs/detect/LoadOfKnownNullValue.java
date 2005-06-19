@@ -82,9 +82,9 @@ public class LoadOfKnownNullValue implements Detector {
 				Instruction next = handle.getNext().getInstruction();
 				InstructionHandle prevHandle = handle.getPrev();
 				SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
-				.fromVisitedInstruction(methodGen, sourceFile, handle);
+				.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
 				SourceLineAnnotation prevSourceLineAnnotation = SourceLineAnnotation
-				.fromVisitedInstruction(methodGen, sourceFile, prevHandle);
+				.fromVisitedInstruction(classContext, methodGen, sourceFile, prevHandle);
 	
 				if (next instanceof ARETURN) {
 					// probably stored for duration of finally block

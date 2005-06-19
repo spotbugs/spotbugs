@@ -129,7 +129,8 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 				}
 			String refSig = refType.getSignature();
 			
-			SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(methodGen, sourceFile, handle);
+			SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(
+					classContext, methodGen, sourceFile, handle);
 
 			ValueNumberFrame vFrame = vnaDataflow.getFactAtLocation(location);
 			boolean isParameter = paramValueNumberSet.contains(vFrame.getTopValue());

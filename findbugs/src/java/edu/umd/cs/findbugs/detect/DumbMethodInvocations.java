@@ -87,7 +87,7 @@ public class DumbMethodInvocations implements Detector {
 							.addClassAndMethod(methodGen, sourceFile)
 							.addSourceLine(
 									SourceLineAnnotation
-											.fromVisitedInstruction(methodGen,
+											.fromVisitedInstruction(classContext, methodGen,
 													sourceFile, location
 															.getHandle())));
 

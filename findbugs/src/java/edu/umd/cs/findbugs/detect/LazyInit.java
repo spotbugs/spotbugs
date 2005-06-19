@@ -237,7 +237,7 @@ public class LazyInit extends ByteCodePatternDetector implements StatelessDetect
 			bugReporter.reportBug(new BugInstance(this, "LI_LAZY_INIT_STATIC", priority)
 			        .addClassAndMethod(methodGen, sourceFile)
 			        .addField(xfield).describe("FIELD_ON")
-			        .addSourceLine(methodGen, sourceFile, start, end));
+			        .addSourceLine(classContext, methodGen, sourceFile, start, end));
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 			return;

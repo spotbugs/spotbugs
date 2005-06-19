@@ -366,6 +366,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	 * ---------------------------------------------------------------------- */
 
 	private BugReporter bugReporter;
+	private ClassContext classContext;
 
 	/* ----------------------------------------------------------------------
 	 * Implementation
@@ -376,6 +377,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	}
 
 	public void visitClassContext(ClassContext classContext) {
+		this.classContext = classContext;
+		
 		JavaClass jclass = classContext.getJavaClass();
 		Method[] methodList = jclass.getMethods();
 
@@ -662,7 +665,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		BugInstance instance =
 			new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addSourceLine(methodGen, sourceFile, location.getHandle())
+			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			.addClass("java.lang.String").describe("CLASS_REFTYPE");
 		
 		WarningWithProperties warn = new WarningWithProperties(instance, propertySet, location);
@@ -678,7 +681,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		String sourceFile = jclass.getSourceFileName();
 		BugInstance instance = new BugInstance(this, "RC_REF_COMPARISON", NORMAL_PRIORITY)
 		        .addClassAndMethod(methodGen, sourceFile)
-		        .addSourceLine(methodGen, sourceFile, location.getHandle())
+		        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 		        .addClass(lhs).describe("CLASS_REFTYPE");
 		refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet(), location));
 	}
@@ -713,7 +716,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				// A literal null value was passed directly to equals().
 				bugReporter.reportBug(new BugInstance(this, "EC_NULL_ARG", NORMAL_PRIORITY)
 				        .addClassAndMethod(methodGen, sourceFile)
-				        .addSourceLine(methodGen, sourceFile, location.getHandle()));
+				        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle()));
 			} else if (lhsType_.getType() == T_NULL) {
 				// Hmm...in this case, equals() is being invoked on
 				// a literal null value.  This is really the
@@ -783,7 +786,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		if (priority <= LOW_PRIORITY) {
 			bugReporter.reportBug(new BugInstance(this, bugType, priority)
 			        .addClassAndMethod(methodGen, sourceFile)
-			        .addSourceLine(methodGen, sourceFile, location.getHandle())
+			        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			        .addClass(lhsType.getClassName()).describe("CLASS_REFTYPE")
 			        .addClass(rhsType.getClassName()).describe("CLASS_REFTYPE"));
 		}

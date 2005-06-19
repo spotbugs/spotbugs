@@ -343,7 +343,7 @@ public class FindNullDeref
 			
 			BugInstance warning = new BugInstance("NP_NONNULL_RETURN_VIOLATION", NORMAL_PRIORITY)
 				.addClassAndMethod(methodGen, sourceFile)
-				.addSourceLine(methodGen, sourceFile, location.getHandle())
+				.addSourceLine(classContext, methodGen, sourceFile, location.getHandle())
 				.addMethod(nonNullReturn.getJavaClass(), nonNullReturn.getMethod()).describe("METHOD_DECLARED_NONNULL");
 			;
 			
@@ -446,7 +446,7 @@ public class FindNullDeref
 		
 		BugInstance warning = new BugInstance(bugType, priority)
 				.addClassAndMethod(methodGen, sourceFile)
-				.addSourceLine(methodGen, sourceFile, location.getHandle())
+				.addSourceLine(classContext, methodGen, sourceFile, location.getHandle())
 				.addMethod(XMethodFactory.createXMethod(invokeInstruction, cpg)).describe("METHOD_CALLED");
 		
 		// Check which params might be null
@@ -530,7 +530,7 @@ public class FindNullDeref
 
 		BugInstance warning = new BugInstance("NP_NONNULL_PARAM_VIOLATION", NORMAL_PRIORITY)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addSourceLine(methodGen, sourceFile, location.getHandle())
+			.addSourceLine(classContext, methodGen, sourceFile, location.getHandle())
 			.addMethod(xmethod).describe("METHOD_CALLED");
 		
 		addParamAnnotations(definitelyNullArgSet, violatedParamSet, propertySet, warning);
@@ -582,7 +582,7 @@ public class FindNullDeref
 
 		BugInstance bugInstance = new BugInstance(this, type, priority)
 		        .addClassAndMethod(methodGen, sourceFile)
-		        .addSourceLine(methodGen, sourceFile, location.getHandle());
+		        .addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
 
 		if (DEBUG)
 			bugInstance.addInt(location.getHandle().getPosition()).describe("INT_BYTECODE_OFFSET");
@@ -639,7 +639,7 @@ public class FindNullDeref
 		BugInstance bugInstance =
 			new BugInstance(this, warning, priority)
 				.addClassAndMethod(methodGen, sourceFile)
-				.addSourceLine(methodGen, sourceFile, location.getHandle());
+				.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
 		
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 			WarningPropertySet propertySet = new WarningPropertySet();

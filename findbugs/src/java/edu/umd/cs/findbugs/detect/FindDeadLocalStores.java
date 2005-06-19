@@ -205,7 +205,7 @@ public class FindDeadLocalStores implements Detector {
 				// TODO: add warning properties?
 				BugInstance bugInstance = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN", NORMAL_PRIORITY)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
-					.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
+					.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle());
 				bugReporter.reportBug(bugInstance);
 				complainedAbout.set(local);
 			}
@@ -294,7 +294,7 @@ public class FindDeadLocalStores implements Detector {
 				// Report the warning
 				BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", priority)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
-					.addSourceLine(methodGen, javaClass.getSourceFileName(), location.getHandle());
+					.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle());
 
 				if (DEBUG) {
 				System.out.println(

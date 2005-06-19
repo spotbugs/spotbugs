@@ -136,7 +136,7 @@ public class FindBadCast2 implements Detector {
 				continue;
 
 			SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
-					.fromVisitedInstruction(methodGen, sourceFile, handle);
+					.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
 			if (ins instanceof CHECKCAST) {
 				if (!haveCast.add(sourceLineAnnotation))
 					haveMultipleCast.add(sourceLineAnnotation);
@@ -223,7 +223,7 @@ public class FindBadCast2 implements Detector {
 			}
 
 			SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
-					.fromVisitedInstruction(methodGen, sourceFile, handle);
+					.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
 
 			if (isCast && haveMultipleCast.contains(sourceLineAnnotation)
 					|| !isCast

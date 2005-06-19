@@ -40,7 +40,7 @@ public class BytecodeScanningDetector extends DismantleBytecode implements Detec
 	 *
 	 * @return the current ClassContext
 	 */
-	protected ClassContext getClassContext() {
+	public ClassContext getClassContext() {
 		return classContext;
 	}
 
