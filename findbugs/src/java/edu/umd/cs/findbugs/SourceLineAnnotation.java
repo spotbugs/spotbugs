@@ -502,6 +502,85 @@ public class SourceLineAnnotation implements BugAnnotation {
 	public void setSurroundingOpcodes(String surroundingOpcodes) {
 		this.surroundingOpcodes = surroundingOpcodes;
 	}
+	
+	/**
+	 * Get the opcodes which preceeded the selected source instructions.
+	 * 
+	 * @param numOpcodes max number of previous opcodes to get;
+	 *        the ones immediately preceeding (closest to) the opcodes selected by
+	 *        the annotation are taken
+	 * @return String encoding the earlier opcodes, or an empty string if
+	 *         there are no (valid) previous opcodes
+	 */
+	public String getEarlierOpcodes(int numOpcodes) {
+		int pipe = surroundingOpcodes.indexOf('|');
+		if (pipe < 0)
+			return "";
+		String opcodes = surroundingOpcodes.substring(0, pipe);
+		String[] split = opcodes.split(",");
+		int index = split.length > numOpcodes ? split.length - numOpcodes : 0;
+		StringBuffer buf = new StringBuffer();
+		while (index < split.length) {
+			if (buf.length() > 0)
+				buf.append(',');
+			buf.append(split[index]);
+			++index;
+		}
+		return buf.toString();
+	}
+
+	/**
+	 * Get the opcode or opcodes of the instruction(s) selected
+	 * by this annotation.
+	 * 
+	 * @return String encoding the selected opcodes, or an empty string
+	 *         if there are no (valid) selected opcodes
+	 */
+	public String getSelectedOpcodes() {
+		int pipe = surroundingOpcodes.indexOf('|');
+		if (pipe < 0)
+			return "";
+		String selected = surroundingOpcodes.substring(pipe + 1);
+		pipe = selected.indexOf('|');
+		if (pipe >= 0) {
+			selected = selected.substring(0, pipe);
+		}
+		return selected;
+	}
+	
+	/**
+	 * Get the opcodes of the instructions immediately following the instructions
+	 * selected by this source line annotation.
+	 * 
+	 * @param numOpcodes max number of opcodes to get
+	 * @return String encoding the later opcodes, or an empty string if there are no
+	 *         (valid) opcodes following the selected instructions
+	 */
+	public String getLaterOpcodes(int numOpcodes) {
+		int pipe = surroundingOpcodes.lastIndexOf('|');
+		if (pipe < 0)
+			return "";
+		String later = surroundingOpcodes.substring(pipe + 1);
+		String[] split = later.split(",");
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < numOpcodes && i < split.length; ++i) {
+			if (buf.length() > 0)
+				buf.append(',');
+			buf.append(split[i]);
+		}
+		return buf.toString();
+	}
+	
+	/**
+	 * Return whether or not the SourceLineAnnotation refers to a particular
+	 * instruction or range of instructions, as opposed to an entire method.
+	 * 
+	 * @return true if the annotation refers to specific instruction(s), false if
+	 *         it refers to an entire method
+	 */
+	public boolean hasSpecificInstructions() {
+		return !surroundingOpcodes.equals("");
+	}
 
 	public void accept(BugAnnotationVisitor visitor) {
 		visitor.visitSourceLineAnnotation(this);
