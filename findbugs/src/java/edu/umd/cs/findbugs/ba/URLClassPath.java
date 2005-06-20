@@ -339,11 +339,18 @@ public class URLClassPath implements Serializable {
 			InputStream in;
 			try {
 				in = entry.openStream(resourceName);
-				if (in != null)
+				if (in != null) {
+					if (URLClassPathRepository.DEBUG) {
+						System.out.println("\t==> found " + resourceName + " in " + entry.getURL());
+					}
 					return in;
+				}
 			} catch (IOException ignore) {
 				// Ignore
 			}
+		}
+		if (URLClassPathRepository.DEBUG) {
+			System.out.print("\t==> could not find " + resourceName + " on classpath");
 		}
 		return null;
 	}

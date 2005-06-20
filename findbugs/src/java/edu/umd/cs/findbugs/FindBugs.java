@@ -54,6 +54,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.ba.ClassObserver;
 import edu.umd.cs.findbugs.ba.URLClassPath;
+import edu.umd.cs.findbugs.ba.URLClassPathRepository;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -1012,22 +1013,9 @@ public class FindBugs implements Constants2, ExitCodes {
 		FindBugsAnalysisFeatures.setRelaxedMode(relaxedReportingMode);
 		
 		// Enable input/output of interprocedural property databases
-		if (emitTrainingOutput) {
-			if (!new File(trainingOutputDir).isDirectory())
-				throw new IOException("Training output directory " + trainingOutputDir + " does not exist");
-			AnalysisContext.currentAnalysisContext().setDatabaseOutputDir(trainingOutputDir);
-			// XXX: hack
-			System.setProperty("findbugs.checkreturn.savetraining", new File(trainingOutputDir, "checkReturn.db").getPath());
-		}
-		if (useTrainingInput) {
-			if (!new File(trainingInputDir).isDirectory())
-				throw new IOException("Training input directory " + trainingInputDir + " does not exist");
-			AnalysisContext.currentAnalysisContext().setDatabaseInputDir(trainingInputDir);
-			AnalysisContext.currentAnalysisContext().loadInterproceduralDatabases();
-			// XXX: hack
-			System.setProperty("findbugs.checkreturn.loadtraining", new File(trainingInputDir, "checkReturn.db").getPath());
-		}
+		configureTrainingDatabases();
 		
+		// Configure analysis features
 		configureAnalysisFeatures();
 		
 		// Give the BugReporter a reference to this object,
@@ -1055,9 +1043,6 @@ public class FindBugs implements Constants2, ExitCodes {
 		analysisContext.clearRepository();
 		
 		// Get list of files to analyze.
-		// Note that despite the name getJarFileArray(),
-		// they can also be zip files, directories,
-		// and single class files.
 		LinkedList<ArchiveWorkListItem> archiveWorkList = new LinkedList<ArchiveWorkListItem>();
 		for (Iterator<String> i = project.getFileList().iterator(); i.hasNext(); ) {
 			String fileName = i.next();
@@ -1193,6 +1178,29 @@ public class FindBugs implements Constants2, ExitCodes {
 	}
 
 	/**
+	 * Configure training databases.
+	 * 
+	 * @throws IOException
+	 */
+	private void configureTrainingDatabases() throws IOException {
+		if (emitTrainingOutput) {
+			if (!new File(trainingOutputDir).isDirectory())
+				throw new IOException("Training output directory " + trainingOutputDir + " does not exist");
+			AnalysisContext.currentAnalysisContext().setDatabaseOutputDir(trainingOutputDir);
+			// XXX: hack
+			System.setProperty("findbugs.checkreturn.savetraining", new File(trainingOutputDir, "checkReturn.db").getPath());
+		}
+		if (useTrainingInput) {
+			if (!new File(trainingInputDir).isDirectory())
+				throw new IOException("Training input directory " + trainingInputDir + " does not exist");
+			AnalysisContext.currentAnalysisContext().setDatabaseInputDir(trainingInputDir);
+			AnalysisContext.currentAnalysisContext().loadInterproceduralDatabases();
+			// XXX: hack
+			System.setProperty("findbugs.checkreturn.loadtraining", new File(trainingInputDir, "checkReturn.db").getPath());
+		}
+	}
+
+	/**
 	 * Create the ExecutionPlan.
 	 * 
 	 * @throws OrderingConstraintException 
@@ -1263,8 +1271,6 @@ public class FindBugs implements Constants2, ExitCodes {
 		
 		// Set implicit classpath entries
 		addCollectionToClasspath(project.getImplicitClasspathEntryList());
-
-
 
 		// Add system classpath entries
 		String systemClassPath = ClassPath.getClassPath();
@@ -1355,6 +1361,10 @@ public class FindBugs implements Constants2, ExitCodes {
 			} else
 				throw new IOException("URL " + fileName + " is not an archive, class file, or directory");
 
+			if (DEBUG || URLClassPathRepository.DEBUG) {
+				System.out.println("Scanning " + url + " for classes");
+			}
+			
 			// Load all referenced classes into the Repository
 			for (; ;) {
 				if (Thread.interrupted())
@@ -1389,7 +1399,9 @@ public class FindBugs implements Constants2, ExitCodes {
 		} catch (IOException e) {
 			// You'd think that the message for a FileNotFoundException would include
 			// the filename, but you'd be wrong.  So, we'll add it explicitly.
-			throw new IOException("Could not analyze " + fileName + ": " + e.getMessage());
+			IOException ioe = new IOException("Could not analyze " + fileName);
+			ioe.initCause(e);
+			throw ioe;
 		} finally {
 			if (classProducer != null) {
 				classProducer.close();

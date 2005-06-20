@@ -46,6 +46,8 @@ import org.apache.bcel.util.Repository;
  * @author David Hovemeyer
  */
 public class URLClassPathRepository implements Repository {
+	public static final boolean DEBUG = Boolean.getBoolean("findbugs.classpath.debug");
+	
 	private static final long serialVersionUID = 1L;
 
 	private Map<String, JavaClass> nameToClassMap;
@@ -77,6 +79,7 @@ public class URLClassPathRepository implements Repository {
 	 * @see org.apache.bcel.util.Repository#storeClass(org.apache.bcel.classfile.JavaClass)
 	 */
 	public void storeClass(JavaClass javaClass) {
+		if (DEBUG) System.out.println("Storing class " + javaClass.getClassName() + " in repository");
 		nameToClassMap.put(javaClass.getClassName(), javaClass);
 		javaClass.setRepository(this);
 	}
@@ -102,7 +105,9 @@ public class URLClassPathRepository implements Repository {
 		//if (className.indexOf('/') >= 0) throw new IllegalStateException();
 		JavaClass javaClass = findClass(className);
 		if (javaClass == null) {
+			if (DEBUG) System.out.println("Looking up " + className + " on classpath");
 			javaClass = urlClassPath.lookupClass(className);
+			if (DEBUG) System.out.println("Storing " + className + " in repository");
 			storeClass(javaClass);
 		}
 		return javaClass;
