@@ -154,7 +154,7 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 			else if (lhs.getClass() == MethodAnnotation.class)
 				cmp = compareMethods(lhsCollection, rhsCollection, (MethodAnnotation) lhs, (MethodAnnotation) rhs);
 			else if (lhs.getClass() == SourceLineAnnotation.class)
-				cmp = compareSourceLines((SourceLineAnnotation) lhs, (SourceLineAnnotation) rhs);
+				cmp = compareSourceLines(lhsCollection, rhsCollection, (SourceLineAnnotation) lhs, (SourceLineAnnotation) rhs);
 			else
 				// everything else just compare directly
 				cmp = lhs.compareTo(rhs);
@@ -187,22 +187,26 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 			return bugCollection.getClassHash(className);
 	}
 	
-	// Compare classes: either exact fully qualified name must match, or class hash must match
 	public int compareClasses(BugCollection lhsCollection, BugCollection rhsCollection, ClassAnnotation lhsClass, ClassAnnotation rhsClass) {
 		if (lhsClass == null || rhsClass == null) {
 			return compareNullElements(lhsClass, rhsClass);
+		} else {
+			return compareClassesByName(lhsCollection, rhsCollection, lhsClass.getClassName(), rhsClass.getClassName());
 		}
-		
+	}
+	
+	// Compare classes: either exact fully qualified name must match, or class hash must match
+	public int compareClassesByName(BugCollection lhsCollection, BugCollection rhsCollection, String lhsClassName, String rhsClassName) {
 		int cmp;
 		
 		// Compare by class name.  If same, great.
-		cmp = lhsClass.compareTo(rhsClass);
+		cmp = lhsClassName.compareTo(rhsClassName);
 		if (cmp == 0)
 			return 0;
 		
 		// Get class hashes
-		ClassHash lhsHash = getClassHash(lhsCollection, lhsClass.getClassName());
-		ClassHash rhsHash = getClassHash(rhsCollection, rhsClass.getClassName());
+		ClassHash lhsHash = getClassHash(lhsCollection, lhsClassName);
+		ClassHash rhsHash = getClassHash(rhsCollection, rhsClassName);
 		if (lhsHash == null || rhsHash == null) {
 			if (DEBUG) System.out.println("missing class hash!");
 			return cmp;
@@ -215,6 +219,7 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 			if (DEBUG) System.out.println("class hash mismatch");
 			return cmp;
 		}
+		
 	}
 	
 	// Compare methods: either exact name and signature must match, or method hash must match
@@ -244,15 +249,47 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	}
 	
 	/**
+	 * For now, just look at the 2 preceeding and succeeding opcodes
+	 * for fuzzy source line matching.
+	 */
+	private static final int NUM_CONTEXT_OPCODES = 2;
+	
+	/**
 	 * Compare source line annotations.
-	 * FIXME: decide if there is an easy way to handle changes in bytecode offsets.
 	 * 
+	 * @param rhsCollection lhs BugCollection
+	 * @param lhsCollection rhs BugCollection
 	 * @param lhs           a SourceLineAnnotation
 	 * @param rhs           another SourceLineAnnotation
 	 * @return comparison of lhs and rhs
 	 */
-	public int compareSourceLines(SourceLineAnnotation lhs, SourceLineAnnotation rhs) {
-		return lhs.getStartBytecode() - rhs.getStartBytecode();
+	public int compareSourceLines(BugCollection lhsCollection, BugCollection rhsCollection, SourceLineAnnotation lhs, SourceLineAnnotation rhs) {
+		if (lhs == null || rhs == null) {
+			return compareNullElements(lhs, rhs);
+		}
+		
+		// Classes must match fuzzily.
+		int cmp = compareClassesByName(lhsCollection, rhsCollection, lhs.getClassName(), rhs.getClassName());
+		if (cmp != 0)
+			return cmp;
+		
+		// If both annotations refer to entire methods, as opposed to
+		// a specific instruction or range of instructions, consider them
+		// equal.  This handles the case where a warning may refer to
+		// another method (i.e., it was called).
+		// Even if the referred-to method changes between versions, we want
+		// the warning to be considered equivalent in both versions.
+		if (!lhs.hasSpecificInstructions() && !rhs.hasSpecificInstructions())
+			return 0;
+		
+		// See if the opcode contexts match.
+		if (   lhs.getEarlierOpcodes(NUM_CONTEXT_OPCODES).equals(rhs.getEarlierOpcodes(NUM_CONTEXT_OPCODES))
+			&& lhs.getSelectedOpcodes().equals(rhs.getSelectedOpcodes())
+			&& lhs.getLaterOpcodes(NUM_CONTEXT_OPCODES).equals(rhs.getLaterOpcodes(NUM_CONTEXT_OPCODES)))
+				return 0;
+		
+		// Give up and use exact matching algorithm to order the annotations
+		return lhs.compareTo(rhs);
 	}
 	
 	// See "FindBugsAnnotationDescriptions.properties"
