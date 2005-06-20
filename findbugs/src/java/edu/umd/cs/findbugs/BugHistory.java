@@ -30,6 +30,8 @@ import java.util.TreeSet;
 
 import org.dom4j.DocumentException;
 
+import edu.umd.cs.findbugs.config.CommandLine;
+
 /**
  * Analyze bug results to find new, fixed, and retained bugs
  * between versions of the same program.  Uses VersionInsensitiveBugComparator
@@ -239,42 +241,99 @@ public class BugHistory {
 		}
 		return comparator;
 	}
+	
+	private static class BugHistoryCommandLine extends CommandLine {
+		private boolean fuzzy;
+		private boolean count;
+		private SetOperation setOp;
+		
+		public BugHistoryCommandLine() {
+			addSwitch("-fuzzy", "use fuzzy warning matching (recommended)");
+			addSwitch("-added", "compute added warnings");
+			addSwitch("-new", "same as \"-added\" switch");
+			addSwitch("-removed", "compute removed warnings");
+			addSwitch("-fixed", "same as \"-removed\" switch");
+			addSwitch("-retained", "compute retained warnings");
+			addSwitch("-count", "just print warning count");
+		}
+		
+		 /* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
+		 */
+		//@Override
+		protected void handleOption(String option, String optionExtraPart) throws IOException {
+			if (option.equals("-fuzzy")) {
+				fuzzy = true;
+			} else if (option.equals("-added") || option.equals("-new")) {
+				setOp = ADDED_WARNINGS;
+			} else if (option.equals("-removed") || option.equals("-fixed")) {
+				setOp = REMOVED_WARNINGS;
+			} else if (option.equals("-retained")) {
+				setOp = RETAINED_WARNINGS;
+			} else if (option.equals("-count")) {
+				count = true;
+			} else {
+				throw new IllegalArgumentException("Unknown option: " + option);
+			}
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java.lang.String, java.lang.String)
+		 */
+		//@Override
+		protected void handleOptionWithArgument(String option, String argument) throws IOException {
+			throw new IllegalArgumentException("Unknown option: " + option);
+		}
+		
+		/**
+		 * @return true if fuzzy matching should be used
+		 */
+		public boolean isFuzzy() {
+			return fuzzy;
+		}
+		
+		/**
+		 * @return true if we should just output the delta
+		 */
+		public boolean isCount() {
+			return count;
+		}
+		
+		/**
+		 * @return Returns the set operation to apply.
+		 */
+		public SetOperation getSetOp() {
+			return setOp;
+		}
+	}
 
 	public static void main(String[] argv) throws Exception {
-		if (argv.length < 3) {
+		
+		BugHistoryCommandLine commandLine = new BugHistoryCommandLine();
+		int argCount = commandLine.parse(argv);
+		if (argv.length - argCount != 2) {
 			printUsage();
+		}
+		
+		if (commandLine.getSetOp() == null) {
+			System.err.println("No set operation specified");
+			System.exit(1);
 		}
 
 		Project project = new Project();
-		
-		boolean useFuzzyComparator = false;
-		int argCount = 0;
-		if (argv[argCount].equals("-fuzzy")) {
-			if (argv.length < 4) {
-				printUsage();
-			}
-			useFuzzyComparator = true;
-			++argCount;
-		}
-
-		String op = argv[argCount++];
 		SortedBugCollection origCollection = readCollection(argv[argCount++], project);
 		SortedBugCollection newCollection = readCollection(argv[argCount++], new Project());
-
-		SortedBugCollection result = null;
-		BugHistory bugHistory = new BugHistory(origCollection, newCollection); 
-		bugHistory.setUseFuzzyComparator(useFuzzyComparator);
-
-		if (op.equals("-new") || op.equals("-added")) {
-			result = bugHistory.performSetOperation(ADDED_WARNINGS);
-		} else if (op.equals("-fixed") || op.equals("-removed")) {
-			result = bugHistory.performSetOperation(REMOVED_WARNINGS);
-		} else if (op.equals("-retained")) {
-			result = bugHistory.performSetOperation(RETAINED_WARNINGS);
-		} else
-			throw new IllegalArgumentException("Unknown operation: " + op);
-
-		result.writeXML(System.out, project);
+		
+		BugHistory bugHistory = new BugHistory(origCollection, newCollection);
+		bugHistory.setUseFuzzyComparator(commandLine.isFuzzy());
+		
+		SortedBugCollection result = bugHistory.performSetOperation(commandLine.getSetOp());
+		
+		if (commandLine.isCount()) {
+			System.out.println("Delta is " +result.getCollection().size());
+		} else {
+			result.writeXML(System.out, project);
+		}
 	}
 
 	/**
@@ -282,15 +341,8 @@ public class BugHistory {
 	 */
 	private static void printUsage() {
 		System.err.println("Usage: " + BugHistory.class.getName() +
-		        " [options] <operation> <old results> <new results>\n" +
-		        "Options:\n" +
-		        "   -fuzzy      Use fuzzy bug comparison\n" +
-		        "Operations:\n" +
-		        "   -added      Output added bugs (in new results but not in old results)\n" +
-		        "   -new        Synonym for -added\n" +
-		        "   -removed    Output removed bugs (in old results but not in new results)\n" +
-		        "   -fixed      Synonym for -removed\n" +
-		        "   -retained   Output retained bugs (in both old and new results)");
+		        " [options] <operation> <old results> <new results>");
+		new BugHistoryCommandLine().printUsage(System.err);
 		System.exit(1);
 	}
 	
