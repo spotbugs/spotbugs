@@ -24,7 +24,9 @@ package edu.umd.cs.findbugs.ba;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.util.ClassPath;
@@ -52,10 +54,14 @@ public class URLClassPathRepository implements Repository {
 
 	private Map<String, JavaClass> nameToClassMap;
 	private URLClassPath urlClassPath;
+	private Set<String> knownClasses;
 	
 	public URLClassPathRepository() {
 		this.nameToClassMap = new HashMap<String, JavaClass>();
 		this.urlClassPath = new URLClassPath();
+		if (DEBUG) {
+			this.knownClasses = new HashSet<String>();
+		}
 	}
 	
 	/**
@@ -64,6 +70,11 @@ public class URLClassPathRepository implements Repository {
 	public void destroy() {
 		nameToClassMap.clear();
 		urlClassPath.close();
+		if (DEBUG) {
+			System.out.println("Destroying Repository");
+			knownClasses.clear();
+			dumpStack();
+		}
 	}
 
 	/**
@@ -80,7 +91,11 @@ public class URLClassPathRepository implements Repository {
 	 */
 	public void storeClass(JavaClass javaClass) {
 		if (DEBUG) System.out.println("Storing class " + javaClass.getClassName() + " in repository");
-		nameToClassMap.put(javaClass.getClassName(), javaClass);
+		JavaClass previous = nameToClassMap.put(javaClass.getClassName(), javaClass);
+		if (DEBUG && previous != null) {
+			System.out.println("\t==> A previous class was evicted!");
+			dumpStack();
+		}
 		javaClass.setRepository(this);
 	}
 
@@ -89,6 +104,15 @@ public class URLClassPathRepository implements Repository {
 	 */
 	public void removeClass(JavaClass javaClass) {
 		nameToClassMap.remove(javaClass.getClassName());
+		if (DEBUG) {
+			System.out.println("Removing class " + javaClass.getClassName() + " from Repository");
+			dumpStack();
+			knownClasses.remove(javaClass.getClassName());
+		}
+	}
+
+	private void dumpStack() {
+		new Throwable().printStackTrace(System.out);
 	}
 
 	/* (non-Javadoc)
@@ -105,7 +129,13 @@ public class URLClassPathRepository implements Repository {
 		//if (className.indexOf('/') >= 0) throw new IllegalStateException();
 		JavaClass javaClass = findClass(className);
 		if (javaClass == null) {
-			if (DEBUG) System.out.println("Looking up " + className + " on classpath");
+			if (DEBUG) {
+				if (knownClasses.contains(className)) {
+					System.out.println("MASSIVE ERROR: " + className + " should be in the Repository already!");
+				}
+				System.out.println("Looking up " + className + " on classpath");
+				dumpStack();
+			}
 			javaClass = urlClassPath.lookupClass(className);
 			if (DEBUG) System.out.println("Storing " + className + " in repository");
 			storeClass(javaClass);
@@ -124,7 +154,14 @@ public class URLClassPathRepository implements Repository {
 	 * @see org.apache.bcel.util.Repository#clear()
 	 */
 	public void clear() {
+		if (DEBUG) {
+			System.out.println("Clearing Repository!");
+			dumpStack();
+		}
 		nameToClassMap.clear();
+		if (DEBUG) {
+			knownClasses.clear();
+		}
 	}
 
 	/* (non-Javadoc)

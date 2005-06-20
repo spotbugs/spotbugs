@@ -316,7 +316,7 @@ public class URLClassPath implements Serializable {
 	 * @throws IOException if an IO error occurs trying to determine
 	 *   whether or not the resource exists 
 	 */
-	public InputStream getInputStreamForResource(String resourceName) throws IOException {
+	private InputStream getInputStreamForResource(String resourceName) throws IOException {
 		// Try each classpath entry, in order, until we find one
 		// that has the resource.  Catch and ignore IOExceptions.
 		
@@ -350,7 +350,7 @@ public class URLClassPath implements Serializable {
 			}
 		}
 		if (URLClassPathRepository.DEBUG) {
-			System.out.print("\t==> could not find " + resourceName + " on classpath");
+			System.out.println("\t==> could not find " + resourceName + " on classpath");
 		}
 		return null;
 	}
