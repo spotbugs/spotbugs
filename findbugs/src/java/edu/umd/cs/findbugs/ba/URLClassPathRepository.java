@@ -54,14 +54,10 @@ public class URLClassPathRepository implements Repository {
 
 	private Map<String, JavaClass> nameToClassMap;
 	private URLClassPath urlClassPath;
-	private Set<String> knownClasses;
 	
 	public URLClassPathRepository() {
 		this.nameToClassMap = new HashMap<String, JavaClass>();
 		this.urlClassPath = new URLClassPath();
-		if (DEBUG) {
-			this.knownClasses = new HashSet<String>();
-		}
 	}
 	
 	/**
@@ -72,8 +68,6 @@ public class URLClassPathRepository implements Repository {
 		urlClassPath.close();
 		if (DEBUG) {
 			System.out.println("Destroying Repository");
-			knownClasses.clear();
-			dumpStack();
 		}
 	}
 
@@ -107,7 +101,6 @@ public class URLClassPathRepository implements Repository {
 		if (DEBUG) {
 			System.out.println("Removing class " + javaClass.getClassName() + " from Repository");
 			dumpStack();
-			knownClasses.remove(javaClass.getClassName());
 		}
 	}
 
@@ -119,7 +112,14 @@ public class URLClassPathRepository implements Repository {
 	 * @see org.apache.bcel.util.Repository#findClass(java.lang.String)
 	 */
 	public JavaClass findClass(String className) {
-		return nameToClassMap.get(className);
+		// Make sure we handle class names with slashes.
+		// If we don't, we can get into serious trouble: a previously
+		// loaded class will appear to be missing (because we're using the
+		// wrong name to look it up) and be evicted by some other random
+		// version of the class loaded from the classpath.
+		String dottedClassName = className.replace('/', '.');
+		
+		return nameToClassMap.get(dottedClassName);
 	}
 
 	/* (non-Javadoc)
@@ -130,14 +130,10 @@ public class URLClassPathRepository implements Repository {
 		JavaClass javaClass = findClass(className);
 		if (javaClass == null) {
 			if (DEBUG) {
-				if (knownClasses.contains(className)) {
-					System.out.println("MASSIVE ERROR: " + className + " should be in the Repository already!");
-				}
 				System.out.println("Looking up " + className + " on classpath");
 				dumpStack();
 			}
 			javaClass = urlClassPath.lookupClass(className);
-			if (DEBUG) System.out.println("Storing " + className + " in repository");
 			storeClass(javaClass);
 		}
 		return javaClass;
@@ -159,9 +155,6 @@ public class URLClassPathRepository implements Repository {
 			dumpStack();
 		}
 		nameToClassMap.clear();
-		if (DEBUG) {
-			knownClasses.clear();
-		}
 	}
 
 	/* (non-Javadoc)
