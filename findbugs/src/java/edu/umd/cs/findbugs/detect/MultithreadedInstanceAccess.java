@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantFieldref;
 import org.apache.bcel.classfile.ConstantNameAndType;
@@ -115,6 +116,11 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 	public void visitMethod(Method obj) {
 		monitorCount = 0;
 		alreadyReported = new HashSet<String>();
+	}
+	
+	public void visitCode(Code obj) {
+		if (!getMethodName().equals("<init>"))
+			super.visitCode(obj);
 	}
 	
 	public void sawField() {
