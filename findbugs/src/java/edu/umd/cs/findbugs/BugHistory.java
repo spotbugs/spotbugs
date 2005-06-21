@@ -126,6 +126,7 @@ public class BugHistory {
 	};
 	
 	private SortedBugCollection origCollection, newCollection;
+	private SortedBugCollection originator;
 	private boolean useFuzzyComparator;
 	private Comparator<BugInstance> comparator;
 	
@@ -164,7 +165,7 @@ public class BugHistory {
 		
 		// Perform the operation, keeping track of which input BugCollection
 		// should be cloned for metadata.
-		SortedBugCollection originator = operation.perform(result, origCollection, newCollection);
+		originator = operation.perform(result, origCollection, newCollection);
 		
 		// Clone the actual BugInstances selected by the set operation.
 		Collection<BugInstance> selected = new LinkedList<BugInstance>();
@@ -180,6 +181,13 @@ public class BugHistory {
 		resultCollection.addAll(selected);
 		
 		return resultCollection;
+	}
+	
+	/**
+	 * @return Returns the originator.
+	 */
+	public SortedBugCollection getOriginator() {
+		return originator;
 	}
 
 	/**
@@ -320,9 +328,10 @@ public class BugHistory {
 			System.exit(1);
 		}
 
-		Project project = new Project();
-		SortedBugCollection origCollection = readCollection(argv[argCount++], project);
-		SortedBugCollection newCollection = readCollection(argv[argCount++], new Project());
+		Project origProject = new Project();
+		SortedBugCollection origCollection = readCollection(argv[argCount++], origProject);
+		Project newProject = new Project();
+		SortedBugCollection newCollection = readCollection(argv[argCount++], newProject);
 		
 		BugHistory bugHistory = new BugHistory(origCollection, newCollection);
 		bugHistory.setUseFuzzyComparator(commandLine.isFuzzy());
@@ -330,9 +339,10 @@ public class BugHistory {
 		SortedBugCollection result = bugHistory.performSetOperation(commandLine.getSetOp());
 		
 		if (commandLine.isCount()) {
-			System.out.println("Delta is " +result.getCollection().size());
+			System.out.println(result.getCollection().size());
 		} else {
-			result.writeXML(System.out, project);
+			result.writeXML(
+					System.out, bugHistory.getOriginator() == origCollection ? origProject : newProject);
 		}
 	}
 

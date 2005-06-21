@@ -247,6 +247,7 @@ public class SortedBugCollection extends BugCollection {
 	 */
 	//@Override
 	public void setClassHash(String className, ClassHash classHash) {
+		//System.out.println("Put class hash: " + className + "->" + classHash);
 		classHashMap.put(className, classHash);
 	}
 	

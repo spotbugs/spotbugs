@@ -238,6 +238,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		String encodedHash = getRequiredAttribute(attributes, "value", qName);
 		byte[] hash;
 		try {
+			//System.out.println("Extract hash " + encodedHash);
 			hash= ClassHash.stringToHash(encodedHash);
 		} catch (IllegalArgumentException e) {
 			throw new SAXException("Invalid class hash", e);

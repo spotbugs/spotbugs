@@ -272,7 +272,9 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 	 * @see java.lang.Comparable#compareTo(T)
 	 */
 	public int compareTo(ClassHash other) {
-		return compareHashes(this.classHash, other.classHash);
+		int cmp = compareHashes(this.classHash, other.classHash);
+		//System.out.println(this + " <=> " + other +  ": compareTo=" + cmp);
+		return cmp;
 	}
 	
 	public static int compareHashes(byte[] a, byte[] b) {
@@ -297,5 +299,13 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 			value |= 0x80;
 		}
 		return value;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	//@Override
+	public String toString() {
+		return getClassName() + ":" + hashToString(this.classHash);
 	}
 }

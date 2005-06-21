@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import edu.umd.cs.findbugs.ba.ClassHash;
@@ -95,6 +96,11 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	/** Keep track of which BugCollections the various BugInstances have come from. */
 	private IdentityHashMap<BugInstance, BugCollection> bugCollectionMap;
 	
+	/**
+	 * Map of class hashes to canonicate class names used for comparison purposes.
+	 */
+	private Map<ClassHash, String> classHashToCanonicalClassNameMap;
+	
 	public FuzzyBugComparator() {
 		if (DEBUG) System.out.println("Created fuzzy comparator");
 		this.bugCollectionMap = new IdentityHashMap<BugInstance, BugCollection>();
@@ -109,6 +115,18 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	public void registerBugCollection(BugCollection bugCollection) {
 		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ) {
 			bugCollectionMap.put(i.next(), bugCollection);
+		}
+		
+		// For each distinct ClassHash, keep track of the lexicographically
+		// least class name.  This serves as the "representative" for all (equivalent)
+		// classes sharing that hash value.  This allows us to ensure that the
+		// class ordering induced by this comparator is transitive.
+		for (Iterator<ClassHash> i = bugCollection.classHashIterator(); i.hasNext();) {
+			ClassHash classHash = i.next();
+			String canonicalClassName = classHashToCanonicalClassNameMap.get(classHash);
+			if (canonicalClassName == null || classHash.getClassName().compareTo(canonicalClassName) < 0) {
+				classHashToCanonicalClassNameMap.put(classHash, classHash.getClassName());
+			}
 		}
 	}
 	
@@ -199,27 +217,19 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	public int compareClassesByName(BugCollection lhsCollection, BugCollection rhsCollection, String lhsClassName, String rhsClassName) {
 		int cmp;
 		
-		// Compare by class name.  If same, great.
-		cmp = lhsClassName.compareTo(rhsClassName);
-		if (cmp == 0)
-			return 0;
-		
 		// Get class hashes
 		ClassHash lhsHash = getClassHash(lhsCollection, lhsClassName);
 		ClassHash rhsHash = getClassHash(rhsCollection, rhsClassName);
-		if (lhsHash == null || rhsHash == null) {
-			if (DEBUG) System.out.println("missing class hash!");
-			return cmp;
-		}
 		
-		if (lhsHash.isSameHash(rhsHash)) {
-			if (DEBUG) System.out.println("class hash match!");
-			return 0;
-		} else {
-			if (DEBUG) System.out.println("class hash mismatch");
-			return cmp;
-		}
-		
+		// Convert to canonical class names based on the class hashes.
+		// This has the effect that classes with the same hash compare as equal,
+		// while ensuring that all class names have a consistent ordering.
+		if (lhsHash != null)
+			lhsClassName = classHashToCanonicalClassNameMap.get(lhsHash);
+		if (rhsHash != null)
+			rhsClassName = classHashToCanonicalClassNameMap.get(rhsHash);
+
+		return lhsClassName.compareTo(rhsClassName);
 	}
 	
 	// Compare methods: either exact name and signature must match, or method hash must match
