@@ -579,9 +579,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
         settingsMenu = new javax.swing.JMenu();
         configureDetectorsItem = new javax.swing.JMenuItem();
         effortMenu = new javax.swing.JMenu();
-        minEffortItem = new javax.swing.JMenuItem();
-        normalEffortItem = new javax.swing.JMenuItem();
-        maxEffortItem = new javax.swing.JMenuItem();
+        minEffortItem = new javax.swing.JCheckBoxMenuItem();
+        normalEffortItem = new javax.swing.JCheckBoxMenuItem();
+        maxEffortItem = new javax.swing.JCheckBoxMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutItem = new javax.swing.JMenuItem();
 
@@ -1638,8 +1638,8 @@ public class FindBugsFrame extends javax.swing.JFrame {
             effortMenu.add(minEffortItem);
 
             normalEffortItem.setFont(new java.awt.Font("Dialog", 0, 12));
-            normalEffortItem.setText("Normal");
             normalEffortItem.setSelected(true);
+            normalEffortItem.setText("Normal");
             effortButtonGroup.add(normalEffortItem);
             localiseButton(normalEffortItem, "menu.normaleffort_item", "&Normal", true);
             normalEffortItem.addActionListener(new java.awt.event.ActionListener() {
@@ -3772,11 +3772,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem loadBugsItem;
     private javax.swing.JLabel logoLabel;
     private javax.swing.JRadioButtonMenuItem lowPriorityButton;
-    private javax.swing.JMenuItem maxEffortItem;
+    private javax.swing.JCheckBoxMenuItem maxEffortItem;
     private javax.swing.JRadioButtonMenuItem mediumPriorityButton;
-    private javax.swing.JMenuItem minEffortItem;
+    private javax.swing.JCheckBoxMenuItem minEffortItem;
     private javax.swing.JMenuItem newProjectItem;
-    private javax.swing.JMenuItem normalEffortItem;
+    private javax.swing.JCheckBoxMenuItem normalEffortItem;
     private javax.swing.JMenuItem openProjectItem;
     private javax.swing.JMenuItem pasteItem;
     private javax.swing.ButtonGroup priorityButtonGroup;

@@ -466,7 +466,7 @@
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(effortMenu, &quot;menu.effort_menu&quot;, &quot;Effort&quot;, true);"/>
               </AuxValues>
               <SubComponents>
-                <MenuItem class="javax.swing.JMenuItem" name="minEffortItem">
+                <MenuItem class="javax.swing.JCheckBoxMenuItem" name="minEffortItem">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Dialog" size="12" style="0"/>
@@ -483,13 +483,13 @@
                     <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(minEffortItem, &quot;menu.mineffort_item&quot;, &quot;&amp;Minimum&quot;, true);"/>
                   </AuxValues>
                 </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="normalEffortItem">
+                <MenuItem class="javax.swing.JCheckBoxMenuItem" name="normalEffortItem">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Dialog" size="12" style="0"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Normal"/>
                     <Property name="selected" type="boolean" value="true"/>
+                    <Property name="text" type="java.lang.String" value="Normal"/>
                     <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                       <ComponentRef name="effortButtonGroup"/>
                     </Property>
@@ -501,7 +501,7 @@
                     <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="localiseButton(normalEffortItem, &quot;menu.normaleffort_item&quot;, &quot;&amp;Normal&quot;, true);"/>
                   </AuxValues>
                 </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="maxEffortItem">
+                <MenuItem class="javax.swing.JCheckBoxMenuItem" name="maxEffortItem">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Dialog" size="12" style="0"/>
