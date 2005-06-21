@@ -475,6 +475,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         java.awt.GridBagConstraints gridBagConstraints;
 
         priorityButtonGroup = new javax.swing.ButtonGroup();
+        effortButtonGroup = new javax.swing.ButtonGroup();
         consoleSplitter = new javax.swing.JSplitPane();
         viewPanel = new javax.swing.JPanel();
         emptyPanel = new javax.swing.JPanel();
@@ -1626,18 +1627,39 @@ public class FindBugsFrame extends javax.swing.JFrame {
             localiseButton(effortMenu, "menu.effort_menu", "Effort", true);
             minEffortItem.setFont(new java.awt.Font("Dialog", 0, 12));
             minEffortItem.setText("Minimum");
+            effortButtonGroup.add(minEffortItem);
             localiseButton(minEffortItem, "menu.mineffort_item", "&Minimum", true);
+            minEffortItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    minEffortItemActionPerformed(evt);
+                }
+            });
+
             effortMenu.add(minEffortItem);
 
             normalEffortItem.setFont(new java.awt.Font("Dialog", 0, 12));
             normalEffortItem.setText("Normal");
             normalEffortItem.setSelected(true);
+            effortButtonGroup.add(normalEffortItem);
             localiseButton(normalEffortItem, "menu.normaleffort_item", "&Normal", true);
+            normalEffortItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    normalEffortItemActionPerformed(evt);
+                }
+            });
+
             effortMenu.add(normalEffortItem);
 
             maxEffortItem.setFont(new java.awt.Font("Dialog", 0, 12));
             maxEffortItem.setText("Maximum");
+            effortButtonGroup.add(maxEffortItem);
             localiseButton(maxEffortItem, "menu.maxeffort_item", "&Maximum", true);
+            maxEffortItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    maxEffortItemActionPerformed(evt);
+                }
+            });
+
             effortMenu.add(maxEffortItem);
 
             settingsMenu.add(effortMenu);
@@ -1664,6 +1686,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             pack();
         }//GEN-END:initComponents
+
+    private void maxEffortItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxEffortItemActionPerformed
+        settingList = FindBugs.MAX_EFFORT;
+    }//GEN-LAST:event_maxEffortItemActionPerformed
+
+    private void normalEffortItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_normalEffortItemActionPerformed
+        settingList = FindBugs.DEFAULT_EFFORT;
+    }//GEN-LAST:event_normalEffortItemActionPerformed
+
+    private void minEffortItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minEffortItemActionPerformed
+        settingList = FindBugs.MIN_EFFORT;
+    }//GEN-LAST:event_minEffortItemActionPerformed
 
     private void settingsMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsMenuActionPerformed
         // TODO add your handling code here:
@@ -3705,6 +3739,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JMenu editMenu;
     private javax.swing.JLabel editProjectLabel;
     private javax.swing.JPanel editProjectPanel;
+    private javax.swing.ButtonGroup effortButtonGroup;
     private javax.swing.JMenu effortMenu;
     private javax.swing.JPanel emptyPanel;
     private javax.swing.JMenuItem exitItem;
