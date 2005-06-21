@@ -39,4 +39,6 @@ public class NullArgumentWarningProperty extends AbstractWarningProperty {
 		new NullArgumentWarningProperty("MONOMORPHIC_CALL_SITE", PriorityAdjustment.RAISE_PRIORITY);
 	public static final NullArgumentWarningProperty ALL_DANGEROUS_TARGETS =
 		new NullArgumentWarningProperty("ALL_DANGEROUS_TARGETS", PriorityAdjustment.RAISE_PRIORITY);
+	public static final NullArgumentWarningProperty ACTUAL_PARAMETER_GUARANTEED_NULL =
+		new NullArgumentWarningProperty("ACTUAL_PARAMETER_GUARANTEED_NULL", PriorityAdjustment.RAISE_PRIORITY);
 }

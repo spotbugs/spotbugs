@@ -381,6 +381,7 @@ public class FindNullDeref
 		// See if any call targets unconditionally dereference one of the null arguments
 		BitSet unconditionallyDereferencedNullArgSet = new BitSet();
 		List<JavaClassAndMethod> dangerousCallTargetList = new LinkedList<JavaClassAndMethod>();
+		List<JavaClassAndMethod> veryDangerousCallTargetList = new LinkedList<JavaClassAndMethod>();
 		for (JavaClassAndMethod targetMethod : targetMethodSet) {
 			if (DEBUG_NULLARG) {
 				System.out.println("For target method " + targetMethod);
@@ -402,6 +403,9 @@ public class FindNullDeref
 			dangerousCallTargetList.add(targetMethod);
 			
 			unconditionallyDereferencedNullArgSet.or(targetUnconditionallyDereferencedNullArgSet);
+			
+			if (!property.getViolatedParamSet(definitelyNullArgSet).isEmpty())
+				veryDangerousCallTargetList.add(targetMethod);
 		}
 		
 		if (dangerousCallTargetList.isEmpty())
@@ -444,6 +448,11 @@ public class FindNullDeref
 			priority = LOW_PRIORITY;
 		}
 		
+		if (dangerousCallTargetList.size() > veryDangerousCallTargetList.size())
+			priority++;
+		else
+			propertySet.addProperty(NullArgumentWarningProperty.ACTUAL_PARAMETER_GUARANTEED_NULL);
+		
 		BugInstance warning = new BugInstance(bugType, priority)
 				.addClassAndMethod(methodGen, sourceFile)
 				.addSourceLine(classContext, methodGen, sourceFile, location.getHandle())
@@ -453,6 +462,11 @@ public class FindNullDeref
 		addParamAnnotations(definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
 
 		// Add annotations for dangerous method call targets
+		for (JavaClassAndMethod dangerousCallTarget : veryDangerousCallTargetList) {
+			warning.addMethod(dangerousCallTarget).describe("METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL");
+		}
+		dangerousCallTargetList.removeAll(veryDangerousCallTargetList);
+//		 Add annotations for dangerous method call targets
 		for (JavaClassAndMethod dangerousCallTarget : dangerousCallTargetList) {
 			warning.addMethod(dangerousCallTarget).describe("METHOD_DANGEROUS_TARGET");
 		}
