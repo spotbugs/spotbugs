@@ -577,6 +577,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
         viewBugsItem = new javax.swing.JRadioButtonMenuItem();
         settingsMenu = new javax.swing.JMenu();
         configureDetectorsItem = new javax.swing.JMenuItem();
+        effortMenu = new javax.swing.JMenu();
+        minEffortItem = new javax.swing.JMenuItem();
+        normalEffortItem = new javax.swing.JMenuItem();
+        maxEffortItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutItem = new javax.swing.JMenuItem();
 
@@ -1600,6 +1604,12 @@ public class FindBugsFrame extends javax.swing.JFrame {
             settingsMenu.setText("Settings");
             settingsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
             localiseButton(settingsMenu, "menu.settings_menu", "&Settings", true);
+            settingsMenu.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    settingsMenuActionPerformed(evt);
+                }
+            });
+
             configureDetectorsItem.setFont(new java.awt.Font("Dialog", 0, 12));
             configureDetectorsItem.setText("Configure Detectors...");
             localiseButton(configureDetectorsItem, "menu.configure_item", "&Configure Detectors...", true);
@@ -1610,6 +1620,27 @@ public class FindBugsFrame extends javax.swing.JFrame {
             });
 
             settingsMenu.add(configureDetectorsItem);
+
+            effortMenu.setText("Effort");
+            effortMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            localiseButton(effortMenu, "menu.effort_menu", "Effort", true);
+            minEffortItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            minEffortItem.setText("Minimum");
+            localiseButton(minEffortItem, "menu.mineffort_item", "&Minimum", true);
+            effortMenu.add(minEffortItem);
+
+            normalEffortItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            normalEffortItem.setText("Normal");
+            normalEffortItem.setSelected(true);
+            localiseButton(normalEffortItem, "menu.normaleffort_item", "&Normal", true);
+            effortMenu.add(normalEffortItem);
+
+            maxEffortItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            maxEffortItem.setText("Maximum");
+            localiseButton(maxEffortItem, "menu.maxeffort_item", "&Maximum", true);
+            effortMenu.add(maxEffortItem);
+
+            settingsMenu.add(effortMenu);
 
             theMenuBar.add(settingsMenu);
 
@@ -1633,6 +1664,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             pack();
         }//GEN-END:initComponents
+
+    private void settingsMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsMenuActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_settingsMenuActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         if (Boolean.getBoolean("findbugs.noSummary")) {
@@ -3670,6 +3705,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JMenu editMenu;
     private javax.swing.JLabel editProjectLabel;
     private javax.swing.JPanel editProjectPanel;
+    private javax.swing.JMenu effortMenu;
     private javax.swing.JPanel emptyPanel;
     private javax.swing.JMenuItem exitItem;
     private javax.swing.JRadioButtonMenuItem expPriorityButton;
@@ -3701,8 +3737,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem loadBugsItem;
     private javax.swing.JLabel logoLabel;
     private javax.swing.JRadioButtonMenuItem lowPriorityButton;
+    private javax.swing.JMenuItem maxEffortItem;
     private javax.swing.JRadioButtonMenuItem mediumPriorityButton;
+    private javax.swing.JMenuItem minEffortItem;
     private javax.swing.JMenuItem newProjectItem;
+    private javax.swing.JMenuItem normalEffortItem;
     private javax.swing.JMenuItem openProjectItem;
     private javax.swing.JMenuItem pasteItem;
     private javax.swing.ButtonGroup priorityButtonGroup;
