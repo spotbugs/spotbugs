@@ -31,6 +31,11 @@ public class ClassHashTest extends TestCase {
 	
 	byte[] hash;
 	String s;
+	byte[] sameHash;
+	byte[] greaterHash;
+	byte[] lesserHash;
+	byte[] shorterHash;
+	byte[] longerHash;
 	
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
@@ -39,6 +44,11 @@ public class ClassHashTest extends TestCase {
 	protected void setUp() throws Exception {
 		hash = new byte[]{0x06, 0x04, (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF};
 		s = "0604deadbeef";
+		sameHash = new byte[]{0x06, 0x04, (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF};
+		greaterHash = new byte[]{0x06, 0x05, (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF};
+		lesserHash = new byte[]{0x06, 0x03, (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF};
+		shorterHash = new byte[]{0x06, 0x04, (byte)0xDE, (byte)0xAD, (byte)0xBE};
+		longerHash = new byte[]{0x06, 0x04, (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF, (byte)0x01};
 	}
 	
 	public void testHashToString() {
@@ -49,5 +59,26 @@ public class ClassHashTest extends TestCase {
 	public void testStringToHash() {
 		byte[] hash2 = ClassHash.stringToHash(s);
 		Assert.assertTrue(Arrays.equals(hash, hash2));
+	}
+	
+	public void testSame() {
+		Assert.assertTrue(ClassHash.compareHashes(hash, sameHash) == 0);
+		Assert.assertTrue(ClassHash.compareHashes(sameHash, hash) == 0);
+	}
+	
+	public void testGreater() {
+		Assert.assertTrue(ClassHash.compareHashes(hash, greaterHash) < 0);
+	}
+	
+	public void testLesser() {
+		Assert.assertTrue(ClassHash.compareHashes(hash, lesserHash) > 0);
+	}
+	
+	public void testShorter() {
+		Assert.assertTrue(ClassHash.compareHashes(hash, shorterHash) > 0);
+	}
+	
+	public void testLonger() {
+		Assert.assertTrue(ClassHash.compareHashes(hash, longerHash) < 0);
 	}
 }
