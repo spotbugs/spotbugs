@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * 
  * @author David Hovemeyer
  */
-public class ClassHash implements XMLWriteable {
+public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 	/**
 	 * XML element name for a ClassHash.
 	 */
@@ -266,5 +266,36 @@ public class ClassHash implements XMLWriteable {
 	 */
 	public boolean isSameHash(ClassHash other) {
 		return Arrays.equals(classHash, other.classHash);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(T)
+	 */
+	public int compareTo(ClassHash other) {
+		return compareHashes(this.classHash, other.classHash);
+	}
+	
+	public static int compareHashes(byte[] a, byte[] b) {
+		int pfxlen = Math.min(a.length, b.length);
+		for (int i = 0; i < pfxlen; ++i) {
+			int cmp = toUnsigned(a[i]) - toUnsigned(b[i]);
+			if (cmp != 0)
+				return cmp;
+		}
+		return a.length - b.length;
+	}
+
+	/**
+	 * Convert a byte to an unsigned int.
+	 * 
+	 * @param b a byte value
+	 * @return the unsigned integer value of the byte
+	 */
+	private static int toUnsigned(byte b) {
+		int value = b & 0x7F;
+		if ((b & 0x80) != 0) {
+			value |= 0x80;
+		}
+		return value;
 	}
 }

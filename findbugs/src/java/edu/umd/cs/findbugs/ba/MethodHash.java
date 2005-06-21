@@ -33,7 +33,7 @@ import org.apache.bcel.classfile.Method;
  * 
  * @author David Hovemeyer
  */
-public class MethodHash {
+public class MethodHash implements Comparable<MethodHash> {
 	public static final String METHOD_HASH_ELEMENT_NAME = "MethodHash";
 	
 	private byte[] hash;
@@ -138,5 +138,12 @@ public class MethodHash {
 	 */
 	public boolean isSameHash(MethodHash other) {
 		return Arrays.equals(this.hash, other.hash);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(T)
+	 */
+	public int compareTo(MethodHash other) {
+		return ClassHash.compareHashes(this.hash, other.hash);
 	}
 }
