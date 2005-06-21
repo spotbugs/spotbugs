@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import de.tobject.findbugs.reporter.MarkerUtil;
 
 /**
  * This is the nature for FindBugs-enabled projects.
@@ -71,6 +72,7 @@ public class FindBugsNature implements IProjectNature {
 	 * Removes the given builder from the build spec for the given project.
 	 */
 	protected void removeFromBuildSpec(String builderID) throws CoreException {
+		MarkerUtil.removeMarkers(getProject());		
 		IProjectDescription description = getProject().getDescription();
 		ICommand[] commands = description.getBuildSpec();
 		for (int i = 0; i < commands.length; ++i) {
