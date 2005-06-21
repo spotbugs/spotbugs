@@ -181,11 +181,15 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 	private static void work(MessageDigest digest, String s, CharsetEncoder encoder) {
 		try {
 			CharBuffer cbuf = CharBuffer.allocate(s.length());
-			cbuf.append(s);
+			cbuf.put(s);
+			cbuf.flip();
+			
 			ByteBuffer buf = encoder.encode(cbuf);
-			int nbytes = buf.remaining();
+//			System.out.println("pos="+buf.position() +",limit=" + buf.limit());
+			int nbytes = buf.limit();
 			byte[] encodedBytes = new byte[nbytes];
 			buf.get(encodedBytes);
+			
 			digest.update(encodedBytes);
 		} catch (CharacterCodingException e) {
 			// This should never happen, since we're encoding to UTF-8.
