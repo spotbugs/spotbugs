@@ -12,3 +12,6 @@ unionResults
 updateBugCollection
 xpathFind
 classifyBugs
+addMessages
+convertXmlToText
+countClasses
