@@ -72,12 +72,26 @@ public abstract class BugCollection {
 
 	/**
 	 * Add a BugInstance to this BugCollection.
+	 * This just calls add(bugInstance, true).
 	 *
 	 * @param bugInstance the BugInstance
 	 * @return true if the BugInstance was added, or false if a matching
 	 *         BugInstance was already in the BugCollection
 	 */
-	public abstract boolean add(BugInstance bugInstance);
+	public boolean add(BugInstance bugInstance) {
+		return add(bugInstance, true);
+	}
+
+	/**
+	 * Add a BugInstance to this BugCollection.
+	 *
+	 * @param bugInstance      the BugInstance
+	 * @param updateActiveTime true if the warning's active time should be updated
+	 *                         to include the collection's current time
+	 * @return true if the BugInstance was added, or false if a matching
+	 *         BugInstance was already in the BugCollection
+	 */
+	public abstract boolean add(BugInstance bugInstance, boolean updateActiveTime);
 
 	/**
 	 * Remove a BugInstance from this BugCollection.

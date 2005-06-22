@@ -95,17 +95,19 @@ public class SortedBugCollection extends BugCollection {
 		classHashMap = new TreeMap<String, ClassHash>();
 		uniqueIdToBugInstanceMap = new HashMap<String, BugInstance>();
 		generatedUniqueIdCount = 0;
-		timestamp = System.currentTimeMillis();
+		timestamp = 0L;
 	}
 
-	public boolean add(BugInstance bugInstance) {
+	public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
 		registerUniqueId(bugInstance);
 
-		// Mark the BugInstance as being active at the BugCollection's current timestamp.
-		TimestampIntervalCollection activeIntervalCollection =
-			bugInstance.getActiveIntervalCollection();
-		activeIntervalCollection.add(new TimestampInterval(timestamp, timestamp));
-		bugInstance.setActiveIntervalCollection(activeIntervalCollection);
+		if (updateActiveTime) {
+			// Mark the BugInstance as being active at the BugCollection's current timestamp.
+			TimestampIntervalCollection activeIntervalCollection =
+				bugInstance.getActiveIntervalCollection();
+			activeIntervalCollection.add(new TimestampInterval(timestamp, timestamp));
+			bugInstance.setActiveIntervalCollection(activeIntervalCollection);
+		}
 		
 		return bugSet.add(bugInstance);
 	}
