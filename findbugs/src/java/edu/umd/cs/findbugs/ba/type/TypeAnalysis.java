@@ -306,8 +306,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	        throws DataflowAnalysisException {
 
 		// Do nothing if we're not computing propagated exceptions
-		if (!FORCE_ACCURATE_EXCEPTIONS ||
-				AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS))
+		if (!(FORCE_ACCURATE_EXCEPTIONS ||
+				AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS)))
 			return;
 
 		// Also, nothing to do if the block is not an exception thrower
