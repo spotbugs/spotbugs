@@ -19,12 +19,16 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 
 /**
  * Add human-readable messages to a dom4j tree containing
@@ -106,6 +110,33 @@ public class AddMessages {
 				.addElement("Details")
 				.addCDATA(bugPattern.getDetailText());
 		}
+	}
+	
+	public static void main(String[] args) throws Exception {
+		if (args.length != 2) {
+			System.err.println("Usage: " + AddMessages.class.getName() + " <input collection> <output collection>");
+			System.exit(1);
+		}
+		
+		String inputFile = args[0];
+		String outputFile = args[1];
+		Project project = new Project();
+		
+		SortedBugCollection inputCollection = new SortedBugCollection();
+		inputCollection.readXML(inputFile, project);
+		
+		Document document = inputCollection.toDocument(project);
+		
+		// Load plugins, in order to get message files
+		DetectorFactoryCollection.instance();
+		
+		AddMessages addMessages = new AddMessages(inputCollection, document);
+		addMessages.execute();
+		
+		XMLWriter writer = new XMLWriter(new BufferedOutputStream(new FileOutputStream(outputFile)),
+				OutputFormat.createPrettyPrint());
+		writer.write(document);
+		writer.close();
 	}
 }
 
