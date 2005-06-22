@@ -25,6 +25,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.TreeMap;
 
 import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.ba.MethodHash;
@@ -104,6 +105,7 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	public FuzzyBugComparator() {
 		if (DEBUG) System.out.println("Created fuzzy comparator");
 		this.bugCollectionMap = new IdentityHashMap<BugInstance, BugCollection>();
+		this.classHashToCanonicalClassNameMap = new TreeMap<ClassHash, String>();
 	}
 	
 	/**
