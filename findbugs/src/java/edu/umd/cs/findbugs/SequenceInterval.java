@@ -19,22 +19,22 @@
 package edu.umd.cs.findbugs;
 
 /**
- * A range of timestamps (inclusive).
+ * A range of sequence numbers (inclusive).
  *
  * @author David Hovemeyer
  */
-public class TimestampInterval implements Comparable<TimestampInterval> {
+public class SequenceInterval implements Comparable<SequenceInterval> {
 	private final long begin, end;
 	
 	/**
 	 * Constructor.
 	 * 
-	 * @param begin beginning of timestamp range (inclusive)
-	 * @param end   end of timestamp range (inclusive)
+	 * @param begin beginning of sequence range (inclusive)
+	 * @param end   end of sequence range (inclusive)
 	 */
-	public TimestampInterval(long begin, long end) {
+	public SequenceInterval(long begin, long end) {
 		if (begin > end)
-			throw new IllegalArgumentException("begin > end in timestamp interval");
+			throw new IllegalArgumentException("begin > end in sequence interval");
 		this.begin = begin;
 		this.end = end;
 	}
@@ -59,56 +59,56 @@ public class TimestampInterval implements Comparable<TimestampInterval> {
 	}
 	
 	/**
-	 * Return whether or not the interval contains given timestamp.
+	 * Return whether or not the interval contains given sequence number.
 	 * 
-	 * @param timestamp the timestamp
-	 * @return true if the timestamp is contained in this interval, false if not
+	 * @param sequence the sequence number
+	 * @return true if the sequence number is contained in this interval, false if not
 	 */
-	public boolean contains(long timestamp) {
-		return timestamp >= begin && timestamp <= end;
+	public boolean contains(long sequence) {
+		return sequence >= begin && sequence <= end;
 	}
 
 	/**
-	 * Decode a String representing a TimestampInterval.
+	 * Decode a String representing a SequenceInterval.
 	 * The String should be in the form <i>begin</i>-<i>end</i>,
 	 * where <i>begin</i> and <i>end</i> both specify <code>long</code>
 	 * values representing the beginning and end of the interval.
 	 * 
 	 * @param token the interval
-	 * @return the TimestampInterval
+	 * @return the SequenceInterval
 	 */
-	public static TimestampInterval decode(String token) throws InvalidTimestampIntervalException {
+	public static SequenceInterval decode(String token) throws InvalidSequenceIntervalException {
 		try {
 			int dash = token.indexOf('-');
 			if (dash < 0) {
 				long moment = Long.parseLong(token);
-				return new TimestampInterval(moment, moment);
+				return new SequenceInterval(moment, moment);
 			} else {
 				String begin = token.substring(0, dash);
 				String end = token.substring(dash+1);
-				return new TimestampInterval(Long.parseLong(begin), Long.parseLong(end));
+				return new SequenceInterval(Long.parseLong(begin), Long.parseLong(end));
 			}
 		} catch (NumberFormatException e) {
-			throw new InvalidTimestampIntervalException("Invalid interval: " + token, e);
+			throw new InvalidSequenceIntervalException("Invalid interval: " + token, e);
 		} catch (IllegalArgumentException e) {
-			throw new InvalidTimestampIntervalException("Invalid interval: " + token, e);
+			throw new InvalidSequenceIntervalException("Invalid interval: " + token, e);
 		}
 	}
 
 	/**
-	 * Encode a TimestampInterval as a String.
+	 * Encode a SequenceInterval as a String.
 	 * The encoded String will be in the form <i>begin</i>-<i>end</i>,
 	 * where <i>begin</i> and <i>end</i> both specify <code>long</code>
 	 * values representing the beginning and end of the interval.
 	 * 
-	 * @param interval the TimestampInterval
+	 * @param interval the SequenceInterval
 	 * @return the encoded String
 	 */
-	public static String encode(TimestampInterval interval) {
+	public static String encode(SequenceInterval interval) {
 		return interval.toString();
 	}
 
-	public int compareTo(TimestampInterval other) {
+	public int compareTo(SequenceInterval other) {
 		long diff = this.begin - other.begin;
 		if (diff != 0L)
 			return signOf(diff);
@@ -128,13 +128,13 @@ public class TimestampInterval implements Comparable<TimestampInterval> {
 	/**
 	 * Do given intervals overlap?
 	 * 
-	 * @param a a TimestampInterval
-	 * @param b another TimestampInterval
+	 * @param a a SequenceInterval
+	 * @param b another SequenceInterval
 	 * @return true if the intervals overlap, false if they don't
 	 */
-	public static boolean overlap(TimestampInterval a, TimestampInterval b) {
+	public static boolean overlap(SequenceInterval a, SequenceInterval b) {
 		if (a.begin > b.begin) {
-			TimestampInterval tmp = a;
+			SequenceInterval tmp = a;
 			a = b;
 			b = tmp;
 		}
@@ -145,12 +145,12 @@ public class TimestampInterval implements Comparable<TimestampInterval> {
 	/**
 	 * Merge overlapping intervals.
 	 * 
-	 * @param a a TimestampInterval
-	 * @param b another TimestampInterval
-	 * @return a new merged TimestampInterval
+	 * @param a a SequenceInterval
+	 * @param b another SequenceInterval
+	 * @return a new merged SequenceInterval
 	 */
-	public static TimestampInterval merge(TimestampInterval a, TimestampInterval b) {
-		return new TimestampInterval(Math.min(a.begin,b.begin), Math.max(a.end,b.end));
+	public static SequenceInterval merge(SequenceInterval a, SequenceInterval b) {
+		return new SequenceInterval(Math.min(a.begin,b.begin), Math.max(a.end,b.end));
 	}
 	
 	// @Override
@@ -166,7 +166,7 @@ public class TimestampInterval implements Comparable<TimestampInterval> {
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
-		TimestampInterval other = (TimestampInterval) obj;
+		SequenceInterval other = (SequenceInterval) obj;
 		return this.begin == other.begin
 			&& this.end == other.end;
 	}

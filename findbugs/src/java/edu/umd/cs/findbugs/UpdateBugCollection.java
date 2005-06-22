@@ -99,11 +99,11 @@ public class UpdateBugCollection {
 		SortedSet<BugInstance> origSetFuzzy = collectionToFuzzySet(collectionToUpdate);
 		SortedSet<BugInstance> newSetFuzzy = collectionToFuzzySet(newCollection);
 		
-		long lastTimestamp = collectionToUpdate.getTimestamp();
+		long lastTimestamp = collectionToUpdate.getSequenceNumber();
 		
 		// We assign a timestamp to the new collection as one greater than the
 		// original collection.
-		long currentTimestamp = collectionToUpdate.getTimestamp() + 1;
+		long currentTimestamp = collectionToUpdate.getSequenceNumber() + 1;
 		
 		// Handle warnings which are in the original bug collection
 		// (and possibly in the new one).
@@ -112,7 +112,7 @@ public class UpdateBugCollection {
 			
 			BugInstance correspondingNewInstance = findMatching(newSetFuzzy, origInstance);
 
-			TimestampIntervalCollection updatedActiveCollection = origInstance.getActiveIntervalCollection();
+			SequenceIntervalCollection updatedActiveCollection = origInstance.getActiveIntervalCollection();
 			updateActiveIntervalCollection(
 					lastTimestamp, currentTimestamp, updatedActiveCollection);
 			
@@ -175,7 +175,7 @@ public class UpdateBugCollection {
 		}
 		
 		// Update the timestamp
-		collectionToUpdate.setTimestamp(currentTimestamp);
+		collectionToUpdate.setSequenceNumber(currentTimestamp);
 	}
 
 	/**
@@ -191,7 +191,7 @@ public class UpdateBugCollection {
 	 * @param activeCollection TimestampIntervalCollection to update
 	 */
 	private void updateActiveIntervalCollection(
-			long lastTimestamp, long currentTimestamp, TimestampIntervalCollection activeCollection) {
+			long lastTimestamp, long currentTimestamp, SequenceIntervalCollection activeCollection) {
 		
 		// If the original bug instance was active during the most recent
 		// analysis, then extend the latest active interval to include
@@ -201,13 +201,13 @@ public class UpdateBugCollection {
 			int lastActiveIndex = activeCollection.findInterval(lastTimestamp);
 			if (lastActiveIndex < 0)
 				throw new IllegalStateException();
-			TimestampInterval lastActiveInterval = activeCollection.get(lastActiveIndex);
+			SequenceInterval lastActiveInterval = activeCollection.get(lastActiveIndex);
 			
 			// Current timestamp should be later than any timestamp in
 			// the existing interval collection.
 			if (currentTimestamp > lastActiveInterval.getEnd()) {
-				TimestampInterval updatedActiveInterval =
-					new TimestampInterval(lastActiveInterval.getBegin(), currentTimestamp);
+				SequenceInterval updatedActiveInterval =
+					new SequenceInterval(lastActiveInterval.getBegin(), currentTimestamp);
 				
 				activeCollection.remove(lastActiveIndex);
 				activeCollection.add(updatedActiveInterval);
@@ -219,7 +219,7 @@ public class UpdateBugCollection {
 		// The original bug instance was not active during the most recent
 		// analysis.  However, it is active now, so just add the current timestamp.
 		if (!added) {
-			activeCollection.add(new TimestampInterval(currentTimestamp, currentTimestamp));
+			activeCollection.add(new SequenceInterval(currentTimestamp, currentTimestamp));
 		}
 	}
 

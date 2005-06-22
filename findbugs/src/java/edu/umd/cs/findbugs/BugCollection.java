@@ -188,22 +188,23 @@ public abstract class BugCollection {
 	public abstract BugInstance lookupFromUniqueId(String uniqueId);
 	
 	/**
-	 * Set the timestamp of the BugCollection.
-	 * This is the wall clock time of the most recent update
-	 * of the collection.
+	 * Get the sequence number of the BugCollection.
+	 * This value represents the number of times the user has
+	 * analyzed a different version of the application and
+	 * updated the historical bug collection using the
+	 * UpdateBugCollection class.
 	 *  
-	 * @return the timestamp
+	 * @return the sequence number
 	 */
-	public abstract long getTimestamp();
+	public abstract long getSequenceNumber();
 
 	/**
-	 * Get the timestamp of the BugCollection.
-	 * This is the wall clock time of the most recent update
-	 * of the collection.
+	 * Set the sequence number of the BugCollection.
 	 * 
-	 * @param timestamp the timestamp
+	 * @param sequence the sequence number
+	 * @see BugCollection#getSequenceNumber()
 	 */
-	public abstract void setTimestamp(long timestamp);
+	public abstract void setSequenceNumber(long sequence);
 	
 	public abstract ClassHash getClassHash(String className);
 	
@@ -378,7 +379,7 @@ public abstract class BugCollection {
 		xmlOutput.openTag(ROOT_ELEMENT_NAME,
 			new XMLAttributeList()
 				.addAttribute("version",Version.RELEASE)
-				.addAttribute("timestamp",String.valueOf(getTimestamp()))
+				.addAttribute("sequence",String.valueOf(getSequenceNumber()))
 		);
 		project.writeXML(xmlOutput);
 	}

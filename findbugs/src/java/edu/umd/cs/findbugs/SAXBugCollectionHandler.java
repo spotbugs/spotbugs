@@ -76,17 +76,23 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			if (!qName.equals("BugCollection"))
 				throw new SAXException(
 						"Invalid top-level element (expected BugCollection, saw " + qName + ")");
-			String timestamp = attributes.getValue("timestamp");
-			long tsval = -1L;
+			
+			// Read and set the sequence number.
+			String sequence = attributes.getValue("sequence");
+			long seqval = -1L;
 			try {
-				tsval = Long.parseLong(timestamp);
+				if (sequence != null)
+					seqval = Long.parseLong(sequence);
 			} catch (NumberFormatException e) {
 				// Ignore
 			}
-			if (tsval < 0L) {
-				tsval = System.currentTimeMillis();
+			
+			// If we can't get the sequence number, or it is not present,
+			// just use 0.
+			if (seqval < 0L) {
+				seqval = 0L;
 			}
-			bugCollection.setTimestamp(tsval);
+			bugCollection.setSequenceNumber(seqval);
 		} else {
 			String outerElement = elementStack.get(elementStack.size() - 1);
 
@@ -118,13 +124,13 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					String activeIntervalCollection = attributes.getValue("active");
 					if (activeIntervalCollection != null) {
 						try {
-							bugInstance.setActiveIntervalCollection(TimestampIntervalCollection.decode(activeIntervalCollection));
-						} catch (InvalidTimestampIntervalException e) {
+							bugInstance.setActiveIntervalCollection(SequenceIntervalCollection.decode(activeIntervalCollection));
+						} catch (InvalidSequenceIntervalException e) {
 							// Whoops, we lost the active history for this BugInstance.
-							// Add the current timestamp.
-							TimestampIntervalCollection activeCollection = new TimestampIntervalCollection();
+							// Add the current sequence.
+							SequenceIntervalCollection activeCollection = new SequenceIntervalCollection();
 							activeCollection.add(
-									new TimestampInterval(bugCollection.getTimestamp(), bugCollection.getTimestamp()));
+									new SequenceInterval(bugCollection.getSequenceNumber(), bugCollection.getSequenceNumber()));
 							bugInstance.setActiveIntervalCollection(activeCollection);
 						}
 					}
@@ -133,7 +139,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					try {
 						bugCollection.getProjectStats().setTimestamp(timestamp);
 					} catch (java.text.ParseException e) {
-						throw new SAXException("Unparseable timestamp: '" + timestamp + "'", e);
+						throw new SAXException("Unparseable sequence number: '" + timestamp + "'", e);
 					}
 				}
 			} else if (outerElement.equals("BugInstance")) {

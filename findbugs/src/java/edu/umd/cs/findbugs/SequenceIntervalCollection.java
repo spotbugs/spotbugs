@@ -25,28 +25,28 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * A collection of TimestampIntervals.
+ * A collection of SequenceIntervals.
  * 
  * @author David Hovemeyer
  */
-public class TimestampIntervalCollection {
-	private List<TimestampInterval> intervalList;
+public class SequenceIntervalCollection {
+	private List<SequenceInterval> intervalList;
 	
 	/**
 	 * Constructor.
 	 * Creates empty collection.
 	 */
-	public TimestampIntervalCollection() {
-		this.intervalList = new ArrayList<TimestampInterval>();
+	public SequenceIntervalCollection() {
+		this.intervalList = new ArrayList<SequenceInterval>();
 	}
 	
 	/**
-	 * Get an Iterator over the TimestampIntervals in the collection.
+	 * Get an Iterator over the SequenceIntervals in the collection.
 	 * Returns them in ascending order.
 	 * 
 	 * @return an Iterator over the intervals in ascending order
 	 */
-	public Iterator<TimestampInterval> intervalIterator() {
+	public Iterator<SequenceInterval> intervalIterator() {
 		return intervalList.iterator();
 	}
 	
@@ -65,7 +65,7 @@ public class TimestampIntervalCollection {
 	 * @param index the index of the interval to get
 	 * @return the interval specified by the index
 	 */
-	public TimestampInterval get(int index) {
+	public SequenceInterval get(int index) {
 		return intervalList.get(index);
 	}
 	
@@ -85,7 +85,7 @@ public class TimestampIntervalCollection {
 	 * 
 	 * @param interval the interval to add
 	 */
-	public void add(TimestampInterval interval) {
+	public void add(SequenceInterval interval) {
 		intervalList.add(interval);
 		sort();
 		simplify();
@@ -93,31 +93,31 @@ public class TimestampIntervalCollection {
 	
 	/**
 	 * Return whether or not the interval collection contains the
-	 * given timestamp.
+	 * given sequence number.
 	 * 
-	 * @param timestamp the timestamp
-	 * @return true if the timestamp is contained in one of the intervals
+	 * @param sequence the sequence number
+	 * @return true if the sequence number is contained in one of the intervals
 	 *         in the collection, false if not
 	 */
-	public boolean contains(long timestamp) {
-		return findInterval(timestamp) >= 0;
+	public boolean contains(long sequence) {
+		return findInterval(sequence) >= 0;
 	}
 	
 	/**
-	 * Find the index of the interval containing given timestamp.
+	 * Find the index of the interval containing given sequence number.
 	 * 
-	 * @param timestamp the timestamp
-	 * @return the index of the interval containing the timestamp,
-	 *         or -1 if no interval contains the timestamp
+	 * @param sequence the sequence number
+	 * @return the index of the interval containing the sequence number,
+	 *         or -1 if no interval contains the sequence number
 	 */
-	public int findInterval(long timestamp) {
+	public int findInterval(long sequence) {
 		int min = 0;
 		int max = intervalList.size();
 		
 		while (min <= max) {
 			int mid = min + (max-min)/2;
-			TimestampInterval interval = intervalList.get(mid);
-			if (interval.contains(timestamp)) {
+			SequenceInterval interval = intervalList.get(mid);
+			if (interval.contains(sequence)) {
 				return mid;
 			}
 			if (mid < interval.getBegin()) {
@@ -131,21 +131,21 @@ public class TimestampIntervalCollection {
 	}
 
 	/**
-	 * Decode TimestampIntervalCollection from String.
+	 * Decode SequenceIntervalCollection from String.
 	 * The String should be a list of encoded TimeStampIntervals separated
 	 * by commas.
 	 * 
 	 * @param s the encoded String
-	 * @return the decoded TimestampIntervalCollection
-	 * @throws InvalidTimestampIntervalException if any specified interval is invalid
+	 * @return the decoded SequenceIntervalCollection
+	 * @throws InvalidSequenceIntervalException if any specified interval is invalid
 	 */
-	public static TimestampIntervalCollection decode(String s)
-			throws InvalidTimestampIntervalException {
-		TimestampIntervalCollection result = new TimestampIntervalCollection();
+	public static SequenceIntervalCollection decode(String s)
+			throws InvalidSequenceIntervalException {
+		SequenceIntervalCollection result = new SequenceIntervalCollection();
 		StringTokenizer t = new StringTokenizer(s, ",");
 		while (t.hasMoreTokens()) {
 			String token = t.nextToken();
-			result.intervalList.add(TimestampInterval.decode(token));
+			result.intervalList.add(SequenceInterval.decode(token));
 		}
 		result.sort();
 		result.simplify();
@@ -153,30 +153,30 @@ public class TimestampIntervalCollection {
 	}
 	
 	/**
-	 * Encode a TimestampIntervalCollection as a String.
+	 * Encode a SequenceIntervalCollection as a String.
 	 * The String will be a list of encoded TimeStampIntervals separated
 	 * by commas.
 	 * 
-	 * @param the TimestampIntervalCollection
+	 * @param the SequenceIntervalCollection
 	 * @return the encoded String representing the collection
 	 */
-	public static String encode(TimestampIntervalCollection collection) {
+	public static String encode(SequenceIntervalCollection collection) {
 		return collection.toString();
 	}
 	
 	/**
-	 * Combine two TimestampIntervalCollections into a single collection.
+	 * Combine two SequenceIntervalCollections into a single collection.
 	 * Overlapping intervals are coalesced.
 	 * 
-	 * @param a a TimestampIntervalCollection
-	 * @param b another TimestampIntervalCollection
-	 * @return the combined TimestampIntervalCollection
+	 * @param a a SequenceIntervalCollection
+	 * @param b another SequenceIntervalCollection
+	 * @return the combined SequenceIntervalCollection
 	 */
-	public static TimestampIntervalCollection merge(
-			TimestampIntervalCollection a, TimestampIntervalCollection b) {
-		TimestampIntervalCollection result = new TimestampIntervalCollection();
+	public static SequenceIntervalCollection merge(
+			SequenceIntervalCollection a, SequenceIntervalCollection b) {
+		SequenceIntervalCollection result = new SequenceIntervalCollection();
 		
-		// TimestampIntervals are immutable, so we can just copy them directly
+		// SequenceIntervals are immutable, so we can just copy them directly
 		// into the result object.
 		result.intervalList.addAll(a.intervalList);
 		result.intervalList.addAll(b.intervalList);
@@ -191,10 +191,10 @@ public class TimestampIntervalCollection {
 	// @Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
-		for (Iterator<TimestampInterval> i = intervalIterator(); i.hasNext();) {
+		for (Iterator<SequenceInterval> i = intervalIterator(); i.hasNext();) {
 			if (buf.length() > 0)
 				buf.append(",");
-			buf.append(TimestampInterval.encode(i.next()));
+			buf.append(SequenceInterval.encode(i.next()));
 		}
 		return buf.toString().intern();// Save memory for identical interval collections
 	}
@@ -217,9 +217,9 @@ public class TimestampIntervalCollection {
 		// Merge adjacent intervals if they overlap.
 		int cur = 0, next = 1;
 		while (next < origSize) {
-			TimestampInterval a = intervalList.get(cur), b = intervalList.get(next);
-			if (TimestampInterval.overlap(a,b)) {
-				intervalList.set(cur, TimestampInterval.merge(a,b));
+			SequenceInterval a = intervalList.get(cur), b = intervalList.get(next);
+			if (SequenceInterval.overlap(a,b)) {
+				intervalList.set(cur, SequenceInterval.merge(a,b));
 			} else {
 				intervalList.set(++cur, b);
 			}

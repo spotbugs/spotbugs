@@ -4,13 +4,13 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 public class TimestampIntervalCollectionTest extends TestCase {
-	TimestampIntervalCollection c1;
-	TimestampIntervalCollection c2;
+	SequenceIntervalCollection c1;
+	SequenceIntervalCollection c2;
 	
 	// @Override
 	protected void setUp() throws Exception {
-		c1 = TimestampIntervalCollection.decode("0-4,6-10");
-		c2 = TimestampIntervalCollection.decode("20-30,5-10,8-15");
+		c1 = SequenceIntervalCollection.decode("0-4,6-10");
+		c2 = SequenceIntervalCollection.decode("20-30,5-10,8-15");
 	}
 	
 	public void testContains() {
@@ -28,7 +28,7 @@ public class TimestampIntervalCollectionTest extends TestCase {
 	}
 	
 	public void testSimplify() {
-		Assert.assertEquals(TimestampIntervalCollection.encode(c2), "5-15,20-30");
+		Assert.assertEquals(SequenceIntervalCollection.encode(c2), "5-15,20-30");
 		Assert.assertTrue(c2.contains(5L));
 		Assert.assertTrue(c2.contains(10L));
 		Assert.assertTrue(c2.contains(15L));
@@ -45,17 +45,17 @@ public class TimestampIntervalCollectionTest extends TestCase {
 	}
 	
 	public void testAddNonOverlapping() {
-		c2.add(new TimestampInterval(40L, 50L));
-		Assert.assertEquals(TimestampIntervalCollection.encode(c2), "5-15,20-30,40-50");
+		c2.add(new SequenceInterval(40L, 50L));
+		Assert.assertEquals(SequenceIntervalCollection.encode(c2), "5-15,20-30,40-50");
 	}
 	
 	public void testAddOverlapping() {
-		c2.add(new TimestampInterval(25L, 35L));
-		Assert.assertEquals(TimestampIntervalCollection.encode(c2), "5-15,20-35");
+		c2.add(new SequenceInterval(25L, 35L));
+		Assert.assertEquals(SequenceIntervalCollection.encode(c2), "5-15,20-35");
 	}
 	
 	public void testAddAtBeginning() {
-		c2.add(new TimestampInterval(1L, 3L));
-		Assert.assertEquals(TimestampIntervalCollection.encode(c2), "1-3,5-15,20-30");
+		c2.add(new SequenceInterval(1L, 3L));
+		Assert.assertEquals(SequenceIntervalCollection.encode(c2), "1-3,5-15,20-30");
 	}
 }

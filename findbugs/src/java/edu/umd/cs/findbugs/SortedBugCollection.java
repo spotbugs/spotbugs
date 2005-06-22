@@ -69,7 +69,11 @@ public class SortedBugCollection extends BugCollection {
 
 	private Map<String, BugInstance> uniqueIdToBugInstanceMap;
 	private int generatedUniqueIdCount;
-	private long timestamp;
+	/**
+	 * Sequence number of the most-recently analyzed version
+	 * of the code.
+	 */
+	private long sequence;
 	private String releaseName;
 
 	/**
@@ -96,7 +100,7 @@ public class SortedBugCollection extends BugCollection {
 		classHashMap = new TreeMap<String, ClassHash>();
 		uniqueIdToBugInstanceMap = new HashMap<String, BugInstance>();
 		generatedUniqueIdCount = 0;
-		timestamp = 0L;
+		sequence = 0L;
 	}
 
 	public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
@@ -104,9 +108,9 @@ public class SortedBugCollection extends BugCollection {
 
 		if (updateActiveTime) {
 			// Mark the BugInstance as being active at the BugCollection's current timestamp.
-			TimestampIntervalCollection activeIntervalCollection =
+			SequenceIntervalCollection activeIntervalCollection =
 				bugInstance.getActiveIntervalCollection();
-			activeIntervalCollection.add(new TimestampInterval(timestamp, timestamp));
+			activeIntervalCollection.add(new SequenceInterval(sequence, sequence));
 			bugInstance.setActiveIntervalCollection(activeIntervalCollection);
 		}
 		
@@ -226,13 +230,13 @@ public class SortedBugCollection extends BugCollection {
 	}
 
 	// @Override
-	public long getTimestamp() {
-		return timestamp;
+	public long getSequenceNumber() {
+		return sequence;
 	}
 
 	// @Override
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+	public void setSequenceNumber(long sequence) {
+		this.sequence = sequence;
 	}
 	
 	/**
@@ -278,7 +282,7 @@ public class SortedBugCollection extends BugCollection {
 			uniqueIdToBugInstanceMap.put(bugInstance.getUniqueId(), bugInstance);
 		}
 		dup.generatedUniqueIdCount = this.generatedUniqueIdCount;
-		dup.timestamp = this.timestamp;
+		dup.sequence = this.sequence;
 		
 		return dup;
 	}

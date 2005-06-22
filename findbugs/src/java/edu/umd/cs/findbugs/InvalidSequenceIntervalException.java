@@ -19,15 +19,15 @@
 package edu.umd.cs.findbugs;
 
 /**
- * Exception indicating that a TimestampInterval is invalid.
- * This can occur when decoding one or more TimestampIntervals
+ * Exception indicating that a SequenceInterval is invalid.
+ * This can occur when decoding one or more SequenceIntervals
  * from a String, or when defining new intervals.
  * 
- * @see edu.umd.cs.findbugs.TimestampInterval
- * @see edu.umd.cs.findbugs.TimestampIntervalCollection
+ * @see edu.umd.cs.findbugs.SequenceInterval
+ * @see edu.umd.cs.findbugs.SequenceIntervalCollection
  * @author David Hovemeyer
  */
-public class InvalidTimestampIntervalException extends Exception {
+public class InvalidSequenceIntervalException extends Exception {
 	private static final long serialVersionUID = 3977296603520381746L;
 
 	/**
@@ -35,7 +35,7 @@ public class InvalidTimestampIntervalException extends Exception {
 	 * 
 	 * @param msg message describing reason for exception
 	 */
-	public InvalidTimestampIntervalException(String msg) {
+	public InvalidSequenceIntervalException(String msg) {
 		super(msg);
 	}
 	
@@ -45,7 +45,7 @@ public class InvalidTimestampIntervalException extends Exception {
 	 * @param msg   message describing reason for exception
 	 * @param cause reason for exception (generally a RuntimeException)
 	 */
-	public InvalidTimestampIntervalException(String msg, Throwable cause) {
+	public InvalidSequenceIntervalException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
 }

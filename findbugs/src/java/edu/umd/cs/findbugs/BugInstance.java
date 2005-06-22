@@ -347,28 +347,28 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	}
 
 	/**
-	 * Get the collection of TimestampIntervals indicating when this
+	 * Get the collection of SequenceIntervals indicating when this
 	 * BugInstance is/was active.  Note that modications made to the
 	 * object returned will <em>not</em> affect the BugInstance.
 	 * 
-	 * @return the TimestampIntervalCollection
+	 * @return the SequenceIntervalCollection
 	 */
-	public TimestampIntervalCollection getActiveIntervalCollection() {
+	public SequenceIntervalCollection getActiveIntervalCollection() {
 		try {
-			return TimestampIntervalCollection.decode(activeIntervalCollection);
-		} catch (InvalidTimestampIntervalException e) {
-			return new TimestampIntervalCollection();
+			return SequenceIntervalCollection.decode(activeIntervalCollection);
+		} catch (InvalidSequenceIntervalException e) {
+			return new SequenceIntervalCollection();
 		}
 	}
 	
 	/**
-	 * Set the collection of TimestampIntervals indicating when this
+	 * Set the collection of SequenceIntervals indicating when this
 	 * BugInstance is/was active.
 	 * 
-	 * @param collection the TimestampIntervalCollection
+	 * @param collection the SequenceIntervalCollection
 	 */
-	public void setActiveIntervalCollection(TimestampIntervalCollection collection) {
-		this.activeIntervalCollection = TimestampIntervalCollection.encode(collection);
+	public void setActiveIntervalCollection(SequenceIntervalCollection collection) {
+		this.activeIntervalCollection = SequenceIntervalCollection.encode(collection);
 	}
 	
 	/* ----------------------------------------------------------------------

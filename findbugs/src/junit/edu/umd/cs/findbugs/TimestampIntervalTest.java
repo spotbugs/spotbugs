@@ -5,21 +5,21 @@ import junit.framework.TestCase;
 
 public class TimestampIntervalTest extends TestCase {
 	
-	TimestampInterval t1;
-	TimestampInterval t1Copy;
-	TimestampInterval t2;
-	TimestampInterval t3;
-	TimestampInterval t4;
-	TimestampInterval t4SameBegin;
+	SequenceInterval t1;
+	SequenceInterval t1Copy;
+	SequenceInterval t2;
+	SequenceInterval t3;
+	SequenceInterval t4;
+	SequenceInterval t4SameBegin;
 	
 	// @Override
 	protected void setUp() throws Exception {
-		t1 = new TimestampInterval(0L, 4L);
-		t1Copy = new TimestampInterval(0L, 4L);
-		t2 = new TimestampInterval(1L, 3L);
-		t3 = new TimestampInterval(4L, 10L);
-		t4 = new TimestampInterval(5L, 10L);
-		t4SameBegin = new TimestampInterval(5L, 11L);
+		t1 = new SequenceInterval(0L, 4L);
+		t1Copy = new SequenceInterval(0L, 4L);
+		t2 = new SequenceInterval(1L, 3L);
+		t3 = new SequenceInterval(4L, 10L);
+		t4 = new SequenceInterval(5L, 10L);
+		t4SameBegin = new SequenceInterval(5L, 11L);
 	}
 	
 	public void testAccess() {
@@ -28,32 +28,32 @@ public class TimestampIntervalTest extends TestCase {
 	}
 	
 	public void testOverlapSelf() {
-		Assert.assertTrue(TimestampInterval.overlap(t1, t1));
+		Assert.assertTrue(SequenceInterval.overlap(t1, t1));
 	}
 	
 	public void testOverlapOther() {
-		Assert.assertTrue(TimestampInterval.overlap(t1, t2));
-		Assert.assertTrue(TimestampInterval.overlap(t2, t1));
+		Assert.assertTrue(SequenceInterval.overlap(t1, t2));
+		Assert.assertTrue(SequenceInterval.overlap(t2, t1));
 	}
 	
 	public void testNotOverlapOther() {
-		Assert.assertFalse(TimestampInterval.overlap(t1, t4));
-		Assert.assertFalse(TimestampInterval.overlap(t4, t1));
+		Assert.assertFalse(SequenceInterval.overlap(t1, t4));
+		Assert.assertFalse(SequenceInterval.overlap(t4, t1));
 	}
 	
 	public void testOverlapEdgeCase() {
-		Assert.assertTrue(TimestampInterval.overlap(t1, t3));
-		Assert.assertTrue(TimestampInterval.overlap(t3, t1));
+		Assert.assertTrue(SequenceInterval.overlap(t1, t3));
+		Assert.assertTrue(SequenceInterval.overlap(t3, t1));
 	}
 	
 	public void testInteriorMerge() {
-		TimestampInterval m = TimestampInterval.merge(t1, t2);
+		SequenceInterval m = SequenceInterval.merge(t1, t2);
 		Assert.assertEquals(t1, m);
 		Assert.assertEquals(m, t1);
 	}
 	
 	public void testMerge() {
-		TimestampInterval m = TimestampInterval.merge(t1, t3);
+		SequenceInterval m = SequenceInterval.merge(t1, t3);
 		Assert.assertEquals(m.getBegin(), 0L);
 		Assert.assertEquals(m.getEnd(), 10L);
 	}
@@ -73,14 +73,14 @@ public class TimestampIntervalTest extends TestCase {
 		Assert.assertTrue(t4.compareTo(t4SameBegin) < 0);
 	}
 	
-	public void testDecodeMoment() throws InvalidTimestampIntervalException {
-		TimestampInterval m = TimestampInterval.decode("1");
+	public void testDecodeMoment() throws InvalidSequenceIntervalException {
+		SequenceInterval m = SequenceInterval.decode("1");
 		Assert.assertEquals(m.getBegin(), 1L);
 		Assert.assertEquals(m.getEnd(), 1L);
 	}
 	
-	public void testDecodeInterval() throws InvalidTimestampIntervalException {
-		TimestampInterval m = TimestampInterval.decode("1-4");
+	public void testDecodeInterval() throws InvalidSequenceIntervalException {
+		SequenceInterval m = SequenceInterval.decode("1-4");
 		Assert.assertEquals(m.getBegin(), 1L);
 		Assert.assertEquals(m.getEnd(), 4L);
 	}
