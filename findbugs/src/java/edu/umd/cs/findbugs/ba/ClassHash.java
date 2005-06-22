@@ -32,6 +32,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -154,6 +155,22 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 			}
 		});
 		
+		Field[] fieldList = new Field[javaClass.getFields().length];
+		
+		// Sort fields
+		System.arraycopy(javaClass.getFields(), 0, fieldList, 0, javaClass.getFields().length);
+		Arrays.sort(fieldList, new Comparator<Field>() {
+			/* (non-Javadoc)
+			 * @see java.util.Comparator#compare(T, T)
+			 */
+			public int compare(Field o1, Field o2) {
+				int cmp = o1.getName().compareTo(o2.getName());
+				if (cmp != 0)
+					return cmp;
+				return o1.getSignature().compareTo(o2.getSignature());
+			}
+		});
+		
 		MessageDigest digest;
 		try {
 			digest = MessageDigest.getInstance("MD5");
@@ -161,16 +178,21 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 			throw new IllegalStateException("No algorithm for computing class hash", e);
 		}
 		
-		// Compute digest of names and signatures, in order.
+		// Compute digest of method names and signatures, in order.
 		// Also, compute method hashes.
 		CharsetEncoder encoder = Charset.forName("UTF-8").newEncoder();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			work(digest, method.getName(), encoder); 
 			work(digest, method.getSignature(), encoder);
 			
 			MethodHash methodHash = new MethodHash().computeHash(method);
 			methodHashMap.put(XMethodFactory.createXMethod(javaClass, method), methodHash);
+		}
+		
+		// Compute digest of field names and signatures.
+		for (Field field : fieldList) {
+			work(digest, field.getName(), encoder);
+			work(digest, field.getSignature(), encoder);
 		}
 		
 		classHash = digest.digest();
