@@ -127,7 +127,6 @@ public class BugHistory {
 	
 	private SortedBugCollection origCollection, newCollection;
 	private SortedBugCollection originator;
-	private boolean useFuzzyComparator;
 	private Comparator<BugInstance> comparator;
 	
 	/**
@@ -142,13 +141,17 @@ public class BugHistory {
 	}
 	
 	/**
-	 * Set whether or not to use the FuzzyBugComparator.
-	 * 
-	 * @param useFuzzyComparator true if we should use FuzzyBugComparator, false for
-	 *         VersionInsensitiveBugComparator
+	 * Get the Comparator used to compare BugInstances from different BugCollections.
 	 */
-	public void setUseFuzzyComparator(boolean useFuzzyComparator) {
-		this.useFuzzyComparator = useFuzzyComparator;
+	public Comparator<BugInstance> getComparator() {
+		return comparator;
+	}
+	
+	/**
+	 * @param comparator The comparator to set.
+	 */
+	public void setComparator(Comparator<BugInstance> comparator) {
+		this.comparator = comparator;
 	}
 
 	/**
@@ -233,30 +236,18 @@ public class BugHistory {
 		}
 	}
 	
-	/**
-	 * Get the Comparator used to compare BugInstances from different BugCollections.
-	 */
-	private Comparator<BugInstance> getComparator() {
-		if (comparator == null) {
-			if (useFuzzyComparator) {
-				FuzzyBugComparator fuzzyComparator = new FuzzyBugComparator();
-				fuzzyComparator.registerBugCollection(origCollection);
-				fuzzyComparator.registerBugCollection(newCollection);
-				comparator = fuzzyComparator;
-			} else {
-				comparator = VersionInsensitiveBugComparator.instance();
-			}
-		}
-		return comparator;
-	}
+	private static final int VERSION_INSENSITIVE_COMPARATOR = 0;
+	private static final int FUZZY_COMPARATOR = 1;
+	private static final int SLOPPY_COMPARATOR = 2;
 	
 	private static class BugHistoryCommandLine extends CommandLine {
-		private boolean fuzzy;
+		private int comparatorType = VERSION_INSENSITIVE_COMPARATOR;
 		private boolean count;
 		private SetOperation setOp;
 		
 		public BugHistoryCommandLine() {
-			addSwitch("-fuzzy", "use fuzzy warning matching (recommended)");
+			addSwitch("-fuzzy", "use fuzzy warning matching");
+			addSwitch("-sloppy", "use sloppy warning matching");
 			addSwitch("-added", "compute added warnings");
 			addSwitch("-new", "same as \"-added\" switch");
 			addSwitch("-removed", "compute removed warnings");
@@ -271,7 +262,9 @@ public class BugHistory {
 		//@Override
 		protected void handleOption(String option, String optionExtraPart) throws IOException {
 			if (option.equals("-fuzzy")) {
-				fuzzy = true;
+				comparatorType = FUZZY_COMPARATOR;
+			} else if (option.equals("-sloppy")) {
+				comparatorType = SLOPPY_COMPARATOR;
 			} else if (option.equals("-added") || option.equals("-new")) {
 				setOp = ADDED_WARNINGS;
 			} else if (option.equals("-removed") || option.equals("-fixed")) {
@@ -294,10 +287,10 @@ public class BugHistory {
 		}
 		
 		/**
-		 * @return true if fuzzy matching should be used
+		 * @return Returns the comparatorType.
 		 */
-		public boolean isFuzzy() {
-			return fuzzy;
+		public int getComparatorType() {
+			return comparatorType;
 		}
 		
 		/**
@@ -334,7 +327,26 @@ public class BugHistory {
 		SortedBugCollection newCollection = readCollection(argv[argCount++], newProject);
 		
 		BugHistory bugHistory = new BugHistory(origCollection, newCollection);
-		bugHistory.setUseFuzzyComparator(commandLine.isFuzzy());
+
+		// Create comparator
+		Comparator<BugInstance> comparator;
+		switch (commandLine.getComparatorType()) {
+		case VERSION_INSENSITIVE_COMPARATOR:
+			comparator = VersionInsensitiveBugComparator.instance();
+			break;
+		case FUZZY_COMPARATOR:
+			FuzzyBugComparator fuzzy = new FuzzyBugComparator();
+			fuzzy.registerBugCollection(origCollection);
+			fuzzy.registerBugCollection(newCollection);
+			comparator = fuzzy;
+			break;
+		case SLOPPY_COMPARATOR:
+			comparator = new SloppyBugComparator();
+			break;
+		default:
+			throw new IllegalStateException();
+		}
+		bugHistory.setComparator(comparator);
 		
 		SortedBugCollection result = bugHistory.performSetOperation(commandLine.getSetOp());
 		
