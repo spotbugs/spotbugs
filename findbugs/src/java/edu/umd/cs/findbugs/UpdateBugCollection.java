@@ -19,12 +19,15 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dom4j.DocumentException;
+
+import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
  * Update a BugCollection with new BugInstances, preserving the history
@@ -40,6 +43,7 @@ import org.dom4j.DocumentException;
 public class UpdateBugCollection {
 	private BugCollection collectionToUpdate, newCollection;
 	private Set<String> updatedClassNameSet;
+	private Comparator<BugInstance> comparator;
 
 	/**
 	 * Constructor.
@@ -55,6 +59,23 @@ public class UpdateBugCollection {
  	public UpdateBugCollection(BugCollection collectionToUpdate, BugCollection newCollection) {
 		this.collectionToUpdate = collectionToUpdate;
 		this.newCollection = newCollection;
+		this.comparator = VersionInsensitiveBugComparator.instance();
+	}
+
+ 	/**
+ 	 * Get the comparator used to match warnings from different code versions.
+ 	 * 
+ 	 * @return the comparator
+ 	 */
+	public VersionInsensitiveBugComparator getComparator() {
+		return VersionInsensitiveBugComparator.instance();
+	}
+	
+	/**
+	 * @param comparator The comparator to set.
+	 */
+	public void setComparator(Comparator<BugInstance> comparator) {
+		this.comparator = comparator;
 	}
 
 	/**
@@ -72,24 +93,24 @@ public class UpdateBugCollection {
 	 * results from the most recent analysis.
 	 */
 	public void execute() {
-		SortedSet<BugInstance> origSet = collectionToSet(collectionToUpdate);
-		SortedSet<BugInstance> newSet = collectionToSet(newCollection);
+		SortedSet<BugInstance> origSetExact = collectionToExactSet(collectionToUpdate);
+		SortedSet<BugInstance> newSetExact = collectionToExactSet(newCollection);
+		
+		SortedSet<BugInstance> origSetFuzzy = collectionToFuzzySet(collectionToUpdate);
+		SortedSet<BugInstance> newSetFuzzy = collectionToFuzzySet(newCollection);
 		
 		long lastTimestamp = collectionToUpdate.getTimestamp();
 		
-		long currentTimestamp = newCollection.getTimestamp();
-		if (currentTimestamp <= lastTimestamp) {
-			// Looks like we have unsynchronized clocks.
-			// Make the current timestamp greater than the last timestamp.
-			currentTimestamp = lastTimestamp + 11;
-		}
+		// We assign a timestamp to the new collection as one greater than the
+		// original collection.
+		long currentTimestamp = collectionToUpdate.getTimestamp() + 1;
 		
 		// Handle warnings which are in the original bug collection
 		// (and possibly in the new one).
-		for (Iterator<BugInstance> i = origSet.iterator(); i.hasNext();) {
+		for (Iterator<BugInstance> i = origSetExact.iterator(); i.hasNext();) {
 			BugInstance origInstance = i.next();
 			
-			BugInstance correspondingNewInstance = findMatching(newSet, origInstance);
+			BugInstance correspondingNewInstance = findMatching(newSetFuzzy, origInstance);
 
 			TimestampIntervalCollection updatedActiveCollection = origInstance.getActiveIntervalCollection();
 			updateActiveIntervalCollection(
@@ -141,10 +162,10 @@ public class UpdateBugCollection {
 		
 		// Handle warnings that are only in the new collection.
 		// This is easy: just copy them into the orig collection.
-		for (Iterator<BugInstance> i = newSet.iterator(); i.hasNext();) {
+		for (Iterator<BugInstance> i = newSetExact.iterator(); i.hasNext();) {
 			BugInstance newInstance = i.next();
 			
-			BugInstance correspondingOrigInstance = findMatching(origSet, newInstance);
+			BugInstance correspondingOrigInstance = findMatching(origSetFuzzy, newInstance);
 			if (correspondingOrigInstance == null) {
 				// Note that the BugCollection will assign a new unique id
 				// to the new instance, so that it won't conflict with
@@ -209,8 +230,14 @@ public class UpdateBugCollection {
 		}
 	}
 
-	private SortedSet<BugInstance> collectionToSet(BugCollection bugCollection) {
-		TreeSet<BugInstance> set = new TreeSet<BugInstance>(VersionInsensitiveBugComparator.instance());
+	private SortedSet<BugInstance> collectionToExactSet(BugCollection bugCollection) {
+		TreeSet<BugInstance> set = new TreeSet<BugInstance>(new SortedBugCollection.BugInstanceComparator());
+		set.addAll(bugCollection.getCollection());
+		return set;
+	}
+	
+	private SortedSet<BugInstance> collectionToFuzzySet(BugCollection bugCollection) {
+		TreeSet<BugInstance> set = new TreeSet<BugInstance>(getComparator());
 		set.addAll(bugCollection.getCollection());
 		return set;
 	}
@@ -221,21 +248,69 @@ public class UpdateBugCollection {
 		if (tailSet.isEmpty())
 			return null;
 		BugInstance correspondingBugInstance = tailSet.first();
-		return VersionInsensitiveBugComparator.instance().compare(bugInstance, correspondingBugInstance) == 0
+		return getComparator().compare(bugInstance, correspondingBugInstance) == 0
 				? correspondingBugInstance
 				: null;
 	}
 	
+	private static final int VERSION_INSENSITIVE_COMPARATOR = 1;
+	private static final int FUZZY_COMPARATOR = 2;
+	private static final int SLOPPY_COMPARATOR = 3;
+	
+	private static class UpdateBugCollectionCommandLine extends CommandLine {
+		private int comparatorType = VERSION_INSENSITIVE_COMPARATOR;
+		
+		public UpdateBugCollectionCommandLine() {
+			addSwitch("-fuzzy", "use FuzzyBugComparator");
+			addSwitch("-sloppy", "use SloppyBugComparator");
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
+		 */
+		//@Override
+		protected void handleOption(String option, String optionExtraPart) throws IOException {
+			if (option.equals("-fuzzy")) {
+				comparatorType = FUZZY_COMPARATOR;
+			} else if (option.equals("-sloppy")) {
+				comparatorType = SLOPPY_COMPARATOR;
+			} else {
+				throw new IllegalArgumentException("Unknown option: " + option);
+			}
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java.lang.String, java.lang.String)
+		 */
+		//@Override
+		protected void handleOptionWithArgument(String option, String argument) throws IOException {
+			throw new IllegalArgumentException("Unknown option: " + option);
+		}
+		
+		/**
+		 * @return Returns the comparatorType.
+		 */
+		public int getComparatorType() {
+			return comparatorType;
+		}
+	}
+	
 	public static void main(String[] args) throws IOException, DocumentException {
-		if (args.length != 3) {
-			System.err.println("Usage: " + UpdateBugCollection.class.getName() +
+		
+		UpdateBugCollectionCommandLine commandLine = new UpdateBugCollectionCommandLine();
+		int argCount = commandLine.parse(args);
+
+		if (args.length - argCount != 3) {
+			System.err.println("Usage: " + UpdateBugCollection.class.getName() + " [options] " +
 					" <bug collection to update> <new bug colllection> <output bug collection>");
+			System.err.println("Options:");
+			commandLine.printUsage(System.err);
 			System.exit(1);
 		}
 		
-		String origFileName = args[0];
-		String newFileName = args[1];
-		String outputFileName = args[2];
+		String origFileName = args[argCount++];
+		String newFileName = args[argCount++];
+		String outputFileName = args[argCount++];
 		
 		SortedBugCollection origCollection = new SortedBugCollection();
 		origCollection.readXML(origFileName, new Project());
@@ -245,9 +320,33 @@ public class UpdateBugCollection {
 		newCollection.readXML(newFileName, currentProject);
 		
 		UpdateBugCollection updater = new UpdateBugCollection(origCollection, newCollection);
+
+		Comparator<BugInstance> comparator;
+		switch (commandLine.getComparatorType()) {
+		case VERSION_INSENSITIVE_COMPARATOR:
+			comparator = VersionInsensitiveBugComparator.instance();
+			break;
+		case FUZZY_COMPARATOR:
+			FuzzyBugComparator fuzzy = new FuzzyBugComparator();
+			fuzzy.registerBugCollection(origCollection);
+			fuzzy.registerBugCollection(newCollection);
+			comparator = fuzzy;
+			break;
+		case SLOPPY_COMPARATOR:
+			comparator = new SloppyBugComparator();
+			break;
+		default:
+			throw new IllegalStateException();
+		}
+		updater.setComparator(comparator);
+		
 		updater.execute();
 		
-		// FIXME: should transfer analysis errors and missing classes
+		// Transfer analysis errors, missing classes, and other metadata from new collection,
+		// but get actual BugInstances from original collection.
+		SortedBugCollection result = newCollection.duplicate();
+		result.clearBugInstances();
+		result.addAll(origCollection.getCollection(), false);
 		
 		origCollection.writeXML(outputFileName, currentProject);
 	}
