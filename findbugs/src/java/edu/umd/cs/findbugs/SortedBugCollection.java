@@ -70,6 +70,7 @@ public class SortedBugCollection extends BugCollection {
 	private Map<String, BugInstance> uniqueIdToBugInstanceMap;
 	private int generatedUniqueIdCount;
 	private long timestamp;
+	private String releaseName;
 
 	/**
 	 * Constructor.
@@ -290,6 +291,14 @@ public class SortedBugCollection extends BugCollection {
 		bugSet.clear();
 		uniqueIdToBugInstanceMap.clear();
 		generatedUniqueIdCount = 0;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#getReleaseName()
+	 */
+	//@Override
+	public String getReleaseName() {
+		return releaseName;
 	}
 }
 

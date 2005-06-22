@@ -222,6 +222,12 @@ public abstract class BugCollection {
 	 * Clear out all BugInstances, but preserve other metadata.
 	 */
 	public abstract void clearBugInstances();
+	
+	/**
+	 * Get the current release name.
+	 * Returns an empty String if the current release name is unknown.
+	 */
+	public abstract String getReleaseName();
 
 	private static final boolean REPORT_SUMMARY_HTML = 
 		Boolean.getBoolean("findbugs.report.SummaryHTML");
