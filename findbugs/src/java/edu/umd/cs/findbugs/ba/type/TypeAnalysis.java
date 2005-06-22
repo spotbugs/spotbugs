@@ -81,12 +81,9 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	private static final boolean DEBUG = Boolean.getBoolean("ta.debug");
 
 	/**
-	 * Compute what kinds of exceptions can propagate
-	 * on each exception edge.
+	 * Force computation of accurate exceptions.
 	 */
-	public static final boolean ACCURATE_EXCEPTIONS =
-	           Boolean.getBoolean("ta.accurateExceptions")
-	        || AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS);
+	public static final boolean FORCE_ACCURATE_EXCEPTIONS =Boolean.getBoolean("ta.accurateExceptions");
 
 	/**
 	 * Repository of information about thrown exceptions computed for
@@ -309,7 +306,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	        throws DataflowAnalysisException {
 
 		// Do nothing if we're not computing propagated exceptions
-		if (!ACCURATE_EXCEPTIONS)
+		if (!FORCE_ACCURATE_EXCEPTIONS ||
+				AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS))
 			return;
 
 		// Also, nothing to do if the block is not an exception thrower
@@ -365,7 +363,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 				// Determine the type of exception(s) caught.
 				Type catchType = null;
 				
-				if (ACCURATE_EXCEPTIONS) {
+				if (FORCE_ACCURATE_EXCEPTIONS ||
+						AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS)) {
 					try {
 						// Ideally, the exceptions that can be propagated
 						// on this edge has already been computed.
