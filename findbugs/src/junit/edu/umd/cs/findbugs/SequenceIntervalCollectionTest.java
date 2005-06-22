@@ -3,7 +3,7 @@ package edu.umd.cs.findbugs;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-public class TimestampIntervalCollectionTest extends TestCase {
+public class SequenceIntervalCollectionTest extends TestCase {
 	SequenceIntervalCollection c1;
 	SequenceIntervalCollection c2;
 	
