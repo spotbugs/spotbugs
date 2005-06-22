@@ -60,6 +60,7 @@ public abstract class BugCollection {
 
 	/**
 	 * Add a Collection of BugInstances to this BugCollection object.
+	 * This just calls add(BugInstance) for each instance in the input collection.
 	 *
 	 * @param collection the Collection of BugInstances to add
 	 */
@@ -67,6 +68,19 @@ public abstract class BugCollection {
 		Iterator<BugInstance> i = collection.iterator();
 		while (i.hasNext()) {
 			add(i.next());
+		}
+	}
+	
+	/**
+	 * Add a Collection of BugInstances to this BugCollection object.
+	 *
+	 * @param collection       the Collection of BugInstances to add
+	 * @param updateActiveTime true if active time of added BugInstances should
+	 *                         be updated to match collection: false if not
+	 */
+	public void addAll(Collection<BugInstance> collection, boolean updateActiveTime) {
+		for (BugInstance warning : collection) {
+			add(warning, updateActiveTime);
 		}
 	}
 
