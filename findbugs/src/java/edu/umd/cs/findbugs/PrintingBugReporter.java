@@ -45,6 +45,27 @@ public class PrintingBugReporter extends TextUIBugReporter {
 	public void finish() {
 		outputStream.close();
 	}
+	
+	public static void main(String[] args) throws Exception {
+		if (args.length != 1) {
+			System.err.println("Usage: " + PrintingBugReporter.class.getName());
+			System.exit(1);
+		}
+		
+		PrintingBugReporter reporter = new PrintingBugReporter();
+		
+		SortedBugCollection bugCollection = new SortedBugCollection();
+		bugCollection.readXML(args[0], new Project());
+		
+		// Load plugins, in order to get message files
+		DetectorFactoryCollection.instance();
+		
+		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
+			BugInstance warning = i.next();
+			reporter.printBug(warning);
+		}
+		
+	}
 }
 
 // vim:ts=4

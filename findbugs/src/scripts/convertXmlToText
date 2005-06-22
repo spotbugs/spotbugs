@@ -1,0 +1,9 @@
+#! /bin/sh
+
+@GET_FBHOME@
+
+@SET_DEFAULT_JAVA@
+
+fb_mainclass=edu.umd.cs.findbugs.PrintingBugReporter
+
+@WRAP_JAVA@
