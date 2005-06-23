@@ -87,9 +87,8 @@ public class MineBugHistory {
 			bugCollection.getCurrentAppVersion());
 		
 		for (Iterator<BugInstance> j = bugCollection.iterator(); j.hasNext();) {
+			BugInstance bugInstance = j.next();
 			for (int i = 1; i <= maxSequence; ++i) {
-				BugInstance bugInstance = j.next();
-				
 				SequenceIntervalCollection whenActive = bugInstance.getActiveIntervalCollection();
 				
 				boolean activePrevious = whenActive.contains(((long)i) -1);
