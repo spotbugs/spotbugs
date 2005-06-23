@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 /**
  * Helper class to format attributes in an XML tag.
  *
@@ -98,7 +100,9 @@ public class XMLAttributeList {
 	 * @param value the attribute value
 	 * @return this object (so calls to addAttribute() can be chained)
 	 */
-	public XMLAttributeList addAttribute(String name, String value) {
+	public XMLAttributeList addAttribute(@NonNull String name, @NonNull String value) {
+		if (name == null) throw new NullPointerException("name must be nonnull");
+		if (value == null) throw new NullPointerException("value must be nonnull");
 		nameValuePairList.add(new NameValuePair(name, value));
 		return this;
 	}
@@ -131,7 +135,8 @@ public class XMLAttributeList {
 	 * @param rawValue the raw value of the attribute
 	 * @return a properly quoted representation of the value
 	 */
-	public static String getQuotedAttributeValue(String rawValue) {
+	public static String getQuotedAttributeValue(@NonNull String rawValue) {
+		if (rawValue == null) throw new NullPointerException("rawValue must be nonnull");
 		StringBuffer buf = new StringBuffer();
 		buf.append('"');
 		new StringBufferQuoteMetaCharacters(rawValue, attrMetaCharacterMap, buf).process();
