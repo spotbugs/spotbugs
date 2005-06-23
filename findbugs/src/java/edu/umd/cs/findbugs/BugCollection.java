@@ -249,6 +249,13 @@ public abstract class BugCollection {
 	 * @param appVersion the AppVersion
 	 */
 	public abstract void addAppVersion(AppVersion appVersion);
+	
+	/**
+	 * Create a new empty BugCollection with the same metadata as this one.
+	 * 
+	 * @return a new empty BugCollection with the same metadata as this one
+	 */
+	public abstract BugCollection createEmptyCollectionWithMetadata();
 
 	private static final boolean REPORT_SUMMARY_HTML = 
 		Boolean.getBoolean("findbugs.report.SummaryHTML");

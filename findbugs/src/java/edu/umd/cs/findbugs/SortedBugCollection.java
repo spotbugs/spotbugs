@@ -103,6 +103,7 @@ public class SortedBugCollection extends BugCollection {
 		generatedUniqueIdCount = 0;
 		sequence = 0L;
 		appVersionList = new LinkedList<AppVersion>();
+		releaseName = "";
 	}
 
 	public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
@@ -285,6 +286,9 @@ public class SortedBugCollection extends BugCollection {
 		}
 		dup.generatedUniqueIdCount = this.generatedUniqueIdCount;
 		dup.sequence = this.sequence;
+		for (AppVersion appVersion : appVersionList) {
+			dup.appVersionList.add((AppVersion) appVersion.clone());
+		}
 		
 		return dup;
 	}
@@ -320,8 +324,7 @@ public class SortedBugCollection extends BugCollection {
 	 */
 	//@Override
 	public Iterator<AppVersion> appVersionIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return appVersionList.iterator();
 	}
 
 	/* (non-Javadoc)
@@ -329,8 +332,18 @@ public class SortedBugCollection extends BugCollection {
 	 */
 	//@Override
 	public void addAppVersion(AppVersion appVersion) {
-		// TODO Auto-generated method stub
+		appVersionList.add(appVersion);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#createEmptyCollectionWithMetadata()
+	 */
+	//@Override
+	public SortedBugCollection createEmptyCollectionWithMetadata() {
+		SortedBugCollection result = duplicate();
+		result.clearBugInstances();
 		
+		return result;
 	}
 }
 
