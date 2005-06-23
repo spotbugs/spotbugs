@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -303,6 +303,14 @@ public class SortedBugCollection extends BugCollection {
 	//@Override
 	public String getReleaseName() {
 		return releaseName;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#setReleaseName(java.lang.String)
+	 */
+	//@Override
+	public void setReleaseName(String releaseName) {
+		this.releaseName = releaseName;
 	}
 }
 

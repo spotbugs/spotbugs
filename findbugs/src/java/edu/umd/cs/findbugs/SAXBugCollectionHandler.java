@@ -93,6 +93,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				seqval = 0L;
 			}
 			bugCollection.setSequenceNumber(seqval);
+			
+			// Set release name, if present.
+			String releaseName = attributes.getValue("release");
+			if (releaseName != null) {
+				bugCollection.setReleaseName(releaseName);
+			}
 		} else {
 			String outerElement = elementStack.get(elementStack.size() - 1);
 

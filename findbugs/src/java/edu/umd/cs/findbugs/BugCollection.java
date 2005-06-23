@@ -229,6 +229,13 @@ public abstract class BugCollection {
 	 * Returns an empty String if the current release name is unknown.
 	 */
 	public abstract String getReleaseName();
+	
+	/**
+	 * Set the current release name.
+	 * 
+	 * @param releaseName the current release name
+	 */
+	public abstract void setReleaseName(String releaseName);
 
 	private static final boolean REPORT_SUMMARY_HTML = 
 		Boolean.getBoolean("findbugs.report.SummaryHTML");
@@ -380,6 +387,7 @@ public abstract class BugCollection {
 			new XMLAttributeList()
 				.addAttribute("version",Version.RELEASE)
 				.addAttribute("sequence",String.valueOf(getSequenceNumber()))
+				.addAttribute("release", getReleaseName())
 		);
 		project.writeXML(xmlOutput);
 	}
