@@ -31,33 +31,30 @@ import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
  * Update a BugCollection with new BugInstances, preserving the history
- * of all existing BugInstances.  Note that both BugCollections
- * will be destructively modified, and afterwards the "original" collection will
- * be the new "up to date" collection, containing all information from
- * the old and new collections.
+ * of all existing BugInstances.  The update is performed by
+ * constructing an entirely new and disjoint BugCollection;
+ * the input BugCollections are not modified.
  * 
  * @see edu.umd.cs.findbugs.BugCollection
  * @see edu.umd.cs.findbugs.VersionInsensitiveBugComparator
  * @author David Hovemeyer
  */
 public class UpdateBugCollection {
-	private BugCollection collectionToUpdate, newCollection;
+	private BugCollection origCollection, newCollection;
+	private BugCollection resultCollection;
 	private Set<String> updatedClassNameSet;
 	private Comparator<BugInstance> comparator;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param collectionToUpdate the BugCollection containing all previous
-	 *                           BugInstances over the lifetime of the project;
-	 *                           will be modified to include the BugInstances from
-	 *                           the most recent analysis
-	 * @param newCollection      a BugCollection containing new BugInstances from the
-	 *                           most recent analysis; will also be modified
-	 *                           (and should not be used again)
+	 * @param origCollection the BugCollection containing all previous
+	 *                       BugInstances over the lifetime of the project
+	 * @param newCollection  a BugCollection containing new BugInstances from the
+	 *                       most recent analysis
 	 */
- 	public UpdateBugCollection(BugCollection collectionToUpdate, BugCollection newCollection) {
-		this.collectionToUpdate = collectionToUpdate;
+ 	public UpdateBugCollection(BugCollection origCollection, BugCollection newCollection) {
+		this.origCollection = origCollection;
 		this.newCollection = newCollection;
 		this.comparator = VersionInsensitiveBugComparator.instance();
 	}
@@ -67,8 +64,8 @@ public class UpdateBugCollection {
  	 * 
  	 * @return the comparator
  	 */
-	public VersionInsensitiveBugComparator getComparator() {
-		return VersionInsensitiveBugComparator.instance();
+	public Comparator<BugInstance> getComparator() {
+		return comparator;
 	}
 	
 	/**
@@ -91,91 +88,96 @@ public class UpdateBugCollection {
 	/**
 	 * Update the original comprehensive BugCollection to contain the new
 	 * results from the most recent analysis.
+	 * 
+	 * @return this object
 	 */
-	public void execute() {
-		SortedSet<BugInstance> origSetExact = collectionToExactSet(collectionToUpdate);
+	public UpdateBugCollection execute() {
+		// Result collection is initialized using new collection's metadata
+		resultCollection = newCollection.createEmptyCollectionWithMetadata();
+
+		// Get Sets with exact contents of orig and new collections
+		SortedSet<BugInstance> origSetExact = collectionToExactSet(origCollection);
 		SortedSet<BugInstance> newSetExact = collectionToExactSet(newCollection);
 		
-		SortedSet<BugInstance> origSetFuzzy = collectionToFuzzySet(collectionToUpdate);
+		// Get "fuzzy" matching sets of orig and new collections,
+		// for querying "same" warnings accross the two versions.
+		SortedSet<BugInstance> origSetFuzzy = collectionToFuzzySet(origCollection);
 		SortedSet<BugInstance> newSetFuzzy = collectionToFuzzySet(newCollection);
-		
-		long lastTimestamp = collectionToUpdate.getSequenceNumber();
+
+		// Previous sequence number
+		long lastSequence = origCollection.getSequenceNumber();
 		
 		// We assign a timestamp to the new collection as one greater than the
 		// original collection.
-		long currentTimestamp = collectionToUpdate.getSequenceNumber() + 1;
-		
-		// Handle warnings which are in the original bug collection
-		// (and possibly in the new one).
-		for (Iterator<BugInstance> i = origSetExact.iterator(); i.hasNext();) {
-			BugInstance origInstance = i.next();
-			
-			BugInstance correspondingNewInstance = findMatching(newSetFuzzy, origInstance);
+		long currentSequence = origCollection.getSequenceNumber() + 1;
+		resultCollection.setSequenceNumber(currentSequence);
 
-			SequenceIntervalCollection updatedActiveCollection = origInstance.getActiveIntervalCollection();
-			updateActiveIntervalCollection(
-					lastTimestamp, currentTimestamp, updatedActiveCollection);
+		// Handle removed and retained warnings.
+		// These must be added using the SAME UNIQUE IDs as were present in the original bug collection.
+		for (BugInstance origWarning : origSetExact) {
+			BugInstance matchingNewWarning = findMatching(newSetFuzzy, origWarning);
+
+			BugInstance warningToAdd;
 			
-			if (correspondingNewInstance != null) {
-				// Combine the new and orig instances
+			if (matchingNewWarning != null) {
+				// Warning is retained.
 				//
 				// From original, keep:
 				// - unique id
 				// - BugProperty list (classifications, &c.)
 				// - annotation text
 				//
-				// If the original instance was active in the most recent update
-				// (timestamp), extend the interval containing that timestamp to
-				// include the current timestamp.
-				//
-				// All other information taken from new instance.
-				
-				// This operation is implemented by copying the required information
-				// into the new instance and replacing the original instance
-				// with the new instance.
+				// In all other respects, the warning is a clone of the matching new warning.
 
-				correspondingNewInstance.setUniqueId(origInstance.getUniqueId());
-				copyBugProperties(origInstance, correspondingNewInstance);
-				correspondingNewInstance.setAnnotationText(origInstance.getAnnotationText());
+				warningToAdd = (BugInstance) matchingNewWarning.clone();
+				warningToAdd.setUniqueId(origWarning.getUniqueId());
+				copyBugProperties(origWarning, warningToAdd);
+				warningToAdd.setAnnotationText(origWarning.getAnnotationText());
 				
-				correspondingNewInstance.setActiveIntervalCollection(updatedActiveCollection);
-				
-				collectionToUpdate.remove(origInstance);
-				collectionToUpdate.add(correspondingNewInstance);
+				// Update the warning as being active at the current sequence number.
+				SequenceIntervalCollection whenActive = origWarning.getActiveIntervalCollection();
+				updateActiveIntervalCollection(lastSequence, currentSequence, whenActive);
+				warningToAdd.setActiveIntervalCollection(whenActive);
 			} else {
-				// BugInstance exists in original set, but not in new set.
-				
-				// If the orig bug instance is not part of the set of updated classes,
-				// then we mark it active anyway, assuming that it still exists,
-				// but the analysis didn't look at that class.  Otherwise, we leave
-				// the active collection as-is, meaning that the instance won't
-				// be considered active any more.
-				
-				if (updatedClassNameSet != null) {
-					ClassAnnotation primaryClass = origInstance.getPrimaryClass();
-					if (primaryClass != null && updatedClassNameSet.contains(primaryClass.getClassName())) {
-						origInstance.setActiveIntervalCollection(updatedActiveCollection);
-					}
-				}
+				// Warning is removed.
+				// The old warning remains, but its metadata (classifications,
+				// when it was active) remains exactly the same.
+				warningToAdd = (BugInstance) origWarning.clone();
 			}
-		}
-		
-		// Handle warnings that are only in the new collection.
-		// This is easy: just copy them into the orig collection.
-		for (Iterator<BugInstance> i = newSetExact.iterator(); i.hasNext();) {
-			BugInstance newInstance = i.next();
 			
-			BugInstance correspondingOrigInstance = findMatching(origSetFuzzy, newInstance);
-			if (correspondingOrigInstance == null) {
-				// Note that the BugCollection will assign a new unique id
-				// to the new instance, so that it won't conflict with
-				// existing uids.
-				collectionToUpdate.add(newInstance);
+			resultCollection.add(warningToAdd, false);
+		}
+		
+		// Handle new warnings.
+		// These will be assigned new unique ids guaranteed not to conflict
+		// with any existing unique ids.
+		for (BugInstance newWarning : newSetExact) {
+			BugInstance matchingOrigWarning = findMatching(origSetFuzzy, newWarning);
+			
+			if (matchingOrigWarning == null) {
+				// Added warning.
+				// Mark active at current time only, and add to result collection directly
+				
+				SequenceIntervalCollection activeNow = new SequenceIntervalCollection();
+				activeNow.add(new SequenceInterval(currentSequence, currentSequence));
+				
+				BugInstance warningToAdd = (BugInstance) newWarning.clone();
+				warningToAdd.setActiveIntervalCollection(activeNow);
+				
+				resultCollection.add(warningToAdd, false);
 			}
 		}
 		
-		// Update the timestamp
-		collectionToUpdate.setSequenceNumber(currentTimestamp);
+		return this;
+	}
+	
+	/**
+	 * Get the result collection.
+	 * 
+	 * @return the result collection.
+	 */
+	public BugCollection getResultCollection() {
+		return resultCollection;
 	}
 
 	/**
@@ -186,28 +188,28 @@ public class UpdateBugCollection {
 	 * timestamp.  (I.e., we assume continuity between the last timestamp and
 	 * the current one.)
 	 * 
-	 * @param lastTimestamp    timestamp of the last analysis
-	 * @param currentTimestamp timestamp of the current analysis
+	 * @param lastSequence    timestamp of the last analysis
+	 * @param currentSequence timestamp of the current analysis
 	 * @param activeCollection TimestampIntervalCollection to update
 	 */
 	private void updateActiveIntervalCollection(
-			long lastTimestamp, long currentTimestamp, SequenceIntervalCollection activeCollection) {
+			long lastSequence, long currentSequence, SequenceIntervalCollection activeCollection) {
 		
 		// If the original bug instance was active during the most recent
 		// analysis, then extend the latest active interval to include
 		// the current timestamp.
 		boolean added = false;
-		if (activeCollection.contains(lastTimestamp)) {
-			int lastActiveIndex = activeCollection.findInterval(lastTimestamp);
+		if (activeCollection.contains(lastSequence)) {
+			int lastActiveIndex = activeCollection.findInterval(lastSequence);
 			if (lastActiveIndex < 0)
 				throw new IllegalStateException();
 			SequenceInterval lastActiveInterval = activeCollection.get(lastActiveIndex);
 			
 			// Current timestamp should be later than any timestamp in
 			// the existing interval collection.
-			if (currentTimestamp > lastActiveInterval.getEnd()) {
+			if (currentSequence > lastActiveInterval.getEnd()) {
 				SequenceInterval updatedActiveInterval =
-					new SequenceInterval(lastActiveInterval.getBegin(), currentTimestamp);
+					new SequenceInterval(lastActiveInterval.getBegin(), currentSequence);
 				
 				activeCollection.remove(lastActiveIndex);
 				activeCollection.add(updatedActiveInterval);
@@ -219,7 +221,7 @@ public class UpdateBugCollection {
 		// The original bug instance was not active during the most recent
 		// analysis.  However, it is active now, so just add the current timestamp.
 		if (!added) {
-			activeCollection.add(new SequenceInterval(currentTimestamp, currentTimestamp));
+			activeCollection.add(new SequenceInterval(currentSequence, currentSequence));
 		}
 	}
 
@@ -342,12 +344,6 @@ public class UpdateBugCollection {
 		
 		updater.execute();
 		
-		// Transfer analysis errors, missing classes, and other metadata from new collection,
-		// but get actual BugInstances from original collection.
-		SortedBugCollection result = newCollection.duplicate();
-		result.clearBugInstances();
-		result.addAll(origCollection.getCollection(), false);
-		
-		origCollection.writeXML(outputFileName, currentProject);
+		updater.getResultCollection().writeXML(outputFileName, currentProject);
 	}
 }
