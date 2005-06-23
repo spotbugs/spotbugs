@@ -15,3 +15,4 @@ classifyBugs
 addMessages
 convertXmlToText
 countClasses
+mineBugHistory
