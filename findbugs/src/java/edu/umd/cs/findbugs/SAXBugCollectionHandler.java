@@ -231,6 +231,22 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 							XMethodFactory.createXMethod(classHash.getClassName(), methodName, methodSig, isStatic),
 							hash);
 				}
+			} else if (outerElement.equals(BugCollection.HISTORY_ELEMENT_NAME)) {
+				if (qName.equals(AppVersion.ELEMENT_NAME)) {
+					try {
+						String sequence = getRequiredAttribute(attributes, "sequence", qName);
+						String timestamp = attributes.getValue("timestamp");
+						String releaseName = attributes.getValue("release");
+						AppVersion appVersion = new AppVersion(Long.valueOf(sequence).longValue());
+						if (timestamp != null)
+							appVersion.setTimestamp(Long.valueOf(timestamp).longValue());
+						if (releaseName != null)
+							appVersion.setReleaseName(releaseName);
+						bugCollection.addAppVersion(appVersion);
+					} catch (NumberFormatException e) {
+						throw new SAXException("Invalid AppVersion element", e);
+					}
+				}
 			}
 		}
 

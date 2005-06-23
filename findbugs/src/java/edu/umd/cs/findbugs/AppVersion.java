@@ -38,7 +38,7 @@ public class AppVersion implements XMLWriteable {
 	/**
 	 * XML element name for a stored AppVersion object.
 	 */
-	private static final String ELEMENT_NAME = "AppVersion";
+	public static final String ELEMENT_NAME = "AppVersion";
 	
 	private long sequence;
 	private long timestamp;

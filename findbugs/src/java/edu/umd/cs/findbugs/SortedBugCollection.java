@@ -66,6 +66,7 @@ public class SortedBugCollection extends BugCollection {
 	private String summaryHTML;
 	private ProjectStats projectStats;
 	private Map<String, ClassHash> classHashMap;
+	private List<AppVersion> appVersionList;
 
 	private Map<String, BugInstance> uniqueIdToBugInstanceMap;
 	private int generatedUniqueIdCount;
@@ -101,6 +102,7 @@ public class SortedBugCollection extends BugCollection {
 		uniqueIdToBugInstanceMap = new HashMap<String, BugInstance>();
 		generatedUniqueIdCount = 0;
 		sequence = 0L;
+		appVersionList = new LinkedList<AppVersion>();
 	}
 
 	public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
@@ -311,6 +313,24 @@ public class SortedBugCollection extends BugCollection {
 	//@Override
 	public void setReleaseName(String releaseName) {
 		this.releaseName = releaseName;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#appVersionIterator()
+	 */
+	//@Override
+	public Iterator<AppVersion> appVersionIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#addAppVersion(edu.umd.cs.findbugs.AppVersion)
+	 */
+	//@Override
+	public void addAppVersion(AppVersion appVersion) {
+		// TODO Auto-generated method stub
+		
 	}
 }
 

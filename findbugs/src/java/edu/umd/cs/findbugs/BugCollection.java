@@ -41,6 +41,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import sun.security.krb5.internal.crypto.x;
+
 import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
@@ -57,6 +59,7 @@ import edu.umd.cs.findbugs.xml.XMLOutputUtil;
  * @see BugInstance
  */
 public abstract class BugCollection {
+
 
 	/**
 	 * Add a Collection of BugInstances to this BugCollection object.
@@ -236,6 +239,18 @@ public abstract class BugCollection {
 	 * @param releaseName the current release name
 	 */
 	public abstract void setReleaseName(String releaseName);
+	
+	/**
+	 * Get an Iterator over AppVersions defined in the collection.
+	 */
+	public abstract Iterator<AppVersion> appVersionIterator();
+	
+	/**
+	 * Add an AppVersion representing a version of the analyzed application.
+	 * 
+	 * @param appVersion the AppVersion
+	 */
+	public abstract void addAppVersion(AppVersion appVersion);
 
 	private static final boolean REPORT_SUMMARY_HTML = 
 		Boolean.getBoolean("findbugs.report.SummaryHTML");
@@ -253,6 +268,7 @@ public abstract class BugCollection {
 	static final String SUMMARY_HTML_ELEMENT_NAME = "SummaryHTML";
 	static final String APP_CLASS_ELEMENT_NAME = "AppClass";
 	static final String CLASS_HASHES_ELEMENT_NAME = "ClassHashes"; // 0.9.2 and later
+	static final String HISTORY_ELEMENT_NAME = "History"; // 0.9.2 and later
 
 	/**
 	 * Read XML data from given file into this object,
@@ -432,6 +448,14 @@ public abstract class BugCollection {
 			classHash.writeXML(xmlOutput);
 		}
 		xmlOutput.closeTag(CLASS_HASHES_ELEMENT_NAME);
+		
+		// AppVersions
+		xmlOutput.openTag(HISTORY_ELEMENT_NAME);
+		for (Iterator<AppVersion> i = appVersionIterator(); i.hasNext();) {
+			AppVersion appVersion = i.next();
+			appVersion.writeXML(xmlOutput);
+		}
+		xmlOutput.closeTag(HISTORY_ELEMENT_NAME);
 		
 		// Summary HTML
 		if ( REPORT_SUMMARY_HTML ) {
