@@ -29,28 +29,11 @@ import org.dom4j.DocumentException;
  * preserving annotations.
  */
 public class UnionResults {
-	private SortedBugCollection origCollection;
-	private SortedBugCollection newCollection;
-	private Project project;
 
-	public UnionResults(String origFilename, String newFilename) throws IOException, DocumentException {
-		this(new SortedBugCollection(), new SortedBugCollection(), new Project());
-		origCollection.readXML(origFilename, new Project());
-		newCollection.readXML(newFilename, this.project);
-	}
-
-	public UnionResults(SortedBugCollection origCollection, SortedBugCollection newCollection, Project project) {
-		this.origCollection = origCollection;
-		this.newCollection = newCollection;
-		this.project = project;
-	}
-
-	public Project getProject() {
-		return project;
-	}
-
-	public SortedBugCollection execute() {
+	static {
 		DetectorFactoryCollection.instance(); // as a side effect, loads detector plugins
+	}
+	static public SortedBugCollection union (SortedBugCollection origCollection, SortedBugCollection newCollection) {
 
 		SortedBugCollection result = new SortedBugCollection();
 
@@ -88,25 +71,25 @@ public class UnionResults {
 	}
 
 	public static void main(String[] argv) throws Exception {
-		if (argv.length != 3) {
+
+
+		if (argv.length == 0) {
 			System.err.println("Usage: " + UnionResults.class.getName() + " <orig results> <new results> <output file>");
 			System.exit(1);
 		}
 
-		String origFilename = argv[0];
-		String newFilename = argv[1];
-		String outputFilename = argv[2];
-
-		UnionResults unionResults = new UnionResults(origFilename, newFilename);
-		SortedBugCollection result = unionResults.execute();
-		result.writeXML(outputFilename, unionResults.getProject());
+		SortedBugCollection results = new SortedBugCollection();
+		results.readXML(argv[0], new Project());
+		for(int i = 1; i < argv.length; i++) {
+			SortedBugCollection more = new SortedBugCollection();
+			more.readXML(argv[i], new Project());
+			results = union(results, more);
+		}
+	
+		results.writeXML(System.out, new Project());
 	}
 
-	private static SortedSet<BugInstance> createSet(SortedBugCollection bugCollection) {
-		SortedSet<BugInstance> set = new TreeSet<BugInstance>();
-		set.addAll(bugCollection.getCollection());
-		return set;
-	}
+
 }
 
 // vim:ts=3
