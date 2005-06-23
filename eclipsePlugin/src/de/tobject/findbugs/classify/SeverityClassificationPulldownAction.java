@@ -3,8 +3,6 @@
  */
 package de.tobject.findbugs.classify;
 
-import javax.swing.event.MenuListener;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -22,7 +20,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowPulldownDelegate2;
 
 import de.tobject.findbugs.reporter.MarkerUtil;
-
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugProperty;
 
