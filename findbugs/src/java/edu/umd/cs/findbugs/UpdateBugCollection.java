@@ -120,18 +120,33 @@ public class UpdateBugCollection {
 		// Previous sequence number
 		long lastSequence = origCollection.getSequenceNumber();
 		
-		// We assign a timestamp to the new collection as one greater than the
+		// We assign a sequence number to the new collection as one greater than the
 		// original collection.
 		long currentSequence = origCollection.getSequenceNumber() + 1;
 		resultCollection.setSequenceNumber(currentSequence);
+		
+		// A SequenceInterval representing just the original collection's sequence number.
+		SequenceInterval lastVersion = new SequenceInterval(lastSequence, lastSequence);
 
 		// Handle removed and retained warnings.
 		// These must be added using the SAME UNIQUE IDs as were present in the original bug collection.
 		for (BugInstance origWarning : origSetExact) {
+
+			// Special case: if the original collection doesn't contain history,
+			// reset the active time to just the original sequence number.
+			// This allows us to handle old bug collections which contain timestamps
+			// or other junk in their "active" attributes.
+			if (!origCollectionContainsHistory()) {
+				SequenceIntervalCollection activeLastTimeOnly = new SequenceIntervalCollection();
+				activeLastTimeOnly.add(lastVersion);
+				origWarning = (BugInstance) origWarning.clone(); // make a fresh copy
+				origWarning.setActiveIntervalCollection(activeLastTimeOnly);
+			}
+
+			// See if the warning is in the new collection, too
 			BugInstance matchingNewWarning = findMatching(newSetFuzzy, origWarning);
 
 			BugInstance warningToAdd;
-			
 			if (matchingNewWarning != null) {
 				// Warning is retained.
 				//
@@ -191,6 +206,19 @@ public class UpdateBugCollection {
 	 */
 	public BugCollection getResultCollection() {
 		return resultCollection;
+	}
+	
+	/**
+	 * Return whether or not the original collection actually contains the results
+	 * of multiple application versions.
+	 * 
+	 * @return true if the original collection has the results of multiple application
+	 *         versions, false if not
+	 */
+	private boolean origCollectionContainsHistory() {
+		// We know that if the original collection contains the results of multiple
+		// versions it will contain at least one AppVersion.
+		return origCollection.appVersionIterator().hasNext();
 	}
 
 	/**
