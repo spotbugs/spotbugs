@@ -94,6 +94,19 @@ public class UpdateBugCollection {
 	public UpdateBugCollection execute() {
 		// Result collection is initialized using new collection's metadata
 		resultCollection = newCollection.createEmptyCollectionWithMetadata();
+		
+		// The AppVersion history is retained from the orig collection,
+		// adding an entry for the sequence/timestamp of the current state
+		// of the orig collection.
+		resultCollection.clearAppVersions();
+		for (Iterator<AppVersion> i = origCollection.appVersionIterator(); i.hasNext();) {
+			AppVersion appVersion = i.next();
+			resultCollection.addAppVersion((AppVersion) appVersion.clone());
+		}
+		AppVersion origCollectionVersion = new AppVersion(origCollection.getSequenceNumber());
+		origCollectionVersion.setTimestamp(origCollection.getTimestamp());
+		origCollectionVersion.setReleaseName(origCollection.getReleaseName());
+		resultCollection.addAppVersion(origCollectionVersion);
 
 		// Get Sets with exact contents of orig and new collections
 		SortedSet<BugInstance> origSetExact = collectionToExactSet(origCollection);

@@ -28,6 +28,8 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter {
 	public BugCollectionBugReporter(Project project) {
 		this.project = project;
 		this.bugCollection = new SortedBugCollection(getProjectStats());
+
+		bugCollection.setTimestamp(System.currentTimeMillis());
 	}
 
 	public Project getProject() {

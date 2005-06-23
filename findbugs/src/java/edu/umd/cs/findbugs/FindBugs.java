@@ -1049,6 +1049,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		// such as hashes of methods and classes.
 		if (bugReporter.getRealBugReporter() instanceof BugCollectionBugReporter) {
 			bugCollectionBugReporter = (BugCollectionBugReporter) bugReporter.getRealBugReporter();
+			bugCollectionBugReporter.getBugCollection().setReleaseName(releaseName);
 		}
 
 		// Create execution plan

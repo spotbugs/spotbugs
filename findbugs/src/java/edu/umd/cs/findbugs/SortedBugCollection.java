@@ -70,12 +70,20 @@ public class SortedBugCollection extends BugCollection {
 
 	private Map<String, BugInstance> uniqueIdToBugInstanceMap;
 	private int generatedUniqueIdCount;
+	
 	/**
 	 * Sequence number of the most-recently analyzed version
 	 * of the code.
 	 */
 	private long sequence;
+	/**
+	 * Release name of the analyzed application.
+	 */
 	private String releaseName;
+	/**
+	 * Current analysis timestamp.
+	 */
+	private long timestamp;
 
 	/**
 	 * Constructor.
@@ -104,6 +112,7 @@ public class SortedBugCollection extends BugCollection {
 		sequence = 0L;
 		appVersionList = new LinkedList<AppVersion>();
 		releaseName = "";
+		timestamp = -1L;
 	}
 
 	public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
@@ -286,6 +295,8 @@ public class SortedBugCollection extends BugCollection {
 		}
 		dup.generatedUniqueIdCount = this.generatedUniqueIdCount;
 		dup.sequence = this.sequence;
+		dup.timestamp = this.timestamp;
+		dup.releaseName = this.releaseName;
 		for (AppVersion appVersion : appVersionList) {
 			dup.appVersionList.add((AppVersion) appVersion.clone());
 		}
@@ -336,6 +347,14 @@ public class SortedBugCollection extends BugCollection {
 	}
 
 	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#clearAppVersions()
+	 */
+	//@Override
+	public void clearAppVersions() {
+		appVersionList.clear();
+	}
+
+	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#createEmptyCollectionWithMetadata()
 	 */
 	//@Override
@@ -344,6 +363,22 @@ public class SortedBugCollection extends BugCollection {
 		result.clearBugInstances();
 		
 		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#setTimestamp(long)
+	 */
+	//@Override
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#getTimestamp()
+	 */
+	//@Override
+	public long getTimestamp() {
+		return timestamp;
 	}
 }
 

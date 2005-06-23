@@ -79,26 +79,17 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			
 			// Read and set the sequence number.
 			String sequence = attributes.getValue("sequence");
-			long seqval = -1L;
-			try {
-				if (sequence != null)
-					seqval = Long.parseLong(sequence);
-			} catch (NumberFormatException e) {
-				// Ignore
-			}
-			
-			// If we can't get the sequence number, or it is not present,
-			// just use 0.
-			if (seqval < 0L) {
-				seqval = 0L;
-			}
+			long seqval = parseLong(sequence, 0L);
 			bugCollection.setSequenceNumber(seqval);
+			
+			// Read and set timestamp.
+			String timestamp = attributes.getValue("timestamp");
+			long tsval = parseLong(timestamp, -1L);
+			bugCollection.setTimestamp(tsval);
 			
 			// Set release name, if present.
 			String releaseName = attributes.getValue("release");
-			if (releaseName != null) {
-				bugCollection.setReleaseName(releaseName);
-			}
+			bugCollection.setReleaseName((releaseName != null) ? releaseName : "");
 		} else {
 			String outerElement = elementStack.get(elementStack.size() - 1);
 
@@ -252,6 +243,16 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 		textBuffer.delete(0, textBuffer.length());
 		elementStack.add(qName);
+	}
+
+	private long parseLong(String s, long defaultValue) {
+		long value;
+		try {
+			value = (s != null) ? Long.parseLong(s) : defaultValue;
+		} catch (NumberFormatException e) {
+			value = defaultValue;
+		}
+		return value;
 	}
 
 	/**

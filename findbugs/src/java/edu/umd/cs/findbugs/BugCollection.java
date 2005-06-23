@@ -251,12 +251,32 @@ public abstract class BugCollection {
 	public abstract void addAppVersion(AppVersion appVersion);
 	
 	/**
+	 * Clear all AppVersions representing previously-analyzed versions
+	 * of the application.
+	 */
+	public abstract void clearAppVersions();
+	
+	/**
 	 * Create a new empty BugCollection with the same metadata as this one.
 	 * 
 	 * @return a new empty BugCollection with the same metadata as this one
 	 */
 	public abstract BugCollection createEmptyCollectionWithMetadata();
 
+	/**
+	 * Set the analysis timestamp.
+	 * 
+	 * @param timestamp the analysis timestamp.
+	 */
+	public abstract void setTimestamp(long timestamp);
+	
+	/**
+	 * Get the analysis timestamp.
+	 * 
+	 * @return the analysis timestamp, or &lt; 0 if the analysis timestamp is unknown
+	 */
+	public abstract long getTimestamp();
+	
 	private static final boolean REPORT_SUMMARY_HTML = 
 		Boolean.getBoolean("findbugs.report.SummaryHTML");
 
@@ -408,6 +428,7 @@ public abstract class BugCollection {
 			new XMLAttributeList()
 				.addAttribute("version",Version.RELEASE)
 				.addAttribute("sequence",String.valueOf(getSequenceNumber()))
+				.addAttribute("timestamp", String.valueOf(getTimestamp()))
 				.addAttribute("release", getReleaseName())
 		);
 		project.writeXML(xmlOutput);
