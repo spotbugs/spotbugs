@@ -476,12 +476,14 @@ public class FindBugs implements Constants2, ExitCodes {
 		private UserPreferences userPreferences = UserPreferences.createDefaultUserPreferences();
 		private String trainingOutputDir;
 		private String trainingInputDir;
+		private String releaseName = "";
 
 		public TextUICommandLine() {
 			super();
 			addSwitch("-showPlugins", "show list of available plugins");
 			addSwitch("-quiet", "suppress error messages");
 			addSwitch("-longBugCodes", "report long bug codes");
+			addOption("-release", "release name", "set the release name of the analyzed application");
 			addSwitch("-experimental", "report all warnings including experimental bug patterns");
 			addSwitch("-low", "report all warnings");
 			addSwitch("-medium", "report only medium and high priority warnings [default]");
@@ -602,6 +604,8 @@ public class FindBugs implements Constants2, ExitCodes {
 					System.err.println("Couldn't open " + outputFile + " for output: " + e.toString());
 					System.exit(1);
 				}
+			} else if (option.equals("-release")) {
+				this.releaseName = argument;
 			} else if (option.equals("-visitors") || option.equals("-omitVisitors")) {
 				boolean omit = option.equals("-omitVisitors");
 
@@ -790,6 +794,8 @@ public class FindBugs implements Constants2, ExitCodes {
 			}
 			
 			findBugs.setAnalysisFeatureSettings(settingList);
+			
+			findBugs.setReleaseName(releaseName);
 
 			return findBugs;
 		}
@@ -848,6 +854,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	private String trainingInputDir;
 	private String trainingOutputDir;
 	private AnalysisFeatureSetting[] settingList = DEFAULT_EFFORT;
+	private String releaseName;
 	
 	private int passCount;
 
@@ -994,6 +1001,20 @@ public class FindBugs implements Constants2, ExitCodes {
 	public void setAnalysisFeatureSettings(AnalysisFeatureSetting[] settingList) {
 		if (settingList != null)
 			this.settingList  = settingList;
+	}
+	
+	/**
+	 * @return Returns the releaseName.
+	 */
+	public String getReleaseName() {
+		return releaseName;
+	}
+	
+	/**
+	 * @param releaseName The releaseName to set.
+	 */
+	public void setReleaseName(String releaseName) {
+		this.releaseName = releaseName;
 	}
 	
 	/**
