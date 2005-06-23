@@ -316,4 +316,14 @@ public class Subtypes {
 			name = name.substring(1, name.length() - 1);
 		return name;
 	}
+
+	/**
+	 * Determine whether or not the given class is an application class.
+	 * 
+	 * @param javaClass a class
+	 * @return true if it's an application class, false if not
+	 */
+	public boolean isApplicationClass(JavaClass javaClass) {
+		return applicationClasses.contains(javaClass);
+	}
 }
