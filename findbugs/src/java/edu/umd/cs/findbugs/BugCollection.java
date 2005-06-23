@@ -41,8 +41,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import sun.security.krb5.internal.crypto.x;
-
 import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
