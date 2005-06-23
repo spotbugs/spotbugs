@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.xml;
 
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 /**
  * Quote metacharacters in a String.
  *
@@ -37,7 +39,9 @@ public abstract class QuoteMetaCharacters {
 	 * @param text the text in which we want to quote metacharacters
 	 * @param map  the MetaCharacterMap
 	 */
-	public QuoteMetaCharacters(String text, MetaCharacterMap map) {
+	public QuoteMetaCharacters(@NonNull String text, @NonNull MetaCharacterMap map) {
+		if (text == null) throw new NullPointerException("text must be nonnull");
+		if (map == null) throw new NullPointerException("map must be nonnull");
 		this.text = text;
 		this.map = map;
 	}
