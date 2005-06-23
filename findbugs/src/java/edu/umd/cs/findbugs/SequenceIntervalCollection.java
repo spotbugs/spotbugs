@@ -114,14 +114,14 @@ public class SequenceIntervalCollection {
 		int min = 0;
 		int max = intervalList.size();
 		
-		while (min <= max) {
+		while (min < max) {
 			int mid = min + (max-min)/2;
 			SequenceInterval interval = intervalList.get(mid);
 			if (interval.contains(sequence)) {
 				return mid;
 			}
 			if (mid < interval.getBegin()) {
-				max = mid - 1;
+				max = mid;
 			} else {
 				min = mid + 1;
 			}

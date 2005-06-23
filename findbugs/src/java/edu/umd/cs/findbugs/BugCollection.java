@@ -255,6 +255,15 @@ public abstract class BugCollection {
 	 * of the application.
 	 */
 	public abstract void clearAppVersions();
+
+	/**
+	 * Get the current AppVersion.
+	 */
+	public AppVersion getCurrentAppVersion() {
+		return new AppVersion(getSequenceNumber())
+			.setReleaseName(getReleaseName())
+			.setTimestamp(getTimestamp());
+	}
 	
 	/**
 	 * Create a new empty BugCollection with the same metadata as this one.

@@ -82,6 +82,9 @@ public class MineBugHistory {
 			AppVersion appVersion = i.next();
 			sequenceToAppVersionMap.put(Long.valueOf(appVersion.getSequenceNumber()), appVersion);
 		}
+		sequenceToAppVersionMap.put(
+			Long.valueOf(bugCollection.getSequenceNumber()),
+			bugCollection.getCurrentAppVersion());
 		
 		for (Iterator<BugInstance> j = bugCollection.iterator(); j.hasNext();) {
 			for (int i = 1; i <= maxSequence; ++i) {
@@ -113,6 +116,7 @@ public class MineBugHistory {
 				out.print(',');
 				out.print(version.get(j));
 			}
+			out.println();
 		}
 	}
 
@@ -121,18 +125,18 @@ public class MineBugHistory {
 	 * in successive versions in the history.
 	 * 
 	 * @param activePrevious true if the bug was active in the previous version, false if not
-	 * @param activeCurrent  trus if the bug is active in the current version, false if not
+	 * @param activeCurrent  true if the bug is active in the current version, false if not
 	 * @return the key: one of ADDED, RETAINED, REMOVED, and DEAD
 	 */
 	private int getKey(boolean activePrevious, boolean activeCurrent) {
 		if (activePrevious)
 			return activeCurrent ? RETAINED : REMOVED;
-		else
+		else // !activePrevious
 			return activeCurrent ? ADDED : DEAD;
 	}
 
 	public static void main(String[] args) throws Exception {
-		if (args.length != 2) {
+		if (args.length != 1) {
 			System.err.println("Usage: " + MineBugHistory.class.getName() + " <bug collection>");
 			System.exit(1);
 		}
