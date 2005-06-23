@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * 
  * @author David Hovemeyer
  */
-public class AppVersion implements XMLWriteable {
+public class AppVersion implements XMLWriteable, Cloneable {
 	/**
 	 * XML element name for a stored AppVersion object.
 	 */
@@ -48,6 +48,18 @@ public class AppVersion implements XMLWriteable {
 		this.sequence = sequence;
 		this.timestamp = -1;
 		this.releaseName = "";
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	//@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException();
+		}
 	}
 	
 	/**
