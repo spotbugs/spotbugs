@@ -118,6 +118,9 @@ public class AddMessages {
 			System.exit(1);
 		}
 		
+		// Load plugins, in order to get message files
+		DetectorFactoryCollection.instance();
+		
 		String inputFile = args[0];
 		String outputFile = args[1];
 		Project project = new Project();
@@ -126,9 +129,6 @@ public class AddMessages {
 		inputCollection.readXML(inputFile, project);
 		
 		Document document = inputCollection.toDocument(project);
-		
-		// Load plugins, in order to get message files
-		DetectorFactoryCollection.instance();
 		
 		AddMessages addMessages = new AddMessages(inputCollection, document);
 		addMessages.execute();
