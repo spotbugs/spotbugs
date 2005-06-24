@@ -200,6 +200,17 @@ public class AnalysisContext {
 	/**
 	 * Return whether or not the given class is an application class.
 	 * 
+	 * @param cls the class to lookup
+	 * @return true if the class is an application class, false if not
+	 *         an application class or if the class cannot be located
+	 */
+	public boolean isApplicationClass(JavaClass cls) {
+		return subtypes.isApplicationClass(cls);
+	}
+
+	/**
+	 * Return whether or not the given class is an application class.
+	 * 
 	 * @param className name of a class
 	 * @return true if the class is an application class, false if not
 	 *         an application class or if the class cannot be located
@@ -207,7 +218,7 @@ public class AnalysisContext {
 	public boolean isApplicationClass(String className) {
 		try {
 			JavaClass javaClass = lookupClass(className);
-			return subtypes.isApplicationClass(javaClass);
+			return isApplicationClass(javaClass);
 		} catch (ClassNotFoundException e) {
 			return false;
 		}

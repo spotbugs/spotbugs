@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class UseObjectEquals extends BytecodeScanningDetector implements Constants2, StatelessDetector {
@@ -44,9 +45,9 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 
 	public void visit(Method obj) {
 		super.visit(obj);
-                stack.resetForMethodEntry(this);
+        stack.resetForMethodEntry(this);
 	}
-	
+		
 	public void sawOpcode(int seen) {					
 		if ((seen == INVOKEVIRTUAL) 
 		&&   getNameConstantOperand().equals("equals")
@@ -60,9 +61,12 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Constan
 
 						if ((cls != null) && cls.isFinal()) {
 							if (item1.getSignature().equals("Ljava/lang/Class;"))
-								return;
+								return;							
 							String methodClassName = getClassConstantOperand();
 							if (methodClassName.equals("java/lang/Object")) {
+								if (!AnalysisContext.currentAnalysisContext().isApplicationClass(cls))
+									return;
+
 								bugReporter.reportBug(new BugInstance("UOE_USE_OBJECT_EQUALS", LOW_PRIORITY)
 				    	    		.addClassAndMethod(this)
 				    	    		.addSourceLine(this));	
