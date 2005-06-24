@@ -108,4 +108,18 @@ public class AppVersion implements XMLWriteable, Cloneable {
 				.addAttribute("timestamp", String.valueOf(timestamp))
 				.addAttribute("release", releaseName));
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	//@Override
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(String.valueOf(sequence));
+		buf.append(',');
+		buf.append(String.valueOf(timestamp));
+		buf.append(',');
+		buf.append(releaseName);
+		return buf.toString();
+	}
 }
