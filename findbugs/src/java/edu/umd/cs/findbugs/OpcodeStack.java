@@ -75,7 +75,10 @@ public class OpcodeStack implements Constants2
 	
 	public static class Item
 	{ 		
+		public static final int BYTE_ARRAY_LOAD = 1;
+		public static final int RANDOM_INT = 2;
 		public static final Object UNKNOWN = null;
+		private int specialKind;
  		private String signature;
  		private Object constValue = UNKNOWN;
 		private FieldAnnotation field;
@@ -90,7 +93,7 @@ public class OpcodeStack implements Constants2
 			}
 
 		public int hashCode() {
-			int r = 42;
+			int r = 42 + specialKind;
 			if (signature != null)
 				r+= signature.hashCode();
 			r *= 31;
@@ -114,6 +117,7 @@ public class OpcodeStack implements Constants2
 				&& equals(this.constValue, that.constValue)
 				&& equals(this.field, that.field)
 				&& this.isNull == that.isNull
+				&& this.specialKind == that.specialKind
 				&& this.registerNumber == that.registerNumber;
 			}
 
@@ -259,6 +263,20 @@ public class OpcodeStack implements Constants2
  		public FieldAnnotation getField() {
  			return field;
  		}
+
+		/**
+		 * @param specialKind The specialKind to set.
+		 */
+		private void setSpecialKind(int specialKind) {
+			this.specialKind = specialKind;
+		}
+
+		/**
+		 * @return Returns the specialKind.
+		 */
+		private int getSpecialKind() {
+			return specialKind;
+		}
 	}
 
 	public String toString() {
@@ -616,6 +634,12 @@ public class OpcodeStack implements Constants2
 	 			break;
 	 			
 	 			case BALOAD:
+	 			{
+	 				pop(2);
+	 				Item v =  new Item("I");
+	 				v.setSpecialKind(Item.BYTE_ARRAY_LOAD);
+	 				push(v);
+	 			}
 	 			case CALOAD:
 	 				pop(2);
 	 				push(new Item("I"));
@@ -960,6 +984,11 @@ public class OpcodeStack implements Constants2
 	 			case INVOKESTATIC:
 	 			case INVOKEVIRTUAL:
 	 				pushByInvoke(dbc, seen != INVOKESTATIC);
+	 				if (dbc.getNameConstantOperand().equals("nextInt")) {
+	 					Item i = pop();
+	 					i.setSpecialKind(Item.RANDOM_INT);
+	 					push(i);
+	 				}
 	 			break;
 	 				
 	 			default:
