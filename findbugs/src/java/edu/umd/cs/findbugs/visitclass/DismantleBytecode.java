@@ -486,12 +486,12 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 								ConstantCP cp = (ConstantCP) constantRefOperand;
 								ConstantClass clazz
 								        = (ConstantClass) getConstantPool().getConstant(cp.getClassIndex());
-								classConstantOperand = getStringFromIndex(clazz.getNameIndex()).intern();
+								classConstantOperand = getStringFromIndex(clazz.getNameIndex());
 								dottedClassConstantOperand = replaceSlashesWithDots(classConstantOperand);
 								ConstantNameAndType sig
 								        = (ConstantNameAndType) getConstantPool().getConstant(cp.getNameAndTypeIndex());
 								nameConstantOperand = getStringFromIndex(sig.getNameIndex());
-								sigConstantOperand = getStringFromIndex(sig.getSignatureIndex()).intern();
+								sigConstantOperand = getStringFromIndex(sig.getSignatureIndex());
 								dottedSigConstantOperand = replaceSlashesWithDots(sigConstantOperand);
 								StringBuffer ref = new StringBuffer(5 + dottedClassConstantOperand.length()
 								        + nameConstantOperand.length()
