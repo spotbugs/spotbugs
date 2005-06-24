@@ -467,7 +467,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 							constantRefOperand = getConstantPool().getConstant(v);
 							if (constantRefOperand instanceof ConstantClass) {
 								ConstantClass clazz = (ConstantClass) constantRefOperand;
-								classConstantOperand = getStringFromIndex(clazz.getNameIndex()).intern();
+								classConstantOperand = getStringFromIndex(clazz.getNameIndex());
 								dottedClassConstantOperand = replaceSlashesWithDots(classConstantOperand);
 							}
 							if (constantRefOperand instanceof ConstantInteger)
