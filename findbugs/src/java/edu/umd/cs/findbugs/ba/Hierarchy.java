@@ -38,6 +38,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
 /**
@@ -797,7 +798,7 @@ public class Hierarchy {
 	 * @return an XField object representing the field, or null
 	 *         if no such field could be found
 	 */
-	public static XField findXField(FieldInstruction fins, ConstantPoolGen cpg)
+	public static XField findXField(FieldInstruction fins, @NonNull ConstantPoolGen cpg)
 	        throws ClassNotFoundException {
 
 		String className = fins.getClassName(cpg);
