@@ -20,9 +20,14 @@
 package edu.umd.cs.findbugs;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -136,11 +141,13 @@ public class CountBugsFast {
 		int minPriority = Detector.NORMAL_PRIORITY;
 		String categories;
 		String abbrevs;
+		String listFile;
 		
 		CountBugsFastCommandLine() {
 			addOption("-categories", "cat1,cat2...", "set bug categories");
 			addOption("-abbrevs", "abbrev1,abbrev2...", "set bug type abbreviations");
 			addOption("-minPriority", "priority", "set min bug priority (3=low, 2=medium, 1=high)");
+			addOption("-bulk", "list file (\"-\"=stdin)", "list of files to count, print counts as CSV");
 		}
 		
 		/**
@@ -164,6 +171,13 @@ public class CountBugsFast {
 			return minPriority;
 		}
 		
+		/**
+		 * @return Returns the listFile.
+		 */
+		public String getListFile() {
+			return listFile;
+		}
+		
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
 		 */
@@ -183,9 +197,38 @@ public class CountBugsFast {
 				abbrevs = argument;
 			} else if (option.equals("-minPriority")) {
 				minPriority = Integer.parseInt(argument);
+			} else if (option.equals("-bulk")) {
+				listFile = argument;
 			} else {
 				throw new IllegalArgumentException("Unknown option: " + option);
 			}
+		}
+
+		public CountBugsFast createAndExecute(String fileName) throws FileNotFoundException, IOException, SAXException {
+			CountBugsFast countBugs = new CountBugsFast(
+					new BufferedInputStream(new FileInputStream(fileName)));
+			configure(countBugs);
+			countBugs.execute();
+			return countBugs;
+		}
+
+		public void configure(CountBugsFast countBugs) {
+			if (getAbbrevs() != null)
+				countBugs.setAbbrevs(getAbbrevs());
+			if (getCategories() != null)
+				countBugs.setCategories(getCategories());
+			countBugs.setMinPriority(getMinPriority());
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.config.CommandLine#printUsage(java.io.OutputStream)
+		 */
+		//@Override
+		public void printUsage(OutputStream os) {
+			System.err.println("Usage: " + CountBugsFast.class.getName() +
+					" [options] <bug collection>");
+			System.err.println("Options:");
+			super.printUsage(os);
 		}
 	}
 
@@ -194,25 +237,42 @@ public class CountBugsFast {
 		
 		CountBugsFastCommandLine commandLine = new CountBugsFastCommandLine();
 		int argCount = commandLine.parse(args);
-		
-		if (args.length - argCount != 1) {
-			System.err.println("Usage: " + CountBugsFast.class.getName() +
-					" [options] <bug collection>");
-			System.err.println("Options:");
-			commandLine.printUsage(System.err);
-			System.exit(1);
+
+		if (commandLine.getListFile() != null ){
+			if (args.length != argCount) {
+				commandLine.printUsage(System.err);
+				System.exit(1);
+			}
+			BufferedReader reader;
+			if (commandLine.getListFile().equals("-")) {
+				reader = new BufferedReader(new InputStreamReader(System.in));
+			} else {
+				reader = new BufferedReader(new FileReader(commandLine.getListFile()));
+			}
+			String fileName;
+			while ((fileName = reader.readLine()) != null) {
+				fileName = fileName.trim();
+				try {
+					CountBugsFast countBugs = commandLine.createAndExecute(fileName);
+					System.out.println(fileName + "," + countBugs.getCount());
+				} catch (SAXException e) {
+					throw new SAXException("Error parsing " + fileName, e);
+				} catch (IOException e) {
+					IOException e2 = new IOException("Error parsing " + fileName);
+					e2.initCause(e);
+					throw e2;
+				}
+			}
+		} else {
+			if (args.length - argCount != 1) {
+				commandLine.printUsage(System.err);
+				System.exit(1);
+			}
+			// Just count one and print to stdout
+			String fileName = args[argCount];
+			CountBugsFast countBugs = commandLine.createAndExecute(fileName);
+			System.out.println(countBugs.getCount());
 		}
-		
-		CountBugsFast countBugs = new CountBugsFast(
-				new BufferedInputStream(new FileInputStream(args[argCount])));
-		if (commandLine.getAbbrevs() != null)
-			countBugs.setAbbrevs(commandLine.getAbbrevs());
-		if (commandLine.getCategories() != null)
-			countBugs.setCategories(commandLine.getCategories());
-		countBugs.setMinPriority(commandLine.getMinPriority());
-		
-		countBugs.execute();
-		System.out.println(countBugs.getCount());
 	}
 
 }
