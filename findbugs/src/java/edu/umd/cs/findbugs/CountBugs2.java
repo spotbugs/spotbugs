@@ -43,6 +43,7 @@ public class CountBugs2 {
 	public CountBugs2(BugCollection bugCollection) {
 		this.bugCollection = bugCollection;
 		this.categorySet = new HashSet<String>();
+		this.abbrevSet = new HashSet<String>();
 		this.minPriority = Detector.NORMAL_PRIORITY;
 	}
 	
@@ -175,8 +176,10 @@ public class CountBugs2 {
 		bugCollection.readXML(args[argCount], new Project());
 		
 		CountBugs2 countBugs = new CountBugs2(bugCollection);
-		countBugs.setAbbrevs(commandLine.getAbbrevs());
-		countBugs.setCategories(commandLine.getCategories());
+		if (commandLine.getAbbrevs() != null)
+			countBugs.setAbbrevs(commandLine.getAbbrevs());
+		if (commandLine.getCategories() != null)
+			countBugs.setCategories(commandLine.getCategories());
 		countBugs.setMinPriority(commandLine.getMinPriority());
 		
 		countBugs.execute();
