@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
  * @author David Hovemeyer
  */
 public class CountBugs2 {
+	private static final boolean DEBUG = Boolean.getBoolean("findbugs.countbugs.debug");
 	
 	private BugCollection bugCollection;
 	private Set<String> categorySet;
@@ -66,6 +67,7 @@ public class CountBugs2 {
 		StringTokenizer t = new StringTokenizer(str, ",");
 		while (t.hasMoreTokens()) {
 			String category = t.nextToken();
+			if (DEBUG) System.err.println("Adding element: " + category);
 			set.add(category);
 		}
 	}
@@ -75,16 +77,25 @@ public class CountBugs2 {
 			BugInstance warning = i.next();
 			BugPattern pattern = warning.getBugPattern();
 
-			if (pattern == null && (!categorySet.isEmpty() || !abbrevSet.isEmpty()))
-				continue;
+			if (pattern == null ) {
+				System.err.println("Null pattern for " + warning.getType());
+				if (!categorySet.isEmpty() || !abbrevSet.isEmpty()) {
+					if (DEBUG) System.err.println("skipping for nonempty category or abbrev set");
+					continue;
+				}
+			}
 			
 			if (!categorySet.isEmpty()
-					&& !categorySet.contains(pattern.getCategory()))
+					&& !categorySet.contains(pattern.getCategory())) {
+				if (DEBUG) System.out.println("Mismatched category: " + pattern.getCategory());
 				continue;
+			}
 			
 			if (!abbrevSet.isEmpty()
-					&& !abbrevSet.contains(pattern.getAbbrev()))
+					&& !abbrevSet.contains(pattern.getAbbrev())) {
+				if (DEBUG) System.out.println("Mismatched abbrev: " + pattern.getAbbrev());
 				continue;
+			}
 			
 			if (warning.getPriority() > minPriority)
 				continue;
@@ -102,7 +113,7 @@ public class CountBugs2 {
 	}
 	
 	static class CountBugs2CommandLine extends CommandLine {
-		int minPriority;
+		int minPriority= Detector.NORMAL_PRIORITY;
 		String categories;
 		String abbrevs;
 		
