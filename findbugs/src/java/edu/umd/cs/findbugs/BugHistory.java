@@ -19,14 +19,24 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.dom4j.DocumentException;
 
@@ -45,6 +55,69 @@ import edu.umd.cs.findbugs.config.CommandLine;
  */
 public class BugHistory {
 	private static final boolean DEBUG = false;
+	
+	private static class BugCollectionAndProject {
+		SortedBugCollection bugCollection;
+		Project project;
+		
+		public BugCollectionAndProject(SortedBugCollection bugCollection, Project project) {
+			this.bugCollection = bugCollection;
+			this.project = project;
+		}
+		
+		/**
+		 * @return Returns the bugCollection.
+		 */
+		public SortedBugCollection getBugCollection() {
+			return bugCollection;
+		}
+		
+		/**
+		 * @return Returns the project.
+		 */
+		public Project getProject() {
+			return project;
+		}
+	}
+
+	/**
+	 * Cache of BugCollections and Projects for when we're operating in bulk mode.
+	 * If the pairs of files form a chronological sequence, then we won't have to
+	 * repeatedly perform I/O.
+	 */
+	private static class BugCollectionAndProjectCache extends LinkedHashMap<String,BugCollectionAndProject> {
+		private static final long serialVersionUID = 1L;
+		
+		// 2 should be sufficient if the pairs are sorted
+		private static final int CACHE_SIZE = 5;
+		
+		/* (non-Javadoc)
+		 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)
+		 */
+		//@Override
+		protected boolean removeEldestEntry(Entry<String, BugCollectionAndProject> eldest) {
+			return size() > CACHE_SIZE;
+		}
+		
+		/**
+		 * Fetch an entry, reading it if necessary.
+		 * 
+		 * @param fileName file to get
+		 * @return the BugCollectionAndProject for the file
+		 * @throws IOException
+		 * @throws DocumentException
+		 */
+		public BugCollectionAndProject fetch(String fileName) throws IOException, DocumentException {
+			BugCollectionAndProject result = get(fileName);
+			if (result == null) {
+				Project project = new Project();
+				SortedBugCollection bugCollection = readCollection(fileName, project);
+				result = new BugCollectionAndProject(bugCollection, project);
+				put(fileName, result);
+			}
+			return result;
+		}
+	}
 	
 	/**
 	 * A set operation between two bug collections.
@@ -126,6 +199,7 @@ public class BugHistory {
 	};
 	
 	private SortedBugCollection origCollection, newCollection;
+	private SortedBugCollection resultCollection;
 	private SortedBugCollection originator;
 	private Comparator<BugInstance> comparator;
 	
@@ -183,6 +257,8 @@ public class BugHistory {
 		resultCollection.clearBugInstances();
 		resultCollection.addAll(selected);
 		
+		this.resultCollection = resultCollection;
+		
 		return resultCollection;
 	}
 	
@@ -191,6 +267,32 @@ public class BugHistory {
 	 */
 	public SortedBugCollection getOriginator() {
 		return originator;
+	}
+	
+	/**
+	 * @return Returns the origCollection.
+	 */
+	public SortedBugCollection getOrigCollection() {
+		return origCollection;
+	}
+	
+	/**
+	 * @return Returns the newCollection.
+	 */
+	public SortedBugCollection getNewCollection() {
+		return newCollection;
+	}
+	
+	/**
+	 * @return Returns the result.
+	 */
+	public SortedBugCollection getResultCollection() {
+		return resultCollection;
+	}
+
+	public void writeResultCollection(Project origProject, Project newProject, OutputStream outputStream) throws IOException {
+		getResultCollection().writeXML(
+				outputStream, getOriginator() == getOrigCollection() ? origProject : newProject);
 	}
 
 	/**
@@ -243,7 +345,11 @@ public class BugHistory {
 	private static class BugHistoryCommandLine extends CommandLine {
 		private int comparatorType = VERSION_INSENSITIVE_COMPARATOR;
 		private boolean count;
+		private String opName;
 		private SetOperation setOp;
+		private String listFile;
+		private String outputDir;
+		private boolean verbose;
 		
 		public BugHistoryCommandLine() {
 			addSwitch("-fuzzy", "use fuzzy warning matching");
@@ -254,6 +360,9 @@ public class BugHistory {
 			addSwitch("-fixed", "same as \"-removed\" switch");
 			addSwitch("-retained", "compute retained warnings");
 			addSwitch("-count", "just print warning count");
+			addOption("-bulk", "file of csv xml file pairs", "bulk mode, output written to v2-OP.xml");
+			addOption("-outputDir", "output dir", "output directory for bulk mode (optional)");
+			addSwitch("-verbose", "verbose output for bulk mode");
 		}
 		
 		 /* (non-Javadoc)
@@ -266,13 +375,18 @@ public class BugHistory {
 			} else if (option.equals("-sloppy")) {
 				comparatorType = SLOPPY_COMPARATOR;
 			} else if (option.equals("-added") || option.equals("-new")) {
+				opName = option;
 				setOp = ADDED_WARNINGS;
 			} else if (option.equals("-removed") || option.equals("-fixed")) {
+				opName = option;
 				setOp = REMOVED_WARNINGS;
 			} else if (option.equals("-retained")) {
+				opName = option;
 				setOp = RETAINED_WARNINGS;
 			} else if (option.equals("-count")) {
 				count = true;
+			} else if (option.equals("-verbose")) {
+				verbose = true;
 			} else {
 				throw new IllegalArgumentException("Unknown option: " + option);
 			}
@@ -283,7 +397,13 @@ public class BugHistory {
 		 */
 		//@Override
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
-			throw new IllegalArgumentException("Unknown option: " + option);
+			if (option.equals("-bulk")) {
+				listFile = argument;
+			} else if (option.equals("-outputDir")) {
+				outputDir = argument;
+			} else {
+				throw new IllegalArgumentException("Unknown option: " + option);
+			}
 		}
 		
 		/**
@@ -301,60 +421,205 @@ public class BugHistory {
 		}
 		
 		/**
+		 * @return Returns the opName.
+		 */
+		public String getOpName() {
+			return opName;
+		}
+		
+		/**
 		 * @return Returns the set operation to apply.
 		 */
 		public SetOperation getSetOp() {
 			return setOp;
 		}
+		
+		/**
+		 * @return Returns the listFile.
+		 */
+		public String getListFile() {
+			return listFile;
+		}
+		
+		/**
+		 * @return Returns the outputDir.
+		 */
+		public String getOutputDir() {
+			return outputDir;
+		}
+		
+		/**
+		 * @return Returns the verbose.
+		 */
+		public boolean isVerbose() {
+			return verbose;
+		}
+
+		public void configure(BugHistory bugHistory, SortedBugCollection origCollection, SortedBugCollection newCollection) {
+			// Create comparator
+			Comparator<BugInstance> comparator;
+			switch (getComparatorType()) {
+			case VERSION_INSENSITIVE_COMPARATOR:
+				comparator = VersionInsensitiveBugComparator.instance();
+				break;
+			case FUZZY_COMPARATOR:
+				FuzzyBugComparator fuzzy = new FuzzyBugComparator();
+				fuzzy.registerBugCollection(origCollection);
+				fuzzy.registerBugCollection(newCollection);
+				comparator = fuzzy;
+				break;
+			case SLOPPY_COMPARATOR:
+				comparator = new SloppyBugComparator();
+				break;
+			default:
+				throw new IllegalStateException();
+			}
+			bugHistory.setComparator(comparator);
+		}
+		
+		public BugHistory createAndExecute(
+				String origFile, String newFile, Project origProject, Project newProject) throws IOException, DocumentException {
+			SortedBugCollection origCollection = readCollection(origFile, origProject);
+			SortedBugCollection newCollection = readCollection(newFile, newProject);
+
+			return createAndExecute(origCollection, newCollection, origProject, newProject);
+		}
+		
+		public BugHistory createAndExecute(
+				SortedBugCollection origCollection,
+				SortedBugCollection newCollection,
+				Project origProject,
+				Project newProject) {
+			BugHistory bugHistory = new BugHistory(origCollection, newCollection);
+
+			configure(bugHistory, origCollection, newCollection);
+			
+			// We can ignore the return value because it will be accessible by calling getResult()
+			bugHistory.performSetOperation(getSetOp());
+
+			return bugHistory;
+		}
+		
+		public String getBulkOutputFileName(String fileName) {
+			File file = new File(fileName);
+			
+			String filePart = file.getName();
+			int ext = filePart.lastIndexOf('.');
+			if (ext < 0 ) {
+				filePart = filePart + getOpName();
+			} else {
+				filePart = filePart.substring(0, ext) + getOpName() + filePart.substring(ext);
+			}
+
+			String dirPart = (getOutputDir() != null) ? getOutputDir() : file.getParent();
+					
+			File outputFile = new File(dirPart, filePart);
+			return outputFile.getPath();
+		}
+	}
+	
+	private static SortedBugCollection readCollection(String fileName, Project project)
+			throws IOException, DocumentException {
+		SortedBugCollection result = new SortedBugCollection();
+		result.readXML(fileName, project);
+		return result;
 	}
 
 	public static void main(String[] argv) throws Exception {
-		
 		BugHistoryCommandLine commandLine = new BugHistoryCommandLine();
 		int argCount = commandLine.parse(argv);
-		if (argv.length - argCount != 2) {
-			printUsage();
-		}
 		
 		if (commandLine.getSetOp() == null) {
 			System.err.println("No set operation specified");
+			printUsage();
 			System.exit(1);
 		}
 
-		Project origProject = new Project();
-		SortedBugCollection origCollection = readCollection(argv[argCount++], origProject);
-		Project newProject = new Project();
-		SortedBugCollection newCollection = readCollection(argv[argCount++], newProject);
-		
-		BugHistory bugHistory = new BugHistory(origCollection, newCollection);
+		if (commandLine.getListFile() != null) {
+			if (argv.length != argCount) {
+				printUsage();
+			}
 
-		// Create comparator
-		Comparator<BugInstance> comparator;
-		switch (commandLine.getComparatorType()) {
-		case VERSION_INSENSITIVE_COMPARATOR:
-			comparator = VersionInsensitiveBugComparator.instance();
-			break;
-		case FUZZY_COMPARATOR:
-			FuzzyBugComparator fuzzy = new FuzzyBugComparator();
-			fuzzy.registerBugCollection(origCollection);
-			fuzzy.registerBugCollection(newCollection);
-			comparator = fuzzy;
-			break;
-		case SLOPPY_COMPARATOR:
-			comparator = new SloppyBugComparator();
-			break;
-		default:
-			throw new IllegalStateException();
+			runBulk(commandLine);
+		} else{
+			if (argv.length - argCount != 2) {
+				printUsage();
+			}
+			
+			String origFile = argv[argCount++];
+			String newFile = argv[argCount++];
+			
+			runSinglePair(commandLine, origFile, newFile);
 		}
-		bugHistory.setComparator(comparator);
+	}
+
+	private static void runBulk(BugHistoryCommandLine commandLine) throws FileNotFoundException, IOException, DocumentException {
+		BufferedReader reader;
+		if (commandLine.getListFile().equals("-")) {
+			reader = new BufferedReader(new InputStreamReader(System.in));
+		} else {
+			reader = new BufferedReader(new FileReader(commandLine.getListFile()));
+		}
 		
-		SortedBugCollection result = bugHistory.performSetOperation(commandLine.getSetOp());
+		BugCollectionAndProjectCache cache = new BugCollectionAndProjectCache();
+		
+		String csvRecord;
+		while ((csvRecord = reader.readLine()) != null) {
+			csvRecord = csvRecord.trim();
+			String[] tuple = csvRecord.split(",");
+			if (tuple.length < 2)
+				continue;
+
+			String origFile = tuple[0];
+			String newFile = tuple[1];
+			
+			BugCollectionAndProject orig;
+			BugCollectionAndProject next;
+			
+			try {
+				orig = cache.fetch(origFile);
+				next = cache.fetch(newFile);
+			} catch (RuntimeException e) {
+				throw e;
+			} catch (Exception e ) {
+				System.err.println("Warning: error reading bug collection");
+				e.printStackTrace();
+				continue;
+			}
+			
+			if (commandLine.isVerbose()) {
+				System.out.print("Computing delta from " + origFile + " to " + newFile + "...");
+				System.out.flush();
+			}
+
+			BugHistory bugHistory = commandLine.createAndExecute(
+					orig.getBugCollection(), next.getBugCollection(), orig.getProject(), next.getProject());
+			
+			String outputFile = commandLine.getBulkOutputFileName(newFile);
+			if (commandLine.isVerbose()) {
+				System.out.print("Writing " + outputFile + "...");
+				System.out.flush();
+			}
+			
+			
+			bugHistory.writeResultCollection(orig.getProject(), next.getProject(),
+					new BufferedOutputStream(new FileOutputStream(outputFile)));
+			if (commandLine.isVerbose()) {
+				System.out.println("done");
+			}
+		}
+	}
+
+	private static void runSinglePair(BugHistoryCommandLine commandLine, String origFile, String newFile) throws IOException, DocumentException {
+		Project origProject = new Project();
+		Project newProject = new Project();
+		BugHistory bugHistory = commandLine.createAndExecute(origFile, newFile, origProject, newProject);
 		
 		if (commandLine.isCount()) {
-			System.out.println(result.getCollection().size());
+			System.out.println(bugHistory.getResultCollection().getCollection().size());
 		} else {
-			result.writeXML(
-					System.out, bugHistory.getOriginator() == origCollection ? origProject : newProject);
+			OutputStream outputStream = System.out;
+			bugHistory.writeResultCollection(origProject, newProject, outputStream);
 		}
 	}
 
@@ -366,13 +631,6 @@ public class BugHistory {
 		        " [options] <operation> <old results> <new results>");
 		new BugHistoryCommandLine().printUsage(System.err);
 		System.exit(1);
-	}
-	
-	private static SortedBugCollection readCollection(String fileName, Project project)
-			throws IOException, DocumentException {
-		SortedBugCollection result = new SortedBugCollection();
-		result.readXML(fileName, project);
-		return result;
 	}
 }
 
