@@ -36,6 +36,7 @@ public class CountBugs2 {
 	
 	private BugCollection bugCollection;
 	private Set<String> categorySet;
+	private Set<String> abbrevSet;
 	private int minPriority;
 	private int count;
 	
@@ -53,20 +54,37 @@ public class CountBugs2 {
 	}
 	
 	public void setCategories(String categories) {
-		StringTokenizer t = new StringTokenizer(categories, ",");
+		buildSetFromString(categories, categorySet);
+	}
+	
+	public void setAbbrevs(String abbrevs) {
+		buildSetFromString(abbrevs, abbrevSet);
+	}
+
+	private void buildSetFromString(String str, Set<String> set) {
+		StringTokenizer t = new StringTokenizer(str, ",");
 		while (t.hasMoreTokens()) {
 			String category = t.nextToken();
-			categorySet.add(category);
+			set.add(category);
 		}
-	}	
+	}
+	
 	public CountBugs2 execute() {
 		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
 			BugInstance warning = i.next();
-			if (!categorySet.isEmpty()) {
-				BugPattern pattern = warning.getBugPattern();
-				if (pattern == null || !categorySet.contains(pattern.getCategory()))
-					continue;
-			}
+			BugPattern pattern = warning.getBugPattern();
+
+			if (pattern == null && (!categorySet.isEmpty() || !abbrevSet.isEmpty()))
+				continue;
+			
+			if (!categorySet.isEmpty()
+					&& !categorySet.contains(pattern.getCategory()))
+				continue;
+			
+			if (!abbrevSet.isEmpty()
+					&& !abbrevSet.contains(pattern.getAbbrev()))
+				continue;
+			
 			if (warning.getPriority() > minPriority)
 				continue;
 			
@@ -85,9 +103,11 @@ public class CountBugs2 {
 	static class CountBugs2CommandLine extends CommandLine {
 		int minPriority;
 		String categories;
+		String abbrevs;
 		
 		CountBugs2CommandLine() {
 			addOption("-categories", "cat1,cat2...", "set bug categories");
+			addOption("-abbrevs", "abbrev1,abbrev2...", "set bug type abbreviations");
 			addOption("-minPriority", "priority", "set min bug priority (3=low, 2=medium, 1=high)");
 		}
 		
@@ -96,6 +116,13 @@ public class CountBugs2 {
 		 */
 		public String getCategories() {
 			return categories;
+		}
+		
+		/**
+		 * @return Returns the abbrevs.
+		 */
+		public String getAbbrevs() {
+			return abbrevs;
 		}
 		
 		/**
@@ -120,6 +147,8 @@ public class CountBugs2 {
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			if (option.equals("-categories")) {
 				categories = argument;
+			} else if (option.equals("-abbrevs")) {
+				abbrevs = argument;
 			} else if (option.equals("-minPriority")) {
 				minPriority = Integer.parseInt(argument);
 			} else {
@@ -136,7 +165,9 @@ public class CountBugs2 {
 		
 		if (args.length - argCount != 1) {
 			System.err.println("Usage: " + CountBugs2.class.getName() +
-					" [options] <bug collection");
+					" [options] <bug collection>");
+			System.err.println("Options:");
+			commandLine.printUsage(System.err);
 			System.exit(1);
 		}
 		
@@ -144,6 +175,10 @@ public class CountBugs2 {
 		bugCollection.readXML(args[argCount], new Project());
 		
 		CountBugs2 countBugs = new CountBugs2(bugCollection);
+		countBugs.setAbbrevs(commandLine.getAbbrevs());
+		countBugs.setCategories(commandLine.getCategories());
+		countBugs.setMinPriority(commandLine.getMinPriority());
+		
 		countBugs.execute();
 		System.out.println(countBugs.getCount());
 	}
