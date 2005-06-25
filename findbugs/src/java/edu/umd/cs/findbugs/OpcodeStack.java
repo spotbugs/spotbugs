@@ -267,14 +267,14 @@ public class OpcodeStack implements Constants2
 		/**
 		 * @param specialKind The specialKind to set.
 		 */
-		private void setSpecialKind(int specialKind) {
+		public void setSpecialKind(int specialKind) {
 			this.specialKind = specialKind;
 		}
 
 		/**
 		 * @return Returns the specialKind.
 		 */
-		private int getSpecialKind() {
+		public int getSpecialKind() {
 			return specialKind;
 		}
 	}
@@ -639,6 +639,7 @@ public class OpcodeStack implements Constants2
 	 				Item v =  new Item("I");
 	 				v.setSpecialKind(Item.BYTE_ARRAY_LOAD);
 	 				push(v);
+	 				break;
 	 			}
 	 			case CALOAD:
 	 				pop(2);
@@ -1021,6 +1022,7 @@ public class OpcodeStack implements Constants2
  	}
  	
  	public int resetForMethodEntry(PreorderVisitor v) {
+ 		if (DEBUG) System.out.println(" --- ");
  		stack.clear();
 		jumpTarget = -1;
  		lvValues.clear();
@@ -1029,6 +1031,8 @@ public class OpcodeStack implements Constants2
 		String className = v.getClassName();
 		Method m = v.getMethod();
 		String signature = v.getMethodSig();
+		if (DEBUG) System.out.println(" --- " + className 
+				+ " " + m.getName() + " " + signature);
 		Type[] argTypes = Type.getArgumentTypes(signature);
 		int reg = 0;
 		if (!m.isStatic()) {
