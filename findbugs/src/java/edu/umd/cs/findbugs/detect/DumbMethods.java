@@ -60,6 +60,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 	private boolean prevOpcodeWasReadLine;
 	private boolean isPublicStaticVoidMain;
 	private int randomNextIntState;
+	private boolean checkForBitIorofSignedByte;
 	
 	private boolean jdk15ChecksEnabled;
 
@@ -91,6 +92,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 		primitiveObjCtorSeen = null;
 		ctorSeen = false;
 		randomNextIntState = 0;
+		checkForBitIorofSignedByte = false;
 	}
 
 	public void sawOpcode(int seen) {
@@ -104,20 +106,21 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 						.addSourceLine(this));
 						}
 		}
-		if (seen == IOR || seen == LOR) {
+		if (checkForBitIorofSignedByte && seen != I2B) 
+			  bugReporter.reportBug(new BugInstance(this, "BIT_IOR_OF_SIGNED_BYTE", NORMAL_PRIORITY)
+						.addClassAndMethod(this)
+						.addSourceLine(this));
+		else if (seen == IOR || seen == LOR) {
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			OpcodeStack.Item item1 = stack.getStackItem(1);
 			
 			int special0 = item0.getSpecialKind();
 			int special1 = item1.getSpecialKind();
-			if (special0 == OpcodeStack.Item.BYTE_ARRAY_LOAD 
-					|| special1 == OpcodeStack.Item.BYTE_ARRAY_LOAD )
-				  bugReporter.reportBug(new BugInstance(this, "BIT_IOR_OF_SIGNED_BYTE", NORMAL_PRIORITY)
-							.addClassAndMethod(this)
-							.addSourceLine(this));
-							
-		}
-		
+			checkForBitIorofSignedByte = (special0 == OpcodeStack.Item.BYTE_ARRAY_LOAD 
+					|| special1 == OpcodeStack.Item.BYTE_ARRAY_LOAD );
+		} else checkForBitIorofSignedByte = false;
+
+		  
 	if (prevOpcodeWasReadLine && seen == INVOKEVIRTUAL
 		&& getClassConstantOperand().equals("java/lang/String")) {
 	  bugReporter.reportBug(new BugInstance(this, "NP_IMMEDIATE_DEREFERENCE_OF_READLINE", NORMAL_PRIORITY)
