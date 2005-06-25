@@ -57,7 +57,7 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
  *   <li>dup2_x2</li>
  * 	 <li>jsr_w</li>
  *   <li>wide</li>
- * </ul>  
+ * </ul>    
  */
 public class OpcodeStack implements Constants2
 {
