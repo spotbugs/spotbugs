@@ -562,6 +562,7 @@ public class BugHistory {
 		}
 		
 		BugCollectionAndProjectCache cache = new BugCollectionAndProjectCache();
+		int missing = 0;
 		
 		String csvRecord;
 		while ((csvRecord = reader.readLine()) != null) {
@@ -582,8 +583,8 @@ public class BugHistory {
 			} catch (RuntimeException e) {
 				throw e;
 			} catch (Exception e ) {
-				System.err.println("Warning: error reading bug collection");
-				e.printStackTrace();
+				System.err.println("Warning: error reading bug collection: " + e.toString());
+				++missing;
 				continue;
 			}
 			
@@ -607,6 +608,10 @@ public class BugHistory {
 			if (commandLine.isVerbose()) {
 				System.out.println("done");
 			}
+		}
+		
+		if (missing > 0) {
+			System.err.println(missing + " pairs skipped because of missing files");
 		}
 	}
 
