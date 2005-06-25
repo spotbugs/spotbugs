@@ -16,3 +16,6 @@ addMessages
 convertXmlToText
 countClasses
 mineBugHistory
+countBugs2
+countBugsFast
+printAppVersion
