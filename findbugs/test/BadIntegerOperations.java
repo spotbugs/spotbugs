@@ -4,14 +4,14 @@ class BadIntegerOperations {
 
 	
 
-	long getBytesAsLong(byte b[]) {
-		long l = 0;
+	int getBytesAsInt(byte b[]) {
+		int l = 0;
 		for(int i = 0; i < b.length; i++)
 			l = (l << 8) | b[i];
 		return l;
 		}
-	int getBytesAsInt(byte b[]) {
-		int l = 0;
+	long getBytesAsLong(byte b[]) {
+		long l = 0;
 		for(int i = 0; i < b.length; i++)
 			l = (l << 8) | b[i];
 		return l;
@@ -34,4 +34,6 @@ class BadIntegerOperations {
 	int getRandomElement(int a[]) {
 		return a[r.nextInt() % a.length];
 		}
+	public BadIntegerOperations() {
+	}
 }
