@@ -636,8 +636,8 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="EC" type="EC_NULL_ARG" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_UNRELATED_INTERFACES" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_UNRELATED_CLASS_AND_INTERFACE" category="CORRECTNESS"/>
-  <BugPattern abbrev="MWN" type="MWN_MISMATCHED_WAIT" category="CORRECTNESS" />
-  <BugPattern abbrev="MWN" type="MWN_MISMATCHED_NOTIFY" category="CORRECTNESS" />
+  <BugPattern abbrev="MWN" type="MWN_MISMATCHED_WAIT" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="MWN" type="MWN_MISMATCHED_NOTIFY" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_LOCAL_SELF_ASSIGNMENT" category="STYLE" />
   <BugPattern abbrev="BIT" type="BIT_IOR_OF_SIGNED_BYTE"    category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_AND"    category="CORRECTNESS" />
