@@ -95,7 +95,29 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 
 	public void sawOpcode(int seen) {
 
-
+		if (seen == IREM) {
+			OpcodeStack.Item item1 = stack.getStackItem(1);
+			int special = item1.getSpecialKind();
+			if (special == OpcodeStack.Item.RANDOM_INT) {
+					  bugReporter.reportBug(new BugInstance(this, "RV_REM_OF_RANDOM_INT", HIGH_PRIORITY)
+						.addClassAndMethod(this)
+						.addSourceLine(this));
+						}
+		}
+		if (seen == IOR || seen == LOR) {
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			OpcodeStack.Item item1 = stack.getStackItem(1);
+			
+			int special0 = item0.getSpecialKind();
+			int special1 = item1.getSpecialKind();
+			if (special0 == OpcodeStack.Item.BYTE_ARRAY_LOAD 
+					|| special1 == OpcodeStack.Item.BYTE_ARRAY_LOAD )
+				  bugReporter.reportBug(new BugInstance(this, "BIT_IOR_OF_SIGNED_BYTE", NORMAL_PRIORITY)
+							.addClassAndMethod(this)
+							.addSourceLine(this));
+							
+		}
+		
 	if (prevOpcodeWasReadLine && seen == INVOKEVIRTUAL
 		&& getClassConstantOperand().equals("java/lang/String")) {
 	  bugReporter.reportBug(new BugInstance(this, "NP_IMMEDIATE_DEREFERENCE_OF_READLINE", NORMAL_PRIORITY)

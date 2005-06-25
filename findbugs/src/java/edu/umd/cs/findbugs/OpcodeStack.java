@@ -124,6 +124,11 @@ public class OpcodeStack implements Constants2
 		public String toString() {
 			StringBuffer buf = new StringBuffer("< ");
 			buf.append(signature);
+			if (specialKind == BYTE_ARRAY_LOAD)
+				buf.append(", byte_array_load");
+			if (specialKind == RANDOM_INT)
+				buf.append(", random_int");
+				
 			if (constValue != UNKNOWN) {
 				buf.append(", ");
 				buf.append(constValue);
@@ -731,9 +736,21 @@ public class OpcodeStack implements Constants2
 	 			case LSHR:
 	 			case LREM:
 	 			case LUSHR:
+	 				if (DEBUG) 
+	 					System.out.println("Long math: " + this);
+	 				
 	 				it = pop();
 	 				it2 = pop();
+	 				try {
 	 				pushByLongMath(seen, it, it2);
+	 				}
+	 				catch (Exception e) {
+	 					e.printStackTrace();
+	 				} finally {
+	 				if (DEBUG) 
+	 					System.out.println("After long math: " + this);
+	 				}
+	 				
 	 			break;
  			
 	 			case LCMP:
@@ -844,13 +861,17 @@ public class OpcodeStack implements Constants2
 	 				}
 	 			break;
 	 			
-	 			case I2L:
+	 			case I2L:{
 	 				it = pop();
+	 				Item newValue;
 	 				if (it.getConstant() != null) {
-	 					push(new Item("J", new Long((long)((Integer)it.getConstant()).intValue())));
+	 					newValue = new Item("J", new Long((long)((Integer)it.getConstant()).intValue()));
 	 				} else {
-	 					push(new Item("J"));
+	 					newValue = new Item("J");
 	 				}
+	 				newValue.setSpecialKind(it.getSpecialKind());
+	 				push(newValue);
+	 			}
 	 			break;
 
 	 			case I2S:
@@ -1110,62 +1131,72 @@ public class OpcodeStack implements Constants2
 		pushByLocalLoad("", register);
  	}
  	
- 	private void pushByIntMath(int seen, Item it, Item it2) {
+ 	private void pushByIntMath(int seen, Item it, Item it2) {;
+ 		if (DEBUG) System.out.println("pushByIntMath: " + it.getConstant()  + " " + it2.getConstant() );
+ 		Item newValue  = new Item("I");
+ 		try {
  		if ((it.getConstant() != null) && it2.getConstant() != null) {
 			if (seen == IADD)
-				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() + ((Integer)it.getConstant()).intValue())));
+				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() + ((Integer)it.getConstant()).intValue()));
 			else if (seen == ISUB)
-				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() - ((Integer)it.getConstant()).intValue())));
+				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() - ((Integer)it.getConstant()).intValue()));
 			else if (seen == IMUL)
-				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() * ((Integer)it.getConstant()).intValue())));
+				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() * ((Integer)it.getConstant()).intValue()));
 			else if (seen == IDIV)
-				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() / ((Integer)it.getConstant()).intValue())));
+				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() / ((Integer)it.getConstant()).intValue()));
 			else if (seen == IAND)
-				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() & ((Integer)it.getConstant()).intValue())));
+				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() & ((Integer)it.getConstant()).intValue()));
 			else if (seen == IOR)
-				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() | ((Integer)it.getConstant()).intValue())));
+				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() | ((Integer)it.getConstant()).intValue()));
 			else if (seen == IXOR)
-				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() ^ ((Integer)it.getConstant()).intValue())));
+				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() ^ ((Integer)it.getConstant()).intValue()));
 			else if (seen == ISHL)
-				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() << ((Integer)it.getConstant()).intValue())));
+				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() << ((Integer)it.getConstant()).intValue()));
 			else if (seen == ISHR)
-				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() >> ((Integer)it.getConstant()).intValue())));
+				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() >> ((Integer)it.getConstant()).intValue()));
 			else if (seen == IREM)
-				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() % ((Integer)it.getConstant()).intValue())));
+				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() % ((Integer)it.getConstant()).intValue()));
 			else if (seen == IUSHR)
-				push(new Item("I", new Integer(((Integer)it2.getConstant()).intValue() >>> ((Integer)it.getConstant()).intValue())));
-		} else {
-			push(new Item("I"));
+				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() >>> ((Integer)it.getConstant()).intValue()));
 		}
+ 		} catch (Exception e) {
+ 			// ignore it
+ 		}
+ 		if (DEBUG) System.out.println("push: " + newValue);
+ 		push(newValue);
 	}
 	
 	private void pushByLongMath(int seen, Item it, Item it2) {
+		Item newValue  = new Item("J");
+		try {
 		if ((it.getConstant() != null) && it2.getConstant() != null) {
 			if (seen == LADD)
-				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() + ((Long)it.getConstant()).longValue())));
+				newValue  = new Item("J", new Long(((Long)it2.getConstant()).longValue() + ((Long)it.getConstant()).longValue()));
 			else if (seen == LSUB)
-				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() - ((Long)it.getConstant()).longValue())));
+				newValue  = new Item("J", new Long(((Long)it2.getConstant()).longValue() - ((Long)it.getConstant()).longValue()));
 			else if (seen == LMUL)
-				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() * ((Long)it.getConstant()).longValue())));
+				newValue  = new Item("J", new Long(((Long)it2.getConstant()).longValue() * ((Long)it.getConstant()).longValue()));
 			else if (seen == LDIV)
-				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() / ((Long)it.getConstant()).longValue())));
+				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() / ((Long)it.getConstant()).longValue()));
 			else if (seen == LAND)
-				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() & ((Long)it.getConstant()).longValue())));
+				newValue  = new Item("J", new Long(((Long)it2.getConstant()).longValue() & ((Long)it.getConstant()).longValue()));
 			else if (seen == LOR)
-				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() | ((Long)it.getConstant()).longValue())));
+				newValue  = new Item("J", new Long(((Long)it2.getConstant()).longValue() | ((Long)it.getConstant()).longValue()));
 			else if (seen == LXOR)
-				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() ^ ((Long)it.getConstant()).longValue())));
+				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() ^ ((Long)it.getConstant()).longValue()));
 			else if (seen == LSHL)
-				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() << ((Long)it.getConstant()).longValue())));
+				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() << ((Number)it.getConstant()).intValue()));
 			else if (seen == LSHR)
-				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() >> ((Long)it.getConstant()).longValue())));
+				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() >> ((Number)it.getConstant()).intValue()));
 			else if (seen == LREM)
-				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() % ((Long)it.getConstant()).longValue())));
+				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() % ((Long)it.getConstant()).longValue()));
 			else if (seen == LUSHR)
-				push(new Item("J", new Long(((Long)it2.getConstant()).longValue() >>> ((Long)it.getConstant()).longValue())));
-		} else {
-			push(new Item("J"));
+				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() >>> ((Number)it.getConstant()).intValue()));
 		}
+		} catch (Exception e) {
+			// ignore it
+		}
+		push(newValue);
 	}
 	
 	private void pushByFloatMath(int seen, Item it, Item it2) {

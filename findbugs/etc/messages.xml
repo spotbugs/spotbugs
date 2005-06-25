@@ -3153,6 +3153,35 @@ Such assignments are useless, and may indicate a logic error or typo.
     </Details>
   </BugPattern>
 
+  <BugPattern type="RV_REM_OF_RANDOM_INT">
+    <ShortDescription>Remainder of 32-bit signed random integer</ShortDescription>
+    <LongDescription>Remainder of 32-bit signed random integer computed in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This code generates a random signed integer and then computes
+the remainder of that value modulo another value. Since the random
+number can be negative, the result of the remainder operation
+can also be negative. Be sure this is intended, and strongly
+consider using the Random.nextInt(int) method instead.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="BIT_IOR_OF_SIGNED_BYTE">
+    <ShortDescription>Bitwise OR of signed byte value</ShortDescription>
+    <LongDescription>Bitwise OR of signed byte value computed in {1} </LongDescription>
+    <Details>
+<![CDATA[
+<p> Loads a value from a byte array and performs a bitwise OR with
+that value. Values loaded from byte arrays are signed bytes, and
+thus this may not give the desired results.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
   <BugPattern type="BIT_AND">
     <ShortDescription>Incompatible bit masks</ShortDescription>
     <LongDescription>Incompatible bit masks yield a constant result in {1}</LongDescription>
