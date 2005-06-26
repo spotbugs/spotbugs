@@ -61,7 +61,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 			state = SEEN_NOTHING;
 			invokePC = 0;
 			super.visitCode(obj);
-			if (state == SEEN_RETURN) {
+			if ((state == SEEN_RETURN) && (invokePC != 0)) {
 				bugReporter.reportBug( new BugInstance( this, "USM_USELESS_SUBCLASS_METHOD", LOW_PRIORITY )
 					.addClassAndMethod(this)
 					.addSourceLine(this, invokePC));
