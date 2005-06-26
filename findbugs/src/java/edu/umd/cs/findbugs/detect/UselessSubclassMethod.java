@@ -59,7 +59,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 		String methodName = getMethodName();
 		if (!methodName.equals("<init>")
 		&&  !methodName.equals("clone")
-		&&  ((this.getMethod().getModifiers() & Constants.ACC_STATIC)) == 0) {
+		&&  ((this.getMethod().getModifiers() & (Constants.ACC_STATIC|Constants.ACC_SYNTHETIC)) == 0)) {
 			state = SEEN_NOTHING;
 			invokePC = 0;
 			super.visitCode(obj);
