@@ -20,7 +20,9 @@
 package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -57,9 +59,18 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 	public void visitCode(Code obj)
 	{
 		String methodName = getMethodName();
+		
 		if (!methodName.equals("<init>")
 		&&  !methodName.equals("clone")
 		&&  ((getMethod().getAccessFlags() & (Constants.ACC_STATIC|Constants.ACC_SYNTHETIC)) == 0)) {
+			
+			/* for some reason, access flags doesn't return Synthetic, so do this hocus pocus */
+			Attribute[] atts = getMethod().getAttributes();
+			for (int i = 0; i < atts.length; i++) {
+				if (atts[i].getClass().equals(Synthetic.class))
+					return;
+			}
+
 			state = SEEN_NOTHING;
 			invokePC = 0;
 			super.visitCode(obj);
