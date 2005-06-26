@@ -940,6 +940,19 @@ factory pattern to create these objects.</p>
 	</Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.UselessSubclassMethod">
+	<Details>
+		<![CDATA[
+		<p>
+		This detector looks for subclasses that implement methods defined in the super
+		class, that only pass the parameters untouched to the parent class method.
+		These methods can just be removed.
+		</p>
+		<p>It is a fast detector.</p>
+		]]>
+	</Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.TrainNullReturnValues">
 	<Details>
 		<![CDATA[
@@ -4057,6 +4070,20 @@ and the next method is supposed to change the state of the iterator.
     	]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="USM_USELESS_SUBCLASS_METHOD">
+    <ShortDescription>Method superfluously delegates to parent class method</ShortDescription>
+    <LongDescription>Method {1} superfluously delegates to parent class method</LongDescription>
+    <Details>
+    	<![CDATA[
+    	<p>
+    	This derived method merely calls the same superclass method passing in the exact parameters
+    	received. This method can be removed, as it provides no additional value.
+    	</p>
+    	]]>
+    </Details>
+  </BugPattern>
+  
   <!--
   **********************************************************************
    BugCodes
@@ -4164,4 +4191,5 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="DB">Duplicate Branches</BugCode>
   <BugCode abbrev="IMA">Inefficient Member Access</BugCode>
   <BugCode abbrev="XFB">XML Factory Bypass</BugCode>
-</MessageCollection>
+  <BugCode abbrev="USM">Useless Subclass Method</BugCode>
+  </MessageCollection>
