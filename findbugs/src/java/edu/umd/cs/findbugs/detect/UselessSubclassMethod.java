@@ -114,7 +114,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 			break;
 			
 			case SEEN_LAST_PARM:
-				if ((seen == INVOKENONVIRTUAL) && getMethodSig().equals(getSigConstantOperand())) {
+				if ((seen == INVOKENONVIRTUAL) && getMethodName().equals(getNameConstantOperand()) && getMethodSig().equals(getSigConstantOperand())) {
 					invokePC = getPC();
 					state = SEEN_INVOKE;
 				}
