@@ -56,7 +56,9 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 	
 	public void visitCode(Code obj)
 	{
-		if (!getMethodName().equals("<init>")
+		String methodName = getMethodName();
+		if (!methodName.equals("<init>")
+		&&  !methodName.equals("clone")
 		&&  ((this.getMethod().getModifiers() & Constants.ACC_STATIC)) == 0) {
 			state = SEEN_NOTHING;
 			invokePC = 0;
