@@ -58,6 +58,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 	private String primitiveObjCtorSeen;
 	private boolean ctorSeen;
 	private boolean prevOpcodeWasReadLine;
+	private int prevOpcode;
 	private boolean isPublicStaticVoidMain;
 	private int randomNextIntState;
 	private boolean checkForBitIorofSignedByte;
@@ -96,6 +97,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 	}
 
 	public void sawOpcode(int seen) {
+		try {
 
 		if (seen == IREM) {
 			OpcodeStack.Item item1 = stack.getStackItem(1);
@@ -107,7 +109,8 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 						}
 		}
 		if (checkForBitIorofSignedByte && seen != I2B) 
-			  bugReporter.reportBug(new BugInstance(this, "BIT_IOR_OF_SIGNED_BYTE", NORMAL_PRIORITY)
+			  bugReporter.reportBug(new BugInstance(this, "BIT_IOR_OF_SIGNED_BYTE", 
+					prevOpcode == LOR ? HIGH_PRIORITY : LOW_PRIORITY)
 						.addClassAndMethod(this)
 						.addSourceLine(this));
 		else if (seen == IOR || seen == LOR) {
@@ -398,7 +401,10 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 		sawLDCEmptyString = false;
 */
 		
+	} finally {
 		stack.sawOpcode(this,seen);
+		prevOpcode = seen;
+	}
 	}
 
 	private void checkMonitorWait() {
