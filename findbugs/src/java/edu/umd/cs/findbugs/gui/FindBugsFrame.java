@@ -93,6 +93,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.dom4j.DocumentException;
+
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
@@ -1892,6 +1894,18 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		}
 	}//GEN-LAST:event_saveBugsItemActionPerformed
 
+	private void loadBugsFromFile(File file) throws IOException, DocumentException {
+		File selectedFile = file;
+
+		Project project = new Project();
+		AnalysisRun analysisRun = new AnalysisRun(project, this);
+
+		analysisRun.loadBugsFromFile(selectedFile);
+
+		setProject(project);
+		synchAnalysisRun(analysisRun);
+	}
+	
 	private void loadBugsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadBugsItemActionPerformed
 		// FIXME: offer to save current project and bugs
 
@@ -1904,15 +1918,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			int result = chooseFile(chooser, L10N.getLocalString("dlg.loadbugs_ttl", "Load Bugs..."));
 
 			if (result != JFileChooser.CANCEL_OPTION) {
-				File selectedFile = chooser.getSelectedFile();
-
-				Project project = new Project();
-				AnalysisRun analysisRun = new AnalysisRun(project, this);
-
-				analysisRun.loadBugsFromFile(selectedFile);
-
-				setProject(project);
-				synchAnalysisRun(analysisRun);
+				loadBugsFromFile(chooser.getSelectedFile());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3590,6 +3596,13 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			addSwitch("-debug", "enable debug output");
 			addSwitchWithOptionalExtraPart("-look", "plastic|gtk|native", "set look and feel");
 			addOption("-project", "project file", "load given project");
+			addOption("-loadbugs", "bugs xml filename", "load given bugs xml file");
+		}
+		
+		String bugsFilename = "";
+		
+		public String getBugsFilename() {
+			return bugsFilename;
 		}
 		
 		//@Override
@@ -3630,7 +3643,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		
 		//@Override
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
-			super.handleOptionWithArgument(option, argument);
+			if (option.equals("-loadbugs")) {
+				bugsFilename = argument;
+			} else {
+				super.handleOptionWithArgument(option, argument);
+			}
 		}
 	}
 	
@@ -3674,7 +3691,15 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		
 		if (project != null) {
 			frame.setProject(project);
+		} else if (commandLine.getBugsFilename().length() > 0) {
+			try {
+				File bugsFile = new File(commandLine.getBugsFilename());
+				frame.loadBugsFromFile(bugsFile);
+			} catch (Exception e) {
+				System.err.println("Error: " + e.getMessage());
+			}
 		}
+		
 		if (commandLine.getSettingList() != null) {
 			frame.settingList = commandLine.getSettingList();
 		}
