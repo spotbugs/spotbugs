@@ -89,6 +89,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 				invokePC = 0;
 				super.visitCode(obj);
 				if ((state == SEEN_RETURN) && (invokePC != 0)) {
+					//Do this check late, as it is potentially expensive
 					Method superMethod = findSuperclassMethod(superclassName, getMethod());
 					if ((superMethod == null) || accessModifiersAreDifferent(getMethod(), superMethod))
 						return;
@@ -199,12 +200,14 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 		throws ClassNotFoundException {
 		
 		String methodName = subclassMethod.getName();
-		Type[] subArgs = Type.getArgumentTypes(subclassMethod.getSignature());
+		Type[] subArgs = null;
 		JavaClass superClass = Repository.lookupClass(superclassName);
 		Method[] methods = superClass.getMethods();
 		for (int i = 0; i < methods.length; i++) {
 			Method m = methods[i];
 			if (m.getName().equals(methodName)) {
+				if (subArgs == null)
+					subArgs = Type.getArgumentTypes(subclassMethod.getSignature());
 				Type[] superArgs = Type.getArgumentTypes(m.getSignature());
 				if (subArgs.length == superArgs.length) {
 					for (int j = 0; j < subArgs.length; j++) {
@@ -215,6 +218,9 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 				}
 			}
 		}
+		
+		if(!superclassName.equals("Object"))
+			return findSuperclassMethod(superClass.getSuperclassName(), subclassMethod);
 		
 		return null;
 	}
