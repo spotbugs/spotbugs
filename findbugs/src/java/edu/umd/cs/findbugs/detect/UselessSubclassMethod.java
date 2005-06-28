@@ -20,8 +20,11 @@
 package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.Type;
 
@@ -29,6 +32,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class UselessSubclassMethod extends BytecodeScanningDetector implements Constants2, StatelessDetector {
@@ -41,6 +45,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 	public static final int SEEN_INVALID = 5;
 	
 	private BugReporter bugReporter;
+	private String superclassName;
 	private int state;
 	private int curParm;
 	private int curParmOffset;
@@ -56,29 +61,46 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 		return super.clone();
 	}
 	
+	public void visitClassContext(ClassContext classContext) {
+		superclassName = classContext.getJavaClass().getSuperclassName();
+		super.visitClassContext(classContext);
+	}
 	public void visitCode(Code obj)
 	{
-		String methodName = getMethodName();
-		
-		if (!methodName.equals("<init>")
-		&&  !methodName.equals("clone")
-		&&  ((getMethod().getAccessFlags() & (Constants.ACC_STATIC|Constants.ACC_SYNTHETIC)) == 0)) {
+		try {
+			String methodName = getMethodName();
 			
-			/* for some reason, access flags doesn't return Synthetic, so do this hocus pocus */
-			Attribute[] atts = getMethod().getAttributes();
-			for (int i = 0; i < atts.length; i++) {
-				if (atts[i].getClass().equals(Synthetic.class))
+			if (!methodName.equals("<init>")
+			&&  !methodName.equals("clone")
+			&&  ((getMethod().getAccessFlags() & (Constants.ACC_STATIC|Constants.ACC_SYNTHETIC)) == 0)) {
+				
+				/* for some reason, access flags doesn't return Synthetic, so do this hocus pocus */
+				Attribute[] atts = getMethod().getAttributes();
+				for (int i = 0; i < atts.length; i++) {
+					if (atts[i].getClass().equals(Synthetic.class))
+						return;
+				}
+				
+				byte[] codeBytes = obj.getCode();
+				if ((codeBytes.length == 0) || (codeBytes[0] != ALOAD_0))
 					return;
+				
+				state = SEEN_NOTHING;
+				invokePC = 0;
+				super.visitCode(obj);
+				if ((state == SEEN_RETURN) && (invokePC != 0)) {
+					Method superMethod = findSuperclassMethod(superclassName, getMethod());
+					if ((superMethod == null) || accessModifiersAreDifferent(getMethod(), superMethod))
+						return;
+	
+					bugReporter.reportBug( new BugInstance( this, "USM_USELESS_SUBCLASS_METHOD", LOW_PRIORITY )
+						.addClassAndMethod(this)
+						.addSourceLine(this, invokePC));
+				}
 			}
-
-			state = SEEN_NOTHING;
-			invokePC = 0;
-			super.visitCode(obj);
-			if ((state == SEEN_RETURN) && (invokePC != 0)) {
-				bugReporter.reportBug( new BugInstance( this, "USM_USELESS_SUBCLASS_METHOD", LOW_PRIORITY )
-					.addClassAndMethod(this)
-					.addSourceLine(this, invokePC));
-			}
+		}
+		catch (ClassNotFoundException cnfe) {
+			bugReporter.reportMissingClass(cnfe);
 		}
 	}
 	
@@ -171,5 +193,36 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 			curParmOffset += parmSize;
 		else
 			state = SEEN_INVALID;
+	}
+	
+	private Method findSuperclassMethod(String superclassName, Method subclassMethod) 
+		throws ClassNotFoundException {
+		
+		String methodName = subclassMethod.getName();
+		Type[] subArgs = Type.getArgumentTypes(subclassMethod.getSignature());
+		JavaClass superClass = Repository.lookupClass(superclassName);
+		Method[] methods = superClass.getMethods();
+		for (int i = 0; i < methods.length; i++) {
+			Method m = methods[i];
+			if (m.getName().equals(methodName)) {
+				Type[] superArgs = Type.getArgumentTypes(m.getSignature());
+				if (subArgs.length == superArgs.length) {
+					for (int j = 0; j < subArgs.length; j++) {
+						if (!superArgs[j].equals(subArgs[j]))
+							continue;
+					}
+					return m;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	private boolean accessModifiersAreDifferent(Method m1, Method m2) {
+		int access1 = m1.getAccessFlags() & (Constants.ACC_PRIVATE|Constants.ACC_PROTECTED|Constants.ACC_PUBLIC);
+		int access2 = m2.getAccessFlags() & (Constants.ACC_PRIVATE|Constants.ACC_PROTECTED|Constants.ACC_PUBLIC);
+
+		return access1 != access2;
 	}
 }

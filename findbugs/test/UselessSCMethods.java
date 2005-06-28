@@ -15,6 +15,10 @@ class Super
 	{
 		return 0.0;
 	}
+	
+	protected void test4(String s)
+	{
+	}
 }
 
 public class UselessSCMethods extends Super
@@ -32,5 +36,11 @@ public class UselessSCMethods extends Super
 	public double test3(double d, int i, Object o, float f, long l)
 	{
 		return super.test3(d, i, o, f, l);
+	}
+		
+	public void test4(String s)
+	{	//don't report this, altho suspect, access has been widened
+		//perhaps this should be reported as another bug type, dunno
+		super.test4(s);
 	}
 }
