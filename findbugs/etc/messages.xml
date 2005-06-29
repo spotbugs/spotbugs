@@ -3650,30 +3650,78 @@ result in this case, can be determined statically, and is faster and sometimes m
 just use the constant. Methods detected are:
 </p>
 <table>
-<tr><th>Method</th><th>Parameter</th></tr>
-<tr>abs<td></td><td>-any-</td></tr>
-<tr>acos<td></td><td>0.0 or 1.0</td></tr>
-<tr>asin<td></td><td>0.0 or 1.0</td></tr>
-<tr>atan<td></td><td>0.0 or 1.0</td></tr>
-<tr>atan2<td></td><td>0.0</td></tr>
-<tr>cbrt<td></td><td>0.0 or 1.0</td></tr>
-<tr>ceil<td></td><td>-any-</td></tr>
-<tr>cos<td></td><td>0.0</td></tr>
-<tr>cosh<td></td><td>0.0</td></tr>
-<tr>exp<td></td><td>0.0 or 1.0</td></tr>
-<tr>expm1<td></td><td>0.0</td></tr>
-<tr>floor<td></td><td>-any-</td></tr>
-<tr>log<td></td><td>0.0 or 1.0</td></tr>
-<tr>log10<td></td><td>0.0 or 1.0</td></tr>
-<tr>rint<td></td><td>-any-</td></tr>
-<tr>round<td></td><td>-any-</td></tr>
-<tr>sin<td></td><td>0.0</td></tr>
-<tr>sinh<td></td><td>0.0</td></tr>
-<tr>sqrt<td></td><td>0.0 or 1.0</td></tr>
-<tr>tan<td></td><td>0.0</td></tr>
-<tr>tanh<td></td><td>0.0</td></tr>
-<tr>toDegrees<td></td><td>0.0 or 1.0</td></tr>
-<tr>toRadians<td></td><td>0.0</td></tr>
+<tr>
+	<th>Method</th> <th>Parameter</th>
+</tr>
+<tr>
+	<td>abs</td> <td>-any-</td>
+</tr>
+<tr>
+	<td>acos</td> <td>0.0 or 1.0</td>
+</tr>
+<tr>
+	<td>asin</td> <td>0.0 or 1.0</td>
+</tr>
+<tr>
+	<td>atan</td> <td>0.0 or 1.0</td>
+</tr>
+<tr>
+	<td>atan2</td> <td>0.0</td>
+</tr>
+<tr>
+	<td>cbrt</td> <td>0.0 or 1.0</td>
+</tr>
+<tr>
+	<td>ceil</td> <td>-any-</td>
+</tr>
+<tr>
+	<td>cos</td> <td>0.0</td>
+</tr>
+<tr>
+	<td>cosh</td> <td>0.0</td>
+</tr>
+<tr>
+	<td>exp</td> <td>0.0 or 1.0</td>
+</tr>
+<tr>
+	<td>expm1</td> <td>0.0</td>
+</tr>
+<tr>
+	<td>floor</td> <td>-any-</td>
+</tr>
+<tr>
+	<td>log</td> <td>0.0 or 1.0</td>
+</tr>
+<tr>
+	<td>log10</td> <td>0.0 or 1.0</td>
+</tr>
+<tr>
+	<td>rint</td> <td>-any-</td>
+</tr>
+<tr>
+	<td>round</td> <td>-any-</td>
+</tr>
+<tr>
+	<td>sin</td> <td>0.0</td>
+</tr>
+<tr>
+	<td>sinh</td> <td>0.0</td>
+</tr>
+<tr>
+	<td>sqrt</td> <td>0.0 or 1.0</td>
+</tr>
+<tr>
+	<td>tan</td> <td>0.0</td>
+</tr>
+<tr>
+	<td>tanh</td> <td>0.0</td>
+</tr>
+<tr>
+	<td>toDegrees</td> <td>0.0 or 1.0</td>
+</tr>
+<tr>
+	<td>toRadians</td> <td>0.0</td>
+</tr>
 </table>
 ]]>
     </Details>
