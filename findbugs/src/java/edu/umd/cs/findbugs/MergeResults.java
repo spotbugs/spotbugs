@@ -40,6 +40,7 @@ public class MergeResults {
 	public static final int DEFAULT_COMPARATOR = 0;
 	public static final int VERSION_INSENSITIVE_COMPARATOR = 1;
 	public static final int FUZZY_COMPARATOR = 2;
+	public static final int SLOPPY_COMPARATOR = 3;
 
 	private SortedBugCollection origCollection, newCollection;
 	private Project project;
@@ -80,6 +81,9 @@ public class MergeResults {
 				fuzzyComparator.registerBugCollection(origCollection);
 				fuzzyComparator.registerBugCollection(newCollection);
 				comparator  = fuzzyComparator;
+				break;
+			case SLOPPY_COMPARATOR:
+				comparator = new SloppyBugComparator();
 				break;
 			default:
 				throw new IllegalStateException("Unknown comparator type: " + comparatorType);
@@ -137,7 +141,8 @@ public class MergeResults {
 		MergeResultsCommandLine() {
 			addSwitch("-vi", "use version-insensitive bug comparator");
 			addSwitch("-fuzzy", "use fuzzy bug comparator");
-			addSwitch("-update", "only update bug categories contained in new results");
+			addSwitch("-updateCategories", "only update bug categories contained in new results");
+			addSwitch("-sloppy", "use the sloppy bug comparator");
 		}
 
 		/**
@@ -165,6 +170,8 @@ public class MergeResults {
 				comparatorType = FUZZY_COMPARATOR;
 			} else if (option.equals("-updateCategories")) {
 				updateCategories = true;
+			} else if (option.equals("-sloppy")) {
+				comparatorType = SLOPPY_COMPARATOR;
 			} else {
 				throw new IllegalArgumentException("Unexpected option: " + option);
 			}
