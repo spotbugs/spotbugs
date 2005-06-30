@@ -51,6 +51,7 @@ public class CountBugsFast {
 	private InputStream inputStream;
 	private Set<String> categorySet;
 	private Set<String> abbrevSet;
+	private Set<String> bugTypeSet;
 	private int minPriority;
 	private int count;
 	
@@ -58,6 +59,7 @@ public class CountBugsFast {
 		this.inputStream = in;
 		this.categorySet = new HashSet<String>();
 		this.abbrevSet = new HashSet<String>();
+		this.bugTypeSet = new HashSet<String>();
 		this.minPriority = Detector.NORMAL_PRIORITY;
 	}
 	
@@ -74,6 +76,10 @@ public class CountBugsFast {
 	
 	public void setAbbrevs(String abbrevs) {
 		buildSetFromString(abbrevs, abbrevSet);
+	}
+	
+	public void setBugTypes(String bugTypes) {
+		buildSetFromString(bugTypes, bugTypeSet);
 	}
 
 	private void buildSetFromString(String str, Set<String> set) {
@@ -110,6 +116,9 @@ public class CountBugsFast {
 					if (!abbrevSet.isEmpty() && !abbrevSet.contains(pattern.getAbbrev()))
 						return;
 					
+					if (!bugTypeSet.isEmpty() && !bugTypeSet.contains(type))
+						return;
+					
 					if (Integer.parseInt(priority) > minPriority)
 						return;
 					
@@ -141,11 +150,13 @@ public class CountBugsFast {
 		int minPriority = Detector.NORMAL_PRIORITY;
 		String categories;
 		String abbrevs;
+		String bugTypes;
 		String listFile;
 		
 		CountBugsFastCommandLine() {
 			addOption("-categories", "cat1,cat2...", "set bug categories");
 			addOption("-abbrevs", "abbrev1,abbrev2...", "set bug type abbreviations");
+			addOption("-bugTypes", "type1,type2...", "count only warnings with given type(s)");
 			addOption("-minPriority", "priority", "set min bug priority (3=low, 2=medium, 1=high)");
 			addOption("-bulk", "list file (\"-\"=stdin)", "list of files to count, print counts as CSV");
 		}
@@ -162,6 +173,13 @@ public class CountBugsFast {
 		 */
 		public String getAbbrevs() {
 			return abbrevs;
+		}
+		
+		/**
+		 * @return Returns the bugTypes.
+		 */
+		public String getBugTypes() {
+			return bugTypes;
 		}
 		
 		/**
@@ -195,6 +213,8 @@ public class CountBugsFast {
 				categories = argument;
 			} else if (option.equals("-abbrevs")) {
 				abbrevs = argument;
+			} else if (option.equals("-bugTypes")) {
+				bugTypes = argument;
 			} else if (option.equals("-minPriority")) {
 				minPriority = Integer.parseInt(argument);
 			} else if (option.equals("-bulk")) {
@@ -217,6 +237,8 @@ public class CountBugsFast {
 				countBugs.setAbbrevs(getAbbrevs());
 			if (getCategories() != null)
 				countBugs.setCategories(getCategories());
+			if (getBugTypes() != null)
+				countBugs.setBugTypes(getBugTypes());
 			countBugs.setMinPriority(getMinPriority());
 		}
 		
