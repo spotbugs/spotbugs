@@ -33,7 +33,13 @@ import edu.umd.cs.findbugs.ba.MethodHash;
 /**
  * A slightly more intellegent way of comparing BugInstances from two versions
  * to see if they are the "same".  Uses class and method hashes to try to
- * handle renamings, at least for simple cases.
+ * handle renamings, at least for simple cases.  (<em>Hashes disabled for the
+ * time being.</em>)  Uses opcode context to try to identify code that is the
+ * same, even if it moves within the method.  Also compares by bug abbreviation
+ * rather than bug type, since the "same" bug can change type if the context
+ * changes (e.g., "definitely null" to "null on simple path" for a null pointer
+ * dereference).  Also, we often change bug types between different versions
+ * of FindBugs.
  * 
  * @see edu.umd.cs.findbugs.BugInstance
  * @see edu.umd.cs.findbugs.VersionInsensitiveBugComparator
@@ -41,6 +47,9 @@ import edu.umd.cs.findbugs.ba.MethodHash;
  */
 public class FuzzyBugComparator implements Comparator<BugInstance> {
 	private static final boolean DEBUG = false;
+
+	// Don't use hashes for now.  Still ironing out issues there.
+	private static final boolean USE_HASHES = false;
 	
 	/**
 	 * Filter ignored BugAnnotations from given Iterator.
@@ -137,15 +146,13 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 		
 		if (DEBUG) System.out.println("Fuzzy comparison");
 		
-		// Bug types must match exactly.
-		// TODO: might want to experiment with just matching abbreviation:
-		// maybe annotations provide enough context
-		// to detect when bug patterns are renamed.
-		cmp = a.getType().compareTo(b.getType());
-		if (cmp != 0) {
-			if (DEBUG) System.out.println("type mismatch: " + a.getType() + "," + b.getType());
+		// Bug abbreviations must match.
+		BugPattern lhsPattern = a.getBugPattern();
+		BugPattern rhsPattern = b.getBugPattern();
+		if ((cmp = compareNullElements(lhsPattern, rhsPattern)) != 0)
 			return cmp;
-		}
+		if ((cmp = lhsPattern.getAbbrev().compareTo(rhsPattern.getAbbrev())) != 0)
+			return cmp;
 		
 		BugCollection lhsCollection = bugCollectionMap.get(a);
 		BugCollection rhsCollection = bugCollectionMap.get(b);
@@ -191,7 +198,7 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 			return (lhsIter.hasNext() ? 1 : -1);
 	}
 
-	private static <T> int compareNullElements(T a, T b) {
+	private static int compareNullElements(Object a, Object b) {
 		if (a != null)
 			return 1;
 		else if (b != null)
@@ -218,18 +225,20 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	// Compare classes: either exact fully qualified name must match, or class hash must match
 	public int compareClassesByName(BugCollection lhsCollection, BugCollection rhsCollection, String lhsClassName, String rhsClassName) {
 		int cmp;
-		
-		// Get class hashes
-		ClassHash lhsHash = getClassHash(lhsCollection, lhsClassName);
-		ClassHash rhsHash = getClassHash(rhsCollection, rhsClassName);
-		
-		// Convert to canonical class names based on the class hashes.
-		// This has the effect that classes with the same hash compare as equal,
-		// while ensuring that all class names have a consistent ordering.
-		if (lhsHash != null)
-			lhsClassName = classHashToCanonicalClassNameMap.get(lhsHash);
-		if (rhsHash != null)
-			rhsClassName = classHashToCanonicalClassNameMap.get(rhsHash);
+
+		if (USE_HASHES) {
+			// Get class hashes
+			ClassHash lhsHash = getClassHash(lhsCollection, lhsClassName);
+			ClassHash rhsHash = getClassHash(rhsCollection, rhsClassName);
+			
+			// Convert to canonical class names based on the class hashes.
+			// This has the effect that classes with the same hash compare as equal,
+			// while ensuring that all class names have a consistent ordering.
+			if (lhsHash != null)
+				lhsClassName = classHashToCanonicalClassNameMap.get(lhsHash);
+			if (rhsHash != null)
+				rhsClassName = classHashToCanonicalClassNameMap.get(rhsHash);
+		}
 
 		return lhsClassName.compareTo(rhsClassName);
 	}
@@ -242,22 +251,28 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 
 		// Compare for exact match
 		int cmp = lhsMethod.compareTo(rhsMethod);
-		if (cmp == 0)
-			return 0;
 		
-		// Get class hashes for primary classes
-		ClassHash lhsClassHash = getClassHash(lhsCollection, lhsMethod.getClassName());
-		ClassHash rhsClassHash = getClassHash(rhsCollection, rhsMethod.getClassName());
-		if (lhsClassHash == null || rhsClassHash == null)
-			return cmp;
+		if (USE_HASHES) {
+			if (cmp == 0)
+				return 0;
+
+			// Get class hashes for primary classes
+			ClassHash lhsClassHash = getClassHash(lhsCollection, lhsMethod.getClassName());
+			ClassHash rhsClassHash = getClassHash(rhsCollection, rhsMethod.getClassName());
+			if (lhsClassHash == null || rhsClassHash == null)
+				return cmp;
+			
+			// Look up method hashes
+			MethodHash lhsHash = lhsClassHash.getMethodHash(lhsMethod.toXMethod());
+			MethodHash rhsHash = rhsClassHash.getMethodHash(rhsMethod.toXMethod());
+			if (lhsHash == null || rhsHash == null)
+				return cmp;
+			
+			if (lhsHash.isSameHash(rhsHash))
+				return 0;
+		}
 		
-		// Look up method hashes
-		MethodHash lhsHash = lhsClassHash.getMethodHash(lhsMethod.toXMethod());
-		MethodHash rhsHash = rhsClassHash.getMethodHash(rhsMethod.toXMethod());
-		if (lhsHash == null || rhsHash == null)
-			return cmp;
-		
-		return lhsHash.isSameHash(rhsHash) ? 0 : cmp;
+		return cmp;
 	}
 	
 	/**
@@ -295,9 +310,9 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 			return 0;
 		
 		// See if the opcode contexts match.
-		if (   lhs.getEarlierOpcodes(NUM_CONTEXT_OPCODES).equals(rhs.getEarlierOpcodes(NUM_CONTEXT_OPCODES))
-			&& lhs.getSelectedOpcodes().equals(rhs.getSelectedOpcodes())
-			&& lhs.getLaterOpcodes(NUM_CONTEXT_OPCODES).equals(rhs.getLaterOpcodes(NUM_CONTEXT_OPCODES)))
+		if (   lhs.getEarlierOpcodesAsString(NUM_CONTEXT_OPCODES).equals(rhs.getEarlierOpcodesAsString(NUM_CONTEXT_OPCODES))
+			&& lhs.getSelectedOpcodesAsString().equals(rhs.getSelectedOpcodesAsString())
+			&& lhs.getLaterOpcodesAsString(NUM_CONTEXT_OPCODES).equals(rhs.getLaterOpcodesAsString(NUM_CONTEXT_OPCODES)))
 				return 0;
 		
 		// Give up and use exact matching algorithm to order the annotations

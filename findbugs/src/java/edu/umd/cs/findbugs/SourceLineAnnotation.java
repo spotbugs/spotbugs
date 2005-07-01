@@ -503,6 +503,32 @@ public class SourceLineAnnotation implements BugAnnotation {
 		this.surroundingOpcodes = surroundingOpcodes;
 	}
 	
+	public final static short[] EMPTY_OPCODE_LIST = new short[0];
+	
+	private static short[] parseOpcodes(String[] split) {
+		short[] opcodeList = new short[split.length];
+		for (int i = 0; i < split.length; ++i) {
+			opcodeList[i] = Short.parseShort(split[i]);
+		}
+		return opcodeList;
+	}
+	
+	/**
+	 * Get list of earlier opcodes.
+	 * 
+	 * @return list of earlier opcodes
+	 */
+	public short[] getEarlierOpcodes() {
+		int pipe = surroundingOpcodes.indexOf('|');
+		if (pipe < 0)
+			return EMPTY_OPCODE_LIST;
+
+		String opcodes = surroundingOpcodes.substring(0, pipe);
+		String[] split = opcodes.split(",");
+		
+		return parseOpcodes(split);
+	}
+	
 	/**
 	 * Get the opcodes which preceeded the selected source instructions.
 	 * 
@@ -512,21 +538,29 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @return String encoding the earlier opcodes, or an empty string if
 	 *         there are no (valid) previous opcodes
 	 */
-	public String getEarlierOpcodes(int numOpcodes) {
-		int pipe = surroundingOpcodes.indexOf('|');
-		if (pipe < 0)
-			return "";
-		String opcodes = surroundingOpcodes.substring(0, pipe);
-		String[] split = opcodes.split(",");
-		int index = split.length > numOpcodes ? split.length - numOpcodes : 0;
+	public String getEarlierOpcodesAsString(int numOpcodes) {
+		short[] opcodeList = getEarlierOpcodes();
+		int start = opcodeList.length - numOpcodes;
+		if (start < 0)
+			start = 0;
 		StringBuffer buf = new StringBuffer();
-		while (index < split.length) {
+		for (int i = start; i < opcodeList.length; ++i) {
 			if (buf.length() > 0)
 				buf.append(',');
-			buf.append(split[index]);
-			++index;
+			buf.append(String.valueOf(opcodeList[i]));
 		}
 		return buf.toString();
+	}
+
+	/**
+	 * Get list of selected opcodes.
+	 * 
+	 * @return list of selected opcodes
+	 */
+	public short[] getSelectedOpcodes() {
+		String selected = getSelectedOpcodesAsString();
+		String[] split = selected.split(",");
+		return parseOpcodes(split);
 	}
 
 	/**
@@ -536,7 +570,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @return String encoding the selected opcodes, or an empty string
 	 *         if there are no (valid) selected opcodes
 	 */
-	public String getSelectedOpcodes() {
+	public String getSelectedOpcodesAsString() {
 		int pipe = surroundingOpcodes.indexOf('|');
 		if (pipe < 0)
 			return "";
@@ -548,6 +582,15 @@ public class SourceLineAnnotation implements BugAnnotation {
 		return selected;
 	}
 	
+	public short[] getLaterOpcodes() {
+		int pipe = surroundingOpcodes.lastIndexOf('|');
+		if (pipe < 0)
+			return EMPTY_OPCODE_LIST;
+		String later = surroundingOpcodes.substring(pipe + 1);
+		String[] split = later.split(",");
+		return parseOpcodes(split);
+	}
+	
 	/**
 	 * Get the opcodes of the instructions immediately following the instructions
 	 * selected by this source line annotation.
@@ -556,17 +599,14 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @return String encoding the later opcodes, or an empty string if there are no
 	 *         (valid) opcodes following the selected instructions
 	 */
-	public String getLaterOpcodes(int numOpcodes) {
-		int pipe = surroundingOpcodes.lastIndexOf('|');
-		if (pipe < 0)
-			return "";
-		String later = surroundingOpcodes.substring(pipe + 1);
-		String[] split = later.split(",");
+	public String getLaterOpcodesAsString(int numOpcodes) {
+		short[] later = getLaterOpcodes();
+		int min = Math.min(later.length, numOpcodes);
 		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < numOpcodes && i < split.length; ++i) {
+		for (int i = 0; i < min; ++i) {
 			if (buf.length() > 0)
 				buf.append(',');
-			buf.append(split[i]);
+			buf.append(String.valueOf(later[i]));
 		}
 		return buf.toString();
 	}
