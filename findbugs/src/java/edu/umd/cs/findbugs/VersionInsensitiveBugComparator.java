@@ -90,16 +90,56 @@ public class VersionInsensitiveBugComparator implements Comparator<BugInstance> 
 		return false;
 	}
 
+	private static int compareNullElements(Object a, Object b) {
+		if (a != null)
+			return 1;
+		else if (b != null)
+			return -1;
+		else
+			return 0;
+	}
+	
+	private static String getCode(String pattern) {
+		int sep = pattern.indexOf('_');
+		if (sep < 0)
+			return "";
+		return pattern.substring(0, sep);
+	}
+
 	public int compare(BugInstance lhs, BugInstance rhs) {
 		// Attributes of BugInstance.
-		// Compare type.
+		// Compare abbreviation 
 		// Compare class and method annotations (ignoring line numbers).
 		// Compare field annotations.
 
 		int cmp;
-
-		cmp = lhs.getType().compareTo(rhs.getType());
-		if (cmp != 0) return cmp;
+		
+		BugPattern lhsPattern = lhs.getBugPattern();
+		BugPattern rhsPattern = rhs.getBugPattern();
+		
+		if (lhsPattern == null || rhsPattern == null) {
+			// One of the patterns is missing.
+			// However, we can still accurately match by abbrev (usually) by comparing
+			// the part of the type before the first '_' character.
+			// This is almost always equivalent to the abbrev.
+			
+			String lhsCode = getCode(lhs.getType());
+			String rhsCode = getCode(rhs.getType());
+			
+			if ((cmp = lhsCode.compareTo(rhsCode)) != 0) {
+				return cmp;
+			}
+		} else {
+			// Compare by abbrev instead of type. The specific bug type can change
+			// (e.g., "definitely null" to "null on simple path").  Also, we often
+			// change bug pattern types from one version of FindBugs to the next.
+			//
+			// Source line and field name are still matched precisely, so this shouldn't
+			// cause loss of precision.
+			if ((cmp = lhsPattern.getAbbrev().compareTo(rhsPattern.getAbbrev())) != 0)
+				return cmp;
+		}
+		
 
 /*
 		// Don't compare priority.
