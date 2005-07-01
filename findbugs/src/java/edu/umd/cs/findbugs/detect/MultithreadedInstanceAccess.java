@@ -51,6 +51,7 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 	private Set<JavaClass> mtClasses;
 	private String mtClassName;
 	private int monitorCount;
+	private boolean writingField;
 	private Set<String> alreadyReported;
 	
 	public MultithreadedInstanceAccess(BugReporter bugReporter) {
@@ -116,6 +117,7 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 	public void visitMethod(Method obj) {
 		monitorCount = 0;
 		alreadyReported = new HashSet<String>();
+		writingField = false;
 	}
 	
 	public void visitCode(Code obj) {
@@ -124,7 +126,7 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 	}
 	
 	public void sawField() {
-		if (monitorCount > 0)
+		if ((monitorCount > 0) || (!writingField))
 			return;
 		
 		ConstantFieldref fieldRef;
@@ -168,6 +170,8 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 			monitorCount++;
 		else if (seen == MONITOREXIT)
 			monitorCount--;
+		
+		writingField = ((seen == PUTFIELD) || (seen == PUTFIELD_QUICK) || (seen == PUTFIELD_QUICK_W));
 	}
 
 	
