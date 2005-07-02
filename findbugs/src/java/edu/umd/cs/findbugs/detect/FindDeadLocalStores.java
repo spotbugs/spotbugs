@@ -192,8 +192,9 @@ public class FindDeadLocalStores implements Detector {
 			int local = ins.getIndex();
 			
 			// Heuristic: name of local variable.
+			LocalVariableTable localVariableTable = method.getLocalVariableTable();
 			checkLocalVariableName(
-					method.getLocalVariableTable(),
+					localVariableTable,
 					local,
 					location.getHandle().getPosition(),
 					propertySet);
@@ -291,11 +292,13 @@ public class FindDeadLocalStores implements Detector {
 				propertySet.addProperty(DeadLocalStoreProperty.MANY_STORES);
 			int priority = propertySet.computePriority(NORMAL_PRIORITY);
 			if (priority <= Detector.EXP_PRIORITY) {	
-				LocalVariable lv = LVTHelper.getLocalVariableAtPC(method.getLocalVariableTable(),
-																	local,
-																		location.getHandle().getPosition());
-				if ((lv != null) && EXCLUDED_LOCALS.contains(lv.getName()))
-					continue;
+				if (localVariableTable != null) {
+					LocalVariable lv = LVTHelper.getLocalVariableAtPC(localVariableTable,
+							local,
+							location.getHandle().getPosition());
+					if ((lv != null) && EXCLUDED_LOCALS.contains(lv.getName()))
+						continue;
+				}
 				
 				// Report the warning				
 				BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", priority)
