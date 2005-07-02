@@ -5,7 +5,6 @@ import java.util.Iterator;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ARETURN;
-import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
@@ -57,7 +56,6 @@ public class LoadOfKnownNullValue implements Detector {
 		CFG cfg = classContext.getCFG(method);
 		IsNullValueDataflow nullValueDataflow = classContext
 				.getIsNullValueDataflow(method);
-		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		MethodGen methodGen = classContext.getMethodGen(method);
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 

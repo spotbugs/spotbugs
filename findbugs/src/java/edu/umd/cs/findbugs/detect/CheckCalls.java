@@ -86,7 +86,6 @@ public class CheckCalls implements Detector {
 	private void analyzeMethod(ClassContext classContext, Method method)
 			throws CFGBuilderException, ClassNotFoundException, DataflowAnalysisException {
 		CFG cfg = classContext.getCFG(method);
-		MethodGen methodGen = classContext.getMethodGen(method);
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 			Instruction ins = location.getHandle().getInstruction();
