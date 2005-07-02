@@ -124,19 +124,21 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	 * @param bugCollection a BugCollection
 	 */
 	public void registerBugCollection(BugCollection bugCollection) {
-		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ) {
-			bugCollectionMap.put(i.next(), bugCollection);
-		}
-		
-		// For each distinct ClassHash, keep track of the lexicographically
-		// least class name.  This serves as the "representative" for all (equivalent)
-		// classes sharing that hash value.  This allows us to ensure that the
-		// class ordering induced by this comparator is transitive.
-		for (Iterator<ClassHash> i = bugCollection.classHashIterator(); i.hasNext();) {
-			ClassHash classHash = i.next();
-			String canonicalClassName = classHashToCanonicalClassNameMap.get(classHash);
-			if (canonicalClassName == null || classHash.getClassName().compareTo(canonicalClassName) < 0) {
-				classHashToCanonicalClassNameMap.put(classHash, classHash.getClassName());
+		if (USE_HASHES) {
+			for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ) {
+				bugCollectionMap.put(i.next(), bugCollection);
+			}
+			
+			// For each distinct ClassHash, keep track of the lexicographically
+			// least class name.  This serves as the "representative" for all (equivalent)
+			// classes sharing that hash value.  This allows us to ensure that the
+			// class ordering induced by this comparator is transitive.
+			for (Iterator<ClassHash> i = bugCollection.classHashIterator(); i.hasNext();) {
+				ClassHash classHash = i.next();
+				String canonicalClassName = classHashToCanonicalClassNameMap.get(classHash);
+				if (canonicalClassName == null || classHash.getClassName().compareTo(canonicalClassName) < 0) {
+					classHashToCanonicalClassNameMap.put(classHash, classHash.getClassName());
+				}
 			}
 		}
 	}
@@ -309,14 +311,24 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 		if (!lhs.hasSpecificInstructions() && !rhs.hasSpecificInstructions())
 			return 0;
 		
-		// See if the opcode contexts match.
-		if (   lhs.getEarlierOpcodesAsString(NUM_CONTEXT_OPCODES).equals(rhs.getEarlierOpcodesAsString(NUM_CONTEXT_OPCODES))
-			&& lhs.getSelectedOpcodesAsString().equals(rhs.getSelectedOpcodesAsString())
-			&& lhs.getLaterOpcodesAsString(NUM_CONTEXT_OPCODES).equals(rhs.getLaterOpcodesAsString(NUM_CONTEXT_OPCODES)))
-				return 0;
+		// Compare earlier opcodes
+		if ((cmp = lhs.getEarlierOpcodesAsString(NUM_CONTEXT_OPCODES).compareTo(
+				rhs.getEarlierOpcodesAsString(NUM_CONTEXT_OPCODES))) != 0) {
+			return cmp;
+		}
 		
-		// Give up and use exact matching algorithm to order the annotations
-		return lhs.compareTo(rhs);
+		// Compare selected opcodes
+		if ((cmp = lhs.getSelectedOpcodesAsString().compareTo(rhs.getSelectedOpcodesAsString())) != 0) {
+			return cmp;
+		}
+		
+		// Compare later opcodes
+		if ((cmp = lhs.getLaterOpcodesAsString(NUM_CONTEXT_OPCODES).compareTo(
+				rhs.getLaterOpcodesAsString(NUM_CONTEXT_OPCODES))) != 0) {
+			return cmp;
+		}
+		
+		return 0;
 	}
 	
 	// See "FindBugsAnnotationDescriptions.properties"
