@@ -7,8 +7,10 @@ import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INSTANCEOF;
@@ -97,8 +99,20 @@ public class FindBadCast2 implements Detector {
 				|| bytecodeSet.get(Constants.INSTANCEOF);
 	}
 
+	private boolean isSynthetic(Method m) {
+		Attribute[] attrs = m.getAttributes();
+		for (int a = 0; a < attrs.length; a++) {
+			if (attrs[a] instanceof Synthetic)
+				return true;
+		}
+		return false;
+	}
+	
 	private void analyzeMethod(ClassContext classContext, Method method)
 			throws CFGBuilderException, DataflowAnalysisException {
+		if (isSynthetic(method))
+			return;
+		
 		CFG cfg = classContext.getCFG(method);
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 		ValueNumberDataflow vnaDataflow = classContext
