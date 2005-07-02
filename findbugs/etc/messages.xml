@@ -2750,7 +2750,7 @@ was return from a method which is known to return possibly-null values.</p>
 		<![CDATA[
 		<p>
 		A possibly-null value is passed to a method which unconditionally
-		dereferences.  This will almost certainly result in a null pointer exception.
+		dereferences it.  This will almost certainly result in a null pointer exception.
 		</p>
 		]]>
 	</Details>
