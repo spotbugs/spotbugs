@@ -632,7 +632,6 @@ public class Hierarchy {
 		if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC)
 			throw new IllegalArgumentException();
 		
-		String className = invokeInstruction.getClassName(cpg);
 		String methodName = invokeInstruction.getName(cpg);
 		String methodSig = invokeInstruction.getSignature(cpg);
 		
