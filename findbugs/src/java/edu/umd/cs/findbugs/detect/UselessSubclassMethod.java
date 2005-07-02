@@ -203,7 +203,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 		Type[] subArgs = null;
 		JavaClass superClass = Repository.lookupClass(superclassName);
 		Method[] methods = superClass.getMethods();
-		for (int i = 0; i < methods.length; i++) {
+		outer: for (int i = 0; i < methods.length; i++) {
 			Method m = methods[i];
 			if (m.getName().equals(methodName)) {
 				if (subArgs == null)
@@ -212,7 +212,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 				if (subArgs.length == superArgs.length) {
 					for (int j = 0; j < subArgs.length; j++) {
 						if (!superArgs[j].equals(subArgs[j]))
-							continue;
+							continue outer;
 					}
 					return m;
 				}
