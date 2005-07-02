@@ -20,10 +20,12 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import edu.umd.cs.findbugs.config.CommandLine;
 
@@ -38,6 +40,7 @@ public class CountBugs2 {
 	private BugCollection bugCollection;
 	private Set<String> categorySet;
 	private Set<String> abbrevSet;
+	private Comparator<BugInstance> comparator;
 	private int minPriority;
 	private int count;
 	
@@ -62,6 +65,13 @@ public class CountBugs2 {
 	public void setAbbrevs(String abbrevs) {
 		buildSetFromString(abbrevs, abbrevSet);
 	}
+	
+	/**
+	 * @param comparator The comparator to set.
+	 */
+	public void setComparator(Comparator<BugInstance> comparator) {
+		this.comparator = comparator;
+	}
 
 	private void buildSetFromString(String str, Set<String> set) {
 		StringTokenizer t = new StringTokenizer(str, ",");
@@ -73,8 +83,20 @@ public class CountBugs2 {
 	}
 	
 	public CountBugs2 execute() {
-		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
-			BugInstance warning = i.next();
+		Iterator<BugInstance> iter;
+		
+		if (comparator != null) {
+			// We are using a fuzzy matching comparator to see how many
+			// warnings within a single collection are aliased by the comparator.
+			Set<BugInstance> set = new TreeSet<BugInstance>(comparator);
+			set.addAll(bugCollection.getCollection());
+			iter = set.iterator();
+		} else {
+			iter = bugCollection.iterator();
+		}
+		
+		while (iter.hasNext()) {
+			BugInstance warning = iter.next();
 			BugPattern pattern = warning.getBugPattern();
 
 			if (pattern == null ) {
@@ -112,15 +134,24 @@ public class CountBugs2 {
 		return count;
 	}
 	
+	private static final int NO_COMPARATOR = 0;
+	private static final int VERSION_INSENSITIVE_COMPARATOR = 1;
+	private static final int FUZZY_COMPARATOR = 2;
+	private static final int SLOPPY_COMPARATOR = 3;
+	
 	static class CountBugs2CommandLine extends CommandLine {
 		int minPriority= Detector.NORMAL_PRIORITY;
 		String categories;
 		String abbrevs;
+		int comparatorType = NO_COMPARATOR;
 		
 		CountBugs2CommandLine() {
 			addOption("-categories", "cat1,cat2...", "set bug categories");
 			addOption("-abbrevs", "abbrev1,abbrev2...", "set bug type abbreviations");
 			addOption("-minPriority", "priority", "set min bug priority (3=low, 2=medium, 1=high)");
+			addSwitch("-vi", "use version-insensitive comparator");
+			addSwitch("-fuzzy", "use fuzzy bug comparator");
+			addSwitch("-sloppy", "use sloppy bug comparator");
 		}
 		
 		/**
@@ -144,12 +175,60 @@ public class CountBugs2 {
 			return minPriority;
 		}
 		
+		/**
+		 * @return Returns the comparatorType.
+		 */
+		public int getComparatorType() {
+			return comparatorType;
+		}
+
+		/**
+		 * Configure the CountBugs2 object.
+		 * 
+		 * @param countBugs      the counter
+		 * @param bugCollection  the BugCollection to be counted
+		 */
+		public void configureCounter(CountBugs2 countBugs, SortedBugCollection bugCollection) {
+			CountBugs2CommandLine commandLine = this;
+			
+			if (commandLine.getAbbrevs() != null)
+				countBugs.setAbbrevs(commandLine.getAbbrevs());
+			
+			if (commandLine.getCategories() != null)
+				countBugs.setCategories(commandLine.getCategories());
+			
+			countBugs.setMinPriority(commandLine.getMinPriority());
+			
+			if (commandLine.getComparatorType() != NO_COMPARATOR) {
+				Comparator<BugInstance> comparator;
+				switch (commandLine.getComparatorType()) {
+				case VERSION_INSENSITIVE_COMPARATOR:
+					comparator = VersionInsensitiveBugComparator.instance();
+					break;
+				case FUZZY_COMPARATOR:
+					FuzzyBugComparator fuzzy = new FuzzyBugComparator();
+					fuzzy.registerBugCollection(bugCollection);
+					comparator = fuzzy;
+					break;
+				case SLOPPY_COMPARATOR:
+					comparator = new SloppyBugComparator();
+				default:
+					throw new IllegalStateException();
+				}
+				countBugs.setComparator(comparator);
+			}
+		}
+		
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
 		 */
 		//@Override
 		protected void handleOption(String option, String optionExtraPart) throws IOException {
-			throw new IllegalArgumentException("Unknown option: " + option);
+			if (option.equals("-vi")) {
+				
+			} else {
+				throw new IllegalArgumentException("Unknown option: " + option);
+			}
 		}
 		
 		/* (non-Javadoc)
@@ -187,11 +266,7 @@ public class CountBugs2 {
 		bugCollection.readXML(args[argCount], new Project());
 		
 		CountBugs2 countBugs = new CountBugs2(bugCollection);
-		if (commandLine.getAbbrevs() != null)
-			countBugs.setAbbrevs(commandLine.getAbbrevs());
-		if (commandLine.getCategories() != null)
-			countBugs.setCategories(commandLine.getCategories());
-		countBugs.setMinPriority(commandLine.getMinPriority());
+		commandLine.configureCounter(countBugs, bugCollection);
 		
 		countBugs.execute();
 		System.out.println(countBugs.getCount());
