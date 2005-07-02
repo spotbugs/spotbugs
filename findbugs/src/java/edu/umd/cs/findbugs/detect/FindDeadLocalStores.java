@@ -49,7 +49,6 @@ import org.apache.bcel.generic.StoreInstruction;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -60,6 +59,7 @@ import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
+import edu.umd.cs.findbugs.visitclass.LVTHelper;
 
 /**
  * Find dead stores to local variables.
@@ -291,7 +291,13 @@ public class FindDeadLocalStores implements Detector {
 				propertySet.addProperty(DeadLocalStoreProperty.MANY_STORES);
 			int priority = propertySet.computePriority(NORMAL_PRIORITY);
 			if (priority <= Detector.EXP_PRIORITY) {	
-				// Report the warning
+				LocalVariable lv = LVTHelper.getLocalVariableAtPC(method.getLocalVariableTable(),
+																	local,
+																		location.getHandle().getPosition());
+				if ((lv != null) && EXCLUDED_LOCALS.contains(lv.getName()))
+					continue;
+				
+				// Report the warning				
 				BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", priority)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
 					.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle());
