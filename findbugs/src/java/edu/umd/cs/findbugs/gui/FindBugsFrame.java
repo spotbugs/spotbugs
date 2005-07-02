@@ -3702,6 +3702,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		
 		if (commandLine.getSettingList() != null) {
 			frame.settingList = commandLine.getSettingList();
+			if (frame.settingList.equals(FindBugs.MIN_EFFORT))
+				frame.minEffortItem.setSelected(true);
+			else if (frame.settingList.equals(FindBugs.MAX_EFFORT))
+				frame.maxEffortItem.setSelected(true);
 		}
 		
 		frame.setSize(800, 600);
