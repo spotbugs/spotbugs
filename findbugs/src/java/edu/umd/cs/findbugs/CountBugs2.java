@@ -212,6 +212,8 @@ public class CountBugs2 {
 					break;
 				case SLOPPY_COMPARATOR:
 					comparator = new SloppyBugComparator();
+					break;
+					
 				default:
 					throw new IllegalStateException();
 				}
