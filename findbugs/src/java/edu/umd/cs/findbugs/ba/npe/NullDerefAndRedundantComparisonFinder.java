@@ -35,6 +35,8 @@ import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -202,9 +204,15 @@ public class NullDerefAndRedundantComparisonFinder {
 				definitelyDifferentBranchSet.set(lineNumber);
 			}
 
-
-			//reportRedundantNullCheck(classContext, method, lastHandle);
 			RedundantBranch redundantBranch = new RedundantBranch(location, lineNumber, top, topNext);
+			
+			// Figure out which control edge is made infeasible by the redundant comparison
+			boolean wantSame = (lastHandle.getInstruction().getOpcode() == Constants.IF_ACMPEQ);
+			int infeasibleEdgeType = (wantSame == definitelySame)
+					? EdgeTypes.IFCMP_EDGE : EdgeTypes.FALL_THROUGH_EDGE;
+			Edge infeasibleEdge = invDataflow.getCFG().getOutgoingEdgeWithType(basicBlock, infeasibleEdgeType);
+			redundantBranch.setInfeasibleEdge(infeasibleEdge);
+			
 			if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
 			redundantBranchList.add(redundantBranch);
 		} else {
@@ -255,6 +263,14 @@ public class NullDerefAndRedundantComparisonFinder {
 		}
 
 		RedundantBranch redundantBranch = new RedundantBranch(location, lineNumber, top);
+		
+		// Determine which control edge is made infeasible by the redundant comparison
+		boolean wantNull = (opcode == Constants.IFNULL);
+		int infeasibleEdgeType = (wantNull == top.isDefinitelyNull())
+				? EdgeTypes.IFCMP_EDGE : EdgeTypes.FALL_THROUGH_EDGE;
+		Edge infeasibleEdge = invDataflow.getCFG().getOutgoingEdgeWithType(basicBlock, infeasibleEdgeType);
+		redundantBranch.setInfeasibleEdge(infeasibleEdge);
+		
 		if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
 		redundantBranchList.add(redundantBranch);
 	}

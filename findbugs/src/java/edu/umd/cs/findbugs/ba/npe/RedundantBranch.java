@@ -18,6 +18,7 @@
  */
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
 
 /**
@@ -32,6 +33,8 @@ public class RedundantBranch {
 	public final int lineNumber;
 
 	public final IsNullValue firstValue, secondValue;
+	
+	public Edge infeasibleEdge;
 
 	/**
 	 * Constructor.
@@ -52,6 +55,7 @@ public class RedundantBranch {
 		this.firstValue = firstValue;
 		this.secondValue = secondValue;
 	}
+	
 	/**
 	 * Constructor.
 	 * 
@@ -68,6 +72,15 @@ public class RedundantBranch {
 		this.lineNumber = lineNumber;
 		this.firstValue = firstValue;
 		this.secondValue = null;
+	}
+	
+	/**
+	 * Set the edge which has been determined to be infeasible.
+	 * 
+	 * @param infeasibleEdge The infeasibleEdge to set.
+	 */
+	public void setInfeasibleEdge(Edge infeasibleEdge) {
+		this.infeasibleEdge = infeasibleEdge;
 	}
 
 	public String toString() {
