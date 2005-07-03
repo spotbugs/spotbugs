@@ -151,10 +151,18 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 		// Bug abbreviations must match.
 		BugPattern lhsPattern = a.getBugPattern();
 		BugPattern rhsPattern = b.getBugPattern();
-		if ((cmp = compareNullElements(lhsPattern, rhsPattern)) != 0)
-			return cmp;
-		if ((cmp = lhsPattern.getAbbrev().compareTo(rhsPattern.getAbbrev())) != 0)
-			return cmp;
+//		if ((cmp = compareNullElements(lhsPattern, rhsPattern)) != 0)
+//			return cmp;
+		
+		if (lhsPattern == null || rhsPattern == null) {
+			String lhsCode = getCode(a.getType());
+			String rhsCode = getCode(b.getType());
+			if ((cmp = lhsCode.compareTo(rhsCode)) != 0)
+				return cmp;
+		} else {
+			if ((cmp = lhsPattern.getAbbrev().compareTo(rhsPattern.getAbbrev())) != 0)
+				return cmp;
+		}
 		
 		BugCollection lhsCollection = bugCollectionMap.get(a);
 		BugCollection rhsCollection = bugCollectionMap.get(b);
@@ -198,6 +206,18 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 			return 0;
 		} else
 			return (lhsIter.hasNext() ? 1 : -1);
+	}
+
+	/**
+	 * @param type
+	 * @return
+	 */
+	private String getCode(String type) {
+		int bar = type.indexOf('_');
+		if (bar < 0)
+			return "";
+		else
+			return type.substring(0, bar);
 	}
 
 	private static int compareNullElements(Object a, Object b) {
