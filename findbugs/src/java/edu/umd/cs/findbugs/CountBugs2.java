@@ -227,7 +227,11 @@ public class CountBugs2 {
 		//@Override
 		protected void handleOption(String option, String optionExtraPart) throws IOException {
 			if (option.equals("-vi")) {
-				
+				comparatorType = VERSION_INSENSITIVE_COMPARATOR;
+			} else if (option.equals("-fuzzy")) {
+				comparatorType = FUZZY_COMPARATOR;
+			} else if (option.equals("-sloppy")) {
+				comparatorType = SLOPPY_COMPARATOR;
 			} else {
 				throw new IllegalArgumentException("Unknown option: " + option);
 			}
