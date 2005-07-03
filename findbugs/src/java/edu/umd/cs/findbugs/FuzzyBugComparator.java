@@ -143,20 +143,24 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 		}
 	}
 	
-	public int compare(BugInstance a, BugInstance b) {
+	public int compare(BugInstance lhs, BugInstance rhs) {
 		int cmp;
 		
 		if (DEBUG) System.out.println("Fuzzy comparison");
 		
 		// Bug abbreviations must match.
-		BugPattern lhsPattern = a.getBugPattern();
-		BugPattern rhsPattern = b.getBugPattern();
-//		if ((cmp = compareNullElements(lhsPattern, rhsPattern)) != 0)
-//			return cmp;
+		BugPattern lhsPattern = lhs.getBugPattern();
+		BugPattern rhsPattern = rhs.getBugPattern();
 		
 		if (lhsPattern == null || rhsPattern == null) {
-			String lhsCode = getCode(a.getType());
-			String rhsCode = getCode(b.getType());
+			if (DEBUG) {
+				if (lhsPattern == null)
+					System.out.println("Missing pattern: " + lhs.getType());
+				if (rhsPattern == null)
+					System.out.println("Missing pattern: " + rhs.getType());
+			}
+			String lhsCode = getCode(lhs.getType());
+			String rhsCode = getCode(rhs.getType());
 			if ((cmp = lhsCode.compareTo(rhsCode)) != 0)
 				return cmp;
 		} else {
@@ -164,37 +168,37 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 				return cmp;
 		}
 		
-		BugCollection lhsCollection = bugCollectionMap.get(a);
-		BugCollection rhsCollection = bugCollectionMap.get(b);
+		BugCollection lhsCollection = bugCollectionMap.get(lhs);
+		BugCollection rhsCollection = bugCollectionMap.get(rhs);
 		
 		// Scan through bug annotations, comparing fuzzily if possible
 		
-		Iterator<BugAnnotation> lhsIter = new FilteringBugAnnotationIterator(a.annotationIterator());
-		Iterator<BugAnnotation> rhsIter = new FilteringBugAnnotationIterator(b.annotationIterator());
+		Iterator<BugAnnotation> lhsIter = new FilteringBugAnnotationIterator(lhs.annotationIterator());
+		Iterator<BugAnnotation> rhsIter = new FilteringBugAnnotationIterator(rhs.annotationIterator());
 		
 		while (lhsIter.hasNext() && rhsIter.hasNext()) {
-			BugAnnotation lhs = lhsIter.next();
-			BugAnnotation rhs = rhsIter.next();
+			BugAnnotation lhsAnnotation = lhsIter.next();
+			BugAnnotation rhsAnnotation = rhsIter.next();
 			
-			if (DEBUG) System.out.println("Compare annotations: " + lhs + "," + rhs);
+			if (DEBUG) System.out.println("Compare annotations: " + lhsAnnotation + "," + rhsAnnotation);
 
 			// Annotation classes must match exactly
-			cmp = lhs.getClass().getName().compareTo(rhs.getClass().getName());
+			cmp = lhsAnnotation.getClass().getName().compareTo(rhsAnnotation.getClass().getName());
 			if (cmp != 0) {
-				if (DEBUG) System.out.println("annotation class mismatch: " + lhs.getClass().getName() +
-						"," + rhs.getClass().getName());
+				if (DEBUG) System.out.println("annotation class mismatch: " + lhsAnnotation.getClass().getName() +
+						"," + rhsAnnotation.getClass().getName());
 				return cmp;
 			}
 			
-			if (lhs.getClass() == ClassAnnotation.class)
-				cmp = compareClasses(lhsCollection, rhsCollection, (ClassAnnotation) lhs, (ClassAnnotation) rhs);
-			else if (lhs.getClass() == MethodAnnotation.class)
-				cmp = compareMethods(lhsCollection, rhsCollection, (MethodAnnotation) lhs, (MethodAnnotation) rhs);
-			else if (lhs.getClass() == SourceLineAnnotation.class)
-				cmp = compareSourceLines(lhsCollection, rhsCollection, (SourceLineAnnotation) lhs, (SourceLineAnnotation) rhs);
+			if (lhsAnnotation.getClass() == ClassAnnotation.class)
+				cmp = compareClasses(lhsCollection, rhsCollection, (ClassAnnotation) lhsAnnotation, (ClassAnnotation) rhsAnnotation);
+			else if (lhsAnnotation.getClass() == MethodAnnotation.class)
+				cmp = compareMethods(lhsCollection, rhsCollection, (MethodAnnotation) lhsAnnotation, (MethodAnnotation) rhsAnnotation);
+			else if (lhsAnnotation.getClass() == SourceLineAnnotation.class)
+				cmp = compareSourceLines(lhsCollection, rhsCollection, (SourceLineAnnotation) lhsAnnotation, (SourceLineAnnotation) rhsAnnotation);
 			else
 				// everything else just compare directly
-				cmp = lhs.compareTo(rhs);
+				cmp = lhsAnnotation.compareTo(rhsAnnotation);
 			
 			if (cmp != 0)
 				return cmp;
