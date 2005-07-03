@@ -105,17 +105,13 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		int thenStartPos = thenBB.getFirstInstruction().getPosition();
 		int elseStartPos = elseBB.getFirstInstruction().getPosition();
 		
-		BasicBlock thenFinishBlock = findThenFinish(cfg, thenBB, elseStartPos);
+		InstructionHandle thenFinishIns = findThenFinish(cfg, thenBB, elseStartPos);
+		int thenFinishPos = thenFinishIns.getPosition();
 		
-		if (thenFinishBlock == null)
+		if (!(thenFinishIns.getInstruction() instanceof GotoInstruction))
 			return;
 		
-		Instruction lastFinishIns = thenFinishBlock.getLastInstruction().getInstruction();
-		if (!(lastFinishIns instanceof GotoInstruction))
-			return;
-		
-		int thenFinishPos = thenFinishBlock.getLastInstruction().getPosition();
-		int elseFinishPos = ((GotoInstruction) lastFinishIns).getTarget().getPosition();
+		int elseFinishPos = ((GotoInstruction) thenFinishIns.getInstruction()).getTarget().getPosition();
 		
 		if (thenFinishPos >= elseStartPos)
 			return;
@@ -236,35 +232,27 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		return bytes;
 	}
 	
-	private BasicBlock findThenFinish(CFG cfg, BasicBlock thenBB, int elsePos) {
-		//Follow fall thru links until we find a goto link past the else
-		
-		Iterator<Edge> ie = cfg.outgoingEdgeIterator(thenBB);
-		while (ie.hasNext()) {
-			Edge e = ie.next();
-			if (e.getType() == EdgeTypes.GOTO_EDGE) {
-				InstructionHandle firstInsH = e.getTarget().getFirstInstruction();
-				if (firstInsH != null) {
-					int targetPos = firstInsH.getPosition();
-					if (targetPos > elsePos)
-						return e.getSource();
+	private InstructionHandle findThenFinish(CFG cfg, BasicBlock thenBB, int elsePos) {
+		InstructionHandle inst = thenBB.getFirstInstruction();
+		while (inst == null) {
+			Iterator<Edge> ie = cfg.outgoingEdgeIterator(thenBB);
+			while (ie.hasNext()) {
+				Edge e = ie.next();
+				if (e.getType() == EdgeTypes.FALL_THROUGH_EDGE) {
+					thenBB = e.getTarget();
+					break;
 				}
 			}
+			inst = thenBB.getFirstInstruction();
 		}
 		
-		ie = cfg.outgoingEdgeIterator(thenBB);
-		while (ie.hasNext()) {
-			Edge e = ie.next();
-			if (e.getType() == EdgeTypes.FALL_THROUGH_EDGE) {
-				BasicBlock target = e.getTarget();
-				if (target.getFirstInstruction() == null)
-					return findThenFinish(cfg, target, elsePos);
-				int targetPos = target.getFirstInstruction().getPosition();
-				if (targetPos < elsePos)
-					return findThenFinish(cfg, target, elsePos);
-			}
+		InstructionHandle lastIns = inst;
+		while (inst.getPosition() < elsePos) {
+			lastIns = inst;
+			inst = inst.getNext();
 		}
-		return null;
+		
+		return lastIns;
 	}
 	
 	public void report() {
