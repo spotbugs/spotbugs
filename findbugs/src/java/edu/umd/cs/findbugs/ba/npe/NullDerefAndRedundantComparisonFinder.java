@@ -209,7 +209,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			// Figure out which control edge is made infeasible by the redundant comparison
 			boolean wantSame = (lastHandle.getInstruction().getOpcode() == Constants.IF_ACMPEQ);
 			int infeasibleEdgeType = (wantSame == definitelySame)
-					? EdgeTypes.IFCMP_EDGE : EdgeTypes.FALL_THROUGH_EDGE;
+					? EdgeTypes.FALL_THROUGH_EDGE : EdgeTypes.IFCMP_EDGE;
 			Edge infeasibleEdge = invDataflow.getCFG().getOutgoingEdgeWithType(basicBlock, infeasibleEdgeType);
 			redundantBranch.setInfeasibleEdge(infeasibleEdge);
 			
@@ -267,7 +267,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		// Determine which control edge is made infeasible by the redundant comparison
 		boolean wantNull = (opcode == Constants.IFNULL);
 		int infeasibleEdgeType = (wantNull == top.isDefinitelyNull())
-				? EdgeTypes.IFCMP_EDGE : EdgeTypes.FALL_THROUGH_EDGE;
+				? EdgeTypes.FALL_THROUGH_EDGE : EdgeTypes.IFCMP_EDGE;
 		Edge infeasibleEdge = invDataflow.getCFG().getOutgoingEdgeWithType(basicBlock, infeasibleEdgeType);
 		redundantBranch.setInfeasibleEdge(infeasibleEdge);
 		
