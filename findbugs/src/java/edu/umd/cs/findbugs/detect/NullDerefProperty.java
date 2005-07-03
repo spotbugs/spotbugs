@@ -36,6 +36,10 @@ public class NullDerefProperty extends AbstractWarningProperty {
 	/** Redundant null comparison is of a checked null value. */
 	public static final NullDerefProperty CHECKED_VALUE =
 		new NullDerefProperty("CHECKED_VALUE", PriorityAdjustment.RAISE_PRIORITY);
+	/** Redundant nullcheck of previously dereferenced value. */
 	public static final NullDerefProperty WOULD_HAVE_BEEN_A_KABOOM =
 		new NullDerefProperty("WOULD_HAVE_BEEN_A_KABOOM", PriorityAdjustment.RAISE_PRIORITY);
+	/** Redundant nullcheck created dead code. */
+	public static final NullDerefProperty CREATED_DEAD_CODE =
+		new NullDerefProperty("CREATED_DEAD_CODE", PriorityAdjustment.RAISE_PRIORITY);
 }

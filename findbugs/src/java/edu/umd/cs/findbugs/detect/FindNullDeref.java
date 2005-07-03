@@ -39,10 +39,12 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowValueChooser;
+import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
@@ -66,6 +68,8 @@ import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
@@ -106,6 +110,8 @@ public class FindNullDeref
 	// Transient state
 	private ClassContext classContext;
 	private Method method;
+	private IsNullValueDataflow invDataflow;
+	private BitSet previouslyDeadBlocks;
 	private JavaClassAndMethod nonNullReturn;
 
 	public FindNullDeref(BugReporter bugReporter) {
@@ -151,8 +157,10 @@ public class FindNullDeref
 		if (DEBUG || DEBUG_NULLARG)
 			System.out.println(SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)));
 
-		// Get the IsNullValueAnalysis for the method from the ClassContext
-		IsNullValueDataflow invDataflow = classContext.getIsNullValueDataflow(method);
+		this.previouslyDeadBlocks = findPreviouslyDeadBlocks();
+		
+		// Get the IsNullValueDataflow for the method from the ClassContext
+		invDataflow = classContext.getIsNullValueDataflow(method);
 		
 		// Create a NullDerefAndRedundantComparisonFinder object to do the actual
 		// work.  It will call back to report null derefs and redundant null comparisons
@@ -167,6 +175,28 @@ public class FindNullDeref
 		if (checkUnconditionalDeref || checkParamAnnotations || checkReturnValueAnnotations) {
 			checkCallSitesAndReturnInstructions();
 		}
+	}
+
+	/**
+	 * Find set of blocks which were known to be dead before doing the
+	 * null pointer analysis.
+	 * 
+	 * @return set of previously dead blocks, indexed by block id
+	 * @throws CFGBuilderException 
+	 * @throws DataflowAnalysisException 
+	 */
+	private BitSet findPreviouslyDeadBlocks() throws DataflowAnalysisException, CFGBuilderException {
+		BitSet deadBlocks = new BitSet();
+		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+		for (Iterator<BasicBlock> i = vnaDataflow.getCFG().blockIterator(); i.hasNext();) {
+			BasicBlock block = i.next();
+			ValueNumberFrame vnaFrame = vnaDataflow.getStartFact(block);
+			if (vnaFrame.isTop()) {
+				deadBlocks.set(block.getId());
+			}
+		}
+		
+		return deadBlocks;
 	}
 
 	/**
@@ -616,6 +646,30 @@ public class FindNullDeref
 		boolean isChecked = redundantBranch.firstValue.isChecked();
 		boolean wouldHaveBeenAKaboom = redundantBranch.firstValue.wouldHaveBeenAKaboom();
 		
+		boolean createdDeadCode = false;
+		Edge infeasibleEdge = redundantBranch.infeasibleEdge;
+		if (infeasibleEdge != null) {
+			if (DEBUG) System.out.println("Check if " + redundantBranch + " creates dead code");
+			BasicBlock target = infeasibleEdge.getTarget();
+			
+			// If the block is empty, it probably doesn't matter that it was killed.
+			// FIXME: really, we should crawl the immediately reachable blocks
+			// starting at the target block to see if any of them are dead and nonempty.
+			boolean empty =  !target.isExceptionThrower() &&
+				(target.isEmpty() || isGoto(target.getFirstInstruction().getInstruction()));
+			if (DEBUG) System.out.println("Target block is  " + (empty ? "empty" : "not empty"));
+			
+			if (!empty && !previouslyDeadBlocks.get(target.getId())) {
+				if (DEBUG) System.out.println("target was alive previously");
+				// Block was not dead before the null pointer analysis.
+				// See if it is dead now by inspecting the null value frame.
+				// If it's TOP, then the block became dead.
+				IsNullValueFrame invFrame = invDataflow.getStartFact(target);
+				createdDeadCode = invFrame.isTop();
+				if (DEBUG) System.out.println("target is now " + (createdDeadCode ? "dead" : "alive"));
+			}
+		}
+		
 		int priority = LOW_PRIORITY;
 		String warning;
 		if (redundantBranch.secondValue == null) {
@@ -638,18 +692,23 @@ public class FindNullDeref
 		if (wouldHaveBeenAKaboom) {
 			priority = HIGH_PRIORITY;
 			warning = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE";
+		} else if (isChecked) {
+			// A non-kaboom redundant null check is medium priority only
+			// if it creates dead code.
+			priority = createdDeadCode ? NORMAL_PRIORITY : LOW_PRIORITY;
 		}
-		else if (isChecked) priority = NORMAL_PRIORITY;
 
-		if (false) {
-		System.out.println("RCN" + priority + " " 
-						+ redundantBranch.firstValue + " =? "
-						+ redundantBranch.secondValue 
-						+ " : " + warning 
-						);
-		if (isChecked) System.out.println("isChecked");
-		if (wouldHaveBeenAKaboom) System.out.println("wouldHaveBeenAKaboom");
+		if (DEBUG) {
+			System.out.println("RCN" + priority + " " 
+					+ redundantBranch.firstValue + " =? "
+					+ redundantBranch.secondValue 
+					+ " : " + warning 
+			);
+			if (isChecked) System.out.println("isChecked");
+			if (wouldHaveBeenAKaboom) System.out.println("wouldHaveBeenAKaboom");
+			if (createdDeadCode) System.out.println("createdDeadCode");
 		}
+		
 		BugInstance bugInstance =
 			new BugInstance(this, warning, priority)
 				.addClassAndMethod(methodGen, sourceFile)
@@ -662,7 +721,8 @@ public class FindNullDeref
 				propertySet.addProperty(NullDerefProperty.CHECKED_VALUE);
 			if (wouldHaveBeenAKaboom) 
 				propertySet.addProperty(NullDerefProperty.WOULD_HAVE_BEEN_A_KABOOM);
-			
+			if (createdDeadCode)
+				propertySet.addProperty(NullDerefProperty.CREATED_DEAD_CODE);
 			
 			propertySet.decorateBugInstance(bugInstance);
 			
@@ -671,6 +731,17 @@ public class FindNullDeref
 		}
 
 		bugReporter.reportBug(bugInstance);
+	}
+
+	/**
+	 * Determine whether or not given instruction is a goto.
+	 * 
+	 * @param instruction the instruction
+	 * @return true if the instruction is a goto, false otherwise
+	 */
+	private boolean isGoto(Instruction instruction) {
+		return instruction.getOpcode() == Constants.GOTO
+			|| instruction.getOpcode() == Constants.GOTO_W;
 	}
 
 }
