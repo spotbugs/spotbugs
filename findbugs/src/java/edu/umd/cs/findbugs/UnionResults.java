@@ -19,10 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.IOException;
-import java.util.*;
-
-import org.dom4j.DocumentException;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Compute the union of two sets of bug results,
