@@ -953,6 +953,22 @@ factory pattern to create these objects.</p>
 	</Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.ConfusedInheritance">
+	<Details>
+		<![CDATA[
+		<p>
+		This detector for final classes that declare protected members. As this
+		class can not be derived from, the use of protected access for members is 
+		incorrect. The access should be changed to public or private to represent
+		the correct intention of the field. This was probably caused by a change in 
+		use for this class, without completely changing all of the class to the new
+		paradigm.
+		</p>
+		<p>It is a fast detector.</p>
+		]]>
+	</Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.TrainNullReturnValues">
 	<Details>
 		<![CDATA[
@@ -4132,6 +4148,21 @@ and the next method is supposed to change the state of the iterator.
     </Details>
   </BugPattern>
   
+  <BugPattern type="CI_CONFUSED_INHERITANCE">
+    <ShortDescription>Class is final but declares protected field</ShortDescription>
+    <LongDescription>Class {0} is final but declares protected field {1}</LongDescription>
+    <Details>
+    	<![CDATA[
+    	<p>
+    	This class is declared to be final, but declares fields to be protected. Since the class
+    	is final, it can not be derived from, and the use of protected is confusing. The access
+    	modifier for the field should be changed to private or public to represent the true
+    	use for the field.
+    	</p>
+    	]]>
+    </Details>
+  </BugPattern>
+
   <!--
   **********************************************************************
    BugCodes
@@ -4240,4 +4271,5 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="IMA">Inefficient Member Access</BugCode>
   <BugCode abbrev="XFB">XML Factory Bypass</BugCode>
   <BugCode abbrev="USM">Useless Subclass Method</BugCode>
+  <BugCode abbrev="CI">Confused Inheritance</BugCode>
   </MessageCollection>
