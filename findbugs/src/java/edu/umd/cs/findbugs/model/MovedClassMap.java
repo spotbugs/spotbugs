@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
  */
 public class MovedClassMap {
 	
-	private static final boolean DEBUG = true;//Boolean.getBoolean("movedClasses.debug");
+	private static final boolean DEBUG = Boolean.getBoolean("movedClasses.debug");
 	
 	private BugCollection before;
 	private BugCollection after;
