@@ -19,3 +19,5 @@ mineBugHistory
 countBugs2
 countBugsFast
 printAppVersion
+aliasedWarnings
+randomSubset
