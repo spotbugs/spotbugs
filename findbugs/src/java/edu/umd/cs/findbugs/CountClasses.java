@@ -19,8 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
+
+import edu.umd.cs.findbugs.model.ClassFeatureSet;
+import edu.umd.cs.findbugs.model.SimilarClassFinder;
 
 /**
  * @author David Hovemeyer
@@ -36,17 +40,15 @@ public class CountClasses {
 		bugCollection.readXML(args[0], new Project());
 		
 		Set<String> classesSeen = new TreeSet<String>();
-//		Set<ClassHash> classHashesSeen = new TreeSet<ClassHash>();
+		SimilarClassFinder similarClasses = new SimilarClassFinder();
 		
-//		for (Iterator<ClassHash> i = bugCollection.classHashIterator(); i.hasNext(); ) {
-//			ClassHash classHash = i.next();
-//			classesSeen.add(classHash.getClassName());
-//			classHashesSeen.add(classHash);
-//		}
+		for (Iterator<ClassFeatureSet> i = bugCollection.classFeatureSetIterator(); i.hasNext();) {
+			ClassFeatureSet classFeatureSet = i.next();
+			classesSeen.add(classFeatureSet.getClassName());
+			similarClasses.add(classFeatureSet);
+		}
 		
 		System.out.println(classesSeen.size() + " classes");
-//		System.out.println(classHashesSeen.size() + " class hash values seen");
-		
-		// FIXME: print number of dissimilar classes based on class features
+		System.out.println(similarClasses.size() + " equivalence classes");
 	}
 }

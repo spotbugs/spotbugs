@@ -374,6 +374,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 //				if (qName.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
 //					classHash = null;
 //				}
+			} else if (outerElement.equals("ClassFeatures")) {
+				if (qName.equals(ClassFeatureSet.ELEMENT_NAME)) {
+					bugCollection.setClassFeatureSet(classFeatureSet);
+					classFeatureSet = null;
+				}
 			}
 		}
 

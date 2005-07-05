@@ -25,11 +25,14 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -44,9 +47,11 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 public class ClassFeatureSet implements XMLWriteable {
 	public static final String CLASS_NAME_KEY = "Class:";
 	public static final String METHOD_NAME_KEY = "Method:";
+	public static final String CODE_LENGTH_KEY = "CodeLength:";
 	public static final String FIELD_NAME_KEY = "Field:";
 	
 	private String className;
+	private boolean isInterface;
 	private Set<String> featureSet;
 	
 	/**
@@ -56,6 +61,11 @@ public class ClassFeatureSet implements XMLWriteable {
 	public ClassFeatureSet() {
 		this.featureSet = new HashSet<String>();
 	}
+
+	/**
+	 * Minimum code length required to add a CodeLength feature.
+	 */
+	public static final int MIN_CODE_LENGTH = 10;
 	
 	/**
 	 * Initialize from given JavaClass.
@@ -65,21 +75,30 @@ public class ClassFeatureSet implements XMLWriteable {
 	 */
 	public ClassFeatureSet initialize(JavaClass javaClass) {
 		this.className = javaClass.getClassName();
+		this.isInterface = javaClass.isInterface();
 		
-		addFeature(CLASS_NAME_KEY + javaClass.getClassName());
+		addFeature(CLASS_NAME_KEY + transformClassName(javaClass.getClassName()));
 		
 		for (Method method : javaClass.getMethods()) {
 			if (!isSynthetic(method)) {
-				addFeature(
-						METHOD_NAME_KEY + method.getName() +
-						transformMethodSignature(method.getSignature()));
+				String transformedMethodSignature = transformMethodSignature(method.getSignature());
+				
+				if (method.isStatic() || !overridesSuperclassMethod(javaClass, method)) {
+					addFeature(METHOD_NAME_KEY + method.getName() + ":" + transformedMethodSignature);
+				}
+				
+				Code code = method.getCode();
+				if (code != null && code.getCode() != null && code.getCode().length >= MIN_CODE_LENGTH) {
+					addFeature(CODE_LENGTH_KEY + method.getName() + ":" + transformedMethodSignature +
+							":" + code.getCode().length);
+				}
 			}
 		}
 		
 		for (Field field : javaClass.getFields()) {
 			if (!isSynthetic(field)) {
 				addFeature(
-						FIELD_NAME_KEY + field.getName() +
+						FIELD_NAME_KEY + field.getName() + ":" +
 						transformSignature(field.getSignature()));
 			}
 		}
@@ -87,6 +106,41 @@ public class ClassFeatureSet implements XMLWriteable {
 		return this;
 	}
 	
+	/**
+	 * Determine if given method overrides a superclass or superinterface method.
+	 * 
+	 * @param javaClass class defining the method
+	 * @param method    the method
+	 * @return true if the method overrides a superclass/superinterface method, false if not
+	 * @throws ClassNotFoundException 
+	 */
+	private boolean overridesSuperclassMethod(JavaClass javaClass, Method method) {
+		if (method.isStatic())
+			return false;
+		
+		try {
+			JavaClass[] superclassList = javaClass.getSuperClasses();
+			if (superclassList != null) {
+				JavaClassAndMethod match =
+					Hierarchy.findMethod(superclassList, method.getName(), method.getSignature(), Hierarchy.INSTANCE_METHOD);
+				if (match != null)
+					return true;
+			}
+			
+			JavaClass[] interfaceList = javaClass.getAllInterfaces();
+			if (interfaceList != null) {
+				JavaClassAndMethod match =
+					Hierarchy.findMethod(interfaceList, method.getName(), method.getSignature(), Hierarchy.INSTANCE_METHOD);
+				if (match != null)
+					return true;
+			}
+			
+			return false;
+		} catch (ClassNotFoundException e) {
+			return true;
+		}
+	}
+
 	/**
 	 * Figure out if a class member (field or method) is synthetic.
 	 * 
@@ -120,6 +174,20 @@ public class ClassFeatureSet implements XMLWriteable {
 	 */
 	public void setClassName(String className) {
 		this.className = className;
+	}
+	
+	/**
+	 * @return Returns the isInterface.
+	 */
+	public boolean isInterface() {
+		return isInterface;
+	}
+	
+	/**
+	 * @param isInterface The isInterface to set.
+	 */
+	public void setInterface(boolean isInterface) {
+		this.isInterface = isInterface;
 	}
 	
 	public int getNumFeatures() {
@@ -223,14 +291,23 @@ public class ClassFeatureSet implements XMLWriteable {
 	public static final int MIN_FEATURES = 5;
 	
 	/**
-	 * Minimum fraction of features which must be shared in order
-	 * to declare two classes similar.
+	 * Minimum similarity required to declare two classes similar.
 	 */
 	public static final double MIN_MATCH = 0.60;
 	
+	/**
+	 * Similarity of classes which don't have enough features to match
+	 * exactly, but whose class names match exactly.
+	 */
+	public static final double EXACT_CLASS_NAME_MATCH = MIN_MATCH + 0.1;
+	
 	public static double similarity(ClassFeatureSet a, ClassFeatureSet b) {
-		if (a.getNumFeatures() < MIN_FEATURES || b.getNumFeatures() < MIN_FEATURES)
+		// Some features must match exactly
+		if (a.isInterface() != b.isInterface())
 			return 0.0;
+		
+		if (a.getNumFeatures() < MIN_FEATURES || b.getNumFeatures() < MIN_FEATURES)
+			return a.getClassName().equals(b.getClassName()) ? EXACT_CLASS_NAME_MATCH : 0.0;
 		
 		int numMatch = 0;
 		int max = Math.max(a.getNumFeatures(), b.getNumFeatures());

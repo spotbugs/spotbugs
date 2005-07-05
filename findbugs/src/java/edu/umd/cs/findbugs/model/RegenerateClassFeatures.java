@@ -20,10 +20,12 @@
 package edu.umd.cs.findbugs.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -51,6 +53,9 @@ public class RegenerateClassFeatures {
 		
 		ZipFile zipFile = new ZipFile(jarFile);
 		
+		ArrayList<JavaClass> classList = new ArrayList<JavaClass>();
+
+		// Add all classes to repository (for hierarchy queries)
 		Enumeration<? extends ZipEntry> entries = zipFile.entries();
 		while (entries.hasMoreElements()) {
 			ZipEntry entry = entries.nextElement();
@@ -61,8 +66,12 @@ public class RegenerateClassFeatures {
 			ClassParser parser = new ClassParser(zipFile.getInputStream(entry), entry.getName());
 			JavaClass javaClass = parser.parse();
 			
+			Repository.addClass(javaClass);
+			classList.add(javaClass);
+		}
+		
+		for (JavaClass javaClass : classList) {
 			ClassFeatureSet classFeatureSet = new ClassFeatureSet().initialize(javaClass);
-			
 			bugCollection.setClassFeatureSet(classFeatureSet);
 		}
 		
