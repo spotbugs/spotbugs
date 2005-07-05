@@ -83,7 +83,7 @@ public class SignatureParser {
 		}
 	}
 
-	private String signature;
+	private final String signature;
 
 	/**
 	 * Constructor.
@@ -92,7 +92,7 @@ public class SignatureParser {
 	 */
 	public SignatureParser(String signature) {
 		if (!signature.startsWith("("))
-			throw new IllegalStateException("Bad method signature: " + signature);
+			throw new IllegalArgumentException("Bad method signature: " + signature);
 		this.signature = signature;
 	}
 
@@ -103,6 +103,18 @@ public class SignatureParser {
 	 */
 	public Iterator<String> parameterSignatureIterator() {
 		return new ParameterSignatureIterator();
+	}
+	
+	/**
+	 * Get the method return type signature.
+	 * 
+	 * @return the method return type signature
+	 */
+	public String getReturnTypeSignature() {
+		int endOfParams = signature.lastIndexOf(')');
+		if (endOfParams < 0)
+			throw new IllegalArgumentException("Bad method signature: " + signature);
+		return signature.substring(endOfParams + 1);
 	}
 	
 	/**
