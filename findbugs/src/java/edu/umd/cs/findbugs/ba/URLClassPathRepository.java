@@ -24,9 +24,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.util.ClassPath;

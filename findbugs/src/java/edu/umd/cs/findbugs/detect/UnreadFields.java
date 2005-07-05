@@ -43,7 +43,6 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 public class UnreadFields extends BytecodeScanningDetector implements Constants2 {
 	private static final boolean DEBUG = Boolean.getBoolean("unreadfields.debug");
