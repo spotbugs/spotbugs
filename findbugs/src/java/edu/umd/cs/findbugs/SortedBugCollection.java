@@ -29,9 +29,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.xml.transform.TransformerException;
+
+import edu.umd.cs.findbugs.model.ClassFeatureSet;
 
 /**
  * An implementation of {@link BugCollection} that keeps the BugInstances
@@ -63,6 +66,7 @@ public class SortedBugCollection extends BugCollection {
 	private String summaryHTML;
 	private ProjectStats projectStats;
 //	private Map<String, ClassHash> classHashMap;
+	private Map<String, ClassFeatureSet> classFeatureSetMap;
 	private List<AppVersion> appVersionList;
 
 	private Map<String, BugInstance> uniqueIdToBugInstanceMap;
@@ -104,6 +108,7 @@ public class SortedBugCollection extends BugCollection {
 		missingClassSet = new TreeSet<String>();
 		summaryHTML = "";
 //		classHashMap = new TreeMap<String, ClassHash>();
+		classFeatureSetMap = new TreeMap<String, ClassFeatureSet>();
 		uniqueIdToBugInstanceMap = new HashMap<String, BugInstance>();
 		generatedUniqueIdCount = 0;
 		sequence = 0L;
@@ -287,7 +292,7 @@ public class SortedBugCollection extends BugCollection {
 		dup.missingClassSet.addAll(this.missingClassSet);
 		dup.summaryHTML = this.summaryHTML;
 //		dup.classHashMap.putAll(this.classHashMap);
-		// FIXME: class features
+		dup.classFeatureSetMap.putAll(this.classFeatureSetMap);
 		for (BugInstance bugInstance : dup.bugSet) {
 			uniqueIdToBugInstanceMap.put(bugInstance.getUniqueId(), bugInstance);
 		}
@@ -377,6 +382,38 @@ public class SortedBugCollection extends BugCollection {
 	//@Override
 	public long getTimestamp() {
 		return timestamp;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#getClassFeatureSet(java.lang.String)
+	 */
+	//@Override
+	public ClassFeatureSet getClassFeatureSet(String className) {
+		return classFeatureSetMap.get(className);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#setClassFeatureSet(edu.umd.cs.findbugs.model.ClassFeatureSet)
+	 */
+	//@Override
+	public void setClassFeatureSet(ClassFeatureSet classFeatureSet) {
+		classFeatureSetMap.put(classFeatureSet.getClassName(), classFeatureSet);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#classFeatureSetIterator()
+	 */
+	//@Override
+	public Iterator<ClassFeatureSet> classFeatureSetIterator() {
+		return classFeatureSetMap.values().iterator();
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#clearClassFeatures()
+	 */
+	//@Override
+	public void clearClassFeatures() {
+		classFeatureSetMap.clear();
 	}
 }
 

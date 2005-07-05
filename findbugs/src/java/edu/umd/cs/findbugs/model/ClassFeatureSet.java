@@ -19,16 +19,21 @@
 
 package edu.umd.cs.findbugs.model;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLWriteable;
 
 /**
  * Features of a class which may be used to identify it if it is renamed
@@ -36,11 +41,12 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
  * 
  * @author David Hovemeyer
  */
-public class ClassFeatureSet {
+public class ClassFeatureSet implements XMLWriteable {
 	public static final String CLASS_NAME_KEY = "Class:";
 	public static final String METHOD_NAME_KEY = "Method:";
 	public static final String FIELD_NAME_KEY = "Field:";
 	
+	private String className;
 	private Set<String> featureSet;
 	
 	/**
@@ -58,19 +64,21 @@ public class ClassFeatureSet {
 	 * @return this object
 	 */
 	public ClassFeatureSet initialize(JavaClass javaClass) {
-		featureSet.add(CLASS_NAME_KEY + javaClass.getClassName());
+		this.className = javaClass.getClassName();
+		
+		addFeature(CLASS_NAME_KEY + javaClass.getClassName());
 		
 		for (Method method : javaClass.getMethods()) {
-			if (!method.isSynthetic()) {
-				featureSet.add(
+			if (!isSynthetic(method)) {
+				addFeature(
 						METHOD_NAME_KEY + method.getName() +
 						transformMethodSignature(method.getSignature()));
 			}
 		}
 		
 		for (Field field : javaClass.getFields()) {
-			if (!field.isSynthetic()) {
-				featureSet.add(
+			if (!isSynthetic(field)) {
+				addFeature(
 						FIELD_NAME_KEY + field.getName() +
 						transformSignature(field.getSignature()));
 			}
@@ -79,8 +87,47 @@ public class ClassFeatureSet {
 		return this;
 	}
 	
+	/**
+	 * Figure out if a class member (field or method) is synthetic.
+	 * 
+	 * @param member a field or method
+	 * @return true if the member is synthetic
+	 */
+	private boolean isSynthetic(FieldOrMethod member) {
+		if (member.isSynthetic()) // this never works, but worth a try
+			return true;
+		
+		String name = member.getName();
+		
+		if (name.startsWith("class$"))
+			return true;
+		
+		if (name.startsWith("access$"))
+			return true;
+		
+		return false;
+	}
+
+	/**
+	 * @return Returns the className.
+	 */
+	public String getClassName() {
+		return className;
+	}
+	
+	/**
+	 * @param className The className to set.
+	 */
+	public void setClassName(String className) {
+		this.className = className;
+	}
+	
 	public int getNumFeatures() {
 		return featureSet.size();
+	}
+	
+	public void addFeature(String feature) {
+		featureSet.add(feature);
 	}
 	
 	public Iterator<String> featureIterator() {
@@ -151,12 +198,22 @@ public class ClassFeatureSet {
 	 * @return the transformed signature
 	 */
 	public static String transformSignature(String signature) {
+		StringBuffer buf = new StringBuffer();
+		
+		int lastBracket = signature.lastIndexOf('[');
+		if (lastBracket > 0) {
+			buf.append(signature.substring(0, lastBracket+1));
+			signature = signature.substring(lastBracket+1);
+		}
+
 		if (signature.startsWith("L")) {
-			signature = signature.substring(1, signature.length() - 2).replace('/', '.');
+			signature = signature.substring(1, signature.length() - 1).replace('/', '.');
 			signature = transformClassName(signature);
 			signature = "L" + signature.replace('.', '/') +  ";";
 		}
-		return signature;
+		buf.append(signature);
+		
+		return buf.toString();
 	}
 	
 	/**
@@ -207,5 +264,22 @@ public class ClassFeatureSet {
 		
 		System.out.println("Similarity is " + similarity(aFeatures, bFeatures));
 		System.out.println("Classes are" + (aFeatures.similarTo(bFeatures) ? "" : " not") + " similar");
+	}
+	
+	public static final String ELEMENT_NAME = "ClassFeatureSet";
+	public static final String FEATURE_ELEMENT_NAME = "Feature";
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.xml.XMLWriteable#writeXML(edu.umd.cs.findbugs.xml.XMLOutput)
+	 */
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		xmlOutput.openTag(ELEMENT_NAME, new XMLAttributeList().addAttribute("class", className));
+		for (Iterator<String> i = featureIterator(); i.hasNext(); ) {
+			String feature = i.next();
+			xmlOutput.openCloseTag(
+					FEATURE_ELEMENT_NAME,
+					new XMLAttributeList().addAttribute("value", feature));
+		}
+		xmlOutput.closeTag(ELEMENT_NAME);
 	}
 }

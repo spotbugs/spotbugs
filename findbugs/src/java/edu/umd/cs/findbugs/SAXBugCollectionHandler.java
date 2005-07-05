@@ -30,7 +30,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.ba.ClassHash;
-import edu.umd.cs.findbugs.ba.XMethodFactory;
+import edu.umd.cs.findbugs.model.ClassFeatureSet;
 
 /**
  * Build a BugCollection based on SAX events.
@@ -48,7 +48,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private BugInstance bugInstance;
 	private MethodAnnotation methodAnnotation;
 	private AnalysisError analysisError;
-	private ClassHash classHash;
+//	private ClassHash classHash;
+	private ClassFeatureSet classFeatureSet;
 	private ArrayList<String> stackTrace;
 
 	public SAXBugCollectionHandler(BugCollection bugCollection, Project project) {
@@ -212,15 +213,26 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 //					classHash = new ClassHash(className, hash);
 //					bugCollection.setClassHash(className, classHash);
 //				}
-			} else if (outerElement.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
-				if (qName.equals(ClassHash.METHOD_HASH_ELEMENT_NAME) && classHash != null) {
-					String methodName = getRequiredAttribute(attributes, "name", qName);
-					String methodSig = getRequiredAttribute(attributes, "signature", qName);
-					boolean isStatic = Boolean.valueOf(getRequiredAttribute(attributes, "isStatic", qName)).booleanValue();
-					byte[] hash = extractHash(qName, attributes);
-					classHash.setMethodHash(
-							XMethodFactory.createXMethod(classHash.getClassName(), methodName, methodSig, isStatic),
-							hash);
+//			} else if (outerElement.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
+//				if (qName.equals(ClassHash.METHOD_HASH_ELEMENT_NAME) && classHash != null) {
+//					String methodName = getRequiredAttribute(attributes, "name", qName);
+//					String methodSig = getRequiredAttribute(attributes, "signature", qName);
+//					boolean isStatic = Boolean.valueOf(getRequiredAttribute(attributes, "isStatic", qName)).booleanValue();
+//					byte[] hash = extractHash(qName, attributes);
+//					classHash.setMethodHash(
+//							XMethodFactory.createXMethod(classHash.getClassName(), methodName, methodSig, isStatic),
+//							hash);
+//				}
+			} else if (outerElement.equals("ClassFeatures")) {
+				if (qName.equals(ClassFeatureSet.ELEMENT_NAME)) {
+					String className = getRequiredAttribute(attributes, "class", qName);
+					classFeatureSet = new ClassFeatureSet();
+					classFeatureSet.setClassName(className);
+				}
+			} else if (outerElement.equals(ClassFeatureSet.ELEMENT_NAME)) {
+				if (qName.equals(ClassFeatureSet.FEATURE_ELEMENT_NAME)) {
+					String value = getRequiredAttribute(attributes, "value", qName);
+					classFeatureSet.addFeature(value);
 				}
 			} else if (outerElement.equals(BugCollection.HISTORY_ELEMENT_NAME)) {
 				if (qName.equals(AppVersion.ELEMENT_NAME)) {
@@ -358,10 +370,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				} else if (qName.equals(BugCollection.ERROR_STACK_TRACE_ELEMENT_NAME)) {
 					stackTrace.add(textBuffer.toString());
 				}
-			} else if (outerElement.equals(BugCollection.CLASS_HASHES_ELEMENT_NAME)) {
-				if (qName.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
-					classHash = null;
-				}
+//			} else if (outerElement.equals(BugCollection.CLASS_HASHES_ELEMENT_NAME)) {
+//				if (qName.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
+//					classHash = null;
+//				}
 			}
 		}
 

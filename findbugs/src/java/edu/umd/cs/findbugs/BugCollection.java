@@ -41,6 +41,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -211,6 +212,14 @@ public abstract class BugCollection {
 //	public abstract void setClassHash(String className, ClassHash classHash);
 //	
 //	public abstract Iterator<ClassHash> classHashIterator();
+	
+	public abstract ClassFeatureSet getClassFeatureSet(String className);
+	
+	public abstract void setClassFeatureSet(ClassFeatureSet classFeatureSet);
+	
+	public abstract Iterator<ClassFeatureSet> classFeatureSetIterator();
+	
+	public abstract void clearClassFeatures();
 	
 	/**
 	 * Make an exact deep copy of this BugCollection.
@@ -482,6 +491,14 @@ public abstract class BugCollection {
 //			classHash.writeXML(xmlOutput);
 //		}
 //		xmlOutput.closeTag(CLASS_HASHES_ELEMENT_NAME);
+		
+		// Class features
+		xmlOutput.openTag("ClassFeatures");
+		for (Iterator<ClassFeatureSet> i = classFeatureSetIterator(); i.hasNext();) {
+			ClassFeatureSet classFeatureSet = i.next();
+			classFeatureSet.writeXML(xmlOutput);
+		}
+		xmlOutput.closeTag("ClassFeatures");
 		
 		// AppVersions
 		xmlOutput.openTag(HISTORY_ELEMENT_NAME);
