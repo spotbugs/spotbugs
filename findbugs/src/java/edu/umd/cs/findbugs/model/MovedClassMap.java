@@ -29,16 +29,15 @@ import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
-import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 
 /**
  * Build a map of added class names to removed class names.
+ * Serves as a ClassNameRewriter that can match up renamed classes
+ * in two BugCollections.
  * 
  * @author David Hovemeyer
  */
-public class MovedClassMap {
+public class MovedClassMap implements ClassNameRewriter {
 	
 	private static final boolean DEBUG = Boolean.getBoolean("movedClasses.debug");
 	
@@ -89,70 +88,6 @@ public class MovedClassMap {
 			className = rewrittenClassName;
 		}
 		return className;
-	}
-	
-	public String rewriteMethodSignature(String methodSignature) {
-		SignatureParser parser = new SignatureParser(methodSignature);
-		
-		StringBuffer buf = new StringBuffer();
-		
-		buf.append('(');
-		for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
-			buf.append(rewriteSignature(i.next()));
-		}
-		
-		buf.append(')');
-		buf.append(rewriteSignature(parser.getReturnTypeSignature()));
-		
-		return buf.toString();
-	}
-	
-	/**
-	 * Rewrite a signature.
-	 * 
-	 * @param signature a signature (parameter, return type, or field)
-	 * @return rewritten signature with class name updated if required
-	 */
-	public String rewriteSignature(String signature) {
-		if (!signature.startsWith("L"))
-			return signature;
-		
-		String className = signature.substring(1, signature.length() - 1).replace('/', '.');
-		className = rewriteClassName(className);
-		
-		return "L" + className.replace('.', '/') + ";";
-	}
-
-	/**
-	 * Rewrite a MethodAnnotation to update the class name,
-	 * and any class names mentioned in the method signature.
-	 * 
-	 * @param annotation a MethodAnnotation
-	 * @return the possibly-updated MethodAnnotation
-	 */
-	public MethodAnnotation convertMethodAnnotation(MethodAnnotation annotation) {
-		annotation = new MethodAnnotation(
-				rewriteClassName(annotation.getClassName()),
-				annotation.getMethodName(),
-				rewriteMethodSignature(annotation.getMethodSignature()),
-				annotation.isStatic());
-		return annotation;
-	}
-
-	/**
-	 * Rewrite a FieldAnnotation to update the class name
-	 * and field signature, if needed.
-	 * 
-	 * @param annotation a FieldAnnotation
-	 * @return the possibly-updated FieldAnnotation
-	 */
-	public FieldAnnotation convertFieldAnnotation(FieldAnnotation annotation) {
-		annotation = new FieldAnnotation(
-				rewriteClassName(annotation.getClassName()),
-				annotation.getFieldName(),
-				rewriteSignature(annotation.getFieldSignature()),
-				annotation.isStatic());
-		return annotation;
 	}
 
 	/**

@@ -19,9 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-import edu.umd.cs.findbugs.model.MovedClassMap;
+import edu.umd.cs.findbugs.model.ClassNameRewriter;
+import edu.umd.cs.findbugs.model.ClassNameRewriterUtil;
+import edu.umd.cs.findbugs.model.IdentityClassNameRewriter;
 
 /**
  * Compare bug instances by only those criteria which we would expect to
@@ -29,15 +32,12 @@ import edu.umd.cs.findbugs.model.MovedClassMap;
  */
 public class VersionInsensitiveBugComparator implements WarningComparator {
 	
-	private MovedClassMap classNameRewriter;
+	private ClassNameRewriter classNameRewriter = IdentityClassNameRewriter.instance();
 	
 	public VersionInsensitiveBugComparator() {
 	}
 	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.WarningComparator#setClassNameRewriter(edu.umd.cs.findbugs.model.MovedClassMap)
-	 */
-	public void setClassNameRewriter(MovedClassMap classNameRewriter) {
+	public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
 		if (this == instance())
 			throw new IllegalStateException();
 		this.classNameRewriter = classNameRewriter; 
@@ -179,17 +179,34 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 				// ClassAnnotations should have their class names rewritten to
 				// handle moved and renamed classes.
 				
-				String lhsClassName = rewriteClassName(((ClassAnnotation)lhsAnnotation).getClassName());
-				String rhsClassName = rewriteClassName(((ClassAnnotation)rhsAnnotation).getClassName());
+				String lhsClassName = classNameRewriter.rewriteClassName(
+						((ClassAnnotation)lhsAnnotation).getClassName());
+				String rhsClassName = classNameRewriter.rewriteClassName(
+						((ClassAnnotation)rhsAnnotation).getClassName());
 				
 				return lhsClassName.compareTo(rhsClassName);
 				
-			} else if(lhsAnnotation.getClass() == MethodAnnotation.class ||
-			        lhsAnnotation.getClass() == FieldAnnotation.class) {
-				// MethodAnnotations, and FieldAnnotations
-				// may all be compared directly.
-				cmp = lhsAnnotation.compareTo(rhsAnnotation);
-				if (cmp != 0) return cmp;
+			} else if(lhsAnnotation.getClass() == MethodAnnotation.class ) {
+				// Rewrite class names in MethodAnnotations
+				MethodAnnotation lhsMethod = ClassNameRewriterUtil.convertMethodAnnotation(
+						classNameRewriter, (MethodAnnotation) lhsAnnotation);
+				MethodAnnotation rhsMethod = ClassNameRewriterUtil.convertMethodAnnotation(
+						classNameRewriter, (MethodAnnotation) rhsAnnotation);
+				
+				cmp = lhsMethod.compareTo(rhsMethod);
+				if (cmp != 0)
+					return cmp;
+				
+			} else if(lhsAnnotation.getClass() == FieldAnnotation.class) {
+				// Rewrite class names in FieldAnnotations
+				FieldAnnotation lhsField = ClassNameRewriterUtil.convertFieldAnnotation(
+						classNameRewriter, (FieldAnnotation) lhsAnnotation);
+				FieldAnnotation rhsField = ClassNameRewriterUtil.convertFieldAnnotation(
+						classNameRewriter, (FieldAnnotation) rhsAnnotation);
+				
+				cmp = lhsField.compareTo(rhsField);
+				if (cmp != 0)
+					return cmp;
 			} else if (lhsAnnotation.getClass() == SourceLineAnnotation.class) {
 				// We assume that source lines may change, but source files
 				// and bytecode offsets will not.
@@ -213,19 +230,6 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 			return 1;
 		else
 			return 0;
-	}
-
-	/**
-	 * Rewrite a class name, if appropriate.
-	 * 
-	 * @param className a classname
-	 * @return the rewritten class name
-	 */
-	private String rewriteClassName(String className) {
-		if (classNameRewriter != null)
-			return classNameRewriter.rewriteClassName(className);
-		else
-			return className;
 	}
 
 	/**

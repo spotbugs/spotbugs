@@ -27,6 +27,7 @@ import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
 import edu.umd.cs.findbugs.ba.ClassHash;
+import edu.umd.cs.findbugs.model.ClassNameRewriter;
 import edu.umd.cs.findbugs.model.MovedClassMap;
 
 /**
@@ -105,7 +106,7 @@ public class FuzzyBugComparator implements WarningComparator {
 	/** Keep track of which BugCollections the various BugInstances have come from. */
 	private IdentityHashMap<BugInstance, BugCollection> bugCollectionMap;
 	
-	private MovedClassMap classNameRewriter;
+	private ClassNameRewriter classNameRewriter;
 	
 	/**
 	 * Map of class hashes to canonicate class names used for comparison purposes.
@@ -147,7 +148,7 @@ public class FuzzyBugComparator implements WarningComparator {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.WarningComparator#setClassNameRewriter(edu.umd.cs.findbugs.model.MovedClassMap)
 	 */
-	public void setClassNameRewriter(MovedClassMap classNameRewriter) {
+	public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
 		this.classNameRewriter = classNameRewriter;
 	}
 	

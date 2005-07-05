@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.model.MovedClassMap;
+import edu.umd.cs.findbugs.model.ClassNameRewriter;
+import edu.umd.cs.findbugs.model.ClassNameRewriterUtil;
+import edu.umd.cs.findbugs.model.IdentityClassNameRewriter;
 
 /**
  * Very sloppy bug comparator: if the warnings are of the same type,
@@ -31,7 +33,7 @@ public class SloppyBugComparator implements  WarningComparator {
 	
 	private static final boolean DEBUG = Boolean.getBoolean("sloppyComparator.debug");
 	
-	private MovedClassMap classNameRewriter;
+	private ClassNameRewriter classNameRewriter = IdentityClassNameRewriter.instance();
 	
 	/**
 	 * Constructor.
@@ -39,22 +41,16 @@ public class SloppyBugComparator implements  WarningComparator {
 	public SloppyBugComparator() {
 	}
 	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.WarningComparator#setClassNameRewriter(edu.umd.cs.findbugs.model.MovedClassMap)
-	 */
-	public void setClassNameRewriter(MovedClassMap classNameRewriter) {
+	public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
 		this.classNameRewriter = classNameRewriter;
 	}
 	
-//	private int compareAllowingNull(BugAnnotation lhs, BugAnnotation rhs) {
-//		if (lhs == null || rhs == null) {
-//			if (lhs == null && rhs == null)
-//				return 0;
-//			else
-//				return (lhs == null) ? -1 : 1;
-//		}
-//		return lhs.compareTo(rhs);
-//	}
+	private int compareNullElements(Object lhs, Object rhs) {
+		if (lhs == null && rhs == null)
+			return 0;
+		else
+			return (lhs == null) ? -1 : 1;
+	}
 
 	/**
 	 * Compare class annotations.
@@ -65,15 +61,11 @@ public class SloppyBugComparator implements  WarningComparator {
 	 */
 	private int compareClassesAllowingNull(ClassAnnotation lhs, ClassAnnotation rhs) {
 		if (lhs == null || rhs == null) {
-			if (lhs == null && rhs == null) {
-				return 0;
-			} else {
-				return (lhs == null) ? -1 : 1;
-			}
+			return compareNullElements(lhs, rhs);
 		}
 		
-		String lhsClassName = rewriteClassName(lhs.getClassName());
-		String rhsClassName = rewriteClassName(rhs.getClassName());
+		String lhsClassName = classNameRewriter.rewriteClassName(lhs.getClassName());
+		String rhsClassName = classNameRewriter.rewriteClassName(rhs.getClassName());
 		
 		if (DEBUG) System.err.println("Comparing " + lhsClassName + " and " + rhsClassName);
 		
@@ -84,11 +76,7 @@ public class SloppyBugComparator implements  WarningComparator {
 	
 	private int compareMethodsAllowingNull(MethodAnnotation lhs, MethodAnnotation rhs) {
 		if (lhs == null || rhs == null) {
-			if (lhs == null && rhs == null) {
-				return 0;
-			} else {
-				return (lhs == null) ? -1 : 1;
-			}
+			return compareNullElements(lhs, rhs);
 		}
 
 		lhs = convertMethod(lhs);
@@ -99,11 +87,7 @@ public class SloppyBugComparator implements  WarningComparator {
 	
 	private int compareFieldsAllowingNull(FieldAnnotation lhs, FieldAnnotation rhs) {
 		if (lhs == null || rhs == null) {
-			if (lhs == null && rhs == null) {
-				return 0;
-			} else {
-				return (lhs == null) ? -1 : 1;
-			}
+			return compareNullElements(lhs, rhs);
 		}
 
 		lhs = convertField(lhs);
@@ -114,50 +98,22 @@ public class SloppyBugComparator implements  WarningComparator {
 		return lhs.compareTo(rhs);
 	}
 
-	/**
-	 * @param methodAnnotation
-	 * @return
-	 */
 	private MethodAnnotation convertMethod(MethodAnnotation methodAnnotation) {
-		if (classNameRewriter != null) {
-			methodAnnotation = classNameRewriter.convertMethodAnnotation(methodAnnotation);
-		}
-		return methodAnnotation;
+		return ClassNameRewriterUtil.convertMethodAnnotation(classNameRewriter, methodAnnotation);
 	}
 	
 	private FieldAnnotation convertField(FieldAnnotation fieldAnnotation) {
-		if (classNameRewriter != null) {
-			fieldAnnotation = classNameRewriter.convertFieldAnnotation(fieldAnnotation);
-		}
-		return fieldAnnotation;
+		return ClassNameRewriterUtil.convertFieldAnnotation(classNameRewriter, fieldAnnotation);
 	}
 
-	/**
-	 * If a class name rewriter is present, rewrite given class name.
-	 * Otherwise, just return it as-is.
-	 * 
-	 * @param className a class name
-	 * @return rewritten class name
-	 */
-	private String rewriteClassName(String className) {
-		return classNameRewriter != null
-				? classNameRewriter.rewriteClassName(className)
-				: className;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.util.Comparator#compare(T, T)
-	 */
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.WarningComparator#compare(edu.umd.cs.findbugs.BugInstance, edu.umd.cs.findbugs.BugInstance)
 	 */
 	public int compare(BugInstance lhs, BugInstance rhs) {
-		int cmp;
+		if (classNameRewriter == IdentityClassNameRewriter.instance())
+			throw new IllegalStateException();
 		
-		// Bug types must match
-//		cmp = lhs.getType().compareTo(rhs.getType());
-//		if (cmp != 0)
-//			return cmp;
+		int cmp;
 		
 		// Bug abbrevs must match
 		BugPattern lhsPattern = lhs.getBugPattern();

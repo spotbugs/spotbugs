@@ -17,25 +17,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs;
-
-import java.util.Comparator;
-
-import edu.umd.cs.findbugs.model.ClassNameRewriter;
+package edu.umd.cs.findbugs.model;
 
 /**
+ * ClassNameRewriter that leaves classe names unchanged.
+ * 
  * @author David Hovemeyer
  */
-public interface WarningComparator extends Comparator<BugInstance> {
-
+public class IdentityClassNameRewriter implements ClassNameRewriter {
+	
+	private static final IdentityClassNameRewriter theInstance = new IdentityClassNameRewriter();
+	
 	/**
-	 * @param classNameRewriter The classNameRewriter to set.
+	 * Get the single instance.
+	 * 
+	 * @return the instance
 	 */
-	public abstract void setClassNameRewriter(ClassNameRewriter classNameRewriter);
+	public static final IdentityClassNameRewriter instance() { return theInstance; }
 
 	/* (non-Javadoc)
-	 * @see java.util.Comparator#compare(T, T)
+	 * @see edu.umd.cs.findbugs.model.ClassNameRewriter#rewriteClassName(java.lang.String)
 	 */
-	public abstract int compare(BugInstance lhs, BugInstance rhs);
+	public String rewriteClassName(String className) {
+		return className;
+	}
 
 }
