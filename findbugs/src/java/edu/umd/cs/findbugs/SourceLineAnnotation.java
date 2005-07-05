@@ -587,6 +587,9 @@ public class SourceLineAnnotation implements BugAnnotation {
 		if (pipe < 0)
 			return EMPTY_OPCODE_LIST;
 		String later = surroundingOpcodes.substring(pipe + 1);
+		if (later.equals("")) {
+			return EMPTY_OPCODE_LIST;
+		}
 		String[] split = later.split(",");
 		return parseOpcodes(split);
 	}
