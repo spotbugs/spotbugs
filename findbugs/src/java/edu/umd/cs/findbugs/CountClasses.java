@@ -19,11 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
-
-import edu.umd.cs.findbugs.ba.ClassHash;
 
 /**
  * @author David Hovemeyer
@@ -39,15 +36,17 @@ public class CountClasses {
 		bugCollection.readXML(args[0], new Project());
 		
 		Set<String> classesSeen = new TreeSet<String>();
-		Set<ClassHash> classHashesSeen = new TreeSet<ClassHash>();
+//		Set<ClassHash> classHashesSeen = new TreeSet<ClassHash>();
 		
-		for (Iterator<ClassHash> i = bugCollection.classHashIterator(); i.hasNext(); ) {
-			ClassHash classHash = i.next();
-			classesSeen.add(classHash.getClassName());
-			classHashesSeen.add(classHash);
-		}
+//		for (Iterator<ClassHash> i = bugCollection.classHashIterator(); i.hasNext(); ) {
+//			ClassHash classHash = i.next();
+//			classesSeen.add(classHash.getClassName());
+//			classHashesSeen.add(classHash);
+//		}
 		
 		System.out.println(classesSeen.size() + " classes");
-		System.out.println(classHashesSeen.size() + " class hash values seen");
+//		System.out.println(classHashesSeen.size() + " class hash values seen");
+		
+		// FIXME: print number of dissimilar classes based on class features
 	}
 }

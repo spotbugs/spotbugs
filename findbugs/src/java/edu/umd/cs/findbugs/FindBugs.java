@@ -51,7 +51,6 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.ba.ClassObserver;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.ba.URLClassPathRepository;
@@ -1400,9 +1399,11 @@ public class FindBugs implements Constants2, ExitCodes {
 					repositoryClassList.add(jclass.getClassName());
 
 					if (bugCollectionBugReporter != null) {
-						// Add class hash.
-						bugCollectionBugReporter.getBugCollection().setClassHash(
-								jclass.getClassName(), new ClassHash().computeHash(jclass));
+//						// Add class hash.
+//						bugCollectionBugReporter.getBugCollection().setClassHash(
+//								jclass.getClassName(), new ClassHash().computeHash(jclass));
+						
+						// TODO: add class features
 					}
 				} catch (ClassFormatException e) {
 					if (DEBUG) e.printStackTrace();

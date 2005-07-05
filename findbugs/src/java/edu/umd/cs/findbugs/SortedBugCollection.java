@@ -29,12 +29,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.xml.transform.TransformerException;
-
-import edu.umd.cs.findbugs.ba.ClassHash;
 
 /**
  * An implementation of {@link BugCollection} that keeps the BugInstances
@@ -65,7 +62,7 @@ public class SortedBugCollection extends BugCollection {
 	private TreeSet<String> missingClassSet;
 	private String summaryHTML;
 	private ProjectStats projectStats;
-	private Map<String, ClassHash> classHashMap;
+//	private Map<String, ClassHash> classHashMap;
 	private List<AppVersion> appVersionList;
 
 	private Map<String, BugInstance> uniqueIdToBugInstanceMap;
@@ -106,7 +103,7 @@ public class SortedBugCollection extends BugCollection {
 		errorList = new LinkedList<AnalysisError>();
 		missingClassSet = new TreeSet<String>();
 		summaryHTML = "";
-		classHashMap = new TreeMap<String, ClassHash>();
+//		classHashMap = new TreeMap<String, ClassHash>();
 		uniqueIdToBugInstanceMap = new HashMap<String, BugInstance>();
 		generatedUniqueIdCount = 0;
 		sequence = 0L;
@@ -251,32 +248,32 @@ public class SortedBugCollection extends BugCollection {
 		this.sequence = sequence;
 	}
 	
-	/**
-	 * Get ClassHash for given class.
-	 * 
-	 * @param className name of class
-	 * @return the ClassHash for that class, or null if we don't have a hash for that class
-	 */
-	public ClassHash getClassHash(String className) {
-		return classHashMap.get(className);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.BugCollection#setClassHash(java.lang.String, edu.umd.cs.findbugs.ba.ClassHash)
-	 */
-	//@Override
-	public void setClassHash(String className, ClassHash classHash) {
-		//System.out.println("Put class hash: " + className + "->" + classHash);
-		classHashMap.put(className, classHash);
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.BugCollection#classHashIterator()
-	 */
-	//@Override
-	public Iterator<ClassHash> classHashIterator() {
-		return classHashMap.values().iterator();
-	}
+//	/**
+//	 * Get ClassHash for given class.
+//	 * 
+//	 * @param className name of class
+//	 * @return the ClassHash for that class, or null if we don't have a hash for that class
+//	 */
+//	public ClassHash getClassHash(String className) {
+//		return classHashMap.get(className);
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see edu.umd.cs.findbugs.BugCollection#setClassHash(java.lang.String, edu.umd.cs.findbugs.ba.ClassHash)
+//	 */
+//	//@Override
+//	public void setClassHash(String className, ClassHash classHash) {
+//		//System.out.println("Put class hash: " + className + "->" + classHash);
+//		classHashMap.put(className, classHash);
+//	}
+//	
+//	/* (non-Javadoc)
+//	 * @see edu.umd.cs.findbugs.BugCollection#classHashIterator()
+//	 */
+//	//@Override
+//	public Iterator<ClassHash> classHashIterator() {
+//		return classHashMap.values().iterator();
+//	}
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#duplicate()
@@ -289,7 +286,8 @@ public class SortedBugCollection extends BugCollection {
 		dup.errorList.addAll(this.errorList);
 		dup.missingClassSet.addAll(this.missingClassSet);
 		dup.summaryHTML = this.summaryHTML;
-		dup.classHashMap.putAll(this.classHashMap);
+//		dup.classHashMap.putAll(this.classHashMap);
+		// FIXME: class features
 		for (BugInstance bugInstance : dup.bugSet) {
 			uniqueIdToBugInstanceMap.put(bugInstance.getUniqueId(), bugInstance);
 		}

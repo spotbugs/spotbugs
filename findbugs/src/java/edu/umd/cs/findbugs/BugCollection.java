@@ -41,7 +41,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -207,11 +206,11 @@ public abstract class BugCollection {
 	 */
 	public abstract void setSequenceNumber(long sequence);
 	
-	public abstract ClassHash getClassHash(String className);
-	
-	public abstract void setClassHash(String className, ClassHash classHash);
-	
-	public abstract Iterator<ClassHash> classHashIterator();
+//	public abstract ClassHash getClassHash(String className);
+//	
+//	public abstract void setClassHash(String className, ClassHash classHash);
+//	
+//	public abstract Iterator<ClassHash> classHashIterator();
 	
 	/**
 	 * Make an exact deep copy of this BugCollection.
@@ -476,13 +475,13 @@ public abstract class BugCollection {
 		// Statistics
 		getProjectStats().writeXML(xmlOutput);
 		
-		// Class and method hashes
-		xmlOutput.openTag(CLASS_HASHES_ELEMENT_NAME);
-		for (Iterator<ClassHash> i = classHashIterator(); i.hasNext();) {
-			ClassHash classHash = i.next();
-			classHash.writeXML(xmlOutput);
-		}
-		xmlOutput.closeTag(CLASS_HASHES_ELEMENT_NAME);
+//		// Class and method hashes
+//		xmlOutput.openTag(CLASS_HASHES_ELEMENT_NAME);
+//		for (Iterator<ClassHash> i = classHashIterator(); i.hasNext();) {
+//			ClassHash classHash = i.next();
+//			classHash.writeXML(xmlOutput);
+//		}
+//		xmlOutput.closeTag(CLASS_HASHES_ELEMENT_NAME);
 		
 		// AppVersions
 		xmlOutput.openTag(HISTORY_ELEMENT_NAME);

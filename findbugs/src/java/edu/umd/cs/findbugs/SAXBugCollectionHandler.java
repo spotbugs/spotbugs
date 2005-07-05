@@ -205,13 +205,13 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						getRequiredAttribute(attributes, "size", qName));
 					bugCollection.getProjectStats().addClass(className, isInterface, size);
 				}
-			} else if (outerElement.equals(BugCollection.CLASS_HASHES_ELEMENT_NAME)) {
-				if (qName.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
-					String className = getRequiredAttribute(attributes, "class", qName);
-					byte[] hash = extractHash(qName, attributes);
-					classHash = new ClassHash(className, hash);
-					bugCollection.setClassHash(className, classHash);
-				}
+//			} else if (outerElement.equals(BugCollection.CLASS_HASHES_ELEMENT_NAME)) {
+//				if (qName.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
+//					String className = getRequiredAttribute(attributes, "class", qName);
+//					byte[] hash = extractHash(qName, attributes);
+//					classHash = new ClassHash(className, hash);
+//					bugCollection.setClassHash(className, classHash);
+//				}
 			} else if (outerElement.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
 				if (qName.equals(ClassHash.METHOD_HASH_ELEMENT_NAME) && classHash != null) {
 					String methodName = getRequiredAttribute(attributes, "name", qName);
