@@ -21,12 +21,26 @@ package edu.umd.cs.findbugs;
 
 import java.util.*;
 
+import edu.umd.cs.findbugs.model.MovedClassMap;
+
 /**
  * Compare bug instances by only those criteria which we would expect to
  * remain constant between versions.
  */
-public class VersionInsensitiveBugComparator implements Comparator<BugInstance> {
-	private VersionInsensitiveBugComparator() {
+public class VersionInsensitiveBugComparator implements WarningComparator {
+	
+	private MovedClassMap classNameRewriter;
+	
+	public VersionInsensitiveBugComparator() {
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.WarningComparator#setClassNameRewriter(edu.umd.cs.findbugs.model.MovedClassMap)
+	 */
+	public void setClassNameRewriter(MovedClassMap classNameRewriter) {
+		if (this == instance())
+			throw new IllegalStateException();
+		this.classNameRewriter = classNameRewriter; 
 	}
 
 	/**
@@ -161,10 +175,18 @@ public class VersionInsensitiveBugComparator implements Comparator<BugInstance> 
 			if (lhsAnnotation.getClass() != rhsAnnotation.getClass())
 				return lhsAnnotation.getClass().getName().compareTo(rhsAnnotation.getClass().getName());
 
-			if (lhsAnnotation.getClass() == ClassAnnotation.class ||
-			        lhsAnnotation.getClass() == MethodAnnotation.class ||
+			if (lhsAnnotation.getClass() == ClassAnnotation.class) {
+				// ClassAnnotations should have their class names rewritten to
+				// handle moved and renamed classes.
+				
+				String lhsClassName = rewriteClassName(((ClassAnnotation)lhsAnnotation).getClassName());
+				String rhsClassName = rewriteClassName(((ClassAnnotation)rhsAnnotation).getClassName());
+				
+				return lhsClassName.compareTo(rhsClassName);
+				
+			} else if(lhsAnnotation.getClass() == MethodAnnotation.class ||
 			        lhsAnnotation.getClass() == FieldAnnotation.class) {
-				// ClassAnnotations, MethodAnnotations, and FieldAnnotations
+				// MethodAnnotations, and FieldAnnotations
 				// may all be compared directly.
 				cmp = lhsAnnotation.compareTo(rhsAnnotation);
 				if (cmp != 0) return cmp;
@@ -191,6 +213,19 @@ public class VersionInsensitiveBugComparator implements Comparator<BugInstance> 
 			return 1;
 		else
 			return 0;
+	}
+
+	/**
+	 * Rewrite a class name, if appropriate.
+	 * 
+	 * @param className a classname
+	 * @return the rewritten class name
+	 */
+	private String rewriteClassName(String className) {
+		if (classNameRewriter != null)
+			return classNameRewriter.rewriteClassName(className);
+		else
+			return className;
 	}
 
 	/**

@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -28,6 +27,7 @@ import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
 import edu.umd.cs.findbugs.ba.ClassHash;
+import edu.umd.cs.findbugs.model.MovedClassMap;
 
 /**
  * A slightly more intellegent way of comparing BugInstances from two versions
@@ -44,7 +44,7 @@ import edu.umd.cs.findbugs.ba.ClassHash;
  * @see edu.umd.cs.findbugs.VersionInsensitiveBugComparator
  * @author David Hovemeyer
  */
-public class FuzzyBugComparator implements Comparator<BugInstance> {
+public class FuzzyBugComparator implements WarningComparator {
 	private static final boolean DEBUG = false;
 
 	// Don't use hashes for now.  Still ironing out issues there.
@@ -105,6 +105,8 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 	/** Keep track of which BugCollections the various BugInstances have come from. */
 	private IdentityHashMap<BugInstance, BugCollection> bugCollectionMap;
 	
+	private MovedClassMap classNameRewriter;
+	
 	/**
 	 * Map of class hashes to canonicate class names used for comparison purposes.
 	 */
@@ -140,6 +142,13 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 //				}
 //			}
 //		}
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.WarningComparator#setClassNameRewriter(edu.umd.cs.findbugs.model.MovedClassMap)
+	 */
+	public void setClassNameRewriter(MovedClassMap classNameRewriter) {
+		this.classNameRewriter = classNameRewriter;
 	}
 	
 	public int compare(BugInstance lhs, BugInstance rhs) {
@@ -265,11 +274,23 @@ public class FuzzyBugComparator implements Comparator<BugInstance> {
 //				rhsClassName = classHashToCanonicalClassNameMap.get(rhsHash);
 //		}
 		
-		// FIXME: use class features
+		lhsClassName = rewriteClassName(lhsClassName);
+		rhsClassName = rewriteClassName(rhsClassName);
 
 		return lhsClassName.compareTo(rhsClassName);
 	}
 	
+	/**
+	 * @param className
+	 * @return
+	 */
+	private String rewriteClassName(String className) {
+		if (classNameRewriter != null) {
+			className = classNameRewriter.rewriteClassName(className);
+		}
+		return className;
+	}
+
 	// Compare methods: either exact name and signature must match, or method hash must match
 	public int compareMethods(BugCollection lhsCollection, BugCollection rhsCollection, MethodAnnotation lhsMethod, MethodAnnotation rhsMethod) {
 		if (lhsMethod == null || rhsMethod == null) {

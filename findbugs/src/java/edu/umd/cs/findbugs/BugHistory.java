@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -41,6 +40,7 @@ import java.util.Map.Entry;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.config.CommandLine;
+import edu.umd.cs.findbugs.model.MovedClassMap;
 
 /**
  * Analyze bug results to find new, fixed, and retained bugs
@@ -201,7 +201,7 @@ public class BugHistory {
 	private SortedBugCollection origCollection, newCollection;
 	private SortedBugCollection resultCollection;
 	private SortedBugCollection originator;
-	private Comparator<BugInstance> comparator;
+	private WarningComparator comparator;
 	
 	/**
 	 * Contructor.
@@ -217,14 +217,14 @@ public class BugHistory {
 	/**
 	 * Get the Comparator used to compare BugInstances from different BugCollections.
 	 */
-	public Comparator<BugInstance> getComparator() {
+	public WarningComparator getComparator() {
 		return comparator;
 	}
 	
 	/**
 	 * @param comparator The comparator to set.
 	 */
-	public void setComparator(Comparator<BugInstance> comparator) {
+	public void setComparator(WarningComparator comparator) {
 		this.comparator = comparator;
 	}
 
@@ -457,10 +457,10 @@ public class BugHistory {
 
 		public void configure(BugHistory bugHistory, SortedBugCollection origCollection, SortedBugCollection newCollection) {
 			// Create comparator
-			Comparator<BugInstance> comparator;
+			WarningComparator comparator;
 			switch (getComparatorType()) {
 			case VERSION_INSENSITIVE_COMPARATOR:
-				comparator = VersionInsensitiveBugComparator.instance();
+				comparator = new VersionInsensitiveBugComparator();
 				break;
 			case FUZZY_COMPARATOR:
 				FuzzyBugComparator fuzzy = new FuzzyBugComparator();
@@ -474,6 +474,11 @@ public class BugHistory {
 			default:
 				throw new IllegalStateException();
 			}
+			
+			// Handle renamed classes
+			MovedClassMap classNameRewriter = new MovedClassMap(origCollection, newCollection).execute();
+			comparator.setClassNameRewriter(classNameRewriter);
+			
 			bugHistory.setComparator(comparator);
 		}
 		

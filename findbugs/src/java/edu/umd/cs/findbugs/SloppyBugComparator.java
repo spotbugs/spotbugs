@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.Comparator;
+import edu.umd.cs.findbugs.model.MovedClassMap;
 
 /**
  * Very sloppy bug comparator: if the warnings are of the same type,
@@ -27,7 +27,22 @@ import java.util.Comparator;
  * 
  * @author David Hovemeyer
  */
-public class SloppyBugComparator implements Comparator<BugInstance> {
+public class SloppyBugComparator implements  WarningComparator {
+	
+	private MovedClassMap classNameRewriter;
+	
+	/**
+	 * Constructor.
+	 */
+	public SloppyBugComparator() {
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.WarningComparator#setClassNameRewriter(edu.umd.cs.findbugs.model.MovedClassMap)
+	 */
+	public void setClassNameRewriter(MovedClassMap classNameRewriter) {
+		this.classNameRewriter = classNameRewriter;
+	}
 	
 	private int compareAllowingNull(BugAnnotation lhs, BugAnnotation rhs) {
 		if (lhs == null || rhs == null) {
@@ -38,10 +53,47 @@ public class SloppyBugComparator implements Comparator<BugInstance> {
 		}
 		return lhs.compareTo(rhs);
 	}
+
+	/**
+	 * Compare class annotations.
+	 * 
+	 * @param lhs left hand class annotation
+	 * @param rhs right hand class annotation
+	 * @return comparison of the class annotations
+	 */
+	private int compareClassesAllowingNull(ClassAnnotation lhs, ClassAnnotation rhs) {
+		if (lhs == null || rhs == null) {
+			if (lhs == null && rhs == null) {
+				return 0;
+			} else {
+				return (lhs == null) ? -1 : 1;
+			}
+		}
+		
+		String lhsClassName = rewriteClassName(lhs.getClassName());
+		String rhsClassName = rewriteClassName(rhs.getClassName());
+		
+		return lhsClassName.compareTo(rhsClassName);
+	}
 	
-	
+	/**
+	 * If a class name rewriter is present, rewrite given class name.
+	 * Otherwise, just return it as-is.
+	 * 
+	 * @param className a class name
+	 * @return rewritten class name
+	 */
+	private String rewriteClassName(String className) {
+		return classNameRewriter != null
+				? classNameRewriter.rewriteClassName(className)
+				: className;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(T, T)
+	 */
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.WarningComparator#compare(edu.umd.cs.findbugs.BugInstance, edu.umd.cs.findbugs.BugInstance)
 	 */
 	public int compare(BugInstance lhs, BugInstance rhs) {
 		int cmp;
@@ -52,7 +104,7 @@ public class SloppyBugComparator implements Comparator<BugInstance> {
 			return cmp;
 		
 		// Primary class must match
-		cmp = compareAllowingNull(lhs.getPrimaryClass(), rhs.getPrimaryClass());
+		cmp = compareClassesAllowingNull(lhs.getPrimaryClass(), rhs.getPrimaryClass());
 		if (cmp != 0)
 			return cmp;
 		
