@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.model;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -139,7 +140,7 @@ public class MovedClassMap implements ClassNameRewriter {
 		if (lastDot >= 0) {
 			className = className.substring(lastDot + 1);
 		}
-		return className;
+		return className.toLowerCase(Locale.US).replace('+', '$');
 	}
 	
 	
