@@ -108,12 +108,13 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 						.addSourceLine(this));
 						}
 		}
-		if (checkForBitIorofSignedByte && seen != I2B) 
+		if (checkForBitIorofSignedByte && seen != I2B) {
 			  bugReporter.reportBug(new BugInstance(this, "BIT_IOR_OF_SIGNED_BYTE", 
 					prevOpcode == LOR ? HIGH_PRIORITY : LOW_PRIORITY)
 						.addClassAndMethod(this)
 						.addSourceLine(this));
-		else if (seen == IOR || seen == LOR) {
+			  checkForBitIorofSignedByte = false;
+		} else if (seen == IOR || seen == LOR) {
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			OpcodeStack.Item item1 = stack.getStackItem(1);
 			
