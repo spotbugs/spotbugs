@@ -50,11 +50,7 @@ public class InefficientMemberAccess extends BytecodeScanningDetector implements
 		if (clsName.indexOf("$") >= 0)
 			super.visitClassContext(classContext);
 	}
-	
-	public void visit(Code obj) {
-		super.visit(obj);
-	}
-	
+		
 	public void sawOpcode(int seen) {
 		int varSlot;
 		if (seen == INVOKESTATIC) {

@@ -44,16 +44,11 @@ public class MutableLock extends BytecodeScanningDetector implements Constants2,
 		return super.clone();
 	}
 
-	public void visit(JavaClass obj) {
-		super.visit(obj);
-	}
-
 	public void visit(Method obj) {
 		super.visit(obj);
 		setFields.clear();
 		thisOnTOS = false;
 	}
-
 
 	public void sawOpcode(int seen) {
 

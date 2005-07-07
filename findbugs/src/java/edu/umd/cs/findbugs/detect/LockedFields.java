@@ -99,11 +99,6 @@ public class LockedFields extends BytecodeScanningDetector implements Constants2
 		}
 	}
 
-	public void visit(JavaClass obj) {
-		super.visit(obj);
-	}
-
-
 	public void visit(Field obj) {
 		super.visit(obj);
 
