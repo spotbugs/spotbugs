@@ -19,6 +19,10 @@ class Super
 	protected void test4(String s)
 	{
 	}
+	
+	public void test5(String[] s)
+	{
+	}
 }
 
 public class UselessSCMethods extends Super
@@ -42,5 +46,10 @@ public class UselessSCMethods extends Super
 	{	//don't report this, altho suspect, access has been widened
 		//perhaps this should be reported as another bug type, dunno
 		super.test4(s);
+	}
+
+	public void test5(String[] s)
+	{
+		super.test5(s);
 	}
 }
