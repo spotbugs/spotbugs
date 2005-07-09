@@ -157,11 +157,16 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 			
 			boolean match2 = sameMethod && !seenTransferOfControl;
 			boolean match3 = sameMethod && !seenReturn && largestBranchTarget < getPC();
-			if (match1 || match2 || match3)  
+			if (match1 || match2 || match3)   {
+				if (DEBUG) 
+					System.out.println("IL: " + match1 
+						+ " " + match2
+						+ " " + match3);
 				bugReporter.reportBug(new BugInstance(this, "IL_INFINITE_RECURSIVE_LOOP", HIGH_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this)
 					);
+				}
 			}
 		}
 
@@ -172,6 +177,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
                        case RETURN:
                        case DRETURN:
                        case FRETURN:
+                       case ATHROW:
 				seenReturn = true;
                                seenTransferOfControl = true;
 				break;
