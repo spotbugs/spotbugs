@@ -37,7 +37,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements C
 	private boolean seenStateChange;
 	private int largestBranchTarget;
 
-	private final static boolean DEBUG = false;
+	private final static boolean DEBUG = Boolean.getBoolean("irl.debug");
 	public InfiniteRecursiveLoop(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
