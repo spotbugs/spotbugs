@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;

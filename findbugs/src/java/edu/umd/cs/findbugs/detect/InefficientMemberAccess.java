@@ -19,7 +19,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
