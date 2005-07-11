@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.Location;
 
 /**
@@ -171,6 +172,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 * Convert to an exception path value.
 	 */
 	public IsNullValue toExceptionValue() {
+		if (getBaseKind() == NO_KABOOM_NN) return new IsNullValue(kind | EXCEPTION, locationOfKaBoom);
 		return instanceByFlagsList[(getFlags() | EXCEPTION) >> FLAG_SHIFT][getBaseKind()];
 	}
 	
@@ -179,6 +181,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 * in a method property database.
 	 */
 	public IsNullValue toMayReturnNullValue() {
+		if (getBaseKind() == NO_KABOOM_NN) return new IsNullValue(kind | RETURN_VAL, locationOfKaBoom);
 		return instanceByFlagsList[(getFlags() | RETURN_VAL) >> FLAG_SHIFT][getBaseKind()];
 	}
 
@@ -216,7 +219,9 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 * Get the instance representing a value known to be non-null
 	 * because a NPE would have occurred if it were null.
 	 */
-	public static IsNullValue noKaboomNonNullValue(Location ins) {
+	public static IsNullValue noKaboomNonNullValue(@NonNull Location ins) {
+		if (ins == null) 
+			throw new NullPointerException("ins cannot be null");
 		return new IsNullValue(NO_KABOOM_NN, ins);
 	}
 
@@ -276,6 +281,8 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	public static IsNullValue merge(IsNullValue a, IsNullValue b) {
 		if (a == b) return a;
 		if (a.equals(b)) return a;
+		int aKind = a.kind & 0xff;
+		int bKind = b.kind & 0xff;
 		int aFlags = a.getFlags();
 		int bFlags = b.getFlags();
 		
@@ -288,22 +295,16 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 		else
 			if (!(b.isNullOnSomePath() || b.isDefinitelyNull()) && a.isException())
 				combinedFlags |= EXCEPTION;
-		a = a.toBaseValue();
-		b = b.toBaseValue();
-		
 		
 		// Left hand value should be >=, since it is used
 		// as the first dimension of the matrix to index.
-		if (a.kind < b.kind) {
-			IsNullValue tmp = a;
-			a = b;
-			b = tmp;
-			int tmpFlags = aFlags;
-			aFlags = bFlags;
-			bFlags = tmpFlags;
+		if (aKind < bKind) {
+			int tmp = aKind;
+			aKind = bKind;
+			bKind = tmp;
 		}
-		assert a.kind >= b.kind;
-		int result = mergeMatrix[a.kind][b.kind];
+		assert aKind >= bKind;
+		int result = mergeMatrix[aKind][bKind];
 		
 		
 		IsNullValue resultValue;
