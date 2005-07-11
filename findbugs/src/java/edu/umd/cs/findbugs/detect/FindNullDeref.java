@@ -694,6 +694,7 @@ public class FindNullDeref
 			priority = HIGH_PRIORITY;
 			warning = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE";
 			location = locationOfKaBoom;
+			if (location == null) throw new NullPointerException("location of KaBoom is null");
 		} else if (isChecked) {
 			// A non-kaboom redundant null check is medium priority only
 			// if it creates dead code.
