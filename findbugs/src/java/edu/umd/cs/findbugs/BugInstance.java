@@ -37,6 +37,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.XField;
@@ -989,7 +990,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 * @param handle     the InstructionHandle containing the visited instruction
 	 * @return this object
 	 */
-	public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile, InstructionHandle handle) {
+	public BugInstance addSourceLine(ClassContext classContext, MethodGen methodGen, String sourceFile, @NonNull InstructionHandle handle) {
 		SourceLineAnnotation sourceLineAnnotation =
 			SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
 		if (sourceLineAnnotation != null)

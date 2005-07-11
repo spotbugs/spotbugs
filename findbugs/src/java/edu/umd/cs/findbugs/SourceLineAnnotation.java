@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
@@ -307,7 +308,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @return the SourceLineAnnotation, or null if we do not have line number information
 	 *         for the instruction
 	 */
-	public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, MethodGen methodGen, String sourceFile, InstructionHandle handle) {
+	public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, MethodGen methodGen, String sourceFile, @NonNull InstructionHandle handle) {
 		LineNumberTable table = methodGen.getLineNumberTable(methodGen.getConstantPool());
 		String className = methodGen.getClassName();
 
