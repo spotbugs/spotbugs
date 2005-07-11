@@ -27,7 +27,7 @@ public class IsNullValueTest extends TestCase {
 		assertFalse(nsp.isException());
 	}
 	public void testMerge4() {
-		IsNullValue noKaboom = IsNullValue.noKaboomNonNullValue();	
+		IsNullValue noKaboom = IsNullValue.noKaboomNonNullValue(null);	
 		IsNullValue nsp_e = IsNullValue.nullOnSimplePathValue().toExceptionValue();
 		IsNullValue nsp_e2 = IsNullValue.merge(noKaboom, nsp_e);
 		assertTrue(nsp_e2.isNullOnSomePath());

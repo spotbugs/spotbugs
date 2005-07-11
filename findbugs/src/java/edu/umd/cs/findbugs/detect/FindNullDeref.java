@@ -645,7 +645,8 @@ public class FindNullDeref
 		
 		boolean isChecked = redundantBranch.firstValue.isChecked();
 		boolean wouldHaveBeenAKaboom = redundantBranch.firstValue.wouldHaveBeenAKaboom();
-		
+		Location locationOfKaBoom = redundantBranch.firstValue.getLocationOfKaBoom();
+		 
 		boolean createdDeadCode = false;
 		Edge infeasibleEdge = redundantBranch.infeasibleEdge;
 		if (infeasibleEdge != null) {
@@ -692,6 +693,7 @@ public class FindNullDeref
 		if (wouldHaveBeenAKaboom) {
 			priority = HIGH_PRIORITY;
 			warning = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE";
+			location = locationOfKaBoom;
 		} else if (isChecked) {
 			// A non-kaboom redundant null check is medium priority only
 			// if it creates dead code.
@@ -704,6 +706,8 @@ public class FindNullDeref
 					+ redundantBranch.secondValue 
 					+ " : " + warning 
 			);
+			if (location == null) System.out.println("location is null");
+			if (location.getHandle() == null) System.out.println("location handle is null");
 			if (isChecked) System.out.println("isChecked");
 			if (wouldHaveBeenAKaboom) System.out.println("wouldHaveBeenAKaboom");
 			if (createdDeadCode) System.out.println("createdDeadCode");

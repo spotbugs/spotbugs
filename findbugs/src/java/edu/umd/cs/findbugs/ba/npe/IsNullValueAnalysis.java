@@ -336,6 +336,7 @@ public class IsNullValueAnalysis
 			} else {
 				final int edgeType = edge.getType();
 				final BasicBlock sourceBlock = edge.getSource();
+				final BasicBlock targetBlock = edge.getTarget();
 				final ValueNumberFrame targetVnaFrame = vnaDataflow.getStartFact(destBlock);
 				assert targetVnaFrame != null;
 
@@ -373,6 +374,7 @@ public class IsNullValueAnalysis
 
 					Instruction firstInDest = edge.getTarget().getFirstInstruction().getInstruction();
 			
+		
 					IsNullValue instance = fact.getInstance(firstInDest, methodGen.getConstantPool());
 					
 					
@@ -384,8 +386,11 @@ public class IsNullValueAnalysis
 					else if (!instance.isDefinitelyNotNull()) {
 						// If we're not sure that the instance is definitely non-null,
 						// update the is-null information for the dereferenced value.
+						InstructionHandle kaBoomLocation = targetBlock.getFirstInstruction();
 						ValueNumber replaceMe = vnaFrame.getInstance(firstInDest, methodGen.getConstantPool());
-						tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, IsNullValue.noKaboomNonNullValue());
+						tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, IsNullValue.noKaboomNonNullValue(
+								new Location(kaBoomLocation, targetBlock)
+								));
 					}
 				}
 			}

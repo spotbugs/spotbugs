@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.ba.Location;
+
 /**
  * A class to abstractly represent values in stack slots,
  * indicating whether thoses values can be null, non-null,
@@ -102,20 +104,29 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 
 	// Fields
 	private final int kind;
+	private final Location locationOfKaBoom;
 
 	private IsNullValue(int kind) {
 		this.kind = kind;
+		locationOfKaBoom = null;
+	}
+	private IsNullValue(int kind, Location ins) {
+		this.kind = kind;
+		locationOfKaBoom = ins;
 	}
 
 	public boolean equals(Object o) {
 		if (o == null || this.getClass() != o.getClass())
 			return false;
 		IsNullValue other = (IsNullValue) o;
-		return kind == other.kind;
+		if ( kind != other.kind) return false;
+		if (locationOfKaBoom == other.locationOfKaBoom) return true;
+		if (locationOfKaBoom == null || other.locationOfKaBoom == null) return false;
+		return locationOfKaBoom.equals(other.locationOfKaBoom);
 	}
 
 	public int hashCode() {
-		return kind;
+		return kind + locationOfKaBoom.hashCode();
 	}
 
 	private int getBaseKind() {
@@ -205,8 +216,8 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 * Get the instance representing a value known to be non-null
 	 * because a NPE would have occurred if it were null.
 	 */
-	public static IsNullValue noKaboomNonNullValue() {
-		return instanceByFlagsList[0][NO_KABOOM_NN];
+	public static IsNullValue noKaboomNonNullValue(Location ins) {
+		return new IsNullValue(NO_KABOOM_NN, ins);
 	}
 
 	/**
@@ -264,6 +275,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	 */
 	public static IsNullValue merge(IsNullValue a, IsNullValue b) {
 		if (a == b) return a;
+		if (a.equals(b)) return a;
 		int aFlags = a.getFlags();
 		int bFlags = b.getFlags();
 		
@@ -293,8 +305,13 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 		assert a.kind >= b.kind;
 		int result = mergeMatrix[a.kind][b.kind];
 		
+		
+		IsNullValue resultValue;
+		if (result == NO_KABOOM_NN) 
+			resultValue = noKaboomNonNullValue(a.locationOfKaBoom);
+		else resultValue = instanceByFlagsList[combinedFlags >> FLAG_SHIFT][result];
+		
 
-		IsNullValue resultValue = instanceByFlagsList[combinedFlags >> FLAG_SHIFT][result];
 		return resultValue;
 	}
 
@@ -373,6 +390,9 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 		default:
 			throw new IllegalStateException("unknown kind of IsNullValue: " + kind);
 		}
+	}
+	public Location getLocationOfKaBoom() {
+		return locationOfKaBoom;
 	}
 }
 
