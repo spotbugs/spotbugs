@@ -250,7 +250,7 @@ public class FindBugs implements Constants2, ExitCodes {
 							return parseClass(url.toString(), new NoCloseInputStream(zipInputStream), entryName);
 						} else if (archiveExtensionSet.contains(fileExtension)) {
 							// Add nested archive to archive work list
-							if (!url.getProtocol().equals("jar")) {
+							if (url.toString().indexOf("!/") < 0) {
 							ArchiveWorkListItem nestedItem =
 								new ArchiveWorkListItem("jar:" + url.toString() + "!/" + entryName, false);
 							archiveWorkList.addFirst(nestedItem);

@@ -16,7 +16,9 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INSTANCEOF;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
@@ -161,12 +163,15 @@ public class FindBadCast2 implements Detector {
 		}
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
+	
 			InstructionHandle handle = location.getHandle();
 			int pc = handle.getPosition();
 			Instruction ins = handle.getInstruction();
-
+	
 			if (!(ins instanceof CHECKCAST) && !(ins instanceof INSTANCEOF))
 				continue;
+			if (handle.getNext() == null) continue;
+			Instruction nextIns = handle.getNext().getInstruction();
 
 			boolean isCast = ins instanceof CHECKCAST;
 			String kind = isCast ? "checkedCast" : "instanceof";
@@ -226,7 +231,7 @@ public class FindBadCast2 implements Detector {
 				refSig2 = refSig2.substring(1);
 			}
 
-			if (refSig2.equals("Ljava/lang/Object;")) {
+			if (refSig2.equals("Ljava/lang/Object;") && !(nextIns instanceof InvokeInstruction)) {
 				// System.out.println("cast of object value to " + castType.getSignature());
 				continue;
 			}
@@ -269,6 +274,22 @@ public class FindBadCast2 implements Detector {
 				} else {
 					boolean downcast = Repository.instanceOf(castJavaClass,
 							refJavaClass);
+					if (false && downcast && refName.equals("java.lang.Object") && nextIns instanceof InvokeInstruction) {
+						InvokeInstruction nextInvokeIns =  (InvokeInstruction) nextIns;
+						Type []  argTypes = nextInvokeIns.getArgumentTypes(cpg);
+						String mName =  nextInvokeIns.getMethodName(cpg);
+						if (argTypes.length > 0 && !mName.equals("add")) {
+							Type lastArg = argTypes[argTypes.length - 1];
+							if (lastArg instanceof ObjectType) {
+								String name = ((ObjectType)lastArg).getClassName();
+								if (refName.equals(name))
+								System.out.println("Cast from " + refName + " to " + castName + " for argument of type " + name
+	+ " of " + mName
+										+ " in " + sourceFile + " : " + methodName);
+							}
+						}
+					}
+					if (refName.equals("java.lang.Object")) continue;
 					double rank = Analyze.deepInstanceOf(refJavaClass,
 							castJavaClass);
 					boolean castToConcreteCollection = concreteCollectionClasses.contains(castName)

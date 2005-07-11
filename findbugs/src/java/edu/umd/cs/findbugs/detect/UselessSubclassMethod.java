@@ -219,8 +219,14 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 			}
 		}
 		
-		if(!superclassName.equals("Object"))
+		if(!superclassName.equals("Object")) {
+			String superSuperClassName = superClass.getSuperclassName();
+			if (superSuperClassName.equals(superclassName)) {
+				throw new ClassNotFoundException(
+					"superclass of " + superclassName + " is itself");
+				}
 			return findSuperclassMethod(superClass.getSuperclassName(), subclassMethod);
+			}
 		
 		return null;
 	}
