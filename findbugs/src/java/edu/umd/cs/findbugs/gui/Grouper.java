@@ -36,10 +36,10 @@ import java.util.*;
  */
 public class Grouper <ElementType> {
 
-	public interface Callback <ElementType> {
-		public void startGroup(ElementType firstMember);
+	public interface Callback <ElementType2> {
+		public void startGroup(ElementType2 firstMember);
 
-		public void addToGroup(ElementType member);
+		public void addToGroup(ElementType2 member);
 	}
 
 	private Callback<ElementType> callback;
