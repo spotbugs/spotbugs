@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 /**
  * A class representing a location in the CFG for a method.
  * Essentially, it represents a static instruction, <em>with the important caveat</em>
@@ -46,7 +48,9 @@ public class Location implements Comparable<Location> {
 	 * @param handle     the instruction
 	 * @param basicBlock the basic block containing the instruction
 	 */
-	public Location(InstructionHandle handle, BasicBlock basicBlock) {
+	public Location(@NonNull InstructionHandle handle, @NonNull BasicBlock basicBlock) {
+		if (handle == null) throw new NullPointerException("handle cannot be null");
+		if (basicBlock == null) throw new NullPointerException("basicBlock cannot be null");
 		this.handle = handle;
 		this.basicBlock = basicBlock;
 	}
