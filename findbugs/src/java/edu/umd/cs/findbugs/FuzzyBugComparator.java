@@ -28,7 +28,6 @@ import java.util.TreeMap;
 
 import edu.umd.cs.findbugs.ba.ClassHash;
 import edu.umd.cs.findbugs.model.ClassNameRewriter;
-import edu.umd.cs.findbugs.model.MovedClassMap;
 
 /**
  * A slightly more intellegent way of comparing BugInstances from two versions
