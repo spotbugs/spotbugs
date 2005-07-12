@@ -78,7 +78,9 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 			getReady(); // If no warnings were issued, then nothing has been written yet
 
 			if (addMessages) {
+				writeBugCategories();
 				writeBugPatterns();
+				writeBugCodes();
 			}
 			
 			getBugCollection().writeEpilogue(xmlOutput);
@@ -126,6 +128,66 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 			xmlOutput.closeTag("Details");
 			
 			xmlOutput.closeTag("BugPattern");
+		}
+	}
+
+	private void writeBugCodes() throws IOException {
+		// Find bug codes reported
+		Set<String> bugCodeSet = new HashSet<String>();
+		for (Iterator<BugInstance> i = getBugCollection().iterator(); i.hasNext();) {
+			BugInstance bugInstance = i.next();
+			String bugCode = bugInstance.getAbbrev();
+			if (bugCode != null) {
+				bugCodeSet.add(bugCode);
+			}
+		}
+		// Emit element describing each reported bug code
+		for (Iterator<String> i = bugCodeSet.iterator(); i.hasNext();) {
+			String bugCode = i.next();
+			String bugCodeDescription = I18N.instance().getBugTypeDescription(bugCode);
+			if (bugCodeDescription == null)
+				continue;
+
+			XMLAttributeList attributeList = new XMLAttributeList();
+			attributeList.addAttribute("abbrev", bugCode);
+
+			xmlOutput.openTag("BugCode", attributeList);
+
+			xmlOutput.openTag("Description");
+			xmlOutput.writeText(bugCodeDescription);
+			xmlOutput.closeTag("Description");
+
+			xmlOutput.closeTag("BugCode");
+		}
+	}
+
+	private void writeBugCategories() throws IOException {
+		// Find bug categories reported
+		Set<String> bugCatSet = new HashSet<String>();
+		for (Iterator<BugInstance> i = getBugCollection().iterator(); i.hasNext();) {
+			BugInstance bugInstance = i.next();
+			BugPattern bugPattern = bugInstance.getBugPattern();
+			if (bugPattern != null) {
+				bugCatSet.add(bugPattern.getCategory());
+			}
+		}
+		// Emit element describing each reported bug code
+		for (Iterator<String> i = bugCatSet.iterator(); i.hasNext();) {
+			String bugCat = i.next();
+			String bugCatDescription = I18N.instance().getBugCategoryDescription(bugCat);
+			if (bugCatDescription == null)
+				continue;
+
+			XMLAttributeList attributeList = new XMLAttributeList();
+			attributeList.addAttribute("category", bugCat);
+
+			xmlOutput.openTag("BugCategory", attributeList);
+
+			xmlOutput.openTag("Description");
+			xmlOutput.writeText(bugCatDescription);
+			xmlOutput.closeTag("Description");
+
+			xmlOutput.closeTag("BugCategory");
 		}
 	}
 }
