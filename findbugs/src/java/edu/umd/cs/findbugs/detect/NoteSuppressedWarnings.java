@@ -62,7 +62,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor
                   BugReporter origBugReporter = b.getRealBugReporter();
 		  suppressionMatcher = new SuppressionMatcher();
                   BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, suppressionMatcher, false);
-                  b.setRealBugReporter(filterBugReporter);
+                  b.setDelegate(filterBugReporter);
 		  recursiveDetector = new NoteSuppressedWarnings(bugReporter,true);
 		  recursiveDetector.suppressionMatcher = 
 				suppressionMatcher;

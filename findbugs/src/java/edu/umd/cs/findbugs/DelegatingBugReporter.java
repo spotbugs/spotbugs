@@ -28,66 +28,80 @@ import org.apache.bcel.classfile.JavaClass;
  * @author David Hovemeyer
  */
 public class DelegatingBugReporter implements BugReporter {
-	private BugReporter realBugReporter;
+	private BugReporter delegate;
 
-	public DelegatingBugReporter(BugReporter realBugReporter) {
-		this.realBugReporter = realBugReporter;
+	/**
+	 * Constructor.
+	 * 
+	 * @param delegate another BugReporter to delegate all BugReporter methods to
+	 */
+	public DelegatingBugReporter(BugReporter delegate) {
+		this.delegate = delegate;
 	}
 
 	public BugReporter getRealBugReporter() {
-		return realBugReporter.getRealBugReporter();
+		return delegate.getRealBugReporter();
 	}
 
-	public void setRealBugReporter(BugReporter realBugReporter) {
-		this.realBugReporter = realBugReporter;
+	/**
+	 * Set BugReporter to delegate reported BugInstances to.
+	 * 
+	 * @param delegate BugReporter to delegate all BugReporter methods to
+	 */
+	public void setDelegate(BugReporter delegate) {
+		this.delegate = delegate;
+	}
+	
+	public BugReporter getDelegate() {
+		return this.delegate;
 	}
 
 	public void setEngine(FindBugs engine) {
-		realBugReporter.setEngine(engine);
+		delegate.setEngine(engine);
 	}
 
 	public void setErrorVerbosity(int level) {
-		realBugReporter.setErrorVerbosity(level);
+		delegate.setErrorVerbosity(level);
 	}
 
 	public void setPriorityThreshold(int threshold) {
-		realBugReporter.setPriorityThreshold(threshold);
+		delegate.setPriorityThreshold(threshold);
 	}
 
 	public void observeClass(JavaClass javaClass) {
-		realBugReporter.observeClass(javaClass);
+		delegate.observeClass(javaClass);
 	}
 
 	public void reportBug(BugInstance bugInstance) {
-		realBugReporter.reportBug(bugInstance);
+		delegate.reportBug(bugInstance);
 	}
 
 	public void logError(String message) {
-		realBugReporter.logError(message);
+		delegate.logError(message);
 	}
 
 	public void reportMissingClass(ClassNotFoundException ex) {
-		realBugReporter.reportMissingClass(ex);
+		delegate.reportMissingClass(ex);
 	}
 
 	public void finish() {
-		realBugReporter.finish();
+		delegate.finish();
 	}
 
 	public void reportQueuedErrors() {
-		realBugReporter.reportQueuedErrors();
+		delegate.reportQueuedErrors();
 	}
 
 	public void addObserver(BugReporterObserver observer) {
-		realBugReporter.addObserver(observer);
+		delegate.addObserver(observer);
 	}
 
 	public ProjectStats getProjectStats() {
-		return realBugReporter.getProjectStats();
+		return delegate.getProjectStats();
 	}
 
 	public void logError(String message, Throwable e) {
-		realBugReporter.logError(message, e);
+		delegate.logError(message, e);
 	}
 }
 

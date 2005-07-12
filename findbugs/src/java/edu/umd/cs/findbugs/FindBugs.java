@@ -410,7 +410,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			BugPattern bugPattern = bugInstance.getBugPattern();
 			String category = bugPattern.getCategory();
 			if (categorySet.contains(category))
-				getRealBugReporter().reportBug(bugInstance);
+				getDelegate().reportBug(bugInstance);
 		}
 	}
 
@@ -927,9 +927,9 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	public void setFilter(String filterFileName, boolean include) throws IOException, FilterException {
 		Filter filter = new Filter(filterFileName);
-		BugReporter origBugReporter = bugReporter.getRealBugReporter();
+		BugReporter origBugReporter = bugReporter.getDelegate();
 		BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, (Matcher)filter, include);
-		bugReporter.setRealBugReporter(filterBugReporter);
+		bugReporter.setDelegate(filterBugReporter);
 	}
 
 	/**
