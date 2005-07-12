@@ -3,6 +3,7 @@
 <!--
   FindBugs - Find bugs in Java programs
   Copyright (C) 2004,2005 University of Maryland
+  Copyright (C) 2005, Chris Nappin
   
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -38,6 +39,7 @@
 
   Authors:
   David Hovemeyer
+  Chris Nappin (summary table)
 -->
 
 <xsl:stylesheet
@@ -127,6 +129,42 @@
 		<li><a href="#Warnings_STYLE">Style Warnings</a></li>
 		<li><a href="#Details">Details</a></li>
 	</ul>
+
+	<h1>Summary</h1>
+	<table width="500" cellpadding="5" cellspacing="2">
+	    <tr class="tableheader">
+			<th align="left">Warning Type</th>
+			<th align="right">Number</th>
+		</tr>
+		<tr class="tablerow0">
+		    <td><a href="#Warnings_CORRECTNESS">Correctness Warnings</a></td>
+		    <td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category='CORRECTNESS'])"/></td>
+		</tr>
+		<tr class="tablerow1">
+		    <td><a href="#Warnings_I18N">Internationalization Warnings</a></td>
+		    <td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category='I18N'])"/></td>
+		</tr>
+		<tr class="tablerow0">
+		    <td><a href="#Warnings_MT_CORRECTNESS">Multithreaded Correctness Warnings</a></td>
+		    <td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category='MT_CORRECTNESS'])"/></td>
+		</tr>
+		<tr class="tablerow1">
+		    <td><a href="#Warnings_MALICIOUS_CODE">Malicious Code Vulnerability Warnings</a></td>
+		    <td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category='MALICIOUS_CODE'])"/></td>
+		</tr>
+		<tr class="tablerow0">
+		    <td><a href="#Warnings_PERFORMANCE">Performance Warnings</a></td>
+		    <td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category='PERFORMANCE'])"/></td>
+		</tr>
+		<tr class="tablerow1">
+		    <td><a href="#Warnings_STYLE">Style Warnings</a></td>
+		    <td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category='STYLE'])"/></td>
+		</tr>
+		<tr class="tablerow0">
+		    <td><b>Total</b></td>
+		    <td align="right"><b><xsl:value-of select="count(/BugCollection/BugInstance)"/></b></td>
+		</tr>
+	</table>
 
 	<h1>Warnings</h1>
 
