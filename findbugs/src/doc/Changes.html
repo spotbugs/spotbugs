@@ -14,6 +14,40 @@
 
 <h1>FindBugs Change Log</h1>
 
+<p>Changes since version 0.9.0:</p>
+<ul>
+	<li>Fixed dependence on JRE 1.5: all features should work on JRE 1.4 again</li>
+	<li>Fixed -effort command line option handling for Swing GUI</li>
+	<li>Fixed conserveSpace and workHard attributes int Ant task</li>
+	<li>Added support for effort attribute in Ant task</li>
+</ul>
+
+<p>Changes since version 0.8.8:</p>
+<ul>
+	<!-- New detectors and bug patterns -->
+	<li>XMLFactoryBypass detector to find direct allocation of xml class implementations (Dave Brosius)</li>
+	<li>InefficientMemberAccess detector to find accesses to owning class private members (Dave Brosius)</li>
+	<li>DuplicateBranches detector checks switch statements too (Dave Brosius)</li>
+	
+	<!-- Feature enhancements -->
+	<li>FindBugs available from findbugs.sourceforge.net as Java Web Start application (Dave Brosius)</li>
+	<li>Updated Japanese bug message translations (Shisei Hanai)</li>
+	<li>Improved bug detail message for covariant equals() (Shisei Hanai)</li>
+	<li>Modeling of instanceof checks is now enabled by default, making the
+		bad cast detector much more useful (Bill Pugh, David Hovemeyer)</li>
+	<li>Support for detector ordering constraints in plugin descriptor (David Hovemeyer)</li>
+	<li>Simpler option to control analysis effort: -effort:<i>value</i>, where
+		<i>value</i> is one of <code>min</code>, <code>default</code>, or <code>max</code>
+		(David Hovemeyer)
+	</li>
+	<li>Using -effort:max, FindNullDeref checks for null arguments passed to methods
+		which dereference them unconditionally (David Hovemeyer)</li>
+	<li>FindNullDeref checks @Null and @NonNull annotations for parameters
+		and return values (David Hovemeyer)</li>
+
+	<!-- Bug fixes -->
+</ul>
+
 <p>Changes since version 0.8.7:</p>
 
 <ul>
