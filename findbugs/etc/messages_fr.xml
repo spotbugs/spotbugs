@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- French translation provided by David Cotton :) -->
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   				   xsi:noNamespaceSchemaLocation="messagecollection.xsd">
+                  xsi:noNamespaceSchemaLocation="messagecollection.xsd">
 
   <!--
   **********************************************************************
@@ -16,7 +16,7 @@
 ]]>
     </Details>
   </Plugin>
-  
+
   <!--
   **********************************************************************
   Detectors
@@ -405,7 +405,7 @@
 ]]>
     </Details>
   </Detector>
-  
+
   <Detector class="edu.umd.cs.findbugs.detect.IncompatMask">
     <Details>
 <![CDATA[
@@ -498,15 +498,15 @@
     <Details>
 <![CDATA[
 <p>Ce détecteur recherche les appels à equals(java.lang.Object) sur des tableaux ou des classes finales qui ne surchargent pas la méthode equals de la classe Object. Celà signifie que la sémantique de equals est la même que ==, ce qui est probablement une erreur.</p>
-]]>    
+]]>
     </Details>
   </Detector>
-  
+
   <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted">
     <Details>
 <![CDATA[
 <p>Ce détecteur recherche les appels à Thread.interrupted() à partir d'un contexte non statique. Si l'appel provient de Thread.currentThread().interrupted(), l'exercice est inutile et il suffit d'utiliser Thread.interrupted(). Si l'appel provient d'un objet thread quelconque, c'est probablement une erreur puisque interrupted() est toujours appelé sur le thread en cours.</p>
-]]>    
+]]>
     </Details>
   </Detector>
 
@@ -515,7 +515,7 @@
 <![CDATA[
 <p>
 Ce détecteur utilise l'analyse de flôt de données pour rechercher les invocations
-de méthodes execute sur des commandes SQL (statement) dans lesquelles 
+de méthodes execute sur des commandes SQL (statement) dans lesquelles
 l'argument passé n'est pas une chaîne constante.
 </p>
 ]]>
@@ -529,7 +529,7 @@ l'argument passé n'est pas une chaîne constante.
 ]]>
     </Details>
   </Detector>
-  
+
   <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields">
     <Details>
 <![CDATA[
@@ -553,23 +553,23 @@ l'argument passé n'est pas une chaîne constante.
 ]]>
    </Details>
   </Detector>
-  
+
   <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture">
-	  <Details>
+     <Details>
 <![CDATA[
 <p>Ce détecteur recherche les clauses catch qui interceptent Exception, alors qu'aucun code dans le bloc ne déclenche Exception.</p>
 ]]>
-	  </Details>
+     </Details>
   </Detector>
-  
+
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality">
       <Details>
 <![CDATA[
 <p>Recherche les tests d'égalité en virgule flottante. C'est un détecteur rapide.</p>
 ]]>
       </Details>
-  </Detector>  
-  
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation">
     <Details>
 <![CDATA[
@@ -610,7 +610,7 @@ C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
-  
+
   <Detector class="edu.umd.cs.findbugs.detect.PublicSemaphores">
     <Details>
 <![CDATA[
@@ -622,7 +622,7 @@ C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
-  
+
   <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck">
     <Details>
 <![CDATA[
@@ -632,7 +632,7 @@ C'est un détecteur rapide.</p>
 ]]>
     </Details>
   </Detector>
-  
+
   <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble">
     <Details>
 <![CDATA[
@@ -653,7 +653,7 @@ Ce détecteur recherche les transtypages incorrects.
 ]]>
     </Details>
   </Detector>
-  
+
   <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression">
     <Details>
 <![CDATA[
@@ -930,7 +930,7 @@ et que la classe fille <i>B</i> appelle super.clone(), alors il est probable que
   <p>Cette méthode alloue un objet juste pour appeler sa méthode getClass() afin d'obtenir l'objet Class correspondant. Il est plus simple d'accèder directement à la propriété .class de la classe.</p>
 ]]>
     </Details>
-  </BugPattern>  
+  </BugPattern>
 
   <BugPattern type="DM_NEXTINT_VIA_NEXTDOUBLE">
     <ShortDescription>Utiliser la méthode nextInt de Random plutôt que nextDouble pour générer un entier aléatoire</ShortDescription>
@@ -940,7 +940,7 @@ et que la classe fille <i>B</i> appelle super.clone(), alors il est probable que
   <p>Si r est un java.util.Random, vous pouvez générer un nombre aléatoire entre 0 et n-1 en utilisant r.nextInt(n) plutôt que (int)(r.nextDouble() * n).</p>
 ]]>
     </Details>
-  </BugPattern>  
+  </BugPattern>
 
   <BugPattern type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE">
     <ShortDescription>Une chaîne non constante est passée à la méthode execute d'une commande SQL</ShortDescription>
@@ -948,13 +948,13 @@ et que la classe fille <i>B</i> appelle super.clone(), alors il est probable que
     <Details>
 <![CDATA[
   <p>Cette méthode invoque la méthode execute d'une commande SQL (statement) avec une chaîne
-  qui semble générée dynamiquement. Préférer la préparation de la commande avec 
+  qui semble générée dynamiquement. Préférer la préparation de la commande avec
   un PreparedStatement, c'est plus efficace et bien moins vulnérable aux attaques
   par injection SQL (insertion de code SQL malveillant au sein d'une requête).
 </p>
 ]]>
     </Details>
-  </BugPattern>  
+  </BugPattern>
 
 
   <BugPattern type="DM_USELESS_THREAD">
@@ -965,7 +965,7 @@ et que la classe fille <i>B</i> appelle super.clone(), alors il est probable que
   <p>Cette méthode crée un thread sans spécifier de méthode run, soit par dérivation de la classe Thread, soit en transmettant un objet Runnable. Ce thread ne fait donc rien sauf perdre du temps.</p>
 ]]>
     </Details>
-  </BugPattern>  
+  </BugPattern>
 
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>Possible double vérification d'un champ</ShortDescription>
@@ -1326,7 +1326,7 @@ synchronized() {}
 </pre>
 <p>L'utilisation de blocs synchronisés vides est bien plus subtile et dure
 à réaliser correctement que bien des gens ne le reconnaissent,
-et de plus ne correspond que rarement à la meilleure des solutions. 
+et de plus ne correspond que rarement à la meilleure des solutions.
 </p>
 ]]>
     </Details>
@@ -1893,18 +1893,16 @@ et de plus ne correspond que rarement à la meilleure des solutions.
     <LongDescription>Comparaison redondante à null dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode contient une comparaison redondante d'une référence avec null. Deux types de redondances sont signalés :
+<p>Cette méthode contient une comparaison redondante d'une référence avec null. Deux types de redondances sont signalés :</p>
 <ul>
 <li>les deux valeurs comparées sont définitivement à null</li>
 <li>une valeur est définitivement à null tandis que l'autre ne pourra jamais l'être</li>
 </ul>
-</p>
-<p>Cette alarme particulière représente deux sortes de comparaisons redondantes :
+<p>Cette alarme particulière représente deux sortes de comparaisons redondantes :</p>
 <ol>
 <li>Une valeur a été déréférencée, puis explicitement comparée à null : ceci indique souvent une erreur dans la méthode</li>
 <li>Une value littérale null a été explicitement comparée à null : ceci peut indiquer que la méthode a été modifiée sans comprendre tous ses invariants</li>
 </ol>
-</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1914,12 +1912,11 @@ et de plus ne correspond que rarement à la meilleure des solutions.
     <LongDescription>Comparaison redondante à null d'une valeur préalablement vérifiée dans {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode contient une comparaison redondante d'une référence à null. Deux types de comparaisons redondantes sont signalés :
+<p>Cette méthode contient une comparaison redondante d'une référence à null. Deux types de comparaisons redondantes sont signalés :</p>
 <ul>
 <li>les deux valeurs sont définitivement à null</li>
 <li>une valeur est définitivement à null et l'autre ne pourra jamais l'être</li>
 </ul>
-</p>
 <p>Cette alarme signale généralement qu'une variable connue pour être différente de null est comparée avec null. Bien que le test ne soit pas nécessaire, ce peut-être un simple cas de programmation défensive.</p>
 ]]>
     </Details>
@@ -2256,14 +2253,14 @@ Si le tableau transmis est assez grand pour stocker tous les éléments de la coll
 ]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="EC_BAD_ARRAY_COMPARE">
     <ShortDescription>Appel à equals() sur un tableau équivalent à ==</ShortDescription>
     <LongDescription>Les appels à equals sur un tableau sont équivalents à ==</LongDescription>
     <Details>
 <![CDATA[
 <p>Cette méthode invoque la méthode equals(Object o) d'un tableau. Comme les tableaux ne surchargent pas la méthode equals de Object, cet appel revient à comparer les adresses. Pour comparer les contenus de tableaux, utilisez java.util.Array.equals(Object[], Object[]).</p>
-]]>    
+]]>
     </Details>
   </BugPattern>
 
@@ -2273,17 +2270,17 @@ Si le tableau transmis est assez grand pour stocker tous les éléments de la coll
     <Details>
 <![CDATA[
 <p>Cette méthode invoque la méthode equals(Object o) d'une classe finale qui ne surcharge pas la méthode de la classe Object, et donc qui agit comme le test d'identité ==. Il est correcte d'utiliser la méthode equals(), mais vous devriez envisager de surcharger cette méthode dans la classe.</p>
-]]>    
+]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="STI_INTERRUPTED_ON_CURRENTTHREAD">
     <ShortDescription>Utilisation superflue d'un appel à currentThread() pour appeler interrupted()</ShortDescription>
     <LongDescription>La méthode {1} invoque inutilement currentThread() juste pour appeler interrupted()</LongDescription>
     <Details>
 <![CDATA[
 <p>Cette méthode invoque Thread.currentThread() juste pour appeler la méthode interrupted(). Comme interrupted() est une méthode statique, il est plus simple et facile d'utiliser Thread.interrupted().</p>
-]]>    
+]]>
     </Details>
   </BugPattern>
 
@@ -2293,7 +2290,7 @@ Si le tableau transmis est assez grand pour stocker tous les éléments de la coll
     <Details>
 <![CDATA[
 <p>Cette méthode invoque Thread.interrupted() sur un objet Thread qui n'est pas le thread actif. Pusique la méthode interrupted() est statique, la méthode interrupted() sera appelée sur un objet différent de celui auquel l'auteur du code pensait.</p>
-]]>    
+]]>
     </Details>
   </BugPattern>
 
@@ -2306,7 +2303,7 @@ Si le tableau transmis est assez grand pour stocker tous les éléments de la coll
 ]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="DLS_DEAD_LOCAL_STORE">
     <ShortDescription>Alimentation à perte d'une variable locale</ShortDescription>
     <LongDescription>Alimentation à perte d'une variable locale dans la méthode {1}</LongDescription>
@@ -2346,7 +2343,7 @@ Si le tableau transmis est assez grand pour stocker tous les éléments de la coll
 ]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="ISC_INSTANTIATE_STATIC_CLASS">
     <ShortDescription>Instantiation inutile d'une classe qui n'a que des méthodes statiques</ShortDescription>
     <LongDescription>La méthode {1} instancie une classe qui n'a que des méthodes statiques</LongDescription>
@@ -2372,13 +2369,13 @@ Si le tableau transmis est assez grand pour stocker tous les éléments de la coll
     <LongDescription>Test d'égalité en virgule flottane dans {1}.</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette opération teste l'égalité de deux valeurs en virgule flottante. Les calculs en virgule flottante pouvant introduire des arrondis, les valeurs flottantes ou doubles peuvent être imprécises. Pour les valeurs qui doivent être précises, telles que les valeurs monétaires, pensez à utiliser un type à précision fixe tel qu'un BigDecimal. Pour les valeurs qui n'ont pas besoin d'être précises, pensez à tester l'égalité sur une portée quelconque, par exemple : 
-<code>if ( Math.abs(x - y) < .0000001 )</code>.
+<p>Cette opération teste l'égalité de deux valeurs en virgule flottante. Les calculs en virgule flottante pouvant introduire des arrondis, les valeurs flottantes ou doubles peuvent être imprécises. Pour les valeurs qui doivent être précises, telles que les valeurs monétaires, pensez à utiliser un type à précision fixe tel qu'un BigDecimal. Pour les valeurs qui n'ont pas besoin d'être précises, pensez à tester l'égalité sur une portée quelconque, par exemple :
+<code>if ( Math.abs(x - y) &lt; .0000001 )</code>.
 Cf section 4.2.4 des spécifications du langage Java.</p>
     ]]>
-  	  </Details>
+     </Details>
   </BugPattern>
-    
+
   <BugPattern type="UM_UNNECESSARY_MATH">
     <ShortDescription>Appel d'une méthode statique de la classe Math sur une valeur constante</ShortDescription>
     <LongDescription>Appel d'une méthode statique de la classe Math sur une valeur constante</LongDescription>
@@ -2415,7 +2412,7 @@ Cf section 4.2.4 des spécifications du langage Java.</p>
 ]]>
     </Details>
   </BugPattern>
-  
+
   <BugPattern type="CD_CIRCULAR_DEPENDENCY">
     <ShortDescription>Dépendance circulaire entre des classes</ShortDescription>
     <LongDescription>La classe {0} a une dépendance circulaire avec d'autre classes</LongDescription>
@@ -2425,7 +2422,7 @@ Cf section 4.2.4 des spécifications du langage Java.</p>
     ]]>
     </Details>
   </BugPattern>
-    
+
   <BugPattern type="RI_REDUNDANT_INTERFACES">
     <ShortDescription>Classe implémentant la même interface que sa super-classe</ShortDescription>
     <LongDescription>La classe {0} implémente la même interface que sa classe mère</LongDescription>
@@ -2441,18 +2438,18 @@ Cf section 4.2.4 des spécifications du langage Java.</p>
     <LongDescription>Incrémentation compliquée, subtile au incorrecte dans la boucle for {1} </LongDescription>
     <Details>
 <![CDATA[
-	<p>Etes vous certain que cette boucle incrémente la variable voulue ?
-	Il apparaît qu'une autre variable est initialisée et vérifiée par la boucle.
+   <p>Etes vous certain que cette boucle incrémente la variable voulue ?
+   Il apparaît qu'une autre variable est initialisée et vérifiée par la boucle.
 </p>
 ]]>
     </Details>
   </BugPattern>
 
     <BugPattern type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD">
-	  <ShortDescription>La classe hérite d'une classe action Struts et utilise les variables de l'instance.</ShortDescription>
-	  <LongDescription>La classe {0} hérite d'une classe action Struts et utilise les variables de l'instance.</LongDescription>
-	  <Details>
-	<![CDATA[
+     <ShortDescription>La classe hérite d'une classe action Struts et utilise les variables de l'instance.</ShortDescription>
+     <LongDescription>La classe {0} hérite d'une classe action Struts et utilise les variables de l'instance.</LongDescription>
+     <Details>
+   <![CDATA[
     <p>
     Cette classe hérite d'une classe action Struts, et utilise une variable de cette instance.
     Puisqu'une seule instance de la classe action Struts est créée par le cadre de travail Struts
@@ -2464,10 +2461,10 @@ Cf section 4.2.4 des spécifications du langage Java.</p>
     </BugPattern>
 
     <BugPattern type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD">
-	  <ShortDescription>La classe hérite de Servlet et utilise les variables de l'instance.</ShortDescription>
-	  <LongDescription>La classe {0} hérite de Servlet et utilise les variables de l'instance.</LongDescription>
-	  <Details>
-	<![CDATA[
+     <ShortDescription>La classe hérite de Servlet et utilise les variables de l'instance.</ShortDescription>
+     <LongDescription>La classe {0} hérite de Servlet et utilise les variables de l'instance.</LongDescription>
+     <Details>
+   <![CDATA[
     <p>
     Cette classe hérite de la classe Servlet, et utilise une variable de l'instance.
     Puisqu'une seule instance d'une classe Servlet est créée par le cadre de travail j2ee,
@@ -2479,12 +2476,12 @@ Cf section 4.2.4 des spécifications du langage Java.</p>
     </BugPattern>
 
     <BugPattern type="PS_PUBLIC_SEMAPHORES">
-	  <ShortDescription>La classe expose sa synchronisation et ses sémaphores dans son interface publique.</ShortDescription>
-	  <LongDescription>La classe {0} expose sa synchronisation et ses sémaphores dans son interface publique.</LongDescription>
-	  <Details>
-	<![CDATA[
+     <ShortDescription>La classe expose sa synchronisation et ses sémaphores dans son interface publique.</ShortDescription>
+     <LongDescription>La classe {0} expose sa synchronisation et ses sémaphores dans son interface publique.</LongDescription>
+     <Details>
+   <![CDATA[
     <p>
-    Cette classe utilise la synchronisation avec with wait(), notify() or notifyAll() sur elle-même 
+    Cette classe utilise la synchronisation avec with wait(), notify() or notifyAll() sur elle-même
     (la référence this). Les classes qui utilise cette classes peuvent de plus utiliser une instance de cette
     classe comme un objet de synchronisation. Du fait que deux classes peuvent utiliser le même objet pour
     la synchronisation, la cohérence en environnement multitâche devient suspecte.
@@ -2494,14 +2491,14 @@ Cf section 4.2.4 des spécifications du langage Java.</p>
     ]]>
       </Details>
     </BugPattern>
-    
+
   <BugPattern type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL">
     <ShortDescription>Valeur entière transtypée en nombre flottant passée à Math.ceil</ShortDescription>
     <LongDescription>Une valeur entière est transtypée en nombre flottant puis passée à Math.ceil dans {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-Ce code convertit une valeur entière en nombre flottant à double précision et 
+Ce code convertit une valeur entière en nombre flottant à double précision et
 passe le résultat à la méthode Math.ceil(), qui arrondit un nombre flottant à sa valeur
 entière immédiatement supérieure. Cette opération n'a pas de raison d'être, puisque
 le transtypage d'un entier en double donne un nombre sans valeur après la virgule.
@@ -2512,7 +2509,7 @@ visait l'utilisation de l'arithmétique sur un nombre flottant en double précisio
 ]]>
     </Details>
   </BugPattern>
-   
+
   <BugPattern type="ICAST_IDIV_CAST_TO_DOUBLE">
     <ShortDescription>Résultat d'une division entière transtypé en nombre flottant</ShortDescription>
     <LongDescription>Résultat d'une division entière transtypé en nombre flottant à double précision dans {1}</LongDescription>
@@ -2549,7 +2546,7 @@ double value2 =  x / (double) y;
 <p>
 Ce code transtype un object de type Collection vers un type de collection abstrait
 (tel que Collection). Assurez vous que l'objet est bien du type précisé.
-Si vous désirez par exemple faire une itération sur une collection, le transtypage 
+Si vous désirez par exemple faire une itération sur une collection, le transtypage
 vers Set ou List est inutile.
 </p>
 ]]>
@@ -2573,7 +2570,7 @@ Ce trantypage lancera toujours une exception ClassCastException.
 <![CDATA[
 <p>
 La faisablité du transtypage n'est pas vérifiée, et tous les objets candidats au transtypage
-ne sont pas légitimes. Assurez vous que la logique du programme est correcte et que 
+ne sont pas légitimes. Assurez vous que la logique du programme est correcte et que
 le transtypage n'échouera pas.
 </p>
 ]]>
@@ -2585,7 +2582,7 @@ le transtypage n'échouera pas.
     <Details>
 <![CDATA[
 <p>
-Ce code transtype une collection abtraite (telles que Collection, List, ou Set) 
+Ce code transtype une collection abtraite (telles que Collection, List, ou Set)
 vers une implémentation concrète spécifique (telles que ArrayList ou HashSet).
 Ceci n'est pas forcément correct, et peut rendre votre code plus fragile,
 puisqu'il un éventuel refactoring futur avec une autre implémentation
@@ -2595,7 +2592,7 @@ des classes abstraites est recommandée.
 ]]>
     </Details>
   </BugPattern>
-   
+
   <BugPattern type="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION">
     <ShortDescription>Syntaxe d'expression régulière invalide</ShortDescription>
     <LongDescription>Syntaxe d'expression régulière invalide {1}</LongDescription>
@@ -2643,7 +2640,7 @@ de la taille du décalage)</p>
 <p>
 Un décalage de n bits est effectué avec n hors des limites (0..31).
 Ceci résulte en l'utilisation des 5 bits inférieurs de l'entier pour décider
-de la valeur du décalage. Ce n'est sans doute pas l'effet recherché et est 
+de la valeur du décalage. Ce n'est sans doute pas l'effet recherché et est
 pour le moins source de confusion.
 </p>
 ]]>
@@ -2674,7 +2671,7 @@ La valeur de la constante de mois excède les limites attendues (entre 0 et 11).
     </Details>
   </BugPattern>
 
-  
+
    <!--
   **********************************************************************
    BugCodes

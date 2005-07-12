@@ -2929,7 +2929,7 @@ body of an <code>if</code> statement, e.g.:</p>
 be null because it was previously dereferences and if it were null a null pointer
 exception would have occurred. Essentially, this code and the previous dereference
 disagree as to whether this value is allowed to be null. Either the check is redundant
-or the previous dereference is erroneous.
+or the previous dereference is erroneous.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2939,7 +2939,7 @@ or the previous dereference is erroneous.
     <Details>
 <![CDATA[
 <p> This method contains a redundant check of a known null value against
-the constant null.
+the constant null.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2952,7 +2952,7 @@ the constant null.
     <Details>
 <![CDATA[
 <p> This method contains a redundant check of a known non-null value against
-the constant null.
+the constant null.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2962,7 +2962,7 @@ the constant null.
     <Details>
 <![CDATA[
 <p> This method contains a redundant comparison of two references known to 
-both be definitely null.
+both be definitely null.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2974,7 +2974,7 @@ both be definitely null.
     <Details>
 <![CDATA[
 <p> This method contains a reference known to be non-null with another reference
-known to be null.
+known to be null.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2988,11 +2988,11 @@ known to be null.
 <![CDATA[
 <p> This method contains a redundant comparison of a reference value
 to null. Two types of redundant comparison are reported:
+</p>
 <ul>
 <li> Both values compared are definitely null</li>
 <li> One value is definitely null and the other is definitely not null</li>
 </ul>
-</p>
 
 <p> This particular warning generally indicates that a
 value known not to be null was checked against null.
@@ -3666,7 +3666,7 @@ does not need to be created, just access the static methods directly using the c
 	consider using a fixed-precision type such as BigDecimal.
     For values that need not be precise, consider comparing for equality
     within some range, for example: 
-    <code>if ( Math.abs(x - y) < .0000001 )</code>.
+    <code>if ( Math.abs(x - y) &lt; .0000001 )</code>.
 	See the Java Language Specification, section 4.2.4.
     </p>
     ]]>
@@ -4139,15 +4139,14 @@ and the next method is supposed to change the state of the iterator.
     	This method allocates a specific implementation of an xml interface. It is preferable to use
 		the supplied factory classes to create these objects so that the implementation can be
 		changed at runtime. See 
+    	</p>
 		<ul>
 			<li>javax.xml.parsers.DocumentBuilderFactory</li>
 			<li>javax.xml.parsers.SAXParserFactory</li>
 			<li>javax.xml.transform.TransformerFactory</li>
 			<li>org.w3c.dom.Document.create<i>XXXX</i></li>
-			
 		</ul>
-		for details.
-    	</p>
+		<p>for details.</p>
     	]]>
     </Details>
   </BugPattern>
