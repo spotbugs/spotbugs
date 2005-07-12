@@ -61,6 +61,8 @@ public class AddMessages {
 		Iterator<BugInstance> bugInstanceIter = bugCollection.iterator();
 
 		Set<String> bugTypeSet = new HashSet<String>();
+		Set<String> bugCategorySet = new HashSet<String>();
+		Set<String> bugCodeSet = new HashSet<String>();
 
 		// Add short and long descriptions to BugInstance elements.
 		// We rely on the Document and the BugCollection storing
@@ -73,6 +75,9 @@ public class AddMessages {
 			bugTypeSet.add(bugType);
 
 			BugPattern bugPattern = bugInstance.getBugPattern();
+			
+			bugCategorySet.add(bugPattern.getCategory());
+			bugCodeSet.add(bugPattern.getAbbrev());
 
 			element.addElement("ShortMessage").addText(
 				bugPattern != null
@@ -92,6 +97,42 @@ public class AddMessages {
 		}
 
 		// Add BugPattern elements for each referenced bug types.
+		addBugCategories(bugCategorySet);
+		addBugPatterns(bugTypeSet);
+		addBugCodes(bugCodeSet);
+	}
+
+	/**
+	 * Add BugCategory elements.
+	 * 
+	 * @param bugCategorySet all bug categories referenced in the BugCollection
+	 */
+	private void addBugCategories(Set<String> bugCategorySet) {
+		Element root = document.getRootElement();
+		for (String category : bugCategorySet) {
+			Element element = root.addElement("BugCategory");
+			element.addAttribute("category", category);
+			Element description = element.addElement("Description");
+			description.setText(I18N.instance().getBugCategoryDescription(category));
+		}
+	}
+
+	/**
+	 * Add BugCode elements.
+	 * 
+	 * @param bugCodeSet all bug codes (abbrevs) referenced in the BugCollection
+	 */
+	private void addBugCodes(Set<String> bugCodeSet) {
+		Element root = document.getRootElement();
+		for (String bugCode : bugCodeSet) {
+			Element element = root.addElement("BugCode");
+			element.addAttribute("abbrev", bugCode);
+			Element description = element.addElement("Description");
+			description.setText(I18N.instance().getBugTypeDescription(bugCode));
+		}
+	}
+
+	private void addBugPatterns(Set<String> bugTypeSet) {
 		Element root = document.getRootElement();
 		for (Iterator<String> bugTypeIter = bugTypeSet.iterator(); bugTypeIter.hasNext(); ) {
 			String bugType = bugTypeIter.next();
