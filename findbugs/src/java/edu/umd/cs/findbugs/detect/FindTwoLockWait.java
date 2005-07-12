@@ -47,6 +47,8 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 	private BugReporter bugReporter;
 	private JavaClass javaClass;
 
+	private boolean sawTwoLockWait = false;
+	private boolean sawTwoLockNotify = false;
 	public FindTwoLockWait(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
@@ -57,7 +59,7 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 
 	public void visitClassContext(ClassContext classContext) {
 		javaClass = classContext.getJavaClass();
-
+		sawTwoLockWait = sawTwoLockNotify = false;
 		Method[] methodList = javaClass.getMethods();
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
@@ -96,23 +98,24 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 		ConstantPoolGen cpg = mg.getConstantPool();
 
 		int lockCount = mg.isSynchronized() ? 1 : 0;
-		boolean sawWait = false;
+		boolean sawWaitOrNotify = false;
 
 		InstructionHandle handle = mg.getInstructionList().getStart();
-		while (handle != null && !(lockCount >= 2 && sawWait)) {
+		while (handle != null && !(lockCount >= 2 && sawWaitOrNotify)) {
 			Instruction ins = handle.getInstruction();
 			if (ins instanceof MONITORENTER)
 				++lockCount;
 			else if (ins instanceof INVOKEVIRTUAL) {
 				INVOKEVIRTUAL inv = (INVOKEVIRTUAL) ins;
-				if (inv.getMethodName(cpg).equals("wait"))
-					sawWait = true;
+				String methodName = inv.getMethodName(cpg);
+				if (methodName.equals("wait") || methodName.startsWith("notify"))
+					sawWaitOrNotify = true;
 			}
 
 			handle = handle.getNext();
 		}
 
-		return lockCount >= 2 && sawWait;
+		return lockCount >= 2 && sawWaitOrNotify;
 	}
 
 	public void visitLocation(ClassContext classContext, Location location, MethodGen methodGen, LockDataflow dataflow) throws DataflowAnalysisException {
@@ -123,10 +126,23 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 			if (count > 1) {
 				// A wait with multiple locks held?
 				String sourceFile = javaClass.getSourceFileName();
-				bugReporter.reportBug(new BugInstance(this, "TLW_TWO_LOCK_WAIT", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "TLW_TWO_LOCK_WAIT", sawTwoLockNotify ? HIGH_PRIORITY : NORMAL_PRIORITY)
 						.addClass(javaClass)
 						.addMethod(methodGen, sourceFile)
 						.addSourceLine(classContext, methodGen, sourceFile, location.getHandle()));
+				sawTwoLockWait = true;
+			}
+		}
+		if (Hierarchy.isMonitorNotify(location.getHandle().getInstruction(), cpg)) {
+			int count = dataflow.getFactAtLocation(location).getNumLockedObjects();
+			if (count > 1) {
+				// A notify with multiple locks held?
+				String sourceFile = javaClass.getSourceFileName();
+				bugReporter.reportBug(new BugInstance(this, "TLW_TWO_LOCK_NOTIFY", sawTwoLockWait ? HIGH_PRIORITY : NORMAL_PRIORITY)
+						.addClass(javaClass)
+						.addMethod(methodGen, sourceFile)
+						.addSourceLine(classContext, methodGen, sourceFile, location.getHandle()));
+				sawTwoLockNotify = true;
 			}
 		}
 	}

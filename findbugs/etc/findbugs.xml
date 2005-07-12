@@ -183,7 +183,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" 
             speed="slow"
-            reports="TLW_TWO_LOCK_WAIT" />
+            reports="TLW_TWO_LOCK_WAIT,TLW_TWO_LOCK_NOTIFY" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" 
             speed="fast" reports="UW_UNCOND_WAIT" />
@@ -561,6 +561,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="SP" type="SP_SPIN_ON_FIELD" category="MT_CORRECTNESS" />
   <BugPattern abbrev="NS" type="NS_NON_SHORT_CIRCUIT" category="CORRECTNESS" />
   <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_WAIT" category="MT_CORRECTNESS" />
+   <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_NOTIFY" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UW" type="UW_UNCOND_WAIT" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UR" type="UR_UNINIT_READ" category="CORRECTNESS" />
   <BugPattern abbrev="UG" type="UG_SYNC_SET_UNSYNC_GET" category="MT_CORRECTNESS" />

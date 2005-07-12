@@ -161,6 +161,26 @@ public class Hierarchy {
 		return (methodName.equals("notify") || methodName.equals("notifyAll")) &&
 		        methodSig.equals("()V");
 	}
+	/**
+	 * Determine if given Instruction is a monitor wait.
+	 * 
+	 * @param ins the Instruction
+	 * @param cpg the ConstantPoolGen for the Instruction
+	 *
+	 * @return true if the instruction is a monitor wait, false if not
+	 */
+	public static boolean isMonitorNotify(Instruction ins, ConstantPoolGen cpg) {
+		if (!(ins instanceof InvokeInstruction))
+			return false;
+		if (ins.getOpcode() == Constants.INVOKESTATIC)
+			return false;
+		
+		InvokeInstruction inv = (InvokeInstruction) ins;
+		String methodName = inv.getMethodName(cpg);
+		String methodSig = inv.getSignature(cpg);
+		
+		return isMonitorNotify(methodName, methodSig);
+	}
 
 	/**
 	 * Look up the method referenced by given InvokeInstruction.
