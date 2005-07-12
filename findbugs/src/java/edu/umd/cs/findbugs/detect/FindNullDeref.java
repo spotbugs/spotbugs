@@ -693,8 +693,7 @@ public class FindNullDeref
 		if (wouldHaveBeenAKaboom) {
 			priority = HIGH_PRIORITY;
 			warning = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE";
-			location = locationOfKaBoom;
-			if (location == null) throw new NullPointerException("location of KaBoom is null");
+			if (locationOfKaBoom == null) throw new NullPointerException("location of KaBoom is null");
 		} else if (isChecked) {
 			// A non-kaboom redundant null check is medium priority only
 			// if it creates dead code.
@@ -716,8 +715,12 @@ public class FindNullDeref
 		
 		BugInstance bugInstance =
 			new BugInstance(this, warning, priority)
-				.addClassAndMethod(methodGen, sourceFile)
-				.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
+				.addClassAndMethod(methodGen, sourceFile);
+		if (wouldHaveBeenAKaboom) {
+			bugInstance.addSourceLine(classContext, methodGen, sourceFile, locationOfKaBoom.getHandle());
+			bugInstance.addSourceLine(classContext, methodGen, sourceFile, location.getHandle()).describe("SOURCE_REDUNDANT_NULL_CHECK");
+		}
+		else bugInstance.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
 		
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 			WarningPropertySet propertySet = new WarningPropertySet();
