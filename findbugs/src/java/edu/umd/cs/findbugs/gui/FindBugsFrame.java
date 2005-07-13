@@ -51,6 +51,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -3702,9 +3703,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		
 		if (commandLine.getSettingList() != null) {
 			frame.settingList = commandLine.getSettingList();
-			if (frame.settingList.equals(FindBugs.MIN_EFFORT))
+			if (Arrays.equals(frame.settingList,FindBugs.MIN_EFFORT))
 				frame.minEffortItem.setSelected(true);
-			else if (frame.settingList.equals(FindBugs.MAX_EFFORT))
+			else if (Arrays.equals(frame.settingList, FindBugs.MAX_EFFORT))
 				frame.maxEffortItem.setSelected(true);
 		}
 		
