@@ -565,9 +565,10 @@ public class BugHistory {
 		} else {
 			reader = new BufferedReader(new FileReader(commandLine.getListFile()));
 		}
-		
-		BugCollectionAndProjectCache cache = new BugCollectionAndProjectCache();
 		int missing = 0;
+		try {
+		BugCollectionAndProjectCache cache = new BugCollectionAndProjectCache();
+
 		
 		String csvRecord;
 		while ((csvRecord = reader.readLine()) != null) {
@@ -614,7 +615,9 @@ public class BugHistory {
 				System.out.println("done");
 			}
 		}
-		
+		} finally {
+			reader.close();
+		}
 		if (missing > 0) {
 			System.err.println(missing + " pairs skipped because of missing files");
 		}
