@@ -419,13 +419,17 @@ These options are only accepted by the Text User Interface.
     Generate HTML output.  By default, &FindBugs; will use the <filename>default.xsl</filename>
     <ulink url="http://www.w3.org/TR/xslt">XSLT</ulink>
     stylesheet to generate the HTML: you can find this file in <filename>findbugs.jar</filename>,
-    or in the &FindBugs; source or binary distributions.  A variant of this option is
-	<command>-html:plain.xsl</command>, which uses a simpler formatting style.
+    or in the &FindBugs; source or binary distributions.  Variants of this option include
+	<command>-html:plain.xsl</command> and <command>-html:fancy.xsl</command>.
+	The <filename>plain.xsl</filename> stylesheet does not use Javascript or DOM,
+	and may work better with older web browsers, or for printing.  The <filename>fancy.xsl</filename>
+	stylesheet makes extensive use of DOM and Javascript for navigation and CSS for
+	visual presentation.
 	</para>		
 		
 	<para>
   	If you want to specify your own
-    XSLT stylesheet to perform the transformation, specify the option as
+    XSLT stylesheet to perform the transformation to HTML, specify the option as
     <command>-html:<replaceable>myStylesheet.xsl</replaceable></command>,
     where <replaceable>myStylesheet.xsl</replaceable> is the filename of the
     stylesheet you want to use.
