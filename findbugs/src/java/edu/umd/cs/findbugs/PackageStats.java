@@ -31,9 +31,9 @@ import java.util.*;
  * @author Mike Fagan
  * @author Jay Dunning
  */
-public class PackageStats implements XMLWriteable, Cloneable {
+public class PackageStats implements XMLWriteable {
 
-	private static class ClassStats implements XMLWriteable {
+	private static class ClassStats implements XMLWriteable, Cloneable {
 		private String name;
 		private boolean isInterface;
 		// nBugs[0] is total; nBugs[n] is total for bug priority n
