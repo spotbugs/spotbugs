@@ -9,8 +9,8 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/AppleJavaExtensions.jar"/>
-	<classpathentry sourcepath="/bcel/src" kind="lib" path="lib/bcel.jar"/>
-	<classpathentry kind="lib" path="lib/dom4j-full.jar"/>
+	<classpathentry exported="true" sourcepath="/bcel/src" kind="lib" path="lib/bcel.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/dom4j-full.jar"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
