@@ -116,10 +116,9 @@ public class MineBugHistory {
 				continue;
 
 			for (int i = 1; i <= maxSequence; ++i) {
-				SequenceIntervalCollection whenActive = bugInstance.getActiveIntervalCollection();
 				
-				boolean activePrevious = whenActive.contains(((long)i) -1);
-				boolean activeCurrent = whenActive.contains((long)i);
+				boolean activePrevious = bugInstance.getFirstVersion() < maxSequence;
+				boolean activeCurrent = bugInstance.getLastVersion() == -1 || bugInstance.getLastVersion() >= maxSequence ;
 				
 				int key = getKey(activePrevious, activeCurrent);
 				versionList[i].increment(key);

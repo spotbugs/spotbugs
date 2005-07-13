@@ -83,7 +83,8 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	private String annotationText;
 	private BugProperty propertyListHead, propertyListTail;
 	private String uniqueId;
-	private String activeIntervalCollection;
+	private long firstVersion = 0;
+	private long lastVersion = -1;
 
 	/**
 	 * This value is used to indicate that the cached hashcode
@@ -110,7 +111,6 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		annotationList = new ArrayList<BugAnnotation>(4);
 		cachedHashCode = INVALID_HASH_CODE;
 		annotationText = "";
-		activeIntervalCollection = "";
 		
 		if (adjustExperimental && isExperimental())
 			this.priority = Detector.EXP_PRIORITY;
@@ -347,30 +347,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		this.uniqueId = uniqueId;
 	}
 
-	/**
-	 * Get the collection of SequenceIntervals indicating when this
-	 * BugInstance is/was active.  Note that modications made to the
-	 * object returned will <em>not</em> affect the BugInstance.
-	 * 
-	 * @return the SequenceIntervalCollection
-	 */
-	public SequenceIntervalCollection getActiveIntervalCollection() {
-		try {
-			return SequenceIntervalCollection.decode(activeIntervalCollection);
-		} catch (InvalidSequenceIntervalException e) {
-			return new SequenceIntervalCollection();
-		}
-	}
 	
-	/**
-	 * Set the collection of SequenceIntervals indicating when this
-	 * BugInstance is/was active.
-	 * 
-	 * @param collection the SequenceIntervalCollection
-	 */
-	public void setActiveIntervalCollection(SequenceIntervalCollection collection) {
-		this.activeIntervalCollection = SequenceIntervalCollection.encode(collection);
-	}
 	
 	/* ----------------------------------------------------------------------
 	 * Property accessors
@@ -1163,10 +1140,9 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 			attributeList.addAttribute("uid", getUniqueId());
 		}
 		
-		// Add active interval collection.
-		if (activeIntervalCollection != null) {
-			attributeList.addAttribute("active", activeIntervalCollection);
-		}
+		attributeList.addAttribute("first", Long.toString(firstVersion));
+		if (lastVersion >= 0) 	attributeList.addAttribute("last", Long.toString(lastVersion));
+
 
 		xmlOutput.openTag(ELEMENT_NAME, attributeList);
 
@@ -1291,6 +1267,34 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		// All elements in prefix were the same,
 		// so use number of elements to decide
 		return annotationList.size() - other.annotationList.size();
+	}
+
+	/**
+	 * @param firstVersion The firstVersion to set.
+	 */
+	public void setFirstVersion(long firstVersion) {
+		this.firstVersion = firstVersion;
+	}
+
+	/**
+	 * @return Returns the firstVersion.
+	 */
+	public long getFirstVersion() {
+		return firstVersion;
+	}
+
+	/**
+	 * @param lastVersion The lastVersion to set.
+	 */
+	public void setLastVersion(long lastVersion) {
+		this.lastVersion = lastVersion;
+	}
+
+	/**
+	 * @return Returns the lastVersion.
+	 */
+	public long getLastVersion() {
+		return lastVersion;
 	}
 }
 

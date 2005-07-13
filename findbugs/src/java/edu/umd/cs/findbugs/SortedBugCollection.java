@@ -121,11 +121,7 @@ public class SortedBugCollection extends BugCollection {
 		registerUniqueId(bugInstance);
 
 		if (updateActiveTime) {
-			// Mark the BugInstance as being active at the BugCollection's current timestamp.
-			SequenceIntervalCollection activeIntervalCollection =
-				bugInstance.getActiveIntervalCollection();
-			activeIntervalCollection.add(new SequenceInterval(sequence, sequence));
-			bugInstance.setActiveIntervalCollection(activeIntervalCollection);
+			bugInstance.setFirstVersion(sequence);
 		}
 		
 		return bugSet.add(bugInstance);

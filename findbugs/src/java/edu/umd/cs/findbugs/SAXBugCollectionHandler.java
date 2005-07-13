@@ -119,18 +119,13 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						bugInstance.setUniqueId(uniqueId);
 					}
 					
-					String activeIntervalCollection = attributes.getValue("active");
-					if (activeIntervalCollection != null) {
-						try {
-							bugInstance.setActiveIntervalCollection(SequenceIntervalCollection.decode(activeIntervalCollection));
-						} catch (InvalidSequenceIntervalException e) {
-							// Whoops, we lost the active history for this BugInstance.
-							// Add the current sequence.
-							SequenceIntervalCollection activeCollection = new SequenceIntervalCollection();
-							activeCollection.add(
-									new SequenceInterval(bugCollection.getSequenceNumber(), bugCollection.getSequenceNumber()));
-							bugInstance.setActiveIntervalCollection(activeCollection);
-						}
+					String firstVersion = attributes.getValue("first");
+					if (firstVersion != null) {
+						bugInstance.setFirstVersion(Long.parseLong(firstVersion));
+					}
+					String lastVersion = attributes.getValue("last");
+					if (lastVersion != null) {
+						bugInstance.setLastVersion(Long.parseLong(lastVersion));
 					}
 				} else if (qName.equals("FindBugsSummary")) {
 					String timestamp = getRequiredAttribute(attributes, "timestamp", qName);
