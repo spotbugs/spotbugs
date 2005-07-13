@@ -59,7 +59,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor
 	public NoteSuppressedWarnings(BugReporter bugReporter, boolean recursive) {
 		if (!recursive) {
 		  DelegatingBugReporter b = (DelegatingBugReporter) bugReporter;
-                  BugReporter origBugReporter = b.getRealBugReporter();
+                  BugReporter origBugReporter = b.getDelegate();
 		  suppressionMatcher = new SuppressionMatcher();
                   BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, suppressionMatcher, false);
                   b.setDelegate(filterBugReporter);
