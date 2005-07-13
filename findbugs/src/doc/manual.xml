@@ -1931,12 +1931,24 @@ in the Ant task.</para>
 	
 <para>
 	Jay Dunning contributed a detector to find equality comparisons
-	of floating-point values.
+	of floating-point values, and overhauled the analysis summary
+	report and its representation in the saved XML format.
 </para>
 
 <para>
 	Olivier Parent contributed updated French translations for bug descriptions and
 	Swing GUI.
+</para>
+
+<para>
+	Chris Nappin contributed the <filename>plain.xsl</filename>
+	stylesheet.
+</para>
+
+<para>
+	Etienne Giraudy contributed the <filename>fancy.xsl</filename>
+	stylesheet, and made improvements to the <command>-xml:withMessages</command>
+	option.
 </para>
 
 <para>If you have contributed to &FindBugs;, but aren't mentioned above,
