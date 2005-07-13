@@ -706,8 +706,7 @@ public class FindNullDeref
 					+ redundantBranch.secondValue 
 					+ " : " + warning 
 			);
-			if (location == null) System.out.println("location is null");
-			if (location.getHandle() == null) System.out.println("location handle is null");
+
 			if (isChecked) System.out.println("isChecked");
 			if (wouldHaveBeenAKaboom) System.out.println("wouldHaveBeenAKaboom");
 			if (createdDeadCode) System.out.println("createdDeadCode");
@@ -716,11 +715,9 @@ public class FindNullDeref
 		BugInstance bugInstance =
 			new BugInstance(this, warning, priority)
 				.addClassAndMethod(methodGen, sourceFile);
-		if (wouldHaveBeenAKaboom) {
+		if (wouldHaveBeenAKaboom) 
 			bugInstance.addSourceLine(classContext, methodGen, sourceFile, locationOfKaBoom.getHandle());
-			bugInstance.addSourceLine(classContext, methodGen, sourceFile, location.getHandle()).describe("SOURCE_REDUNDANT_NULL_CHECK");
-		}
-		else bugInstance.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
+		bugInstance.addSourceLine(classContext, methodGen, sourceFile, location.getHandle()).describe("SOURCE_REDUNDANT_NULL_CHECK");
 		
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 			WarningPropertySet propertySet = new WarningPropertySet();
