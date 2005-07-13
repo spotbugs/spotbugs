@@ -640,7 +640,6 @@ C'est un détecteur rapide.</p>
 est transtypée en nombre flottant à double précision. Souvent, l'intention initiale
 était de transtyper les opérandes avant de procéder à la division.
 C'est un détecteur rapide.</p>
-</p>
 ]]>
     </Details>
   </Detector>
@@ -1157,13 +1156,12 @@ implique que l'identité des objets soit basée sur des critères plus compliqués q
     <LongDescription>Synchronisation incohérente de {1}; verrouillée à {2}%</LongDescription>
     <Details>
 <![CDATA[
-  <p>Les champs de cette classe semblent être accédés de façon incohérente vis-à-vis de la synchronisation. Le détecteur de bogue juge que :
+  <p>Les champs de cette classe semblent être accédés de façon incohérente vis-à-vis de la synchronisation. Le détecteur de bogue juge que :</p>
   <ol>
   <li>la classe contient un mélange d'accès verrouillés et non verrouillés,</li>
   <li>au moins un des accès verrouillés est effectué par une des propres méthodes de la classe,</li>
   <li>le nombre d'accès (lectures et écritures) non synchronisés ne représente pas plus d'un tiers de tous les accès, avec plus de deux fois plus d'écritures que de lectures.</li>
   </ol>
-  </p>
   <p>Un bogue typique déclenchant ce détecteur est l'oubli de la synchronisation sur l'une des méthodes d'une classe qui essaye d'être sûre vis-à-vis des threads.</p>
   <p>Vous pouvez sélectionner les noeuds nommés "Accès non synchronisés" pour avoir la position exacte dans le code où le détecteur pense qu'un champ est accédé sans synchronisation.</p>
   <p>Notez qu'il y a diverses sources d'inexactitude dans ce détecteur ; par exemple, le détecteur ne peut pas repérer statiquement toutes les situations dans lesquelles un verrou est obtenu. En fait, même lorsque le détecteur repère effectivement des accès avec et sans verrou, le code concerné peut quand même être correct.</p>
@@ -1337,13 +1335,12 @@ et de plus ne correspond que rarement à la meilleure des solutions.
     <LongDescription>Synchronisation incohérente de {1}; verrouillée à {2}%</LongDescription>
     <Details>
 <![CDATA[
-  <p>Les champs de cette classe semblent être accédés de façon incohérente vis-à-vis de la synchronisation. Le détecteur indique que :
+  <p>Les champs de cette classe semblent être accédés de façon incohérente vis-à-vis de la synchronisation. Le détecteur indique que :</p>
   <ol>
   <li>la classe mélange les accès verrouillés et non verrouillés,</li>
   <li>au moins des accès verrouillés est effectué par l'une des propres méthodes de la classe,</li>
   <li>le nombre d'accès non synchronisés à un champ (lectures et écritures) ne dépasse pas un tiers de l'ensemble des accès, les écritures étant deux fois plus présentes que les lectures.</li>
   </ol>
-  </p>
   <p>Typiquement, oublier de synchroniser une des méthodes dans une classe essayant d'être sûre vis-à-vis des threads est un bogue signalé par ce détecteur.</p>
   <p>NB : il y a diverses sources d'inexactitude dans ce détecteur ; par exemple, le détecteur ne peut pas déterminer statiquement toutes les situations dans lesquelles un verrou est détenu. Ainsi, même lorsque le détecteur repère effectivement des accès verrouillés / non verrouillés, le code en question peut tout de même être correct.</p>
 ]]>
@@ -2026,12 +2023,12 @@ et de plus ne correspond que rarement à la meilleure des solutions.
     <Details>
 <![CDATA[
 <p>Cette méthode contient une auto-alimentation d'une variable locale, par exemple :
-<pre>
+<code>
   public vida foo() {
     int x = 3;
     x = x;
   }
-</pre>
+</code>
 De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou une erreur de logique.</p>
 ]]>
     </Details>
@@ -2043,12 +2040,12 @@ De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou 
     <Details>
 <![CDATA[
 <p>Cette méthode contient un champ s'auto-alimentant; par exemple,
-<pre>
+<code>
   int x;
   public void foo() {
     x = x;
   }
-</pre>
+</code>
 De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou une erreur logique.</p>
 ]]>
     </Details>
@@ -2178,7 +2175,7 @@ De telles affectations sont inutiles et peuvent indiquer une faute de frappe ou 
     <Details>
 <![CDATA[
 <p>Cette méthode utilise la méthode toArray() d'une classe dérivant de Collection, en lui passant en paramètre un tableau vide. Il est plus efficace d'utiliser
-<pre>myCollection.toArray(new Foo[myCollection.size()])</pre>
+<code>myCollection.toArray(new Foo[myCollection.size()])</code>
 Si le tableau transmis est assez grand pour stocker tous les éléments de la collection, alors il est alimenté et renvoyé directement. Ceci évite la nécessité de créer un nouveau tableau (par réflexion) pour renvoyer le résultat.</p>
 ]]>
     </Details>
@@ -2381,34 +2378,33 @@ Cf section 4.2.4 des spécifications du langage Java.</p>
     <LongDescription>Appel d'une méthode statique de la classe Math sur une valeur constante</LongDescription>
     <Details>
 <![CDATA[
-<p>Cette méthode utilise une méthode statique de java.lang.Math sur une valeur constante. Dans ce cas, le résultat de cet appel peut être déterminé statiquement, ce qui est plus rapide et souvent plus précis. Les méthodes détectées sont :
+<p>Cette méthode utilise une méthode statique de java.lang.Math sur une valeur constante. Dans ce cas, le résultat de cet appel peut être déterminé statiquement, ce qui est plus rapide et souvent plus précis. Les méthodes détectées sont :</p>
 <table>
 <tr><th>Méthode</th><th>Paramètre</th></tr>
-<tr>abs<td></td><td>-tous-</td></tr>
-<tr>acos<td></td><td>0.0 ou 1.0</td></tr>
-<tr>asin<td></td><td>0.0 ou 1.0</td></tr>
-<tr>atan<td></td><td>0.0 ou 1.0</td></tr>
-<tr>atan2<td></td><td>0.0</td></tr>
-<tr>cbrt<td></td><td>0.0 ou 1.0</td></tr>
-<tr>ceil<td></td><td>-tous-</td></tr>
-<tr>cos<td></td><td>0.0</td></tr>
-<tr>cosh<td></td><td>0.0</td></tr>
-<tr>exp<td></td><td>0.0 ou 1.0</td></tr>
-<tr>expm1<td></td><td>0.0</td></tr>
-<tr>floor<td></td><td>-tous-</td></tr>
-<tr>log<td></td><td>0.0 ou 1.0</td></tr>
-<tr>log10<td></td><td>0.0 ou 1.0</td></tr>
-<tr>rint<td></td><td>-tous-</td></tr>
-<tr>round<td></td><td>-tous-</td></tr>
-<tr>sin<td></td><td>0.0</td></tr>
-<tr>sinh<td></td><td>0.0</td></tr>
-<tr>sqrt<td></td><td>0.0 ou 1.0</td></tr>
-<tr>tan<td></td><td>0.0</td></tr>
-<tr>tanh<td></td><td>0.0</td></tr>
-<tr>toDegrees<td></td><td>0.0 ou 1.0</td></tr>
-<tr>toRadians<td></td><td>0.0</td></tr>
+<tr><td>abs</td><td>-tous-</td></tr>
+<tr><td>acos</td><td>0.0 ou 1.0</td></tr>
+<tr><td>asin</td><td>0.0 ou 1.0</td></tr>
+<tr><td>atan</td><td>0.0 ou 1.0</td></tr>
+<tr><td>atan2</td><td>0.0</td></tr>
+<tr><td>cbrt</td><td>0.0 ou 1.0</td></tr>
+<tr><td>ceil</td><td>-tous-</td></tr>
+<tr><td>cos</td><td>0.0</td></tr>
+<tr><td>cosh</td><td>0.0</td></tr>
+<tr><td>exp</td><td>0.0 ou 1.0</td></tr>
+<tr><td>expm1</td><td>0.0</td></tr>
+<tr><td>floor</td><td>-tous-</td></tr>
+<tr><td>log</td><td>0.0 ou 1.0</td></tr>
+<tr><td>log10</td><td>0.0 ou 1.0</td></tr>
+<tr><td>rint</td><td>-tous-</td></tr>
+<tr><td>round</td><td>-tous-</td></tr>
+<tr><td>sin</td><td>0.0</td></tr>
+<tr><td>sinh</td><td>0.0</td></tr>
+<tr><td>sqrt</td><td>0.0 ou 1.0</td></tr>
+<tr><td>tan</td><td>0.0</td></tr>
+<tr><td>tanh</td><td>0.0</td></tr>
+<tr><td>toDegrees</td><td>0.0 ou 1.0</td></tr>
+<tr><td>toRadians</td><td>0.0</td></tr>
 </table>
-</p>
 ]]>
     </Details>
   </BugPattern>
