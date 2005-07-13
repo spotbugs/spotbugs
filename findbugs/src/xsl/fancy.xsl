@@ -15,7 +15,6 @@
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
       <title>FindBugs (<xsl:value-of select="/BugCollection/@version" />) Analysis for <xsl:value-of select="/BugCollection/Project/@filename" /></title>
-      <link rel="StyleSheet" href="report.css" type="text/css" />
       <script type="text/javascript">
          function show(foo) {
             document.getElementById(foo).style.display="block";
@@ -53,6 +52,183 @@
             // else menu already selected!
          }
       </script>
+      <style type='text/css'>
+         html, body {
+            background-color: #ffffff;
+         }
+         a, a:link , a:active, a:visited, a:hover {
+            text-decoration: none; color: black;
+         }
+         div, span {
+            vertical-align: top;
+         }
+         p {
+            margin: 0px;
+         }
+         #header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 14pt;
+            color: red;
+         }
+         #menu {
+            margin-bottom: 10px;
+         }
+         #menu ul {
+         margin-left: 0;
+         padding-left: 0;
+         display: inline;
+         }
+         #menu ul li {
+         margin-left: 0;
+         margin-bottom: 0;
+         padding: 2px 15px 5px;
+         border: 1px solid #000;
+         list-style: none;
+         display: inline;
+         }
+         #menu ul li.here {
+         border-bottom: 1px solid #ffc;
+         list-style: none;
+         display: inline;
+         }
+         .menu-tab {
+            background: white;
+         }
+         .menu-tab:hover {
+            background: grey;
+         }
+         .menu-tab-selected {
+            background: #aaaaaa;
+         }
+         #analysis-data ul {
+            margin-left: 15px;
+         }
+         #analyzed-files, #used-libraries, #analysis-error {
+           float: left;
+           margin: 2px;
+           border: 1px black solid;
+           padding: 2px;
+         }
+         #analyzed-files {
+           width: 25%;
+         }
+         #used-libraries {
+           width: 25%;
+         }
+         #analysis-error {
+           width: 40%;
+         }
+
+         div.summary {
+            width:100%;
+            text-align:center;
+         }
+         .summary table {
+            border:1px solid black;
+         }
+         .summary th {
+            background: #aaaaaa;
+            color: white;
+         }
+         .summary th, .summary td {
+            padding: 2px 4px 2px 4px;
+         }
+         .summary-name {
+            background: #eeeeee;
+            text-align:left;
+         }
+         .summary-size {
+            background: #eeeeee;
+            text-align:center;
+         }
+         .summary-ratio {
+            background: #eeeeee;
+            text-align:center;
+         }
+         .summary-priority-all {
+            background: #dddddd;
+            text-align:center;
+         }
+         .summary-priority-1 {
+            background: red;
+            text-align:center;
+         }
+         .summary-priority-2 {
+            background: orange;
+            text-align:center;
+         }
+         .summary-priority-3 {
+            background: green;
+            text-align:center;
+         }
+         .summary-priority-4 {
+            background: blue;
+            text-align:center;
+         }
+
+         .outerbox {
+            border: 1px solid black;
+            margin: 10px;
+         }
+
+         .outerbox-title {
+            border-bottom: 1px solid #000000; font-size: 12pt; font-weight: bold;
+            background: #cccccc; margin: 0; padding: 0 5px 0 5px;
+         }
+
+         .innerbox-1, .innerbox-2 {
+            margin: 0 0 0 10px;
+         }
+
+         .innerbox-1-title, .innerbox-2-title {
+            border-bottom: 1px solid #000000; border-left: 1px solid #000000;
+            margin: 0; padding: 0 5px 0 5px;
+            font-size: 12pt; font-weight: bold; background: #cccccc;
+         }
+
+         .bug-box {
+            border-bottom: 1px solid #000000; border-left: 1px solid #000000;
+         }
+
+         .bug-priority-1 {
+            background: red; height: 0.5em; width: 1em;
+            margin-right: 0.5em;
+         }
+
+         .bug-priority-2 {
+            background: orange; height: 0.5em; width: 1em;
+            margin-right: 0.5em;
+         }
+
+         .bug-priority-3 {
+            background: green; height: 0.5em; width: 1em;
+            margin-right: 0.5em;
+         }
+
+         .bug-priority-4 {
+            background: blue; height: 0.5em; width: 1em;
+            margin-right: 0.5em;
+         }
+
+         .bug-type {
+         }
+
+         .bug-ref {
+            font-size: 10pt; font-weight: bold; padding: 0 0 0 60px;
+         }
+
+         .bug-descr {
+            font-weight: normal; background: #eeeee0;
+            padding: 0 5px 0 5px; border-bottom: 1px dashed black; margin: 0px;
+         }
+
+         .bug-details {
+            font-weight: normal; background: #eeeee0;
+            padding: 0 5px 0 5px; margin: 0px;
+         }
+      </style>
    </head>
    <body>
       <div id="header">
