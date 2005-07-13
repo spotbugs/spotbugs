@@ -11,7 +11,6 @@ public class IsNullValueTest extends TestCase {
 		assertFalse(result.isException());
 	}
 	public void testMerge2() {
-		IsNullValue nullValue = IsNullValue.nullValue();
 		IsNullValue nullExceptionValue = IsNullValue.nullValue().toExceptionValue();
 		IsNullValue nonNullValue = IsNullValue.nonNullValue();
 		IsNullValue nsp_e = IsNullValue.merge(nonNullValue, nullExceptionValue);
