@@ -243,12 +243,12 @@ public class SortedBugCollection extends BugCollection {
 		return uniqueIdToBugInstanceMap.get(uniqueId);
 	}
 
-	// @Override
+	 @Override
 	public long getSequenceNumber() {
 		return sequence;
 	}
 
-	// @Override
+	 @Override
 	public void setSequenceNumber(long sequence) {
 		this.sequence = sequence;
 	}
@@ -283,7 +283,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#duplicate()
 	 */
-	//@Override
+	@Override
 	public SortedBugCollection duplicate() {
 		SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone());
 		
@@ -310,7 +310,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#clearBugInstances()
 	 */
-	//@Override
+	@Override
 	public void clearBugInstances() {
 		bugSet.clear();
 		uniqueIdToBugInstanceMap.clear();
@@ -320,7 +320,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#getReleaseName()
 	 */
-	//@Override
+	@Override
 	public String getReleaseName() {
 		return releaseName;
 	}
@@ -328,7 +328,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#setReleaseName(java.lang.String)
 	 */
-	//@Override
+	@Override
 	public void setReleaseName(String releaseName) {
 		this.releaseName = releaseName;
 	}
@@ -336,7 +336,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#appVersionIterator()
 	 */
-	//@Override
+	@Override
 	public Iterator<AppVersion> appVersionIterator() {
 		return appVersionList.iterator();
 	}
@@ -344,7 +344,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#addAppVersion(edu.umd.cs.findbugs.AppVersion)
 	 */
-	//@Override
+	@Override
 	public void addAppVersion(AppVersion appVersion) {
 		appVersionList.add(appVersion);
 	}
@@ -352,7 +352,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#clearAppVersions()
 	 */
-	//@Override
+	@Override
 	public void clearAppVersions() {
 		appVersionList.clear();
 	}
@@ -360,7 +360,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#createEmptyCollectionWithMetadata()
 	 */
-	//@Override
+	@Override
 	public SortedBugCollection createEmptyCollectionWithMetadata() {
 		SortedBugCollection result = duplicate();
 		result.clearBugInstances();
@@ -371,7 +371,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#setTimestamp(long)
 	 */
-	//@Override
+	@Override
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
@@ -379,7 +379,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#getTimestamp()
 	 */
-	//@Override
+	@Override
 	public long getTimestamp() {
 		return timestamp;
 	}
@@ -387,7 +387,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#getClassFeatureSet(java.lang.String)
 	 */
-	//@Override
+	@Override
 	public ClassFeatureSet getClassFeatureSet(String className) {
 		return classFeatureSetMap.get(className);
 	}
@@ -395,7 +395,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#setClassFeatureSet(edu.umd.cs.findbugs.model.ClassFeatureSet)
 	 */
-	//@Override
+	@Override
 	public void setClassFeatureSet(ClassFeatureSet classFeatureSet) {
 		classFeatureSetMap.put(classFeatureSet.getClassName(), classFeatureSet);
 	}
@@ -403,7 +403,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#classFeatureSetIterator()
 	 */
-	//@Override
+	@Override
 	public Iterator<ClassFeatureSet> classFeatureSetIterator() {
 		return classFeatureSetMap.values().iterator();
 	}
@@ -411,7 +411,7 @@ public class SortedBugCollection extends BugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#clearClassFeatures()
 	 */
-	//@Override
+	@Override
 	public void clearClassFeatures() {
 		classFeatureSetMap.clear();
 	}
