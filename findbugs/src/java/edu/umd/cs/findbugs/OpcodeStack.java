@@ -1024,7 +1024,7 @@ public class OpcodeStack implements Constants2
 			throw e;
 		}
 */
-	 	catch (Exception e) {
+	 	catch (RuntimeException e) {
 	 		//If an error occurs, we clear the stack and locals. one of two things will occur. 
 	 		//Either the client will expect more stack items than really exist, and so they're condition check will fail, 
 	 		//or the stack will resync with the code. But hopefully not false positives
@@ -1159,7 +1159,7 @@ public class OpcodeStack implements Constants2
 			else if (seen == IUSHR)
 				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() >>> ((Integer)it.getConstant()).intValue()));
 		}
- 		} catch (Exception e) {
+ 		} catch (RuntimeException e) {
  			// ignore it
  		}
  		if (DEBUG) System.out.println("push: " + newValue);
@@ -1193,7 +1193,7 @@ public class OpcodeStack implements Constants2
 			else if (seen == LUSHR)
 				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() >>> ((Number)it.getConstant()).intValue()));
 		}
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
 			// ignore it
 		}
 		push(newValue);
