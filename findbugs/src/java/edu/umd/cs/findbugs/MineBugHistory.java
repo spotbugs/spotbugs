@@ -118,7 +118,7 @@ public class MineBugHistory {
 			for (int i = 0; i <= maxSequence; ++i) {
 				if (bugInstance.getFirstVersion() > i) continue;
 				boolean activePrevious = bugInstance.getFirstVersion() < i;
-				boolean activeCurrent = bugInstance.getLastVersion() == -1 || bugInstance.getLastVersion() >= maxSequence ;
+				boolean activeCurrent = bugInstance.getLastVersion() == -1 || bugInstance.getLastVersion() >= i ;
 				
 				int key = getKey(activePrevious, activeCurrent);
 				versionList[i].increment(key);
@@ -138,6 +138,7 @@ public class MineBugHistory {
 	}
 	
 	public void dump(PrintStream out) {
+		out.println("seq,release,time,added,removed,persist,dead,active");
 		for (int i = 1; i < versionList.length; ++i) {
 			Version version = versionList[i];
 			AppVersion appVersion = sequenceToAppVersionMap.get(version.getSequence());
