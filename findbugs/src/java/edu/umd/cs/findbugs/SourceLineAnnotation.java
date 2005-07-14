@@ -521,7 +521,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 */
 	public short[] getEarlierOpcodes() {
 		int pipe = surroundingOpcodes.indexOf('|');
-		if (pipe < 0)
+		if (pipe <= 0)
 			return EMPTY_OPCODE_LIST;
 
 		String opcodes = surroundingOpcodes.substring(0, pipe);
