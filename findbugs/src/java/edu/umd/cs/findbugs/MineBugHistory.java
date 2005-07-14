@@ -115,9 +115,9 @@ public class MineBugHistory {
 			if (ignore(bugInstance))
 				continue;
 
-			for (int i = 1; i <= maxSequence; ++i) {
-				
-				boolean activePrevious = bugInstance.getFirstVersion() < maxSequence;
+			for (int i = 0; i <= maxSequence; ++i) {
+				if (bugInstance.getFirstVersion() > i) continue;
+				boolean activePrevious = bugInstance.getFirstVersion() < i;
 				boolean activeCurrent = bugInstance.getLastVersion() == -1 || bugInstance.getLastVersion() >= maxSequence ;
 				
 				int key = getKey(activePrevious, activeCurrent);
