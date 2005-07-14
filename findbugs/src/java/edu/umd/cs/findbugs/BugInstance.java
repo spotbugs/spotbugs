@@ -83,9 +83,16 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	private String annotationText;
 	private BugProperty propertyListHead, propertyListTail;
 	private String uniqueId;
+	
+	/*
+	 * The following fields are used for tracking Bug instances across multiple versions of software.
+	 * They are meaningless in a BugCollection for just one version of software. 
+	 */
 	private long firstVersion = 0;
 	private long lastVersion = -1;
-
+	private boolean introducedByChangeOfExistingClass;
+	private boolean removedByChangeOfPersistingClass;
+	
 	/**
 	 * This value is used to indicate that the cached hashcode
 	 * is invalid, and should be recomputed.
@@ -1140,10 +1147,12 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 			attributeList.addAttribute("uid", getUniqueId());
 		}
 		
-		attributeList.addAttribute("first", Long.toString(firstVersion));
+		if (firstVersion > 0) attributeList.addAttribute("first", Long.toString(firstVersion));
 		if (lastVersion >= 0) 	attributeList.addAttribute("last", Long.toString(lastVersion));
-
-
+		if (introducedByChangeOfExistingClass) 
+			attributeList.addAttribute("introducedByChange", "true");
+		if (removedByChangeOfPersistingClass) 
+			attributeList.addAttribute("removedByChange", "true");
 		xmlOutput.openTag(ELEMENT_NAME, attributeList);
 
 		if (!annotationText.equals("")) {
@@ -1301,6 +1310,34 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 */
 	public long getLastVersion() {
 		return lastVersion;
+	}
+
+	/**
+	 * @param introducedByChangeOfExistingClass The introducedByChangeOfExistingClass to set.
+	 */
+	public void setIntroducedByChangeOfExistingClass(boolean introducedByChangeOfExistingClass) {
+		this.introducedByChangeOfExistingClass = introducedByChangeOfExistingClass;
+	}
+
+	/**
+	 * @return Returns the introducedByChangeOfExistingClass.
+	 */
+	public boolean isIntroducedByChangeOfExistingClass() {
+		return introducedByChangeOfExistingClass;
+	}
+
+	/**
+	 * @param removedByChangeOfPersistingClass The removedByChangeOfPersistingClass to set.
+	 */
+	public void setRemovedByChangeOfPersistingClass(boolean removedByChangeOfPersistingClass) {
+		this.removedByChangeOfPersistingClass = removedByChangeOfPersistingClass;
+	}
+
+	/**
+	 * @return Returns the removedByChangeOfPersistingClass.
+	 */
+	public boolean isRemovedByChangeOfPersistingClass() {
+		return removedByChangeOfPersistingClass;
 	}
 }
 

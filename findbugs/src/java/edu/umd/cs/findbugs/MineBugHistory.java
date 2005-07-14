@@ -41,8 +41,10 @@ public class MineBugHistory {
 	static final int REMOVED    = 1;
 	static final int RETAINED   = 2;
 	static final int DEAD       = 3;
-	static final int ACTIVE_NOW = 4;
-	static final int TUPLE_SIZE = 5;
+	static final int NEWCODE    = 4;
+	static final int REMOVEDCODE= 5;
+	static final int ACTIVE_NOW = 6;
+	static final int TUPLE_SIZE = 7;
 	
 	static class Version {
 		long sequence;
@@ -61,7 +63,7 @@ public class MineBugHistory {
 
 		void increment(int key) {
 			tuple[key]++;
-			if (key == ADDED || key == RETAINED)
+			if (key == ADDED || key == RETAINED || key == NEWCODE)
 				tuple[ACTIVE_NOW]++;
 		}
 		
@@ -122,6 +124,8 @@ public class MineBugHistory {
 				boolean activeCurrent = bugInstance.getLastVersion() == -1 || bugInstance.getLastVersion() >= i ;
 				
 				int key = getKey(activePrevious, activeCurrent);
+				if (key == REMOVED && !bugInstance.isRemovedByChangeOfPersistingClass()) key = REMOVEDCODE;
+				else if (key == ADDED && !bugInstance.isIntroducedByChangeOfExistingClass()) key = NEWCODE;
 				versionList[i].increment(key);
 			}
 		}
@@ -139,7 +143,7 @@ public class MineBugHistory {
 	}
 	
 	public void dump(PrintStream out) {
-		out.println("seq,release,time,added,removed,persist,dead,active");
+		out.println("seq,release,time,added,removed,persist,dead,newCode,removedCode,active");
 		for (int i = 1; i < versionList.length; ++i) {
 			Version version = versionList[i];
 			AppVersion appVersion = sequenceToAppVersionMap.get(version.getSequence());

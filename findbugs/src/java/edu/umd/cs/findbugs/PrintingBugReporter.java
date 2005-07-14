@@ -47,15 +47,18 @@ public class PrintingBugReporter extends TextUIBugReporter {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		if (args.length != 1) {
-			System.err.println("Usage: " + PrintingBugReporter.class.getName());
+		if (args.length > 1) {
+			System.err.println("Usage: " + PrintingBugReporter.class.getName() + "[<xmlFile>]");
 			System.exit(1);
 		}
 		
 		PrintingBugReporter reporter = new PrintingBugReporter();
 		
 		SortedBugCollection bugCollection = new SortedBugCollection();
-		bugCollection.readXML(args[0], new Project());
+		if (args.length > 0)
+			bugCollection.readXML(args[0], new Project());
+		else
+			bugCollection.readXML(System.in, new Project());
 		
 		// Load plugins, in order to get message files
 		DetectorFactoryCollection.instance();

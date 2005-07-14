@@ -33,7 +33,7 @@ import java.util.*;
  */
 public class PackageStats implements XMLWriteable {
 
-	private static class ClassStats implements XMLWriteable, Cloneable {
+	public static class ClassStats implements XMLWriteable, Cloneable {
 		private String name;
 		private boolean isInterface;
 		// nBugs[0] is total; nBugs[n] is total for bug priority n
@@ -107,6 +107,10 @@ public class PackageStats implements XMLWriteable {
 		return result;
 	}
 	
+	public ClassStats getClassStatsOrNull(String name) {
+		ClassStats result = packageMembers.get(name);
+		return result;
+	}
 	public void addError(BugInstance bug) {
 		++nBugs[bug.getPriority()];
 		++nBugs[0];

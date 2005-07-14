@@ -127,9 +127,21 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					if (lastVersion != null) {
 						bugInstance.setLastVersion(Long.parseLong(lastVersion));
 					}
+					
 					if (bugInstance.getLastVersion() >= 0 &&
 							bugInstance.getFirstVersion() > bugInstance.getLastVersion())
 						throw new IllegalStateException("huh");
+					
+					String introducedByChange = attributes.getValue("introducedByChange");
+					if (introducedByChange != null) {
+						bugInstance.setIntroducedByChangeOfExistingClass(Boolean.parseBoolean(introducedByChange));
+					}
+					String removedByChange = attributes.getValue("removedByChange");
+					if (removedByChange != null) {
+						bugInstance.setRemovedByChangeOfPersistingClass(Boolean.parseBoolean(removedByChange));
+					}
+					
+					
 				} else if (qName.equals("FindBugsSummary")) {
 					String timestamp = getRequiredAttribute(attributes, "timestamp", qName);
 					try {

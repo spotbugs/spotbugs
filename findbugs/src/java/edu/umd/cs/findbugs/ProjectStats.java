@@ -40,6 +40,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
@@ -110,6 +111,25 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		stat.addClass(className, isInterface, size);
 		totalClasses++;
 		totalSize += size;
+	}
+	
+	/**
+	 * Report that a class has been analyzed.
+	 *
+	 * @param className   the full name of the class
+	 * @param isInterface true if the class is an interface
+	 * @param size        a normalized class size value;
+	 *                    see detect/FindBugsSummaryStats.
+	 */
+	public ClassStats getClassStats(String className) {
+		String packageName;
+		int lastDot = className.lastIndexOf('.');
+		if (lastDot < 0)
+			packageName = "";
+		else
+			packageName = className.substring(0, lastDot);
+		PackageStats stat = getPackageStats(packageName);
+		return stat.getClassStatsOrNull(className);
 	}
 
 	/**
