@@ -110,8 +110,6 @@ public class SloppyBugComparator implements  WarningComparator {
 	 * @see edu.umd.cs.findbugs.WarningComparator#compare(edu.umd.cs.findbugs.BugInstance, edu.umd.cs.findbugs.BugInstance)
 	 */
 	public int compare(BugInstance lhs, BugInstance rhs) {
-		if (classNameRewriter == IdentityClassNameRewriter.instance())
-			throw new IllegalStateException();
 		
 		int cmp;
 		
