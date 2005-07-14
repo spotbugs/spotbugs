@@ -1274,6 +1274,9 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 */
 	public void setFirstVersion(long firstVersion) {
 		this.firstVersion = firstVersion;
+		if (lastVersion >= 0 && firstVersion > lastVersion) 
+			throw new IllegalArgumentException(
+				firstVersion + ".." + lastVersion);
 	}
 
 	/**
@@ -1287,6 +1290,9 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 * @param lastVersion The lastVersion to set.
 	 */
 	public void setLastVersion(long lastVersion) {
+		if (lastVersion >= 0 && firstVersion > lastVersion) 
+			throw new IllegalArgumentException(
+				firstVersion + ".." + lastVersion);
 		this.lastVersion = lastVersion;
 	}
 

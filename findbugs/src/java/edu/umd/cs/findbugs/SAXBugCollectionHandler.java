@@ -118,7 +118,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					if (uniqueId != null) {
 						bugInstance.setUniqueId(uniqueId);
 					}
-					
+
 					String firstVersion = attributes.getValue("first");
 					if (firstVersion != null) {
 						bugInstance.setFirstVersion(Long.parseLong(firstVersion));
@@ -127,6 +127,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					if (lastVersion != null) {
 						bugInstance.setLastVersion(Long.parseLong(lastVersion));
 					}
+					if (bugInstance.getLastVersion() >= 0 &&
+							bugInstance.getFirstVersion() > bugInstance.getLastVersion())
+						throw new IllegalStateException("huh");
 				} else if (qName.equals("FindBugsSummary")) {
 					String timestamp = getRequiredAttribute(attributes, "timestamp", qName);
 					try {
@@ -329,7 +332,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 			if (outerElement.equals("BugCollection")) {
 				if (qName.equals("BugInstance")) {
-					bugCollection.add(bugInstance);
+					bugCollection.add(bugInstance, false);
                     bugCollection.getProjectStats().addBug(bugInstance);
 				}
 			} else if (outerElement.equals("Project")) {
