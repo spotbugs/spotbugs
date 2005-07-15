@@ -30,6 +30,7 @@ import java.nio.charset.Charset;
 
 import java.util.*;
 
+
 /**
  * Helper class for parsing command line arguments.
  */
@@ -156,6 +157,20 @@ public abstract class CommandLine {
 		return resultList.toArray(new String[resultList.size()]);
 	}
 
+	public int parse(String argv[], int minArgs, int maxArgs, String usage) {
+		try {
+		int count = parse(argv);
+		int remaining = argv.length - count;
+		if (remaining < minArgs || remaining > maxArgs) throw new RuntimeException("Wrong number of arguments");
+		return count;
+		} catch (Exception e) {
+			System.out.println(usage);
+			System.out.println("Options:");
+			printUsage(System.out);
+			System.exit(1);
+			throw new RuntimeException(e);
+		}
+	}
 	/**
 	 * Parse a command line.
 	 * Calls down to handleOption() and handleOptionWithArgument() methods.

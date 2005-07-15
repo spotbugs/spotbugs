@@ -144,7 +144,7 @@ public class MineBugHistory {
 	
 	public void dump(PrintStream out) {
 		out.println("seq,release,time,added,removed,persist,dead,newCode,removedCode,active");
-		for (int i = 1; i < versionList.length; ++i) {
+		for (int i = 0; i < versionList.length; ++i) {
 			Version version = versionList[i];
 			AppVersion appVersion = sequenceToAppVersionMap.get(version.getSequence());
 			out.print(i);
@@ -213,17 +213,17 @@ public class MineBugHistory {
 		MineBugHistoryCommandLine commandLine = new MineBugHistoryCommandLine();
 		int argCount = commandLine.parse(args);
 
-		if (args.length - argCount != 1) {
+		if (args.length - argCount > 1) {
 			System.err.println("Usage: " + MineBugHistory.class.getName() + " [options] <bug collection>");
 			System.err.println("Options:");
 			commandLine.printUsage(System.err);
 			System.exit(1);
 		}
 
-		String fileName = args[argCount];
-		
 		SortedBugCollection bugCollection = new SortedBugCollection();
-		bugCollection.readXML(fileName, new Project());
+		if (argCount == args.length)  
+		bugCollection.readXML(System.in, new Project());
+		else bugCollection.readXML(args[argCount], new Project());
 
 		MineBugHistory mineBugHistory = new MineBugHistory(bugCollection);
 		mineBugHistory.setPrio(commandLine.getPrio());
