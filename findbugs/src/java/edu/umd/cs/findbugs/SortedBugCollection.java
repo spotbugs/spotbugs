@@ -56,10 +56,23 @@ public class SortedBugCollection extends BugCollection {
 				return cmp;
 			return lhs.compareTo(rhs);
 		}
+		public static final BugInstanceComparator instance = new BugInstanceComparator();
 	}
-
-	private static final BugInstanceComparator comparator = new BugInstanceComparator();
-
+	
+	public static class MultiversionBugInstanceComparator extends BugInstanceComparator {
+		public int compare(BugInstance lhs, BugInstance rhs) {
+			int result = super.compare(lhs,rhs);
+			if (result != 0) return result;
+			long diff  = lhs.getFirstVersion() - rhs.getFirstVersion();
+			if (diff == 0) 
+				diff = lhs.getLastVersion() - rhs.getLastVersion();
+			if (diff < 0) return -1;
+			if (diff > 0) return 1;
+			return 0;
+		}
+		public static final MultiversionBugInstanceComparator instance = new MultiversionBugInstanceComparator();
+	}
+	private Comparator<BugInstance> comparator;
 	private TreeSet<BugInstance> bugSet;
 	private List<AnalysisError> errorList;
 	private TreeSet<String> missingClassSet;
@@ -96,12 +109,31 @@ public class SortedBugCollection extends BugCollection {
 	
 	/**
 	 * Constructor.
+	 * Creates an empty object.
+	 */
+	public SortedBugCollection(Comparator<BugInstance> comparator) {
+		this(new ProjectStats(), comparator);
+	}
+	
+	/**
+	 * Constructor.
 	 * Creates an empty object given an existing ProjectStats.
 	 * 
 	 * @param projectStats the ProjectStats
 	 */
 	public SortedBugCollection(ProjectStats projectStats) {
+		this(projectStats, BugInstanceComparator.instance);
+	}
+	/**
+	 * Constructor.
+	 * Creates an empty object given an existing ProjectStats.
+	 * 
+	 * @param projectStats the ProjectStats
+	 * @param comparator to use for sorting bug instances
+	 */
+	public SortedBugCollection(ProjectStats projectStats, Comparator<BugInstance> comparator) {
 		this.projectStats = projectStats;
+		this.comparator = comparator;
 		bugSet = new TreeSet<BugInstance>(comparator);
 		bugSet = new TreeSet<BugInstance>(comparator);
 		errorList = new LinkedList<AnalysisError>();
@@ -281,7 +313,7 @@ public class SortedBugCollection extends BugCollection {
 	 */
 	@Override
 	public SortedBugCollection duplicate() {
-		SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone());
+		SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator);
 		
 		BugCollection.cloneAll(dup.bugSet, this.bugSet);
 		dup.errorList.addAll(this.errorList);
