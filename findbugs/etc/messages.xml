@@ -969,6 +969,18 @@ factory pattern to create these objects.</p>
    </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.QuestionableBooleanAssignment">
+   <Details>
+      <![CDATA[
+      <p>
+      This detector looks for simple assignments of literal boolean values to variables in 
+      conditional expressions.
+      </p>
+      <p>It is a fast detector.</p>
+      ]]>
+   </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.TrainNullReturnValues">
    <Details>
       <![CDATA[
@@ -4164,6 +4176,7 @@ and the next method is supposed to change the state of the iterator.
       ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="CI_CONFUSED_INHERITANCE">
     <ShortDescription>Class is final but declares protected field</ShortDescription>
     <LongDescription>Class {0} is final but declares protected field {1}</LongDescription>
@@ -4174,6 +4187,20 @@ and the next method is supposed to change the state of the iterator.
       is final, it can not be derived from, and the use of protected is confusing. The access
       modifier for the field should be changed to private or public to represent the true
       use for the field.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT">
+    <ShortDescription>Method assigns boolean literal in boolean expression</ShortDescription>
+    <LongDescription>Method {1} assigns boolean literal in boolean expression</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      This method assigns a literal boolean value (true or false) to a boolean variable inside
+      an if or while expression. Most probably this was supposed to be a boolean comparison using 
+      ==, not an assignment using =.
       </p>
       ]]>
     </Details>
@@ -4288,4 +4315,5 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="XFB">XML Factory Bypass</BugCode>
   <BugCode abbrev="USM">Useless Subclass Method</BugCode>
   <BugCode abbrev="CI">Confused Inheritance</BugCode>
+  <BugCode abbrev="QBA">Questionable Boolean Assignment</BugCode>
   </MessageCollection>

@@ -472,6 +472,10 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   			speed="fast"
   			reports="CI_CONFUSED_INHERITANCE"/>
 
+  <Detector class="edu.umd.cs.findbugs.detect.QuestionableBooleanAssignment"
+  			speed="fast"
+  			reports="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT"/>
+
   <Detector class="edu.umd.cs.findbugs.detect.TrainNullReturnValues"
             hidden="true" speed="slow" reports=""/>
 
@@ -716,4 +720,5 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="XFB" type="XFB_XML_FACTORY_BYPASS" category="STYLE" experimental="true"/>
   <BugPattern abbrev="USM" type="USM_USELESS_SUBCLASS_METHOD" category="CORRECTNESS" experimental="true"/>
   <BugPattern abbrev="CI" type="CI_CONFUSED_INHERITANCE" category="STYLE"/>
+  <BugPattern abbrev="QBA" type="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT" category="CORRECTNESS"/>
 </FindbugsPlugin>
