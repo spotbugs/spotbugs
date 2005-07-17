@@ -61,7 +61,7 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 				if (seen == DUP)
 					state = SEEN_DUP;
 				else
-					seen = SEEN_NOTHING;
+					state = SEEN_NOTHING;
 			break;
 			
 			case SEEN_DUP:
