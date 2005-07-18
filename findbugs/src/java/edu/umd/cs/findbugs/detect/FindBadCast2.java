@@ -89,8 +89,8 @@ public class FindBadCast2 implements Detector {
 				bugReporter.logError("Detector " + this.getClass().getName()
 						+ " caught exception", e);
 			} catch (DataflowAnalysisException e) {
-				bugReporter.logError("Detector " + this.getClass().getName()
-						+ " caught exception", e);
+//				bugReporter.logError("Detector " + this.getClass().getName()
+//						+ " caught exception", e);
 			}
 		}
 	}
