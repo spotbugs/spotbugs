@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -33,6 +35,7 @@ import org.apache.bcel.generic.MethodGen;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -47,7 +50,8 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 	private BugReporter bugReporter;
 	private JavaClass javaClass;
 
-	private boolean sawTwoLockWait = false;
+	private Collection<BugInstance> possibleWaitBugs = new LinkedList<BugInstance>();
+	private Collection<SourceLineAnnotation> possibleNotifyLocations = new LinkedList<SourceLineAnnotation>();
 	private boolean sawTwoLockNotify = false;
 	public FindTwoLockWait(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -59,7 +63,8 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 
 	public void visitClassContext(ClassContext classContext) {
 		javaClass = classContext.getJavaClass();
-		sawTwoLockWait = sawTwoLockNotify = false;
+		possibleWaitBugs.clear();
+		possibleNotifyLocations.clear();
 		Method[] methodList = javaClass.getMethods();
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
@@ -74,11 +79,17 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 			try {
 				analyzeMethod(classContext, method);
 			} catch (DataflowAnalysisException e) {
-				bugReporter.logError("Error analyzing " + method.toString(), e);
+				// bugReporter.logError("Error analyzing " + method.toString(), e);
 			} catch (CFGBuilderException e) {
 				bugReporter.logError("Error analyzing " + method.toString(), e);
 			}
 		}
+		if (!possibleNotifyLocations.isEmpty()) 
+			for(BugInstance bug : possibleWaitBugs ) {
+				for(SourceLineAnnotation notifyLine : possibleNotifyLocations)
+					bug.addSourceLine(notifyLine).describe("SOURCE_NOTIFICATION_DEADLOCK");
+				bugReporter.reportBug(bug);
+			}
 	}
 
 	private void analyzeMethod(ClassContext classContext, Method method)
@@ -126,11 +137,10 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 			if (count > 1) {
 				// A wait with multiple locks held?
 				String sourceFile = javaClass.getSourceFileName();
-				bugReporter.reportBug(new BugInstance(this, "TLW_TWO_LOCK_WAIT", sawTwoLockNotify ? HIGH_PRIORITY : NORMAL_PRIORITY)
+				possibleWaitBugs.add(new BugInstance(this, "TLW_TWO_LOCK_WAIT", HIGH_PRIORITY )
 						.addClass(javaClass)
 						.addMethod(methodGen, sourceFile)
 						.addSourceLine(classContext, methodGen, sourceFile, location.getHandle()));
-				sawTwoLockWait = true;
 			}
 		}
 		if (Hierarchy.isMonitorNotify(location.getHandle().getInstruction(), cpg)) {
@@ -138,11 +148,7 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 			if (count > 1) {
 				// A notify with multiple locks held?
 				String sourceFile = javaClass.getSourceFileName();
-				bugReporter.reportBug(new BugInstance(this, "TLW_TWO_LOCK_NOTIFY", sawTwoLockWait ? HIGH_PRIORITY : NORMAL_PRIORITY)
-						.addClass(javaClass)
-						.addMethod(methodGen, sourceFile)
-						.addSourceLine(classContext, methodGen, sourceFile, location.getHandle()));
-				sawTwoLockNotify = true;
+				possibleNotifyLocations.add(SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle()));
 			}
 		}
 	}
