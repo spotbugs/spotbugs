@@ -345,7 +345,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			if (outerElement.equals("BugCollection")) {
 				if (qName.equals("BugInstance")) {
 					bugCollection.add(bugInstance, false);
-                    bugCollection.getProjectStats().addBug(bugInstance);
+                   // TODO: check this
+                    if (bugInstance.getLastVersion() == -1)
+                    	bugCollection.getProjectStats().addBug(bugInstance);
 				}
 			} else if (outerElement.equals("Project")) {
 				//System.out.println("Adding project element " + qName + ": " + textBuffer.toString());

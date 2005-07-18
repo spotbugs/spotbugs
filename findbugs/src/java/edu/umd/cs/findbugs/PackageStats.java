@@ -65,7 +65,18 @@ public class PackageStats implements XMLWriteable {
 			++nBugs[bug.getPriority()];
 			++nBugs[0];
 		}
-
+		public int getTotalBugs() {
+			return nBugs[0];
+		}
+		public int getBugsAtPriority(int p) {
+			return nBugs[p];
+		}
+		public int size() {
+			return size;
+		}
+		public String getName() {
+			return name;
+		}
 		public void writeXML(XMLOutput xmlOutput) throws IOException {
 			xmlOutput.startTag("ClassStats");
 
@@ -76,6 +87,14 @@ public class PackageStats implements XMLWriteable {
 			writeBugPriorities(xmlOutput, nBugs);			
 
 			xmlOutput.stopTag(true);
+		}
+
+		/**
+		 * 
+		 */
+		public void clearBugCounts() {
+			for(int i = 0; i < nBugs.length; i++) nBugs[i] = 0;
+			
 		}
 	}
 
@@ -97,6 +116,18 @@ public class PackageStats implements XMLWriteable {
 		this.packageName = packageName;
 	}
 
+	public Collection<ClassStats> getClassStats() {
+		return packageMembers.values();
+	}
+	public int getTotalBugs() {
+		return nBugs[0];
+	}
+	public int size() {
+		return size;
+	}
+	public int getBugsAtPriority(int p) {
+		return nBugs[p];
+	}
 	private ClassStats getClassStats(String name) {
 		ClassStats result = packageMembers.get(name);
 		if ( result == null ) {
@@ -169,6 +200,19 @@ public class PackageStats implements XMLWriteable {
 					String.valueOf(bugs[i]));
 			}
 		}
+	}
+
+	/**
+	 * 
+	 */
+	public void clearBugCounts() {
+		for(int i = 0; i < nBugs.length; i++)
+			nBugs[i] = 0;
+		
+		for(ClassStats classStats :  packageMembers.values()) {
+			classStats.clearBugCounts();
+		}
+		
 	}
 }
 

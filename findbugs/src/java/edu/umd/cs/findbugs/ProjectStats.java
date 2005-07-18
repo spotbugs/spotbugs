@@ -29,6 +29,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -146,6 +147,16 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	}
 
 	/**
+	 * Clear bug counts
+	 */
+	public void clearBugCounts() {
+		Iterator<PackageStats> i = packageStatsMap.values().iterator();
+		while (i.hasNext()) {
+			PackageStats stats = i.next();
+			stats.clearBugCounts();
+		}
+	}
+	/**
 	 * Output as XML.
 	 */
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
@@ -211,6 +222,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 			is.close();
 	}
 
+	public Collection<PackageStats> getPackageStats() {
+		return packageStatsMap.values();
+	}
 	private PackageStats getPackageStats(String packageName) {
 		PackageStats stat = packageStatsMap.get(packageName);
 		if (stat == null) {

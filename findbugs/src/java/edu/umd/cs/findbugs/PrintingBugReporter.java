@@ -53,6 +53,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		}
 		
 		PrintingBugReporter reporter = new PrintingBugReporter();
+		// Load plugins, in order to get message files
+		DetectorFactoryCollection.instance();
 		
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		if (args.length > 0)
@@ -60,8 +62,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		else
 			bugCollection.readXML(System.in, new Project());
 		
-		// Load plugins, in order to get message files
-		DetectorFactoryCollection.instance();
+
 		
 		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
 			BugInstance warning = i.next();
