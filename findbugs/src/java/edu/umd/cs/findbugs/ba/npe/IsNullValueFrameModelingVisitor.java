@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import org.apache.bcel.generic.ACONST_NULL;
+import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
@@ -204,7 +205,11 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	public void visitLDC2_W(LDC2_W obj) {
 		produce2(IsNullValue.nonNullValue());
 	}
-
+	
+	@Override
+	public void visitCHECKCAST(CHECKCAST obj) {
+		// Do nothing
+	}
 	public void visitINVOKESTATIC(INVOKESTATIC obj) {
 		handleInvoke(obj);
 	}

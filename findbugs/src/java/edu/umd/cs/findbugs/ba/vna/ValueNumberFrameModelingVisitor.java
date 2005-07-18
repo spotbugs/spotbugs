@@ -396,6 +396,11 @@ public class ValueNumberFrameModelingVisitor
 		getFrame().setValue(local, output[0]);
 	}
 
+	@Override
+	public void visitCHECKCAST(CHECKCAST obj) {
+		// Do nothing
+	}
+	
 	/* ----------------------------------------------------------------------
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
