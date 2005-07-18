@@ -25,6 +25,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
@@ -149,7 +150,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 			return aRef.getFirstCommonSuperclass(bRef);
 		} catch (ClassNotFoundException e) {
 			lookupFailureCallback.reportMissingClass(e);
-			throw new DataflowAnalysisException("Repository lookup failure: " + e.toString(), e);
+			throw new MissingClassException(e);
 		}
 	}
 

@@ -53,6 +53,7 @@ import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -447,7 +448,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 					tmpFact.setValue(i, feasibleCheck ? instanceOfType : TopType.instance());
 				} catch (ClassNotFoundException e) {
 					lookupFailureCallback.reportMissingClass(e);
-					throw new DataflowAnalysisException("Missing class", e);
+					throw new MissingClassException(e);
 				}
 			}
 		}

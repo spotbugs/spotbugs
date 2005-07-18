@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
+import edu.umd.cs.findbugs.ba.MissingClassException;
 
 /**
  * An abstract class which provides much of the functionality
@@ -177,9 +178,23 @@ public abstract class AbstractBugReporter implements BugReporter {
 	}
 	
 	public void logError(String message, Throwable e) {
+
+		boolean isMissingClassException = (e instanceof MissingClassException);
+		if (isMissingClassException) {
+			// Record the missing class, in case the exception thrower didn't.
+			MissingClassException missingClassEx = (MissingClassException) e;
+			ClassNotFoundException cnfe = missingClassEx.getClassNotFoundException();
+			reportMissingClass(cnfe);
+		}
+		
 		if (verbosityLevel == SILENT)
 			return;
 		
+		// Don't report dataflow analysis exceptions due to missing classes.
+		// Too much noise.
+		if (isMissingClassException)
+			return;
+	
 		Error error = new Error(errorCount++, message, e);
 		if (!errorSet.contains(error))
 			errorSet.add(error);
