@@ -39,7 +39,7 @@ import java.io.IOException;
  * @see BugAnnotation
  */
 public class MethodAnnotation extends PackageMemberAnnotation {
-	private static final long serialVersionUID = 2L;
+	private static final long serialVersionUID = 1L;
 
 	private static final boolean UGLY_METHODS = Boolean.getBoolean("ma.ugly");
 

@@ -28,6 +28,8 @@ package edu.umd.cs.findbugs;
  * @see BugAnnotation
  */
 public abstract class PackageMemberAnnotation implements BugAnnotation {
+	private static final long serialVersionUID = -8208567669352996892L;
+	
 	protected String className;
 	protected String description;
 
