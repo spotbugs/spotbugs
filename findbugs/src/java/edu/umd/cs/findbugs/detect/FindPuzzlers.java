@@ -156,7 +156,7 @@ public class FindPuzzlers extends BytecodeScanningDetector implements Constants2
 			if (o != null && o instanceof Integer) {
 				int v =  ((Integer)o).intValue();
 				if (v < 0 || v > 11)
-				 bugReporter.reportBug(new BugInstance(this, "PZ_BAD_MONTH", NORMAL_PRIORITY)
+				 bugReporter.reportBug(new BugInstance(this, "DMI_BAD_MONTH", NORMAL_PRIORITY)
 						.addClassAndMethod(this)
 						.addInt(v)
 						.addCalledMethod(this)
