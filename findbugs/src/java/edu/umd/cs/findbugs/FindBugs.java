@@ -468,8 +468,8 @@ public class FindBugs implements Constants2, ExitCodes {
 		private String stylesheet = null;
 		private boolean quiet = false;
 		private ClassScreener classScreener = new ClassScreener();
-		private String filterFile = null;
-		private boolean include = false;
+		private String includeFilterFile = null;
+		private String excludeFilterFile = null;
 		private boolean setExitCode = false;
 		private int priorityThreshold = Detector.NORMAL_PRIORITY;
 		private PrintStream outputStream = null;
@@ -697,9 +697,14 @@ public class FindBugs implements Constants2, ExitCodes {
 					else
 						classScreener.addAllowedClass(item);
 				}
-			} else if (option.equals("-exclude") || option.equals("-include")) {
-				filterFile = argument;
-				include = option.equals("-include");
+			} else if (option.equals("-exclude")) {
+				if (excludeFilterFile != null) 
+					throw new IllegalArgumentException("Can specify one exclude filter file");
+				excludeFilterFile = argument;
+			} else if (option.equals("-include")) {
+				if (includeFilterFile != null) 
+					throw new IllegalArgumentException("Can specify one include filter file");
+				includeFilterFile = argument;
 			} else if (option.equals("-auxclasspath")) {
 				StringTokenizer tok = new StringTokenizer(argument, File.pathSeparator);
 				while (tok.hasMoreTokens())
@@ -780,8 +785,10 @@ public class FindBugs implements Constants2, ExitCodes {
 			
 			findBugs.setUserPreferences(userPreferences);
 
-			if (filterFile != null)
-				findBugs.setFilter(filterFile, include);
+			if (includeFilterFile != null) 
+				findBugs.addFilter(includeFilterFile, true);
+			if (excludeFilterFile != null) 
+				findBugs.addFilter(excludeFilterFile, false);
 
 			findBugs.setClassScreener(classScreener);
 			
@@ -925,7 +932,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * @param include        true if the filter specifies bug instances to include,
 	 *                       false if it specifies bug instances to exclude
 	 */
-	public void setFilter(String filterFileName, boolean include) throws IOException, FilterException {
+	public void addFilter(String filterFileName, boolean include) throws IOException, FilterException {
 		Filter filter = new Filter(filterFileName);
 		BugReporter origBugReporter = bugReporter.getDelegate();
 		BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, (Matcher)filter, include);
