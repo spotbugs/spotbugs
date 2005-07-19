@@ -316,10 +316,10 @@ public class IsNullValueAnalysis
 				// CloneNotSupportedException or InterruptedException
 				CodeExceptionGen handler = destBlock.getExceptionGen();
 				ObjectType catchType = handler.getCatchType();
-				if (catchType != null) {
+				if (false && catchType != null) {
 					String catchClass = catchType.getClassName();
-					if (false && (catchClass.equals("java.lang.CloneNotSupportedException") ||
-					        catchClass.equals("java.lang.InterruptedException"))) {
+					if (catchClass.equals("java.lang.CloneNotSupportedException") ||
+					        catchClass.equals("java.lang.InterruptedException")) {
 						for (int i = 0; i < tmpFact.getNumSlots(); ++i) {
 							IsNullValue value = tmpFact.getValue(i);
 							if (value.isDefinitelyNull() || value.isNullOnSomePath())
