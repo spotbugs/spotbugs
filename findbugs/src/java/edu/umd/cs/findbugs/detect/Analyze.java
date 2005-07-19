@@ -52,7 +52,9 @@ public class Analyze {
 
 	private static boolean isPrimitiveComponentClass(String refSig) {
 		int c = 0;
-		while (refSig.charAt(c++) == '[') {}
+		while (refSig.charAt(c) == '[') {
+			c++;
+		}
 		return refSig.charAt(c) != 'L';
 	}
 	
