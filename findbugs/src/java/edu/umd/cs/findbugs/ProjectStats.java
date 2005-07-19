@@ -75,6 +75,12 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		}
 	}
 
+	public int size() {
+		return totalSize;
+	}
+	public int getTotalBugs() {
+		return totalErrors[0];
+	}
 	/**
 	 * Set the timestamp for this analysis run.
 	 *
@@ -150,6 +156,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 * Clear bug counts
 	 */
 	public void clearBugCounts() {
+		for(int i = 0; i < totalErrors.length; i++)
+			totalErrors[i] = 0;
 		Iterator<PackageStats> i = packageStatsMap.values().iterator();
 		while (i.hasNext()) {
 			PackageStats stats = i.next();
