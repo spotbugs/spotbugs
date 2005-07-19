@@ -2959,7 +2959,7 @@ the constant null.</p>
 
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE">
-    <ShortDescription>Redundant nullcheck of value known to be null</ShortDescription>
+    <ShortDescription>Redundant nullcheck of value known to be non-null</ShortDescription>
     <LongDescription>Redundant nullcheck of value known to be non-null {1}</LongDescription>
     <Details>
 <![CDATA[
