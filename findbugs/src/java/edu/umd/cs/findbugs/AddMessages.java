@@ -80,9 +80,7 @@ public class AddMessages {
 			bugCodeSet.add(bugPattern.getAbbrev());
 
 			element.addElement("ShortMessage").addText(
-				bugPattern != null
-					? bugPattern.getShortDescription()
-					: bugInstance.toString());
+				bugPattern.getShortDescription());
 			element.addElement("LongMessage").addText(bugInstance.getMessage());
 
 			// Add pre-formatted display strings in "Message"
