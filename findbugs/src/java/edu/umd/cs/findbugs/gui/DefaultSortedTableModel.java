@@ -213,12 +213,13 @@ public class DefaultSortedTableModel extends AbstractTableModel
 			viewToModelMapping.add(new Integer(i));
 		
 		Collections.sort( viewToModelMapping, new Comparator<Integer>() {
+			@SuppressWarnings("unchecked")
 			public int compare( Integer a, Integer b ) {
 				if ((sortDirection == SORT_NO_ORDER) || (sortColumn == -1))
 					return a.compareTo(b);
 				
-				Comparable first = (Comparable)baseModel.getValueAt( a.intValue(), sortColumn );
-				Comparable second = (Comparable)baseModel.getValueAt( b.intValue(), sortColumn );
+				Comparable<Object> first = (Comparable<Object>)baseModel.getValueAt( a.intValue(), sortColumn );
+				Comparable<Object>  second = (Comparable<Object>)baseModel.getValueAt( b.intValue(), sortColumn );
 				
 				if (sortDirection == SORT_ASCENDING_ORDER) 
 					return first.compareTo(second);
