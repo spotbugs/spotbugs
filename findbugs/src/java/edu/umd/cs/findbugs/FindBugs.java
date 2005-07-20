@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -151,6 +152,11 @@ public class FindBugs implements Constants2, ExitCodes {
 		public boolean containsSourceFiles();
 
 		/**
+		 * Return the latest creation/modification time of any of the class files scanned. 
+		 * @return
+		 */
+		public long getLastModificationTime();
+		/**
 		 * Close any internal files or streams.
 		 */
 		public void close();
@@ -161,7 +167,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	private class SingleClassProducer implements ClassProducer {
 		private URL url;
-
+		long time = 0;
 		/**
 		 * Constructor.
 		 *
@@ -185,19 +191,29 @@ public class FindBugs implements Constants2, ExitCodes {
 				return null;
 
 			try {
-				return parseClass(urlToParse);
+				URLConnection u = urlToParse.openConnection();
+				time = u.getLastModified();
+				return parseFromStream(u.getInputStream(), urlToParse.toString());
 			} catch (ClassFormatException e) {
 				throw new ClassFormatException("Invalid class file format for " +
 				        url.toString() + ": " + e.getMessage());
 			}
 		}
 
+	
 		public boolean containsSourceFiles() {
 			return false;
 		}
 
 		public void close() {
 			// Nothing to do here
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.FindBugs.ClassProducer#getLatestTimeOfClass()
+		 */
+		public long getLastModificationTime() {
+			return time;
 		}
 	}
 
@@ -210,6 +226,8 @@ public class FindBugs implements Constants2, ExitCodes {
 		private List<String> additionalAuxClasspathEntryList;
 		private ZipInputStream zipInputStream;
 		private boolean containsSourceFiles;
+		private long time = 0;
+		private long zipTime = 0;
 
 		public ZipClassProducer(URL url, LinkedList<ArchiveWorkListItem> archiveWorkList,
 				List<String> additionalAuxClasspathEntryList)
@@ -218,10 +236,13 @@ public class FindBugs implements Constants2, ExitCodes {
 			this.archiveWorkList = archiveWorkList;
 			this.additionalAuxClasspathEntryList = additionalAuxClasspathEntryList;
 			if (DEBUG) System.out.println("Opening jar/zip input stream for " + url.toString());
-			this.zipInputStream = new ZipInputStream(url.openStream());
+			URLConnection u = url.openConnection();
+			this.zipTime = u.getLastModified();
+			this.zipInputStream = new ZipInputStream(u.getInputStream());
 			this.containsSourceFiles = false;
 		}
 
+		
 		public JavaClass getNextClass() throws IOException, InterruptedException {
 			for (;;) {
 				if (Thread.interrupted())
@@ -247,6 +268,8 @@ public class FindBugs implements Constants2, ExitCodes {
 					String fileExtension = URLClassPath.getFileExtension(entryName);
 					if (fileExtension != null) {
 						if (fileExtension.equals(".class")) {
+							long modTime = zipEntry.getTime();
+							if (modTime > time) time = modTime;
 							return parseClass(url.toString(), new NoCloseInputStream(zipInputStream), entryName);
 						} else if (archiveExtensionSet.contains(fileExtension)) {
 							// Add nested archive to archive work list
@@ -278,6 +301,14 @@ public class FindBugs implements Constants2, ExitCodes {
 				}
 			}
 		}
+		static final long millisecondsInAYear = 31556926000L; 
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.FindBugs.ClassProducer#getLastModificationTime()
+		 */
+		public long getLastModificationTime() {
+			if (time + millisecondsInAYear > zipTime) return time;
+			return zipTime;
+		}
 	}
 
 	/**
@@ -289,6 +320,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		private List<String> additionalAuxClasspathEntryList;
 		private Iterator<String> rfsIter;
 		private boolean containsSourceFiles;
+		private long time;
 
 		public DirectoryClassProducer(String dirName,
 				List<String> additionalAuxClasspathEntryList) throws InterruptedException {
@@ -331,6 +363,8 @@ public class FindBugs implements Constants2, ExitCodes {
 				}
 			}
 			try {
+				long modTime = new File(fileName).lastModified();
+				if (time < modTime) time = modTime;
 				return parseClass(new URL("file:" + fileName));
 			} catch (ClassFormatException e) {
 				throw new ClassFormatException("Invalid class file format for " +
@@ -344,6 +378,13 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		public void close() {
 			// Nothing to do here
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.FindBugs.ClassProducer#getLastModificationTime()
+		 */
+		public long getLastModificationTime() {
+			return time;
 		}
 	}
 
@@ -1101,7 +1142,9 @@ public class FindBugs implements Constants2, ExitCodes {
 			scanArchiveOrDirectory(item, archiveWorkList, repositoryClassList,
 				additionalAuxClasspathEntryList);
 		}
-		
+		if (project.getTimestamp() != 0 && bugCollectionBugReporter != null) {
+			bugCollectionBugReporter.getBugCollection().setTimestamp(project.getTimestamp());
+		}
 		// Add "extra" aux classpath entries needed to ensure that
 		// skipped classes can be referenced.
 		addCollectionToClasspath(additionalAuxClasspathEntryList);
@@ -1427,6 +1470,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			// add it to the end of the source path.
 			if (classProducer.containsSourceFiles())
 				project.addSourceDir(fileName);
+			project.addTimestamp(classProducer.getLastModificationTime());
 
 		} catch (IOException e) {
 			// You'd think that the message for a FileNotFoundException would include
