@@ -179,20 +179,19 @@ public abstract class AbstractBugReporter implements BugReporter {
 	
 	public void logError(String message, Throwable e) {
 
-		boolean isMissingClassException = (e instanceof MissingClassException);
-		if (isMissingClassException) {
+
+		if (e instanceof MissingClassException) {
 			// Record the missing class, in case the exception thrower didn't.
 			MissingClassException missingClassEx = (MissingClassException) e;
 			ClassNotFoundException cnfe = missingClassEx.getClassNotFoundException();
+
 			reportMissingClass(cnfe);
+			// Don't report dataflow analysis exceptions due to missing classes.
+			// Too much noise.
+			return;
 		}
 		
 		if (verbosityLevel == SILENT)
-			return;
-		
-		// Don't report dataflow analysis exceptions due to missing classes.
-		// Too much noise.
-		if (isMissingClassException)
 			return;
 	
 		Error error = new Error(errorCount++, message, e);
