@@ -31,6 +31,7 @@ import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1144,6 +1145,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		}
 		if (project.getTimestamp() != 0 && bugCollectionBugReporter != null) {
 			bugCollectionBugReporter.getBugCollection().setTimestamp(project.getTimestamp());
+			bugCollectionBugReporter.getBugCollection().getProjectStats().setTimestamp(project.getTimestamp());
 		}
 		// Add "extra" aux classpath entries needed to ensure that
 		// skipped classes can be referenced.

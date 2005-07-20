@@ -92,6 +92,10 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		this.timestamp = new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).parse(timestamp);
 	}
 	
+	public void setTimestamp(long timestamp) {
+		this.timestamp = new Date(timestamp);
+	}
+	
 	/**
 	 * Get the number of classes analyzed.
 	 */
