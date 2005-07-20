@@ -102,6 +102,8 @@ public class Project implements XMLWriteable {
 	 */
 	public static final String UNNAMED_PROJECT = "<<unnamed project>>";
 
+	private long timestamp = 0L;
+	
 	/**
 	 * Create an anonymous project.
 	 */
@@ -838,6 +840,24 @@ public class Project implements XMLWriteable {
 
 		list.clear();
 		list.addAll(replace);
+	}
+
+	/**
+	 * @param timestamp The timestamp to set.
+	 */
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+	
+	public void addTimestamp(long timestamp) {
+		if (this.timestamp < timestamp)
+			this.timestamp = timestamp;
+	}
+	/**
+	 * @return Returns the timestamp.
+	 */
+	public long getTimestamp() {
+		return timestamp;
 	}
 }
 
