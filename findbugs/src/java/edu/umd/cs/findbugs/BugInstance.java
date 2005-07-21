@@ -80,7 +80,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	private int priority;
 	private ArrayList<BugAnnotation> annotationList;
 	private int cachedHashCode;
-	private String annotationText;
+	@NonNull private String annotationText;
 	private BugProperty propertyListHead, propertyListTail;
 	private String uniqueId;
 	
@@ -299,7 +299,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 *
 	 * @param annotationText the user annotation text
 	 */
-	public void setAnnotationText(String annotationText) {
+	public void setAnnotationText(@NonNull String annotationText) {
 		this.annotationText = annotationText;
 	}
 
@@ -308,7 +308,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 *
 	 * @return the user annotation text
 	 */
-	public String getAnnotationText() {
+	@NonNull public String getAnnotationText() {
 		return annotationText;
 	}
 
