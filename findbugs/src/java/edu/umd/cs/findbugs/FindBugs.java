@@ -856,6 +856,8 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * ---------------------------------------------------------------------- */
 
 	public static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
+	public static final boolean TIMEDEBUG = Boolean.getBoolean("findbugs.time");
+	public static final int TIMEQUANTUM = Integer.getInteger("findbugs.time.quantum",1000);
 
 	/**
 	 * FindBugs home directory.
@@ -1549,7 +1551,12 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	private void examineClass(AnalysisPass analysisPass, String className) throws InterruptedException {
 		if (DEBUG) System.out.println("Examining class " + className);
-
+		long entireClassAnalysisStart = 0;
+		
+		
+		if (TIMEDEBUG || DEBUG)  {
+			entireClassAnalysisStart = System.currentTimeMillis();
+		}
 		this.currentClass = className;
 		
 		Detector[] detectors = analysisPass.getDetectorList();
@@ -1582,15 +1589,23 @@ public class FindBugs implements Constants2, ExitCodes {
 				try {
 					long start = 0, end;
 					
-					if (DEBUG) {
-						System.out.println("  running " + detector.getClass().getName());
+					
+					if (TIMEDEBUG || DEBUG)  {
 						start = System.currentTimeMillis();
+						if (DEBUG) {
+							System.out.println("  running " + detector.getClass().getName());
+							
+						}
 					}
 					detector.visitClassContext(classContext);
 					
-					if (DEBUG) {
+					if (TIMEDEBUG || DEBUG) {
 						end = System.currentTimeMillis();
 						long delta = end - start;
+						entireClassAnalysisStart += delta;
+						if (delta > TIMEQUANTUM)
+							System.out.println("TIME: " + detector.getClass().getName() + " " + className + " " + delta);
+						if (DEBUG) {
 						String detectorName = detector.getClass().getName();
 						Long total = detectorTimings.get(detectorName);
 						if (total == null)
@@ -1598,6 +1613,7 @@ public class FindBugs implements Constants2, ExitCodes {
 						else
 							total = new Long(total.longValue() + delta);
 						detectorTimings.put(detectorName, total);
+						}
 					}
 				} catch (AnalysisException e) {
 					reportRecoverableDetectorException(className, detector, e);
@@ -1628,7 +1644,11 @@ public class FindBugs implements Constants2, ExitCodes {
 			}
 			throw annotatedEx;
 		}
-
+		if (TIMEDEBUG || DEBUG) {
+			long classSetupTime = System.currentTimeMillis() - entireClassAnalysisStart;
+			if (classSetupTime > TIMEQUANTUM)
+				System.out.println("TIME:  setup " + className + " " + classSetupTime); 
+		}
 		progressCallback.finishClass();
 	}
 
