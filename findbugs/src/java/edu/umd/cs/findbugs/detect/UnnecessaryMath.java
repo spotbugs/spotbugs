@@ -23,11 +23,11 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantFloat;
 import org.apache.bcel.classfile.ConstantLong;
-import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -99,10 +99,10 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Constan
 		return super.clone();
 	}
 
-	public void visit(Method obj) {
+	public void visit(Code obj) {
 		// Don't complain about unnecessary math calls in class initializers,
 		// since they may be there to improve readability.
-		if (obj.getName().equals("<clinit>"))
+		if (getMethod().getName().equals("<clinit>"))
 			return;
 		
 		state = SEEN_NOTHING;

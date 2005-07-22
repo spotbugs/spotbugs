@@ -1,7 +1,14 @@
 
+import java.math.BigInteger;
 
 public class UnnecessaryMathTest
 {
+	static {
+		//Bug 1196294 - Don't report in clinit
+		BigInteger check = BigInteger.valueOf((long)
+								Math.floor(Integer.MAX_VALUE / 127.5));
+	}
+	
 	public void test()
 	{
 		double a;
