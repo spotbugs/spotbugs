@@ -94,7 +94,7 @@ public class ClassType extends ObjectType {
 	}
 
 	public boolean equals(Object o) {
-		if (o.getClass() != this.getClass())
+		if (o == null || o.getClass() != this.getClass())
 			return false;
 		ClassType other = (ClassType) o;
 		return this.getSignature().equals(other.getSignature());

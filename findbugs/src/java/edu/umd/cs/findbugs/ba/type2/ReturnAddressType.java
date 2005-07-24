@@ -61,6 +61,7 @@ public class ReturnAddressType implements Type {
 	}
 
 	public boolean equals(Object o) {
+		if (o == null) return false;
 		return this.getClass() == o.getClass();
 	}
 

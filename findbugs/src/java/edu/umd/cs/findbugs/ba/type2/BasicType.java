@@ -57,7 +57,7 @@ public class BasicType implements Type {
 	}
 
 	public boolean equals(Object o) {
-		if (o.getClass() != this.getClass())
+		if (o == null || o.getClass() != this.getClass())
 			return false;
 		BasicType other = (BasicType) o;
 		return this.typeCode == other.typeCode;

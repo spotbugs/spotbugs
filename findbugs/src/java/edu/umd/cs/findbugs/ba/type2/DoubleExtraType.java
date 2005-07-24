@@ -54,7 +54,7 @@ public class DoubleExtraType implements Type, ExtendedTypes {
 	}
 
 	public boolean equals(Object o) {
-		return this.getClass() == o.getClass();
+		return o != null && this.getClass() == o.getClass();
 	}
 
 	public int hashCode() {
