@@ -20,7 +20,9 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
@@ -47,6 +49,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 		this.analysisContext = analysisContext;
 	}
 
+	static Map<Method,Boolean> cachedResults = new IdentityHashMap<Method,Boolean>();
 	public void execute() throws CFGBuilderException, DataflowAnalysisException {
 		if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.CONSERVE_SPACE))
 			throw new IllegalStateException("This should not happen");
@@ -81,35 +84,61 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 					continue;
 				}
 				Method method = classAndMethod.getMethod();
-				if (DEBUG) System.out.println("\tFound " + method.toString());
+				if (DEBUG) System.out.println("\tFound " + method);
 
 				// FIXME: for now, only allow static and private methods.
 				// Could also allow final methods (but would require class hierarchy
 				// search).
 				if (!(method.isStatic() || method.isPrivate()))
 					continue;
-
-				// Ignore abstract and native methods
-				MethodGen calledMethodGen = classContext.getMethodGen(method);
-				if (calledMethodGen == null)
+				if (method.getCode() == null) continue;
+				
+				// TODO: Parameterize by effort level
+				if (method.getCode().getLength() > 500) continue;
+				Boolean result = cachedResults.get(method);
+				if (Boolean.FALSE.equals(result))
 					continue;
+				
+				MethodGen calledMethodGen = null;
+				if (result == null) {
+					// Ignore abstract and native methods
+					calledMethodGen = classContext.getMethodGen(method);
+					if (calledMethodGen == null)
+						continue;
 
-				// Analyze exception paths of called method
-				// to see if it always throws an unhandled exception.
-				CFG calledCFG = classContext.getCFG(method);
-				ReturnPathDataflow pathDataflow = classContext.getReturnPathDataflow(method);
-				ReturnPath pathValue = pathDataflow.getStartFact(calledCFG.getExit());
+					// Analyze exception paths of called method
+					// to see if it always throws an unhandled exception.
+					CFG calledCFG = classContext.getCFG(method);
+					ReturnPathDataflow pathDataflow = classContext
+							.getReturnPathDataflow(method);
+					ReturnPath pathValue = pathDataflow.getStartFact(calledCFG
+							.getExit());
 
-				if (pathValue.getKind() != ReturnPath.RETURNS) {
+					result = Boolean
+							.valueOf(pathValue.getKind() != ReturnPath.RETURNS);
+					// System.out.println("isThrower: " + result + " " + method.getCode().getLength() + " " + method);
+					if (true) cachedResults.put(method, result);
+				}
+
+				if (result.booleanValue()) {
 					// Method always throws an unhandled exception
 					// or calls System.exit().
 					// Remove the normal control flow edge from the CFG.
-					Edge fallThrough = cfg.getOutgoingEdgeWithType(basicBlock, FALL_THROUGH_EDGE);
+					Edge fallThrough = cfg.getOutgoingEdgeWithType(basicBlock,
+							FALL_THROUGH_EDGE);
 					if (fallThrough != null) {
 						if (DEBUG) {
 							System.out.println("\tREMOVING normal return for:");
-							System.out.println("\t  Call to " + SignatureConverter.convertMethodSignature(calledMethodGen));
-							System.out.println("\t  In method " + SignatureConverter.convertMethodSignature(methodGen));
+							if (calledMethodGen == null)
+								calledMethodGen = classContext
+										.getMethodGen(method);
+							System.out
+									.println("\t  Call to "
+											+ SignatureConverter
+													.convertMethodSignature(calledMethodGen));
+							System.out.println("\t  In method "
+									+ SignatureConverter
+											.convertMethodSignature(methodGen));
 						}
 						deletedEdgeSet.add(fallThrough);
 					}
