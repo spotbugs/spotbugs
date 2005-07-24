@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -39,6 +41,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ca.CallListAnalysis;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantAnalysis;
@@ -382,13 +385,35 @@ public class ClassContext {
 
 	private JavaClass jclass;
 	private AnalysisContext analysisContext;
-
+	// TODO: Evaluate whether the memory requirements of this can grow too big
+	static private Map<Method, MethodGen> cachedMethodGen = new IdentityHashMap<Method,MethodGen>();
 	private NoExceptionAnalysisFactory<MethodGen> methodGenFactory =
 	        new NoExceptionAnalysisFactory<MethodGen>("MethodGen construction") {
 		        protected MethodGen analyze(Method method) {
 			        if (method.getCode() == null)
 				        return null;
-			        return new MethodGen(method, jclass.getClassName(), getConstantPoolGen());
+			        MethodGen result = cachedMethodGen.get(method);
+
+			        
+			         if (result != null) {
+			        	// System.out.println("got cached value " + System.identityHashCode(result));
+			        	return result;
+			        }
+			         if (false) System.out.println("methodGen: " + jclass.getClassName() + "." 
+				        		+ method.getName() + " : " + method.getSignature() + " " + System.identityHashCode(method));
+				       
+			        if (false && jclass.getClassName().indexOf("edu.umd.cs.findbugs.xml.XMLOutputUtil") >= 0) {
+			        	try {
+			        		throw new RuntimeException("get methodGen for XMLOutputUtil");
+			        	}catch (RuntimeException e) {
+			        		e.printStackTrace(System.out);
+			        	}
+			        }
+			        
+			        result = new MethodGen(method, jclass.getClassName(), getConstantPoolGen());
+			        if (true) cachedMethodGen.put(method, result);
+			        // System.out.println("Returning " + System.identityHashCode(result));
+			        return result;
 		        }
 	        };
 
@@ -919,7 +944,7 @@ public class ClassContext {
 	 *
 	 * @return the ConstantPoolGen
 	 */
-	public ConstantPoolGen getConstantPoolGen() {
+	public @NonNull ConstantPoolGen getConstantPoolGen() {
 		if (classGen == null)
 			classGen = new ClassGen(jclass);
 		return classGen.getConstantPool();
