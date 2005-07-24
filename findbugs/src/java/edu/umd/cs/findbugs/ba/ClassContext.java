@@ -411,6 +411,8 @@ public class ClassContext {
 			        }
 			        
 			        result = new MethodGen(method, jclass.getClassName(), getConstantPoolGen());
+			        // TODO: Find a smarter way to do this.
+			        if (cachedMethodGen.size() > 1000) cachedMethodGen.clear();
 			        if (true) cachedMethodGen.put(method, result);
 			        // System.out.println("Returning " + System.identityHashCode(result));
 			        return result;
