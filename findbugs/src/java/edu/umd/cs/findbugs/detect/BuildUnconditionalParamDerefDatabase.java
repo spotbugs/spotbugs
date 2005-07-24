@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -61,6 +63,12 @@ public class BuildUnconditionalParamDerefDatabase {
 		Method[] methodList = classContext.getJavaClass().getMethods();
 		for (int i = 0; i < methodList.length; ++i) {
 			Method method = methodList[i];
+			boolean hasReferenceParameters = false;
+			for(Type argument : method.getArgumentTypes()) 
+				if (argument instanceof ReferenceType)
+					hasReferenceParameters = true;
+			
+			if (!hasReferenceParameters) continue;
 			
 			if (classContext.getMethodGen(method) == null)
 				continue; // no code
