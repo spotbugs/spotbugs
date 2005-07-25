@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs;
 
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
+
 public abstract class BugCollectionBugReporter extends TextUIBugReporter {
 	private SortedBugCollection bugCollection;
 	private Project project;
@@ -49,6 +51,10 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter {
 	}
 
 	public void logError(String message, Throwable e) {
+		if (e instanceof MethodUnprofitableException) {
+			// TODO: log this
+			return;
+		}
 		bugCollection.addError(message, e);
 		super.logError(message, e);
 	}

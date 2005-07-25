@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
+import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 
 /**
@@ -179,7 +180,10 @@ public abstract class AbstractBugReporter implements BugReporter {
 	
 	public void logError(String message, Throwable e) {
 
-
+		if (e instanceof MethodUnprofitableException) {
+			// TODO: log this
+			return;
+		}
 		if (e instanceof MissingClassException) {
 			// Record the missing class, in case the exception thrower didn't.
 			MissingClassException missingClassEx = (MissingClassException) e;
