@@ -183,7 +183,7 @@ public class DetectorFactoryCollection {
 			File file = pluginList[i];
 			try {
 				if (FindBugs.DEBUG) System.out.println("Loading plugin: " + file.toString());
-				URL url = file.toURL();
+				URL url = file.toURI().toURL();
 				PluginLoader pluginLoader = new PluginLoader(url, this.getClass().getClassLoader());
 
 				Plugin plugin = pluginLoader.getPlugin();
