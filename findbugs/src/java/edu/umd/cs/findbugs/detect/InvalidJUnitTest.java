@@ -1,6 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2004,2005 Dave Brosius <dbrosius@users.sourceforge.net>
+ * Copyright (C) 2005 William Pugh
  * Copyright (C) 2004,2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
@@ -20,6 +21,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -27,95 +29,77 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.Lookup;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class InvalidJUnitTest extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class InvalidJUnitTest extends BytecodeScanningDetector implements
+		Constants2, StatelessDetector {
 
 	private static final int SEEN_NOTHING = 0;
+
 	private static final int SEEN_ALOAD_0 = 1;
 
 	private BugReporter bugReporter;
 
-	private MethodAnnotation setUpAnnotation;
-	private MethodAnnotation tearDownAnnotation;
-	private String methodName;
-	private boolean validClass;
-	private boolean validMethod;
-	private boolean sawSetUp;
-	private boolean sawTearDown;
 	private int state;
 
 	public InvalidJUnitTest(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
+	boolean directChildOfTestCase;
+
 	public void visitClassContext(ClassContext classContext) {
+		JavaClass jClass = classContext.getJavaClass();
+
 		try {
-			setUpAnnotation = null;
-			tearDownAnnotation = null;
-			validClass = false;
-			validMethod = false;
-			sawSetUp = false;
-			sawTearDown = false;
-			JavaClass[] superClasses = classContext.getJavaClass().getSuperClasses();
-			for (int i = 0; i < superClasses.length; i++) {
-				JavaClass sc = superClasses[i];
-				if (sc.getClassName().equals("junit.framework.TestCase")) {
-					validClass = true;
-					classContext.getJavaClass().accept(this);
-					break;
-				}
-			}
+			if (!Repository.instanceOf(jClass, "junit.framework.TestCase"))
+				return;
+
+			JavaClass superClass = jClass.getSuperClass();
+			directChildOfTestCase = superClass.getClassName().equals(
+					"junit.framework.TestCase");
+			jClass.accept(this);
 		} catch (ClassNotFoundException cnfe) {
 			bugReporter.reportMissingClass(cnfe);
 		}
-			
-	}
 
-	public void visitAfter(JavaClass obj) {
-		if ((setUpAnnotation != null) && !sawSetUp) {
-			bugReporter.reportBug(new BugInstance(this, "IJU_SETUP_NO_SUPER", NORMAL_PRIORITY)
-			        .addClass(this)
-			        .addMethod(setUpAnnotation));
-
-		}
-		if ((tearDownAnnotation != null) && !sawTearDown) {
-			bugReporter.reportBug(new BugInstance(this, "IJU_TEARDOWN_NO_SUPER", NORMAL_PRIORITY)
-			        .addClass(this)
-			        .addMethod(tearDownAnnotation));
-
-		}
 	}
 
 	public void visit(Method obj) {
-		if (!validClass)
-			return;
-		validMethod = false;
-		methodName = obj.getName();
-		if (methodName.equals("setUp") || methodName.equals("tearDown")) {
-			if (methodName.equals("setUp"))
-				setUpAnnotation = MethodAnnotation.fromVisitedMethod(this);
-			else if (methodName.equals("tearDown"))
-				tearDownAnnotation = MethodAnnotation.fromVisitedMethod(this);
-			validMethod = true;
-			state = SEEN_NOTHING;
-			super.visit(obj);
-		} else if (methodName.equals("suite") && !obj.isStatic())
-			bugReporter.reportBug(new BugInstance(this, "IJU_SUITE_NOT_STATIC", NORMAL_PRIORITY)
-			        .addClass(this)
-			        .addMethod(MethodAnnotation.fromVisitedMethod(this)));
+		if (getMethodName().equals("suite") && !obj.isStatic())
+			bugReporter.reportBug(new BugInstance(this, "IJU_SUITE_NOT_STATIC",
+					NORMAL_PRIORITY).addClassAndMethod(this));
+
 	}
-	
+
+	private boolean sawSuperCall;
+
 	public void visit(Code obj) {
-		if (validClass && validMethod)
+		if (!directChildOfTestCase
+				&& (getMethodName().equals("setUp") || getMethodName().equals(
+						"tearDown"))) {
+			sawSuperCall = false;
 			super.visit(obj);
+			if (sawSuperCall)
+				return;
+			JavaClass we = Lookup.findSuperImplementor(getThisClass(),
+					getMethodName(), "()V", bugReporter);
+			if (!we.getClassName().equals("junit.framework.TestCase")) {
+				// OK, got a bug
+				bugReporter.reportBug(new BugInstance(this, getMethodName()
+						.equals("setUp") ? "IJU_SETUP_NO_SUPER"
+						: "IJU_TEARDOWN_NO_SUPER", NORMAL_PRIORITY)
+						.addClassAndMethod(this));
+			}
+		}
 	}
 
 	public void sawOpcode(int seen) {
@@ -126,18 +110,14 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements Consta
 			break;
 
 		case SEEN_ALOAD_0:
-//			if (seen == INVOKESPECIAL)
-//				System.out.println(getNameConstantOperand());
 			if ((seen == INVOKESPECIAL)
-			        && (getNameConstantOperand().equals(methodName))
-			        && (getMethodSig().equals("()V"))) {
-				if (methodName.equals("setUp"))
-					sawSetUp = true;
-				else if (methodName.equals("tearDown"))
-					sawTearDown = true;
-			}
+					&& (getNameConstantOperand().equals(getMethodName()))
+					&& (getMethodSig().equals("()V")))
+				sawSuperCall = true;
 			state = SEEN_NOTHING;
 			break;
+		default:
+			state = SEEN_NOTHING;
 		}
 	}
 }
