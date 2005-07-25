@@ -42,6 +42,7 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.PossiblyNull;
 import edu.umd.cs.findbugs.ba.ca.CallListAnalysis;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantAnalysis;
@@ -389,7 +390,7 @@ public class ClassContext {
 	static private Map<Method, MethodGen> cachedMethodGen = new IdentityHashMap<Method,MethodGen>();
 	private NoExceptionAnalysisFactory<MethodGen> methodGenFactory =
 	        new NoExceptionAnalysisFactory<MethodGen>("MethodGen construction") {
-		        protected MethodGen analyze(Method method) {
+		        @PossiblyNull protected MethodGen analyze(Method method) {
 			        if (method.getCode() == null)
 				        return null;
 			        MethodGen result = cachedMethodGen.get(method);
@@ -399,8 +400,9 @@ public class ClassContext {
 			        	// System.out.println("got cached value " + System.identityHashCode(result));
 			        	return result;
 			        }
-			         if (false) System.out.println("methodGen: " + jclass.getClassName() + "." 
-				        		+ method.getName() + " : " + method.getSignature() + " " + System.identityHashCode(method));
+			         String methodName = method.getName();
+					if (false) System.out.println("methodGen: " + jclass.getClassName() + "." 
+				        		+ methodName + " : " + method.getSignature() + " " + System.identityHashCode(method));
 				       
 			        if (false && jclass.getClassName().indexOf("edu.umd.cs.findbugs.xml.XMLOutputUtil") >= 0) {
 			        	try {
@@ -409,10 +411,16 @@ public class ClassContext {
 			        		e.printStackTrace(System.out);
 			        	}
 			        }
-			        
+			        // TODO: Parameterize this
+			        int codeLength = method.getCode().getLength();
+					if (codeLength > 3000 
+			        		|| (methodName.equals("<clinit>") || methodName.equals("getContents")) && codeLength > 1000)
+			        	return null;
 			        result = new MethodGen(method, jclass.getClassName(), getConstantPoolGen());
+			        Runtime runtime = Runtime.getRuntime();
 			        // TODO: Find a smarter way to do this.
-			        if (cachedMethodGen.size() > 1000) cachedMethodGen.clear();
+			        if (cachedMethodGen.size() > 500 
+			        		&& runtime.freeMemory() < runtime.totalMemory()/5) cachedMethodGen.clear();
 			        if (true) cachedMethodGen.put(method, result);
 			        // System.out.println("Returning " + System.identityHashCode(result));
 			        return result;
