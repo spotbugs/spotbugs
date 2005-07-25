@@ -310,6 +310,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 
 		JavaClass javaClass = classContext.getJavaClass();
 		MethodGen methodGen = classContext.getMethodGen(method);
+		if (methodGen == null) return;
 		CFG cfg = classContext.getCFG(method);
 
 		// Add Streams passed into the method as parameters.

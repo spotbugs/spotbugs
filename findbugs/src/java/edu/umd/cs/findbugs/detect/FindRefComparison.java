@@ -430,10 +430,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	private void analyzeMethod(ClassContext classContext, final Method method)
 	        throws CFGBuilderException, DataflowAnalysisException {
 
+		MethodGen methodGen = classContext.getMethodGen(method);
+		if (methodGen == null) return;
 		boolean sawCallToEquals = false;
 		JavaClass jclass = classContext.getJavaClass();
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
-		MethodGen methodGen = classContext.getMethodGen(method);
+
 
 		// Enqueue all of the potential violations we find in the method.
 		// Normally we'll only report the first highest-priority warning,

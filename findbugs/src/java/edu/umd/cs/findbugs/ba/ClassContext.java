@@ -215,7 +215,7 @@ public class ClassContext {
 		 * @throws CFGBuilderException       if the CFG can't be constructed for the method
 		 * @throws DataflowAnalysisException if dataflow analysis fails on the method
 		 */
-		public Analysis getAnalysis(Method method) throws CFGBuilderException, DataflowAnalysisException {
+		@PossiblyNull public Analysis getAnalysis(Method method) throws CFGBuilderException, DataflowAnalysisException {
 			AnalysisResult<Analysis> result = map.get(method);
 			if (result == null) {
 				if (TIME_ANALYSES) {
@@ -266,7 +266,7 @@ public class ClassContext {
 			return result.getAnalysis();
 		}
 
-		protected abstract Analysis analyze(Method method)
+		@PossiblyNull protected abstract Analysis analyze(Method method)
 		        throws CFGBuilderException, DataflowAnalysisException;
 	}
 
@@ -322,7 +322,7 @@ public class ClassContext {
 
 		public CFG getRefinedCFG(Method method) throws CFGBuilderException {
 			MethodGen methodGen = getMethodGen(method);
-
+			if (methodGen == null) throw new MethodUnprofitableException(jclass, method);
 			CFG cfg = getRawCFG(method);
 
 			// HACK:
@@ -667,10 +667,12 @@ public class ClassContext {
 
 	private AnalysisFactory<ConstantDataflow> constantDataflowFactory =
 		new AnalysisFactory<ConstantDataflow>("constant propagation analysis") {
-			//@Override
+			@Override @PossiblyNull
 			protected ConstantDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+				MethodGen methodGen = getMethodGen(method);
+				if (methodGen == null) return null;
 				ConstantAnalysis analysis = new ConstantAnalysis(
-					getMethodGen(method),
+					methodGen,
 					getDepthFirstSearch(method)
 				);
 				ConstantDataflow dataflow = new ConstantDataflow(getCFG(method), analysis);
@@ -682,7 +684,7 @@ public class ClassContext {
 
 	private AnalysisFactory<UnconditionalDerefDataflow> unconditionalDerefDataflowFactory =
 		new AnalysisFactory<UnconditionalDerefDataflow>("unconditional deref analysis") {
-			//@Override
+			@Override
 			protected UnconditionalDerefDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
 				CFG cfg = getCFG(method); 
 				
@@ -702,7 +704,7 @@ public class ClassContext {
 	
 	private AnalysisFactory<LoadDataflow> loadDataflowFactory =
 		new AnalysisFactory<LoadDataflow>("field load analysis") {
-			//@Override
+			@Override
 			protected LoadDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
 				LoadAnalysis analysis = new LoadAnalysis(
 						getDepthFirstSearch(method),
@@ -753,6 +755,7 @@ public class ClassContext {
 			new NoExceptionAnalysisFactory<LoadedFieldSet>("loaded field set factory") {
 				protected LoadedFieldSet analyze(Method method) {
 					MethodGen methodGen = getMethodGen(method);
+					if (methodGen == null) return null;
 					InstructionList il = methodGen.getInstructionList();
 
 					LoadedFieldSet loadedFieldSet = new LoadedFieldSet(methodGen);
@@ -802,8 +805,10 @@ public class ClassContext {
 			new AnalysisFactory<LiveLocalStoreDataflow>("live local stores analysis") {
 				protected LiveLocalStoreDataflow analyze(Method method)
 					throws DataflowAnalysisException, CFGBuilderException {
-						CFG cfg = getCFG(method);
 						MethodGen methodGen = getMethodGen(method);
+						if (methodGen == null) return null;
+						CFG cfg = getCFG(method);
+
 						ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(method);
 
 						LiveLocalStoreAnalysis analysis = new LiveLocalStoreAnalysis(methodGen, rdfs);
@@ -917,8 +922,9 @@ public class ClassContext {
 	 * @param method the method
 	 * @return the MethodGen object for the method, or null
 	 *         if the method has no Code attribute (and thus cannot be analyzed)
+	 *         or if the method seems unprofitable to analyze
 	 */
-	public MethodGen getMethodGen(Method method) {
+	@PossiblyNull public MethodGen getMethodGen(Method method) {
 		return methodGenFactory.getAnalysis(method);
 	}
 

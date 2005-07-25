@@ -87,6 +87,7 @@ public class FindSqlInjection implements Detector {
 		
 		JavaClass javaClass = classContext.getJavaClass();
 		MethodGen methodGen = classContext.getMethodGen(method);
+		if (methodGen == null) return;
 		ConstantPoolGen cpg = methodGen.getConstantPool();
 		try {
 		CFG cfg = classContext.getCFG(method);

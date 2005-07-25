@@ -255,6 +255,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 
 	public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match) {
 		MethodGen methodGen = classContext.getMethodGen(method);
+		if (methodGen == null) return;
 		JavaClass javaClass = classContext.getJavaClass();
 
 		InstructionHandle call = match.getLabeledInstruction("call");

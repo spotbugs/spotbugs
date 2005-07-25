@@ -549,6 +549,7 @@ public class FindInconsistentSync2 implements Detector {
 	 */
 	public static boolean isGetterMethod(ClassContext classContext, Method method) {
 		MethodGen methodGen = classContext.getMethodGen(method);
+		if (methodGen == null) return false;
 		InstructionList il = methodGen.getInstructionList();
 		// System.out.println("Checking getter method: " + method.getName());
 		if (il.getLength() > 60)

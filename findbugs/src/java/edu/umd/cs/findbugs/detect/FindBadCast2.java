@@ -132,6 +132,7 @@ public class FindBadCast2 implements Detector {
 
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		MethodGen methodGen = classContext.getMethodGen(method);
+		if (methodGen == null) return;
 		String methodName = methodGen.getClassName() + "."
 				+ methodGen.getName();
 		String sourceFile = classContext.getJavaClass().getSourceFileName();

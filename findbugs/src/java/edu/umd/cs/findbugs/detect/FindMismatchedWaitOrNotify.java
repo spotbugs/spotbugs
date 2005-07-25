@@ -88,6 +88,7 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 	        throws CFGBuilderException, DataflowAnalysisException {
 
 		MethodGen methodGen = classContext.getMethodGen(method);
+		if (methodGen == null) return;
 		ConstantPoolGen cpg = methodGen.getConstantPool();
 		CFG cfg = classContext.getCFG(method);
 		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);

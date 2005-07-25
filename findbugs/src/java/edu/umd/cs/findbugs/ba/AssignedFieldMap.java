@@ -100,6 +100,7 @@ public class AssignedFieldMap implements Constants {
 
 	private void scanMethod(Method method, Set<XField> assignableFieldSet) throws ClassNotFoundException {
 		MethodGen methodGen = classContext.getMethodGen(method);
+		if (methodGen == null) return;
 		InstructionList il = methodGen.getInstructionList();
 		InstructionHandle handle = il.getStart();
 
