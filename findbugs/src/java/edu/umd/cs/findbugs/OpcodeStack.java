@@ -956,7 +956,7 @@ public class OpcodeStack implements Constants2
 	 			break;
 	 			
 	 			case NEW:
-	 				pushBySignature(dbc.getClassConstantOperand());
+	 				pushBySignature("L" + dbc.getClassConstantOperand() + ";");
 	 			break;
 	 			
 	 			case NEWARRAY:
