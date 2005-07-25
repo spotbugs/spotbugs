@@ -143,6 +143,8 @@ public class FindNullDeref
 
 	private void analyzeMethod(ClassContext classContext, Method method)
 	        throws CFGBuilderException, DataflowAnalysisException {
+		if (classContext.getMethodGen(method) == null)
+			return;
 		if (!checkedDatabases) {
 			checkDatabases();
 			checkedDatabases = true;
