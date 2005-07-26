@@ -32,6 +32,8 @@ package edu.umd.cs.findbugs.ba;
  *
  * @author David Hovemeyer
  */
+
+// TODO: Rename this interface?
 public interface RepositoryLookupFailureCallback {
 	/**
 	 * Called to report a lookup failure.
@@ -40,6 +42,11 @@ public interface RepositoryLookupFailureCallback {
 	 */
 	public void reportMissingClass(ClassNotFoundException ex);
 
+	/**
+	 * Report that we skipped some analysis of a method
+	 * @param method
+	 */
+	public void reportSkippedAnalysis(JavaClassAndMethod method);
 	/**
 	 * Log an error that occurs while performing analysis.
 	 *

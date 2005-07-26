@@ -322,7 +322,11 @@ public class ClassContext {
 
 		public CFG getRefinedCFG(Method method) throws CFGBuilderException {
 			MethodGen methodGen = getMethodGen(method);
-			if (methodGen == null) throw new MethodUnprofitableException(jclass, method);
+			if (methodGen == null) {
+				JavaClassAndMethod javaClassAndMethod = new JavaClassAndMethod(jclass, method);
+				getLookupFailureCallback().reportSkippedAnalysis(javaClassAndMethod);
+				throw new MethodUnprofitableException(javaClassAndMethod);
+			}
 			CFG cfg = getRawCFG(method);
 
 			// HACK:
@@ -404,26 +408,33 @@ public class ClassContext {
 					if (false) System.out.println("methodGen: " + jclass.getClassName() + "." 
 				        		+ methodName + " : " + method.getSignature() + " " + System.identityHashCode(method));
 				       
-			        if (false && jclass.getClassName().indexOf("edu.umd.cs.findbugs.xml.XMLOutputUtil") >= 0) {
-			        	try {
-			        		throw new RuntimeException("get methodGen for XMLOutputUtil");
-			        	}catch (RuntimeException e) {
-			        		e.printStackTrace(System.out);
-			        	}
-			        }
-			        // TODO: Parameterize this
-			        int codeLength = method.getCode().getLength();
-					if (codeLength > 3000 
-			        		|| (methodName.equals("<clinit>") || methodName.equals("getContents")) && codeLength > 1000)
-			        	return null;
-			        result = new MethodGen(method, jclass.getClassName(), getConstantPoolGen());
-			        Runtime runtime = Runtime.getRuntime();
-			        // TODO: Find a smarter way to do this.
-			        if (cachedMethodGen.size() > 500 
-			        		&& runtime.freeMemory() < runtime.totalMemory()/5) cachedMethodGen.clear();
-			        if (true) cachedMethodGen.put(method, result);
-			        // System.out.println("Returning " + System.identityHashCode(result));
-			        return result;
+					if (false && jclass.getClassName().indexOf("edu.umd.cs.findbugs.xml.XMLOutputUtil") >= 0) {
+						try {
+							throw new RuntimeException("get methodGen for XMLOutputUtil");
+						}catch (RuntimeException e) {
+							e.printStackTrace(System.out);
+						}
+					}
+					if (analysisContext.getBoolProperty(AnalysisFeatures.SKIP_HUGE_METHODS)) {
+						int codeLength = method.getCode().getLength();
+						if (codeLength > 3000 
+								|| (methodName.equals("<clinit>") || methodName.equals("getContents")) && codeLength > 1000) {
+							getLookupFailureCallback().reportSkippedAnalysis(new JavaClassAndMethod(jclass, method));
+							return null;
+						}
+					}
+					
+					result = new MethodGen(method, jclass.getClassName(), getConstantPoolGen());
+
+					if (!analysisContext.getBoolProperty(AnalysisFeatures.CONSERVE_SPACE)) {
+						Runtime runtime = Runtime.getRuntime();
+						// TODO: Find a smarter way to do this.
+						if (cachedMethodGen.size() > 500 
+								&& runtime.freeMemory() < runtime.totalMemory()/5) cachedMethodGen.clear();
+						if (true) cachedMethodGen.put(method, result);
+					}
+					// System.out.println("Returning " + System.identityHashCode(result));
+					return result;
 		        }
 	        };
 

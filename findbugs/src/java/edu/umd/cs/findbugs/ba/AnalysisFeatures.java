@@ -46,6 +46,12 @@ public interface AnalysisFeatures {
 	public static final int MODEL_INSTANCEOF = 2;
 
 	/**
+	 * Skip generating CFG's and methodGen's for huge methods
+	 */
+	public static final int SKIP_HUGE_METHODS = 3;
+	
+	
+	/**
 	 * Number of boolean analysis properties reserved for the bytecode analysis framework.
 	 * Clients of the framework may use property values &gt;= this value.
 	 */

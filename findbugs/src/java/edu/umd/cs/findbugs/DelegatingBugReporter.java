@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs;
 
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+
 /**
  * A BugReporter which delegates all method calls to another BugReporter.
  * This is useful for customizing the behavior of another bug reporter.
@@ -102,6 +104,13 @@ public class DelegatingBugReporter implements BugReporter {
 
 	public void logError(String message, Throwable e) {
 		delegate.logError(message, e);
+	}
+	/**
+	 * Report that we skipped some analysis of a method
+	 * @param method
+	 */
+	public void reportSkippedAnalysis(JavaClassAndMethod method) {
+		delegate.reportSkippedAnalysis(method);
 	}
 }
 

@@ -480,6 +480,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
 			new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
 			new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, false),
+			new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
 			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
 	};
 	
@@ -487,6 +488,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
 			new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
 			new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+			new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
 			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
 	};
 	
@@ -494,6 +496,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
 			new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
 			new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+			new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, false),
 			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
 	};
 

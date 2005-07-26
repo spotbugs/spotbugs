@@ -54,4 +54,11 @@ public class DebugRepositoryLookupFailureCallback implements
 		System.exit(1);
 	}
 
+	/**
+	 * Report that we skipped some analysis of a method
+	 * @param method
+	 */
+	public void reportSkippedAnalysis(JavaClassAndMethod method) {
+		System.err.println("Skipping " + method);
+	}
 }
