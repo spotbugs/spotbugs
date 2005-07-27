@@ -961,7 +961,7 @@ public class OpcodeStack implements Constants2
 	 			
 	 			case NEWARRAY:
 	 				pop();
-	 				signature = BasicType.getType((byte)dbc.getIntConstant()).getSignature();
+	 				signature = "[" + BasicType.getType((byte)dbc.getIntConstant()).getSignature();
 	 				pushBySignature(signature);
 	 			break;
 
