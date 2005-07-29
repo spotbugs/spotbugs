@@ -120,8 +120,9 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 			
 			int special0 = item0.getSpecialKind();
 			int special1 = item1.getSpecialKind();
-			checkForBitIorofSignedByte = (special0 == OpcodeStack.Item.BYTE_ARRAY_LOAD 
-					|| special1 == OpcodeStack.Item.BYTE_ARRAY_LOAD );
+			checkForBitIorofSignedByte = (special0 == OpcodeStack.Item.BYTE_ARRAY_LOAD  
+					&& special1 == OpcodeStack.Item.LOW_8_BITS_CLEAR
+					|| special0 == OpcodeStack.Item.LOW_8_BITS_CLEAR && special1 == OpcodeStack.Item.BYTE_ARRAY_LOAD );
 		} else checkForBitIorofSignedByte = false;
 
 		  
