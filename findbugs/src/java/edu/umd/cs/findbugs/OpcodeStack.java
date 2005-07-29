@@ -77,6 +77,7 @@ public class OpcodeStack implements Constants2
 	{ 		
 		public static final int BYTE_ARRAY_LOAD = 1;
 		public static final int RANDOM_INT = 2;
+		public static final int LOW_8_BITS_CLEAR = 3;
 		public static final Object UNKNOWN = null;
 		private int specialKind;
  		private String signature;
@@ -169,6 +170,8 @@ public class OpcodeStack implements Constants2
 				m.isNull = i1.isNull;
 			if (i1.registerNumber == i2.registerNumber)
 				m.registerNumber = i1.registerNumber;
+			if (i1.specialKind == i2.specialKind)
+				m.specialKind = i1.specialKind;
 			return m;
 		}
  		public Item(String s, int reg) {
@@ -197,6 +200,10 @@ public class OpcodeStack implements Constants2
  		public Item(String s, Object v) {
  			signature = s;
  			constValue = v;
+ 			if (v instanceof Integer && (((Integer)v).intValue() & 0xff) == 0)
+ 				specialKind = LOW_8_BITS_CLEAR;
+ 			else if (v instanceof Long && (((Long)v).intValue() & 0xff) == 0)
+ 				specialKind = LOW_8_BITS_CLEAR;
  		}
  		
  		public Item() {
@@ -1158,7 +1165,10 @@ public class OpcodeStack implements Constants2
 				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() % ((Integer)it.getConstant()).intValue()));
 			else if (seen == IUSHR)
 				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() >>> ((Integer)it.getConstant()).intValue()));
-		}
+		} else if (it2.getConstant() != null && seen == ISHL  && ((Integer)it2.getConstant()).intValue() >= 8)
+			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+ 		else if (it2.getConstant() != null && seen == IAND  && (((Integer)it2.getConstant()).intValue() & 0xff) == 0)
+			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
  		} catch (RuntimeException e) {
  			// ignore it
  		}
@@ -1193,6 +1203,10 @@ public class OpcodeStack implements Constants2
 			else if (seen == LUSHR)
 				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() >>> ((Number)it.getConstant()).intValue()));
 		}
+		 else if (it2.getConstant() != null && seen == LSHR  && ((Integer)it2.getConstant()).intValue() >= 8)
+			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+ 		else if (it2.getConstant() != null && seen == LAND  && (((Long)it2.getConstant()).longValue() & 0xff) == 0)
+			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
 		} catch (RuntimeException e) {
 			// ignore it
 		}
