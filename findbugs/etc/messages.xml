@@ -3458,6 +3458,17 @@ super.tearDown(), but doesn't.</p>
     </Details>
   </BugPattern>
 
+  <BugPattern type="IJU_NO_TESTS">
+    <ShortDescription>TestCase has no tests</ShortDescription>
+    <LongDescription>TestCase {0} has no tests</LongDescription>
+    <Details>
+<![CDATA[
+<p> Class is a JUnit TestCase but has not implemented any test methods</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
   <BugPattern type="BOA_BADLY_OVERRIDDEN_ADAPTER">
     <ShortDescription>Class overrides a method implemented in super class Adapter wrongly</ShortDescription>
     <LongDescription>Class {0} overrides a method {1} implemented in super class Adapter wrongly</LongDescription>

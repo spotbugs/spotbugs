@@ -327,7 +327,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
             
    <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest" 
              speed="fast"
-             reports="IJU_SETUP_NO_SUPER,IJU_TEARDOWN_NO_SUPER,IJU_SUITE_NOT_STATIC" />
+             reports="IJU_SETUP_NO_SUPER,IJU_TEARDOWN_NO_SUPER,IJU_SUITE_NOT_STATIC,IJU_NO_TESTS" />
              
    <Detector class="edu.umd.cs.findbugs.detect.BadlyOverriddenAdapter" 
              speed="fast"
@@ -668,6 +668,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="IJU" type="IJU_SETUP_NO_SUPER" category="CORRECTNESS" />
   <BugPattern abbrev="IJU" type="IJU_TEARDOWN_NO_SUPER" category="CORRECTNESS" />
   <BugPattern abbrev="IJU" type="IJU_SUITE_NOT_STATIC" category="CORRECTNESS" />
+  <BugPattern abbrev="IJU" type="IJU_NO_TESTS" category="CORRECTNESS" />
   <BugPattern abbrev="BOA" type="BOA_BADLY_OVERRIDDEN_ADAPTER" category="CORRECTNESS" />
   <BugPattern abbrev="BRSA" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"
     experimental="true"/>
