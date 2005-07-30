@@ -91,7 +91,6 @@ public class FindSqlInjection implements Detector {
 		ConstantPoolGen cpg = methodGen.getConstantPool();
 		try {
 		CFG cfg = classContext.getCFG(method);
-
 	        ConstantDataflow dataflow 
 			= classContext.getConstantDataflow(method);
 		
@@ -103,20 +102,22 @@ public class FindSqlInjection implements Detector {
 			INVOKEINTERFACE invoke = (INVOKEINTERFACE) ins;
 
 			String methodName = invoke.getMethodName(cpg);
-			if (!methodName.startsWith("execute")) continue;
 			String interfaceName = invoke.getClassName(cpg);
-			if (!interfaceName.equals("java.sql.Statement")) continue;
+			if (methodName.equals("prepareStatement") && interfaceName.equals("java.sql.Connection")
+					||  methodName.startsWith("execute") && interfaceName.equals("java.sql.Statement")) {
 			ConstantFrame frame = dataflow.getFactAtLocation(location);
 		        Constant value = frame.getStackValue(0);
 			if (!value.isConstantString())
 
 			    bugReporter.reportBug(
 				new BugInstance(this, 
-				 "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",  
+						methodName.equals("prepareStatement")
+						? "SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING" 
+								: "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",  
 				 NORMAL_PRIORITY) 
 				.addClassAndMethod(methodGen, javaClass.getSourceFileName())
 				.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle()));
-
+			}
 
 
 			}

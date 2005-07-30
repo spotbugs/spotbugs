@@ -140,9 +140,9 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.FindSqlInjection" 
             speed="moderate"
-            reports="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" 
+            reports="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE,SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING" 
 	    	disabled="true"
-			hidden="true"
+		hidden="true"
 		/>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" 
@@ -535,6 +535,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="Dm" type="DM_NEXTINT_VIA_NEXTDOUBLE" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_USELESS_THREAD" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SQL" type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE" category="CORRECTNESS" />
+  <BugPattern abbrev="SQL" type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING" category="CORRECTNESS" />
   <BugPattern abbrev="DC" type="DC_DOUBLECHECK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE" />
   <BugPattern abbrev="FI" type="FI_EMPTY" category="PERFORMANCE" />

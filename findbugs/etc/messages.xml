@@ -1459,6 +1459,19 @@ SQL injection attacks.
     </Details>
   </BugPattern>
 
+  <BugPattern type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING">
+    <ShortDescription>A prepared statement is generated from a nonconstant String</ShortDescription>
+    <LongDescription>A prepared statement is generated from a nonconstant String at {1} </LongDescription>
+    <Details>
+<![CDATA[
+  <p>The code creates an SQL prepared statement from a nonconstant String.
+If unchecked, tainted data from a user is used in building this String, SQL injection could
+be used to make the prepared statement do something unexpected and undesirable.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="DM_USELESS_THREAD">
     <ShortDescription>A thread was created using the default empty run method</ShortDescription>
     <LongDescription>Method {1} creates a thread using the default empty run method</LongDescription>
