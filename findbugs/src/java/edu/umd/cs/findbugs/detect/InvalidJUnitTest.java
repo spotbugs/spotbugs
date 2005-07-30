@@ -63,18 +63,20 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements
 			if (!Repository.instanceOf(jClass, "junit.framework.TestCase"))
 				return;
 			
-			Method[] methods = jClass.getMethods();
-			boolean foundTest = false;
-			for (int i = 0; i < methods.length; i++) {
-				Method m = methods[i];
-				if (m.getName().startsWith("test")) {
-					foundTest = true;
-					break;
+			if ((jClass.getAccessFlags() & ACC_ABSTRACT) == 0) {
+				Method[] methods = jClass.getMethods();
+				boolean foundTest = false;
+				for (int i = 0; i < methods.length; i++) {
+					Method m = methods[i];
+					if (m.getName().startsWith("test")) {
+						foundTest = true;
+						break;
+					}
 				}
-			}
-			if (!foundTest) {
-				bugReporter.reportBug( new BugInstance( this, "IJU_NO_TESTS", LOW_PRIORITY)
-						.addClass(jClass));
+				if (!foundTest) {
+					bugReporter.reportBug( new BugInstance( this, "IJU_NO_TESTS", LOW_PRIORITY)
+							.addClass(jClass));
+				}
 			}
 
 			JavaClass superClass = jClass.getSuperClass();

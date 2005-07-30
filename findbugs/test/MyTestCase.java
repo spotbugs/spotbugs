@@ -2,7 +2,7 @@
 import junit.framework.TestCase;
 import junit.framework.Test;
 
-public class MyTestCase extends TestCase
+public abstract class MyTestCase extends TestCase
 {
 	public void setUp()
 	{
