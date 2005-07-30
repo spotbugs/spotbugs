@@ -110,7 +110,7 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 		}
 		if (checkForBitIorofSignedByte && seen != I2B) {
 			  bugReporter.reportBug(new BugInstance(this, "BIT_IOR_OF_SIGNED_BYTE", 
-					prevOpcode == LOR ? HIGH_PRIORITY : LOW_PRIORITY)
+					prevOpcode == LOR ? HIGH_PRIORITY : NORMAL_PRIORITY)
 						.addClassAndMethod(this)
 						.addSourceLine(this));
 			  checkForBitIorofSignedByte = false;
