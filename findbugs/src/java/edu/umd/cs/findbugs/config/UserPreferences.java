@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 
 /**
  * User Preferences outside of any one Project.
- * This consists of a class to manage the findbugs.prop file found in the user.dir.
+ * This consists of a class to manage the findbugs.prop file found in the user.home.
  *
  * @author Dave Brosius
  */
@@ -55,6 +55,7 @@ public class UserPreferences implements Cloneable {
 	private static final int MAX_RECENT_FILES = 9;
 	private static final String DETECTOR_THRESHOLD_KEY = "detector_threshold";
 	private static final String FILTER_SETTINGS_KEY = "filter_settings";
+	private static final String DEFAULT_DIRECTORY = "default_directory";
 	private LinkedList<String> recentProjectsList = new LinkedList<String>();
 	private Map<String, Boolean> detectorEnablementMap = new HashMap<String, Boolean>();
 	private ProjectFilterSettings filterSettings;
@@ -161,6 +162,10 @@ public class UserPreferences implements Cloneable {
 				}
 			}
 		}
+		
+		String dd = (String)props.get(DEFAULT_DIRECTORY);
+		if (dd != null)
+			System.setProperty("user.dir", dd);
 
 	}
 
@@ -207,6 +212,8 @@ public class UserPreferences implements Cloneable {
 		// This will allow the properties file to work with older versions
 		// of FindBugs.
 		props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(filterSettings.getMinPriorityAsInt()));
+		
+		props.put(DEFAULT_DIRECTORY, System.getProperty("user.dir"));
 
 		OutputStream prefStream = null;
 		try {

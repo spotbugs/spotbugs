@@ -450,16 +450,16 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 * Creates new form FindBugsFrame.
 	 */
 	public FindBugsFrame() {
+		
+		UserPreferences prefs = UserPreferences.getUserPreferences();
+		prefs.read();
+		
 		String dirProp = System.getProperty("user.dir");
 		
 		if (dirProp != null) {
 			currentDirectory = new File(dirProp);
 		}
-		
-		UserPreferences prefs = UserPreferences.getUserPreferences();
-		prefs.read();
-//		prefs.loadUserDetectorPreferences();
-		
+
 		initComponents();
 		postInitComponents();
 	}
