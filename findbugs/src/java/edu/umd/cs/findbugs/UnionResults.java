@@ -72,7 +72,7 @@ public class UnionResults {
 
 
 		if (argv.length == 0) {
-			System.err.println("Usage: " + UnionResults.class.getName() + " <orig results> <new results> <output file>");
+			System.err.println("Usage: " + UnionResults.class.getName() + " <results1> <results2> ... <resultsn>");
 			System.exit(1);
 		}
 
