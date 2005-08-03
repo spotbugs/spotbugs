@@ -221,8 +221,12 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 				&&  !(ins instanceof LOOKUPSWITCH)) {
 					BranchInstruction bi = (BranchInstruction)ins;
 					int offset = bi.getIndex();
-					if ((offset + pos) >= end) {
-						bytes[pos+bi.getLength()-1 - start] = 0;
+					int target = offset + pos;
+					if (target >= end) {
+						byte hiByte = (byte)((target >> 8) & 0x000000FF);
+						byte loByte = (byte)(target & 0x000000FF);
+						bytes[pos+bi.getLength()-2 - start] = hiByte;
+						bytes[pos+bi.getLength()-1 - start] = loByte;
 					}
 				}
 			}
