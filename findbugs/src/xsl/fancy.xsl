@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <!--
-  Copyright (C) 2005, Etienne Giraudy
-	
+  Copyright (C) 2005, Etienne Giraudy, InStranet Inc
+
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either
   version 2.1 of the License, or (at your option) any later version.
-  
+
   This library is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   Lesser General Public License for more details.
-  
+
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -->
 
-<xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" >
+<xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" >
    <xsl:output
          method="xml" indent="yes"
          doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
          doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
          encoding="UTF-8"/>
 
-   <xsl:key name="category-key"  match="/BugCollection/BugInstance" use="@category" />
-   <xsl:key name="code-key"      match="/BugCollection/BugInstance" use="concat(@category,@abbrev)" />
-   <xsl:key name="bug-key"       match="/BugCollection/BugInstance" use="concat(@category,@abbrev,@type)" />
+   <xsl:key name="lbc-category-key"    match="/BugCollection/BugInstance" use="@category" />
+   <xsl:key name="lbc-code-key"        match="/BugCollection/BugInstance" use="concat(@category,@abbrev)" />
+   <xsl:key name="lbc-bug-key"         match="/BugCollection/BugInstance" use="concat(@category,@abbrev,@type)" />
+
+   <xsl:key name="lbp-class-bug-type"  match="/BugCollection/BugInstance" use="concat(Class/@classname,@type)" />
+
 
 <xsl:template match="/" >
 <html>
@@ -60,11 +62,10 @@
                document.getElementById("analysis-data-tab").className="menu-tab";
                //hide("list-by-bug-type");
                //document.getElementById("list-by-bug-type-tab").className="menu-tab";
-               //hide("list-by-package");
-               //document.getElementById("list-by-package-tab").className="menu-tab";
+               hide("list-by-package");
+               document.getElementById("list-by-package-tab").className="menu-tab";
                hide("list-by-category");
                document.getElementById("list-by-category-tab").className="menu-tab";
-
                document.getElementById(foo+"-tab").className="menu-tab-selected";
                show(foo);
             }
@@ -139,7 +140,6 @@
          #analysis-error {
            width: 40%;
          }
-
          div.summary {
             width:100%;
             text-align:center;
@@ -186,63 +186,50 @@
             background: blue;
             text-align:center;
          }
-
          .outerbox {
             border: 1px solid black;
             margin: 10px;
          }
-
          .outerbox-title {
             border-bottom: 1px solid #000000; font-size: 12pt; font-weight: bold;
             background: #cccccc; margin: 0; padding: 0 5px 0 5px;
          }
-
          .innerbox-1, .innerbox-2 {
             margin: 0 0 0 10px;
          }
-
          .innerbox-1-title, .innerbox-2-title {
             border-bottom: 1px solid #000000; border-left: 1px solid #000000;
             margin: 0; padding: 0 5px 0 5px;
             font-size: 12pt; font-weight: bold; background: #cccccc;
          }
-
          .bug-box {
             border-bottom: 1px solid #000000; border-left: 1px solid #000000;
          }
-
          .bug-priority-1 {
             background: red; height: 0.5em; width: 1em;
             margin-right: 0.5em;
          }
-
          .bug-priority-2 {
             background: orange; height: 0.5em; width: 1em;
             margin-right: 0.5em;
          }
-
          .bug-priority-3 {
             background: green; height: 0.5em; width: 1em;
             margin-right: 0.5em;
          }
-
          .bug-priority-4 {
             background: blue; height: 0.5em; width: 1em;
             margin-right: 0.5em;
          }
-
          .bug-type {
          }
-
          .bug-ref {
             font-size: 10pt; font-weight: bold; padding: 0 0 0 60px;
          }
-
          .bug-descr {
             font-weight: normal; background: #eeeee0;
             padding: 0 5px 0 5px; border-bottom: 1px dashed black; margin: 0px;
          }
-
          .bug-details {
             font-weight: normal; background: #eeeee0;
             padding: 0 5px 0 5px; margin: 0px;
@@ -253,7 +240,6 @@
       <div id="header">
          FindBugs (<xsl:value-of select="/BugCollection/@version" />) Analysis for <xsl:value-of select="/BugCollection/Project/@filename" />
       </div>
-
       <div id="menu">
          <ul>
             <li id='bug-summary-tab' class='menu-tab-selected'>
@@ -268,23 +254,25 @@
                <xsl:attribute name="onclick">showmenu('list-by-category');return false;</xsl:attribute>
                <a href='' onclick='return false;'>List bugs by bug category</a>
             </li>
+            <li id='list-by-package-tab' class='menu-tab'>
+               <xsl:attribute name="onclick">showmenu('list-by-package');return false;</xsl:attribute>
+               <a href='' onclick='return false;'>List bugs by package</a>
+            </li>
          </ul>
       </div>
-
       <xsl:call-template name="generateSummary" />
       <xsl:call-template name="analysis-data" />
       <xsl:call-template name="list-by-category" />
+      <xsl:call-template name="list-by-package" />
    </body>
 </html>
 </xsl:template>
-
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 <!-- generate summary report from stats -->
 <xsl:template name="generateSummary" >
 <div class='summary' id='bug-summary'>
    <h2>FindBugs Analysis generated at: <xsl:value-of select="/BugCollection/FindBugsSummary/@timestamp" /></h2>
-
    <table>
       <tr>
          <th>Package</th>
@@ -310,10 +298,8 @@
          <td class='summary-priority-4'><xsl:value-of select="/BugCollection/FindBugsSummary/@priority_4" /></td>
          <td class='summary-ratio'></td>
       </tr>
-
       <xsl:for-each select="/BugCollection/FindBugsSummary/PackageStats">
          <xsl:sort select="@package" />
-
          <xsl:if test="@total_bugs!='0'" >
             <tr>
                <td class='summary-name'><xsl:value-of select="@package" /></td>
@@ -339,7 +325,6 @@
    </table>
 </div>
 </xsl:template>
-
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 <!-- display analysis info -->
@@ -383,7 +368,6 @@
       </div>
 </xsl:template>
 
-
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 <!-- show priorities helper -->
 <xsl:template name="helpPriorities">
@@ -405,14 +389,12 @@
    </span> Exp.
 </xsl:template>
 
-
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 <!-- display the details of a bug -->
 <xsl:template name="display-bug" >
    <xsl:param name="bug-type"    select="''" />
    <xsl:param name="bug-id"      select="''" />
    <xsl:param name="which-list"  select="''" />
-
    <div class="bug-box">
       <a>
          <xsl:attribute name="href"></xsl:attribute>
@@ -436,32 +418,25 @@
    </div>
 </xsl:template>
 
-
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 <!-- main template for the list by category -->
 <xsl:template name="list-by-category" >
    <div id='list-by-category' class='data-box' style='display:none;'>
       <xsl:call-template name="helpPriorities" />
-
-      <xsl:variable name="unique-category" select="/BugCollection/BugInstance[generate-id() = generate-id(key('category-key',@category))]/@category" />
+      <xsl:variable name="unique-category" select="/BugCollection/BugInstance[generate-id() = generate-id(key('lbc-category-key',@category))]/@category" />
       <xsl:for-each select="$unique-category">
          <xsl:sort select="." order="ascending" />
-<span style='display:none;'> DEBUG: processing category: <xsl:value-of select="." /> </span>
             <xsl:call-template name="categories">
                <xsl:with-param name="category" select="." />
             </xsl:call-template>
       </xsl:for-each>
    </div>
-
 </xsl:template>
-
 
 <xsl:template name="categories" >
    <xsl:param name="category" select="''" />
-
    <xsl:variable name="category-count"
                        select="count(/BugCollection/BugInstance[@category=$category])" />
-
    <div class='outerbox'>
       <div class='outerbox-title'>
          <a>
@@ -472,23 +447,18 @@
       </div>
       <div style="display:none;">
          <xsl:attribute name="id">category-<xsl:value-of select="$category" /></xsl:attribute>
-<span style='display:none;'> DEBUG: processing codes of category: <xsl:value-of select="$category" /> </span>
          <xsl:call-template name="list-by-category-and-code">
             <xsl:with-param name="category" select="$category" />
          </xsl:call-template>
       </div>
    </div>
-
 </xsl:template>
-
 
 <xsl:template name="list-by-category-and-code" >
    <xsl:param name="category" select="''" />
-
-   <xsl:variable name="unique-code" select="/BugCollection/BugInstance[@category=$category and generate-id()= generate-id(key('code-key',concat(@category,@abbrev)))]/@abbrev" />
+   <xsl:variable name="unique-code" select="/BugCollection/BugInstance[@category=$category and generate-id()= generate-id(key('lbc-code-key',concat(@category,@abbrev)))]/@abbrev" />
    <xsl:for-each select="$unique-code">
       <xsl:sort select="." order="ascending" />
-<span style='display:none;'> DEBUG: processing code: <xsl:value-of select="." /> </span>
          <xsl:call-template name="codes">
             <xsl:with-param name="category" select="$category" />
             <xsl:with-param name="code" select="." />
@@ -496,14 +466,11 @@
    </xsl:for-each>
 </xsl:template>
 
-
 <xsl:template name="codes" >
    <xsl:param name="category" select="''" />
    <xsl:param name="code"     select="''" />
-
    <xsl:variable name="code-count"
                        select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code])" />
-
    <div class='innerbox-1'>
       <div class="innerbox-1-title">
          <a>
@@ -514,7 +481,6 @@
       </div>
       <div style="display:none;">
          <xsl:attribute name="id">category-<xsl:value-of select="$category" />-and-code-<xsl:value-of select="$code" /></xsl:attribute>
-<span style='display:none;'> DEBUG: processing types of code: <xsl:value-of select="$code" /> </span>
          <xsl:call-template name="list-by-category-and-code-and-bug">
             <xsl:with-param name="category" select="$category" />
             <xsl:with-param name="code" select="$code" />
@@ -523,15 +489,12 @@
    </div>
 </xsl:template>
 
-
 <xsl:template name="list-by-category-and-code-and-bug" >
    <xsl:param name="category" select="''" />
    <xsl:param name="code" select="''" />
-
-   <xsl:variable name="unique-bug" select="/BugCollection/BugInstance[@category=$category and @abbrev=$code and generate-id()= generate-id(key('bug-key',concat(@category,@abbrev,@type)))]/@type" />
+   <xsl:variable name="unique-bug" select="/BugCollection/BugInstance[@category=$category and @abbrev=$code and generate-id()= generate-id(key('lbc-bug-key',concat(@category,@abbrev,@type)))]/@type" />
    <xsl:for-each select="$unique-bug">
       <xsl:sort select="." order="ascending" />
-<span style='display:none;'> DEBUG: processing bugs of type: <xsl:value-of select="." /> </span>
          <xsl:call-template name="bugs">
             <xsl:with-param name="category" select="$category" />
             <xsl:with-param name="code" select="$code" />
@@ -540,15 +503,12 @@
    </xsl:for-each>
 </xsl:template>
 
-
 <xsl:template name="bugs" >
    <xsl:param name="category" select="''" />
    <xsl:param name="code"     select="''" />
    <xsl:param name="bug"      select="''" />
-
    <xsl:variable name="bug-count"
                        select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug])" />
-
    <div class='innerbox-2'>
       <div class='innerbox-2-title'>
          <a>
@@ -561,7 +521,6 @@
       </div>
       <div style="display:none;">
          <xsl:attribute name="id">category-<xsl:value-of select="$category" />-and-code-<xsl:value-of select="$code" />-and-bug-<xsl:value-of select="$bug" /></xsl:attribute>
-
          <xsl:variable name="cat-code-type">category-<xsl:value-of select="$category" />-and-code-<xsl:value-of select="$code" />-and-bug-<xsl:value-of select="$bug" /></xsl:variable>
          <xsl:for-each select="/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug]">
             <xsl:call-template name="display-bug">
@@ -573,5 +532,120 @@
       </div>
    </div>
 </xsl:template>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- main template for the list by package -->
+<xsl:template name="list-by-package" >
+   <div id='list-by-package' class='data-box' style='display:none;'>
+      <xsl:call-template name="helpPriorities" />
+      <xsl:for-each select="/BugCollection/FindBugsSummary/PackageStats[@total_bugs != '0']/@package">
+         <xsl:sort select="." order="ascending" />
+            <xsl:call-template name="packages">
+               <xsl:with-param name="package" select="." />
+            </xsl:call-template>
+      </xsl:for-each>
+   </div>
+</xsl:template>
+
+<xsl:template name="packages" >
+   <xsl:param name="package" select="''" />
+   <div class='outerbox'>
+      <div class='outerbox-title'>
+         <a>
+            <xsl:attribute name="href"></xsl:attribute>
+            <xsl:attribute name="onclick">toggle('package-<xsl:value-of select="$package" />');return false;</xsl:attribute>
+            <xsl:value-of select="$package" /> (<xsl:value-of select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@total_bugs" />)
+         </a>
+      </div>
+      <div style="display:none;">
+         <xsl:attribute name="id">package-<xsl:value-of select="$package" /></xsl:attribute>
+         <xsl:call-template name="list-by-package-and-class">
+            <xsl:with-param name="package" select="$package" />
+         </xsl:call-template>
+      </div>
+   </div>
+</xsl:template>
+
+<xsl:template name="list-by-package-and-class" >
+   <xsl:param name="package" select="''" />
+   <xsl:for-each select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@bugs != '0']/@class">
+      <xsl:sort select="." order="ascending" />
+         <xsl:call-template name="classes">
+            <xsl:with-param name="package" select="$package" />
+            <xsl:with-param name="class" select="." />
+         </xsl:call-template>
+   </xsl:for-each>
+</xsl:template>
+
+<xsl:template name="classes" >
+   <xsl:param name="package" select="''" />
+   <xsl:param name="class"     select="''" />
+   <xsl:variable name="class-count"
+                       select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@bugs" />
+   <div class='innerbox-1'>
+      <div class="innerbox-1-title">
+         <a>
+            <xsl:attribute name="href"></xsl:attribute>
+            <xsl:attribute name="onclick">toggle('package-<xsl:value-of select="$package" />-and-class-<xsl:value-of select="$class" />');return false;</xsl:attribute>
+            <xsl:value-of select="$class" />  (<xsl:value-of select="$class-count" />)
+         </a>
+      </div>
+      <div style="display:none;">
+         <xsl:attribute name="id">package-<xsl:value-of select="$package" />-and-class-<xsl:value-of select="$class" /></xsl:attribute>
+         <xsl:call-template name="list-by-package-and-class-and-bug">
+            <xsl:with-param name="package" select="$package" />
+            <xsl:with-param name="class" select="$class" />
+         </xsl:call-template>
+      </div>
+   </div>
+</xsl:template>
+
+
+<xsl:template name="list-by-package-and-class-and-bug" >
+   <xsl:param name="package" select="''" />
+   <xsl:param name="class" select="''" />
+   <xsl:variable name="unique-class-bugs" select="/BugCollection/BugInstance[Class[position()=1 and @classname=$class] and generate-id() = generate-id(key('lbp-class-bug-type',concat(Class/@classname,@type)))]/@type" />
+
+   <xsl:for-each select="$unique-class-bugs">
+      <xsl:sort select="." order="ascending" />
+         <xsl:call-template name="class-bugs">
+            <xsl:with-param name="package" select="$package" />
+            <xsl:with-param name="class" select="$class" />
+            <xsl:with-param name="type" select="." />
+         </xsl:call-template>
+   </xsl:for-each>
+</xsl:template>
+
+<xsl:template name="class-bugs" >
+   <xsl:param name="package" select="''" />
+   <xsl:param name="class"     select="''" />
+   <xsl:param name="type"      select="''" />
+   <xsl:variable name="bug-count"
+                       select="count(/BugCollection/BugInstance[@type=$type and Class[position()=1 and @classname=$class]])" />
+   <div class='innerbox-2'>
+      <div class='innerbox-2-title'>
+         <a>
+            <xsl:attribute name="href"></xsl:attribute>
+            <xsl:attribute name="onclick">toggle('package-<xsl:value-of select="$package" />-and-class-<xsl:value-of select="$class" />-and-type-<xsl:value-of select="$type" />');return false;</xsl:attribute>
+            <xsl:attribute name="title"><xsl:value-of select="$type" /></xsl:attribute>
+            <xsl:value-of select="/BugCollection/BugPattern[@type=$type]/ShortDescription" />&#160;&#160;
+            (<xsl:value-of select="$bug-count" />)
+         </a>
+      </div>
+      <div style="display:none;">
+         <xsl:attribute name="id">package-<xsl:value-of select="$package" />-and-class-<xsl:value-of select="$class" />-and-type-<xsl:value-of select="$type" /></xsl:attribute>
+         <xsl:variable name="package-class-type">package-<xsl:value-of select="$package" />-and-class-<xsl:value-of select="$class" />-and-type-<xsl:value-of select="$type" /></xsl:variable>
+         <xsl:for-each select="/BugCollection/BugInstance[@type=$type and Class[position()=1 and @classname=$class]]">
+            <xsl:call-template name="display-bug">
+               <xsl:with-param name="bug-type"     select="@type" />
+               <xsl:with-param name="bug-id"       select="@uid" />
+               <xsl:with-param name="which-list"   select="$package-class-type" />
+            </xsl:call-template>
+         </xsl:for-each>
+      </div>
+   </div>
+</xsl:template>
+
+
 
 </xsl:transform>
