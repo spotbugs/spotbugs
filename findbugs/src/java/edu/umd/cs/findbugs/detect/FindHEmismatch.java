@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Lookup;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
@@ -44,6 +45,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 	boolean hasEqualsSelf = false;
 	boolean hasCompareToSelf = false;
 	boolean extendsObject = false;
+	MethodAnnotation equalsMethod = null;
 	private BugReporter bugReporter;
 
 	public FindHEmismatch(BugReporter bugReporter) {
@@ -112,13 +114,17 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 					priority++;
 				if (!visibleOutsidePackage)
 					priority++;
-				bugReporter.reportBug(new BugInstance(this, "EQ_SELF_USE_OBJECT", priority).addClass(getDottedClassName()));
+				BugInstance bug = new BugInstance(this, "EQ_SELF_USE_OBJECT", priority).addClass(getDottedClassName());
+				if (equalsMethod != null) bug.addMethod(equalsMethod);
+				bugReporter.reportBug(bug);
 			} else {
 				int priority = NORMAL_PRIORITY;
 				if (hasFields)
 					priority--;
 				if (obj.isAbstract()) priority++;
-				bugReporter.reportBug(new BugInstance(this, "EQ_SELF_NO_OBJECT", priority).addClass(getDottedClassName()));
+				BugInstance bug = new BugInstance(this, "EQ_SELF_NO_OBJECT", priority).addClass(getDottedClassName());
+				if (equalsMethod != null) bug.addMethod(equalsMethod);
+				bugReporter.reportBug(bug);
 			}
 		}
 		/*
@@ -152,8 +158,10 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 				if (!visibleOutsidePackage) {
 					priority++;
 				}
-				bugReporter.reportBug(new BugInstance(this, "HE_EQUALS_USE_HASHCODE",
-				        priority).addClass(getDottedClassName()));
+				BugInstance bug = new BugInstance(this, "HE_EQUALS_USE_HASHCODE",
+				        priority).addClass(getDottedClassName());
+				if (equalsMethod != null) bug.addMethod(equalsMethod);
+				bugReporter.reportBug(bug);
 			} else if (!inheritedHashCodeIsFinal) {
 				int priority = LOW_PRIORITY;
 				if (hasEqualsObject && inheritedEqualsIsAbstract)
@@ -162,16 +170,20 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 				if (equalsMethodIsInstanceOfEquals || !hasEqualsObject)
 					priority += 2;
 				else if (obj.isAbstract()) priority++;
-				bugReporter.reportBug(new BugInstance(this, "HE_EQUALS_NO_HASHCODE",
+				BugInstance bug = new BugInstance(this, "HE_EQUALS_NO_HASHCODE",
 				        priority)
-				        .addClass(getDottedClassName()));
+				        .addClass(getDottedClassName());
+				if (equalsMethod != null) bug.addMethod(equalsMethod);
+				bugReporter.reportBug(bug);
 			}
 		}
 		if (!hasHashCode && !hasEqualsObject && !hasEqualsSelf
 		        && !usesDefaultEquals && usesDefaultHashCode
 		        && !obj.isAbstract() && classThatDefinesEqualsIsAbstract) {
-			bugReporter.reportBug(new BugInstance(this, "HE_INHERITS_EQUALS_USE_HASHCODE",
-			        NORMAL_PRIORITY).addClass(getDottedClassName()));
+			BugInstance bug = new BugInstance(this, "HE_INHERITS_EQUALS_USE_HASHCODE",
+			        NORMAL_PRIORITY).addClass(getDottedClassName());
+			if (equalsMethod != null) bug.addMethod(equalsMethod);
+			bugReporter.reportBug(bug);
 		}
 	}
 
@@ -186,6 +198,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 		hashCodeIsAbstract = false;
 		equalsObjectIsAbstract = false;
 		equalsMethodIsInstanceOfEquals = false;
+		equalsMethod = null;
 	}
 
 	public void visit(Field obj) {
@@ -219,6 +232,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 			// System.out.println("Found hashCode for " + betterClassName);
 		} else if (name.equals("equals")) {
 			if (sigIsObject) {
+				equalsMethod = MethodAnnotation.fromVisitedMethod(this);
 				hasEqualsObject = true;
 				if (obj.isAbstract())
 					equalsObjectIsAbstract = true;
@@ -234,8 +248,11 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 						equalsMethodIsInstanceOfEquals = true;
 					}
 				}
-			} else if (sig.equals("(L" + getClassName() + ";)Z"))
+			} else if (sig.equals("(L" + getClassName() + ";)Z")) {
 				hasEqualsSelf = true;
+				if (equalsMethod == null) 
+					equalsMethod = MethodAnnotation.fromVisitedMethod(this);
+			}
 		} else if (name.equals("compareTo")) {
 			if (sig.equals("(Ljava/lang/Object;)I"))
 				hasCompareToObject = true;
