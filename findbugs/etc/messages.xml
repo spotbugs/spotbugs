@@ -1636,6 +1636,14 @@ be used to make the prepared statement do something unexpected and undesirable.
   the <code>hashCode()</code> method.&nbsp; (Overriding <code>hashCode()</code>
   implies that the object's identity is based on criteria more complicated
   than simple reference equality.)</p>
+<p>If you don't think instances of this class will ever be inserted into a HashMap/HashTable,
+the recommended <code>hashCode</code> implementation to use is:</p>
+<p><pre>public int hashCode() {
+  assert false : "hashCode not designed";
+  return 42; // any arbitrary constant will do 
+  }</pre></p>
+
+
 ]]>
     </Details>
   </BugPattern>
@@ -1663,10 +1671,12 @@ be used to make the prepared statement do something unexpected and undesirable.
   by the VM).&nbsp; Therefore, the class is very likely to violate the
   invariant that equal objects must have equal hashcodes.</p>
 
-  <p>If you don't want to define a hashCode method, and/or don't
-   believe the object will ever be put into a HashMap/Hashtable,
-   define the <code>hashCode()</code> method
-   to throw <code>UnsupportedOperationException</code>.</p>
+<p>If you don't think instances of this class will ever be inserted into a HashMap/HashTable,
+the recommended <code>hashCode</code> implementation to use is:</p>
+<p><pre>public int hashCode() {
+  assert false : "hashCode not designed";
+  return 42; // any arbitrary constant will do 
+  }</pre></p>
 ]]>
     </Details>
   </BugPattern>
@@ -4083,6 +4093,17 @@ and it at least confusing.
 The code multiplies the result of an integer remaining by an integer constant.
 Be sure you don't have your operator precedence confused. For example
 i % 60 * 1000 is (i % 60) * 1000, not i % (60 * 1000).
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DMI_HARDCODED_ABSOLUTE_FILENAME">
+    <ShortDescription>Code contains a hard coded reference to an absolute pathname</ShortDescription>
+    <LongDescription>Hard coded reference to an absolute pathname in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>This code constructs a File object using a hard coded to an absolute pathname
+(e.g., <code>new File("/home/dannyc/workspace/j2ee/src/share/com/sun/enterprise/deployment");</code>
 </p>
 ]]>
     </Details>

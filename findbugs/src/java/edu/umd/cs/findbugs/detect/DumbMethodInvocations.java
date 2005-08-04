@@ -92,6 +92,26 @@ public class DumbMethodInvocations implements Detector {
 															.getHandle())));
 
 			}
+			else 
+				if (iins.getName(cpg).equals("<init>")
+						&& iins.getSignature(cpg).equals("(Ljava/lang/String;)V")
+						&& iins.getClassName(cpg).equals("java.io.File")) {
+
+					Constant operandValue = frame.getTopValue();
+					if (!operandValue.isConstantString())
+						continue;
+					String v = operandValue.getConstantString();
+					if (v.startsWith("/") || v.startsWith("C:"))
+						bugReporter.reportBug(new BugInstance(this,
+								"DMI_HARDCODED_ABSOLUTE_FILENAME", NORMAL_PRIORITY)
+								.addClassAndMethod(methodGen, sourceFile)
+								.addSourceLine(
+										SourceLineAnnotation
+												.fromVisitedInstruction(classContext, methodGen,
+														sourceFile, location
+																.getHandle())));
+
+				}
 
 		}
 	}
