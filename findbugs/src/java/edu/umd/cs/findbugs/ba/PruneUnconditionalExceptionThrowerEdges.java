@@ -93,7 +93,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 					continue;
 				if (method.getCode() == null) continue;
 				
-				// TODO: Parameterize by effort level
+				// TODO: Parameterize size of methods to check for unconditional throwing by effort level
 				if (method.getCode().getLength() > 500) continue;
 				Boolean result = cachedResults.get(method);
 				if (Boolean.FALSE.equals(result))
