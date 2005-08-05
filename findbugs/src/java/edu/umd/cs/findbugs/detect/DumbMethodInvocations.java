@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
+import java.io.File;
 import java.util.Iterator;
 
 import org.apache.bcel.classfile.Method;
@@ -101,7 +102,7 @@ public class DumbMethodInvocations implements Detector {
 					if (!operandValue.isConstantString())
 						continue;
 					String v = operandValue.getConstantString();
-					if (v.startsWith("/") || v.startsWith("C:"))
+					if (isAbsoluteFileName(v))
 						bugReporter.reportBug(new BugInstance(this,
 								"DMI_HARDCODED_ABSOLUTE_FILENAME", NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
@@ -113,6 +114,18 @@ public class DumbMethodInvocations implements Detector {
 
 				}
 
+		}
+	}
+
+	private boolean isAbsoluteFileName(String v) {
+		if ( v.startsWith("/")) return true;
+		if (v.startsWith("C:")) return true;
+		if (v.startsWith("c:")) return true;
+		try {
+			File f = new File(v);
+			return f.isAbsolute();
+		} catch (RuntimeException e) {
+			return false;
 		}
 	}
 
