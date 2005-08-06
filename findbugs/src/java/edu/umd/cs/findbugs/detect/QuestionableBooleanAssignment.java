@@ -33,6 +33,7 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 	public static final int SEEN_ICONST_0_OR_1 = 1;
 	public static final int SEEN_DUP = 2;
 	public static final int SEEN_ISTORE = 3;
+	public static final int SEEN_GOTO = 4;
 	
 	private BugReporter bugReporter;
 	private int state;
@@ -51,7 +52,10 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 	}
 	
 	public void sawOpcode(int seen) {
-		switch (state) {
+		if (seen == GOTO && getBranchOffset() == 4) {
+			state = SEEN_GOTO;
+		}
+		else switch (state) {
 			case SEEN_NOTHING:
 				if ((seen == ICONST_1) || (seen == ICONST_0))
 					state = SEEN_ICONST_0_OR_1;
@@ -74,12 +78,16 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 			case SEEN_ISTORE:
 				if (seen == IFEQ)
 				{
-					bugReporter.reportBug( new BugInstance( this, "QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT", LOW_PRIORITY)
+					bugReporter.reportBug( new BugInstance( this, "QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT", NORMAL_PRIORITY)
 						.addClassAndMethod(this)
 						.addSourceLine(this));
 				}
 				state = SEEN_NOTHING;
 			break;
+
+			case SEEN_GOTO:
+				state = SEEN_NOTHING;
+				break;
 		}
 	}
 }
