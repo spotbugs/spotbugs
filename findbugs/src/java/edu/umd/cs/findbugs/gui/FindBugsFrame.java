@@ -33,6 +33,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Event;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.HeadlessException;
 import java.awt.Point;
@@ -119,6 +120,21 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @author David Hovemeyer
  */
 public class FindBugsFrame extends javax.swing.JFrame {
+	/**
+	 * 
+	 */
+	private static final Font SOURCE_FONT = new java.awt.Font("Monospaced", 0, 12);
+
+	/**
+	 * 
+	 */
+	private static final Font LABEL_FONT = new java.awt.Font("Dialog", 1, 24);
+
+	/**
+	 * 
+	 */
+	private static final Font BUTTON_FONT = new java.awt.Font("Dialog", 0, 12);
+
 	private static final long serialVersionUID = 1L;
 
 	/* ----------------------------------------------------------------------
@@ -616,7 +632,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         editProjectPanel.setLayout(new java.awt.GridBagLayout());
 
-        jarFileLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        jarFileLabel.setFont(BUTTON_FONT);
         jarFileLabel.setText("Archive or directory:");
         jarFileLabel.setText(L10N.getLocalString("dlg.jarfile_lbl", "Archive or Directory:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -645,7 +661,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         editProjectPanel.add(jarNameTextField, gridBagConstraints);
 
-        addJarButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        addJarButton.setFont(BUTTON_FONT);
         addJarButton.setText("Add");
         addJarButton.setMaximumSize(new java.awt.Dimension(90, 25));
         addJarButton.setMinimumSize(new java.awt.Dimension(90, 25));
@@ -664,7 +680,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(addJarButton, gridBagConstraints);
 
-        jarFileListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        jarFileListLabel.setFont(BUTTON_FONT);
         jarFileListLabel.setText("Archives/directories:");
         jarFileListLabel.setText(L10N.getLocalString("dlg.jarlist_lbl", "Archives/Directories:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -674,7 +690,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(jarFileListLabel, gridBagConstraints);
 
-        sourceDirLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        sourceDirLabel.setFont(BUTTON_FONT);
         sourceDirLabel.setText("Source directory:");
         sourceDirLabel.setText(L10N.getLocalString("dlg.srcfile_lbl", "Source directory:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -703,7 +719,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         editProjectPanel.add(srcDirTextField, gridBagConstraints);
 
-        addSourceDirButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        addSourceDirButton.setFont(BUTTON_FONT);
         addSourceDirButton.setText("Add");
         addSourceDirButton.setMaximumSize(new java.awt.Dimension(90, 25));
         addSourceDirButton.setMinimumSize(new java.awt.Dimension(90, 25));
@@ -722,7 +738,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(addSourceDirButton, gridBagConstraints);
 
-        sourceDirListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        sourceDirListLabel.setFont(BUTTON_FONT);
         sourceDirListLabel.setText("Source directories:");
         sourceDirListLabel.setText(L10N.getLocalString("dlg.srclist_lbl", "Source directories:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -732,7 +748,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(sourceDirListLabel, gridBagConstraints);
 
-        removeJarButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        removeJarButton.setFont(BUTTON_FONT);
         removeJarButton.setText("Remove");
         removeJarButton.setMaximumSize(new java.awt.Dimension(90, 25));
         removeJarButton.setMinimumSize(new java.awt.Dimension(90, 25));
@@ -751,7 +767,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(removeJarButton, gridBagConstraints);
 
-        removeSrcDirButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        removeSrcDirButton.setFont(BUTTON_FONT);
         removeSrcDirButton.setText("Remove");
         removeSrcDirButton.setMaximumSize(new java.awt.Dimension(90, 25));
         removeSrcDirButton.setMinimumSize(new java.awt.Dimension(90, 25));
@@ -778,7 +794,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
         editProjectPanel.add(jSeparator1, gridBagConstraints);
 
-        browseJarButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        browseJarButton.setFont(BUTTON_FONT);
         browseJarButton.setText("Browse");
         browseJarButton.setMaximumSize(new java.awt.Dimension(90, 25));
         browseJarButton.setMinimumSize(new java.awt.Dimension(90, 25));
@@ -796,7 +812,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(browseJarButton, gridBagConstraints);
 
-        browseSrcDirButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        browseSrcDirButton.setFont(BUTTON_FONT);
         browseSrcDirButton.setText("Browse");
         browseSrcDirButton.setMaximumSize(new java.awt.Dimension(90, 25));
         browseSrcDirButton.setMinimumSize(new java.awt.Dimension(90, 25));
@@ -815,7 +831,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         editProjectPanel.add(browseSrcDirButton, gridBagConstraints);
 
         editProjectLabel.setBackground(new java.awt.Color(0, 0, 204));
-        editProjectLabel.setFont(new java.awt.Font("Dialog", 1, 24));
+        editProjectLabel.setFont(LABEL_FONT);
         editProjectLabel.setForeground(new java.awt.Color(255, 255, 255));
         editProjectLabel.setText("Project");
         editProjectLabel.setOpaque(true);
@@ -860,7 +876,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         jarFileListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
         jarFileList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        jarFileList.setFont(new java.awt.Font("Dialog", 0, 12));
+        jarFileList.setFont(BUTTON_FONT);
         disableEditKeyBindings(jarFileList);
 
         jarFileList.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -882,7 +898,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         sourceDirListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
         sourceDirList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        sourceDirList.setFont(new java.awt.Font("Dialog", 0, 12));
+        sourceDirList.setFont(BUTTON_FONT);
         disableEditKeyBindings(sourceDirList);
         sourceDirList.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -902,7 +918,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
         editProjectPanel.add(sourceDirListScrollPane, gridBagConstraints);
 
-        classpathEntryLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        classpathEntryLabel.setFont(BUTTON_FONT);
         classpathEntryLabel.setText("Classpath entry:");
         classpathEntryLabel.setText(L10N.getLocalString("dlg.classpathfile_lbl", "Classpath entry:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -912,7 +928,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
         editProjectPanel.add(classpathEntryLabel, gridBagConstraints);
 
-        classpathEntryListLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        classpathEntryListLabel.setFont(BUTTON_FONT);
         classpathEntryListLabel.setText("Classpath entries:");
         classpathEntryListLabel.setText(L10N.getLocalString("dlg.classpathlist_lbl", "Classpath entries:"));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -935,7 +951,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         editProjectPanel.add(classpathEntryTextField, gridBagConstraints);
 
-        browseClasspathEntryButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        browseClasspathEntryButton.setFont(BUTTON_FONT);
         browseClasspathEntryButton.setText("Browse");
         browseClasspathEntryButton.setMaximumSize(new java.awt.Dimension(90, 25));
         browseClasspathEntryButton.setMinimumSize(new java.awt.Dimension(90, 25));
@@ -952,7 +968,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 15;
         editProjectPanel.add(browseClasspathEntryButton, gridBagConstraints);
 
-        addClasspathEntryButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        addClasspathEntryButton.setFont(BUTTON_FONT);
         addClasspathEntryButton.setText("Add");
         addClasspathEntryButton.setMaximumSize(new java.awt.Dimension(90, 25));
         addClasspathEntryButton.setMinimumSize(new java.awt.Dimension(90, 25));
@@ -971,7 +987,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         editProjectPanel.add(addClasspathEntryButton, gridBagConstraints);
 
-        removeClasspathEntryButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        removeClasspathEntryButton.setFont(BUTTON_FONT);
         removeClasspathEntryButton.setText("Remove");
         removeClasspathEntryButton.setMaximumSize(new java.awt.Dimension(90, 25));
         removeClasspathEntryButton.setMinimumSize(new java.awt.Dimension(90, 25));
@@ -992,7 +1008,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
         classpathEntryListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
         classpathEntryList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        classpathEntryList.setFont(new java.awt.Font("Dialog", 0, 12));
+        classpathEntryList.setFont(BUTTON_FONT);
         disableEditKeyBindings(classpathEntryList);
         classpathEntryList.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -1020,7 +1036,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
         editProjectPanel.add(jSeparator5, gridBagConstraints);
 
-        sourceUpButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        sourceUpButton.setFont(BUTTON_FONT);
         sourceUpButton.setText("Up");
         sourceUpButton.setMaximumSize(new java.awt.Dimension(90, 25));
         sourceUpButton.setMinimumSize(new java.awt.Dimension(90, 25));
@@ -1038,7 +1054,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.weighty = 0.2;
         editProjectPanel.add(sourceUpButton, gridBagConstraints);
 
-        sourceDownButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        sourceDownButton.setFont(BUTTON_FONT);
         sourceDownButton.setText("Down");
         sourceDownButton.setMaximumSize(new java.awt.Dimension(90, 25));
         sourceDownButton.setMinimumSize(new java.awt.Dimension(90, 25));
@@ -1054,7 +1070,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 11;
         editProjectPanel.add(sourceDownButton, gridBagConstraints);
 
-        classpathUpButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        classpathUpButton.setFont(BUTTON_FONT);
         classpathUpButton.setText("Up");
         classpathUpButton.setMaximumSize(new java.awt.Dimension(90, 25));
         classpathUpButton.setMinimumSize(new java.awt.Dimension(90, 25));
@@ -1072,7 +1088,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         gridBagConstraints.weighty = 0.2;
         editProjectPanel.add(classpathUpButton, gridBagConstraints);
 
-        classpathDownButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        classpathDownButton.setFont(BUTTON_FONT);
         classpathDownButton.setText("Down");
         classpathDownButton.setMaximumSize(new java.awt.Dimension(90, 25));
         classpathDownButton.setMinimumSize(new java.awt.Dimension(90, 25));
@@ -1168,7 +1184,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
         sourceTextAreaScrollPane.setMinimumSize(new java.awt.Dimension(22, 180));
         sourceTextAreaScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
         sourceTextArea.setEditable(false);
-        sourceTextArea.setFont(new java.awt.Font("Monospaced", 0, 12));
+        sourceTextArea.setFont(SOURCE_FONT);
         sourceTextArea.setEnabled(false);
         sourceTextArea.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -1236,7 +1252,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             consoleScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
             consoleMessageArea.setBackground(new java.awt.Color(204, 204, 204));
             consoleMessageArea.setEditable(false);
-            consoleMessageArea.setFont(new java.awt.Font("Monospaced", 0, 12));
+            consoleMessageArea.setFont(SOURCE_FONT);
             consoleMessageArea.setAutoscrolls(false);
             consoleMessageArea.setMinimumSize(new java.awt.Dimension(0, 0));
             consoleMessageArea.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -1258,7 +1274,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             gridBagConstraints.weighty = 1.0;
             getContentPane().add(consoleSplitter, gridBagConstraints);
 
-            urlLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+            urlLabel.setFont(BUTTON_FONT);
             urlLabel.setText("FindBugs - http://findbugs.sourceforge.net/");
             gridBagConstraints = new java.awt.GridBagConstraints();
             gridBagConstraints.gridx = 0;
@@ -1281,9 +1297,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
             gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 2);
             getContentPane().add(jPanel1, gridBagConstraints);
 
-            theMenuBar.setFont(new java.awt.Font("Dialog", 0, 12));
+            theMenuBar.setFont(BUTTON_FONT);
             fileMenu.setText("File");
-            fileMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            fileMenu.setFont(BUTTON_FONT);
             localiseButton(fileMenu, "menu.file_menu", "&File", true);
             fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
                 public void menuCanceled(javax.swing.event.MenuEvent evt) {
@@ -1295,7 +1311,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 }
             });
 
-            newProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            newProjectItem.setFont(BUTTON_FONT);
             newProjectItem.setText("New Project");
             localiseButton(newProjectItem, "menu.new_item", "&New Project", true);
             newProjectItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1306,7 +1322,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             fileMenu.add(newProjectItem);
 
-            openProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            openProjectItem.setFont(BUTTON_FONT);
             openProjectItem.setText("Open Project...");
             localiseButton(openProjectItem, "menu.open_item", "&Open Project...", true);
             openProjectItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1318,14 +1334,14 @@ public class FindBugsFrame extends javax.swing.JFrame {
             fileMenu.add(openProjectItem);
 
             recentProjectsMenu.setText("Recent Projects");
-            recentProjectsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            recentProjectsMenu.setFont(BUTTON_FONT);
             localiseButton(recentProjectsMenu, "menu.recent_menu", "R&ecent Projects", true);
             rebuildRecentProjectsMenu();
             fileMenu.add(recentProjectsMenu);
 
             fileMenu.add(jSeparator9);
 
-            closeProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            closeProjectItem.setFont(BUTTON_FONT);
             closeProjectItem.setText("Close Project");
             localiseButton(closeProjectItem, "menu.close_item", "&Close Project", true);
             closeProjectItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1336,7 +1352,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             fileMenu.add(closeProjectItem);
 
-            saveProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            saveProjectItem.setFont(BUTTON_FONT);
             saveProjectItem.setText("Save Project");
             localiseButton(saveProjectItem, "menu.save_item", "&Save Project", true);
             saveProjectItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1347,7 +1363,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             fileMenu.add(saveProjectItem);
 
-            saveProjectAsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            saveProjectAsItem.setFont(BUTTON_FONT);
             saveProjectAsItem.setText("Save Project As...");
             localiseButton(saveProjectAsItem, "menu.saveas_item", "Save Project &As...", true);
             saveProjectAsItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1358,7 +1374,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             fileMenu.add(saveProjectAsItem);
 
-            reloadProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            reloadProjectItem.setFont(BUTTON_FONT);
             reloadProjectItem.setText("Reload Project");
             localiseButton(reloadProjectItem, "menu.reload_item", "&Reload Project", true);
             reloadProjectItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1371,7 +1387,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             fileMenu.add(jSeparator3);
 
-            loadBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            loadBugsItem.setFont(BUTTON_FONT);
             loadBugsItem.setText("Load Bugs...");
             localiseButton(loadBugsItem, "menu.loadbugs_item", "&Load Bugs...", true);
             loadBugsItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1382,7 +1398,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             fileMenu.add(loadBugsItem);
 
-            saveBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            saveBugsItem.setFont(BUTTON_FONT);
             saveBugsItem.setText("Save Bugs");
             localiseButton(saveBugsItem, "menu.savebugs_item", "Save &Bugs...", true);
             saveBugsItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1395,7 +1411,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             fileMenu.add(jSeparator6);
 
-            exitItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            exitItem.setFont(BUTTON_FONT);
             exitItem.setText("Exit");
             localiseButton(exitItem, "menu.exit_item", "E&xit", true);
             exitItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1409,10 +1425,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
             theMenuBar.add(fileMenu);
 
             editMenu.setText("Edit");
-            editMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            editMenu.setFont(BUTTON_FONT);
             editMenu.setEnabled(false);
             localiseButton(editMenu, "menu.edit_menu", "&Edit", true);
-            cutItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            cutItem.setFont(BUTTON_FONT);
             cutItem.setText("Cut");
             localiseButton(cutItem, "menu.cut_item", "Cut", true);
             cutItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1423,7 +1439,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             editMenu.add(cutItem);
 
-            copyItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            copyItem.setFont(BUTTON_FONT);
             copyItem.setText("Copy");
             localiseButton(copyItem, "menu.copy_item", "Copy", true);
             copyItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1434,7 +1450,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             editMenu.add(copyItem);
 
-            pasteItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            pasteItem.setFont(BUTTON_FONT);
             pasteItem.setText("Paste");
             localiseButton(pasteItem, "menu.paste_item", "Paste", true);
             pasteItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1448,7 +1464,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             editMenu.add(jSeparator10);
 
             selectAllItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
-            selectAllItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            selectAllItem.setFont(BUTTON_FONT);
             selectAllItem.setText("Select All");
             localiseButton(selectAllItem, "menu.selectall_item", "Select &All", true);
             selectAllItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1462,7 +1478,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             theMenuBar.add(editMenu);
 
             viewMenu.setText("View");
-            viewMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            viewMenu.setFont(BUTTON_FONT);
             localiseButton(viewMenu, "menu.view_menu", "&View", true);
 
             viewMenu.addMenuListener(new javax.swing.event.MenuListener() {
@@ -1475,7 +1491,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 }
             });
 
-            viewConsoleItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            viewConsoleItem.setFont(BUTTON_FONT);
             viewConsoleItem.setText("Console");
             localiseButton(viewConsoleItem, "menu.console_item", "&Console", true);
             viewConsoleItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1486,7 +1502,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             viewMenu.add(viewConsoleItem);
 
-            viewBugDetailsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            viewBugDetailsItem.setFont(BUTTON_FONT);
             viewBugDetailsItem.setSelected(true);
             viewBugDetailsItem.setText("Bug Details");
             localiseButton(viewBugDetailsItem, "menu.bugdetails_item", "Bug &Details", true);
@@ -1498,7 +1514,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             viewMenu.add(viewBugDetailsItem);
 
-            fullDescriptionsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            fullDescriptionsItem.setFont(BUTTON_FONT);
             fullDescriptionsItem.setSelected(true);
             fullDescriptionsItem.setText("Full Descriptions");
             localiseButton(fullDescriptionsItem, "menu.fulldescriptions_item", "&Full Descriptions", true);
@@ -1513,9 +1529,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
             viewMenu.add(jSeparator7);
 
             filterWarningsMenu.setText("Filter Warnings");
-            filterWarningsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            filterWarningsMenu.setFont(BUTTON_FONT);
             localiseButton(filterWarningsMenu, "menu.filterwarnings_menu", "Filter &Warnings", true);
-            expPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
+            expPriorityButton.setFont(BUTTON_FONT);
             expPriorityButton.setText("Experimental Priority");
             priorityButtonGroup.add(expPriorityButton);
             localiseButton(expPriorityButton, "menu.exppriority_item", "&Experimental Priority", true);
@@ -1528,7 +1544,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             filterWarningsMenu.add(expPriorityButton);
 
-            lowPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
+            lowPriorityButton.setFont(BUTTON_FONT);
             lowPriorityButton.setText("Low Priority");
             priorityButtonGroup.add(lowPriorityButton);
             localiseButton(lowPriorityButton, "menu.lowpriority_item", "&Low Priority", true);
@@ -1541,7 +1557,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             filterWarningsMenu.add(lowPriorityButton);
 
-            mediumPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
+            mediumPriorityButton.setFont(BUTTON_FONT);
             mediumPriorityButton.setText("Medium Priority");
             priorityButtonGroup.add(mediumPriorityButton);
             localiseButton(mediumPriorityButton, "menu.mediumpriority_item", "&Medium Priority", true);
@@ -1554,7 +1570,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             filterWarningsMenu.add(mediumPriorityButton);
 
-            highPriorityButton.setFont(new java.awt.Font("Dialog", 0, 12));
+            highPriorityButton.setFont(BUTTON_FONT);
             highPriorityButton.setText("High Priority");
             priorityButtonGroup.add(highPriorityButton);
             localiseButton(highPriorityButton, "menu.highpriority_item", "&High Priority", true);
@@ -1579,7 +1595,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             viewMenu.add(jSeparator8);
 
-            viewProjectItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            viewProjectItem.setFont(BUTTON_FONT);
             viewProjectItem.setText("View Project Details");
             viewProjectItem.setEnabled(false);
             localiseButton(viewProjectItem, "menu.viewprojectdetails_item", "View Project Details", true);
@@ -1591,7 +1607,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             viewMenu.add(viewProjectItem);
 
-            viewBugsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            viewBugsItem.setFont(BUTTON_FONT);
             viewBugsItem.setText("View Bugs");
             viewBugsItem.setEnabled(false);
             localiseButton(viewBugsItem, "menu.viewbugs_item", "View Bugs", true);
@@ -1606,7 +1622,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
             theMenuBar.add(viewMenu);
 
             settingsMenu.setText("Settings");
-            settingsMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            settingsMenu.setFont(BUTTON_FONT);
             localiseButton(settingsMenu, "menu.settings_menu", "&Settings", true);
             settingsMenu.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1614,7 +1630,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
                 }
             });
 
-            configureDetectorsItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            configureDetectorsItem.setFont(BUTTON_FONT);
             configureDetectorsItem.setText("Configure Detectors...");
             localiseButton(configureDetectorsItem, "menu.configure_item", "&Configure Detectors...", true);
             configureDetectorsItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1626,9 +1642,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
             settingsMenu.add(configureDetectorsItem);
 
             effortMenu.setText("Effort");
-            effortMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            effortMenu.setFont(BUTTON_FONT);
             localiseButton(effortMenu, "menu.effort_menu", "Effort", true);
-            minEffortItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            minEffortItem.setFont(BUTTON_FONT);
             minEffortItem.setText("Minimum");
             effortButtonGroup.add(minEffortItem);
             localiseButton(minEffortItem, "menu.mineffort_item", "&Minimum", true);
@@ -1640,7 +1656,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             effortMenu.add(minEffortItem);
 
-            normalEffortItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            normalEffortItem.setFont(BUTTON_FONT);
             normalEffortItem.setSelected(true);
             normalEffortItem.setText("Normal");
             effortButtonGroup.add(normalEffortItem);
@@ -1653,7 +1669,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
             effortMenu.add(normalEffortItem);
 
-            maxEffortItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            maxEffortItem.setFont(BUTTON_FONT);
             maxEffortItem.setText("Maximum");
             effortButtonGroup.add(maxEffortItem);
             localiseButton(maxEffortItem, "menu.maxeffort_item", "&Maximum", true);
@@ -1670,9 +1686,9 @@ public class FindBugsFrame extends javax.swing.JFrame {
             theMenuBar.add(settingsMenu);
 
             helpMenu.setText("Help");
-            helpMenu.setFont(new java.awt.Font("Dialog", 0, 12));
+            helpMenu.setFont(BUTTON_FONT);
             localiseButton(helpMenu, "menu.help_menu", "&Help", true);
-            aboutItem.setFont(new java.awt.Font("Dialog", 0, 12));
+            aboutItem.setFont(BUTTON_FONT);
             aboutItem.setText("About...");
             localiseButton(aboutItem, "menu.about_item", "&About", true);
             aboutItem.addActionListener(new java.awt.event.ActionListener() {
@@ -2425,7 +2441,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			String bugCategoryDescription = edu.umd.cs.findbugs.I18N.instance().getBugCategoryDescription(bugCategory);
 
 			final JCheckBoxMenuItem item = new JCheckBoxMenuItem(bugCategoryDescription, true);
-			item.setFont(new java.awt.Font("Dialog", 0, 12));
+			item.setFont(BUTTON_FONT);
 			item.setSelected(getFilterSettings().containsCategory(bugCategory));
 			item.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2565,7 +2581,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				recentProjectsMenu.removeAll();
-				java.awt.Font ft = new java.awt.Font("Dialog", 0, 12);
+				java.awt.Font ft = BUTTON_FONT;
 				if (recentProjects.size() == 0) {
 					JMenuItem emptyItem = new JMenuItem(L10N.getLocalString("menu.empty_item", "Empty"));
 					emptyItem.setFont(ft);
@@ -3293,6 +3309,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			
 			String line;
 			while ((line = reader.readLine()) != null) {
+				// TODO: evaluate whether this is inefficient
 				sourceTextArea.append(line + "\n");
 			}
 		} finally {
