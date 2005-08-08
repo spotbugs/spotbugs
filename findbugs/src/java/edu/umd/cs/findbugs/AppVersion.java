@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.util.Date;
 
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -44,6 +45,16 @@ public class AppVersion implements XMLWriteable, Cloneable {
 	private long timestamp;
 	private String releaseName;
 	
+	public AppVersion(long sequence, long time, String name) {
+		this.sequence = sequence;
+		this.timestamp = time;
+		this.releaseName = name;
+	}
+	public AppVersion(long sequence, Date time, String name) {
+		this.sequence = sequence;
+		this.timestamp = time.getTime();
+		this.releaseName = name;
+	}
 	public AppVersion(long sequence) {
 		this.sequence = sequence;
 		this.timestamp = -1;
