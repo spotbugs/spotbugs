@@ -264,7 +264,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			return false;
 		}
 
-		private static final InvokeInstruction toInvokeInstruction(Instruction ins) {
+		private static InvokeInstruction toInvokeInstruction(Instruction ins) {
 			short opcode = ins.getOpcode();
 			if (opcode != Constants.INVOKEVIRTUAL && opcode != Constants.INVOKEINTERFACE)
 				return null;

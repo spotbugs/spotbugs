@@ -33,7 +33,7 @@ public class IdentityClassNameRewriter implements ClassNameRewriter {
 	 * 
 	 * @return the instance
 	 */
-	public static final IdentityClassNameRewriter instance() { return theInstance; }
+	public static IdentityClassNameRewriter instance() { return theInstance; }
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.model.ClassNameRewriter#rewriteClassName(java.lang.String)

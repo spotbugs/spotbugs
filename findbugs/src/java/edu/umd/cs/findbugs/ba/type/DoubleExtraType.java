@@ -51,7 +51,7 @@ public class DoubleExtraType extends Type implements ExtendedTypes {
 		return o == this;
 	}
 
-	public static final Type instance() {
+	public static Type instance() {
 		return theInstance;
 	}
 }

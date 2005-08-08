@@ -26,11 +26,11 @@ public class ResourceValue {
 	private static final ResourceValue instance = new ResourceValue();
 	private static final ResourceValue notInstance = new ResourceValue();
 
-	public static final ResourceValue instance() {
+	public static ResourceValue instance() {
 		return instance;
 	}
 
-	public static final ResourceValue notInstance() {
+	public static ResourceValue notInstance() {
 		return notInstance;
 	}
 

@@ -44,7 +44,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
 		sourceFileNameCache.put(javaClass.getClassName(), sourceFileName);
 	}
 	
-	private final String fileNameFor(final String packageName, final String sourceName) { 
+	private String fileNameFor(final String packageName, final String sourceName) { 
 		String result;
 		SourceFinder sourceFinder = getEngine().getAnalysisContext().getSourceFinder();
 		try {
