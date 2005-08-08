@@ -114,7 +114,7 @@ public class IsNullValueAnalysis
 		this.nonNullParamDatabase = nonNullParamDatabase;
 	}
 	
-	public void setPossiblyNullParamDatabase(NonNullParamPropertyDatabase possiblyNullParamDatabase) {
+	public void setCheckForNullParamDatabase(NonNullParamPropertyDatabase possiblyNullParamDatabase) {
 		this.possiblyNullParamDatabase = possiblyNullParamDatabase;
 	}
 	
@@ -162,7 +162,7 @@ public class IsNullValueAnalysis
 				if (instanceMethod && i == 0) {
 					value = IsNullValue.nonNullValue();
 				} else if (possiblyNullParamSet.get(paramIndex)) {
-					// Parameter declared @PossiblyNull
+					// Parameter declared @CheckForNull
 					value = IsNullValue.nullOnSimplePathValue();
 				} else if (nonNullParamSet.get(paramIndex)) {
 					// Parameter declared @NonNull

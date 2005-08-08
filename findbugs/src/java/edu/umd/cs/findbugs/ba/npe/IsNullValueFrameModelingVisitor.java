@@ -137,7 +137,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 				}
 				if (prop == null && nullReturnAnnotationDatabase != null) {
 					// Traverse upwards in class hierarchy until we find
-					// a @NonNull or @PossiblyNull annotation.
+					// a @NonNull or @CheckForNull annotation.
 					NonNullReturnValueAnnotationChecker annotationChecker = new NonNullReturnValueAnnotationChecker(nullReturnAnnotationDatabase);
 					try {
 						Hierarchy.findInvocationLeastUpperBound(obj, getCPG(), annotationChecker);

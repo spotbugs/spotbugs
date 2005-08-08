@@ -42,7 +42,7 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.PossiblyNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.ca.CallListAnalysis;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantAnalysis;
@@ -215,7 +215,7 @@ public class ClassContext {
 		 * @throws CFGBuilderException       if the CFG can't be constructed for the method
 		 * @throws DataflowAnalysisException if dataflow analysis fails on the method
 		 */
-		@PossiblyNull public Analysis getAnalysis(Method method) throws CFGBuilderException, DataflowAnalysisException {
+		@CheckForNull public Analysis getAnalysis(Method method) throws CFGBuilderException, DataflowAnalysisException {
 			AnalysisResult<Analysis> result = map.get(method);
 			if (result == null) {
 				if (TIME_ANALYSES) {
@@ -266,7 +266,7 @@ public class ClassContext {
 			return result.getAnalysis();
 		}
 
-		@PossiblyNull protected abstract Analysis analyze(Method method)
+		@CheckForNull protected abstract Analysis analyze(Method method)
 		        throws CFGBuilderException, DataflowAnalysisException;
 	}
 
@@ -394,7 +394,7 @@ public class ClassContext {
 	static private Map<Method, MethodGen> cachedMethodGen = new IdentityHashMap<Method,MethodGen>();
 	private NoExceptionAnalysisFactory<MethodGen> methodGenFactory =
 	        new NoExceptionAnalysisFactory<MethodGen>("MethodGen construction") {
-		        @PossiblyNull protected MethodGen analyze(Method method) {
+		        @CheckForNull protected MethodGen analyze(Method method) {
 			        if (method.getCode() == null)
 				        return null;
 			        MethodGen result = cachedMethodGen.get(method);
@@ -471,7 +471,7 @@ public class ClassContext {
 					invAnalysis.setMayReturnNullDatabase(analysisContext.getMayReturnNullDatabase());
 					invAnalysis.setNullReturnAnnotationDatabase(analysisContext.getNullReturnValueAnnotationDatabase());
 					invAnalysis.setNonNullParamDatabase(analysisContext.getNonNullParamDatabase());
-					invAnalysis.setPossiblyNullParamDatabase(analysisContext.getPossiblyNullParamDatabase());
+					invAnalysis.setCheckForNullParamDatabase(analysisContext.getCheckForNullParamDatabase());
 					invAnalysis.setClassAndMethod(new JavaClassAndMethod(getJavaClass(), method));
 					
 			        IsNullValueDataflow invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
@@ -678,7 +678,7 @@ public class ClassContext {
 
 	private AnalysisFactory<ConstantDataflow> constantDataflowFactory =
 		new AnalysisFactory<ConstantDataflow>("constant propagation analysis") {
-			@Override @PossiblyNull
+			@Override @CheckForNull
 			protected ConstantDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
 				MethodGen methodGen = getMethodGen(method);
 				if (methodGen == null) return null;
@@ -935,7 +935,7 @@ public class ClassContext {
 	 *         if the method has no Code attribute (and thus cannot be analyzed)
 	 *         or if the method seems unprofitable to analyze
 	 */
-	@PossiblyNull public MethodGen getMethodGen(Method method) {
+	@CheckForNull public MethodGen getMethodGen(Method method) {
 		return methodGenFactory.getAnalysis(method);
 	}
 

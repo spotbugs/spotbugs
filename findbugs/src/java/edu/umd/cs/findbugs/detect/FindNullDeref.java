@@ -98,7 +98,7 @@ public class FindNullDeref
 	// Cached database stuff
 	private NonNullParamPropertyDatabase unconditionalDerefParamDatabase;
 	private NonNullParamPropertyDatabase nonNullParamDatabase;
-	private NonNullParamPropertyDatabase possiblyNullParamDatabase;
+	private NonNullParamPropertyDatabase checkForNullParamDatabase;
 	private MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase;
 	private boolean checkedDatabases;
 	private boolean checkUnconditionalDeref;
@@ -209,11 +209,11 @@ public class FindNullDeref
 		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
 		unconditionalDerefParamDatabase = analysisContext.getUnconditionalDerefParamDatabase();
 		nonNullParamDatabase = analysisContext.getNonNullParamDatabase();
-		possiblyNullParamDatabase = analysisContext.getPossiblyNullParamDatabase();
+		checkForNullParamDatabase = analysisContext.getCheckForNullParamDatabase();
 		nullReturnValueAnnotationDatabase = analysisContext.getNullReturnValueAnnotationDatabase();
 		
 		checkUnconditionalDeref = isDatabaseNonEmpty(unconditionalDerefParamDatabase);
-		checkParamAnnotations = isDatabaseNonEmpty(nonNullParamDatabase) && isDatabaseNonEmpty(possiblyNullParamDatabase);
+		checkParamAnnotations = isDatabaseNonEmpty(nonNullParamDatabase) && isDatabaseNonEmpty(checkForNullParamDatabase);
 		checkReturnValueAnnotations = isDatabaseNonEmpty(nullReturnValueAnnotationDatabase);
 		
 		checkCallSites = checkUnconditionalDeref || checkParamAnnotations;
@@ -349,7 +349,7 @@ public class FindNullDeref
 			checkUnconditionallyDereferencedParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
 		}
 		
-		if (nonNullParamDatabase != null && possiblyNullParamDatabase != null) {
+		if (nonNullParamDatabase != null && checkForNullParamDatabase != null) {
 			if (DEBUG_NULLARG) {
 				System.out.println("Checking nonnull params");
 			}
@@ -549,9 +549,9 @@ public class FindNullDeref
 			BitSet nullArgSet,
 			BitSet definitelyNullArgSet) throws ClassNotFoundException {
 		
-		// Go up the class hierarchy finding @NonNull and @PossiblyNull annotations
+		// Go up the class hierarchy finding @NonNull and @CheckForNull annotations
 		// for parameters.
-		NonNullContractCollector nonNullContractCollector = new NonNullContractCollector(nonNullParamDatabase, possiblyNullParamDatabase);
+		NonNullContractCollector nonNullContractCollector = new NonNullContractCollector(nonNullParamDatabase, checkForNullParamDatabase);
 		nonNullContractCollector.findContractForCallSite(invokeInstruction, cpg);
 
 		// See if any null arguments violate a @NonNull annotation.

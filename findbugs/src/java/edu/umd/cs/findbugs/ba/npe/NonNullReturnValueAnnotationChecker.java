@@ -6,7 +6,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * This callback can be passed to Hierarchy.findInvocationLeastUpperBound
- * to find the @NonNull or @PossiblyNull method return value annotation
+ * to find the @NonNull or @CheckForNull method return value annotation
  * which should be applied at a call site.
  * 
  * @author David Hovemeyer
@@ -33,14 +33,14 @@ public class NonNullReturnValueAnnotationChecker implements JavaClassAndMethodCh
 	public boolean choose(JavaClassAndMethod javaClassAndMethod) {
 		XMethod xmethod = javaClassAndMethod.toXMethod();
 		if (DEBUG) {
-			System.out.print("Checking " + xmethod + " for @NonNull or @PossiblyNull...");
+			System.out.print("Checking " + xmethod + " for @NonNull or @CheckForNull...");
 		}
 		Boolean prop = database.getProperty(xmethod);
 		if (prop != null) {
 			this.property = prop;
 			this.annotatedMethod = javaClassAndMethod;
 			if (DEBUG) {
-				System.out.println(prop.booleanValue() ? "@PossiblyNull" : "@NonNull");
+				System.out.println(prop.booleanValue() ? "@CheckForNull" : "@NonNull");
 			}
 			return true;
 		}

@@ -51,7 +51,7 @@ public class AnalysisContext {
 	private static final boolean DEBUG_HIERARCHY = Boolean.getBoolean("findbugs.debug.hierarchy");
 	
 	public static final String DEFAULT_NONNULL_PARAM_DATABASE_FILENAME = "nonnullParam.db";
-	public static final String DEFAULT_POSSIBLYNULL_PARAM_DATABASE_FILENAME = "possiblyNullParam.db";
+	public static final String DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME = "checkForNullParam.db";
 	public static final String DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE = "nonnullReturn.db";
 	public static final String UNCONDITIONAL_DEREF_DB_FILENAME = "unconditionalDeref.db";
 	public static final String DEFAULT_NULL_RETURN_VALUE_DB_FILENAME = "mayReturnNull.db";
@@ -72,7 +72,7 @@ public class AnalysisContext {
 	private MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase;
 	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
 	private NonNullParamPropertyDatabase nonNullParamDatabase;
-	private NonNullParamPropertyDatabase possiblyNullParamDatabase;
+	private NonNullParamPropertyDatabase checkForNullParamDatabase;
 	private NonNullParamPropertyDatabase unconditionalDerefParamDatabase;
 
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
@@ -272,14 +272,14 @@ public class AnalysisContext {
 				new NonNullParamPropertyDatabase(),
 				DEFAULT_NONNULL_PARAM_DATABASE_FILENAME,
 				"@NonNull parameter annotation database");
-		possiblyNullParamDatabase = loadPropertyDatabase(
+		checkForNullParamDatabase = loadPropertyDatabase(
 				new NonNullParamPropertyDatabase(),
-				DEFAULT_POSSIBLYNULL_PARAM_DATABASE_FILENAME,
-				"@PossiblyNull parameter annotation database");
+				DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME,
+				"@CheckForNull parameter annotation database");
 		nullReturnValueAnnotationDatabase= loadPropertyDatabase(
 				new MayReturnNullPropertyDatabase(),
 				DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE,
-				"@NonNull/@PossiblyNull return value annotation database"
+				"@NonNull/@CheckForNull return value annotation database"
 				);
 		unconditionalDerefParamDatabase = loadPropertyDatabase(
 				new NonNullParamPropertyDatabase(),
@@ -388,17 +388,17 @@ public class AnalysisContext {
 	
 	/**
 	 * Set possibly-null param database.
-	 * Based on PossiblyNull annotations.
+	 * Based on CheckForNull annotations.
 	 * 
 	 * @param possiblyNullParamDatabase the possibly-null param database
 	 */
-	public void setPossiblyNullParamDatabase(
+	public void setCheckForNullParamDatabase(
 			NonNullParamPropertyDatabase possiblyNullParamDatabase) {
-		this.possiblyNullParamDatabase = possiblyNullParamDatabase;
+		this.checkForNullParamDatabase = possiblyNullParamDatabase;
 	}
 	
-	public NonNullParamPropertyDatabase getPossiblyNullParamDatabase() {
-		return possiblyNullParamDatabase;
+	public NonNullParamPropertyDatabase getCheckForNullParamDatabase() {
+		return checkForNullParamDatabase;
 	}
 	
 	public void setNullReturnValueAnnotationDatabase(

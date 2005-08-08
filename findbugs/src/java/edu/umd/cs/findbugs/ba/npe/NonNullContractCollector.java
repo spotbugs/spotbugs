@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
 
 /**
- * Find the contract specified by @NonNull and @PossiblyNull parameter
+ * Find the contract specified by @NonNull and @CheckForNull parameter
  * annotations in the class hierarchy.  Also, check null argument sets
  * for violations.
  * 
@@ -86,7 +86,7 @@ public class NonNullContractCollector implements JavaClassAndMethodChooser {
 	public interface SpecificationBuilder {
 		public boolean checkParam(int param);
 		public void setNonNullParam(int param, NonNullSpecification specification);
-		public void setPossiblyNullParam(int param, NonNullSpecification specification);
+		public void setCheckForNullParam(int param, NonNullSpecification specification);
 	}
 	
 	public void checkSpecifications(int numParams, SpecificationBuilder builder) {
@@ -112,9 +112,9 @@ public class NonNullContractCollector implements JavaClassAndMethodChooser {
 				
 				// Param should be checked, and we haven't seen a specification for the parameter yet.
 				// See if this method defines a specification.
-				if (specification.getPossiblyNullProperty().isNonNull(i)) {
-					// Parameter declared @PossiblyNull.
-					builder.setPossiblyNullParam(i, specification);
+				if (specification.getCheckForNullProperty().isNonNull(i)) {
+					// Parameter declared @CheckForNull.
+					builder.setCheckForNullParam(i, specification);
 					checkedParams.set(i);
 				} else if (specification.getNonNullProperty().isNonNull(i)) {
 					// Parameter declated @NonNull.
@@ -148,8 +148,8 @@ public class NonNullContractCollector implements JavaClassAndMethodChooser {
 				violatedParamSet.set(param);
 			}
 			
-			public void setPossiblyNullParam(int param, NonNullSpecification specification) {
-				if (DEBUG_NULLARG) System.out.println(" ==> @PossiblyNull");
+			public void setCheckForNullParam(int param, NonNullSpecification specification) {
+				if (DEBUG_NULLARG) System.out.println(" ==> @CheckForNull");
 			}
 			
 			private boolean argIsNull(int param) {
@@ -169,7 +169,7 @@ public class NonNullContractCollector implements JavaClassAndMethodChooser {
 				nonNullParamSet.set(param);
 			}
 			
-			public void setPossiblyNullParam(int param, NonNullSpecification specification) {
+			public void setCheckForNullParam(int param, NonNullSpecification specification) {
 				possiblyNullParamSet.set(param);
 			}
 		};

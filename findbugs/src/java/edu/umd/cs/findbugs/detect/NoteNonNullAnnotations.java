@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * Scan classes for @NonNull and @PossiblyNull annotations,
+ * Scan classes for @NonNull, @PossiblyNull and @CheckForNull annotations,
  * and convey them to FindNullDeref.
  * 
  * @author daveho

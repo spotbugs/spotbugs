@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * Training detector to
- * store NonNull and PossiblyNull annotations to database files.
+ * store NonNull, PossiblyNull and CheckForNull annotations to database files.
  * 
  * @author David Hovemeyer
  */
@@ -55,8 +55,8 @@ public class TrainNonNullAnnotations extends BuildNonNullAnnotationDatabase
 				AnalysisContext.DEFAULT_NONNULL_PARAM_DATABASE_FILENAME,
 				"non-null param database");
 		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
-				getPossiblyNullDatabase(),
-				AnalysisContext.DEFAULT_POSSIBLYNULL_PARAM_DATABASE_FILENAME,
+				getCheckForNullDatabase(),
+				AnalysisContext.DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME,
 				"possibly-null param database");
 		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
 				getNullReturnValueDatabase(),

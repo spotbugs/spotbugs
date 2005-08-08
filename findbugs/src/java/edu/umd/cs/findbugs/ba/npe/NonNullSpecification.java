@@ -40,7 +40,7 @@ public class NonNullSpecification {
 		return nonNullProperty;
 	}
 	
-	public NonNullParamProperty getPossiblyNullProperty() {
+	public NonNullParamProperty getCheckForNullProperty() {
 		return possiblyNullProperty;
 	}
 	
