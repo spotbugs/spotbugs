@@ -269,7 +269,7 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 			buf.append("[basicBlock=");
 			buf.append(getBasicBlock().getId());
 			buf.append(", index=");
-			buf.append(next != null ? "end" : String.valueOf(next.getPosition()));
+			buf.append(next == null ? "end" : String.valueOf(next.getPosition()));
 			buf.append(']');
 			return buf.toString();
 		}
