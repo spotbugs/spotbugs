@@ -1192,7 +1192,11 @@ public class FindBugsFrame extends javax.swing.JFrame {
             }
         });
 
+
         sourceTextAreaScrollPane.setViewportView(sourceTextArea);
+        sourceLineNumberer = new LineNumberer(sourceTextArea);
+        sourceLineNumberer.setBackground(Color.WHITE);
+        sourceTextAreaScrollPane.setRowHeaderView(sourceLineNumberer);
 
         bugDetailsTabbedPane.addTab("Source code", sourceTextAreaScrollPane);
 
@@ -3844,6 +3848,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane sourceDirListScrollPane;
     private javax.swing.JButton sourceDownButton;
     private javax.swing.JTextArea sourceTextArea;
+    private LineNumberer sourceLineNumberer;
     private javax.swing.JScrollPane sourceTextAreaScrollPane;
     private javax.swing.JButton sourceUpButton;
     private javax.swing.JTextField srcDirTextField;
