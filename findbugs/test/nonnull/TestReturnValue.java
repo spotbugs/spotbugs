@@ -1,10 +1,10 @@
 package nonnull;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.PossiblyNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 abstract class Foo {
-	protected abstract @PossiblyNull Object getPossiblyNull();
+	protected abstract @PCheckForNull Object getCheckForNull();
 	public abstract @NonNull Object reportReturnNull();
 }
 
@@ -13,12 +13,12 @@ abstract class Bar extends Foo {
 
 public abstract class TestReturnValue {
 	public void report(Foo f) {
-		Object obj = f.getPossiblyNull();
+		Object obj = f.getCheckForNull();
 		System.out.println(obj.hashCode());
 	}
 	
 	public void reportCallThroughSubclass(Bar b) {
-		Object obj = b.getPossiblyNull();
+		Object obj = b.getCheckForNull();
 		System.out.println(obj.hashCode());
 	}
 
@@ -33,7 +33,7 @@ public abstract class TestReturnValue {
 	}
 	
 	// This is fine
-	public @PossiblyNull Object doNotReportReturnPossiblyNull() {
+	public @CheckForNull Object doNotReportReturnCheckForNull() {
 		return null;
 	}
 }

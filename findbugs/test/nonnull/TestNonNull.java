@@ -1,7 +1,7 @@
 package nonnull;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.PossiblyNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 interface A {
 	public void f(@NonNull Object obj, @NonNull Object obj2);
@@ -9,7 +9,7 @@ interface A {
 
 interface B extends A {
 	// relax constraint on second param	 
-	public void f(@NonNull Object obj, @PossiblyNull Object obj2);
+	public void f(@NonNull Object obj, @CheckForNull Object obj2);
 }
 
 interface C extends A {
@@ -22,7 +22,7 @@ public class TestNonNull implements B {
 	}
 	
 	public void doNotReport(B b) {
-		// The B interface declared  arg 2 to be @PossiblyNull, so this is OK
+		// The B interface declared  arg 2 to be @CheckForNull, so this is OK
 		b.f(new Object(), null);
 	}
 	
@@ -39,6 +39,6 @@ public class TestNonNull implements B {
 	public void f(Object obj, Object obj2) {
 		System.out.println(obj.hashCode()); // ok, declared @NonNull
 		
-		System.out.println(obj2.hashCode()); // BAD - declared @PossiblyNull
+		System.out.println(obj2.hashCode()); // BAD - declared @CheckForNull
 	}
 }
