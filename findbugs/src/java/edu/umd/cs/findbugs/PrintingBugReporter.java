@@ -19,9 +19,16 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import org.apache.bcel.classfile.JavaClass;
+
+import edu.umd.cs.findbugs.config.CommandLine;
+
 
 /**
  * A simple BugReporter which simply prints the formatted message
@@ -46,23 +53,51 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		outputStream.close();
 	}
 	
-	public static void main(String[] args) throws Exception {
-		if (args.length > 1) {
-			System.err.println("Usage: " + PrintingBugReporter.class.getName() + "[<xmlFile>]");
-			System.exit(1);
+	class PrintingCommandLine extends CommandLine {
+
+		public PrintingCommandLine() {
+			addSwitch("-longBugCodes", "use long bug codes when generating text");
+		}
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
+		 */
+		@Override
+		protected void handleOption(String option, String optionExtraPart) throws IOException {
+			if (option.equals("-longBugCodes"))
+				setUseLongBugCodes(true);
+			
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java.lang.String, java.lang.String)
+		 */
+		@Override
+		protected void handleOptionWithArgument(String option, String argument) throws IOException {
+			// TODO Auto-generated method stub
+			
 		}
 		
+	}
+	public static void main(String[] args) throws Exception {
+
 		PrintingBugReporter reporter = new PrintingBugReporter();
+		PrintingCommandLine commandLine = reporter.new PrintingCommandLine();
+
+		int argCount = commandLine.parse(args, 0, 2, "Usage: " + PrintingCommandLine.class.getName()
+				+ " [options] [<xml results> [<test results]] ");
+
 		// Load plugins, in order to get message files
 		DetectorFactoryCollection.instance();
 		
+		
 		SortedBugCollection bugCollection = new SortedBugCollection();
-		if (args.length > 0)
-			bugCollection.readXML(args[0], new Project());
+		if (argCount < args.length)
+			bugCollection.readXML(args[argCount++], new Project());
 		else
 			bugCollection.readXML(System.in, new Project());
 		
-
+		if (argCount < args.length)
+			reporter.setOutputStream(new PrintStream(args[argCount++]));
 		
 		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
 			BugInstance warning = i.next();
