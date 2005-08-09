@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 abstract class Foo {
-	protected abstract @PCheckForNull Object getCheckForNull();
+	protected abstract @CheckForNull Object getCheckForNull();
 	public abstract @NonNull Object reportReturnNull();
 }
 
