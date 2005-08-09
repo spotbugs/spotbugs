@@ -314,9 +314,10 @@ public class IsNullValueAnalysis
 
 				// Downgrade NULL and NSP to DNR if the handler is for
 				// CloneNotSupportedException or InterruptedException
+				if (false) {
 				CodeExceptionGen handler = destBlock.getExceptionGen();
 				ObjectType catchType = handler.getCatchType();
-				if (false && catchType != null) {
+				if (catchType != null) {
 					String catchClass = catchType.getClassName();
 					if (catchClass.equals("java.lang.CloneNotSupportedException") ||
 					        catchClass.equals("java.lang.InterruptedException")) {
@@ -326,6 +327,7 @@ public class IsNullValueAnalysis
 								tmpFact.setValue(i, IsNullValue.nullOnComplexPathValue());
 						}
 					}
+				}
 				}
 
 				// Mark all values as having occurred on an exception path
