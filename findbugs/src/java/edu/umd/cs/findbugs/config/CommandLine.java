@@ -163,13 +163,16 @@ public abstract class CommandLine {
 		int remaining = argv.length - count;
 		if (remaining < minArgs || remaining > maxArgs) throw new RuntimeException("Wrong number of arguments");
 		return count;
-		} catch (Exception e) {
-			System.out.println(usage);
-			System.out.println("Options:");
-			printUsage(System.out);
-			System.exit(1);
-			throw new RuntimeException(e);
+		} catch (RuntimeException e) {
+			// fall through
+		} catch (IOException e) {
+			// fall through
 		}
+		System.out.println(usage);
+		System.out.println("Options:");
+		printUsage(System.out);
+		System.exit(1);
+		return -1;
 	}
 	/**
 	 * Parse a command line.
