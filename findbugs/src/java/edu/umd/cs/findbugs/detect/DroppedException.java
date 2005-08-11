@@ -58,9 +58,10 @@ public class DroppedException extends PreorderVisitor implements Detector, Const
 		if (!causes.add(c)) return checkedCauses.contains(c);
 		try {
 			if (Hierarchy.isSubtype(c, "java.lang.Exception")
-			        && !Hierarchy.isSubtype(c, "java.lang.RuntimeException"))
+			        && !Hierarchy.isSubtype(c, "java.lang.RuntimeException")) {
 				checkedCauses.add(c);
-			return true;
+				return true;
+			}
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 		}
