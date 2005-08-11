@@ -378,6 +378,11 @@ public class ClassContext {
 
 		protected CFG analyze(Method method) throws CFGBuilderException {
 			MethodGen methodGen = getMethodGen(method);
+			if (methodGen == null) {
+				JavaClassAndMethod javaClassAndMethod = new JavaClassAndMethod(jclass, method);
+				getLookupFailureCallback().reportSkippedAnalysis(javaClassAndMethod);
+				throw new MethodUnprofitableException(javaClassAndMethod);
+			}
 			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
 			cfgBuilder.build();
 			return cfgBuilder.getCFG();

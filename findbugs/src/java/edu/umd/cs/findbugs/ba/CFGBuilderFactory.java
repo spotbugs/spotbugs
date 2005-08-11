@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 /**
  * Factory object to create CFGBuilders for methods.
  * Using a CFGBuilderFactory is preferable to direct instantiation of
@@ -39,7 +41,7 @@ public class CFGBuilderFactory {
 	 * @param methodGen the method
 	 * @return a CFGBuilder for the method
 	 */
-	public static CFGBuilder create(MethodGen methodGen) {
+	public static CFGBuilder create(@NonNull MethodGen methodGen) {
 		return new BetterCFGBuilder2(methodGen);
 	}
 }
