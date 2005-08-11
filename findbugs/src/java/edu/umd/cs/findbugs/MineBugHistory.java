@@ -19,15 +19,16 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.config.CommandLine;
-
 import java.io.PrintStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+
+import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
  * Mine historical information from a BugCollection.
@@ -74,18 +75,25 @@ public class MineBugHistory {
 	
 	BugCollection bugCollection;
 	Version[] versionList;
-	Map<Long, AppVersion> sequenceToAppVersionMap;
+	Map<Long, AppVersion> sequenceToAppVersionMap = new HashMap<Long, AppVersion>();
 	int prio = Detector.LOW_PRIORITY;
-	Set<String> categorySet;
+	Set<String> categorySet = new HashSet<String>();
+	boolean formatDates = false;
 	
+	public MineBugHistory() {
+	}
 	public MineBugHistory(BugCollection bugCollection) {
 		this.bugCollection = bugCollection;
-		this.sequenceToAppVersionMap = new HashMap<Long, AppVersion>();
-		this.categorySet = new HashSet<String>();
 	}
 
+	public void setBugCollection(BugCollection bugCollection) {
+		this.bugCollection = bugCollection;
+	}
 	public void setPrio(int prio) {
 		this.prio = prio;
+	}
+	public void setFormatDates(boolean value) {
+		this.formatDates = value;
 	}
 
 	public void setCategories(String categories) {
@@ -151,7 +159,9 @@ public class MineBugHistory {
 			out.print(',');
 			out.print(appVersion != null ? appVersion.getReleaseName() : "");
 			out.print(',');
-			out.print(appVersion != null ? appVersion.getTimestamp() : 0L);
+			if (formatDates)
+				out.print("\"" + (appVersion != null ?  new Date(appVersion.getTimestamp()).toString() : "") + "\"");
+			else out.print(appVersion != null ? appVersion.getTimestamp() : 0L);
 			for (int j = 0; j < TUPLE_SIZE; ++j) {
 				out.print(',');
 				out.print(version.get(j));
@@ -175,32 +185,26 @@ public class MineBugHistory {
 			return activeCurrent ? ADDED : DEAD;
 	}
 
-	static class MineBugHistoryCommandLine extends CommandLine {
-		int prio = Detector.LOW_PRIORITY;
-		String categories = "";
+	 class MineBugHistoryCommandLine extends CommandLine {
 
 		MineBugHistoryCommandLine() {
+			addSwitch("-formatDates", "render dates in textual form");
 			addOption("-prio", "min priority", "set min priority");
 			addOption("-categories", "cat1[,cat2...]", "set categories");
 		}
 
-		public int getPrio() {
-			return prio;
-		}
-
-		public String getCategories() {
-			return categories;
-		}
-
 		public void handleOption(String option, String optionalExtraPart) {
+			if  (option.equals("-formatDates")) 
+				setFormatDates(true);
+			else 
 			throw new IllegalArgumentException("unknown option: " + option);
 		}
 
 		public void handleOptionWithArgument(String option, String argument) {
 			if (option.equals("-prio")) {
-				prio = Integer.parseInt(argument);
+				setPrio(Integer.parseInt(argument));
 			} else if (option.equals("-categories")) {
-				categories = argument;
+				setCategories(argument);
 			} else {
 				throw new IllegalArgumentException("unknown option: " + option);
 			}
@@ -210,27 +214,22 @@ public class MineBugHistory {
 	public static void main(String[] args) throws Exception {
 		DetectorFactoryCollection.instance(); // load plugins
 
-		MineBugHistoryCommandLine commandLine = new MineBugHistoryCommandLine();
-		int argCount = commandLine.parse(args);
-
-		if (args.length - argCount > 1) {
-			System.err.println("Usage: " + MineBugHistory.class.getName() + " [options] <bug collection>");
-			System.err.println("Options:");
-			commandLine.printUsage(System.err);
-			System.exit(1);
-		}
+		MineBugHistory mineBugHistory = new MineBugHistory();
+		MineBugHistoryCommandLine commandLine = mineBugHistory.new MineBugHistoryCommandLine();
+		int argCount = commandLine.parse(args, 0, 2, "Usage: " + MineBugHistory.class.getName()
+				+ " [options] [<xml results> [<history]] ");
 
 		SortedBugCollection bugCollection = new SortedBugCollection();
-		if (argCount == args.length)  
-		bugCollection.readXML(System.in, new Project());
-		else bugCollection.readXML(args[argCount], new Project());
-
-		MineBugHistory mineBugHistory = new MineBugHistory(bugCollection);
-		mineBugHistory.setPrio(commandLine.getPrio());
-		mineBugHistory.setCategories(commandLine.getCategories());
+		if (argCount < args.length)  
+			bugCollection.readXML(args[argCount++], new Project());
+		else bugCollection.readXML(System.in, new Project());
+		mineBugHistory.setBugCollection(bugCollection);
 
 		mineBugHistory.execute();
-		mineBugHistory.dump(System.out);
+		if (argCount < args.length)  
+			mineBugHistory.dump(new PrintStream(args[argCount++]));
+		else 
+			mineBugHistory.dump(System.out);
 		
 	}
 }
