@@ -127,9 +127,10 @@ public class OpcodeStack implements Constants2
 			buf.append(signature);
 			if (specialKind == BYTE_ARRAY_LOAD)
 				buf.append(", byte_array_load");
-			if (specialKind == RANDOM_INT)
+			else if (specialKind == RANDOM_INT)
 				buf.append(", random_int");
-				
+			else if (specialKind == LOW_8_BITS_CLEAR)
+				buf.append(", low8clear");
 			if (constValue != UNKNOWN) {
 				buf.append(", ");
 				buf.append(constValue);
