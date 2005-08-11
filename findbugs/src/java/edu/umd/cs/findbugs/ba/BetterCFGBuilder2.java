@@ -19,13 +19,31 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.BitSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.BranchInstruction;
+import org.apache.bcel.generic.ClassGen;
+import org.apache.bcel.generic.CodeExceptionGen;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.ExceptionThrower;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.InstructionTargeter;
+import org.apache.bcel.generic.JsrInstruction;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.NOP;
+import org.apache.bcel.generic.ReturnInstruction;
+
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * A CFGBuilder that really tries to construct accurate control flow graphs.
@@ -507,7 +525,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 	 *
 	 * @param methodGen the method to build a CFG for
 	 */
-	public BetterCFGBuilder2(MethodGen methodGen) {
+	public BetterCFGBuilder2(@NonNull MethodGen methodGen) {
 		this.methodGen = methodGen;
 		this.cpg = methodGen.getConstantPool();
 		this.exceptionHandlerMap = new ExceptionHandlerMap(methodGen);
