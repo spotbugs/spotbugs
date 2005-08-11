@@ -35,6 +35,7 @@ import de.tobject.findbugs.FindbugsPlugin;
 import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisError;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -214,5 +215,9 @@ public class Reporter extends AbstractBugReporter {
 
 	public void reportMissingClass(String missingClass) {
 		FindbugsPlugin.getDefault().logWarning("FindBugs missing class: " + missingClass);
+	}
+
+	public BugReporter getRealBugReporter() {
+		return this;
 	}
 }

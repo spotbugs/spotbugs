@@ -44,7 +44,6 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.UpdateBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
@@ -202,9 +201,10 @@ public class FindBugsWorker {
 			Reporter bugReporter,
 			SortedBugCollection oldBugCollection,
 			SortedBugCollection newBugCollection) {
-		UpdateBugCollection updater = new UpdateBugCollection(oldBugCollection, newBugCollection);
-		updater.setUpdatedClassNameSet(bugReporter.getAnalyzedClassNames());
-		updater.execute();
+		throw new UnsupportedOperationException();
+//		UpdateBugCollection updater = new UpdateBugCollection(oldBugCollection, newBugCollection);
+//		updater.setUpdatedClassNameSet(bugReporter.getAnalyzedClassNames());
+//		updater.execute();
 	}
 
 	/**
