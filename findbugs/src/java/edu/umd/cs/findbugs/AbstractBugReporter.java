@@ -153,6 +153,13 @@ public abstract class AbstractBugReporter implements BugReporter {
 			return;
 
 		String message = getMissingClassName(ex);
+		if (false && message.indexOf("/") >= 0) {
+			try { throw new IllegalArgumentException("bad class name: " + message);
+			
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			}
+		}
 
 		if (message.startsWith("[")) {
 			// Sometimes we see methods called on array classes.
