@@ -90,7 +90,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 			|| annotationClass.endsWith(POSSIBLY_NULL_ANNOTATION_CLASS);
 	}
 
-	//@Override
+	@Override
 	public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
 		if (!visitingMethod() || !isNonNullAnnotation(annotationClass))
 			return;
@@ -105,7 +105,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		}
 	}
 	
-	//@Override
+	@Override
 	public void visitParameterAnnotation(int p, String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
 		if (!isNonNullAnnotation(annotationClass))
 			return;
@@ -124,7 +124,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 			createdMethodParameterPropertySet.add(xmethod);
 		}
 		
-		NonNullParamPropertyDatabase database = annotationClass.equals(NONNULL_ANNOTATION_CLASS)
+		NonNullParamPropertyDatabase database = annotationClass.endsWith(NONNULL_ANNOTATION_CLASS)
 				? nonNullDatabase : checkForNullDatabase;
 		
 		NonNullParamProperty property = database.getProperty(xmethod);
