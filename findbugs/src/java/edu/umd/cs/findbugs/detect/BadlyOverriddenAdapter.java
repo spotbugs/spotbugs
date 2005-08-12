@@ -57,7 +57,10 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements 
 			if (superClass == null) return;
 			String packageName = superClass.getPackageName();
 			String className = superClass.getClassName();
-			isAdapter = ((className.endsWith("Adapter")) && (packageName.equals("java.awt.event") || packageName.equals("javax.swing.event")));
+			
+			//A more generic way to add Adapters would be nice here
+			isAdapter = ((className.endsWith("Adapter")) && (packageName.equals("java.awt.event") || packageName.equals("javax.swing.event")))
+			          ||((className.equals("DefaultHandler") && (packageName.equals("org.xml.sax.helpers"))));
 			if (isAdapter) {
 				Method[] methods = superClass.getMethods();
 				for (int i = 0; i < methods.length; i++) {
