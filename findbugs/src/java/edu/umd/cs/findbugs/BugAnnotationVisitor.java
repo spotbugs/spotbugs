@@ -28,6 +28,8 @@ public interface BugAnnotationVisitor {
 
 	public void visitIntAnnotation(IntAnnotation intAnnotation);
 
+	public void visitStringAnnotation(StringAnnotation StringAnnotation);
+	
 	public void visitSourceLineAnnotation(SourceLineAnnotation sourceLineAnnotation);
 }
 
