@@ -118,6 +118,7 @@ public class FindBadForLoop extends BytecodeScanningDetector implements Constant
             	stack.sawOpcode(this, seen);
 
 		} catch (RuntimeException e) {
+			// FIXME
 			System.out.println("Exception at " + getPC() 
 				+ " in " + getFullyQualifiedMethodName());
 			e.printStackTrace(System.out);
