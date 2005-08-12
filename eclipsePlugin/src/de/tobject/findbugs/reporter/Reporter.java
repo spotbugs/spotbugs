@@ -74,6 +74,8 @@ public class Reporter extends AbstractBugReporter {
 	private UserPreferences userPrefs;
 	
 	private boolean workStarted;
+	int filesNumber;
+	int observed = 0;
 	
 	/**
 	 * Constructor.
@@ -171,9 +173,9 @@ public class Reporter extends AbstractBugReporter {
 		}
 		if (!workStarted) {
 			workStarted = true;
-			int filesNumber = findBugsProject.getFileCount();
+			filesNumber = findBugsProject.getFileCount();
 			if (!(monitor instanceof SubProgressMonitor)) {
-				monitor.beginTask("Performing bug checking...", filesNumber);
+				monitor.beginTask("Performing bug checking...", filesNumber*2);
 			}
 		}
 		if (monitor.isCanceled()) {
@@ -181,6 +183,14 @@ public class Reporter extends AbstractBugReporter {
 			Thread.currentThread().interrupt();
 		}
 		int bugsNbr = getBugCollection().getCollection().size();
+		if (observed++ < filesNumber)
+			monitor.setTaskName(
+					"Prescanning... (found "
+						+ bugsNbr
+						+ ", check in "
+						+ getAbbreviatedClassName(clazz)
+						+ ")");
+		else 
 		monitor.setTaskName(
 			"Bug checking... (found "
 				+ bugsNbr
