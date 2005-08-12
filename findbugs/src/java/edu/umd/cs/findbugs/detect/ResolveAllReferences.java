@@ -102,9 +102,9 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector,
 			Constant co = constants[i];
 			if (co instanceof ConstantDouble || co instanceof ConstantLong)
 				i++;
-			if (false && co instanceof ConstantClass) {
+			if (co instanceof ConstantClass) {
 				String ref = getClassName(obj, i).replace('/','.');
-				if (!defined.contains(ref))
+				if (ref.startsWith("java") && !defined.contains(ref))
 					System.out.println(getClassName()
 							+ " makes unresolvable reference to " + ref );
 
