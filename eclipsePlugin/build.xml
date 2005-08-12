@@ -26,7 +26,6 @@
 	<property name="fbeclipse.dir" value="."/>
 
 	<property name="src.dir" value="src"/>
-	<property name="build.dir" value="build"/>
 	<property name="lib.dir" value="lib"/>
 	<property name="dist.dir" value="dist"/>
 	<property name="tools.dir" value="tools"/>
@@ -42,19 +41,22 @@
 
 
 	<target name="init">
-		<mkdir dir="${build.dir}"/>
 		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${bin.dir}"/>
 	</target>
 
 	<target name="clean" description="Clean up temporary files">
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${bin.dir}"/>
 		<delete includeEmptyDirs="true">
 			<fileset dir="${dist.dir}" />
 			<fileset dir="${bin.dir}" />
-			<fileset dir="${build.dir}" />
 		</delete>
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${bin.dir}"/>
 	</target>
 
-	<target name="classes" depends="init" description="Compile java source files">
+	<target name="classes" depends="init,fbjars" description="Compile java source files">
         <mkdir dir="${bin.dir}"/>
         <!-- Compile Java source files. -->
         <javac srcdir="${src.dir}"
@@ -67,40 +69,11 @@
 	</target>
 
 	
-	<target name="convert" depends="init" description="Convert Eclipse-built classes to 1.4 compatible bytecode">
-		<copy todir="${build.dir}">
-			<fileset dir="${bin.dir}"/>
-		</copy> 
-		
-		<!-- Use Retroweaver to weave classes into 1.4-compatible bytecode. -->
-		<java classname="com.rc.retroweaver.Weaver">
-			<arg value="-source"/>
-			<arg value="${build.dir}"/>        
-			<classpath>
-				<fileset dir="lib">
-					<include name="**/*"/>
-				</fileset>
-				<fileset dir=".">
-					<include name="${tools.dir}/retroweaver/retroweaver-ex.jar" />
-				</fileset>
-			</classpath>
-		</java>
-	</target>
 
-	<target name="dist" depends="convert" description="Build a plugin distributable, including the conversion of all classes to 1.4 compatible bytecode">
-
-		<!-- 
-			Workaround: if you include retroweaver-rt.jar in the plugin,
-			and list it in plugin.xml, its classes will not be found by
-			Eclipse at runtime. This extacts the retroweaver runtime classes and
-			includes them directly into the findbugs-plugin.jar (the classes are needed
-			to run retroweaver-converted code).
-		-->
-
-		<unjar src="${tools.dir}/retroweaver/retroweaver-rt.jar" dest="${build.dir}" />
+	<target name="dist" depends="clean,classes" description="Build a plugin distributable, including the conversion of all classes to 1.4 compatible bytecode">
 
 		<jar destfile="${dist.dir}/findbugs-plugin.jar">
-				<fileset dir="${build.dir}" />
+				<fileset dir="${bin.dir}" />
 		</jar>
 		<copy todir="${dist.dir}">
 			<fileset file="bcel.jar" />
@@ -111,6 +84,9 @@
 		</copy>
 		<copy todir="${dist.dir}/plugin">
 			<fileset dir="plugin" />
+		</copy>
+		<copy todir="${dist.dir}/icons">
+			<fileset dir="icons" />
 		</copy>
 	</target>
 
