@@ -108,8 +108,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector,
 				if (ref.startsWith("java") && !defined.contains(ref))
 					bugReporter.reportBug(new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY)
 					        .addClass(obj).addString(ref));
-					System.out.println(getClassName()
-							+ " makes unresolvable reference to " + ref );
+					
 
 			} else if (co instanceof ConstantFieldref) {
 				// do nothing until we handle static fields defined in interfaces
