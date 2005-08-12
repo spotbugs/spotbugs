@@ -89,12 +89,18 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 			|| annotationClass.endsWith(CHECK_FOR_NULL_ANNOTATION_CLASS)
 			|| annotationClass.endsWith(POSSIBLY_NULL_ANNOTATION_CLASS);
 	}
-
+	private static boolean isCheckForNullAnnotation(String annotationClass) {
+		return annotationClass.endsWith(CHECK_FOR_NULL_ANNOTATION_CLASS)
+			|| annotationClass.endsWith(POSSIBLY_NULL_ANNOTATION_CLASS);
+	}
+	private static boolean isNullnessAnnotation(String annotationClass) {
+		return isNonNullAnnotation(annotationClass) || isCheckForNullAnnotation(annotationClass);
+	}
 	@Override
 	public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
-		if (!visitingMethod() || !isNonNullAnnotation(annotationClass))
+		if (!visitingMethod() || !isNullnessAnnotation(annotationClass))
 			return;
-		Boolean property = annotationClass.endsWith(NONNULL_ANNOTATION_CLASS)
+		Boolean property = isNonNullAnnotation(annotationClass)
 				? Boolean.FALSE : Boolean.TRUE;
 		XMethod xmethod = XMethodFactory.createXMethod(this);
 		nullReturnValueDatabase.setProperty(xmethod, property);
@@ -107,7 +113,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 	
 	@Override
 	public void visitParameterAnnotation(int p, String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
-		if (!isNonNullAnnotation(annotationClass))
+		if (!isNullnessAnnotation(annotationClass))
 			return;
 
 		XMethod xmethod = XMethodFactory.createXMethod(this);
@@ -124,7 +130,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 			createdMethodParameterPropertySet.add(xmethod);
 		}
 		
-		NonNullParamPropertyDatabase database = annotationClass.endsWith(NONNULL_ANNOTATION_CLASS)
+		NonNullParamPropertyDatabase database = isNonNullAnnotation(annotationClass)
 				? nonNullDatabase : checkForNullDatabase;
 		
 		NonNullParamProperty property = database.getProperty(xmethod);
