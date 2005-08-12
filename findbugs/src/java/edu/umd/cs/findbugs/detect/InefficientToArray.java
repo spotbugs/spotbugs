@@ -99,7 +99,7 @@ public class InefficientToArray extends BytecodeScanningDetector implements Cons
 			        && (getNameConstantOperand().equals("toArray"))
 			        && (getSigConstantOperand().equals("([Ljava/lang/Object;)[Ljava/lang/Object;"))) {
 				try {
-					String clsName = getClassConstantOperand();
+					String clsName = getDottedClassConstantOperand();
 					JavaClass cls = Repository.lookupClass(clsName);
 					if (cls.implementationOf(collectionClass))
 						bugReporter.reportBug(new BugInstance(this, "ITA_INEFFICIENT_TO_ARRAY", LOW_PRIORITY)

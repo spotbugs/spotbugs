@@ -62,7 +62,7 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, Co
 			SortedSet<String> redundantInfNames = new TreeSet<String>();
 			
 			for (int i = 0; i < interfaceNames.length; i++) {
-				JavaClass inf = Repository.lookupClass(interfaceNames[i]);
+				JavaClass inf = Repository.lookupClass(interfaceNames[i].replace('/','.'));
 				if (superObj.instanceOf(inf))
 					redundantInfNames.add(inf.getClassName());
 			}

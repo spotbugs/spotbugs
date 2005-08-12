@@ -83,7 +83,7 @@ public class XMLFactoryBypass extends BytecodeScanningDetector implements Consta
 		        if (samePackageBase(invokerClsName, newClsName))
 		            return;
 		        		        
-		        JavaClass newCls = Repository.lookupClass(getClassConstantOperand());
+		        JavaClass newCls = Repository.lookupClass(getDottedClassConstantOperand());
 		        
 		        JavaClass superCls = curClass.getSuperClass();
 		        if (superCls.getClassName().equals(newClsName.replace('/', '.')))
