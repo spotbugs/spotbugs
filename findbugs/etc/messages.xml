@@ -4252,7 +4252,7 @@ and the next method is supposed to change the state of the iterator.
   </BugPattern>
   <BugPattern type="VR_UNRESOLVABLE_REFERENCE">
     <ShortDescription>Class makes reference to unresolvable class or method</ShortDescription>
-    <LongDescription>Unresolvable reference to {2} in {1}</LongDescription>
+    <LongDescription>Unresolvable reference to {1} by {0}</LongDescription>
     <Details>
       <![CDATA[
       <p>
