@@ -107,7 +107,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements
 				return;
 			JavaClass we = Lookup.findSuperImplementor(getThisClass(),
 					getMethodName(), "()V", bugReporter);
-			if (!we.getClassName().equals("junit.framework.TestCase")) {
+			if (we != null && !we.getClassName().equals("junit.framework.TestCase")) {
 				// OK, got a bug
 				bugReporter.reportBug(new BugInstance(this, getMethodName()
 						.equals("setUp") ? "IJU_SETUP_NO_SUPER"
