@@ -98,7 +98,7 @@
             hidden="true" />
   <Detector class="edu.umd.cs.findbugs.detect.ResolveAllReferences" 
             speed="fast"
-            reports="TESTING"
+            reports="VR_UNRESOLVABLE_REFERENCE"
             disabled="true"
             hidden="true" />
             
@@ -495,11 +495,14 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
             speed="fast"
             hidden="true" />
                         
+                        
+  <BugPattern abbrev="VR" type="VR_UNRESOLVABLE_REFERENCE" category="CORRECTNESS"
+    experimental="true"/>
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="IL" type="IL_INFINITE_RECURSIVE_LOOP" category="CORRECTNESS" 
-    experimental="true"/>
+/>
   <BugPattern abbrev="IL" type="IL_CONTAINER_ADDED_TO_ITSELF" category="CORRECTNESS" 
     experimental="true"/>
   <BugPattern abbrev="VO" type="VO_VOLATILE_REFERENCE_TO_ARRAY" category="MT_CORRECTNESS" 
@@ -508,9 +511,9 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
     experimental="true"/>
   <BugPattern abbrev="TEST" type="TESTING" category="STYLE" />
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="CORRECTNESS" 
-    experimental="true"/>
+ />
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="CORRECTNESS" 
-    experimental="true"/>
+/>
   <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="CORRECTNESS" />
   <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS" />
   <BugPattern abbrev="CN" type="CN_IDIOM" category="CORRECTNESS" />

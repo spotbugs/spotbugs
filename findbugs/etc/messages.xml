@@ -4250,6 +4250,18 @@ and the next method is supposed to change the state of the iterator.
       ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="VR_UNRESOLVABLE_REFERENCE">
+    <ShortDescription>Class makes reference to unresolvable class or method</ShortDescription>
+    <LongDescription>Unresolvable reference to {2} in {1}</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      This class makes a reference to a class or method that can not be
+	resolved using against the libraries it is being analyzed with.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
 
   <!--
   **********************************************************************
@@ -4361,4 +4373,5 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="USM">Useless Subclass Method</BugCode>
   <BugCode abbrev="CI">Confused Inheritance</BugCode>
   <BugCode abbrev="QBA">Questionable Boolean Assignment</BugCode>
+  <BugCode abbrev="VR">Version compatibility issue</BugCode>
   </MessageCollection>

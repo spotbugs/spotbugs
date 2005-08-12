@@ -17,6 +17,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -105,6 +106,8 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector,
 			if (co instanceof ConstantClass) {
 				String ref = getClassName(obj, i).replace('/','.');
 				if (ref.startsWith("java") && !defined.contains(ref))
+					bugReporter.reportBug(new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY)
+					        .addClass(obj).addString(ref));
 					System.out.println(getClassName()
 							+ " makes unresolvable reference to " + ref );
 
@@ -150,9 +153,9 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector,
 							continue checkConstant;
 						}
 					}
-			
-					System.out.println(getClassName()
-							+ " makes unresolvable reference to '" + ref + "' : " + defined.contains(ref) );
+					bugReporter.reportBug(new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY)
+					        .addClass(obj).addString(ref));
+					
 				} catch (ClassNotFoundException e) {
 					bugReporter.reportMissingClass(e);
 				}

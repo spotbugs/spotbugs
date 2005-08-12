@@ -911,6 +911,17 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		return this;
 	}
 
+	/**
+	 * Add a String annotation.
+	 *
+	 * @param value the String value
+	 * @return this object
+	 */
+	public BugInstance addString(String value) {
+		add(new StringAnnotation(value));
+		return this;
+	}
+
 	/* ----------------------------------------------------------------------
 	 * Source line annotation adders
 	 * ---------------------------------------------------------------------- */

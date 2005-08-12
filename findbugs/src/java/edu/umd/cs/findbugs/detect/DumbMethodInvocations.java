@@ -106,6 +106,7 @@ public class DumbMethodInvocations implements Detector {
 						bugReporter.reportBug(new BugInstance(this,
 								"DMI_HARDCODED_ABSOLUTE_FILENAME", NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
+								.addString(v).describe("FileName")
 								.addSourceLine(
 										SourceLineAnnotation
 												.fromVisitedInstruction(classContext, methodGen,
