@@ -1,3 +1,4 @@
 .fbwarnings
 build
 dist
+local.properties

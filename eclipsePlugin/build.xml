@@ -13,15 +13,33 @@
 <project name="fbeclipse" default="fbjars">
 
 	<property file="build.properties" />
+
+<!-- 
+	The local.properties properties file contains the location of eclipsePlugin.dir 
+
+	This value is likely to be different for each checkout of the plugin,
+	so the local.properties file is not managed by cvs
+	
+-->
+	<property file="local.properties" />
+
 	<property name="fbeclipse.dir" value="."/>
 
+	<property name="src.dir" value="src"/>
 	<property name="build.dir" value="build"/>
 	<property name="lib.dir" value="lib"/>
 	<property name="dist.dir" value="dist"/>
 	<property name="tools.dir" value="tools"/>
-
 	<!-- the binaries/classes, built by eclipse. -->
 	<property name="bin.dir" value="bin" />
+
+	 <path id="plugin.classpath">
+	<fileset dir="${eclipsePlugin.dir}">
+	  <include name="org.eclipse*.jar"/>
+	  </fileset>
+	    </path>
+
+
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
@@ -31,10 +49,24 @@
 	<target name="clean" description="Clean up temporary files">
 		<delete includeEmptyDirs="true">
 			<fileset dir="${dist.dir}" />
+			<fileset dir="${bin.dir}" />
 			<fileset dir="${build.dir}" />
 		</delete>
 	</target>
 
+	<target name="classes" depends="init" description="Compile java source files">
+        <mkdir dir="${bin.dir}"/>
+        <!-- Compile Java source files. -->
+        <javac srcdir="${src.dir}"
+		  destdir="${bin.dir}"
+                source="1.5"
+                target="jsr14"
+                debug="on">
+            <classpath refid="plugin.classpath"/>
+        </javac>
+	</target>
+
+	
 	<target name="convert" depends="init" description="Convert Eclipse-built classes to 1.4 compatible bytecode">
 		<copy todir="${build.dir}">
 			<fileset dir="${bin.dir}"/>
