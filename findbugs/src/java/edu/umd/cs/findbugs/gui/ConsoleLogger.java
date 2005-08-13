@@ -30,7 +30,7 @@ import java.util.*;
 /**
  * @author David Hovemeyer
  */
-public class ConsoleLogger {
+public class ConsoleLogger implements Logger {
 
 	public static final int INFO = 0;
 	public static final int WARNING = 1;

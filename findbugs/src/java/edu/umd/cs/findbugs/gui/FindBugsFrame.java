@@ -3467,7 +3467,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	 * Show About
 	 */
 	void about() {
-		AboutDialog dialog = new AboutDialog(this, true);
+		AboutDialog dialog = new AboutDialog(this, logger, true);
 		dialog.setSize(500, 354);
 		dialog.setLocationRelativeTo(null); // center the dialog
 		dialog.setVisible(true);
@@ -3550,7 +3550,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	/**
 	 * Get the ConsoleLogger.
 	 */
-	public ConsoleLogger getLogger() {
+	public Logger getLogger() {
 		return logger;
 	}
 	

@@ -33,6 +33,7 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.regex.Pattern;
 
+import javax.swing.JFrame;
 import javax.swing.event.HyperlinkEvent;
 
 import edu.umd.cs.findbugs.Version;
@@ -45,14 +46,16 @@ import edu.umd.cs.findbugs.Version;
 public class AboutDialog extends javax.swing.JDialog {
 	private static final long serialVersionUID = 3546076956480385584L;
 
-	private FindBugsFrame parent;
+	private JFrame parent;
+	private Logger logger;
 
 	/**
 	 * Creates new form AboutDialog
 	 */
-	public AboutDialog(FindBugsFrame parent, boolean modal) {
+	public AboutDialog(JFrame parent, Logger l, boolean modal) {
 		super(parent, modal);
 		this.parent = parent;
+		logger = l;
 
 		initComponents();
 
@@ -61,7 +64,7 @@ public class AboutDialog extends javax.swing.JDialog {
 			licenseEditorPane.setPage(getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/License.html"));
 			acknowldgementsEditorPane.setPage(getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/Acknowledgements.html"));
 		} catch (IOException e) {
-			parent.getLogger().logMessage(ConsoleLogger.ERROR, e.toString());
+			logger.logMessage(ConsoleLogger.ERROR, e.toString());
 		}
 
 		setTitle(MessageFormat.format(L10N.getLocalString("dlg.aboutfindbugs_ttl", "About FindBugs {0}"), new Object[]{Version.RELEASE}));

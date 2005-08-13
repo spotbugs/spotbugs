@@ -48,7 +48,7 @@ public class AnalysisRun {
 	private Project project;
 	private FindBugsFrame frame;
 	private String summary;
-	private ConsoleLogger logger;
+	private Logger logger;
 	private FindBugs findBugs;
 	private SwingGUIBugReporter reporter;
 	private HashMap<String, DefaultTreeModel> treeModelMap;
