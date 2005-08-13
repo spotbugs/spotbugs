@@ -37,15 +37,15 @@ public class FindbugsSaveParticipant implements ISaveParticipant {
 	}
 
 	public void prepareToSave(ISaveContext context) throws CoreException {
-		System.out.println("preparing!");
+//		System.out.println("preparing!");
 	}
 
 	public void rollback(ISaveContext context) {
-		System.out.println("rollback!");
+//		System.out.println("rollback!");
 	}
 
 	public void saving(ISaveContext context) throws CoreException {
-		System.out.println("saving, kind == " + context.getKind());
+//		System.out.println("saving, kind == " + context.getKind());
 		
 		switch (context.getKind()) {
 		case ISaveContext.FULL_SAVE:
@@ -67,8 +67,9 @@ public class FindbugsSaveParticipant implements ISaveParticipant {
 	}
 
 	private void saveBugCollection(IProject project) {
-		System.out.println("Saving project " + project.getName());
+		if (project.isAccessible())
 		try {
+//			System.out.println("Saving project " + project.getName());
 			FindbugsPlugin.saveCurrentBugCollection(project, null);
 		} catch (RuntimeException e) {
 			throw e;
