@@ -25,6 +25,8 @@
 
 package edu.umd.cs.findbugs.gui;
 
+import edu.umd.cs.findbugs.BugReporter;
+
 /**
  * A dialog to report errors that occured during analysis.
  *
@@ -32,12 +34,12 @@ package edu.umd.cs.findbugs.gui;
  */
 public class AnalysisErrorDialog extends javax.swing.JDialog {
 	
-	private SwingGUIBugReporter reporter;
+	private BugReporter reporter;
 
 	/**
 	 * Creates new form AnalysisErrorDialog
 	 */
-	public AnalysisErrorDialog(java.awt.Frame parent, boolean modal, SwingGUIBugReporter reporter) {
+	public AnalysisErrorDialog(java.awt.Frame parent, boolean modal, BugReporter reporter) {
 		super(parent, modal);
 		this.reporter = reporter;
 		initComponents();
