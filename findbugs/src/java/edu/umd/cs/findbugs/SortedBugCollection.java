@@ -271,12 +271,10 @@ public class SortedBugCollection extends AbstractBugCollection {
 		return uniqueIdToBugInstanceMap.get(uniqueId);
 	}
 
-	 @Override
 	public long getSequenceNumber() {
 		return sequence;
 	}
 
-	 @Override
 	public void setSequenceNumber(long sequence) {
 		this.sequence = sequence;
 	}
