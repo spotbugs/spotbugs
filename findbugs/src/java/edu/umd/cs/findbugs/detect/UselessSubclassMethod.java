@@ -19,6 +19,10 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
@@ -52,6 +56,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 	private int invokePC;
 	private Type[] argTypes;
 	private int register;
+	private Set<String> interfaceMethods = null;
 	
 	public UselessSubclassMethod(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -62,9 +67,45 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 	}
 	
 	public void visitClassContext(ClassContext classContext) {
-		superclassName = classContext.getJavaClass().getSuperclassName();
+		try {
+			JavaClass cls = classContext.getJavaClass();
+			superclassName = cls.getSuperclassName();
+			JavaClass[] interfaces = null;
+			if (cls.isClass() && ((cls.getAccessFlags() & Constants.ACC_ABSTRACT) != 0)) {
+				interfaces = cls.getAllInterfaces();
+				interfaceMethods = new HashSet<String>();
+				for (int i = 0; i < interfaces.length; i++) {
+					Method[] infMethods = interfaces[i].getMethods();
+					Method m = infMethods[i];
+					interfaceMethods.add(m.getName() + m.getSignature());
+				}
+			}
+		} catch (ClassNotFoundException cnfe) {
+			bugReporter.reportMissingClass(cnfe);
+		}
 		super.visitClassContext(classContext);
 	}
+	
+	@Override
+	public void visitAfter(JavaClass obj) {
+		interfaceMethods = null;
+		super.visitAfter(obj);
+	}
+	
+	public void visitMethod(Method obj) {
+		if ((interfaceMethods != null) && ((obj.getAccessFlags() & Constants.ACC_ABSTRACT) != 0)) {
+			String curDetail = obj.getName() + obj.getSignature();
+			Iterator<String> it = interfaceMethods.iterator();
+			while (it.hasNext()) {
+				String infMethodDetail = it.next();
+				if (curDetail.equals(infMethodDetail))
+					bugReporter.reportBug( new BugInstance( this, "USM_USELESS_ABSTRACT_METHOD", LOW_PRIORITY)
+							.addClassAndMethod(getClassContext().getJavaClass(), obj));
+			}
+		}
+		super.visitMethod(obj);
+	}
+	
 	public void visitCode(Code obj)
 	{
 		try {

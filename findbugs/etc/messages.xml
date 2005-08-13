@@ -4222,7 +4222,20 @@ and the next method is supposed to change the state of the iterator.
     </Details>
   </BugPattern>
 
-  <BugPattern type="CI_CONFUSED_INHERITANCE">
+  <BugPattern type="USM_USELESS_ABSTRACT_METHOD">
+    <ShortDescription>Abstract Method is already defined in implemented interface</ShortDescription>
+    <LongDescription>Abstract Method {1} is already defined in implemented interface</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      This abstract method is already defined in an interface that is implemented by this abstract 
+      class. This method can be removed, as it provides no additional value.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  
+    <BugPattern type="CI_CONFUSED_INHERITANCE">
     <ShortDescription>Class is final but declares protected field</ShortDescription>
     <LongDescription>Class {0} is final but declares protected field {1}</LongDescription>
     <Details>

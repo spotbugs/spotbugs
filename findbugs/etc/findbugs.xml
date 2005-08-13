@@ -466,7 +466,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
 
   <Detector class="edu.umd.cs.findbugs.detect.UselessSubclassMethod"
   			speed="fast"
-  			reports="USM_USELESS_SUBCLASS_METHOD"/>
+  			reports="USM_USELESS_SUBCLASS_METHOD,USM_USELESS_ABSTRACT_METHOD"/>
   			
   <Detector class="edu.umd.cs.findbugs.detect.ConfusedInheritance"
   			speed="fast"
@@ -725,6 +725,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="IMA" type="IMA_INEFFICIENT_MEMBER_ACCESS" category="PERFORMANCE" experimental="true"/>
   <BugPattern abbrev="XFB" type="XFB_XML_FACTORY_BYPASS" category="STYLE" experimental="true"/>
   <BugPattern abbrev="USM" type="USM_USELESS_SUBCLASS_METHOD" category="CORRECTNESS" experimental="true"/>
+  <BugPattern abbrev="USM" type="USM_USELESS_ABSTRACT_METHOD" category="CORRECTNESS" experimental="true"/>
   <BugPattern abbrev="CI" type="CI_CONFUSED_INHERITANCE" category="STYLE"/>
   <BugPattern abbrev="QBA" type="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT" category="CORRECTNESS"/>
 </FindbugsPlugin>
