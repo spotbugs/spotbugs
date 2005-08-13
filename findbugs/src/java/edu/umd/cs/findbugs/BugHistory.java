@@ -246,7 +246,7 @@ public class BugHistory {
 		
 		// Clone the actual BugInstances selected by the set operation.
 		Collection<BugInstance> selected = new LinkedList<BugInstance>();
-		BugCollection.cloneAll(selected, result);
+		AbstractBugCollection.cloneAll(selected, result);
 		
 		// Duplicate the collection from which the results came,
 		// in order to copy all metadata, such as analysis errors,

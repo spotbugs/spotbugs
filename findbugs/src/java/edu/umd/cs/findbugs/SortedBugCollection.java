@@ -44,7 +44,7 @@ import edu.umd.cs.findbugs.model.ClassFeatureSet;
  * @see BugInstance
  * @author David Hovemeyer
  */
-public class SortedBugCollection extends BugCollection {
+public class SortedBugCollection extends AbstractBugCollection {
 	public static class BugInstanceComparator implements Comparator<BugInstance> {
 		public int compare(BugInstance lhs, BugInstance rhs) {
 			ClassAnnotation lca = lhs.getPrimaryClass();
@@ -315,7 +315,7 @@ public class SortedBugCollection extends BugCollection {
 	public SortedBugCollection duplicate() {
 		SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator);
 		
-		BugCollection.cloneAll(dup.bugSet, this.bugSet);
+		AbstractBugCollection.cloneAll(dup.bugSet, this.bugSet);
 		dup.errorList.addAll(this.errorList);
 		dup.missingClassSet.addAll(this.missingClassSet);
 		dup.summaryHTML = this.summaryHTML;
