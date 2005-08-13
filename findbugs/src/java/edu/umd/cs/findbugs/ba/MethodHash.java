@@ -144,6 +144,31 @@ public class MethodHash implements Comparable<MethodHash> {
 	 * @see java.lang.Comparable#compareTo(T)
 	 */
 	public int compareTo(MethodHash other) {
-		return ClassHash.compareHashes(this.hash, other.hash);
+		return MethodHash.compareHashes(this.hash, other.hash);
 	}
+	
+	public static int compareHashes(byte[] a, byte[] b) {
+		int pfxlen = Math.min(a.length, b.length);
+		for (int i = 0; i < pfxlen; ++i) {
+			int cmp = toUnsigned(a[i]) - toUnsigned(b[i]);
+			if (cmp != 0)
+				return cmp;
+		}
+		return a.length - b.length;
+	}
+
+	/**
+	 * Convert a byte to an unsigned int.
+	 * 
+	 * @param b a byte value
+	 * @return the unsigned integer value of the byte
+	 */
+	private static int toUnsigned(byte b) {
+		int value = b & 0x7F;
+		if ((b & 0x80) != 0) {
+			value |= 0x80;
+		}
+		return value;
+	}
+
 }

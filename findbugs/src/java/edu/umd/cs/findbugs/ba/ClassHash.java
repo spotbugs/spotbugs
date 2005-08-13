@@ -298,35 +298,11 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 	 * @see java.lang.Comparable#compareTo(T)
 	 */
 	public int compareTo(ClassHash other) {
-		int cmp = compareHashes(this.classHash, other.classHash);
+		int cmp = MethodHash.compareHashes(this.classHash, other.classHash);
 		//System.out.println(this + " <=> " + other +  ": compareTo=" + cmp);
 		return cmp;
 	}
-	
-	public static int compareHashes(byte[] a, byte[] b) {
-		int pfxlen = Math.min(a.length, b.length);
-		for (int i = 0; i < pfxlen; ++i) {
-			int cmp = toUnsigned(a[i]) - toUnsigned(b[i]);
-			if (cmp != 0)
-				return cmp;
-		}
-		return a.length - b.length;
-	}
-
-	/**
-	 * Convert a byte to an unsigned int.
-	 * 
-	 * @param b a byte value
-	 * @return the unsigned integer value of the byte
-	 */
-	private static int toUnsigned(byte b) {
-		int value = b & 0x7F;
-		if ((b & 0x80) != 0) {
-			value |= 0x80;
-		}
-		return value;
-	}
-	
+		
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
