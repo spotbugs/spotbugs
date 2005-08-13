@@ -96,6 +96,15 @@ public abstract class AbstractBugCollection implements BugCollection {
 	public boolean add(BugInstance bugInstance) {
 		return add(bugInstance, true);
 	}
+	
+	/**
+	 * Add an analysis error.
+	 *
+	 * @param message the error message
+	 */
+	public void addError(String message) {
+		addError(message, null);
+	}
 
 	/**
 	 * Remove a BugInstance from this BugCollection.

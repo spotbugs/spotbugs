@@ -437,7 +437,6 @@ public class SortedBugCollection extends AbstractBugCollection {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugCollection#clearClassFeatures()
 	 */
-	@Override
 	public void clearClassFeatures() {
 		classFeatureSetMap.clear();
 	}
