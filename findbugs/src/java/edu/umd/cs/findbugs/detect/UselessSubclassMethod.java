@@ -77,7 +77,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 				for (int i = 0; i < interfaces.length; i++) {
 					Method[] infMethods = interfaces[i].getMethods();
 					for (int m = 0; m < infMethods.length; m++) {
-						Method meth = infMethods[i];
+						Method meth = infMethods[m];
 						interfaceMethods.add(meth.getName() + meth.getSignature());
 					}
 				}
