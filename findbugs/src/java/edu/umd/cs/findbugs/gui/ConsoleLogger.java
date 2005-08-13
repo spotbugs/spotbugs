@@ -32,23 +32,20 @@ import java.util.*;
  */
 public class ConsoleLogger implements Logger {
 
-	public static final int INFO = 0;
-	public static final int WARNING = 1;
-	public static final int ERROR = 2;
 
-	private FindBugsFrame frame;
+	private LogSync logSync;
 
 	/**
 	 * Creates a new instance of ConsoleLogger
 	 */
-	public ConsoleLogger(FindBugsFrame frame) {
-		this.frame = frame;
+	public ConsoleLogger(LogSync logSync) {
+		this.logSync = logSync;
 	}
 
 	public void logMessage(int severity, String message) {
 		// If this is an error, pass it to the GUI
 		if (severity == ERROR)
-			frame.error(message);
+			logSync.error(message);
 
 		// Format a message for the console window
 		Date date = new Date();
@@ -61,7 +58,7 @@ public class ConsoleLogger implements Logger {
 		else if (severity == WARNING)
 			buf.append(L10N.getLocalString("msg.warning_txt", "WARNING: "));
 		buf.append(message);
-		frame.writeToConsole(buf.toString());
+		logSync.writeToLog(buf.toString());
 	}
 
 }

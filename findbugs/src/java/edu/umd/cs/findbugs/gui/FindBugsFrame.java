@@ -119,7 +119,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  *
  * @author David Hovemeyer
  */
-public class FindBugsFrame extends javax.swing.JFrame {
+public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 	/**
 	 * 
 	 */
@@ -1889,7 +1889,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 
 		try {
 			if (currentAnalysisRun == null) {
-				logger.logMessage(ConsoleLogger.ERROR, "No bugs are loaded!");
+				logger.logMessage(Logger.ERROR, "No bugs are loaded!");
 				return;
 			}
 
@@ -1911,7 +1911,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.logMessage(ConsoleLogger.ERROR, "Could not save bugs: " + e.toString());
+			logger.logMessage(Logger.ERROR, "Could not save bugs: " + e.toString());
 		}
 	}//GEN-LAST:event_saveBugsItemActionPerformed
 
@@ -1943,7 +1943,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.logMessage(ConsoleLogger.ERROR, "Could not load bugs: " + e.toString());
+			logger.logMessage(Logger.ERROR, "Could not load bugs: " + e.toString());
 		}
 
 	}//GEN-LAST:event_loadBugsItemActionPerformed
@@ -1969,7 +1969,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			setProject(project);
 			findBugsButtonActionPerformed(evt);
 		} catch (IOException e) {
-			logger.logMessage(ConsoleLogger.ERROR, "Could not reload project: " + e.getMessage());
+			logger.logMessage(Logger.ERROR, "Could not reload project: " + e.getMessage());
 		}
 
 	}//GEN-LAST:event_reloadProjectItemActionPerformed
@@ -2104,7 +2104,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			rebuildRecentProjectsMenu();
 
 		} catch (IOException e) {
-			logger.logMessage(ConsoleLogger.ERROR, MessageFormat.format( L10N.getLocalString("msg.couldnotopenproject_txt", "Could not open project: {0}"), new Object[]{e.getMessage()}));
+			logger.logMessage(Logger.ERROR, MessageFormat.format( L10N.getLocalString("msg.couldnotopenproject_txt", "Could not open project: {0}"), new Object[]{e.getMessage()}));
 		}
 	}//GEN-LAST:event_openProjectItemActionPerformed
 
@@ -2140,7 +2140,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		Project project = getCurrentProject();
 
 		if (project.getFileCount() == 0) {
-			logger.logMessage(ConsoleLogger.ERROR, MessageFormat.format(L10N.getLocalString("msg.projectnojars_txt", "Project {0} has no Jar files selected"), new Object[]{project}));
+			logger.logMessage(Logger.ERROR, MessageFormat.format(L10N.getLocalString("msg.projectnojars_txt", "Project {0} has no Jar files selected"), new Object[]{project}));
 			return;
 		}
 
@@ -2148,7 +2148,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		sourceTextArea.setText("");
 		AnalysisRun analysisRun = new AnalysisRun(project, this);
 
-		logger.logMessage(ConsoleLogger.INFO, MessageFormat.format(L10N.getLocalString("msg.beginninganalysis_txt", "Beginning analysis of {0}"), new Object[]{project}));
+		logger.logMessage(Logger.INFO, MessageFormat.format(L10N.getLocalString("msg.beginninganalysis_txt", "Beginning analysis of {0}"), new Object[]{project}));
 
 		// Run the analysis!
 		RunAnalysisDialog dialog = new RunAnalysisDialog(this, analysisRun);
@@ -2157,7 +2157,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		dialog.setVisible(true);
 
 		if (dialog.isCompleted()) {
-			logger.logMessage(ConsoleLogger.INFO, MessageFormat.format(L10N.getLocalString("msg.analysiscompleted_txt", "Analysis {0} completed"), new Object[]{project}));
+			logger.logMessage(Logger.INFO, MessageFormat.format(L10N.getLocalString("msg.analysiscompleted_txt", "Analysis {0} completed"), new Object[]{project}));
 
 			// Report any errors that might have occurred during analysis
 			analysisRun.reportAnalysisErrors();
@@ -2179,7 +2179,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 				err.setVisible(true);
 			} else {
 				// Cancelled by user
-				logger.logMessage(ConsoleLogger.INFO, MessageFormat.format(L10N.getLocalString("msg.analysiscancelled_txt", "Analysis of {0} cancelled by user"), new Object[]{project}));
+				logger.logMessage(Logger.INFO, MessageFormat.format(L10N.getLocalString("msg.analysiscancelled_txt", "Analysis of {0} cancelled by user"), new Object[]{project}));
 			}
 		}
 	}//GEN-LAST:event_findBugsButtonActionPerformed
@@ -2334,7 +2334,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			UserPreferences.getUserPreferences().useProject(file.getPath());
 		} catch (IOException e) {
 			UserPreferences.getUserPreferences().removeProject(file.getPath());
-			logger.logMessage(ConsoleLogger.ERROR, MessageFormat.format(L10N.getLocalString("msg.couldnotopenproject_txt", "Could not open project: {0}"), new Object[]{e.getMessage()}));
+			logger.logMessage(Logger.ERROR, MessageFormat.format(L10N.getLocalString("msg.couldnotopenproject_txt", "Could not open project: {0}"), new Object[]{e.getMessage()}));
 		} finally {
 			rebuildRecentProjectsMenu();
 		}
@@ -2827,7 +2827,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			}
 			
 			project.write(file.getPath(), useRelativePaths, file.getParent());
-			logger.logMessage(ConsoleLogger.INFO, "Project saved");
+			logger.logMessage(Logger.INFO, "Project saved");
 			project.setProjectFileName(file.getPath());
 			
 			UserPreferences prefs = UserPreferences.getUserPreferences();
@@ -2839,7 +2839,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 			
 			return true;
 		} catch (IOException e) {
-			logger.logMessage(ConsoleLogger.ERROR, "Could not save project: " + e.toString());
+			logger.logMessage(Logger.ERROR, "Could not save project: " + e.toString());
 			JOptionPane.showMessageDialog(this, "Error saving project: " + e.toString(),
 					"Error", JOptionPane.ERROR_MESSAGE);
 			return false;
@@ -3256,7 +3256,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 					sourceTextArea.setText("No source line information for this bug");
 			} catch (IOException e) {
 				sourceTextArea.setText("Could not find source: " + e.getMessage());
-				logger.logMessage(ConsoleLogger.WARNING, e.getMessage());
+				logger.logMessage(Logger.WARNING, e.getMessage());
 			}
 			
 			currentSourceLineAnnotation = srcLine;
@@ -3299,7 +3299,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 		sourceFinder.setSourceBaseList(project.getSourceDirList());
 		String sourceFile = srcLine.getSourceFile();
 		if (sourceFile == null || sourceFile.equals("<Unknown>")) {
-			logger.logMessage(ConsoleLogger.WARNING, "No source file for class " + srcLine.getClassName());
+			logger.logMessage(Logger.WARNING, "No source file for class " + srcLine.getClassName());
 			return false;
 		}
 		
@@ -3371,7 +3371,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 					sourceTextArea.select(selBegin, selEnd);
 					sourceTextArea.getCaret().setSelectionVisible(true);
 				} catch (javax.swing.text.BadLocationException e) {
-					logger.logMessage(ConsoleLogger.ERROR, e.toString());
+					logger.logMessage(Logger.ERROR, e.toString());
 				}
 			}
 		});
@@ -3548,7 +3548,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	}
 	
 	/**
-	 * Get the ConsoleLogger.
+	 * Get the Logger.
 	 */
 	public Logger getLogger() {
 		return logger;
@@ -3563,8 +3563,10 @@ public class FindBugsFrame extends javax.swing.JFrame {
 	
 	/**
 	 * Write a message to the console window.
+	 * 
+	 * @param message the message to write
 	 */
-	public void writeToConsole(String message) {
+	public void writeToLog(String message) {
 		consoleMessageArea.append(message);
 		consoleMessageArea.append("\n");
 	}
@@ -3863,7 +3865,7 @@ public class FindBugsFrame extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
 	// My variable declarations
-	private ConsoleLogger logger;
+	private Logger logger;
 	private CardLayout viewPanelLayout;
 	private String currentView;
 	private File currentDirectory;
