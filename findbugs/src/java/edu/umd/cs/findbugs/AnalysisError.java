@@ -82,7 +82,7 @@ public class AnalysisError {
 	 * @param stackTraceList the stack trace elements
 	 */
 	public void setStackTrace(String[] stackTraceList) {
-		this.stackTrace = stackTraceList;
+		stackTrace = stackTraceList;
 	}
 
 	/**
