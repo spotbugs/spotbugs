@@ -40,6 +40,7 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.InstructionTargeter;
 import org.apache.bcel.generic.JsrInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.NOP;
 import org.apache.bcel.generic.ReturnInstruction;
 
@@ -716,22 +717,37 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			subroutine.setUnhandledExceptionBlock(etb);
 		}
 	}
-
+	private BitSet peiIsCached = new BitSet(256);
+	private BitSet peiIsTrue = new BitSet(256);
+	private boolean isPEI(InstructionHandle handle) {
+		Instruction ins = handle.getInstruction();
+		short opcode = ins.getOpcode();
+		if (peiIsCached.get(opcode)) 
+			return peiIsTrue.get(opcode);
+		boolean result = calculateIsPEI(handle);
+		if (result) peiIsTrue.set(opcode);
+		peiIsCached.set(opcode);
+		return result;
+	}
+	
 	/**
 	 * Return whether or not the given instruction can throw exceptions.
+	 * Instructions that can only throw errors produce a false result.
 	 *
 	 * @param handle the instruction
 	 * @return true if the instruction can throw an exception, false otherwise
 	 */
-	private boolean isPEI(InstructionHandle handle) {
+	private boolean calculateIsPEI(InstructionHandle handle) {
 		Instruction ins = handle.getInstruction();
 		short opcode = ins.getOpcode();
 
 		if (!(ins instanceof ExceptionThrower))
 			return false;
 
+		if (ins instanceof NEW) return false;
+			
 		// Return instructions can throw exceptions only if the method is synchronized
-		if (ins instanceof ReturnInstruction && !methodGen.isSynchronized())
+		if (ins instanceof ReturnInstruction)
 			return false;
 
 		// We're really not interested in exceptions that could hypothetically be
@@ -745,7 +761,10 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		        (opcode == Constants.LDC || opcode == Constants.LDC_W || opcode == Constants.LDC2_W))
 			return false;
 
-		return true;
+		Class [] throwers = ((ExceptionThrower)ins).getExceptions();
+		for(Class c : throwers) 
+			if (Exception.class.isAssignableFrom(c)) return true;
+		return false;
 	}
 
 	/**

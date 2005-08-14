@@ -29,10 +29,15 @@ import java.util.Set;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionTargeter;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.NEW;
+import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -654,14 +659,28 @@ public class FindNullDeref
 		if (infeasibleEdge != null) {
 			if (DEBUG) System.out.println("Check if " + redundantBranch + " creates dead code");
 			BasicBlock target = infeasibleEdge.getTarget();
-			
+
+			if (DEBUG) System.out.println("Target block is  " + (target.isExceptionThrower() ? " exception thrower" : " not exception thrower"));
 			// If the block is empty, it probably doesn't matter that it was killed.
 			// FIXME: really, we should crawl the immediately reachable blocks
 			// starting at the target block to see if any of them are dead and nonempty.
 			boolean empty =  !target.isExceptionThrower() &&
 				(target.isEmpty() || isGoto(target.getFirstInstruction().getInstruction()));
 			if (DEBUG) System.out.println("Target block is  " + (empty ? "empty" : "not empty"));
-			
+			if (!empty) {
+				InstructionHandle ins = target.getFirstInstruction();
+				int maxCount = 7;
+				while (ins != null) {
+					if (maxCount-- <= 0) break;
+					Instruction i = ins.getInstruction();
+					if (i instanceof ATHROW) {
+						empty = true;
+						break;
+					}
+					if (i instanceof InstructionTargeter) break;
+					ins = ins.getNext();
+				}
+			}
 			if (!empty && !previouslyDeadBlocks.get(target.getId())) {
 				if (DEBUG) System.out.println("target was alive previously");
 				// Block was not dead before the null pointer analysis.
@@ -670,6 +689,19 @@ public class FindNullDeref
 				IsNullValueFrame invFrame = invDataflow.getStartFact(target);
 				createdDeadCode = invFrame.isTop();
 				if (DEBUG) System.out.println("target is now " + (createdDeadCode ? "dead" : "alive"));
+				if (DEBUG) {
+					System.out.println("Target: ");
+					System.out.println(target);
+					System.out.println("Target2: " + target.isEmpty());
+					
+					InstructionHandle ins = target.getFirstInstruction();
+					int maxCount = 6;
+					while (ins != null) {
+						if (maxCount-- <= 0) break;
+						System.out.println(ins.getInstruction());
+						ins = ins.getNext();
+					}
+				}
 			}
 		}
 		
@@ -693,7 +725,7 @@ public class FindNullDeref
 		}
 		
 		if (wouldHaveBeenAKaboom) {
-			priority = HIGH_PRIORITY;
+			priority = createdDeadCode ? HIGH_PRIORITY : NORMAL_PRIORITY;
 			warning = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE";
 			if (locationOfKaBoom == null) throw new NullPointerException("location of KaBoom is null");
 		} else if (isChecked) {
