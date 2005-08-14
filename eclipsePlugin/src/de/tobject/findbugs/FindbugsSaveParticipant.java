@@ -33,7 +33,7 @@ import org.eclipse.core.runtime.CoreException;
 public class FindbugsSaveParticipant implements ISaveParticipant {
 
 	public void doneSaving(ISaveContext context) {
-		System.out.println("done saving!");
+//		System.out.println("done saving!");
 	}
 
 	public void prepareToSave(ISaveContext context) throws CoreException {
