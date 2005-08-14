@@ -21,6 +21,12 @@ public class RedundantNullCheck {
 		}
 	}
 
+   public int baz(String s) {
+	if (s.hashCode() > 0) return s.hashCode();
+	if (s == null) throw new NullPointerException("Foo");
+    return -s.hashCode();
+	}
+
 	public int bar(String s) {
 		try {
 		if (s == null)
