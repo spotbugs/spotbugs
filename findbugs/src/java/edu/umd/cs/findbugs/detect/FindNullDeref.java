@@ -38,6 +38,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -677,7 +678,8 @@ public class FindNullDeref
 						empty = true;
 						break;
 					}
-					if (i instanceof InstructionTargeter) break;
+					if (i instanceof InstructionTargeter 
+							|| i instanceof ReturnInstruction) break;
 					ins = ins.getNext();
 				}
 			}
@@ -725,15 +727,15 @@ public class FindNullDeref
 		}
 		
 		if (wouldHaveBeenAKaboom) {
-			priority = createdDeadCode ? HIGH_PRIORITY : NORMAL_PRIORITY;
+			priority = HIGH_PRIORITY;
 			warning = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE";
 			if (locationOfKaBoom == null) throw new NullPointerException("location of KaBoom is null");
 		} else if (isChecked) {
 			// A non-kaboom redundant null check is medium priority only
 			// if it creates dead code.
-			priority = createdDeadCode ? NORMAL_PRIORITY : LOW_PRIORITY;
+			priority = NORMAL_PRIORITY;
 		}
-
+		if (createdDeadCode) priority++;
 		if (DEBUG) {
 			System.out.println("RCN" + priority + " " 
 					+ redundantBranch.firstValue + " =? "
