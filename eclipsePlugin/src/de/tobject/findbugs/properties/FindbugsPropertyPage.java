@@ -149,6 +149,11 @@ public class FindbugsPropertyPage extends PropertyPage {
 		minPriorityCombo.add(ProjectFilterSettings.LOW_PRIORITY);
 		minPriorityCombo.setText(origUserPreferences.getFilterSettings().getMinPriority());
 		minPriorityCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		minPriorityCombo.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				currentUserPreferences.setUserDetectorThreshold(minPriorityCombo.getText());
+			}
+		});
 		
 		/*
 		chkDisplayFalseWarnings = new Button(prioGroup, SWT.CHECK);
