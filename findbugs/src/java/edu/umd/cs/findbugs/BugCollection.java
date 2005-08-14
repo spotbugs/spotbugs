@@ -86,6 +86,11 @@ public interface BugCollection
 	public long getSequenceNumber();
 
 	/**
+	 * Clear all AppVersions representing previously-analyzed versions
+	 * of the application.
+	 */
+	public abstract void clearAppVersions();
+	/**
 	 * Add an AppVersion representing a version of the analyzed application.
 	 * 
 	 * @param appVersion the AppVersion
