@@ -356,6 +356,14 @@ public class UserPreferences implements Cloneable {
 		filterSettings.setMinPriority(minPriority);
 	}
 	
+	/**
+	 * Set the detector threshold  (min severity to report a warning). 
+	 * 
+	 * @param threshold the detector threshold
+	 */
+	public void setUserDetectorThreshold(String threshold) {
+		filterSettings.setMinPriority(threshold);
+	}
 	//@Override
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
