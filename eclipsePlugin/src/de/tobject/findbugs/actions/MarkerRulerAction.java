@@ -65,7 +65,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 	ITextEditor editor;
 
 	/** Contains the markers of the currently selected line in the ruler margin. */
-	ArrayList markers = new ArrayList();
+	ArrayList<IMarker> markers = new ArrayList<IMarker>();
 
 	/**
 	 * The action sent to this delegate. Enable and disable it based upon whether 
@@ -186,7 +186,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 	 */
 	public void update() {
 		if (markers.size() > 0) {
-			IMarker marker = (IMarker) markers.get(0);
+			IMarker marker = markers.get(0);
 			DetailsView.showMarker(marker);
 		}
 	}

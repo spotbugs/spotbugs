@@ -65,9 +65,9 @@ public class ResourceDeltaFilesCollector extends AbstractFilesCollector {
 	 * @see #getFiles(IContainer)
 	 * @return Collection A list of all files to be built.
 	 */
-	private Collection collectFiles(IResourceDelta delta) {
-		ArrayList files = new ArrayList(0);
-		ArrayList folders = new ArrayList(0);
+	private Collection<IResource> collectFiles(IResourceDelta delta) {
+		ArrayList<IResource> files = new ArrayList<IResource>(0);
+		ArrayList<IResourceDelta> folders = new ArrayList<IResourceDelta>(0);
 		IResourceDelta affectedChildren[] = delta.getAffectedChildren();
 		for (int i = 0; i < affectedChildren.length; i++) {
 			IResourceDelta childDelta = affectedChildren[i];
@@ -93,9 +93,9 @@ public class ResourceDeltaFilesCollector extends AbstractFilesCollector {
 			}
 		}
 		
-		for (Iterator iter = folders.iterator();
-			iter.hasNext();
-			files.addAll(collectFiles((IResourceDelta) iter.next())));
+		for (IResourceDelta resourceDelta2 : folders)
+			files.addAll(collectFiles(resourceDelta2));
+			
 		return files;
 	}
 	

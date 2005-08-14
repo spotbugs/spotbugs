@@ -67,8 +67,8 @@ public class NonRecursiveContainerFilesCollector extends AbstractFilesCollector 
 	 * @see #getFiles(IResourceDelta)
 	 * @return Collection A list of all files to be built.
 	 */
-	private Collection collectFiles(IContainer container) throws CoreException {
-		ArrayList files = new ArrayList(0);
+	private Collection<IResource> collectFiles(IContainer container) throws CoreException {
+		ArrayList<IResource> files = new ArrayList<IResource>(0);
 		IResource children[] = container.members();
 		for (int i = 0; i < children.length; i++) {
 			IResource child = children[i];

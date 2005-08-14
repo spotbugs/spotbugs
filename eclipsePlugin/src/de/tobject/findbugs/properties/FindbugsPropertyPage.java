@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,8 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.preference.IPreferencePage;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -99,7 +102,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private UserPreferences currentUserPreferences;
 	private IProject project;
 	protected TableViewer availableFactoriesTableViewer;
-	protected Map factoriesToBugAbbrev;
+	protected Map<DetectorFactory, String> factoriesToBugAbbrev;
 	private Button restoreDefaultsButton;
 
 	/**
@@ -258,10 +261,10 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 * @param project       the project being configured
 	 */
 	private void buildBugCategoryList(Composite categoryGroup, final IProject project) {
-		List bugCategoryList = new LinkedList(I18N.instance().getBugCategories());
-		List checkBoxList = new LinkedList();
-		for (Iterator i = bugCategoryList.iterator(); i.hasNext(); ) {
-			String category = (String) i.next();
+		List<String> bugCategoryList = new LinkedList<String>(I18N.instance().getBugCategories());
+		List<Button> checkBoxList = new LinkedList<Button>();
+		for (Iterator<String> i = bugCategoryList.iterator(); i.hasNext(); ) {
+			String category = i.next();
 			Button checkBox = new Button(categoryGroup, SWT.CHECK);
 			checkBox.setText(I18N.instance().getBugCategoryDescription(category));
 			checkBox.setSelection(origUserPreferences.getFilterSettings().containsCategory(category));
@@ -287,8 +290,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 			checkBoxList.add(checkBox);
 		}
 		
-		this.chkEnableBugCategoryList = (Button[]) checkBoxList.toArray(new Button[checkBoxList.size()]);
-		this.bugCategoryList = (String[]) bugCategoryList.toArray(new String[bugCategoryList.size()]);
+		this.chkEnableBugCategoryList = checkBoxList.toArray(new Button[checkBoxList.size()]);
+		this.bugCategoryList =  bugCategoryList.toArray(new String[bugCategoryList.size()]);
 	}
 
 	/**
@@ -405,8 +408,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 * Populate the rule table
 	 */
 	private void populateAvailableRulesTable(IProject project) {
-		List allAvailableList = new ArrayList();
-		factoriesToBugAbbrev = new HashMap();
+		List<DetectorFactory> allAvailableList = new ArrayList<DetectorFactory>();
+		factoriesToBugAbbrev = new HashMap<DetectorFactory, String>();
 		Iterator iterator =
 			DetectorFactoryCollection.instance().factoryIterator();
 		while (iterator.hasNext()) {
@@ -454,7 +457,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	}
 
 	protected String getBugsAbbreviation(DetectorFactory factory) {
-		String abbr = (String) factoriesToBugAbbrev.get(factory);
+		String abbr =  factoriesToBugAbbrev.get(factory);
 		if (abbr == null) {
 			abbr = createBugsAbbreviation(factory);
 		}
@@ -466,14 +469,11 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 	protected String createBugsAbbreviation(DetectorFactory factory) {
 		StringBuffer sb = new StringBuffer();
-		Collection patterns = factory.getReportedBugPatterns();
-		ArrayList abbrs = new ArrayList();
-		for (Iterator iter = patterns.iterator(); iter.hasNext();) {
-			BugPattern pattern = (BugPattern) iter.next();
+		Collection<BugPattern> patterns = factory.getReportedBugPatterns();
+		LinkedHashSet<String> abbrs = new LinkedHashSet<String>();
+		for (Iterator<BugPattern> iter = patterns.iterator(); iter.hasNext();) {
+			BugPattern pattern = iter.next();
 			String abbr = pattern.getAbbrev();
-			if (abbrs.contains(abbr)) {
-				continue;
-			}
 			abbrs.add(abbr);
 		}
 		for (Iterator iter = abbrs.iterator(); iter.hasNext();) {

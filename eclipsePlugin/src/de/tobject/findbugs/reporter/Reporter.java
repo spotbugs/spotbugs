@@ -68,7 +68,7 @@ public class Reporter extends AbstractBugReporter {
 	private SortedBugCollection bugCollection;
 	
 	/** Set of names of analyzed classes. */
-	private Set analyzedClassNameSet;
+	private Set<String> analyzedClassNameSet;
 	
 	/** Current user preferences for the project. */
 	private UserPreferences userPrefs;
@@ -91,7 +91,7 @@ public class Reporter extends AbstractBugReporter {
 		this.findBugsProject = findBugsProject;
 		this.project = project;
 		this.bugCollection = new SortedBugCollection();
-		this.analyzedClassNameSet = new HashSet();
+		this.analyzedClassNameSet = new HashSet<String>();
 		try {
 			this.userPrefs = FindbugsPlugin.getUserPreferences(project);
 		} catch (CoreException e) {
@@ -143,7 +143,7 @@ public class Reporter extends AbstractBugReporter {
 	 * 
 	 * @return Set containing names of all analyzed classes
 	 */
-	public Set getAnalyzedClassNames() {
+	public Set<String> getAnalyzedClassNames() {
 		return analyzedClassNameSet;
 	}
 	

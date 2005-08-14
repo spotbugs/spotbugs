@@ -71,14 +71,12 @@ public class ProjectUtilities {
 		if (project.hasNature(FindbugsPlugin.NATURE_ID)) {
 			IProjectDescription description = project.getDescription();
 			String[] prevNatures = description.getNatureIds();
-			ArrayList newNaturesList = new ArrayList();
+			ArrayList<String> newNaturesList = new ArrayList<String>();
 			for (int i = 0; i < prevNatures.length; i++)
 				if (!prevNatures[i].equals(FindbugsPlugin.NATURE_ID)) {
 					newNaturesList.add(prevNatures[i]);
 				}
-			String[] newNatures = new String[newNaturesList.size()];
-			for (int i = 0; i < newNaturesList.size(); i++)
-				newNatures[i] = (String) newNaturesList.get(i);
+			String[] newNatures = newNaturesList.toArray(new String[newNaturesList.size()]);
 			description.setNatureIds(newNatures);
 			project.setDescription(description, monitor);
 		}

@@ -106,7 +106,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 			AbstractFilesCollector collector = FilesCollectorFactory.getFilesCollector((IContainer)resource);
 			return collector.getFiles();
 		}else{
-			Collection result = new ArrayList();
+			Collection<IResource> result = new ArrayList<IResource>();
 			result.add(resource);			
 			// For a single file resource, if we have a java file, attempt to add its corresponding class file,
 			// and vice versa, so that the analysis can proceed.
