@@ -31,13 +31,14 @@ public class AnalysisLocal<T> {
 //		return  t.analysisLocals;
 //	}
 	
-	protected Map<Object,Object> getMap() {
-		return AnalysisContext.currentAnalysisContext().analysisLocals;
+	protected Map <AnalysisLocal<T>, T> getMap() {
+		Map m = AnalysisContext.currentAnalysisContext().analysisLocals;
+		return m;
 	}
 	
 	public T get() {
-		//Map<AnalysisLocal<T>, T> m = getMap();
-		Map<Object,Object> m = getMap();
+		Map<AnalysisLocal<T>, T> m = getMap();
+
 		if (m.containsKey(this)) {
 			return (T) m.get(this);
 		}
@@ -52,11 +53,11 @@ public class AnalysisLocal<T> {
 		}
 	}
 	public  void set(T value) {
-		Map<Object, Object> m = getMap();
+		Map<AnalysisLocal<T>, T> m = getMap();
 		m.put(this, value);
 	}
 	public  void  remove() {
-		Map<Object, Object> m = getMap();
+		Map<AnalysisLocal<T>, T> m = getMap();
 		m.remove(this);
 	}
 }
