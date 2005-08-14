@@ -85,7 +85,6 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 public class FindbugsPropertyPage extends PropertyPage {
 
 	private static final String COLUMN_PROPS_DESCRIPTION = "description"; //$NON-NLS-1$
-	private static final String COLUMN_PROPS_SPEED = "speed"; //$NON-NLS-1$
 	private static final String COLUMN_PROPS_NAME = "name"; //$NON-NLS-1$
 	private static final String COLUMN_PROPS_BUG_ABBREV = "bug codes"; //$NON-NLS-1$
 	private boolean initialEnabled;
@@ -178,6 +177,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		tableLayoutData.horizontalAlignment = GridData.FILL;
 		tableLayoutData.verticalAlignment = GridData.FILL;
 		tableLayoutData.heightHint = 50;
+		tableLayoutData.widthHint = 590;
 		availableRulesTable.setLayoutData(tableLayoutData);
 
 		addSeparator(composite);
@@ -339,21 +339,13 @@ public class FindbugsPropertyPage extends PropertyPage {
 		factoryNameColumn.setWidth(200);
 		addColumnSelectionListener(sorter, factoryNameColumn, ++currentColumnIdx);
 
-		TableColumn factorySpeedColumn =
-			new TableColumn(factoriesTable, SWT.LEFT);
-		factorySpeedColumn.setResizable(true);
-		factorySpeedColumn.setText(getMessage("Detector speed"));
-		factorySpeedColumn.setWidth(90);
-		addColumnSelectionListener(
-			sorter,
-			factorySpeedColumn,
-			++currentColumnIdx);
+		
 
 		TableColumn bugsDescriptionColumn =
-			new TableColumn(factoriesTable, SWT.LEFT);
+			new TableColumn(factoriesTable, SWT.FILL);
 		bugsDescriptionColumn.setResizable(true);
 		bugsDescriptionColumn.setText(getMessage("Detector description"));
-		bugsDescriptionColumn.setWidth(200);
+		bugsDescriptionColumn.setWidth(280);
 
 		factoriesTable.setLinesVisible(true);
 		factoriesTable.setHeaderVisible(true);
@@ -366,7 +358,6 @@ public class FindbugsPropertyPage extends PropertyPage {
 			new String[] {
 				COLUMN_PROPS_BUG_ABBREV,
 				COLUMN_PROPS_NAME,
-				COLUMN_PROPS_SPEED,
 				COLUMN_PROPS_DESCRIPTION });
 
 		availableFactoriesTableViewer.setSorter(sorter);
@@ -708,17 +699,11 @@ public class FindbugsPropertyPage extends PropertyPage {
 					s2 = page.getBugsAbbreviation(factory2);
 					break;
 				case 1 :
+				default :
 					s1 = "" + factory1.getShortName(); //$NON-NLS-1$
 					s2 = factory2.getShortName();
 					break;
-				case 2 :
-					s1 = "" + factory1.getSpeed(); //$NON-NLS-1$
-					s2 = factory2.getSpeed();
-					break;
-				default :
-					s1 = "" + factory1.getSpeed(); //$NON-NLS-1$
-					s2 = factory2.getSpeed();
-					break;
+				
 			}
 
 			result = s1.compareTo(s2);
@@ -727,14 +712,13 @@ public class FindbugsPropertyPage extends PropertyPage {
 			if (result == 0) {
 				switch (getSortColumnIndex()) {
 					case 0 :
-						// fall througth
-					case 1 :
-						s1 = "" + factory1.getSpeed(); //$NON-NLS-1$
-						s2 = factory2.getSpeed();
-						break;
-					case 2 :
 						s1 = "" + factory1.getShortName(); //$NON-NLS-1$
 						s2 = factory2.getShortName();
+						break;
+					case 1 :
+					default :
+						s1 = page.getBugsAbbreviation(factory1);
+						s2 = page.getBugsAbbreviation(factory2);
 						break;
 				}
 				result = s1.compareTo(s2);
@@ -748,8 +732,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 		public boolean isSorterProperty(Object element, String property) {
 			return property.equals(COLUMN_PROPS_NAME)
-				|| property.equals(COLUMN_PROPS_BUG_ABBREV)
-				|| property.equals(COLUMN_PROPS_SPEED);
+				|| property.equals(COLUMN_PROPS_BUG_ABBREV);
 		}
 
 		/**
@@ -830,8 +813,6 @@ public class FindbugsPropertyPage extends PropertyPage {
 				case 1 :
 					return factory.getShortName();
 				case 2 :
-					return factory.getSpeed();
-				case 3 :
 					StringBuffer sb = new StringBuffer();
 					Collection patterns = factory.getReportedBugPatterns();
 					for (Iterator iter = patterns.iterator(); iter.hasNext();) {
