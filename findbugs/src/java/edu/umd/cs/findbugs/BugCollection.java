@@ -129,6 +129,15 @@ public interface BugCollection
 	public boolean add(BugInstance bugInstance, boolean updateActiveTime);
 
 	/**
+	 * Look up a BugInstance by its unique id.
+	 * 
+	 * @param uniqueId the BugInstance's unique id.
+	 * @return the BugInstance with the given unique id,
+	 *         or null if there is no such BugInstance
+	 */
+	public BugInstance lookupFromUniqueId(String uniqueId);
+	
+	/**
 	 * Add an analysis error.
 	 *
 	 * @param message the error message
