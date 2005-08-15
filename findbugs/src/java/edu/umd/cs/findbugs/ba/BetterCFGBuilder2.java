@@ -29,19 +29,26 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ExceptionThrower;
+import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.INSTANCEOF;
+import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.InstructionTargeter;
 import org.apache.bcel.generic.JsrInstruction;
+import org.apache.bcel.generic.MONITORENTER;
+import org.apache.bcel.generic.MONITOREXIT;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.NOP;
+import org.apache.bcel.generic.PUTSTATIC;
 import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -717,19 +724,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			subroutine.setUnhandledExceptionBlock(etb);
 		}
 	}
-	private BitSet peiIsCached = new BitSet(256);
-	private BitSet peiIsTrue = new BitSet(256);
-	private boolean isPEI(InstructionHandle handle) {
-		Instruction ins = handle.getInstruction();
-		short opcode = ins.getOpcode();
-		if (peiIsCached.get(opcode)) 
-			return peiIsTrue.get(opcode);
-		boolean result = calculateIsPEI(handle);
-		if (result) peiIsTrue.set(opcode);
-		peiIsCached.set(opcode);
-		return result;
-	}
-	
+
 	/**
 	 * Return whether or not the given instruction can throw exceptions.
 	 * Instructions that can only throw errors produce a false result.
@@ -737,36 +732,24 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 	 * @param handle the instruction
 	 * @return true if the instruction can throw an exception, false otherwise
 	 */
-	private boolean calculateIsPEI(InstructionHandle handle) {
+	private boolean isPEI(InstructionHandle handle) {
 		Instruction ins = handle.getInstruction();
-		short opcode = ins.getOpcode();
 
 		if (!(ins instanceof ExceptionThrower))
 			return false;
 
 		if (ins instanceof NEW) return false;
-			
-		// Return instructions can throw exceptions only if the method is synchronized
-		if (ins instanceof ReturnInstruction)
-			return false;
-
-		// We're really not interested in exceptions that could hypothetically be
-		// thrown by static field accesses.
-		if (NO_STATIC_FIELD_EXCEPTIONS &&
-		        (opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC))
-			return false;
-
-		// Exceptions from LDC instructions seem a bit far fetched as well.
-		if (NO_LOAD_CONSTANT_EXCEPTIONS &&
-		        (opcode == Constants.LDC || opcode == Constants.LDC_W || opcode == Constants.LDC2_W))
-			return false;
-
-		Class [] throwers = ((ExceptionThrower)ins).getExceptions();
-		for(Class c : throwers) 
-			if (Exception.class.isAssignableFrom(c)) return true;
-		return false;
+		if (ins instanceof ATHROW) return false;
+		if (ins instanceof GETSTATIC) return false;
+		if (ins instanceof PUTSTATIC) return false;
+		if (ins instanceof ReturnInstruction) return false;
+		if (ins instanceof INSTANCEOF) return false;
+		if (ins instanceof INVOKESTATIC) return false;
+		if (ins instanceof MONITORENTER) return false;
+		if (ins instanceof MONITOREXIT) return false;
+		return true;
+	
 	}
-
 	/**
 	 * Determine whether or not the given instruction is a control flow merge.
 	 *
