@@ -1,0 +1,14 @@
+#! /bin/sh
+
+# General purpose utility for filtering/transforming
+# bug collection and/or historical bug collections
+
+@GET_FBHOME@
+
+@SET_DEFAULT_JAVA@
+
+fb_mainclass=edu.umd.cs.findbugs.workflow.Filter
+
+@WRAP_JAVA@
+
+# vim:ts=3

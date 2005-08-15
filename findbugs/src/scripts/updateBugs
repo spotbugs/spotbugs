@@ -1,0 +1,14 @@
+#! /bin/sh
+
+# Merge a historical bug collection and a bug collection, producing an updated
+# historical bug collection
+
+@GET_FBHOME@
+
+@SET_DEFAULT_JAVA@
+
+fb_mainclass=edu.umd.cs.findbugs.workflow.Update
+
+@WRAP_JAVA@
+
+# vim:ts=3

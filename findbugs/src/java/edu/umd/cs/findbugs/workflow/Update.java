@@ -1,0 +1,248 @@
+/*
+ * FindBugs - Find bugs in Java programs
+ * Copyright (C) 2003-2005 William Pugh
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+package edu.umd.cs.findbugs.workflow;
+
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.TreeMap;
+
+import org.dom4j.DocumentException;
+
+import edu.umd.cs.findbugs.AppVersion;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.SloppyBugComparator;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.VersionInsensitiveBugComparator;
+import edu.umd.cs.findbugs.config.CommandLine;
+/**
+ * Java main application to compute update a historical bug collection
+ * with results from another build/analysis. 
+ * 
+ * @author William Pugh
+ */
+
+public class Update {
+	static private BugCollection origCollection, newCollection;
+
+	static private BugCollection resultCollection;
+
+	private static HashMap<BugInstance, BugInstance> mapFromNewToOldBug = new HashMap<BugInstance, BugInstance>();
+
+	private static HashSet<BugInstance> matchedOldBugs = new HashSet<BugInstance>();
+
+	static class UpdateCommandLine extends CommandLine {
+		String revisionName;
+		UpdateCommandLine() {
+			addOption("-revision", "name", "provide name for new version");
+		}
+
+		@Override
+		protected void handleOption(String option, String optionExtraPart) throws IOException {
+			throw new IllegalArgumentException("no option " + option);
+			
+		}
+
+		@Override
+		protected void handleOptionWithArgument(String option, String argument) throws IOException {
+			if (option.equals("-revision"))
+				revisionName = argument;
+			
+		}
+
+			
+	}
+	public static void main(String[] args) throws IOException, DocumentException {
+		
+		DetectorFactoryCollection.instance();
+		UpdateCommandLine commandLine = new UpdateCommandLine();
+		int argCount = commandLine.parse(args, 2, 3, "Usage: " + Update.class.getName()
+				+ " [options] <historyData> <newData> [<mergedData>] ");
+
+
+		String origFileName = args[argCount++];
+		String newFileName = args[argCount++];
+	
+
+		origCollection = new SortedBugCollection(
+				SortedBugCollection.MultiversionBugInstanceComparator.instance);
+		BugCollection oCollection = origCollection;
+		origCollection.readXML(origFileName, new Project());
+
+		for (BugInstance bug : origCollection.getCollection())
+			if (bug.getLastVersion() >= 0 && bug.getFirstVersion() > bug.getLastVersion())
+				throw new IllegalStateException("Illegal Version range: " + bug.getFirstVersion()
+						+ ".." + bug.getLastVersion());
+		Project currentProject = new Project();
+		newCollection = new SortedBugCollection(
+				SortedBugCollection.MultiversionBugInstanceComparator.instance);
+		BugCollection nCollection = newCollection;
+
+		newCollection.readXML(newFileName, currentProject);
+		
+		if (commandLine.revisionName != null)
+			newCollection.setReleaseName(commandLine.revisionName);
+		System.out.println(origCollection.getCollection().size() + " orig bugs, "
+				+ newCollection.getCollection().size() + " new bugs");
+
+		resultCollection = newCollection.createEmptyCollectionWithMetadata();
+		// Previous sequence number
+		long lastSequence = origCollection.getSequenceNumber();
+		// The AppVersion history is retained from the orig collection,
+		// adding an entry for the sequence/timestamp of the current state
+		// of the orig collection.
+		resultCollection.clearAppVersions();
+		for (Iterator<AppVersion> i = origCollection.appVersionIterator(); i.hasNext();) {
+			AppVersion appVersion = i.next();
+			resultCollection.addAppVersion((AppVersion) appVersion.clone());
+		}
+		AppVersion origCollectionVersion = new AppVersion(lastSequence);
+		origCollectionVersion.setTimestamp(origCollection.getCurrentAppVersion().getSequenceNumber());
+		origCollectionVersion.setReleaseName(origCollection.getCurrentAppVersion().getReleaseName());
+		resultCollection.addAppVersion(origCollectionVersion);
+
+		// We assign a sequence number to the new collection as one greater than
+		// the
+		// original collection.
+		long currentSequence = origCollection.getSequenceNumber() + 1;
+		resultCollection.setSequenceNumber(currentSequence);
+
+		matchBugs(new SortedBugCollection.BugInstanceComparator());
+		matchBugs(VersionInsensitiveBugComparator.instance());
+		matchBugs(new SloppyBugComparator());
+
+		int oldBugs = 0;
+		int newlyDeadBugs = 0;
+		int persistantBugs = 0;
+		int addedBugs = 0;
+		int addedInNewCode = 0;
+		int deadBugInDeadCode = 0;
+
+		// Copy unmatched bugs
+		for (BugInstance bug : origCollection.getCollection())
+			if (!matchedOldBugs.contains(bug)) {
+				if (bug.getLastVersion() == -1)
+					newlyDeadBugs++;
+				else
+					oldBugs++;
+				BugInstance newBug = (BugInstance) bug.clone();
+
+				if (newBug.getLastVersion() == -1) {
+					newBug.setLastVersion(lastSequence);
+					ClassAnnotation classBugFoundIn = bug.getPrimaryClass();
+					String className = classBugFoundIn.getClassName();
+					if (newCollection.getProjectStats().getClassStats(className) != null)
+						newBug.setRemovedByChangeOfPersistingClass(true);
+					else
+						deadBugInDeadCode++;
+				}
+
+				if (newBug.getFirstVersion() > newBug.getLastVersion())
+					throw new IllegalStateException("Illegal Version range: "
+							+ newBug.getFirstVersion() + ".." + newBug.getLastVersion());
+				resultCollection.add(newBug, false);
+			}
+		// Copy matched bugs
+		for (BugInstance bug : newCollection.getCollection()) {
+			BugInstance newBug = (BugInstance) bug.clone();
+			if (mapFromNewToOldBug.containsKey(bug)) {
+				BugInstance origWarning = mapFromNewToOldBug.get(bug);
+				assert origWarning.getLastVersion() == -1;
+
+				newBug.setUniqueId(origWarning.getUniqueId());
+				copyBugHistory(origWarning, newBug);
+				String annotation = newBug.getAnnotationText();
+				if (annotation.length() == 0)
+					newBug.setAnnotationText(origWarning.getAnnotationText());
+
+				persistantBugs++;
+			} else {
+				newBug.setFirstVersion(lastSequence + 1);
+				addedBugs++;
+
+				ClassAnnotation classBugFoundIn = bug.getPrimaryClass();
+
+				String className = classBugFoundIn.getClassName();
+				if (origCollection.getProjectStats().getClassStats(className) != null) {
+					newBug.setIntroducedByChangeOfExistingClass(true);
+					// System.out.println("added bug to existing code " +
+					// newBug.getUniqueId() + " : " + newBug.getAbbrev() + " in
+					// " + classBugFoundIn);
+				} else
+					addedInNewCode++;
+			}
+			assert newBug.getLastVersion() == -1;
+			if (newBug.getLastVersion() != -1)
+				throw new IllegalStateException("Illegal Version range: "
+						+ newBug.getFirstVersion() + ".." + newBug.getLastVersion());
+			int oldSize = resultCollection.getCollection().size();
+			resultCollection.add(newBug, false);
+			int newSize = resultCollection.getCollection().size();
+			if (newSize != oldSize + 1) {
+				System.out.println("Failed to add bug #" + newBug.getUniqueId() + " : "
+						+ newBug.getMessage());
+			}
+		}
+		if (argCount < args.length) {
+			resultCollection.writeXML(args[argCount++], currentProject);
+			System.out.println("Bugs: " + oldBugs + " old, " + deadBugInDeadCode + " in removed code, "
+					+ (newlyDeadBugs - deadBugInDeadCode) + " died, " + persistantBugs + " persist, "
+					+ addedInNewCode + " in new code, " + (addedBugs - addedInNewCode) + " added");
+		} else 	resultCollection.writeXML(System.out, currentProject);
+
+	}
+
+	private static void copyBugHistory(BugInstance src, BugInstance dest) {
+
+		dest.setFirstVersion(src.getFirstVersion());
+		dest.setLastVersion(src.getLastVersion());
+		dest.setIntroducedByChangeOfExistingClass(src.isIntroducedByChangeOfExistingClass());
+		dest.setRemovedByChangeOfPersistingClass(src.isRemovedByChangeOfPersistingClass());
+	}
+
+	private static void matchBugs(Comparator<BugInstance> bugInstanceComparator) {
+		TreeMap<BugInstance, Queue<BugInstance>> set = new TreeMap<BugInstance, Queue<BugInstance>>(
+				bugInstanceComparator);
+		for (BugInstance bug : origCollection.getCollection())
+			if (bug.getLastVersion() == -1 && !matchedOldBugs.contains(bug)) {
+				Queue<BugInstance> q = set.get(bug);
+				if (q == null) {
+					q = new LinkedList<BugInstance>();
+					set.put(bug, q);
+				}
+				q.offer(bug);
+			}
+		for (BugInstance bug : newCollection.getCollection()) {
+			Queue<BugInstance> q = set.get(bug);
+			if (q != null && !q.isEmpty()) {
+				BugInstance matchedBug = q.remove();
+				mapFromNewToOldBug.put(bug, matchedBug);
+				matchedOldBugs.add(matchedBug);
+			}
+		}
+	}
+
+}
