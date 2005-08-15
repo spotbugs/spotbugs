@@ -8,7 +8,7 @@
 
 @SET_DEFAULT_JAVA@
 
-maxheap=256
+maxheap=768
 
 ShowHelpAndExit() {
 	fb_appjar="$findbugs_home/lib/findbugsGUI.jar"
@@ -19,6 +19,7 @@ ShowHelpAndExit() {
 
 # Set defaults
 fb_appjar="$findbugs_home/lib/findbugsGUI.jar"
+fb_mainclass="edu.umd.cs.findbugs.gui.FindBugsFrame"
 user_jvmargs=''
 debug_arg=''
 conservespace_arg=''
@@ -30,10 +31,12 @@ while [ $# -gt 0 ]; do
 	case $1 in
 	-gui)
 		fb_appjar="$findbugs_home/lib/findbugsGUI.jar"
+		fb_mainclass="edu.umd.cs.findbugs.gui.FindBugsFrame"
 		;;
 
 	-textui)
 		fb_appjar="$findbugs_home/lib/findbugs.jar"
+		fb_mainclass="edu.umd.cs.findbugs.FindBugs"
 		;;
 
 	-jvmArgs)
@@ -102,6 +105,6 @@ if [ $fb_osname = "Darwin" ]; then
 		-Dapple.laf.useScreenMenuBar=true"
 fi
 
-@WRAP_JAR@
+@WRAP_JAVA@
 
 # vim:ts=3
