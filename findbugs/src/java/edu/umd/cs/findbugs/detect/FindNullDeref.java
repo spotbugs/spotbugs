@@ -711,24 +711,32 @@ public class FindNullDeref
 			}
 		}
 		
-		int priority = LOW_PRIORITY;
+		int priority;
 		boolean valueIsNull = true;
 		String warning;
 		if (redundantBranch.secondValue == null) {
 			if (redundantBranch.firstValue.isDefinitelyNull() ) {
 				warning = "RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE";
+				priority = NORMAL_PRIORITY;
 			}
 			else {
 				warning = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE";
 				valueIsNull = false; 
+				priority = isChecked ? NORMAL_PRIORITY : LOW_PRIORITY;
 			}
 
 		} else {
 			boolean bothNull =  redundantBranch.firstValue.isDefinitelyNull() && redundantBranch.secondValue.isDefinitelyNull();		
-			if (bothNull) warning = "RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES";
-			else warning = "RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE";
 			if (redundantBranch.secondValue.isChecked()) isChecked = true;
 			if (redundantBranch.secondValue.wouldHaveBeenAKaboom()) wouldHaveBeenAKaboom = true;
+			if (bothNull) {
+				warning = "RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES";
+				priority = NORMAL_PRIORITY;
+			}
+			else {
+				warning = "RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE";
+				priority = isChecked ? NORMAL_PRIORITY : LOW_PRIORITY;
+			}
 
 		}
 		
@@ -736,10 +744,6 @@ public class FindNullDeref
 			priority = HIGH_PRIORITY;
 			warning = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE";
 			if (locationOfKaBoom == null) throw new NullPointerException("location of KaBoom is null");
-		} else if (isChecked) {
-			// A non-kaboom redundant null check is medium priority only
-			// if it creates dead code.
-			priority = NORMAL_PRIORITY;
 		}
 		
 		if (DEBUG) System.out.println(createdDeadCode + " " + infeasibleEdgeSimplyThrowsException + " " + valueIsNull + " " + priority);
