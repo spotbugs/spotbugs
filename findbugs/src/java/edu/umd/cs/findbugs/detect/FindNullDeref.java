@@ -610,7 +610,7 @@ public class FindNullDeref
 		
 		if (refValue.isDefinitelyNull()) {
 			String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION" : "NP_ALWAYS_NULL";
-			int priority = onExceptionPath ? LOW_PRIORITY : HIGH_PRIORITY;
+			int priority = onExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
 			reportNullDeref(propertySet, classContext, method, location, type, priority);
 		} else if (refValue.isNullOnSomePath()) {
 			String type = onExceptionPath ? "NP_NULL_ON_SOME_PATH_EXCEPTION" : "NP_NULL_ON_SOME_PATH";
