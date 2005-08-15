@@ -137,7 +137,7 @@ public class FindNullDeref
 				
 				if (METHOD != null && !method.getName().equals(METHOD))
 					continue;
-
+				if (DEBUG) System.out.println("Checking for NP in " + method.getName());
 				analyzeMethod(classContext, method);
 			}
 		} catch (DataflowAnalysisException e) {
