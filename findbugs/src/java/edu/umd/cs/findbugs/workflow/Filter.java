@@ -5,16 +5,17 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 package edu.umd.cs.findbugs.workflow;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -44,10 +46,9 @@ import edu.umd.cs.findbugs.filter.Matcher;
 /**
  * Java main application to filter/transform an XML bug collection
  * or bug history collection.
- * 
+ *
  * @author William Pugh
  */
-
 public class Filter {
 	static SourceFinder sourceFinder = new SourceFinder();
 	static class FilterCommandLine extends CommandLine {
@@ -85,6 +86,15 @@ public class Filter {
 
 		public boolean removedCode = false;
 		public boolean removedCodeSpecified = false;
+
+		public boolean classified = false;
+		public boolean classifiedSpecified = false;
+
+		public boolean unclassified = false;
+		public boolean unclassifiedSpecified = false;
+
+		public boolean serious = false;
+		public boolean seriousSpecified = false;
 		
 		public  List<String> sourcePaths = new LinkedList<String>();
 
@@ -104,6 +114,9 @@ public class Filter {
 			addOption("-first", "when", "allow only warnings that first occurred in this sequence number");
 			addOption("-setRevisionName", "name", "set the name of the last revision in this database");
 			addOption("-annotation", "text", "allow only warnings containing this text in an annotation");
+			addSwitch("-classified", "allow only classified warnings");
+			addSwitch("-serious", "allow only warnings classified as serious");
+			addSwitch("-unclassified", "allow only unclassified warnings");
 			addOption("-last", "when", "allow only warnings that last occurred in this sequence number");
 			addOption("-alive", "when", "allow only warnings alive in this sequence number");
 			addOption("-dead", "when", "allow only warnings dead in this sequence number");
@@ -241,7 +254,29 @@ public class Filter {
 				}
 				if (hasSource != withSource) return false;
 			}
+
+			if (classifiedSpecified && !isClassified(bug)) {
+				return false;
+			}
+
+			if (unclassifiedSpecified && isClassified(bug)) {
+				return false;
+			}
+
+			if (seriousSpecified) {
+				Set<String> words = bug.getTextAnnotationWords();
+				if (   !words.contains("BUG")
+					|| (words.contains("NOT_BUG") || words.contains("HARMLESS"))) {
+					return false;
+				}
+			}
+
 			return true;
+		}
+
+		private boolean isClassified(BugInstance bug) {
+			Set<String> words = bug.getTextAnnotationWords();
+			return words.contains("BUG") || words.contains("NOT_BUG");
 		}
 
 		private boolean bugLiveAt(BugInstance bug, long now) {
@@ -367,3 +402,5 @@ public class Filter {
 	}
 
 }
+
+// vim:ts=4
