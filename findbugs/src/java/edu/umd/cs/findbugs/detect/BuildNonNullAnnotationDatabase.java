@@ -85,9 +85,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 	}
 	
 	private static boolean isNonNullAnnotation(String annotationClass) {
-		return annotationClass.endsWith(NONNULL_ANNOTATION_CLASS)
-			|| annotationClass.endsWith(CHECK_FOR_NULL_ANNOTATION_CLASS)
-			|| annotationClass.endsWith(POSSIBLY_NULL_ANNOTATION_CLASS);
+		return annotationClass.endsWith(NONNULL_ANNOTATION_CLASS);
 	}
 	private static boolean isCheckForNullAnnotation(String annotationClass) {
 		return annotationClass.endsWith(CHECK_FOR_NULL_ANNOTATION_CLASS)
