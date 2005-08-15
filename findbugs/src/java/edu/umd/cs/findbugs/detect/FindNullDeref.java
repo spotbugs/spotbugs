@@ -647,6 +647,21 @@ public class FindNullDeref
 		bugReporter.reportBug(bugInstance);
 	}
 
+	public static boolean isThrower(BasicBlock target) {
+		InstructionHandle ins = target.getFirstInstruction();
+		int maxCount = 7;
+		while (ins != null) {
+			if (maxCount-- <= 0) break;
+			Instruction i = ins.getInstruction();
+			if (i instanceof ATHROW) {
+				return true;
+			}
+			if (i instanceof InstructionTargeter 
+					|| i instanceof ReturnInstruction) return false;
+			ins = ins.getNext();
+		}
+		return false;
+	}
 	public void foundRedundantNullCheck(Location location, RedundantBranch redundantBranch) {
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 		MethodGen methodGen = classContext.getMethodGen(method);
@@ -656,6 +671,7 @@ public class FindNullDeref
 		Location locationOfKaBoom = redundantBranch.firstValue.getLocationOfKaBoom();
 		 
 		boolean createdDeadCode = false;
+		boolean infeasibleEdgeSimplyThrowsException = false;
 		Edge infeasibleEdge = redundantBranch.infeasibleEdge;
 		if (infeasibleEdge != null) {
 			if (DEBUG) System.out.println("Check if " + redundantBranch + " creates dead code");
@@ -667,21 +683,21 @@ public class FindNullDeref
 			// starting at the target block to see if any of them are dead and nonempty.
 			boolean empty =  !target.isExceptionThrower() &&
 				(target.isEmpty() || isGoto(target.getFirstInstruction().getInstruction()));
-			if (DEBUG) System.out.println("Target block is  " + (empty ? "empty" : "not empty"));
 			if (!empty) {
-				InstructionHandle ins = target.getFirstInstruction();
-				int maxCount = 7;
-				while (ins != null) {
-					if (maxCount-- <= 0) break;
-					Instruction i = ins.getInstruction();
-					if (i instanceof ATHROW) {
-						empty = true;
-						break;
-					}
-					if (i instanceof InstructionTargeter 
-							|| i instanceof ReturnInstruction) break;
-					ins = ins.getNext();
+				try {
+				if (classContext.getCFG(method).getNumIncomingEdges(target) > 1) {
+					if (DEBUG) System.out.println("Target of infeasible edge has multiple incoming edges");
+					empty = true;
+				}}
+				catch (CFGBuilderException e) {
+					assert true; // ignore it
 				}
+			}
+			if (DEBUG) System.out.println("Target block is  " + (empty ? "empty" : "not empty"));
+
+			if (!empty) {
+				if (isThrower(target)) infeasibleEdgeSimplyThrowsException = true;
+		
 			}
 			if (!empty && !previouslyDeadBlocks.get(target.getId())) {
 				if (DEBUG) System.out.println("target was alive previously");
@@ -691,23 +707,12 @@ public class FindNullDeref
 				IsNullValueFrame invFrame = invDataflow.getStartFact(target);
 				createdDeadCode = invFrame.isTop();
 				if (DEBUG) System.out.println("target is now " + (createdDeadCode ? "dead" : "alive"));
-				if (DEBUG) {
-					System.out.println("Target: ");
-					System.out.println(target);
-					System.out.println("Target2: " + target.isEmpty());
-					
-					InstructionHandle ins = target.getFirstInstruction();
-					int maxCount = 6;
-					while (ins != null) {
-						if (maxCount-- <= 0) break;
-						System.out.println(ins.getInstruction());
-						ins = ins.getNext();
-					}
-				}
+
 			}
 		}
 		
 		int priority = LOW_PRIORITY;
+		boolean valueIsNull = true;
 		String warning;
 		if (redundantBranch.secondValue == null) {
 			if (redundantBranch.firstValue.isDefinitelyNull() ) {
@@ -715,6 +720,7 @@ public class FindNullDeref
 			}
 			else {
 				warning = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE";
+				valueIsNull = false; 
 			}
 
 		} else {
@@ -735,7 +741,22 @@ public class FindNullDeref
 			// if it creates dead code.
 			priority = NORMAL_PRIORITY;
 		}
-		if (createdDeadCode) priority++;
+		
+		if (DEBUG) System.out.println(createdDeadCode + " " + infeasibleEdgeSimplyThrowsException + " " + valueIsNull + " " + priority);
+		if (createdDeadCode && !infeasibleEdgeSimplyThrowsException) {
+			priority += 0;
+		} else if (createdDeadCode && infeasibleEdgeSimplyThrowsException) {
+			// throw clause
+			if (valueIsNull) 
+				priority += 0;
+			else
+				priority += 1;
+		} else {
+			// didn't create any dead code
+			priority += 1;
+		}
+
+
 		if (DEBUG) {
 			System.out.println("RCN" + priority + " " 
 					+ redundantBranch.firstValue + " =? "
