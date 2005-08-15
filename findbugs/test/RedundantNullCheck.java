@@ -1,6 +1,9 @@
 public class RedundantNullCheck {
 	public void foo(String s) {
-		System.out.println(s.hashCode());
+	    int k = 1;
+		int i = s.hashCode();
+		int j = i+k;
+		System.out.println(j);
 
 		if (s != null) { // bug
 			System.out.println("Yeah");
