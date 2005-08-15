@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.config.CommandLine;
+import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.filter.Matcher;
 
 /**
@@ -52,7 +53,7 @@ import edu.umd.cs.findbugs.filter.Matcher;
 public class Filter {
 	static SourceFinder sourceFinder = new SourceFinder();
 	static class FilterCommandLine extends CommandLine {
-		Pattern className,bugType;
+		Pattern className,bugPattern;
 		public boolean notSpecified = false;
 		public boolean not = false;
 		long first;
@@ -132,7 +133,7 @@ public class Filter {
 			addSwitchWithOptionalExtraPart("-removedCode", "truth",
 			"allow only warnings removed by removal of a class");
 			addOption("-class", "pattern", "allow only bugs whose primary class name matches this pattern");
-			addOption("-type", "pattern", "allow only bugs whose type matches this pattern");
+			addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
 			addOption("-category", "category", "allow only warnings with a category that starts with this string");
 			
 
@@ -227,7 +228,7 @@ public class Filter {
 			if (removedCodeSpecified && removedCode != (!bug.isRemovedByChangeOfPersistingClass() && bug.getLastVersion() != -1))
 				return false;
 
-			if (bugType != null && !bugType.matcher(bug.getType()).find())
+			if (bugPattern != null && !bugPattern.matcher(bug.getType()).find())
 					return false;
 			if (className != null && !className.matcher(bug.getPrimaryClass().getClassName()).find())
 					return false;
@@ -320,32 +321,45 @@ public class Filter {
 				priority = i;
 			}
 
-			if (option.equals("-source"))
+			else if (option.equals("-source"))
 				sourcePaths.add(argument);
 			
-			if (option.equals("-first")) 
+			else if (option.equals("-first")) 
 				firstAsString = argument;
-			if (option.equals("-last")) 
+			else if (option.equals("-last")) 
 				lastAsString = argument;
-			if (option.equals("-after")) 
+			else if (option.equals("-after")) 
 				afterAsString = argument;
-			if (option.equals("-before")) 
+			else if (option.equals("-before")) 
 				beforeAsString = argument;
-			if (option.equals("-alive")) 
+			else if (option.equals("-alive")) 
 				aliveAsString = argument;
-			if (option.equals("-dead")) 
+			else if (option.equals("-dead")) 
 				deadAsString = argument;
 			
-			if (option.equals("-setRevisionName"))
+			else if (option.equals("-setRevisionName"))
 				revisionName = argument;
-			if (option.equals("-category"))
+			else if (option.equals("-category"))
 				category = argument;
-			if (option.equals("-class"))
+			else if (option.equals("-class"))
 					className = Pattern.compile(argument);
-			if (option.equals("-type"))
-					bugType = Pattern.compile(argument);
-			if (option.equals("-annotation"))
+			else if (option.equals("-bugPattern"))
+					bugPattern = Pattern.compile(argument);
+			else if (option.equals("-annotation"))
 				annotation = argument;
+			else if (option.equals("-include")) {
+				try {
+					includeFilter = new edu.umd.cs.findbugs.filter.Filter(argument);
+				} catch (FilterException e) {
+					throw new IllegalArgumentException("Error processing include file: " + argument, e);
+				}
+			} else if (option.equals("-exclude")) {
+				try {
+					excludeFilter = new edu.umd.cs.findbugs.filter.Filter(argument);
+				} catch (FilterException e) {
+					throw new IllegalArgumentException("Error processing include file: " + argument, e);
+				}
+			} else throw new IllegalArgumentException("can't handle command line argument of " + option);
 		}
 
 	}
