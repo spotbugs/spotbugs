@@ -30,7 +30,9 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.LDC2_W;
 import org.apache.bcel.generic.LDC_W;
+import org.apache.bcel.generic.MULTIANEWARRAY;
 import org.apache.bcel.generic.NEW;
+import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
@@ -185,23 +187,31 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			}
 		}
 	}
-
+@Override
 	public void visitACONST_NULL(ACONST_NULL obj) {
 		produce(IsNullValue.nullValue());
 	}
-
+	@Override
 	public void visitNEW(NEW obj) {
 		produce(IsNullValue.nonNullValue());
 	}
 
+    @Override
+	public void visitNEWARRAY(NEWARRAY obj) {
+		modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
+		produce(IsNullValue.nonNullValue());
+	}
+	@Override
+	public void visitMULTIANEWARRAY(MULTIANEWARRAY obj) {
+		modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
+		produce(IsNullValue.nonNullValue());
+	}
+	@Override
 	public void visitLDC(LDC obj) {
 		produce(IsNullValue.nonNullValue());
 	}
 
-	public void visitLDC_W(LDC_W obj) {
-		produce(IsNullValue.nonNullValue());
-	}
-
+	@Override
 	public void visitLDC2_W(LDC2_W obj) {
 		produce2(IsNullValue.nonNullValue());
 	}
@@ -210,18 +220,19 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	public void visitCHECKCAST(CHECKCAST obj) {
 		// Do nothing
 	}
+	@Override
 	public void visitINVOKESTATIC(INVOKESTATIC obj) {
 		handleInvoke(obj);
 	}
-
+@Override
 	public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
 		handleInvoke(obj);
 	}
-
+@Override
 	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
 		handleInvoke(obj);
 	}
-
+@Override
 	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
 		handleInvoke(obj);
 	}
