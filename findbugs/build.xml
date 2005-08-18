@@ -28,6 +28,7 @@
 	<property name="jnlp.dir" value="jnlp"/>
 	<property name="pkg.base" value="edu/umd/cs/findbugs"/>
 	<property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
+	<property name="annotations.jar" value="${jar.dir}/annotations.jar"/>
 	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
 	<property name="gui.jar" value="${jar.dir}/findbugsGUI.jar"/>
 	<property name="test.jar" value="${test.dir}/dumb.jar"/>
@@ -92,6 +93,7 @@
 				destdir="${classes.dir}"
 				source="1.5"
 				target="jsr14"
+				deprecation="on"
 				debug="on">
 			<classpath refid="findbugs.classpath"/>
 		</javac>
@@ -179,6 +181,13 @@
 				<include name="${pkg.base}/gui/**/*.properties"/>
 				<include name="${pkg.base}/gui/**/*.png"/>
 				<include name="${pkg.base}/gui/**/*.html"/>
+			</fileset>
+		</jar>
+
+		<!-- Annotations jar file. -->
+		<jar destfile="${annotations.jar}">
+			<fileset dir="${classes.dir}">
+				<include name="${pkg.base}/annotations/*.class"/>
 			</fileset>
 		</jar>
 	</target>
