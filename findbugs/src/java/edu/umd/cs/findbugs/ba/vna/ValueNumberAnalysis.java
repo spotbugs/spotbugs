@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
  *
  * @author David Hovemeyer
  * @see ValueNumber
- * @see DominatorsAnalysis
+ * @see edu.umd.cs.findbugs.ba.DominatorsAnalysis
  */
 public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, ValueNumberFrame> {
 
