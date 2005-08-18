@@ -466,6 +466,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
 
   <Detector class="edu.umd.cs.findbugs.detect.UselessSubclassMethod"
   			speed="fast"
+  			disabled="true"
   			reports="USM_USELESS_SUBCLASS_METHOD,USM_USELESS_ABSTRACT_METHOD"/>
   			
   <Detector class="edu.umd.cs.findbugs.detect.ConfusedInheritance"
