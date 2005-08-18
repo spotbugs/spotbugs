@@ -177,7 +177,7 @@ public class AnalysisRun {
 	 * @return the tree model
 	 */
 	public DefaultTreeModel getTreeModel(String groupByOrder) {
-		return (DefaultTreeModel) treeModelMap.get(groupByOrder);
+		return treeModelMap.get(groupByOrder);
 	}
 
 	public String getSummary() {

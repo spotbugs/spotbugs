@@ -225,13 +225,12 @@ public abstract class AbstractBugReporter implements BugReporter {
 				return o1.getSequence() - o2.getSequence();
 			}
 		});
-		for (int i = 0; i < errorList.length; ++i) {
-			Error error = errorList[i];
+		for (java.lang.Error error : errorList) {
 			reportAnalysisError(new AnalysisError(error.getMessage(), error.getCause()));
 		}
-		
-		for (Iterator<String> i = missingClassMessageList.iterator(); i.hasNext();) {
-			reportMissingClass(i.next());
+
+		for (String aMissingClassMessageList : missingClassMessageList) {
+			reportMissingClass(aMissingClassMessageList);
 		}
 	}
 
@@ -247,9 +246,8 @@ public abstract class AbstractBugReporter implements BugReporter {
 	 * This should be called when a bug is reported by a subclass.
 	 */
 	protected void notifyObservers(BugInstance bugInstance) {
-		Iterator<BugReporterObserver> i = observerList.iterator();
-		while (i.hasNext())
-			i.next().reportBug(bugInstance);
+		for (BugReporterObserver aObserverList : observerList)
+			aObserverList.reportBug(bugInstance);
 	}
 
 	/**

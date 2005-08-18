@@ -104,19 +104,18 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	}
 
 	private boolean checkSuper(MyMethod m, HashSet<MyMethod> others) {
-		for (Iterator<MyMethod> i = others.iterator(); i.hasNext();) {
-			MyMethod m2 = i.next();
+		for (MyMethod m2 : others) {
 			try {
 				if (m.confusingMethodNames(m2)
-				        && Repository.instanceOf(m.className, m2.className)) {
+						&& Repository.instanceOf(m.className, m2.className)) {
 					MyMethod m3 = new MyMethod(m.className, m2.methodName, m.methodSig, m.isStatic);
 					boolean r = others.contains(m3);
 					if (r) continue;
 					bugReporter.reportBug(new BugInstance(this, "NM_VERY_CONFUSING", HIGH_PRIORITY)
-					        .addClass(m.getClassName())
-					        .addMethod(m.getClassName(), m.methodName, m.methodSig, m.isStatic)
-					        .addClass(m2.getClassName())
-					        .addMethod(m2.getClassName(), m2.methodName, m2.methodSig, m2.isStatic));
+							.addClass(m.getClassName())
+							.addMethod(m.getClassName(), m.methodName, m.methodSig, m.isStatic)
+							.addClass(m2.getClassName())
+							.addMethod(m2.getClassName(), m2.methodName, m2.methodSig, m2.isStatic));
 					return true;
 				}
 			} catch (ClassNotFoundException e) {
@@ -126,14 +125,13 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	}
 
 	private boolean checkNonSuper(MyMethod m, HashSet<MyMethod> others) {
-		for (Iterator<MyMethod> i = others.iterator(); i.hasNext();) {
-			MyMethod m2 = i.next();
+		for (MyMethod m2 : others) {
 			if (m.confusingMethodNames(m2)) {
 				bugReporter.reportBug(new BugInstance(this, "NM_CONFUSING", LOW_PRIORITY)
-				        .addClass(m.getClassName())
-				        .addMethod(m.getClassName(), m.methodName, m.methodSig, m.isStatic)
-				        .addClass(m2.getClassName())
-				        .addMethod(m2.getClassName(), m2.methodName, m2.methodSig, m2.isStatic));
+						.addClass(m.getClassName())
+						.addMethod(m.getClassName(), m.methodName, m.methodSig, m.isStatic)
+						.addClass(m2.getClassName())
+						.addMethod(m2.getClassName(), m2.methodName, m2.methodSig, m2.isStatic));
 				return true;
 			}
 		}
@@ -144,21 +142,20 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 	public void report() {
 
 	canonicalNameIterator:
-		for (Iterator<String> i = canonicalToTrueMapping.keySet().iterator(); i.hasNext(); ) {
-			String allSmall = i.next();
-			HashSet<String> s = canonicalToTrueMapping.get(allSmall);
-			if (s.size() <= 1)
-				continue;
-			HashSet<MyMethod> conflictingMethods = canonicalToMyMethod.get(allSmall);
-			for (Iterator<MyMethod> j = conflictingMethods.iterator(); j.hasNext();) {
-				if (checkSuper(j.next(), conflictingMethods))
-					j.remove();
-			}
-			for (Iterator<MyMethod> j = conflictingMethods.iterator(); j.hasNext();) {
-				if (checkNonSuper(j.next(), conflictingMethods))
-					continue canonicalNameIterator;
-			}
+	for (String allSmall : canonicalToTrueMapping.keySet()) {
+		HashSet<String> s = canonicalToTrueMapping.get(allSmall);
+		if (s.size() <= 1)
+			continue;
+		HashSet<MyMethod> conflictingMethods = canonicalToMyMethod.get(allSmall);
+		for (Iterator<MyMethod> j = conflictingMethods.iterator(); j.hasNext();) {
+			if (checkSuper(j.next(), conflictingMethods))
+				j.remove();
 		}
+		for (MyMethod conflictingMethod : conflictingMethods) {
+			if (checkNonSuper(conflictingMethod, conflictingMethods))
+				continue canonicalNameIterator;
+		}
+	}
 	}
 
 	public void visitJavaClass(JavaClass obj) {
@@ -167,8 +164,8 @@ public class Naming extends PreorderVisitor implements Detector, Constants2 {
 		if (!visited.add(name)) return;
 		try {
 			JavaClass supers[] = Repository.getSuperClasses(obj);
-			for (int i = 0; i < supers.length; i++) {
-				visitJavaClass(supers[i]);
+			for (JavaClass aSuper : supers) {
+				visitJavaClass(aSuper);
 			}
 		} catch (ClassNotFoundException e) {
 			// ignore it

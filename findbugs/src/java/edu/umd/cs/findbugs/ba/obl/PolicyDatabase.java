@@ -101,8 +101,7 @@ public class PolicyDatabase {
 	public Obligation lookup(
 			String className, String methodName, String signature, boolean isStatic,
 			int action) throws ClassNotFoundException {
-		for (Iterator<Entry> i = entryList.iterator(); i.hasNext(); ) {
-			Entry entry = i.next();
+		for (Entry entry : entryList) {
 			if (isStatic == entry.isStatic()
 					&& action == entry.getAction()
 					&& methodName.equals(entry.getMethodName())

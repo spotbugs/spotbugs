@@ -312,9 +312,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 			toolTip.append("</th></tr>");
 			
 			Collection<BugPattern> patterns = factory.getReportedBugPatterns();
-			Iterator<BugPattern> it = patterns.iterator();
-			while (it.hasNext()) {
-				BugPattern pattern = it.next();
+			for (BugPattern pattern : patterns) {
 				toolTip.append("<tr><td align='center'>");
 				toolTip.append("[");
 				toolTip.append(pattern.getAbbrev());

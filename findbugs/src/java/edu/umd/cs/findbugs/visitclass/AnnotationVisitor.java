@@ -119,8 +119,8 @@ public class AnnotationVisitor extends PreorderVisitor {
 				}
 
 				if (DEBUG) {
-					for (int i = 0; i < b.length; i++)
-						System.out.print(Integer.toString((b[i] & 0xff), 16)
+					for (byte aB : b)
+						System.out.print(Integer.toString((aB & 0xff), 16)
 								+ " ");
 					System.out.println();
 				}

@@ -49,16 +49,14 @@ public class FindUnsyncGet extends BytecodeScanningDetector implements Constants
 		commonProperties.retainAll(setMethods.keySet());
 
 		// Report method pairs
-		for (Iterator<String> i = commonProperties.iterator(); i.hasNext();) {
-			String propName = (String) i.next();
-
+		for (String propName : commonProperties) {
 			MethodAnnotation getMethod = getMethods.get(propName);
 			MethodAnnotation setMethod = setMethods.get(propName);
 
 			bugReporter.reportBug(new BugInstance(this, "UG_SYNC_SET_UNSYNC_GET", NORMAL_PRIORITY)
-			        .addClass(prevClassName)
-			        .addMethod(getMethod)
-			        .addMethod(setMethod));
+					.addClass(prevClassName)
+					.addMethod(getMethod)
+					.addMethod(setMethod));
 		}
 		getMethods.clear();
 		setMethods.clear();

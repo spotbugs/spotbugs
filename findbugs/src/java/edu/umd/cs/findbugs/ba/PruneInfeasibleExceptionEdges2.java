@@ -306,12 +306,10 @@ public class PruneInfeasibleExceptionEdges2 implements EdgeTypes {
 	}
 
 	private void updateCFG() {
-		for (Iterator<MarkedEdge> i = markedEdgeList.iterator(); i.hasNext();) {
-			MarkedEdge markedEdge = i.next();
+		for (MarkedEdge markedEdge : markedEdgeList) {
 			markedEdge.apply();
 		}
-		for (Iterator<Edge> i = removedEdgeList.iterator(); i.hasNext();) {
-			Edge edge = i.next();
+		for (Edge edge : removedEdgeList) {
 			cfg.removeEdge(edge);
 		}
 	}

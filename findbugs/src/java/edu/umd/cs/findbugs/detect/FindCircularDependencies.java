@@ -91,9 +91,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 						this,
 						"CD_CIRCULAR_DEPENDENCY",
 						NORMAL_PRIORITY);
-				Iterator<String> lIt = loop.iterator();
-				while (lIt.hasNext()) {
-					String loopCls = lIt.next();
+				for (String loopCls : loop) {
 					bug.addClass(loopCls);
 				}
 				bugReporter.reportBug(bug);
@@ -138,9 +136,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 	private boolean removeLoopLinks(Map<String, Set<String>> dependencyGraph, Set<String> loop) 
 	{
 		Set<String> dependencies = null;
-		Iterator<String> cIt = loop.iterator();
-		while (cIt.hasNext()) {
-			String clsName = cIt.next();
+		for (String clsName : loop) {
 			if (dependencies != null)
 				dependencies.remove(clsName);
 			dependencies = dependencyGraph.get(clsName);
@@ -185,15 +181,13 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 			
 			visited.add(curClass);
 			loop.add(curClass);
-			Iterator<String> dit = dependencies.iterator();
-			while (dit.hasNext()) {
-				String depClass = dit.next();
+			for (String depClass : dependencies) {
 				if (depClass.equals(startClass))
 					return true;
-				
+
 				if (visited.contains(depClass))
 					continue;
-				
+
 				if (findLoop(depClass))
 					return true;
 			}

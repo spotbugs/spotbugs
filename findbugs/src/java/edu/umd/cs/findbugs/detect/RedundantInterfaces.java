@@ -60,9 +60,9 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, Co
 		try {
 			JavaClass superObj = obj.getSuperClass();
 			SortedSet<String> redundantInfNames = new TreeSet<String>();
-			
-			for (int i = 0; i < interfaceNames.length; i++) {
-				JavaClass inf = Repository.lookupClass(interfaceNames[i].replace('/','.'));
+
+			for (String interfaceName : interfaceNames) {
+				JavaClass inf = Repository.lookupClass(interfaceName.replace('/', '.'));
 				if (superObj.instanceOf(inf))
 					redundantInfNames.add(inf.getClassName());
 			}
@@ -70,9 +70,8 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, Co
 			if (redundantInfNames.size() > 0) {
 				BugInstance bug = new BugInstance( this, "RI_REDUNDANT_INTERFACES", LOW_PRIORITY )
 							.addClass(obj);
-				Iterator<String> it = redundantInfNames.iterator();
-				while (it.hasNext())
-					bug.addClass(it.next()).describe("INTERFACE_TYPE");
+				for (String redundantInfName : redundantInfNames)
+					bug.addClass(redundantInfName).describe("INTERFACE_TYPE");
 					
 				bugReporter.reportBug(bug);
 			}

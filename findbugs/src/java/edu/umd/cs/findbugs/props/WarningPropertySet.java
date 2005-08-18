@@ -39,9 +39,7 @@ public class WarningPropertySet implements Cloneable {
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer("{ ");
-		for (Iterator<Map.Entry<WarningProperty,Object>> i = map.entrySet().iterator();
-				i.hasNext();) {
-			Map.Entry<WarningProperty,Object> entry = i.next();
+		for (Map.Entry<WarningProperty, Object> entry : map.entrySet()) {
 			WarningProperty prop = entry.getKey();
 			Object attribute = entry.getValue();
 			buf.append("  ");
@@ -51,7 +49,7 @@ public class WarningPropertySet implements Cloneable {
 			buf.append("\t");
 			buf.append(attribute);
 			buf.append("\n");
-			}
+		}
 		buf.append("}\n");
 		return buf.toString();
 		}
@@ -157,8 +155,8 @@ public class WarningPropertySet implements Cloneable {
 		
 		int priority = basePriority;
 		if (!relaxedReporting) {
-			for (Iterator<WarningProperty> i = map.keySet().iterator(); i.hasNext();) {
-				PriorityAdjustment adj = i.next().getPriorityAdjustment();
+			for (WarningProperty warningProperty : map.keySet()) {
+				PriorityAdjustment adj = warningProperty.getPriorityAdjustment();
 				if (adj == PriorityAdjustment.FALSE_POSITIVE)
 					return Detector.EXP_PRIORITY + 1;
 				else if (adj == PriorityAdjustment.RAISE_PRIORITY)
@@ -193,9 +191,7 @@ public class WarningPropertySet implements Cloneable {
 	 * @param bugInstance the BugInstance
 	 */
 	public void decorateBugInstance(BugInstance bugInstance) {
-		for (Iterator<Map.Entry<WarningProperty,Object>> i = map.entrySet().iterator();
-				i.hasNext();) {
-			Map.Entry<WarningProperty,Object> entry = i.next();
+		for (Map.Entry<WarningProperty, Object> entry : map.entrySet()) {
 			WarningProperty prop = entry.getKey();
 			Object attribute = entry.getValue();
 			if (attribute == null)

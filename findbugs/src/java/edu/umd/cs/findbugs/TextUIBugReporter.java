@@ -134,8 +134,8 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 			if (reportStackTrace) {
 				String[] stackTrace = error.getStackTrace();
 				if (stackTrace != null) {
-					for (int i = 0; i < stackTrace.length; ++i) {
-						emitLine("\t\t\tAt " + stackTrace[i]);
+					for (String aStackTrace : stackTrace) {
+						emitLine("\t\t\tAt " + aStackTrace);
 					}
 				}
 			}

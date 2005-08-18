@@ -37,10 +37,6 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-/**
- * @deprecated
- * @author pugh
- */
 public class FindBadCast extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 
 
@@ -102,13 +98,13 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 	public void sawOpcode(int seen) {
 		if (DEBUG)  {
 			System.out.println(stack);
-			TestingGround.printOpCode(this,seen);
+			printOpCode(seen);
 			}
 
 
 		if (stack.getStackDepth() > 0) {
 		if (seen == CHECKCAST || seen == INSTANCEOF) {
-		if (DEBUG) 
+		if (DEBUG)
 			System.out.println(" ... checking ... ");
 		OpcodeStack.Item it = stack.getStackItem(0);
 		String signature = it.getSignature();
@@ -119,15 +115,15 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 		if (to.length() > 0 && to.charAt(0) == 'L')
 			to = to.substring(1,to.length()-1);
 		String toDot = to.replace('/','.');
-		if (signature.length() > 0 
-			&& !signature.equals("java/lang/Object") 
+		if (signature.length() > 0
+			&& !signature.equals("java/lang/Object")
 			&& !signature.equals(to)) {
 
 		     try {
 			JavaClass toClass = Repository.lookupClass(toDot);
-			JavaClass signatureClass 
+			JavaClass signatureClass
 				= Repository.lookupClass(signatureDot);
-		if (DEBUG) 
+		if (DEBUG)
 			System.out.println(" ... checking ...... ");
 		     if  ( !castTo.contains(to)
 				 && !Repository.instanceOf( signatureClass, toClass)) {
@@ -138,8 +134,8 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 			 || signatureClass.isFinal()
 			 || toClass.isFinal()
 			))
-  bugReporter.reportBug(new BugInstance(this, 
-				seen == CHECKCAST ? "BC_IMPOSSIBLE_CAST"  : "BC_IMPOSSIBLE_INSTANCEOF", 
+  bugReporter.reportBug(new BugInstance(this,
+				seen == CHECKCAST ? "BC_IMPOSSIBLE_CAST"  : "BC_IMPOSSIBLE_INSTANCEOF",
 				seen == CHECKCAST ? HIGH_PRIORITY : NORMAL_PRIORITY)
                                 .addClassAndMethod(this)
                                 .addSourceLine(this)
@@ -151,10 +147,10 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 			System.out.println("Checking BC in " + getFullyQualifiedMethodName());
 			System.out.println("to class: " + toClass);
 			System.out.println("from class: " + signatureClass);
-			System.out.println("instanceof : " + 
+			System.out.println("instanceof : " +
 				Repository.instanceOf( toClass, signatureClass)) ;
 			}
-			if (Repository.instanceOf( toClass, signatureClass)) 
+			if (Repository.instanceOf( toClass, signatureClass))
 				priority+=2;
 			if (getThisClass().equals(toClass) || getThisClass().equals(signatureClass))
 				priority+=1;
@@ -196,7 +192,7 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 				if (concreteCollectionClasses.contains(to))
 				  bug =  "BC_BAD_CAST_TO_CONCRETE_COLLECTION";
 				else if (abstractCollectionClasses.contains(to)
-					&& (signature.equals("java/util/Collection") 
+					&& (signature.equals("java/util/Collection")
 					   ||  signature.equals("java/lang/Iterable") ))
 				  bug = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION";
 				  bugReporter.reportBug(new BugInstance(this, bug, priority)
@@ -225,5 +221,42 @@ public class FindBadCast extends BytecodeScanningDetector implements Constants2,
 
 
 
-	
+	private void printOpCode(int seen) {
+		System.out.print("  FindBadCast: [" + getPC() + "]  " + OPCODE_NAMES[seen]);
+		if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC))
+			System.out.print("   " + getClassConstantOperand() + "." + getNameConstantOperand() + " " + getSigConstantOperand());
+		else if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
+			Constant c = getConstantRefOperand();
+			if (c instanceof ConstantString)
+				System.out.print("   \"" + getStringConstantOperand() + "\"");
+			else if (c instanceof ConstantClass)
+				System.out.print("   " + getClassConstantOperand());
+			else
+				System.out.print("   " + c);
+		} else if ((seen == ALOAD) || (seen == ASTORE))
+			System.out.print("   " + getRegisterOperand());
+		else if ((seen == GOTO) || (seen == GOTO_W)
+		||       (seen == IF_ACMPEQ) || (seen == IF_ACMPNE)
+		||       (seen == IF_ICMPEQ) || (seen == IF_ICMPGE)
+		||       (seen == IF_ICMPGT) || (seen == IF_ICMPLE)
+		||       (seen == IF_ICMPLT) || (seen == IF_ICMPNE)
+		||       (seen == IFEQ) 	|| (seen == IFGE)
+		||       (seen == IFGT) 	|| (seen == IFLE)
+		||       (seen == IFLT) 	|| (seen == IFNE)
+		||       (seen == IFNONNULL) || (seen == IFNULL))
+			System.out.print("   " + getBranchTarget());
+		else if ((seen == NEW) || (seen == INSTANCEOF))
+			System.out.print("   " + getClassConstantOperand());
+		else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
+			System.out.print("    [");
+			int switchPC = getPC();
+			int[] offsets = getSwitchOffsets();
+			for (int i = 0; i < offsets.length; i++) {
+				System.out.print((switchPC + offsets[i]) + ",");
+			}
+			System.out.print((switchPC + getDefaultSwitchOffset()) + "]");
+		}
+
+		System.out.println();
+	}
 }

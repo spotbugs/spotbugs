@@ -53,8 +53,8 @@ public class MatchAny extends PatternElement {
 	}
 
 	public PatternElement label(String label) {
-		for (int i = 0; i < childList.length; ++i) {
-			childList[i].label(label);
+		for (PatternElement aChildList : childList) {
+			aChildList.label(label);
 		}
 		return this;
 	}
@@ -63,8 +63,8 @@ public class MatchAny extends PatternElement {
 		// Just forward this on to all children,
 		// since it is the children that the PatternMatcher will ask
 		// about edges.
-		for (int i = 0; i < childList.length; ++i)
-			childList[i].setAllowTrailingEdges(allowTrailingEdges);
+		for (PatternElement aChildList : childList)
+			aChildList.setAllowTrailingEdges(allowTrailingEdges);
 
 		return this;
 	}
@@ -72,8 +72,7 @@ public class MatchAny extends PatternElement {
 	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
 	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
-		for (int i = 0; i < childList.length; ++i) {
-			PatternElement child = childList[i];
+		for (PatternElement child : childList) {
 			MatchResult matchResult = child.match(handle, cpg, before, after, bindingSet);
 			if (matchResult != null)
 				return matchResult;

@@ -262,14 +262,14 @@ public class Project implements XMLWriteable {
 	 * Get project files as an array of Strings.
 	 */
 	public String[] getFileArray() {
-		return (String[]) fileList.toArray(new String[fileList.size()]);
+		return fileList.toArray(new String[fileList.size()]);
 	}
 
 	/**
 	 * Get source dirs as an array of Strings.
 	 */
 	public String[] getSourceDirArray() {
-		return (String[]) srcDirList.toArray(new String[srcDirList.size()]);
+		return srcDirList.toArray(new String[srcDirList.size()]);
 	}
 
 	/**
@@ -424,9 +424,7 @@ public class Project implements XMLWriteable {
 
 		// Prime the worklist by adding the zip/jar files
 		// in the project.
-		for (Iterator<String> i = fileList.iterator(); i.hasNext();) {
-			String fileName = i.next();
-
+		for (String fileName : fileList) {
 			try {
 				URL url = workList.createURL(fileName);
 				WorkListItem item = new WorkListItem(url);
@@ -474,8 +472,7 @@ public class Project implements XMLWriteable {
 				if (classPath != null) {
 					String[] fileList = classPath.split("\\s+");
 
-					for (int i = 0; i < fileList.length; ++i) {
-						String jarFile = fileList[i];
+					for (String jarFile : fileList) {
 						URL referencedURL = workList.createRelativeURL(jarFileURL, jarFile);
 						if (workList.add(new WorkListItem(referencedURL))) {
 							implicitClasspath.add(referencedURL.toString());
@@ -517,24 +514,21 @@ public class Project implements XMLWriteable {
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
 		try {
 			writer.println(JAR_FILES_KEY);
-			for (Iterator<String> i = fileList.iterator(); i.hasNext();) {
-				String jarFile = i.next();
+			for (String jarFile : fileList) {
 				if (useRelativePaths)
 					jarFile = convertToRelative(jarFile, relativeBase);
 				writer.println(jarFile);
 			}
 
 			writer.println(SRC_DIRS_KEY);
-			for (Iterator<String> i = srcDirList.iterator(); i.hasNext();) {
-				String srcDir = i.next();
+			for (String srcDir : srcDirList) {
 				if (useRelativePaths)
 					srcDir = convertToRelative(srcDir, relativeBase);
 				writer.println(srcDir);
 			}
 
 			writer.println(AUX_CLASSPATH_ENTRIES_KEY);
-			for (Iterator<String> i = auxClasspathEntryList.iterator(); i.hasNext();) {
-				String auxClasspathEntry = i.next();
+			for (String auxClasspathEntry : auxClasspathEntryList) {
 				if (useRelativePaths)
 					auxClasspathEntry = convertToRelative(auxClasspathEntry, relativeBase);
 				writer.println(auxClasspathEntry);
@@ -832,8 +826,7 @@ public class Project implements XMLWriteable {
 	 */
 	private void makeListAbsoluteProject(List<String> list) throws IOException {
 		List<String> replace = new LinkedList<String>();
-		for (Iterator<String> i = list.iterator(); i.hasNext();) {
-			String fileName = i.next();
+		for (String fileName : list) {
 			fileName = convertToAbsolute(fileName);
 			replace.add(fileName);
 		}

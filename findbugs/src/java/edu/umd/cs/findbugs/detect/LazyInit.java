@@ -187,8 +187,7 @@ public class LazyInit extends ByteCodePatternDetector implements StatelessDetect
 			LockDataflow lockDataflow = classContext.getLockDataflow(method);
 			LockSet lockSet = null;
 			boolean sawNEW = false, sawINVOKE = false;
-			for (Iterator<BasicBlock> i = cfg.getBlocks(extent).iterator(); i.hasNext();) {
-				BasicBlock block = i.next();
+			for (BasicBlock block : cfg.getBlocks(extent)) {
 				for (Iterator<InstructionHandle> j = block.instructionIterator(); j.hasNext();) {
 					InstructionHandle handle = j.next();
 
@@ -240,7 +239,6 @@ public class LazyInit extends ByteCodePatternDetector implements StatelessDetect
 			        .addSourceLine(classContext, methodGen, sourceFile, start, end));
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
-			return;
 		}
 	}
 

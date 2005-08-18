@@ -118,9 +118,7 @@ public class CategorizeBugs {
 
 	private static void dumpStats(String banner, Map<String, Stats> map) {
 		System.out.println("\n" + banner + ":");
-		Iterator<Map.Entry<String, Stats>> i = map.entrySet().iterator();
-		while (i.hasNext()) {
-			Map.Entry<String, Stats> entry = i.next();
+		for (Map.Entry<String, Stats> entry : map.entrySet()) {
 			String key = entry.getKey();
 			Stats stats = entry.getValue();
 

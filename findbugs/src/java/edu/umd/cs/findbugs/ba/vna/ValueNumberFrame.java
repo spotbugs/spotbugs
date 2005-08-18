@@ -150,12 +150,12 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		StringBuffer buf = new StringBuffer();
 		buf.append('[');
 		boolean first = true;
-		for (int i = 0; i < valueNumberList.length; ++i) {
+		for (ValueNumber aValueNumberList : valueNumberList) {
 			if (first)
 				first = false;
 			else
 				buf.append(',');
-			buf.append(valueNumberList[i].getNumber());
+			buf.append(aValueNumberList.getNumber());
 		}
 		buf.append(']');
 		return buf.toString();

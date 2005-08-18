@@ -62,12 +62,10 @@ public class TrainFieldStoreTypes implements TrainingDetector {
 
 	public void visitClassContext(ClassContext classContext) {
 		Method[] methodList = classContext.getJavaClass().getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
-			
+		for (Method method : methodList) {
 			if (method.getCode() == null)
 				continue;
-			
+
 			try {
 				analyzeMethod(classContext, method);
 			} catch (CFGBuilderException e) {

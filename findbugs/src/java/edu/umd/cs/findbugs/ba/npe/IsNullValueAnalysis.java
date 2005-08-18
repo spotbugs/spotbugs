@@ -358,6 +358,7 @@ public class IsNullValueAnalysis
 							// the start fact for this block.
 
 							final Location atIf = new Location(sourceBlock.getLastInstruction(), sourceBlock);
+							// TODO: prevIsNullValueFrame is not used
 							final IsNullValueFrame prevIsNullValueFrame = getFactAtLocation(atIf);
 							final ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
 

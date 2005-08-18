@@ -212,8 +212,8 @@ public class CountBugs {
 
 	public int getTotal() {
 		int total = 0;
-		for (Iterator<Integer> i = countMap.values().iterator(); i.hasNext();) {
-			total += i.next().intValue();
+		for (Integer integer : countMap.values()) {
+			total += integer.intValue();
 		}
 		return total;
 	}
@@ -262,8 +262,7 @@ public class CountBugs {
 		allCategories.addAll(countMap.keySet());
 		allCategories.addAll(newer.countMap.keySet());
 
-		for (Iterator<Key> i = allCategories.iterator(); i.hasNext();) {
-			Key key = i.next();
+		for (Key key : allCategories) {
 			Integer delta = new Integer(newer.getCount(key).intValue() - getCount(key).intValue());
 			countMap.put(key, delta);
 		}
@@ -272,9 +271,7 @@ public class CountBugs {
 	public void printCounts(OutputStream out, boolean deltas) {
 		PrintStream pout = new PrintStream(out);
 
-		Iterator<Key> j = countMap.keySet().iterator();
-		while (j.hasNext()) {
-			Key key = j.next();
+		for (Key key : countMap.keySet()) {
 			int count = countMap.get(key).intValue();
 
 			if (count != 0) {

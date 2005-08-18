@@ -72,8 +72,7 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 			}
 
 			// Fill in parameter types
-			for (int i = 0; i < parameterSignatureList.length; ++i) {
-				String signature = parameterSignatureList[i];
+			for (String signature : parameterSignatureList) {
 				Type type = typeRepository.typeFromSignature(signature);
 
 				// Long and double values occupy an extra local slot

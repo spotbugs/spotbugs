@@ -232,7 +232,7 @@ public class ClassContext {
 
 				// Attempt to create the Analysis and store it in the AnalysisResult.
 				// If an exception occurs, record it in the AnalysisResult.
-				Analysis analysis = null;
+				Analysis analysis;
 				try {
 					analysis = analyze(method);
 					result.setAnalysis(analysis);
@@ -551,7 +551,7 @@ public class ClassContext {
 		public UnpackedCode getUnpackedCode() {
 			return new UnpackedCode(bytecodeSet, offsetToOpcodeMap);
 		}
-	};
+	}
 
 	private NoExceptionAnalysisFactory<UnpackedCode> unpackedCodeFactory =
 	        new NoExceptionAnalysisFactory<UnpackedCode>("unpacked bytecode") {
@@ -559,17 +559,17 @@ public class ClassContext {
 
 			        Code code = method.getCode();
 			        if (code == null)
-			        	return null;
-			        
+				        return null;
+
 			        byte[] instructionList = code.getCode();
-			        
+
 			        // Create callback
 			        UnpackedBytecodeCallback callback = new UnpackedBytecodeCallback(instructionList.length);
-			        
+
 			        // Scan the method.
 			        BytecodeScanner scanner = new BytecodeScanner();
 			        scanner.scan(instructionList, callback);
-			        
+
 			        return callback.getUnpackedCode();
 		        }
 	        };
@@ -905,8 +905,7 @@ public class ClassContext {
 	 */
 	public Method getMethod(MethodGen methodGen) {
 		Method[] methodList = jclass.getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			if (method.getName().equals(methodGen.getName())
 					&& method.getSignature().equals(methodGen.getSignature())
 					&& method.getAccessFlags() == methodGen.getAccessFlags()) {

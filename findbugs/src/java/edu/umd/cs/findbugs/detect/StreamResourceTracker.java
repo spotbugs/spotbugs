@@ -155,8 +155,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 			orig.clear();
 			orig.addAll(uninterestingStreamEscapeSet);
 
-			for (Iterator<StreamEscape> i = streamEscapeSet.iterator(); i.hasNext();) {
-				StreamEscape streamEscape = i.next();
+			for (StreamEscape streamEscape : streamEscapeSet) {
 				if (isUninterestingStreamEscape(streamEscape.source)) {
 					if (FindOpenStream.DEBUG)
 						System.out.println("Propagating stream escape " + streamEscape);
@@ -247,9 +246,9 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 
 		// All StreamFactories are given an opportunity to
 		// look at the location and possibly identify a created stream.
-		for (int i = 0; i < streamFactoryList.length; ++i) {
-			Stream stream = streamFactoryList[i].createStream(location, (ObjectType) type,
-			        cpg, lookupFailureCallback);
+		for (StreamFactory aStreamFactoryList : streamFactoryList) {
+			Stream stream = aStreamFactoryList.createStream(location, (ObjectType) type,
+					cpg, lookupFailureCallback);
 			if (stream != null)
 				return stream;
 		}

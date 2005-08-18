@@ -113,8 +113,7 @@ public class XMLAttributeList {
 	 */
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
-		for (Iterator<NameValuePair> i = nameValuePairList.iterator(); i.hasNext(); ) {
-			NameValuePair pair = i.next();
+		for (NameValuePair pair : nameValuePairList) {
 			buf.append(' ');
 			buf.append(pair.getName());
 			buf.append('=');

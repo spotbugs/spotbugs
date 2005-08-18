@@ -40,12 +40,12 @@ public class AnalysisLocal<T> {
 		Map<AnalysisLocal<T>, T> m = getMap();
 
 		if (m.containsKey(this)) {
-			return (T) m.get(this);
+			return m.get(this);
 		}
 		
 		synchronized(m) {
 			if (m.containsKey(this)) {
-				return (T) m.get(this);
+				return m.get(this);
 			}
 			T result = initialValue();
 			m.put(this,result);

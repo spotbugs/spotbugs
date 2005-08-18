@@ -65,8 +65,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements
 			if ((jClass.getAccessFlags() & ACC_ABSTRACT) == 0) {
 				Method[] methods = jClass.getMethods();
 				boolean foundTest = false;
-				for (int i = 0; i < methods.length; i++) {
-					Method m = methods[i];
+				for (Method m : methods) {
 					if (m.getName().startsWith("test")) {
 						foundTest = true;
 						break;

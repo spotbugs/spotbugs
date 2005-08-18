@@ -45,6 +45,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.KeyEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -424,7 +426,7 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 		public String getDescription() {
 			return L10N.getLocalString("dlg.javaarchives_lbl", "Java archives (*.jar,*.zip,*.ear,*.war)");
 		}
-	};
+	}
 
 	/**
 	 * The instance of ArchiveAndDirectoryFilter.
@@ -1756,10 +1758,10 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 		String separatorStr = System.getProperty("path.separator");
 		String sep = "";
 		ListModel m = list.getModel();
-		for (int i = 0; i < indices.length; i++) {
+		for (int indice : indices) {
 			path.append(sep);
 			sep = separatorStr;
-			path.append(m.getElementAt(indices[i]));
+			path.append(m.getElementAt(indice));
 		}
 		return path.toString();
 	}
@@ -2041,9 +2043,7 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 	}//GEN-LAST:event_browseClasspathEntryButtonActionPerformed
 
 	private void fullDescriptionsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullDescriptionsItemActionPerformed
-		for (int j = 0; j < bugTreeList.length; ++j) {
-			JTree bugTree = bugTreeList[j];
-
+		for (JTree bugTree : bugTreeList) {
 			// Redisplay the displayed bug instance nodes
 			DefaultTreeModel bugTreeModel = (DefaultTreeModel) bugTree.getModel();
 			int numRows = bugTree.getRowCount();
@@ -2171,8 +2171,8 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 				AnalysisErrorDialog err = new AnalysisErrorDialog(this, true, null);
 				err.addLine(MessageFormat.format(L10N.getLocalString("msg.fatalanalysisexception_txt", "Fatal analysis exception: {0}"),  new Object[]{e.toString()}));
 				StackTraceElement[] callList = e.getStackTrace();
-				for (int i = 0; i < callList.length; ++i)
-					err.addLine("\t" + callList[i]);
+				for (StackTraceElement aCallList : callList)
+					err.addLine("\t" + aCallList);
 				err.finish();
 				err.setSize(650, 500);
 				err.setLocationRelativeTo(null); // center the dialog
@@ -2286,8 +2286,7 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 		Dimension d;
 
 		int minX = 0, minY = 0;
-		for (int i = 0; i < components.length; i++) {
-			JComponent comp = components[i];
+		for (JComponent comp : components) {
 			comp.setMaximumSize(null);
 			comp.setMinimumSize(null);
 			comp.setPreferredSize(null);
@@ -2299,8 +2298,7 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 		}
 
 		d = new Dimension(minX, minY);
-		for (int i = 0; i < components.length; i++) {
-			JComponent comp = components[i];
+		for (JComponent comp : components) {
 			comp.setMinimumSize(d);
 			comp.setMaximumSize(d);
 			comp.setPreferredSize(d);
@@ -2440,19 +2438,18 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 		this.bugCategoryCheckBoxList = new JCheckBoxMenuItem[bugCategoryCollection.size()];
 		this.bugCategoryList = new String[bugCategoryCollection.size()];
 		int count = 0;
-		for(Iterator<String> i = bugCategoryCollection.iterator(); i.hasNext();) {
-			String bugCategory = i.next();
-			String bugCategoryDescription = edu.umd.cs.findbugs.I18N.instance().getBugCategoryDescription(bugCategory);
+		for (String bugCategory : bugCategoryCollection) {
+			String bugCategoryDescription = I18N.instance().getBugCategoryDescription(bugCategory);
 
 			final JCheckBoxMenuItem item = new JCheckBoxMenuItem(bugCategoryDescription, true);
 			item.setFont(BUTTON_FONT);
 			item.setSelected(getFilterSettings().containsCategory(bugCategory));
-			item.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent evt) {
+			item.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
 					toggleBugCategory(item);
 				}
 			});
-			
+
 			filterWarningsMenu.add(item);
 
 			this.bugCategoryCheckBoxList[count] = item;
@@ -2471,8 +2468,7 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 		bugTreeList = new JTree[]{byClassBugTree, byPackageBugTree, byBugTypeBugTree, byBugCategoryBugTree};
 		
 		// Configure bug trees
-		for (int i = 0; i < bugTreeList.length; ++i) {
-			JTree bugTree = bugTreeList[i];
+		for (JTree bugTree : bugTreeList) {
 			bugTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			bugTree.setCellRenderer(BugCellRenderer.instance());
 			bugTree.setRootVisible(false);
@@ -2592,11 +2588,11 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 					emptyItem.setEnabled(false);
 					recentProjectsMenu.add(emptyItem);
 				} else {
-					for (int i = 0; i < recentProjects.size(); i++) {
-						JMenuItem projectItem = new JMenuItem(recentProjects.get(i));
+					for (String recentProject : recentProjects) {
+						JMenuItem projectItem = new JMenuItem(recentProject);
 						projectItem.setFont(ft);
-						projectItem.addActionListener(new java.awt.event.ActionListener() {
-							public void actionPerformed(java.awt.event.ActionEvent evt) {
+						projectItem.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent evt) {
 								openRecentProjectItemActionPerformed(evt);
 							}
 						});
@@ -2966,8 +2962,7 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 		// Sort the instances (considering only those that meet the
 		// priority threshold)
 		TreeSet<BugInstance> sortedCollection = new TreeSet<BugInstance>(getBugInstanceComparator(groupBy));
-		for (Iterator<BugInstance> i = analysisRun.getBugInstances().iterator(); i.hasNext();) {
-			BugInstance bugInstance = i.next();
+		for (BugInstance bugInstance : analysisRun.getBugInstances()) {
 			if (getFilterSettings().displayWarning(bugInstance))
 				sortedCollection.add(bugInstance);
 		}
@@ -3109,8 +3104,7 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 	private void addJarToList() {
 		String dirs = jarNameTextField.getText();
 		String[] jarDirs = parsePaths(dirs);
-		for (int i = 0; i < jarDirs.length; i++) {
-			String jarFile = jarDirs[i];
+		for (String jarFile : jarDirs) {
 			if (!jarFile.equals("")) {
 				addJarToProject(jarFile);
 			}
@@ -3161,8 +3155,7 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 	private void addSourceDirToList() {
 		String dirs = srcDirTextField.getText();
 		String[] sourceDirs = parsePaths(dirs);
-		for (int i = 0; i < sourceDirs.length; i++) {
-			String sourceDir = sourceDirs[i];
+		for (String sourceDir : sourceDirs) {
 			if (!sourceDir.equals("")) {
 				Project project = getCurrentProject();
 				if (project.addSourceDir(sourceDir)) {
@@ -3181,8 +3174,7 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 	private void addClasspathEntryToList() {
 		String dirs = classpathEntryTextField.getText();
 		String[] classDirs = parsePaths(dirs);
-		for (int i = 0; i < classDirs.length; i++) {
-			String classpathEntry = classDirs[i];
+		for (String classpathEntry : classDirs) {
 			if (!classpathEntry.equals("")) {
 				addClasspathEntryToProject(classpathEntry);
 			}

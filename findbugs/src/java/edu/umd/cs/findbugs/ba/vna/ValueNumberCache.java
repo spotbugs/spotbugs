@@ -71,9 +71,9 @@ public class ValueNumberCache {
 		public int hashCode() {
 			if (cachedHashCode == 0) {
 				int code = handle.getPosition();
-				for (int i = 0; i < inputValueList.length; ++i) {
+				for (ValueNumber aInputValueList : inputValueList) {
 					code *= 101;
-					ValueNumber valueNumber = inputValueList[i];
+					ValueNumber valueNumber = aInputValueList;
 					code += valueNumber.hashCode();
 				}
 				cachedHashCode = code;
@@ -84,9 +84,9 @@ public class ValueNumberCache {
 		public String toString() {
 			StringBuffer buf = new StringBuffer();
 			buf.append(handle.toString());
-			for (int i = 0; i < inputValueList.length; ++i) {
+			for (ValueNumber aInputValueList : inputValueList) {
 				buf.append(", ");
-				buf.append(inputValueList[i].toString());
+				buf.append(aInputValueList.toString());
 			}
 			return buf.toString();
 		}

@@ -104,8 +104,8 @@ public class ProjectFilterSettings implements Cloneable {
 		ProjectFilterSettings result = new ProjectFilterSettings();
 		
 		// Add all bugs categories
-		for (Iterator<String> i = I18N.instance().getBugCategories().iterator(); i.hasNext(); ) {
-			result.addCategory(i.next());
+		for (String s : I18N.instance().getBugCategories()) {
+			result.addCategory(s);
 		}
 		
 		// Set default priority threshold

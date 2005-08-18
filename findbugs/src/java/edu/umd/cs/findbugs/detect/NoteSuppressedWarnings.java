@@ -103,8 +103,8 @@ public class NoteSuppressedWarnings extends AnnotationVisitor
 		Object [] suppressedWarnings = (Object[]) value;
 		if (suppressedWarnings.length == 0)
 			suppressWarning(null);
-		else for(int i = 0; i < suppressedWarnings.length; i++)
-			suppressWarning((String)suppressedWarnings[i]);
+		else for (Object suppressedWarning : suppressedWarnings)
+			suppressWarning((String) suppressedWarning);
 		}
 
         private void suppressWarning(String pattern) {

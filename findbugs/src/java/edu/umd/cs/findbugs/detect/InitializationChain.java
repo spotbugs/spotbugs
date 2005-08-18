@@ -92,20 +92,18 @@ public class InitializationChain extends BytecodeScanningDetector implements Con
 	public void compute() {
 		Set<String> allClasses = classRequires.keySet();
 		Set<String> emptyClasses = new TreeSet<String>();
-		for (Iterator<String> i = allClasses.iterator(); i.hasNext();) {
-			String c = i.next();
+		for (String c : allClasses) {
 			Set<String> needs = classRequires.get(c);
 			needs.retainAll(allClasses);
 			Set<String> extra = new TreeSet<String>();
-			for (Iterator<String> j = needs.iterator(); j.hasNext();)
-				extra.addAll(classRequires.get(j.next()));
+			for (String need : needs)
+				extra.addAll(classRequires.get(need));
 			needs.addAll(extra);
 			needs.retainAll(allClasses);
 			classRequires.put(c, needs);
 			if (needs.isEmpty()) emptyClasses.add(c);
 		}
-		for (Iterator<String> i = emptyClasses.iterator(); i.hasNext();) {
-			String c =  i.next();
+		for (String c : emptyClasses) {
 			classRequires.remove(c);
 		}
 	}
@@ -123,18 +121,15 @@ public class InitializationChain extends BytecodeScanningDetector implements Con
 		compute();
 		Set<String> allClasses = classRequires.keySet();
 
-		for (Iterator<String> i = allClasses.iterator(); i.hasNext();) {
-			String c = i.next();
+		for (String c : allClasses) {
 			if (DEBUG) System.out.println("Class " + c + " requires:");
-			for (Iterator<String> j = (classRequires.get(c)).iterator();
-			     j.hasNext();) {
-				String needs = j.next();
+			for (String needs : (classRequires.get(c))) {
 				if (DEBUG) System.out.println("  " + needs);
 				Set<String> s = classRequires.get(needs);
 				if (s != null && s.contains(c) && c.compareTo(needs) < 0)
 					bugReporter.reportBug(new BugInstance(this, "IC_INIT_CIRCULARITY", NORMAL_PRIORITY)
-					        .addClass(c)
-					        .addClass(needs));
+							.addClass(c)
+							.addClass(needs));
 			}
 		}
 	}

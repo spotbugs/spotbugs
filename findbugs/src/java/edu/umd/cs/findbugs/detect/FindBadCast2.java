@@ -77,9 +77,7 @@ public class FindBadCast2 implements Detector {
 	public void visitClassContext(ClassContext classContext) {
 		Method[] methodList = classContext.getJavaClass().getMethods();
 
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
-
+		for (Method method : methodList) {
 			if (method.getCode() == null)
 				continue;
 
@@ -103,8 +101,8 @@ public class FindBadCast2 implements Detector {
 
 	private boolean isSynthetic(Method m) {
 		Attribute[] attrs = m.getAttributes();
-		for (int a = 0; a < attrs.length; a++) {
-			if (attrs[a] instanceof Synthetic)
+		for (Attribute attr : attrs) {
+			if (attr instanceof Synthetic)
 				return true;
 		}
 		return false;

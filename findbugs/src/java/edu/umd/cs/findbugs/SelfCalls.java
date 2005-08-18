@@ -62,16 +62,13 @@ public class SelfCalls {
 		if (DEBUG) System.out.println("Class has " + methods.length + " methods");
 
 		// Add call graph nodes for all methods
-		for (int i = 0; i < methods.length; ++i) {
-			Method method = methods[i];
-
+		for (Method method : methods) {
 			callGraph.addNode(method);
 		}
 		if (DEBUG) System.out.println("Added " + callGraph.getNumVertices() + " nodes to graph");
 
 		// Scan methods for self calls
-		for (int i = 0; i < methods.length; ++i) {
-			Method method = methods[i];
+		for (Method method : methods) {
 			MethodGen mg = classContext.getMethodGen(method);
 			if (mg == null)
 				continue;
@@ -196,16 +193,14 @@ public class SelfCalls {
 
 		// Scan methods for one that matches.
 		Method[] methods = jclass.getMethods();
-		for (int i = 0; i < methods.length; ++i) {
-			Method method = methods[i];
-
+		for (Method method : methods) {
 			String methodName = method.getName();
 			String signature = method.getSignature();
 			boolean isStatic = method.isStatic();
 
 			if (methodName.equals(calledMethodName) &&
-			        signature.equals(calledMethodSignature) &&
-			        isStatic == isStaticCall) {
+					signature.equals(calledMethodSignature) &&
+					isStatic == isStaticCall) {
 				// This method looks like a match.
 				return wantCallsFor(method) ? method : null;
 			}

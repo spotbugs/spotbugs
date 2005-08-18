@@ -58,17 +58,16 @@ public class CheckCalls implements Detector {
 	 */
 	public void visitClassContext(ClassContext classContext) {
 		Method[] methodList = classContext.getJavaClass().getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			if (method.getCode() == null)
 				continue;
-			
+
 			//System.out.println("--> " + method.getName());
 			if (METHOD != null && !method.getName().equals(METHOD))
 				continue;
 
 			try {
-				System.out.println("Analyzing " + 
+				System.out.println("Analyzing " +
 						SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method)
 				);
 				analyzeMethod(classContext, method);

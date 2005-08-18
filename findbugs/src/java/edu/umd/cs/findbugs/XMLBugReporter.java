@@ -106,27 +106,26 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 			}
 		}
 		// Emit element describing each reported bug pattern
-		for (Iterator<String> i = bugTypeSet.iterator(); i.hasNext();) {
-			String bugType = i.next();
+		for (String bugType : bugTypeSet) {
 			BugPattern bugPattern = I18N.instance().lookupBugPattern(bugType);
 			if (bugPattern == null)
 				continue;
-			
+
 			XMLAttributeList attributeList = new XMLAttributeList();
 			attributeList.addAttribute("type", bugType);
 			attributeList.addAttribute("abbrev", bugPattern.getAbbrev());
 			attributeList.addAttribute("category", bugPattern.getCategory());
-			
+
 			xmlOutput.openTag("BugPattern", attributeList);
-			
+
 			xmlOutput.openTag("ShortDescription");
 			xmlOutput.writeText(bugPattern.getShortDescription());
 			xmlOutput.closeTag("ShortDescription");
-			
+
 			xmlOutput.openTag("Details");
 			xmlOutput.writeCDATA(bugPattern.getDetailText());
 			xmlOutput.closeTag("Details");
-			
+
 			xmlOutput.closeTag("BugPattern");
 		}
 	}
@@ -142,8 +141,7 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 			}
 		}
 		// Emit element describing each reported bug code
-		for (Iterator<String> i = bugCodeSet.iterator(); i.hasNext();) {
-			String bugCode = i.next();
+		for (String bugCode : bugCodeSet) {
 			String bugCodeDescription = I18N.instance().getBugTypeDescription(bugCode);
 			if (bugCodeDescription == null)
 				continue;
@@ -172,8 +170,7 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 			}
 		}
 		// Emit element describing each reported bug code
-		for (Iterator<String> i = bugCatSet.iterator(); i.hasNext();) {
-			String bugCat = i.next();
+		for (String bugCat : bugCatSet) {
 			String bugCatDescription = I18N.instance().getBugCategoryDescription(bugCat);
 			if (bugCatDescription == null)
 				continue;

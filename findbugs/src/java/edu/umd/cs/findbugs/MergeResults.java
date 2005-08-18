@@ -199,10 +199,7 @@ public class MergeResults {
 		SortedSet<BugInstance> origSet = createSet(origCollection);
 		SortedSet<BugInstance> newSet = createSet(newCollection);
 
-		Iterator<BugInstance> i = origSet.iterator();
-		while (i.hasNext()) {
-			BugInstance orig = i.next();
-
+		for (BugInstance orig : origSet) {
 			if (preserveUnconditionally(orig)) {
 				// This original bug is not in a category that we are updating.
 				// Therefore, it is copied into the results unconditionally.

@@ -71,8 +71,7 @@ public class InstructionScannerDriver {
 					scannerList.add(generator.createScanner());
 
 				// Pump the instruction into all scanners
-				for (Iterator<InstructionScanner> j = scannerList.iterator(); j.hasNext();) {
-					InstructionScanner scanner = j.next();
+				for (InstructionScanner scanner : scannerList) {
 					scanner.scanInstruction(handle);
 				}
 
@@ -83,8 +82,7 @@ public class InstructionScannerDriver {
 
 			// Now that we've finished the source block, pump the edge
 			// into all scanners
-			for (Iterator<InstructionScanner> j = scannerList.iterator(); j.hasNext();) {
-				InstructionScanner scanner = j.next();
+			for (InstructionScanner scanner : scannerList) {
 				scanner.traverseEdge(edge);
 			}
 		}

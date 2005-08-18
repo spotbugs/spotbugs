@@ -213,7 +213,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 */
 	public boolean isExperimental() {
 		BugPattern pattern = I18N.instance().lookupBugPattern(type);
-		return (pattern != null) ? pattern.isExperimental() : false;
+		return (pattern != null) && pattern.isExperimental();
 	}
 
 	/**
@@ -261,9 +261,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 */
 	public SourceLineAnnotation getPrimarySourceLineAnnotation() {
 		// Highest priority: return the first top level source line annotation
-		Iterator<BugAnnotation> i = annotationList.iterator();
-		while (i.hasNext()) {
-			BugAnnotation annotation = i.next();
+		for (BugAnnotation annotation : annotationList) {
 			if (annotation instanceof SourceLineAnnotation)
 				return (SourceLineAnnotation) annotation;
 		}
@@ -404,8 +402,8 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 			return cur == null ? propertyListHead : cur.getNext();
 		}
 
-	};
-	
+	}
+
 	/**
 	 * Get value of given property.
 	 * 
@@ -1103,7 +1101,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	public String getMessage() {
 		String pattern = I18N.instance().getMessage(type);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-		return format.format((BugAnnotation[]) annotationList.toArray(new BugAnnotation[annotationList.size()]));
+		return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]));
 	}
 
 	/**
@@ -1184,8 +1182,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 			xmlOutput.closeTag("LongMessage");
 		}
 
-		for (Iterator<BugAnnotation> i = annotationList.iterator(); i.hasNext();) {
-			BugAnnotation annotation = i.next();
+		for (BugAnnotation annotation : annotationList) {
 			annotation.writeXML(xmlOutput, addMessages);
 		}
 		

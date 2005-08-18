@@ -268,7 +268,7 @@ public class DetectorFactory {
 	public Detector create(BugReporter bugReporter) {
 		try {
 			Constructor<? extends Detector> constructor = detectorClass.getConstructor(constructorArgTypes);
-			Detector detector = (Detector) constructor.newInstance(new Object[]{bugReporter});
+			Detector detector = constructor.newInstance(new Object[]{bugReporter});
 			
 			// Backwards-compatibility: if the Detector has a setAnalysisContext()
 			// method, call it, passing the current AnalysisContext.  We do this

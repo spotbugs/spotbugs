@@ -103,8 +103,7 @@ public class ClassScreener {
 		if (DEBUG) System.out.println("Matching: " + fileName);
 
 		// Scan through list of regexes
-		for (Iterator<Pattern> i = patternList.iterator(); i.hasNext(); ) {
-			Pattern pattern = i.next();
+		for (Pattern pattern : patternList) {
 			if (DEBUG) System.out.print("\tTrying [" + pattern.toString());
 			Matcher matcher = pattern.matcher(fileName);
 			if (matcher.find()) {

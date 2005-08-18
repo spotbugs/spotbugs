@@ -265,8 +265,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 				if (DEBUG) System.out.println("FindOpenStream: saw class " + className);
 				
 				if (className != null) {
-					for (int j = 0; j < PRESCREEN_CLASS_LIST.length; ++j) {
-						if (className.indexOf(PRESCREEN_CLASS_LIST[j]) >= 0) {
+					for (String aPRESCREEN_CLASS_LIST : PRESCREEN_CLASS_LIST) {
+						if (className.indexOf(aPRESCREEN_CLASS_LIST) >= 0) {
 							sawResourceClass = true;
 							break;
 						}
@@ -322,12 +322,10 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 
 			int local = methodGen.isStatic() ? 0 : 1;
 
-			for (int i = 0; i < parameterTypeList.length; ++i) {
-				Type type = parameterTypeList[i];
+			for (Type type : parameterTypeList) {
 				if (type instanceof ObjectType) {
 					ObjectType objectType = (ObjectType) type;
-					for (int j = 0; j < streamBaseList.length; ++j) {
-						ObjectType streamBase = streamBaseList[j];
+					for (ObjectType streamBase : streamBaseList) {
 						if (Hierarchy.isSubtype(objectType, streamBase)) {
 							// OK, found a parameter that is a resource.
 							// Create a Stream object to represent it.
@@ -335,7 +333,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 							// inhibit reporting for any stream that wraps it.
 
 							Stream paramStream =
-							        new Stream(firstLocation, objectType.getClassName(), streamBase.getClassName());
+									new Stream(firstLocation, objectType.getClassName(), streamBase.getClassName());
 							paramStream.setIsOpenOnCreation(true);
 							paramStream.setOpenLocation(firstLocation);
 							paramStream.setInstanceParam(local);
@@ -390,13 +388,11 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		// for the "interesting" streams that haven't been closed
 		// (and aren't in an equivalence class with another stream
 		// that was closed).
-		for (Iterator<PotentialOpenStream> i = potentialOpenStreamList.iterator(); i.hasNext();) {
-			PotentialOpenStream pos = i.next();
-
+		for (PotentialOpenStream pos : potentialOpenStreamList) {
 			Stream stream = pos.stream;
 			if (stream.isClosed())
-			// Stream was in an equivalence class with another
-			// stream that was properly closed.
+				// Stream was in an equivalence class with another
+				// stream that was properly closed.
 				continue;
 
 			if (stream.isUninteresting())
@@ -407,13 +403,13 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 				continue;
 
 			if (IGNORE_WRAPPED_UNINTERESTING_STREAMS
-			        && resourceTracker.isUninterestingStreamEscape(stream))
+					&& resourceTracker.isUninterestingStreamEscape(stream))
 				continue;
 
 			String sourceFile = javaClass.getSourceFileName();
 			bugReporter.reportBug(new BugInstance(this, pos.bugType, pos.priority)
-			        .addClassAndMethod(methodGen, sourceFile)
-			        .addSourceLine(classContext, methodGen, sourceFile, stream.getLocation().getHandle()));
+					.addClassAndMethod(methodGen, sourceFile)
+					.addSourceLine(classContext, methodGen, sourceFile, stream.getLocation().getHandle()));
 		}
 	}
 

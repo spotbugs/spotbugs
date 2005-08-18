@@ -177,8 +177,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		
 		public boolean match(String className, String methodName, String signature)
 				throws ClassNotFoundException {
-			for (Iterator<PolicyDatabaseEntry> i = database.iterator(); i.hasNext(); ) {
-				PolicyDatabaseEntry entry = i.next();
+			for (PolicyDatabaseEntry entry : database) {
 				if (entry.match(className, methodName, signature))
 					return true;
 			}
@@ -193,8 +192,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		PolicyDatabase database = policyDatabaseLocal.get();
 		if (database == null) {
 			database = new PolicyDatabase();
-			for (int i = 0; i < STANDARD_POLICY_DATABASE.length; ++i) {
-				String[] tuple = STANDARD_POLICY_DATABASE[i];
+			for (String[] tuple : STANDARD_POLICY_DATABASE) {
 				database.add(new PolicyDatabaseEntry(tuple[0], tuple[1], tuple[2]));
 			}
 			

@@ -90,20 +90,20 @@ public class SwitchHandler
 			switchPC = pc;
 			int uniqueOffsets = 0;
 			int lastValue = -1;
-			for (int i = 0; i < offsets.length; i++) {
-				if (offsets[i] != lastValue) {
+			for (int offset : offsets) {
+				if (offset != lastValue) {
 					uniqueOffsets++;
-					lastValue = offsets[i];
+					lastValue = offset;
 				}
 			}
 			
 			swOffsets = new int[uniqueOffsets];
 			int insertPos = 0;
 			lastValue = -1;
-			for (int i = 0; i < offsets.length; i++) {
-				if (offsets[i] != lastValue) {
-					swOffsets[insertPos++] = offsets[i];
-					lastValue = offsets[i];
+			for (int offset1 : offsets) {
+				if (offset1 != lastValue) {
+					swOffsets[insertPos++] = offset1;
+					lastValue = offset1;
 				}
 			}
 			defaultOffset = defOffset;

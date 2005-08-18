@@ -142,9 +142,7 @@ public class BlockTypeAnalysis implements DataflowAnalysis<BlockType> {
 		String methodName = System.getProperty("blocktype.method");
 
 		Method[] methodList = jclass.getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
-
+		for (Method method : methodList) {
 			if (method.isNative() || method.isAbstract())
 				continue;
 
@@ -158,7 +156,7 @@ public class BlockTypeAnalysis implements DataflowAnalysis<BlockType> {
 
 			final BlockTypeAnalysis analysis = new BlockTypeAnalysis(dfs);
 			Dataflow<BlockType, BlockTypeAnalysis> dataflow =
-			        new Dataflow<BlockType, BlockTypeAnalysis>(cfg, analysis);
+					new Dataflow<BlockType, BlockTypeAnalysis>(cfg, analysis);
 			dataflow.execute();
 
 			if (Boolean.getBoolean("blocktype.printcfg")) {

@@ -113,8 +113,7 @@ public class AssertionMethods implements Constants {
 	}
 
 	private static boolean isUserAssertionMethod(String className, String methodName) {
-		for (Iterator<UserAssertionMethod> i = userAssertionMethodList.iterator(); i.hasNext();) {
-			UserAssertionMethod uam = i.next();
+		for (UserAssertionMethod uam : userAssertionMethodList) {
 			if (className.equals(uam.getClassName()) && methodName.equals(uam.getMethodName()))
 				return true;
 		}

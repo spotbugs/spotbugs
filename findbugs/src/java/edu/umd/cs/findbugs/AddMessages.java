@@ -132,22 +132,21 @@ public class AddMessages {
 
 	private void addBugPatterns(Set<String> bugTypeSet) {
 		Element root = document.getRootElement();
-		for (Iterator<String> bugTypeIter = bugTypeSet.iterator(); bugTypeIter.hasNext(); ) {
-			String bugType = bugTypeIter.next();
+		for (String bugType : bugTypeSet) {
 			BugPattern bugPattern = I18N.instance().lookupBugPattern(bugType);
 			if (bugPattern == null)
 				continue;
 			Element details = root.addElement("BugPattern");
 			details
-				.addAttribute("type", bugType)
-				.addAttribute("abbrev", bugPattern.getAbbrev())
-				.addAttribute("category", bugPattern.getCategory());
+					.addAttribute("type", bugType)
+					.addAttribute("abbrev", bugPattern.getAbbrev())
+					.addAttribute("category", bugPattern.getCategory());
 			details
-				.addElement("ShortDescription")
-				.addText(bugPattern.getShortDescription());
+					.addElement("ShortDescription")
+					.addText(bugPattern.getShortDescription());
 			details
-				.addElement("Details")
-				.addCDATA(bugPattern.getDetailText());
+					.addElement("Details")
+					.addCDATA(bugPattern.getDetailText());
 		}
 	}
 	

@@ -422,8 +422,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 		// Parse each file provided on the
 		// command line.
-		for (int i = 0; i < argv.length; i++) {
-			FileReader r = new FileReader(argv[i]);
+		for (String aArgv : argv) {
+			FileReader r = new FileReader(aArgv);
 			xr.parse(new InputSource(r));
 		}
 	}

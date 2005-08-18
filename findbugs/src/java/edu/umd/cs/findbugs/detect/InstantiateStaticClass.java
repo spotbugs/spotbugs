@@ -88,37 +88,35 @@ public class InstantiateStaticClass extends BytecodeScanningDetector implements 
 				
 				Method[] methods = cls.getMethods();
 				int staticCount = 0;
-				for (int i = 0; i < methods.length; i++) {
-					Method m = methods[i];
-					if (m.isStatic()) {
-						staticCount++;
-						continue;
-						}
-					
-					if (m.getName().equals("<init>")) {
-						if (!m.getSignature().equals("()V"))
-							return false;
-						
-						Code c = m.getCode();
+	   for (Method m : methods) {
+		   if (m.isStatic()) {
+			   staticCount++;
+			   continue;
+		   }
 
-						if (c.getCode().length > 5)
-							return false;
-					} else {
-						return false;
-					}
-				}
+		   if (m.getName().equals("<init>")) {
+			   if (!m.getSignature().equals("()V"))
+				   return false;
+
+			   Code c = m.getCode();
+
+			   if (c.getCode().length > 5)
+				   return false;
+		   } else {
+			   return false;
+		   }
+	   }
 				
 				Field[] fields = cls.getFields();
-				for (int i = 0; i < fields.length; i++) {
-					Field f = fields[i];
-					if (f.isStatic()) {
-						staticCount++;
-						continue;
-						}
-					
-					if (!f.isPrivate())
-						return false;
-				}
+	   for (Field f : fields) {
+		   if (f.isStatic()) {
+			   staticCount++;
+			   continue;
+		   }
+
+		   if (!f.isPrivate())
+			   return false;
+	   }
 
 				if (staticCount == 0) return false;
 				return true;

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.10 $
+// $Revision: 1.11 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -72,8 +72,7 @@ public class MergeVertices
 		// For each original edge into or out of the vertex set,
 		// create an equivalent edge referencing the composite
 		// vertex
-		for (Iterator<EdgeType> i = edgeSet.iterator(); i.hasNext();) {
-			EdgeType e = i.next();
+		for (EdgeType e : edgeSet) {
 			VertexType source = vertexSet.contains(e.getSource()) ? compositeVertex : e.getSource();
 			VertexType target = vertexSet.contains(e.getTarget()) ? compositeVertex : e.getTarget();
 
@@ -84,7 +83,7 @@ public class MergeVertices
 			// unless one of the vertices in the vertex set
 			// had a self edge
 			if (source == compositeVertex && target == compositeVertex &&
-			        e.getSource() != e.getTarget())
+					e.getSource() != e.getTarget())
 				continue;
 
 			// Don't create duplicate edges.
@@ -99,8 +98,8 @@ public class MergeVertices
 		// Remove all of the vertices in the vertex set; this will
 		// automatically remove the edges into and out of those
 		// vertices
-		for (Iterator<VertexType> i = vertexSet.iterator(); i.hasNext();) {
-			g.removeVertex(i.next());
+		for (VertexType aVertexSet : vertexSet) {
+			g.removeVertex(aVertexSet);
 		}
 
 	}

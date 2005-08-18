@@ -66,9 +66,7 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 		possibleWaitBugs.clear();
 		possibleNotifyLocations.clear();
 		Method[] methodList = javaClass.getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
-
+		for (Method method : methodList) {
 			MethodGen methodGen = classContext.getMethodGen(method);
 			if (methodGen == null)
 				continue;

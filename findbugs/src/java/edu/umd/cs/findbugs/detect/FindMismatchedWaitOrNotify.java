@@ -62,8 +62,7 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 		JavaClass jclass = classContext.getJavaClass();
 
 		Method[] methodList = jclass.getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			MethodGen methodGen = classContext.getMethodGen(method);
 			if (methodGen == null)
 				continue;

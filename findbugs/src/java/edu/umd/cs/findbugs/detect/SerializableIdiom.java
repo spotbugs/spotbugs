@@ -85,9 +85,8 @@ public class SerializableIdiom extends PreorderVisitor
 	private void flush() {
 		if (!isAbstract &&
 		        !((sawReadExternal && sawWriteExternal) || (sawReadObject && sawWriteObject))) {
-			Iterator<BugInstance> i = fieldWarningList.iterator();
-			while (i.hasNext())
-				bugReporter.reportBug(i.next());
+			for (BugInstance aFieldWarningList : fieldWarningList)
+				bugReporter.reportBug(aFieldWarningList);
 		}
 		fieldWarningList.clear();
 	}
@@ -117,12 +116,12 @@ public class SerializableIdiom extends PreorderVisitor
 
 		// Does this class directly implement Serializable?
 		String[] interface_names = obj.getInterfaceNames();
-		for (int i = 0; i < interface_names.length; i++) {
-			if (interface_names[i].equals("java.io.Externalizable")) {
+		for (String interface_name : interface_names) {
+			if (interface_name.equals("java.io.Externalizable")) {
 				directlyImplementsExternalizable = true;
 				isExternalizable = true;
 				// System.out.println("Directly implements Externalizable: " + betterClassName);
-			} else if (interface_names[i].equals("java.io.Serializable")) {
+			} else if (interface_name.equals("java.io.Serializable")) {
 				implementsSerializableDirectly = true;
 				isSerializable = true;
 				break;
@@ -156,18 +155,17 @@ public class SerializableIdiom extends PreorderVisitor
 				superClassImplementsSerializable = Repository.instanceOf(superClass,
 				        "java.io.Serializable");
 				superClassHasVoidConstructor = false;
-				for (int i = 0; i < superClassMethods.length; i++) {
-					Method m = superClassMethods[i];
+				for (Method m : superClassMethods) {
 					/*
-					if (!m.isPrivate())
-					System.out.println("Supercase of " + className
-						+ " has an accessible method named " + m.getName()
-						+ " with sig " + m.getSignature());
-					*/
+					                        if (!m.isPrivate())
+					                        System.out.println("Supercase of " + className
+						                        + " has an accessible method named " + m.getName()
+						                        + " with sig " + m.getSignature());
+					                        */
 					if (m.getName().equals("<init>")
-					        && m.getSignature().equals("()V")
-					        && !m.isPrivate()
-					) {
+							&& m.getSignature().equals("()V")
+							&& !m.isPrivate()
+							) {
 						// System.out.println("  super has void constructor");
 						superClassHasVoidConstructor = true;
 						break;
@@ -286,8 +284,8 @@ public class SerializableIdiom extends PreorderVisitor
 
 	boolean isSynthetic(FieldOrMethod obj) {
 		Attribute[] a = obj.getAttributes();
-		for (int i = 0; i < a.length; i++)
-			if (a[i] instanceof Synthetic) return true;
+		for (Attribute aA : a)
+			if (aA instanceof Synthetic) return true;
 		return false;
 	}
 

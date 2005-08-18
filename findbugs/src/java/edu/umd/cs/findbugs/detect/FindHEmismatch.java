@@ -263,10 +263,10 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Constant
 
 	Method findMethod(JavaClass clazz, String name, String sig) {
 		Method[] m = clazz.getMethods();
-		for (int i = 0; i < m.length; i++)
-			if (m[i].getName().equals(name)
-			        && m[i].getSignature().equals(sig))
-				return m[i];
+		for (Method aM : m)
+			if (aM.getName().equals(name)
+					&& aM.getSignature().equals(sig))
+				return aM;
 		return null;
 	}
 }

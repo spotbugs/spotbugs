@@ -163,7 +163,6 @@ public class XDocsBugReporter extends TextUIBugReporter {
 		}
 
 
-		return;
 	}
 
 }

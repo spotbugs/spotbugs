@@ -61,8 +61,7 @@ public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
 		LocationAndFactPair result = null;
 		
 		// Return the first valid frame at any of the returned Locations
-		for (Iterator<Location> i = locations.iterator(); i.hasNext();) {
-			Location location = i.next();
+		for (Location location : locations) {
 			try {
 				TypeFrame frame = getFactAtLocation(location);
 				if (frame.isValid()) {

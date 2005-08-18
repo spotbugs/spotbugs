@@ -33,8 +33,8 @@ public class AnalysisError {
 			exceptionMessage = exception.toString();
 			StackTraceElement[] exceptionStackTrace = exception.getStackTrace();
 			ArrayList<String> arr = new ArrayList<String>();
-			for (int i = 0; i < exceptionStackTrace.length; ++i) {
-				arr.add(exceptionStackTrace[i].toString());
+			for (StackTraceElement aExceptionStackTrace : exceptionStackTrace) {
+				arr.add(aExceptionStackTrace.toString());
 			}
 			stackTrace = arr.toArray(new String[arr.size()]);
 		}

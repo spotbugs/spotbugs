@@ -141,15 +141,14 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		}
 
 		// Remove deleted edges
-		for (Iterator<Edge> j = deletedEdgeSet.iterator(); j.hasNext();) {
-			Edge edge = j.next();
+		for (Edge edge : deletedEdgeSet) {
 			cfg.removeEdge(edge);
 			if (STATS) ++numEdgesPruned;
 		}
 
 		// Mark edges
-		for (Iterator<MarkedEdge> j = markedEdgeList.iterator(); j.hasNext();) {
-			j.next().apply();
+		for (MarkedEdge aMarkedEdgeList : markedEdgeList) {
+			aMarkedEdgeList.apply();
 		}
 	}
 }

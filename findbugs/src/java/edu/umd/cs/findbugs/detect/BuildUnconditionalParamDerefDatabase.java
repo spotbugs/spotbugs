@@ -61,18 +61,17 @@ public class BuildUnconditionalParamDerefDatabase {
 		
 		if (VERBOSE_DEBUG) System.out.println("Visiting class " + classContext.getJavaClass().getClassName());
 		Method[] methodList = classContext.getJavaClass().getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			boolean hasReferenceParameters = false;
-			for(Type argument : method.getArgumentTypes()) 
+			for (Type argument : method.getArgumentTypes())
 				if (argument instanceof ReferenceType)
 					hasReferenceParameters = true;
-			
+
 			if (!hasReferenceParameters) continue;
-			
+
 			if (classContext.getMethodGen(method) == null)
 				continue; // no code
-			
+
 			if (VERBOSE_DEBUG) System.out.println("Check " + method);
 			analyzeMethod(classContext, method);
 		}

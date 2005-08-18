@@ -92,8 +92,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Constants
 		if (obj.isAbstract()) return;
 		// Does this class directly implement Cloneable?
 		String[] interface_names = obj.getInterfaceNames();
-		for (int i = 0; i < interface_names.length; i++) {
-			if (interface_names[i].equals("java.lang.Cloneable")) {
+		for (String interface_name : interface_names) {
+			if (interface_name.equals("java.lang.Cloneable")) {
 				implementsCloneableDirectly = true;
 				//isCloneable = true;
 				break;

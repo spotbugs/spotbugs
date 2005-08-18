@@ -116,10 +116,9 @@ public class Dom4JXMLOutput implements XMLOutput {
 	 * @param listValues Collection of String values to add
 	 */
 	public void writeElementList(String tagName, Collection<String> listValues) {
-		Iterator<String> i = listValues.iterator();
-		while (i.hasNext()) {
+		for (String listValue : listValues) {
 			openTag(tagName);
-			writeText(i.next());
+			writeText(listValue);
 			closeTag(tagName);
 		}
 	}
@@ -143,9 +142,7 @@ public class Dom4JXMLOutput implements XMLOutput {
 	 * @param collection Collection of XMLWriteable objects
 	 */
 	public void writeCollection(Collection<? extends XMLWriteable> collection) {
-		for (Iterator<? extends XMLWriteable> i = collection.iterator();
-			i.hasNext(); ) {
-			XMLWriteable obj = i.next();
+		for (XMLWriteable obj : collection) {
 			write(obj);
 		}
 	}

@@ -465,10 +465,9 @@ public class DumbMethods extends BytecodeScanningDetector implements Constants2 
 			// Make sure the GC invocation is not in an exception handler
 			// for OutOfMemoryError.
 			boolean outOfMemoryHandler = false;
-			for (int i = 0; i < exceptionTable.length; ++i) {
-				CodeException handler = exceptionTable[i];
+			for (CodeException handler : exceptionTable) {
 				if (gcInvocationPC < handler.getHandlerPC() ||
-				        gcInvocationPC > handler.getHandlerPC() + OOM_CATCH_LEN)
+						gcInvocationPC > handler.getHandlerPC() + OOM_CATCH_LEN)
 					continue;
 				int catchTypeIndex = handler.getCatchType();
 				if (catchTypeIndex > 0) {

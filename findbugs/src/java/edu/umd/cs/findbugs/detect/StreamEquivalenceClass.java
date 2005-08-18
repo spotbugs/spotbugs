@@ -70,8 +70,7 @@ public class StreamEquivalenceClass {
 	public void setClosed() {
 		if (!isClosed) {
 			isClosed = true;
-			for (Iterator<Stream> i = memberSet.iterator(); i.hasNext();) {
-				Stream member = i.next();
+			for (Stream member : memberSet) {
 				member.setClosed();
 			}
 		}

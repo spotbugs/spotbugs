@@ -53,8 +53,7 @@ public abstract class ByteCodePatternDetector implements Detector {
 			JavaClass jclass = classContext.getJavaClass();
 			Method[] methodList = jclass.getMethods();
 
-			for (int i = 0; i < methodList.length; ++i) {
-				Method method = methodList[i];
+			for (Method method : methodList) {
 				if (method.isAbstract() || method.isNative())
 					continue;
 
@@ -63,8 +62,8 @@ public abstract class ByteCodePatternDetector implements Detector {
 
 				if (DEBUG) {
 					System.out.print("=====================================================================\n" +
-					        "Method " + jclass.getClassName() + "." + method.getName() + "\n" +
-					        "=====================================================================\n");
+							"Method " + jclass.getClassName() + "." + method.getName() + "\n" +
+							"=====================================================================\n");
 				}
 
 				if (!prescreen(method, classContext))

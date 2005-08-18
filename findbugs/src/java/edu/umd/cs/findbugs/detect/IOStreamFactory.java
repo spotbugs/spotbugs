@@ -56,8 +56,8 @@ public class IOStreamFactory implements StreamFactory {
 
 			if (Hierarchy.isSubtype(type, baseClassType)) {
 				boolean isUninteresting = false;
-				for (int i = 0; i < uninterestingSubclassTypeList.length; ++i) {
-					if (Hierarchy.isSubtype(type, uninterestingSubclassTypeList[i])) {
+				for (ObjectType aUninterestingSubclassTypeList : uninterestingSubclassTypeList) {
+					if (Hierarchy.isSubtype(type, aUninterestingSubclassTypeList)) {
 						isUninteresting = true;
 						break;
 					}

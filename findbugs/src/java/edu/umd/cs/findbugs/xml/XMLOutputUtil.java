@@ -69,9 +69,7 @@ public abstract class XMLOutputUtil {
 	 */
 	public static void writeCollection(XMLOutput xmlOutput, Collection<? extends XMLWriteable> collection)
 			throws IOException {
-		Iterator<? extends XMLWriteable> i = collection.iterator();
-		while (i.hasNext()) {
-			XMLWriteable obj = i.next();
+		for (XMLWriteable obj : collection) {
 			obj.writeXML(xmlOutput);
 		}
 	}

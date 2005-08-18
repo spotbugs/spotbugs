@@ -44,7 +44,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
 		sourceFileNameCache.put(javaClass.getClassName(), sourceFileName);
 	}
 	
-	private String fileNameFor(final String packageName, final String sourceName) { 
+	private String fileNameFor(final String packageName, final String sourceName) {
 		String result;
 		SourceFinder sourceFinder = getEngine().getAnalysisContext().getSourceFinder();
 		try {
@@ -64,7 +64,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
 		if (line == null) {
 			ClassAnnotation classInfo = bugInstance.getPrimaryClass();
 			if (classInfo != null) {
-				fullPath = (String) sourceFileNameCache.get(classInfo.getClassName());
+				fullPath = sourceFileNameCache.get(classInfo.getClassName());
 			}
 		} else {
 			lineStart = line.getStartLine();

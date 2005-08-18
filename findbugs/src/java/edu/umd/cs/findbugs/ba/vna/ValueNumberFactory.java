@@ -68,10 +68,9 @@ public class ValueNumberFactory {
 	 */
 	public void compact(int[] map, int numValuesAllocated) {
 		ArrayList<ValueNumber> oldList = this.allocatedValueList;
-		ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.nCopies(numValuesAllocated, (ValueNumber) null));
+		ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.nCopies(numValuesAllocated, null));
 
-		for (Iterator<ValueNumber> i = oldList.iterator(); i.hasNext();) {
-			ValueNumber value = i.next();
+		for (ValueNumber value : oldList) {
 			int newNumber = map[value.getNumber()];
 			if (newNumber >= 0) {
 				// Note: because we are simply assigning new numbers to the

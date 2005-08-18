@@ -70,9 +70,7 @@ public class BuildNullReturnValueDatabase {
 		}
 		
 		Method[] methodList = classContext.getJavaClass().getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
-			
+		for (Method method : methodList) {
 			// Prescreening - only check methods which return a reference type
 			String methodSig = method.getSignature();
 			if (methodSig.indexOf(")L") < 0 && methodSig.indexOf(")[") < 0)
@@ -81,7 +79,7 @@ public class BuildNullReturnValueDatabase {
 			// Make sure there is Code
 			if (classContext.getMethodGen(method) == null)
 				continue;
-			
+
 			analyzeMethod(classContext, method);
 		}
 	}

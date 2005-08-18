@@ -98,19 +98,18 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 
 		definedPrivateMethods.removeAll(calledMethods);
 
-		for (Iterator<MethodAnnotation> i = definedPrivateMethods.iterator(); i.hasNext();) {
-			MethodAnnotation m = i.next();
+		for (MethodAnnotation m : definedPrivateMethods) {
 			// System.out.println("Checking " + m);
 			int priority = LOW_PRIORITY;
 			String methodName = m.getMethodName();
 			if (methodName.length() > 1
-			        && calledMethodNames.contains(methodName.toLowerCase()))
+					&& calledMethodNames.contains(methodName.toLowerCase()))
 				priority = NORMAL_PRIORITY;
 			BugInstance bugInstance
-			        = new BugInstance(this, "UPM_UNCALLED_PRIVATE_METHOD",
-			                priority)
-			        .addClass(this)
-			        .addMethod(m);
+					= new BugInstance(this, "UPM_UNCALLED_PRIVATE_METHOD",
+					priority)
+					.addClass(this)
+					.addMethod(m);
 			bugReporter.reportBug(bugInstance);
 		}
 

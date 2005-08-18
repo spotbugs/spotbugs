@@ -45,9 +45,7 @@ public abstract class ResourceValueAnalysisTestDriver <Resource, ResourceTracker
 		ClassContext classContext = analysisContext.getClassContext(jclass);
 
 		Method[] methodList = jclass.getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
-
+		for (Method method : methodList) {
 			if (!method.getName().equals(methodName))
 				continue;
 
@@ -57,44 +55,44 @@ public abstract class ResourceValueAnalysisTestDriver <Resource, ResourceTracker
 			InstructionHandle creationInstruction = null;
 
 			blockLoop:
-				for (Iterator<BasicBlock> ii = cfg.blockIterator(); ii.hasNext();) {
-					BasicBlock basicBlock = ii.next();
-					for (Iterator<InstructionHandle> j = basicBlock.instructionIterator(); j.hasNext();) {
-						InstructionHandle handle = j.next();
-						if (handle.getPosition() == offset) {
-							creationBlock = basicBlock;
-							creationInstruction = handle;
-							break blockLoop;
-						}
+			for (Iterator<BasicBlock> ii = cfg.blockIterator(); ii.hasNext();) {
+				BasicBlock basicBlock = ii.next();
+				for (Iterator<InstructionHandle> j = basicBlock.instructionIterator(); j.hasNext();) {
+					InstructionHandle handle = j.next();
+					if (handle.getPosition() == offset) {
+						creationBlock = basicBlock;
+						creationInstruction = handle;
+						break blockLoop;
 					}
 				}
+			}
 
 			if (creationInstruction == null) throw new IllegalArgumentException("No bytecode with offset " + offset);
 
 			final ResourceTrackerType resourceTracker = createResourceTracker(classContext, method);
 			final Resource resource =
-			        resourceTracker.isResourceCreation(creationBlock, creationInstruction, classContext.getConstantPoolGen());
+					resourceTracker.isResourceCreation(creationBlock, creationInstruction, classContext.getConstantPoolGen());
 
 			if (resource == null)
 				throw new IllegalArgumentException("offset " + offset + " is not a resource creation");
 
 			DataflowTestDriver<ResourceValueFrame, ResourceValueAnalysis<Resource>> driver =
-			        new DataflowTestDriver<ResourceValueFrame, ResourceValueAnalysis<Resource>>() {
-				        public Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> createDataflow(ClassContext classContext, Method method)
-				                throws CFGBuilderException, DataflowAnalysisException {
-					        MethodGen methodGen = classContext.getMethodGen(method);
-					        CFG cfg = classContext.getCFG(method);
-					        DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+					new DataflowTestDriver<ResourceValueFrame, ResourceValueAnalysis<Resource>>() {
+						public Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> createDataflow(ClassContext classContext, Method method)
+								throws CFGBuilderException, DataflowAnalysisException {
+							MethodGen methodGen = classContext.getMethodGen(method);
+							CFG cfg = classContext.getCFG(method);
+							DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 
-					        ResourceValueAnalysis<Resource> analysis =
-					                new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource);
-					        Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
-					                new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
-					        dataflow.execute();
+							ResourceValueAnalysis<Resource> analysis =
+									new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource);
+							Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
+									new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
+							dataflow.execute();
 
-					        return dataflow;
-				        }
-			        };
+							return dataflow;
+						}
+					};
 
 			driver.execute(classContext, method);
 			break;

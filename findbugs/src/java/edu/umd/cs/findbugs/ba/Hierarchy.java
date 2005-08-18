@@ -286,7 +286,7 @@ public class Hierarchy {
 	public static JavaClassAndMethod findInvocationLeastUpperBound(
 			InvokeInstruction inv, ConstantPoolGen cpg, JavaClassAndMethodChooser methodChooser)
 	        throws ClassNotFoundException {
-		JavaClassAndMethod result = null;
+		JavaClassAndMethod result;
 		
 		if (DEBUG_METHOD_LOOKUP) {
 			System.out.println("Find prototype method for " +
@@ -406,8 +406,7 @@ public class Hierarchy {
 			System.out.println("Check " + javaClass.getClassName());
 		}
 		Method[] methodList = javaClass.getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			JavaClassAndMethod javaClassAndMethod = new JavaClassAndMethod(javaClass, method);
 			if (method.getName().equals(methodName)
 					&& method.getSignature().equals(methodSig)
@@ -507,8 +506,7 @@ public class Hierarchy {
 			JavaClassAndMethodChooser chooser) {
 		JavaClassAndMethod m = null;
 
-		for (int i = 0; i < classList.length; ++i) {
-			JavaClass cls = classList[i];
+		for (JavaClass cls : classList) {
 			if ((m = findMethod(cls, methodName, methodSig, chooser)) != null)
 				break;
 		}
@@ -542,8 +540,7 @@ public class Hierarchy {
 	 */
 	public static XMethod findXMethod(JavaClass[] classList, String methodName, String methodSig,
 			JavaClassAndMethodChooser chooser) {
-		for (int i = 0; i < classList.length; ++i) {
-			JavaClass cls = classList[i];
+		for (JavaClass cls : classList) {
 			JavaClassAndMethod m;
 			if ((m = findMethod(cls, methodName, methodSig)) != null && chooser.choose(m)) {
 				return XMethodFactory.createXMethod(cls, m.getMethod());
@@ -731,8 +728,7 @@ public class Hierarchy {
 
 		while (jclass != null) {
 			Field[] fieldList = jclass.getFields();
-			for (int i = 0; i < fieldList.length; ++i) {
-				Field field = fieldList[i];
+			for (Field field : fieldList) {
 				if (field.getName().equals(fieldName)) {
 					return field;
 				}
@@ -787,8 +783,8 @@ public class Hierarchy {
 		loop:
 			while (classDefiningField != null) {
 				Field[] fieldList = classDefiningField.getFields();
-				for (int i = 0; i < fieldList.length; ++i) {
-					field = fieldList[i];
+				for (Field aFieldList : fieldList) {
+					field = aFieldList;
 					if (field.getName().equals(fieldName) && field.getSignature().equals(fieldSig)) {
 						break loop;
 					}

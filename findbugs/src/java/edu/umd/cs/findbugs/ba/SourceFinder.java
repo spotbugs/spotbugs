@@ -140,9 +140,7 @@ public class SourceFinder {
 	 * Set the list of source directories.
 	 */
 	public void setSourceBaseList(List<String> sourceBaseList) {
-		Iterator<String> i = sourceBaseList.iterator();
-		while (i.hasNext()) {
-			String repos = i.next();
+		for (String repos : sourceBaseList) {
 			if (repos.endsWith(".zip") || repos.endsWith(".jar")) {
 				// Zip or jar archive
 				try {
@@ -203,10 +201,7 @@ public class SourceFinder {
 		if (DEBUG) System.out.println("Trying " + fileName + "...");
 
 		// Query each element of the source path to find the requested source file
-		Iterator<SourceRepository> i = repositoryList.iterator();
-		while (i.hasNext()) {
-			SourceRepository repos = i.next();
-
+		for (SourceRepository repos : repositoryList) {
 			fileName = repos.isPlatformDependent() ? platformName : canonicalName;
 			if (repos.contains(fileName)) {
 				// Found it

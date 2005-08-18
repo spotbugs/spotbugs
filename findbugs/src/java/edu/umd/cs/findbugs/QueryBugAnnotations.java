@@ -68,8 +68,8 @@ public abstract class QueryBugAnnotations {
 			BugInstance bugInstance = i.next();
 
 			Set<String> contents = bugInstance.getTextAnnotationWords();
-			for (Iterator<String> j = keywordSet.iterator(); j.hasNext();) {
-				if (contents.contains(j.next())) {
+			for (String aKeywordSet : keywordSet) {
+				if (contents.contains(aKeywordSet)) {
 					match(bugInstance, filename);
 					break;
 				}

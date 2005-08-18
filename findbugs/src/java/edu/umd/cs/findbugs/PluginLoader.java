@@ -133,9 +133,7 @@ public class PluginLoader extends URLClassLoader {
 		// Note that if there is no "defaultenabled" attribute,
 		// then we assume that the plugin IS enabled by default.
 		String defaultEnabled = pluginDescriptor.valueOf("/FindbugsPlugin/@defaultenabled");
-		boolean pluginEnabled = defaultEnabled.equals("")
-				? true
-				: Boolean.valueOf(defaultEnabled).booleanValue();
+		boolean pluginEnabled = defaultEnabled.equals("") || Boolean.valueOf(defaultEnabled).booleanValue();
 
 		// Load the message collections
 		try {
@@ -183,17 +181,16 @@ public class PluginLoader extends URLClassLoader {
 		try {
 			List<Node> detectorNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/Detector");
 			int detectorCount = 0;
-			for (Iterator<Node> i = detectorNodeList.iterator(); i.hasNext();) {
-				Node detectorNode = i.next();
+			for (Node detectorNode : detectorNodeList) {
 				String className = detectorNode.valueOf("@class");
 				String speed = detectorNode.valueOf("@speed");
 				String disabled = detectorNode.valueOf("@disabled");
 				String reports = detectorNode.valueOf("@reports");
 				String requireJRE = detectorNode.valueOf("@requirejre");
 				String hidden = detectorNode.valueOf("@hidden");
-	
+
 				//System.out.println("Found detector: class="+className+", disabled="+disabled);
-	
+
 				// Create DetectorFactory for the detector
 				//Class <? extends Detector>detectorClass = loadClass(className).asSubclass(Detector.class);
 				Class detectorClass = loadClass(className);
@@ -202,7 +199,7 @@ public class PluginLoader extends URLClassLoader {
 				DetectorFactory factory = new DetectorFactory(
 						plugin,
 						(Class<? extends Detector>) detectorClass, !disabled.equals("true"),
-				        speed, reports, requireJRE);
+						speed, reports, requireJRE);
 				if (Boolean.valueOf(hidden).booleanValue())
 					factory.setHidden(true);
 				factory.setPositionSpecifiedInPluginDescriptor(detectorCount++);
@@ -211,8 +208,8 @@ public class PluginLoader extends URLClassLoader {
 				// Find Detector node in one of the messages files,
 				// to get the detail HTML.
 				Node node = findMessageNode(messageCollectionList,
-				        "/MessageCollection/Detector[@class='" + className + "']/Details",
-				        "Missing Detector description for detector " + className);
+						"/MessageCollection/Detector[@class='" + className + "']/Details",
+						"Missing Detector description for detector " + className);
 
 				Element details = (Element) node;
 				String detailHTML = details.getText();
@@ -232,17 +229,14 @@ public class PluginLoader extends URLClassLoader {
 			pluginDescriptor.selectSingleNode("/FindbugsPlugin/OrderingConstraints");
 		if (orderingConstraintsNode != null) {
 			// Get inter-pass and intra-pass constraints
-			for (Iterator<Element> i = orderingConstraintsNode.selectNodes("./SplitPass|./WithinPass").iterator();
-				i.hasNext();) {
-				Element constraintElement =  i.next();
-
+			for (Element constraintElement : (Iterable<Element>) orderingConstraintsNode.selectNodes("./SplitPass|./WithinPass")) {
 				// Create the selectors which determine which detectors are
 				// involved in the constraint
 				DetectorFactorySelector earlierSelector = getConstraintSelector(
 						constraintElement, plugin, "Earlier", "EarlierCategory");
 				DetectorFactorySelector laterSelector = getConstraintSelector(
 						constraintElement, plugin, "Later", "LaterCategory");
-				
+
 				// Create the constraint
 				DetectorOrderingConstraint constraint = new DetectorOrderingConstraint(
 						earlierSelector, laterSelector);
@@ -257,8 +251,7 @@ public class PluginLoader extends URLClassLoader {
 
 		// Create BugPatterns
 		List<Node> bugPatternNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugPattern");
-		for (Iterator<Node> i = bugPatternNodeList.iterator(); i.hasNext();) {
-			Node bugPatternNode = i.next();
+		for (Node bugPatternNode : bugPatternNodeList) {
 			String type = bugPatternNode.valueOf("@type");
 			String abbrev = bugPatternNode.valueOf("@abbrev");
 			String category = bugPatternNode.valueOf("@category");
@@ -267,26 +260,23 @@ public class PluginLoader extends URLClassLoader {
 			// Find the matching element in messages.xml (or translations)
 			String query = "/MessageCollection/BugPattern[@type='" + type + "']";
 			Node messageNode = findMessageNode(messageCollectionList, query,
-			        "messages.xml missing BugPattern element for type " + type);
+					"messages.xml missing BugPattern element for type " + type);
 
 			String shortDesc = getChildText(messageNode, "ShortDescription");
 			String longDesc = getChildText(messageNode, "LongDescription");
 			String detailText = getChildText(messageNode, "Details");
 
 			BugPattern bugPattern = new BugPattern(type, abbrev, category,
-			        Boolean.valueOf(experimental).booleanValue(),
-			        shortDesc, longDesc, detailText);
+					Boolean.valueOf(experimental).booleanValue(),
+					shortDesc, longDesc, detailText);
 			plugin.addBugPattern(bugPattern);
 		}
 
 		// Create BugCodes
 		Set<String> definedBugCodes = new HashSet<String>();
-		for (Iterator<Document> i = messageCollectionList.iterator(); i.hasNext();) {
-			Document messageCollection = i.next();
-
+		for (Document messageCollection : messageCollectionList) {
 			List<Node> bugCodeNodeList = messageCollection.selectNodes("/MessageCollection/BugCode");
-			for (Iterator<Node> j = bugCodeNodeList.iterator(); j.hasNext();) {
-				Node bugCodeNode = (Node) j.next();
+			for (Node bugCodeNode : bugCodeNodeList) {
 				String abbrev = bugCodeNode.valueOf("@abbrev");
 				if (abbrev.equals(""))
 					throw new PluginException("BugCode element with missing abbrev attribute");
@@ -363,8 +353,7 @@ public class PluginLoader extends URLClassLoader {
 	private static Node findMessageNode(List<Document> messageCollectionList, String xpath,
 	                                    String missingMsg) throws PluginException {
 
-		for (Iterator<Document> i = messageCollectionList.iterator(); i.hasNext();) {
-			Document document = i.next();
+		for (Document document : messageCollectionList) {
 			Node node = document.selectSingleNode(xpath);
 			if (node != null)
 				return node;

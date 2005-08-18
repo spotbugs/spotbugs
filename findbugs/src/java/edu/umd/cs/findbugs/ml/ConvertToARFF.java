@@ -464,10 +464,10 @@ public class ConvertToARFF {
 	public static String collectionToRange(Collection<String> collection) {
 		StringBuffer buf = new StringBuffer();
 		buf.append("{");
-		for (Iterator<String> i = collection.iterator(); i.hasNext();) {
+		for (String aCollection : collection) {
 			if (buf.length() > 1)
 				buf.append(',');
-			buf.append(i.next());
+			buf.append(aCollection);
 		}
 		buf.append("}");
 
@@ -582,8 +582,7 @@ public class ConvertToARFF {
 	public void scan(Document document, final String appName) throws MissingNodeException, IOException {
 		List<Element> bugInstanceList = getBugInstanceList(document);
 
-		for (Iterator<Element> i = bugInstanceList.iterator(); i.hasNext(); ) {
-			final Element element = (Element) i.next();
+		for (final Element element : bugInstanceList) {
 			scanAttributeList(new AttributeCallback() {
 				public void apply(Attribute attribute) throws MissingNodeException {
 					attribute.scan(element, appName);
@@ -631,10 +630,10 @@ public class ConvertToARFF {
 			throws MissingNodeException, IOException {
 		List bugInstanceList = getBugInstanceList(document);
 
-		for (Iterator<Element> i = bugInstanceList.iterator(); i.hasNext(); ) {
-			final Element element = i.next();
+		for (final Element element : (Iterable<Element>) bugInstanceList) {
 			scanAttributeList(new AttributeCallback() {
 				boolean first = true;
+
 				public void apply(Attribute attribute) throws IOException {
 					if (!first)
 						out.write(",");
@@ -659,8 +658,7 @@ public class ConvertToARFF {
 	 */
 	public void scanAttributeList(AttributeCallback callback)
 			throws MissingNodeException, IOException {
-		for (Iterator<Attribute> i = attributeList.iterator(); i.hasNext();) {
-			Attribute attribute = i.next();
+		for (Attribute attribute : attributeList) {
 			callback.apply(attribute);
 		}
 	}
@@ -855,8 +853,7 @@ public class ConvertToARFF {
 		converter.generateHeader(relationName, out);
 
 		// Generate instances from each document
-		for (Iterator<DataFile> i = dataFileList.iterator(); i.hasNext(); ) {
-			DataFile dataFile = i.next();
+		for (DataFile dataFile : dataFileList) {
 			converter.generateInstances(dataFile.getDocument(), dataFile.getAppName(), out);
 		}
 

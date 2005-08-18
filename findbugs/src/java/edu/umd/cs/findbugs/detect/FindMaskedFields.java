@@ -52,21 +52,21 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 
 		Field[] fields = obj.getFields();
 		String fieldName;
-		for (int f = 0; f < fields.length; f++) {
-			fieldName = fields[f].getName();
-			classFields.put(fieldName, fields[f]);
+		for (Field field : fields) {
+			fieldName = field.getName();
+			classFields.put(fieldName, field);
 		}
 		
 		// Walk up the super class chain, looking for name collisions
 		try {
 			JavaClass[] superClasses = org.apache.bcel.Repository.getSuperClasses(obj);
-			for (int c = 0; c < superClasses.length; c++) {
-				fields = superClasses[c].getFields();
+			for (JavaClass superClass : superClasses) {
+				fields = superClass.getFields();
 				for (int f = 0; f < fields.length; f++) {
 					Field fld = fields[f];
 					if (!fld.isStatic()
-					        && !maskedFields.contains(fld)
-					        && (fld.isPublic() || fld.isProtected())) {
+							&& !maskedFields.contains(fld)
+							&& (fld.isPublic() || fld.isProtected())) {
 						fieldName = fld.getName();
 						if (fieldName.length() == 1)
 							continue;
@@ -76,32 +76,32 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 							maskedFields.add(fld);
 							Field maskingField = classFields.get(fieldName);
 							FieldAnnotation fa = new FieldAnnotation(getDottedClassName(),
-							        maskingField.getName(),
-							        maskingField.getSignature(),
-							        maskingField.isStatic());
+									maskingField.getName(),
+									maskingField.getSignature(),
+									maskingField.isStatic());
 							int priority = NORMAL_PRIORITY;
 							if (maskingField.isStatic()
-							        || maskingField.isFinal())
+									|| maskingField.isFinal())
 								priority++;
 							else if (fld.getSignature().charAt(0) == 'L'
-							        && !fld.getSignature().startsWith("Ljava/lang/")
-							        || fld.getSignature().charAt(0) == '[')
+									&& !fld.getSignature().startsWith("Ljava/lang/")
+									|| fld.getSignature().charAt(0) == '[')
 								priority--;
 							if (fld.getAccessFlags()
-							        != maskingField.getAccessFlags())
+									!= maskingField.getAccessFlags())
 								priority++;
 							if (!fld.getSignature().equals(maskingField.getSignature()))
 								priority++;
 
 							FieldAnnotation maskedFieldAnnotation
-							        = FieldAnnotation.fromBCELField(superClasses[c].getClassName(), fld);
+									= FieldAnnotation.fromBCELField(superClass.getClassName(), fld);
 							bugReporter.reportBug(new BugInstance(this, "MF_CLASS_MASKS_FIELD",
-							        priority)
-							        .addClass(this)
-							        .addField(maskedFieldAnnotation)
-							        .describe("FIELD_MASKED")
-							        .addField(fa)
-							        .describe("FIELD_MASKING"));
+									priority)
+									.addClass(this)
+									.addField(maskedFieldAnnotation)
+									.describe("FIELD_MASKED")
+									.addField(fa)
+									.describe("FIELD_MASKING"));
 						}
 					}
 				}
@@ -136,8 +136,7 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 
 			LocalVariable[] vars = obj.getLocalVariableTable();
 			// System.out.println("Num params = " + numParms);
-			for (int v = 0; v < vars.length; v++) {
-				LocalVariable var = vars[v];
+			for (LocalVariable var : vars) {
 				if (var.getIndex() < numParms)
 					continue;
 				String varName = var.getName();
@@ -150,12 +149,12 @@ public class FindMaskedFields extends BytecodeScanningDetector implements Consta
 				// vs. obscuring a field in a superclass.  Not sure how important that is.
 				if (f != null) {
 					FieldAnnotation fa
-					        = FieldAnnotation.fromBCELField(getClassName(), f);
+							= FieldAnnotation.fromBCELField(getClassName(), f);
 					if (true || var.getStartPC() > 0)
 						bugReporter.reportBug(new BugInstance(this, "MF_METHOD_MASKS_FIELD", LOW_PRIORITY)
-						        .addClassAndMethod(this)
-						        .addField(fa)
-						        .addSourceLine(this, var.getStartPC() - 1));
+								.addClassAndMethod(this)
+								.addField(fa)
+								.addSourceLine(this, var.getStartPC() - 1));
 				}
 			}
 		}

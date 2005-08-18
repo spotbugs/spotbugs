@@ -82,8 +82,7 @@ public class ObligationFactory {
 	}
 	
 	public Obligation getObligationById(int id) {
-		for (Iterator<Obligation> i = classNameToObligationMap.values().iterator(); i.hasNext();) {
-			Obligation obligation = i.next();
+		for (Obligation obligation : classNameToObligationMap.values()) {
 			if (obligation.getId() == id)
 				return obligation;
 		}

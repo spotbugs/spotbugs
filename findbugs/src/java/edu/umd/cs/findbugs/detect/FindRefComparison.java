@@ -382,8 +382,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		JavaClass jclass = classContext.getJavaClass();
 		Method[] methodList = jclass.getMethods();
 
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			MethodGen methodGen = classContext.getMethodGen(method);
 			if (methodGen == null)
 				continue;
@@ -396,7 +395,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 			if (DEBUG)
 				System.out.println("FindRefComparison: analyzing " +
-				        SignatureConverter.convertMethodSignature(methodGen));
+						SignatureConverter.convertMethodSignature(methodGen));
 
 			try {
 				analyzeMethod(classContext, method);
@@ -542,9 +541,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	private void decorateWarnings(
 			LinkedList<WarningWithProperties> stringComparisonList,
 			WarningDecorator warningDecorator) {
-		for (Iterator<WarningWithProperties> i = stringComparisonList.iterator(); i.hasNext();) {
-			WarningWithProperties warn = i.next();
-
+		for (WarningWithProperties warn : stringComparisonList) {
 			warningDecorator.decorate(warn);
 			warn.instance.setPriority(warn.propertySet.computePriority(NORMAL_PRIORITY));
 		}
@@ -558,12 +555,11 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		boolean reportAll = relaxed || REPORT_ALL_REF_COMPARISONS;
 		
 		WarningWithProperties best = null;
-		for (Iterator<WarningWithProperties> i = warningList.iterator(); i.hasNext();) {
-			WarningWithProperties warn = i.next();
+		for (WarningWithProperties warn : warningList) {
 			if (best == null || warn.instance.getPriority() < best.instance.getPriority()) {
 				best = warn;
 			}
-			
+
 			if (reportAll) {
 				if (relaxed) {
 					// Add general warning properties
@@ -572,7 +568,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 							classContext,
 							method,
 							warn.location);
-					
+
 					// Convert warning properties to bug properties
 					warn.propertySet.decorateBugInstance(warn.instance);
 				}

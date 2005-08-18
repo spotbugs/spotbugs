@@ -66,11 +66,11 @@ public class RecursiveFileSearch {
 				continue;
 
 			File[] contentList = dir.listFiles();
-			for (int i = 0; i < contentList.length; ++i) {
+			for (File aContentList : contentList) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
 
-				File file = contentList[i];
+				File file = aContentList;
 
 				if (!fileFilter.accept(file))
 					continue;

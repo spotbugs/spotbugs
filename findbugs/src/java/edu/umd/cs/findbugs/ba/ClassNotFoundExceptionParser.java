@@ -59,8 +59,7 @@ public class ClassNotFoundExceptionParser {
 	 *         couldn't figure out the class name
 	 */
 	public static String getMissingClassName(ClassNotFoundException ex) {
-		for (int i = 0; i < patternList.length; ++i) {
-			Pattern pattern = patternList[i];
+		for (Pattern pattern : patternList) {
 			Matcher matcher = pattern.matcher(ex.getMessage());
 			if (matcher.matches())
 				return matcher.group(1);

@@ -83,21 +83,20 @@ public class LockedFields extends BytecodeScanningDetector implements Constants2
 			if (mode == READ_UNLOCKED || mode == WRITTEN_UNLOCKED) return;
 			}
 		*/
-		for (Iterator<FieldAnnotation> i = fields.iterator(); i.hasNext();) {
-			FieldAnnotation f = i.next();
+		for (FieldAnnotation f : fields) {
 			if (f.getClassName().equals(getDottedClassName()) && mode <= WRITTEN_LOCKED)
 				localLocks.add(f);
-			int[] theseStats = (int[]) stats.get(f);
+			int[] theseStats = stats.get(f);
 			if (theseStats == null) {
 				theseStats = new int[4];
 				stats.put(f, theseStats);
 			}
 			if (DEBUG)
 				System.out.println(names[mode]
-				        + "	"
-				        + getFullyQualifiedMethodName()
-				        + "	"
-				        + f.toString());
+						+ "	"
+						+ getFullyQualifiedMethodName()
+						+ "	"
+						+ f.toString());
 
 			theseStats[mode]++;
 		}
@@ -242,10 +241,9 @@ public class LockedFields extends BytecodeScanningDetector implements Constants2
 		int mostlyUnlocked = 0;
 
 		//for (Iterator<Map.Entry<FieldAnnotation, int[]>> i = stats.entrySet().iterator(); i.hasNext();) {
-		for (Iterator<FieldAnnotation> i = stats.keySet().iterator(); i.hasNext(); ) {
-			FieldAnnotation f = i.next();
+		for (FieldAnnotation f : stats.keySet()) {
 			int[] theseStats = stats.get(f);
-			
+
 			int locked = theseStats[READ_LOCKED] + theseStats[WRITTEN_LOCKED];
 			int biasedLocked = theseStats[READ_LOCKED] + 2 * theseStats[WRITTEN_LOCKED];
 			int unlocked = theseStats[READ_UNLOCKED] + theseStats[WRITTEN_UNLOCKED];
@@ -264,7 +262,7 @@ public class LockedFields extends BytecodeScanningDetector implements Constants2
 				int freq = (100 * locked) / (locked + unlocked);
 				if (DEBUG) {
 					System.out.print(freq
-					        + "	");
+							+ "	");
 					for (int j = 0; j < 4; j++)
 						System.out.print(theseStats[j] + "	");
 					System.out.println(f);
@@ -291,12 +289,12 @@ public class LockedFields extends BytecodeScanningDetector implements Constants2
 			}
 			int freq = (100 * locked) / (locked + unlocked);
 			bugReporter.reportBug(new BugInstance(this, "IS_INCONSISTENT_SYNC", NORMAL_PRIORITY)
-			        .addClass(f.getClassName())
-			        .addField(f)
-			        .addInt(freq).describe("INT_SYNC_PERCENT"));
+					.addClass(f.getClassName())
+					.addField(f)
+					.addInt(freq).describe("INT_SYNC_PERCENT"));
 			if (DEBUG) {
 				System.out.print(freq
-				        + "	");
+						+ "	");
 				for (int j = 0; j < 4; j++)
 					System.out.print(theseStats[j] + "	");
 				System.out.println(f);

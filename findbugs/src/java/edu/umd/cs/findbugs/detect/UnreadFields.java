@@ -104,10 +104,10 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 		}
 		// Does this class directly implement Serializable?
 		String[] interface_names = obj.getInterfaceNames();
-		for (int i = 0; i < interface_names.length; i++) {
-			if (interface_names[i].equals("java.io.Externalizable")) {
+		for (String interface_name : interface_names) {
+			if (interface_name.equals("java.io.Externalizable")) {
 				isSerializable = true;
-			} else if (interface_names[i].equals("java.io.Serializable")) {
+			} else if (interface_name.equals("java.io.Serializable")) {
 				isSerializable = true;
 				break;
 			}
@@ -391,141 +391,136 @@ public class UnreadFields extends BytecodeScanningDetector implements Constants2
 		Set<FieldAnnotation> writeOnlyFields = declaredFields;
 		writeOnlyFields.removeAll(readFields);
 
-		for (Iterator<FieldAnnotation> i = notInitializedInConstructors.iterator(); i.hasNext();) {
-			FieldAnnotation f = i.next();
+		for (FieldAnnotation f : notInitializedInConstructors) {
 			String fieldName = f.getFieldName();
 			String className = f.getClassName();
 			String fieldSignature = f.getFieldSignature();
 			if (!superWrittenFields.contains(fieldName)
-				 && !fieldsOfSerializableOrNativeClassed.contains(f)
-				 && (fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')
-				) {
+					&& !fieldsOfSerializableOrNativeClassed.contains(f)
+					&& (fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')
+					) {
 				int priority = LOW_PRIORITY;
-				bugReporter.reportBug(new BugInstance(this, 
-						"UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", 
+				bugReporter.reportBug(new BugInstance(this,
+						"UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR",
 						priority)
-				        .addClass(className)
-				        .addField(f));
-				}
+						.addClass(className)
+						.addField(f));
+			}
 		}
 
 
-		for (Iterator<FieldAnnotation> i = readOnlyFields.iterator(); i.hasNext();) {
-			FieldAnnotation f = i.next();
+		for (FieldAnnotation f : readOnlyFields) {
 			String fieldName = f.getFieldName();
 			String className = f.getClassName();
 			String fieldSignature = f.getFieldSignature();
 			if (!superWrittenFields.contains(fieldName)
-				 && !fieldsOfSerializableOrNativeClassed.contains(f)) {
+					&& !fieldsOfSerializableOrNativeClassed.contains(f)) {
 				int priority = NORMAL_PRIORITY;
 				if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '['))
 					priority++;
-				
-				bugReporter.reportBug(new BugInstance(this, 
-					"UWF_UNWRITTEN_FIELD", 
-					priority)
-				        .addClass(className)
-				        .addField(f));
+
+				bugReporter.reportBug(new BugInstance(this,
+						"UWF_UNWRITTEN_FIELD",
+						priority)
+						.addClass(className)
+						.addField(f));
 			}
-				
+
 		}
-		for (Iterator<FieldAnnotation> i = nullOnlyFields.iterator(); i.hasNext();) {
-			FieldAnnotation f = i.next();
+		for (FieldAnnotation f : nullOnlyFields) {
 			String fieldName = f.getFieldName();
 			String className = f.getClassName();
 			String fieldSignature = f.getFieldSignature();
-			if (DEBUG)  {
-			System.out.println("Null only: " + f);
-			System.out.println("   : " + assumedNonNull.containsKey(f));
+			if (DEBUG) {
+				System.out.println("Null only: " + f);
+				System.out.println("   : " + assumedNonNull.containsKey(f));
 			}
 			if (superWrittenFields.contains(fieldName)) continue;
 			if (fieldsOfSerializableOrNativeClassed.contains(f)) continue;
 			int priority = NORMAL_PRIORITY;
-			if (assumedNonNull.containsKey(f))  {
+			if (assumedNonNull.containsKey(f)) {
 				priority = HIGH_PRIORITY;
-				for(ProgramPoint p : assumedNonNull.get(f)) 
-					bugReporter.reportBug(new BugInstance(this, 
-							"NP_UNWRITTEN_FIELD", 
+				for (ProgramPoint p : assumedNonNull.get(f))
+					bugReporter.reportBug(new BugInstance(this,
+							"NP_UNWRITTEN_FIELD",
 							NORMAL_PRIORITY)
 							.addClassAndMethod(p.method)
 							.addSourceLine(p.sourceLine)
 					);
-				}
+			}
 			if (!readOnlyFields.contains(f))
-			bugReporter.reportBug(new BugInstance(this, 
-				"UWF_NULL_FIELD", 
-				priority)
-				        .addClass(className)
-				        .addField(f));
+				bugReporter.reportBug(new BugInstance(this,
+						"UWF_NULL_FIELD",
+						priority)
+						.addClass(className)
+						.addField(f));
 		}
 
-		for (Iterator<FieldAnnotation> i = writeOnlyFields.iterator(); i.hasNext();) {
-			FieldAnnotation f = i.next();
+		for (FieldAnnotation f : writeOnlyFields) {
 			String fieldName = f.getFieldName();
 			String className = f.getClassName();
 			int lastDollar =
-			        Math.max(className.lastIndexOf('$'),
-			                className.lastIndexOf('+'));
+					Math.max(className.lastIndexOf('$'),
+							className.lastIndexOf('+'));
 			boolean isAnonymousInnerClass =
-			        (lastDollar > 0)
-			        && (lastDollar < className.length() - 1)
-			        && Character.isDigit(className.charAt(className.length() - 1));
+					(lastDollar > 0)
+							&& (lastDollar < className.length() - 1)
+							&& Character.isDigit(className.charAt(className.length() - 1));
 
 			if (DEBUG) {
-			System.out.println("Checking write only field " + className
-					+ "." + fieldName
-					+ "\t" + superReadFields.contains(fieldName)
-					+ "\t" + constantFields.contains(f)
-					+ "\t" + f.isStatic()
-					);
+				System.out.println("Checking write only field " + className
+						+ "." + fieldName
+						+ "\t" + superReadFields.contains(fieldName)
+						+ "\t" + constantFields.contains(f)
+						+ "\t" + f.isStatic()
+				);
 			}
 			if (superReadFields.contains(fieldName)) continue;
 			if (dontComplainAbout.matcher(fieldName).find()) continue;
 			if (fieldName.startsWith("this$")
-			        || fieldName.startsWith("this+")) {
-				 if (!innerClassCannotBeStatic.contains(className)) {
-						boolean easyChange = !needsOuterObjectInConstructor.contains(className);
-						if (easyChange || !isAnonymousInnerClass) {
+					|| fieldName.startsWith("this+")) {
+				if (!innerClassCannotBeStatic.contains(className)) {
+					boolean easyChange = !needsOuterObjectInConstructor.contains(className);
+					if (easyChange || !isAnonymousInnerClass) {
 
-							// easyChange    isAnonymousInnerClass
-							// true          false			medium, SIC
-							// true          true				low, SIC_ANON
-							// false         true				not reported
-							// false         false			low, SIC_THIS
-							int priority = LOW_PRIORITY;
-							if (easyChange && !isAnonymousInnerClass)
-								priority = NORMAL_PRIORITY;
+						// easyChange    isAnonymousInnerClass
+						// true          false			medium, SIC
+						// true          true				low, SIC_ANON
+						// false         true				not reported
+						// false         false			low, SIC_THIS
+						int priority = LOW_PRIORITY;
+						if (easyChange && !isAnonymousInnerClass)
+							priority = NORMAL_PRIORITY;
 
-							String bug = "SIC_INNER_SHOULD_BE_STATIC";
-							if (isAnonymousInnerClass)
-								bug = "SIC_INNER_SHOULD_BE_STATIC_ANON";
-							else if (!easyChange)
-								bug = "SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS";
+						String bug = "SIC_INNER_SHOULD_BE_STATIC";
+						if (isAnonymousInnerClass)
+							bug = "SIC_INNER_SHOULD_BE_STATIC_ANON";
+						else if (!easyChange)
+							bug = "SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS";
 
-							bugReporter.reportBug(new BugInstance(this, bug, priority)
-							        .addClass(className));
-						} 
-				 } 
-			} else  {
+						bugReporter.reportBug(new BugInstance(this, bug, priority)
+								.addClass(className));
+					}
+				}
+			} else {
 				if (constantFields.contains(f)) {
 					if (!f.isStatic())
-					bugReporter.reportBug(new BugInstance(this, 
-							"SS_SHOULD_BE_STATIC", 
-							NORMAL_PRIORITY)
-					        .addClass(className)
-					        .addField(f));
-					}
-				else if (fieldsOfSerializableOrNativeClassed.contains(f)) {
+						bugReporter.reportBug(new BugInstance(this,
+								"SS_SHOULD_BE_STATIC",
+								NORMAL_PRIORITY)
+								.addClass(className)
+								.addField(f));
+				} else if (fieldsOfSerializableOrNativeClassed.contains(f)) {
 					// ignore it
 				} else if (!writtenFields.contains(f) && !superWrittenFields.contains(fieldName))
 					bugReporter.reportBug(new BugInstance(this, "UUF_UNUSED_FIELD", NORMAL_PRIORITY)
-					        .addClass(className)
-					        .addField(f));
+							.addClass(className)
+							.addField(f));
 				else if (!f.isStatic() || !finalFields.contains(f))
 					bugReporter.reportBug(new BugInstance(this, "URF_UNREAD_FIELD", NORMAL_PRIORITY)
-					        .addClass(className)
-					        .addField(f));
-			} 
+							.addClass(className)
+							.addField(f));
+			}
 		}
 
 	}

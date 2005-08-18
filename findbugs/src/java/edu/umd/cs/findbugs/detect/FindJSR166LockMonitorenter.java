@@ -69,8 +69,7 @@ public class FindJSR166LockMonitorenter implements Detector, StatelessDetector {
 		JavaClass jclass = classContext.getJavaClass();
 		Method[] methodList = jclass.getMethods();
 
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			if (method.getCode() == null)
 				continue;
 

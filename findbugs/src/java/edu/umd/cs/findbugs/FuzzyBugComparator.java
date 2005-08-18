@@ -258,7 +258,7 @@ public class FuzzyBugComparator implements WarningComparator {
 	
 	// Compare classes: either exact fully qualified name must match, or class hash must match
 	public int compareClassesByName(BugCollection lhsCollection, BugCollection rhsCollection, String lhsClassName, String rhsClassName) {
-		int cmp;
+		
 
 //		if (USE_HASHES) {
 //			// Get class hashes

@@ -72,8 +72,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 
 		final JavaClass jclass = classContext.getJavaClass();
 		Method[] methodList = jclass.getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			if (method.isAbstract() || method.isNative())
 				continue;
 
@@ -97,7 +96,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 				ResourceTrackerType resourceTracker = getResourceTracker(classContext, method);
 
 				ResourceCollection<Resource> resourceCollection =
-				        buildResourceCollection(classContext, method, resourceTracker);
+						buildResourceCollection(classContext, method, resourceTracker);
 				if (resourceCollection.isEmpty())
 					continue;
 

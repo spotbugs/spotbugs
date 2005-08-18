@@ -130,11 +130,10 @@ public class FindNullDeref
 		try {
 			JavaClass jclass = classContext.getJavaClass();
 			Method[] methodList = jclass.getMethods();
-			for (int i = 0; i < methodList.length; ++i) {
-				Method method = methodList[i];
+			for (Method method : methodList) {
 				if (method.isAbstract() || method.isNative() || method.getCode() == null)
 					continue;
-				
+
 				if (METHOD != null && !method.getName().equals(METHOD))
 					continue;
 				if (DEBUG) System.out.println("Checking for NP in " + method.getName());
@@ -383,8 +382,7 @@ public class FindNullDeref
 				.addClassAndMethod(methodGen, sourceFile)
 				.addSourceLine(classContext, methodGen, sourceFile, location.getHandle())
 				.addMethod(nonNullReturn.getJavaClass(), nonNullReturn.getMethod()).describe("METHOD_DECLARED_NONNULL");
-			;
-			
+
 			JavaClassAndMethod visitedMethod = new JavaClassAndMethod(classContext.getJavaClass(), method);
 			if (visitedMethod.equals(nonNullReturn)) {
 				// It's sort of blatant to declare a method @NonNull,

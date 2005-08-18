@@ -155,9 +155,7 @@ public abstract class AbstractGraph
 	}
 
 	public boolean containsVertex(VertexType v) {
-		Iterator<VertexType> i = vertexList.iterator();
-		while (i.hasNext()) {
-			VertexType existingVertex = i.next();
+		for (VertexType existingVertex : vertexList) {
 			if (v == existingVertex)
 				return true;
 		}

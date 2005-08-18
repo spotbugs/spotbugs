@@ -431,8 +431,8 @@ public class ValueNumberFrameModelingVisitor
 	 */
 	private void pushOutputValues(ValueNumber[] outputValueList) {
 		ValueNumberFrame frame = getFrame();
-		for (int i = 0; i < outputValueList.length; ++i)
-			frame.pushValue(outputValueList[i]);
+		for (ValueNumber aOutputValueList : outputValueList)
+			frame.pushValue(aOutputValueList);
 	}
 
 	/**
@@ -466,9 +466,9 @@ public class ValueNumberFrameModelingVisitor
 
 	private static String vlts(ValueNumber[] vl) {
 		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < vl.length; ++i) {
+		for (ValueNumber aVl : vl) {
 			if (buf.length() > 0) buf.append(',');
-			buf.append(vl[i].getNumber());
+			buf.append(aVl.getNumber());
 		}
 		return buf.toString();
 	}

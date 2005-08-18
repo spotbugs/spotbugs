@@ -55,10 +55,10 @@ public class DontCatchIllegalMonitorStateException
 	public void visit(ExceptionTable obj) {
 		if (DEBUG) {
 			String names[] = obj.getExceptionNames();
-			for (int i = 0; i < names.length; i++)
-				if (names[i].equals("java.lang.Exception")
-				        || names[i].equals("java.lang.Throwable"))
-					System.out.println(names[i] + " thrown by " + getFullyQualifiedMethodName());
+			for (String name : names)
+				if (name.equals("java.lang.Exception")
+						|| name.equals("java.lang.Throwable"))
+					System.out.println(name + " thrown by " + getFullyQualifiedMethodName());
 		}
 	}
 

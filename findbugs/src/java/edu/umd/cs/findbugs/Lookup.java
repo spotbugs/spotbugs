@@ -55,13 +55,13 @@ public class Lookup
 	public static JavaClass
 	        findImplementor(JavaClass[] clazz, String name, String signature) {
 
-		for (int i = 0; i < clazz.length; i++) {
-			Method m = findImplementation(clazz[i], name, signature);
+		for (JavaClass aClazz : clazz) {
+			Method m = findImplementation(aClazz, name, signature);
 			if (m != null) {
 				if ((m.getAccessFlags() & ACC_ABSTRACT) != 0)
 					return null;
 				else
-					return clazz[i];
+					return aClazz;
 			}
 		}
 		return null;
@@ -70,13 +70,13 @@ public class Lookup
 	public static Method
 	        findImplementation(JavaClass clazz, String name, String signature) {
 		Method[] m = clazz.getMethods();
-		for (int i = 0; i < m.length; i++)
-			if (m[i].getName().equals(name)
-			        && m[i].getSignature().equals(signature)
-			        && ((m[i].getAccessFlags() & ACC_PRIVATE) == 0)
-			        && ((m[i].getAccessFlags() & ACC_STATIC) == 0)
-			)
-				return m[i];
+		for (Method aM : m)
+			if (aM.getName().equals(name)
+					&& aM.getSignature().equals(signature)
+					&& ((aM.getAccessFlags() & ACC_PRIVATE) == 0)
+					&& ((aM.getAccessFlags() & ACC_STATIC) == 0)
+					)
+				return aM;
 		return null;
 	}
 }

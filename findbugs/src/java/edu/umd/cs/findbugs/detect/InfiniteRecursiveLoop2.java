@@ -78,14 +78,13 @@ public class InfiniteRecursiveLoop2 implements Detector {
 	 */
 	public void visitClassContext(ClassContext classContext) {
 		Method[] methodList = classContext.getJavaClass().getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			if (method.getCode() == null)
 				continue;
-			
+
 			if (IRL_METHOD != null && !method.getName().equals(IRL_METHOD))
 				continue;
-			
+
 			try {
 				if (DEBUG) {
 					System.out.println("Checking method " +
@@ -185,7 +184,7 @@ public class InfiniteRecursiveLoop2 implements Detector {
 			// (1) all parameters are passed unconditionally as arguments
 			// (2) no fields which might have been read have been written to
 			//     (meaning a different path could be taken in the called method)
-			report = allParamsPassedAsArgs(classContext, vnaDataflow, vnaFrameAtEntry, numArgsToCheck, basicBlock, (InvokeInstruction) ins)
+			report = allParamsPassedAsArgs(classContext, vnaDataflow, vnaFrameAtEntry, numArgsToCheck, basicBlock, ins)
 					&& !checkedStateHasBeenModified(classContext, method, basicBlock);
 		}
 		

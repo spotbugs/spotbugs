@@ -130,8 +130,7 @@ public class ExecutionPlan {
 
 		// Sort each pass by intra-pass ordering constraints.
 		// This may assign some previously unassigned detectors to passes.
-		for (Iterator<AnalysisPass> i = passList.iterator(); i.hasNext(); ) {
-			AnalysisPass pass = i.next();
+		for (AnalysisPass pass : passList) {
 			sortPass(intraPassConstraintList, factoryMap, pass);
 		}
 		
@@ -189,14 +188,12 @@ public class ExecutionPlan {
 
 		ConstraintGraph result = new ConstraintGraph();
 
-		for (Iterator<DetectorOrderingConstraint> i = constraintList.iterator(); i.hasNext(); ) {
-			DetectorOrderingConstraint constraint = i.next();
-			
+		for (DetectorOrderingConstraint constraint : constraintList) {
 			Set<DetectorNode> earlierSet = addOrCreateDetectorNodes(
 					constraint.getEarlier(), nodeMap, factorySet, result);
 			Set<DetectorNode> laterSet = addOrCreateDetectorNodes(
 					constraint.getLater(), nodeMap, factorySet, result);
-			
+
 			createConstraintEdges(result, earlierSet, laterSet, constraint);
 		}
 
@@ -206,8 +203,7 @@ public class ExecutionPlan {
 	private Set<DetectorFactory> selectDetectors(
 			DetectorFactorySelector selector, Set<DetectorFactory> candidateSet) {
 		Set<DetectorFactory> result = new HashSet<DetectorFactory>();
-		for (Iterator<DetectorFactory> i = candidateSet.iterator(); i.hasNext();) {
-			DetectorFactory factory = i.next();
+		for (DetectorFactory factory : candidateSet) {
 			if (selector.selectFactory(factory)) {
 				result.add(factory);
 			}
@@ -223,9 +219,8 @@ public class ExecutionPlan {
 		HashSet<DetectorNode> result = new HashSet<DetectorNode>();
 		
 		Set<DetectorFactory> chosenSet = selectDetectors(selector, factorySet);
-		
-		for (Iterator<DetectorFactory> i = chosenSet.iterator(); i.hasNext();) {
-			DetectorFactory factory = i.next();
+
+		for (DetectorFactory factory : chosenSet) {
 			DetectorNode node = addOrCreateDetectorNode(factory, nodeMap, constraintGraph);
 			result.add(node);
 		}
@@ -256,11 +251,9 @@ public class ExecutionPlan {
 		// if any detector it specifies is not enabled.
 		if (earlierSet.isEmpty() || laterSet.isEmpty())
 			return;
-		
-		for (Iterator<DetectorNode> i = earlierSet.iterator(); i.hasNext();) {
-			DetectorNode earlier = i.next();
-			for (Iterator<DetectorNode> j = laterSet.iterator(); j.hasNext();) {
-				DetectorNode later = j.next();
+
+		for (DetectorNode earlier : earlierSet) {
+			for (DetectorNode later : laterSet) {
 				result.createEdge(earlier, later);
 			}
 		}
@@ -288,8 +281,7 @@ public class ExecutionPlan {
 				throw new OrderingConstraintException("Cycle in inter-pass ordering constraints");
 
 			// Remove all of the chosen detectors from the constraint graph.
-			for (Iterator<DetectorNode> i = inDegreeZeroList.iterator(); i.hasNext(); ) {
-				DetectorNode node = i.next();
+			for (DetectorNode node : inDegreeZeroList) {
 				constraintGraph.removeVertex(node);
 			}
 
@@ -298,8 +290,7 @@ public class ExecutionPlan {
 			// it doesn't assign them a position in the pass.
 			AnalysisPass pass = new AnalysisPass();
 			addPass(pass);
-			for (Iterator<DetectorNode> i = inDegreeZeroList.iterator(); i.hasNext(); ) {
-				DetectorNode node = i.next();
+			for (DetectorNode node : inDegreeZeroList) {
 				assignToPass(node.getFactory(), pass);
 			}
 		}
@@ -327,9 +318,7 @@ public class ExecutionPlan {
 		// Build list of ordering constraints in this pass only
 		List<DetectorOrderingConstraint> passConstraintList =
 			new LinkedList<DetectorOrderingConstraint>();
-		for (Iterator<DetectorOrderingConstraint> i = constraintList.iterator(); i.hasNext(); ) {
-			DetectorOrderingConstraint constraint = i.next();
-			
+		for (DetectorOrderingConstraint constraint : constraintList) {
 			// Does this constraint specify any detectors in this pass?
 			// If so, add it to the pass constraints
 			if (selectDetectors(constraint.getEarlier(), detectorSet).size() > 0
@@ -357,8 +346,7 @@ public class ExecutionPlan {
 		
 		// See if any detectors were brought into the pass by an intrapass ordering constraint.
 		// Assign them to the pass officially.
-		for (Iterator<DetectorNode> i = nodeMap.values().iterator(); i.hasNext();) {
-			DetectorNode node = i.next();
+		for (DetectorNode node : nodeMap.values()) {
 			if (!pass.contains(node.getFactory())) {
 				assignToPass(node.getFactory(), pass);
 			}
@@ -452,8 +440,7 @@ public class ExecutionPlan {
 
 		ExecutionPlan execPlan = new ExecutionPlan();
 
-		for (int i = 0; i < argv.length; ++i) {
-			String pluginId = argv[i];
+		for (String pluginId : argv) {
 			Plugin plugin = detectorFactoryCollection.getPluginById(pluginId);
 			if (plugin != null)
 				execPlan.addPlugin(plugin);

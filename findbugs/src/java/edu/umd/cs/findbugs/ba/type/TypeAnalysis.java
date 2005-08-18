@@ -252,9 +252,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		// Note that long and double parameters need to be handled
 		// specially because they occupy two locals.
 		Type[] argumentTypes = methodGen.getArgumentTypes();
-		for (int i = 0; i < argumentTypes.length; ++i) {
-			Type argType = argumentTypes[i];
-
+		for (Type argType : argumentTypes) {
 			// Add special "extra" type for long or double params.
 			// These occupy the slot before the "plain" type.
 			if (argType.getType() == Constants.T_LONG) {
@@ -507,7 +505,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	private CachedExceptionSet computeBlockExceptionSet(BasicBlock basicBlock, TypeFrame result)
 	        throws DataflowAnalysisException {
 
-		ExceptionSet exceptionSet = null;
+		ExceptionSet exceptionSet;
 		try {
 			exceptionSet = computeThrownExceptionTypes(basicBlock);
 		} catch (ClassNotFoundException e) {
@@ -627,8 +625,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		// Note that all of these are unchecked.
 		ExceptionThrower exceptionThrower = (ExceptionThrower) ins;
 		Class[] exceptionList = exceptionThrower.getExceptions();
-		for (int i = 0; i < exceptionList.length; ++i) {
-			exceptionTypeSet.addImplicit(new ObjectType(exceptionList[i].getName()));
+		for (Class aExceptionList : exceptionList) {
+			exceptionTypeSet.addImplicit(new ObjectType(aExceptionList.getName()));
 		}
 
 		// Assume that an Error may be thrown by any instruction.
@@ -699,8 +697,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 					        SignatureConverter.convertMethodSignature(inv, cpg));
 				exceptionTypeSet.addExplicit(Hierarchy.EXCEPTION_TYPE);
 			} else {
-				for (int i = 0; i < declaredExceptionList.length; ++i) {
-					exceptionTypeSet.addExplicit(declaredExceptionList[i]);
+				for (ObjectType aDeclaredExceptionList : declaredExceptionList) {
+					exceptionTypeSet.addExplicit(aDeclaredExceptionList);
 				}
 			}
 

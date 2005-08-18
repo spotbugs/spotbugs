@@ -66,9 +66,8 @@ public abstract class AbstractBugCollection implements BugCollection {
 	 * @param collection the Collection of BugInstances to add
 	 */
 	public void addAll(Collection<BugInstance> collection) {
-		Iterator<BugInstance> i = collection.iterator();
-		while (i.hasNext()) {
-			add(i.next());
+		for (BugInstance aCollection : collection) {
+			add(aCollection);
 		}
 	}
 	
@@ -471,9 +470,9 @@ public abstract class AbstractBugCollection implements BugCollection {
 			
 			String stackTrace[] = error.getStackTrace();
 			if (stackTrace != null) {
-				for (int j = 0; j < stackTrace.length; ++j) {
+				for (String aStackTrace : stackTrace) {
 					xmlOutput.openTag(AbstractBugCollection.ERROR_STACK_TRACE_ELEMENT_NAME);
-					xmlOutput.writeText(stackTrace[j]);
+					xmlOutput.writeText(aStackTrace);
 					xmlOutput.closeTag(AbstractBugCollection.ERROR_STACK_TRACE_ELEMENT_NAME);
 				}
 			}
@@ -522,8 +521,7 @@ public abstract class AbstractBugCollection implements BugCollection {
 	 * @param source the source Collection
 	 */
 	public static void cloneAll(Collection<BugInstance> dest, Collection<BugInstance> source) {
-		for (Iterator<BugInstance> i = source.iterator(); i.hasNext(); ) {
-			BugInstance obj = i.next();
+		for (BugInstance obj : source) {
 			dest.add((BugInstance) obj.clone());
 		}
 	}

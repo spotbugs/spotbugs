@@ -172,29 +172,28 @@ public class MutableStaticFields extends BytecodeScanningDetector implements Con
 			System.out.println("Unsafe: " + i.next());
 			}
 		*/
-		for (Iterator<FieldRecord> i = seen.iterator(); i.hasNext();) {
-			FieldRecord f = i.next();
+		for (FieldRecord f : seen) {
 			boolean isFinal = f.isFinal;
 			String className = f.className;
 			String fieldSig = f.signature;
 			String fieldName = f.name;
 			String name = className + "." + fieldName;
 			boolean couldBeFinal = !isFinal
-			        && !notFinal.contains(name);
+					&& !notFinal.contains(name);
 			boolean isPublic = f.isPublic;
 			boolean couldBePackage = !outsidePackage.contains(name);
 			boolean movedOutofInterface = couldBePackage &&
-			        interfaces.contains(className);
+					interfaces.contains(className);
 			boolean isHashtable = fieldSig.equals("Ljava.util.Hashtable;");
 			boolean isArray = fieldSig.charAt(0) == '['
-			        && unsafeValue.contains(name);
+					&& unsafeValue.contains(name);
 			/*
-			System.out.println(className + "."  + fieldName
-						+ " : " + fieldSig
-					+ "	" + isHashtable
-					+ "	" + isArray
-						);
-			*/
+			              System.out.println(className + "."  + fieldName
+						              + " : " + fieldSig
+					              + "	" + isHashtable
+					              + "	" + isArray
+						              );
+			              */
 
 			String bugType;
 			int priority = NORMAL_PRIORITY;
@@ -207,7 +206,7 @@ public class MutableStaticFields extends BytecodeScanningDetector implements Con
 			else if (couldBeFinal && !isHashtable && !isArray) {
 				bugType = "MS_SHOULD_BE_FINAL";
 				if (fieldName.equals(fieldName.toUpperCase())
-					|| fieldSig.charAt(0) == 'L')
+						|| fieldSig.charAt(0) == 'L')
 					priority = HIGH_PRIORITY;
 			} else if (couldBePackage)
 				bugType = "MS_PKGPROTECT";
@@ -215,21 +214,19 @@ public class MutableStaticFields extends BytecodeScanningDetector implements Con
 				bugType = "MS_MUTABLE_HASHTABLE";
 				if (!isFinal)
 					priority = HIGH_PRIORITY;
-				}
-			else if (isArray) {
+			} else if (isArray) {
 				bugType = "MS_MUTABLE_ARRAY";
 				if (fieldSig.indexOf("L") >= 0 || !isFinal)
 					priority = HIGH_PRIORITY;
-				}
-			else if (!isFinal)
+			} else if (!isFinal)
 				bugType = "MS_CANNOT_BE_FINAL";
 			else
 				throw new RuntimeException("impossible");
 
 
 			bugReporter.reportBug(new BugInstance(this, bugType, priority)
-			        .addClass(className)
-			        .addField(className, fieldName, fieldSig, true));
+					.addClass(className)
+					.addField(className, fieldName, fieldSig, true));
 
 		}
 	}

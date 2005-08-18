@@ -103,7 +103,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
 				pluginList.add(new File(tok.nextToken()));
 			}
 
-			DetectorFactoryCollection.setPluginList((File[]) pluginList.toArray(new File[pluginList.size()]));
+			DetectorFactoryCollection.setPluginList(pluginList.toArray(new File[pluginList.size()]));
 		} else if (option.equals("-project")) {
 			String projectFile = argument;
 

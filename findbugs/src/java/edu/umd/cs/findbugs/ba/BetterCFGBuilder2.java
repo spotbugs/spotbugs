@@ -705,9 +705,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 		List<CodeExceptionGen> exceptionHandlerList = exceptionHandlerMap.getHandlerList(pei);
 		if (exceptionHandlerList != null) {
-			Iterator<CodeExceptionGen> i = exceptionHandlerList.iterator();
-			while (i.hasNext()) {
-				CodeExceptionGen exceptionHandler = i.next();
+			for (CodeExceptionGen exceptionHandler : exceptionHandlerList) {
 				InstructionHandle handlerStart = exceptionHandler.getHandlerPC();
 				subroutine.addEdgeAndExplore(etb, handlerStart, HANDLED_EXCEPTION_EDGE);
 
@@ -761,8 +759,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			// Check all targeters of this handle to see if any
 			// of them are branches.  If so, the instruction is a merge.
 			InstructionTargeter[] targeterList = handle.getTargeters();
-			for (int i = 0; i < targeterList.length; ++i) {
-				InstructionTargeter targeter = targeterList[i];
+			for (InstructionTargeter targeter : targeterList) {
 				if (targeter instanceof BranchInstruction)
 					return true;
 			}
@@ -965,9 +962,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		ClassGen classGen = new ClassGen(jclass);
 
 		Method[] methodList = jclass.getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
-
+		for (Method method : methodList) {
 			if (method.isAbstract() || method.isNative())
 				continue;
 

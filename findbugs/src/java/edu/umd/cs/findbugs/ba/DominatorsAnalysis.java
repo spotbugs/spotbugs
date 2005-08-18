@@ -72,9 +72,7 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 		boolean ignoreExceptionEdges = Boolean.getBoolean("dominators.ignoreExceptionEdges");
 
 		Method[] methodList = jclass.getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
-
+		for (Method method : methodList) {
 			if (method.isNative() || method.isAbstract())
 				continue;
 
@@ -88,7 +86,7 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 
 			DominatorsAnalysis analysis = new DominatorsAnalysis(cfg, dfs, ignoreExceptionEdges);
 			Dataflow<BitSet, DominatorsAnalysis> dataflow =
-			        new Dataflow<BitSet, DominatorsAnalysis>(cfg, analysis);
+					new Dataflow<BitSet, DominatorsAnalysis>(cfg, analysis);
 			dataflow.execute();
 
 			for (Iterator<BasicBlock> j = cfg.blockIterator(); j.hasNext();) {

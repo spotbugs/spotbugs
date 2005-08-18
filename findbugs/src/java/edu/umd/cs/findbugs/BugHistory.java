@@ -333,8 +333,8 @@ public class BugHistory {
 	 * @param toRemove Collection of BugInstances to remove
 	 */
 	private static void removeBugInstances(Set<BugInstance> result, Collection<BugInstance> toRemove) {
-		for (Iterator<BugInstance> i = toRemove.iterator(); i.hasNext(); ) {
-			result.remove(i.next());
+		for (BugInstance aToRemove : toRemove) {
+			result.remove(aToRemove);
 		}
 	}
 	

@@ -782,7 +782,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		}
 
 		public FindBugs createEngine() throws IOException, FilterException {
-			TextUIBugReporter textuiBugReporter = null;
+			TextUIBugReporter textuiBugReporter;
 			switch (bugReporterType) {
 			case PRINTING_REPORTER:
 				textuiBugReporter = new PrintingBugReporter();
@@ -981,7 +981,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	public void addFilter(String filterFileName, boolean include) throws IOException, FilterException {
 		Filter filter = new Filter(filterFileName);
 		BugReporter origBugReporter = bugReporter.getDelegate();
-		BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, (Matcher)filter, include);
+		BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, filter, include);
 		bugReporter.setDelegate(filterBugReporter);
 	}
 
@@ -1120,8 +1120,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		
 		// Get list of files to analyze.
 		LinkedList<ArchiveWorkListItem> archiveWorkList = new LinkedList<ArchiveWorkListItem>();
-		for (Iterator<String> i = project.getFileList().iterator(); i.hasNext(); ) {
-			String fileName = i.next();
+		for (String fileName : project.getFileList()) {
 			archiveWorkList.add(new ArchiveWorkListItem(fileName, true));
 		}
 
@@ -1375,14 +1374,13 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * @param repository URLClassPathRepository to add the entries to
 	 */
 	private void addCollectionToClasspath(Collection<String> collection) {
-		for (Iterator<String> i = collection.iterator(); i.hasNext(); ) {
-			String entry = i.next();
+		for (String entry : collection) {
 			try {
 				//repository.addURL(entry);
 				analysisContext.addClasspathEntry(entry);
 			} catch (IOException e) {
-				bugReporter.logError("Warning: could not add URL "  +
-					entry + " to classpath", e);
+				bugReporter.logError("Warning: could not add URL " +
+						entry + " to classpath", e);
 			}
 		}
 	}
@@ -1512,26 +1510,22 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		// Examine each class in the application
 		Set<String> examinedClassSet = new HashSet<String>();
-		for (Iterator<String> i = repositoryClassList.iterator(); i.hasNext();) {
-			String className = i.next();
+		for (String className : repositoryClassList) {
 			if (examinedClassSet.add(className))
 				examineClass(analysisPass, className);
 		}
 		
 		if (DEBUG) {
 			long total = 0;
-			Iterator<Long> timingsIt = detectorTimings.values().iterator();
-			while (timingsIt.hasNext()) {
-				total += timingsIt.next().longValue();
+			for (Long aLong : detectorTimings.values()) {
+				total += aLong.longValue();
 			}
 			System.out.println();
 			System.out.println("Detector Timings");
-			Iterator<Map.Entry<String,Long>> it = detectorTimings.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry<String,Long> entry = it.next();
+			for (Map.Entry<String, Long> entry : detectorTimings.entrySet()) {
 				String detectorName = entry.getKey();
 				long detectorTime = entry.getValue().longValue();
-				System.out.println(detectorName + ": " + detectorTime + " ms  -> (" + (detectorTime * 100.0f / (float)total) + ") %");
+				System.out.println(detectorName + ": " + detectorTime + " ms  -> (" + (detectorTime * 100.0f / (float) total) + ") %");
 			}
 			System.out.println();
 			detectorTimings = new HashMap<String,Long>();
@@ -1567,40 +1561,40 @@ public class FindBugs implements Constants2, ExitCodes {
 			JavaClass javaClass = Repository.lookupClass(className);
 
 			// Notify ClassObservers
-			for (Iterator<ClassObserver> i = classObserverList.iterator(); i.hasNext();) {
-				i.next().observeClass(javaClass);
+			for (ClassObserver aClassObserverList : classObserverList) {
+				aClassObserverList.observeClass(javaClass);
 			}
 
 			// Create a ClassContext for the class
 			ClassContext classContext = analysisContext.getClassContext(javaClass);
 
 			// Run the Detectors
-			for (int i = 0; i < detectors.length; ++i) {
+			for (Detector detector1 : detectors) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
-				Detector detector = detectors[i];
+				Detector detector = detector1;
 				if (detector instanceof StatelessDetector) {
 					try {
-						detector = (Detector)((StatelessDetector)detector).clone();
+						detector = (Detector) ((StatelessDetector) detector).clone();
 					} catch (CloneNotSupportedException cnfe) {
-						detector = detectors[i]; // this shouldn't happen
+						detector = detector1; // this shouldn't happen
 					}
 				}
-					
-				
+
+
 				try {
 					long start = 0, end;
-					
-					
-					if (TIMEDEBUG || DEBUG)  {
+
+
+					if (TIMEDEBUG || DEBUG) {
 						start = System.currentTimeMillis();
 						if (DEBUG) {
 							System.out.println("  running " + detector.getClass().getName());
-							
+
 						}
 					}
 					detector.visitClassContext(classContext);
-					
+
 					if (TIMEDEBUG || DEBUG) {
 						end = System.currentTimeMillis();
 						long delta = end - start;
@@ -1608,13 +1602,13 @@ public class FindBugs implements Constants2, ExitCodes {
 						if (delta > TIMEQUANTUM)
 							System.out.println("TIME: " + detector.getClass().getName() + " " + className + " " + delta);
 						if (DEBUG) {
-						String detectorName = detector.getClass().getName();
-						Long total = detectorTimings.get(detectorName);
-						if (total == null)
-							total = new Long(delta);
-						else
-							total = new Long(total.longValue() + delta);
-						detectorTimings.put(detectorName, total);
+							String detectorName = detector.getClass().getName();
+							Long total = detectorTimings.get(detectorName);
+							if (total == null)
+								total = new Long(delta);
+							else
+								total = new Long(total.longValue() + delta);
+							detectorTimings.put(detectorName, total);
 						}
 					}
 				} catch (AnalysisException e) {
@@ -1674,10 +1668,10 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * report any accumulated bug reports.
 	 */
 	private void reportFinal(Detector[] detectors) throws InterruptedException {
-		for (int i = 0; i < detectors.length; ++i) {
+		for (Detector detector : detectors) {
 			if (Thread.interrupted())
 				throw new InterruptedException();
-			detectors[i].report();
+			detector.report();
 		}
 	}
 

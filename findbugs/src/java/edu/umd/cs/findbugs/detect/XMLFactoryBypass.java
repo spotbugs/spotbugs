@@ -90,14 +90,14 @@ public class XMLFactoryBypass extends BytecodeScanningDetector implements Consta
 		        	return;
 		        
 		        JavaClass[] infs = newCls.getAllInterfaces();
-		        for (int i = 0; i < infs.length; i++) {
-		            if (xmlInterfaces.contains(infs[i].getClassName())) {
-		                bugReporter.reportBug( new BugInstance(this, "XFB_XML_FACTORY_BYPASS", LOW_PRIORITY)
-		                	.addClassAndMethod(this)
-		                	.addSourceLine(this));
-		                rejectedXMLClasses.remove(newClsName);
-		            }
-		        }
+			    for (JavaClass inf : infs) {
+				    if (xmlInterfaces.contains(inf.getClassName())) {
+					    bugReporter.reportBug(new BugInstance(this, "XFB_XML_FACTORY_BYPASS", LOW_PRIORITY)
+							    .addClassAndMethod(this)
+							    .addSourceLine(this));
+					    rejectedXMLClasses.remove(newClsName);
+				    }
+			    }
 		    }
 	    } catch (ClassNotFoundException cnfe) {
 	        bugReporter.reportMissingClass(cnfe);

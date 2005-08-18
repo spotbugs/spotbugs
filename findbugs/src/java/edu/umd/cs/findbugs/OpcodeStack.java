@@ -305,8 +305,7 @@ public class OpcodeStack implements Constants2
 
 	
  	public void sawOpcode(DismantleBytecode dbc, int seen) {
- 		int register, intConstant;
- 		JavaClass cls;
+ 		int register;
  		String signature;
  		Item it, it2, it3;
  		Constant cons;
@@ -687,7 +686,7 @@ public class OpcodeStack implements Constants2
 	 			
 	 			case BIPUSH:
 	 			case SIPUSH:
-	 				push(new Item("I", new Integer((int)dbc.getIntConstant())));
+	 				push(new Item("I", new Integer(dbc.getIntConstant())));
 	 			break;
 	 			
 	 			case IADD:
@@ -894,7 +893,7 @@ public class OpcodeStack implements Constants2
 	 			case D2I:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("I", new Integer((int)((Integer)it.getConstant()).intValue())));
+	 					push(new Item("I", new Integer(((Integer)it.getConstant()).intValue())));
 	 				} else {
 	 					push(new Item("I"));
 	 				}
@@ -1070,12 +1069,12 @@ public class OpcodeStack implements Constants2
 			it.registerNumber = reg;
 			setLVValue( reg++, it);
 			}
-		for(int i = 0; i < argTypes.length; i++) {
-			Item it = new Item(argTypes[i].getSignature());
-			it.registerNumber = reg;
-			it.isInitialParameter = true;
-			setLVValue( reg++, it);
-			}
+		 for (Type argType : argTypes) {
+			 Item it = new Item(argType.getSignature());
+			 it.registerNumber = reg;
+			 it.isInitialParameter = true;
+			 setLVValue(reg++, it);
+		 }
 		return reg;
 		}
 		
@@ -1139,8 +1138,8 @@ public class OpcodeStack implements Constants2
 		pushByLocalLoad("", register);
  	}
  	
- 	private void pushByIntMath(int seen, Item it, Item it2) {;
- 		if (DEBUG) System.out.println("pushByIntMath: " + it.getConstant()  + " " + it2.getConstant() );
+ 	private void pushByIntMath(int seen, Item it, Item it2) {
+		 if (DEBUG) System.out.println("pushByIntMath: " + it.getConstant()  + " " + it2.getConstant() );
  		Item newValue  = new Item("I");
  		try {
  		if ((it.getConstant() != null) && it2.getConstant() != null) {

@@ -117,8 +117,7 @@ public class CallList {
 	
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
-		for (Iterator<Call> i = callList.iterator(); i.hasNext(); ) {
-			Call call = i.next();
+		for (Call call : callList) {
 			if (buf.length() > 0)
 				buf.append(',');
 			buf.append(call.getMethodName());

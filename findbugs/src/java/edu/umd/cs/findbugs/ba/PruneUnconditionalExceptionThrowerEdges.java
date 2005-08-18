@@ -149,8 +149,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 		}
 
 		// Remove all edges marked for deletion
-		for (Iterator<Edge> i = deletedEdgeSet.iterator(); i.hasNext();) {
-			Edge edge = i.next();
+		for (Edge edge : deletedEdgeSet) {
 			cfg.removeEdge(edge);
 		}
 	}

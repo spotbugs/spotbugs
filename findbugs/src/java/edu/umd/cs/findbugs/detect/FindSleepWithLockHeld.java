@@ -57,15 +57,13 @@ public class FindSleepWithLockHeld implements Detector {
 		JavaClass javaClass = classContext.getJavaClass();
 		
 		Method[] methodList = javaClass.getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
-			
+		for (Method method : methodList) {
 			if (method.getCode() == null)
 				continue;
-			
+
 			if (!prescreen(classContext, method))
 				continue;
-			
+
 			try {
 				analyzeMethod(classContext, method);
 			} catch (CFGBuilderException e) {

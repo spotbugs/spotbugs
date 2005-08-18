@@ -123,8 +123,8 @@ public class TestingGround extends BytecodeScanningDetector implements Constants
 			System.out.print("    [");
 			int switchPC = getPC();
 			int[] offsets = getSwitchOffsets();
-			for (int i = 0; i < offsets.length; i++) {
-				System.out.print((switchPC + offsets[i]) + ",");
+			for (int offset : offsets) {
+				System.out.print((switchPC + offset) + ",");
 			}
 			System.out.print((switchPC + getDefaultSwitchOffset()) + "]");
 		}

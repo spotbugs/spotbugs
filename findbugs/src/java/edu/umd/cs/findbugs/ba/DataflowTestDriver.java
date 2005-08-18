@@ -54,8 +54,7 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends AbstractDat
 		String methodName = System.getProperty("dataflow.method");
 
 		Method[] methods = jclass.getMethods();
-		for (int i = 0; i < methods.length; ++i) {
-			Method method = methods[i];
+		for (Method method : methods) {
 			if (methodName != null && !method.getName().equals(methodName))
 				continue;
 

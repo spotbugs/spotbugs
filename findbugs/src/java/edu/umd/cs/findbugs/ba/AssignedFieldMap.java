@@ -45,14 +45,13 @@ public class AssignedFieldMap implements Constants {
 		scanFields(jclass, assignableFieldSet);
 		JavaClass[] superClassList = jclass.getSuperClasses();
 		if (superClassList != null) {
-			for (int i = 0; i < superClassList.length; ++i) {
-				scanFields(superClassList[i], assignableFieldSet);
+			for (JavaClass aSuperClassList : superClassList) {
+				scanFields(aSuperClassList, assignableFieldSet);
 			}
 		}
 
 		Method[] methodList = jclass.getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			MethodGen methodGen = classContext.getMethodGen(method);
 			if (methodGen == null)
 				continue;
@@ -79,11 +78,10 @@ public class AssignedFieldMap implements Constants {
 		String superPackageName = jclass.getPackageName();
 
 		Field[] fieldList = jclass.getFields();
-		for (int i = 0; i < fieldList.length; ++i) {
-			Field field = fieldList[i];
+		for (Field field : fieldList) {
 			if (field.isStatic())
 				continue;
-			boolean assignable = false;
+			boolean assignable;
 			if (field.isPublic() || field.isProtected())
 				assignable = true;
 			else if (field.isPrivate())
@@ -93,7 +91,7 @@ public class AssignedFieldMap implements Constants {
 
 			if (assignable) {
 				assignableFieldSet.add(new InstanceField(superClassName, field.getName(), field.getSignature(),
-				        field.getAccessFlags()));
+						field.getAccessFlags()));
 			}
 		}
 	}

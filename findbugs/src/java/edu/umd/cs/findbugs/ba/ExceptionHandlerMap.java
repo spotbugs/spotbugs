@@ -80,8 +80,7 @@ public class ExceptionHandlerMap {
 		CodeExceptionGen[] handlerList = methodGen.getExceptionHandlers();
 
 		// Map handler start instructions to the actual exception handlers
-		for (int i = 0; i < handlerList.length; ++i) {
-			CodeExceptionGen exceptionHandler = handlerList[i];
+		for (CodeExceptionGen exceptionHandler : handlerList) {
 			startInstructionToHandlerMap.put(exceptionHandler.getHandlerPC(), exceptionHandler);
 		}
 
@@ -91,23 +90,22 @@ public class ExceptionHandlerMap {
 			int offset = handle.getPosition();
 
 			handlerLoop:
-				for (int i = 0; i < handlerList.length; ++i) {
-					CodeExceptionGen exceptionHandler = handlerList[i];
-					int startOfRange = exceptionHandler.getStartPC().getPosition();
-					int endOfRange = exceptionHandler.getEndPC().getPosition();
+			for (CodeExceptionGen exceptionHandler : handlerList) {
+				int startOfRange = exceptionHandler.getStartPC().getPosition();
+				int endOfRange = exceptionHandler.getEndPC().getPosition();
 
-					if (offset >= startOfRange && offset <= endOfRange) {
-						// This handler is reachable from the instruction
-						addHandler(handle, exceptionHandler);
+				if (offset >= startOfRange && offset <= endOfRange) {
+					// This handler is reachable from the instruction
+					addHandler(handle, exceptionHandler);
 
-						// If this handler handles all exception types
-						// i.e., an ANY handler, or catch(Throwable...),
-						// then no further (lower-priority)
-						// handlers are reachable from the instruction.
-						if (Hierarchy.isUniversalExceptionHandler(exceptionHandler.getCatchType()))
-							break handlerLoop;
-					}
+					// If this handler handles all exception types
+					// i.e., an ANY handler, or catch(Throwable...),
+					// then no further (lower-priority)
+					// handlers are reachable from the instruction.
+					if (Hierarchy.isUniversalExceptionHandler(exceptionHandler.getCatchType()))
+						break handlerLoop;
 				}
+			}
 
 			handle = handle.getNext();
 		}

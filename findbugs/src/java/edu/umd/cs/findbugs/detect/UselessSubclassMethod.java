@@ -74,10 +74,9 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 			if (cls.isClass() && ((cls.getAccessFlags() & Constants.ACC_ABSTRACT) != 0)) {
 				interfaces = cls.getAllInterfaces();
 				interfaceMethods = new HashSet<String>();
-				for (int i = 0; i < interfaces.length; i++) {
-					Method[] infMethods = interfaces[i].getMethods();
-					for (int m = 0; m < infMethods.length; m++) {
-						Method meth = infMethods[m];
+				for (JavaClass aInterface : interfaces) {
+					Method[] infMethods = aInterface.getMethods();
+					for (Method meth : infMethods) {
 						interfaceMethods.add(meth.getName() + meth.getSignature());
 					}
 				}
@@ -97,11 +96,9 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 	public void visitMethod(Method obj) {
 		if ((interfaceMethods != null) && ((obj.getAccessFlags() & Constants.ACC_ABSTRACT) != 0)) {
 			String curDetail = obj.getName() + obj.getSignature();
-			Iterator<String> it = interfaceMethods.iterator();
-			while (it.hasNext()) {
-				String infMethodDetail = it.next();
+			for (String infMethodDetail : interfaceMethods) {
 				if (curDetail.equals(infMethodDetail))
-					bugReporter.reportBug( new BugInstance( this, "USM_USELESS_ABSTRACT_METHOD", LOW_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, "USM_USELESS_ABSTRACT_METHOD", LOW_PRIORITY)
 							.addClassAndMethod(getClassContext().getJavaClass(), obj));
 			}
 		}
@@ -119,8 +116,8 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 				
 				/* for some reason, access flags doesn't return Synthetic, so do this hocus pocus */
 				Attribute[] atts = getMethod().getAttributes();
-				for (int i = 0; i < atts.length; i++) {
-					if (atts[i].getClass().equals(Synthetic.class))
+				for (Attribute att : atts) {
+					if (att.getClass().equals(Synthetic.class))
 						return;
 				}
 				
@@ -246,8 +243,8 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements C
 		Type[] subArgs = null;
 		JavaClass superClass = Repository.lookupClass(superclassName);
 		Method[] methods = superClass.getMethods();
-		outer: for (int i = 0; i < methods.length; i++) {
-			Method m = methods[i];
+		outer:
+		for (Method m : methods) {
 			if (m.getName().equals(methodName)) {
 				if (subArgs == null)
 					subArgs = Type.getArgumentTypes(subclassMethod.getSignature());

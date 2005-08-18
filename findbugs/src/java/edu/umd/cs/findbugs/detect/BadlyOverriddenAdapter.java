@@ -63,8 +63,8 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements 
 			          ||((className.equals("DefaultHandler") && (packageName.equals("org.xml.sax.helpers"))));
 			if (isAdapter) {
 				Method[] methods = superClass.getMethods();
-				for (int i = 0; i < methods.length; i++) {
-					methodMap.put(methods[i].getName(), methods[i].getSignature());
+				for (Method method1 : methods) {
+					methodMap.put(method1.getName(), method1.getSignature());
 				}
 			}
 		} catch (ClassNotFoundException cnfe) {
@@ -73,9 +73,7 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements 
 	}
 	
 	public void visitAfter(JavaClass obj) {
-		Iterator<BugInstance> it = badOverrideMap.values().iterator();
-		while (it.hasNext()) {
-			BugInstance bi = it.next();
+		for (BugInstance bi : badOverrideMap.values()) {
 			if (bi != null)
 				bugReporter.reportBug(bi);
 		}

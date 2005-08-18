@@ -311,8 +311,7 @@ public class InnerClassAccessMap {
 				JavaClass javaClass = Repository.lookupClass(className);
 
 				Method[] methodList = javaClass.getMethods();
-				for (int i = 0; i < methodList.length; ++i) {
-					Method method = methodList[i];
+				for (Method method : methodList) {
 					String methodName = method.getName();
 					if (!methodName.startsWith("access$"))
 						continue;
@@ -322,7 +321,7 @@ public class InnerClassAccessMap {
 						continue;
 
 					if (DEBUG) System.out.println("Analyzing " + className + "." +
-						method.getName() + " as an inner-class access method...");
+							method.getName() + " as an inner-class access method...");
 
 					byte[] instructionList = code.getCode();
 					String methodSig = method.getSignature();

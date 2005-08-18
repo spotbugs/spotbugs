@@ -118,8 +118,7 @@ public class StateSet {
 		this.isTop = other.isTop;
 		this.isBottom = other.isBottom;
 		this.stateMap.clear();
-		for (Iterator<State> i = other.stateMap.values().iterator(); i.hasNext(); ) {
-			State state = i.next();
+		for (State state : other.stateMap.values()) {
 			State dup = state.duplicate();
 			this.stateMap.put(dup.getObligationSet(), dup);
 		}
@@ -243,9 +242,7 @@ public class StateSet {
 	 */
 	public void applyToAllStates(StateCallback callback)
 			throws NonexistentObligationException {
-		for (Iterator<State> i = stateMap.values().iterator();
-			i.hasNext();) {
-			State state = i.next();
+		for (State state : stateMap.values()) {
 			callback.apply(state);
 		}
 	}

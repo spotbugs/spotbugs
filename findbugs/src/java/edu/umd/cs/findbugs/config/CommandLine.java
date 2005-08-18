@@ -120,8 +120,7 @@ public abstract class CommandLine {
 				throws IOException {
 		ArrayList<String> resultList = new ArrayList<String>();
 
-		for (int i = 0; i < argv.length; ++i) {
-			String arg = argv[i];
+		for (String arg : argv) {
 			if (!arg.startsWith("@")) {
 				resultList.add(arg);
 				continue;
@@ -130,7 +129,7 @@ public abstract class CommandLine {
 			BufferedReader reader = null;
 			try {
 				reader = new BufferedReader(new InputStreamReader(
-					new FileInputStream(arg.substring(1)), Charset.forName("UTF-8")));
+						new FileInputStream(arg.substring(1)), Charset.forName("UTF-8")));
 				String line;
 				while ((line = reader.readLine()) != null) {
 					line = line.trim();
@@ -244,8 +243,7 @@ public abstract class CommandLine {
 	 */
 	public void printUsage(OutputStream os) {
 		PrintStream out = new PrintStream(os);
-		for (Iterator<String> i = optionList.iterator(); i.hasNext();) {
-			String option = i.next();
+		for (String option : optionList) {
 			out.print("  ");
 
 			StringBuffer buf = new StringBuffer();

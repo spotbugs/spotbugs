@@ -75,11 +75,11 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	public void visitCode(Code obj) {
 		super.visitCode(obj);
 		CodeException[] exceptions = obj.getExceptionTable();
-		for (int i = 0; i < exceptions.length; i++)
-			exceptions[i].accept(this);
+		for (CodeException exception : exceptions)
+			exception.accept(this);
 		Attribute[] attributes = obj.getAttributes();
-		for (int i = 0; i < attributes.length; i++)
-			attributes[i].accept(this);
+		for (Attribute attribute : attributes)
+			attribute.accept(this);
 	}
 
 	// Constants
@@ -107,8 +107,8 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 			fieldIsStatic = field.isStatic();
 			field.accept(this);
 			Attribute[] attributes = field.getAttributes();
-			for (int i = 0; i < attributes.length; i++)
-				attributes[i].accept(this);
+			for (Attribute attribute : attributes)
+				attribute.accept(this);
 		} finally {
 			visitingField = false;
 		}
@@ -136,8 +136,8 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 
 			this.method.accept(this);
 			Attribute[] attributes = method.getAttributes();
-			for (int i = 0; i < attributes.length; i++)
-				attributes[i].accept(this);
+			for (Attribute attribute : attributes)
+				attribute.accept(this);
 		} finally {
 			visitingMethod = false;
 		}
@@ -147,8 +147,8 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	public void visitInnerClasses(InnerClasses obj) {
 		super.visitInnerClasses(obj);
 		InnerClass[] inner_classes = obj.getInnerClasses();
-		for (int i = 0; i < inner_classes.length; i++)
-			inner_classes[i].accept(this);
+		for (InnerClass inner_class : inner_classes)
+			inner_class.accept(this);
 	}
 
 	public void visitAfter(JavaClass obj) {
@@ -171,27 +171,27 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		Field[] fields = obj.getFields();
 		Method[] methods = obj.getMethods();
 		Attribute[] attributes = obj.getAttributes();
-		for (int i = 0; i < fields.length; i++)
-			doVisitField(fields[i]);
-		for (int i = 0; i < methods.length; i++)
-			doVisitMethod(methods[i]);
-		for (int i = 0; i < attributes.length; i++)
-			attributes[i].accept(this);
+		for (Field field : fields)
+			doVisitField(field);
+		for (Method method1 : methods)
+			doVisitMethod(method1);
+		for (Attribute attribute : attributes)
+			attribute.accept(this);
 		visitAfter(obj);
 	}
 
 	public void visitLineNumberTable(LineNumberTable obj) {
 		super.visitLineNumberTable(obj);
 		LineNumber[] line_number_table = obj.getLineNumberTable();
-		for (int i = 0; i < line_number_table.length; i++)
-			line_number_table[i].accept(this);
+		for (LineNumber aLine_number_table : line_number_table)
+			aLine_number_table.accept(this);
 	}
 
 	public void visitLocalVariableTable(LocalVariableTable obj) {
 		super.visitLocalVariableTable(obj);
 		LocalVariable[] local_variable_table = obj.getLocalVariableTable();
-		for (int i = 0; i < local_variable_table.length; i++)
-			local_variable_table[i].accept(this);
+		for (LocalVariable aLocal_variable_table : local_variable_table)
+			aLocal_variable_table.accept(this);
 	}
 
 	// Accessors

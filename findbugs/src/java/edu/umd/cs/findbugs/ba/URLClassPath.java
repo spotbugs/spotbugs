@@ -298,8 +298,7 @@ public class URLClassPath implements Serializable {
 	 */
 	public String getClassPath() {
 		StringBuffer buf = new StringBuffer();
-		for (Iterator<Entry> i = entryList.iterator(); i.hasNext(); ) {
-			Entry entry = i.next();
+		for (Entry entry : entryList) {
 			if (buf.length() > 0)
 				buf.append(File.pathSeparator);
 			buf.append(entry.getURL());
@@ -332,10 +331,8 @@ public class URLClassPath implements Serializable {
 		//
 		// Short of reimplementing HTTP, etc., ourselves,
 		// there is probably nothing we can do about this problem.
-		
-		Iterator<Entry> i = entryList.iterator();
-		while (i.hasNext()) {
-			Entry entry = i.next();
+
+		for (Entry entry : entryList) {
 			InputStream in;
 			try {
 				in = entry.openStream(resourceName);
@@ -397,8 +394,7 @@ public class URLClassPath implements Serializable {
 	 * Close all underlying resources.
 	 */
 	public void close() {
-		for (Iterator<Entry> i = entryList.iterator(); i.hasNext();) {
-			Entry entry = i.next();
+		for (Entry entry : entryList) {
 			entry.close();
 		}
 		entryList.clear();

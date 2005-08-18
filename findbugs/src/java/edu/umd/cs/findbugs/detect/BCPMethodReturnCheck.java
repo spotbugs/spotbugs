@@ -216,13 +216,13 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 		String externalCheckReturnValues = System.getProperty("checkReturnValues");
 		if (externalCheckReturnValues != null) {
 			String [] checks = externalCheckReturnValues.split("[|]");
-			for(int i = 0; i < checks.length; i++) {
-				String [] parts = checks[i].split(":");
+			for (String check : checks) {
+				String [] parts = check.split(":");
 				if (parts.length != 3) continue;
-				Invoke in = 
-				  new Invoke(parts[0], parts[1], parts[2], Invoke.INSTANCE, null);
+				Invoke in =
+						new Invoke(parts[0], parts[1], parts[2], Invoke.INSTANCE, null);
 				list.add(in);
-				}
+			}
 			}
 			
 		

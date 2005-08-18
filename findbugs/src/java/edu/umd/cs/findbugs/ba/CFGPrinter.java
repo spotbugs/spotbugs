@@ -119,8 +119,7 @@ public class CFGPrinter {
 			Method[] methods = cls.getMethods();
 			String methodName = System.getProperty("cfg.method");
 
-			for (int i = 0; i < methods.length; ++i) {
-				Method method = methods[i];
+			for (Method method : methods) {
 				MethodGen methodGen = classContext.getMethodGen(method);
 				if (methodGen == null)
 					continue;

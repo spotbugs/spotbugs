@@ -162,9 +162,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	public void clearBugCounts() {
 		for(int i = 0; i < totalErrors.length; i++)
 			totalErrors[i] = 0;
-		Iterator<PackageStats> i = packageStatsMap.values().iterator();
-		while (i.hasNext()) {
-			PackageStats stats = i.next();
+		for (PackageStats stats : packageStatsMap.values()) {
 			stats.clearBugCounts();
 		}
 	}
@@ -184,10 +182,8 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		PackageStats.writeBugPriorities(xmlOutput, totalErrors);
 		
 		xmlOutput.stopTag(false);
-		
-		Iterator<PackageStats> i = packageStatsMap.values().iterator();
-		while (i.hasNext()) {
-			PackageStats stats = i.next();
+
+		for (PackageStats stats : packageStatsMap.values()) {
 			stats.writeXML(xmlOutput);
 		}
 		

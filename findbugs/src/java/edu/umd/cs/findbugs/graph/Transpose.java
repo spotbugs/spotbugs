@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.12 $
+// $Revision: 1.13 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -61,7 +61,7 @@ public class Transpose
 		// ensuring that vertex labels in the transposed graph
 		// match vertex labels in the original graph
 		for (Iterator<VertexType> i = orig.vertexIterator(); i.hasNext();) {
-			VertexType v = (VertexType) i.next();
+			VertexType v = i.next();
 
 			// Make a duplicate of original vertex
 			// (Ensuring that transposed graph has same labeling as original)

@@ -169,18 +169,17 @@ public class DetectorFactoryCollection {
 			}
 
 			ArrayList<File> arr = new ArrayList<File>();
-			for (int i = 0; i < contentList.length; ++i) {
-				if (contentList[i].getName().endsWith(".jar")) {
-					if (FindBugs.DEBUG) System.out.println("Found plugin: " + contentList[i].toString());
-					arr.add(contentList[i]);
+			for (File aContentList : contentList) {
+				if (aContentList.getName().endsWith(".jar")) {
+					if (FindBugs.DEBUG) System.out.println("Found plugin: " + aContentList.toString());
+					arr.add(aContentList);
 				}
 			}
-			pluginList = (File[]) arr.toArray(new File[arr.size()]);
+			pluginList = arr.toArray(new File[arr.size()]);
 		}
 
 		int numLoaded = 0;
-		for (int i = 0; i < pluginList.length; ++i) {
-			File file = pluginList[i];
+		for (File file : pluginList) {
 			try {
 				if (FindBugs.DEBUG) System.out.println("Loading plugin: " + file.toString());
 				URL url = file.toURI().toURL();
@@ -188,10 +187,10 @@ public class DetectorFactoryCollection {
 
 				Plugin plugin = pluginLoader.getPlugin();
 				pluginByIdMap.put(plugin.getPluginId(), plugin);
-				
+
 				// Register all of the detectors that this plugin contains
 				for (Iterator<DetectorFactory> j = plugin.detectorFactoryIterator();
-						j.hasNext(); ) {
+				     j.hasNext();) {
 					DetectorFactory factory = j.next();
 					registerDetector(factory);
 				}
@@ -199,13 +198,13 @@ public class DetectorFactoryCollection {
 				I18N i18n = I18N.instance();
 
 				// Register the BugPatterns
-				for (Iterator<BugPattern> j = plugin.bugPatternIterator(); j.hasNext();){ 
+				for (Iterator<BugPattern> j = plugin.bugPatternIterator(); j.hasNext();) {
 					BugPattern bugPattern = j.next();
 					i18n.registerBugPattern(bugPattern);
 				}
-				
+
 				// Register the BugCodes
-				for (Iterator<BugCode> j = plugin.bugCodeIterator(); j.hasNext(); ) {
+				for (Iterator<BugCode> j = plugin.bugCodeIterator(); j.hasNext();) {
 					BugCode bugCode = j.next();
 					i18n.registerBugCode(bugCode);
 				}

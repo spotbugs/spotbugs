@@ -48,9 +48,8 @@ public class BugCodeMatcher implements Matcher {
 
 	public boolean match(BugInstance bugInstance) {
 		String bugCode = bugInstance.getAbbrev();
-		Iterator<String> i = bugCodeList.iterator();
-		while (i.hasNext()) {
-			if (bugCode.equals(i.next()))
+		for (String aBugCodeList : bugCodeList) {
+			if (bugCode.equals(aBugCodeList))
 				return true;
 		}
 		return false;

@@ -62,20 +62,18 @@ public class FindBadEqualsImplementation implements Detector {
 		
 		JavaClass javaClass = classContext.getJavaClass();
 		Method[] methodList = javaClass.getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
-			
+		for (Method method : methodList) {
 			if (!isEqualsMethod(method))
 				continue;
-			
+
 			XMethod xmethod = XMethodFactory.createXMethod(javaClass, method);
 			NonNullParamProperty property = database.getProperty(xmethod);
 			if (property == null)
 				continue;
-			
+
 			if (property.isNonNull(0)) {
 				BugInstance warning = new BugInstance("NP_DOES_NOT_HANDLE_NULL", NORMAL_PRIORITY)
-					.addClassAndMethod(javaClass, method);
+						.addClassAndMethod(javaClass, method);
 				bugReporter.reportBug(warning);
 			}
 		}

@@ -97,12 +97,9 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 				super.visitClassContext(classContext);
 			}
 			else {
-				Iterator<JavaClass> it = getMtClasses().iterator();
-				while (it.hasNext())
-				{
-					JavaClass mtClass = it.next();
+				for (JavaClass mtClass : getMtClasses()) {
 					if (cls.implementationOf(mtClass)
-					||  cls.instanceOf(mtClass)) {
+							|| cls.instanceOf(mtClass)) {
 						mtClassName = mtClass.getClassName();
 						super.visitClassContext(classContext);
 						return;
@@ -142,21 +139,21 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 				int nameIdx = ntc.getNameIndex();
 
 				Field[] flds = getClassContext().getJavaClass().getFields();
-								
-				for (int i = 0; i < flds.length; i++) {
-					if (flds[i].getNameIndex() == nameIdx) {
-						if (!flds[i].isStatic()) {
-							ConstantUtf8 nameCons = (ConstantUtf8)cp.getConstant(nameIdx);
-							ConstantUtf8 typeCons = (ConstantUtf8)cp.getConstant(ntc.getSignatureIndex());
-							
+
+				for (Field fld : flds) {
+					if (fld.getNameIndex() == nameIdx) {
+						if (!fld.isStatic()) {
+							ConstantUtf8 nameCons = (ConstantUtf8) cp.getConstant(nameIdx);
+							ConstantUtf8 typeCons = (ConstantUtf8) cp.getConstant(ntc.getSignatureIndex());
+
 							if (alreadyReported.contains(nameCons.getBytes()))
 								return;
 							alreadyReported.add(nameCons.getBytes());
-							bugReporter.reportBug( new BugInstance(this, 
-									 STRUTS_ACTION_NAME.equals(mtClassName) ? "MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" : "MTIA_SUSPECT_SERVLET_INSTANCE_FIELD",
-									 LOW_PRIORITY )
+							bugReporter.reportBug(new BugInstance(this,
+									STRUTS_ACTION_NAME.equals(mtClassName) ? "MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" : "MTIA_SUSPECT_SERVLET_INSTANCE_FIELD",
+									LOW_PRIORITY)
 									.addClass(this).addSourceLine(this)
-									.addField( new FieldAnnotation(getClassName(), nameCons.getBytes(), typeCons.getBytes(), false)));
+									.addField(new FieldAnnotation(getClassName(), nameCons.getBytes(), typeCons.getBytes(), false)));
 						}
 						break;
 					}

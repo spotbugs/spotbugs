@@ -33,9 +33,7 @@ public class DumbMethodInvocations implements Detector {
 	public void visitClassContext(ClassContext classContext) {
 		Method[] methodList = classContext.getJavaClass().getMethods();
 
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
-
+		for (Method method : methodList) {
 			if (method.getCode() == null)
 				continue;
 

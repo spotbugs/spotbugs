@@ -325,7 +325,7 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 
 	public void visit(Code obj) {
 		sizePrevOpcodeBuffer = 0;
-		currentPosInPrevOpcodeBuffer = prevOpcode.length-1;;
+		currentPosInPrevOpcodeBuffer = prevOpcode.length-1;
 
 		int switchLow = 1000000;
 		int switchHigh = -1000000;
@@ -368,7 +368,6 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 							switchOffsets[o] = byteStream.readInt();
 							i += 8;
 						}
-						;
 						sortByOffset(switchOffsets, switchLabels);
 					} else if (opcode == TABLESWITCH) {
 						int pad = 4 - (i & 3);
@@ -391,7 +390,6 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 							switchOffsets[o] = byteStream.readInt();
 							i += 4;
 						}
-						;
 						sortByOffset(switchOffsets, switchLabels);
 					} else if (opcode == WIDE) {
 						opcodeIsWide = true;

@@ -165,10 +165,10 @@ public class FindDoubleCheck extends BytecodeScanningDetector implements Constan
 				fieldDefinedIn = Repository.lookupClass(className);
 			}
 			Field[] f = fieldDefinedIn.getFields();
-			for (int i = 0; i < f.length; i++)
-				if (f[i].getName().equals(fieldName)) {
+			for (Field aF : f)
+				if (aF.getName().equals(fieldName)) {
 					// System.out.println("Found " + f[i]);
-					return f[i];
+					return aF;
 				}
 			return null;
 		} catch (ClassNotFoundException e) {

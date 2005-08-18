@@ -84,14 +84,12 @@ public class FindUnsatisfiedObligation implements Detector {
 		// FIXME: prescreen class
 		
 		Method[] methodList = classContext.getJavaClass().getMethods();
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
-			
+		for (Method method : methodList) {
 			if (DEBUG_METHOD != null && !method.getName().equals(DEBUG_METHOD))
 				continue;
-			
+
 			MethodGen methodGen = classContext.getMethodGen(method);
-			
+
 			if (methodGen != null) {
 				// FIXME: prescreen method
 				analyzeMethod(classContext, method);
@@ -142,13 +140,12 @@ public class FindUnsatisfiedObligation implements Detector {
 					}
 				}
 			}
-			
-			for (Iterator<Obligation> i = leakedObligationSet.iterator(); i.hasNext(); ) {
-				Obligation obligation = i.next();
+
+			for (Obligation obligation : leakedObligationSet) {
 				bugReporter.reportBug(new BugInstance(this, "OS_OPEN_STREAM", NORMAL_PRIORITY)
 						.addClassAndMethod(methodGen, classContext.getJavaClass().getSourceFileName())
 						.addClass(obligation.getClassName()).describe("CLASS_REFTYPE")
-						);
+				);
 			}
 		} catch (CFGBuilderException e) {
 			bugReporter.logError(

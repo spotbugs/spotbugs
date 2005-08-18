@@ -48,8 +48,7 @@ public class BCELRepositoryClassResolver implements ClassResolver {
 
 		// Set interface links (if any)
 		int[] interfaceIndexList = javaClass.getInterfaceIndices();
-		for (int i = 0; i < interfaceIndexList.length; ++i) {
-			int index = interfaceIndexList[i];
+		for (int index : interfaceIndexList) {
 			String interfaceName = getClassString(javaClass, index);
 			repos.addInterfaceLink(type, repos.classTypeFromSlashedClassName(interfaceName));
 		}

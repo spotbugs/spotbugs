@@ -111,8 +111,8 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
 
 		// Add non-default switch edges.
 		InstructionHandle[] targets = ins.getTargets();
-		for (int i = 0; i < targets.length; ++i) {
-			targetList.add(new Target(targets[i], SWITCH_EDGE));
+		for (InstructionHandle target : targets) {
+			targetList.add(new Target(target, SWITCH_EDGE));
 		}
 
 		// Add default switch edge.

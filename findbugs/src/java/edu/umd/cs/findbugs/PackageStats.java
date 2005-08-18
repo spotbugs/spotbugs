@@ -173,9 +173,8 @@ public class PackageStats implements XMLWriteable {
 
 		xmlOutput.stopTag(false);
 
-		Iterator<ClassStats> i = packageMembers.values().iterator();
-		while (i.hasNext()) {
-			i.next().writeXML(xmlOutput);
+		for (ClassStats classStats : packageMembers.values()) {
+			classStats.writeXML(xmlOutput);
 		}
 
 		xmlOutput.closeTag(ELEMENT_NAME);

@@ -243,16 +243,14 @@ public class FindInconsistentSync2 implements Detector {
 			bugReporter.logError("Error finding locked call sites", e);
 			return;
 		}
-		
-		Iterator<Method> i = publicReachableMethods.iterator();
-		while (i.hasNext()) {
-			Method method = i.next();
+
+		for (Method method : publicReachableMethods) {
 			if (classContext.getMethodGen(method) == null)
 				continue;
 			/*
-			 if (isConstructor(method.getName()))
-			 continue;
-			 */
+			                                 if (isConstructor(method.getName()))
+			                                 continue;
+			                                 */
 			if (method.getName().startsWith("access$"))
 				// Ignore inner class access methods;
 				// we will treat calls to them as field accesses
@@ -268,10 +266,9 @@ public class FindInconsistentSync2 implements Detector {
 	}
 
 	public void report() {
-		for (Iterator<XField> i = statMap.keySet().iterator(); i.hasNext(); ) {
-			XField xfield = i.next();
+		for (XField xfield : statMap.keySet()) {
 			FieldStats stats = statMap.get(xfield);
-			
+
 			WarningPropertySet propertySet = new WarningPropertySet();
 
 			int numReadUnlocked = stats.getNumAccesses(READ_UNLOCKED);
@@ -351,20 +348,20 @@ public class FindInconsistentSync2 implements Detector {
 			int priority = propertySet.computePriority(NORMAL_PRIORITY);
 			if (!propertySet.isFalsePositive(priority)) {
 				BugInstance bugInstance = new BugInstance("IS2_INCONSISTENT_SYNC", priority)
-					.addClass(xfield.getClassName())
-					.addField(xfield)
-					.addInt(freq).describe("INT_SYNC_PERCENT");
-				
+						.addClass(xfield.getClassName())
+						.addField(xfield)
+						.addInt(freq).describe("INT_SYNC_PERCENT");
+
 				if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 					propertySet.decorateBugInstance(bugInstance);
 				}
-				
+
 				// Add source lines for unsynchronized accesses
 				for (Iterator<SourceLineAnnotation> j = stats.unsyncAccessIterator(); j.hasNext();) {
 					SourceLineAnnotation accessSourceLine = j.next();
 					bugInstance.addSourceLine(accessSourceLine).describe("SOURCE_LINE_UNSYNC_ACCESS");
 				}
-				
+
 				if (SYNC_ACCESS) {
 					// Add source line for synchronized accesses;
 					// useful for figuring out what the detector is doing
@@ -373,12 +370,12 @@ public class FindInconsistentSync2 implements Detector {
 						bugInstance.addSourceLine(accessSourceLine).describe("SOURCE_LINE_SYNC_ACCESS");
 					}
 				}
-				
+
 				if (EVAL) {
 					bugInstance.addInt(biasedLocked).describe("INT_BIASED_LOCKED");
 					bugInstance.addInt(biasedUnlocked).describe("INT_BIASED_UNLOCKED");
 				}
-				
+
 				bugReporter.reportBug(bugInstance);
 			}
 		}
@@ -629,10 +626,9 @@ public class FindInconsistentSync2 implements Detector {
 
 		// Assume all public methods are called from
 		// unlocked context
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			if (method.isPublic()
-			        && !isConstructor(method.getName())) {
+					&& !isConstructor(method.getName())) {
 				lockedMethodSet.remove(method);
 			}
 		}
@@ -665,8 +661,7 @@ public class FindInconsistentSync2 implements Detector {
 
 		if (DEBUG) {
 			System.out.println("Apparently not unlocked methods:");
-			for (Iterator<Method> i = lockedMethodSet.iterator(); i.hasNext();) {
-				Method method = i.next();
+			for (Method method : lockedMethodSet) {
 				System.out.println("\t" + method.getName());
 			}
 		}
@@ -694,8 +689,7 @@ public class FindInconsistentSync2 implements Detector {
 		Set<Method> lockedMethodSet = new HashSet<Method>();
 
 		// Assume all public methods are unlocked
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			if (method.isSynchronized()) {
 				lockedMethodSet.add(method);
 			}
@@ -726,8 +720,7 @@ public class FindInconsistentSync2 implements Detector {
 
 		if (DEBUG) {
 			System.out.println("Apparently locked methods:");
-			for (Iterator<Method> i = lockedMethodSet.iterator(); i.hasNext();) {
-				Method method = i.next();
+			for (Method method : lockedMethodSet) {
 				System.out.println("\t" + method.getName());
 			}
 		}
@@ -753,10 +746,9 @@ public class FindInconsistentSync2 implements Detector {
 		Set<Method> publicReachableMethodSet = new HashSet<Method>();
 
 		// Assume all public methods are unlocked
-		for (int i = 0; i < methodList.length; ++i) {
-			Method method = methodList[i];
+		for (Method method : methodList) {
 			if (method.isPublic()
-			        && !isConstructor(method.getName())) {
+					&& !isConstructor(method.getName())) {
 				publicReachableMethodSet.add(method);
 			}
 		}
@@ -785,8 +777,7 @@ public class FindInconsistentSync2 implements Detector {
 
 		if (DEBUG) {
 			System.out.println("Methods apparently reachable from public non-constructor methods:");
-			for (Iterator<Method> i = publicReachableMethodSet.iterator(); i.hasNext();) {
-				Method method = i.next();
+			for (Method method : publicReachableMethodSet) {
 				System.out.println("\t" + method.getName());
 			}
 		}

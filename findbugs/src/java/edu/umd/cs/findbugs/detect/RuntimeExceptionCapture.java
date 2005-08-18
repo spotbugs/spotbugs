@@ -116,44 +116,41 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 
 		super.visitCode(obj);
 
-		for (Iterator<CaughtException> iterator = catchList.iterator(); iterator.hasNext();) {
-			CaughtException caughtException = iterator.next();
+		for (CaughtException caughtException : catchList) {
 			Set<String> thrownSet = new HashSet<String>();
-			for (Iterator<ThrownException> iterator1 = throwList.iterator(); iterator1.hasNext();) {
-				ThrownException thrownException = iterator1.next();
+			for (ThrownException thrownException : throwList) {
 				if (thrownException.offset >= caughtException.startOffset
-				        && thrownException.offset < caughtException.endOffset) {
-				    thrownSet.add(thrownException.exceptionClass);
-				    if (thrownException.exceptionClass.equals(caughtException.exceptionClass))
-					caughtException.seen = true;
+						&& thrownException.offset < caughtException.endOffset) {
+					thrownSet.add(thrownException.exceptionClass);
+					if (thrownException.exceptionClass.equals(caughtException.exceptionClass))
+						caughtException.seen = true;
 				}
 			}
 			int catchClauses = 0;
 			if (caughtException.exceptionClass.equals("java.lang.Exception") && !caughtException.seen) {
 				// Now we have a case where Exception is caught, but not thrown
 				boolean rteCaught = false;
-				for (Iterator<CaughtException> iterator1 = catchList.iterator(); iterator1.hasNext();) {
-					CaughtException otherException = iterator1.next();
+				for (CaughtException otherException : catchList) {
 					if (otherException.startOffset == caughtException.startOffset
-						&& otherException.endOffset == caughtException.endOffset) {
-					   catchClauses++;
-					   if (otherException.exceptionClass.equals("java.lang.RuntimeException"))
-						rteCaught = true;
+							&& otherException.endOffset == caughtException.endOffset) {
+						catchClauses++;
+						if (otherException.exceptionClass.equals("java.lang.RuntimeException"))
+							rteCaught = true;
 					}
 				}
 				int range = caughtException.endOffset - caughtException.startOffset;
 				if (!rteCaught) {
-					int priority = LOW_PRIORITY+1;
+					int priority = LOW_PRIORITY + 1;
 					if (range > 300) priority--;
 					else if (range < 30) priority++;
 					if (catchClauses > 1) priority++;
 					if (thrownSet.size() > 1) priority--;
 					if (caughtException.dead) priority--;
-					bugReporter.reportBug(new BugInstance(this, "REC_CATCH_EXCEPTION", 
+					bugReporter.reportBug(new BugInstance(this, "REC_CATCH_EXCEPTION",
 							priority)
-					        .addClassAndMethod(this)
-					        .addSourceLine(this, caughtException.sourcePC));
-					}
+							.addClassAndMethod(this)
+							.addSourceLine(this, caughtException.sourcePC));
+				}
 			}
 		}
 	}
@@ -176,12 +173,11 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 			LiveLocalStoreDataflow dataflow = getClassContext().getLiveLocalStoreDataflow(this.method);
 			CFG cfg = getClassContext().getCFG(method);
 			Collection<BasicBlock> blockList = cfg.getBlocksContainingInstructionWithOffset(obj.getHandlerPC());
-			for (Iterator<BasicBlock> i = blockList.iterator(); i.hasNext(); ) {
-				BasicBlock block = i.next();
+			for (BasicBlock block : blockList) {
 				InstructionHandle first = block.getFirstInstruction();
 				if (first != null
-					&& first.getPosition() == obj.getHandlerPC()
-					&& first.getInstruction() instanceof ASTORE) {
+						&& first.getPosition() == obj.getHandlerPC()
+						&& first.getInstruction() instanceof ASTORE) {
 					ASTORE astore = (ASTORE) first.getInstruction();
 					BitSet liveStoreSet = dataflow.getFactAtLocation(new Location(first, block));
 					if (!liveStoreSet.get(astore.getIndex())) {
@@ -226,15 +222,14 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 					if (!className.startsWith("[")) {
 						JavaClass clazz = Repository.lookupClass(className);
 						Method[] methods = clazz.getMethods();
-						for (int i = 0; i < methods.length; i++) {
-							Method method = methods[i];
+						for (Method method : methods) {
 							if (method.getName().equals(getNameConstantOperand())
-							        && method.getSignature().equals(getSigConstantOperand())) {
+									&& method.getSignature().equals(getSigConstantOperand())) {
 								ExceptionTable et = method.getExceptionTable();
 								if (et != null) {
 									String[] names = et.getExceptionNames();
-									for (int j = 0; j < names.length; j++)
-										throwList.add(new ThrownException(names[j], getPC()));
+									for (String name : names)
+										throwList.add(new ThrownException(name, getPC()));
 								}
 								break;
 							}
