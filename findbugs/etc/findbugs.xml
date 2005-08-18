@@ -39,10 +39,6 @@
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
 	</SplitPass>
-	<SplitPass>
-		<Earlier class="edu.umd.cs.findbugs.detect.NoteNullReturnValues"/>
-		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
-	</SplitPass>
 	
 	<!-- NoteUnconditionalParamDerefs should come before FindBadEqualsImplementation. -->
 	<SplitPass>
@@ -69,8 +65,6 @@
   <Detector class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"
 	        speed="slow" reports="" hidden="true"/>
 
-  <Detector class="edu.umd.cs.findbugs.detect.NoteNullReturnValues"
-            speed="slow" reports="" hidden="true" disabled="true"/>
 	        
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" 
 	        speed="fast"
@@ -477,8 +471,6 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   			speed="fast"
   			reports="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT"/>
 
-  <Detector class="edu.umd.cs.findbugs.detect.TrainNullReturnValues"
-            hidden="true" speed="slow" reports=""/>
 
   <Detector class="edu.umd.cs.findbugs.detect.TrainUnconditionalDerefParams"
             hidden="true" speed="slow" reports=""/>
