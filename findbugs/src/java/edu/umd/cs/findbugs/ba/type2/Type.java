@@ -73,7 +73,7 @@ public interface Type {
 	/**
 	 * Return the type code value as defined in
 	 * org.apache.bcel.Constants or
-	 * {@link edu.umd.cs.findbugs.ba.ExtendedTypes}.
+	 * {@link edu.umd.cs.findbugs.ba.type.ExtendedTypes}.
 	 */
 	public int getTypeCode();
 
