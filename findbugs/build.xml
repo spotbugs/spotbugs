@@ -23,6 +23,8 @@
 	<property name="etc.dir" value="etc"/>
 	<property name="test.dir" value="test"/>
 	<property name="doc.dir" value="doc"/>
+	<property name="apiDoc.dir" value="apiJavaDoc"/>
+	<property name="annotationDoc.dir" value="annotationJavaDoc"/>
 	<property name="jnlp.dir" value="jnlp"/>
 	<property name="pkg.base" value="edu/umd/cs/findbugs"/>
 	<property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
@@ -478,6 +480,32 @@
 		<delete file="${gui.jar}"/>
 		<delete file="${anttask.jar}"/>
 	</target>
+
+    <target name="apiJavadoc">
+       <delete dir="${apiDoc.dir}"/>
+       <mkdir dir="${apiDoc.dir}"/>
+      <javadoc access="protected" 
+       author="true" 
+	    packagenames="*"
+       classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-full.jar:lib/AppleJavaExtensions.jar"
+        destdir="${apiDoc.dir}" 
+        doctitle="FindBugs API Documentation" 
+	    nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false" 
+        sourcepath="src/java" splitindex="true" use="true" version="true"/>
+		</target>
+
+    <target name="annotationJavadoc">
+       <delete dir="${annotationDoc.dir}"/>
+       <mkdir dir="${annotationDoc.dir}"/>
+      <javadoc access="public" 
+       classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-full.jar:lib/AppleJavaExtensions.jar"
+        destdir="${annotationDoc.dir}" 
+	    packagenames="edu.umd.cs.findbugs.annotations"
+        doctitle="FindBugs Annotation Documentation" 
+	    nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false" 
+        sourcepath="src/java" splitindex="true" use="true" version="true"/>
+		</target>
+
 	
 </project>
 
