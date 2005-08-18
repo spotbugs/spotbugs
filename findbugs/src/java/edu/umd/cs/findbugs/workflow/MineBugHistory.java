@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.workflow;
 
 import java.io.PrintStream;
 import java.util.Date;
@@ -28,6 +28,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import edu.umd.cs.findbugs.AppVersion;
+import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
@@ -36,14 +43,15 @@ import edu.umd.cs.findbugs.config.CommandLine;
  * to record the history of analyzing all versions over time.
  * 
  * @author David Hovemeyer
+ * @author William Pugh
  */
 public class MineBugHistory {
 	static final int ADDED      = 0;
-	static final int REMOVED    = 1;
-	static final int RETAINED   = 2;
-	static final int DEAD       = 3;
-	static final int NEWCODE    = 4;
-	static final int REMOVEDCODE= 5;
+	static final int NEWCODE    = 1;
+	static final int REMOVED    = 2;
+	static final int REMOVEDCODE= 3;
+	static final int RETAINED   = 4;
+	static final int DEAD       = 5;
 	static final int ACTIVE_NOW = 6;
 	static final int TUPLE_SIZE = 7;
 	
@@ -150,20 +158,21 @@ public class MineBugHistory {
 		return false;
 	}
 	
+
 	public void dump(PrintStream out) {
-		out.println("seq,release,time,added,removed,persist,dead,newCode,removedCode,active");
+		out.println("seq	release	time	added	newCode	fixed	removed	retained	dead	active");
 		for (int i = 0; i < versionList.length; ++i) {
 			Version version = versionList[i];
 			AppVersion appVersion = sequenceToAppVersionMap.get(version.getSequence());
 			out.print(i);
-			out.print(',');
+			out.print('\t');
 			out.print(appVersion != null ? appVersion.getReleaseName() : "");
-			out.print(',');
+			out.print('\t');
 			if (formatDates)
 				out.print("\"" + (appVersion != null ?  new Date(appVersion.getTimestamp()).toString() : "") + "\"");
 			else out.print(appVersion != null ? appVersion.getTimestamp() : 0L);
 			for (int j = 0; j < TUPLE_SIZE; ++j) {
-				out.print(',');
+				out.print('\t');
 				out.print(version.get(j));
 			}
 			out.println();
@@ -202,7 +211,7 @@ public class MineBugHistory {
 
 		public void handleOptionWithArgument(String option, String argument) {
 			if (option.equals("-prio")) {
-				setPrio(Integer.parseInt(argument));
+				setPrio(Filter.parsePriority(argument));
 			} else if (option.equals("-categories")) {
 				setCategories(argument);
 			} else {

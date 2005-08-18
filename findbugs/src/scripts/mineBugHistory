@@ -4,6 +4,6 @@
 
 @SET_DEFAULT_JAVA@
 
-fb_mainclass=edu.umd.cs.findbugs.MineBugHistory
+fb_mainclass=edu.umd.cs.findbugs.workflow.MineBugHistory
 
 @WRAP_JAVA@
