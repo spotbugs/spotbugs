@@ -19,6 +19,7 @@ package edu.umd.cs.findbugs.workflow;
 
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -56,8 +57,11 @@ public class Update {
 
 	static class UpdateCommandLine extends CommandLine {
 		String revisionName;
+		long revisionTimestamp = 0L;
 		UpdateCommandLine() {
-			addOption("-revision", "name", "provide name for new version");
+			addOption("-name", "name", "provide name for new results");
+			addOption("-timestamp", "when", "timestamp for new results");
+			
 		}
 
 		@Override
@@ -68,8 +72,11 @@ public class Update {
 
 		@Override
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
-			if (option.equals("-revision"))
+			if (option.equals("-name"))
 				revisionName = argument;
+			else if (option.equals("-timestamp")) 
+				revisionTimestamp = Date.parse(argument);
+			else throw new IllegalArgumentException("Can't handle option " + option);
 			
 		}
 
@@ -85,7 +92,7 @@ public class Update {
 
 		String origFileName = args[argCount++];
 		String newFileName = args[argCount++];
-	
+		boolean verbose = argCount < args.length;
 
 		origCollection = new SortedBugCollection(
 				SortedBugCollection.MultiversionBugInstanceComparator.instance);
@@ -105,7 +112,11 @@ public class Update {
 		
 		if (commandLine.revisionName != null)
 			newCollection.setReleaseName(commandLine.revisionName);
-		System.out.println(origCollection.getCollection().size() + " orig bugs, "
+		if (commandLine.revisionTimestamp != 0)
+			newCollection.setTimestamp(commandLine.revisionTimestamp);
+		
+		if (verbose)
+			System.out.println(origCollection.getCollection().size() + " orig bugs, "
 				+ newCollection.getCollection().size() + " new bugs");
 
 		resultCollection = newCollection.createEmptyCollectionWithMetadata();
@@ -206,7 +217,8 @@ public class Update {
 						+ newBug.getMessage());
 			}
 		}
-		if (argCount < args.length) {
+
+		if (verbose) {
 			resultCollection.writeXML(args[argCount++], currentProject);
 			System.out.println("Bugs: " + oldBugs + " old, " + deadBugInDeadCode + " in removed code, "
 					+ (newlyDeadBugs - deadBugInDeadCode) + " died, " + persistantBugs + " persist, "
