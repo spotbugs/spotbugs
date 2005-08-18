@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,10 +66,10 @@ public class Filter {
 		
 		long last;
 		String lastAsString; 
-		long alive;
-		String aliveAsString; 
-		long dead;
-		String deadAsString; 
+		long present;
+		String presentAsString; 
+		long absent;
+		String absentAsString; 
 		String annotation;
 		String revisionName = null;
 		public boolean activeSpecified = false;
@@ -91,8 +92,7 @@ public class Filter {
 		public boolean classified = false;
 		public boolean classifiedSpecified = false;
 
-		public boolean unclassified = false;
-		public boolean unclassifiedSpecified = false;
+
 
 		public boolean serious = false;
 		public boolean seriousSpecified = false;
@@ -104,26 +104,24 @@ public class Filter {
 		int priority = 3;
 
 		FilterCommandLine() {
+			
 			addSwitch("-not", "reverse (all) switches for the filter");
 			addSwitch("-withSource", "only warnings for switch source is available");
 			addOption("-exclude", "filter file", "exclude bugs matching given filter");
 			addOption("-include", "filter file", "include only bugs matching given filter");
+			
+			addOption("-annotation", "text", "allow only warnings containing this text in an annotation");
+			addSwitchWithOptionalExtraPart("-classified", "truth", "allow only classified warnings");
+			addSwitchWithOptionalExtraPart("-serious", "truth", "allow only warnings classified as serious");
+			
 			addOption("-after", "when", "allow only warnings that first occurred after this version");
 			addOption("-before", "when", "allow only warnings that first occurred before this version");
-			addOption("-first", "when", "allow only warnings that first occurred in this sequence number");
-			
-			addOption("-first", "when", "allow only warnings that first occurred in this sequence number");
-			addOption("-setRevisionName", "name", "set the name of the last revision in this database");
-			addOption("-annotation", "text", "allow only warnings containing this text in an annotation");
-			addSwitch("-classified", "allow only classified warnings");
-			addSwitch("-serious", "allow only warnings classified as serious");
-			addSwitch("-unclassified", "allow only unclassified warnings");
-			addOption("-last", "when", "allow only warnings that last occurred in this sequence number");
-			addOption("-alive", "when", "allow only warnings alive in this sequence number");
-			addOption("-dead", "when", "allow only warnings dead in this sequence number");
-			addOption("-source", "directory", "Add this directory to the source search path");
-			addOption("-priority", "level", "allow only warnings with this priority or higher");
+			addOption("-first", "when", "allow only warnings that first occurred in this version");
+			addOption("-last", "when", "allow only warnings that last occurred in this version");
+			addOption("-present", "when", "allow only warnings present in this version");
+			addOption("-absent", "when", "allow only warnings absent in this version");
 			addSwitchWithOptionalExtraPart("-active", "truth", "allow only warnings alive in the last sequence number");
+			
 			addSwitchWithOptionalExtraPart("-introducedByChange", "truth",
 					"allow only warnings introduced by a change of an existing class");
 			addSwitchWithOptionalExtraPart("-removedByChange", "truth",
@@ -132,11 +130,14 @@ public class Filter {
 			"allow only warnings introduced by the addition of a new class");
 			addSwitchWithOptionalExtraPart("-removedCode", "truth",
 			"allow only warnings removed by removal of a class");
+			addOption("-priority", "level", "allow only warnings with this priority or higher");
 			addOption("-class", "pattern", "allow only bugs whose primary class name matches this pattern");
 			addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
 			addOption("-category", "category", "allow only warnings with a category that starts with this string");
 			
-
+			addOption("-setRevisionName", "name", "set the name of the last revision in this database");
+			addOption("-source", "directory", "Add this directory to the source search path");
+			
 		}
 
 		static long getVersionNum(Map<String, AppVersion> versions, 
@@ -152,7 +153,7 @@ public class Filter {
 					return Long.parseLong(val);
 				}
 				catch (NumberFormatException e1) {
-					throw new IllegalArgumentException("Could not interprete version specification of '" + val + "'");
+					throw new IllegalArgumentException("Could not interpret version specification of '" + val + "'");
 				}
 			}
 		}
@@ -185,14 +186,37 @@ public class Filter {
 			last = getVersionNum(versions, timeStamps, lastAsString, true);
 			before = getVersionNum(versions, timeStamps, beforeAsString, true);
 			after = getVersionNum(versions, timeStamps, afterAsString, false);
-			alive = getVersionNum(versions, timeStamps, aliveAsString, true);
-			dead = getVersionNum(versions, timeStamps, deadAsString, true);
+			present = getVersionNum(versions, timeStamps, presentAsString, true);
+			absent = getVersionNum(versions, timeStamps, absentAsString, true);
 			
 		}
 		boolean accept(BugInstance bug) {
 			boolean result = evaluate(bug);
 			if (not) return !result;
 			return result;
+		}
+		HashSet<String> sourceFound = new HashSet<String>();
+		HashSet<String> sourceNotFound = new HashSet<String>();
+		
+		boolean findSource(SourceLineAnnotation srcLine) {
+			if (srcLine == null) return false;
+			String sourceFile = srcLine.getSourceFile();
+			if (sourceFile != null && !sourceFile.equals("<Unknown>")) {
+				
+				String cName = srcLine.getClassName();
+				if (sourceFound.contains(cName)) return true;
+				if (sourceNotFound.contains(cName)) return false;
+				try {
+					InputStream in = sourceFinder.openSource(srcLine.getPackageName(), sourceFile);
+					in.close();
+					sourceFound.add(cName);
+					return true;
+				} catch (IOException e) {
+					assert true; // ignore it -- couldn't find source file
+					sourceNotFound.add(cName);
+				}
+			}
+			return false;
 		}
 		boolean evaluate(BugInstance bug) {
 
@@ -210,9 +234,9 @@ public class Filter {
 				return false;
 			if (lastAsString != null && bug.getLastVersion() != last)
 				return false;
-			if (aliveAsString != null && !bugLiveAt(bug, alive))
+			if (presentAsString != null && !bugLiveAt(bug, present))
 				return false;
-			if (deadAsString != null && bugLiveAt(bug, dead))
+			if (absentAsString != null && bugLiveAt(bug, absent))
 				return false;
 			
 			if (activeSpecified && active != (bug.getLastVersion() == -1))
@@ -237,39 +261,19 @@ public class Filter {
 				return false;
 			
 			if (withSourceSpecified) {
-				boolean hasSource = false;
-				SourceLineAnnotation srcLine = bug.getPrimarySourceLineAnnotation();
-				if (srcLine != null) {
-					String sourceFile = srcLine.getSourceFile();
-					if (sourceFile != null && !sourceFile.equals("<Unknown>")) {
-						try {
-						  InputStream in = sourceFinder.openSource(srcLine.getPackageName(), sourceFile);
-						  in.close();
-						  hasSource = true;
-						} catch (IOException e) {
-							assert true; // ignore it -- couldn't find source file
-						}
-						
-					}
-					
-				}
-				if (hasSource != withSource) return false;
+				if (findSource(bug.getPrimarySourceLineAnnotation()) != withSource) 
+					return false;
 			}
 
-			if (classifiedSpecified && !isClassified(bug)) {
-				return false;
-			}
-
-			if (unclassifiedSpecified && isClassified(bug)) {
+			if (classifiedSpecified && classified != isClassified(bug)) {
 				return false;
 			}
 
 			if (seriousSpecified) {
 				Set<String> words = bug.getTextAnnotationWords();
-				if (   !words.contains("BUG")
-					|| (words.contains("NOT_BUG") || words.contains("HARMLESS"))) {
-					return false;
-				}
+				boolean thisOneIsSerious = words.contains("BUG")
+				&& !(words.contains("NOT_BUG") || words.contains("HARMLESS"));
+				if (serious != thisOneIsSerious) return false;
 			}
 
 			return true;
@@ -313,12 +317,7 @@ public class Filter {
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 
 			if (option.equals("-priority")) {
-				int i = " HMLE".indexOf(argument);
-				if (i == -1)
-					i = " 1234".indexOf(argument);
-				if (i == -1)
-					throw new IllegalArgumentException("Bad priority: " + argument);
-				priority = i;
+				priority = parsePriority(argument);
 			}
 
 			else if (option.equals("-source"))
@@ -332,10 +331,10 @@ public class Filter {
 				afterAsString = argument;
 			else if (option.equals("-before")) 
 				beforeAsString = argument;
-			else if (option.equals("-alive")) 
-				aliveAsString = argument;
-			else if (option.equals("-dead")) 
-				deadAsString = argument;
+			else if (option.equals("-present")) 
+				presentAsString = argument;
+			else if (option.equals("-absent")) 
+				absentAsString = argument;
 			
 			else if (option.equals("-setRevisionName"))
 				revisionName = argument;
@@ -362,8 +361,17 @@ public class Filter {
 			} else throw new IllegalArgumentException("can't handle command line argument of " + option);
 		}
 
-	}
 
+
+	}
+	public static int parsePriority(String argument) {
+		int i = " HMLE".indexOf(argument);
+		if (i == -1)
+			i = " 1234".indexOf(argument);
+		if (i == -1)
+			throw new IllegalArgumentException("Bad priority: " + argument);
+		return i;
+	}
 	/**
 	 * @param args
 	 */
