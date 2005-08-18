@@ -694,7 +694,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	}
 
 	public int hashCode() {
-		return className.hashCode() + startLine + endLine;
+		return className.hashCode() + startLine + 3 * endLine;
 	}
 
 	public boolean equals(Object o) {
