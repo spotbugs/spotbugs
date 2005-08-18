@@ -19,13 +19,12 @@
 
 package edu.umd.cs.findbugs.config;
 
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.I18N;
-
 import java.util.Iterator;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.I18N;
 
 public class ProjectFilterSettingsTest extends TestCase {
 	ProjectFilterSettings plain;

@@ -19,13 +19,17 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import org.apache.bcel.classfile.Code;
 
 public class InitializationChain extends BytecodeScanningDetector implements Constants2 {
 	Set<String> requires = new TreeSet<String>();

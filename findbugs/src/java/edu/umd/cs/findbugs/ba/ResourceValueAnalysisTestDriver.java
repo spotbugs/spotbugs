@@ -20,7 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Iterator;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;

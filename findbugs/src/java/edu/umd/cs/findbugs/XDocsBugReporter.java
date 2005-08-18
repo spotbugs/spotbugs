@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.Iterator;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.dom4j.Document;

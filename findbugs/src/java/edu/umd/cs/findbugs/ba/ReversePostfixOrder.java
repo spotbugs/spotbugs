@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.Comparator;
 
 /**
  * A BlockOrder for visiting the blocks of a CFG in

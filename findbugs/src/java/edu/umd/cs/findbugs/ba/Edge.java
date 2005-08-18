@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import edu.umd.cs.findbugs.graph.AbstractEdge;
 import org.apache.bcel.generic.InstructionHandle;
+
+import edu.umd.cs.findbugs.graph.AbstractEdge;
 
 /**
  * An edge of a control flow graph.

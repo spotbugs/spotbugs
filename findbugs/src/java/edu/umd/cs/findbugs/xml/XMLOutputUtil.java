@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.xml;
 
 import java.io.IOException;
-
 import java.util.Collection;
 import java.util.Iterator;
 

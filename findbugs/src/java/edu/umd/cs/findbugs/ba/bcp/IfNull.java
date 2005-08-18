@@ -19,11 +19,16 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.IFNONNULL;
+import org.apache.bcel.generic.IFNULL;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
+
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-import org.apache.bcel.generic.*;
 
 public class IfNull extends OneVariableInstruction implements EdgeTypes {
 

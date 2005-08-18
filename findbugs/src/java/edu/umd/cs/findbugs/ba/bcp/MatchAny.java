@@ -19,13 +19,13 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * A "meta" PatternElement that matches any of a list of other child PatternElements.

@@ -19,7 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 import edu.umd.cs.findbugs.filter.Matcher;
 

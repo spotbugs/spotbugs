@@ -27,8 +27,10 @@
 package edu.umd.cs.findbugs.gui;
 
 import java.awt.event.KeyEvent;
-import java.util.*;
-import javax.swing.*;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import javax.swing.AbstractButton;
 
 public class L10N {
 	private static ResourceBundle bundle;

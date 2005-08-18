@@ -19,12 +19,15 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.BitSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-import edu.umd.cs.findbugs.graph.AbstractVertex;
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
+
+import edu.umd.cs.findbugs.graph.AbstractVertex;
 
 /**
  * Simple basic block abstraction for BCEL.

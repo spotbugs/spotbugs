@@ -19,11 +19,11 @@
 
 package edu.umd.cs.findbugs.tools.html;
 
-import edu.umd.cs.findbugs.BugPattern;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+
+import edu.umd.cs.findbugs.BugPattern;
 
 public class PlainPrintBugDescriptions extends PrintBugDescriptions {
 	private String docTitle;

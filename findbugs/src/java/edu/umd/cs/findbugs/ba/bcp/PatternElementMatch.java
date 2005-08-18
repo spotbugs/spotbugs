@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import edu.umd.cs.findbugs.ba.BasicBlock;
 import org.apache.bcel.generic.InstructionHandle;
+
+import edu.umd.cs.findbugs.ba.BasicBlock;
 
 /**
  * PatternElementMatch represents matching a PatternElement against

@@ -22,7 +22,8 @@ package edu.umd.cs.findbugs.ba;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.zip.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * A source file data source for source files residing in Zip or Jar

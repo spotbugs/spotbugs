@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.obl;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import edu.umd.cs.findbugs.ba.Hierarchy;

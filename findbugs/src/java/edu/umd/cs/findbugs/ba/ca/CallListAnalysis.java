@@ -18,8 +18,11 @@
  */
 package edu.umd.cs.findbugs.ba.ca;
 
-import org.apache.bcel.classfile.Method;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -38,10 +41,6 @@ import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ReversePostfixOrder;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
 	private CFG cfg;

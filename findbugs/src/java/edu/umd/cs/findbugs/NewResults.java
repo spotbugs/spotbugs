@@ -19,7 +19,6 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
-
 import java.util.Iterator;
 
 import org.dom4j.DocumentException;

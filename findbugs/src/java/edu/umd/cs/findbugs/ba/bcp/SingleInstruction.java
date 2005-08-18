@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
-import edu.umd.cs.findbugs.ba.Edge;
 import org.apache.bcel.generic.InstructionHandle;
+
+import edu.umd.cs.findbugs.ba.Edge;
 
 /**
  * An abstract PatternElement subclass for pattern elements which

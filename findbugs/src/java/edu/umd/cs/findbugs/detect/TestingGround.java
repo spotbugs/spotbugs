@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.text.NumberFormat;
-
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;

@@ -19,11 +19,13 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.Edge;
-import org.apache.bcel.generic.InstructionHandle;
 
 /**
  * Drive an InstructionScannerGenerator over the instructions of

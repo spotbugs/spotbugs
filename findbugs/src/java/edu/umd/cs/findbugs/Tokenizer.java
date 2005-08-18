@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
-import java.util.*;
+import java.util.BitSet;
 
 /**
  * A simple tokenizer for Java source text.

@@ -20,15 +20,23 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import org.apache.bcel.classfile.*;
+import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class FindMaskedFields extends BytecodeScanningDetector implements Constants2 {
 	private BugReporter bugReporter;

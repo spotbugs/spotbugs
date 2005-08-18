@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Search for bug instances whose text annotations contain

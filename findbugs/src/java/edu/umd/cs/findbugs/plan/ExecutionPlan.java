@@ -19,13 +19,6 @@
 
 package edu.umd.cs.findbugs.plan;
 
-import edu.umd.cs.findbugs.DetectorFactory;
-import edu.umd.cs.findbugs.DetectorFactoryChooser;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.Plugin;
-
-import edu.umd.cs.findbugs.graph.DepthFirstSearch;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -36,6 +29,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.DetectorFactoryChooser;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.graph.DepthFirstSearch;
 
 /**
  * A plan for executing Detectors on an application.

@@ -19,10 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.rta;
 
-import java.util.*;
+import java.util.HashSet;
+
+import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.ClassObserver;
-import org.apache.bcel.classfile.JavaClass;
 
 /**
  * Driver for performing Rapid Type Analysis (RTA) on a collection of

@@ -19,11 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
-
-import java.util.*;
+import java.util.HashMap;
 
 import org.apache.bcel.generic.InstructionHandle;
+
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 /**
  * A cache mapping instructions and input values to the output values they

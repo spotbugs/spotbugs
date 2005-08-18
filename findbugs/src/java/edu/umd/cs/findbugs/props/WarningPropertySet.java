@@ -19,7 +19,6 @@
 package edu.umd.cs.findbugs.props;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.BugInstance;

@@ -19,9 +19,17 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.ATHROW;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.GotoInstruction;
+import org.apache.bcel.generic.INVOKESTATIC;
+import org.apache.bcel.generic.IfInstruction;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.ReturnInstruction;
+import org.apache.bcel.generic.Select;
 
 /**
  * Visitor to find all of the targets of an instruction

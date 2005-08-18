@@ -19,10 +19,10 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.IOException;
+
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
-
-import java.io.IOException;
 
 /**
  * Bug annotation class for integer values.

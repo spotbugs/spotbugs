@@ -17,11 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.4 $
+// $Revision: 1.5 $
 
 package edu.umd.cs.findbugs.graph;
 
-import java.util.*;
+import java.util.Set;
 
 /**
  * Interface for an object which combines a set of vertices into

@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.util.Iterator;
 
 import org.apache.bcel.classfile.JavaClass;
 

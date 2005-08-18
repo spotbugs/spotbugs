@@ -17,13 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.5 $
+// $Revision: 1.6 $
 
 package edu.umd.cs.findbugs.graph;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import java.util.Comparator;
 
-import java.util.*;
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 /**
  * Comparator to compare GraphVertex objects by their visitation times in a

@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.IdentityHashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;

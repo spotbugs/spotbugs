@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
-import java.util.regex.*;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Parse the detail message in a ClassNotFoundException

@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Graph IS2 (inconsistent synchronization) false positive rate

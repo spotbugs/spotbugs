@@ -25,7 +25,9 @@
 
 package edu.umd.cs.findbugs.gui;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
 
 /**
  * Given a sorted Collection and a Comparator, produces groups of objects

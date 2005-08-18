@@ -19,16 +19,15 @@
 
 package edu.umd.cs.findbugs.tools.html;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
-
-import java.io.IOException;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 
 public abstract class PrintBugDescriptions {
 	public void print() throws IOException {

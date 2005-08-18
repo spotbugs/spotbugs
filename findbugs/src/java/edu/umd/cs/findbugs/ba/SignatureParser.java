@@ -19,7 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * A simple class to parse method signatures.

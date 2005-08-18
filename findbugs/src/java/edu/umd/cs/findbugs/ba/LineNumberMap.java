@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.IdentityHashMap;
 
 import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;

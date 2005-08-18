@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba.type2;
 
 import edu.umd.cs.findbugs.ba.Frame;
-import edu.umd.cs.findbugs.ba.type2.Type;
 
 /**
  * A Frame containing Type objects representing the type

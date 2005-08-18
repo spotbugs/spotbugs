@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Object to enumerate (some subset of) the simple paths in a CFG.

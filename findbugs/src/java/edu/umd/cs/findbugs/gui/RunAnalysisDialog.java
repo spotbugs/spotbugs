@@ -26,7 +26,9 @@
 package edu.umd.cs.findbugs.gui;
 
 import java.awt.event.WindowEvent;
-import javax.swing.*;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import edu.umd.cs.findbugs.FindBugsProgress;
 

@@ -1,6 +1,11 @@
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 public class CategorizeBugs {
 

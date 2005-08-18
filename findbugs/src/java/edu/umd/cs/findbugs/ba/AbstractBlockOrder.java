@@ -19,7 +19,10 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
 
 /**
  * Abstract base class for BlockOrder variants.

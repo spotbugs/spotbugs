@@ -19,12 +19,16 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
-
-import edu.umd.cs.findbugs.graph.AbstractGraph;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.InstructionHandle;
+
+import edu.umd.cs.findbugs.graph.AbstractGraph;
 
 /**
  * Simple control flow graph abstraction for BCEL.

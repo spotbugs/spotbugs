@@ -19,9 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.Iterator;
 import java.util.LinkedList;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

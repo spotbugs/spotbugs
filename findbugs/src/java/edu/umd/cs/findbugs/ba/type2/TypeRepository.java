@@ -19,11 +19,16 @@
 
 package edu.umd.cs.findbugs.ba.type2;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+
+import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.ba.Debug;
-import org.apache.bcel.Constants;
 
 /**
  * Factory/repository class to ensure that all abstract Java types

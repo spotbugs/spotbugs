@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba.type;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Dataflow;

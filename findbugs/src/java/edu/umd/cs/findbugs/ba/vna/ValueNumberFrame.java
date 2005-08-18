@@ -19,7 +19,10 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.XField;

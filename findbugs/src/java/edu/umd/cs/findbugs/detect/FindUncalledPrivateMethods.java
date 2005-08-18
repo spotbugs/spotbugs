@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
-import java.util.Iterator;
 
 import org.apache.bcel.classfile.Method;
 

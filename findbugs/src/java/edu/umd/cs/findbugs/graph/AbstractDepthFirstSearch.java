@@ -19,11 +19,11 @@
 
 package edu.umd.cs.findbugs.graph;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 /**
  * Perform a depth first search on a graph.

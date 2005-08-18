@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.gui;
 
-import com.apple.eawt.*;
+import com.apple.eawt.ApplicationAdapter;
+import com.apple.eawt.ApplicationEvent;
 
 /*
  * Based on sample code from Apple.

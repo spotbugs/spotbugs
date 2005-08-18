@@ -21,7 +21,9 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * Recursively search a directory, its subdirectories, etc.

@@ -19,11 +19,14 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLWriteable;
-
-import java.io.IOException;
-import java.util.*;
 
 /**
  * Class to store package bug statistics.

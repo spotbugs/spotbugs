@@ -19,7 +19,6 @@
 package edu.umd.cs.findbugs.ba.constant;
 
 import org.apache.bcel.classfile.Method;
-
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 

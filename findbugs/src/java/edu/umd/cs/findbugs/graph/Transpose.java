@@ -17,11 +17,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.13 $
+// $Revision: 1.14 $
 
 package edu.umd.cs.findbugs.graph;
 
-import java.util.*;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
 
 /**
  * Algorithm to transpose a graph.

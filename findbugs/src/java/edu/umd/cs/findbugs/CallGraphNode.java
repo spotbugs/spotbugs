@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.graph.AbstractVertex;
 import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.graph.AbstractVertex;
 
 public class CallGraphNode extends AbstractVertex<CallGraphEdge, CallGraphNode> {
 	private Method method;

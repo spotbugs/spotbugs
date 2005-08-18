@@ -19,7 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Set of streams that are in an equivalence class.

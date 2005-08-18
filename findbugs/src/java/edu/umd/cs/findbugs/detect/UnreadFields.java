@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.detect;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;

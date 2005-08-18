@@ -19,7 +19,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 

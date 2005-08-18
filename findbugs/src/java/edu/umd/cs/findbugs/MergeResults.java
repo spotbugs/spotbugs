@@ -20,7 +20,12 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dom4j.DocumentException;
 

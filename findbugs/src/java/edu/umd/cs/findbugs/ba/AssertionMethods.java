@@ -19,10 +19,19 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.ClassFormatException;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantMethodref;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantUtf8;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.InvokeInstruction;
 
 /**

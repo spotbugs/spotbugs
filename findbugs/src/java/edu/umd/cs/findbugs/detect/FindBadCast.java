@@ -24,9 +24,6 @@ import java.util.Set;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantClass;
-import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -36,7 +33,6 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 public class FindBadCast extends BytecodeScanningDetector implements Constants2, StatelessDetector {
 

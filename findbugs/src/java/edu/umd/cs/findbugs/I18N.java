@@ -19,7 +19,13 @@
 
 package edu.umd.cs.findbugs;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Singleton responsible for returning localized strings for information

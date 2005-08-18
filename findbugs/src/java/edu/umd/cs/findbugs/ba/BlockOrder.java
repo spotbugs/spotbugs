@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import java.util.*;
+import java.util.Iterator;
 
 /**
  * Specify an order for visiting basic blocks.

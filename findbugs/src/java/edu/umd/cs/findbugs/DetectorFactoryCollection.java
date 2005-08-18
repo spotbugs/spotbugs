@@ -21,7 +21,9 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * The DetectorFactoryCollection stores all of the DetectorFactory objects

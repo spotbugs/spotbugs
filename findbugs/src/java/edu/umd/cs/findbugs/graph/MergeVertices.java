@@ -17,11 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.11 $
+// $Revision: 1.12 $
 
 package edu.umd.cs.findbugs.graph;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Algorithm to merge a set of vertices into a single vertex.

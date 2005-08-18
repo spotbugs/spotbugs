@@ -29,10 +29,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.HashMap;
+
 import javax.swing.tree.DefaultTreeModel;
 
-import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.FindBugsProgress;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 

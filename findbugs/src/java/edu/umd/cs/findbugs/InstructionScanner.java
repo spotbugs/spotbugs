@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.ba.Edge;
 import org.apache.bcel.generic.InstructionHandle;
+
+import edu.umd.cs.findbugs.ba.Edge;
 
 /**
  * A scanner for implementing a state machine over a sequence

@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.ba.type.ExceptionSet;
+import edu.umd.cs.findbugs.ba.type.TypeAnalysis;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 
 /**
