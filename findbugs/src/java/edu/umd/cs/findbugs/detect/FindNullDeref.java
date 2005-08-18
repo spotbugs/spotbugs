@@ -62,8 +62,8 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.NonNullContractCollector;
-import edu.umd.cs.findbugs.ba.npe.NonNullParamProperty;
-import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
+import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.NonNullParamViolation;
 import edu.umd.cs.findbugs.ba.npe.NonNullReturnValueAnnotationChecker;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector;
@@ -100,9 +100,9 @@ public class FindNullDeref
 	private BugReporter bugReporter;
 	
 	// Cached database stuff
-	private NonNullParamPropertyDatabase unconditionalDerefParamDatabase;
-	private NonNullParamPropertyDatabase nonNullParamDatabase;
-	private NonNullParamPropertyDatabase checkForNullParamDatabase;
+	private ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase;
+	private ParameterNullnessPropertyDatabase nonNullParamDatabase;
+	private ParameterNullnessPropertyDatabase checkForNullParamDatabase;
 	private MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase;
 	private boolean checkedDatabases;
 	private boolean checkUnconditionalDeref;
@@ -421,7 +421,7 @@ public class FindNullDeref
 				System.out.println("For target method " + targetMethod);
 			}
 			
-			NonNullParamProperty property = unconditionalDerefParamDatabase.getProperty(targetMethod.toXMethod());
+			ParameterNullnessProperty property = unconditionalDerefParamDatabase.getProperty(targetMethod.toXMethod());
 			if (property == null)
 				continue;
 			if (DEBUG_NULLARG) {

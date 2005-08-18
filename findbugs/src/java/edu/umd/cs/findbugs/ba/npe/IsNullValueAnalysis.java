@@ -74,8 +74,8 @@ public class IsNullValueAnalysis
 	private IsNullValueFrame lastFrame;
 	private IsNullValueFrame cachedEntryFact;
 	
-	private NonNullParamPropertyDatabase nonNullParamDatabase;
-	private NonNullParamPropertyDatabase possiblyNullParamDatabase;
+	private ParameterNullnessPropertyDatabase nonNullParamDatabase;
+	private ParameterNullnessPropertyDatabase possiblyNullParamDatabase;
 	private JavaClassAndMethod classAndMethod;
 
 	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs,
@@ -110,11 +110,11 @@ public class IsNullValueAnalysis
 		visitor.setNullReturnAnnotationDatabase(nullReturnAnnotationDatabase);
 	}
 	
-	public void setNonNullParamDatabase(NonNullParamPropertyDatabase nonNullParamDatabase) {
+	public void setNonNullParamDatabase(ParameterNullnessPropertyDatabase nonNullParamDatabase) {
 		this.nonNullParamDatabase = nonNullParamDatabase;
 	}
 	
-	public void setCheckForNullParamDatabase(NonNullParamPropertyDatabase possiblyNullParamDatabase) {
+	public void setCheckForNullParamDatabase(ParameterNullnessPropertyDatabase possiblyNullParamDatabase) {
 		this.possiblyNullParamDatabase = possiblyNullParamDatabase;
 	}
 	

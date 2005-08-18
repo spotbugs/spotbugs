@@ -28,17 +28,17 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
  * 
  * @author David Hovemeyer
  */
-public class NonNullParamPropertyDatabase extends MethodPropertyDatabase<NonNullParamProperty> {
+public class ParameterNullnessPropertyDatabase extends MethodPropertyDatabase<ParameterNullnessProperty> {
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#decodeProperty(java.lang.String)
 	 */
 	//@Override
-	protected NonNullParamProperty decodeProperty(String propStr)
+	protected ParameterNullnessProperty decodeProperty(String propStr)
 			throws PropertyDatabaseFormatException {
 		try {
 			int unconditionalDerefSet = Integer.parseInt(propStr);
-			NonNullParamProperty prop = new NonNullParamProperty();
+			ParameterNullnessProperty prop = new ParameterNullnessProperty();
 			prop.setNonNullParamSet(unconditionalDerefSet);
 			return prop;
 		} catch (NumberFormatException e) {
@@ -50,7 +50,7 @@ public class NonNullParamPropertyDatabase extends MethodPropertyDatabase<NonNull
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#encodeProperty(Property)
 	 */
 	//@Override
-	protected String encodeProperty(NonNullParamProperty property) {
+	protected String encodeProperty(ParameterNullnessProperty property) {
 		return String.valueOf(property.getNonNullParamSet());
 	}
 

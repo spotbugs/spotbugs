@@ -29,8 +29,8 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
-import edu.umd.cs.findbugs.ba.npe.NonNullParamProperty;
-import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
+import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 
 /**
  * Find equals(Object) methods that unconditionally dereference the parameter,
@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
 public class FindBadEqualsImplementation implements Detector {
 	
 	private BugReporter bugReporter;
-	private NonNullParamPropertyDatabase database;
+	private ParameterNullnessPropertyDatabase database;
 	private boolean checkedDatabase;
 	
 	public FindBadEqualsImplementation(BugReporter bugReporter) {
@@ -67,7 +67,7 @@ public class FindBadEqualsImplementation implements Detector {
 				continue;
 
 			XMethod xmethod = XMethodFactory.createXMethod(javaClass, method);
-			NonNullParamProperty property = database.getProperty(xmethod);
+			ParameterNullnessProperty property = database.getProperty(xmethod);
 			if (property == null)
 				continue;
 

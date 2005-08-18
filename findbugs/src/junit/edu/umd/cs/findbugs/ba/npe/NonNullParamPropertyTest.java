@@ -5,19 +5,19 @@ import junit.framework.TestCase;
 
 public class NonNullParamPropertyTest extends TestCase {
 	
-	NonNullParamProperty empty;
-	NonNullParamProperty nonEmpty;
-	NonNullParamProperty extremes;
+	ParameterNullnessProperty empty;
+	ParameterNullnessProperty nonEmpty;
+	ParameterNullnessProperty extremes;
 	
 	//@Override
 	protected void setUp() throws Exception {
-		empty = new NonNullParamProperty();
+		empty = new ParameterNullnessProperty();
 		
-		nonEmpty = new NonNullParamProperty();
+		nonEmpty = new ParameterNullnessProperty();
 		nonEmpty.setNonNull(11, true);
 		nonEmpty.setNonNull(25, true);
 		
-		extremes = new NonNullParamProperty();
+		extremes = new ParameterNullnessProperty();
 		extremes.setNonNull(0, true);
 		extremes.setNonNull(31, true);
 	}

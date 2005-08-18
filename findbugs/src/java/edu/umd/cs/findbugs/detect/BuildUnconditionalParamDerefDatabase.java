@@ -30,8 +30,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
-import edu.umd.cs.findbugs.ba.npe.NonNullParamProperty;
-import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
+import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefSet;
 
@@ -44,9 +44,9 @@ public class BuildUnconditionalParamDerefDatabase {
 	private static final boolean VERBOSE_DEBUG = Boolean.getBoolean("fnd.debug.nullarg.verbose");
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.nullarg");
 	
-	private NonNullParamPropertyDatabase database;
+	private ParameterNullnessPropertyDatabase database;
 	
-	protected NonNullParamPropertyDatabase getDatabase() {
+	protected ParameterNullnessPropertyDatabase getDatabase() {
 		return database;
 	}
 	
@@ -54,7 +54,7 @@ public class BuildUnconditionalParamDerefDatabase {
 		if (database == null) {
 			database = AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase();
 			if (database == null) {
-				database = new NonNullParamPropertyDatabase();
+				database = new ParameterNullnessPropertyDatabase();
 				AnalysisContext.currentAnalysisContext().setUnconditionalDerefParamDatabase(database);
 			}
 		}
@@ -101,7 +101,7 @@ public class BuildUnconditionalParamDerefDatabase {
 				System.out.println("\tAdding result " + unconditionalDerefSet.toString() + " to database");
 			}
 
-			NonNullParamProperty property = new NonNullParamProperty();
+			ParameterNullnessProperty property = new ParameterNullnessProperty();
 			property.setNonNullParamSet(unconditionalDerefSet);
 			
 			XMethod xmethod = XMethodFactory.createXMethod(classContext.getJavaClass(), method);

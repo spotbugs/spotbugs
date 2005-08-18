@@ -23,10 +23,10 @@ import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 
 public class NonNullSpecification {
 	private final JavaClassAndMethod classAndMethod;
-	private final NonNullParamProperty nonNullProperty;
-	private final NonNullParamProperty possiblyNullProperty;
+	private final ParameterNullnessProperty nonNullProperty;
+	private final ParameterNullnessProperty possiblyNullProperty;
 
-	public NonNullSpecification(JavaClassAndMethod classAndMethod, NonNullParamProperty nonParamProperty, NonNullParamProperty possiblyNullProperty) {
+	public NonNullSpecification(JavaClassAndMethod classAndMethod, ParameterNullnessProperty nonParamProperty, ParameterNullnessProperty possiblyNullProperty) {
 		this.classAndMethod = classAndMethod;
 		this.nonNullProperty = nonParamProperty;
 		this.possiblyNullProperty = possiblyNullProperty;
@@ -36,11 +36,11 @@ public class NonNullSpecification {
 		return classAndMethod;
 	}
 	
-	public NonNullParamProperty getNonNullProperty() {
+	public ParameterNullnessProperty getNonNullProperty() {
 		return nonNullProperty;
 	}
 	
-	public NonNullParamProperty getCheckForNullProperty() {
+	public ParameterNullnessProperty getCheckForNullProperty() {
 		return possiblyNullProperty;
 	}
 	

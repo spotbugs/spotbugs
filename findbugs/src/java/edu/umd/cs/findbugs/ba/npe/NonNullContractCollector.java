@@ -44,11 +44,11 @@ import edu.umd.cs.findbugs.ba.XMethodFactory;
 public class NonNullContractCollector implements JavaClassAndMethodChooser {
 	private static final boolean DEBUG_NULLARG = Boolean.getBoolean("fnd.debug.nullarg");
 
-	private final NonNullParamPropertyDatabase nonNullParamDatabase;
-	private final NonNullParamPropertyDatabase possiblyNullParamDatabase;
+	private final ParameterNullnessPropertyDatabase nonNullParamDatabase;
+	private final ParameterNullnessPropertyDatabase possiblyNullParamDatabase;
 	private final List<NonNullSpecification> specificationList;
 
-	public NonNullContractCollector(NonNullParamPropertyDatabase nonNullParamDatabase, NonNullParamPropertyDatabase possiblyNullParamDatabase) {
+	public NonNullContractCollector(ParameterNullnessPropertyDatabase nonNullParamDatabase, ParameterNullnessPropertyDatabase possiblyNullParamDatabase) {
 		super();
 		this.nonNullParamDatabase = nonNullParamDatabase;
 		this.possiblyNullParamDatabase = possiblyNullParamDatabase;
@@ -176,7 +176,7 @@ public class NonNullContractCollector implements JavaClassAndMethodChooser {
 		checkSpecifications(numParams, builder);
 	}
 	
-	static NonNullParamProperty wrapProperty(NonNullParamProperty property) {
-		return property != null ? property : new NonNullParamProperty();
+	static ParameterNullnessProperty wrapProperty(ParameterNullnessProperty property) {
+		return property != null ? property : new ParameterNullnessProperty();
 	}
 }

@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
-import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 
 
@@ -68,12 +68,12 @@ public class AnalysisContext {
 	// Interprocedural fact databases
 	private String databaseInputDir;
 	private String databaseOutputDir;
-	private MayReturnNullPropertyDatabase mayReturnNullDatabase;
+	// private MayReturnNullPropertyDatabase mayReturnNullDatabase;
 	private MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase;
 	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
-	private NonNullParamPropertyDatabase nonNullParamDatabase;
-	private NonNullParamPropertyDatabase checkForNullParamDatabase;
-	private NonNullParamPropertyDatabase unconditionalDerefParamDatabase;
+	private ParameterNullnessPropertyDatabase nonNullParamDatabase;
+	private ParameterNullnessPropertyDatabase checkForNullParamDatabase;
+	private ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase;
 
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
 		= new InheritableThreadLocal<AnalysisContext>();
@@ -269,11 +269,11 @@ public class AnalysisContext {
 				FieldStoreTypeDatabase.DEFAULT_FILENAME,
 				"field store type database");
 		nonNullParamDatabase = loadPropertyDatabase(
-				new NonNullParamPropertyDatabase(),
+				new ParameterNullnessPropertyDatabase(),
 				DEFAULT_NONNULL_PARAM_DATABASE_FILENAME,
 				"@NonNull parameter annotation database");
 		checkForNullParamDatabase = loadPropertyDatabase(
-				new NonNullParamPropertyDatabase(),
+				new ParameterNullnessPropertyDatabase(),
 				DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME,
 				"@CheckForNull parameter annotation database");
 		nullReturnValueAnnotationDatabase= loadPropertyDatabase(
@@ -282,7 +282,7 @@ public class AnalysisContext {
 				"@NonNull/@CheckForNull return value annotation database"
 				);
 		unconditionalDerefParamDatabase = loadPropertyDatabase(
-				new NonNullParamPropertyDatabase(),
+				new ParameterNullnessPropertyDatabase(),
 				UNCONDITIONAL_DEREF_DB_FILENAME,
 				"unconditional param deref database");
 	}
@@ -346,20 +346,7 @@ public class AnalysisContext {
 		return databaseOutputDir;
 	}
 	
-	public void setMayReturnNullDatabase(
-			MayReturnNullPropertyDatabase mayReturnNullDatabase) {
-		this.mayReturnNullDatabase = mayReturnNullDatabase;
-	}
-	
-	/**
-	 * Get the method property database containing methods which may return
-	 * a null value. 
-	 * 
-	 * @return the database, or null if there is no database available
-	 */
-	public MayReturnNullPropertyDatabase getMayReturnNullDatabase() {
-		return mayReturnNullDatabase;
-	}
+
 	
 	/**
 	 * Get the property database recording the types of values stored
@@ -378,11 +365,11 @@ public class AnalysisContext {
 	 * @param nonNullParamDatabase the non-null param database
 	 */
 	public void setNonNullParamDatabase(
-			NonNullParamPropertyDatabase nonNullParamDatabase) {
+			ParameterNullnessPropertyDatabase nonNullParamDatabase) {
 		this.nonNullParamDatabase = nonNullParamDatabase;
 	}
 	
-	public NonNullParamPropertyDatabase getNonNullParamDatabase() {
+	public ParameterNullnessPropertyDatabase getNonNullParamDatabase() {
 		return nonNullParamDatabase;
 	}
 	
@@ -393,11 +380,11 @@ public class AnalysisContext {
 	 * @param possiblyNullParamDatabase the possibly-null param database
 	 */
 	public void setCheckForNullParamDatabase(
-			NonNullParamPropertyDatabase possiblyNullParamDatabase) {
+			ParameterNullnessPropertyDatabase possiblyNullParamDatabase) {
 		this.checkForNullParamDatabase = possiblyNullParamDatabase;
 	}
 	
-	public NonNullParamPropertyDatabase getCheckForNullParamDatabase() {
+	public ParameterNullnessPropertyDatabase getCheckForNullParamDatabase() {
 		return checkForNullParamDatabase;
 	}
 	
@@ -411,11 +398,11 @@ public class AnalysisContext {
 	}
 	
 	public void setUnconditionalDerefParamDatabase(
-			NonNullParamPropertyDatabase unconditionalDerefParamDatabase) {
+			ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase) {
 		this.unconditionalDerefParamDatabase = unconditionalDerefParamDatabase;
 	}
 	
-	public NonNullParamPropertyDatabase getUnconditionalDerefParamDatabase() {
+	public ParameterNullnessPropertyDatabase getUnconditionalDerefParamDatabase() {
 		return unconditionalDerefParamDatabase;
 	}
 

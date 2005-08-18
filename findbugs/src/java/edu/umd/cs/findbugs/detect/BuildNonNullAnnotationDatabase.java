@@ -26,8 +26,8 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodFactory;
 import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
-import edu.umd.cs.findbugs.ba.npe.NonNullParamProperty;
-import edu.umd.cs.findbugs.ba.npe.NonNullParamPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
+import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**
@@ -38,14 +38,17 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.annotation");
 
+
+	private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 	private static final String NONNULL_ANNOTATION_CLASS = "NonNull";
+	private static final String NULLABLE_ANNOTATION_CLASS = "Nullable";
 	private static final String CHECK_FOR_NULL_ANNOTATION_CLASS = "CheckForNull";
 	private static final String POSSIBLY_NULL_ANNOTATION_CLASS = "PossiblyNull";
 	
-	private NonNullParamPropertyDatabase nonNullDatabase;
-	private NonNullParamPropertyDatabase checkForNullDatabase;
+	private ParameterNullnessPropertyDatabase nonNullDatabase;
+	private ParameterNullnessPropertyDatabase checkForNullDatabase;
 	private MayReturnNullPropertyDatabase nullReturnValueDatabase;
-	private HashSet<XMethod> createdMethodParameterPropertySet;
+	private HashSet<XMethod> methodIsAnnotatedForNullness;
 	
 	public BuildNonNullAnnotationDatabase() {
 		// Ensure we are using the same databases as the AnalysisContext,
@@ -61,22 +64,22 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		// Keep track of which properties we created for method properties.
 		// When we encounter @NonNull and @CheckForNull annotations on method parameters, we
 		// will override any existing properties in the database.
-		createdMethodParameterPropertySet = new HashSet<XMethod>();
+		methodIsAnnotatedForNullness = new HashSet<XMethod>();
 	}
 
-	private static NonNullParamPropertyDatabase createIfNeeded(NonNullParamPropertyDatabase database) {
-		return database != null ? database : new NonNullParamPropertyDatabase();
+	private static ParameterNullnessPropertyDatabase createIfNeeded(ParameterNullnessPropertyDatabase database) {
+		return database != null ? database : new ParameterNullnessPropertyDatabase();
 	}
 	
 	private static MayReturnNullPropertyDatabase createIfNeeded(MayReturnNullPropertyDatabase database) {
 		return database != null ? database : new MayReturnNullPropertyDatabase();
 	}
 	
-	protected NonNullParamPropertyDatabase getNonNullDatabase() {
+	protected ParameterNullnessPropertyDatabase getNonNullDatabase() {
 		return nonNullDatabase;
 	}
 	
-	protected NonNullParamPropertyDatabase getCheckForNullDatabase() {
+	protected ParameterNullnessPropertyDatabase getCheckForNullDatabase() {
 		return checkForNullDatabase;
 	}
 	
@@ -84,18 +87,35 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		return nullReturnValueDatabase;
 	}
 	
+	private static boolean isDefaultAnnotationAnnotation(String annotationClass) {
+		return annotationClass.endsWith(DEFAULT_ANNOTATION_ANNOTATION_CLASS);
+	}
 	private static boolean isNonNullAnnotation(String annotationClass) {
 		return annotationClass.endsWith(NONNULL_ANNOTATION_CLASS);
+	}
+	private static boolean isNullableAnnotation(String annotationClass) {
+		return annotationClass.endsWith(NULLABLE_ANNOTATION_CLASS);
 	}
 	private static boolean isCheckForNullAnnotation(String annotationClass) {
 		return annotationClass.endsWith(CHECK_FOR_NULL_ANNOTATION_CLASS)
 			|| annotationClass.endsWith(POSSIBLY_NULL_ANNOTATION_CLASS);
 	}
 	private static boolean isNullnessAnnotation(String annotationClass) {
-		return isNonNullAnnotation(annotationClass) || isCheckForNullAnnotation(annotationClass);
+		return isNonNullAnnotation(annotationClass) || isNullableAnnotation(annotationClass) || isCheckForNullAnnotation(annotationClass);
 	}
 	@Override
 	public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible) {
+		if (!visitingMethod() && !visitingField() && isDefaultAnnotationAnnotation(annotationClass)) {
+			Object[] values = (Object[]) map.get("value");
+			for(Object v : values) 
+				if (v instanceof Class) {
+					String name = ((Class) v).getName();
+					if (isNullnessAnnotation(name)) {
+						System.out.println("Found one");
+					}
+			}
+			
+		}
 		if (!visitingMethod() || !isNullnessAnnotation(annotationClass))
 			return;
 		Boolean property = isNonNullAnnotation(annotationClass)
@@ -121,19 +141,19 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 					" in " + xmethod.toString());
 		}
 
-		if (!createdMethodParameterPropertySet.contains(xmethod)) {
+		if (!methodIsAnnotatedForNullness.contains(xmethod)) {
 			// Remove any existing properties for this method.
 			nonNullDatabase.removeProperty( xmethod);
 			checkForNullDatabase.removeProperty(xmethod);
-			createdMethodParameterPropertySet.add(xmethod);
+			methodIsAnnotatedForNullness.add(xmethod);
 		}
 		
-		NonNullParamPropertyDatabase database = isNonNullAnnotation(annotationClass)
+		ParameterNullnessPropertyDatabase database = isNonNullAnnotation(annotationClass)
 				? nonNullDatabase : checkForNullDatabase;
 		
-		NonNullParamProperty property = database.getProperty(xmethod);
+		ParameterNullnessProperty property = database.getProperty(xmethod);
 		if (property == null) {
-			property = new NonNullParamProperty();
+			property = new ParameterNullnessProperty();
 			database.setProperty(xmethod, property);
 		}
 		property.setNonNull(p, true);

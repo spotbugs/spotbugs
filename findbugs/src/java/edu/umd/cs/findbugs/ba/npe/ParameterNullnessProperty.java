@@ -27,14 +27,14 @@ import java.util.BitSet;
  * 
  * @author David Hovemeyer
  */
-public class NonNullParamProperty {
+public class ParameterNullnessProperty {
 	private int nonNullParamSet;
 	
 	/**
 	 * Constructor.
 	 * Parameters are all assumed not to be non-null.
 	 */
-	public NonNullParamProperty() {
+	public ParameterNullnessProperty() {
 		this.nonNullParamSet = 0;
 	}
 	

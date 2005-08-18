@@ -473,7 +473,7 @@ public class ClassContext {
 			        IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow, dfs, assertionMethods);
 
 					// Set return value and parameter databases
-					invAnalysis.setMayReturnNullDatabase(analysisContext.getMayReturnNullDatabase());
+
 					invAnalysis.setNullReturnAnnotationDatabase(analysisContext.getNullReturnValueAnnotationDatabase());
 					invAnalysis.setNonNullParamDatabase(analysisContext.getNonNullParamDatabase());
 					invAnalysis.setCheckForNullParamDatabase(analysisContext.getCheckForNullParamDatabase());
