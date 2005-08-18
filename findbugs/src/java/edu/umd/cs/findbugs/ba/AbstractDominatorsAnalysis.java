@@ -142,6 +142,7 @@ public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<Bit
 			return;
 
 		if (isTop(fact))
+			return;
 		else if (isTop(result))
 			copy(fact, result);
 		else

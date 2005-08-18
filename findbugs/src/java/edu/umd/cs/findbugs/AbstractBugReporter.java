@@ -225,7 +225,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 				return o1.getSequence() - o2.getSequence();
 			}
 		});
-		for (java.lang.Error error : errorList) {
+		for (Error error : errorList) {
 			reportAnalysisError(new AnalysisError(error.getMessage(), error.getCause()));
 		}
 

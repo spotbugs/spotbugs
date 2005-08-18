@@ -145,7 +145,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector implement
 			dependencies.remove(loop.iterator().next());
 		
 		boolean removedClass = false;
-		cIt = loop.iterator();
+		Iterator<String> cIt = loop.iterator();
 		while (cIt.hasNext()) {
 			String clsName = cIt.next();
 			dependencies = dependencyGraph.get(clsName);

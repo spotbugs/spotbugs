@@ -19,11 +19,14 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.detect.TestingGround;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.*;
 
 import org.apache.bcel.classfile.*;
@@ -752,5 +755,49 @@ abstract public class DismantleBytecode extends PreorderVisitor implements Const
 	}
 
 	public void sawClass() {
+	}
+
+	static private NumberFormat formatter = NumberFormat.getIntegerInstance();
+	static {
+		formatter.setMinimumIntegerDigits(4);
+		formatter.setGroupingUsed(false);
+	}
+	public   void printOpCode( int seen) {
+		System.out.print("  TestingGround: [" + formatter.format(getPC()) + "]  " + OPCODE_NAMES[seen]);
+		if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC))
+			System.out.print("   " + getClassConstantOperand() + "." + getNameConstantOperand() + " " + getSigConstantOperand());
+		else if (seen == LDC || seen == LDC_W || seen == LDC2_W) {
+			Constant c = getConstantRefOperand();
+			if (c instanceof ConstantString)
+				System.out.print("   \"" + getStringConstantOperand() + "\"");
+			else if (c instanceof ConstantClass)
+				System.out.print("   " + getClassConstantOperand());
+			else
+				System.out.print("   " + c);
+		} else if ((seen == ALOAD) || (seen == ASTORE))
+			System.out.print("   " + getRegisterOperand());
+		else if ((seen == GOTO) || (seen == GOTO_W)
+		||       (seen == IF_ACMPEQ) || (seen == IF_ACMPNE)
+		||       (seen == IF_ICMPEQ) || (seen == IF_ICMPGE)
+		||       (seen == IF_ICMPGT) || (seen == IF_ICMPLE)
+		||       (seen == IF_ICMPLT) || (seen == IF_ICMPNE)
+		||       (seen == IFEQ) 	|| (seen == IFGE)
+		||       (seen == IFGT) 	|| (seen == IFLE)
+		||       (seen == IFLT) 	|| (seen == IFNE)
+		||       (seen == IFNONNULL) || (seen == IFNULL))
+			System.out.print("   " + getBranchTarget());
+		else if ((seen == NEW) || (seen == INSTANCEOF))
+			System.out.print("   " + getClassConstantOperand());
+		else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
+			System.out.print("    [");
+			int switchPC = getPC();
+			int[] offsets = getSwitchOffsets();
+			for (int i = 0; i < offsets.length; i++) {
+				System.out.print((switchPC + offsets[i]) + ",");
+			}
+			System.out.print((switchPC + getDefaultSwitchOffset()) + "]");
+		}
+	
+		System.out.println();
 	}
 }

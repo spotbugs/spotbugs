@@ -68,7 +68,7 @@ public class ValueNumberFactory {
 	 */
 	public void compact(int[] map, int numValuesAllocated) {
 		ArrayList<ValueNumber> oldList = this.allocatedValueList;
-		ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.nCopies(numValuesAllocated, null));
+		ArrayList<ValueNumber> newList = new ArrayList<ValueNumber>(Collections.nCopies(numValuesAllocated, (ValueNumber)null));
 
 		for (ValueNumber value : oldList) {
 			int newNumber = map[value.getNumber()];

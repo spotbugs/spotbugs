@@ -70,7 +70,8 @@ public class Filter extends OrMatcher {
 		}
 
 		// Iterate over Match elements
-		for (Object matchNode : filterDoc.selectNodes("/FindBugsFilter/Match")) {
+		for (Object matchObj : filterDoc.selectNodes("/FindBugsFilter/Match")) {
+			Element matchNode = (Element) matchObj;
 			AndMatcher matchMatcher = new AndMatcher();
 
 			// Each match node must have either "class" or "classregex" attributes
