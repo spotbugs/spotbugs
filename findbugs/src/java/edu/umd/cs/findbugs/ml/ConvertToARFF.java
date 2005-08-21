@@ -583,7 +583,8 @@ public class ConvertToARFF {
 	public void scan(Document document, final String appName) throws MissingNodeException, IOException {
 		List<Element> bugInstanceList = getBugInstanceList(document);
 
-		for (final Element element : bugInstanceList) {
+		for (Iterator<Element> i = bugInstanceList.iterator(); i.hasNext(); ) {
+			final Element element = (Element) i.next();
 			scanAttributeList(new AttributeCallback() {
 				public void apply(Attribute attribute) throws MissingNodeException {
 					attribute.scan(element, appName);

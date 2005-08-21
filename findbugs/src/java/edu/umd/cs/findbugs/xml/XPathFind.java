@@ -48,8 +48,8 @@ public abstract class XPathFind {
 	}
 
 	public void find(String xpath) {
-		for (Node node : (Iterable<Node>) document.selectNodes(xpath)) {
-			match(node);
+		for (Iterator<Node> i = document.selectNodes(xpath).iterator(); i.hasNext(); ) {
+			match(i.next());
 		}
 	}
 

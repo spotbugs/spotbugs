@@ -23,6 +23,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -228,7 +229,10 @@ public class PluginLoader extends URLClassLoader {
 			pluginDescriptor.selectSingleNode("/FindbugsPlugin/OrderingConstraints");
 		if (orderingConstraintsNode != null) {
 			// Get inter-pass and intra-pass constraints
-			for (Element constraintElement : (Iterable<Element>) orderingConstraintsNode.selectNodes("./SplitPass|./WithinPass")) {
+			for (Iterator<Element> i = orderingConstraintsNode.selectNodes("./SplitPass|./WithinPass").iterator();
+				i.hasNext();) {
+				Element constraintElement =  i.next();
+
 				// Create the selectors which determine which detectors are
 				// involved in the constraint
 				DetectorFactorySelector earlierSelector = getConstraintSelector(
