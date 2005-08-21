@@ -70,6 +70,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	private String fullyQualifiedMethodName = "none";
 
 	// Available when visiting a field
+	private Field field;
 	private boolean visitingField = false;
 	private String fullyQualifiedFieldName = "none";
 	private String fieldName = "none";
@@ -113,6 +114,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		if (visitingField)
 			throw new IllegalStateException("visitField called when already visiting a field");
 		visitingField = true;
+		this.field = field;
 		try {
 			fieldName = getStringFromIndex(field.getNameIndex());
 			fieldSig = getStringFromIndex(field.getSignatureIndex());
@@ -126,6 +128,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 				attribute.accept(this);
 		} finally {
 			visitingField = false;
+			this.field = null;
 		}
 	}
 
@@ -270,6 +273,12 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	public boolean visitingField() {
 		return visitingField;
 		}
+	/** If currently visiting a method, get the method's Method object */
+	public Field getField() {
+		if (!visitingField)
+			throw new IllegalStateException("getField called while not visiting method");
+		return field;
+	}
 	/** If currently visiting a method, get the method's Method object */
 	public Method getMethod() {
 		if (!visitingMethod)

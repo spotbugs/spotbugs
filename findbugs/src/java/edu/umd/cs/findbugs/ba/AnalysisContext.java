@@ -74,6 +74,12 @@ public class AnalysisContext {
 	private ParameterNullnessPropertyDatabase nonNullParamDatabase;
 	private ParameterNullnessPropertyDatabase checkForNullParamDatabase;
 	private ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase;
+	
+	
+	private NullnessAnnotationDatabase nullnessAnnotationDatabase = new NullnessAnnotationDatabase();
+	public NullnessAnnotationDatabase getNullnessAnnotationDatabase() {
+		return nullnessAnnotationDatabase;
+	}
 
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
 		= new InheritableThreadLocal<AnalysisContext>();
@@ -373,6 +379,7 @@ public class AnalysisContext {
 		return nonNullParamDatabase;
 	}
 	
+
 	/**
 	 * Set possibly-null param database.
 	 * Based on CheckForNull annotations.

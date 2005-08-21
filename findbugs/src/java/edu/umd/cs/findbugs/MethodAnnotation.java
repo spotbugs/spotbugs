@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.XMethodFactory;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -130,7 +130,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @return an XMethod specifying the same method as this MethodAnnotation
 	 */
 	public XMethod toXMethod() {
-		return XMethodFactory.createXMethod(className, methodName, methodSig, isStatic);
+		return XFactory.createXMethod(className, methodName, methodSig, isStatic);
 	}
 
 	/**

@@ -52,10 +52,13 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.NullnessAnnotation;
+import edu.umd.cs.findbugs.ba.AnnotationDatabase;
+import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.XMethodFactory;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
@@ -84,6 +87,7 @@ import edu.umd.cs.findbugs.props.WarningPropertyUtil;
  * involving null and non-null values.
  *
  * @author David Hovemeyer
+ * @author William Pugh
  * @see edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis
  */
 public class FindNullDeref
@@ -101,22 +105,16 @@ public class FindNullDeref
 	
 	// Cached database stuff
 	private ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase;
-	private ParameterNullnessPropertyDatabase nonNullParamDatabase;
-	private ParameterNullnessPropertyDatabase checkForNullParamDatabase;
-	private MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase;
-	private boolean checkedDatabases;
 	private boolean checkUnconditionalDeref;
-	private boolean checkParamAnnotations;
-	private boolean checkReturnValueAnnotations;
-	private boolean checkCallSites;
-	private boolean checkCallSitesOrReturnInstructions;
+	private boolean checkedDatabases = false;
+
 	
 	// Transient state
 	private ClassContext classContext;
 	private Method method;
 	private IsNullValueDataflow invDataflow;
 	private BitSet previouslyDeadBlocks;
-	private JavaClassAndMethod nonNullReturn;
+	private NullnessAnnotation methodAnnotation;
 
 	public FindNullDeref(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -154,10 +152,8 @@ public class FindNullDeref
 		}
 		
 		this.method = method;
-		
-		if (checkReturnValueAnnotations) {
-			checkForNonNullAnnotation();
-		}
+		this.methodAnnotation = getMethodNullnessAnnotation();
+
 
 		if (DEBUG || DEBUG_NULLARG)
 			System.out.println(SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)));
@@ -177,9 +173,9 @@ public class FindNullDeref
 				this);
 		worker.execute();
 
-		if (checkUnconditionalDeref || checkParamAnnotations || checkReturnValueAnnotations) {
-			checkCallSitesAndReturnInstructions();
-		}
+
+		checkCallSitesAndReturnInstructions();
+		
 	}
 
 	/**
@@ -210,17 +206,7 @@ public class FindNullDeref
 	 */
 	private void checkDatabases() {
 		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
-		unconditionalDerefParamDatabase = analysisContext.getUnconditionalDerefParamDatabase();
-		nonNullParamDatabase = analysisContext.getNonNullParamDatabase();
-		checkForNullParamDatabase = analysisContext.getCheckForNullParamDatabase();
-		nullReturnValueAnnotationDatabase = analysisContext.getNullReturnValueAnnotationDatabase();
-		
-		checkUnconditionalDeref = isDatabaseNonEmpty(unconditionalDerefParamDatabase);
-		checkParamAnnotations = isDatabaseNonEmpty(nonNullParamDatabase) && isDatabaseNonEmpty(checkForNullParamDatabase);
-		checkReturnValueAnnotations = isDatabaseNonEmpty(nullReturnValueAnnotationDatabase);
-		
-		checkCallSites = checkUnconditionalDeref || checkParamAnnotations;
-		checkCallSitesOrReturnInstructions = checkCallSites || checkReturnValueAnnotations;
+		unconditionalDerefParamDatabase = analysisContext.getUnconditionalDerefParamDatabase();		
 	}
 
 	private<
@@ -232,44 +218,19 @@ public class FindNullDeref
 	 * See if the currently-visited method declares a @NonNull annotation,
 	 * or overrides a method which declares a @NonNull annotation.
 	 */
-	private void checkForNonNullAnnotation() {
-		nonNullReturn = null;
+	private NullnessAnnotation getMethodNullnessAnnotation() {
 		
-		if (method.getSignature().indexOf(")L") >= 0) {
+		if (method.getSignature().indexOf(")L") >= 0 || method.getSignature().indexOf(")[") >= 0 ) {
 			if (DEBUG_NULLRETURN) {
 				System.out.println("Checking return annotation for " +
 						SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
 			}
 			
-			// Check to see if there is a @NonNull annotation on this method
-			NonNullReturnValueAnnotationChecker annotationChecker =
-				new NonNullReturnValueAnnotationChecker(nullReturnValueAnnotationDatabase);
-			
-			try {
-				JavaClassAndMethod classAndMethod = new JavaClassAndMethod(
-						classContext.getJavaClass(), method);
-				
-				annotationChecker.choose(classAndMethod);
-				if (annotationChecker.getProperty() == null) {
-					Hierarchy.visitSuperClassMethods(classAndMethod, annotationChecker);
-				}
-				if (annotationChecker.getProperty() == null) {
-					Hierarchy.visitSuperInterfaceMethods(classAndMethod, annotationChecker);
-				}
-				
-				if(annotationChecker.getProperty() != null
-						&& !annotationChecker.getProperty().booleanValue()) {
-					nonNullReturn = annotationChecker.getAnnotatedMethod();
-				}
-				
-				if (DEBUG_NULLRETURN && nonNullReturn != null) {
-					System.out.println("\t==> found: " + nonNullReturn);
-				}
-			} catch (ClassNotFoundException e) {
-				bugReporter.reportMissingClass(e);
-			}
-			
+			XMethod m = XFactory.createXMethod(classContext.getJavaClass(), method);
+			return AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase()
+			.getResolvedAnnotation(m, false);
 		}
+		return NullnessAnnotation.UNKNOWN_NULLNESS;
 	}
 
 	private void checkCallSitesAndReturnInstructions()
@@ -281,9 +242,9 @@ public class FindNullDeref
 			Location location = i.next();
 			Instruction ins = location.getHandle().getInstruction();
 			try {
-				if (checkCallSites && ins instanceof InvokeInstruction) {
+				if (ins instanceof InvokeInstruction) {
 					examineCallSite(location, cpg, typeDataflow);
-				} else if (checkReturnValueAnnotations && nonNullReturn != null && ins.getOpcode() == Constants.ARETURN) {
+				} else if (methodAnnotation == NullnessAnnotation.NONNULL && ins.getOpcode() == Constants.ARETURN) {
 					examineReturnInstruction(location);
 				}
 			} catch (ClassNotFoundException e) {
@@ -352,12 +313,12 @@ public class FindNullDeref
 			checkUnconditionallyDereferencedParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
 		}
 		
-		if (nonNullParamDatabase != null && checkForNullParamDatabase != null) {
+		
 			if (DEBUG_NULLARG) {
 				System.out.println("Checking nonnull params");
 			}
 			checkNonNullParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
-		}
+		
 	}
 	
 	private void examineReturnInstruction(Location location) throws DataflowAnalysisException, CFGBuilderException {
@@ -376,23 +337,10 @@ public class FindNullDeref
 			
 			WarningPropertySet propertySet = new WarningPropertySet();
 			
-			BugInstance warning = new BugInstance("NP_NONNULL_RETURN_VIOLATION", NORMAL_PRIORITY)
+			BugInstance warning = new BugInstance("NP_NONNULL_RETURN_VIOLATION", tos.isDefinitelyNull() ?
+					HIGH_PRIORITY : NORMAL_PRIORITY)
 				.addClassAndMethod(methodGen, sourceFile)
-				.addSourceLine(classContext, methodGen, sourceFile, location.getHandle())
-				.addMethod(nonNullReturn.getJavaClass(), nonNullReturn.getMethod()).describe("METHOD_DECLARED_NONNULL");
-
-			JavaClassAndMethod visitedMethod = new JavaClassAndMethod(classContext.getJavaClass(), method);
-			if (visitedMethod.equals(nonNullReturn)) {
-				// It's sort of blatant to declare a method @NonNull,
-				// and then return null from it :-)
-				propertySet.addProperty(NonNullReturnProperty.EXACT_METHOD);
-			}
-			
-			int priority = propertySet.computePriority(NORMAL_PRIORITY);
-			if (FindBugsAnalysisFeatures.isRelaxedMode()) {
-				WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
-				propertySet.decorateBugInstance(warning);
-			}
+				.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
 			
 			bugReporter.reportBug(warning);
 		}
@@ -490,7 +438,7 @@ public class FindNullDeref
 		BugInstance warning = new BugInstance(bugType, priority)
 				.addClassAndMethod(methodGen, sourceFile)
 				.addSourceLine(classContext, methodGen, sourceFile, location.getHandle())
-				.addMethod(XMethodFactory.createXMethod(invokeInstruction, cpg)).describe("METHOD_CALLED");
+				.addMethod(XFactory.createXMethod(invokeInstruction, cpg)).describe("METHOD_CALLED");
 		
 		// Check which params might be null
 		addParamAnnotations(definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
@@ -543,6 +491,18 @@ public class FindNullDeref
 		}
 	}
 
+	/**
+	 * We have a method invocation in which a possibly or definitely null
+	 * parameter is passed. Check it against the library of nonnull annotations.
+	 * 
+	 * @param location
+	 * @param cpg
+	 * @param typeDataflow
+	 * @param invokeInstruction
+	 * @param nullArgSet
+	 * @param definitelyNullArgSet
+	 * @throws ClassNotFoundException
+	 */
 	private void checkNonNullParam(
 			Location location, 
 			ConstantPoolGen cpg,
@@ -551,46 +511,31 @@ public class FindNullDeref
 			BitSet nullArgSet,
 			BitSet definitelyNullArgSet) throws ClassNotFoundException {
 		
-		// Go up the class hierarchy finding @NonNull and @CheckForNull annotations
-		// for parameters.
-		NonNullContractCollector nonNullContractCollector = new NonNullContractCollector(nonNullParamDatabase, checkForNullParamDatabase);
-		nonNullContractCollector.findContractForCallSite(invokeInstruction, cpg);
-
-		// See if any null arguments violate a @NonNull annotation.
-		int numParams = new SignatureParser(invokeInstruction.getSignature(cpg)).getNumParameters();
-		if (DEBUG_NULLARG) {
-			System.out.println("Checking " + numParams + " parameter(s)");
-		}
-		BitSet violatedParamSet = new BitSet();
-		List<NonNullParamViolation> violationList = new LinkedList<NonNullParamViolation>();
-		nonNullContractCollector.getViolationList(numParams, nullArgSet, violationList, violatedParamSet);
-		if (violationList.isEmpty())
+		XMethod m = XFactory.createXMethod(invokeInstruction, cpg);
+		if (m.getClassName().startsWith("java")) {
+			// at the moment, none of these are annotation
 			return;
-
-		// Issue a warning
-		
-		XMethod xmethod = XMethodFactory.createXMethod(invokeInstruction, cpg);
-		
-		WarningPropertySet propertySet = new WarningPropertySet();
-
-		MethodGen methodGen = classContext.getMethodGen(method);
-		String sourceFile = classContext.getJavaClass().getSourceFileName();
-
-		BugInstance warning = new BugInstance("NP_NONNULL_PARAM_VIOLATION", NORMAL_PRIORITY)
-			.addClassAndMethod(methodGen, sourceFile)
-			.addSourceLine(classContext, methodGen, sourceFile, location.getHandle())
-			.addMethod(xmethod).describe("METHOD_CALLED");
-		
-		addParamAnnotations(definitelyNullArgSet, violatedParamSet, propertySet, warning);
-		
-		for (NonNullParamViolation violation : violationList) {
-			warning.addMethod(violation.getClassAndMethod());
-			warning.addInt(violation.getParam()).describe("INT_NONNULL_PARAM");
 		}
-
-		decorateWarning(location, propertySet, warning);
+		NullnessAnnotationDatabase db 
+		= AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
+		for(int i=nullArgSet.nextSetBit(0); i>=0; i=nullArgSet.nextSetBit(i+1)) 
+			if (db.parameterMustBeNonNull(m, i)) {
+				boolean definitelyNull = definitelyNullArgSet.get(i);
+				WarningPropertySet propertySet = new WarningPropertySet();
+				
+				MethodGen methodGen = classContext.getMethodGen(method);
+				String sourceFile = classContext.getJavaClass().getSourceFileName();
+				
+				BugInstance warning = new BugInstance("NP_NONNULL_PARAM_VIOLATION", 
+						definitelyNull ? HIGH_PRIORITY : NORMAL_PRIORITY)
+						.addClassAndMethod(methodGen, sourceFile)
+						.addSourceLine(classContext, methodGen, sourceFile, location.getHandle())
+						.addMethod(m).describe("METHOD_CALLED");
+				warning.addInt(i).describe("INT_NONNULL_PARAM");
+				
+				bugReporter.reportBug(warning);
+			}
 		
-		bugReporter.reportBug(warning);
 	}
 
 	public void report() {

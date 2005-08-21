@@ -186,7 +186,7 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 			work(digest, method.getSignature(), encoder);
 			
 			MethodHash methodHash = new MethodHash().computeHash(method);
-			methodHashMap.put(XMethodFactory.createXMethod(javaClass, method), methodHash);
+			methodHashMap.put(XFactory.createXMethod(javaClass, method), methodHash);
 		}
 		
 		// Compute digest of field names and signatures.

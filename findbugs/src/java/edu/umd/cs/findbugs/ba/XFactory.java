@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -32,11 +33,11 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * 
  * @author David Hovemeyer
  */
-public abstract class XMethodFactory {
+public abstract class XFactory {
 	/**
 	 * Create an XMethod object from a BCEL Method.
 	 * 
-	 * @param classContext the ClassContext of the class to which the Method belongs
+	 * @param javaClass the class to which the Method belongs
 	 * @param method       the Method
 	 * @return an XMethod representing the Method
 	 */
@@ -50,7 +51,23 @@ public abstract class XMethodFactory {
 		else
 			return new InstanceMethod(className, methodName, methodSig, accessFlags);
 	}
-	
+	/**
+	 * Create an XField object from a BCEL Field.
+	 * 
+	 * @param classContext the ClassContext of the class to which the Method belongs
+	 * @param method       the Method
+	 * @return an XMethod representing the Method
+	 */
+	public static XField createXField(JavaClass javaClass, Field field) {
+		String className = javaClass.getClassName();
+		String fieldName = field.getName();
+		String fieldSig = field.getSignature();
+		int accessFlags = field.getAccessFlags();
+		if (field.isStatic())
+			return new StaticField(className, fieldName, fieldSig, accessFlags);
+		else
+			return new InstanceField(className, fieldName, fieldSig, accessFlags);
+	}
 	/**
 	 * Create an XMethod object from an InvokeInstruction.
 	 * 
@@ -82,6 +99,19 @@ public abstract class XMethodFactory {
 		JavaClass javaClass = visitor.getThisClass();
 		Method method = visitor.getMethod();
 		return createXMethod(javaClass, method);
+	}
+	
+	/**
+	 * Create an XField object from the field currently being visited by
+	 * the given PreorderVisitor.
+	 * 
+	 * @param visitor the PreorderVisitor
+	 * @return the XField representing the method currently being visited
+	 */
+	public static XField createXField(PreorderVisitor visitor) {
+		JavaClass javaClass = visitor.getThisClass();
+		Field field = visitor.getField();
+		return createXField(javaClass, field);
 	}
 	
 	/**

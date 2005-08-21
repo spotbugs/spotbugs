@@ -230,7 +230,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 //					boolean isStatic = Boolean.valueOf(getRequiredAttribute(attributes, "isStatic", qName)).booleanValue();
 //					byte[] hash = extractHash(qName, attributes);
 //					classHash.setMethodHash(
-//							XMethodFactory.createXMethod(classHash.getClassName(), methodName, methodSig, isStatic),
+//							XFactory.createXMethod(classHash.getClassName(), methodName, methodSig, isStatic),
 //							hash);
 //				}
 			} else if (outerElement.equals("ClassFeatures")) {

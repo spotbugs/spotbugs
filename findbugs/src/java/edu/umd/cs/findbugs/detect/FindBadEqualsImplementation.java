@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.XMethodFactory;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 
@@ -66,7 +66,7 @@ public class FindBadEqualsImplementation implements Detector {
 			if (!isEqualsMethod(method))
 				continue;
 
-			XMethod xmethod = XMethodFactory.createXMethod(javaClass, method);
+			XMethod xmethod = XFactory.createXMethod(javaClass, method);
 			ParameterNullnessProperty property = database.getProperty(xmethod);
 			if (property == null)
 				continue;

@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethodChooser;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.XMethodFactory;
+import edu.umd.cs.findbugs.ba.XFactory;
 
 /**
  * Find the contract specified by @NonNull and @CheckForNull parameter
@@ -56,7 +56,7 @@ public class NonNullContractCollector implements JavaClassAndMethodChooser {
 	}
 
 	public boolean choose(JavaClassAndMethod classAndMethod) {
-		XMethod xmethod = XMethodFactory.createXMethod(
+		XMethod xmethod = XFactory.createXMethod(
 				classAndMethod.getJavaClass(), classAndMethod.getMethod());
 
 		NonNullSpecification specification = new NonNullSpecification(

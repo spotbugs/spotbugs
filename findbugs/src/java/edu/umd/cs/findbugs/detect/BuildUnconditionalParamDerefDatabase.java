@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.XMethodFactory;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
@@ -104,7 +104,7 @@ public class BuildUnconditionalParamDerefDatabase {
 			ParameterNullnessProperty property = new ParameterNullnessProperty();
 			property.setNonNullParamSet(unconditionalDerefSet);
 			
-			XMethod xmethod = XMethodFactory.createXMethod(classContext.getJavaClass(), method);
+			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 			database.setProperty(xmethod, property);
 			if (DEBUG) {
 				System.out.println("Unconditional deref: " + xmethod + "=" + property);

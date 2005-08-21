@@ -32,11 +32,15 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.XMethodFactory;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.bcp.Invoke;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
+/**
+ * @author William Pugh
+ */
+ 
 public class NoteCheckReturnValue extends AnnotationVisitor 
   implements NonReportingDetector, Constants2 {
 	
@@ -75,7 +79,7 @@ public class NoteCheckReturnValue extends AnnotationVisitor
 			getThisClass().isStatic() ? Invoke.STATIC : Invoke.ANY);
 		
 		if (SAVE_TRAINING != null) {
-			checkReturnValueDatabase.add(XMethodFactory.createXMethod(this));
+			checkReturnValueDatabase.add(XFactory.createXMethod(this));
 		}
 		}
 

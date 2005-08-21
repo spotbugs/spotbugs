@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -43,6 +44,26 @@ public class JavaClassAndMethod {
 		this.javaClass = javaClass;
 		this.method = method;
 	}
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param javaClass the JavaClass
+	 * @param method    a Method belonging to the JavaClass
+	 * @throws ClassNotFoundException 
+	 */
+	public JavaClassAndMethod(XMethod method) throws ClassNotFoundException {
+
+		this.javaClass = Repository.lookupClass(method.getClassName());
+		for(Method m : javaClass.getMethods()) 
+			if (m.getName().equals(method.getName())
+					&& m.getSignature().equals(method.getSignature())
+					&& m.getAccessFlags() == method.getAccessFlags()) {
+				this.method = m;
+				return;
+			}
+		throw new IllegalArgumentException("Can't find " + method);
+	}
 
 	/**
 	 * Get the JavaClass.
@@ -62,7 +83,7 @@ public class JavaClassAndMethod {
 	 * Convert to an XMethod.
 	 */
 	public XMethod toXMethod() {
-		return XMethodFactory.createXMethod(javaClass, method);
+		return XFactory.createXMethod(javaClass, method);
 	}
 	
 	//@Override

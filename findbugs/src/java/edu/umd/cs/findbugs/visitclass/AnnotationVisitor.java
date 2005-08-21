@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantFloat;
 import org.apache.bcel.classfile.ConstantInteger;
@@ -151,7 +152,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 	private String getAnnotationName(DataInputStream bytes) throws IOException {
 		int annotationNameIndex = bytes.readUnsignedShort();
 		String annotationName = ((ConstantUtf8) getConstantPool().getConstant(
-				annotationNameIndex)).getBytes();
+				annotationNameIndex)).getBytes().replace('/','.');
 		annotationName = annotationName.substring(1,
 				annotationName.length() - 1);
 		if (DEBUG)
@@ -161,6 +162,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 
 	private Object readAnnotationValue(DataInputStream bytes)
 			throws IOException {
+		try {
 		char tag = (char) bytes.readUnsignedByte();
 		if (DEBUG)
 			System.out.println("tag: " + tag);
@@ -182,6 +184,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 		case 'S':
 		case 'Z':
 		case 's':
+		case 'c':
 			int cp_index = bytes.readUnsignedShort();
 			Constant c = getConstantPool().getConstant(cp_index);
 			switch (tag) {
@@ -203,11 +206,24 @@ public class AnnotationVisitor extends PreorderVisitor {
 				return Boolean.valueOf(((ConstantInteger) c).getBytes() != 0);
 			case 's':
 				return ((ConstantUtf8) c).getBytes();
+			case 'c':
+				String cName = ((ConstantUtf8)c).getBytes().replace('/','.');
+				if (cName.startsWith("L") && cName.endsWith(";"))
+					cName = cName.substring(1,cName.length()-1);
+				if (DEBUG) System.out.println("cName: " + cName);
+				return cName;
 			default:
+				if (DEBUG) System.out.println("Impossible");
 				throw new IllegalStateException("Impossible");
 			}
 		default:
+			if (DEBUG) System.out.println("Unexpected");
 			throw new IllegalArgumentException();
+		}
+		} catch (RuntimeException e) {
+			System.out.println("Problem processing annotation");
+			e.printStackTrace();
+			throw e;
 		}
 	}
 }

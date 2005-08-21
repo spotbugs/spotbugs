@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.XMethodFactory;
+import edu.umd.cs.findbugs.ba.XFactory;
 
 public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisitor<IsNullValue, IsNullValueFrame> {
 
@@ -129,7 +129,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 				pushValue = IsNullValue.nonNullValue();
 			} else if (mayReturnNullDatabase != null || nullReturnAnnotationDatabase != null) {
 				// Check to see if this method is in either database
-				XMethod calledMethod = XMethodFactory.createXMethod(obj, getCPG());
+				XMethod calledMethod = XFactory.createXMethod(obj, getCPG());
 				if (IsNullValueAnalysis.DEBUG) System.out.println("Check " + calledMethod + " for null return...");
 				
 				Boolean prop = null;

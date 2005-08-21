@@ -50,18 +50,19 @@ public class TrainNonNullAnnotations extends BuildNonNullAnnotationDatabase
 	 * @see edu.umd.cs.findbugs.Detector#report()
 	 */
 	public void report() {
-		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
-				getNonNullDatabase(),
-				AnalysisContext.DEFAULT_NONNULL_PARAM_DATABASE_FILENAME,
-				"non-null param database");
-		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
-				getCheckForNullDatabase(),
-				AnalysisContext.DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME,
-				"possibly-null param database");
-		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
-				getNullReturnValueDatabase(),
-				AnalysisContext.DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE,
-				"non-null and possibly-null return value database");
+		// TODO: FIX for new version of annnotations
+//		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
+//				getNonNullDatabase(),
+//				AnalysisContext.DEFAULT_NONNULL_PARAM_DATABASE_FILENAME,
+//				"non-null param database");
+//		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
+//				getCheckForNullDatabase(),
+//				AnalysisContext.DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME,
+//				"possibly-null param database");
+//		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
+//				getNullReturnValueDatabase(),
+//				AnalysisContext.DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE,
+//				"non-null and possibly-null return value database");
 	}
 
 }

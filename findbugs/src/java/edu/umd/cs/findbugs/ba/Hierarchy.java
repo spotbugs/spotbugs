@@ -435,7 +435,7 @@ public class Hierarchy {
 	public static XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig,
 			JavaClassAndMethodChooser chooser) {
 		JavaClassAndMethod result = findMethod(javaClass, methodName, methodSig, chooser);
-		return result == null ? null : XMethodFactory.createXMethod(result.getJavaClass(), result.getMethod());
+		return result == null ? null : XFactory.createXMethod(result.getJavaClass(), result.getMethod());
 	}
 	
 	/**
@@ -543,7 +543,7 @@ public class Hierarchy {
 		for (JavaClass cls : classList) {
 			JavaClassAndMethod m;
 			if ((m = findMethod(cls, methodName, methodSig)) != null && chooser.choose(m)) {
-				return XMethodFactory.createXMethod(cls, m.getMethod());
+				return XFactory.createXMethod(cls, m.getMethod());
 			}
 		}
 		return null;
