@@ -216,12 +216,22 @@ public class AnnotationVisitor extends PreorderVisitor {
 				if (DEBUG) System.out.println("Impossible");
 				throw new IllegalStateException("Impossible");
 			}
+		case '@':
+			throw new IllegalArgumentException("Not ready to handle annotations as elements of annotations");
+		case 'e':
+			{
+			int cp1= bytes.readUnsignedShort();
+			ConstantUtf8 c1 = (ConstantUtf8) getConstantPool().getConstant(cp1);
+			int cp2= bytes.readUnsignedShort();
+			ConstantUtf8 c2 = (ConstantUtf8) getConstantPool().getConstant(cp2);
+			return c1.getBytes() +"." + c2.getBytes();
+			}
 		default:
-			if (DEBUG) System.out.println("Unexpected");
-			throw new IllegalArgumentException();
+			if (DEBUG) System.out.println("Unexpected tag of " + tag);
+			throw new IllegalArgumentException("Unexpected tag of " + tag);
 		}
 		} catch (RuntimeException e) {
-			System.out.println("Problem processing annotation");
+			System.out.println("Problem processing annotation " + e.getMessage());
 			e.printStackTrace();
 			throw e;
 		}
