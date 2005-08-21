@@ -385,6 +385,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
 
   <Detector class="edu.umd.cs.findbugs.detect.FindCircularDependencies" 
   			speed="moderate"
+			disabled="true"
 			reports="CD_CIRCULAR_DEPENDENCY"/>
 			
   <Detector class="edu.umd.cs.findbugs.detect.RedundantInterfaces"
@@ -416,6 +417,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <Detector class="edu.umd.cs.findbugs.detect.FindBadCast"
             speed="fast"
 	    disabled="true"
+	    hidden="true"
             reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF,BC_VACUOUS_INSTANCEOF"
 	    />
   <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2"
@@ -717,8 +719,8 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="DB" type="DB_DUPLICATE_BRANCHES" category="STYLE" experimental="true"/>
   <BugPattern abbrev="IMA" type="IMA_INEFFICIENT_MEMBER_ACCESS" category="PERFORMANCE" experimental="true"/>
   <BugPattern abbrev="XFB" type="XFB_XML_FACTORY_BYPASS" category="STYLE" experimental="true"/>
-  <BugPattern abbrev="USM" type="USM_USELESS_SUBCLASS_METHOD" category="CORRECTNESS" experimental="true"/>
-  <BugPattern abbrev="USM" type="USM_USELESS_ABSTRACT_METHOD" category="CORRECTNESS" experimental="true"/>
+  <BugPattern abbrev="USM" type="USM_USELESS_SUBCLASS_METHOD" category="STYLE" experimental="true"/>
+  <BugPattern abbrev="USM" type="USM_USELESS_ABSTRACT_METHOD" category="STYLE" experimental="true"/>
   <BugPattern abbrev="CI" type="CI_CONFUSED_INHERITANCE" category="STYLE"/>
   <BugPattern abbrev="QBA" type="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT" category="CORRECTNESS"/>
 </FindbugsPlugin>
