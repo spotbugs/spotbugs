@@ -231,8 +231,10 @@ public class AnnotationVisitor extends PreorderVisitor {
 			throw new IllegalArgumentException("Unexpected tag of " + tag);
 		}
 		} catch (RuntimeException e) {
+			if (DEBUG) {
 			System.out.println("Problem processing annotation " + e.getMessage());
 			e.printStackTrace();
+			}
 			throw e;
 		}
 	}
