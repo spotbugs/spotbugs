@@ -187,9 +187,7 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 			String cName = c.getClassName();
 			int p = cName.lastIndexOf('.');
 			cName = cName.substring(0,p+1) + "package-info";
-			System.out.println(cName);
 			c = Repository.lookupClass(cName);
-			System.out.println("Found " + c.getClassName());
 			n = defaultAnnotation.get(kind).get(c);
 			if (DEBUG) 
 				System.out.println("Default annotation for " + kind + " is " + n);
