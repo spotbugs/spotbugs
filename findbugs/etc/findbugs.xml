@@ -389,7 +389,6 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
 			
   <Detector class="edu.umd.cs.findbugs.detect.RedundantInterfaces"
   			speed="fast"
-			disabled="true"
   			reports="RI_REDUNDANT_INTERFACES"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.MultithreadedInstanceAccess"
