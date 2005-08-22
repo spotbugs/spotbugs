@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class BadAppletConstructor extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class BadAppletConstructor extends BytecodeScanningDetector implements  StatelessDetector {
 	private BugReporter bugReporter;
 	private JavaClass appletClass;
 	private boolean inConstructor;

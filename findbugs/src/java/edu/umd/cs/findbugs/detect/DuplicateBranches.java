@@ -44,7 +44,7 @@ import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-public class DuplicateBranches extends PreorderVisitor implements Detector, StatelessDetector, Constants2
+public class DuplicateBranches extends PreorderVisitor implements Detector, StatelessDetector
 {
 	private ClassContext classContext;
 	private BugReporter bugReporter;

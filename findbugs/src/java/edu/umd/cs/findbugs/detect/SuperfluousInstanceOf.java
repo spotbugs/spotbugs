@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
  *
  * @author Dave Brosius
  */
-public class SuperfluousInstanceOf extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class SuperfluousInstanceOf extends BytecodeScanningDetector implements StatelessDetector {
 
 	private static final int SEEN_NOTHING = 0;
 	private static final int SEEN_ALOAD = 1;

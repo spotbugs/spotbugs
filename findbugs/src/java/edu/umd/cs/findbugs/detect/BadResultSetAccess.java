@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 
-public class BadResultSetAccess extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class BadResultSetAccess extends BytecodeScanningDetector implements  StatelessDetector {
 
 	private static Set<String> dbFieldTypesSet = new HashSet<String>() 
 	{

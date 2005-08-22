@@ -26,8 +26,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-public class ResolveAllReferences extends PreorderVisitor implements Detector,
-		Constants2 {
+public class ResolveAllReferences extends PreorderVisitor implements Detector {
 
 	private BugReporter bugReporter;
 

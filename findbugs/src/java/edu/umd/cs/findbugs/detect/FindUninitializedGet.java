@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class FindUninitializedGet extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class FindUninitializedGet extends BytecodeScanningDetector implements StatelessDetector {
 	Set<FieldAnnotation> initializedFields = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> declaredFields = new HashSet<FieldAnnotation>();
 	boolean inConstructor;

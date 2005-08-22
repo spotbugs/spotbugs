@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-public class ConfusedInheritance extends PreorderVisitor  implements Detector, StatelessDetector, Constants2 {
+public class ConfusedInheritance extends PreorderVisitor  implements Detector, StatelessDetector {
 	
 	private BugReporter bugReporter;
 	private JavaClass cls;

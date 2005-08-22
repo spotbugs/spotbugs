@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class InitializationChain extends BytecodeScanningDetector implements Constants2 {
+public class InitializationChain extends BytecodeScanningDetector {
 	Set<String> requires = new TreeSet<String>();
 	Map<String, Set<String>> classRequires = new TreeMap<String, Set<String>>();
 	private BugReporter bugReporter;

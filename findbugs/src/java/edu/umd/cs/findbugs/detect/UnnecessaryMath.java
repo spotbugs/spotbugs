@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  *
  * @author Dave Brosius
  */
-public class UnnecessaryMath extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class UnnecessaryMath extends BytecodeScanningDetector implements StatelessDetector {
 	static final int SEEN_NOTHING = 0;
 	static final int SEEN_DCONST = 1;
 

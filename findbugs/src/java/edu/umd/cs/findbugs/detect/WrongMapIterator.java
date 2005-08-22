@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class WrongMapIterator extends BytecodeScanningDetector implements   Constants2, StatelessDetector {
+public class WrongMapIterator extends BytecodeScanningDetector implements   StatelessDetector {
     private BugReporter bugReporter;
     private static final int SAW_NOTHING = 0;
     private static final int SAW_MAP_LOAD1 = 1;

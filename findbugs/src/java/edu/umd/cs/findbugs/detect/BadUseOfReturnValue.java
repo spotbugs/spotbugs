@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class BadUseOfReturnValue extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class BadUseOfReturnValue extends BytecodeScanningDetector implements StatelessDetector {
 
 	BugReporter bugReporter;
 

@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class InefficientMemberAccess extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class InefficientMemberAccess extends BytecodeScanningDetector implements StatelessDetector {
 	
 	public static final String ACCESS_PREFIX = "access$";
 	private BugReporter bugReporter;

@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  * looks for calls to Thread.interrupted from a non static context, especially when that context is
  * not 'currentThread()'.
  */
-public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implements  StatelessDetector {
 	public static final int SEEN_NOTHING = 0;
 	public static final int SEEN_CURRENTTHREAD = 1;
 	public static final int SEEN_POP_AFTER_CURRENTTHREAD = 2;

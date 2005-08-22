@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class PreferZeroLengthArrays extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class PreferZeroLengthArrays extends BytecodeScanningDetector implements  StatelessDetector {
 	boolean nullOnTOS = false;
 	private BugReporter bugReporter;
 

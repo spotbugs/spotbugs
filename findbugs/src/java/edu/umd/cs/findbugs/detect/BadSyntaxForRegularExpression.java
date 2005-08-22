@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class BadSyntaxForRegularExpression 
-extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+extends BytecodeScanningDetector implements  StatelessDetector {
 
     BugReporter bugReporter;
 

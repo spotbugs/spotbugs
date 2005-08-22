@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class UseObjectEquals extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class UseObjectEquals extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;
 	private OpcodeStack stack = new OpcodeStack();
 

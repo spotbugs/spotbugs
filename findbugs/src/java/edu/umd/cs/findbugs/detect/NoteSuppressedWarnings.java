@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class NoteSuppressedWarnings extends AnnotationVisitor 
-  implements NonReportingDetector, Constants2 {
+  implements NonReportingDetector {
 
 	private static Set<String> packages = new HashSet<String>();
 

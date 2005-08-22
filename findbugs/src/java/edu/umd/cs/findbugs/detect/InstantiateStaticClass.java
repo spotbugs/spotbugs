@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 
-public class InstantiateStaticClass extends BytecodeScanningDetector implements Constants2 {
+public class InstantiateStaticClass extends BytecodeScanningDetector {
 	private BugReporter bugReporter;
 
 	Map<String,Boolean> isStaticClass = new HashMap<String,Boolean>();

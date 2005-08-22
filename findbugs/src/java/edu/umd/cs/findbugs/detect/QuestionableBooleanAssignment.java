@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class QuestionableBooleanAssignment extends BytecodeScanningDetector implements StatelessDetector, Constants2
+public class QuestionableBooleanAssignment extends BytecodeScanningDetector implements StatelessDetector
 {
 	public static final int SEEN_NOTHING = 0;
 	public static final int SEEN_ICONST_0_OR_1 = 1;

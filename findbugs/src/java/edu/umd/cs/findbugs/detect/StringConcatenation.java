@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  * @author Dave Brosius
  * @author William Pugh
  */
-public class StringConcatenation extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class StringConcatenation extends BytecodeScanningDetector implements StatelessDetector {
 	private static final boolean DEBUG
 	        = Boolean.getBoolean("sbsc.debug");
 

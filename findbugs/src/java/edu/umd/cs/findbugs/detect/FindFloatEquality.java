@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class FindFloatEquality extends BytecodeScanningDetector implements Constants2, StatelessDetector 
+public class FindFloatEquality extends BytecodeScanningDetector implements StatelessDetector 
 {
 	private static final int SAW_NOTHING = 0;
 	private static final int SAW_COMP = 1;

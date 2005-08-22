@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class InvalidJUnitTest extends BytecodeScanningDetector implements
-		Constants2, StatelessDetector {
+		 StatelessDetector {
 
 	private static final int SEEN_NOTHING = 0;
 

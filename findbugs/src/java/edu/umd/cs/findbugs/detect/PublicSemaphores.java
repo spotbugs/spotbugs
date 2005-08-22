@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  * synchronized on this, or defining synchronized methods is bad, but since that is so prevalent, 
  * don't warn on that.
  */
-public class PublicSemaphores extends BytecodeScanningDetector implements StatelessDetector, Constants2
+public class PublicSemaphores extends BytecodeScanningDetector implements StatelessDetector
 {
 	private static final int SEEN_NOTHING = 0;
 	private static final int SEEN_ALOAD_0 = 1;

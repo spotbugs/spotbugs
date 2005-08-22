@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class SerializableIdiom extends PreorderVisitor
-        implements Detector, Constants2 {
+        implements Detector {
 
 
 	boolean sawSerialVersionUID;

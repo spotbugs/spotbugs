@@ -32,8 +32,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class VolatileUsage extends BytecodeScanningDetector implements 
-		Constants2 {
+public class VolatileUsage extends BytecodeScanningDetector  {
 	  private BugReporter bugReporter;
 
     public VolatileUsage(BugReporter bugReporter) {

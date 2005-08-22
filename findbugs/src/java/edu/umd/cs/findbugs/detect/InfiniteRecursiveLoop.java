@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements Constants2,
+public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements 
 		StatelessDetector {
 
 	private BugReporter bugReporter;

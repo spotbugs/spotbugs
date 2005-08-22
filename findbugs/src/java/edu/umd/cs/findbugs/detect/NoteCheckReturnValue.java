@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  */
  
 public class NoteCheckReturnValue extends AnnotationVisitor 
-  implements NonReportingDetector, Constants2 {
+  implements NonReportingDetector {
 	
 	// XXX: Hack, for now
 	private static final String LOAD_TRAINING = System.getProperty("findbugs.checkreturn.loadtraining");

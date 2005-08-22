@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 //   9:   monitorexit
 
 
-public class FindNakedNotify extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class FindNakedNotify extends BytecodeScanningDetector implements  StatelessDetector {
 	int stage = 0;
 	private BugReporter bugReporter;
 	boolean synchronizedMethod;

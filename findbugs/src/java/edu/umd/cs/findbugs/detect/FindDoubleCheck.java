@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class FindDoubleCheck extends BytecodeScanningDetector implements Constants2 {
+public class FindDoubleCheck extends BytecodeScanningDetector {
 	static final boolean debug = false;
 	int stage = 0;
 	int startPC, endPC;

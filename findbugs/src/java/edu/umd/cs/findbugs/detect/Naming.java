@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-public class Naming extends PreorderVisitor implements Detector, Constants2 {
+public class Naming extends PreorderVisitor implements Detector {
 	String baseClassName;
 	boolean classIsPublicOrProtected;
 

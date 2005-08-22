@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 
-public class SwitchFallthrough extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class SwitchFallthrough extends BytecodeScanningDetector implements StatelessDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("switchFallthrough.debug");
 	private static final boolean LOOK_IN_SOURCE_FOR_FALLTHRU_COMMENT =
 		Boolean.getBoolean("findbugs.sf.comment");

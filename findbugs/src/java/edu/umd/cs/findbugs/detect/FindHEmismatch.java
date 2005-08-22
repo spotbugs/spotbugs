@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class FindHEmismatch extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class FindHEmismatch extends BytecodeScanningDetector implements StatelessDetector {
 	boolean hasFields = false;
 	boolean visibleOutsidePackage = false;
 	boolean hasHashCode = false;

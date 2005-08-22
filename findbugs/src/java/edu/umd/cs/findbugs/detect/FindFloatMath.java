@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class FindFloatMath extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class FindFloatMath extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;
 
 	public FindFloatMath(BugReporter bugReporter) {

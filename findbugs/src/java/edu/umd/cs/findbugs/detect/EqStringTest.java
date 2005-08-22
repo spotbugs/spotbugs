@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class EqStringTest extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class EqStringTest extends BytecodeScanningDetector implements  StatelessDetector {
 	boolean constantOnTOS = false;
 	boolean callToInternSeen = false;
 	private BugReporter bugReporter;

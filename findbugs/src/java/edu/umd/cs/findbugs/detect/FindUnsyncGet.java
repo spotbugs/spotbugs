@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class FindUnsyncGet extends BytecodeScanningDetector implements Constants2 {
+public class FindUnsyncGet extends BytecodeScanningDetector {
 	String prevClassName = " none ";
 	private BugReporter bugReporter;
 	static final int doNotConsider = ACC_PRIVATE | ACC_STATIC | ACC_NATIVE;

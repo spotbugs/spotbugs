@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  *
  * @author Dave Brosius
  */
-public class InefficientToArray extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class InefficientToArray extends BytecodeScanningDetector implements StatelessDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("ita.debug");
 
 	static final int SEEN_NOTHING = 0;

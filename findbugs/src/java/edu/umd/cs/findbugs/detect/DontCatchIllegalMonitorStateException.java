@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class DontCatchIllegalMonitorStateException
-        extends PreorderVisitor implements Detector, Constants2, StatelessDetector {
+        extends PreorderVisitor implements Detector, StatelessDetector {
 
 	private static final boolean DEBUG = Boolean.getBoolean("dcimse.debug");
 

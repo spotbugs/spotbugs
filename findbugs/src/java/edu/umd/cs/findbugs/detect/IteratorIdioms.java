@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class IteratorIdioms extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class IteratorIdioms extends BytecodeScanningDetector implements  StatelessDetector {
 
     private JavaClass iteratorClass;
 	private BugReporter bugReporter;

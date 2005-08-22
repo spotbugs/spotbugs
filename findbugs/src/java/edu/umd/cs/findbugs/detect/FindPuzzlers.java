@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class FindPuzzlers extends BytecodeScanningDetector implements Constants2 {
+public class FindPuzzlers extends BytecodeScanningDetector {
 
 
 	BugReporter bugReporter;

@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class WaitInLoop extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class WaitInLoop extends BytecodeScanningDetector implements StatelessDetector {
 
 	boolean sawWait = false;
 	boolean sawAwait = false;

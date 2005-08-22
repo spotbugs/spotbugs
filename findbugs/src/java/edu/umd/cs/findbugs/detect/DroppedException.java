@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-public class DroppedException extends PreorderVisitor implements Detector, Constants2 {
+public class DroppedException extends PreorderVisitor implements Detector {
 	private static final boolean DEBUG = Boolean.getBoolean("de.debug");
 	private static final boolean LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS
 	        = Boolean.getBoolean("findbugs.de.comment");

@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class LockedFields extends BytecodeScanningDetector implements Constants2 {
+public class LockedFields extends BytecodeScanningDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("lockedfields.debug");
 
 	Set<FieldAnnotation> volatileOrFinalFields = new HashSet<FieldAnnotation>();

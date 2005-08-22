@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class FindBadCast extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class FindBadCast extends BytecodeScanningDetector implements  StatelessDetector {
 
 
 	private HashSet<String> castTo = new HashSet<String>();

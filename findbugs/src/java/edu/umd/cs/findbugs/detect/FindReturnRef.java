@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class FindReturnRef extends BytecodeScanningDetector implements Constants2 {
+public class FindReturnRef extends BytecodeScanningDetector {
 	boolean check = false;
 	boolean thisOnTOS = false;
 	boolean fieldOnTOS = false;

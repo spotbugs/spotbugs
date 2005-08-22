@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
-public class MutableLock extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class MutableLock extends BytecodeScanningDetector implements  StatelessDetector {
 	Set<String> setFields = new HashSet<String>();
 	boolean thisOnTOS = false;
 	private BugReporter bugReporter;

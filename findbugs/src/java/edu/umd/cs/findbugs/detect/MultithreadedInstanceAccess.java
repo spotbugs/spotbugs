@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 
-public class MultithreadedInstanceAccess extends BytecodeScanningDetector implements Constants2, StatelessDetector
+public class MultithreadedInstanceAccess extends BytecodeScanningDetector implements  StatelessDetector
 {
 	private static final String STRUTS_ACTION_NAME = "org.apache.struts.action.Action";
 	private static final String SERVLET_NAME = "javax.servlet.Servlet";

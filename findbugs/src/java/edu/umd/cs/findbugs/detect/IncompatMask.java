@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  *
  * @author Tom Truscott
  */
-public class IncompatMask extends BytecodeScanningDetector implements Constants2, StatelessDetector {
+public class IncompatMask extends BytecodeScanningDetector implements StatelessDetector {
 	int state;
 	long arg0, arg1;
 	int bitop;
