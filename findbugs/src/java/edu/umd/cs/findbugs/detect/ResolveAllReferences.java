@@ -23,7 +23,6 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class ResolveAllReferences extends PreorderVisitor implements Detector {

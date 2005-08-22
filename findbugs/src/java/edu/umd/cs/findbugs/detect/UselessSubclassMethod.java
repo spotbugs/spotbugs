@@ -36,7 +36,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class UselessSubclassMethod extends BytecodeScanningDetector implements StatelessDetector {
 

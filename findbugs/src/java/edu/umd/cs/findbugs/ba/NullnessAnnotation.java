@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
-import edu.umd.cs.findbugs.annotations.*;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * @author pugh

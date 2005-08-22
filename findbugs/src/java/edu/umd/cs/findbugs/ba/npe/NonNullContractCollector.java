@@ -29,8 +29,8 @@ import org.apache.bcel.generic.InvokeInstruction;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethodChooser;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * Find the contract specified by @NonNull and @CheckForNull parameter

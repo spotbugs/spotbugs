@@ -32,7 +32,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class LockedFields extends BytecodeScanningDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("lockedfields.debug");

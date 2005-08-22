@@ -31,7 +31,6 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 public class CloneIdiom extends DismantleBytecode implements Detector, StatelessDetector {

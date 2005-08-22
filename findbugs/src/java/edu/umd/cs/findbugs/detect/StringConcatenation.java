@@ -26,7 +26,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**
  * Find occurrences of using the String "+" or "+=" operators

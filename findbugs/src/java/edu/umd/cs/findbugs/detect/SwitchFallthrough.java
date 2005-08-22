@@ -35,7 +35,6 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 
 public class SwitchFallthrough extends BytecodeScanningDetector implements StatelessDetector {

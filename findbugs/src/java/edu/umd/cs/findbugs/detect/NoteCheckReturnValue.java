@@ -31,11 +31,10 @@ import java.util.Set;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.Invoke;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**
  * @author William Pugh

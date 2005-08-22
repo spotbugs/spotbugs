@@ -29,7 +29,6 @@ import org.apache.bcel.classfile.Code;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class InitializationChain extends BytecodeScanningDetector {
 	Set<String> requires = new TreeSet<String>();

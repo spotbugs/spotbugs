@@ -26,7 +26,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class FindSpinLoop extends BytecodeScanningDetector implements StatelessDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("findspinloop.debug");

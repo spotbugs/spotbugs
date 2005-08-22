@@ -27,7 +27,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Lookup;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class FindFinalizeInvocations extends BytecodeScanningDetector implements StatelessDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("ffi.debug");

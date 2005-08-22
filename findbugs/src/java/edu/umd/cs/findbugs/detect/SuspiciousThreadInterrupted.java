@@ -28,7 +28,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**
  * looks for calls to Thread.interrupted from a non static context, especially when that context is

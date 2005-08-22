@@ -29,7 +29,6 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class XMLFactoryBypass extends BytecodeScanningDetector  {
     private BugReporter bugReporter;

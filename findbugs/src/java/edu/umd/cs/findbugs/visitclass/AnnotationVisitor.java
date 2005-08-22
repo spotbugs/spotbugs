@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantFloat;
 import org.apache.bcel.classfile.ConstantInteger;

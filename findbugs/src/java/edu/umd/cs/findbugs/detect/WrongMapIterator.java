@@ -27,7 +27,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class WrongMapIterator extends BytecodeScanningDetector implements   StatelessDetector {
     private BugReporter bugReporter;

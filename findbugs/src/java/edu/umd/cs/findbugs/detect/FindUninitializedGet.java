@@ -31,7 +31,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class FindUninitializedGet extends BytecodeScanningDetector implements StatelessDetector {
 	Set<FieldAnnotation> initializedFields = new HashSet<FieldAnnotation>();

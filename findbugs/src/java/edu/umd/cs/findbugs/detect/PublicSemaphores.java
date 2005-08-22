@@ -28,7 +28,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**
  * finds public classes that use 'this' as a semaphore, which can cause conflicts if clients of this

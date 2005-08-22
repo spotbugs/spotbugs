@@ -29,14 +29,6 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethodParameter;
-import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
-import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
-import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
-import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**
  * @author William Pugh

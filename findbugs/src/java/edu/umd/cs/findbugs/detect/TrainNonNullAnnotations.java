@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.TrainingDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**

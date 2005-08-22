@@ -27,7 +27,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class StartInConstructor extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;

@@ -22,8 +22,8 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 
 import edu.umd.cs.findbugs.ba.SignatureConverter;
-import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;

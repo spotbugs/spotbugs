@@ -36,7 +36,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class FindMaskedFields extends BytecodeScanningDetector {
 	private BugReporter bugReporter;

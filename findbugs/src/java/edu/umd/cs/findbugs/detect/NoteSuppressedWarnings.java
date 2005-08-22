@@ -40,7 +40,6 @@ import edu.umd.cs.findbugs.PackageWarningSuppressor;
 import edu.umd.cs.findbugs.SuppressionMatcher;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
-import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class NoteSuppressedWarnings extends AnnotationVisitor 
   implements NonReportingDetector {
