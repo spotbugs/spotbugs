@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Iterator;
 
+import org.apache.bcel.generic.InstructionHandle;
+
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 
 /**
@@ -90,13 +92,12 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			if (pkgEnd >= 0) {
 				shortAnalysisName = shortAnalysisName.substring(pkgEnd + 1);
 			}
+			
 			if (analysis instanceof IsNullValueAnalysis) {
 				IsNullValueAnalysis a = (IsNullValueAnalysis) analysis;
 				String method = a.getClassAndMethod().toString();
 
 				System.out.println("Executing " + shortAnalysisName  + " on " + a.getClassAndMethod());
-				if (method.indexOf("appendEncoded") >= 0)
-					System.out.println("Found it");
 			}
 			else System.out.println("Executing " + shortAnalysisName );
 		}
@@ -177,12 +178,19 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 		} while (change);
 	}
 
+	private static String blockId(BasicBlock bb) {
+		InstructionHandle handle = bb.getFirstInstruction();
+		if (handle == null) return ""+ bb.getId();
+		return bb.getId()+":"+handle.getInstruction();
+	}
 	private static void debug(BasicBlock bb, String msg) {
-		System.out.print("Dataflow (block " + bb.getId() + "): " + msg);
+		
+		
+		System.out.print("Dataflow (block " + blockId(bb) + "): " + msg);
 	}
 
 	private static void debug(BasicBlock bb, BasicBlock pred, String msg) {
-		System.out.print("Dataflow (block " + bb.getId() + ", predecessor " + pred.getId() + "): " + msg);
+		System.out.print("Dataflow (block " + blockId(bb) + ", predecessor " + blockId(pred) + "): " + msg);
 	}
 
 	/**

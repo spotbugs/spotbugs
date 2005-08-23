@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefSet;
  */
 public class BuildUnconditionalParamDerefDatabase {
 	private static final boolean VERBOSE_DEBUG = Boolean.getBoolean("fnd.debug.nullarg.verbose");
-	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.nullarg");
+	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.nullarg") || VERBOSE_DEBUG;
 	
 	private ParameterNullnessPropertyDatabase database;
 	
