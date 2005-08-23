@@ -664,19 +664,11 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 				if (!frame.isValid()) {
 					exceptionTypeSet.addExplicit(Type.THROWABLE);
 				} else if (frame.getStackDepth() == 0) {
-					if (DEBUG) {
-						try {
-							throw new IllegalStateException("empty stack " +
-						        " thrown by " + pei + " in " +
-						        SignatureConverter.convertMethodSignature(methodGen));
-						} catch (IllegalStateException e) {
-							e.printStackTrace(System.out);
-						}
-						        
-					}
-					exceptionTypeSet.addExplicit(Type.THROWABLE);
+					throw new IllegalStateException("empty stack " +
+							" thrown by " + pei + " in " +
+							SignatureConverter.convertMethodSignature(methodGen));
 				} else {
-				
+					
 					Type throwType = frame.getTopValue();
 					if (throwType instanceof ObjectType) {
 						exceptionTypeSet.addExplicit((ObjectType) throwType);
