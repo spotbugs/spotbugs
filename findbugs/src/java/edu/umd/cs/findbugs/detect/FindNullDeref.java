@@ -130,9 +130,9 @@ public class FindNullDeref
 				analyzeMethod(classContext, method);
 			}
 		} catch (DataflowAnalysisException e) {
-			bugReporter.logError("FindNullDeref caught exception", e);
+			bugReporter.logError("FindNullDeref caught dae exception", e);
 		} catch (CFGBuilderException e) {
-			bugReporter.logError("FindNullDeref caught exception", e);
+			bugReporter.logError("FindNullDeref caught cfgb exception", e);
 		}
 	}
 
