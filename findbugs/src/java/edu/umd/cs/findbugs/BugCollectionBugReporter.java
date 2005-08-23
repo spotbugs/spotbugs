@@ -55,6 +55,7 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter {
 		if (e instanceof MissingClassException) {
 			MissingClassException e2 = (MissingClassException)e;
 			reportMissingClass(e2.getClassNotFoundException());
+			return;
 		}
 		if (e instanceof MethodUnprofitableException) {
 			// TODO: log this

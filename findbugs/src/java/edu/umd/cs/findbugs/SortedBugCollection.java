@@ -34,6 +34,7 @@ import java.util.TreeSet;
 
 import javax.xml.transform.TransformerException;
 
+import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 
 /**
@@ -209,18 +210,28 @@ public class SortedBugCollection extends AbstractBugCollection {
 		return bugSet;
 	}
 
-	//@Override
+	@Override
 	public void addError(String message, Throwable exception) {
+		if (exception instanceof MissingClassException) {
+			MissingClassException e = (MissingClassException) exception;
+			addMissingClass(AbstractBugReporter.getMissingClassName(e.getClassNotFoundException()));
+			return;
+		}
+		if (exception instanceof ClassNotFoundException) {
+			ClassNotFoundException e = (ClassNotFoundException) exception;
+			addMissingClass(AbstractBugReporter.getMissingClassName(e));
+			return;
+		}
 		errorList.add(new AnalysisError(message, exception));
 	}
+
 	
-	//@Override
 	public void addError(AnalysisError error) {
 		errorList.add(error);
 	}
 	
-	public void addMissingClass(String message) {
-		missingClassSet.add(message);
+	public void addMissingClass(String className) {
+		missingClassSet.add(className);
 	}
 
 	public Iterator<AnalysisError> errorIterator() {
