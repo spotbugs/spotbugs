@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
+import edu.umd.cs.findbugs.ba.MissingClassException;
 
 public abstract class BugCollectionBugReporter extends TextUIBugReporter {
 	private SortedBugCollection bugCollection;
@@ -51,6 +52,10 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter {
 	}
 
 	public void logError(String message, Throwable e) {
+		if (e instanceof MissingClassException) {
+			MissingClassException e2 = (MissingClassException)e;
+			reportMissingClass(e2.getClassNotFoundException());
+		}
 		if (e instanceof MethodUnprofitableException) {
 			// TODO: log this
 			return;

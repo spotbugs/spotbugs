@@ -52,6 +52,7 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
@@ -129,6 +130,8 @@ public class FindNullDeref
 				if (DEBUG) System.out.println("Checking for NP in " + method.getName());
 				analyzeMethod(classContext, method);
 			}
+		} catch (MissingClassException e) {
+			bugReporter.reportMissingClass(e.getClassNotFoundException());
 		} catch (DataflowAnalysisException e) {
 			bugReporter.logError("FindNullDeref caught dae exception", e);
 		} catch (CFGBuilderException e) {
