@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Iterator;
 
@@ -104,8 +105,8 @@ public class CFGPrinter {
 
 	public static void main(String[] argv) {
 		try {
-			if (argv.length != 1) {
-				System.out.println("Usage: " + CFGPrinter.class.getName() + " <class file>");
+			if (argv.length == 0 || argv.length > 2) {
+				System.out.println("Usage: " + CFGPrinter.class.getName() + " <class file> [outputFile]");
 				System.exit(1);
 			}
 
@@ -118,7 +119,9 @@ public class CFGPrinter {
 
 			Method[] methods = cls.getMethods();
 			String methodName = System.getProperty("cfg.method");
-
+			PrintStream out = System.err;
+			if (argv.length == 2) 
+				out = new PrintStream(new FileOutputStream(argv[1]));
 			for (Method method : methods) {
 				MethodGen methodGen = classContext.getMethodGen(method);
 				if (methodGen == null)
@@ -127,14 +130,15 @@ public class CFGPrinter {
 				if (methodName != null && !method.getName().equals(methodName))
 					continue;
 
-				System.out.println();
-				System.out.println("----------------------------------------------------------------------------");
-				System.out.println("Method " + SignatureConverter.convertMethodSignature(methodGen));
-				System.out.println("----------------------------------------------------------------------------");
+			
+				out.println();
+				out.println("----------------------------------------------------------------------------");
+				out.println("Method " + SignatureConverter.convertMethodSignature(methodGen));
+				out.println("----------------------------------------------------------------------------");
 
 				CFG cfg = classContext.getCFG(method);
 				CFGPrinter printer = new CFGPrinter(cfg);
-				printer.print(System.out);
+				printer.print(out);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
