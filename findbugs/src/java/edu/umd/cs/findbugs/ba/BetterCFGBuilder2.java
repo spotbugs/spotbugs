@@ -737,7 +737,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			return false;
 
 		if (ins instanceof NEW) return false;
-		if (ins instanceof ATHROW) return false;
+		// if (ins instanceof ATHROW) return false;
 		if (ins instanceof GETSTATIC) return false;
 		if (ins instanceof PUTSTATIC) return false;
 		if (ins instanceof ReturnInstruction) return false;
