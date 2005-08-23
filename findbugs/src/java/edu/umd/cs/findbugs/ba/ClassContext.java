@@ -239,14 +239,6 @@ public class ClassContext {
 				} catch (CFGBuilderException e) {
 					result.setCFGBuilderException(e);
 				} catch (DataflowAnalysisException e) {
-					if (TIME_ANALYSES) {
-						long end = System.currentTimeMillis();
-						indent();
-						System.out.println("CC: " + analysisName + " killed by exception after " +
-						        (end - begin) + " millis");
-						e.printStackTrace();
-						--depth;
-					}
 					result.setDataflowAnalysisException(e);
 				} catch (AnalysisException e) {
 					result.setAnalysisException(e);
