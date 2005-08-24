@@ -30,7 +30,9 @@ import java.lang.annotation.Target;
 public @interface SuppressWarnings {
     /**
      * The set of warnings that are to be suppressed by the compiler in the
-     * annotated element.  Duplicate names are permitted.  The second and
+     * annotated element.  
+     * 
+     * Duplicate names are permitted.  The second and
      * successive occurrences of a name are ignored.  The presence of
      * unrecognized warning names is <i>not</i> an error: Compilers must
      * ignore any warning names they do not recognize.  They are, however,

@@ -1,6 +1,6 @@
 /*
- * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2005, University of Maryland
+ * Bytecode Analysis Framework
+ * Copyright (C) 2005 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,10 +16,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package edu.umd.cs.findbugs.annotations;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,24 +25,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that all members of the class or package should be
- * annotated with the default value of the supplied annotation class.
+ * The annotated element could be null under some circumstances.
  * 
- * This would be used for behavior annotations such as @NonNull, @CheckForNull,
- * or @CheckReturnValue.
- * 
- * In particular, you can use @DefaultAnnotation(NonNull.class) on a class or package,
- * and then use @Nullable only on those parameters, methods or fields that you want
- * to allow to be null.
+ * In general, this means developers will have to read the documentation
+ * to determine when a null value is acceptable and whether it is neccessary
+ * to check for a null value. 
  *
- * @author William Pugh
- */
-
+ * When this annotation is applied to a method it applies to the method return value. 
+ **/
 @Documented
-@Target({ElementType.TYPE, ElementType.PACKAGE})
+@Target({ElementType.FIELD, ElementType.METHOD,
+         ElementType.PARAMETER, 
+         ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.CLASS)
+public @interface Nullable {
 
-public @interface DefaultAnnotation {
-	Class<? extends Annotation>[] value();
 }
-
