@@ -189,6 +189,9 @@
 			<fileset dir="${classes.dir}">
 				<include name="${pkg.base}/annotations/*.class"/>
 			</fileset>
+			<fileset dir="${src.dir}">
+				<include name="${pkg.base}/annotations/*.java"/>
+			</fileset>
 		</jar>
 	</target>
 	
