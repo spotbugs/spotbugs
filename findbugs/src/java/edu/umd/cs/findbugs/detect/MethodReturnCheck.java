@@ -194,6 +194,9 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			for (String[] tuple : STANDARD_POLICY_DATABASE) {
 				database.add(new PolicyDatabaseEntry(tuple[0], tuple[1], tuple[2]));
 			}
+			for (String[] tuple : JDK15_POLICY_DATABASE) {
+				database.add(new PolicyDatabaseEntry(tuple[0], tuple[1], tuple[2]));
+			}
 			
 			// TODO: should add policies set by @CheckReturnValue annotations
 			
@@ -271,7 +274,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 					int popPC = getPC();
 					if (DEBUG) System.out.println("Saw POP @"+popPC);
 					BugInstance warning =
-						new BugInstance(this, "RV_RETURN_VALUE_IGNORED", NORMAL_PRIORITY)
+						new BugInstance(this, "RV_RETURN_VALUE_IGNORED2", NORMAL_PRIORITY)
 							.addClassAndMethod(this)
 							.addMethod(className, methodName, signature, seen == Constants.INVOKESTATIC).describe("METHOD_CALLED")
 							.addSourceLine(this, callPC);
