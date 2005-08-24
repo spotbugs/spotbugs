@@ -8,12 +8,11 @@
    class="de.tobject.findbugs.FindbugsPlugin">
 
    <runtime>
-      <library name="findbugs-plugin.jar">
-         <export name="*"/>
-      </library>
+      <library name="findbugs-plugin.jar"/>
       <library name="bcel.jar"/>
       <library name="dom4j-full.jar"/>
-      <library name="findbugs.jar"/>
+      <library name="findbugs.jar">
+      </library>
    </runtime>
 
    <requires>
@@ -213,6 +212,12 @@
             icon="icons/bugAnnotation.gif"
             id="de.tobject.findbugs.imageprovider">
       </imageprovider>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.core.classpathVariableInitializer">
+      <classpathVariableInitializer
+            class="de.tobject.findbugs.AnnotationClasspathInitializer"
+            variable="FINDBUGS_ANNOTATIONS"/>
    </extension>
 
 </plugin>
