@@ -24,10 +24,8 @@ import java.util.Map;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
-import edu.umd.cs.findbugs.ba.NullnessAnnotation;
+import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.XMethodParameter;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**
@@ -38,9 +36,9 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
  * @author David Hovemeyer
  * @author William Pugh
  */
-public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
+public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 	private static final boolean DEBUG = Boolean
-			.getBoolean("fnd.debug.annotation");
+			.getBoolean("frv.debug.annotation");
 
 	private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
@@ -53,7 +51,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
 	}
 
-	public BuildNonNullAnnotationDatabase() {
+	public BuildCheckReturnAnnotationDatabase() {
 
 	}
 
@@ -70,7 +68,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
 		annotationClass = lastPortion(annotationClass);
 
-		NullnessAnnotation n = NullnessAnnotation.parse(annotationClass);
+		CheckReturnValueAnnotation n = CheckReturnValueAnnotation.parse(annotationClass);
 		if (n == null) {
 			if (annotationClass.startsWith("DefaultAnnotation")) {
 
@@ -84,10 +82,10 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
 				if (annotationTarget != null)
 					for (Object aClass : (Object[]) v) {
-						n = NullnessAnnotation.parse((String) aClass);
+						n = CheckReturnValueAnnotation.parse((String) aClass);
 						if (n != null)
 							AnalysisContext.currentAnalysisContext()
-									.getNullnessAnnotationDatabase()
+									.getCheckReturnAnnotationDatabase()
 									.addDefaultAnnotation(annotationTarget,
 											getThisClass(), n);
 					}
@@ -96,39 +94,12 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 		}
 		else if (visitingMethod())
 			AnalysisContext.currentAnalysisContext()
-					.getNullnessAnnotationDatabase().addDirectAnnotation(
+					.getCheckReturnAnnotationDatabase().addDirectAnnotation(
 							XFactory.createXMethod(this), n);
-		else if (visitingField())
-			AnalysisContext.currentAnalysisContext()
-					.getNullnessAnnotationDatabase().addDirectAnnotation(
-							XFactory.createXField(this), n);
+		
 
 	}
 
-	@Override
-	public void visitParameterAnnotation(int p, String annotationClass,
-			Map<String, Object> map, boolean runtimeVisible) {
-		annotationClass = lastPortion(annotationClass);
-		NullnessAnnotation n = NullnessAnnotation.parse(annotationClass);
-
-		if (n == null)
-			return;
-
-		XMethod xmethod = XFactory.createXMethod(this);
-		if (DEBUG) {
-			System.out.println("Parameter "
-					+ p
-					+ " @"
-					+ annotationClass.substring(annotationClass
-							.lastIndexOf('/') + 1) + " in "
-					+ xmethod.toString());
-		}
-		XMethodParameter xparameter = new XMethodParameter(xmethod, p);
-
-		AnalysisContext.currentAnalysisContext()
-				.getNullnessAnnotationDatabase().addDirectAnnotation(
-						xparameter, n);
-
-	}
+	
 
 }

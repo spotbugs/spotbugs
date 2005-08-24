@@ -81,6 +81,11 @@ public class AnalysisContext {
 		return nullnessAnnotationDatabase;
 	}
 
+	private CheckReturnAnnotationDatabase checkReturnAnnotationDatabase = new CheckReturnAnnotationDatabase();
+	public CheckReturnAnnotationDatabase getCheckReturnAnnotationDatabase() {
+		return checkReturnAnnotationDatabase;
+	}
+	
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
 		= new InheritableThreadLocal<AnalysisContext>();
 

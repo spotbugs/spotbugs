@@ -29,6 +29,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * @author William Pugh
@@ -75,7 +76,7 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 	}
 
 	private final Set<Annotation> seen = new HashSet<Annotation>();
-	public void addDirectAnnotation(Object o, Annotation n) {
+	public void addDirectAnnotation(@NonNull Object o, @NonNull Annotation n) {
 		directAnnotations.put(o, n);
 		seen.add(n);
 	}

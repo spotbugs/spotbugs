@@ -1,6 +1,6 @@
 /*
- * Bytecode Analysis Framework
- * Copyright (C) 2005 University of Maryland
+ * FindBugs - Find Bugs in Java programs
+ * Copyright (C) 2005, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,25 +16,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.umd.cs.findbugs.annotations;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package edu.umd.cs.findbugs.ba;
 
 /**
- * The annotated element must not be null. 
- * 
- * Annotated Fields must only not be null after construction
- * has completed. Annotated methods must have non-null return values. 
- **/
-@Documented
-@Target({ElementType.FIELD, ElementType.METHOD,
-         ElementType.PARAMETER, 
-         ElementType.LOCAL_VARIABLE})
-@Retention(RetentionPolicy.CLASS)
-public @interface NonNull {
+ * @author pugh
+ */
+public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckReturnValueAnnotation> {
 
 }

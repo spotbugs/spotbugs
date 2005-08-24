@@ -32,8 +32,12 @@ import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * Look for calls to methods where the return value is
@@ -207,7 +211,9 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		
 	private BugReporter bugReporter;
 	private ClassContext classContext;
+	private CheckReturnAnnotationDatabase checkReturnAnnotationDatabase;
 	private Method method;
+	private XMethod callSeen;
 	private int state;
 	private int callPC;
 	private String className, methodName, signature;
@@ -218,6 +224,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 	
 	public void visitClassContext(ClassContext classContext) {
 		this.classContext = classContext;
+		checkReturnAnnotationDatabase = AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase();
 		super.visitClassContext(classContext);
 		this.classContext = null;
 	}
@@ -261,6 +268,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 					className = getDottedClassConstantOperand();
 					methodName = getNameConstantOperand();
 					signature = getSigConstantOperand();
+					callSeen = XFactory.createXMethod(className, methodName, signature, seen == INVOKESTATIC);
 					if (requiresReturnValueCheck()) {
 						if (DEBUG) System.out.println(
 								"Saw "+className+"."+methodName+":"+signature+" @"+callPC);
@@ -271,6 +279,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 				
 			case SAW_INVOKE:
 				if (isPop(seen)) {
+					
 					int popPC = getPC();
 					if (DEBUG) System.out.println("Saw POP @"+popPC);
 					BugInstance warning =
