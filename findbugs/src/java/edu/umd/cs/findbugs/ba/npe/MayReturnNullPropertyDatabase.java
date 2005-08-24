@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
  * may return null.
  * 
  * @author David Hovemeyer
+ * @deprecated
  */
 public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<Boolean> {
 	//@Override

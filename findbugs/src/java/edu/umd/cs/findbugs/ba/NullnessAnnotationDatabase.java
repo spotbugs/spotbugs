@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 /**
  * @author pugh
  */
@@ -29,5 +31,29 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		NullnessAnnotation resolvedAnnotation = getResolvedAnnotation(xmp, true);
 		// System.out.println("QQQ parameter " + param + " of " + m + " is " + resolvedAnnotation);
 		return resolvedAnnotation == NullnessAnnotation.NONNULL;
+	}
+	
+	@CheckForNull @Override
+	public NullnessAnnotation getResolvedAnnotation(final Object o, boolean getMinimal) {
+		
+		if (o instanceof XMethodParameter) {
+			XMethodParameter mp = (XMethodParameter) o;
+			XMethod m = mp.getMethod();
+			if (mp.getParameterNumber() == 0 && m.getName().equals("equals") 
+					&& m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())
+					return NullnessAnnotation.CHECK_FOR_NULL;
+			else if (mp.getParameterNumber() == 0 && m.getName().equals("compareTo") 
+					&& m.getSignature().endsWith(";)Z") && !m.isStatic())
+					return NullnessAnnotation.NONNULL;
+		}
+		else if (o instanceof XMethod) {
+			XMethod m = (XMethod) o;
+			if  (m.getClassName().equals("java.lang.String"))
+					return NullnessAnnotation.NONNULL;
+			else if (m.getClassName().equals("java.io.BufferedReader")
+					&& m.getName().equals("readLine"))
+					return NullnessAnnotation.CHECK_FOR_NULL;
+		}
+		return super.getResolvedAnnotation(o, getMinimal);
 	}
 }

@@ -1634,6 +1634,8 @@ public class FindBugs implements Constants2, ExitCodes {
 				msg = sep + "While finding bugs in class: " + className + ((msg == null) ? "" : (sep + msg));
 				annotatedEx = c.newInstance(new Object[] {msg});
 				annotatedEx.setStackTrace(re.getStackTrace());
+			} catch (RuntimeException e) {
+				throw re;
 			} catch (Exception e) {
 				throw re;
 			}

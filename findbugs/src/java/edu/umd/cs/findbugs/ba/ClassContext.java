@@ -466,9 +466,6 @@ public class ClassContext {
 
 					// Set return value and parameter databases
 
-					invAnalysis.setNullReturnAnnotationDatabase(analysisContext.getNullReturnValueAnnotationDatabase());
-					invAnalysis.setNonNullParamDatabase(analysisContext.getNonNullParamDatabase());
-					invAnalysis.setCheckForNullParamDatabase(analysisContext.getCheckForNullParamDatabase());
 					invAnalysis.setClassAndMethod(new JavaClassAndMethod(getJavaClass(), method));
 					
 			        IsNullValueDataflow invDataflow = new IsNullValueDataflow(cfg, invAnalysis);

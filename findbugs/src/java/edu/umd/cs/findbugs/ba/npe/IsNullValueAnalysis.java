@@ -45,6 +45,11 @@ import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.NullnessAnnotation;
+import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.XMethodParameter;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -70,12 +75,9 @@ public class IsNullValueAnalysis
 	private IsNullValueFrameModelingVisitor visitor;
 	private ValueNumberDataflow vnaDataflow;
 	private int[] numNonExceptionSuccessorMap;
-	private IsNullValue paramValue;
 	private IsNullValueFrame lastFrame;
 	private IsNullValueFrame cachedEntryFact;
 	
-	private ParameterNullnessPropertyDatabase nonNullParamDatabase;
-	private ParameterNullnessPropertyDatabase possiblyNullParamDatabase;
 	private JavaClassAndMethod classAndMethod;
 
 	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs,
@@ -84,9 +86,6 @@ public class IsNullValueAnalysis
 		this.methodGen = methodGen;
 		this.visitor = new IsNullValueFrameModelingVisitor(methodGen.getConstantPool(), assertionMethods);
 		this.vnaDataflow = vnaDataflow;
-		this.paramValue = UNKNOWN_VALUES_ARE_NSP
-			? IsNullValue.nullOnSimplePathValue()
-			: IsNullValue.nonReportingNotNullValue();
 		this.numNonExceptionSuccessorMap = new int[cfg.getNumBasicBlocks()];
 
 		// For each basic block, calculate the number of non-exception successors.
@@ -100,23 +99,7 @@ public class IsNullValueAnalysis
 		}
 	}
 	
-	public void setMayReturnNullDatabase(MayReturnNullPropertyDatabase mayReturnNullDatabase) {
-		if (DEBUG) System.out.println("May return null database is " + (mayReturnNullDatabase == null ? "null" : "not null"));
-		visitor.setMayReturnNullDatabase(mayReturnNullDatabase);
-	}
-	
-	public void setNullReturnAnnotationDatabase(MayReturnNullPropertyDatabase nullReturnAnnotationDatabase) {
-		if (DEBUG) System.out.println("Null return annotation database is " + (nullReturnAnnotationDatabase == null ? "null" : "not null"));
-		visitor.setNullReturnAnnotationDatabase(nullReturnAnnotationDatabase);
-	}
-	
-	public void setNonNullParamDatabase(ParameterNullnessPropertyDatabase nonNullParamDatabase) {
-		this.nonNullParamDatabase = nonNullParamDatabase;
-	}
-	
-	public void setCheckForNullParamDatabase(ParameterNullnessPropertyDatabase possiblyNullParamDatabase) {
-		this.possiblyNullParamDatabase = possiblyNullParamDatabase;
-	}
+		
 	
 	public void setClassAndMethod(JavaClassAndMethod classAndMethod) {
 		this.classAndMethod = classAndMethod;
@@ -128,49 +111,43 @@ public class IsNullValueAnalysis
 		return new IsNullValueFrame(methodGen.getMaxLocals());
 	}
 	
-	public void setParamValue(IsNullValue paramValue) {
-		this.paramValue = paramValue;
-	}
+
 
 	public void initEntryFact(IsNullValueFrame result) {
 		if (cachedEntryFact ==  null) {
-			BitSet nonNullParamSet = new BitSet();
-			BitSet possiblyNullParamSet = new BitSet();
-			if (nonNullParamDatabase != null && possiblyNullParamDatabase != null) {
-				NonNullContractCollector nonNullContractCollector =
-					new NonNullContractCollector(nonNullParamDatabase, possiblyNullParamDatabase);
-				try {
-					nonNullContractCollector.findContractForMethod(classAndMethod);
-					nonNullContractCollector.getAnnotationSets(methodGen.getMaxLocals(), nonNullParamSet, possiblyNullParamSet);
-				} catch (ClassNotFoundException e) {
-					AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
-				}
-			}
 			
 			cachedEntryFact = createFact();
 			cachedEntryFact.setValid();
 
 			int numLocals = methodGen.getMaxLocals();
 			boolean instanceMethod = !methodGen.isStatic();
-
+			XMethod xm = XFactory.createXMethod(methodGen.getClassName(), 
+					methodGen.getName(), methodGen.getSignature(), methodGen.isStatic());
+			NullnessAnnotationDatabase db = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
 			int paramShift = instanceMethod ? 1 : 0;
 			for (int i = 0; i < numLocals; ++i) {
 				IsNullValue value;
-
+				
 				int paramIndex = i - paramShift;
 				
 				if (instanceMethod && i == 0) {
 					value = IsNullValue.nonNullValue();
-				} else if (possiblyNullParamSet.get(paramIndex)) {
-					// Parameter declared @CheckForNull
-					value = IsNullValue.nullOnSimplePathValue();
-				} else if (nonNullParamSet.get(paramIndex)) {
-					// Parameter declared @NonNull
-					value = IsNullValue.nonNullValue();
+				} else if (paramIndex > methodGen.getArgumentTypes().length) {
+					value = IsNullValue.nonReportingNotNullValue();
 				} else {
-					// Don't know; use default value, normally non-reporting nonnull
-					value = paramValue;
+					NullnessAnnotation n = db.getResolvedAnnotation(new XMethodParameter(xm, paramIndex), false);
+					if (n == NullnessAnnotation.CHECK_FOR_NULL)
+						// Parameter declared @CheckForNull
+						value = IsNullValue.nullOnSimplePathValue();
+					else if (n == NullnessAnnotation.NONNULL) 
+						// Parameter declared @NonNull
+						// TODO: label this so we don't report defensive programming
+						value = IsNullValue.nonNullValue();
+					else 
+						// Don't know; use default value, normally non-reporting nonnull
+						value = IsNullValue.nonReportingNotNullValue();
 				}
+				
 				cachedEntryFact.setValue(i, value);
 			}
 		}

@@ -34,7 +34,6 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
-import edu.umd.cs.findbugs.ba.npe.MayReturnNullPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 
@@ -69,10 +68,7 @@ public class AnalysisContext {
 	private String databaseInputDir;
 	private String databaseOutputDir;
 	// private MayReturnNullPropertyDatabase mayReturnNullDatabase;
-	private MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase;
 	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
-	private ParameterNullnessPropertyDatabase nonNullParamDatabase;
-	private ParameterNullnessPropertyDatabase checkForNullParamDatabase;
 	private ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase;
 	
 	
@@ -279,20 +275,7 @@ public class AnalysisContext {
 				new FieldStoreTypeDatabase(),
 				FieldStoreTypeDatabase.DEFAULT_FILENAME,
 				"field store type database");
-		nonNullParamDatabase = loadPropertyDatabase(
-				new ParameterNullnessPropertyDatabase(),
-				DEFAULT_NONNULL_PARAM_DATABASE_FILENAME,
-				"@NonNull parameter annotation database");
-		checkForNullParamDatabase = loadPropertyDatabase(
-				new ParameterNullnessPropertyDatabase(),
-				DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME,
-				"@CheckForNull parameter annotation database");
-		nullReturnValueAnnotationDatabase= loadPropertyDatabase(
-				new MayReturnNullPropertyDatabase(),
-				DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE,
-				"@NonNull/@CheckForNull return value annotation database"
-				);
-		unconditionalDerefParamDatabase = loadPropertyDatabase(
+			unconditionalDerefParamDatabase = loadPropertyDatabase(
 				new ParameterNullnessPropertyDatabase(),
 				UNCONDITIONAL_DEREF_DB_FILENAME,
 				"unconditional param deref database");
@@ -369,51 +352,16 @@ public class AnalysisContext {
 		return fieldStoreTypeDatabase;
 	}
 	
-	/**
-	 * Set non-null param database.
-	 * Based on NonNull annotations.
-	 * 
-	 * @param nonNullParamDatabase the non-null param database
-	 */
-	public void setNonNullParamDatabase(
-			ParameterNullnessPropertyDatabase nonNullParamDatabase) {
-		this.nonNullParamDatabase = nonNullParamDatabase;
-	}
-	
-	public ParameterNullnessPropertyDatabase getNonNullParamDatabase() {
-		return nonNullParamDatabase;
-	}
+		
+
+
 	
 
-	/**
-	 * Set possibly-null param database.
-	 * Based on CheckForNull annotations.
-	 * 
-	 * @param possiblyNullParamDatabase the possibly-null param database
-	 */
-	public void setCheckForNullParamDatabase(
-			ParameterNullnessPropertyDatabase possiblyNullParamDatabase) {
-		this.checkForNullParamDatabase = possiblyNullParamDatabase;
-	}
-	
-	public ParameterNullnessPropertyDatabase getCheckForNullParamDatabase() {
-		return checkForNullParamDatabase;
-	}
-	
-	public void setNullReturnValueAnnotationDatabase(
-			MayReturnNullPropertyDatabase nullReturnValueAnnotationDatabase) {
-		this.nullReturnValueAnnotationDatabase = nullReturnValueAnnotationDatabase;
-	}
-	
-	public MayReturnNullPropertyDatabase getNullReturnValueAnnotationDatabase() {
-		return nullReturnValueAnnotationDatabase;
-	}
-	
 	public void setUnconditionalDerefParamDatabase(
 			ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase) {
 		this.unconditionalDerefParamDatabase = unconditionalDerefParamDatabase;
 	}
-	
+
 	public ParameterNullnessPropertyDatabase getUnconditionalDerefParamDatabase() {
 		return unconditionalDerefParamDatabase;
 	}

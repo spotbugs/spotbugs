@@ -38,7 +38,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
-import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 
@@ -47,23 +47,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	private static final boolean NO_ASSERT_HACK = Boolean.getBoolean("inva.noAssertHack");
 
 	private AssertionMethods assertionMethods;
-	private MayReturnNullPropertyDatabase mayReturnNullDatabase;
-	private MayReturnNullPropertyDatabase nullReturnAnnotationDatabase;
 
 	public IsNullValueFrameModelingVisitor(ConstantPoolGen cpg, AssertionMethods assertionMethods) {
 		super(cpg);
 		this.assertionMethods = assertionMethods;
 	}
 	
-	public void setMayReturnNullDatabase(MayReturnNullPropertyDatabase mayReturnNullDatabase) {
-		this.mayReturnNullDatabase = mayReturnNullDatabase;
-	}
-	
-	public void setNullReturnAnnotationDatabase(
-			MayReturnNullPropertyDatabase nullReturnAnnotationDatabase) {
-		this.nullReturnAnnotationDatabase = nullReturnAnnotationDatabase;
-	}
-
 	public IsNullValue getDefaultValue() {
 		return IsNullValue.nonReportingNotNullValue();
 	}
@@ -108,11 +97,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
 		boolean isReadLine =  methodName.equals("readLine");
 		// Determine if we are going to model the return value of this call.
-		boolean modelCallReturnValue =
-			  isReadLine
-			  || stringMethodCall
-			|| (mayReturnNullDatabase != null || nullReturnAnnotationDatabase != null)
-			|| IsNullValueAnalysis.UNKNOWN_VALUES_ARE_NSP;
+		boolean modelCallReturnValue = returnType instanceof ReferenceType;
 
 			
 		if( !modelCallReturnValue) {
@@ -127,48 +112,26 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			} else if (stringMethodCall) {
 				// String methods always return a non-null value
 				pushValue = IsNullValue.nonNullValue();
-			} else if (mayReturnNullDatabase != null || nullReturnAnnotationDatabase != null) {
+			} else  {
 				// Check to see if this method is in either database
 				XMethod calledMethod = XFactory.createXMethod(obj, getCPG());
 				if (IsNullValueAnalysis.DEBUG) System.out.println("Check " + calledMethod + " for null return...");
-				
-				Boolean prop = null;
-				if (mayReturnNullDatabase != null) {
-					prop = mayReturnNullDatabase.getProperty(calledMethod);
-				}
-				if (prop == null && nullReturnAnnotationDatabase != null) {
-					// Traverse upwards in class hierarchy until we find
-					// a @NonNull or @CheckForNull annotation.
-					NonNullReturnValueAnnotationChecker annotationChecker = new NonNullReturnValueAnnotationChecker(nullReturnAnnotationDatabase);
-					try {
-						Hierarchy.findInvocationLeastUpperBound(obj, getCPG(), annotationChecker);
-						prop = annotationChecker.getProperty();
-					} catch (ClassNotFoundException e) {
-						AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+				NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase().getResolvedAnnotation(calledMethod, false);
+				if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
+					if (IsNullValueAnalysis.DEBUG) {
+						System.out.println("Null value returned from " + calledMethod);
 					}
-				}
-				
-				if (prop != null) {
-					if (prop.booleanValue()) {
-						// Method may return null!
-						if (IsNullValueAnalysis.DEBUG) {
-							System.out.println("Null value returned from " + calledMethod);
-						}
-						pushValue = IsNullValue.nullOnSimplePathValue().toMayReturnNullValue();
-					} else {
-						// Method is declared NOT to return null
-						if (IsNullValueAnalysis.DEBUG) {
-							System.out.println("NonNull value return from " + calledMethod);
-						}
-						pushValue = IsNullValue.nonNullValue().toMayReturnNullValue();
+					pushValue = IsNullValue.nullOnSimplePathValue().toMayReturnNullValue();
+				} else  if (annotation == NullnessAnnotation.NONNULL) {
+					// Method is declared NOT to return null
+					if (IsNullValueAnalysis.DEBUG) {
+						System.out.println("NonNull value return from " + calledMethod);
 					}
+					pushValue = IsNullValue.nonNullValue().toMayReturnNullValue();
+					
 				} else {
 					pushValue = IsNullValue.nonReportingNotNullValue();
 				}
-			} else if (IsNullValueAnalysis.UNKNOWN_VALUES_ARE_NSP) {
-				pushValue = (returnType instanceof ReferenceType)
-					? IsNullValue.nullOnSimplePathValue()
-					: IsNullValue.nonReportingNotNullValue();
 			}
 			
 			modelInstruction(obj, getNumWordsConsumed(obj), getNumWordsProduced(obj), pushValue);

@@ -10,6 +10,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
  * which should be applied at a call site.
  * 
  * @author David Hovemeyer
+ * @deprecated
  */
 public class NonNullReturnValueAnnotationChecker implements JavaClassAndMethodChooser {
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.nullreturn");

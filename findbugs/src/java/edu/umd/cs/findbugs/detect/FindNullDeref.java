@@ -331,9 +331,7 @@ public class FindNullDeref
 		if (tos.mightBeNull()) {
 			MethodGen methodGen = classContext.getMethodGen(method);
 			String sourceFile = classContext.getJavaClass().getSourceFileName();
-			
-			WarningPropertySet propertySet = new WarningPropertySet();
-			
+						
 			BugInstance warning = new BugInstance("NP_NONNULL_RETURN_VIOLATION", tos.isDefinitelyNull() ?
 					HIGH_PRIORITY : NORMAL_PRIORITY)
 				.addClassAndMethod(methodGen, sourceFile)
@@ -518,7 +516,6 @@ public class FindNullDeref
 		for(int i=nullArgSet.nextSetBit(0); i>=0; i=nullArgSet.nextSetBit(i+1)) 
 			if (db.parameterMustBeNonNull(m, i)) {
 				boolean definitelyNull = definitelyNullArgSet.get(i);
-				WarningPropertySet propertySet = new WarningPropertySet();
 				
 				MethodGen methodGen = classContext.getMethodGen(method);
 				String sourceFile = classContext.getJavaClass().getSourceFileName();
