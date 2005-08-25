@@ -406,9 +406,10 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
 
   <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck"
             speed="fast"
-            reports="RV_RETURN_VALUE_IGNORED"
-			hidden="true"
-			disabled="true"/>
+            reports="RV_RETURN_VALUE_IGNORED2"
+	    disabled="true"
+	    hidden="true"
+		/>
   
   <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble"
             speed="fast"
@@ -619,6 +620,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="Wa" type="WA_AWAIT_NOT_IN_LOOP" category="MT_CORRECTNESS" />
   <BugPattern abbrev="No" type="NO_NOTIFY_NOT_NOTIFYALL" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED" category="CORRECTNESS" />
+  <BugPattern abbrev="RV" type="RV_RETURN_VALUE_IGNORED2" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_CHECK_FOR_POSITIVE_INDEXOF" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_DONT_JUST_NULL_CHECK_READLINE" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_ALWAYS_NULL" category="CORRECTNESS" />
