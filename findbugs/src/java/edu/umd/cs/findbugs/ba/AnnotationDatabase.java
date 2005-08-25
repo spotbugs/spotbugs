@@ -120,7 +120,8 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 					return null;
 				}
 				c = Repository.lookupClass(m.getClassName());
-				if (!m.isStatic()) {
+				if (!m.isStatic() && !m.isPrivate() && !m.getName().equals("<init>")) {
+					// get inherited annotation
 					TreeSet<Annotation> inheritedAnnotations = new TreeSet<Annotation>();
 					if (c.getSuperclassNameIndex() > 0) {
 						

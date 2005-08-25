@@ -257,50 +257,31 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 	}
 	
 	public void sawOpcode(int seen) {
-		boolean redo;
 		
-		do {
-			redo = false;
-			switch (state) {
-			case SCAN:
-				if (INVOKE_OPCODE_SET.get(seen)) {
-					callPC = getPC();
-					className = getDottedClassConstantOperand();
-					methodName = getNameConstantOperand();
-					signature = getSigConstantOperand();
-					callSeen = XFactory.createXMethod(className, methodName, signature, seen == INVOKESTATIC);
-					if (requiresReturnValueCheck()) {
-						if (DEBUG) System.out.println(
-								"Saw "+className+"."+methodName+":"+signature+" @"+callPC);
-						state = SAW_INVOKE;
-					}
-				}
-				break;
-				
-			case SAW_INVOKE:
-				if (isPop(seen)) {
-					
-					int popPC = getPC();
-					if (DEBUG) System.out.println("Saw POP @"+popPC);
-					BugInstance warning =
-						new BugInstance(this, "RV_RETURN_VALUE_IGNORED2", NORMAL_PRIORITY)
-							.addClassAndMethod(this)
-							.addMethod(className, methodName, signature, seen == Constants.INVOKESTATIC).describe("METHOD_CALLED")
-							.addSourceLine(this, callPC);
-					bugReporter.reportBug(warning);
-				} else {
-					// This instruction might be an invocation, too.
-					// So redo processing this instruction.
-					redo = true;
-				}
-				state = SCAN;
-				break;
-				
-			default:
+		if (state == SAW_INVOKE && isPop(seen)) {
+			int popPC = getPC();
+			if (DEBUG) System.out.println("Saw POP @"+popPC);
+			BugInstance warning =
+				new BugInstance(this, "RV_RETURN_VALUE_IGNORED2", NORMAL_PRIORITY)
+					.addClassAndMethod(this)
+					.addMethod(className, methodName, signature, seen == Constants.INVOKESTATIC).describe("METHOD_CALLED")
+					.addSourceLine(this, callPC);
+			bugReporter.reportBug(warning);
+			state = SCAN;
+		} else if (INVOKE_OPCODE_SET.get(seen)) {
+			callPC = getPC();
+			className = getDottedClassConstantOperand();
+			methodName = getNameConstantOperand();
+			signature = getSigConstantOperand();
+			callSeen = XFactory.createXMethod(className, methodName, signature, seen == INVOKESTATIC);
+			if (requiresReturnValueCheck()) {
+				if (DEBUG) System.out.println(
+						"Saw "+className+"."+methodName+":"+signature+" @"+callPC);
+				state = SAW_INVOKE;
 			}
-		} while (redo);
-
-	}
+		} else
+			state = SCAN;
+		}
 
 	private boolean isPop(int seen) {
 		return seen == Constants.POP || seen == Constants.POP2;
