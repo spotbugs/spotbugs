@@ -26,17 +26,22 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  */
 public class CheckReturnValueAnnotation extends AnnotationEnumeration {
 
-	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE = new CheckReturnValueAnnotation(
-			"CheckReturnValue", 1);
-
-	public final static CheckReturnValueAnnotation OK_TO_IGNORE_RETURN_VALUE = new CheckReturnValueAnnotation(
-			"OkToIgnoreReturnValue", 2);
-
-	public final static CheckReturnValueAnnotation UNKNOWN_CHECKRETURNVALUE = new CheckReturnValueAnnotation(
+	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_UNKNOWN = new CheckReturnValueAnnotation(
 			"UnknownCheckReturnValue", 0);
+	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_HIGH = new CheckReturnValueAnnotation(
+			"CheckReturnValueHigh", 1);
 
-	private final static CheckReturnValueAnnotation[] myValues = { UNKNOWN_CHECKRETURNVALUE,
-		CHECK_RETURN_VALUE, OK_TO_IGNORE_RETURN_VALUE };
+	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_MEDIUM = new CheckReturnValueAnnotation(
+			"CheckReturnValue", 2);
+	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_LOW = new CheckReturnValueAnnotation(
+			"CheckReturnValueLow", 3);
+	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_IGNORE = new CheckReturnValueAnnotation(
+			"OkToIgnoreReturnValue", 4);
+
+
+
+	private final static CheckReturnValueAnnotation[] myValues = { CHECK_RETURN_VALUE_UNKNOWN,
+		CHECK_RETURN_VALUE_HIGH,CHECK_RETURN_VALUE_MEDIUM, CHECK_RETURN_VALUE_LOW, CHECK_RETURN_VALUE_IGNORE };
 	
 	@CheckForNull public static CheckReturnValueAnnotation parse(String s) {
 		for(CheckReturnValueAnnotation v : myValues) 
