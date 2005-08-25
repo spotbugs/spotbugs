@@ -1616,7 +1616,7 @@ as expected.
 </para>
 
 <para>
-	4. Match a particular bug pattern in a particular method.
+	5. Match a particular bug pattern in a particular method.
 	
 <programlisting>
 <![CDATA[
@@ -1630,7 +1630,7 @@ as expected.
 </para>
 
 <para>
-	5. Match a particular bug pattern with a given priority in a particular method.
+	6. Match a particular bug pattern with a given priority in a particular method.
 	
 <programlisting>
 <![CDATA[
@@ -1674,12 +1674,12 @@ as expected.
      &lt;/Match&gt;
 
 <![CDATA[
-    <!-- A method with a dead local store false positive (medium priority). -->
-    <Match class="com.foobar.MyClass">
-	  <Method name="someMethod"/>
-	  <BugPattern name="DLS_DEAD_LOCAL_STORE"/>
-	  <Priority value="2"/>
-	</Match>
+     <!-- A method with a dead local store false positive (medium priority). -->
+     <Match class="com.foobar.MyClass">
+       <Method name="someMethod"/>
+       <BugPattern name="DLS_DEAD_LOCAL_STORE"/>
+       <Priority value="2"/>
+     </Match>
 ]]>
 &lt;/FindBugsFilter&gt;
 </programlisting>
