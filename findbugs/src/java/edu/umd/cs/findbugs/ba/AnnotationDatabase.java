@@ -94,9 +94,25 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 	public boolean anyAnnotations(Annotation n) {
 		return seen.contains(n);
 	}
-
+	
+	HashMap<Object, Annotation> cachedMinimal = new HashMap<Object, Annotation>();
+	HashMap<Object, Annotation> cachedMaximal= new HashMap<Object, Annotation>();
 	@CheckForNull
-	public Annotation getResolvedAnnotation(final Object o, boolean getMinimal) {
+	public Annotation getResolvedAnnotation(Object o, boolean getMinimal) {
+		HashMap<Object, Annotation> cache;
+		if (getMinimal) cache = cachedMinimal;
+		else cache = cachedMaximal;
+		
+		if (cache.containsKey(o)) {
+			return cache.get(o);
+		}
+		Annotation n = getUncachedResolvedAnnotation(o, getMinimal);
+		cache.put(o,n);
+		return n;
+	}
+	
+	@CheckForNull
+	public Annotation getUncachedResolvedAnnotation(final Object o, boolean getMinimal) {
 		Annotation n = directAnnotations.get(o);
 		if (n != null)
 			return n;
