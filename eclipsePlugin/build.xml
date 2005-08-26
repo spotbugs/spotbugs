@@ -26,6 +26,7 @@
 	<property name="fbeclipse.dir" value="."/>
 
 	<property name="src.dir" value="src"/>
+	<property name="buildtools.dir" value="buildtools"/>
 	<property name="lib.dir" value="lib"/>
 	<property name="dist.dir" value="dist"/>
 	<property name="tools.dir" value="tools"/>
@@ -39,6 +40,11 @@
 		<fileset file="findbugs.jar"/>
 		<fileset file="bcel.jar"/>
 		<fileset file="dom4j-full.jar"/>
+	</path>
+	
+	<path id="tools.classpath">
+		<pathelement location="dom4j-full.jar"/>
+		<pathelement location="${bin.dir}"/>
 	</path>
 
 	<target name="init">
@@ -67,6 +73,14 @@
                 debug="on">
             <classpath refid="plugin.classpath"/>
         </javac>
+		<!-- Compile build tools. -->
+		<javac srcdir="${buildtools.dir}"
+			destdir="${bin.dir}"
+			source="1.5"
+			target="jsr14"
+			debug="on">
+			<classpath refid="tools.classpath"/>
+		</javac>
 	</target>
 
 	
@@ -74,7 +88,7 @@
 	<target name="dist" depends="clean,classes" description="Build a plugin distributable, including the conversion of all classes to 1.4 compatible bytecode">
 
 		<jar destfile="${dist.dir}/findbugs-plugin.jar">
-				<fileset dir="${bin.dir}" />
+				<fileset dir="${bin.dir}" excludes="de/tobject/findbugs/tools/**" />
 		</jar>
 		<copy todir="${dist.dir}">
 			<fileset file="bcel.jar" />
@@ -89,6 +103,25 @@
 		<copy todir="${dist.dir}/icons">
 			<fileset dir="icons" />
 		</copy>
+		
+		<!-- Extract the plugin id and version from plugin.xml. -->
+		<java
+			fork="true"
+			dir="."
+			classname="de.tobject.findbugs.tools.PluginInfo"
+			failonerror="true"
+			output="${bin.dir}/plugininfo.properties">
+			<classpath refid="tools.classpath"/>
+			<arg value="plugin.xml"/>
+		</java>
+		
+		<!-- Read plugin id and plugin version properties. -->
+		<property file="${bin.dir}/plugininfo.properties"/>
+		
+		<!-- Create plugin zipfile. -->
+		<zip destfile="${bin.dir}/${plugin.id}_${plugin.version}.zip">
+			<fileset dir="${dist.dir}" includes="**"/>
+		</zip>
 	</target>
 
 	<target name="fbjars" description="Copy required jar files from the main findbugs project (which should be a sibling of this project)">
