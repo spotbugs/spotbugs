@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.RequiresJavaVersion;
 import edu.umd.cs.findbugs.annotations.Priority;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
@@ -37,6 +38,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
  * @author David Hovemeyer
  * @author William Pugh
  */
+@RequiresJavaVersion("1.5")
 public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 	private static final boolean DEBUG = Boolean
 			.getBoolean("frv.debug.annotation");
@@ -69,7 +71,7 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 
 		annotationClass = lastPortion(annotationClass);
 
-		CheckReturnValueAnnotation n = CheckReturnValueAnnotation.parse(annotationClass, (Priority) map.get("priority"));
+		CheckReturnValueAnnotation n = CheckReturnValueAnnotation.Parser.parse(annotationClass, (Priority) map.get("priority"));
 		if (n == null) {
 			if (annotationClass.startsWith("DefaultAnnotation")) {
 
@@ -83,7 +85,7 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 				
 				if (annotationTarget != null)
 					for (Object aClass : (Object[]) v) {
-						n = CheckReturnValueAnnotation.parse((String) aClass, (Priority) map.get("priority"));
+						n = CheckReturnValueAnnotation.Parser.parse((String) aClass, (Priority) map.get("priority"));
 						if (n != null)
 							AnalysisContext.currentAnalysisContext()
 									.getCheckReturnAnnotationDatabase()

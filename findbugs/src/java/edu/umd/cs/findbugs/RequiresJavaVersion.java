@@ -17,25 +17,24 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.annotations;
+package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.RequiresJavaVersion;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * use to mark classes than cannot be effectively compiled using target=jsr14
+ * (e.g., classes that use enums).
+ * 
  * @author pugh
  */
-@RequiresJavaVersion("1.5")
-public enum Priority {
-	HIGH(Detector.HIGH_PRIORITY), MEDIUM(Detector.NORMAL_PRIORITY), LOW(Detector.LOW_PRIORITY);
+@Documented
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.CLASS)
+public @interface RequiresJavaVersion {
+	String value() default "1.5";
 
-	final int priorityValue;
-
-	int getPriorityValue() {
-		return priorityValue;
-	}
-
-	private Priority(int p) {
-		priorityValue = p;
-	}
 }

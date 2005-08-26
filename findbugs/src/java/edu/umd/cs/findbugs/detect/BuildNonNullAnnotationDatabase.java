@@ -70,7 +70,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
 		annotationClass = lastPortion(annotationClass);
 
-		NullnessAnnotation n = NullnessAnnotation.parse(annotationClass);
+		NullnessAnnotation n = NullnessAnnotation.Parser.parse(annotationClass);
 		if (n == null) {
 			if (annotationClass.startsWith("DefaultAnnotation")) {
 
@@ -84,7 +84,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
 				if (annotationTarget != null)
 					for (Object aClass : (Object[]) v) {
-						n = NullnessAnnotation.parse((String) aClass);
+						n = NullnessAnnotation.Parser.parse((String) aClass);
 						if (n != null)
 							AnalysisContext.currentAnalysisContext()
 									.getNullnessAnnotationDatabase()
@@ -109,7 +109,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 	public void visitParameterAnnotation(int p, String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
 		annotationClass = lastPortion(annotationClass);
-		NullnessAnnotation n = NullnessAnnotation.parse(annotationClass);
+		NullnessAnnotation n = NullnessAnnotation.Parser.parse(annotationClass);
 
 		if (n == null)
 			return;

@@ -41,12 +41,14 @@ public class NullnessAnnotation extends AnnotationEnumeration {
 		NONNULL, NULLABLE,
 		CHECK_FOR_NULL };
 	
+	public static class Parser {
 	@CheckForNull public static NullnessAnnotation parse(String s) {
 		for(NullnessAnnotation v : myValues) 
 			if (s.endsWith(v.name)) return v;
 		if (s.endsWith("PossiblyNull"))
 			return CHECK_FOR_NULL;
 		return null;
+	}
 	}
 	public static NullnessAnnotation[] values() {
 		return myValues.clone();

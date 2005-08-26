@@ -63,6 +63,7 @@
  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations" 
 	        speed="fast"
 	        reports="TESTING"
+		requirejre="1.5"
             hidden="true" /> 
   <Detector class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"
             speed="fast"
