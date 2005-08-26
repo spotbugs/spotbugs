@@ -32,7 +32,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.CopyOnWriteArraySet", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.Exchanger", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.FutureTask", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addMethodAnnotation("java.util.Queue", "poll", "()Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
+		// addMethodAnnotation("java.util.Queue", "poll", "()Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 	}
 	public boolean parameterMustBeNonNull(XMethod m, int param) {
 		if (!anyAnnotations(NullnessAnnotation.NONNULL)) return false;

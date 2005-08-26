@@ -44,15 +44,18 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		addMethodAnnotation("java.util.concurrent.locks.Lock",         "tryLock",    "(JLjava/util/concurrent/TimeUnit;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.util.concurrent.locks.Lock",         "newCondition","()Ljava/util/concurrent/locks/Condition;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.util.concurrent.locks.Lock",         "tryLock",     "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-		addMethodAnnotation("java.util.Queue",                         "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-		addMethodAnnotation("java.util.concurrent.BlockingQueue",      "offer",       "(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-		addMethodAnnotation("java.util.concurrent.BlockingQueue",      "poll",        "(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-		addMethodAnnotation("java.util.Queue",                         "poll",        "()Ljava/lang/Object;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+		addMethodAnnotation("java.util.Queue",                         "offer",       "(Ljava/lang/Object;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+		addMethodAnnotation("java.util.concurrent.BlockingQueue",      "offer",       "(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+		addMethodAnnotation("java.util.concurrent.BlockingQueue",      "poll",        "(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
+		addMethodAnnotation("java.util.Queue",                         "poll",        "()Ljava/lang/Object;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 		
 		
 		addDefaultMethodAnnotation("java.lang.String", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addDefaultMethodAnnotation("java.math.BigDecimal", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
+		addMethodAnnotation("java.math.BigDecimal", "inflate", "()V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addDefaultMethodAnnotation("java.math.BigInteger", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
+		addMethodAnnotation("java.math.BigInteger", "addOne", "([IIII)I", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
+		addMethodAnnotation("java.math.BigInteger", "subN", "([I[II)I", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addDefaultMethodAnnotation("java.sql.Connection", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addDefaultMethodAnnotation("java.net.InetAddress", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		try {

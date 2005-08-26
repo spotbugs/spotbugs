@@ -305,7 +305,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 			priority++;
 		// System.out.println("priority: " + priority);
 				
-		bugReporter.reportBug(new BugInstance(this, "RV_RETURN_VALUE_IGNORED",
+		bugReporter.reportBug(new BugInstance(this, "RV_RETURN_VALUE_IGNORED2",
 		        priority)
 		        .addClassAndMethod(methodGen, sourceFile)
 		        .addCalledMethod(methodGen, inv)

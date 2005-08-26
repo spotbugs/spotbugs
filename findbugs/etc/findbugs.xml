@@ -260,7 +260,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" 
             speed="slow"
-            reports="RV_RETURN_VALUE_IGNORED" />
+            reports="RV_RETURN_VALUE_IGNORED2" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref" 
             speed="slow"
@@ -414,7 +414,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
 
   <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck"
             speed="fast"
-            reports="RV_RETURN_VALUE_IGNORED2"
+            reports="RV_RETURN_VALUE_IGNORED"
 		/>
   
   <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble"

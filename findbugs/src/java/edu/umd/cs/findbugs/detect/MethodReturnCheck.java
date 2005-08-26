@@ -113,7 +113,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			int popPC = getPC();
 			if (DEBUG) System.out.println("Saw POP @"+popPC);
 			BugInstance warning =
-				new BugInstance(this, "RV_RETURN_VALUE_IGNORED2", annotation.getPriority())
+				new BugInstance(this, "RV_RETURN_VALUE_IGNORED", annotation.getPriority())
 					.addClassAndMethod(this)
 					.addMethod(className, methodName, signature, seen == Constants.INVOKESTATIC).describe("METHOD_CALLED")
 					.addSourceLine(this, callPC);

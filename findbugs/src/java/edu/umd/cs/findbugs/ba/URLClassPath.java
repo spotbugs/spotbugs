@@ -365,7 +365,7 @@ public class URLClassPath implements Serializable {
 	public JavaClass lookupClass(String className) throws ClassNotFoundException {
 		if (classesThatCantBeFound.contains(className)) {
 			throw new ClassNotFoundException("Error while looking for class " + 
-						className);
+					className + ": class not found");
 		}
 		String resourceName = className.replace('.', '/') + ".class";
 		InputStream in = null;
