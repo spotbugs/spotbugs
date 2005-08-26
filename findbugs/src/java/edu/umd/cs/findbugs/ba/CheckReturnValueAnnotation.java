@@ -20,9 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.RequiresJavaVersion;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.Priority;
 
 /**
  * @author pugh
@@ -47,19 +45,18 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration {
 	private final static CheckReturnValueAnnotation[] myValues = { CHECK_RETURN_VALUE_UNKNOWN,
 		CHECK_RETURN_VALUE_HIGH,CHECK_RETURN_VALUE_MEDIUM, CHECK_RETURN_VALUE_LOW, CHECK_RETURN_VALUE_IGNORE };
 	
-	@RequiresJavaVersion("1.5")
-	public static class Parser {
-	@CheckForNull public static CheckReturnValueAnnotation parse(String s, Priority priority) {
+
+	@CheckForNull public static CheckReturnValueAnnotation parse(String s, String priority) {
 		if (!s.endsWith("CheckForNull")) return null;
 		if (priority == null) return CHECK_RETURN_VALUE_MEDIUM;
-		if (priority == Priority.HIGH)
+		if (priority.endsWith("HIGH"))
 			return CHECK_RETURN_VALUE_HIGH;
-		if (priority == Priority.MEDIUM)
+		if (priority.endsWith("MEDIUM"))
 			return CHECK_RETURN_VALUE_MEDIUM;
-		if (priority ==  Priority.LOW)
+		if (priority.endsWith("LOW"))
 			return CHECK_RETURN_VALUE_LOW;
 		throw new IllegalArgumentException("Bad priority: " + priority);
-		}
+		
 	}
 	public static CheckReturnValueAnnotation[] values() {
 		return myValues.clone();

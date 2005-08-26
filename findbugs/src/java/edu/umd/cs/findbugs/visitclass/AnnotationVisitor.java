@@ -45,10 +45,12 @@ public class AnnotationVisitor extends PreorderVisitor {
 	 */
 	public void visitAnnotation(String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
+		if (DEBUG) {
 		System.out.println("Annotation: " + annotationClass);
 		for (Map.Entry<String, Object> e : map.entrySet()) {
 			System.out.println("    " + e.getKey());
 			System.out.println(" -> " + e.getValue());
+		}
 		}
 	}
 
@@ -167,6 +169,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 			System.out.println("tag: " + tag);
 		switch (tag) {
 		case '[':
+		{
 			int sz = bytes.readUnsignedShort();
 			if (DEBUG)
 				System.out.println("Array of " + sz + " entries");
@@ -174,6 +177,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 			for (int i = 0; i < sz; i++)
 				result[i] = readAnnotationValue(bytes);
 			return result;
+		}
 		case 'B':
 		case 'C':
 		case 'D':
@@ -221,9 +225,14 @@ public class AnnotationVisitor extends PreorderVisitor {
 			{
 			int cp1= bytes.readUnsignedShort();
 			ConstantUtf8 c1 = (ConstantUtf8) getConstantPool().getConstant(cp1);
+			String cName = ((ConstantUtf8)c1).getBytes().replace('/','.');
+			if (cName.startsWith("L") && cName.endsWith(";"))
+				cName = cName.substring(1,cName.length()-1);
 			int cp2= bytes.readUnsignedShort();
 			ConstantUtf8 c2 = (ConstantUtf8) getConstantPool().getConstant(cp2);
-			return c1.getBytes() +"." + c2.getBytes();
+			String result = cName +"." + c2.getBytes();
+			// System.out.println(result);
+			return result;
 			}
 		default:
 			if (DEBUG) System.out.println("Unexpected tag of " + tag);

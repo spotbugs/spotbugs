@@ -43,6 +43,15 @@ This plugin contains all of the standard FindBugs detectors.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations">
+    <Details>
+<![CDATA[
+<p> Looks for annotations to check return values of a method.
+</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations">
    <Details>
       <![CDATA[

@@ -20,12 +20,10 @@
 package edu.umd.cs.findbugs.annotations;
 
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.RequiresJavaVersion;
 
 /**
  * @author pugh
  */
-@RequiresJavaVersion("1.5")
 public enum Priority {
 	HIGH(Detector.HIGH_PRIORITY), MEDIUM(Detector.NORMAL_PRIORITY), LOW(Detector.LOW_PRIORITY);
 
