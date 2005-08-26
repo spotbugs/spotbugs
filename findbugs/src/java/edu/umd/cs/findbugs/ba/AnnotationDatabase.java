@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * @author William Pugh
@@ -95,11 +96,12 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 		return seen.contains(n);
 	}
 	
-	HashMap<Object, Annotation> cachedMinimal = new HashMap<Object, Annotation>();
-	HashMap<Object, Annotation> cachedMaximal= new HashMap<Object, Annotation>();
+	// TODO: Parameterize these values?
+	Map<Object, Annotation> cachedMinimal = new MapCache<Object, Annotation>(20000);
+	Map<Object, Annotation> cachedMaximal= new MapCache<Object, Annotation>(20000);
 	@CheckForNull
 	public Annotation getResolvedAnnotation(Object o, boolean getMinimal) {
-		HashMap<Object, Annotation> cache;
+		Map<Object, Annotation> cache;
 		if (getMinimal) cache = cachedMinimal;
 		else cache = cachedMaximal;
 		
