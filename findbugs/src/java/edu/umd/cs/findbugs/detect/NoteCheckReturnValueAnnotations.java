@@ -24,15 +24,14 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * Scan classes for @NonNull, @PossiblyNull and @CheckForNull annotations,
- * and convey them to FindNullDeref.
+ * Scan classes for @CheckReturnValue annotations
  * 
  * @author daveho
  */
-public class NoteNonNullAnnotations extends BuildNonNullAnnotationDatabase implements NonReportingDetector {
+public class NoteCheckReturnValueAnnotations extends BuildCheckReturnAnnotationDatabase implements NonReportingDetector {
 	private BugReporter bugReporter;
 	
-	public NoteNonNullAnnotations(BugReporter bugReporter) {
+	public NoteCheckReturnValueAnnotations(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 

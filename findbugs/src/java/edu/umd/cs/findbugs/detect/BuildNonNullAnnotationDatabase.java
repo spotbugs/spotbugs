@@ -89,7 +89,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 							AnalysisContext.currentAnalysisContext()
 									.getNullnessAnnotationDatabase()
 									.addDefaultAnnotation(annotationTarget,
-											getThisClass(), n);
+											getDottedClassName(), n);
 					}
 
 			}

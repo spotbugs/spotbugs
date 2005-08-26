@@ -26,6 +26,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public interface Detector {
 	/**
+	 *  priority for bug instances that should be ignored
+	 */
+	public static final int IGNORE_PRIORITY = 5;	
+	/**
 	 * Experimental priority for bug instances.
 	 */
 	public static final int EXP_PRIORITY = 4;	

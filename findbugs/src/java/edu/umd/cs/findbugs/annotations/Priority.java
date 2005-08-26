@@ -17,30 +17,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.detect;
+package edu.umd.cs.findbugs.annotations;
 
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.NonReportingDetector;
-import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.Detector;
 
 /**
- * Scan classes for @NonNull, @PossiblyNull and @CheckForNull annotations,
- * and convey them to FindNullDeref.
- * 
- * @author daveho
+ * @author pugh
  */
-public class NoteNonNullAnnotations extends BuildNonNullAnnotationDatabase implements NonReportingDetector {
-	private BugReporter bugReporter;
-	
-	public NoteNonNullAnnotations(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+public enum Priority {
+	HIGH(Detector.HIGH_PRIORITY), MEDIUM(Detector.NORMAL_PRIORITY), LOW(Detector.LOW_PRIORITY);
+
+	final int priorityValue;
+
+	int getPriorityValue() {
+		return priorityValue;
 	}
 
-	public void visitClassContext(ClassContext classContext) {
-		
-		classContext.getJavaClass().accept(this);
-	}
-
-	public void report() {
+	private Priority(int p) {
+		priorityValue = p;
 	}
 }

@@ -25,6 +25,12 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  * @author pugh
  */
 public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnotation> {
+	
+	public NullnessAnnotationDatabase() {
+		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.package-info", NullnessAnnotation.NONNULL);
+		addMethodAnnotation("java.util.Queue",                         "poll",        "()Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
+
+	}
 	public boolean parameterMustBeNonNull(XMethod m, int param) {
 		if (!anyAnnotations(NullnessAnnotation.NONNULL)) return false;
 		XMethodParameter xmp = new XMethodParameter(m,param);

@@ -61,17 +61,17 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 
 	private Map<Object, Annotation> directAnnotations = new HashMap<Object, Annotation>();
 
-	private final Map<String, Map<JavaClass, Annotation>> defaultAnnotation = new HashMap<String, Map<JavaClass, Annotation>>();
+	private final Map<String, Map<String, Annotation>> defaultAnnotation = new HashMap<String, Map<String, Annotation>>();
 
 	public AnnotationDatabase() {
 		defaultAnnotation.put(ANY,
-				new HashMap<JavaClass, Annotation>());
+				new HashMap<String, Annotation>());
 		defaultAnnotation.put(PARAMETER,
-				new HashMap<JavaClass, Annotation>());
+				new HashMap<String, Annotation>());
 		defaultAnnotation.put(METHOD,
-				new HashMap<JavaClass, Annotation>());
+				new HashMap<String, Annotation>());
 		defaultAnnotation.put(FIELD,
-				new HashMap<JavaClass, Annotation>());
+				new HashMap<String, Annotation>());
 
 	}
 
@@ -81,12 +81,12 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 		seen.add(n);
 	}
 
-	public void addDefaultAnnotation(String target, JavaClass c,
+	public void addDefaultAnnotation(String target, String c,
 			Annotation n) {
 		if (!defaultAnnotation.containsKey(target))
 			return;
 		if (DEBUG)
-			System.out.println("Default annotation " + target + " " + c.getClassName() + " " + n);
+			System.out.println("Default annotation " + target + " " + c + " " + n);
 		defaultAnnotation.get(target).put(c, n);
 		seen.add(n);
 	}
@@ -103,6 +103,7 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 
 		try {
 			JavaClass c;
+			String className;
 			String kind;
 			if (o instanceof XMethod || o instanceof XMethodParameter) {
 				
@@ -117,9 +118,10 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 					throw new IllegalStateException("impossible");
 				if (m.getClassName().startsWith("java")) {
 					// TODO: none of these are annotated
-					return null;
+					// return null;
 				}
-				c = Repository.lookupClass(m.getClassName());
+				className = m.getClassName();
+				c = Repository.lookupClass(className);
 				if (!m.isStatic() && !m.isPrivate() && !m.getName().equals("<init>")) {
 					// get inherited annotation
 					TreeSet<Annotation> inheritedAnnotations = new TreeSet<Annotation>();
@@ -153,11 +155,7 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 				} // associated with method
 			 else if (o instanceof XField) {
 				
-				String className = ((XField) o).getClassName();
-				if (className.startsWith("java")) {
-					// TODO: None of these are annotated
-					return null;
-				}
+				className = ((XField) o).getClassName();
 				c = Repository.lookupClass(className);
 				kind = FIELD;
 			} else
@@ -166,29 +164,33 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 
 			// look for default annotation
 
-			n = defaultAnnotation.get(kind).get(c);
+			n = defaultAnnotation.get(kind).get(className);
 			if (DEBUG) 
 				System.out.println("Default annotation for " + kind + " is " + n);
 			if (n != null)
 				return n;
 
-			n = defaultAnnotation.get(ANY).get(c);
+			n = defaultAnnotation.get(ANY).get(className);
 			if (DEBUG) 
 				System.out.println("Default annotation for any is " + n);
 			if (n != null)
 				return n;
 
-			String cName = c.getClassName();
-			int p = cName.lastIndexOf('.');
-			cName = cName.substring(0,p+1) + "package-info";
-			c = Repository.lookupClass(cName);
-			n = defaultAnnotation.get(kind).get(c);
+
+			int p = className.lastIndexOf('.');
+			className = className.substring(0,p+1) + "package-info";
+			try {
+				c = Repository.lookupClass(className);
+			} catch (ClassNotFoundException e) {
+				// ignore it
+			}
+			n = defaultAnnotation.get(kind).get(className);
 			if (DEBUG) 
 				System.out.println("Default annotation for " + kind + " is " + n);
 			if (n != null)
 				return n;
 
-			n = defaultAnnotation.get(ANY).get(c);
+			n = defaultAnnotation.get(ANY).get(className);
 			if (DEBUG) 
 				System.out.println("Default annotation for any is " + n);
 			if (n != null)
@@ -229,5 +231,22 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 			e.printStackTrace();
 			throw e;
 		}
+	}
+
+	protected void addDefaultMethodAnnotation(String cName, Annotation annotation) {
+	
+
+		addDefaultAnnotation(AnnotationDatabase.METHOD, cName, annotation);
+
+	
+	}
+
+	protected void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, Annotation annotation) {
+		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
+		addDirectAnnotation(m, annotation);
+	}
+	protected void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, int param, Annotation annotation) {
+		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
+		addDirectAnnotation(new XMethodParameter(m, param), annotation);
 	}
 }

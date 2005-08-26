@@ -29,6 +29,10 @@
 		<Later class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck"/>
 	</SplitPass>
 
+	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations"/>
+		<Later class="edu.umd.cs.findbugs.detect.MethodReturnCheck"/>
+	</SplitPass>
 	<!-- NoteNonNullAnnotation, NoteUnconditionalParamDerefs, and NoteNullReturnValues
 		 should happen in an earlier pass than FindNullDeref. -->	
 	<SplitPass>
@@ -56,7 +60,10 @@
 	        speed="fast"
 	        reports="TESTING"
             hidden="true" /> 
-			
+ <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations" 
+	        speed="fast"
+	        reports="TESTING"
+            hidden="true" /> 
   <Detector class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"
             speed="fast"
             reports=""
@@ -407,8 +414,6 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck"
             speed="fast"
             reports="RV_RETURN_VALUE_IGNORED2"
-	    disabled="true"
-	    hidden="true"
 		/>
   
   <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble"

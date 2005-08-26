@@ -19,42 +19,54 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.Priority;
 
 /**
  * @author pugh
  */
 public class CheckReturnValueAnnotation extends AnnotationEnumeration {
 
+	 final int priority;
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_UNKNOWN = new CheckReturnValueAnnotation(
-			"UnknownCheckReturnValue", 0);
+			"UnknownCheckReturnValue", 0, Detector.EXP_PRIORITY);
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_HIGH = new CheckReturnValueAnnotation(
-			"CheckReturnValueHigh", 1);
+			"CheckReturnValueHigh", 1, Detector.HIGH_PRIORITY);
 
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_MEDIUM = new CheckReturnValueAnnotation(
-			"CheckReturnValue", 2);
+			"CheckReturnValue", 2, Detector.NORMAL_PRIORITY);
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_LOW = new CheckReturnValueAnnotation(
-			"CheckReturnValueLow", 3);
+			"CheckReturnValueLow", 3, Detector.LOW_PRIORITY);
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_IGNORE = new CheckReturnValueAnnotation(
-			"OkToIgnoreReturnValue", 4);
+			"OkToIgnoreReturnValue", 4, Detector.IGNORE_PRIORITY);
 
 
 
 	private final static CheckReturnValueAnnotation[] myValues = { CHECK_RETURN_VALUE_UNKNOWN,
 		CHECK_RETURN_VALUE_HIGH,CHECK_RETURN_VALUE_MEDIUM, CHECK_RETURN_VALUE_LOW, CHECK_RETURN_VALUE_IGNORE };
 	
-	@CheckForNull public static CheckReturnValueAnnotation parse(String s) {
-		for(CheckReturnValueAnnotation v : myValues) 
-			if (s.endsWith(v.name)) return v;
-
-		return null;
-	}
+	@CheckForNull public static CheckReturnValueAnnotation parse(String s, Priority priority) {
+		if (!s.endsWith("CheckForNull")) return null;
+		if (priority == null) return CHECK_RETURN_VALUE_MEDIUM;
+		if (priority == Priority.HIGH)
+			return CHECK_RETURN_VALUE_HIGH;
+		if (priority == Priority.MEDIUM)
+			return CHECK_RETURN_VALUE_MEDIUM;
+		if (priority ==  Priority.LOW)
+			return CHECK_RETURN_VALUE_LOW;
+		throw new IllegalArgumentException("Bad priority: " + priority);
+		}
 	public static CheckReturnValueAnnotation[] values() {
 		return myValues.clone();
 	}
 
-	private CheckReturnValueAnnotation(String s, int i) {
+	public int getPriority() {
+		return priority;
+	}
+	private CheckReturnValueAnnotation(String s, int i, int p) {
 		super(s,i);
+		priority = p;
 		
 	}
 

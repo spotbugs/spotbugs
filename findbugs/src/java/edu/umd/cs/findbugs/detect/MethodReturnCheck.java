@@ -18,24 +18,19 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
+import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 
@@ -61,153 +56,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		INVOKE_OPCODE_SET.set(Constants.INVOKEVIRTUAL);
 	}
 	
-	private static final String ANY = null;
 	
-	// Methods to look for, as tuples "class, method, signature".
-	// Null means "any".  In method and signature, the string
-	// is treated as a pattern, where the * can match
-	// any sequence of characters, and all other characters are
-	// matched literally.
-	private static final String[][] STANDARD_POLICY_DATABASE = {
-		// Class                        Method              Signature
-		{ANY,                           "equals",           "(Ljava/lang/Object;)Z"},
-		{"java.lang.String",            ANY,                "*)Ljava/lang/String;"},
-		{"java.lang.StringBuffer",      "toString",         "*)Ljava/lang/String;"},
-		{"java.lang.Thread",            "<init>",           ANY},
-		{"java.lang.Throwable",         "<init>",           ANY},
-		{"java.security.MessageDigest", "digest",           "([B)[B"},
-		{"java.sql.Connection",         ANY,                ANY},
-		{"java.net.InetAddress",        ANY,                ANY},
-		{"java.math.BigDecimal",        ANY,                ANY},
-		{"java.math.BigInteger",        ANY,                ANY},
-		{"java.util.Enumeration",       "hasMoreElements",  "()Z"},
-		{"java.util.Iterator",          "hasNext",          "()Z"},
-		{"java.io.File",                "createNewFile",    "()Z"},
-//		{"",                            "",                 ""},
-	};
-	private static final String[][] JDK15_POLICY_DATABASE = {
-		// Class                                    Method        Signature
-		{"java.util.concurrent.locks.ReadWriteLock","readLock",   "()Ljava/util/concurrent/locks/Lock;"},
-		{"java.util.concurrent.locks.ReadWriteLock","writeLock",  "()Ljava/util/concurrent/locks/Lock;"},
-		{"java.util.concurrent.locks.Condition",    "await",      "(JLjava/util/concurrent/TimeUnit;)Z"},
-		{"java.util.concurrent.locks.Condition",    "awaitUtil",  "(Ljava/util/Date;)Z"},
-		{"java.util.concurrent.locks.Condition",    "awaitNanos", "(J)Z"},
-		{"java.util.concurrent.Semaphore",          "tryAcquire", "(JLjava/util/concurrent/TimeUnit;)Z"},
-		{"java.util.concurrent.Semaphore",          "tryAcquire", "()Z"},
-		{"java.util.concurrent.locks.Lock",         "tryLock",    "(JLjava/util/concurrent/TimeUnit;)Z"},
-		{"java.util.concurrent.locks.Lock",         "newCondition","()Ljava/util/concurrent/locks/Condition;"},
-		{"java.util.concurrent.locks.Lock",         "tryLock",     "()Z"},
-		{"java.util.Queue",                         "offer",       "(Ljava/lang/Object;)Z"},
-		{"java.util.concurrent.BlockingQueue",      "offer",       "(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z"},
-		{"java.util.concurrent.BlockingQueue",      "poll",        "(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;"},
-		{"java.util.Queue",                         "poll",        "()Ljava/lang/Object;"},
-//		{"",                                        "",            ""},
-	};
-	
-	private static class PolicyDatabaseEntry {
-		private String className, methodName, signature;
-		private Pattern methodPattern, signaturePattern;
-		
-		public PolicyDatabaseEntry(String className, String methodName, String signature) {
-			this.className = className;
-			this.methodName = methodName;
-			this.signature = signature;
-			this.methodPattern = createPattern(methodName);
-			this.signaturePattern = createPattern(signature);
-		}
-		
-		public boolean match(String className, String methodName, String signature) throws ClassNotFoundException {
-			return matchClass(className)
-				&& matchElement(methodName, this.methodName, this.methodPattern)
-				&& matchElement(signature, this.signature, this.signaturePattern);
-		}
-
-		private boolean matchClass(String className) throws ClassNotFoundException {
-			return this.className == null
-				|| Hierarchy.isSubtype(className, this.className);
-		}
-
-		private boolean matchElement(String value, String expected, Pattern pattern) {
-			if (expected == null) {
-				return true;
-			} else if (pattern == null) {
-				return value.equals(expected); 
-			} else {
-				Matcher matcher = pattern.matcher(value);
-				return matcher.matches();
-			}
-		}
-
-		private Pattern createPattern(String s) {
-			if (s == null || s.indexOf('*') < 0)
-				return null;
-
-			StringBuffer regex = new StringBuffer();
-			regex.append('^');
-			while (s.length() > 0) {
-				int star = s.indexOf('*');
-				if (star < 0) {
-					appendLiteral(regex, s);
-					s = "";
-				} else {
-					appendLiteral(regex, s.substring(0, star));
-					regex.append(".*");
-					s = s.substring(star+1);
-				}
-			}
-			regex.append('$');
-			
-			return Pattern.compile(regex.toString());
-		}
-
-		private void appendLiteral(StringBuffer regex, String s) {
-			regex.append("\\Q");
-			regex.append(s);
-			regex.append("\\E");
-		}
-	}
-
-	private static class PolicyDatabase {
-		private List<PolicyDatabaseEntry> database;
-		
-		public PolicyDatabase() {
-			this.database = new ArrayList<PolicyDatabaseEntry>();
-		}
-		
-		public void add(PolicyDatabaseEntry entry) {
-			database.add(entry);
-		}
-		
-		public boolean match(String className, String methodName, String signature)
-				throws ClassNotFoundException {
-			for (PolicyDatabaseEntry entry : database) {
-				if (entry.match(className, methodName, signature))
-					return true;
-			}
-			return false;
-		}
-	}
-	
-	static AnalysisLocal<PolicyDatabase> policyDatabaseLocal =
-		new AnalysisLocal<PolicyDatabase>();
-
-	static PolicyDatabase getDatabase() {
-		PolicyDatabase database = policyDatabaseLocal.get();
-		if (database == null) {
-			database = new PolicyDatabase();
-			for (String[] tuple : STANDARD_POLICY_DATABASE) {
-				database.add(new PolicyDatabaseEntry(tuple[0], tuple[1], tuple[2]));
-			}
-			for (String[] tuple : JDK15_POLICY_DATABASE) {
-				database.add(new PolicyDatabaseEntry(tuple[0], tuple[1], tuple[2]));
-			}
-			
-			// TODO: should add policies set by @CheckReturnValue annotations
-			
-			policyDatabaseLocal.set(database);
-		}
-		return database;
-	}
 		
 	private BugReporter bugReporter;
 	private ClassContext classContext;
@@ -259,14 +108,17 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 		
 		if (state == SAW_INVOKE && isPop(seen)) {
+			CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase.getResolvedAnnotation(callSeen, false);
+			if (annotation != null && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
 			int popPC = getPC();
 			if (DEBUG) System.out.println("Saw POP @"+popPC);
 			BugInstance warning =
-				new BugInstance(this, "RV_RETURN_VALUE_IGNORED2", NORMAL_PRIORITY)
+				new BugInstance(this, "RV_RETURN_VALUE_IGNORED2", annotation.getPriority())
 					.addClassAndMethod(this)
 					.addMethod(className, methodName, signature, seen == Constants.INVOKESTATIC).describe("METHOD_CALLED")
 					.addSourceLine(this, callPC);
 			bugReporter.reportBug(warning);
+			}
 			state = SCAN;
 		} else if (INVOKE_OPCODE_SET.get(seen)) {
 			callPC = getPC();
@@ -274,11 +126,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			methodName = getNameConstantOperand();
 			signature = getSigConstantOperand();
 			callSeen = XFactory.createXMethod(className, methodName, signature, seen == INVOKESTATIC);
-			if (requiresReturnValueCheck()) {
-				if (DEBUG) System.out.println(
-						"Saw "+className+"."+methodName+":"+signature+" @"+callPC);
-				state = SAW_INVOKE;
-			}
+			state = SAW_INVOKE;
 		} else
 			state = SCAN;
 		}
@@ -287,15 +135,5 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		return seen == Constants.POP || seen == Constants.POP2;
 	}
 
-	private boolean requiresReturnValueCheck() {
-		if (DEBUG) {
-			System.out.println("Trying: "+className+"."+methodName+":"+signature);
-		}
-		try {
-			return getDatabase().match(className, methodName, signature);
-		} catch (ClassNotFoundException e) {
-			bugReporter.reportMissingClass(e);
-			return false;
-		}
-	}
+	
 }

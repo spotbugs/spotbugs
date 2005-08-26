@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface CheckReturnValue {
 
-    String priority() default "medium";
+    Priority priority() default Priority.MEDIUM;
     /**
      * A textual explaination of why the return value should be checked
      */
