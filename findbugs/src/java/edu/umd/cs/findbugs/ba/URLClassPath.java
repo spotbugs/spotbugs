@@ -26,8 +26,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -351,7 +353,7 @@ public class URLClassPath implements Serializable {
 		}
 		return null;
 	}
-	
+	private Set<String> classesThatCantBeFound = new HashSet<String>();
 	/**
 	 * Look up a class from the classpath.
 	 * 
@@ -361,15 +363,22 @@ public class URLClassPath implements Serializable {
 	 * @throws ClassFormatException if the classfile format is invalid
 	 */
 	public JavaClass lookupClass(String className) throws ClassNotFoundException {
+		if (classesThatCantBeFound.contains(className)) {
+			throw new ClassNotFoundException("Error while looking for class " + 
+						className);
+		}
 		String resourceName = className.replace('.', '/') + ".class";
 		InputStream in = null;
 		boolean parsedClass = false;
 		
 		try {
+			
 			in = getInputStreamForResource(resourceName);
-			if (in == null)
+			if (in == null) {
+				classesThatCantBeFound.add(className);
 				throw new ClassNotFoundException("Error while looking for class " + 
 						className + ": class not found");
+			}
 			
 			ClassParser classParser = new ClassParser(in, resourceName);
 			JavaClass javaClass = classParser.parse();
@@ -377,6 +386,7 @@ public class URLClassPath implements Serializable {
 			
 			return javaClass;
 		} catch (IOException e) {
+			classesThatCantBeFound.add(className);
 			throw new ClassNotFoundException("IOException while looking for class " +
 					className + ": " + e.toString());
 		} finally {

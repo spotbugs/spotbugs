@@ -102,7 +102,7 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 			return n;
 
 		try {
-			JavaClass c;
+			
 			String className;
 			String kind;
 			if (o instanceof XMethod || o instanceof XMethodParameter) {
@@ -121,8 +121,9 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 					// return null;
 				}
 				className = m.getClassName();
-				c = Repository.lookupClass(className);
-				if (!m.isStatic() && !m.isPrivate() && !m.getName().equals("<init>")) {
+
+				if (!m.isStatic() && !m.getName().equals("<init>")) {
+					JavaClass c = Repository.lookupClass(className);
 					// get inherited annotation
 					TreeSet<Annotation> inheritedAnnotations = new TreeSet<Annotation>();
 					if (c.getSuperclassNameIndex() > 0) {
@@ -156,7 +157,6 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 			 else if (o instanceof XField) {
 				
 				className = ((XField) o).getClassName();
-				c = Repository.lookupClass(className);
 				kind = FIELD;
 			} else
 				throw new IllegalArgumentException(
@@ -179,11 +179,6 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 
 			int p = className.lastIndexOf('.');
 			className = className.substring(0,p+1) + "package-info";
-			try {
-				c = Repository.lookupClass(className);
-			} catch (ClassNotFoundException e) {
-				// ignore it
-			}
 			n = defaultAnnotation.get(kind).get(className);
 			if (DEBUG) 
 				System.out.println("Default annotation for " + kind + " is " + n);
