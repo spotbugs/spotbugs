@@ -48,6 +48,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		if (o instanceof XMethodParameter) {
 			XMethodParameter mp = (XMethodParameter) o;
 			XMethod m = mp.getMethod();
+			if (m.getName().startsWith("access$")) return null;
 			if (mp.getParameterNumber() == 0 && m.getName().equals("equals") 
 					&& m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())
 					return NullnessAnnotation.CHECK_FOR_NULL;
@@ -57,7 +58,8 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		}
 		else if (o instanceof XMethod) {
 			XMethod m = (XMethod) o;
-			if  (m.getClassName().equals("java.lang.String"))
+			if (m.getName().startsWith("access$")) return null;
+			else if  (m.getClassName().equals("java.lang.String"))
 					return NullnessAnnotation.NONNULL;
 			else if (m.getClassName().equals("java.io.BufferedReader")
 					&& m.getName().equals("readLine"))
