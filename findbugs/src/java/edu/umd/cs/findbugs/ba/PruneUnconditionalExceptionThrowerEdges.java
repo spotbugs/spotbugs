@@ -19,12 +19,15 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.BitSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -33,6 +36,8 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.ba.ch.Subtypes;
+
 public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("cfg.prune.throwers.debug");
 
@@ -40,6 +45,15 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 	private CFG cfg;
 	private ConstantPoolGen cpg;
 	private AnalysisContext analysisContext;
+	private  static final BitSet RETURN_OPCODE_SET = new BitSet();
+	static {
+		RETURN_OPCODE_SET.set(Constants.ARETURN);
+		RETURN_OPCODE_SET.set(Constants.IRETURN);
+		RETURN_OPCODE_SET.set(Constants.LRETURN);
+		RETURN_OPCODE_SET.set(Constants.DRETURN);
+		RETURN_OPCODE_SET.set(Constants.FRETURN);
+		RETURN_OPCODE_SET.set(Constants.RETURN);
+	}
 
 	public PruneUnconditionalExceptionThrowerEdges(MethodGen methodGen, CFG cfg, ConstantPoolGen cpg,
 	                                               AnalysisContext analysisContext) {
@@ -49,7 +63,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 		this.analysisContext = analysisContext;
 	}
 
-	static Map<Method,Boolean> cachedResults = new IdentityHashMap<Method,Boolean>();
+	static Map<XMethod,Boolean> cachedResults = new HashMap<XMethod,Boolean>();
 	public void execute() throws CFGBuilderException, DataflowAnalysisException {
 		if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.CONSERVE_SPACE))
 			throw new IllegalStateException("This should not happen");
@@ -59,7 +73,8 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 		if (DEBUG)
 			System.out.println("PruneUnconditionalExceptionThrowerEdges: examining " +
 			        SignatureConverter.convertMethodSignature(methodGen));
-
+		 Subtypes subtypes = AnalysisContext.currentAnalysisContext()
+			.getSubtypes();
 		for (Iterator<BasicBlock> i = cfg.blockIterator(); i.hasNext();) {
 			BasicBlock basicBlock = i.next();
 			if (!basicBlock.isExceptionThrower())
@@ -74,6 +89,9 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				String className = inv.getClassName(cpg);
 				if (className.startsWith("["))
 					continue;
+				String methodSig = inv.getSignature(cpg);
+				if (!methodSig.endsWith("V")) 
+					continue;
 				JavaClass javaClass = Repository.lookupClass(className);
 				ClassContext classContext = analysisContext.getClassContext(javaClass);
 
@@ -84,25 +102,29 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 					continue;
 				}
 				Method method = classAndMethod.getMethod();
+				XMethod xMethod = XFactory.createXMethod(javaClass, method);
 				if (DEBUG) System.out.println("\tFound " + method);
 
 				// FIXME: for now, only allow static and private methods.
 				// Could also allow final methods (but would require class hierarchy
 				// search).
-				if (!(method.isStatic() || method.isPrivate()))
+				if (!(method.isStatic() || method.isPrivate() || method.isFinal() || javaClass.isFinal() || !subtypes.hasSubtypes(javaClass)))
 					continue;
+				
+				// Ignore abstract and native methods
 				if (method.getCode() == null) continue;
 				
-				// TODO: Parameterize size of methods to check for unconditional throwing by effort level
-				if (method.getCode().getLength() > 500) continue;
-				Boolean result = cachedResults.get(method);
-				if (Boolean.FALSE.equals(result))
-					continue;
+				BitSet bytecodeSet = classContext.getBytecodeSet(method);
 				
-				MethodGen calledMethodGen = null;
+				Boolean result = cachedResults.get(xMethod);
 				if (result == null) {
+					result = bytecodeSet.intersects(RETURN_OPCODE_SET);
+					cachedResults.put(xMethod, result);
+				}
+				if (false && result.booleanValue()) {
+				    MethodGen calledMethodGen = classContext.getMethodGen(method);
 					// Ignore abstract and native methods
-					calledMethodGen = classContext.getMethodGen(method);
+
 					if (calledMethodGen == null)
 						continue;
 
@@ -114,31 +136,19 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 					ReturnPath pathValue = pathDataflow.getStartFact(calledCFG
 							.getExit());
 
-					result = Boolean
-							.valueOf(pathValue.getKind() != ReturnPath.RETURNS);
+					result = pathValue.getKind() != ReturnPath.RETURNS;
 					// System.out.println("isThrower: " + result + " " + method.getCode().getLength() + " " + method);
-					if (true) cachedResults.put(method, result);
+					if (true) cachedResults.put(xMethod, result);
 				}
 
 				if (result.booleanValue()) {
 					// Method always throws an unhandled exception
-					// or calls System.exit().
 					// Remove the normal control flow edge from the CFG.
 					Edge fallThrough = cfg.getOutgoingEdgeWithType(basicBlock,
 							FALL_THROUGH_EDGE);
 					if (fallThrough != null) {
 						if (DEBUG) {
-							System.out.println("\tREMOVING normal return for:");
-							if (calledMethodGen == null)
-								calledMethodGen = classContext
-										.getMethodGen(method);
-							System.out
-									.println("\t  Call to "
-											+ SignatureConverter
-													.convertMethodSignature(calledMethodGen));
-							System.out.println("\t  In method "
-									+ SignatureConverter
-											.convertMethodSignature(methodGen));
+							System.out.println("\tREMOVING normal return for: " + xMethod);
 						}
 						deletedEdgeSet.add(fallThrough);
 					}

@@ -75,6 +75,19 @@ public class Subtypes {
 	}
 
 	/**
+	 * Determine if a class or interface has subtypes
+	 * 
+	 * @param c a class or interface
+	 * @return true if c has any subtypes/interfaces
+	 */
+	public boolean hasSubtypes(JavaClass c) {
+		if (!allClasses.contains(c))
+			addClass(c);
+		compute();
+		return !immediateSubtypes.get(c).isEmpty();
+	}
+
+	/**
 	 * Get set of all known classes and interfaces. 
 	 * 
 	 * @return set of all known classes and interfaces
