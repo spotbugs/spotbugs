@@ -724,7 +724,6 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 	/**
 	 * Return whether or not the given instruction can throw exceptions.
-	 * Instructions that can only throw errors produce a false result.
 	 *
 	 * @param handle the instruction
 	 * @return true if the instruction can throw an exception, false otherwise
@@ -741,7 +740,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		if (ins instanceof PUTSTATIC) return false;
 		if (ins instanceof ReturnInstruction) return false;
 		if (ins instanceof INSTANCEOF) return false;
-		if (ins instanceof INVOKESTATIC) return false;
+		// if (ins instanceof INVOKESTATIC) return false;
 		if (ins instanceof MONITORENTER) return false;
 		if (ins instanceof MONITOREXIT) return false;
 		return true;
