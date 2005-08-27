@@ -77,6 +77,9 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	private String fieldSig = "none";
 	private String dottedFieldSig = "none";
 	private boolean fieldIsStatic;
+	
+	// Available when visiting a Code
+	private Code code;
 
 	protected String getStringFromIndex(int i) {
 		ConstantUtf8 name = (ConstantUtf8) constantPool.getConstant(i);
@@ -87,8 +90,30 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		return 0xff & b;
 	}
 
+	/**
+	 * Return the current Code attribute; assuming one is being visited
+	 * @return current code attribute
+	 */
+	 public Code getCode() {
+		if (code == null) throw new IllegalStateException("Not visiting Code");
+		return code;
+	}
+	 
+	 public int getSizeOfSurroundingCatchBlock(int pc) {
+			if (code == null) throw new IllegalStateException("Not visiting Code");
+			int size = Integer.MAX_VALUE;
+			for (CodeException catchBlock : code.getExceptionTable()) {
+				if (pc >= catchBlock.getStartPC() && pc <= catchBlock.getEndPC()) {
+					int thisSize = catchBlock.getEndPC() - catchBlock.getStartPC();
+					if (size > thisSize) 
+						size = thisSize;
+				}
+			}
+			return size;
+	 }
 	// Attributes
 	public void visitCode(Code obj) {
+		code = obj;
 		super.visitCode(obj);
 		CodeException[] exceptions = obj.getExceptionTable();
 		for (CodeException exception : exceptions)
@@ -96,6 +121,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		Attribute[] attributes = obj.getAttributes();
 		for (Attribute attribute : attributes)
 			attribute.accept(this);
+		code = null;
 	}
 
 	// Constants
