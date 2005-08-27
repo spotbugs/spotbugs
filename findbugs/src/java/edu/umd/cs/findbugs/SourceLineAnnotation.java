@@ -406,6 +406,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 					if (buf.charAt(buf.length() - 1) != '|')
 						buf.append(',');
 					buf.append(String.valueOf((int) offsetToOpcodeMap[offset]));
+					count++;
 				}
 				
 				this.surroundingOpcodes = buf.toString();
