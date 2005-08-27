@@ -99,17 +99,38 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		return code;
 	}
 	 
-	 public int getSizeOfSurroundingCatchBlock(int pc) {
+	 /**
+	  * Get lines of code in try block that surround pc
+	  * @param pc
+	  * @return
+	  */
+	 public int getSizeOfSurroundingTryBlock(int pc) {
 			if (code == null) throw new IllegalStateException("Not visiting Code");
 			int size = Integer.MAX_VALUE;
+			int tightStartPC = 0;
+			int tightEndPC = Integer.MAX_VALUE;
+			if (code.getExceptionTable() == null) return size;
 			for (CodeException catchBlock : code.getExceptionTable()) {
-				if (pc >= catchBlock.getStartPC() && pc <= catchBlock.getEndPC()) {
-					int thisSize = catchBlock.getEndPC() - catchBlock.getStartPC();
-					if (size > thisSize) 
+				int startPC = catchBlock.getStartPC();
+				int endPC = catchBlock.getEndPC();
+				if (pc >= startPC && pc <= endPC) {
+					int thisSize = endPC - startPC;
+					if (size > thisSize) {
 						size = thisSize;
+						tightStartPC = startPC;
+						tightEndPC = endPC;
+					}
 				}
 			}
-			return size;
+			if (size < Integer.MAX_VALUE) {
+				if (code.getLineNumberTable() == null) return size;
+				int firstLineNumber = code.getLineNumberTable().getSourceLine(tightStartPC);
+				int lastLineNumber = code.getLineNumberTable().getSourceLine(tightEndPC);
+				int diff = lastLineNumber - firstLineNumber + 1;
+				if (diff >= size && diff <= size/8) return diff;
+			}
+			return size / 8;
+
 	 }
 	// Attributes
 	public void visitCode(Code obj) {

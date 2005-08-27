@@ -28,20 +28,21 @@ import org.apache.bcel.classfile.Method;
  */
 public class MethodUnprofitableException extends CFGBuilderException {
 	private static final long serialVersionUID = 1L;
-	private final JavaClassAndMethod method;
+	private final XMethod method;
 
 	public MethodUnprofitableException(JavaClassAndMethod method) {
 		super("Appears unprofitable to analyze " + method);
-		this.method = method;
+		this.method = XFactory.createXMethod(method.getJavaClass(), method.getMethod());
 	}
 	/**
 	 * @param message
 	 */
 	public MethodUnprofitableException(JavaClass jClass, Method method) {
-		this(new JavaClassAndMethod(jClass, method));
+		super("Appears unprofitable to analyze " + method);
+		this.method = XFactory.createXMethod(jClass, method);
 	}
 	
-	public JavaClassAndMethod getMethod() {
+	public XMethod getMethod() {
 		return method;
 	}
 

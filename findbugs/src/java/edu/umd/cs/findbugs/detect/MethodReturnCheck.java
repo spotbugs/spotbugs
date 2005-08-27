@@ -109,10 +109,11 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			if (annotation != null && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
 			int popPC = getPC();
 			if (DEBUG) System.out.println("Saw POP @"+popPC);
-			int catchSize = getSizeOfSurroundingCatchBlock(popPC);
+			int catchSize = getSizeOfSurroundingTryBlock(popPC);
 			
 			int priority = annotation.getPriority();
-			if (catchSize <= 9) priority++;
+			if (catchSize <= 1) priority+=2;
+			else if (catchSize <= 2) priority += 1;
 			BugInstance warning =
 				new BugInstance(this, "RV_RETURN_VALUE_IGNORED", priority)
 					.addClassAndMethod(this)

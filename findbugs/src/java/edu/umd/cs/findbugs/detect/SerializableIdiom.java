@@ -95,7 +95,12 @@ public class SerializableIdiom extends PreorderVisitor
 	static Pattern anonymousInnerClassNamePattern =
 			Pattern.compile(".+\\$\\d+");
 	boolean isAnonymousInnerClass;
+	private boolean isEnum;
 	public void visit(JavaClass obj) {
+		String superClassname = obj.getSuperclassName();
+		// System.out.println("superclass of " + getClassName() + " is " + superClassname);
+		isEnum = superClassname.equals("java.lang.Enum");
+		if (isEnum) return;
 		int flags = obj.getAccessFlags();
 		isAbstract = (flags & ACC_ABSTRACT) != 0
 		        || (flags & ACC_INTERFACE) != 0;
@@ -109,6 +114,7 @@ public class SerializableIdiom extends PreorderVisitor
 		isExternalizable = false;
 		directlyImplementsExternalizable = false;
 		isGUIClass = false;
+		boolean isEnum = obj.getSuperclassName().equals("java.lang.Enum");
 		
 		//isRemote = false;
 
@@ -195,6 +201,7 @@ public class SerializableIdiom extends PreorderVisitor
 	}
 
 	public void visitAfter(JavaClass obj) {
+		if (isEnum) return;
 		if (false) {
 			System.out.println(getDottedClassName());
 			System.out.println("  hasPublicVoidConstructor: " + hasPublicVoidConstructor);

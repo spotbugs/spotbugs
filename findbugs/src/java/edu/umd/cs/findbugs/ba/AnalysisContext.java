@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
+import edu.umd.cs.findbugs.util.MapCache;
 
 
 /**
@@ -57,12 +58,12 @@ public class AnalysisContext {
 	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
-	private ClassContextCache classContextCache;
+	private Map<JavaClass, ClassContext> classContextCache;
 	private Subtypes subtypes;
 	public Map<Object,Object> analysisLocals = 
 		Collections.synchronizedMap(new HashMap<Object,Object>());
 	private BitSet boolPropertySet;
-	private int cacheSize;
+
 	
 	// Interprocedural fact databases
 	private String databaseInputDir;
@@ -91,24 +92,15 @@ public class AnalysisContext {
 	 */
 	private static final int DEFAULT_CACHE_SIZE = 60;
 
-	private class ClassContextCache extends LinkedHashMap<JavaClass, ClassContext> {
-		private static final long serialVersionUID = 1L;
-
-		public boolean removeEldestEntry(Map.Entry<JavaClass, ClassContext> entry) {
-			return size() >= cacheSize;
-		}
-	}
-
 	/**
 	 * Constructor.
 	 */
 	public AnalysisContext(RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.sourceFinder = new SourceFinder();
-		this.classContextCache = new ClassContextCache();
 		this.subtypes = new Subtypes();
 		this.boolPropertySet = new BitSet();
-
+		
 		currentAnalysisContext.set(this);
 	}
 
@@ -180,7 +172,8 @@ public class AnalysisContext {
 	 * This should be done between analysis passes.
 	 */
 	public void clearClassContextCache() {
-		classContextCache.clear();
+		if (classContextCache != null)
+			classContextCache.clear();
 	}
 	
 	/**
@@ -251,10 +244,10 @@ public class AnalysisContext {
 	 * @return the ClassContext for that class
 	 */
 	public ClassContext getClassContext(JavaClass javaClass) {
-		if (cacheSize == 0) {
-			cacheSize = getBoolProperty(AnalysisFeatures.CONSERVE_SPACE) ? 1 : DEFAULT_CACHE_SIZE;
+		if (classContextCache == null) {
+		int cacheSize = getBoolProperty(AnalysisFeatures.CONSERVE_SPACE) ? 1 : DEFAULT_CACHE_SIZE;
+		classContextCache = new MapCache<JavaClass,ClassContext>(cacheSize);
 		}
-		
 		ClassContext classContext = classContextCache.get(javaClass);
 		if (classContext == null) {
 			classContext = new ClassContext(javaClass, this);

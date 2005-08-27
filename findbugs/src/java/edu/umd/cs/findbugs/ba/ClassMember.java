@@ -18,6 +18,8 @@
  */
 package edu.umd.cs.findbugs.ba;
 
+import java.io.Serializable;
+
 /**
  * Common super-interface for class members (fields and methods).
  * 
@@ -25,7 +27,7 @@ package edu.umd.cs.findbugs.ba;
  * @see edu.umd.cs.findbugs.ba.XMethod
  * @author David Hovemeyer
  */
-public interface ClassMember extends Comparable<ClassMember>  {
+public interface ClassMember extends Comparable<ClassMember>, Serializable  {
 
 	/**
 	 * Get the name of the field/method.

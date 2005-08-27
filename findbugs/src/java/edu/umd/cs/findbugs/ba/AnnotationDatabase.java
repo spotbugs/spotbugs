@@ -134,10 +134,7 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 					kind = PARAMETER;
 				} else
 					throw new IllegalStateException("impossible");
-				if (m.getClassName().startsWith("java")) {
-					// TODO: none of these are annotated
-					// return null;
-				}
+
 				className = m.getClassName();
 
 				if (!m.isStatic() && !m.getName().equals("<init>")) {
