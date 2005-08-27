@@ -96,10 +96,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
 		if (!(bytecodeSet.get(Constants.POP) || bytecodeSet.get(Constants.POP2))) {
 			return false;
-		} else if (!(bytecodeSet.get(Constants.INVOKEINTERFACE) ||
-				bytecodeSet.get(Constants.INVOKESPECIAL) ||
-				bytecodeSet.get(Constants.INVOKESTATIC) ||
-				bytecodeSet.get(Constants.INVOKEVIRTUAL))) {
+		} else if (!bytecodeSet.intersects(INVOKE_OPCODE_SET)) {
 			return false;
 		}
 		return true;
@@ -112,8 +109,12 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			if (annotation != null && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
 			int popPC = getPC();
 			if (DEBUG) System.out.println("Saw POP @"+popPC);
+			int catchSize = getSizeOfSurroundingCatchBlock(popPC);
+			
+			int priority = annotation.getPriority();
+			if (catchSize <= 9) priority++;
 			BugInstance warning =
-				new BugInstance(this, "RV_RETURN_VALUE_IGNORED", annotation.getPriority())
+				new BugInstance(this, "RV_RETURN_VALUE_IGNORED", priority)
 					.addClassAndMethod(this)
 					.addMethod(className, methodName, signature, seen == Constants.INVOKESTATIC).describe("METHOD_CALLED")
 					.addSourceLine(this, callPC);
