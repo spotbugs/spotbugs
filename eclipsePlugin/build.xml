@@ -120,7 +120,7 @@
 		
 		<!-- Create plugin zipfile. -->
 		<zip destfile="${bin.dir}/${plugin.id}_${plugin.version}.zip">
-			<fileset dir="${dist.dir}" includes="**"/>
+			<zipfileset prefix="${plugin.id}_${plugin.version}" dir="${dist.dir}" includes="**"/>
 		</zip>
 	</target>
 
