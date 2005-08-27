@@ -38,6 +38,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
@@ -302,9 +303,12 @@ public abstract class AbstractBugCollection implements BugCollection {
 			Reader reader = new InputStreamReader(in);
 
 			xr.parse(new InputSource(reader));
+		} catch (SAXParseException e) {
+			throw new DocumentException("Parse error at line " + e.getLineNumber() 
+					+ " : " + e.getColumnNumber(), e);
 		} catch (SAXException e) {
 			// FIXME: throw SAXException from method?
-			throw new DocumentException("Parse error", e);
+			throw new DocumentException("Sax error ", e);
 		}
 
 		// Presumably, project is now up-to-date
