@@ -103,7 +103,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				}
 				Method method = classAndMethod.getMethod();
 				XMethod xMethod = XFactory.createXMethod(javaClass, method);
-				if (DEBUG) System.out.println("\tFound " + method);
+				if (DEBUG) System.out.println("\tFound " + xMethod);
 
 				// FIXME: for now, only allow static and private methods.
 				// Could also allow final methods (but would require class hierarchy
@@ -116,12 +116,19 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				
 				BitSet bytecodeSet = classContext.getBytecodeSet(method);
 				
-				Boolean result = cachedResults.get(xMethod);
-				if (result == null) {
-					result = bytecodeSet.intersects(RETURN_OPCODE_SET);
-					cachedResults.put(xMethod, result);
+				Boolean isUnconditionalThrower = cachedResults.get(xMethod);
+				if (isUnconditionalThrower == null) {
+					if (DEBUG) System.out.println("\tChecking " + xMethod);
+					isUnconditionalThrower = !bytecodeSet.intersects(RETURN_OPCODE_SET);
+					if (DEBUG && isUnconditionalThrower) {
+						System.out.println("Return opcode set: " + RETURN_OPCODE_SET);
+						System.out.println("Code opcode set: " + bytecodeSet);
+						
+						
+					}
+					cachedResults.put(xMethod, isUnconditionalThrower);
 				}
-				if (false && result.booleanValue()) {
+				if (false && isUnconditionalThrower.booleanValue()) {
 				    MethodGen calledMethodGen = classContext.getMethodGen(method);
 					// Ignore abstract and native methods
 
@@ -136,12 +143,12 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 					ReturnPath pathValue = pathDataflow.getStartFact(calledCFG
 							.getExit());
 
-					result = pathValue.getKind() != ReturnPath.RETURNS;
+					isUnconditionalThrower = pathValue.getKind() != ReturnPath.RETURNS;
 					// System.out.println("isThrower: " + result + " " + method.getCode().getLength() + " " + method);
-					if (true) cachedResults.put(xMethod, result);
+					if (true) cachedResults.put(xMethod, isUnconditionalThrower);
 				}
 
-				if (result.booleanValue()) {
+				if (isUnconditionalThrower.booleanValue()) {
 					// Method always throws an unhandled exception
 					// Remove the normal control flow edge from the CFG.
 					Edge fallThrough = cfg.getOutgoingEdgeWithType(basicBlock,
