@@ -84,6 +84,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		        && getMethodName().equals("main")
 		        || cName.toLowerCase().indexOf("benchmark") >= 0;
 		prevOpcodeWasReadLine = false;
+		pendingRemOfRandomIntBug = null;
 		Code code = method.getCode();
 		if (code != null)
 			this.exceptionTable = code.getExceptionTable();
@@ -95,17 +96,23 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		checkForBitIorofSignedByte = false;
 	}
 
+	BugInstance pendingRemOfRandomIntBug;
 	public void sawOpcode(int seen) {
-		
+		if (pendingRemOfRandomIntBug != null && !(seen == INVOKESTATIC
+				&& getClassConstantOperand().equals("java/lang/Math")
+				&& getNameConstantOperand().equals("abs"))) 
+			bugReporter.reportBug(pendingRemOfRandomIntBug);
+
+		pendingRemOfRandomIntBug = null;
 		try {
 
 		if (seen == IREM) {
 			OpcodeStack.Item item1 = stack.getStackItem(1);
 			int special = item1.getSpecialKind();
 			if (special == OpcodeStack.Item.RANDOM_INT) {
-					  bugReporter.reportBug(new BugInstance(this, "RV_REM_OF_RANDOM_INT", HIGH_PRIORITY)
+				pendingRemOfRandomIntBug = new BugInstance(this, "RV_REM_OF_RANDOM_INT", HIGH_PRIORITY)
 						.addClassAndMethod(this)
-						.addSourceLine(this));
+						.addSourceLine(this);
 						}
 		}
 		if (checkForBitIorofSignedByte && seen != I2B) {
