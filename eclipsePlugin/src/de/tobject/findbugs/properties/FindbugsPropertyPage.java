@@ -40,11 +40,12 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferencePage;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
@@ -101,7 +102,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private UserPreferences origUserPreferences;
 	private UserPreferences currentUserPreferences;
 	private IProject project;
-	protected TableViewer availableFactoriesTableViewer;
+	protected CheckboxTableViewer availableFactoriesTableViewer;
 	protected Map<DetectorFactory, String> factoriesToBugAbbrev;
 	private Button restoreDefaultsButton;
 
@@ -151,7 +152,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 		minPriorityCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		minPriorityCombo.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				currentUserPreferences.setUserDetectorThreshold(minPriorityCombo.getText());
+				String data = minPriorityCombo.getText();
+				System.out.println("Minimum priority changed to " + data + "!");
+				currentUserPreferences.getFilterSettings().setMinPriority(data);
 			}
 		});
 		
@@ -331,6 +334,13 @@ public class FindbugsPropertyPage extends PropertyPage {
 				| SWT.CHECK;
 		availableFactoriesTableViewer =
 			CheckboxTableViewer.newCheckList(parent, tableStyle);
+		availableFactoriesTableViewer.addCheckStateListener(new ICheckStateListener() {
+
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				System.out.println("Detector selection changed!");
+				syncUserPreferencesWithTable();
+			}
+		});
 
 		int currentColumnIdx = -1;
 		Table factoriesTable = availableFactoriesTableViewer.getTable();
@@ -443,14 +453,6 @@ public class FindbugsPropertyPage extends PropertyPage {
 			if (currentUserPreferences.isDetectorEnabled(rule)) {
 				itemList[i].setChecked(true);
 			}
-			
-			// Listen for check/uncheck events, update user preferences accordingly
-			itemList[i].addListener(SWT.Selection, new Listener() {
-				public void handleEvent(Event event) {
-					System.out.println("Detector selection changed!");
-					syncUserPreferencesWithTable();
-				}
-			});
 		}
 	}
 
