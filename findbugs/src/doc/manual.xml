@@ -1950,6 +1950,11 @@ in the Ant task.</para>
 	stylesheet, and made improvements to the <command>-xml:withMessages</command>
 	option.
 </para>
+	
+<para>
+	Takashi Okamoto fixed bugs in the project preferences dialog
+	in the Eclipse plugin.
+</para>
 
 <para>If you have contributed to &FindBugs;, but aren't mentioned above,
 please send email to <email>daveho@cs.umd.edu</email> (and also accept
