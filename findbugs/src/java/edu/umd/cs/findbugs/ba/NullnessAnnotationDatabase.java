@@ -32,7 +32,14 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.CopyOnWriteArraySet", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.Exchanger", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.FutureTask", NullnessAnnotation.UNKNOWN_NULLNESS);
+		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.PriorityQueue", NullnessAnnotation.NONNULL);
+		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.SortedMap", NullnessAnnotation.NONNULL);
+		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.SortedSet", NullnessAnnotation.NONNULL);
+		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.EnumMap", NullnessAnnotation.NONNULL);
+		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.EnumSet", NullnessAnnotation.NONNULL);
+		addDefaultAnnotation(AnnotationDatabase.METHOD, "java.lang.String", NullnessAnnotation.NONNULL);
 		// addMethodAnnotation("java.util.Queue", "poll", "()Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
+		addMethodAnnotation("java.io.BufferedReader", "readLine", "()Ljava/lang/String;", false, NullnessAnnotation.CHECK_FOR_NULL);
 	}
 	public boolean parameterMustBeNonNull(XMethod m, int param) {
 		if (!anyAnnotations(NullnessAnnotation.NONNULL)) return false;
@@ -59,11 +66,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		else if (o instanceof XMethod) {
 			XMethod m = (XMethod) o;
 			if (m.getName().startsWith("access$")) return null;
-			else if  (m.getClassName().equals("java.lang.String"))
-					return NullnessAnnotation.NONNULL;
-			else if (m.getClassName().equals("java.io.BufferedReader")
-					&& m.getName().equals("readLine"))
-					return NullnessAnnotation.CHECK_FOR_NULL;
+
 		}
 		return super.getResolvedAnnotation(o, getMinimal);
 	}
