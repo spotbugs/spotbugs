@@ -1260,6 +1260,17 @@ using the &FindBugs; task.
        </para>
     </listitem>
   </varlistentry>
+	
+  <varlistentry>
+	  <term><literal>warningsProperty</literal></term>
+	  <listitem>
+		  <para>
+			  Optional attribute which specifies the name of a property
+			  that will be set to "true" if any warnings are reported by
+			  &FindBugs; on the analyzed program.
+		  </para>
+	  </listitem>
+  </varlistentry>
 
 </variablelist>
 
@@ -1957,6 +1968,9 @@ in the Ant task.</para>
 </para>
 	
 <para>Thomas Einwaller fixed bugs in the project preferences dialog in the Eclipse plugin.</para>
+	
+<para>Jeff Knox contributed support for the warningsProperty attribute
+in the Ant task.</para>
 
 <para>If you have contributed to &FindBugs;, but aren't mentioned above,
 please send email to <email>daveho@cs.umd.edu</email> (and also accept
