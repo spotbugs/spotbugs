@@ -11,8 +11,7 @@
       <library name="findbugs-plugin.jar"/>
       <library name="bcel.jar"/>
       <library name="dom4j-full.jar"/>
-      <library name="findbugs.jar">
-      </library>
+      <library name="findbugs.jar"/>
    </runtime>
 
    <requires>

@@ -91,11 +91,16 @@
 				<fileset dir="${bin.dir}" excludes="de/tobject/findbugs/tools/**" />
 		</jar>
 		<copy todir="${dist.dir}">
-			<fileset file="bcel.jar" />
-			<fileset file="dom4j-full.jar" />
-			<fileset file="findbugs.jar" />
+			<fileset file="welcome.xml" />
+			<fileset file="RELEASENOTES" />
 			<fileset file="plugin.xml" />
 			<fileset file="plugin.properties" />
+			<fileset dir="${fbeclipse.dir}">
+				  <include name="*.jar"/>
+				  <include name="*.png"/>
+				  <include name="about.*"/>
+			</fileset>
+			  
 		</copy>
 		<copy todir="${dist.dir}/plugin">
 			<fileset dir="plugin" />
