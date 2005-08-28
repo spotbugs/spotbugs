@@ -4,10 +4,13 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 public class BadlyOverriddenAdapterTest extends JFrame
 {
 	public BadlyOverriddenAdapterTest() {
 		addWindowListener( new WindowAdapter() {
+			@SuppressWarnings("DM_EXIT")
 			public void windowClosing() {
 				dispose();
 				System.exit(0);

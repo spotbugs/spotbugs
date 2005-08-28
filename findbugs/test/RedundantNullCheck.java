@@ -1,3 +1,5 @@
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 public class RedundantNullCheck {
 	public void foo(String s) {
 	    int k = 1;
@@ -40,7 +42,20 @@ public class RedundantNullCheck {
 		if (s != null) System.out.println("foo");
 		}
 		}
-		
+
+   public @CheckForNull Object f() {
+		return null;
+	    }		
+
+   public int g() {
+			Object o = f();
+		    if (o == null) return 0;
+		return 42;
+		}
+   public int h() {
+			Object o = f();
+		return o.hashCode();
+		}
 		
 }
 
