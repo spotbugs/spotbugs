@@ -485,7 +485,7 @@
 		</delete>
 		<delete dir="build"/>
 		<delete>
-			<fileset dir="${test.dir}" includes="*.class,*.jar"/>
+			<fileset dir="${test.dir}" includes="**/*.class,*.jar"/>
 		</delete>
 		<delete file="${engine.jar}"/>
 		<delete file="${coreplugin.jar}"/>
