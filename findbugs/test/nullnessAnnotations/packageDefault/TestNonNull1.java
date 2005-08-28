@@ -1,4 +1,4 @@
-package nullnessAnnotations.packageAnnotation;
+package nullnessAnnotations.packageDefault;
 
 import edu.umd.cs.findbugs.annotations.*;
 

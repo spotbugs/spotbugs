@@ -1,4 +1,4 @@
-package nullnessAnnotations.packageAnnotation;
+package nullnessAnnotations.packageDefault;
 class TestNonNull2 extends TestNonNull1 implements Interface1 {
 
 	void baz() {
