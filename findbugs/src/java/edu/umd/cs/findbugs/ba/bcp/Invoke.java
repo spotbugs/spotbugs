@@ -27,6 +27,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
@@ -159,7 +160,7 @@ public class Invoke extends PatternElement {
 	 * @param mode       the mode of invocation
 	 */
 	public Invoke(String className, String methodName, String methodSig, int mode,
-	              RepositoryLookupFailureCallback lookupFailureCallback) {
+	              @Nullable RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.classNameMatcher = createClassMatcher(className);
 		this.methodNameMatcher = createMatcher(methodName);
 		this.methodSigMatcher = createMatcher(methodSig);

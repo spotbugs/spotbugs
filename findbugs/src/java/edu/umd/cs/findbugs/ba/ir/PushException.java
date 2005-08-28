@@ -27,6 +27,7 @@ package edu.umd.cs.findbugs.ba.ir;
  * it will ever be used for anything.</p>
  * 
  * @author David Hovemeyer
+ * @deprecated
  */
 public class PushException extends ExtendedInstruction {
 	private static final long serialVersionUID = 1;

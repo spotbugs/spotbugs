@@ -282,6 +282,7 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 
 	public boolean prescreen(ClassContext classContext, Method method) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
+		if (bytecodeSet == null) return false;
 		return bytecodeSet.get(Constants.NEW)
 		        || bytecodeSet.get(Constants.INVOKEINTERFACE)
 		        || bytecodeSet.get(Constants.INVOKESPECIAL)

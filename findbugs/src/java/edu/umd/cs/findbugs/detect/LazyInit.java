@@ -102,7 +102,7 @@ public class LazyInit extends ByteCodePatternDetector implements StatelessDetect
 
 	public boolean prescreen(Method method, ClassContext classContext) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
-
+		if (bytecodeSet == null) return false;
 		// The pattern requires a get/put pair accessing the same field.
 		if (!(bytecodeSet.get(Constants.GETSTATIC) && bytecodeSet.get(Constants.PUTSTATIC)) &&
 		        !(bytecodeSet.get(Constants.GETFIELD) && bytecodeSet.get(Constants.PUTFIELD)))

@@ -28,6 +28,8 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 public abstract class ResourceValueAnalysisTestDriver <Resource, ResourceTrackerType extends ResourceTracker<Resource>> {
 
 	public abstract ResourceTrackerType createResourceTracker(ClassContext classContext, Method method)
@@ -78,9 +80,11 @@ public abstract class ResourceValueAnalysisTestDriver <Resource, ResourceTracker
 
 			DataflowTestDriver<ResourceValueFrame, ResourceValueAnalysis<Resource>> driver =
 					new DataflowTestDriver<ResourceValueFrame, ResourceValueAnalysis<Resource>>() {
+						@Override @CheckForNull
 						public Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> createDataflow(ClassContext classContext, Method method)
 								throws CFGBuilderException, DataflowAnalysisException {
 							MethodGen methodGen = classContext.getMethodGen(method);
+							if (methodGen == null) return null;
 							CFG cfg = classContext.getCFG(method);
 							DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 

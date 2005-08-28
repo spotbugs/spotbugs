@@ -135,6 +135,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 	        throws CFGBuilderException, DataflowAnalysisException {
 
 		MethodGen methodGen = classContext.getMethodGen(method);
+		if (methodGen == null) return;
 		CFG cfg = classContext.getCFG(method);
 		DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 

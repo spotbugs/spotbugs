@@ -22,6 +22,9 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Synthetic;
+
 import edu.umd.cs.findbugs.RequiresJavaVersion;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
@@ -37,7 +40,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
  * @author David Hovemeyer
  * @author William Pugh
  */
-@RequiresJavaVersion("1.5")
+
 public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 	private static final boolean DEBUG = Boolean
 			.getBoolean("frv.debug.annotation");
@@ -64,6 +67,22 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 		return className.substring(i + 1);
 	}
 
+	
+	@Override public void visit(Synthetic a) {
+		if (visitingMethod()) {
+			AnalysisContext.currentAnalysisContext()
+			.getCheckReturnAnnotationDatabase().addSyntheticElement(
+					XFactory.createXMethod(this));
+		} else if (visitingField()) {
+			AnalysisContext.currentAnalysisContext()
+			.getCheckReturnAnnotationDatabase().addSyntheticElement(
+					XFactory.createXField(this));
+		} else {
+			AnalysisContext.currentAnalysisContext()
+			.getCheckReturnAnnotationDatabase().addSyntheticElement(
+					getDottedClassName());
+		}
+	}
 	@Override
 	public void visitAnnotation(String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {

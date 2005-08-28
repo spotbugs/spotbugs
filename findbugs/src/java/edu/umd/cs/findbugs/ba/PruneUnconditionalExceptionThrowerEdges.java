@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.ba;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -115,6 +114,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				if (method.getCode() == null) continue;
 				
 				BitSet bytecodeSet = classContext.getBytecodeSet(method);
+				if (bytecodeSet == null) continue;
 				
 				Boolean isUnconditionalThrower = cachedResults.get(xMethod);
 				if (isUnconditionalThrower == null) {

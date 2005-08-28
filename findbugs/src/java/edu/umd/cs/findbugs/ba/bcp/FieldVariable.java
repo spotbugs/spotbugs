@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.bcp;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 public class FieldVariable implements Variable {
@@ -46,7 +47,7 @@ public class FieldVariable implements Variable {
 	 * @param fieldName the field name
 	 * @param fieldSig  the field signature
 	 */
-	public FieldVariable(ValueNumber ref, String className, String fieldName, String fieldSig) {
+	public FieldVariable(@Nullable ValueNumber ref, String className, String fieldName, String fieldSig) {
 		this.ref = ref;
 		this.className = className;
 		this.fieldName = fieldName;

@@ -70,6 +70,7 @@ public class LockChecker {
 	 */
 	public void execute() throws DataflowAnalysisException, CFGBuilderException {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
+		if (bytecodeSet == null) return;
 		if (bytecodeSet.get(Constants.MONITORENTER) || bytecodeSet.get(Constants.MONITOREXIT)) {
 			this.lockDataflow = classContext.getLockDataflow(method);
 		} else if (method.isSynchronized()) {

@@ -19,6 +19,7 @@
 package edu.umd.cs.findbugs.ba;
 
 public class InstanceMethod extends AbstractMethod {
+	private static final long serialVersionUID = 0L;
 	public InstanceMethod(String className, String methodName, String methodSig, int accessFlags) {
 		super(className, methodName, methodSig, accessFlags);
 	}

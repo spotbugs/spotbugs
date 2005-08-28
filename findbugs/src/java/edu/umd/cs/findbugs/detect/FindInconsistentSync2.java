@@ -406,6 +406,7 @@ public class FindInconsistentSync2 implements Detector {
 		InnerClassAccessMap icam = InnerClassAccessMap.instance();
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		MethodGen methodGen = classContext.getMethodGen(method);
+		if (methodGen == null) return;
 		CFG cfg = classContext.getCFG(method);
 		LockChecker lockChecker = classContext.getLockChecker(method);
 		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
@@ -413,7 +414,7 @@ public class FindInconsistentSync2 implements Detector {
 
 		if (DEBUG)
 			System.out.println("**** Analyzing method " +
-			        SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)));
+			        SignatureConverter.convertMethodSignature(methodGen));
 
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
@@ -516,7 +517,7 @@ public class FindInconsistentSync2 implements Detector {
 				if (isLocked || !isConstructor(method.getName())) {
 					if (DEBUG)
 						System.out.println("IS2:\t" +
-						        SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)) +
+						        SignatureConverter.convertMethodSignature(methodGen) +
 						        "\t" + xfield + "\t" + ((isWrite ? "W" : "R") + "/" + (isLocked ? "L" : "U")));
 
 					FieldStats stats = getStats(xfield);
@@ -822,10 +823,12 @@ public class FindInconsistentSync2 implements Detector {
 
 			// Find the ValueNumber of the receiver object
 			int numConsumed = ins.consumeStack(cpg);
+			MethodGen methodGen = classContext.getMethodGen(method);
+			assert methodGen != null;
 			if (numConsumed == Constants.UNPREDICTABLE)
 				throw new DataflowAnalysisException(
 						"Unpredictable stack consumption",
-						classContext.getMethodGen(method),
+						methodGen,
 						handle);
 			//if (DEBUG) System.out.println("Getting receiver for frame: " + frame);
 			ValueNumber instance = frame.getStackValue(numConsumed - 1);

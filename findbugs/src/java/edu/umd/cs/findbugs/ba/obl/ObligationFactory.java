@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.bcel.generic.ObjectType;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 
 /**
@@ -37,6 +38,7 @@ public class ObligationFactory {
 	// XXX: this is just for debugging.
 	static ObligationFactory lastInstance;
 
+	@SuppressWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
 	public ObligationFactory() {
 		this.classNameToObligationMap = new HashMap<String, Obligation>();
 		lastInstance = this;

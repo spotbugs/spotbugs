@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
@@ -138,6 +139,7 @@ public class AliasedWarnings {
 		aliasedWarnings.execute();
 	}
 
+	@SuppressWarnings("DM_EXIT")
 	private static void printUsage(AliasedWarningsCommandLine commandLine) {
 		System.err.println("Usage: AliasedWarnings [-vi|-fuzzy|-sloppy] <bug collection>");
 		System.err.println("Options:");

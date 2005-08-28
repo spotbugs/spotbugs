@@ -94,6 +94,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 
 	private boolean prescreen() {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
+		if (bytecodeSet == null) return false;
 		if (!(bytecodeSet.get(Constants.POP) || bytecodeSet.get(Constants.POP2))) {
 			return false;
 		} else if (!bytecodeSet.intersects(INVOKE_OPCODE_SET)) {

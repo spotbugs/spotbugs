@@ -20,6 +20,9 @@
 package edu.umd.cs.findbugs.ba;
 
 public class InstanceField extends AbstractField {
+
+	private static final long serialVersionUID = 0L;
+
 	public InstanceField(String className, String fieldName, String fieldSig, int accessFlags) {
 		super(className, fieldName, fieldSig, accessFlags);
 	}

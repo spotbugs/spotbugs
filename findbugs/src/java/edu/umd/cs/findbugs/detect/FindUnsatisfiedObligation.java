@@ -105,6 +105,7 @@ public class FindUnsatisfiedObligation implements Detector {
 	 */
 	private void analyzeMethod(ClassContext classContext, Method method) {
 		MethodGen methodGen = classContext.getMethodGen(method);
+		if (methodGen == null) return;
 		if (DEBUG) {
 			System.out.println("*** Analyzing method " +
 					SignatureConverter.convertMethodSignature(methodGen));
@@ -114,6 +115,7 @@ public class FindUnsatisfiedObligation implements Detector {
 			CFG cfg = classContext.getCFG(method);
 			DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 			TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+			assert typeDataflow != null;
 			
 			ObligationAnalysis analysis =
 				new ObligationAnalysis(dfs, typeDataflow, methodGen, factory, database, bugReporter);

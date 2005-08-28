@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.generic.InstructionHandle;
+import edu.umd.cs.findbugs.annotations.*;
 
 /**
  * A dataflow analysis to be used with the {@link Dataflow} class.
@@ -103,7 +104,7 @@ public interface DataflowAnalysis <Fact> {
 	 *                   or end of block (if backwards analysis)
 	 * @param result     resulting dataflow facts at other end of block
 	 */
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException;
+	public void transfer(BasicBlock basicBlock, @Nullable InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException;
 
 	/**
 	 * Meet a dataflow fact associated with an incoming edge into another fact.

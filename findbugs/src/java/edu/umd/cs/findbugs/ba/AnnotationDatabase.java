@@ -27,6 +27,7 @@ import java.util.TreeSet;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -35,7 +36,7 @@ import edu.umd.cs.findbugs.util.MapCache;
 /**
  * @author William Pugh
  */
-public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
+public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration> {
 	static final boolean DEBUG = false;
 
 	/**
@@ -60,30 +61,38 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 
 	private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 
-	private Map<Object, Annotation> directAnnotations = new HashMap<Object, Annotation>();
+	private Map<Object, AnnotationEnum> directAnnotations = new HashMap<Object, AnnotationEnum>();
+	
+	private Set<Object> syntheticElements = new HashSet<Object>();
 
-	private final Map<String, Map<String, Annotation>> defaultAnnotation = new HashMap<String, Map<String, Annotation>>();
+	private final Map<String, Map<String, AnnotationEnum>> defaultAnnotation = new HashMap<String, Map<String, AnnotationEnum>>();
 
 	public AnnotationDatabase() {
 		defaultAnnotation.put(ANY,
-				new HashMap<String, Annotation>());
+				new HashMap<String, AnnotationEnum>());
 		defaultAnnotation.put(PARAMETER,
-				new HashMap<String, Annotation>());
+				new HashMap<String, AnnotationEnum>());
 		defaultAnnotation.put(METHOD,
-				new HashMap<String, Annotation>());
+				new HashMap<String, AnnotationEnum>());
 		defaultAnnotation.put(FIELD,
-				new HashMap<String, Annotation>());
+				new HashMap<String, AnnotationEnum>());
 
 	}
 
-	private final Set<Annotation> seen = new HashSet<Annotation>();
-	public void addDirectAnnotation(@NonNull Object o, @NonNull Annotation n) {
+	private final Set<AnnotationEnum> seen = new HashSet<AnnotationEnum>();
+	public void addSyntheticElement(Object o) {
+		syntheticElements.add(o);
+		if (DEBUG)
+			System.out.println("Synthetic element: " + o);
+	}
+	
+	public void addDirectAnnotation(Object o, AnnotationEnum n) {
 		directAnnotations.put(o, n);
 		seen.add(n);
 	}
 
 	public void addDefaultAnnotation(String target, String c,
-			Annotation n) {
+			AnnotationEnum n) {
 		if (!defaultAnnotation.containsKey(target))
 			return;
 		if (DEBUG)
@@ -92,30 +101,32 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 		seen.add(n);
 	}
 
-	public boolean anyAnnotations(Annotation n) {
+	public boolean anyAnnotations(AnnotationEnum n) {
 		return seen.contains(n);
 	}
 	
 	// TODO: Parameterize these values?
-	Map<Object, Annotation> cachedMinimal = new MapCache<Object, Annotation>(20000);
-	Map<Object, Annotation> cachedMaximal= new MapCache<Object, Annotation>(20000);
+	Map<Object, AnnotationEnum> cachedMinimal = new MapCache<Object, AnnotationEnum>(20000);
+	Map<Object, AnnotationEnum> cachedMaximal= new MapCache<Object, AnnotationEnum>(20000);
 	@CheckForNull
-	public Annotation getResolvedAnnotation(Object o, boolean getMinimal) {
-		Map<Object, Annotation> cache;
+	public AnnotationEnum getResolvedAnnotation(Object o, boolean getMinimal) {
+		Map<Object, AnnotationEnum> cache;
 		if (getMinimal) cache = cachedMinimal;
 		else cache = cachedMaximal;
 		
 		if (cache.containsKey(o)) {
 			return cache.get(o);
 		}
-		Annotation n = getUncachedResolvedAnnotation(o, getMinimal);
+		AnnotationEnum n = getUncachedResolvedAnnotation(o, getMinimal);
+		if (DEBUG) System.out.println("TTT: " + o + " " + n);
 		cache.put(o,n);
 		return n;
 	}
 	
 	@CheckForNull
-	public Annotation getUncachedResolvedAnnotation(final Object o, boolean getMinimal) {
-		Annotation n = directAnnotations.get(o);
+	public AnnotationEnum getUncachedResolvedAnnotation(final Object o, boolean getMinimal) {
+		
+		AnnotationEnum n = directAnnotations.get(o);
 		if (n != null)
 			return n;
 
@@ -123,24 +134,33 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 			
 			String className;
 			String kind;
+			boolean isParameterToInitMethodofAnonymousInnerClass = false;
 			if (o instanceof XMethod || o instanceof XMethodParameter) {
 				
 				XMethod m;
 				if (o instanceof XMethod) {
 					m = (XMethod) o;
 					kind = METHOD;
+					className = m.getClassName();
 				} else if (o instanceof XMethodParameter) {
 					m = ((XMethodParameter) o).getMethod();
+					className = m.getClassName();
 					kind = PARAMETER;
+					if (m.getName().equals("<init>")) {
+						int i = className.lastIndexOf("$");
+						if (i+1 < className.length()
+								&& Character.isDigit(className.charAt(i+1)))
+								isParameterToInitMethodofAnonymousInnerClass = true;
+					}
 				} else
 					throw new IllegalStateException("impossible");
 
-				className = m.getClassName();
+				
 
 				if (!m.isStatic() && !m.getName().equals("<init>")) {
 					JavaClass c = Repository.lookupClass(className);
 					// get inherited annotation
-					TreeSet<Annotation> inheritedAnnotations = new TreeSet<Annotation>();
+					TreeSet<AnnotationEnum> inheritedAnnotations = new TreeSet<AnnotationEnum>();
 					if (c.getSuperclassNameIndex() > 0) {
 						
 						n = lookInOverriddenMethod(o, c.getSuperclassName(), m, getMinimal);
@@ -159,26 +179,39 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 						if (!getMinimal) 
 							return inheritedAnnotations.last();
 						
-						Annotation min = inheritedAnnotations.first();
+						AnnotationEnum min = inheritedAnnotations.first();
 						if (min.getIndex() == 0) {
 							inheritedAnnotations.remove(min);
 							min = inheritedAnnotations.first();
 						}
 						return min;
 					}
-					
+					// check to see if method is defined in this class;
+					// if not, on't consider default annotations
+					if (! classDefinesMethod(c, m) ) return null;
+					if (DEBUG) System.out.println("looking for default annotations: " + c.getClassName() + " defines " + m);
 				} // if not static
 				} // associated with method
 			 else if (o instanceof XField) {
 				
 				className = ((XField) o).getClassName();
 				kind = FIELD;
-			} else
-				throw new IllegalArgumentException(
-						"Can't lookup annotation for " + o.getClass().getName());
+			} else if (o instanceof String) {
+				className = (String) o;
+				kind = "CLASS";
+			} else throw new IllegalArgumentException("Can't look up annotation for " + o.getClass().getName());
 
+			// <init> method parameters for inner classes don't inherit default annotations
+			// since some of them are synthetic
+			if (isParameterToInitMethodofAnonymousInnerClass) return null;
+				
+			
+			// synthetic elements should not inherit default annotations
+			if (syntheticElements.contains(o)) return null;
+			if (syntheticElements.contains(className)) return null;
+			
+			
 			// look for default annotation
-
 			n = defaultAnnotation.get(kind).get(className);
 			if (DEBUG) 
 				System.out.println("Default annotation for " + kind + " is " + n);
@@ -216,10 +249,19 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 
 	}
 
-	private Annotation lookInOverriddenMethod(final Object originalQuery, 
+	private boolean classDefinesMethod(JavaClass c, XMethod m) {
+		for(Method definedMethod : c.getMethods()) 
+			if (definedMethod.getName().equals(m.getName())
+					&& definedMethod.getSignature().equals(m.getSignature())
+					&& definedMethod.isStatic() == m.isStatic())
+				return true;
+		return false;
+	}
+
+	private AnnotationEnum lookInOverriddenMethod(final Object originalQuery, 
 			String classToLookIn, XMethod originalMethod, boolean getMinimal) {
 		try {
-		Annotation n;
+		AnnotationEnum n;
 		// Look in supermethod
 		XMethod superMethod = XFactory.createXMethod(classToLookIn, originalMethod.getName(),
 				originalMethod.getSignature(), originalMethod.isStatic());
@@ -243,7 +285,7 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 		}
 	}
 
-	protected void addDefaultMethodAnnotation(String cName, Annotation annotation) {
+	protected void addDefaultMethodAnnotation(String cName, AnnotationEnum annotation) {
 	
 
 		addDefaultAnnotation(AnnotationDatabase.METHOD, cName, annotation);
@@ -251,11 +293,11 @@ public class AnnotationDatabase<Annotation extends AnnotationEnumeration> {
 	
 	}
 
-	protected void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, Annotation annotation) {
+	protected void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
 		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
 		addDirectAnnotation(m, annotation);
 	}
-	protected void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, int param, Annotation annotation) {
+	protected void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, int param, AnnotationEnum annotation) {
 		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
 		addDirectAnnotation(new XMethodParameter(m, param), annotation);
 	}

@@ -43,6 +43,7 @@ import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.ca.CallListAnalysis;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantAnalysis;
@@ -151,7 +152,7 @@ public class ClassContext {
 		 * 
 		 * @param analysis the Analysis
 		 */
-		public void setAnalysis(Analysis analysis) {
+		public void setAnalysis(@Nullable Analysis analysis) {
 			this.analysisSetExplicitly = true;
 			this.analysis = analysis;
 		}
@@ -342,7 +343,7 @@ public class ClassContext {
 					TypeDataflow typeDataflow = getTypeDataflow(method);
 					// Exception edge pruning based on ExceptionSets.
 					// Note: this is quite slow.
-					new PruneInfeasibleExceptionEdges(cfg, getMethodGen(method), typeDataflow).execute();
+					new PruneInfeasibleExceptionEdges(cfg, methodGen, typeDataflow).execute();
 				} catch (DataflowAnalysisException e) {
 					// FIXME: should report the error
 				} catch (ClassNotFoundException e) {
@@ -441,6 +442,7 @@ public class ClassContext {
 	        new AnalysisFactory<ValueNumberDataflow>("value number analysis") {
 		        protected ValueNumberDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
+			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
 			        DepthFirstSearch dfs = getDepthFirstSearch(method);
 			        LoadedFieldSet loadedFieldSet = getLoadedFieldSet(method);
 			        ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs, loadedFieldSet,
@@ -457,6 +459,7 @@ public class ClassContext {
 	        new AnalysisFactory<IsNullValueDataflow>("null value analysis") {
 		        protected IsNullValueDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
+			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
 			        CFG cfg = getCFG(method);
 			        ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
 			        DepthFirstSearch dfs = getDepthFirstSearch(method);
@@ -478,6 +481,7 @@ public class ClassContext {
 	        new AnalysisFactory<TypeDataflow>("type analysis") {
 		        protected TypeDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
+			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
 			        CFG cfg = getRawCFG(method);
 			        DepthFirstSearch dfs = getDepthFirstSearch(method);
 			        ExceptionSetFactory exceptionSetFactory = getExceptionSetFactory(method);
@@ -567,6 +571,7 @@ public class ClassContext {
 	        new AnalysisFactory<LockDataflow>("lock set analysis") {
 		        protected LockDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
+			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
 			        ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
 			        DepthFirstSearch dfs = getDepthFirstSearch(method);
 			        CFG cfg = getCFG(method);
@@ -689,14 +694,18 @@ public class ClassContext {
 
 	private AnalysisFactory<UnconditionalDerefDataflow> unconditionalDerefDataflowFactory =
 		new AnalysisFactory<UnconditionalDerefDataflow>("unconditional deref analysis") {
-			@Override
+			@Override @CheckForNull
 			protected UnconditionalDerefDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+				MethodGen methodGen = getMethodGen(method);
+				if (methodGen == null)
+					return null;
 				CFG cfg = getCFG(method); 
 				
+	
 				UnconditionalDerefAnalysis analysis = new UnconditionalDerefAnalysis(
 						getReverseDepthFirstSearch(method),
 						cfg,
-						getMethodGen(method),
+						methodGen,
 						getValueNumberDataflow(method),
 						getTypeDataflow(method));
 				UnconditionalDerefDataflow dataflow = new UnconditionalDerefDataflow(cfg, analysis);
@@ -709,8 +718,11 @@ public class ClassContext {
 	
 	private AnalysisFactory<LoadDataflow> loadDataflowFactory =
 		new AnalysisFactory<LoadDataflow>("field load analysis") {
-			@Override
+			@Override @CheckForNull
 			protected LoadDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+				MethodGen methodGen = getMethodGen(method);
+				if (methodGen == null)
+					return null;
 				LoadAnalysis analysis = new LoadAnalysis(
 						getDepthFirstSearch(method),
 						getConstantPoolGen()
@@ -723,8 +735,11 @@ public class ClassContext {
 
 	private AnalysisFactory<StoreDataflow> storeDataflowFactory =
 		new AnalysisFactory<StoreDataflow>("field store analysis") {
-			//@Override
+			@Override @CheckForNull
 			protected StoreDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+				MethodGen methodGen = getMethodGen(method);
+				if (methodGen == null)
+					return null;
 				StoreAnalysis analysis = new StoreAnalysis(
 						getDepthFirstSearch(method),
 						getConstantPoolGen()
@@ -1032,7 +1047,7 @@ public class ClassContext {
 	 * @return the BitSet containing the opcodes which appear in the method,
 	 *          or null if the method has no code
 	 */
-	public BitSet getBytecodeSet(Method method) {
+	@CheckForNull public BitSet getBytecodeSet(Method method) {
 		UnpackedCode unpackedCode = unpackedCodeFactory.getAnalysis(method);
 		return unpackedCode != null ? unpackedCode.getBytecodeSet() : null;
 	}

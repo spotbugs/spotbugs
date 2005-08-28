@@ -250,7 +250,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 		// Pre-screen for methods with POP or POP2 bytecodes.
 		// This gives us a speedup close to 5X.
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
-		return bytecodeSet.get(Constants.POP) || bytecodeSet.get(Constants.POP2);
+		return bytecodeSet != null && (bytecodeSet.get(Constants.POP) || bytecodeSet.get(Constants.POP2));
 	}
 
 	public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match) {

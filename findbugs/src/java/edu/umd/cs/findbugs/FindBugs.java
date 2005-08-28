@@ -48,6 +48,7 @@ import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.util.ClassPath;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -572,6 +573,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			return quiet;
 		}
 
+		@SuppressWarnings("DM_EXIT")
 		protected void handleOption(String option, String optionExtraPart) {
 			if (option.equals("-showPlugins")) {
 				System.out.println("Available plugins:");
@@ -638,6 +640,7 @@ public class FindBugs implements Constants2, ExitCodes {
 			}
 		}
 
+		@SuppressWarnings("DM_EXIT")
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			if (option.equals("-outputFile")) {
 				String outputFile = argument;
@@ -1835,6 +1838,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		return commandLine.createEngine();
 	}
 
+	@SuppressWarnings("DM_EXIT")
 	private static void showHelp(TextUICommandLine commandLine) {
 		showSynopsis();
 		ShowHelp.showGeneralOptions();
@@ -1842,6 +1846,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		System.exit(1);
 	}
 
+	@SuppressWarnings("DM_EXIT")
 	private static void runMain(FindBugs findBugs, TextUICommandLine commandLine)
 	        throws java.io.IOException, RuntimeException, FilterException {
 		try {

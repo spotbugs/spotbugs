@@ -111,6 +111,7 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ShowHelp;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
@@ -3468,6 +3469,7 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 	/**
 	 * Exit the application.
 	 */
+	@SuppressWarnings("DM_EXIT")
 	void exitFindBugs() {
 		// TODO: offer to save work, etc.
 //		UserPreferences.getUserPreferences().storeUserDetectorPreferences();

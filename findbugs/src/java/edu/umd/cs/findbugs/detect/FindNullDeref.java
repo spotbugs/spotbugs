@@ -141,7 +141,8 @@ public class FindNullDeref
 
 	private void analyzeMethod(ClassContext classContext, Method method)
 	        throws CFGBuilderException, DataflowAnalysisException {
-		if (classContext.getMethodGen(method) == null)
+		MethodGen methodGen = classContext.getMethodGen(method);
+		if (methodGen == null)
 			return;
 		if (!checkedDatabases) {
 			checkDatabases();
@@ -153,7 +154,7 @@ public class FindNullDeref
 
 
 		if (DEBUG || DEBUG_NULLARG)
-			System.out.println(SignatureConverter.convertMethodSignature(classContext.getMethodGen(method)));
+			System.out.println("FND: " + SignatureConverter.convertMethodSignature(methodGen));
 
 		this.previouslyDeadBlocks = findPreviouslyDeadBlocks();
 		
@@ -260,7 +261,7 @@ public class FindNullDeref
 			location.getHandle().getInstruction();
 		
 		if (DEBUG_NULLARG) {
-			System.out.println("Examining call site: " + location.getHandle());
+			// System.out.println("Examining call site: " + location.getHandle());
 		}
 
 		String methodName = invokeInstruction.getName(cpg);
@@ -304,6 +305,10 @@ public class FindNullDeref
 			return;
 		if (DEBUG_NULLARG) {
 			System.out.println("Null arguments passed: " + nullArgSet);
+			System.out.println("Frame is: " + frame);
+			System.out.println("# arguments: " + frame.getNumArguments(invokeInstruction, cpg));
+			XMethod xm = XFactory.createXMethod(invokeInstruction, cpg);
+			System.out.print("Signature: " + xm.getSignature());
 		}
 		
 		if (unconditionalDerefParamDatabase != null) {
@@ -311,10 +316,10 @@ public class FindNullDeref
 		}
 		
 		
-			if (DEBUG_NULLARG) {
-				System.out.println("Checking nonnull params");
-			}
-			checkNonNullParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
+		if (DEBUG_NULLARG) {
+			System.out.println("Checking nonnull params");
+		}
+		checkNonNullParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
 		
 	}
 	
@@ -507,15 +512,18 @@ public class FindNullDeref
 			BitSet definitelyNullArgSet) throws ClassNotFoundException {
 		
 		XMethod m = XFactory.createXMethod(invokeInstruction, cpg);
-		if (m.getClassName().startsWith("java")) {
-			// at the moment, none of these are annotation
-			return;
-		}
+
+		int offset = 0;
 		NullnessAnnotationDatabase db 
 		= AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
 		for(int i=nullArgSet.nextSetBit(0); i>=0; i=nullArgSet.nextSetBit(i+1)) 
-			if (db.parameterMustBeNonNull(m, i)) {
+			if (i >= offset && db.parameterMustBeNonNull(m, i-offset)) {
 				boolean definitelyNull = definitelyNullArgSet.get(i);
+				if (DEBUG_NULLARG) {
+			    System.out.println("QQQ2: " + i + " " + offset + " is null");
+			    System.out.println("QQQ nullArgSet: " + nullArgSet);
+			    System.out.println("QQQ dnullArgSet: " + definitelyNullArgSet);
+				}
 				
 				MethodGen methodGen = classContext.getMethodGen(method);
 				String sourceFile = classContext.getJavaClass().getSourceFileName();
@@ -523,8 +531,8 @@ public class FindNullDeref
 				BugInstance warning = new BugInstance("NP_NONNULL_PARAM_VIOLATION", 
 						definitelyNull ? HIGH_PRIORITY : NORMAL_PRIORITY)
 						.addClassAndMethod(methodGen, sourceFile)
-						.addSourceLine(classContext, methodGen, sourceFile, location.getHandle())
-						.addMethod(m).describe("METHOD_CALLED");
+						.addMethod(m).describe("METHOD_CALLED")
+						.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
 				warning.addInt(i).describe("INT_NONNULL_PARAM");
 				
 				bugReporter.reportBug(warning);

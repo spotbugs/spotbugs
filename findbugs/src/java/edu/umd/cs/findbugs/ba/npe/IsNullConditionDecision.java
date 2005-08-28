@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
@@ -44,7 +45,7 @@ public class IsNullConditionDecision implements EdgeTypes {
 	 * @param ifcmpDecision       the decision for the IFCMP_EDGE; null if that edge is not feasible
 	 * @param fallThroughDecision the decision for the FALL_THROUGH_EDGE; null if that edge is not feasible
 	 */
-	public IsNullConditionDecision(ValueNumber value, IsNullValue ifcmpDecision, IsNullValue fallThroughDecision) {
+	public IsNullConditionDecision(@CheckForNull ValueNumber value, @CheckForNull IsNullValue ifcmpDecision, @CheckForNull IsNullValue fallThroughDecision) {
 		this.value = value;
 
 		// At least one of the edges must be feasible

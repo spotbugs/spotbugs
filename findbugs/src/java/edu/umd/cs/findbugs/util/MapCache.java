@@ -30,6 +30,7 @@ import java.util.Map;
  * @author pugh
  */
 public class MapCache<K,V> extends LinkedHashMap<K,V> {
+	private static final long serialVersionUID = 0L;
 	int maxCapacity;
 	/**
 	 * Create a new MapCache

@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -170,8 +171,8 @@ public class PatternMatcher implements DFSEdgeTypes {
 		 * Constructor.
 		 */
 		public State(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
-		             PatternElement patternElement, int matchCount, PatternElementMatch currentMatch,
-		             BindingSet bindingSet, boolean canFork) {
+		             PatternElement patternElement, int matchCount, @Nullable PatternElementMatch currentMatch,
+		             @Nullable BindingSet bindingSet, boolean canFork) {
 			this.basicBlock = basicBlock;
 			this.instructionIterator = instructionIterator;
 			this.patternElement = patternElement;

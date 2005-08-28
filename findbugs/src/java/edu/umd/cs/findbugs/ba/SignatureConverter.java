@@ -36,6 +36,7 @@ import org.apache.bcel.generic.MethodGen;
  *
  * @author David Hovemeyer
  */
+
 public class SignatureConverter {
 	private String signature;
 

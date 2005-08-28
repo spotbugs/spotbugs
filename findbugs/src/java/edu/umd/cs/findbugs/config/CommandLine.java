@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 
 /**
  * Helper class for parsing command line arguments.
@@ -160,6 +162,7 @@ public abstract class CommandLine {
 		return resultList.toArray(new String[resultList.size()]);
 	}
 
+	@SuppressWarnings("DM_EXIT")
 	public int parse(String argv[], int minArgs, int maxArgs, String usage) {
 		try {
 		int count = parse(argv);

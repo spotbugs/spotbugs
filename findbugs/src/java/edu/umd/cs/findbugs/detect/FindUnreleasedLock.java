@@ -298,6 +298,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 	
 	public boolean prescreen(ClassContext classContext, Method method) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
+		if (bytecodeSet == null) return false;
 		MethodGen methodGen = classContext.getMethodGen(method);
 		return methodGen != null && methodGen.getName().toLowerCase().indexOf("lock") == -1
 			&& (bytecodeSet.get(Constants.INVOKEVIRTUAL) 

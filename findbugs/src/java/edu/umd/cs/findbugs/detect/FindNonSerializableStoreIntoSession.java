@@ -61,7 +61,7 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 
         public boolean prescreen(ClassContext classContext, Method method) {
                 BitSet bytecodeSet = classContext.getBytecodeSet(method);
-                return bytecodeSet.get(Constants.CHECKCAST) || bytecodeSet.get(Constants.INSTANCEOF);
+                return bytecodeSet != null && (bytecodeSet.get(Constants.CHECKCAST) || bytecodeSet.get(Constants.INSTANCEOF));
         }
 
 	private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {

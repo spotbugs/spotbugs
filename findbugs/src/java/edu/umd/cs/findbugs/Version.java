@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 /**
  * Version number and release date information.
  */
@@ -104,6 +106,7 @@ public class Version {
 			usage();
 	}
 
+	@SuppressWarnings("DM_EXIT")
 	private static void usage() {
 		System.err.println("Usage: " + Version.class.getName() +
 		        "  (-release|-date|-props)");

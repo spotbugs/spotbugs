@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs;
 import java.io.BufferedReader;
 import java.io.StringReader;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 /**
  * Find bug instances annotated with "GOOD_EXAMPLE" or "EXCELLENT_EXAMPLE".
  */
@@ -35,6 +37,7 @@ public class FindExamples extends QueryBugAnnotations {
 		new FindExamples().execute(argv);
 	}
 
+	@SuppressWarnings("DM_EXIT")
 	public void execute(String[] argv) throws Exception {
 		int start = 0;
 		while (start < argv.length && argv[start].startsWith("-")) {

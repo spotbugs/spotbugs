@@ -75,6 +75,7 @@ public class FindJSR166LockMonitorenter implements Detector, StatelessDetector {
 
 			// We can ignore methods that don't contain a monitorenter
 			BitSet bytecodeSet = classContext.getBytecodeSet(method);
+			if (bytecodeSet == null) continue;
 			if (!bytecodeSet.get(Constants.MONITORENTER))
 				continue;
 

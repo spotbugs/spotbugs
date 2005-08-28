@@ -30,6 +30,8 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 /**
  * Add human-readable messages to a dom4j tree containing
  * FindBugs XML output.  This transformation makes it easier
@@ -150,6 +152,7 @@ public class AddMessages {
 		}
 	}
 	
+	@SuppressWarnings("DM_EXIT")
 	public static void main(String[] args) throws Exception {
 		if (args.length != 2) {
 			System.err.println("Usage: " + AddMessages.class.getName() + " <input collection> <output collection>");

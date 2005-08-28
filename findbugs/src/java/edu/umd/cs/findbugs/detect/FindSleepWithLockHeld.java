@@ -76,7 +76,7 @@ public class FindSleepWithLockHeld implements Detector {
 
 	private boolean prescreen(ClassContext classContext, Method method) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
-		
+		if (bytecodeSet == null) return false;
 		// method must acquire a lock
 		if (!bytecodeSet.get(Constants.MONITORENTER) && !method.isSynchronized())
 			return false;

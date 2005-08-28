@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 /**
  * Graph IS2 (inconsistent synchronization) false positive rate
  * as a function of cutoff percent for number of unsynchronized accesses.
@@ -47,6 +49,7 @@ public class GraphIS2FalsePositives extends QueryBugAnnotations {
 		new GraphIS2FalsePositives().execute(argv);
 	}
 
+	@SuppressWarnings("DM_EXIT")
 	public void execute(String[] argv) throws Exception {
 		if (argv.length != 3) {
 			System.err.println("Usage: " + GraphIS2FalsePositives.class.getName() +

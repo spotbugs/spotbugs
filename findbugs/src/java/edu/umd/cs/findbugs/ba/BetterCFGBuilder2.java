@@ -36,7 +36,6 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ExceptionThrower;
 import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.INSTANCEOF;
-import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
@@ -51,6 +50,7 @@ import org.apache.bcel.generic.PUTSTATIC;
 import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 
 /**
  * A CFGBuilder that really tries to construct accurate control flow graphs.
@@ -418,7 +418,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		 * @param subroutine the subroutine being inlined
 		 * @param result     the result CFG
 		 */
-		public Context(Context caller, Subroutine subroutine, CFG result) {
+		public Context(@Nullable Context caller, Subroutine subroutine, CFG result) {
 			this.caller = caller;
 			this.subroutine = subroutine;
 			this.result = result;

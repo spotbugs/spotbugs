@@ -100,18 +100,25 @@ public class AnnotationVisitor extends PreorderVisitor {
 				} else if (name.equals("RuntimeVisibleParameterAnnotations")
 						|| name.equals("RuntimeInvisibleParameterAnnotations")) {
 					int numParameters = bytes.readUnsignedByte();
+					if (DEBUG) System.out.println("Number of parameters: " + numParameters);
+					int numParameterToMethod = getMethod().getArgumentTypes().length;
+					if (DEBUG) System.out.println("Number of parameters to method: " + numParameterToMethod);
+					int offset = 0;
+					if (numParameterToMethod > numParameters) offset = 1;
 					for (int p = 0; p < numParameters; p++) {
 						int numAnnotations = bytes.readUnsignedShort();
 						if (DEBUG)
-							System.out.println("# of annotations: "
+							System.out.println("# of annotations on parameter " + (offset+p)
+									+ ": "
 									+ numAnnotations);
 						for (int i = 0; i < numAnnotations; i++) {
 							String annotationName = getAnnotationName(bytes);
 							int numPairs = bytes.readUnsignedShort();
 							Map<String, Object> values = readAnnotationValues(
 									bytes, numPairs);
+							
 							visitParameterAnnotation(
-									p,
+									p+offset,
 									annotationName,
 									values,
 									name.equals("RuntimeVisibleParameterAnnotations"));

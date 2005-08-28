@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 /**
  * DebugRepositoryLookupFailureCallback implementation for debugging.
  * (Test drivers, etc.)  It just prints a message and exits.
@@ -31,6 +33,7 @@ public class DebugRepositoryLookupFailureCallback implements
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#reportMissingClass(java.lang.ClassNotFoundException)
 	 */
+	@SuppressWarnings("DM_EXIT")
 	public void reportMissingClass(ClassNotFoundException ex) {
 		System.out.println("Missing class");
 		ex.printStackTrace();
@@ -40,6 +43,7 @@ public class DebugRepositoryLookupFailureCallback implements
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#logError(java.lang.String)
 	 */
+	@SuppressWarnings("DM_EXIT")
 	public void logError(String message) {
 		System.err.println("Error: " + message);
 		System.exit(1);
@@ -48,6 +52,7 @@ public class DebugRepositoryLookupFailureCallback implements
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback#logError(java.lang.String, java.lang.Throwable)
 	 */
+	@SuppressWarnings("DM_EXIT")
 	public void logError(String message, Throwable e) {
 		System.err.println("Error: " + message);
 		e.printStackTrace();

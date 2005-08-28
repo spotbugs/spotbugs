@@ -236,11 +236,11 @@ public class Update {
 	}
 
 	private static void matchBugs(Comparator<BugInstance> bugInstanceComparator) {
-		TreeMap<BugInstance, Queue<BugInstance>> set = new TreeMap<BugInstance, Queue<BugInstance>>(
+		TreeMap<BugInstance, LinkedList<BugInstance>> set = new TreeMap<BugInstance, LinkedList<BugInstance>>(
 				bugInstanceComparator);
 		for (BugInstance bug : origCollection.getCollection())
 			if (bug.getLastVersion() == -1 && !matchedOldBugs.contains(bug)) {
-				Queue<BugInstance> q = set.get(bug);
+				LinkedList<BugInstance> q = set.get(bug);
 				if (q == null) {
 					q = new LinkedList<BugInstance>();
 					set.put(bug, q);
@@ -248,7 +248,7 @@ public class Update {
 				q.offer(bug);
 			}
 		for (BugInstance bug : newCollection.getCollection()) {
-			Queue<BugInstance> q = set.get(bug);
+			LinkedList<BugInstance> q = set.get(bug);
 			if (q != null && !q.isEmpty()) {
 				BugInstance matchedBug = q.remove();
 				mapFromNewToOldBug.put(bug, matchedBug);

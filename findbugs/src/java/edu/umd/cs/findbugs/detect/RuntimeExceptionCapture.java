@@ -64,16 +64,16 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 	private BugReporter bugReporter;
 	private Method method;
 	private OpcodeStack stack = new OpcodeStack();
-	private List<CaughtException> catchList;
-	private List<ThrownException> throwList;
+	private List<ExceptionCaught> catchList;
+	private List<ExceptionThrown> throwList;
 
-	private static class CaughtException {
+	private static class ExceptionCaught {
 		public String exceptionClass;
 		public int startOffset, endOffset, sourcePC;
 		public boolean seen = false;
 		public boolean dead = false;
 
-		public CaughtException(String exceptionClass, int startOffset, int endOffset, int sourcePC) {
+		public ExceptionCaught(String exceptionClass, int startOffset, int endOffset, int sourcePC) {
 			this.exceptionClass = exceptionClass;
 			this.startOffset = startOffset;
 			this.endOffset = endOffset;
@@ -81,11 +81,11 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 		}
 	}
 
-	private static class ThrownException {
+	private static class ExceptionThrown {
 		public String exceptionClass;
 		public int offset;
 
-		public ThrownException(String exceptionClass, int offset) {
+		public ExceptionThrown(String exceptionClass, int offset) {
 			this.exceptionClass = exceptionClass;
 			this.offset = offset;
 		}
@@ -109,15 +109,15 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 	}
 
 	public void visitCode(Code obj) {
-		catchList = new ArrayList<CaughtException>();
-		throwList = new ArrayList<ThrownException>();
+		catchList = new ArrayList<ExceptionCaught>();
+		throwList = new ArrayList<ExceptionThrown>();
                 stack.resetForMethodEntry(this);
 
 		super.visitCode(obj);
 
-		for (CaughtException caughtException : catchList) {
+		for (ExceptionCaught caughtException : catchList) {
 			Set<String> thrownSet = new HashSet<String>();
-			for (ThrownException thrownException : throwList) {
+			for (ExceptionThrown thrownException : throwList) {
 				if (thrownException.offset >= caughtException.startOffset
 						&& thrownException.offset < caughtException.endOffset) {
 					thrownSet.add(thrownException.exceptionClass);
@@ -129,7 +129,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 			if (caughtException.exceptionClass.equals("java.lang.Exception") && !caughtException.seen) {
 				// Now we have a case where Exception is caught, but not thrown
 				boolean rteCaught = false;
-				for (CaughtException otherException : catchList) {
+				for (ExceptionCaught otherException : catchList) {
 					if (otherException.startOffset == caughtException.startOffset
 							&& otherException.endOffset == caughtException.endOffset) {
 						catchClauses++;
@@ -160,8 +160,8 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 		if (type == 0) return;
 		String name = getConstantPool().constantToString(getConstantPool().getConstant(type));
 
-		CaughtException caughtException =
-			new CaughtException(name, obj.getStartPC(), obj.getEndPC(), obj.getHandlerPC());
+		ExceptionCaught caughtException =
+			new ExceptionCaught(name, obj.getStartPC(), obj.getEndPC(), obj.getHandlerPC());
 		catchList.add(caughtException);
 
 		try {
@@ -208,7 +208,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 							signature = SignatureConverter.convert(signature);
 						else
 							signature = signature.replace('/', '.');
-						throwList.add(new ThrownException(signature, getPC()));
+						throwList.add(new ExceptionThrown(signature, getPC()));
 					}
 				}
 				break;
@@ -228,7 +228,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 								if (et != null) {
 									String[] names = et.getExceptionNames();
 									for (String name : names)
-										throwList.add(new ThrownException(name, getPC()));
+										throwList.add(new ExceptionThrown(name, getPC()));
 								}
 								break;
 							}

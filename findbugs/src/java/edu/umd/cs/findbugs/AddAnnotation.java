@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -71,6 +72,7 @@ public class AddAnnotation {
 		}
 	}
 
+	@SuppressWarnings("DM_EXIT")
 	public static void main(String[] argv) throws Exception {
 		if (argv.length != 2) {
 			System.err.println("Usage: " + AddAnnotation.class.getName() + " <results file> <annotation>");

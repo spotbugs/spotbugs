@@ -314,12 +314,12 @@ public abstract class Frame <ValueType> implements Debug {
 	 * @param ins the method invocation instruction
 	 * @param cpg the ConstantPoolGen for the class containing the method
 	 * @param i   index of the argument; 0 for the first argument, etc.
+	 * @param numArguments TODO
 	 * @return the <i>i</i>th argument
 	 * @throws DataflowAnalysisException
 	 */
-	public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg, int i)
+	public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg, int i, int numArguments)
 			throws DataflowAnalysisException {
-		int numArguments = getNumArguments(ins, cpg);
 		if (i >= numArguments)
 			throw new IllegalArgumentException();
 		return getStackValue((numArguments - 1) - i);
@@ -361,7 +361,7 @@ public abstract class Frame <ValueType> implements Debug {
 		int numArguments = getNumArguments(invokeInstruction, cpg);
 
 		for (int i = 0; i < numArguments; ++i) {
-			ValueType value = getArgument(invokeInstruction, cpg, i);
+			ValueType value = getArgument(invokeInstruction, cpg, i, numArguments);
 			if (chooser.choose(value))
 				chosenArgSet.set(i);
 		}

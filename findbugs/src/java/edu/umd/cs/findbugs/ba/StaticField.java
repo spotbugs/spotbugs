@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 public class StaticField extends AbstractField {
+	private static final long serialVersionUID = 0L;
 	public StaticField(String className, String fieldName, String fieldSig, int accessFlags) {
 		super(className, fieldName, fieldSig, accessFlags);
 	}

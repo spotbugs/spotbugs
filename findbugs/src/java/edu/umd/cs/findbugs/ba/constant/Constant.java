@@ -18,6 +18,8 @@
  */
 package edu.umd.cs.findbugs.ba.constant;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
+
 /**
  * Abstract dataflow value representing a value which
  * may or may not be a constant.
@@ -38,7 +40,7 @@ public class Constant {
 	 * 
 	 * @param value the constant value; must be a String, Integer, etc.
 	 */
-	public Constant(Object value) {
+	public Constant(@Nullable Object value) {
 		this.value = value;
 	}
 	
