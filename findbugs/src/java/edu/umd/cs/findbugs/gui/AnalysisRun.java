@@ -27,11 +27,14 @@ package edu.umd.cs.findbugs.gui;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.HashMap;
 
 import javax.swing.tree.DefaultTreeModel;
+
+import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Detector;
@@ -137,6 +140,20 @@ public class AnalysisRun {
 	public void loadBugsFromFile(File file) throws IOException, org.dom4j.DocumentException {
 		reporter.getBugCollection().readXML(file, project);
 
+		// Update summary stats
+		summary = reporter.getBugCollection().getSummaryHTML();
+	}
+	
+	/**
+	 * Load bugs from an InputStream.
+	 * 
+	 * @param in the InputStream
+	 * @throws IOException
+	 * @throws DocumentException
+	 */
+	public void loadBugsFromInputStream(InputStream in) throws IOException, DocumentException {
+		reporter.getBugCollection().readXML(in, project);
+		
 		// Update summary stats
 		summary = reporter.getBugCollection().getSummaryHTML();
 	}

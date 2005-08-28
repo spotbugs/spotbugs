@@ -53,6 +53,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1930,6 +1932,19 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 		synchAnalysisRun(analysisRun);
 	}
 	
+	private void loadBugsFromURL(String urlspec) throws IOException, DocumentException {
+		URL url = new URL(urlspec);
+		InputStream in = url.openStream();
+		
+		Project project = new Project();
+		AnalysisRun analysisRun = new AnalysisRun(project, this);
+		
+		analysisRun.loadBugsFromInputStream(in);
+		
+		setProject(project);
+		synchAnalysisRun(analysisRun);
+	}
+	
 	private void loadBugsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadBugsItemActionPerformed
 		// FIXME: offer to save current project and bugs
 
@@ -3713,6 +3728,14 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 			try {
 				File bugsFile = new File(commandLine.getBugsFilename());
 				frame.loadBugsFromFile(bugsFile);
+			} catch (Exception e) {
+				System.err.println("Error: " + e.getMessage());
+			}
+		} else if (System.getProperty("findbugs.loadBugsFromURL") != null) {
+			// Allow JNLP launch to specify the URL of a report to load
+			try {
+				String urlspec = System.getProperty("findbugs.loadBugsFromURL");
+				frame.loadBugsFromURL(urlspec);
 			} catch (Exception e) {
 				System.err.println("Error: " + e.getMessage());
 			}
