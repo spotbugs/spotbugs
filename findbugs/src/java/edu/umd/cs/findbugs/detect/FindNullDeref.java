@@ -37,6 +37,7 @@ import org.apache.bcel.generic.InstructionTargeter;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReturnInstruction;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -513,14 +514,21 @@ public class FindNullDeref
 		
 		XMethod m = XFactory.createXMethod(invokeInstruction, cpg);
 
-		int offset = 0;
 		NullnessAnnotationDatabase db 
 		= AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
-		for(int i=nullArgSet.nextSetBit(0); i>=0; i=nullArgSet.nextSetBit(i+1)) 
-			if (i >= offset && db.parameterMustBeNonNull(m, i-offset)) {
+		for(int i=nullArgSet.nextSetBit(0); i>=0; i=nullArgSet.nextSetBit(i+1)) {
+			int paramNum = 0;
+			
+	      String signature = invokeInstruction.getSignature(cpg);
+	      Type[] args      = Type.getArgumentTypes(signature);
+	      int words =0;
+	      while (words < i) 
+	    	  words += args[paramNum++].getSize();
+	
+			if (db.parameterMustBeNonNull(m, paramNum)) {
 				boolean definitelyNull = definitelyNullArgSet.get(i);
 				if (DEBUG_NULLARG) {
-			    System.out.println("QQQ2: " + i + " " + offset + " is null");
+			    System.out.println("QQQ2: " + i + " -- " + paramNum + " is null");
 			    System.out.println("QQQ nullArgSet: " + nullArgSet);
 			    System.out.println("QQQ dnullArgSet: " + definitelyNullArgSet);
 				}
@@ -537,6 +545,7 @@ public class FindNullDeref
 				
 				bugReporter.reportBug(warning);
 			}
+		}
 		
 	}
 
