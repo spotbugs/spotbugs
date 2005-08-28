@@ -106,7 +106,7 @@ import java.util.List;
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  *
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  *
  * @since Ant 1.5
  *
@@ -125,6 +125,7 @@ public class FindBugsTask extends Task {
 	private boolean quietErrors = false;
 	private boolean failOnError = false;
 	private String errorProperty = null;
+	private String warningsProperty = null;
 	private boolean workHard = false;
 	private boolean relaxed = false;
 	private boolean adjustExperimental = false;
@@ -286,6 +287,14 @@ public class FindBugsTask extends Task {
 	public void setErrorProperty(String name) {
 		this.errorProperty = name;
 	}
+	
+	/**
+	 * Tells this task to set the property with the
+	 * given name to "true" when bugs were found.
+	 */
+	public void setWarningsProperty(String name) {
+		this.warningsProperty = name;
+	}    
 
 	/**
 	 * Set the debug flag
@@ -715,6 +724,10 @@ public class FindBugsTask extends Task {
 		if ((rc & ExitCodes.MISSING_CLASS_FLAG) != 0) {
 			log("Classes needed for analysis were missing");
 		}
+		if (warningsProperty != null && (rc & ExitCodes.BUGS_FOUND_FLAG) != 0) {
+			getProject().setProperty(warningsProperty, "true");
+		}
+        
 		if (outputFileName != null) {
 			log("Output saved to " + outputFileName);
 		}
