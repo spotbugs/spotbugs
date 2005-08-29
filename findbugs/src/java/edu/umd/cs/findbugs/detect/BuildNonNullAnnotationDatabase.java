@@ -80,27 +80,27 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 					XFactory.createXField(this));
 		} else {
 			AnalysisContext.currentAnalysisContext()
-			.getCheckReturnAnnotationDatabase().addSyntheticElement(
+			.getNullnessAnnotationDatabase().addSyntheticElement(
 					getDottedClassName());
 		}
 	}
 	@Override public void visit(JavaClass obj) {
 		if (obj.isSynthetic())
 			AnalysisContext.currentAnalysisContext()
-			.getCheckReturnAnnotationDatabase().addSyntheticElement(
+			.getNullnessAnnotationDatabase().addSyntheticElement(
 					getDottedClassName());
 	}
 	@Override public void visit(Field f) {
 		if (f.isSynthetic())
 			AnalysisContext.currentAnalysisContext()
-			.getCheckReturnAnnotationDatabase().addSyntheticElement(
+			.getNullnessAnnotationDatabase().addSyntheticElement(
 					XFactory.createXField(this));
 	}
 
 	@Override public void visit(Method m) {
 		if (m.isSynthetic())
 			AnalysisContext.currentAnalysisContext()
-			.getCheckReturnAnnotationDatabase().addSyntheticElement(
+			.getNullnessAnnotationDatabase().addSyntheticElement(
 					XFactory.createXMethod(this));
 	}
 	
