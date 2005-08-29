@@ -70,6 +70,7 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 			// Don't bother analyzing the method unless there is both locking
 			// and a method call.
 			BitSet bytecodeSet = classContext.getBytecodeSet(method);
+			if (bytecodeSet == null) continue;
 			if (!(bytecodeSet.get(Constants.MONITORENTER) && bytecodeSet.get(Constants.INVOKEVIRTUAL)))
 				continue;
 
