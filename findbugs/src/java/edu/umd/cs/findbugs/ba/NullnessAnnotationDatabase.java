@@ -32,6 +32,11 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.CopyOnWriteArraySet", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.Exchanger", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.FutureTask", NullnessAnnotation.UNKNOWN_NULLNESS);
+		addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "addIfUnderCorePoolSize", "(Ljava/lang/Runnable;)Z", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
+		addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "addThread", "(Ljava/lang/Runnable;)Ljava/lang/Thread;", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
+		addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "afterExecute", "(Ljava/lang/Runnable;Ljava/lang/Throwable;)V", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
+		
+		
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.PriorityQueue", NullnessAnnotation.NONNULL);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.SortedMap", NullnessAnnotation.NONNULL);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.SortedSet", NullnessAnnotation.NONNULL);
