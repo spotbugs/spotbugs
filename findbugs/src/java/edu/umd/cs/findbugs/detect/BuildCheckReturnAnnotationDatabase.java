@@ -23,6 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
 
 import edu.umd.cs.findbugs.RequiresJavaVersion;
@@ -67,7 +70,25 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 		return className.substring(i + 1);
 	}
 
-	
+	@Override public void visit(JavaClass obj) {
+		if (obj.isSynthetic())
+			AnalysisContext.currentAnalysisContext()
+			.getCheckReturnAnnotationDatabase().addSyntheticElement(
+					getDottedClassName());
+	}
+	@Override public void visit(Field f) {
+		if (f.isSynthetic())
+			AnalysisContext.currentAnalysisContext()
+			.getCheckReturnAnnotationDatabase().addSyntheticElement(
+					XFactory.createXField(this));
+	}
+	@Override public void visit(Method m) {
+		if (m.isSynthetic())
+			AnalysisContext.currentAnalysisContext()
+			.getCheckReturnAnnotationDatabase().addSyntheticElement(
+					XFactory.createXMethod(this));
+	}
+		
 	@Override public void visit(Synthetic a) {
 		if (visitingMethod()) {
 			AnalysisContext.currentAnalysisContext()
