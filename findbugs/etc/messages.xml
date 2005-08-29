@@ -3994,7 +3994,7 @@ If this session is passivated or migrated, an error will result.
   </BugPattern>
   <BugPattern type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN">
     <ShortDescription>Non serializable object written to ObjectOutput</ShortDescription>
-    <LongDescription>Non serialable {3} written to ObjectOutput in {1}</LongDescription>
+    <LongDescription>Non serializable {3} written to ObjectOutput in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
