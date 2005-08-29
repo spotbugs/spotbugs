@@ -11,6 +11,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
@@ -32,13 +33,13 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
-public class FindNonSerializableStoreIntoSession implements Detector {
+public class FindNonSerializableValuePassedToWriteObject implements Detector {
 
 	private BugReporter bugReporter;
 
 	private static final boolean DEBUG = false;
 
-	public FindNonSerializableStoreIntoSession(BugReporter bugReporter) {
+	public FindNonSerializableValuePassedToWriteObject(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
@@ -82,15 +83,16 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 			int pc = handle.getPosition();
 			Instruction ins = handle.getInstruction();
 
-			if (!(ins instanceof INVOKEINTERFACE))
+			if (!(ins instanceof InvokeInstruction))
 				continue;
 
-			INVOKEINTERFACE invoke = (INVOKEINTERFACE) ins;
+			InvokeInstruction invoke = (InvokeInstruction) ins;
 			String mName = invoke.getMethodName(cpg);
-			if (!mName.equals("setAttribute"))
+			if (!mName.equals("writeObject"))
 				continue;
 			String cName = invoke.getClassName(cpg);
-			if (!cName.equals("javax.servlet.http.HttpSession"))
+			if (!cName.equals("java.io.ObjectOutput") 
+					&& !cName.equals("java.io.ObjectOutputStream"))
 				continue;
 
 			TypeFrame frame = typeDataflow.getFactAtLocation(location);
@@ -127,7 +129,7 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 					bugReporter
 							.reportBug(new BugInstance(
 									this,
-									"J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION",
+									"DMI_NONSERIALIZABLE_OBJECT_WRITTEN",
 									isSerializable < 0.15 ? HIGH_PRIORITY
 											: isSerializable > 0.5 ? LOW_PRIORITY
 													: NORMAL_PRIORITY)

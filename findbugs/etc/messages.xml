@@ -871,6 +871,19 @@ This detector looks for stores of non serializable objects into Http sessions.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject">
+    <Details>
+<![CDATA[
+<p>
+This detector looks for stores of non serializable objects passed to the writeObject method of
+an ObjectOutput.
+</p>
+]]>
+    </Details>
+  </Detector>
+
+
+
 
   <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression">
     <Details>
@@ -3979,6 +3992,20 @@ If this session is passivated or migrated, an error will result.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN">
+    <ShortDescription>Non serializable object written to ObjectOutput</ShortDescription>
+    <LongDescription>Non serialable {3} written to ObjectOutput in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code seems to be passing a non-serializable object to the ObjectOutput.writeObject method.
+If the object is, indeed, non-serializable, an error will result.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
 
   <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
     <ShortDescription>Questionable cast to abstract collection </ShortDescription>

@@ -438,6 +438,10 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
             speed="fast"
             reports="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION"
 	    />
+  <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject"
+            speed="fast"
+            reports="DMI_NONSERIALIZABLE_OBJECT_WRITTEN"
+	    />
   <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression"
             speed="fast"
             reports="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION"
@@ -729,6 +733,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="ST" type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" category="STYLE"/>
   <BugPattern abbrev="SWL" type="SWL_SLEEP_WITH_LOCK_HELD" category="MT_CORRECTNESS"/>
   <BugPattern abbrev="J2EE" type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION" category="CORRECTNESS"/>
+  <BugPattern abbrev="DMI" type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN" category="CORRECTNESS"/>
   <BugPattern abbrev="DB" type="DB_DUPLICATE_BRANCHES" category="STYLE" experimental="true"/>
   <BugPattern abbrev="IMA" type="IMA_INEFFICIENT_MEMBER_ACCESS" category="PERFORMANCE" experimental="true"/>
   <BugPattern abbrev="XFB" type="XFB_XML_FACTORY_BYPASS" category="STYLE" experimental="true"/>
