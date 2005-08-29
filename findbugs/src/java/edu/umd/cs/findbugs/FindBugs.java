@@ -1456,7 +1456,7 @@ public class FindBugs implements Constants2, ExitCodes {
 					analysisContext.addApplicationClassToRepository(jclass);
 					repositoryClassList.add(jclass.getClassName());
 
-					if (bugCollectionBugReporter != null) {
+					if (false && bugCollectionBugReporter != null) {
 //						// Add class hash.
 //						bugCollectionBugReporter.getBugCollection().setClassHash(
 //								jclass.getClassName(), new ClassHash().computeHash(jclass));
