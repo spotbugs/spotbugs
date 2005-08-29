@@ -135,15 +135,19 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration> {
 			String className;
 			String kind;
 			boolean isParameterToInitMethodofAnonymousInnerClass = false;
+			boolean isSyntheticMethod = false;
 			if (o instanceof XMethod || o instanceof XMethodParameter) {
 				
 				XMethod m;
 				if (o instanceof XMethod) {
 					m = (XMethod) o;
+					isSyntheticMethod = syntheticElements.contains(m);
 					kind = METHOD;
 					className = m.getClassName();
 				} else if (o instanceof XMethodParameter) {
 					m = ((XMethodParameter) o).getMethod();
+					// Don't 
+					isSyntheticMethod = syntheticElements.contains(m);
 					className = m.getClassName();
 					kind = PARAMETER;
 					if (m.getName().equals("<init>")) {
@@ -204,7 +208,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration> {
 			// <init> method parameters for inner classes don't inherit default annotations
 			// since some of them are synthetic
 			if (isParameterToInitMethodofAnonymousInnerClass) return null;
-				
+			if (isSyntheticMethod) return null;
 			
 			// synthetic elements should not inherit default annotations
 			if (syntheticElements.contains(o)) return null;
@@ -297,7 +301,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration> {
 		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
 		addDirectAnnotation(m, annotation);
 	}
-	protected void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, int param, AnnotationEnum annotation) {
+	protected void addMethodParameterAnnotation(String cName, String mName, String mSig, boolean isStatic, int param, AnnotationEnum annotation) {
 		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
 		addDirectAnnotation(new XMethodParameter(m, param), annotation);
 	}
