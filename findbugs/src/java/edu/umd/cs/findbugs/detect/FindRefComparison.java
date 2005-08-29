@@ -390,7 +390,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			// Prescreening - must have IF_ACMPEQ, IF_ACMPNE,
 			// or an invocation of an instance method
 			BitSet bytecodeSet = classContext.getBytecodeSet(method);
-			if (!bytecodeSet.intersects(prescreenSet))
+			if (bytecodeSet == null || !bytecodeSet.intersects(prescreenSet))
 				continue;
 
 			if (DEBUG)

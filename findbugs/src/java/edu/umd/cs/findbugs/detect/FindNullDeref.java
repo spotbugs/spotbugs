@@ -261,10 +261,7 @@ public class FindNullDeref
 		InvokeInstruction invokeInstruction = (InvokeInstruction)
 			location.getHandle().getInstruction();
 		
-		if (DEBUG_NULLARG) {
-			// System.out.println("Examining call site: " + location.getHandle());
-		}
-
+		
 		String methodName = invokeInstruction.getName(cpg);
 		String signature = invokeInstruction.getSignature(cpg);
 		
