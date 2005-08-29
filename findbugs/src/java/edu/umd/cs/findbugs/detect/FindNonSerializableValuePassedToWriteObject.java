@@ -120,6 +120,12 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
 			try {
 
 				double isSerializable = Analyze.isDeepSerializable(refSig);
+				
+				if (isSerializable < 0.9) {
+					double isRemote = Analyze.isDeepRemote(refSig);
+					if (isSerializable < isRemote)
+						isSerializable = isRemote;
+				}
 
 				if (isSerializable < 0.9) {
 					SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation

@@ -15,6 +15,7 @@ public class Analyze {
 	static private JavaClass collection;
 
 	static private JavaClass map;
+	static private JavaClass remote;
 	static private ClassNotFoundException storedException;
 
 	static {
@@ -24,6 +25,11 @@ public class Analyze {
 			map = Repository.lookupClass("java.util.Map");
 		} catch (ClassNotFoundException e) {
 			storedException = e;
+		}
+		try {
+			remote = Repository.lookupClass("java.rmi.Remote");
+		} catch (ClassNotFoundException e) {
+			// ignore it
 		}
 	}
 
@@ -40,7 +46,7 @@ public class Analyze {
 			throw storedException;
 
 		if (isPrimitiveComponentClass(refSig))
-			return 0.99;
+			return 1.0;
 		
 		String refName = getComponentClass(refSig);
 		if (refName.equals("java.lang.Object"))
@@ -50,6 +56,23 @@ public class Analyze {
 		return isDeepSerializable(refJavaClass);
 	}
 
+	public static double isDeepRemote(String refSig) {
+		if (remote == null) return 0.1;
+		
+		String refName = getComponentClass(refSig);
+		if (refName.equals("java.lang.Object"))
+			return 0.99;
+
+		JavaClass refJavaClass;
+		try {
+			refJavaClass = Repository.lookupClass(refName);
+			return deepInstanceOf(refJavaClass, remote);
+		} catch (ClassNotFoundException e) {
+			return 0.99;
+		}
+		
+
+	}
 	private static boolean isPrimitiveComponentClass(String refSig) {
 		int c = 0;
 		while (refSig.charAt(c) == '[') {
