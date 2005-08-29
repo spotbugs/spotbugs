@@ -65,6 +65,11 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 		MethodGen methodGen = classContext.getMethodGen(method);
 		if (methodGen == null)
 			return;
+		BitSet bytecodeSet = classContext.getBytecodeSet(method);
+		if (bytecodeSet == null) return;
+		// We don't adequately model instanceof interfaces yet
+		if (bytecodeSet.get(Constants.INSTANCEOF) || bytecodeSet.get(Constants.CHECKCAST))
+			return;
 		CFG cfg = classContext.getCFG(method);
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
