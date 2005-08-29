@@ -71,6 +71,9 @@ public class AnnotationVisitor extends PreorderVisitor {
 //		}
 	}
 
+	public void visitSyntheticParameterAnnotation(int p,  boolean runtimeVisible) {
+	}
+	
 	public void visit(Attribute obj) {
 		try {
 			if (obj instanceof Unknown) {
@@ -81,6 +84,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 				byte[] b = ((Unknown) obj).getBytes();
 				DataInputStream bytes = new DataInputStream(
 						new ByteArrayInputStream(b));
+				boolean runtimeVisible = name.equals("RuntimeVisibleParameterAnnotations");
 				if (name.equals("RuntimeVisibleAnnotations")
 						|| name.equals("RuntimeInvisibleAnnotations")) {
 
@@ -97,14 +101,24 @@ public class AnnotationVisitor extends PreorderVisitor {
 								.equals("RuntimeVisibleAnnotations"));
 					}
 
-				} else if (name.equals("RuntimeVisibleParameterAnnotations")
+				} else if (runtimeVisible
 						|| name.equals("RuntimeInvisibleParameterAnnotations")) {
 					int numParameters = bytes.readUnsignedByte();
 					if (DEBUG) System.out.println("Number of parameters: " + numParameters);
-					int numParameterToMethod = getMethod().getArgumentTypes().length;
-					if (DEBUG) System.out.println("Number of parameters to method: " + numParameterToMethod);
+					int numParametersToMethod = getMethod().getArgumentTypes().length;
+					if (DEBUG) System.out.println("Number of parameters to method: " + numParametersToMethod);
 					int offset = 0;
-					if (numParameterToMethod > numParameters) offset = 1;
+					if (numParametersToMethod > numParameters) {
+						offset = 1;
+						visitSyntheticParameterAnnotation(
+								0,
+								runtimeVisible);
+						for(int p = numParameters+1; p < numParametersToMethod; p++) {
+							visitSyntheticParameterAnnotation(
+									p,
+									runtimeVisible);
+						}
+					}
 					for (int p = 0; p < numParameters; p++) {
 						int numAnnotations = bytes.readUnsignedShort();
 						if (DEBUG)
@@ -121,7 +135,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 									p+offset,
 									annotationName,
 									values,
-									name.equals("RuntimeVisibleParameterAnnotations"));
+									runtimeVisible);
 						}
 					}
 

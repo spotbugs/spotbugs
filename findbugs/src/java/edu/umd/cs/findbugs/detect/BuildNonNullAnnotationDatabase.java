@@ -121,7 +121,20 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 							XFactory.createXField(this), n);
 
 	}
+	@Override
+	public void visitSyntheticParameterAnnotation(int p, boolean runtimeVisible) {
 
+		XMethod xmethod = XFactory.createXMethod(this);
+
+		XMethodParameter xparameter = new XMethodParameter(xmethod, p);
+
+		AnalysisContext.currentAnalysisContext()
+				.getNullnessAnnotationDatabase().addDirectAnnotation(
+						xparameter, NullnessAnnotation.UNKNOWN_NULLNESS);
+
+	}
+
+	
 	@Override
 	public void visitParameterAnnotation(int p, String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
