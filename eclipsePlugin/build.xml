@@ -53,11 +53,11 @@
 	</target>
 
 	<target name="clean" description="Clean up temporary files">
-		<mkdir dir="${dist.dir}"/>
-		<mkdir dir="${bin.dir}"/>
-		<delete includeEmptyDirs="true">
-			<fileset dir="${dist.dir}" />
-			<fileset dir="${bin.dir}" />
+		<delete>
+			<fileset dir="${dist.dir}" includes="**"/>
+		</delete>
+		<delete>
+			<fileset dir="${bin.dir}" excludes=".cvsignore" includes="**" />
 		</delete>
 		<mkdir dir="${dist.dir}"/>
 		<mkdir dir="${bin.dir}"/>
