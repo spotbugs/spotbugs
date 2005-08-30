@@ -22,13 +22,11 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
 
-import edu.umd.cs.findbugs.RequiresJavaVersion;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;

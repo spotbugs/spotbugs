@@ -1,9 +1,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
@@ -28,9 +26,6 @@ import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.TopType;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 public class FindNonSerializableStoreIntoSession implements Detector {
 
