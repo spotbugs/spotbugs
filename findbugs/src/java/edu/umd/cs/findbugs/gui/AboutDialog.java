@@ -74,7 +74,7 @@ public class AboutDialog extends javax.swing.JDialog {
 	 * Process an HTML page to replace certain substitution patterns.
 	 * Right now, we just expand @VERSION@.
 	 */
-	//@SuppressWarnings("OS")
+	@SuppressWarnings("OS_OPEN_STREAM")
 	private void processPage(javax.swing.JEditorPane pane, String fileName) throws IOException {
 		InputStream in = null;
 
