@@ -40,6 +40,7 @@ import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.IndexedInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.LoadInstruction;
 import org.apache.bcel.generic.MULTIANEWARRAY;
 import org.apache.bcel.generic.MethodGen;
@@ -217,6 +218,9 @@ public class FindDeadLocalStores implements Detector {
 				complainedAbout.set(local);
 			}
 			
+			InstructionHandle prevInsHandle = location.getHandle().getPrev();
+			boolean deadStoreOfLDC = prevInsHandle != null && prevInsHandle.getInstruction() instanceof LDC;
+			if (deadStoreOfLDC) continue;
 			// Get live stores at this instruction.
 			// Note that the analysis also computes which stores were
 			// killed by a subsequent unconditional store.
