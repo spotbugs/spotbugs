@@ -58,6 +58,11 @@ Send your comments to <a href="mailto:daveho@users.sourceforge.net">daveho@users
 	<li>New detector to find stores of literal booleans inside if or while expressions (Dave Brosius)</li>
 	<li>New style detector to find final classes that declare protected fields (Dave Brosius)</li>
 	<li>New detector to find subclass methods that simply forward, verbatim, to the super class (Dave Brosius)</li>
+	<li>
+		Detector to find instances where code is attempting to
+		write an object out via an implemention of DataOutput,
+		but the object is not guaranteed to be Serializable (Jon Christiansen)
+	</li>
 	
 	<!-- Feature enhancements -->
 	<li>Large (35%) analysis speedup (Bill Pugh)</li>
