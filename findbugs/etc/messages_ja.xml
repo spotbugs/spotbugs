@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="Shift_JIS"?>
 
-<!-- This messages file is based on revision 1.233 of message.xml. -->
+<!-- This messages file is based on revision 1.257 of message.xml. -->
 
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:noNamespaceSchemaLocation="messagecollection.xsd">
@@ -38,6 +38,15 @@
     <Details>
 <![CDATA[
 <p> メソッドの戻り値チェックのアノテーションを検出する。
+</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations">
+    <Details>
+<![CDATA[
+<p> メソッドの戻り値をチェックするアノテーションを発見します。
 </p>
 ]]>
     </Details>
@@ -759,6 +768,16 @@ nullが戻るかもしれないメソッド呼び出しを発見する第一パス。後方のパスでFindNullDr
     </Details>
   </Detector>
   
+  <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject">
+    <Details>
+<![CDATA[
+<p>
+このディテクタはObjectOutputのwriteObjectメソッドに直列化できないオブジェクトを渡しているコードを発見します。
+</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression">
     <Details>
 <![CDATA[
@@ -810,6 +829,33 @@ nullが戻るかもしれないメソッド呼び出しを発見する第一パス。後方のパスでFindNullDr
 <p>高速ディテクタです。</p>
 ]]>
     </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.UselessSubclassMethod">
+   <Details>
+      <![CDATA[
+<p>このディテクタは親クラスのメソッドを子クラスで実装していて、そのメソッドが単に親クラスのメソッドにパラメータをそのまま渡しているだけのコードを発見します。これらは単純に削除可能です。</p>
+<p>高速ディテクタです。</p>
+      ]]>
+   </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.ConfusedInheritance">
+   <Details>
+      <![CDATA[
+<p>このディテクタはpreotectedなメンバを持ちながらfinal宣言されたクラスを発見します。このクラスは継承できないのですから、メンバをprotected宣言するのは間違いです。publicかprivate(訳注：かパッケージプライベート)に変更すべきです。クラスの使用方法が変わって、新しいパラダイムにクラスを変更する際、一部の変更を忘れたものと思われます。</p>
+<p>高速ディテクタです。</p>
+      ]]>
+   </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.QuestionableBooleanAssignment">
+   <Details>
+      <![CDATA[
+<p>このディテクタはbooleanの直定数が条件式の中でboolean変数に代入されているコードを発見します。</p>
+<p>高速ディテクタです。</p>
+      ]]>
+   </Details>
   </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.TrainNullReturnValues">
@@ -1199,6 +1245,16 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
     </Details>
   </BugPattern>  
 
+  <BugPattern type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING">
+    <ShortDescription>PreparedStatementが定数でないStringから生成されています。</ShortDescription>
+    <LongDescription>{1} でPreparedStatementが定数でないStringから生成されています。</LongDescription>
+    <Details>
+<![CDATA[
+<p>このコードはSQLのPreparedStatementを定数でないStringから生成しています。内容がチェックしないと、汚染されたユーザ入力が文字列に含まれてしまい、SQLインジェクションによって予期しない、望ましくない動作を招くかもしれません。</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="DM_USELESS_THREAD">
     <ShortDescription>実行する内容を指定せずにThreadオブジェクトを生成しています。</ShortDescription>
     <LongDescription>メソッド {1} は、実行する内容を指定せずにThreadオブジェクトを生成しています。</LongDescription>
@@ -1333,6 +1389,14 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
     <Details>
 <![CDATA[
 <p> このクラスは<code>hashCode()</code>メソッドを定義していますが、<code>equals()</code>メソッドは<code>java.lang.Object</code>のもの(参照が同一かどうかで同値性を判定します)をそのまま利用しています。これは、同値であると判定されたオブジェクトが同じハッシュコードを返さなければならないという規約は満たしますが、恐らく<code>hashCode()</code>メソッドのオーバーライドは意図されたものでは無いと思われます(<code>hashCode()</code>のオーバーライドは、単なる参照が同一という同値性よりも複雑な基準がある事を意味します)。</p>
+<p>もしもこのクラスのインスタンスがHashMap/HashTableに挿入されることがあり得ないと考えるのであれば、推奨されるhashCodeの実装は次のようになります。</p>
+<p><PRE>
+public int hashCode() {
+  assert false : "hashCodeが呼び出されることは想定されていません。";
+  return 42; // 適当な値
+}
+</pre></p>
+
 ]]>
     </Details>
   </BugPattern>
@@ -1353,6 +1417,13 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
     <Details>
 <![CDATA[
 <p> このクラスは<code>equals(Object)</code>をオーバーライドしていますが、<code>hashCode()</code>をオーバーライドしていないので、<code>java.lang.Object</code>の<code>hashCode()</code>の実装をそのまま利用しています(これは、VMがObjectに割り当てた一意のハッシュコードを返します)。このため、同値のオブジェクトが等しいハッシュコードを返さなければならないという規約を破る可能性が非常に高いです。</p>
+<p>もしもこのクラスのインスタンスがHashMap/HashTableに挿入されることがあり得ないと考えるのであれば、推奨されるhashCodeの実装は次のようになります。</p>
+<p><PRE>
+public int hashCode() {
+  assert false : "hashCodeが呼び出されることは想定されていません。";
+  return 42; // 適当な値
+}
+</pre></p>
 ]]>
     </Details>
   </BugPattern>
@@ -1522,11 +1593,21 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
   </BugPattern>
 
   <BugPattern type="TLW_TWO_LOCK_WAIT">
-    <ShortDescription>２つのロックを持ったまま wait しています。</ShortDescription>
-    <LongDescription>{1} で２つのロックを持ったまま wait() しています。</LongDescription>
+    <ShortDescription>2つのロックを持ったまま wait しています。</ShortDescription>
+    <LongDescription>{1} で2つのロックを持ったまま wait() しています。</LongDescription>
     <Details>
 <![CDATA[
 <p> 2つ以上のロックを獲得した状態でモニタの上で待ち合わせを行うと、デッドロックする場合があります。wait()メソッドは、呼び出されたオブジェクトのロックのみを解放するだけで、その他のロックは解放しません。これは必ずしもバグとは限りませんが、詳しく検討すべきです。</p>
+]]>
+    </Details>
+  </BugPattern>
+
+   <BugPattern type="TLW_TWO_LOCK_NOTIFY">
+    <ShortDescription>2つのロックを保持したままでのnotify。</ShortDescription>
+    <LongDescription>{1} で2つのロックを保持したままnotify()あるいはnotifyAll*()を実行しています。</LongDescription>
+    <Details>
+<![CDATA[
+<p> このコードは2つのロックを保持したままnotify()あるいはnotifyAll()を呼び出しています。もしもwait()を呼び出しているスレッドが同じロックを保持しているなら、これはデッドロックに陥いる危険があります。なぜならwait呼び出しは1つのロックだけを解放するので、notifyによって2つのロックを獲得することは無いからです。このためnotifyは、意図通りには動作しないでしょう。もしも「2つのロックを持ったまま wait しています。」の警告も同時に出ているのであれば、バグの可能性が極めて高いと言えます。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2148,14 +2229,37 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
     <LongDescription>{1} は {2} の戻り値を無視しています。</LongDescription>
     <Details>
 <![CDATA[
-   <p> このメソッドの戻り値をチェックするべきです。このようなコードを書いてしまった原因の1つとして、イミュータブルなオブジェクトのメソッド呼び出しが、そのオブジェクトの状態を変化させると誤解しているケースが考えられます。例えば、</p>
+<p> このメソッドの戻り値をチェックするべきです。このようなコードを書いてしまった原因の1つとして、イミュータブルなオブジェクトのメソッド呼び出しが、そのオブジェクトの状態を変化させると誤解しているケースが考えられます。例えば、</p>
 <blockquote>
 <pre>
 String dateString = getHeaderField(name);
 dateString.trim();
 </pre>
 </blockquote>
-<p>このプログラムは、trim()メソッドがdateStringが参照しているStringの状態を変えると考えているように思われます。しかしStringはイミュータブルであり、trim()メソッドは新しいStringオブジェクトを返すので、これでは戻されたオブジェクトが捨てられてしまいます。このコードは、以下のように修正すべきです。</p>
+<p> このメソッドの戻り値をチェックするべきです。このようなコードを書いてしまった原因の1つとして、イミュータブルなオブジェクトのメソッド呼び出しが、そのオブジェクトの状態を変化させると誤解しているケースが考えられます。例えば、</p>
+<blockquote>
+<pre>
+String dateString = getHeaderField(name);
+dateString = dateString.trim();
+</pre>
+</blockquote>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="RV_RETURN_VALUE_IGNORED2">
+    <ShortDescription>戻り値を無視しているメソッド呼び出し。</ShortDescription>
+    <LongDescription>{1} で {2} の戻り値を無視しています。</LongDescription>
+    <Details>
+<![CDATA[
+<p> このメソッドの戻り値を無視すべきではありません。この警告が出力される原因として、イミュータブルなオブジェクトのメソッドを呼び出して、それによりオブジェクトの状態が変更できると考えているケースが挙げられます。例えば以下のようなコードです。</p>
+<blockquote>
+<pre>
+String dateString = getHeaderField(name);
+dateString.trim();
+</pre>
+</blockquote>
+<p>このプログラマは、trim()メソッドがdateStringが参照しているStringの状態を変えると考えているように思われます。しかしStringはイミュータブルであり、trim()メソッドは新しいStringオブジェクトを返すので、これでは戻されたオブジェクトが捨てられてしまいます。このコードは、以下のように修正すべきです。</p>
 <blockquote>
 <pre>
 String dateString = getHeaderField(name);
@@ -2229,8 +2333,8 @@ dateString = dateString.trim();
   </BugPattern>
   
   <BugPattern type="NP_NULL_PARAM_DEREF_NONVIRTUAL">
-	<ShortDescription>無条件に引数の参照外しを行なうfinalメソッドにnullを渡しています。</ShortDescription>
-	<LongDescription>無条件に引数の参照外しを行うfinalメソッド {2} に {1} でnullを渡しています。</LongDescription>
+	<ShortDescription>無条件に引数の参照外しを行なう仮想メソッドにnullを渡しています。</ShortDescription>
+	<LongDescription>無条件に引数の参照外しを行う仮想メソッド {2} に {1} でnullを渡しています。</LongDescription>
 	<Details>
 <![CDATA[
 <p>
@@ -2266,7 +2370,7 @@ dateString = dateString.trim();
   
   <BugPattern type="NP_NONNULL_PARAM_VIOLATION">
     <ShortDescription>@NonNullと宣言された引数にnullを渡しています。</ShortDescription>
-    <LongDescription>{1} でnullをメソッドに渡していますが、この引数は {3} で@NonNull宣言されています。</LongDescription>
+    <LongDescription>{1} でnullをメソッドに渡していますが、この引数は {2} で@NonNull宣言されています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2372,6 +2476,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES">
     <ShortDescription>2つのnull参照を無駄に比較しています。</ShortDescription>
     <LongDescription>2つのnull参照を無駄に比較しています{1}。</LongDescription>
@@ -2560,6 +2665,25 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
     </Details>
   </BugPattern>
 
+  <BugPattern type="RV_REM_OF_RANDOM_INT">
+    <ShortDescription>符号付き32bit整数の乱数の剰余計算。</ShortDescription>
+    <LongDescription>符号付き32bit整数の乱数の剰余が {1} で計算されています。</LongDescription>
+    <Details>
+<![CDATA[
+<p> このコードは符号付き整数の乱数を生成し、他の値で割って剰余を求めています。乱数は負になるかもしれないので、この結果は負になるかもしれません。これが想定された動作であることを確認し、替りにRandom.nextInt(int)を使用する事を検討してください。</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="BIT_IOR_OF_SIGNED_BYTE">
+    <ShortDescription>符号付きbyte値に対するビット論理和演算の実行。</ShortDescription>
+    <LongDescription>{1} でビット論理和演算が符号付きbyte値に対して実行されています。</LongDescription>
+    <Details>
+<![CDATA[
+<p> byte配列から値をロードし、ビット論理和を実行しています。byte配列からロードした値は符号付きbyteであるため結果は想定外のものとなるかもしれません。</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="BIT_AND">
     <ShortDescription>互換性のないビットマスク。</ShortDescription>
     <LongDescription>{1}で互換性の無いビットマスクが行われています。これは常に決った結果を返します。</LongDescription>
@@ -2683,8 +2807,9 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
     <LongDescription>{1} メソッドは、Collection.toArray() に流さ0の配列を引数として渡しています。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドで、Collectionの実装クラスのtoArray()メソッドに長さ0の配列を引数に渡しています。<pre>myCollection.toArray(new Foo[myCollection.size()])</pre>とする方が、効率の良いやり方です。
-もしも引数のサイズが、Collectionの中身を格納するのに十分な大きさであれば、そのまま、その配列に格納されて返送されます。さもなければリフレクションによって、新たに配列を生成しなければなりません。</p>
+<p> このメソッドで、Collectionの実装クラスのtoArray()メソッドに長さ0の配列を引数に渡しています。
+<quote>myCollection.toArray(new Foo[myCollection.size()])</quote>
+とする方が、効率の良いやり方です。もしも引数のサイズが、Collectionの中身を格納するのに十分な大きさであれば、そのまま、その配列に格納されて返送されます。さもなければリフレクションによって、新たに配列を生成しなければなりません。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2718,6 +2843,16 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 ]]>
     </Details>
   </BugPattern>  
+
+  <BugPattern type="IJU_NO_TESTS">
+    <ShortDescription>テストを持たないTestCase。</ShortDescription>
+    <LongDescription>TestCase {0} にはテストがありません。</LongDescription>
+    <Details>
+<![CDATA[
+<p> このクラスはJUnitのTestCaseクラスですが、テストメソッドが実装されていません。</p>
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="BOA_BADLY_OVERRIDDEN_ADAPTER">
     <ShortDescription>親のアダプタクラスのメソッドを不適切にオーバーライドしています。</ShortDescription>
@@ -2781,6 +2916,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 <p>
 Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メソッドが呼び出されています。これは==による参照の比較と同値です。equalsメソッドを使うのは良いのですが、このクラスでequalsメソッドをオーバーライドすることを検討してください。
 </p>
+<p>[Bill Pugh]: すみません、私はこの警告の出力には強く反対で、あなたのコードは全く正しいと思います。ユーザのコードはequals()の実装がどうなっているかを意識すべきではなく、==でのインスタンス比較に依存すべきではありません。このようにしてしまうと、ライブラリ側でオブジェクトの同値性を制御することができなくなってしまいます。</p>
 ]]>    
     </Details>
   </BugPattern>
@@ -2894,7 +3030,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
 	<![CDATA[
     <p>
 2つの浮動小数の値が同値であるか比較されています。浮動小数は桁丸めが行なわれるためfloat、doubleの値は誤差を含む場合があります。勘定系の処理のように正確な値が必要な場合には、BigDecimalのような固定小数を使用する事を検討してください。誤差があっても良いケースならば、値の差がある範囲ならば同値であると判断する事を検討してください。これは例えば次のようにします。
-    <code>if ( Math.abs(x - y) < .0000001 )</code>.
+    <code>if ( Math.abs(x - y) &lt; .0000001 )</code>.
 詳しくはJava言語仕様4.2.4.を参照してください。
     </p>
     ]]>
@@ -3045,6 +3181,17 @@ double value2 =  x / (double) y;
     </Details>
   </BugPattern>
 
+  <BugPattern type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN">
+    <ShortDescription>直列化できないオブジェクトのObjectOutputへの書き込み。</ShortDescription>
+    <LongDescription>{1} で直列化できないオブジェクト {3} がObjectOutputに書き込まれています。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このコードは直列化できないオブジェクトをObjectOutput.writeObjectメソッドに渡しているようです。このオブジェクトが実際に直列化できないのであれば結果はエラーとなります。</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
     <ShortDescription>抽象コレクション型への疑わしいキャスト。</ShortDescription>
     <LongDescription>{1}でコレクションが抽象コレクション型{4}にキャストされています。</LongDescription>
@@ -3172,6 +3319,17 @@ double value2 =  x / (double) y;
     </Details>
   </BugPattern>
 
+  <BugPattern type="DMI_HARDCODED_ABSOLUTE_FILENAME">
+    <ShortDescription>絶対パスのハードコード。</ShortDescription>
+    <LongDescription>{1} で絶対パスがハードコードされています。</LongDescription>
+    <Details>
+<![CDATA[
+<p>このコードはハードコードされた絶対パスでFileオブジェクトを生成しています。
+(例：<code>new File("/home/dannyc/workspace/j2ee/src/share/com/sun/enterprise/deployment");</code>)</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="DMI_BAD_MONTH">
     <ShortDescription>0から11の範囲を超えた月定数。</ShortDescription>
     <LongDescription>{1}で間違った月の値{2}が{3}に渡されています。</LongDescription>
@@ -3249,7 +3407,7 @@ hasNext() で next() を呼び出しています。hasNext()はイテレータの状態を変えるもの�
     <Details>
 <![CDATA[
 <p>
-このメソッドはXML関連のインターフェースの特定の実装を直接生成しています。ファクトリクラスを使って生成するのが望ましいやり方です。これににより実行時に仕様する実装を切り替えることが出来ます。詳細は以下を参照してください。
+このメソッドはXML関連のインターフェースの特定の実装を直接生成しています。ファクトリクラスを使って生成するのが望ましいやり方です。これににより実行時に仕様する実装を切り替えることが出来ます。詳細は以下を参照してください。</p>
 <ul>
 <li>javax.xml.parsers.DocumentBuilderFactory</li>
 <li>javax.xml.parsers.SAXParserFactory</li>
@@ -3257,6 +3415,56 @@ hasNext() で next() を呼び出しています。hasNext()はイテレータの状態を変えるもの�
 /ul>
 </p>
 ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="USM_USELESS_SUBCLASS_METHOD">
+    <ShortDescription>親クラスのメソッドへの不必要な移譲</ShortDescription>
+    <LongDescription>メソッド {1} は不必要に親クラスのメソッドに移譲を行っています。</LongDescription>
+    <Details>
+      <![CDATA[
+<p>このメソッドは単に親クラスのメソッドを同じパラメータで呼び出しているに過ぎません。このメソッドには何の価値もなく、削除可能です。</p>
+      ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="USM_USELESS_ABSTRACT_METHOD">
+    <ShortDescription>インターフェースに定義済みのメソッドの抽象メソッド宣言。</ShortDescription>
+    <LongDescription>抽象メソッド {1} は実装しているインターフェースに宣言されています。</LongDescription>
+    <Details>
+      <![CDATA[
+<p>この抽象メソッドは、このクラスが実装しているインターフェースに宣言されています。このメソッドには何の価値もなく、削除可能です。</p>
+      ]]>
+    </Details>
+  </BugPattern>
+  
+    <BugPattern type="CI_CONFUSED_INHERITANCE">
+    <ShortDescription>finalクラスでのprotectedフィールド宣言。</ShortDescription>
+    <LongDescription>クラス {0} はfinalですが、protectedフィールド {1} を宣言しています。</LongDescription>
+    <Details>
+      <![CDATA[
+<p>このクラスはfinal宣言されていますが、protectedなフィールドが宣言されています。このクラスは継承できないのですから、protectedフィールドを宣言すると誤解を招きます。アクセス修飾はprivateかpublic(訳注：かパッケージプライベート)に変更して、正しくフィールドが利用されるようにすべきです。</p>
+      ]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT">
+    <ShortDescription>boolean式でのboolean直定数の代入。</ShortDescription>
+    <LongDescription>メソッド {1} でboolean式の中でboolean直定数を代入しています。</LongDescription>
+    <Details>
+      <![CDATA[
+<p>このメソッドで、ifもしくはwhileの条件式の中でboolean直定数(trueあるいはfalse)をboolean変数に代入しています。恐らく==
+でbooleanの比較すべきところを、=と間違えてしまったものと思われます。</p>
+     	]]>
+     </Details>
+   </BugPattern>
+  <BugPattern type="VR_UNRESOLVABLE_REFERENCE">
+    <ShortDescription>解決できないクラス、メソッドへの参照の生成。</ShortDescription>
+    <LongDescription>{0} は解決できない参照 {1} を生成しています。</LongDescription>
+    <Details>
+      <![CDATA[
+<p>このクラスは解析中のライブラルでは解決できないクラス、メソッドへの参照を生成しています。</p>
+      ]]>
     </Details>
   </BugPattern>
   <!--
@@ -3310,7 +3518,7 @@ hasNext() で next() を呼び出しています。hasNext()はイテレータの状態を変えるもの�
   <BugCode abbrev="UwF" >書かれないフィールドがあります。</BugCode>
   <BugCode abbrev="SIC" >スタティックな内部クラスにする事が可能です</BugCode>
   <BugCode abbrev="TLW" >2つのロックを持ったままwaitしています。</BugCode>
-  <BugCode abbrev="RV" >メソッドのreturn値が無視されています。</BugCode>
+  <BugCode abbrev="RV" >メソッドの戻り値の間違った利用。</BugCode>
   <BugCode abbrev="NP" >nullポインタを参照外ししています。</BugCode>
   <BugCode abbrev="OS">ストリームがクローズされない経路があります。</BugCode>
   <BugCode abbrev="PZLA" >結果無しを指し示すためには、nullよりもむしろ0の長さの配列を利用した方が良いです。</BugCode>
@@ -3366,4 +3574,8 @@ hasNext() で next() を呼び出しています。hasNext()はイテレータの状態を変えるもの�
   <BugCode abbrev="DB">分岐の二重コード</BugCode>
   <BugCode abbrev="IMA">非効率なメンバへのアクセス</BugCode>
   <BugCode abbrev="XFB">XMLファクトリの無視</BugCode>
+  <BugCode abbrev="USM">無駄な継承クラスのメソッド</BugCode>
+  <BugCode abbrev="CI">紛らわしい継承</BugCode>
+  <BugCode abbrev="QBA">疑わしいboolean値の代入</BugCode>
+  <BugCode abbrev="VR">バージョン互換性の問題</BugCode>
 </MessageCollection>
