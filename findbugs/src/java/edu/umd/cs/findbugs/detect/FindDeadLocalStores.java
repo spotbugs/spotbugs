@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -188,14 +189,20 @@ public class FindDeadLocalStores implements Detector {
 			
 			IndexedInstruction ins = (IndexedInstruction) location.getHandle().getInstruction();
 			int local = ins.getIndex();
-			
+			int position = location.getHandle().getPosition()+1;
 			// Heuristic: name of local variable.
 			LocalVariableTable localVariableTable = method.getLocalVariableTable();
-			checkLocalVariableName(
-					localVariableTable,
-					local,
-					location.getHandle().getPosition(),
-					propertySet);
+			String localName = "?";
+			if (localVariableTable != null) {
+
+				LocalVariable lv1 = localVariableTable.getLocalVariable(local, position);
+				// System.out.println("Local variable " + local + " at " +  position + " = " + lv1);
+				if (lv1 != null) {
+					localName = lv1.getName();
+					if (EXCLUDED_LOCALS.contains(localName)) continue;
+					propertySet.setProperty(DeadLocalStoreProperty.LOCAL_NAME, localName);
+				}
+			}
 			
 			// Is this a store to a parameter which was dead on entry to the method?
 			boolean parameterThatIsDeadAtEntry = local < localsThatAreParameters
@@ -204,6 +211,7 @@ public class FindDeadLocalStores implements Detector {
 				// TODO: add warning properties?
 				BugInstance bugInstance = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN", NORMAL_PRIORITY)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
+					.add(new LocalVariableAnnotation(localName, local, position ))
 					.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle());
 				bugReporter.reportBug(bugInstance);
 				complainedAbout.set(local);
@@ -290,17 +298,11 @@ public class FindDeadLocalStores implements Detector {
 				propertySet.addProperty(DeadLocalStoreProperty.MANY_STORES);
 			int priority = propertySet.computePriority(NORMAL_PRIORITY);
 			if (priority <= Detector.EXP_PRIORITY) {	
-				if (localVariableTable != null) {
-					LocalVariable lv = LVTHelper.getLocalVariableAtPC(localVariableTable,
-							local,
-							location.getHandle().getPosition());
-					if ((lv != null) && EXCLUDED_LOCALS.contains(lv.getName()))
-						continue;
-				}
 				
 				// Report the warning				
 				BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", priority)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
+					.add(new LocalVariableAnnotation(localName, local, position ))
 					.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle());
 
 				if (DEBUG) {

@@ -28,7 +28,9 @@ public interface BugAnnotationVisitor {
 
 	public void visitIntAnnotation(IntAnnotation intAnnotation);
 
-	public void visitStringAnnotation(StringAnnotation StringAnnotation);
+	public void visitStringAnnotation(StringAnnotation stringAnnotation);
+	
+	public void visitLocalVariableAnnotation(LocalVariableAnnotation localVariableAnnotation);
 	
 	public void visitSourceLineAnnotation(SourceLineAnnotation sourceLineAnnotation);
 }

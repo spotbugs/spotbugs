@@ -30,12 +30,13 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * @author William Pugh
  * @see BugAnnotation
  */
-public class StringAnnotation implements BugAnnotation {
+public class LocalVariableAnnotation implements BugAnnotation {
 	private static final long serialVersionUID = 1L;
 
-	private static final String DEFAULT_ROLE = "STRING_DEFAULT";
+	private static final String DEFAULT_ROLE = "LOCAL_VARIABLE_DEFAULT";
 
 	final private String value;
+	final int register, pc;
 	 private String description;
 
 	/**
@@ -43,8 +44,10 @@ public class StringAnnotation implements BugAnnotation {
 	 *
 	 * @param value the String value
 	 */
-	public StringAnnotation(String value) {
-		this.value = quoteCharacters(value);
+	public LocalVariableAnnotation(String name, int register, int pc) {
+		this.value = name;
+		this.register = register;
+		this.pc = pc;
 		this.description = DEFAULT_ROLE;
 	}
 	
@@ -57,57 +60,18 @@ public class StringAnnotation implements BugAnnotation {
 		}
 	}
 
-	
-	 private static String quoteCharacters(String s) {
-	        StringBuffer result = null;
-	        for(int i = 0, max = s.length(), delta = 0; i < max; i++) {
-	            char c = s.charAt(i);
-	            String replacement = null;
-
-	            if (c == '&') {
-	                replacement = "&amp;";
-	            } else if (c == '<') {
-	                replacement = "&lt;";
-	            } else if (c == '\r') {
-	                replacement = "&#13;";
-	            } else if (c == '>') {
-	                replacement = "&gt;";
-	            } else if (c == '"') {
-	                replacement = "&quot;";
-	            } else if (c == '\'') {
-	                replacement = "&apos;";
-	            }
-
-	            if (replacement != null) {
-	                if (result == null) {
-	                    result = new StringBuffer(s);
-	                }
-	                result.replace(i + delta, i + delta + 1, replacement);
-	                delta += (replacement.length() - 1);
-	            }
-	        }
-	        if (result == null) {
-	            return s;
-	        }
-	        return result.toString();
-	    }
-
-	 
-	/**
-	 * Get the String value.
-	 *
-	 * @return the String value
-	 */
-	public String getValue() {
-		return value;
-	}
 
 	public void accept(BugAnnotationVisitor visitor) {
-		visitor.visitStringAnnotation(this);
+		visitor.visitLocalVariableAnnotation(this);
 	}
 
 	public String format(String key) {
-		return value;
+		// System.out.println("format: " + key + " reg: " + register + " name: " + value);
+		if (key.equals("register")) return String.valueOf(register);
+		else if (key.equals("pc")) return String.valueOf(pc);
+		else if (key.equals("name")) return value;
+		else if (!value.equals("?")) return value;
+		return "$l"+register;
 	}
 
 	public void setDescription(String description) {
@@ -123,19 +87,20 @@ public class StringAnnotation implements BugAnnotation {
 	}
 
 	public boolean equals(Object o) {
-		if (!(o instanceof StringAnnotation))
+		if (!(o instanceof LocalVariableAnnotation))
 			return false;
-		return value == ((StringAnnotation) o).value;
+		return value == ((LocalVariableAnnotation) o).value;
 	}
 
 	public int compareTo(BugAnnotation o) {
-		if (!(o instanceof StringAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
+		if (!(o instanceof LocalVariableAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
 			return this.getClass().getName().compareTo(o.getClass().getName());
-		return value.compareTo(((StringAnnotation) o).value);
+		return value.compareTo(((LocalVariableAnnotation) o).value);
 	}
 
 	public String toString() {
 		String pattern = I18N.instance().getAnnotationDescription(description);
+		if (value.equals("?")) pattern += "_UNKNOWN";
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
 		return format.format(new BugAnnotation[]{this});
 	}
@@ -144,7 +109,7 @@ public class StringAnnotation implements BugAnnotation {
 	 * XML Conversion support
 	 * ---------------------------------------------------------------------- */
 
-	private static final String ELEMENT_NAME = "String";
+	private static final String ELEMENT_NAME = "LocalVariable";
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		writeXML(xmlOutput, false);
@@ -152,7 +117,9 @@ public class StringAnnotation implements BugAnnotation {
 
 	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
-			.addAttribute("value", value);
+			.addAttribute("name", value)
+		.addAttribute("register", String.valueOf(register))
+		.addAttribute("pc", String.valueOf(pc));
 		
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))

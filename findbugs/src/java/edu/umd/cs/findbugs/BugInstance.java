@@ -582,6 +582,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		return this;
 	}
 	
+	
 	/**
 	 * Add class and method annotations for given class and method.
 	 *  
@@ -1204,7 +1205,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
 
-	void add(BugAnnotation annotation) {
+	public BugInstance add(BugAnnotation annotation) {
 		if (annotation == null)
 			throw new IllegalStateException("Missing BugAnnotation!");
 
@@ -1214,6 +1215,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		// This object is being modified, so the cached hashcode
 		// must be invalidated
 		cachedHashCode = INVALID_HASH_CODE;
+		return this;
 	}
 
 	private void addSourceLinesForMethod(MethodAnnotation methodAnnotation, SourceLineAnnotation sourceLineAnnotation) {

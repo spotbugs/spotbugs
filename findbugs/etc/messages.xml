@@ -3653,7 +3653,7 @@ object than the one the author intended.
   <BugPattern type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN">
     <ShortDescription>A parameter is dead upon entry to a method but
    overwritten</ShortDescription>
-    <LongDescription>A parameter to {1} is dead upon entry but overwritten</LongDescription>
+    <LongDescription>The parameter {2} to {1} is dead upon entry but overwritten</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3667,7 +3667,7 @@ the caller.
   </BugPattern>
   <BugPattern type="DLS_DEAD_LOCAL_STORE">
     <ShortDescription>Dead store to local variable</ShortDescription>
-    <LongDescription>Dead store to local variable in method {1}</LongDescription>
+    <LongDescription>Dead store to {2} in method {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
