@@ -3,7 +3,7 @@
 <plugin
    id="de.tobject.findbugs"
    name="%pluginName"
-   version="0.0.16.rc1"
+   version="0.0.16.rc2"
    provider-name="%providerName"
    class="de.tobject.findbugs.FindbugsPlugin">
 
