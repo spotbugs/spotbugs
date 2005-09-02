@@ -185,6 +185,15 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					} catch (NumberFormatException e) {
 						throw new SAXException("Bad integer value in Int");
 					}
+				} else if (qName.equals("LocalVariable")) {
+					try {
+						String varName = getRequiredAttribute(attributes, "name", qName);
+						int register = Integer.parseInt(getRequiredAttribute(attributes, "register", qName));
+						int pc = Integer.parseInt(getRequiredAttribute(attributes, "pc", qName));
+						bugAnnotation = new LocalVariableAnnotation(varName, register, pc);
+					} catch (NumberFormatException e) {
+						throw new SAXException("Invalid integer value in attribute of LocalVariable element");
+					}
 				} else if (qName.equals("Property")) {
 					// A BugProperty.
 					String propName = getRequiredAttribute(attributes, "name", qName);
