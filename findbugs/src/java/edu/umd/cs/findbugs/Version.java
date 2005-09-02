@@ -49,7 +49,7 @@ public class Version {
 	 * Release candidate number.
 	 * "0" indicates that the version is not a release candidate.
 	 */
-	public static final int RELEASE_CANDIDATE = 2;
+	public static final int RELEASE_CANDIDATE = 3;
 
 	private static final String RELEASE_SUFFIX_WORD =
 		(RELEASE_CANDIDATE > 0 ? "rc" + RELEASE_CANDIDATE : "dev");
@@ -63,7 +63,7 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = "August 30, 2005";
+	public static final String DATE = "September 2, 2005";
 
 	/**
 	 * Version of Eclipse plugin.
@@ -102,15 +102,15 @@ public class Version {
 			System.out.println("eclipse.ui.version=" + ECLIPSE_UI_VERSION);
 			System.out.println("findbugs.website=" + WEBSITE);
 			System.out.println("findbugs.downloads.website=" + DOWNLOADS_WEBSITE);
-		} else
+		} else {
 			usage();
+			System.exit(1);
+		}
 	}
 
-	@SuppressWarnings("DM_EXIT")
 	private static void usage() {
 		System.err.println("Usage: " + Version.class.getName() +
 		        "  (-release|-date|-props)");
-		System.exit(1);
 	}
 }
 
