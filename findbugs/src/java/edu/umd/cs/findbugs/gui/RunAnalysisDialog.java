@@ -340,6 +340,11 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 
 	private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
 		// Here is where we actually kick off the analysis thread.
+		
+		// Lower the priority of the analysis thread to leave more
+		// CPU for interactive tasks.
+		analysisThread.setPriority(Thread.NORM_PRIORITY - 1);
+		
 		analysisThread.start();
 	}//GEN-LAST:event_formWindowOpened
 
