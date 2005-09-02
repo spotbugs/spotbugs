@@ -1,0 +1,110 @@
+AppleJavaExtensions is distributed with the following README file:
+
+----------------------------
+AppleJavaExtensions
+v 1.2
+
+This is a pluggable jar of stub classes representing the new Apple eAWT
+and eIO APIs for Java 1.4 on Mac OS X.  The purpose of these stubs is
+to allow for compilation of eAWT- or eIO-referencing code on platforms
+other than Mac OS X.  The jar file is enclosed in a zip archive for
+easy expansion on other platforms.
+
+These stubs are not intended for the runtime classpath on non-Mac platforms.
+Please see the OSXAdapter sample for how to write cross-platform code
+that uses eAWT.
+
+[07/16/2004]
+----------------------------
+
+The license for AppleJavaExtensions.jar is murky, because Apple does
+not disclose how it is licensed.  We believe that we have permission
+to distribute it, based on the following email.  Despite the
+email's statement that license boilerplate would be included in
+the readme, as of September 2005 this has not happened.
+
+Begin forwarded message:
+
+> From: "mdrance@apple.com" <mdrance@apple.com>
+> Date: 13 August 2004 12:33:03 AM GMT+10:00
+> To: Markus Klink <markus.klink@gmx.net>
+> Cc: java-seed@lists.apple.com
+> Subject: Re: OT: License for AppleJavaExtensions
+>
+> Thank you for bringing this up.  AppleJavaExtensions is subject to all
+> the same terms as the other sample code projects from Apple.  We will
+> update the readme to contain the boilerplate legal info.  Of course you
+> can use them on other platforms -- the readme explicitly says this is
+> their purpose.  But I appreciate your caution and attention to detail.
+>
+>  From a design perspective, please don't actually ship the stubs.  The
+> readme does say that these are for compilation only;  use a pattern
+> like the one demonstrated in OSXAdapter for runtime.
+>
+> ----------------------------------------------------------------
+> Matt Drance
+> Java Engineer
+> Apple Worldwide Developer Technical Support
+> dts@apple.com
+>
+>
+>
+> On Aug 12, 2004, at 12:43 AM, Markus Klink wrote:
+>
+>> As a maintainer of ArgoUML I would be very interested in an answer for
+>> this as well!
+>> Markus
+>>
+>> On Donnerstag, Aug 12, 2004, at 02:37 Europe/Berlin, Rohan Lloyd 
+>> wrote:
+>>
+>>> Sorry for being a bit off topic, but I thought I'd be able to get an
+>>> answer here.
+>>>
+>>> I've submitted some patches to the authors of Findbugs
+>>>
+>>>   http://findbugs.sourceforge.net/
+>>>
+>>> to make it a better Mac citizen. The patches include using
+>>> AppleExtensionsJava.jar
+>>>
+>>>
+>>> http://developer.apple.com/samplecode/AppleJavaExtensions/
+>>> AppleJavaExtensions.html
+>>>
+>>> to enable the code to be compiled on non Mac platforms.
+>>>
+>>> I'm pretty certain that there are no restrictions on distributing
+>>> this .jar file, but nowhere on the sample code web site is there any
+>>> actual mention of a license (or lack of a license) and the authors
+>>> wanted me to check on the status before including it, rather than
+>>> just take my word for it.
+>>>
+>>> Sample source code on the same site includes a disclaimer containing:
+>>>
+>>>> to use, reproduce, modify and redistribute the Apple
+>>>> Software, with or without modifications, in source and/or binary
+>>>> forms;
+>>>
+>>> which is pretty clear, but for AppleExtensionsJava.jar there is
+>>> nothing in either the README, the MANIFEST_MF, or the web page.
+>>>
+>>> So anyone from Apple want to clarify the situation.
+>>>
+>>> -- 
+>>> Rohan Lloyd
+>>> _______________________________________________
+>>> java-seed mailing list | java-seed@lists.apple.com
+>>> Help/Unsubscribe/Archives:
+>>> http://www.lists.apple.com/mailman/listinfo/java-seed
+>>> Do not post admin requests to the list. They will be ignored.
+>> _______________________________________________
+>> java-seed mailing list | java-seed@lists.apple.com
+>> Help/Unsubscribe/Archives:
+>> http://www.lists.apple.com/mailman/listinfo/java-seed
+>> Do not post admin requests to the list. They will be ignored.
+> _______________________________________________
+> java-seed mailing list | java-seed@lists.apple.com
+> Help/Unsubscribe/Archives: 
+> http://www.lists.apple.com/mailman/listinfo/java-seed
+> Do not post admin requests to the list. They will be ignored.
