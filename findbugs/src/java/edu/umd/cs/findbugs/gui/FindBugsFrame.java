@@ -1915,7 +1915,9 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 				currentAnalysisRun.saveBugsToFile(selectedFile);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (FindBugs.DEBUG) {
+				e.printStackTrace();
+			}
 			logger.logMessage(Logger.ERROR, "Could not save bugs: " + e.toString());
 		}
 	}//GEN-LAST:event_saveBugsItemActionPerformed
@@ -1960,7 +1962,9 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 				loadBugsFromFile(chooser.getSelectedFile());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (FindBugs.DEBUG) {
+				e.printStackTrace();
+			}
 			logger.logMessage(Logger.ERROR, "Could not load bugs: " + e.toString());
 		}
 
@@ -2584,8 +2588,10 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 				// above NoClassDefFoundError first.
 				System.err.println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled (" + e + ")");
 			} catch (Exception e) {
-				System.err.println("Exception while loading the OSXAdapter:");
-				e.printStackTrace();
+				System.err.println("Exception while loading the OSXAdapter: " + e);
+				if (FindBugs.DEBUG) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
