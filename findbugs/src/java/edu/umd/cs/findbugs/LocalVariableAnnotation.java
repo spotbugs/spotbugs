@@ -100,7 +100,6 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
 	public String toString() {
 		String pattern = I18N.instance().getAnnotationDescription(description);
-		if (value.equals("?")) pattern += "_UNKNOWN";
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
 		return format.format(new BugAnnotation[]{this});
 	}
