@@ -211,10 +211,16 @@ public class FindDeadLocalStores implements Detector {
 			boolean parameterThatIsDeadAtEntry = local < localsThatAreParameters
 				&& !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
 			if (parameterThatIsDeadAtEntry && !complainedAbout.get(local)) {
+				
+				LocalVariableAnnotation lvAnnotation =
+					new LocalVariableAnnotation(localName, local, position);
+				lvAnnotation.setDescription(
+						localName.equals("?") ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
+				
 				// TODO: add warning properties?
 				BugInstance bugInstance = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN", NORMAL_PRIORITY)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
-					.add(new LocalVariableAnnotation(localName, local, position ))
+					.add(lvAnnotation)
 					.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle());
 				bugReporter.reportBug(bugInstance);
 				complainedAbout.set(local);
@@ -310,10 +316,15 @@ public class FindDeadLocalStores implements Detector {
 			int priority = propertySet.computePriority(NORMAL_PRIORITY);
 			if (priority <= Detector.EXP_PRIORITY) {	
 				
+				LocalVariableAnnotation lvAnnotation =
+					new LocalVariableAnnotation(localName, local, position);
+				lvAnnotation.setDescription(
+						localName.equals("?") ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
+				
 				// Report the warning				
 				BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", priority)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
-					.add(new LocalVariableAnnotation(localName, local, position ))
+					.add(lvAnnotation)
 					.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle());
 
 				if (DEBUG) {
