@@ -6,7 +6,7 @@
 
 @SET_DEFAULT_JAVA@
 
-fb_mainclass= edu.umd.cs.findbugs.workflow.DefectDensity
+fb_mainclass=edu.umd.cs.findbugs.workflow.DefectDensity
 
 @WRAP_JAVA@
 
