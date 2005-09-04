@@ -1081,7 +1081,11 @@ using the &FindBugs; task.
        <para>
        Optional attribute.
        It specifies the output format.  If set to "xml" (the default), output
-       is in XML format.  If set to "text", output is in ad-hoc text format.
+       is in XML format.
+	   If set to "xml:withMessages", output is in XML format augmented with
+	   human-readable messages.  (You should use this format if you plan
+		to generate a report using an XSL stylesheet.)
+		If set to "text", output is in ad-hoc text format.
        If set to "emacs", output is in <ulink url="http://www.gnu.org/software/emacs/">Emacs</ulink> error message format.
        </para>
     </listitem>
