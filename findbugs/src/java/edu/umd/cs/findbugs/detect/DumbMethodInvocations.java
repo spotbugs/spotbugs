@@ -104,7 +104,7 @@ public class DumbMethodInvocations implements Detector {
 						bugReporter.reportBug(new BugInstance(this,
 								"DMI_HARDCODED_ABSOLUTE_FILENAME", NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
-								.addString(v).describe("FileName")
+								.addString(v).describe("FILE_NAME")
 								.addSourceLine(
 										SourceLineAnnotation
 												.fromVisitedInstruction(classContext, methodGen,
@@ -117,7 +117,8 @@ public class DumbMethodInvocations implements Detector {
 	}
 
 	private boolean isAbsoluteFileName(String v) {
-		if ( v.startsWith("/")) return true;
+		if (v.startsWith("/dev/")) return false;
+		if (v.startsWith("/")) return true;
 		if (v.startsWith("C:")) return true;
 		if (v.startsWith("c:")) return true;
 		try {
