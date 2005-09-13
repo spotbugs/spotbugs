@@ -91,8 +91,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor
 			// ignore 
 		}
 	}
-        public void visitAnnotation(String annotationClass, Map<String, Object> map,
- boolean runtimeVisible)  {
+        public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible)  {
 		if (!annotationClass.endsWith("SuppressWarnings")) return;
 		Object value = map.get("value");
 		if (value == null || !(value instanceof Object[]))  {
