@@ -98,7 +98,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 		try {
 			handleInstruction(handle, basicBlock, fact);
 		} catch (ClassNotFoundException e) {
-			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+			AnalysisContext.reportMissingClass(e);
 			fact.setBottom();
 		}
 	}

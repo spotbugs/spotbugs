@@ -599,6 +599,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 					// fails, then we will conservatively assume that the
 					// exception in question CAN, but WON'T NECESSARILY
 					// be caught by the handler.
+					AnalysisContext.reportMissingClass(e);
 					result.add(thrownType, explicit);
 				}
 			}

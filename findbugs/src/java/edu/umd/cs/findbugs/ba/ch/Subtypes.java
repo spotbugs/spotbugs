@@ -193,8 +193,7 @@ public class Subtypes {
 				result.add(clazz);
 			} catch (ClassNotFoundException e) {
 				if (name.length() > 1)
-				AnalysisContext.currentAnalysisContext()
-						.getLookupFailureCallback().reportMissingClass(e);
+					AnalysisContext.reportMissingClass(e);
 			}
 	}
 
@@ -237,8 +236,7 @@ public class Subtypes {
 			for (JavaClass i : c.getInterfaces())
 				addParent(i, c);
 		} catch (ClassNotFoundException e) {
-			AnalysisContext.currentAnalysisContext().getLookupFailureCallback()
-					.reportMissingClass(e);
+			AnalysisContext.reportMissingClass(e);
 		}
 	}
 

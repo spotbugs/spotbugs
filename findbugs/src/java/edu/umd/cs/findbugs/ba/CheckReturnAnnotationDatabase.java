@@ -66,12 +66,12 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		try {
 			throwableClass = Repository.lookupClass("java.lang.Throwable");
 		} catch (ClassNotFoundException e) {
-			// ignore it
+			AnalysisContext.reportMissingClass(e);
 		}
 		try {
 			threadClass = Repository.lookupClass("java.lang.Thread");
 		} catch (ClassNotFoundException e) {
-			// ignore it
+			AnalysisContext.reportMissingClass(e);
 		}
 	}
 	
@@ -83,16 +83,16 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		if (m.getName().startsWith("access$")) return null;
 		else if (m.getName().equals("<init>")) {
 			try {
-				if (Repository.instanceOf(m.getClassName(), throwableClass))
+				if (throwableClass != null && Repository.instanceOf(m.getClassName(), throwableClass))
 					return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH;
 			} catch (ClassNotFoundException e) {
-				// ignore it
+				AnalysisContext.reportMissingClass(e);
 			}
 			try {
-				if (Repository.instanceOf(m.getClassName(), threadClass))
+				if (threadClass != null && Repository.instanceOf(m.getClassName(), threadClass))
 					return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW;
 			} catch (ClassNotFoundException e) {
-				// ignore it
+				AnalysisContext.reportMissingClass(e);
 			}
 		} else if (m.getName().equals("equals") && m.getSignature().equals("(Ljava/lang/Object;)Z")
 				&& !m.isStatic())

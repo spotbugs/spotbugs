@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.apache.bcel.Constants;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.ba.Debug;
 
@@ -671,6 +672,7 @@ public class TypeRepository {
 					for (Iterator<ObjectType> i = inheritanceGraph.successorIterator(type); i.hasNext();)
 						work.add(i.next());
 				} catch (ClassNotFoundException e) {
+					AnalysisContext.reportMissingClass(e);
 					String missingClassName = ClassNotFoundExceptionParser.getMissingClassName(e);
 					if (missingClassName == null)
 						missingClassName = "<unknown class>";
@@ -757,6 +759,7 @@ public class TypeRepository {
 			if (type.isInterface())
 				addInterfaceLink(type, classTypeFromSignature(JAVA_LANG_OBJECT_SIGNATURE));
 		} catch (ClassNotFoundException e) {
+			AnalysisContext.reportMissingClass(e);
 			type.setState(ObjectType.UNKNOWN);
 			type.setResolverFailure(e);
 			throw new ClassNotFoundException("Class " + type.getClassName() +

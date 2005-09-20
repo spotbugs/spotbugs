@@ -300,7 +300,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 					}
 				}
 			} catch (ClassNotFoundException e) {
-				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+				AnalysisContext.reportMissingClass(e);
 			}
 		}
 		

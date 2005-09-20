@@ -81,7 +81,7 @@ public class FieldStoreType {
 			} catch (ClassFormatException e) {
 				// Bad signature: ignore
 			} catch (ClassNotFoundException e) {
-				AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+				AnalysisContext.reportMissingClass(e);
 			}
 		}
 		
@@ -89,7 +89,7 @@ public class FieldStoreType {
 			if (leastSupertype != null && Hierarchy.isSubtype(leastSupertype, fieldType))
 				loadType = leastSupertype;
 		} catch (ClassNotFoundException e) {
-			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+			AnalysisContext.reportMissingClass(e);
 		}
 		
 		if (loadType == null)

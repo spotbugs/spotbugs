@@ -31,6 +31,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
@@ -362,6 +363,7 @@ public class ObligationAnalysis
 		try {
 			return factory.getObligationByType((ObjectType) type);
 		} catch (ClassNotFoundException e) {
+			AnalysisContext.reportMissingClass(e);
 			throw new DataflowAnalysisException(
 					"Subtype query failed during ObligationAnalysis", e);
 		}

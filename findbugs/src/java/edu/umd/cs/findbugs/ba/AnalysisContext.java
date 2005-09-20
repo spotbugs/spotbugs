@@ -111,6 +111,13 @@ public class AnalysisContext {
 	}
 
 	/**
+	 * 
+	 */
+	static public void reportMissingClass(ClassNotFoundException e) {
+		currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+	}
+	
+	/**
 	 * Get the lookup failure callback.
 	 */
 	public RepositoryLookupFailureCallback getLookupFailureCallback() {
@@ -219,6 +226,7 @@ public class AnalysisContext {
 			JavaClass javaClass = lookupClass(className);
 			return isApplicationClass(javaClass);
 		} catch (ClassNotFoundException e) {
+			AnalysisContext.reportMissingClass(e);
 			return false;
 		}
 	}

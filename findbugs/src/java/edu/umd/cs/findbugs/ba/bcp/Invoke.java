@@ -137,9 +137,7 @@ public class Invoke extends PatternElement {
 			try {
 				return Hierarchy.isSubtype(s, className);
 			} catch (ClassNotFoundException e) {
-				AnalysisContext.currentAnalysisContext()
-					.getLookupFailureCallback() 
-					.reportMissingClass(e);
+				AnalysisContext.reportMissingClass(e);
 				return false;
 			}
 		}

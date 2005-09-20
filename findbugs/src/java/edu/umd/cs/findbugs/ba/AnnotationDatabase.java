@@ -246,7 +246,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration> {
 			
 			return n;
 		} catch (ClassNotFoundException e) {
-			// ignore it
+			AnalysisContext.reportMissingClass(e);
 			return null;
 		}
 
