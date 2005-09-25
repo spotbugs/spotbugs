@@ -99,6 +99,10 @@ public class Update {
 
 	public static BugCollection mergeCollections(BugCollection origCollection,
 			BugCollection newCollection) {
+		
+		mapFromNewToOldBug.clear();
+
+		matchedOldBugs.clear();
 		BugCollection resultCollection = newCollection
 				.createEmptyCollectionWithMetadata();
 		// Previous sequence number
