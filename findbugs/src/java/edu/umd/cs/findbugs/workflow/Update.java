@@ -272,10 +272,9 @@ public class Update {
 
 		}
 
-		if (verbose) {
-			origCollection.writeXML(args[argCount++], currentProject);
-
-		} else
+		if (outputFilename != null) 
+			origCollection.writeXML(outputFilename, currentProject);
+		else
 			origCollection.writeXML(System.out, currentProject);
 
 	}
