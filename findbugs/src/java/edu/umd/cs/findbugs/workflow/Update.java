@@ -17,6 +17,7 @@
  */
 package edu.umd.cs.findbugs.workflow;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Date;
@@ -118,7 +119,7 @@ public class Update {
 		}
 		AppVersion origCollectionVersion = new AppVersion(lastSequence);
 		origCollectionVersion.setTimestamp(origCollection
-				.getCurrentAppVersion().getSequenceNumber());
+				.getCurrentAppVersion().getTimestamp());
 		origCollectionVersion.setReleaseName(origCollection
 				.getCurrentAppVersion().getReleaseName());
 		resultCollection.addAppVersion(origCollectionVersion);
@@ -229,6 +230,9 @@ public class Update {
 
 	public static String outputFilename;
 
+	public static String [] getFilePathParts(String filePath) {
+		return filePath.split(File.separator);
+	}
 	public static void main(String[] args) throws IOException,
 			DocumentException {
 
@@ -242,14 +246,29 @@ public class Update {
 			lastInputfile--;
 		}
 		verbose = outputFilename != null;
-		String origFileName = args[argCount++];
+		String[] firstPathParts = getFilePathParts(args[argCount]);
+		int commonPrefix = firstPathParts.length;
+		for(int i = argCount+1; i <= lastInputfile; i++) {
+
+			commonPrefix = Math.min(commonPrefix, 
+					lengthCommonPrefix(
+							firstPathParts, 
+							getFilePathParts(args[i])));
+		}
+		if (verbose) {
+			System.out.println("Common prefix length: " + commonPrefix);
+		}
+		boolean useNamesFromFiles = commandLine.revisionName == null;
+		String origFilename = args[argCount++];
 		Project project = new Project();
 		BugCollection origCollection;
 		origCollection = new SortedBugCollection(
 				SortedBugCollection.MultiversionBugInstanceComparator.instance);
 		BugCollection oCollection = origCollection;
-		origCollection.readXML(origFileName, project);
+		origCollection.readXML(origFilename, project);
 
+		if (useNamesFromFiles)
+			origCollection.setReleaseName(firstPathParts[commonPrefix]);
 		for (BugInstance bug : origCollection.getCollection())
 			if (bug.getLastVersion() >= 0
 					&& bug.getFirstVersion() > bug.getLastVersion())
@@ -270,6 +289,8 @@ public class Update {
 
 			if (commandLine.revisionName != null)
 				newCollection.setReleaseName(commandLine.revisionName);
+			else if (useNamesFromFiles)
+				newCollection.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
 			if (commandLine.revisionTimestamp != 0)
 				newCollection.setTimestamp(commandLine.revisionTimestamp);
 			origCollection = mergeCollections(origCollection, newCollection);
@@ -281,6 +302,14 @@ public class Update {
 		else
 			origCollection.writeXML(System.out, project);
 
+	}
+
+
+	private static int lengthCommonPrefix(String[] string, String[] string2) {
+		int maxLength = Math.min(string.length, string2.length);
+		for (int result = 0; result < maxLength; result++)
+			if (!string[result].equals(string2[result])) return result;
+		return maxLength;
 	}
 
 	private static void copyBugHistory(BugInstance src, BugInstance dest) {
