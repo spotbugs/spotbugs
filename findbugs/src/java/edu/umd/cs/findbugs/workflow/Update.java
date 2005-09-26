@@ -243,30 +243,30 @@ public class Update {
 		}
 		verbose = outputFilename != null;
 		String origFileName = args[argCount++];
-
+		Project project = new Project();
 		BugCollection origCollection;
 		origCollection = new SortedBugCollection(
 				SortedBugCollection.MultiversionBugInstanceComparator.instance);
 		BugCollection oCollection = origCollection;
-		origCollection.readXML(origFileName, new Project());
+		origCollection.readXML(origFileName, project);
 
 		for (BugInstance bug : origCollection.getCollection())
 			if (bug.getLastVersion() >= 0
 					&& bug.getFirstVersion() > bug.getLastVersion())
 				throw new IllegalStateException("Illegal Version range: "
 						+ bug.getFirstVersion() + ".." + bug.getLastVersion());
-		Project currentProject = new Project();
+
 
 		while (argCount <= lastInputfile) {
 
 			BugCollection newCollection = new SortedBugCollection(
 					SortedBugCollection.MultiversionBugInstanceComparator.instance);
-			BugCollection nCollection = newCollection;
 
 			String newFilename = args[argCount++];
 			if (verbose)
 				System.out.println("Merging " + newFilename);
-			newCollection.readXML(newFilename, currentProject);
+			project = new Project();
+			newCollection.readXML(newFilename, project);
 
 			if (commandLine.revisionName != null)
 				newCollection.setReleaseName(commandLine.revisionName);
@@ -277,9 +277,9 @@ public class Update {
 		}
 
 		if (outputFilename != null) 
-			origCollection.writeXML(outputFilename, currentProject);
+			origCollection.writeXML(outputFilename, project);
 		else
-			origCollection.writeXML(System.out, currentProject);
+			origCollection.writeXML(System.out, project);
 
 	}
 
