@@ -21,10 +21,12 @@
 package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Stack;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
@@ -1040,6 +1042,8 @@ public class OpcodeStack implements Constants2
 	 		clear();
 	 	}
 	 	finally {
+	 		if (exceptionHandlers.get(dbc.getNextPC()))
+	 			push(new Item());
 	 		if (DEBUG)
 	 			System.out.println(OPCODE_NAMES[seen] + "  stack depth: " + getStackDepth());
 	 	}
@@ -1050,7 +1054,7 @@ public class OpcodeStack implements Constants2
  		lvValues.clear();
 		jumpStack.clear();
  	}
- 	
+ 	BitSet exceptionHandlers = new BitSet();
  	public int resetForMethodEntry(PreorderVisitor v) {
  		if (DEBUG) System.out.println(" --- ");
  		stack.clear();
@@ -1061,6 +1065,9 @@ public class OpcodeStack implements Constants2
 		String className = v.getClassName();
 		Method m = v.getMethod();
 		String signature = v.getMethodSig();
+		exceptionHandlers.clear();
+		for(CodeException ex : m.getCode().getExceptionTable()) 
+			exceptionHandlers.set(ex.getHandlerPC());
 		if (DEBUG) System.out.println(" --- " + className 
 				+ " " + m.getName() + " " + signature);
 		Type[] argTypes = Type.getArgumentTypes(signature);
