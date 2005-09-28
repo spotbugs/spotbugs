@@ -46,7 +46,7 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 
 	private int opcode;
 	private boolean opcodeIsWide;
-	private int PC;
+	private int PC,nextPC;
 	private int branchOffset;
 	private int branchTarget;
 	private int branchFallThrough;
@@ -655,6 +655,7 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 					refFieldIsStatic = false;
 					break;
 				}
+				nextPC = i;
 				sawOpcode(opcode);
 
 				if (opcode == TABLESWITCH) {
@@ -810,5 +811,13 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 		}
 	
 		System.out.println();
+	}
+
+
+	/**
+	 * @return Returns the nextPC.
+	 */
+	public int getNextPC() {
+		return nextPC;
 	}
 }
