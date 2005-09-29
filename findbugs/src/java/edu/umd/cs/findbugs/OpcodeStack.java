@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Stack;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
@@ -1069,6 +1070,7 @@ public class OpcodeStack implements Constants2
  	}
  	BitSet exceptionHandlers = new BitSet();
  	public int resetForMethodEntry(PreorderVisitor v) {
+ 
  		if (DEBUG) System.out.println(" --- ");
  		stack.clear();
 		jumpTarget = -1;
@@ -1079,8 +1081,13 @@ public class OpcodeStack implements Constants2
 		Method m = v.getMethod();
 		String signature = v.getMethodSig();
 		exceptionHandlers.clear();
-		for(CodeException ex : m.getCode().getExceptionTable()) 
-			exceptionHandlers.set(ex.getHandlerPC());
+		Code code = m.getCode();
+		if (code != null) {
+			CodeException[] exceptionTable = code.getExceptionTable();
+			if (exceptionTable != null)
+				for(CodeException ex : exceptionTable) 
+					exceptionHandlers.set(ex.getHandlerPC());
+		}
 		if (DEBUG) System.out.println(" --- " + className 
 				+ " " + m.getName() + " " + signature);
 		Type[] argTypes = Type.getArgumentTypes(signature);
