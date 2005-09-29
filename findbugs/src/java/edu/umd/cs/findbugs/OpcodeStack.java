@@ -1092,11 +1092,20 @@ public class OpcodeStack implements Constants2
  	}
  
  	public Item getStackItem(int stackOffset) {
-		if (stackOffset > stack.size()) throw new ArrayIndexOutOfBoundsException(
-				"Requested item at offset " + stackOffset + " in a stack of size " + stack.size());
+		if (stackOffset < 0 || stackOffset >= stack.size()) {
+			assert false;
+			return new Item("Lfindbugs/OpcodeStackError;");
+			
+		}
  		int tos = stack.size() - 1;
  		int pos = tos - stackOffset;
+ 		try {
  		return stack.get(pos);
+ 		} catch (ArrayIndexOutOfBoundsException e) {
+ 			throw new ArrayIndexOutOfBoundsException(
+ 				"Requested item at offset " + stackOffset + " in a stack of size " + stack.size()
+ 				+", made request for position " + pos);
+ 		}
  	} 
  	
  	 private Item pop() {
