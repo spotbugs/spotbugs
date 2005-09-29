@@ -91,6 +91,12 @@ public class OpcodeStack implements Constants2
 		private int registerNumber = -1;
 		private boolean isInitialParameter = false;
 
+		
+		public int getSize() {
+			if (signature.equals("J") || signature.equals("D")) return 2;
+			return 1;
+		}
+
 		private static boolean equals(Object o1, Object o2) {
 			if (o1 == o2) return true;
 			if (o1 == null || o2 == null) return false;
@@ -476,11 +482,18 @@ public class OpcodeStack implements Constants2
 	 			
 	 			case DUP2:
 	 				it = pop();
-	 				it2 = pop();
-	 				push(it2);
-	 				push(it);
-	 				push(it2);
-	 				push(it);
+	 				if  (it.getSize() == 2) {
+	 					push(it);
+	 					push(it);
+	 				}
+	 				else {
+	 					it2 = pop();
+	 					push(it2);
+		 				push(it);
+		 				push(it2);
+		 				push(it);
+	 				}
+	 			
 	 			break;
 	 			
 	 			case DUP_X1:
