@@ -231,6 +231,10 @@ public class SortedBugCollection extends AbstractBugCollection {
 	}
 	
 	public void addMissingClass(String className) {
+		if (className.startsWith("[")) {
+			assert false;
+			return;
+		}
 		missingClassSet.add(className);
 	}
 
