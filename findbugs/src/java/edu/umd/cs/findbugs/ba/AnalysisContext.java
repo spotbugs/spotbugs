@@ -77,7 +77,7 @@ public class AnalysisContext {
 		return nullnessAnnotationDatabase;
 	}
 
-	private CheckReturnAnnotationDatabase checkReturnAnnotationDatabase = new CheckReturnAnnotationDatabase();
+	private CheckReturnAnnotationDatabase checkReturnAnnotationDatabase;
 	public CheckReturnAnnotationDatabase getCheckReturnAnnotationDatabase() {
 		return checkReturnAnnotationDatabase;
 	}
@@ -101,6 +101,11 @@ public class AnalysisContext {
 		this.boolPropertySet = new BitSet();
 		
 		currentAnalysisContext.set(this);
+		
+		//CheckReturnAnnotationDatabase may reportMissingClass, so do it after the currentAnalysisContext is set.
+		//Otherwise null ptr exceptions will happen.
+		
+		checkReturnAnnotationDatabase = new CheckReturnAnnotationDatabase();
 	}
 
 	/**
