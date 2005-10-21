@@ -25,6 +25,8 @@ import java.util.Map;
 
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+
 /**
  * Abstract base class providing functionality that will be useful
  * for most dataflow analysis implementations.  In particular, it implements
@@ -60,6 +62,7 @@ public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysi
 	 * Determine whether the given fact is <em>valid</em>
 	 * (neither top nor bottom).
 	 */
+	@CheckReturnValue
 	public abstract boolean isFactValid(Fact fact);
 
 	/**
