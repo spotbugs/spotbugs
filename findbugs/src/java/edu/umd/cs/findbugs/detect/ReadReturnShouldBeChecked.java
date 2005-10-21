@@ -31,6 +31,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 
 	boolean sawRead = false;
 	boolean sawSkip = false;
+	boolean recentCallToAvailable = false;
 	int sawAvailable = 0;
 	boolean wasBufferedInputStream = false;
 	private BugReporter bugReporter;
@@ -99,8 +100,9 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 		            || getSigConstantOperand().equals("([C)I")
 		            || getSigConstantOperand().equals("([CII)I")
 				)
-		        && sawAvailable <= 0) {
+		        ) {
 			sawRead = true;
+			recentCallToAvailable = sawAvailable > 0;
 			readPC = getPC();
 			return;
 			}
@@ -111,24 +113,25 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 			// if not ByteArrayInput Stream
 			//  and either no recent calls to length
 			//        or it is a BufferedInputStream
-			if (sawAvailable <= 0 || isBufferedInputStream) {
+
 				wasBufferedInputStream = isBufferedInputStream;
 				sawSkip = true;
+				recentCallToAvailable = sawAvailable > 0 && !isBufferedInputStream;
 				skipPC = getPC();
 				return;
-			}
+			
 		}
 
 		if ((seen == POP) || (seen == POP2)) {
 			if (sawRead) {
-				bugReporter.reportBug(new BugInstance(this, "RR_NOT_CHECKED", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "RR_NOT_CHECKED", recentCallToAvailable ? LOW_PRIORITY : NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig, false)
 				        .addSourceLine(this, readPC));
 			} else if (sawSkip) {
 
 				bugReporter.reportBug(new BugInstance(this, "SR_NOT_CHECKED",
-				        (wasBufferedInputStream ? HIGH_PRIORITY : NORMAL_PRIORITY))
+				        (wasBufferedInputStream ? HIGH_PRIORITY : recentCallToAvailable ? LOW_PRIORITY : NORMAL_PRIORITY))
 				        .addClassAndMethod(this)
 				        .addCalledMethod(lastCallClass, lastCallMethod, lastCallSig, false)
 				        .addSourceLine(this, skipPC));
