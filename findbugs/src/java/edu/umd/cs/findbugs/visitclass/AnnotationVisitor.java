@@ -74,14 +74,14 @@ public class AnnotationVisitor extends PreorderVisitor {
 	public void visitSyntheticParameterAnnotation(int p,  boolean runtimeVisible) {
 	}
 	
-	public void visit(Attribute obj) {
+	public void visit(Unknown obj) {
 		try {
-			if (obj instanceof Unknown) {
-				String name = ((Unknown) obj).getName();
+			
+				String name = obj.getName();
 				if (DEBUG)
 					System.out.println("In " + getDottedClassName() + " found "
 							+ name);
-				byte[] b = ((Unknown) obj).getBytes();
+				byte[] b = obj.getBytes();
 				DataInputStream bytes = new DataInputStream(
 						new ByteArrayInputStream(b));
 				boolean runtimeVisible = name.equals("RuntimeVisibleParameterAnnotations");
@@ -147,7 +147,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 								+ " ");
 					System.out.println();
 				}
-			}
+			
 
 		} catch (Exception e) {
 			// ignore

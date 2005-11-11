@@ -221,17 +221,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 
 	// General classes
 	public void visitJavaClass(JavaClass obj) {
-		constantPool = obj.getConstantPool();
-		thisClass = obj;
-		ConstantClass c = (ConstantClass) constantPool.getConstant(obj.getClassNameIndex());
-		className = getStringFromIndex(c.getNameIndex());
-		dottedClassName = className.replace('/', '.');
-		packageName = obj.getPackageName();
-		sourceFile = obj.getSourceFileName();
-		superclassName = obj.getSuperclassName();
-		dottedSuperclassName = superclassName.replace('/', '.');
-
-		super.visitJavaClass(obj);
+		setupVisitorForClass(obj);
 		constantPool.accept(this);
 		Field[] fields = obj.getFields();
 		Method[] methods = obj.getMethods();
@@ -243,6 +233,20 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		for (Attribute attribute : attributes)
 			attribute.accept(this);
 		visitAfter(obj);
+	}
+
+	public void setupVisitorForClass(JavaClass obj) {
+		constantPool = obj.getConstantPool();
+		thisClass = obj;
+		ConstantClass c = (ConstantClass) constantPool.getConstant(obj.getClassNameIndex());
+		className = getStringFromIndex(c.getNameIndex());
+		dottedClassName = className.replace('/', '.');
+		packageName = obj.getPackageName();
+		sourceFile = obj.getSourceFileName();
+		superclassName = obj.getSuperclassName();
+		dottedSuperclassName = superclassName.replace('/', '.');
+
+		super.visitJavaClass(obj);
 	}
 
 	public void visitLineNumberTable(LineNumberTable obj) {
