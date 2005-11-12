@@ -93,10 +93,14 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 	}
 
 	private boolean isConditionAwait() {
+		String className = getClassConstantOperand();
 		String name = getNameConstantOperand();
 		String sig = getSigConstantOperand();
+
+		if (!className.equals("java/util/concurrent/locks/Condition")) return false;
 		
-		if (name.equals("await") &&
+		if (
+				name.equals("await") &&
 				(sig.equals("()V") || sig.equals("(JLjava/util/concurrent/TimeUnit;)V")))
 			return true;
 		if (name.equals("awaitNanos") && sig.equals("(J)V"))
