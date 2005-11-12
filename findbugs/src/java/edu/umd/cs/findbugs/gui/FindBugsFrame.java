@@ -129,6 +129,7 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 	 * 
 	 */
 	private static final Font SOURCE_FONT = new java.awt.Font("Monospaced", 0, 12);
+	private static final Font JTREE_FONT = new java.awt.Font("SansSerif", 0, 12);
 
 	/**
 	 * 
@@ -544,12 +545,16 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
         groupByTabbedPane = new javax.swing.JTabbedPane();
         byClassScrollPane = new javax.swing.JScrollPane();
         byClassBugTree = new javax.swing.JTree();
+        byClassBugTree.setFont(JTREE_FONT);
         byPackageScrollPane = new javax.swing.JScrollPane();
         byPackageBugTree = new javax.swing.JTree();
+        byPackageBugTree.setFont(JTREE_FONT);
         byBugTypeScrollPane = new javax.swing.JScrollPane();
         byBugTypeBugTree = new javax.swing.JTree();
+        byBugTypeBugTree.setFont(JTREE_FONT);
         byBugCategoryScrollPane = new javax.swing.JScrollPane();
         byBugCategoryBugTree = new javax.swing.JTree();
+        byBugCategoryBugTree.setFont(JTREE_FONT);
         bySummary = new javax.swing.JScrollPane();
         bugSummaryEditorPane = new javax.swing.JEditorPane();
         bugDetailsTabbedPane = new javax.swing.JTabbedPane();
