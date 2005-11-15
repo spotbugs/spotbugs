@@ -266,6 +266,8 @@ public class Update {
 		BugCollection origCollection;
 		origCollection = new SortedBugCollection(
 				SortedBugCollection.MultiversionBugInstanceComparator.instance);
+		if (verbose)
+			System.out.println("Starting with " + origFilename);
 		BugCollection oCollection = origCollection;
 		origCollection.readXML(origFilename, project);
 
@@ -290,8 +292,8 @@ public class Update {
 			newCollection.readXML(newFilename, project);
 
 
-			if (commandLine.overrideRevisionNames || newCollection.getReleaseName() == null)
-				newCollection.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
+			if (commandLine.overrideRevisionNames || newCollection.getReleaseName() == null || newCollection.getReleaseName().length() == 0) 
+					newCollection.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
 
 			origCollection = mergeCollections(origCollection, newCollection);
 
