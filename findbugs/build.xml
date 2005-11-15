@@ -187,10 +187,10 @@
 		<!-- Annotations jar file. -->
 		<jar destfile="${annotations.jar}">
 			<fileset dir="${classes.dir}">
-				<include name="${pkg.base}/annotations/*.class"/>
+				<include name="**/annotations/*.class"/>
 			</fileset>
 			<fileset dir="${src.dir}">
-				<include name="${pkg.base}/annotations/*.java"/>
+				<include name="**/annotations/*.java"/>
 			</fileset>
 		</jar>
 	</target>

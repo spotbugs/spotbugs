@@ -1,0 +1,5 @@
+The Java code in the package net.jcip.annotations 
+is copyright (c) 2005 Brian Goetz
+and is released under the Creative Commons Attribution License
+(http://creativecommons.org/licenses/by/2.5)
+Official home: http://www.jcip.net
