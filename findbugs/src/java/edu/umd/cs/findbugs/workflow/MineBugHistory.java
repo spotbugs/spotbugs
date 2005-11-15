@@ -151,12 +151,13 @@ public class MineBugHistory {
 			if (formatDates)
 				out.print("\"" + (appVersion != null ?  new Date(appVersion.getTimestamp()).toString() : "") + "\"");
 			else out.print(appVersion != null ? appVersion.getTimestamp() : 0L);
+			out.print('\t');
 			if (appVersion != null) {
 				out.print(appVersion.getNumClasses());
 				out.print('\t');
 				out.print(appVersion.getCodeSize());
-				out.print('\t');
-			} else out.print("0\t0\t");
+
+			} else out.print("\t0\t0");
 
 			for (int j = 0; j < TUPLE_SIZE; ++j) {
 				out.print('\t');
