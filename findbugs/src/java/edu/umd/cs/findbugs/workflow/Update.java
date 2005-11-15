@@ -62,21 +62,25 @@ public class Update {
 	private static HashSet<BugInstance> matchedOldBugs = new HashSet<BugInstance>();
 
 	static class UpdateCommandLine extends CommandLine {
-		String revisionName;
-
-		long revisionTimestamp = 0L;
-
+		boolean getRevisionNamesFromFiles = false;
 		UpdateCommandLine() {
-			addOption("-name", "name", "provide name for new results");
+			addSwitchWithOptionalExtraPart("-getRevisionNamesFromFilenames", "truth",
+			"generate revision names for each version from filenames");
 			addOption("-output", "output file",
 					"explicit filename for merged results (use - for standard out)");
-			addOption("-timestamp", "when", "timestamp for new results");
-
+	
 		}
 
 		@Override
 		protected void handleOption(String option, String optionExtraPart)
 				throws IOException {
+			if (option.equals("-getRevisionNamesFromFilenames")) {
+				if (optionExtraPart.length() == 0)
+					getRevisionNamesFromFiles = true;
+				else
+					getRevisionNamesFromFiles = Boolean.parseBoolean(optionExtraPart);
+			}
+			else 
 			throw new IllegalArgumentException("no option " + option);
 
 		}
@@ -84,12 +88,8 @@ public class Update {
 		@Override
 		protected void handleOptionWithArgument(String option, String argument)
 				throws IOException {
-			if (option.equals("-name"))
-				revisionName = argument;
-			else if (option.equals("-output"))
+			if (option.equals("-output"))
 				outputFilename = argument;
-			else if (option.equals("-timestamp"))
-				revisionTimestamp = Date.parse(argument);
 			else
 				throw new IllegalArgumentException("Can't handle option "
 						+ option);
@@ -259,7 +259,7 @@ public class Update {
 		if (verbose) {
 			System.out.println("Common prefix length: " + commonPrefix);
 		}
-		boolean useNamesFromFiles = commandLine.revisionName == null;
+		
 		String origFilename = args[argCount++];
 		Project project = new Project();
 		BugCollection origCollection;
@@ -268,7 +268,7 @@ public class Update {
 		BugCollection oCollection = origCollection;
 		origCollection.readXML(origFilename, project);
 
-		if (useNamesFromFiles)
+		if (commandLine.getRevisionNamesFromFiles)
 			origCollection.setReleaseName(firstPathParts[commonPrefix]);
 		for (BugInstance bug : origCollection.getCollection())
 			if (bug.getLastVersion() >= 0
@@ -288,12 +288,10 @@ public class Update {
 			project = new Project();
 			newCollection.readXML(newFilename, project);
 
-			if (commandLine.revisionName != null)
-				newCollection.setReleaseName(commandLine.revisionName);
-			else if (useNamesFromFiles)
+
+			if (commandLine.getRevisionNamesFromFiles)
 				newCollection.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
-			if (commandLine.revisionTimestamp != 0)
-				newCollection.setTimestamp(commandLine.revisionTimestamp);
+
 			origCollection = mergeCollections(origCollection, newCollection);
 
 		}

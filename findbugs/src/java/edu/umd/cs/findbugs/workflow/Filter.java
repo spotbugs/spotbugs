@@ -71,7 +71,6 @@ public class Filter {
 		long absent;
 		String absentAsString; 
 		String annotation;
-		String revisionName = null;
 		public boolean activeSpecified = false;
 		public boolean active = false;
 	
@@ -97,8 +96,6 @@ public class Filter {
 		public boolean serious = false;
 		public boolean seriousSpecified = false;
 		
-		public  List<String> sourcePaths = new LinkedList<String>();
-
 		private Matcher includeFilter, excludeFilter;
 		String category;
 		int priority = 3;
@@ -135,8 +132,6 @@ public class Filter {
 			addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
 			addOption("-category", "category", "allow only warnings with a category that starts with this string");
 			
-			addOption("-setRevisionName", "name", "set the name of the last revision in this database");
-			addOption("-source", "directory", "Add this directory to the source search path");
 			
 		}
 
@@ -320,8 +315,6 @@ public class Filter {
 				priority = parsePriority(argument);
 			}
 
-			else if (option.equals("-source"))
-				sourcePaths.add(argument);
 			
 			else if (option.equals("-first")) 
 				firstAsString = argument;
@@ -336,8 +329,6 @@ public class Filter {
 			else if (option.equals("-absent")) 
 				absentAsString = argument;
 			
-			else if (option.equals("-setRevisionName"))
-				revisionName = argument;
 			else if (option.equals("-category"))
 				category = argument;
 			else if (option.equals("-class"))
@@ -392,11 +383,7 @@ public class Filter {
 		BugCollection resultCollection = origCollection.createEmptyCollectionWithMetadata();
 		int passed = 0;
 		int dropped = 0;
-		for(String source : commandLine.sourcePaths)
-			project.addSourceDir(source);
 		sourceFinder.setSourceBaseList(project.getSourceDirList());
-		if (commandLine.revisionName != null)
-			resultCollection.setReleaseName(commandLine.revisionName);
 		commandLine.adjustFilter(resultCollection);
 		resultCollection.getProjectStats().clearBugCounts();
 
