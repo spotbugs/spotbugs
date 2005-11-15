@@ -103,7 +103,8 @@ public class MineBugHistory {
 	
 	
 	public MineBugHistory execute() {
-		int maxSequence = (int)bugCollection.getSequenceNumber();
+		long sequenceNumber = bugCollection.getSequenceNumber();
+		int maxSequence = (int)sequenceNumber;
 		versionList = new Version[maxSequence + 1];
 		for (int i = 0; i <= maxSequence; ++i) {
 			versionList[i] = new Version(i);
@@ -111,11 +112,15 @@ public class MineBugHistory {
 		
 		for (Iterator<AppVersion> i = bugCollection.appVersionIterator(); i.hasNext();) {
 			AppVersion appVersion = i.next();
-			sequenceToAppVersionMap.put(Long.valueOf(appVersion.getSequenceNumber()), appVersion);
+			long versionSequenceNumber = appVersion.getSequenceNumber();
+			System.out.println(versionSequenceNumber);
+			sequenceToAppVersionMap.put(Long.valueOf(versionSequenceNumber), appVersion);
 		}
+		
+		AppVersion currentAppVersion = bugCollection.getCurrentAppVersion();
 		sequenceToAppVersionMap.put(
-			Long.valueOf(bugCollection.getSequenceNumber()),
-			bugCollection.getCurrentAppVersion());
+			Long.valueOf(sequenceNumber),
+			currentAppVersion);
 		
 		for (Iterator<BugInstance> j = bugCollection.iterator(); j.hasNext();) {
 			BugInstance bugInstance = j.next();

@@ -213,7 +213,9 @@ public abstract class AbstractBugCollection implements BugCollection {
 	public AppVersion getCurrentAppVersion() {
 		return new AppVersion(getSequenceNumber())
 			.setReleaseName(getReleaseName())
-			.setTimestamp(getTimestamp());
+			.setTimestamp(getTimestamp())
+			.setNumClasses(getProjectStats().getNumClasses())
+			.setCodeSize(getProjectStats().getCodeSize());
 	}
 	
 	/**

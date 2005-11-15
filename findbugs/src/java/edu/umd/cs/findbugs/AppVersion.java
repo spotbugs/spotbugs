@@ -144,8 +144,9 @@ public class AppVersion implements XMLWriteable, Cloneable {
 	/**
 	 * @param numClasses The numClasses to set.
 	 */
-	public void setNumClasses(int numClasses) {
+	public AppVersion setNumClasses(int numClasses) {
 		this.numClasses = numClasses;
+		return this;
 	}
 	/**
 	 * @return Returns the numClasses.
@@ -156,8 +157,9 @@ public class AppVersion implements XMLWriteable, Cloneable {
 	/**
 	 * @param codeSize The codeSize to set.
 	 */
-	public void setCodeSize(int codeSize) {
+	public AppVersion setCodeSize(int codeSize) {
 		this.codeSize = codeSize;
+		return this;
 	}
 	/**
 	 * @return Returns the codeSize.

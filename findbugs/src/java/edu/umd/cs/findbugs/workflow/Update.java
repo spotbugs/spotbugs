@@ -259,9 +259,7 @@ public class Update {
 							firstPathParts, 
 							getFilePathParts(args[i])));
 		}
-		if (verbose) {
-			System.out.println("Common prefix length: " + commonPrefix);
-		}
+		
 		
 		String origFilename = args[argCount++];
 		Project project = new Project();
@@ -271,7 +269,7 @@ public class Update {
 		BugCollection oCollection = origCollection;
 		origCollection.readXML(origFilename, project);
 
-		if (commandLine.overrideRevisionNames || origCollection.getReleaseName() == null)
+		if (commandLine.overrideRevisionNames || origCollection.getReleaseName() == null || origCollection.getReleaseName().length() == 0)
 			origCollection.setReleaseName(firstPathParts[commonPrefix]);
 		for (BugInstance bug : origCollection.getCollection())
 			if (bug.getLastVersion() >= 0
