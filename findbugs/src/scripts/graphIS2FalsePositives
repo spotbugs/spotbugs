@@ -4,7 +4,7 @@
 
 @SET_DEFAULT_JAVA@
 
-fb_mainclass=edu.umd.cs.findbugs.GraphIS2FalsePositives
+fb_mainclass=edu.umd.cs.findbugs.workflow.GraphIS2FalsePositives
 
 @WRAP_JAVA@
 

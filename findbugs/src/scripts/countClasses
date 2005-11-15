@@ -4,6 +4,6 @@
 
 @SET_DEFAULT_JAVA@
 
-fb_mainclass=edu.umd.cs.findbugs.CountClasses
+fb_mainclass=edu.umd.cs.findbugs.workflow.CountClasses
 
 @WRAP_JAVA@

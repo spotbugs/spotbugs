@@ -20,7 +20,7 @@ while [ $# -gt 0 ] && [ "$out" = "no" ]; do
 	esac
 done
 
-fb_mainclass=edu.umd.cs.findbugs.CategorizeBugs
+fb_mainclass=edu.umd.cs.findbugs.workflow.CategorizeBugs
 
 @WRAP_JAVA@
 

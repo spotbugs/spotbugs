@@ -4,7 +4,7 @@
 
 @SET_DEFAULT_JAVA@
 
-fb_mainclass=edu.umd.cs.findbugs.AliasedWarnings
+fb_mainclass=edu.umd.cs.findbugs.workflow.AliasedWarnings
 
 @WRAP_JAVA@
 

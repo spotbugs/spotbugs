@@ -4,7 +4,7 @@
 
 @SET_DEFAULT_JAVA@
 
-fb_mainclass=edu.umd.cs.findbugs.ClassifyBugs
+fb_mainclass=edu.umd.cs.findbugs.workflow.ClassifyBugs
 
 @WRAP_JAVA@
 

@@ -7,7 +7,7 @@
 
 @SET_DEFAULT_JAVA@
 
-fb_mainclass=edu.umd.cs.findbugs.UnionResults
+fb_mainclass=edu.umd.cs.findbugs.workflow.UnionResults
 
 @WRAP_JAVA@
 

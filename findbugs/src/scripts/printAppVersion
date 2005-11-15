@@ -4,7 +4,7 @@
 
 @SET_DEFAULT_JAVA@
 
-fb_mainclass=edu.umd.cs.findbugs.PrintAppVersion
+fb_mainclass=edu.umd.cs.findbugs.workflow.PrintAppVersion
 
 @WRAP_JAVA@
 
