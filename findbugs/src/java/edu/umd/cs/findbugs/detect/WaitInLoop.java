@@ -89,7 +89,6 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 		if (seen >= IFEQ && seen <= GOTO
 		        || seen >= IFNULL && seen <= GOTO_W)
 			earliestJump = Math.min(earliestJump, getBranchTarget());
-
 	}
 
 	private boolean isConditionAwait() {
@@ -98,6 +97,8 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 		String sig = getSigConstantOperand();
 
 		if (!className.equals("java/util/concurrent/locks/Condition")) return false;
+		
+		if (!name.startsWith("await")) return false;
 		
 		if (
 				name.equals("await") &&
