@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.workflow;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -39,6 +39,14 @@ import java.util.Map.Entry;
 
 import org.dom4j.DocumentException;
 
+import edu.umd.cs.findbugs.AbstractBugCollection;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.FuzzyBugComparator;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.SloppyBugComparator;
+import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.VersionInsensitiveBugComparator;
+import edu.umd.cs.findbugs.WarningComparator;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.model.MovedClassMap;
 
@@ -53,6 +61,7 @@ import edu.umd.cs.findbugs.model.MovedClassMap;
  * 
  * @author David Hovemeyer
  */
+@Deprecated
 public class BugHistory {
 	private static final boolean DEBUG = false;
 	

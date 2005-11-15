@@ -17,38 +17,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs;
+package edu.umd.cs.findbugs.workflow;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-
-import edu.umd.cs.findbugs.model.ClassFeatureSet;
-import edu.umd.cs.findbugs.model.SimilarClassFinder;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.SortedBugCollection;
 
 /**
+ * Print the AppVersion information from a BugCollection.
+ * 
  * @author David Hovemeyer
  */
-public class CountClasses {
+public class PrintAppVersion {
 	public static void main(String[] args) throws Exception {
 		if (args.length != 1) {
-			System.err.println("Usage: " + CountClasses.class.getName() + " <bug collection>");
+			System.out.println("Usage: " + PrintAppVersion.class.getName() +
+					" <bug collection>" );
 			System.exit(1);
 		}
 		
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		bugCollection.readXML(args[0], new Project());
-		
-		Set<String> classesSeen = new TreeSet<String>();
-		SimilarClassFinder similarClasses = new SimilarClassFinder();
-		
-		for (Iterator<ClassFeatureSet> i = bugCollection.classFeatureSetIterator(); i.hasNext();) {
-			ClassFeatureSet classFeatureSet = i.next();
-			classesSeen.add(classFeatureSet.getClassName());
-			similarClasses.add(classFeatureSet);
-		}
-		
-		System.out.println(classesSeen.size() + " classes");
-		System.out.println(similarClasses.size() + " equivalence classes");
+		System.out.println(bugCollection.getCurrentAppVersion());
 	}
 }

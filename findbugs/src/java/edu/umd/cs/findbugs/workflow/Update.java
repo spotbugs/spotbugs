@@ -69,7 +69,7 @@ public class Update {
 		UpdateCommandLine() {
 			addOption("-name", "name", "provide name for new results");
 			addOption("-output", "output file",
-					"explicit filename for merged results");
+					"explicit filename for merged results (use - for standard out)");
 			addOption("-timestamp", "when", "timestamp for new results");
 
 		}
@@ -134,7 +134,7 @@ public class Update {
 				origCollection, newCollection);
 		matchBugs(VersionInsensitiveBugComparator.instance(), origCollection,
 				newCollection);
-		matchBugs(new SloppyBugComparator(), origCollection, newCollection);
+		// matchBugs(new SloppyBugComparator(), origCollection, newCollection);
 
 		int oldBugs = 0;
 		int newlyDeadBugs = 0;
@@ -211,7 +211,7 @@ public class Update {
 						+ " : " + newBug.getMessage());
 			}
 		}
-		if (verbose) {
+		if (false && verbose) {
 			System.out.println(origCollection.getCollection().size()
 					+ " orig bugs, " + newCollection.getCollection().size()
 					+ " new bugs");
@@ -245,6 +245,7 @@ public class Update {
 			outputFilename = args[args.length - 1];
 			lastInputfile--;
 		}
+		if (outputFilename.equals("-")) outputFilename = null;
 		verbose = outputFilename != null;
 		String[] firstPathParts = getFilePathParts(args[argCount]);
 		int commonPrefix = firstPathParts.length;
@@ -351,7 +352,7 @@ public class Update {
 				matchedOldBugs.add(matchedBug);
 			}
 		}
-		if (verbose) System.out.println("matched " + matchedBugs + " of " + oldBugs +"o/" + newBugs  + "n bugs using " + bugInstanceComparator.getClass().getName()); 
+		if (false && verbose) System.out.println("matched " + matchedBugs + " of " + oldBugs +"o/" + newBugs  + "n bugs using " + bugInstanceComparator.getClass().getName()); 
 	}
 
 }

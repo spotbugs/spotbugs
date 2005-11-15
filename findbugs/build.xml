@@ -200,11 +200,8 @@
 		<condition property="scripts.uptodate">
 			<and>
 				<!-- Generated scripts must be newer than src scripts -->
-				<uptodate>
-					<srcfiles dir="." includes="${scriptsrc.dir}/*"/>
-					<mapper type="regexp"
-						from="^src(/|\\)scripts(/|\\)(.*)$$"
-						to="${scripts.dir}/\3"/>
+				<uptodate targetfile="${scripts.stamp}">
+					<srcfiles dir="${scriptsrc.dir}/standard" includes="*"  excludes="CVS"/>
 				</uptodate>
 				<!-- And, generated scripts must be newer than etc/script.properties -->
 				<uptodate targetfile="${scripts.stamp}">
@@ -215,7 +212,9 @@
 	</target>
 	
 	<!-- Generate front-end scripts. -->
-	<target name="scripts" depends="checkscripts" unless="scripts.uptodate">
+	<target name="scripts" depends="checkscripts" 
+				unless="scripts.uptodate"
+				>
 		<loadproperties srcFile="${scripts.props}"/>
 
 		<filterset id="script.filters">
@@ -226,14 +225,23 @@
 			<filter token="DEFINE_ESCAPE_ARG" value="${script.define.escape_arg}"/>
 		</filterset>
 
+		 <delete>
+		 	<fileset dir="${scripts.dir}" includes="*" excludes="CVS"/>
+		  </delete>
 		<copy todir="${scripts.dir}" overwrite="true">
-			<fileset dir="${scriptsrc.dir}"/>
+					<fileset dir="${scriptsrc.dir}/standard"/>
+					<filterset refid="script.filters"/>
+				</copy>
+		
+		<copy todir="${scripts.dir}/deprecated" overwrite="true">
+			<fileset dir="${scriptsrc.dir}/deprecated"/>
 			<filterset refid="script.filters"/>
 		</copy>
 
-		<!-- Make the Unix scripts executable. -->
-		<chmod dir="${scripts.dir}" perm="a+x" includes="*" excludes="*.bat"/>
 
+		<!-- Make the Unix scripts executable. -->
+		<chmod dir="${scripts.dir}" perm="a+x" includes="**/*" excludes="**/*.bat"/>
+		
 		<touch file="${scripts.stamp}"/>
 	</target>
 	
