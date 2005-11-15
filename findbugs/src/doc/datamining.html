@@ -1,0 +1,123 @@
+\documentclass{sig-alt-full}
+<html>
+<head>
+<title>FindBugs Development Team</title>
+<link rel="stylesheet" type="text/css" href="findbugs.css">
+</head>
+<body>
+
+<table width="100%"><tr>
+
+@HTML_SIDEBAR@
+
+<td align="left" valign="top">
+
+
+<h1>
+Data mining of bugs with FindBugs
+</h1>
+
+
+<p>
+FindBugs now incorporates an ability to perform sophisticated queries on bug
+databases and track warnings across multiple versions of code being
+studied, allowing you to do things such as seen when a bug was first introduced, or to examine
+just the warnings that have been introduced since the last release, or to graph the number
+of infinite recursive loops in your code over time.
+
+<p>
+These techniques all depend upon the XML storage format used by FindBugs for storing warnings.
+These XML files usually contain just the warnings from a particular analysis run, but
+you can also store the results from analyzing a sequence of software builds or versions
+
+<h2>Commands</h2>
+<p>
+The current tools for FindBugs data mining are designed to be invoked
+from the command line.
+
+<p>
+Briefly, the commands are:
+
+<dl>
+<dt>unionBugs<dd> combine the results from separate analysis of disjoint
+		classes
+<dt>computeBugHistory<dd> Merge bug warnings from multiple versions into
+			a single multiversion bug database. This can either be used
+			to add more versions to an existing multiversion database,
+			or to create a multiversion database from a sequence of single version
+			bug warning databases.
+<dt>filterBugs<dd> Select a subset of a bug database
+<dt>mineBugHistory<dd> Generate a tabular listing of the number of warnings in each
+		version of a multiversion bug database
+<dt>defectDensity<dd>
+<dt>convertXmlToText<dd> Convert bug warnings in XML format to 
+		a textual, one line per bug, format
+</dl>
+
+<h3>unionBugs</h3> 
+<p>
+If you have, for example, seperately analyzing each jar file used in an application,
+	you can use this command to combine the seperately generated xml bug warning files into
+	a single file containing all of the warnings.
+<p>Do <em>not</em> use this command to combine results from analyzing different versions of the same
+file; use computeBugHistory instead.
+
+<h3>computeBugHistory</h3>
+<p>Use this command to generate a bug database containing information from different builds or versions
+	of software you are analyzing.
+<h3>filterBugs</h3>
+<p>This command is used to select a subset of warnings from a FindBugs XML warning file
+and write the selected subset to a new FindBugs warning file.
+<p>
+This command takes a sequence of options, and either zero, one or two
+filenames of findbugs xml bug files on the command line.
+<p>If no file names are provided, the command reads from standard input
+and writes to standard output. If one file name is provided,
+it reads from the file and writes to standard output.
+If two file names are provided, it reads from the first and writes the output
+to the second file name.
+
+<p>
+<table>
+<tr><th>Option<th>meaning
+<tr><td>-not                        <td>reverse (all) switches for the filter
+<tr><td>-withSource                 <td>only warnings for switch source is available
+<tr><td>-exclude <filter file>      <td>exclude bugs matching given filter
+<tr><td>-include <filter file>      <td>include only bugs matching given filter
+<tr><td>-annotation <text>          <td>allow only warnings containing this text in a manual annotation
+<tr><td>-classified[:truth]         <td>allow only classified warnings
+<tr><td>-serious[:truth]            <td>allow only warnings manually classified as serious
+<tr><td>-after <when>               <td>allow only warnings that first occurred after this version
+<tr><td>-before <when>              <td>allow only warnings that first occurred before this version
+<tr><td>-first <when>               <td>allow only warnings that first occurred in this version
+<tr><td>-last <when>                <td>allow only warnings that last occurred in this version
+<tr><td>-present <when>             <td>allow only warnings present in this version
+<tr><td>-absent <when>              <td>allow only warnings absent in this version
+<tr><td>-active[:truth]             <td>allow only warnings alive in the last sequence number
+<tr><td>-introducedByChange[:truth] allow only warnings introduced by a change of an existing class
+<tr><td>-removedByChange[:truth]    <td>allow only warnings removed by a change of a persisting class
+<tr><td>-newCode[:truth]            <td>allow only warnings introduced by the addition of a new class
+<tr><td>-removedCode[:truth]        <td>allow only warnings removed by removal of a class
+<tr><td>-priority <level>           <td>allow only warnings with this priority or higher
+<tr><td>-class <pattern>            <td>allow only bugs whose primary class name matches this pattern
+<tr><td>-bugPattern <pattern>       <td>allow only bugs whose type matches this pattern
+<tr><td>-category <category>        <td>allow only warnings with a category that starts with this string
+</table>
+
+<h3>mineBugHistory</h3>
+<h3>defectDensity</h3>
+<h3>convertXmlToText</h3>
+<h3>setBugDatabaseInfo</h3>
+
+
+
+
+@HTML_FOOTER@
+
+</td>
+
+</tr></table>
+
+</body>
+</html>
+
