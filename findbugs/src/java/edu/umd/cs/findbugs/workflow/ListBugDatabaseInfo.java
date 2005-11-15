@@ -107,6 +107,7 @@ public class ListBugDatabaseInfo {
 
 			out.println();
 		}
+		out.close();
 	}
 
 }
