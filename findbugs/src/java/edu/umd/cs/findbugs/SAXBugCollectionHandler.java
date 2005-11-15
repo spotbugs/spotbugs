@@ -259,11 +259,18 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						String sequence = getRequiredAttribute(attributes, "sequence", qName);
 						String timestamp = attributes.getValue("timestamp");
 						String releaseName = attributes.getValue("release");
+						String codeSize = attributes.getValue("codeSize");
+						String numClasses = attributes.getValue("numClasses");
 						AppVersion appVersion = new AppVersion(Long.valueOf(sequence).longValue());
 						if (timestamp != null)
 							appVersion.setTimestamp(Long.valueOf(timestamp).longValue());
 						if (releaseName != null)
 							appVersion.setReleaseName(releaseName);
+						if (codeSize != null)
+							appVersion.setCodeSize(Integer.parseInt(codeSize));
+						if (numClasses != null)
+							appVersion.setNumClasses(Integer.parseInt(numClasses));
+						
 						bugCollection.addAppVersion(appVersion);
 					} catch (NumberFormatException e) {
 						throw new SAXException("Invalid AppVersion element", e);

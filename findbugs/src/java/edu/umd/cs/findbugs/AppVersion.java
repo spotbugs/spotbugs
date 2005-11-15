@@ -44,6 +44,8 @@ public class AppVersion implements XMLWriteable, Cloneable {
 	private long sequence;
 	private long timestamp;
 	private String releaseName;
+	private int numClasses;
+	private int codeSize;
 	
 	public AppVersion(long sequence, long time, String name) {
 		this.sequence = sequence;
@@ -117,7 +119,9 @@ public class AppVersion implements XMLWriteable, Cloneable {
 		xmlOutput.openCloseTag(ELEMENT_NAME, new XMLAttributeList()
 				.addAttribute("sequence", String.valueOf(sequence))
 				.addAttribute("timestamp", String.valueOf(timestamp))
-				.addAttribute("release", releaseName));
+				.addAttribute("release", releaseName)
+				.addAttribute("codeSize", String.valueOf(codeSize))
+				.addAttribute("numClasses", String.valueOf(numClasses)));
 	}
 	
 	/* (non-Javadoc)
@@ -131,6 +135,34 @@ public class AppVersion implements XMLWriteable, Cloneable {
 		buf.append(String.valueOf(timestamp));
 		buf.append(',');
 		buf.append(releaseName);
+		buf.append(',');
+		buf.append(codeSize);
+		buf.append(',');
+		buf.append(codeSize);
 		return buf.toString();
+	}
+	/**
+	 * @param numClasses The numClasses to set.
+	 */
+	public void setNumClasses(int numClasses) {
+		this.numClasses = numClasses;
+	}
+	/**
+	 * @return Returns the numClasses.
+	 */
+	public int getNumClasses() {
+		return numClasses;
+	}
+	/**
+	 * @param codeSize The codeSize to set.
+	 */
+	public void setCodeSize(int codeSize) {
+		this.codeSize = codeSize;
+	}
+	/**
+	 * @return Returns the codeSize.
+	 */
+	public int getCodeSize() {
+		return codeSize;
 	}
 }

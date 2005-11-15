@@ -53,6 +53,12 @@ public interface BugCollection
 	 * @param releaseName the current release name
 	 */
 	public void setReleaseName(String releaseName);
+	/**
+	 * Get the current release name.
+	 * 
+	 * @return current release name
+	 */
+	public String getReleaseName();
 	
 	/**
 	 * Get the project stats.
@@ -65,6 +71,13 @@ public interface BugCollection
 	 * @param timestamp the analysis timestamp.
 	 */
 	public void setTimestamp(long timestamp);
+	
+	/**
+	 * Get the analysis timestamp.
+	 * 
+	 * return the analysis timestamp.
+	 */
+	public long getTimestamp();
 
 	/**
 	 * Set the sequence number of the BugCollection.

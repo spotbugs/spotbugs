@@ -74,7 +74,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		}
 	}
 
-	public int size() {
+	public int getCodeSize() {
 		return totalSize;
 	}
 	public int getTotalBugs() {
