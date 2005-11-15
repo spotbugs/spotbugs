@@ -19,21 +19,10 @@
 
 package edu.umd.cs.findbugs.annotations;
 
-import edu.umd.cs.findbugs.Detector;
-
 /**
  * @author pugh
  */
-public enum Priority {
-	HIGH(Detector.HIGH_PRIORITY), MEDIUM(Detector.NORMAL_PRIORITY), LOW(Detector.LOW_PRIORITY), IGNORE(Detector.IGNORE_PRIORITY);
+public enum When {
+	FIRST, ANYTIME, LAST
 
-	private final int priorityValue;
-
-	public int getPriorityValue() {
-		return priorityValue;
-	}
-
-	private Priority(int p) {
-		priorityValue = p;
-	}
 }

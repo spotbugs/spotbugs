@@ -19,21 +19,26 @@
 
 package edu.umd.cs.findbugs.annotations;
 
-import edu.umd.cs.findbugs.Detector;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * @author pugh
- */
-public enum Priority {
-	HIGH(Detector.HIGH_PRIORITY), MEDIUM(Detector.NORMAL_PRIORITY), LOW(Detector.LOW_PRIORITY), IGNORE(Detector.IGNORE_PRIORITY);
+ * Used to annotation a method that, if overridded, must (or should) be invoked
+ * by an invocation on super in the overriding method. Examples
+ * of such methods include finalize() and clone().
+ * 
+ * The argument to the method indicates when the super invocation should
+ * occur: at any time, at the beginning of the overriding method, or at the end
+ * of the overriding method.
+ *
+ **/
+@Documented
+@Target({ElementType.METHOD })
+@Retention(RetentionPolicy.CLASS)
+public @interface OverrideMustInvoke {
+	When value() default When.ANYTIME;
 
-	private final int priorityValue;
-
-	public int getPriorityValue() {
-		return priorityValue;
-	}
-
-	private Priority(int p) {
-		priorityValue = p;
-	}
 }
