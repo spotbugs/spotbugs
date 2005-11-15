@@ -1,7 +1,7 @@
-\documentclass{sig-alt-full}
+
 <html>
 <head>
-<title>FindBugs Development Team</title>
+<title>Data mining of bugs with FindBugs</title>
 <link rel="stylesheet" type="text/css" href="findbugs.css">
 </head>
 <body>
@@ -17,7 +17,6 @@
 Data mining of bugs with FindBugs
 </h1>
 
-
 <p>
 FindBugs now incorporates an ability to perform sophisticated queries on bug
 databases and track warnings across multiple versions of code being
@@ -28,7 +27,28 @@ of infinite recursive loops in your code over time.
 <p>
 These techniques all depend upon the XML storage format used by FindBugs for storing warnings.
 These XML files usually contain just the warnings from a particular analysis run, but
-you can also store the results from analyzing a sequence of software builds or versions
+you can also store the results from analyzing a sequence of software builds or versions.
+
+<p>
+Any FindBugs XML bug database contains a version name and timestamp. 
+FindBugs tries to compute a timestamp from the timestamps of the files that
+are analyzed (e.g., the timestamp is intended to be the time the class files
+were generated, not analyzed). Each bug database also contains a version name.
+Both the version name and timestamp can be set manually using the 
+<a href="#setBugDatabaseInfo>setBugDatabaseInfo</a>
+command.
+
+<p>A multiversion bug database assigns a sequence number to each version of
+the analyzed code. These sequence numbers are simply successive integers,
+starting at 0 (e.g., a bug database for 4 versions of the code will contain
+versions 0..3). The bug database will also record the name and timestamp for
+each version. The <a href="#filterBugs">filterBugs</a> command allows you to refer
+to a version by sequence number, name or timestamp.
+
+<p>
+You can take a sequence (or pair) of single version bug databases and create
+from them a multiversion bug database, or combine a multiversion bug database
+with a sequence of later single-version bug databases.
 
 <h2>Commands</h2>
 <p>
@@ -39,22 +59,25 @@ from the command line.
 Briefly, the commands are:
 
 <dl>
-<dt>unionBugs<dd> combine the results from separate analysis of disjoint
+<dt><a href="#unionBugs">unionBugs</a><dd> combine the results from separate analysis of disjoint
 		classes
-<dt>computeBugHistory<dd> Merge bug warnings from multiple versions into
+<dt><a href="#computeBugHistory">computeBugHistory</a><dd> Merge bug warnings from multiple versions of
+			analyzed code into
 			a single multiversion bug database. This can either be used
 			to add more versions to an existing multiversion database,
 			or to create a multiversion database from a sequence of single version
 			bug warning databases.
-<dt>filterBugs<dd> Select a subset of a bug database
-<dt>mineBugHistory<dd> Generate a tabular listing of the number of warnings in each
+<dt><a href="#setBugDatabaseInfo">setBugDatabaseInfo</a><dd> Set information such as the revision name or
+timestamp in an XML bug database
+<dt><a href="#filterBugs">filterBugs</a><dd> Select a subset of a bug database
+<dt><a href="#mineBugHistory">mineBugHistory</a><dd> Generate a tabular listing of the number of warnings in each
 		version of a multiversion bug database
-<dt>defectDensity<dd>
-<dt>convertXmlToText<dd> Convert bug warnings in XML format to 
+<dt><a href="#defectDensity">defectDensity</a><dd>
+<dt><a href="#convertXmlToText">convertXmlToText</a><dd> Convert bug warnings in XML format to 
 		a textual, one line per bug, format
 </dl>
 
-<h3>unionBugs</h3> 
+<h3><a name="unionBugs"><h3>unionBugs</a></h3> 
 <p>
 If you have, for example, seperately analyzing each jar file used in an application,
 	you can use this command to combine the seperately generated xml bug warning files into
@@ -62,10 +85,10 @@ If you have, for example, seperately analyzing each jar file used in an applicat
 <p>Do <em>not</em> use this command to combine results from analyzing different versions of the same
 file; use computeBugHistory instead.
 
-<h3>computeBugHistory</h3>
+<h3><a name=""><h3></a><a name="computeBugHistory">computeBugHistory</a></h3>
 <p>Use this command to generate a bug database containing information from different builds or versions
 	of software you are analyzing.
-<h3>filterBugs</h3>
+<h3><a name="filterBugs"><h3>filterBugs</a></h3>
 <p>This command is used to select a subset of warnings from a FindBugs XML warning file
 and write the selected subset to a new FindBugs warning file.
 <p>
@@ -81,35 +104,135 @@ to the second file name.
 <table>
 <tr><th>Option<th>meaning
 <tr><td>-not                        <td>reverse (all) switches for the filter
-<tr><td>-withSource                 <td>only warnings for switch source is available
-<tr><td>-exclude <filter file>      <td>exclude bugs matching given filter
-<tr><td>-include <filter file>      <td>include only bugs matching given filter
-<tr><td>-annotation <text>          <td>allow only warnings containing this text in a manual annotation
+<tr><td>-withSource[:truth]           <td>only warnings for switch source is available
+<tr><td>-exclude &lt;filter file&gt;      <td>exclude bugs matching given filter
+<tr><td>-include &lt;filter file&gt;      <td>include only bugs matching given filter
+<tr><td>-annotation &lt;text&gt;          <td>allow only warnings containing this text in a manual annotation
 <tr><td>-classified[:truth]         <td>allow only classified warnings
 <tr><td>-serious[:truth]            <td>allow only warnings manually classified as serious
-<tr><td>-after <when>               <td>allow only warnings that first occurred after this version
-<tr><td>-before <when>              <td>allow only warnings that first occurred before this version
-<tr><td>-first <when>               <td>allow only warnings that first occurred in this version
-<tr><td>-last <when>                <td>allow only warnings that last occurred in this version
-<tr><td>-present <when>             <td>allow only warnings present in this version
-<tr><td>-absent <when>              <td>allow only warnings absent in this version
+<tr><td>-after &lt;when&gt;               <td>allow only warnings that first occurred after this version
+<tr><td>-before &lt;when&gt;              <td>allow only warnings that first occurred before this version
+<tr><td>-first &lt;when&gt;               <td>allow only warnings that first occurred in this version
+<tr><td>-last &lt;when&gt;                <td>allow only warnings that last occurred in this version
+<tr><td>-present &lt;when&gt;             <td>allow only warnings present in this version
+<tr><td>-absent &lt;when&gt;              <td>allow only warnings absent in this version
 <tr><td>-active[:truth]             <td>allow only warnings alive in the last sequence number
-<tr><td>-introducedByChange[:truth] allow only warnings introduced by a change of an existing class
+<tr><td>-introducedByChange[:truth] <td>allow only warnings introduced by a change of an existing class
 <tr><td>-removedByChange[:truth]    <td>allow only warnings removed by a change of a persisting class
 <tr><td>-newCode[:truth]            <td>allow only warnings introduced by the addition of a new class
 <tr><td>-removedCode[:truth]        <td>allow only warnings removed by removal of a class
-<tr><td>-priority <level>           <td>allow only warnings with this priority or higher
-<tr><td>-class <pattern>            <td>allow only bugs whose primary class name matches this pattern
-<tr><td>-bugPattern <pattern>       <td>allow only bugs whose type matches this pattern
-<tr><td>-category <category>        <td>allow only warnings with a category that starts with this string
+<tr><td>-priority &lt;level&gt;           <td>allow only warnings with this priority or higher
+<tr><td>-class &lt;pattern&gt;            <td>allow only bugs whose primary class name matches this pattern
+<tr><td>-bugPattern &lt;pattern&gt;       <td>allow only bugs whose type matches this pattern
+<tr><td>-category &lt;category&gt;        <td>allow only warnings with a category that starts with this string
 </table>
 
-<h3>mineBugHistory</h3>
-<h3>defectDensity</h3>
-<h3>convertXmlToText</h3>
-<h3>setBugDatabaseInfo</h3>
+<h3><a name="mineBugHistory"><h3>mineBugHistory</a></h3>
+
+<p>This command generates a table containing counts of the numbers of warnings
+in each version of a multiversion bug database.
+<p>The options are:
+<table>
+<tr><th>option<th>meaning
+ <tr><td>-formatDates                 <td>render dates in textual form
+ </td>
+ </table>
+ <p>The table is a tab seperated table with the following columns:
+ 
+ <table>
+ <tr><th>title<th>Meaning
+ <tr><td>seq<td>Sequence number (successive integers, starting at 0)
+ <tr><td>release<td>Release name
+ <tr><td>time<td>Release timestamp
+ <tr><td>added<td>Count of new warnings for a class that existed in the previous version
+ <tr><td>newCode<td>Count of new warnings for a class that did not exist in the previous version
+ <tr><td>fixed<td>Count of warnings removed from a class that remains in the current version
+ <tr><td>removed<td>Count of warnings in the previous version for a class that is not present in the current version
+ <tr><td>retained<td>Count of warnings that were in both the previous and current version
+ <tr><td>dead<td>Warnings that were present in earlier versions but in neither the current version or the immediately preceeding version
+ <tr><td>active<td>Total warnings present in the current version
+ </table>
+ 
+
+<h3><a name="defectDensity"><h3>defectDensity</a></h3>
+<h3><a name="convertXmlToText"><h3>convertXmlToText</a></h3>
+table>
+<tr><th>option<th>meaning
+<tr><td>  -longBugCodes <td>use long bug codes, rather than 2 letter bug codes, when generating text
+</table>
+
+<h3><a name="setBugDatabaseInfo"><h3>setBugDatabaseInfo</a></h3>
+<table>
+<tr><th>option<th>meaning
+<tr><td>  -name &lt;name&gt;        <td>set name for (last) revision
+<tr><td>  -timestamp &lt;when&gt;   <td>set timestamp for (last) revision
+ <tr><td> -source &lt;directory&gt; <td>Add this directory to the source search path
+</table>
 
 
+<h2>Examples</h2>
+<p>In all of the following, the commands are given in a directory that contains
+directories jdk1.6.0-b12, jdk1.6.0-b13, ..., jdk1.6.0-b60.
+
+<p>You can use the command:
+<quote>
+<pre>computeBugHistory -output - jdk1.6.0-b* | filterBugs -bugPattern IL_ | mineBugHistory -formatDates</pre>
+</quote>
+<p>to generate the following output:
+<quote>
+<pre>
+seq     release time    added   newCode fixed   removed retained        dead    active
+0       jdk1.6.0-b12    "Thu Nov 11 09:07:20 EST 2004"  0       4       0       0       0       0       4
+1       jdk1.6.0-b13    "Thu Nov 18 06:02:06 EST 2004"  0       0       0       0       4       0       4
+2       jdk1.6.0-b14    "Thu Dec 02 06:12:26 EST 2004"  0       0       2       0       2       0       2
+3       jdk1.6.0-b15    "Thu Dec 09 06:07:04 EST 2004"  0       0       1       0       1       2       1
+4       jdk1.6.0-b16    "Thu Dec 16 06:21:28 EST 2004"  0       0       0       0       1       3       1
+5       jdk1.6.0-b17    "Thu Dec 23 06:27:22 EST 2004"  0       0       0       0       1       3       1
+6       jdk1.6.0-b19    "Thu Jan 13 06:41:16 EST 2005"  0       0       0       0       1       3       1
+7       jdk1.6.0-b21    "Thu Jan 27 05:57:52 EST 2005"  0       0       0       0       1       3       1
+8       jdk1.6.0-b23    "Thu Feb 10 05:44:36 EST 2005"  0       0       0       0       1       3       1
+9       jdk1.6.0-b26    "Thu Mar 03 06:04:02 EST 2005"  0       0       0       0       1       3       1
+10      jdk1.6.0-b27    "Thu Mar 10 04:48:38 EST 2005"  0       0       0       0       1       3       1
+11      jdk1.6.0-b28    "Thu Mar 17 02:54:22 EST 2005"  0       0       0       0       1       3       1
+12      jdk1.6.0-b29    "Thu Mar 24 03:09:20 EST 2005"  0       0       0       0       1       3       1
+13      jdk1.6.0-b30    "Thu Mar 31 02:53:32 EST 2005"  0       0       0       0       1       3       1
+14      jdk1.6.0-b31    "Thu Apr 07 03:00:14 EDT 2005"  0       0       0       0       1       3       1
+15      jdk1.6.0-b32    "Thu Apr 14 02:56:56 EDT 2005"  0       0       0       0       1       3       1
+16      jdk1.6.0-b33    "Thu Apr 21 02:46:22 EDT 2005"  0       0       0       0       1       3       1
+17      jdk1.6.0-b34    "Thu Apr 28 02:49:00 EDT 2005"  0       1       0       0       1       3       2
+18      jdk1.6.0-b35    "Thu May 05 02:49:04 EDT 2005"  0       0       0       0       2       3       2
+19      jdk1.6.0-b36    "Thu May 12 02:59:46 EDT 2005"  0       0       0       0       2       3       2
+20      jdk1.6.0-b37    "Thu May 19 02:55:08 EDT 2005"  0       0       0       0       2       3       2
+21      jdk1.6.0-b38    "Thu May 26 03:08:16 EDT 2005"  0       0       0       0       2       3       2
+22      jdk1.6.0-b39    "Fri Jun 03 03:10:48 EDT 2005"  0       1       0       0       2       3       3
+23      jdk1.6.0-b40    "Thu Jun 09 03:30:28 EDT 2005"  0       2       0       0       3       3       5
+24      jdk1.6.0-b41    "Thu Jun 16 03:19:22 EDT 2005"  0       0       0       0       5       3       5
+25      jdk1.6.0-b42    "Fri Jun 24 03:38:54 EDT 2005"  0       0       0       0       5       3       5
+26      jdk1.6.0-b43    "Thu Jul 14 03:09:34 EDT 2005"  0       0       0       0       5       3       5
+27      jdk1.6.0-b44    "Thu Jul 21 03:05:54 EDT 2005"  0       0       0       0       5       3       5
+28      jdk1.6.0-b45    "Thu Jul 28 03:26:10 EDT 2005"  0       0       1       0       4       3       4
+29      jdk1.6.0-b46    "Thu Aug 04 03:02:48 EDT 2005"  0       0       0       0       4       4       4
+30      jdk1.6.0-b47    "Thu Aug 11 03:18:56 EDT 2005"  0       0       1       0       3       4       3
+31      jdk1.6.0-b48    "Thu Aug 18 08:10:40 EDT 2005"  0       0       0       0       3       5       3
+32      jdk1.6.0-b49    "Thu Aug 25 03:24:38 EDT 2005"  0       0       0       0       3       5       3
+33      jdk1.6.0-b50    "Thu Sep 01 01:52:40 EDT 2005"  1       0       0       0       3       5       4
+34      jdk1.6.0-b51    "Thu Sep 08 01:55:36 EDT 2005"  0       0       0       0       4       5       4
+35      jdk1.6.0-b52    "Thu Sep 15 02:04:08 EDT 2005"  0       0       0       0       4       5       4
+36      jdk1.6.0-b53    "Thu Sep 22 02:00:28 EDT 2005"  0       0       1       0       3       5       3
+37      jdk1.6.0-b54    "Thu Sep 29 01:54:34 EDT 2005"  0       0       0       0       3       6       3
+38      jdk1.6.0-b55    "Thu Oct 06 01:54:14 EDT 2005"  0       0       0       0       3       6       3
+39      jdk1.6.0-b56    "Thu Oct 13 01:54:12 EDT 2005"  0       0       0       0       3       6       3
+40      jdk1.6.0-b57    "Thu Oct 20 01:55:26 EDT 2005"  0       0       0       0       3       6       3
+41      jdk1.6.0-b58    "Thu Oct 27 01:56:30 EDT 2005"  0       0       0       0       3       6       3
+42      jdk1.6.0-b59    "Thu Nov 03 01:56:58 EST 2005"  0       0       0       0       3       6       3
+43      jdk1.6.0-b60    "Thu Nov 10 01:54:18 EST 2005"  0       0       0       0       3       6       3
+</pre>
+</quote>
+<p>We can then use that information to display a graph showing the number of infinite recursive loops
+found by FindBugs in each build of Sun's JDK1.6.0. The blue area indicates the number of infinite
+recursive loops in that build, the red area above it indicates the number of infinite recursive loops that existed
+in some previous version but not in the current version.
+<p align=center><img src="infiniteRecursiveLoops.png">
 
 
 @HTML_FOOTER@
