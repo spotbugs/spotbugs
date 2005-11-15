@@ -51,8 +51,8 @@ public class DefectDensity {
 			origCollection.readXML(args[argCount++], project);
 		ProjectStats stats = origCollection.getProjectStats();
 		printRow("kind", "name", "density/KLOC NCSS", "bugs", "NCSS");
-		printRow("project", origCollection.getCurrentAppVersion(), 1000 * stats.getTotalBugs() / stats.size(), stats.getTotalBugs(),
-				stats.size());
+		printRow("project", origCollection.getCurrentAppVersion(), 1000 * stats.getTotalBugs() / stats.getCodeSize(), stats.getTotalBugs(),
+				stats.getCodeSize());
 		for (PackageStats p : stats.getPackageStats()) if (p.getTotalBugs() > 4) {
 			
 				printRow("package", p.getPackageName(), 1000 * p.getTotalBugs()

@@ -103,7 +103,7 @@ public class Filter {
 		FilterCommandLine() {
 			
 			addSwitch("-not", "reverse (all) switches for the filter");
-			addSwitch("-withSource", "only warnings for switch source is available");
+			addSwitchWithOptionalExtraPart("-withSource", "truth", "only warnings for switch source is available");
 			addOption("-exclude", "filter file", "exclude bugs matching given filter");
 			addOption("-include", "filter file", "include only bugs matching given filter");
 			

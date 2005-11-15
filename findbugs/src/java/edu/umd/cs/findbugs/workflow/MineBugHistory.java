@@ -84,8 +84,6 @@ public class MineBugHistory {
 	BugCollection bugCollection;
 	Version[] versionList;
 	Map<Long, AppVersion> sequenceToAppVersionMap = new HashMap<Long, AppVersion>();
-	int prio = Detector.LOW_PRIORITY;
-	Set<String> categorySet = new HashSet<String>();
 	boolean formatDates = false;
 	
 	public MineBugHistory() {
@@ -97,20 +95,12 @@ public class MineBugHistory {
 	public void setBugCollection(BugCollection bugCollection) {
 		this.bugCollection = bugCollection;
 	}
-	public void setPrio(int prio) {
-		this.prio = prio;
-	}
+
 	public void setFormatDates(boolean value) {
 		this.formatDates = value;
 	}
 
-	public void setCategories(String categories) {
-		StringTokenizer t = new StringTokenizer(categories, ",");
-		while (t.hasMoreTokens()) {
-			String category = t.nextToken();
-			categorySet.add(category);
-		}
-	}
+	
 	
 	public MineBugHistory execute() {
 		int maxSequence = (int)bugCollection.getSequenceNumber();
@@ -130,9 +120,6 @@ public class MineBugHistory {
 		for (Iterator<BugInstance> j = bugCollection.iterator(); j.hasNext();) {
 			BugInstance bugInstance = j.next();
 
-			if (ignore(bugInstance))
-				continue;
-
 			for (int i = 0; i <= maxSequence; ++i) {
 				if (bugInstance.getFirstVersion() > i) continue;
 				boolean activePrevious = bugInstance.getFirstVersion() < i
@@ -149,18 +136,11 @@ public class MineBugHistory {
 		return this;
 	}
 
-	private boolean ignore(BugInstance bugInstance) {
-		if (bugInstance.getPriority() > this.prio)
-			return true;
-		if (!categorySet.isEmpty()
-			&& !categorySet.contains(bugInstance.getBugPattern().getCategory()))
-			return true;
-		return false;
-	}
+	
 	
 
 	public void dump(PrintStream out) {
-		out.println("seq	release	time	added	newCode	fixed	removed	retained	dead	active");
+		out.println("seq	release	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active");
 		for (int i = 0; i < versionList.length; ++i) {
 			Version version = versionList[i];
 			AppVersion appVersion = sequenceToAppVersionMap.get(version.getSequence());
@@ -171,6 +151,13 @@ public class MineBugHistory {
 			if (formatDates)
 				out.print("\"" + (appVersion != null ?  new Date(appVersion.getTimestamp()).toString() : "") + "\"");
 			else out.print(appVersion != null ? appVersion.getTimestamp() : 0L);
+			if (appVersion != null) {
+				out.print(appVersion.getNumClasses());
+				out.print('\t');
+				out.print(appVersion.getCodeSize());
+				out.print('\t');
+			} else out.print("0\t0\t");
+
 			for (int j = 0; j < TUPLE_SIZE; ++j) {
 				out.print('\t');
 				out.print(version.get(j));
@@ -198,8 +185,6 @@ public class MineBugHistory {
 
 		MineBugHistoryCommandLine() {
 			addSwitch("-formatDates", "render dates in textual form");
-			addOption("-prio", "min priority", "set min priority");
-			addOption("-categories", "cat1[,cat2...]", "set categories");
 		}
 
 		public void handleOption(String option, String optionalExtraPart) {
@@ -210,13 +195,8 @@ public class MineBugHistory {
 		}
 
 		public void handleOptionWithArgument(String option, String argument) {
-			if (option.equals("-prio")) {
-				setPrio(Filter.parsePriority(argument));
-			} else if (option.equals("-categories")) {
-				setCategories(argument);
-			} else {
+
 				throw new IllegalArgumentException("unknown option: " + option);
-			}
 		}
 	}
 

@@ -62,10 +62,10 @@ public class Update {
 	private static HashSet<BugInstance> matchedOldBugs = new HashSet<BugInstance>();
 
 	static class UpdateCommandLine extends CommandLine {
-		boolean getRevisionNamesFromFiles = false;
+		boolean overrideRevisionNames = false;
 		UpdateCommandLine() {
-			addSwitchWithOptionalExtraPart("-getRevisionNamesFromFilenames", "truth",
-			"generate revision names for each version from filenames");
+			addSwitchWithOptionalExtraPart("-overrideRevisionNames", "truth",
+			"override revision names for each version with names computed filenames");
 			addOption("-output", "output file",
 					"explicit filename for merged results (use - for standard out)");
 	
@@ -74,11 +74,11 @@ public class Update {
 		@Override
 		protected void handleOption(String option, String optionExtraPart)
 				throws IOException {
-			if (option.equals("-getRevisionNamesFromFilenames")) {
+			if (option.equals("-overrideRevisionNames")) {
 				if (optionExtraPart.length() == 0)
-					getRevisionNamesFromFiles = true;
+					overrideRevisionNames = true;
 				else
-					getRevisionNamesFromFiles = Boolean.parseBoolean(optionExtraPart);
+					overrideRevisionNames = Boolean.parseBoolean(optionExtraPart);
 			}
 			else 
 			throw new IllegalArgumentException("no option " + option);
@@ -122,6 +122,9 @@ public class Update {
 				.getCurrentAppVersion().getTimestamp());
 		origCollectionVersion.setReleaseName(origCollection
 				.getCurrentAppVersion().getReleaseName());
+		origCollectionVersion.setNumClasses(origCollection.getProjectStats().getNumClasses());
+		origCollectionVersion.setCodeSize(origCollection.getProjectStats().getCodeSize());
+		
 		resultCollection.addAppVersion(origCollectionVersion);
 
 		// We assign a sequence number to the new collection as one greater than
@@ -268,7 +271,7 @@ public class Update {
 		BugCollection oCollection = origCollection;
 		origCollection.readXML(origFilename, project);
 
-		if (commandLine.getRevisionNamesFromFiles)
+		if (commandLine.overrideRevisionNames || origCollection.getReleaseName() == null)
 			origCollection.setReleaseName(firstPathParts[commonPrefix]);
 		for (BugInstance bug : origCollection.getCollection())
 			if (bug.getLastVersion() >= 0
@@ -289,7 +292,7 @@ public class Update {
 			newCollection.readXML(newFilename, project);
 
 
-			if (commandLine.getRevisionNamesFromFiles)
+			if (commandLine.overrideRevisionNames || newCollection.getReleaseName() == null)
 				newCollection.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
 
 			origCollection = mergeCollections(origCollection, newCollection);
