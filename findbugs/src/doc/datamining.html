@@ -69,12 +69,13 @@ Briefly, the commands are:
 			bug warning databases.
 <dt><a href="#setBugDatabaseInfo">setBugDatabaseInfo</a><dd> Set information such as the revision name or
 timestamp in an XML bug database
-dt><a href="#listBugDatabaseInfo">listBugDatabaseInfo</a><dd> List information such as the revision name and
+<dt><a href="#listBugDatabaseInfo">listBugDatabaseInfo</a><dd> List information such as the revision name and
 timestamp for a list of XML bug databases
 <dt><a href="#filterBugs">filterBugs</a><dd> Select a subset of a bug database
 <dt><a href="#mineBugHistory">mineBugHistory</a><dd> Generate a tabular listing of the number of warnings in each
 		version of a multiversion bug database
 <dt><a href="#defectDensity">defectDensity</a><dd>
+	List information about defect density (warnings per 1000 NCSS) for the entire project and each class and package.
 <dt><a href="#convertXmlToText">convertXmlToText</a><dd> Convert bug warnings in XML format to 
 		a textual, one line per bug, format
 </dl>
@@ -144,8 +145,10 @@ in each version of a multiversion bug database.
  <table>
  <tr><th>title<th>Meaning
  <tr><td>seq<td>Sequence number (successive integers, starting at 0)
- <tr><td>release<td>Release name
+ <tr><td>version<td>version name
  <tr><td>time<td>Release timestamp
+ <tr><td>classes<td>Number of classes analyzed
+ <tr><td>NCSS<td>Non Commenting Source Statements
  <tr><td>added<td>Count of new warnings for a class that existed in the previous version
  <tr><td>newCode<td>Count of new warnings for a class that did not exist in the previous version
  <tr><td>fixed<td>Count of warnings removed from a class that remains in the current version
@@ -157,8 +160,23 @@ in each version of a multiversion bug database.
  
 
 <h3><a name="defectDensity"><h3>defectDensity</a></h3>
+<p>
+This command lists information about defect density (warnings per 1000 NCSS) for the entire project and each class and package.
+In can either be invoked with no files specified on the command line (in which case it reads from standard input)
+or with one file specified on the command line.
+<p>It generates a table with the following columns, and with one
+row for the entire project, and one row for each package or class that contains at least
+4 warnings.
+<table>
+<tr><td>kind<td>project, package or class
+<tr><td>The name of the project, package or class
+<tr><td>density/KNCSS<td>Number of warnings generated per 1000 lines of NCSS.
+<tr><td>bugs<td>Number of warnings
+<tr><td>NCSS<td>Calculated number of NCSS
+</table>  
+
 <h3><a name="convertXmlToText"><h3>convertXmlToText</a></h3>
-table>
+<table>
 <tr><th>option<th>meaning
 <tr><td>  -longBugCodes <td>use long bug codes, rather than 2 letter bug codes, when generating text
 </table>
@@ -171,6 +189,31 @@ table>
  <tr><td> -source &lt;directory&gt; <td>Add this directory to the source search path
 </table>
 
+<h3><a name="listBugDatabaseInfo"><h3>listBugDatabaseInfo</a></h3>
+<p>This command takes a list of zero or more xml bug database filenames on the command line.
+If zero file names are provided, it reads from standard input and does not generate
+a table header.
+
+<p>There is only one option:
+<table>
+<tr><th>option<th>meaning
+ <tr><td>-formatDates                 <td>render dates in textual form
+ </td>
+ </table>
+<p>The output is a table one row per bug database and the following columns:
+
+<table>
+ <tr><th>title<th>Meaning
+ <tr><td>version<td>version name
+ <tr><td>time<td>Release timestamp
+ <tr><td>classes<td>Number of classes analyzed
+ <tr><td>NCSS<td>Non Commenting Source Statements analyzed
+ <tr><td>total<td>Total number of warnings of all kinds
+ <tr><td>high<td>Total number of high priority warnings of all kinds
+ <tr><td>medium<td>Total number of medium/normal priority warnings of all kinds
+ <tr><td>low<td>Total number of low priority warnings of all kinds
+ <tr><td>filename<td>filename of database
+ </table>
 
 <h2>Examples</h2>
 <p>In all of the following, the commands are given in a directory that contains
@@ -178,62 +221,65 @@ directories jdk1.6.0-b12, jdk1.6.0-b13, ..., jdk1.6.0-b60.
 
 <p>You can use the command:
 <quote>
-<pre>computeBugHistory -output - jdk1.6.0-b* | filterBugs -bugPattern IL_ | mineBugHistory -formatDates</pre>
+<pre>computeBugHistory jdk1.6.0-b* | filterBugs -bugPattern IL_ | mineBugHistory -formatDates</pre>
 </quote>
 <p>to generate the following output:
 <quote>
 <pre>
-seq     release time    added   newCode fixed   removed retained        dead    active
-0       jdk1.6.0-b12    "Thu Nov 11 09:07:20 EST 2004"  0       4       0       0       0       0       4
-1       jdk1.6.0-b13    "Thu Nov 18 06:02:06 EST 2004"  0       0       0       0       4       0       4
-2       jdk1.6.0-b14    "Thu Dec 02 06:12:26 EST 2004"  0       0       2       0       2       0       2
-3       jdk1.6.0-b15    "Thu Dec 09 06:07:04 EST 2004"  0       0       1       0       1       2       1
-4       jdk1.6.0-b16    "Thu Dec 16 06:21:28 EST 2004"  0       0       0       0       1       3       1
-5       jdk1.6.0-b17    "Thu Dec 23 06:27:22 EST 2004"  0       0       0       0       1       3       1
-6       jdk1.6.0-b19    "Thu Jan 13 06:41:16 EST 2005"  0       0       0       0       1       3       1
-7       jdk1.6.0-b21    "Thu Jan 27 05:57:52 EST 2005"  0       0       0       0       1       3       1
-8       jdk1.6.0-b23    "Thu Feb 10 05:44:36 EST 2005"  0       0       0       0       1       3       1
-9       jdk1.6.0-b26    "Thu Mar 03 06:04:02 EST 2005"  0       0       0       0       1       3       1
-10      jdk1.6.0-b27    "Thu Mar 10 04:48:38 EST 2005"  0       0       0       0       1       3       1
-11      jdk1.6.0-b28    "Thu Mar 17 02:54:22 EST 2005"  0       0       0       0       1       3       1
-12      jdk1.6.0-b29    "Thu Mar 24 03:09:20 EST 2005"  0       0       0       0       1       3       1
-13      jdk1.6.0-b30    "Thu Mar 31 02:53:32 EST 2005"  0       0       0       0       1       3       1
-14      jdk1.6.0-b31    "Thu Apr 07 03:00:14 EDT 2005"  0       0       0       0       1       3       1
-15      jdk1.6.0-b32    "Thu Apr 14 02:56:56 EDT 2005"  0       0       0       0       1       3       1
-16      jdk1.6.0-b33    "Thu Apr 21 02:46:22 EDT 2005"  0       0       0       0       1       3       1
-17      jdk1.6.0-b34    "Thu Apr 28 02:49:00 EDT 2005"  0       1       0       0       1       3       2
-18      jdk1.6.0-b35    "Thu May 05 02:49:04 EDT 2005"  0       0       0       0       2       3       2
-19      jdk1.6.0-b36    "Thu May 12 02:59:46 EDT 2005"  0       0       0       0       2       3       2
-20      jdk1.6.0-b37    "Thu May 19 02:55:08 EDT 2005"  0       0       0       0       2       3       2
-21      jdk1.6.0-b38    "Thu May 26 03:08:16 EDT 2005"  0       0       0       0       2       3       2
-22      jdk1.6.0-b39    "Fri Jun 03 03:10:48 EDT 2005"  0       1       0       0       2       3       3
-23      jdk1.6.0-b40    "Thu Jun 09 03:30:28 EDT 2005"  0       2       0       0       3       3       5
-24      jdk1.6.0-b41    "Thu Jun 16 03:19:22 EDT 2005"  0       0       0       0       5       3       5
-25      jdk1.6.0-b42    "Fri Jun 24 03:38:54 EDT 2005"  0       0       0       0       5       3       5
-26      jdk1.6.0-b43    "Thu Jul 14 03:09:34 EDT 2005"  0       0       0       0       5       3       5
-27      jdk1.6.0-b44    "Thu Jul 21 03:05:54 EDT 2005"  0       0       0       0       5       3       5
-28      jdk1.6.0-b45    "Thu Jul 28 03:26:10 EDT 2005"  0       0       1       0       4       3       4
-29      jdk1.6.0-b46    "Thu Aug 04 03:02:48 EDT 2005"  0       0       0       0       4       4       4
-30      jdk1.6.0-b47    "Thu Aug 11 03:18:56 EDT 2005"  0       0       1       0       3       4       3
-31      jdk1.6.0-b48    "Thu Aug 18 08:10:40 EDT 2005"  0       0       0       0       3       5       3
-32      jdk1.6.0-b49    "Thu Aug 25 03:24:38 EDT 2005"  0       0       0       0       3       5       3
-33      jdk1.6.0-b50    "Thu Sep 01 01:52:40 EDT 2005"  1       0       0       0       3       5       4
-34      jdk1.6.0-b51    "Thu Sep 08 01:55:36 EDT 2005"  0       0       0       0       4       5       4
-35      jdk1.6.0-b52    "Thu Sep 15 02:04:08 EDT 2005"  0       0       0       0       4       5       4
-36      jdk1.6.0-b53    "Thu Sep 22 02:00:28 EDT 2005"  0       0       1       0       3       5       3
-37      jdk1.6.0-b54    "Thu Sep 29 01:54:34 EDT 2005"  0       0       0       0       3       6       3
-38      jdk1.6.0-b55    "Thu Oct 06 01:54:14 EDT 2005"  0       0       0       0       3       6       3
-39      jdk1.6.0-b56    "Thu Oct 13 01:54:12 EDT 2005"  0       0       0       0       3       6       3
-40      jdk1.6.0-b57    "Thu Oct 20 01:55:26 EDT 2005"  0       0       0       0       3       6       3
-41      jdk1.6.0-b58    "Thu Oct 27 01:56:30 EDT 2005"  0       0       0       0       3       6       3
-42      jdk1.6.0-b59    "Thu Nov 03 01:56:58 EST 2005"  0       0       0       0       3       6       3
-43      jdk1.6.0-b60    "Thu Nov 10 01:54:18 EST 2005"  0       0       0       0       3       6       3
+seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active
+0	jdk1.6.0-b12	"Thu Nov 11 09:07:20 EST 2004"	13128	811569	0	4	0	0	0	0	4
+1	jdk1.6.0-b13	"Thu Nov 18 06:02:06 EST 2004"	13128	811570	0	0	0	0	4	0	4
+2	jdk1.6.0-b14	"Thu Dec 02 06:12:26 EST 2004"	13145	811786	0	0	2	0	2	0	2
+3	jdk1.6.0-b15	"Thu Dec 09 06:07:04 EST 2004"	13174	811693	0	0	1	0	1	2	1
+4	jdk1.6.0-b16	"Thu Dec 16 06:21:28 EST 2004"	13175	811715	0	0	0	0	1	3	1
+5	jdk1.6.0-b17	"Thu Dec 23 06:27:22 EST 2004"	13176	811974	0	0	0	0	1	3	1
+6	jdk1.6.0-b19	"Thu Jan 13 06:41:16 EST 2005"	13176	812011	0	0	0	0	1	3	1
+7	jdk1.6.0-b21	"Thu Jan 27 05:57:52 EST 2005"	13177	812173	0	0	0	0	1	3	1
+8	jdk1.6.0-b23	"Thu Feb 10 05:44:36 EST 2005"	13179	812188	0	0	0	0	1	3	1
+9	jdk1.6.0-b26	"Thu Mar 03 06:04:02 EST 2005"	13199	811770	0	0	0	0	1	3	1
+10	jdk1.6.0-b27	"Thu Mar 10 04:48:38 EST 2005"	13189	812440	0	0	0	0	1	3	1
+11	jdk1.6.0-b28	"Thu Mar 17 02:54:22 EST 2005"	13185	812056	0	0	0	0	1	3	1
+12	jdk1.6.0-b29	"Thu Mar 24 03:09:20 EST 2005"	13117	809468	0	0	0	0	1	3	1
+13	jdk1.6.0-b30	"Thu Mar 31 02:53:32 EST 2005"	13118	809501	0	0	0	0	1	3	1
+14	jdk1.6.0-b31	"Thu Apr 07 03:00:14 EDT 2005"	13117	809572	0	0	0	0	1	3	1
+15	jdk1.6.0-b32	"Thu Apr 14 02:56:56 EDT 2005"	13169	811096	0	0	0	0	1	3	1
+16	jdk1.6.0-b33	"Thu Apr 21 02:46:22 EDT 2005"	13187	811942	0	0	0	0	1	3	1
+17	jdk1.6.0-b34	"Thu Apr 28 02:49:00 EDT 2005"	13195	813488	0	1	0	0	1	3	2
+18	jdk1.6.0-b35	"Thu May 05 02:49:04 EDT 2005"	13457	829837	0	0	0	0	2	3	2
+19	jdk1.6.0-b36	"Thu May 12 02:59:46 EDT 2005"	13462	831278	0	0	0	0	2	3	2
+20	jdk1.6.0-b37	"Thu May 19 02:55:08 EDT 2005"	13464	831971	0	0	0	0	2	3	2
+21	jdk1.6.0-b38	"Thu May 26 03:08:16 EDT 2005"	13564	836565	0	0	0	0	2	3	2
+22	jdk1.6.0-b39	"Fri Jun 03 03:10:48 EDT 2005"	13856	849992	0	1	0	0	2	3	3
+23	jdk1.6.0-b40	"Thu Jun 09 03:30:28 EDT 2005"	15972	959619	0	2	0	0	3	3	5
+24	jdk1.6.0-b41	"Thu Jun 16 03:19:22 EDT 2005"	15972	959619	0	0	0	0	5	3	5
+25	jdk1.6.0-b42	"Fri Jun 24 03:38:54 EDT 2005"	15966	958581	0	0	0	0	5	3	5
+26	jdk1.6.0-b43	"Thu Jul 14 03:09:34 EDT 2005"	16041	960544	0	0	0	0	5	3	5
+27	jdk1.6.0-b44	"Thu Jul 21 03:05:54 EDT 2005"	16041	960547	0	0	0	0	5	3	5
+28	jdk1.6.0-b45	"Thu Jul 28 03:26:10 EDT 2005"	16037	960606	0	0	1	0	4	3	4
+29	jdk1.6.0-b46	"Thu Aug 04 03:02:48 EDT 2005"	15936	951355	0	0	0	0	4	4	4
+30	jdk1.6.0-b47	"Thu Aug 11 03:18:56 EDT 2005"	15964	952387	0	0	1	0	3	4	3
+31	jdk1.6.0-b48	"Thu Aug 18 08:10:40 EDT 2005"	15970	953421	0	0	0	0	3	5	3
+32	jdk1.6.0-b49	"Thu Aug 25 03:24:38 EDT 2005"	16048	958940	0	0	0	0	3	5	3
+33	jdk1.6.0-b50	"Thu Sep 01 01:52:40 EDT 2005"	16287	974937	1	0	0	0	3	5	4
+34	jdk1.6.0-b51	"Thu Sep 08 01:55:36 EDT 2005"	16362	979377	0	0	0	0	4	5	4
+35	jdk1.6.0-b52	"Thu Sep 15 02:04:08 EDT 2005"	16477	979399	0	0	0	0	4	5	4
+36	jdk1.6.0-b53	"Thu Sep 22 02:00:28 EDT 2005"	16019	957900	0	0	1	0	3	5	3
+37	jdk1.6.0-b54	"Thu Sep 29 01:54:34 EDT 2005"	16019	957900	0	0	0	0	3	6	3
+38	jdk1.6.0-b55	"Thu Oct 06 01:54:14 EDT 2005"	16051	959014	0	0	0	0	3	6	3
+39	jdk1.6.0-b56	"Thu Oct 13 01:54:12 EDT 2005"	16211	970835	0	0	0	0	3	6	3
+40	jdk1.6.0-b57	"Thu Oct 20 01:55:26 EDT 2005"	16279	971627	0	0	0	0	3	6	3
+41	jdk1.6.0-b58	"Thu Oct 27 01:56:30 EDT 2005"	16283	971945	0	0	0	0	3	6	3
+42	jdk1.6.0-b59	"Thu Nov 03 01:56:58 EST 2005"	16232	972193	0	0	0	0	3	6	3
+43	jdk1.6.0-b60	"Thu Nov 10 01:54:18 EST 2005"	16235	972346	0	0	0	0	3	6	3
 </pre>
 </quote>
 <p>We can then use that information to display a graph showing the number of infinite recursive loops
 found by FindBugs in each build of Sun's JDK1.6.0. The blue area indicates the number of infinite
 recursive loops in that build, the red area above it indicates the number of infinite recursive loops that existed
-in some previous version but not in the current version.
+in some previous version but not in the current version (thus, the combined height of the red and blue areas
+is guaranteed to never decrease, and goes up whenever a new infinite recursive loop bug is introduced). The height
+of the red area is computed as the sum of the fixed, removed and dead values for each version.
+
 <p align=center><img src="infiniteRecursiveLoops.png">
 
 
