@@ -76,10 +76,12 @@ public class ListBugDatabaseInfo {
 		PrintWriter out = new PrintWriter(System.out);
 		if (argCount == args.length) 
 			listVersion(out,null);
-		else while (argCount < args.length) {
+		else {
 			out.println("version	time	classes	NCSS	total	high	medium	low	file");
-			String fileName = args[argCount++];
-			listVersion(out, fileName);
+			while (argCount < args.length) {
+				String fileName = args[argCount++];
+				listVersion(out, fileName);
+				}
 		}
 		out.close();
 	}
