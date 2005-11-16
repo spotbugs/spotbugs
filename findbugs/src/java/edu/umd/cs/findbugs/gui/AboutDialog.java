@@ -77,7 +77,7 @@ public class AboutDialog extends javax.swing.JDialog {
 	@SuppressWarnings("OS_OPEN_STREAM")
 	private void processPage(javax.swing.JEditorPane pane, String fileName) throws IOException {
 		InputStream in = null;
-
+		BufferedReader reader = null;
 		try {
 			StringBuffer buf = new StringBuffer();
 
@@ -85,7 +85,7 @@ public class AboutDialog extends javax.swing.JDialog {
 			in = getClass().getClassLoader().getResourceAsStream(fileName);
 			if (in == null)
 				throw new IOException(MessageFormat.format(L10N.getLocalString("msg.couldntload_txt", "Couldn't load {0}"), new Object[]{fileName}));
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			 reader = new BufferedReader(new InputStreamReader(in));
 
 			// Replace instances of @VERSION@ with actual version number
 			Pattern pattern = Pattern.compile("@VERSION@");
@@ -102,7 +102,9 @@ public class AboutDialog extends javax.swing.JDialog {
 			pane.setText(text);
 		} finally {
 			try {
-				if (in != null)
+				if (reader != null)
+					reader.close();
+				else if (in != null)
 					in.close();
 			} catch (IOException e) {
 			}
