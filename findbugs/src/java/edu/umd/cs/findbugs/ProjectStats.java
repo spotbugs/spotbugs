@@ -80,6 +80,9 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	public int getTotalBugs() {
 		return totalErrors[0];
 	}
+	public int getBugsOfPriority(int priority) {
+		return totalErrors[priority];
+	}
 	/**
 	 * Set the timestamp for this analysis run.
 	 *
