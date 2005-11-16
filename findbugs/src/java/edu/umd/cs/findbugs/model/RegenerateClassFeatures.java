@@ -96,7 +96,7 @@ public class RegenerateClassFeatures {
 		
 		bugCollection.readXML(args[0], project);
 		
-		RegenerateClassFeatures regen = new RegenerateClassFeatures(bugCollection, args[1]).execute();
+		new RegenerateClassFeatures(bugCollection, args[1]).execute();
 		
 		bugCollection.writeXML(System.out, project);
 	}
