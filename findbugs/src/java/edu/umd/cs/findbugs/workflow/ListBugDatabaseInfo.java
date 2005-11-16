@@ -85,12 +85,13 @@ public class ListBugDatabaseInfo {
 		Project project = new Project();
 		BugCollection origCollection;
 		PrintWriter out = new PrintWriter(System.out);
-		out.println("release	time	classes	NCSS	file");
+		out.println("version	time	classes	NCSS	file");
 		while (argCount < args.length) {
 			origCollection = new SortedBugCollection(
 					SortedBugCollection.MultiversionBugInstanceComparator.instance);
 			BugCollection oCollection = origCollection;
-			origCollection.readXML(args[argCount++], project);
+			String fileName = args[argCount++];
+			origCollection.readXML(fileName, project);
 			AppVersion appVersion = origCollection.getCurrentAppVersion();
 			out.print(appVersion.getReleaseName());
 			out.print('\t');
@@ -104,6 +105,8 @@ public class ListBugDatabaseInfo {
 			out.print('\t');
 			out.print(appVersion.getCodeSize());
 			out.print('\t');
+			out.print(fileName);
+
 
 			out.println();
 		}
