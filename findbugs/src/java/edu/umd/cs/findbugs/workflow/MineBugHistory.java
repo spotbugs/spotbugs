@@ -113,7 +113,6 @@ public class MineBugHistory {
 		for (Iterator<AppVersion> i = bugCollection.appVersionIterator(); i.hasNext();) {
 			AppVersion appVersion = i.next();
 			long versionSequenceNumber = appVersion.getSequenceNumber();
-			System.out.println(versionSequenceNumber);
 			sequenceToAppVersionMap.put(Long.valueOf(versionSequenceNumber), appVersion);
 		}
 		
@@ -145,7 +144,7 @@ public class MineBugHistory {
 	
 
 	public void dump(PrintStream out) {
-		out.println("seq	release	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active");
+		out.println("seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active");
 		for (int i = 0; i < versionList.length; ++i) {
 			Version version = versionList[i];
 			AppVersion appVersion = sequenceToAppVersionMap.get(version.getSequence());
