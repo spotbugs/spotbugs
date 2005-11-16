@@ -52,10 +52,9 @@ public class Update {
 	/**
 	 * 
 	 */
-	private static final String USAGE = "Usage: " + Update.class.getName()
-			+ " [options] <historyData> <newData> [<mergedData>] or "
+	private static final String USAGE = "Usage: " 
 			+ Update.class.getName()
-			+ " [options] -output filename data1File data2File data3File ... ";
+			+ " [options]  data1File data2File data3File ... ";
 
 	private static HashMap<BugInstance, BugInstance> mapFromNewToOldBug = new HashMap<BugInstance, BugInstance>();
 
@@ -64,10 +63,10 @@ public class Update {
 	static class UpdateCommandLine extends CommandLine {
 		boolean overrideRevisionNames = false;
 		UpdateCommandLine() {
-			addSwitchWithOptionalExtraPart("-overrideRevisionNames", "truth",
+			addSwitch("-overrideRevisionNames", 
 			"override revision names for each version with names computed filenames");
 			addOption("-output", "output file",
-					"explicit filename for merged results (use - for standard out)");
+					"explicit filename for merged results (standard out used if not specified)");
 	
 		}
 
@@ -243,16 +242,10 @@ public class Update {
 		UpdateCommandLine commandLine = new UpdateCommandLine();
 		int argCount = commandLine.parse(args, 2, Integer.MAX_VALUE, USAGE);
 
-		int lastInputfile = args.length - 1;
-		if (outputFilename == null && args.length - argCount == 3) {
-			outputFilename = args[args.length - 1];
-			lastInputfile--;
-		}
-		if (outputFilename.equals("-")) outputFilename = null;
 		verbose = outputFilename != null;
 		String[] firstPathParts = getFilePathParts(args[argCount]);
 		int commonPrefix = firstPathParts.length;
-		for(int i = argCount+1; i <= lastInputfile; i++) {
+		for(int i = argCount+1; i <= (args.length - 1); i++) {
 
 			commonPrefix = Math.min(commonPrefix, 
 					lengthCommonPrefix(
@@ -280,7 +273,7 @@ public class Update {
 						+ bug.getFirstVersion() + ".." + bug.getLastVersion());
 
 
-		while (argCount <= lastInputfile) {
+		while (argCount <= (args.length - 1)) {
 
 			BugCollection newCollection = new SortedBugCollection(
 					SortedBugCollection.MultiversionBugInstanceComparator.instance);
