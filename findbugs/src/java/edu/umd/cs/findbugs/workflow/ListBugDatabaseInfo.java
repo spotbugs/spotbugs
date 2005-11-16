@@ -17,31 +17,21 @@
  */
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.TreeMap;
 
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.SloppyBugComparator;
+import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.VersionInsensitiveBugComparator;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.config.CommandLine;
-import edu.umd.cs.findbugs.workflow.MineBugHistory.Version;
 
 /**
  * Java main application to compute update a historical bug collection with
@@ -80,37 +70,57 @@ public class ListBugDatabaseInfo {
 
 		DetectorFactoryCollection.instance();
 		ListBugDatabaseInfoCommandLine commandLine = new ListBugDatabaseInfoCommandLine();
-		int argCount = commandLine.parse(args, 1, Integer.MAX_VALUE, USAGE);
+		int argCount = commandLine.parse(args, 0, Integer.MAX_VALUE, USAGE);
 
-		Project project = new Project();
-		BugCollection origCollection;
+
 		PrintWriter out = new PrintWriter(System.out);
-		out.println("version	time	classes	NCSS	file");
-		while (argCount < args.length) {
-			origCollection = new SortedBugCollection(
-					SortedBugCollection.MultiversionBugInstanceComparator.instance);
-			BugCollection oCollection = origCollection;
+		if (argCount == args.length) 
+			listVersion(out,null);
+		else while (argCount < args.length) {
+			out.println("version	time	classes	NCSS	warnings	high	medium	low	file");
 			String fileName = args[argCount++];
-			origCollection.readXML(fileName, project);
-			AppVersion appVersion = origCollection.getCurrentAppVersion();
-			out.print(appVersion.getReleaseName());
-			out.print('\t');
-			if (formatDates)
-				out.print("\""+ new Date(appVersion.getTimestamp()) + "\"");
-			else
-				out.print(appVersion.getTimestamp());
-			out.print('\t');
-
-			out.print(appVersion.getNumClasses());
-			out.print('\t');
-			out.print(appVersion.getCodeSize());
-			out.print('\t');
-			out.print(fileName);
-
-
-			out.println();
+			listVersion(out, fileName);
 		}
 		out.close();
+	}
+
+	private static void listVersion(PrintWriter out, @CheckForNull String fileName) throws IOException, DocumentException {
+		Project project = new Project();
+		BugCollection origCollection;
+		origCollection = new SortedBugCollection(
+				SortedBugCollection.MultiversionBugInstanceComparator.instance);
+
+		if (fileName == null)
+			origCollection.readXML(System.in, project);
+		else origCollection.readXML(fileName, project);
+		AppVersion appVersion = origCollection.getCurrentAppVersion();
+		ProjectStats stats = origCollection.getProjectStats();
+		out.print(appVersion.getReleaseName());
+		out.print('\t');
+		if (formatDates)
+			out.print("\""+ new Date(appVersion.getTimestamp()) + "\"");
+		else
+			out.print(appVersion.getTimestamp());
+		out.print('\t');
+
+		out.print(appVersion.getNumClasses());
+		out.print('\t');
+		out.print(appVersion.getCodeSize());
+		out.print('\t');
+		out.print(stats.getTotalBugs());
+		out.print('\t');
+		out.print(stats.getBugsOfPriority(Detector.HIGH_PRIORITY));
+		out.print('\t');
+		out.print(stats.getBugsOfPriority(Detector.NORMAL_PRIORITY));
+		out.print('\t');
+		out.print(stats.getBugsOfPriority(Detector.LOW_PRIORITY));
+		if (fileName != null) {
+			out.print('\t');
+			out.print(fileName);
+		}
+
+
+		out.println();
 	}
 
 }
