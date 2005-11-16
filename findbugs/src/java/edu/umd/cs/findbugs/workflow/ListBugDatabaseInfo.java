@@ -77,7 +77,7 @@ public class ListBugDatabaseInfo {
 		if (argCount == args.length) 
 			listVersion(out,null);
 		else while (argCount < args.length) {
-			out.println("version	time	classes	NCSS	warnings	high	medium	low	file");
+			out.println("version	time	classes	NCSS	total	high	medium	low	file");
 			String fileName = args[argCount++];
 			listVersion(out, fileName);
 		}
