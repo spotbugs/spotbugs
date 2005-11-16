@@ -106,7 +106,7 @@ public class SetBugDatabaseInfo {
 		BugCollection origCollection;
 		origCollection = new SortedBugCollection(
 				SortedBugCollection.MultiversionBugInstanceComparator.instance);
-		BugCollection oCollection = origCollection;
+
 		if (argCount < args.length) 
 			origCollection.readXML(args[argCount++], project);
 		else

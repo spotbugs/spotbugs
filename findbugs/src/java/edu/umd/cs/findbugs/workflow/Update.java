@@ -62,6 +62,7 @@ public class Update {
 
 	static class UpdateCommandLine extends CommandLine {
 		boolean overrideRevisionNames = false;
+		 String outputFilename;
 		UpdateCommandLine() {
 			addSwitch("-overrideRevisionNames", 
 			"override revision names for each version with names computed filenames");
@@ -230,8 +231,6 @@ public class Update {
 
 	public static boolean verbose = false;
 
-	public static String outputFilename;
-
 	public static String [] getFilePathParts(String filePath) {
 		return filePath.split(File.separator);
 	}
@@ -242,7 +241,7 @@ public class Update {
 		UpdateCommandLine commandLine = new UpdateCommandLine();
 		int argCount = commandLine.parse(args, 2, Integer.MAX_VALUE, USAGE);
 
-		verbose = outputFilename != null;
+		verbose = commandLine.outputFilename != null;
 		String[] firstPathParts = getFilePathParts(args[argCount]);
 		int commonPrefix = firstPathParts.length;
 		for(int i = argCount+1; i <= (args.length - 1); i++) {
@@ -261,7 +260,7 @@ public class Update {
 				SortedBugCollection.MultiversionBugInstanceComparator.instance);
 		if (verbose)
 			System.out.println("Starting with " + origFilename);
-		BugCollection oCollection = origCollection;
+
 		origCollection.readXML(origFilename, project);
 
 		if (commandLine.overrideRevisionNames || origCollection.getReleaseName() == null || origCollection.getReleaseName().length() == 0)
@@ -292,8 +291,8 @@ public class Update {
 
 		}
 
-		if (outputFilename != null) 
-			origCollection.writeXML(outputFilename, project);
+		if (commandLine.outputFilename != null) 
+			origCollection.writeXML(commandLine.outputFilename, project);
 		else
 			origCollection.writeXML(System.out, project);
 

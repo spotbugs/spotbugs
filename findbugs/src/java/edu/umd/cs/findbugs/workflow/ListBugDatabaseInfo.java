@@ -42,12 +42,12 @@ import edu.umd.cs.findbugs.config.CommandLine;
 
 public class ListBugDatabaseInfo {
 
-	static boolean formatDates = false;
-
 	private static final String USAGE = "Usage: " + ListBugDatabaseInfo.class.getName()
 			+ " [options] data1File data2File data3File ... ";
 
 	static class ListBugDatabaseInfoCommandLine extends CommandLine {
+
+		 boolean formatDates = false;
 
 		ListBugDatabaseInfoCommandLine() {
 			addSwitch("-formatDates", "render dates in textual form");
@@ -75,18 +75,18 @@ public class ListBugDatabaseInfo {
 
 		PrintWriter out = new PrintWriter(System.out);
 		if (argCount == args.length) 
-			listVersion(out,null);
+			listVersion(out,null, commandLine.formatDates);
 		else {
 			out.println("version	time	classes	NCSS	total	high	medium	low	file");
 			while (argCount < args.length) {
 				String fileName = args[argCount++];
-				listVersion(out, fileName);
+				listVersion(out, fileName, commandLine.formatDates);
 				}
 		}
 		out.close();
 	}
 
-	private static void listVersion(PrintWriter out, @CheckForNull String fileName) throws IOException, DocumentException {
+	private static void listVersion(PrintWriter out, @CheckForNull String fileName, boolean formatDates) throws IOException, DocumentException {
 		Project project = new Project();
 		BugCollection origCollection;
 		origCollection = new SortedBugCollection(
