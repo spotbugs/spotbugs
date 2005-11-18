@@ -13,6 +13,40 @@
 <td align="left" valign="top">
 
 <h1>FindBugs Change Log</h1>
+	
+<p>Note: there was no version 0.9.2</p>
+
+<p>Changes since version 0.9.1:</p>
+<ul>
+	<!-- New detectors -->
+	<li>Embellish USM to find abstract methods that implement an interface method (Dave Brosius) </li>
+	<li>New detector to find stores of literal booleans inside if or while expressions (Dave Brosius)</li>
+	<li>New style detector to find final classes that declare protected fields (Dave Brosius)</li>
+	<li>New detector to find subclass methods that simply forward, verbatim, to the super class (Dave Brosius)</li>
+	<li>
+		Detector to find instances where code is attempting to
+		write an object out via an implemention of DataOutput,
+		but the object is not guaranteed to be Serializable (Jon Christiansen, Bill Pugh)
+	</li>
+	
+	<!-- Feature enhancements -->
+	<li>Large (35%) analysis speedup (Bill Pugh)</li>
+	<li>Add line numbers to Swing GUI code panel (Dave Brosius)</li>
+	<li>Added effort options to Swing GUI (Dave Brosius)</li>
+	<li>Add ability to specify bugs file to open from command line for GUI version, through -loadbugs (Phillip Martin)</li> 
+	<li>New stylesheet for generating HTML: use option <tt>-html:plain.xsl</tt> (Chris Nappin)</li>
+	<li>New stylesheet for generating HTML: use option <tt>-html:fancy.xsl</tt> (Etienne Giraudy)</li>
+	<li>Updated Japanese bug message translations (Shisei Hanai)</li>
+		
+	<!-- Bug fixes -->
+	<li>XHTML compliance fixes for bug details (Etienne Giraudy)</li>
+	<li>Various detector fixes (Shisei Hanai)</li>
+	<li>Fixed bugs in the project preferences dialog int the Eclipse plugin
+		(Takashi Okamoto, Thomas Einwaller)</li>
+	<li>Lowered priority of analysis thread in Swing GUI (David Hovemeyer,
+		suggested by Shisei Hanai and Jeffrey W. Badorek)</li>
+	<li>Fixed EclipsePlugin to correctly pick up auxclasspath entries (Jon Christiansen)</li>
+</ul>
 
 <p>Changes since version 0.9.0:</p>
 <ul>
