@@ -30,17 +30,17 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Lookup;
-import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
-public class InvalidJUnitTest extends BytecodeScanningDetector implements
-		 StatelessDetector {
+public class InvalidJUnitTest extends BytecodeScanningDetector {
 
 	private static final int SEEN_NOTHING = 0;
 
 	private static final int SEEN_ALOAD_0 = 1;
 
 	private BugReporter bugReporter;
+	private boolean checkedTestCaseClass;
+	private boolean haveTestCaseClass;
 
 	private int state;
 
@@ -55,6 +55,9 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements
 	boolean directChildOfTestCase;
 
 	public void visitClassContext(ClassContext classContext) {
+		if (!enabled())
+			return;
+		
 		JavaClass jClass = classContext.getJavaClass();
 
 		try {
@@ -84,6 +87,28 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements
 			bugReporter.reportMissingClass(cnfe);
 		}
 
+	}
+
+	/**
+	 * Check whether or not this detector should be enabled.
+	 * The detector is disabled if the TestCase class cannot be found
+	 * (meaning we don't have junit.jar on the aux classpath).
+	 * 
+	 * @return true if it should be enabled, false if not
+	 */
+	private boolean enabled() {
+		if (!checkedTestCaseClass) {
+			checkedTestCaseClass = true;
+			try {
+				Repository.lookupClass("junit.framework.TestCase");
+				haveTestCaseClass = true;
+			} catch (ClassNotFoundException e) {
+				// No TestCase class, so don't bother running
+				// the detector.
+			}
+		}
+		
+		return haveTestCaseClass;
 	}
 
 	public void visit(Method obj) {
