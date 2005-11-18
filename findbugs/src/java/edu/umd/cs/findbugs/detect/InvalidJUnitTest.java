@@ -98,7 +98,8 @@ public class InvalidJUnitTest extends BytecodeScanningDetector implements
 	public void visit(Code obj) {
 		if (!directChildOfTestCase
 				&& (getMethodName().equals("setUp") || getMethodName().equals(
-						"tearDown"))) {
+						"tearDown"))
+				&& !getMethod().isPrivate()) {
 			sawSuperCall = false;
 			super.visit(obj);
 			if (sawSuperCall)
