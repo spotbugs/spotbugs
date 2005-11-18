@@ -52,7 +52,7 @@
 		<mkdir dir="${bin.dir}"/>
 	</target>
 
-	<target name="clean" description="Clean up temporary files">
+	<target name="clean" depends="init" description="Clean up temporary files">
 		<delete>
 			<fileset dir="${dist.dir}" includes="**"/>
 		</delete>
@@ -86,7 +86,6 @@
 	
 
 	<target name="dist" depends="clean,classes" description="Build a plugin distributable, including the conversion of all classes to 1.4 compatible bytecode">
-
 		<jar destfile="${dist.dir}/findbugs-plugin.jar">
 				<fileset dir="${bin.dir}" excludes="de/tobject/findbugs/tools/**" />
 		</jar>
