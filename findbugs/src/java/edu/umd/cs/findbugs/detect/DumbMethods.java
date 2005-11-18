@@ -121,7 +121,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 						.addClassAndMethod(this)
 						.addSourceLine(this));
 			  checkForBitIorofSignedByte = false;
-		} else if (seen == IOR || seen == LOR) {
+		} else if ((seen == IOR || seen == LOR) && stack.getStackDepth() >= 2) {
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			OpcodeStack.Item item1 = stack.getStackItem(1);
 			
