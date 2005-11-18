@@ -19,6 +19,11 @@
     <othername>H.</othername>
     <surname>Hovemeyer</surname>
   </author>
+	<author>
+		<firstname>William</firstname>
+		<othername>W.</othername>
+		<surname>Pugh</surname>
+	</author>
 </authorgroup>
 
 <copyright>
@@ -1825,6 +1830,437 @@ The list of configurable analysis properties is shown in
 </tgroup>
 </table>
 
+</chapter>
+
+<!--
+   **************************************************************************
+   Data mining
+   **************************************************************************
+-->
+	
+<chapter id="datamining">
+	<title>Data mining of bugs with FindBugs</title>
+
+<para>
+FindBugs now incorporates an ability to perform sophisticated queries on bug
+databases and track warnings across multiple versions of code being
+studied, allowing you to do things such as seen when a bug was first introduced, or to examine
+just the warnings that have been introduced since the last release, or to graph the number
+of infinite recursive loops in your code over time.</para>
+
+<para>
+These techniques all depend upon the XML storage format used by FindBugs for storing warnings.
+These XML files usually contain just the warnings from a particular analysis run, but
+you can also store the results from analyzing a sequence of software builds or versions.
+	</para>
+
+<para>
+Any FindBugs XML bug database contains a version name and timestamp. 
+FindBugs tries to compute a timestamp from the timestamps of the files that
+are analyzed (e.g., the timestamp is intended to be the time the class files
+were generated, not analyzed). Each bug database also contains a version name.
+Both the version name and timestamp can be set manually using the 
+<command>setBugDatabaseInfo</command> (<xref linkend="setBugDatabaseInfo" />) command.
+	</para>
+
+<para>A multiversion bug database assigns a sequence number to each version of
+the analyzed code. These sequence numbers are simply successive integers,
+starting at 0 (e.g., a bug database for 4 versions of the code will contain
+versions 0..3). The bug database will also record the name and timestamp for
+each version. The <command>filterBugs</command> command allows you to refer
+to a version by sequence number, name or timestamp.</para>
+
+<para>
+You can take a sequence (or pair) of single version bug databases and create
+from them a multiversion bug database, or combine a multiversion bug database
+with a sequence of later single-version bug databases.</para>
+
+	<sect1 id="commands">
+		<title>Commands</title>
+		
+		<para>
+The current tools for FindBugs data mining are designed to be invoked
+from the command line.</para>
+
+<para>
+Briefly, the commands are:</para>
+
+		<variablelist>
+			<varlistentry>
+				<term><command>unionBugs</command></term>
+				<listitem>
+					<para>
+						 combine the results from separate analysis of disjoint
+		classes
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><command>computeBugHistory</command></term>
+				<listitem>
+					<para>Merge bug warnings from multiple versions of
+			analyzed code into
+			a single multiversion bug database. This can either be used
+			to add more versions to an existing multiversion database,
+			or to create a multiversion database from a sequence of single version
+			bug warning databases.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><command>setBugDatabaseInfo</command></term>
+				<listitem>
+					<para>Set information such as the revision name or
+timestamp in an XML bug database</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><command>listBugDatabaseInfo</command></term>
+				<listitem>
+					<para>List information such as the revision name and
+timestamp for a list of XML bug databases</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><command>filterBugs</command></term>
+				<listitem>
+					<para>Select a subset of a bug database</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><command>mineBugHistory</command></term>
+				<listitem>
+					<para>Generate a tabular listing of the number of warnings in each
+		version of a multiversion bug database</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><command>defectDensity</command></term>
+				<listitem>
+					<para>List information about defect density
+						 (warnings per 1000 NCSS)
+						 for the entire project and each class and package.</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><command>convertXmlToText</command></term>
+				<listitem>
+					<para>Convert bug warnings in XML format to 
+		a textual, one line per bug, format</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+		
+		
+		<sect2 id="unionBugs">
+			<title>unionBugs</title>
+
+		<para>
+		If you have, for example, seperately analyzing each jar file used in an application,
+		you can use this command to combine the seperately generated xml bug warning files into
+		a single file containing all of the warnings.</para>
+
+			<para>Do <emphasis>not</emphasis> use this command to combine results from analyzing different versions of the same
+			file; use <command>computeBugHistory</command> instead.</para>
+		</sect2>
+
+		<sect2 id="computeBugHistory">
+			<title>computeBugHistory</title>
+		
+<para>Use this command to generate a bug database containing information from different builds or versions
+	of software you are analyzing.</para>
+		</sect2>	
+		<sect2 id="filterBugs">
+			<title>filterBugs</title>
+<para>This command is used to select a subset of warnings from a FindBugs XML warning file
+and write the selected subset to a new FindBugs warning file.</para>
+<para>
+This command takes a sequence of options, and either zero, one or two
+filenames of findbugs xml bug files on the command line.</para>
+<para>If no file names are provided, the command reads from standard input
+and writes to standard output. If one file name is provided,
+it reads from the file and writes to standard output.
+If two file names are provided, it reads from the first and writes the output
+to the second file name.</para>
+		
+		<table id="filterOptionsTable">
+			<title>Options for filterBugs command</title>
+			<tgroup cols="2" align="left">
+  				<thead>
+    				<row>
+      					<entry>Option</entry>
+      					<entry>Meaning</entry>
+    				</row>
+  					</thead>
+  				<tbody>
+<row><entry>-not</entry>                        <entry>reverse (all) switches for the filter</entry></row>
+<row><entry>-withSource[:truth]</entry>         <entry>only warnings for switch source is available</entry></row>
+<row><entry>exclude &lt;filter file&gt;</entry> <entry>exclude bugs matching given filter</entry></row>
+<row><entry>-include &lt;filter file&gt;</entry><entry>include only bugs matching given filter</entry></row>
+<row><entry>-annotation &lt;text&gt;</entry>    <entry>allow only warnings containing this text in a manual annotation</entry></row>
+<row><entry>-classified[:truth]</entry>         <entry>allow only classified warnings</entry></row>
+<row><entry>-serious[:truth]</entry>            <entry>allow only warnings manually classified as serious</entry></row>
+<row><entry>-after &lt;when&gt;</entry>         <entry>allow only warnings that first occurred after this version</entry></row>
+<row><entry>-before &lt;when&gt;</entry>        <entry>allow only warnings that first occurred before this version</entry></row>
+<row><entry>-first &lt;when&gt;</entry>         <entry>allow only warnings that first occurred in this version</entry></row>
+<row><entry>-last &lt;when&gt;</entry>          <entry>allow only warnings that last occurred in this version</entry></row>
+<row><entry>-present &lt;when&gt;</entry>       <entry>allow only warnings present in this version</entry></row>
+<row><entry>-absent &lt;when&gt;</entry>        <entry>allow only warnings absent in this version</entry></row>
+<row><entry>-active[:truth]</entry>             <entry>allow only warnings alive in the last sequence number</entry></row>
+<row><entry>-introducedByChange[:truth]</entry> <entry>allow only warnings introduced by a change of an existing class</entry></row>
+<row><entry>-removedByChange[:truth]</entry>    <entry>allow only warnings removed by a change of a persisting class</entry></row>
+<row><entry>-newCode[:truth]</entry>            <entry>allow only warnings introduced by the addition of a new class</entry></row>
+<row><entry>-removedCode[:truth]</entry>        <entry>allow only warnings removed by removal of a class</entry></row>
+<row><entry>-priority &lt;level&gt;</entry>     <entry>allow only warnings with this priority or higher</entry></row>
+<row><entry>-class &lt;pattern&gt;</entry>      <entry>allow only bugs whose primary class name matches this pattern</entry></row>
+<row><entry>-bugPattern &lt;pattern&gt;</entry> <entry>allow only bugs whose type matches this pattern</entry></row>
+<row><entry>-category &lt;category&gt;</entry>  <entry>allow only warnings with a category that starts with this string</entry></row>
+				</tbody>
+			</tgroup>
+		</table>
+		
+		</sect2>
+		
+		<sect2 id="mineBugHistory">
+			<title>mineBugHistory</title>
+<para>This command generates a table containing counts of the numbers of warnings
+in each version of a multiversion bug database.</para>
+<para>The options are:</para>
+
+			<variablelist>
+				<varlistentry>
+					<term><option>-formatDates</option></term>
+					<listitem>
+						<para>
+							render dates in textual form
+						</para>
+					</listitem>
+				</varlistentry>
+				<!--
+				<varlistentry>
+					<term><option></option></term>
+					<listitem>
+						<para>
+							
+						</para>
+					</listitem>
+				</varlistentry>
+				-->
+			</variablelist>
+<para>The table is a tab seperated table with the following columns:</para>
+
+		<table id="mineBugHistoryColumns">
+			<title>Columns in mineBugHistory output</title>
+			<tgroup cols="2" align="left">
+  				<thead>
+    				<row>
+      					<entry>Title</entry>
+      					<entry>Meaning</entry>
+    				</row>
+  					</thead>
+  				<tbody>
+					  <row><entry>seq</entry><entry>Sequence number (successive integers, starting at 0)</entry></row>
+					  <row><entry>version</entry><entry>Version name</entry></row>
+					  <row><entry>time</entry><entry>Release timestamp</entry></row>
+					  <row><entry>classes</entry><entry>Number of classes analyzed</entry></row>
+					  <row><entry>NCSS</entry><entry>Non Commenting Source Statements</entry></row>
+					  <row><entry>added</entry><entry>Count of new warnings for a class that existed in the previous version</entry></row>
+					  <row><entry>newCode</entry><entry>Count of new warnings for a class that did not exist in the previous version</entry></row>
+					  <row><entry>fixed</entry><entry>Count of warnings removed from a class that remains in the current version</entry></row>
+					  <row><entry>removed</entry><entry>Count of warnings in the previous version for a class that is not present in the current version</entry></row>
+					  <row><entry>retained</entry><entry>Count of warnings that were in both the previous and current version</entry></row>
+					  <row><entry>dead</entry><entry>Warnings that were present in earlier versions but in neither the current version or the immediately preceeding version</entry></row>
+					  <row><entry>active</entry><entry>Total warnings present in the current version</entry></row>
+				</tbody>
+				</tgroup>
+		</table>						
+		</sect2>
+		
+		<sect2 id="defectDensity">
+			<title>defectDensity</title>
+<para>
+This command lists information about defect density (warnings per 1000 NCSS) for the entire project and each class and package.
+In can either be invoked with no files specified on the command line (in which case it reads from standard input)
+or with one file specified on the command line.</para>
+<para>It generates a table with the following columns, and with one
+row for the entire project, and one row for each package or class that contains at least
+4 warnings.</para>
+		<table id="defectDensityColumns">
+			<title>Columns in defectDensity output</title>
+			<tgroup cols="2" align="left">
+  				<thead>
+    				<row>
+      					<entry>Title</entry>
+      					<entry>Meaning</entry>
+    				</row>
+  					</thead>
+  				<tbody>
+					  <row><entry>kind</entry><entry>project, package or class</entry></row>
+					  <row><entry>name</entry><entry>The name of the project, package or class</entry></row>
+					  <row><entry>density</entry><entry>Number of warnings generated per 1000 lines of NCSS.</entry></row>
+					  <row><entry>bugs</entry><entry>Number of warnings</entry></row>
+					  <row><entry>NCSS</entry><entry>Calculated number of NCSS</entry></row>
+				</tbody>
+				</tgroup>
+			</table>
+		</sect2>
+		
+		<sect2 id="convertXmlToText">
+			<title>convertXmlToText</title>
+			
+			<para>
+				This command converts a warning collection in XML format to a text
+				format with one line per warning. It has a single option,
+				<option>-longBugCodes</option>, which causes it to use the full
+				bug pattern code instead of the two-letter abbreviation.
+			</para>
+		</sect2>
+		
+		<sect2 id="setBugDatabaseInfo">
+			<title>setBugDatabaseInfo</title>
+			
+			<para>
+				This command sets meta-information in a specified warning collection.
+				It takes the following options:
+			</para>
+		<table id="setBugDatabaseInfoOptions">
+			<title>setBugDatabaseInfo Options</title>
+			<tgroup cols="2" align="left">
+  				<thead>
+    				<row>
+      					<entry>Option</entry>
+      					<entry>Meaning</entry>
+    				</row>
+  				</thead>
+  				<tbody>
+					  <row><entry>-name <replaceable>name</replaceable></entry><entry>set name for (last) revision</entry></row>
+					  <row><entry>-timestamp <replaceable>when</replaceable></entry><entry>set timestamp for (last) revision</entry></row>
+					  <row><entry>-source <replaceable>directory</replaceable></entry><entry>Add this directory to the source search path</entry></row>
+			 	</tbody>
+				</tgroup>
+			</table>
+		</sect2>
+		
+		<sect2 id="listBugDatabaseInfo">
+			<title>listBugDatabaseInfo</title>
+			
+			<para>This command takes a list of zero or more xml bug database filenames on the command line.
+If zero file names are provided, it reads from standard input and does not generate
+a table header.</para>
+
+<para>There is only one option: <option>-formatDates</option> renders dates
+	in textual form.
+	</para>
+			
+<para>The output is a table one row per bug database and the following columns:</para>
+		<table id="listBugDatabaseInfoColumns">
+			<title>listBugDatabaseInfo Columns</title>
+			<tgroup cols="2" align="left">
+  				<thead>
+    				<row>
+      					<entry>Column</entry>
+      					<entry>Meaning</entry>
+    				</row>
+  				</thead>
+  				<tbody>
+					  <row><entry>version</entry><entry>version name</entry></row>
+					  <row><entry>time</entry><entry>Release timestamp</entry></row>
+					  <row><entry>classes</entry><entry>Number of classes analyzed</entry></row>
+					  <row><entry>NCSS</entry><entry>Non Commenting Source Statements analyzed</entry></row>
+					  <row><entry>total</entry><entry>Total number of warnings of all kinds</entry></row>
+					  <row><entry>high</entry><entry>Total number of high priority warnings of all kinds</entry></row>
+					  <row><entry>medium</entry><entry>Total number of medium/normal priority warnings of all kinds</entry></row>
+					  <row><entry>low</entry><entry>Total number of low priority warnings of all kinds</entry></row>
+					  <row><entry>filename</entry><entry>filename of database</entry></row>
+<!--
+					  <row><entry></entry><entry></entry></row>
+					  <row><entry></entry><entry></entry></row>
+					  <row><entry></entry><entry></entry></row>
+					  <row><entry></entry><entry></entry></row>
+					  <row><entry></entry><entry></entry></row>
+					  <row><entry></entry><entry></entry></row>
+-->
+			 	</tbody>
+				</tgroup>
+			</table>
+			
+		</sect2>
+
+	</sect1>
+	
+	<sect1 id="examples">
+		<title>Examples</title>
+<para>In all of the following, the commands are given in a directory that contains
+directories jdk1.6.0-b12, jdk1.6.0-b13, ..., jdk1.6.0-b60.</para>
+
+<para>You can use the command:</para>
+<screen>
+computeBugHistory jdk1.6.0-b* | filterBugs -bugPattern IL_ | mineBugHistory -formatDates
+</screen>
+<para>to generate the following output:</para>
+	
+<screen>
+seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active
+0	jdk1.6.0-b12	"Thu Nov 11 09:07:20 EST 2004"	13128	811569	0	4	0	0	0	0	4
+1	jdk1.6.0-b13	"Thu Nov 18 06:02:06 EST 2004"	13128	811570	0	0	0	0	4	0	4
+2	jdk1.6.0-b14	"Thu Dec 02 06:12:26 EST 2004"	13145	811786	0	0	2	0	2	0	2
+3	jdk1.6.0-b15	"Thu Dec 09 06:07:04 EST 2004"	13174	811693	0	0	1	0	1	2	1
+4	jdk1.6.0-b16	"Thu Dec 16 06:21:28 EST 2004"	13175	811715	0	0	0	0	1	3	1
+5	jdk1.6.0-b17	"Thu Dec 23 06:27:22 EST 2004"	13176	811974	0	0	0	0	1	3	1
+6	jdk1.6.0-b19	"Thu Jan 13 06:41:16 EST 2005"	13176	812011	0	0	0	0	1	3	1
+7	jdk1.6.0-b21	"Thu Jan 27 05:57:52 EST 2005"	13177	812173	0	0	0	0	1	3	1
+8	jdk1.6.0-b23	"Thu Feb 10 05:44:36 EST 2005"	13179	812188	0	0	0	0	1	3	1
+9	jdk1.6.0-b26	"Thu Mar 03 06:04:02 EST 2005"	13199	811770	0	0	0	0	1	3	1
+10	jdk1.6.0-b27	"Thu Mar 10 04:48:38 EST 2005"	13189	812440	0	0	0	0	1	3	1
+11	jdk1.6.0-b28	"Thu Mar 17 02:54:22 EST 2005"	13185	812056	0	0	0	0	1	3	1
+12	jdk1.6.0-b29	"Thu Mar 24 03:09:20 EST 2005"	13117	809468	0	0	0	0	1	3	1
+13	jdk1.6.0-b30	"Thu Mar 31 02:53:32 EST 2005"	13118	809501	0	0	0	0	1	3	1
+14	jdk1.6.0-b31	"Thu Apr 07 03:00:14 EDT 2005"	13117	809572	0	0	0	0	1	3	1
+15	jdk1.6.0-b32	"Thu Apr 14 02:56:56 EDT 2005"	13169	811096	0	0	0	0	1	3	1
+16	jdk1.6.0-b33	"Thu Apr 21 02:46:22 EDT 2005"	13187	811942	0	0	0	0	1	3	1
+17	jdk1.6.0-b34	"Thu Apr 28 02:49:00 EDT 2005"	13195	813488	0	1	0	0	1	3	2
+18	jdk1.6.0-b35	"Thu May 05 02:49:04 EDT 2005"	13457	829837	0	0	0	0	2	3	2
+19	jdk1.6.0-b36	"Thu May 12 02:59:46 EDT 2005"	13462	831278	0	0	0	0	2	3	2
+20	jdk1.6.0-b37	"Thu May 19 02:55:08 EDT 2005"	13464	831971	0	0	0	0	2	3	2
+21	jdk1.6.0-b38	"Thu May 26 03:08:16 EDT 2005"	13564	836565	0	0	0	0	2	3	2
+22	jdk1.6.0-b39	"Fri Jun 03 03:10:48 EDT 2005"	13856	849992	0	1	0	0	2	3	3
+23	jdk1.6.0-b40	"Thu Jun 09 03:30:28 EDT 2005"	15972	959619	0	2	0	0	3	3	5
+24	jdk1.6.0-b41	"Thu Jun 16 03:19:22 EDT 2005"	15972	959619	0	0	0	0	5	3	5
+25	jdk1.6.0-b42	"Fri Jun 24 03:38:54 EDT 2005"	15966	958581	0	0	0	0	5	3	5
+26	jdk1.6.0-b43	"Thu Jul 14 03:09:34 EDT 2005"	16041	960544	0	0	0	0	5	3	5
+27	jdk1.6.0-b44	"Thu Jul 21 03:05:54 EDT 2005"	16041	960547	0	0	0	0	5	3	5
+28	jdk1.6.0-b45	"Thu Jul 28 03:26:10 EDT 2005"	16037	960606	0	0	1	0	4	3	4
+29	jdk1.6.0-b46	"Thu Aug 04 03:02:48 EDT 2005"	15936	951355	0	0	0	0	4	4	4
+30	jdk1.6.0-b47	"Thu Aug 11 03:18:56 EDT 2005"	15964	952387	0	0	1	0	3	4	3
+31	jdk1.6.0-b48	"Thu Aug 18 08:10:40 EDT 2005"	15970	953421	0	0	0	0	3	5	3
+32	jdk1.6.0-b49	"Thu Aug 25 03:24:38 EDT 2005"	16048	958940	0	0	0	0	3	5	3
+33	jdk1.6.0-b50	"Thu Sep 01 01:52:40 EDT 2005"	16287	974937	1	0	0	0	3	5	4
+34	jdk1.6.0-b51	"Thu Sep 08 01:55:36 EDT 2005"	16362	979377	0	0	0	0	4	5	4
+35	jdk1.6.0-b52	"Thu Sep 15 02:04:08 EDT 2005"	16477	979399	0	0	0	0	4	5	4
+36	jdk1.6.0-b53	"Thu Sep 22 02:00:28 EDT 2005"	16019	957900	0	0	1	0	3	5	3
+37	jdk1.6.0-b54	"Thu Sep 29 01:54:34 EDT 2005"	16019	957900	0	0	0	0	3	6	3
+38	jdk1.6.0-b55	"Thu Oct 06 01:54:14 EDT 2005"	16051	959014	0	0	0	0	3	6	3
+39	jdk1.6.0-b56	"Thu Oct 13 01:54:12 EDT 2005"	16211	970835	0	0	0	0	3	6	3
+40	jdk1.6.0-b57	"Thu Oct 20 01:55:26 EDT 2005"	16279	971627	0	0	0	0	3	6	3
+41	jdk1.6.0-b58	"Thu Oct 27 01:56:30 EDT 2005"	16283	971945	0	0	0	0	3	6	3
+42	jdk1.6.0-b59	"Thu Nov 03 01:56:58 EST 2005"	16232	972193	0	0	0	0	3	6	3
+43	jdk1.6.0-b60	"Thu Nov 10 01:54:18 EST 2005"	16235	972346	0	0	0	0	3	6	3
+</screen>
+
+<para>We can then use that information to display a graph showing the number of infinite recursive loops
+found by FindBugs in each build of Sun's JDK1.6.0. The blue area indicates the number of infinite
+recursive loops in that build, the red area above it indicates the number of infinite recursive loops that existed
+in some previous version but not in the current version (thus, the combined height of the red and blue areas
+is guaranteed to never decrease, and goes up whenever a new infinite recursive loop bug is introduced). The height
+of the red area is computed as the sum of the fixed, removed and dead values for each version.		
+	</para>
+<mediaobject>
+<imageobject>
+<imagedata fileref="infiniteRecursiveLoops.png" />
+</imageobject>
+</mediaobject>
+		
+			</sect1>
+	
 </chapter>
 
 
