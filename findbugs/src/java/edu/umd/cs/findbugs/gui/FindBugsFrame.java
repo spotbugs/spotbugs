@@ -118,6 +118,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 
 /**
  * The main GUI frame for FindBugs.
@@ -3709,6 +3710,11 @@ public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
 			commandLine.parse(args);
 		} catch (IllegalArgumentException e) {
 			System.err.println("Error: " + e.getMessage());
+			showSynopsis();
+			ShowHelp.showGeneralOptions();
+			showCommandLineOptions();
+			System.exit(1);
+		} catch (HelpRequestedException e) {
 			showSynopsis();
 			ShowHelp.showGeneralOptions();
 			showCommandLineOptions();

@@ -84,8 +84,6 @@ public class SetBugDatabaseInfo {
 			else if (option.equals("-timestamp"))
 				revisionTimestamp = Date.parse(argument);
 			else if (option.equals("-source"))
-				revisionTimestamp = Date.parse(argument);
-			else if (option.equals("-source"))
 					sourcePaths.add(argument);
 			else
 				throw new IllegalArgumentException("Can't handle option "

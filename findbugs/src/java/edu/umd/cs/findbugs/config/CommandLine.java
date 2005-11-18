@@ -162,17 +162,30 @@ public abstract class CommandLine {
 		return resultList.toArray(new String[resultList.size()]);
 	}
 
+	public static class HelpRequestedException extends Exception {
+		
+	}
 	@SuppressWarnings("DM_EXIT")
 	public int parse(String argv[], int minArgs, int maxArgs, String usage) {
 		try {
 		int count = parse(argv);
 		int remaining = argv.length - count;
-		if (remaining < minArgs || remaining > maxArgs) throw new RuntimeException("Wrong number of arguments");
+		if (remaining < minArgs || remaining > maxArgs) {
+			System.out.println(usage);
+			System.out.println("Expected " +minArgs + "..." + maxArgs 
+					+ " file arguments, found " + remaining);
+			System.out.println("Options:");
+			printUsage(System.out);
+			System.exit(1);
+		}
 		return count;
+		} catch (HelpRequestedException e) {
+			// fall through
+		
 		} catch (RuntimeException e) {
-			// fall through
+			e.printStackTrace();
 		} catch (IOException e) {
-			// fall through
+			e.printStackTrace();
 		}
 		System.out.println(usage);
 		System.out.println("Options:");
@@ -189,12 +202,15 @@ public abstract class CommandLine {
 	 * @param argv the arguments
 	 * @return the number of arguments parsed; if equal to
 	 *         argv.length, then the entire command line was parsed
+	 * @throws HelpRequestedException 
 	 */
-	public int parse(String argv[]) throws IOException {
+	public int parse(String argv[]) throws IOException, HelpRequestedException {
 		int arg = 0;
 
 		while (arg < argv.length) {
 			String option = argv[arg];
+			if (option.equals("-help"))
+				throw new HelpRequestedException();
 			if (!option.startsWith("-"))
 				break;
 

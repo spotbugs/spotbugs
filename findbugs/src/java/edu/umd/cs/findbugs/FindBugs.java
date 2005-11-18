@@ -59,8 +59,10 @@ import edu.umd.cs.findbugs.ba.URLClassPathRepository;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.gui.Hello;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
@@ -1824,6 +1826,8 @@ public class FindBugs implements Constants2, ExitCodes {
 			argCount = commandLine.parse(argv);
 		} catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());
+			showHelp(commandLine);
+		} catch (HelpRequestedException e) {
 			showHelp(commandLine);
 		}
 
