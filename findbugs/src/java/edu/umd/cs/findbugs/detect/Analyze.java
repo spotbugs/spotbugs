@@ -75,10 +75,16 @@ public class Analyze {
 	}
 	private static boolean isPrimitiveComponentClass(String refSig) {
 		int c = 0;
-		while (refSig.charAt(c) == '[') {
+		while (c < refSig.length() && refSig.charAt(c) == '[') {
 			c++;
 		}
-		return refSig.charAt(c) != 'L';
+		
+		// If the string is now empty, then we evidently have
+		// an invalid type signature.  We'll return "true",
+		// which in turn will cause isDeepSerializable() to return
+		// 1.0, hopefully avoiding any warnings from being generated
+		// by whatever detector is calling us.
+		return c >= refSig.length() || refSig.charAt(c) != 'L';
 	}
 	
 	public static String getComponentClass(String refSig) {
