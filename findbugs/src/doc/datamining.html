@@ -88,9 +88,21 @@ If you have, for example, seperately analyzing each jar file used in an applicat
 <p>Do <em>not</em> use this command to combine results from analyzing different versions of the same
 file; use computeBugHistory instead.
 
-<h3><a name=""><h3></a><a name="computeBugHistory">computeBugHistory</a></h3>
+<h3><a name="computeBugHistory">computeBugHistory</a></h3>
 <p>Use this command to generate a bug database containing information from different builds or versions
-	of software you are analyzing.
+	of software you are analyzing. History is taken from the first file provided as input; any following 
+	files should be single version bug databases (if they contain history the history in those
+	files will be ignored). 
+	<p>The file the combined history is written to can be provided using the -output option, otherwise
+	it is written to standard output. The output file is not written until all input files are read, so
+	you can overwrite one of the input files if you wish.
+	
+<table>
+<tr><th>Option<th>meaning
+<tr><td>-output &lt;filename&gt;                        <td>name of file to write output to (standard out otherwise)
+</table>
+	
+	
 <h3><a name="filterBugs"><h3>filterBugs</a></h3>
 <p>This command is used to select a subset of warnings from a FindBugs XML warning file
 and write the selected subset to a new FindBugs warning file.
@@ -217,70 +229,97 @@ a table header.
 
 <h2>Examples</h2>
 <p>In all of the following, the commands are given in a directory that contains
-directories jdk1.6.0-b12, jdk1.6.0-b13, ..., jdk1.6.0-b60.
+directories jdk1.6.0-b12, jdk1.6.0-b13, ..., jdk1.6.0-b61, each of which contains 
+a file jre/lib/rt.xml that contains the results of running FindBugs over rt.jar for that build.
 
+<h3>Building a history file from scratch</h3>
 <p>You can use the command:
 <quote>
-<pre>computeBugHistory jdk1.6.0-b* | filterBugs -bugPattern IL_ | mineBugHistory -formatDates</pre>
+<pre>computeBugHistory -output db.xml jdk1.6.0-b*/jre/lib/rt.xml</pre>
 </quote>
-<p>to generate the following output:
+<p>to create a bug history file db.xml containing the historical information
+from all of the jdk builds. Having created db.xml, we can use:
+<quote>
+<pre>filterBugs -bugPattern IL_ db.xml | mineBugHistory -formatDates</pre>
+</quote>
+<p>to examine the history of infinite recursive loops in JDK 1.6.0:
 <quote>
 <pre>
-seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active
-0	jdk1.6.0-b12	"Thu Nov 11 09:07:20 EST 2004"	13128	811569	0	4	0	0	0	0	4
-1	jdk1.6.0-b13	"Thu Nov 18 06:02:06 EST 2004"	13128	811570	0	0	0	0	4	0	4
-2	jdk1.6.0-b14	"Thu Dec 02 06:12:26 EST 2004"	13145	811786	0	0	2	0	2	0	2
-3	jdk1.6.0-b15	"Thu Dec 09 06:07:04 EST 2004"	13174	811693	0	0	1	0	1	2	1
-4	jdk1.6.0-b16	"Thu Dec 16 06:21:28 EST 2004"	13175	811715	0	0	0	0	1	3	1
-5	jdk1.6.0-b17	"Thu Dec 23 06:27:22 EST 2004"	13176	811974	0	0	0	0	1	3	1
-6	jdk1.6.0-b19	"Thu Jan 13 06:41:16 EST 2005"	13176	812011	0	0	0	0	1	3	1
-7	jdk1.6.0-b21	"Thu Jan 27 05:57:52 EST 2005"	13177	812173	0	0	0	0	1	3	1
-8	jdk1.6.0-b23	"Thu Feb 10 05:44:36 EST 2005"	13179	812188	0	0	0	0	1	3	1
-9	jdk1.6.0-b26	"Thu Mar 03 06:04:02 EST 2005"	13199	811770	0	0	0	0	1	3	1
-10	jdk1.6.0-b27	"Thu Mar 10 04:48:38 EST 2005"	13189	812440	0	0	0	0	1	3	1
-11	jdk1.6.0-b28	"Thu Mar 17 02:54:22 EST 2005"	13185	812056	0	0	0	0	1	3	1
-12	jdk1.6.0-b29	"Thu Mar 24 03:09:20 EST 2005"	13117	809468	0	0	0	0	1	3	1
-13	jdk1.6.0-b30	"Thu Mar 31 02:53:32 EST 2005"	13118	809501	0	0	0	0	1	3	1
-14	jdk1.6.0-b31	"Thu Apr 07 03:00:14 EDT 2005"	13117	809572	0	0	0	0	1	3	1
-15	jdk1.6.0-b32	"Thu Apr 14 02:56:56 EDT 2005"	13169	811096	0	0	0	0	1	3	1
-16	jdk1.6.0-b33	"Thu Apr 21 02:46:22 EDT 2005"	13187	811942	0	0	0	0	1	3	1
-17	jdk1.6.0-b34	"Thu Apr 28 02:49:00 EDT 2005"	13195	813488	0	1	0	0	1	3	2
-18	jdk1.6.0-b35	"Thu May 05 02:49:04 EDT 2005"	13457	829837	0	0	0	0	2	3	2
-19	jdk1.6.0-b36	"Thu May 12 02:59:46 EDT 2005"	13462	831278	0	0	0	0	2	3	2
-20	jdk1.6.0-b37	"Thu May 19 02:55:08 EDT 2005"	13464	831971	0	0	0	0	2	3	2
-21	jdk1.6.0-b38	"Thu May 26 03:08:16 EDT 2005"	13564	836565	0	0	0	0	2	3	2
-22	jdk1.6.0-b39	"Fri Jun 03 03:10:48 EDT 2005"	13856	849992	0	1	0	0	2	3	3
-23	jdk1.6.0-b40	"Thu Jun 09 03:30:28 EDT 2005"	15972	959619	0	2	0	0	3	3	5
-24	jdk1.6.0-b41	"Thu Jun 16 03:19:22 EDT 2005"	15972	959619	0	0	0	0	5	3	5
-25	jdk1.6.0-b42	"Fri Jun 24 03:38:54 EDT 2005"	15966	958581	0	0	0	0	5	3	5
-26	jdk1.6.0-b43	"Thu Jul 14 03:09:34 EDT 2005"	16041	960544	0	0	0	0	5	3	5
-27	jdk1.6.0-b44	"Thu Jul 21 03:05:54 EDT 2005"	16041	960547	0	0	0	0	5	3	5
-28	jdk1.6.0-b45	"Thu Jul 28 03:26:10 EDT 2005"	16037	960606	0	0	1	0	4	3	4
-29	jdk1.6.0-b46	"Thu Aug 04 03:02:48 EDT 2005"	15936	951355	0	0	0	0	4	4	4
-30	jdk1.6.0-b47	"Thu Aug 11 03:18:56 EDT 2005"	15964	952387	0	0	1	0	3	4	3
-31	jdk1.6.0-b48	"Thu Aug 18 08:10:40 EDT 2005"	15970	953421	0	0	0	0	3	5	3
-32	jdk1.6.0-b49	"Thu Aug 25 03:24:38 EDT 2005"	16048	958940	0	0	0	0	3	5	3
-33	jdk1.6.0-b50	"Thu Sep 01 01:52:40 EDT 2005"	16287	974937	1	0	0	0	3	5	4
-34	jdk1.6.0-b51	"Thu Sep 08 01:55:36 EDT 2005"	16362	979377	0	0	0	0	4	5	4
-35	jdk1.6.0-b52	"Thu Sep 15 02:04:08 EDT 2005"	16477	979399	0	0	0	0	4	5	4
-36	jdk1.6.0-b53	"Thu Sep 22 02:00:28 EDT 2005"	16019	957900	0	0	1	0	3	5	3
-37	jdk1.6.0-b54	"Thu Sep 29 01:54:34 EDT 2005"	16019	957900	0	0	0	0	3	6	3
-38	jdk1.6.0-b55	"Thu Oct 06 01:54:14 EDT 2005"	16051	959014	0	0	0	0	3	6	3
-39	jdk1.6.0-b56	"Thu Oct 13 01:54:12 EDT 2005"	16211	970835	0	0	0	0	3	6	3
-40	jdk1.6.0-b57	"Thu Oct 20 01:55:26 EDT 2005"	16279	971627	0	0	0	0	3	6	3
-41	jdk1.6.0-b58	"Thu Oct 27 01:56:30 EDT 2005"	16283	971945	0	0	0	0	3	6	3
-42	jdk1.6.0-b59	"Thu Nov 03 01:56:58 EST 2005"	16232	972193	0	0	0	0	3	6	3
-43	jdk1.6.0-b60	"Thu Nov 10 01:54:18 EST 2005"	16235	972346	0	0	0	0	3	6	3
+seq     version time    classes NCSS    added   newCode fixed   removed retained        dead    active
+0       jdk1.6.0-b12    1100182040000   13128   811569  0       4       0       0       0       0       4
+1       jdk1.6.0-b13    1100775726000   13128   811570  0       0       0       0       4       0       4
+2       jdk1.6.0-b14    1101985946000   13145   811786  0       0       2       0       2       0       2
+3       jdk1.6.0-b15    1102590424000   13174   811693  0       0       1       0       1       2       1
+4       jdk1.6.0-b16    1103196088000   13175   811715  0       0       0       0       1       3       1
+5       jdk1.6.0-b17    1103801242000   13176   811974  0       0       0       0       1       3       1
+6       jdk1.6.0-b19    1105616476000   13176   812011  0       0       0       0       1       3       1
+7       jdk1.6.0-b21    1106823472000   13177   812173  0       0       0       0       1       3       1
+8       jdk1.6.0-b23    1108032276000   13179   812188  0       0       0       0       1       3       1
+9       jdk1.6.0-b26    1109847842000   13199   811770  0       0       0       0       1       3       1
+10      jdk1.6.0-b27    1110448118000   13189   812440  0       0       0       0       1       3       1
+11      jdk1.6.0-b28    1111046062000   13185   812056  0       0       0       0       1       3       1
+12      jdk1.6.0-b29    1111651760000   13117   809468  0       0       0       0       1       3       1
+13      jdk1.6.0-b30    1112255612000   13118   809501  0       0       0       0       1       3       1
+14      jdk1.6.0-b31    1112857214000   13117   809572  0       0       0       0       1       3       1
+15      jdk1.6.0-b32    1113461816000   13169   811096  0       0       0       0       1       3       1
+16      jdk1.6.0-b33    1114065982000   13187   811942  0       0       0       0       1       3       1
+17      jdk1.6.0-b34    1114670940000   13195   813488  0       1       0       0       1       3       2
+18      jdk1.6.0-b35    1115275744000   13457   829837  0       0       0       0       2       3       2
+19      jdk1.6.0-b36    1115881186000   13462   831278  0       0       0       0       2       3       2
+20      jdk1.6.0-b37    1116485708000   13464   831971  0       0       0       0       2       3       2
+21      jdk1.6.0-b38    1117091296000   13564   836565  0       0       0       0       2       3       2
+22      jdk1.6.0-b39    1117782648000   13856   849992  0       1       0       0       2       3       3
+23      jdk1.6.0-b40    1118302228000   15972   959619  0       2       0       0       3       3       5
+24      jdk1.6.0-b41    1118906362000   15972   959619  0       0       0       0       5       3       5
+25      jdk1.6.0-b42    1119598734000   15966   958581  0       0       0       0       5       3       5
+26      jdk1.6.0-b43    1121324974000   16041   960544  0       0       0       0       5       3       5
+27      jdk1.6.0-b44    1121929554000   16041   960547  0       0       0       0       5       3       5
+28      jdk1.6.0-b45    1122535570000   16037   960606  0       0       1       0       4       3       4
+29      jdk1.6.0-b46    1123138968000   15936   951355  0       0       0       0       4       4       4
+30      jdk1.6.0-b47    1123744736000   15964   952387  0       0       1       0       3       4       3
+31      jdk1.6.0-b48    1124367040000   15970   953421  0       0       0       0       3       5       3
+32      jdk1.6.0-b49    1124954678000   16048   958940  0       0       0       0       3       5       3
+33      jdk1.6.0-b50    1125553960000   16287   974937  1       0       0       0       3       5       4
+34      jdk1.6.0-b51    1126158936000   16362   979377  0       0       0       0       4       5       4
+35      jdk1.6.0-b52    1126764248000   16477   979399  0       0       0       0       4       5       4
+36      jdk1.6.0-b53    1127368828000   16019   957900  0       0       1       0       3       5       3
+37      jdk1.6.0-b54    1127973274000   16019   957900  0       0       0       0       3       6       3
+38      jdk1.6.0-b55    1128578054000   16051   959014  0       0       0       0       3       6       3
+39      jdk1.6.0-b56    1129182852000   16211   970835  0       0       0       0       3       6       3
+40      jdk1.6.0-b57    1129787726000   16279   971627  0       0       0       0       3       6       3
+41      jdk1.6.0-b58    1130392590000   16283   971945  0       0       0       0       3       6       3
+42      jdk1.6.0-b59    1131001018000   16232   972193  0       0       0       0       3       6       3
+43      jdk1.6.0-b60    1131605658000   16235   972346  0       0       0       0       3       6       3
+44      jdk1.6.0-b61    1132210722000   16202   971134  0       0       1       0       2       6       2
 </pre>
 </quote>
+<p>We could also generate that information directly, without creating an intermediate db.xml file,
+using the command
+<quote>
+<pre>computeBugHistory  jdk1.6.0-b*/jre/lib/rt.xml | filterBugs -bugPattern IL_ db.xml | mineBugHistory -formatDates</pre>
+</quote>
+
 <p>We can then use that information to display a graph showing the number of infinite recursive loops
 found by FindBugs in each build of Sun's JDK1.6.0. The blue area indicates the number of infinite
 recursive loops in that build, the red area above it indicates the number of infinite recursive loops that existed
 in some previous version but not in the current version (thus, the combined height of the red and blue areas
 is guaranteed to never decrease, and goes up whenever a new infinite recursive loop bug is introduced). The height
-of the red area is computed as the sum of the fixed, removed and dead values for each version.
+of the red area is computed as the sum of the fixed, removed and dead values for each version. The reductions in builds 13 and 14
+came after Sun was notified about the bugs found by FindBugs in the JDK.
 
 <p align=center><img src="infiniteRecursiveLoops.png">
+
+<h3>Incremental history mantainance</h3>
+<p>If db.xml contains the results of running findbugs over builds b12 - b60, we can update db.xml to include
+the results of analyzing b61 with the commands:
+quote>
+<pre>computeBugHistory -output db.xml db.xml jdk1.6.0-b61/jre/lib/rt.xml</pre>
+</quote>
+<p>to create a bug history file db.xml containing the historical information
+from all of the jdk builds. Having created db.xml, we can use:
+<quote>
+<pre>filterBugs -bugPattern IL_ db.xml | mineBugHistory -formatDates</pre>
+</quote>
 
 
 @HTML_FOOTER@
