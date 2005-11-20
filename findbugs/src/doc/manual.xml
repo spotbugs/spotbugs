@@ -11,7 +11,7 @@
 <book lang="en" id="findbugs-manual">
  
 <bookinfo>
-<title>&FindBugs; Manual</title>
+<title>&FindBugs;&trade; Manual</title>
 
 <authorgroup>
   <author>
@@ -40,6 +40,9 @@ To view a copy of this license, visit
 <ulink url="http://creativecommons.org/licenses/by-nc-sa/1.0/">http://creativecommons.org/licenses/by-nc-sa/1.0/</ulink>
 or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
 </para>
+<para>
+The name FindBugs and the FindBugs logo is trademarked by the University of Maryland.
+</para>
 </legalnotice>
 
 <edition>@VERSION@</edition>
@@ -57,7 +60,7 @@ or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, Californi
 <chapter id="introduction">
 <title>Introduction</title>
 
-<para> &FindBugs; is a program to find bugs in Java programs.  It looks for instances
+<para> &FindBugs;&trade; is a program to find bugs in Java programs.  It looks for instances
 of "bug patterns" --- code instances that are likely to be errors.</para>
 
 <para> This document describes version @VERSION@ of &FindBugs;. This is an
@@ -87,7 +90,7 @@ To analyze very large projects, more memory may be needed.</para>
 -->
 
 <chapter id="installing">
-<title>Installing and Running &FindBugs;</title>
+<title>Installing and Running &FindBugs;&trade;</title>
 
 <para>
 This chapter explains how to install and run &FindBugs;.
@@ -488,7 +491,7 @@ These options are only accepted by the Text User Interface.
 -->
 
 <chapter id="building">
-<title>Building &FindBugs; from Source</title>
+<title>Building &FindBugs;&trade; from Source</title>
 
 <para>
 This chapter describes how to build &FindBugs; from source code.  Unless you are
@@ -696,7 +699,7 @@ Total time: 17 seconds
 </sect1>
 
 <sect1>
-<title>Running &FindBugs;</title>
+<title>Running &FindBugs;&trade;</title>
 <para>
 The &Ant; build script for &FindBugs; is set up such that after 
 building the <command>build</command> target, the working directory
@@ -716,7 +719,7 @@ applies to source distributions, too.
 -->
 
 <chapter id="gui">
-<title>Using the Findbugs Graphical User Interface</title>
+<title>Using the &FindBugs;&trade; Graphical User Interface</title>
 
 <para>
 &FindBugs; has two user interfaces: a graphical user interface (GUI) and a
@@ -725,7 +728,7 @@ command line user interface.  This chapter describes the graphical user interfac
 
 <!--
 <sect1>
-<title>Executing the &FindBugs; GUI</title>
+<title>Executing the &FindBugs;&trade; GUI</title>
 </sect1>
 -->
 
@@ -862,7 +865,7 @@ may change in future releases.
 -->
 
 <chapter id="textui">
-<title>Using the &FindBugs; Command Line Interface</title>
+<title>Using the &FindBugs;&trade; Command Line Interface</title>
 
 <para>
 The &FindBugs; Command Line Interface (or Text UI) can be used to
@@ -887,7 +890,7 @@ Command Line Interface.
 -->
 
 <chapter id="anttask">
-<title>Using the &FindBugs; &Ant; task</title>
+<title>Using the &FindBugs;&trade; &Ant; task</title>
 
 <para>
 This chapter describes how to integrate &FindBugs; into a build script
@@ -1301,7 +1304,7 @@ using the &FindBugs; task.
 -->
 
 <chapter id="eclipse">
-<title>Using the &FindBugs; Eclipse plugin</title>
+<title>Using the &FindBugs;&trade; Eclipse plugin</title>
 
 <para>
 The FindBugs Eclipse plugin allows &FindBugs; to be used within
@@ -1839,7 +1842,7 @@ The list of configurable analysis properties is shown in
 -->
 	
 <chapter id="datamining">
-	<title>Data mining of bugs with FindBugs</title>
+	<title>Data mining of bugs with &FindBugs;&trade;</title>
 
 <para>
 FindBugs now incorporates an ability to perform sophisticated queries on bug
@@ -2274,6 +2277,8 @@ of the red area is computed as the sum of the fixed, removed and dead values for
 <title>License</title>
 
 <para>
+The name FindBugs and the FindBugs logo is trademarked by the University
+of Maryland.
 FindBugs is free software distributed under the terms of the
 <ulink url="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public License</ulink>.
 You should have received a copy of the license in the file <filename>LICENSE.txt</filename>
