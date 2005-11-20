@@ -8,6 +8,15 @@
 	
 	<property file="build.properties"/>
 	
+	<!-- 
+	        The local.properties properties file contains the location of eclipsePlugin.dir 
+
+	        This value is likely to be different for each checkout of the plugin,
+	        so the local.properties file is not managed by cvs
+	        
+	-->
+	<property file="local.properties" />
+	
 	<property name="jar.dir" value="lib"/>
 	<property name="plugin.dir" value="plugin"/>
 	<property name="build.dir" value="build"/>
@@ -68,13 +77,6 @@
 		<include name="**/*.css"/>
 		<include name="**/*.txt"/>
 	</patternset>
-
-	<!-- Some of the test classes require a real JDK 1.5 -->
-	<condition property="jsr14.excludes"
-	           value="IgnoredReturnValue.java,JSR166.java,TryLock.java,UnnecessaryMathTest.java">
-		<equals arg1="${build.compiler}"
-		        arg2="com.cortexeb.Jsr14CompilerAdapter"/>
-	</condition>
 
 	<!-- Default target builds scripts and jars, allowing execution using
 		the working directory as FINDBUGS_HOME.  Also build test case jarfile. -->
@@ -248,7 +250,6 @@
 	<!-- Test cases (for detectors) -->
 	<target name="testjar" depends="classes">
 		<javac srcdir="${test.dir}"
-		       excludes="${jsr14.excludes}"
 		       destdir="${test.dir}"
 		       source="1.5"
 		       debug="on">
@@ -352,7 +353,6 @@
 		<filterset id="doc.filters">
 			<filter token="VERSION" value="${release.number}" />
 			<filter token="RELEASE_DATE" value="${release.date}" />
-			<filter token="ECLIPSE_CORE_VERSION" value="${eclipse.core.version}"/>
 			<filter token="ECLIPSE_UI_VERSION" value="${eclipse.ui.version}" />
 			<filter token="WEBSITE" value="${findbugs.website}"/>
 			<filter token="DOWNLOADS_WEBSITE" value="${findbugs.downloads.website}"/>
