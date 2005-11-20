@@ -1,6 +1,6 @@
 <welcomePage 
         title="FindBugs"
         format="wrap">
-        <intro>This plugin provides access to the <a href="http://findbugs.sourceforge.net">FindBugs</a>, a static analyzer that looks
+        <intro>This plugin provides access to the <a href="http://findbugs.sourceforge.net">FindBugs&trade;</a>, a static analyzer that looks
         for Java coding defects.</intro>
 </welcomePage>
