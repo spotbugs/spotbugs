@@ -1,6 +1,9 @@
 To get started, see doc/index.html and doc/manual/index.html
 
-The FindBugs license is in the file LICENSE.txt
+The FindBugs source license is in the file LICENSE.txt
+
+Both the name FindBugs and the FindBugs bug mark are
+trademarked by the University of Maryland.
 
 The Apache BCEL license is in the file LICENSE-bcel.txt
 
