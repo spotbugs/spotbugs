@@ -1970,7 +1970,26 @@ timestamp for a list of XML bug databases</para>
 			<title>computeBugHistory</title>
 		
 <para>Use this command to generate a bug database containing information from different builds or versions
-	of software you are analyzing.</para>
+of software you are analyzing.
+History is taken from the first file provided as input; any following
+files should be single version bug databases (if they contain history the history in those
+files will be ignored).</para>
+<para>The file the combined history is written to can be provided using the -output option, otherwise
+it is written to standard output. The output file is not written until all input files are read, so
+you can overwrite one of the input files if you wish.
+</para>
+<para>
+The <command>computeBugHistory</command> command can take a single
+(optional) argument: adding </para>
+<screen>
+<command>-output</command> <replaceable>filename</replaceable>
+</screen>
+
+<para>
+will specify that the output should be saved in the file
+<replaceable>filename</replaceable>. (By default, output is
+written to the standard output.)
+</para>
 		</sect2>	
 		<sect2 id="filterBugs">
 			<title>filterBugs</title>
