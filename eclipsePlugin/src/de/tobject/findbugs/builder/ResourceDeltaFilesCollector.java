@@ -21,7 +21,6 @@ package de.tobject.findbugs.builder;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
