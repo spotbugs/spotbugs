@@ -194,6 +194,9 @@
             border-bottom: 1px solid #000000; font-size: 12pt; font-weight: bold;
             background: #cccccc; margin: 0; padding: 0 5px 0 5px;
          }
+         .title-help {
+            font-weight: normal;
+         }
          .innerbox-1, .innerbox-2 {
             margin: 0 0 0 10px;
          }
@@ -437,12 +440,22 @@
    <xsl:param name="category" select="''" />
    <xsl:variable name="category-count"
                        select="count(/BugCollection/BugInstance[@category=$category])" />
+   <xsl:variable name="category-count-p1"
+                       select="count(/BugCollection/BugInstance[@category=$category and @priority='1'])" />
+   <xsl:variable name="category-count-p2"
+                       select="count(/BugCollection/BugInstance[@category=$category and @priority='2'])" />
+   <xsl:variable name="category-count-p3"
+                       select="count(/BugCollection/BugInstance[@category=$category and @priority='3'])" />
+   <xsl:variable name="category-count-p4"
+                       select="count(/BugCollection/BugInstance[@category=$category and @priority='4'])" />
    <div class='outerbox'>
       <div class='outerbox-title'>
          <a>
             <xsl:attribute name="href"></xsl:attribute>
             <xsl:attribute name="onclick">toggle('category-<xsl:value-of select="$category" />');return false;</xsl:attribute>
-            <xsl:value-of select="/BugCollection/BugCategory[@category=$category]/Description" /> (<xsl:value-of select="$category-count" />)
+            <xsl:value-of select="/BugCollection/BugCategory[@category=$category]/Description" />
+            (<xsl:value-of select="$category-count" />:
+            <span class='title-help'><xsl:value-of select="$category-count-p1" />/<xsl:value-of select="$category-count-p2" />/<xsl:value-of select="$category-count-p3" />/<xsl:value-of select="$category-count-p4" /></span>)
          </a>
       </div>
       <div style="display:none;">
@@ -471,12 +484,22 @@
    <xsl:param name="code"     select="''" />
    <xsl:variable name="code-count"
                        select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code])" />
+   <xsl:variable name="code-count-p1"
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @priority='1'])" />
+   <xsl:variable name="code-count-p2"
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @priority='2'])" />
+   <xsl:variable name="code-count-p3"
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @priority='3'])" />
+   <xsl:variable name="code-count-p4"
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @priority='4'])" />
    <div class='innerbox-1'>
       <div class="innerbox-1-title">
          <a>
             <xsl:attribute name="href"></xsl:attribute>
             <xsl:attribute name="onclick">toggle('category-<xsl:value-of select="$category" />-and-code-<xsl:value-of select="$code" />');return false;</xsl:attribute>
-            <xsl:value-of select="$code" />: <xsl:value-of select="/BugCollection/BugCode[@abbrev=$code]/Description" />  (<xsl:value-of select="$code-count" />)
+            <xsl:value-of select="$code" />: <xsl:value-of select="/BugCollection/BugCode[@abbrev=$code]/Description" />
+            (<xsl:value-of select="$code-count" />:
+            <span class='title-help'><xsl:value-of select="$code-count-p1" />/<xsl:value-of select="$code-count-p2" />/<xsl:value-of select="$code-count-p3" />/<xsl:value-of select="$code-count-p4" /></span>)
          </a>
       </div>
       <div style="display:none;">
@@ -509,6 +532,14 @@
    <xsl:param name="bug"      select="''" />
    <xsl:variable name="bug-count"
                        select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug])" />
+   <xsl:variable name="bug-count-p1"
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and @priority='1'])" />
+   <xsl:variable name="bug-count-p2"
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and @priority='2'])" />
+   <xsl:variable name="bug-count-p3"
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and @priority='3'])" />
+   <xsl:variable name="bug-count-p4"
+                       select="count(/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug and @priority='4'])" />
    <div class='innerbox-2'>
       <div class='innerbox-2-title'>
          <a>
@@ -516,7 +547,8 @@
             <xsl:attribute name="onclick">toggle('category-<xsl:value-of select="$category" />-and-code-<xsl:value-of select="$code" />-and-bug-<xsl:value-of select="$bug" />');return false;</xsl:attribute>
             <xsl:attribute name="title"><xsl:value-of select="$bug" /></xsl:attribute>
             <xsl:value-of select="/BugCollection/BugPattern[@category=$category and @abbrev=$code and @type=$bug]/ShortDescription" />&#160;&#160;
-            (<xsl:value-of select="$bug-count" />)
+            (<xsl:value-of select="$bug-count" />:
+            <span class='title-help'><xsl:value-of select="$bug-count-p1" />/<xsl:value-of select="$bug-count-p2" />/<xsl:value-of select="$bug-count-p3" />/<xsl:value-of select="$bug-count-p4" /></span>)
          </a>
       </div>
       <div style="display:none;">
@@ -549,12 +581,39 @@
 
 <xsl:template name="packages" >
    <xsl:param name="package" select="''" />
+   <xsl:variable name="package-count-p1">
+      <xsl:if test="not(/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@priority_1 != '')">0</xsl:if>
+      <xsl:if test="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@priority_1 != ''">
+         <xsl:value-of select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@priority_1" />
+      </xsl:if>
+   </xsl:variable>
+   <xsl:variable name="package-count-p2">
+      <xsl:if test="not(/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@priority_2 != '')">0</xsl:if>
+      <xsl:if test="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@priority_2 != ''">
+         <xsl:value-of select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@priority_2" />
+      </xsl:if>
+   </xsl:variable>
+   <xsl:variable name="package-count-p3">
+      <xsl:if test="not(/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@priority_3 != '')">0</xsl:if>
+      <xsl:if test="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@priority_3 != ''">
+         <xsl:value-of select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@priority_3" />
+      </xsl:if>
+   </xsl:variable>
+   <xsl:variable name="package-count-p4">
+      <xsl:if test="not(/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@priority_4 != '')">0</xsl:if>
+      <xsl:if test="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@priority_4 != ''">
+         <xsl:value-of select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@priority_4" />
+      </xsl:if>
+   </xsl:variable>
+
    <div class='outerbox'>
       <div class='outerbox-title'>
          <a>
             <xsl:attribute name="href"></xsl:attribute>
             <xsl:attribute name="onclick">toggle('package-<xsl:value-of select="$package" />');return false;</xsl:attribute>
-            <xsl:value-of select="$package" /> (<xsl:value-of select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@total_bugs" />)
+            <xsl:value-of select="$package" />
+            (<xsl:value-of select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/@total_bugs" />:
+            <span class='title-help'><xsl:value-of select="$package-count-p1" />/<xsl:value-of select="$package-count-p2" />/<xsl:value-of select="$package-count-p3" />/<xsl:value-of select="$package-count-p4" /></span>)
          </a>
       </div>
       <div style="display:none;">
@@ -582,12 +641,40 @@
    <xsl:param name="class"     select="''" />
    <xsl:variable name="class-count"
                        select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@bugs" />
+
+   <xsl:variable name="class-count-p1">
+      <xsl:if test="not(/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@priority_1 != '')">0</xsl:if>
+      <xsl:if test="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@priority_1 != ''">
+         <xsl:value-of select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@priority_1" />
+      </xsl:if>
+   </xsl:variable>
+   <xsl:variable name="class-count-p2">
+      <xsl:if test="not(/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@priority_2 != '')">0</xsl:if>
+      <xsl:if test="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@priority_2 != ''">
+         <xsl:value-of select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@priority_2" />
+      </xsl:if>
+   </xsl:variable>
+   <xsl:variable name="class-count-p3">
+      <xsl:if test="not(/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@priority_3 != '')">0</xsl:if>
+      <xsl:if test="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@priority_3 != ''">
+         <xsl:value-of select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@priority_3" />
+      </xsl:if>
+   </xsl:variable>
+   <xsl:variable name="class-count-p4">
+      <xsl:if test="not(/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@priority_4 != '')">0</xsl:if>
+      <xsl:if test="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@priority_4 != ''">
+         <xsl:value-of select="/BugCollection/FindBugsSummary/PackageStats[@package=$package]/ClassStats[@class=$class and @bugs != '0']/@priority_4" />
+      </xsl:if>
+   </xsl:variable>
+
+
    <div class='innerbox-1'>
       <div class="innerbox-1-title">
          <a>
             <xsl:attribute name="href"></xsl:attribute>
             <xsl:attribute name="onclick">toggle('package-<xsl:value-of select="$package" />-and-class-<xsl:value-of select="$class" />');return false;</xsl:attribute>
-            <xsl:value-of select="$class" />  (<xsl:value-of select="$class-count" />)
+            <xsl:value-of select="$class" />  (<xsl:value-of select="$class-count" />:
+            <span class='title-help'><xsl:value-of select="$class-count-p1" />/<xsl:value-of select="$class-count-p2" />/<xsl:value-of select="$class-count-p3" />/<xsl:value-of select="$class-count-p4" /></span>)
          </a>
       </div>
       <div style="display:none;">
