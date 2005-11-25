@@ -55,6 +55,19 @@ Send your comments to <a href="mailto:daveho@users.sourceforge.net">daveho@users
 	
 <p>Changes since verson 0.9.3:</p>
 
+<ul>
+<li>Substantial rework of datamining code</li>
+<li>Removed bogus warnings about await on things other than Condition not
+being in a loop</li>
+<li>Fixed bug in OpcodeStack handling of dup2 of long/double values</li>
+<li>Don't report array types as missing classes</li>
+<li>Adjustment of some warnings on ignored return values</li>
+<li>Added thread safety annotations from Java Concurrency in Practice (no
+detectors written for these yet)</li>
+<li>Added annotation for methods that, if overridden, should be invoked
+by overriding methods via a call to super</li>
+</ul>
+
 <p> <a href="Changes.html">Older versions...</a></p>
 
 <h1>Sponsors</h1>
