@@ -227,9 +227,6 @@
 			<filter token="DEFINE_ESCAPE_ARG" value="${script.define.escape_arg}"/>
 		</filterset>
 
-		 <delete>
-		 	<fileset dir="${scripts.dir}" includes="*" excludes="CVS"/>
-		  </delete>
 		<copy todir="${scripts.dir}" overwrite="true">
 					<fileset dir="${scriptsrc.dir}/standard"/>
 					<filterset refid="script.filters"/>
@@ -240,6 +237,7 @@
 			<filterset refid="script.filters"/>
 		</copy>
 
+		<mkdir dir="${build.dir}"/>
 
 		<!-- Make the Unix scripts executable. -->
 		<chmod dir="${scripts.dir}" perm="a+x" includes="**/*" excludes="**/*.bat"/>
@@ -414,7 +412,7 @@
 	<target name="bindist" depends="rebuild,docs">
 		<patternset id="bindist.miscfile.pats">
 			<include name="README.txt"/>
-			<include name="LICENSE.txt"/>
+			<include name="LICENSE*.txt"/>
 			<include name="bin/*.bat"/>
 			<include name="lib/buggy.icns"/>
 			<include name="src/xsl/*.xsl"/> <!-- Bug #1187977 -->
@@ -430,6 +428,7 @@
 		
 		<patternset id="bindist.unixscript.pats">
 			<include name="bin/*"/>
+			<include name="bin/deprecated/*"/>
 			<exclude name="bin/*.bat"/>
 		</patternset>
 
