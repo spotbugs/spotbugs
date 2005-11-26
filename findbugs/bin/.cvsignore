@@ -24,3 +24,8 @@ randomSubset
 updateBugs
 filterBugs
 defectDensity
+computeBugHistory
+deprecated
+listBugDatabaseInfo
+setBugDatabaseInfo
+unionBugs
