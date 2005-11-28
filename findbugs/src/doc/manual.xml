@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-                    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+                    "file:../etc/docbook/docbookx.dtd" [
 <!ENTITY FindBugs "<application>FindBugs</application>">
 <!ENTITY Ant "<application>Ant</application>">
 <!ENTITY Saxon "<application>Saxon</application>">
