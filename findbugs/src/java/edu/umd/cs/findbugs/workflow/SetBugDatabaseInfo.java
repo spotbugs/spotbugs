@@ -17,28 +17,17 @@
  */
 package edu.umd.cs.findbugs.workflow;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeMap;
 
 import org.dom4j.DocumentException;
 
-import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.SloppyBugComparator;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.VersionInsensitiveBugComparator;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
