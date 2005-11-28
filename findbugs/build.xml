@@ -32,6 +32,7 @@
 	<property name="etc.dir" value="etc"/>
 	<property name="test.dir" value="test"/>
 	<property name="doc.dir" value="doc"/>
+	<property name="web.dir" value="web"/>
 	<property name="apiDoc.dir" value="apiJavaDoc"/>
 	<property name="annotationDoc.dir" value="annotationJavaDoc"/>
 	<property name="jnlp.dir" value="jnlp"/>
@@ -325,9 +326,34 @@
 			<arg value="${doc.html.gen.endBody}"/>
 		</java>
 	</target>
+
+	<!--
+		Input Params:
+		docoutput.dir				- output directory for generated documents
+		googleanalytics.fragment	- HTML fragment for google analytics
+	-->
+	<target name="copydocfiles">
+		
+		<copy todir="${docoutput.dir}">
+			<filterset>
+				<filterset refid="doc.filters"/>
+				<filter token="GOOGLE_ANALYTICS" value="${googleanalytics.fragment}"/>
+			</filterset>
+			<fileset dir="${docsrc.dir}">
+				<patternset refid="doc.src.pats"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${docoutput.dir}">
+			<fileset dir="${docsrc.dir}">
+				<patternset refid="doc.img.pats"/>
+			</fileset>
+		</copy>
+	</target>
 	
 	<target name="docfiles" depends="classes,version">
 		<mkdir dir="${doc.dir}"/>
+		<mkdir dir="${web.dir}"/>
 		
 		<!-- Get HTML doc properties -->
 		<loadproperties srcFile="${doc.props.file}"/>
@@ -361,19 +387,18 @@
 			<filter token="HTML_SIDEBAR" value="${doc.html.sidebar}"/>
 			<filter token="HTML_FOOTER" value="${doc.html.footer}"/>
 		</filterset>  
-		
-		<copy todir="${doc.dir}">
-			<filterset refid="doc.filters"/>
-			<fileset dir="${docsrc.dir}">
-				<patternset refid="doc.src.pats"/>
-			</fileset>
-		</copy>
-		
-		<copy todir="${doc.dir}">
-			<fileset dir="${docsrc.dir}">
-				<patternset refid="doc.img.pats"/>
-			</fileset>
-		</copy>
+
+		<!-- Generate local documentation in "doc" directory. -->
+		<antcall target="copydocfiles">
+			<param name="docoutput.dir" value="${doc.dir}"/>
+			<param name="googleanalytics.fragment" value=""/>
+		</antcall>
+
+		<!-- Generate external website in "web" directory. -->
+		<antcall target="copydocfiles">
+			<param name="docoutput.dir" value="${web.dir}"/>
+			<param name="googleanalytics.fragment" value="${doc.html.googleanalytics}"/>
+		</antcall>
 		
 	</target>
 
@@ -496,6 +521,9 @@
 		</delete>
 		<delete includeemptydirs="true">
 			<fileset dir="${doc.dir}" includes="**/*" />
+		</delete>
+		<delete includeemptydirs="true">
+			<fileset dir="${web.dir}" includes="**/*"/>
 		</delete>
 		<delete file="${engine.jar}"/>
 		<delete file="${coreplugin.jar}"/>
