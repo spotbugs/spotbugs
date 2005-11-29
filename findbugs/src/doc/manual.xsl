@@ -7,6 +7,10 @@
 <!-- build.xml will substitute the real path to chunk.xsl here. -->
 <xsl:import href="@HTML_XSL_STYLESHEET@"/>
 
+<xsl:template name="user.header.content">
+@GOOGLE_ANALYTICS@
+</xsl:template>
+
 <!-- This causes the stylesheet to put chapters in a single HTML file,
      rather than putting individual sections into seperate files. -->
 <xsl:variable name="chunk.section.depth">0</xsl:variable>
