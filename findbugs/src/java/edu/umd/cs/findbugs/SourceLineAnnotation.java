@@ -289,7 +289,6 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * Factory method for creating a source line annotation describing the
 	 * source line number for the instruction being visited by given visitor.
 	 *
-	 * @para classContext the ClassContext
 	 * @param visitor a DismantleBytecode visitor which is visiting the method
 	 * @return the SourceLineAnnotation, or null if we do not have line number information
 	 *         for the instruction

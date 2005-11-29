@@ -1063,7 +1063,6 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 	 * Note that if the method does not have line number information, then
 	 * no source line annotation will be added.
 	 *
-	 * @param classContext the ClassContext
 	 * @param visitor a BytecodeScanningDetector visitor that is currently visiting the instruction
 	 * @return this object
 	 */

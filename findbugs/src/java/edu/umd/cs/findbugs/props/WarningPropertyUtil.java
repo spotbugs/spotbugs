@@ -186,7 +186,7 @@ public abstract class WarningPropertyUtil {
 	 * @param propertySet  the WarningPropertySet
 	 * @param classContext the ClassContext
 	 * @param method       the Method
-	 * @param location     the Location
+	 * @param pc           the bytecode offset of an instruction to get properties for
 	 */
 	public static void addPropertiesForLocation(
 			WarningPropertySet propertySet,

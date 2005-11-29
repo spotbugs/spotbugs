@@ -331,7 +331,7 @@ public abstract class Frame <ValueType> implements Debug {
 	 * @param ins the instruction, which must be a StackConsumer
 	 * @param cpg the ConstantPoolGen
 	 * @param i   index of operand to get: 0 for the first operand, etc.
-	 * @return
+	 * @return the <i>i</i>th operand used by the given instruction
 	 * @throws DataflowAnalysisException 
 	 */
 	public ValueType getOperand(StackConsumer ins, ConstantPoolGen cpg, int i) throws DataflowAnalysisException {

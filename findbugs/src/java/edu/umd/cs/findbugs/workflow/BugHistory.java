@@ -138,7 +138,7 @@ public class BugHistory {
 		 * @param result         Set to put the resulting BugInstances in
 		 * @param origCollection original BugCollection
 		 * @param newCollection  new BugCollection
-		 * @returns the input bug collection the results are taken from
+		 * @return the input bug collection the results are taken from
 		 */
 		public SortedBugCollection perform(Set<BugInstance> result,
 				SortedBugCollection origCollection, SortedBugCollection newCollection);

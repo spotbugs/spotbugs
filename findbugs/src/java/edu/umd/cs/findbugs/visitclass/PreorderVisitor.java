@@ -102,7 +102,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	 /**
 	  * Get lines of code in try block that surround pc
 	  * @param pc
-	  * @return
+	  * @return number of lines of code in try block
 	  */
 	 public int getSizeOfSurroundingTryBlock(int pc) {
 			if (code == null) throw new IllegalStateException("Not visiting Code");

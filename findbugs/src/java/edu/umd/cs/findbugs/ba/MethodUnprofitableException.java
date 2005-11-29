@@ -30,18 +30,30 @@ public class MethodUnprofitableException extends CFGBuilderException {
 	private static final long serialVersionUID = 1L;
 	private final XMethod method;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param method the method that is unprofitable to analyze
+	 */
 	public MethodUnprofitableException(JavaClassAndMethod method) {
 		super("Appears unprofitable to analyze " + method);
 		this.method = XFactory.createXMethod(method.getJavaClass(), method.getMethod());
 	}
+
 	/**
-	 * @param message
+	 * Constructor.
+	 *
+	 * @param jClass the class containing the method that is unprofitable to analyze
+	 * @param method the method that is unprofitable to analyze
 	 */
 	public MethodUnprofitableException(JavaClass jClass, Method method) {
 		super("Appears unprofitable to analyze " + method);
 		this.method = XFactory.createXMethod(jClass, method);
 	}
 	
+	/**
+	 * @return the method that is unprofitable to analyze
+	 */
 	public XMethod getMethod() {
 		return method;
 	}

@@ -48,8 +48,7 @@ public class JavaClassAndMethod {
 	/**
 	 * Constructor.
 	 * 
-	 * @param javaClass the JavaClass
-	 * @param method    a Method belonging to the JavaClass
+	 * @param method an XMethod specifying a specific method in a specific class
 	 * @throws ClassNotFoundException 
 	 */
 	public JavaClassAndMethod(XMethod method) throws ClassNotFoundException {

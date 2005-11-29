@@ -42,7 +42,10 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	/**
 	 * Constructor.
 	 *
-	 * @param value the String value
+	 * @param name     the name of the local variable
+	 * @param register the local variable index
+	 * @param pc       the bytecode offset of the instruction that mentions
+	 *                 this local variable
 	 */
 	public LocalVariableAnnotation(String name, int register, int pc) {
 		this.value = name;

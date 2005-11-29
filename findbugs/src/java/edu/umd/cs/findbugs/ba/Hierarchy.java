@@ -274,7 +274,6 @@ public class Hierarchy {
 	 *
 	 * @param inv           the InvokeInstruction
 	 * @param cpg           the ConstantPoolGen used by the class the InvokeInstruction belongs to
-	 * @param methodChooser JavaClassAndMethodChooser which selects among candidate methods
 	 * @return the JavaClassAndMethod, or null if no matching method can be found
 	 */
 	public static JavaClassAndMethod findInvocationLeastUpperBound(

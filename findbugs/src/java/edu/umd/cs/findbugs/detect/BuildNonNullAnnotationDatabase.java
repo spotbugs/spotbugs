@@ -37,8 +37,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 /**
  * Scan application classes for
- * 
- * @NonNull annotations.
+ * NonNull annotations.
  * 
  * @author David Hovemeyer
  * @author William Pugh

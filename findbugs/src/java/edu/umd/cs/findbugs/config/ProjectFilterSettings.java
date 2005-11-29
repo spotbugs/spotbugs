@@ -209,7 +209,7 @@ public class ProjectFilterSettings implements Cloneable {
 	/**
 	 * Set minimum warning priority threshold.
 	 * 
-	 * @param value the priority: one of "High", "Medium", or "Low"
+	 * @param minPriority the priority threshold: one of "High", "Medium", or "Low"
 	 */
 	public void setMinPriority(String minPriority) {
 		this.minPriority = minPriority;

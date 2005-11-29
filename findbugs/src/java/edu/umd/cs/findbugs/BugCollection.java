@@ -160,7 +160,7 @@ public interface BugCollection
 	/**
 	 * Add an analysis error.
 	 * 
-	 * @param the AnalysisError object to add
+	 * @param error the AnalysisError object to add
 	 */
 	public void addError(AnalysisError error);
 

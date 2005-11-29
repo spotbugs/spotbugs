@@ -114,7 +114,6 @@ public class AnalysisPass {
 	 * Create all of the Detectors in this analysis pass.
 	 * 
 	 * @param bugReporter BugReporter to pass to the constructor of each created Detector
-	 * @return array containing each Detector in the pass
 	 */
 	public void createDetectors(BugReporter bugReporter) {
 		ArrayList<Detector> detectorList = new ArrayList<Detector>();

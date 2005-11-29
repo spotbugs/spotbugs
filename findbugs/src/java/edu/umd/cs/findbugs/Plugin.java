@@ -119,7 +119,7 @@ public class Plugin {
 	/**
 	 * Set plugin short (one-line) text description.
 	 *
-	 * @param the plugin short text description
+	 * @param shortDescription the plugin short text description
 	 */
 	public void setShortDescription(String shortDescription) {
 		this.shortDescription = shortDescription;
@@ -197,7 +197,7 @@ public class Plugin {
 	/**
 	 * Look up a DetectorFactory by full name.
 	 *
-	 * @param longName the full name
+	 * @param fullName the full name
 	 * @return the DetectorFactory
 	 */
 	public DetectorFactory getFactoryByFullName(final String fullName) {

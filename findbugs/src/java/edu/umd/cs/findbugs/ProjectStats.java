@@ -130,9 +130,6 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 * Report that a class has been analyzed.
 	 *
 	 * @param className   the full name of the class
-	 * @param isInterface true if the class is an interface
-	 * @param size        a normalized class size value;
-	 *                    see detect/FindBugsSummaryStats.
 	 */
 	public ClassStats getClassStats(String className) {
 		String packageName;

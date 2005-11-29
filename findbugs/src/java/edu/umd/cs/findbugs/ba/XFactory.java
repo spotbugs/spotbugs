@@ -54,9 +54,9 @@ public abstract class XFactory {
 	/**
 	 * Create an XField object from a BCEL Field.
 	 * 
-	 * @param classContext the ClassContext of the class to which the Method belongs
-	 * @param method       the Method
-	 * @return an XMethod representing the Method
+	 * @param javaClass the JavaClass containing the field
+	 * @param field     the Field within the JavaClass
+	 * @return the created XField
 	 */
 	public static XField createXField(JavaClass javaClass, Field field) {
 		String className = javaClass.getClassName();
@@ -123,7 +123,7 @@ public abstract class XFactory {
 	 * @param methodName method name
 	 * @param methodSig  method signature
 	 * @param isStatic   true if method is static, false if not
-	 * @return
+	 * @return the created XMethod
 	 */
 	public static XMethod createXMethod(String className, String methodName, String methodSig, boolean isStatic) {
 		if (isStatic)
