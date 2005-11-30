@@ -67,7 +67,7 @@ public class Version {
 	 * Version of Eclipse plugin.
 	 */
 	public static final String ECLIPSE_UI_VERSION =
-		"0.0.16" + (IS_DEVELOPMENT ? "." + RELEASE_SUFFIX_WORD: "");
+		"0.0.17" + (IS_DEVELOPMENT ? "." + RELEASE_SUFFIX_WORD: "");
 
 	/**
 	 * FindBugs website.
