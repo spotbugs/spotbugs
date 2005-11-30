@@ -410,7 +410,7 @@
 		<!-- Filter set used for generating text substitution values for
 			documentation. -->
 		<filterset id="doc.filters">
-			<filter token="VERSION" value="${release.numbner}" />
+			<filter token="VERSION" value="${release.number}" />
 			<filter token="RELEASE_DATE" value="${release.date}" />
 			<filter token="ECLIPSE_UI_VERSION" value="${eclipse.ui.version}" />
 			<filter token="WEBSITE" value="${findbugs.website}"/>
