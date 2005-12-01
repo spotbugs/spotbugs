@@ -565,12 +565,8 @@
 		<delete>
 			<fileset dir="${test.dir}" includes="**/*.class,*.jar"/>
 		</delete>
-		<delete includeemptydirs="true">
-			<fileset dir="${doc.dir}" includes="**/*" />
-		</delete>
-		<delete includeemptydirs="true">
-			<fileset dir="${web.dir}" includes="**/*"/>
-		</delete>
+		<delete dir="${doc.dir}"/>
+		<delete dir="${web.dir}"/>
 		<delete file="${engine.jar}"/>
 		<delete file="${coreplugin.jar}"/>
 		<delete file="${gui.jar}"/>
