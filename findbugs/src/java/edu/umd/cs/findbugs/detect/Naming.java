@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Field;
@@ -71,8 +72,15 @@ public class Naming extends PreorderVisitor implements Detector {
 		}
 
 		public boolean confusingMethodNames(MyMethod m) {
-			return methodName.equalsIgnoreCase(m.methodName)
-			        && !methodName.equals(m.methodName);
+			if (className.equals(m.className)) return false;
+			if (methodName.equalsIgnoreCase(m.methodName)
+			        && !methodName.equals(m.methodName)) return true;
+			if (methodSig.equals(m.methodSig)) return false;
+			if (removePackageNamesFromSignature(methodSig).equals(removePackageNamesFromSignature(m.methodSig))) {
+					return true;
+			}
+			return false;
+				
 		}
 
 		public String toString() {
@@ -107,7 +115,7 @@ public class Naming extends PreorderVisitor implements Detector {
 			try {
 				if (m.confusingMethodNames(m2)
 						&& Repository.instanceOf(m.className, m2.className)) {
-					MyMethod m3 = new MyMethod(m.className, m2.methodName, m.methodSig, m.isStatic);
+					MyMethod m3 = new MyMethod(m.className, m2.methodName, m2.methodSig, m.isStatic);
 					boolean r = others.contains(m3);
 					if (r) continue;
 					bugReporter.reportBug(new BugInstance(this, "NM_VERY_CONFUSING", HIGH_PRIORITY)
@@ -221,6 +229,7 @@ public class Naming extends PreorderVisitor implements Detector {
 			        .addVisitedField(this)
 				);
 		}
+	private static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
 	public void visit(Method obj) {
 		if (getMethodName().length() == 1) return;
 
@@ -236,9 +245,10 @@ public class Naming extends PreorderVisitor implements Detector {
 				? NORMAL_PRIORITY
 				: LOW_PRIORITY)
 			        .addClassAndMethod(this));
+		String sig = getMethodSig();
 		if (getMethodName().equals(baseClassName)) {
 			bugReporter.reportBug(new BugInstance(this, "NM_METHOD_CONSTRUCTOR_CONFUSION",
-			        (getMethodSig().equals("()V") 
+			        (sig.equals("()V") 
 					&& obj.getCode().getCode().length > 1
 					&& !obj.isNative()
 					)
@@ -250,17 +260,17 @@ public class Naming extends PreorderVisitor implements Detector {
 		if (obj.isAbstract()) return;
 		if (obj.isPrivate()) return;
 
-		if (getMethodName().equals("equal") && getMethodSig().equals("(Ljava/lang/Object;)Z")) {
+		if (getMethodName().equals("equal") && sig.equals("(Ljava/lang/Object;)Z")) {
 			bugReporter.reportBug(new BugInstance(this, "NM_BAD_EQUAL", HIGH_PRIORITY)
 			        .addClassAndMethod(this));
 			return;
 		}
-		if (getMethodName().equals("hashcode") && getMethodSig().equals("()I")) {
+		if (getMethodName().equals("hashcode") && sig.equals("()I")) {
 			bugReporter.reportBug(new BugInstance(this, "NM_LCASE_HASHCODE", HIGH_PRIORITY)
 			        .addClassAndMethod(this));
 			return;
 		}
-		if (getMethodName().equals("tostring") && getMethodSig().equals("()Ljava/lang/String;")) {
+		if (getMethodName().equals("tostring") && sig.equals("()Ljava/lang/String;")) {
 			bugReporter.reportBug(new BugInstance(this, "NM_LCASE_TOSTRING", HIGH_PRIORITY)
 			        .addClassAndMethod(this));
 			return;
@@ -272,10 +282,12 @@ public class Naming extends PreorderVisitor implements Detector {
 		)
 			return;
 
-		String trueName = getMethodName() + getMethodSig();
-		String allSmall = getMethodName().toLowerCase() + getMethodSig();
+		String trueName = getMethodName() + sig;
+		String sig2 = removePackageNamesFromSignature(sig);
+		String allSmall = getMethodName().toLowerCase() + sig2;
+	
 
-		MyMethod mm = new MyMethod(getThisClass().getClassName(), getMethodName(), getMethodSig(), obj.isStatic());
+		MyMethod mm = new MyMethod(getThisClass().getClassName(), getMethodName(), sig, obj.isStatic());
 		{
 			HashSet<String> s = canonicalToTrueMapping.get(allSmall);
 			if (s == null) {
@@ -293,6 +305,10 @@ public class Naming extends PreorderVisitor implements Detector {
 			s.add(mm);
 		}
 
+	}
+
+	private static String removePackageNamesFromSignature(String sig) {
+		return sigType.matcher(sig).replaceAll("L$2");
 	}
 
 
