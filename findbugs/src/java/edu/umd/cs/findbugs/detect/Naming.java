@@ -279,6 +279,7 @@ public class Naming extends PreorderVisitor implements Detector {
 
 		if (obj.isPrivate()
 		        || obj.isStatic()
+		        || getMethodName().equals("<init>")
 		)
 			return;
 
