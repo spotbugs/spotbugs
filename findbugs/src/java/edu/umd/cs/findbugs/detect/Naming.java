@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.bcel.Repository;
@@ -309,7 +310,10 @@ public class Naming extends PreorderVisitor implements Detector {
 	}
 
 	private static String removePackageNamesFromSignature(String sig) {
-		return sigType.matcher(sig).replaceAll("L$2");
+		int end = sig.indexOf(")");
+		Matcher m = sigType.matcher(sig);
+		m.region(0,end);
+		return m.replaceAll("L$2");
 	}
 
 
