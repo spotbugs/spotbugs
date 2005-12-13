@@ -215,8 +215,8 @@ public class SerializableIdiom extends PreorderVisitor
 		        && !superClassHasVoidConstructor
 		        && !superClassImplementsSerializable)
 			bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR",
-			        (implementsSerializableDirectly || sawSerialVersionUID)
-			        ? HIGH_PRIORITY : NORMAL_PRIORITY)
+			        implementsSerializableDirectly ? HIGH_PRIORITY : 
+			        	( sawSerialVersionUID ?  NORMAL_PRIORITY : LOW_PRIORITY))
 			        .addClass(getThisClass().getClassName()));
 		// Downgrade class-level warnings if it's a GUI class.
 		int priority = isGUIClass ? LOW_PRIORITY : NORMAL_PRIORITY;
@@ -227,8 +227,8 @@ public class SerializableIdiom extends PreorderVisitor
 			        directlyImplementsExternalizable ?
 			        HIGH_PRIORITY : NORMAL_PRIORITY)
 			        .addClass(getThisClass().getClassName()));
-		if (foundSynthetic 
-			&& !isAnonymousInnerClass 
+		if (!foundSynthetic) priority++;
+		if (!isAnonymousInnerClass 
 			&& !isExternalizable && !isGUIClass
 		        && isSerializable && !isAbstract && !sawSerialVersionUID)
 			bugReporter.reportBug(new BugInstance(this, "SE_NO_SERIALVERSIONID", priority).addClass(this));
@@ -320,7 +320,8 @@ public class SerializableIdiom extends PreorderVisitor
 						if (priority < LOW_PRIORITY)
 						  priority = LOW_PRIORITY;
 						}
-
+					if (!implementsSerializableDirectly && priority == HIGH_PRIORITY)
+						priority = NORMAL_PRIORITY;
 					if (false)
 					System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName()
 						+" " +  obj.getName()	
