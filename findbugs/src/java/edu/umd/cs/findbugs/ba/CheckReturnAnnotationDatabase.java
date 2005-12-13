@@ -64,7 +64,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		addDefaultMethodAnnotation("java.lang.String", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.lang.String", "getBytes", "(Ljava/lang/String;)[B", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addDefaultMethodAnnotation("java.math.BigDecimal", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
-		addMethodAnnotation("java.math.BigDecimal", "inflate", "()V", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
+		addMethodAnnotation("java.math.BigDecimal", "inflate", "()Ljava/math/BigDecimal;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addDefaultMethodAnnotation("java.math.BigInteger", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.math.BigInteger", "addOne", "([IIII)I", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addMethodAnnotation("java.math.BigInteger", "subN", "([I[II)I", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
@@ -86,7 +86,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 	public CheckReturnValueAnnotation getResolvedAnnotation(Object o, boolean getMinimal) {
 		if (!(o instanceof XMethod))
 			return null;
-		XMethod m = (XMethod) o;
+		XMethod m = (XMethod) o;	
 		if (m.getName().startsWith("access$")) return null;
 		else if (m.getName().equals("<init>")) {
 			try {

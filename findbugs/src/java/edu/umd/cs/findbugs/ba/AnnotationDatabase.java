@@ -122,6 +122,9 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration> {
 		return n;
 	}
 	
+	public boolean annotationIsDirect(Object o) {
+		return directAnnotations.containsKey(o);
+	}
 	@CheckForNull
 	public AnnotationEnum getUncachedResolvedAnnotation(final Object o, boolean getMinimal) {
 		
