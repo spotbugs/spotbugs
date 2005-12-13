@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
  * @author David Hovemeyer
  */
 public class MethodReturnCheck extends BytecodeScanningDetector {
-	private static boolean DEBUG = Boolean.getBoolean("mrc.debug");
+	private static final boolean DEBUG = Boolean.getBoolean("mrc.debug");
 	private static final boolean CHECK_ALL = Boolean.getBoolean("mrc.checkall");
 	
 	private static final int SCAN =0;
@@ -115,6 +115,8 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			int priority = annotation.getPriority();
 			if (catchSize <= 1) priority+=2;
 			else if (catchSize <= 2) priority += 1;
+			if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen) 
+					&& !callSeen.getSignature().endsWith(callSeen.getClassName().replace(".","/")+";")) priority++;
 			BugInstance warning =
 				new BugInstance(this, "RV_RETURN_VALUE_IGNORED", priority)
 					.addClassAndMethod(this)
