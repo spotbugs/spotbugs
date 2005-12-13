@@ -25,7 +25,9 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -73,9 +75,9 @@ public class FindSqlInjection implements Detector {
 			try {
 				analyzeMethod(classContext, method);
 			} catch (DataflowAnalysisException e) {
-				bugReporter.logError("FindDeadLocalStores caught exception while analyzing " + methodGen, e);
+				bugReporter.logError("FindSqlInjection caught exception while analyzing " + methodGen, e);
 			} catch (CFGBuilderException e) {
-				bugReporter.logError("FindDeadLocalStores caught exception while analyzing " + methodGen, e);
+				bugReporter.logError("FindSqlInjection caught exception while analyzing " + methodGen, e);
 			}
 		}
 	}
@@ -91,7 +93,31 @@ public class FindSqlInjection implements Detector {
 		CFG cfg = classContext.getCFG(method);
 	        ConstantDataflow dataflow 
 			= classContext.getConstantDataflow(method);
-		
+	    boolean sawOpenQuote = false;
+	    boolean sawCloseQuote = false;
+	    boolean sawAppend = false;
+	    
+	    for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
+				Location location = i.next();
+				Instruction ins = location.getHandle().getInstruction();
+				if (ins instanceof LDC) {
+					LDC load = (LDC) ins;
+					Object value = load.getValue(cpg);
+					if (value instanceof String) {
+						if (((String)value).endsWith("'"))
+							sawOpenQuote = true;
+						if (((String)value).startsWith("'"))
+							sawCloseQuote = true;
+					}
+				} else if (ins instanceof INVOKEVIRTUAL) {
+					INVOKEVIRTUAL invoke = (INVOKEVIRTUAL) ins;
+					if (invoke.getMethodName(cpg).equals("append")
+						&& invoke.getClassName(cpg).startsWith("java.lang.StringB")) {
+						sawAppend = true;
+					}
+				}
+	    }
+				
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
 			
@@ -105,16 +131,20 @@ public class FindSqlInjection implements Detector {
 					||  methodName.startsWith("execute") && interfaceName.equals("java.sql.Statement")) {
 			ConstantFrame frame = dataflow.getFactAtLocation(location);
 		        Constant value = frame.getStackValue(0);
-			if (!value.isConstantString())
-
+		    
+			if (!value.isConstantString()) {
+				int priority = LOW_PRIORITY;
+				if (sawAppend) priority--;
+				if (sawOpenQuote && sawCloseQuote) priority--;
 			    bugReporter.reportBug(
 				new BugInstance(this, 
 						methodName.equals("prepareStatement")
 						? "SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING" 
 								: "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",  
-				 NORMAL_PRIORITY) 
+				 priority) 
 				.addClassAndMethod(methodGen, javaClass.getSourceFileName())
 				.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle()));
+			}
 			}
 
 
