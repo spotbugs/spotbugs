@@ -76,7 +76,6 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	OpcodeStack stack = new OpcodeStack();
 	
 	public void visit(Method method) {
-		flush();
 		String cName = getDottedClassName();
 		stack.resetForMethodEntry(this);
 		
@@ -454,8 +453,12 @@ public class DumbMethods extends BytecodeScanningDetector  {
 				&& (sig.equals("()V") || sig.equals("(J)V") || sig.equals("(JI)V"));
 	}
 
-	public void report() {
+	@Override
+	public void visit(Code obj) {
+		super.visit(obj);
 		flush();
+	}
+	public void report() {
 	}
 
 	/**
