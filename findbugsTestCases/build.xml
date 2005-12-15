@@ -1,0 +1,73 @@
+<!--
+	FindBugs Ant build script.
+	Based on original FindBugs Ant Script by Mike Fagan.
+	Rewritten 1/5/2005 by David Hovemeyer.
+-->
+
+<project name="findbugs" default="build">
+
+	<property file="build.properties" />
+
+	<!-- 
+	        The local.properties properties file contains the location of findbugs.home 
+
+	        This value is likely to be different for each checkout of the plugin,
+	        so the local.properties file is not managed by cvs
+	        
+	-->
+	<property file="local.properties" />
+	<property name="findbugs.home" value="../findbugs"/>
+		
+
+	<target name="build" depends="classes,runfindbugs" />
+
+	<target name="classes">
+		<javac srcdir="src/java" destdir="build/classes" source="1.5" debug="on">
+			<classpath refid="build/classes:{${findbugs.home}/lib/annotations.jar" />
+		</javac>
+	</target>
+
+	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"  classpath="../findbugs/lib/findbugs-ant.jar"/>
+
+
+	<target name="runfindbugs" depends="classes">
+		
+		<parallel>
+		<sequential>
+		<findbugs home="${findbugs.home}" output="xml" timestampNow="true" reportLevel="low" effort="default" outputFile="build/normal.xml">
+			<sourcePath path="${basedir}/src/java" />
+			<auxclasspath location="${junit.home}/junit.jar"/>
+			<class location="${basedir}/build/classes" />
+		</findbugs>
+		<exec dir="." executable="computeBugHistory">
+			<arg value="-output" />
+			<arg file="history/max.xml" />
+			<arg file="history/max.xml" />
+			<arg file="build/max.xml" />
+		</exec>
+		</sequential>
+	<!--
+		<sequential>
+		<findbugs home="${findbugs.home}" output="xml" timestampNow="true" reportLevel="low" effort="max" outputFile="build/max.xml">
+			<sourcePath path="${basedir}/src/java" />
+			<auxclasspath location="${junit.home}/junit.jar"/>
+			<class location="${basedir}/build/classes" />
+		</findbugs>
+		<exec dir="." executable="computeBugHistory">
+					<arg value="-output" />
+					<arg file="history/normal.xml" />
+					<arg file="history/normal.xml" />
+					<arg file="build/normal.xml" />
+		</exec>
+		</sequential>
+	-->
+			</parallel>
+		
+
+
+	</target>
+
+
+</project>
+
+<!-- vim:set ts=4: -->
