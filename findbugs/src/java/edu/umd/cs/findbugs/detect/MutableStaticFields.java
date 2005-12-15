@@ -223,7 +223,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 			} else if (!isFinal)
 				bugType = "MS_CANNOT_BE_FINAL";
 			else
-				throw new RuntimeException("impossible");
+				throw new IllegalStateException("impossible");
 
 
 			bugReporter.reportBug(new BugInstance(this, bugType, priority)
