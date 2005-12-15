@@ -124,7 +124,7 @@ import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
  *
  * @author David Hovemeyer
  */
-public class FindBugsFrame extends javax.swing.JFrame implements LogSync {
+public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync {
 	/**
 	 * 
 	 */
