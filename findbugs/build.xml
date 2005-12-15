@@ -81,7 +81,7 @@
 
 	<!-- Default target builds scripts and jars, allowing execution using
 		the working directory as FINDBUGS_HOME.  Also build test case jarfile. -->
-	<target name="build" depends="jars,scripts,testjar,anttask"/>
+	<target name="build" depends="jars,scripts,anttask"/>
 	
 	<!-- Rebuild from scratch. -->
 	<target name="rebuild" depends="clean,build"/>
@@ -92,7 +92,7 @@
 		<mkdir dir="${classes.dir}"/>
 		<!-- Compile Java source files. -->
 		<javac srcdir="${src.dir}"
-				excludes="${pkg.base}/ba/ir/**,${pkg.base}/ba/type2/**"
+				excludes="${pkg.base}/ba/ir/**,${pkg.base}/ba/type2/**,${pkg.base}/annotations/**"
 				destdir="${classes.dir}"
 				source="1.5"
 				target="jsr14"
@@ -100,6 +100,15 @@
 				debug="on">
 			<classpath refid="findbugs.classpath"/>
 		</javac>
+		<javac srcdir="${src.dir}"
+						includes="${pkg.base}/annotations/**"
+						destdir="${classes.dir}"
+						source="1.5"
+						target="1.5"
+						deprecation="on"
+						debug="on">
+					<classpath refid="findbugs.classpath"/>
+				</javac>
 		<!-- Copy codebase data files. -->
 		<copy todir="${classes.dir}">
 			<fileset dir="${src.dir}">
@@ -246,20 +255,7 @@
 		<touch file="${scripts.stamp}"/>
 	</target>
 	
-	<!-- Test cases (for detectors) -->
-	<target name="testjar" depends="classes">
-		<javac srcdir="${test.dir}"
-		       destdir="${test.dir}"
-		       source="1.5"
-		       debug="on">
-			<classpath refid="tools.classpath"/>
-		</javac>
-		<jar destfile="${test.jar}">
-			<fileset dir="${test.dir}">
-				<include name="**/*.class"/>
-			</fileset>
-		</jar>
-	</target>
+	
 	
 	<!-- Ant task jar file. -->
 	<target name="anttask" depends="classes">
@@ -451,6 +447,14 @@
 	-->
 	<target name="generatemanual">
 		<java fork="true" dir="${docoutput.dir}" failonerror="true" classname="com.icl.saxon.StyleSheet" >
+			<classpath>
+				<pathelement location="${saxon.home}/saxon.jar"/>
+				<pathelement path="${java.class.path}"/>
+			</classpath>
+			<arg value="manual.xml" />
+			<arg value="manual.xsl" />
+		</java>
+		<java fork="true" dir="${web.dir}" failonerror="true" classname="com.icl.saxon.StyleSheet" >
 			<classpath>
 				<pathelement location="${saxon.home}/saxon.jar"/>
 				<pathelement path="${java.class.path}"/>
