@@ -122,10 +122,12 @@ public class Project implements XMLWriteable {
 	public Project duplicate() {
 		Project dup = new Project();
 		dup.projectFileName = this.projectFileName;
+		dup.optionsMap.clear();
 		dup.optionsMap.putAll(this.optionsMap);
 		dup.fileList.addAll(this.fileList);
 		dup.srcDirList.addAll(this.srcDirList);
 		dup.auxClasspathEntryList.addAll(this.auxClasspathEntryList);
+		dup.timestamp = timestamp;
 
 		return dup;
 	}
