@@ -528,6 +528,8 @@ public class FindBugs implements Constants2, ExitCodes {
 		public TextUICommandLine() {
 			super();
 			addSwitch("-showPlugins", "show list of available plugins");
+			addSwitch("-timestampNow", "set timestamp of results to be current time");
+			
 			addSwitch("-quiet", "suppress error messages");
 			addSwitch("-longBugCodes", "report long bug codes");
 			addOption("-release", "release name", "set the release name of the analyzed application");
@@ -600,6 +602,8 @@ public class FindBugs implements Constants2, ExitCodes {
 				priorityThreshold = Detector.EXP_PRIORITY;
 			else if (option.equals("-longBugCodes"))
 				useLongBugCodes = true;
+			else if (option.equals("-timestampNow"))
+				project.setTimestamp(System.currentTimeMillis());
 			else if (option.equals("-low"))
 				priorityThreshold = Detector.LOW_PRIORITY;
 			else if (option.equals("-medium"))
