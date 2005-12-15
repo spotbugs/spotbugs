@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 
 public class FindDoubleCheck extends BytecodeScanningDetector {
-	static final boolean debug = false;
+	static final boolean DEBUG = false;
 	int stage = 0;
 	int startPC, endPC;
 	int count;
@@ -51,7 +51,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 	}
 
 	public void visit(Method obj) {
-		if (debug) System.out.println(getFullyQualifiedMethodName());
+		if (DEBUG) System.out.println(getFullyQualifiedMethodName());
 		super.visit(obj);
 		fields.clear();
 		twice.clear();
@@ -64,12 +64,12 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 	}
 
 	public void sawOpcode(int seen) {
-		if (debug) System.out.println(getPC() + "	" + OPCODE_NAMES[seen] + "	" + stage + "	" + count + "	" + countSinceGetReference);
+		if (DEBUG) System.out.println(getPC() + "	" + OPCODE_NAMES[seen] + "	" + stage + "	" + count + "	" + countSinceGetReference);
 
 		if (seen == MONITORENTER) sawMonitorEnter = true;
 		if (seen == GETFIELD || seen == GETSTATIC) {
 			pendingFieldLoad = FieldAnnotation.fromReferencedField(this);
-			if (debug) System.out.println("	" + pendingFieldLoad);
+			if (DEBUG) System.out.println("	" + pendingFieldLoad);
 			String sig = getSigConstantOperand();
 			if (sig.equals("Z")) {
 				countSinceGetBoolean = 0;
@@ -86,7 +86,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 			if (((seen == IFNULL || seen == IFNONNULL) && countSinceGetReference < 5)
 			        || ((seen == IFEQ || seen == IFNE) && countSinceGetBoolean < 5)) {
 				int b = getBranchOffset();
-				if (debug) {
+				if (DEBUG) {
 					System.out.println("branch offset is : " + b);
 				}
 				if (b > 0
@@ -134,7 +134,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 		case 3:
 			if (seen == PUTFIELD || seen == PUTSTATIC) {
 				FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
-				if (debug) System.out.println("	" + f);
+				if (DEBUG) System.out.println("	" + f);
 				if (twice.contains(f) && !getNameConstantOperand().startsWith("class$")
 				        && !getSigConstantOperand().equals("Ljava/lang/String;")) {
 					Field declaration = findField(getClassConstantOperand(), getNameConstantOperand());
