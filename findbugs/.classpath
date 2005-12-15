@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/CVS/*" kind="src" path="src/java"/>
+	<classpathentry excluding="**/CVS/*" kind="src" path="src/antTask"/>
 	<classpathentry excluding="**/CVS/*|edu/umd/cs/findbugs/tools/patcomp/**/*" kind="src" path="src/tools"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="src/junit"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
@@ -12,5 +13,6 @@
 	<classpathentry exported="true" sourcepath="/bcel/src" kind="lib" path="lib/bcel.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dom4j-full.jar"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.apache.ant_1.6.5/lib/ant.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
