@@ -54,11 +54,12 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$Transferer", NullnessAnnotation.UNKNOWN_NULLNESS);
 		
 		
+		
 		addMethodParameterAnnotation("java.util.concurrent.ConcurrentHashMap$Segment", "remove", "(Ljava/lang/Object;ILjava/lang/Object;)Ljava/lang/Object;", false, 2, NullnessAnnotation.CHECK_FOR_NULL);
 		addMethodParameterAnnotation("java.util.concurrent.CyclicBarrier", "<init>", "(ILjava/lang/Runnable;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		addMethodParameterAnnotation("java.util.concurrent.Executors$RunnableAdapter", "<init>", "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		addMethodParameterAnnotation("java.util.concurrent.ConcurrentSkipListMap", "doRemove", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, 2, NullnessAnnotation.CHECK_FOR_NULL);
-		
+		addMethodAnnotation("java.util.concurrent.ConcurrentHashMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		
 		
 		addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "addIfUnderCorePoolSize", "(Ljava/lang/Runnable;)Z", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
