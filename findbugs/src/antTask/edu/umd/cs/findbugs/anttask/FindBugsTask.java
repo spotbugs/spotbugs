@@ -77,6 +77,7 @@ import java.util.List;
  * <li>quietErrors        (boolean - default false)
  * <li>failOnError        (boolean - default false)
  * <li>reportLevel        (enum experimental|low|medium|high)
+ * <li>timestampNow       (boolean - default false)
  * <li>sort               (boolean default true)
  * <li>debug              (boolean default false) 
  * <li>output             (enum text|xml|xml:withMessages|html - default xml)
@@ -106,7 +107,7 @@ import java.util.List;
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  *
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  *
  * @since Ant 1.5
  *
@@ -122,6 +123,7 @@ public class FindBugsTask extends Task {
 	private String effort;
 	private boolean conserveSpace = false;
 	private boolean sorted = true;
+	private boolean timestampNow = true;
 	private boolean quietErrors = false;
 	private boolean failOnError = false;
 	private String errorProperty = null;
@@ -264,6 +266,12 @@ public class FindBugsTask extends Task {
 	 */
 	public void setSort(boolean flag) {
 		this.sorted = flag;
+	}
+	/**
+	 * Set the timestampNow flag
+	 */
+	public void setTimestampNow(boolean flag) {
+		this.timestampNow = flag;
 	}
 
 	/**
@@ -653,6 +661,8 @@ public class FindBugsTask extends Task {
 		}
 
 		if ( sorted ) addArg("-sortByClass");
+		if ( timestampNow ) addArg("-timestampNow");
+		
 		if ( outputFormat != null && !outputFormat.trim().equalsIgnoreCase("text") ) {
 			outputFormat = outputFormat.trim();
 			String outputArg = "-";
