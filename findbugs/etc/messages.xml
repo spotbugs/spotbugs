@@ -152,6 +152,13 @@ Normally, this detector does nothing.</p>
 ]]>
     </Details>
   </Detector>
+ <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPriviledged">
+    <Details>
+<![CDATA[
+<p> Look for code that should be executed inside doPriviledged blocks.</p>
+]]>
+    </Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.ResolveAllReferences">
     <Details>
@@ -1277,6 +1284,18 @@ to use Object.clone(), which always returns an object of the correct type.</p>
   <p> This method might ignore an exception.&nbsp; In general, exceptions
   should be handled or reported in some way, or they should be thrown
   out of the method.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+<BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED">
+    <ShortDescription>Method invokes method that should be only be invoked inside a doPriviledged block</ShortDescription>
+    <LongDescription>{1} invokes {2}, which should be invoked from within a doPriviledged block</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This code invokes a method that requires a security permission check.
+  If this code will be granted security permissions, but might be invoked by code that does not
+  have sercurity permissions, that the invocation needs to occur inside a doPriviledged block.</p>
 ]]>
     </Details>
   </BugPattern>
