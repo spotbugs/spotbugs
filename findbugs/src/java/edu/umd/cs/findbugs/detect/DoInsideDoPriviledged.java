@@ -39,7 +39,9 @@ public class DoInsideDoPriviledged  extends BytecodeScanningDetector {
 	@Override
 	public void visit(JavaClass obj) {
 		try {
-			isDoPriviledged = Repository.implementationOf(getClassName(),"java/security/PrivilegedAction");
+			isDoPriviledged =
+				Repository.implementationOf(getClassName(),"java/security/PrivilegedAction")
+				|| Repository.implementationOf(getClassName(),"java/security/PrivilegedExceptionAction");
 		} catch (ClassNotFoundException e) {
 			isDoPriviledged = true;
 		}
