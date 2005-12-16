@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFactory;
  * @author David Hovemeyer
  * @see ValueNumberAnalysis
  */
-public class LockSet {
+public final class LockSet {
 	/**
 	 * An uninitialized lock value.
 	 */
