@@ -107,7 +107,7 @@ import java.util.List;
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  *
- * @version $Revision: 1.36 $
+ * @version $Revision: 1.37 $
  *
  * @since Ant 1.5
  *
@@ -355,8 +355,8 @@ public class FindBugsTask extends Task {
 		boolean nonEmpty = false;
 		
 		String[] elementList = src.list();
-		for (int i = 0; i < elementList.length; ++i) {
-			if (!elementList[i].equals("")) {
+		for (String anElementList : elementList) {
+			if (!anElementList.equals("")) {
 				nonEmpty = true;
 				break;
 			}
@@ -536,12 +536,11 @@ public class FindBugsTask extends Task {
 		if (pluginList != null) {
 			// Make sure that all plugins are actually Jar files.
 			String[] pluginFileList = pluginList.list();
-			for (int i = 0; i < pluginFileList.length; ++i) {
-				String pluginFile = pluginFileList[i];
+			for (String pluginFile : pluginFileList) {
 				if (!pluginFile.endsWith(".jar")) {
 					throw new BuildException("plugin file " + pluginFile + " is not a Jar file " +
-											"in task <" + getTaskName() + "/>",
-											getLocation());
+							"in task <" + getTaskName() + "/>",
+							getLocation());
 				}
 			}
 		}
@@ -583,11 +582,11 @@ public class FindBugsTask extends Task {
 				getLocation());
 		}
 
-		for (Iterator i = systemPropertyList.iterator(); i.hasNext(); ) {
-			SystemProperty systemProperty = (SystemProperty) i.next();
-			if (systemProperty.getName() == null || systemProperty.getValue() == null)
-				throw new BuildException("systemProperty elements must have name and value attributes");
-		}
+	    for (SystemProperty aSystemPropertyList : systemPropertyList) {
+		    SystemProperty systemProperty = (SystemProperty) aSystemPropertyList;
+		    if (systemProperty.getName() == null || systemProperty.getValue() == null)
+			    throw new BuildException("systemProperty elements must have name and value attributes");
+	    }
 		
 		if (effort != null && !effort.equals("min") && !effort.equals("default") && !effort.equals("max")) {
 			throw new BuildException("effort attribute must be one of 'min', 'default', or 'max'");
@@ -619,11 +618,11 @@ public class FindBugsTask extends Task {
 		findbugsEngine.createJvmarg().setLine( jvmargs ); 
 
 		// Add JVM arguments for system properties
-		for (Iterator i = systemPropertyList.iterator(); i.hasNext(); ) {
-			SystemProperty systemProperty = (SystemProperty) i.next();
-			String jvmArg = "-D" + systemProperty.getName() + "=" + systemProperty.getValue();
-			findbugsEngine.createJvmarg().setValue(jvmArg);
-		}
+	    for (SystemProperty aSystemPropertyList : systemPropertyList) {
+		    SystemProperty systemProperty = (SystemProperty) aSystemPropertyList;
+		    String jvmArg = "-D" + systemProperty.getName() + "=" + systemProperty.getValue();
+		    findbugsEngine.createJvmarg().setValue(jvmArg);
+	    }
 
 		if (homeDir != null) {
 			// Use findbugs.home to locate findbugs.jar and the standard
@@ -719,10 +718,9 @@ public class FindBugsTask extends Task {
 		}
         
 		addArg("-exitcode");
-        Iterator itr = classLocations.iterator();
-        while ( itr.hasNext() ) {
-			addArg(itr.next().toString());
-      	} 
+	    for (ClassLocation classLocation : classLocations) {
+		    addArg(classLocation.toString());
+	    }
 
 		log("Running FindBugs...");
 

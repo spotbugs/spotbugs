@@ -229,10 +229,8 @@ public class PluginLoader extends URLClassLoader {
 			pluginDescriptor.selectSingleNode("/FindbugsPlugin/OrderingConstraints");
 		if (orderingConstraintsNode != null) {
 			// Get inter-pass and intra-pass constraints
-			for (Iterator<Element> i = orderingConstraintsNode.selectNodes("./SplitPass|./WithinPass").iterator();
-				i.hasNext();) {
-				Element constraintElement =  i.next();
-
+			for (Element constraintElement : (Iterable<Element>) orderingConstraintsNode.selectNodes("./SplitPass|./WithinPass"))
+			{
 				// Create the selectors which determine which detectors are
 				// involved in the constraint
 				DetectorFactorySelector earlierSelector = getConstraintSelector(

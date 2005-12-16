@@ -55,8 +55,8 @@ public class SplitCamelCaseIdentifierTest extends TestCase {
 
 	private void checkContents(Collection<String> words, String[] expected) {
 		Assert.assertEquals( expected.length, words.size());
-		for (int i = 0; i < expected.length; ++i) {
-			Assert.assertTrue(words.contains(expected[i]));
+		for (String anExpected : expected) {
+			Assert.assertTrue(words.contains(anExpected));
 		}
 	}
 }

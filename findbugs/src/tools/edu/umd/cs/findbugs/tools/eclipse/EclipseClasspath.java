@@ -211,8 +211,7 @@ public class EclipseClasspath {
 
 			// Extract required plugins
 			List requiredPluginNodeList = document.selectNodes("/plugin/requires/import");
-			for (Iterator<Node> i = requiredPluginNodeList.iterator(); i.hasNext(); ) {
-				Node node =  i.next();
+			for (Node node : (Iterable<Node>) requiredPluginNodeList) {
 				String requiredPluginId = node.valueOf("@plugin");
 				if (requiredPluginId.equals(""))
 					throw new EclipseClasspathException("Import has no plugin id");
@@ -222,8 +221,7 @@ public class EclipseClasspath {
 
 			// Extract exported libraries
 			List exportedLibraryNodeList = document.selectNodes("/plugin/runtime/library");
-			for (Iterator<Node> i = exportedLibraryNodeList.iterator(); i.hasNext(); ) {
-				Node node =  i.next();
+			for (Node node : (Iterable<Node>) exportedLibraryNodeList) {
 				String jarName = node.valueOf("@name");
 				if (jarName.equals(""))
 					throw new EclipseClasspathException("Could not get name of exported library");
@@ -352,19 +350,19 @@ public class EclipseClasspath {
 		});
 		if (dirList == null)
 			throw new EclipseClasspathException("Could not list plugins in directory " + pluginDir);
-		for (int i = 0; i < dirList.length; ++i) {
-			String dirName = dirList[i].getName();
+		for (File aDirList : dirList) {
+			String dirName = aDirList.getName();
 			String pluginId = getPluginId(dirName);
 			if (pluginId != null) {
 				//System.out.println(pluginId + " ==> " + dirList[i]);
-				pluginDirectoryMap.put(pluginId, dirList[i]);
+				pluginDirectoryMap.put(pluginId, aDirList);
 
 				// HACK - see if we can deduce the value of the special "ws" variable.
 				if (pluginId.startsWith("org.eclipse.swt.")) {
 					String ws = pluginId.substring("org.eclipse.swt.".length());
 					if (ws.equals("gtk64"))
 						ws = "gtk";
-					varMap.put("ws", new File(dirList[i] + File.separator + "ws" + File.separator + ws).getPath().replace('\\', '/'));
+					varMap.put("ws", new File(aDirList + File.separator + "ws" + File.separator + ws).getPath().replace('\\', '/'));
 				}
 			}
 		}
@@ -401,10 +399,9 @@ public class EclipseClasspath {
 		//System.out.println("Found " + requiredPluginMap.size() + " required plugins");
 
 		importList = new LinkedList<String>();
-		for (Iterator<Plugin> i = requiredPluginMap.values().iterator(); i.hasNext(); ) {
-			Plugin plugin = i.next();
+		for (Plugin plugin : requiredPluginMap.values()) {
 			if (plugin.isDependent()) {
-				for (Iterator<String> j = plugin.exportedLibraryIterator(); j.hasNext(); ) {
+				for (Iterator<String> j = plugin.exportedLibraryIterator(); j.hasNext();) {
 					//System.out.println("Import: " + j.next());
 					importList.add(j.next());
 				}
@@ -463,17 +460,16 @@ public class EclipseClasspath {
 	 */
 	private String replaceSpecial(String value) {
 		if (!varMap.isEmpty()) {
-			for (Iterator<String> i = varMap.keySet().iterator(); i.hasNext(); ) {
-				String key = i.next();
+			for (String key : varMap.keySet()) {
 				String replace = varMap.get(key);
 				Pattern pat = Pattern.compile("\\$\\Q" + key + "\\E\\$");
 				Matcher m = pat.matcher(value);
 				StringBuffer buf = new StringBuffer();
-	
+
 				while (m.find())
 					m.appendReplacement(buf, replace);
 				m.appendTail(buf);
-	
+
 				value = buf.toString();
 			}
 		}

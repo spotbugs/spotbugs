@@ -61,9 +61,7 @@ public class ProjectFilterSettingsTest extends TestCase {
 
 	public void testPlainCategories() {
 		int count = 0;
-		Iterator<String> i = I18N.instance().getBugCategories().iterator();
-		while (i.hasNext()) {
-			String category = i.next();
+		for (String category : I18N.instance().getBugCategories()) {
 			Assert.assertTrue(plain.containsCategory(category));
 			++count;
 		}

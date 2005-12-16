@@ -212,7 +212,7 @@ public class OpcodeStack implements Constants2
  		public Item(String s, Object v) {
  			signature = s;
  			constValue = v;
- 			if (v instanceof Integer && (((Integer)v).intValue() & 0xff) == 0)
+ 			if (v instanceof Integer && (((Integer) v) & 0xff) == 0)
  				specialKind = LOW_8_BITS_CLEAR;
  			else if (v instanceof Long && (((Long)v).intValue() & 0xff) == 0)
  				specialKind = LOW_8_BITS_CLEAR;
@@ -726,7 +726,7 @@ public class OpcodeStack implements Constants2
 	 			case INEG:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("I", new Integer(-((Integer)it.getConstant()).intValue())));
+	 					push(new Item("I", new Integer(-(Integer) it.getConstant())));
 	 				} else {
 	 					push(new Item("I"));
 	 				}
@@ -735,7 +735,7 @@ public class OpcodeStack implements Constants2
 	 			case LNEG:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("J", new Long(-((Long)it.getConstant()).longValue())));
+	 					push(new Item("J", new Long(-(Long) it.getConstant())));
 	 				} else {
 	 					push(new Item("J"));
 	 				}
@@ -744,7 +744,7 @@ public class OpcodeStack implements Constants2
 	 			case DNEG:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("D", new Double(-((Double)it.getConstant()).doubleValue())));
+	 					push(new Item("D", new Double(-(Double) it.getConstant())));
 	 				} else {
 	 					push(new Item("D"));
 	 				}
@@ -782,8 +782,8 @@ public class OpcodeStack implements Constants2
 	 				it = pop();
 	 				it2 = pop();
 	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
-	 					long l = ((Long)it.getConstant()).longValue();
-	 					long l2 = ((Long)it.getConstant()).longValue();
+	 					long l = (Long) it.getConstant();
+	 					long l2 = (Long) it.getConstant();
 	 					if (l2 < l)
 	 						push(new Item("I", new Integer(-1)));
 	 					else if (l2 > l)
@@ -800,8 +800,8 @@ public class OpcodeStack implements Constants2
 	 				it = pop();
 	 				it2 = pop();
 	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
-	 					float f = ((Float)it.getConstant()).floatValue();
-	 					float f2 = ((Float)it.getConstant()).floatValue();
+	 					float f = (Float) it.getConstant();
+	 					float f2 = (Float) it.getConstant();
 	 					if (f2 < f)
 	 						push(new Item("I", new Integer(-1)));
 	 					else if (f2 > f)
@@ -818,8 +818,8 @@ public class OpcodeStack implements Constants2
 	 				it = pop();
 	 				it2 = pop();
 	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
-	 					double d = ((Double)it.getConstant()).doubleValue();
-	 					double d2 = ((Double)it.getConstant()).doubleValue();
+	 					double d = (Double) it.getConstant();
+	 					double d2 = (Double) it.getConstant();
 	 					if (d2 < d)
 	 						push(new Item("I", new Integer(-1)));
 	 					else if (d2 > d)
@@ -911,7 +911,7 @@ public class OpcodeStack implements Constants2
 	 			case D2I:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("I", new Integer(((Integer)it.getConstant()).intValue())));
+	 					push(new Item("I", new Integer((Integer) it.getConstant())));
 	 				} else {
 	 					push(new Item("I"));
 	 				}
@@ -1182,30 +1182,30 @@ public class OpcodeStack implements Constants2
  		try {
  		if ((it.getConstant() != null) && it2.getConstant() != null) {
 			if (seen == IADD)
-				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() + ((Integer)it.getConstant()).intValue()));
+				newValue = new Item("I", ((Integer) it2.getConstant()) + ((Integer) it.getConstant()));
 			else if (seen == ISUB)
-				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() - ((Integer)it.getConstant()).intValue()));
+				newValue = new Item("I", ((Integer) it2.getConstant()) - ((Integer) it.getConstant()));
 			else if (seen == IMUL)
-				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() * ((Integer)it.getConstant()).intValue()));
+				newValue = new Item("I", ((Integer) it2.getConstant()) * ((Integer) it.getConstant()));
 			else if (seen == IDIV)
-				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() / ((Integer)it.getConstant()).intValue()));
+				newValue = new Item("I", ((Integer) it2.getConstant()) / ((Integer) it.getConstant()));
 			else if (seen == IAND)
-				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() & ((Integer)it.getConstant()).intValue()));
+				newValue = new Item("I", ((Integer) it2.getConstant()) & ((Integer) it.getConstant()));
 			else if (seen == IOR)
-				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() | ((Integer)it.getConstant()).intValue()));
+				newValue = new Item("I", ((Integer) it2.getConstant()) | ((Integer) it.getConstant()));
 			else if (seen == IXOR)
-				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() ^ ((Integer)it.getConstant()).intValue()));
+				newValue = new Item("I", ((Integer) it2.getConstant()) ^ ((Integer) it.getConstant()));
 			else if (seen == ISHL)
-				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() << ((Integer)it.getConstant()).intValue()));
+				newValue = new Item("I", ((Integer) it2.getConstant()) << ((Integer) it.getConstant()));
 			else if (seen == ISHR)
-				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() >> ((Integer)it.getConstant()).intValue()));
+				newValue = new Item("I", ((Integer) it2.getConstant()) >> ((Integer) it.getConstant()));
 			else if (seen == IREM)
-				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() % ((Integer)it.getConstant()).intValue()));
+				newValue = new Item("I", ((Integer) it2.getConstant()) % ((Integer) it.getConstant()));
 			else if (seen == IUSHR)
-				newValue = new Item("I", new Integer(((Integer)it2.getConstant()).intValue() >>> ((Integer)it.getConstant()).intValue()));
-		} else if (it2.getConstant() != null && seen == ISHL  && ((Integer)it2.getConstant()).intValue() >= 8)
+				newValue = new Item("I", ((Integer) it2.getConstant()) >>> ((Integer) it.getConstant()));
+		} else if (it2.getConstant() != null && seen == ISHL  && ((Integer) it2.getConstant()) >= 8)
 			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
- 		else if (it2.getConstant() != null && seen == IAND  && (((Integer)it2.getConstant()).intValue() & 0xff) == 0)
+ 		else if (it2.getConstant() != null && seen == IAND  && (((Integer) it2.getConstant()) & 0xff) == 0)
 			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
  		} catch (RuntimeException e) {
  			// ignore it
@@ -1219,31 +1219,31 @@ public class OpcodeStack implements Constants2
 		try {
 		if ((it.getConstant() != null) && it2.getConstant() != null) {
 			if (seen == LADD)
-				newValue  = new Item("J", new Long(((Long)it2.getConstant()).longValue() + ((Long)it.getConstant()).longValue()));
+				newValue  = new Item("J", ((Long) it2.getConstant()) + ((Long) it.getConstant()));
 			else if (seen == LSUB)
-				newValue  = new Item("J", new Long(((Long)it2.getConstant()).longValue() - ((Long)it.getConstant()).longValue()));
+				newValue  = new Item("J", ((Long) it2.getConstant()) - ((Long) it.getConstant()));
 			else if (seen == LMUL)
-				newValue  = new Item("J", new Long(((Long)it2.getConstant()).longValue() * ((Long)it.getConstant()).longValue()));
+				newValue  = new Item("J", ((Long) it2.getConstant()) * ((Long) it.getConstant()));
 			else if (seen == LDIV)
-				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() / ((Long)it.getConstant()).longValue()));
+				newValue  =new Item("J", ((Long) it2.getConstant()) / ((Long) it.getConstant()));
 			else if (seen == LAND)
-				newValue  = new Item("J", new Long(((Long)it2.getConstant()).longValue() & ((Long)it.getConstant()).longValue()));
+				newValue  = new Item("J", ((Long) it2.getConstant()) & ((Long) it.getConstant()));
 			else if (seen == LOR)
-				newValue  = new Item("J", new Long(((Long)it2.getConstant()).longValue() | ((Long)it.getConstant()).longValue()));
+				newValue  = new Item("J", ((Long) it2.getConstant()) | ((Long) it.getConstant()));
 			else if (seen == LXOR)
-				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() ^ ((Long)it.getConstant()).longValue()));
+				newValue  =new Item("J", ((Long) it2.getConstant()) ^ ((Long) it.getConstant()));
 			else if (seen == LSHL)
-				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() << ((Number)it.getConstant()).intValue()));
+				newValue  =new Item("J", ((Long) it2.getConstant()) << ((Number) it.getConstant()).intValue());
 			else if (seen == LSHR)
-				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() >> ((Number)it.getConstant()).intValue()));
+				newValue  =new Item("J", ((Long) it2.getConstant()) >> ((Number) it.getConstant()).intValue());
 			else if (seen == LREM)
-				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() % ((Long)it.getConstant()).longValue()));
+				newValue  =new Item("J", ((Long) it2.getConstant()) % ((Long) it.getConstant()));
 			else if (seen == LUSHR)
-				newValue  =new Item("J", new Long(((Long)it2.getConstant()).longValue() >>> ((Number)it.getConstant()).intValue()));
+				newValue  =new Item("J", ((Long) it2.getConstant()) >>> ((Number) it.getConstant()).intValue());
 		}
-		 else if (it2.getConstant() != null && seen == LSHR  && ((Integer)it2.getConstant()).intValue() >= 8)
+		 else if (it2.getConstant() != null && seen == LSHR  && ((Integer) it2.getConstant()) >= 8)
 			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
- 		else if (it2.getConstant() != null && seen == LAND  && (((Long)it2.getConstant()).longValue() & 0xff) == 0)
+ 		else if (it2.getConstant() != null && seen == LAND  && (((Long) it2.getConstant()) & 0xff) == 0)
 			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
 		} catch (RuntimeException e) {
 			// ignore it
@@ -1254,13 +1254,13 @@ public class OpcodeStack implements Constants2
 	private void pushByFloatMath(int seen, Item it, Item it2) {
 		if ((it.getConstant() != null) && it2.getConstant() != null) {
 			if (seen == FADD)
-				push(new Item("F", new Float(((Float)it2.getConstant()).floatValue() + ((Float)it.getConstant()).floatValue())));
+				push(new Item("F", ((Float) it2.getConstant()) + ((Float) it.getConstant())));
 			else if (seen == FSUB)
-				push(new Item("F", new Float(((Float)it2.getConstant()).floatValue() - ((Float)it.getConstant()).floatValue())));
+				push(new Item("F", ((Float) it2.getConstant()) - ((Float) it.getConstant())));
 			else if (seen == FMUL)
-				push(new Item("F", new Float(((Float)it2.getConstant()).floatValue() * ((Float)it.getConstant()).floatValue())));
+				push(new Item("F", ((Float) it2.getConstant()) * ((Float) it.getConstant())));
 			else if (seen == FDIV)
-				push(new Item("F", new Float(((Float)it2.getConstant()).floatValue() / ((Float)it.getConstant()).floatValue())));
+				push(new Item("F", ((Float) it2.getConstant()) / ((Float) it.getConstant())));
 		} else {
 			push(new Item("F"));
 		}
@@ -1269,13 +1269,13 @@ public class OpcodeStack implements Constants2
 	private void pushByDoubleMath(int seen, Item it, Item it2) {
 		if ((it.getConstant() != null) && it2.getConstant() != null) {
 			if (seen == DADD)
-				push(new Item("D", new Double(((Double)it2.getConstant()).doubleValue() + ((Double)it.getConstant()).doubleValue())));
+				push(new Item("D", ((Double) it2.getConstant()) + ((Double) it.getConstant())));
 			else if (seen == DSUB)
-				push(new Item("D", new Double(((Double)it2.getConstant()).doubleValue() - ((Double)it.getConstant()).doubleValue())));
+				push(new Item("D", ((Double) it2.getConstant()) - ((Double) it.getConstant())));
 			else if (seen == DMUL)
-				push(new Item("D", new Double(((Double)it2.getConstant()).doubleValue() * ((Double)it.getConstant()).doubleValue())));
+				push(new Item("D", ((Double) it2.getConstant()) * ((Double) it.getConstant())));
 			else if (seen == DDIV)
-				push(new Item("D", new Double(((Double)it2.getConstant()).doubleValue() / ((Double)it.getConstant()).doubleValue())));
+				push(new Item("D", ((Double) it2.getConstant()) / ((Double) it.getConstant())));
 			else if (seen == DREM)
 				push(new Item("D"));	//?	
 			} else {

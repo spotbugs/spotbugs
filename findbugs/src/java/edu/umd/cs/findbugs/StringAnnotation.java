@@ -125,7 +125,7 @@ public class StringAnnotation implements BugAnnotation {
 	public boolean equals(Object o) {
 		if (!(o instanceof StringAnnotation))
 			return false;
-		return value == ((StringAnnotation) o).value;
+		return value.equals(((StringAnnotation) o).value);
 	}
 
 	public int compareTo(BugAnnotation o) {

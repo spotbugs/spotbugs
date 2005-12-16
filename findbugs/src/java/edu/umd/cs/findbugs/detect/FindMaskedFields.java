@@ -69,8 +69,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 			JavaClass[] superClasses = org.apache.bcel.Repository.getSuperClasses(obj);
 			for (JavaClass superClass : superClasses) {
 				fields = superClass.getFields();
-				for (int f = 0; f < fields.length; f++) {
-					Field fld = fields[f];
+				for (Field fld : fields) {
 					if (!fld.isStatic()
 							&& !maskedFields.contains(fld)
 							&& (fld.isPublic() || fld.isProtected())) {

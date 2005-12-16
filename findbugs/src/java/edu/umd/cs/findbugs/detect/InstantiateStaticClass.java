@@ -65,7 +65,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 					b = Boolean.valueOf(isStaticOnlyClass(clsName));
 					isStaticClass.put(clsName, b);
 					}
-				if (b.booleanValue())
+				if (b)
 				
 				bugReporter.reportBug(new BugInstance(this, "ISC_INSTANTIATE_STATIC_CLASS", LOW_PRIORITY)
 				        .addClassAndMethod(this)

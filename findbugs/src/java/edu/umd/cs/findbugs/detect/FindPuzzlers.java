@@ -101,7 +101,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 				=  stack.getStackItem(1).getConstant();
 			if (rightHandSide != null && rightHandSide instanceof Integer) {
 				constantArgumentToShift = true;
-				valueOfConstantArgumentToShift = ((Integer)rightHandSide).intValue();
+				valueOfConstantArgumentToShift = ((Integer) rightHandSide);
 				if (valueOfConstantArgumentToShift < 0 || valueOfConstantArgumentToShift >= 32)
 				 bugReporter.reportBug(new BugInstance(this, "ICAST_BAD_SHIFT_AMOUNT", NORMAL_PRIORITY)
 						.addClassAndMethod(this)
@@ -111,7 +111,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 				}
 				if (leftHandSide != null 
 					&& leftHandSide instanceof Integer
-					&&  ((Integer)leftHandSide).intValue()
+					&& ((Integer) leftHandSide)
 						> 0) {
 				// boring; lie so other detectors won't get concerned
 				constantArgumentToShift = true;
@@ -129,7 +129,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 			OpcodeStack.Item item = stack.getStackItem(0);
 			Object o = item.getConstant();
 			if (o != null && o instanceof Integer) {
-				int v =  ((Integer)o).intValue();
+				int v = (Integer) o;
 				if (v < 0 || v > 11)
 				 bugReporter.reportBug(new BugInstance(this, "DMI_BAD_MONTH", NORMAL_PRIORITY)
 						.addClassAndMethod(this)
@@ -153,7 +153,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 			OpcodeStack.Item item = stack.getStackItem(1);
 			Object o = item.getConstant();
 			if (o != null && o instanceof Integer) {
-				int v =  ((Integer)o).intValue();
+				int v = (Integer) o;
 				if (v < 0 || v > 11)
 				 bugReporter.reportBug(new BugInstance(this, "DMI_BAD_MONTH", NORMAL_PRIORITY)
 						.addClassAndMethod(this)

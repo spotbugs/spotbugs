@@ -168,13 +168,13 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 						// Save in field in case of nested SourceLine elements.
 						methodAnnotation =
-							new MethodAnnotation(classname, fieldOrMethodName, signature, Boolean.valueOf(isStatic).booleanValue());
+							new MethodAnnotation(classname, fieldOrMethodName, signature, Boolean.valueOf(isStatic));
 						
 						bugAnnotation = methodAnnotation;
 					} else {
 						String isStatic = getRequiredAttribute(attributes, "isStatic", qName);
 						bugAnnotation = new FieldAnnotation(classname, fieldOrMethodName, signature,
-							Boolean.valueOf(isStatic).booleanValue());
+								Boolean.valueOf(isStatic));
 					}
 				} else if (qName.equals("SourceLine")) {
 					bugAnnotation = createSourceLineAnnotation(qName, attributes);
@@ -261,9 +261,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						String releaseName = attributes.getValue("release");
 						String codeSize = attributes.getValue("codeSize");
 						String numClasses = attributes.getValue("numClasses");
-						AppVersion appVersion = new AppVersion(Long.valueOf(sequence).longValue());
+						AppVersion appVersion = new AppVersion(Long.valueOf(sequence));
 						if (timestamp != null)
-							appVersion.setTimestamp(Long.valueOf(timestamp).longValue());
+							appVersion.setTimestamp(Long.valueOf(timestamp));
 						if (releaseName != null)
 							appVersion.setReleaseName(releaseName);
 						if (codeSize != null)

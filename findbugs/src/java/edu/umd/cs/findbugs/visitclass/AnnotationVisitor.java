@@ -245,7 +245,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 			{
 			int cp1= bytes.readUnsignedShort();
 			ConstantUtf8 c1 = (ConstantUtf8) getConstantPool().getConstant(cp1);
-			String cName = ((ConstantUtf8)c1).getBytes().replace('/','.');
+			String cName = c1.getBytes().replace('/','.');
 			if (cName.startsWith("L") && cName.endsWith(";"))
 				cName = cName.substring(1,cName.length()-1);
 			int cp2= bytes.readUnsignedShort();

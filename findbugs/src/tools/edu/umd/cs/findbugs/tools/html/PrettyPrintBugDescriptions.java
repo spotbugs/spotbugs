@@ -117,12 +117,11 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 
 		ColorAlternator colorAlternator = new ColorAlternator(TABLE_COLORS);
 
-		for (Iterator<BugPattern> i = bugPatternSet.iterator(); i.hasNext(); ) {
-			BugPattern bugPattern = i.next();
+		for (BugPattern bugPattern : bugPatternSet) {
 			out.print("<tr bgcolor=\"" + colorAlternator.nextColor() + "\">");
 			out.print("<td><a href=\"#" + bugPattern.getType() + "\">" +
-				bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription() +
-				"</a></td>");
+					bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription() +
+					"</a></td>");
 			out.println("<td>" + I18N.instance().getBugCategoryDescription(bugPattern.getCategory()) + "</td></tr>");
 		}
 
@@ -134,13 +133,12 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 
 		out.println("<h2>Descriptions</h2>");
 
-		for (Iterator<BugPattern> i = bugPatternSet.iterator(); i.hasNext(); ) {
-			BugPattern bugPattern = i.next();
+		for (BugPattern bugPattern : bugPatternSet) {
 			out.println("<h3><a name=\"" +
-				bugPattern.getType() + "\">" +
-				bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription() +
-				" (" + bugPattern.getType() + ")" +
-				"</a></h3>");
+					bugPattern.getType() + "\">" +
+					bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription() +
+					" (" + bugPattern.getType() + ")" +
+					"</a></h3>");
 			out.println(bugPattern.getDetailText());
 		}
 	}

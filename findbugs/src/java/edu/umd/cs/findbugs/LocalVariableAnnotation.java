@@ -92,7 +92,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	public boolean equals(Object o) {
 		if (!(o instanceof LocalVariableAnnotation))
 			return false;
-		return value == ((LocalVariableAnnotation) o).value;
+		return value.equals(((LocalVariableAnnotation) o).value);
 	}
 
 	public int compareTo(BugAnnotation o) {
