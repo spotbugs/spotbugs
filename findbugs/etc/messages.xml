@@ -155,7 +155,7 @@ Normally, this detector does nothing.</p>
  <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPriviledged">
     <Details>
 <![CDATA[
-<p> Look for code that should be executed inside doPriviledged blocks.</p>
+<p> Look for code that should be executed inside doPrivileged blocks.</p>
 ]]>
     </Details>
   </Detector>
@@ -1289,13 +1289,13 @@ to use Object.clone(), which always returns an object of the correct type.</p>
   </BugPattern>
 
 <BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED">
-    <ShortDescription>Method invokes method that should be only be invoked inside a doPriviledged block</ShortDescription>
-    <LongDescription>{1} invokes {2}, which should be invoked from within a doPriviledged block</LongDescription>
+    <ShortDescription>Method invokes method that should be only be invoked inside a doPrivileged block</ShortDescription>
+    <LongDescription>{1} invokes {2}, which should be invoked from within a doPrivileged block</LongDescription>
     <Details>
 <![CDATA[
   <p> This code invokes a method that requires a security permission check.
   If this code will be granted security permissions, but might be invoked by code that does not
-  have sercurity permissions, that the invocation needs to occur inside a doPriviledged block.</p>
+  have security permissions, that the invocation needs to occur inside a doPrivileged block.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4470,4 +4470,5 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="CI">Confused Inheritance</BugCode>
   <BugCode abbrev="QBA">Questionable Boolean Assignment</BugCode>
   <BugCode abbrev="VR">Version compatibility issue</BugCode>
+  <BugCode abbrev="DP">Do Inside doPrivileged</BugCode>
   </MessageCollection>
