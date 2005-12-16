@@ -47,6 +47,7 @@ import edu.umd.cs.findbugs.model.ClassFeatureSet;
  */
 public class SortedBugCollection extends AbstractBugCollection {
 	public static class BugInstanceComparator implements Comparator<BugInstance> {
+		private BugInstanceComparator() {};
 		public int compare(BugInstance lhs, BugInstance rhs) {
 			ClassAnnotation lca = lhs.getPrimaryClass();
 			ClassAnnotation rca = rhs.getPrimaryClass();
