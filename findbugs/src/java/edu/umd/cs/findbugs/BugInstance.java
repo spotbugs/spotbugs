@@ -73,7 +73,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * @author David Hovemeyer
  * @see BugAnnotation
  */
-public class BugInstance implements Comparable, XMLWriteableWithMessages, Serializable, Cloneable {
+public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMessages, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	
 	private String type;
@@ -1262,8 +1262,7 @@ public class BugInstance implements Comparable, XMLWriteableWithMessages, Serial
 		return true;
 	}
 
-	public int compareTo(Object o) {
-		BugInstance other = (BugInstance) o;
+	public int compareTo(BugInstance other) {
 		int cmp;
 		cmp = type.compareTo(other.type);
 		if (cmp != 0)
