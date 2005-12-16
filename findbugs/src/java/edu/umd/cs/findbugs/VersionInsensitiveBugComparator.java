@@ -34,13 +34,15 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 	
 	private ClassNameRewriter classNameRewriter = IdentityClassNameRewriter.instance();
 	
+	private boolean comparePriorities = false;
 	public VersionInsensitiveBugComparator() {
 	}
 	
 	public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
-		if (this == instance())
-			throw new IllegalStateException();
 		this.classNameRewriter = classNameRewriter; 
+	}
+	public void setComparePriorities(boolean b) {
+		comparePriorities = b;
 	}
 
 	/**
@@ -155,13 +157,13 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 		}
 		
 
-/*
-		// Don't compare priority.
-		// This is something that can reasonably change
-		// from one release of FindBugs to anther.
+
+
+		if (comparePriorities) {
 		cmp = lhs.getPriority() - rhs.getPriority();
 		if (cmp != 0) return cmp;
-*/
+		}
+
 
 		Iterator<BugAnnotation> lhsIter = new FilteringAnnotationIterator(lhs.annotationIterator());
 		Iterator<BugAnnotation> rhsIter = new FilteringAnnotationIterator(rhs.annotationIterator());
@@ -231,16 +233,8 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 		else
 			return 0;
 	}
-
-	/**
-	 * The instance of the version-insensitive comparator.
-	 */
-	private static final VersionInsensitiveBugComparator versionInsensitiveBugComparator =
-	        new VersionInsensitiveBugComparator();
-
-	public static VersionInsensitiveBugComparator instance() {
-		return versionInsensitiveBugComparator;
-	}
 }
+
+
 
 // vim:ts=4
