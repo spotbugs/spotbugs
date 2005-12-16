@@ -64,6 +64,8 @@ public class Update {
 		UpdateCommandLine() {
 			addSwitch("-overrideRevisionNames", 
 			"override revision names for each version with names computed filenames");
+			addSwitch("-precisePriorityMatch", 
+			"only consider two warnings to be the same if their prioritys match exactly");
 			addOption("-output", "output file",
 					"explicit filename for merged results (standard out used if not specified)");
 	
@@ -78,8 +80,10 @@ public class Update {
 				else
 					overrideRevisionNames = Boolean.parseBoolean(optionExtraPart);
 			}
-			else 
-			throw new IllegalArgumentException("no option " + option);
+			else 	if (option.equals("-precisePriorityMatch")) 
+				versionInsensitiveBugComparator.setComparePriorities(true);
+				
+			else throw new IllegalArgumentException("no option " + option);
 
 		}
 
@@ -95,7 +99,8 @@ public class Update {
 		}
 
 	}
-
+	static VersionInsensitiveBugComparator versionInsensitiveBugComparator = new VersionInsensitiveBugComparator();
+	
 	public static BugCollection mergeCollections(BugCollection origCollection,
 			BugCollection newCollection) {
 		
@@ -131,9 +136,9 @@ public class Update {
 		long currentSequence = origCollection.getSequenceNumber() + 1;
 		resultCollection.setSequenceNumber(currentSequence);
 
-		matchBugs(new SortedBugCollection.BugInstanceComparator(),
+		matchBugs(SortedBugCollection.BugInstanceComparator.instance,
 				origCollection, newCollection);
-		matchBugs(VersionInsensitiveBugComparator.instance(), origCollection,
+		matchBugs(versionInsensitiveBugComparator, origCollection,
 				newCollection);
 		// matchBugs(new SloppyBugComparator(), origCollection, newCollection);
 
