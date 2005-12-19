@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.VersionInsensitiveBugComparator;
 import edu.umd.cs.findbugs.config.CommandLine;
+import edu.umd.cs.findbugs.model.MovedClassMap;
 
 /**
  * Java main application to compute update a historical bug collection with
@@ -100,6 +101,7 @@ public class Update {
 
 	}
 	static VersionInsensitiveBugComparator versionInsensitiveBugComparator = new VersionInsensitiveBugComparator();
+
 	
 	public static BugCollection mergeCollections(BugCollection origCollection,
 			BugCollection newCollection) {
@@ -140,6 +142,11 @@ public class Update {
 				origCollection, newCollection);
 		matchBugs(versionInsensitiveBugComparator, origCollection,
 				newCollection);
+		VersionInsensitiveBugComparator movedBugComparator = new VersionInsensitiveBugComparator();
+		movedBugComparator.setClassNameRewriter(new MovedClassMap(origCollection,newCollection));
+		matchBugs(movedBugComparator, origCollection,
+				newCollection);
+
 		// matchBugs(new SloppyBugComparator(), origCollection, newCollection);
 
 		int oldBugs = 0;
