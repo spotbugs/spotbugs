@@ -143,7 +143,7 @@ public class Update {
 		matchBugs(versionInsensitiveBugComparator, origCollection,
 				newCollection);
 		VersionInsensitiveBugComparator movedBugComparator = new VersionInsensitiveBugComparator();
-		movedBugComparator.setClassNameRewriter(new MovedClassMap(origCollection,newCollection));
+		movedBugComparator.setClassNameRewriter(new MovedClassMap(origCollection,newCollection).execute());
 		matchBugs(movedBugComparator, origCollection,
 				newCollection);
 
