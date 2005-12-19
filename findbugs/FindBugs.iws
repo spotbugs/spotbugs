@@ -201,10 +201,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BugCellRenderer.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/gui/BugCellRenderer.java">
+      <file leaf-file-name="FindBugs.iws" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/FindBugs.iws">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="100" column="0" selection-start="3883" selection-end="3883" vertical-scroll-proportion="0.8882554">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-1.313569">
               <folding />
             </state>
           </provider>
@@ -421,7 +421,7 @@
   </component>
   <component name="RecentsManager" />
   <component name="RestoreUpdateTree">
-    <UpdateInfo date="12/16/05 2:09 PM" ActionInfo="Check Status">
+    <UpdateInfo date="12/19/05 10:11 AM" ActionInfo="Check Status">
       <UpdatedFiles>
         <FILE-GROUP>
           <option name="myUpdateName" value="Updated from server" />
@@ -464,25 +464,7 @@
           <option name="mySupportsDeletion" value="false" />
           <option name="myCanBeAbsent" value="false" />
           <option name="myId" value="MODIFIED" />
-          <PATH>$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/SAXBugCollectionHandler.java</PATH>
-          <PATH>$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/xml/XPathFind.java</PATH>
-          <PATH>$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/detect/FindPuzzlers.java</PATH>
-          <PATH>$PROJECT_DIR$/src/tools/edu/umd/cs/findbugs/tools/eclipse/EclipseClasspath.java</PATH>
-          <PATH>$PROJECT_DIR$/src/junit/edu/umd/cs/findbugs/ml/SplitCamelCaseIdentifierTest.java</PATH>
-          <PATH>$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/StringAnnotation.java</PATH>
-          <PATH>$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/visitclass/DismantleBytecode.java</PATH>
-          <PATH>$PROJECT_DIR$/src/junit/edu/umd/cs/findbugs/config/ProjectFilterSettingsTest.java</PATH>
-          <PATH>$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/detect/InstantiateStaticClass.java</PATH>
-          <PATH>$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/visitclass/AnnotationVisitor.java</PATH>
-          <PATH>$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/LocalVariableAnnotation.java</PATH>
-          <PATH>$PROJECT_DIR$/src/antTask/edu/umd/cs/findbugs/anttask/FindBugsTask.java</PATH>
-          <PATH>$PROJECT_DIR$/src/tools/edu/umd/cs/findbugs/tools/patcomp/SimpleNode.java</PATH>
-          <PATH>$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/OpcodeStack.java</PATH>
-          <PATH>$PROJECT_DIR$/src/tools/edu/umd/cs/findbugs/tools/html/PrettyPrintBugDescriptions.java</PATH>
-          <PATH>$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/detect/FindMaskedFields.java</PATH>
-          <PATH>$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/ml/ConvertToARFF.java</PATH>
           <PATH>$PROJECT_DIR$/FindBugs.iws</PATH>
-          <PATH>$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/PluginLoader.java</PATH>
         </FILE-GROUP>
         <FILE-GROUP>
           <option name="myUpdateName" value="Merged with conflicts" />
@@ -689,7 +671,7 @@
   <component name="VcsManagerConfiguration">
     <option name="PUT_FOCUS_INTO_COMMENT" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="removed unneeded final modifiers&#10;Use Java 5.0 foreach loops&#10;Various other quickfixes suggested by IntelliJ." />
+    <option name="LAST_COMMIT_MESSAGE" value="Use Java 5.0 foreach loops&#10;Various other quickfixes suggested by IntelliJ." />
     <option name="SAVE_LAST_COMMIT_MESSAGE" value="true" />
     <option name="CHECKIN_DIALOG_SPLITTER_PROPORTION" value="0.8" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
@@ -705,6 +687,7 @@
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
     <MESSAGE value="removed unneeded final modifiers" />
     <MESSAGE value="removed unneeded final modifiers&#10;Use Java 5.0 foreach loops&#10;Various other quickfixes suggested by IntelliJ." />
+    <MESSAGE value="Use Java 5.0 foreach loops&#10;Various other quickfixes suggested by IntelliJ." />
   </component>
   <component name="VssConfiguration">
     <option name="CLIENT_PATH" value="" />
@@ -792,13 +775,6 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/visitclass/AnnotationVisitor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="247" column="29" selection-start="8267" selection-end="8267" vertical-scroll-proportion="0.7676843">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/ml/ConvertToARFF.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="585" column="55" selection-start="16756" selection-end="16756" vertical-scroll-proportion="0.00893522">
@@ -830,13 +806,6 @@
     <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/gui/BugCellRenderer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="100" column="0" selection-start="3883" selection-end="3883" vertical-scroll-proportion="0.8882554">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/visitclass/DismantleBytecode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="184" column="18" selection-start="7145" selection-end="7145" vertical-scroll-proportion="0.327252">
           <folding />
         </state>
       </provider>
@@ -893,6 +862,20 @@
     <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/workflow/BugHistory.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="578" column="40" selection-start="18226" selection-end="18226" vertical-scroll-proportion="0.36830103">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/visitclass/DismantleBytecode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="184" column="18" selection-start="7145" selection-end="7145" vertical-scroll-proportion="0.327252">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FindBugs.iws">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-1.313569">
           <folding />
         </state>
       </provider>
