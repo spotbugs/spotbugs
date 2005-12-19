@@ -58,15 +58,20 @@ public class Update {
 	private static HashMap<BugInstance, BugInstance> mapFromNewToOldBug = new HashMap<BugInstance, BugInstance>();
 
 	private static HashSet<BugInstance> matchedOldBugs = new HashSet<BugInstance>();
+	static 	boolean noPackageMoves = false;
 
 	static class UpdateCommandLine extends CommandLine {
 		boolean overrideRevisionNames = false;
+	
 		 String outputFilename;
 		UpdateCommandLine() {
 			addSwitch("-overrideRevisionNames", 
 			"override revision names for each version with names computed filenames");
+			addSwitch("-noPackageMoves", 
+			"if a class seems to have moved from one package to another, treat warnings in that class as two seperate warnings");
+			
 			addSwitch("-precisePriorityMatch", 
-			"only consider two warnings to be the same if their prioritys match exactly");
+			"only consider two warnings to be the same if their priorities match exactly");
 			addOption("-output", "output file",
 					"explicit filename for merged results (standard out used if not specified)");
 	
@@ -80,6 +85,12 @@ public class Update {
 					overrideRevisionNames = true;
 				else
 					overrideRevisionNames = Boolean.parseBoolean(optionExtraPart);
+			}
+			else if (option.equals("-noPackageMoves")) {
+				if (optionExtraPart.length() == 0)
+					noPackageMoves = true;
+				else
+					noPackageMoves = Boolean.parseBoolean(optionExtraPart);
 			}
 			else 	if (option.equals("-precisePriorityMatch")) 
 				versionInsensitiveBugComparator.setComparePriorities(true);
@@ -142,10 +153,12 @@ public class Update {
 				origCollection, newCollection);
 		matchBugs(versionInsensitiveBugComparator, origCollection,
 				newCollection);
-		VersionInsensitiveBugComparator movedBugComparator = new VersionInsensitiveBugComparator();
-		movedBugComparator.setClassNameRewriter(new MovedClassMap(origCollection,newCollection).execute());
-		matchBugs(movedBugComparator, origCollection,
+		if (!noPackageMoves) {
+			VersionInsensitiveBugComparator movedBugComparator = new VersionInsensitiveBugComparator();
+			movedBugComparator.setClassNameRewriter(new MovedClassMap(origCollection,newCollection).execute());
+			matchBugs(movedBugComparator, origCollection,
 				newCollection);
+		}
 
 		// matchBugs(new SloppyBugComparator(), origCollection, newCollection);
 
