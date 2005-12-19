@@ -631,7 +631,7 @@ public class ConvertToARFF {
 			throws MissingNodeException, IOException {
 		List bugInstanceList = getBugInstanceList(document);
 
-		for (final Element element : (Iterable<Element>) bugInstanceList) {
+		for (final Element element : (List<Element>) bugInstanceList) {
 			scanAttributeList(new AttributeCallback() {
 				boolean first = true;
 

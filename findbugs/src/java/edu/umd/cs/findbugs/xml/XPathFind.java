@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.xml;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -48,7 +49,7 @@ public abstract class XPathFind {
 	}
 
 	public void find(String xpath) {
-		for (Node node : (Iterable<Node>) document.selectNodes(xpath)) {
+		for (Node node : (List<Node>) document.selectNodes(xpath)) {
 			match(node);
 		}
 	}

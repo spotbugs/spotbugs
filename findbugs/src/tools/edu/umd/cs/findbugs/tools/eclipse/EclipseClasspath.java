@@ -210,8 +210,8 @@ public class EclipseClasspath {
 				throw new EclipseClasspathException("Cannot determine plugin version");
 
 			// Extract required plugins
-			List requiredPluginNodeList = document.selectNodes("/plugin/requires/import");
-			for (Node node : (Iterable<Node>) requiredPluginNodeList) {
+			List<Node> requiredPluginNodeList = (List<Node>) document.selectNodes("/plugin/requires/import");
+			for (Node node :  requiredPluginNodeList) {
 				String requiredPluginId = node.valueOf("@plugin");
 				if (requiredPluginId.equals(""))
 					throw new EclipseClasspathException("Import has no plugin id");
@@ -220,8 +220,8 @@ public class EclipseClasspath {
 			}
 
 			// Extract exported libraries
-			List exportedLibraryNodeList = document.selectNodes("/plugin/runtime/library");
-			for (Node node : (Iterable<Node>) exportedLibraryNodeList) {
+			List<Node> exportedLibraryNodeList = (List<Node>) document.selectNodes("/plugin/runtime/library");
+			for (Node node :  exportedLibraryNodeList) {
 				String jarName = node.valueOf("@name");
 				if (jarName.equals(""))
 					throw new EclipseClasspathException("Could not get name of exported library");
