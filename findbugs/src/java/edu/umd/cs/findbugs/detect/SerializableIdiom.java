@@ -19,12 +19,15 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.JavaClass;
@@ -33,12 +36,16 @@ import org.apache.bcel.classfile.Synthetic;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-public class SerializableIdiom extends PreorderVisitor
-        implements Detector {
+public class SerializableIdiom extends BytecodeScanningDetector
+        {
 
 
 	boolean sawSerialVersionUID;
@@ -46,11 +53,13 @@ public class SerializableIdiom extends PreorderVisitor
 	boolean isExternalizable;
 	boolean isGUIClass;
 	boolean foundSynthetic;
+	boolean seenTransientField;
 	boolean foundSynchronizedMethods;
 	boolean writeObjectIsSynchronized;
 	private BugReporter bugReporter;
 	boolean isAbstract;
 	private List<BugInstance> fieldWarningList = new LinkedList<BugInstance>();
+	private HashMap<String, XField> fieldsThatMightBeAProblem = new HashMap<String, XField>();
 	private boolean sawReadExternal;
 	private boolean sawWriteExternal;
 	private boolean sawReadObject;
@@ -114,7 +123,9 @@ public class SerializableIdiom extends PreorderVisitor
 		isExternalizable = false;
 		directlyImplementsExternalizable = false;
 		isGUIClass = false;
+		seenTransientField = false;
 		boolean isEnum = obj.getSuperclassName().equals("java.lang.Enum");
+		fieldsThatMightBeAProblem.clear();
 		
 		//isRemote = false;
 
@@ -238,6 +249,7 @@ public class SerializableIdiom extends PreorderVisitor
 	}
 
 	public void visit(Method obj) {
+		
 		int accessFlags = obj.getAccessFlags();
 		boolean isSynchronized = (accessFlags & ACC_SYNCHRONIZED) != 0;
 		if (getMethodName().equals("<init>") && getMethodSig().equals("()V")
@@ -273,7 +285,7 @@ public class SerializableIdiom extends PreorderVisitor
 				System.out.println("Non-private writeObject method in: " + getDottedClassName());
 		}
 
-		if (!isSynchronized) return;
+		if (isSynchronized) {
 		if (getMethodName().equals("readObject") &&
 		        getMethodSig().equals("(Ljava/io/ObjectInputStream;)V") &&
 		        isSerializable)
@@ -284,6 +296,8 @@ public class SerializableIdiom extends PreorderVisitor
 			writeObjectIsSynchronized = true;
 		else
 			foundSynchronizedMethods = true;
+		}
+		super.visit(obj);
 
 	}
 
@@ -295,21 +309,64 @@ public class SerializableIdiom extends PreorderVisitor
 	}
 
 
+	public void visit(Code obj) {
+		if (isSerializable) {
+			stack.resetForMethodEntry(this);
+			super.visit(obj);
+		}
+	}
+	@Override
+	public void sawOpcode(int seen) {
+		if (seen == PUTFIELD) {
+			String nameOfClass = getClassConstantOperand();
+			String nameOfField = getNameConstantOperand();
+			if ( getClassName().equals(nameOfClass) &&
+		
+				fieldsThatMightBeAProblem.containsKey(nameOfField)) {
+			try {
+			OpcodeStack.Item first = stack.getStackItem(0);
+			JavaClass classStored = first.getJavaClass();
+			double isSerializable = Analyze.isDeepSerializable(classStored);
+			XField f = fieldsThatMightBeAProblem.get(nameOfField);
+			int priority = NORMAL_PRIORITY;
+			if (implementsSerializableDirectly || seenTransientField) priority = HIGH_PRIORITY;
+			if (isSerializable < 0.5) 
+			fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_STORE", priority)
+			        .addClass(getThisClass().getClassName())
+			        .addField(f)
+			        .addClass(classStored)
+			        .addSourceLine(this));
+
+			
+			} catch (Exception e) {
+				// ignore it
+			}}
+		        
+		}
+		 stack.sawOpcode(this,seen);
+	}
+	private OpcodeStack stack = new OpcodeStack();
+	
 	public void visit(Field obj) {
 		int flags = obj.getAccessFlags();
 
+		if (obj.isTransient())
+			seenTransientField = true;
 		if (getClassName().indexOf("ObjectStreamClass") == -1
 		        && isSerializable
 		        && !isExternalizable
 		        && getFieldSig().indexOf("L") >= 0 && !obj.isTransient() && !obj.isStatic()) {
 			try {
+				
 				double isSerializable = Analyze.isDeepSerializable(getFieldSig());
+				if (isSerializable < 1.0)
+					fieldsThatMightBeAProblem.put(obj.getName(), XFactory.createXField(this));
 				if (isSerializable < 0.9) {
 
 					// Priority is LOW for GUI classes (unless explicitly marked Serializable),
 					// HIGH if the class directly implements Serializable,
 					// NORMAL otherwise.
-					int priority = (int)(2+isSerializable*3);
+					int priority = (int)(1.9+isSerializable*3);
 					if (priority > NORMAL_PRIORITY
 						&& obj.getName().startsWith("this$"))
 					    priority = NORMAL_PRIORITY;

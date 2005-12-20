@@ -2472,6 +2472,17 @@ object is stored in this field.</p>
     </Details>
   </BugPattern>
 
+  <BugPattern type="SE_BAD_FIELD_STORE">
+    <ShortDescription>Non-serializable value stored into instance field of a serializable class</ShortDescription>
+    <LongDescription>{2} stored into non-transient field {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> A non-serializable value is stored into a non-transient field
+of a serializable class.</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="SC_START_IN_CTOR">
     <ShortDescription>Constructor invokes Thread.start()</ShortDescription>
     <LongDescription>{1} invokes {2}</LongDescription>
