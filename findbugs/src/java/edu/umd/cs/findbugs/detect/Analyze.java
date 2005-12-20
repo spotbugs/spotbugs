@@ -175,6 +175,7 @@ public class Analyze {
 
 		if (both.isEmpty()) {
 			if (concreteClassesInXButNotY) {
+				if (x.isAbstract() || x.isInterface()) return 0.2;
 				return 0.1;
 			}
 			return 0.3;
