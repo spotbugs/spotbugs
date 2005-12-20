@@ -327,16 +327,19 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			OpcodeStack.Item first = stack.getStackItem(0);
 			JavaClass classStored = first.getJavaClass();
 			double isSerializable = Analyze.isDeepSerializable(classStored);
-			XField f = fieldsThatMightBeAProblem.get(nameOfField);
-			int priority = NORMAL_PRIORITY;
-			if (implementsSerializableDirectly || seenTransientField) priority = HIGH_PRIORITY;
-			if (isSerializable < 0.5) 
+			if (isSerializable <= 0.2) {
+				XField f = fieldsThatMightBeAProblem.get(nameOfField);
+			
+			int priority = LOW_PRIORITY;
+			if (implementsSerializableDirectly || seenTransientField) priority--;
+			if (isSerializable <= 0.1) priority--;
+	 
 			fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_STORE", priority)
 			        .addClass(getThisClass().getClassName())
 			        .addField(f)
 			        .addClass(classStored)
 			        .addSourceLine(this));
-
+			}
 			
 			} catch (Exception e) {
 				// ignore it
