@@ -91,6 +91,7 @@ public class OpcodeStack implements Constants2
  		private boolean isNull = false;
 		private int registerNumber = -1;
 		private boolean isInitialParameter = false;
+		private Object userValue = null;
 
 		
 		public int getSize() {
@@ -300,6 +301,24 @@ public class OpcodeStack implements Constants2
 		 */
 		public int getSpecialKind() {
 			return specialKind;
+		}
+		
+		/**
+		 * attaches a detector specified value to this item
+		 * 
+		 * @param value the custom value to set
+		 */
+		public void setUserValue(Object value) {
+			userValue = value;
+		}
+		
+		/**
+		 * gets the detector specified value for this item
+		 * 
+		 * @return the custom value
+		 */
+		public Object getUserValue() {
+			return userValue;
 		}
 	}
 
