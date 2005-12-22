@@ -230,7 +230,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			        	( sawSerialVersionUID ?  NORMAL_PRIORITY : LOW_PRIORITY))
 			        .addClass(getThisClass().getClassName()));
 		// Downgrade class-level warnings if it's a GUI class.
-		int priority = isGUIClass ? LOW_PRIORITY : NORMAL_PRIORITY;
+		int priority = false && isGUIClass ? LOW_PRIORITY : NORMAL_PRIORITY;
 		if (obj.getClassName().endsWith("_Stub")) priority++;
 
 		if (isExternalizable && !hasPublicVoidConstructor && !isAbstract)
@@ -325,25 +325,37 @@ public class SerializableIdiom extends BytecodeScanningDetector
 				fieldsThatMightBeAProblem.containsKey(nameOfField)) {
 			try {
 			OpcodeStack.Item first = stack.getStackItem(0);
-			JavaClass classStored = first.getJavaClass();
-			double isSerializable = Analyze.isDeepSerializable(classStored);
-			if (isSerializable <= 0.2) {
-				XField f = fieldsThatMightBeAProblem.get(nameOfField);
-			
-			int priority = LOW_PRIORITY;
-			if (implementsSerializableDirectly || seenTransientField) priority--;
-			if (isSerializable <= 0.1) priority--;
-	 
-			fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_STORE", priority)
-			        .addClass(getThisClass().getClassName())
-			        .addField(f)
-			        .addClass(classStored)
-			        .addSourceLine(this));
+					JavaClass classStored = first.getJavaClass();
+					double isSerializable = Analyze
+							.isDeepSerializable(classStored);
+					if (isSerializable <= 0.2) {
+						XField f = fieldsThatMightBeAProblem.get(nameOfField);
+
+						String sig = f.getSignature();
+						// System.out.println("Field signature: " + sig);
+						// System.out.println("Class stored: " +
+						// classStored.getClassName());
+						String genSig = "L"
+								+ classStored.getClassName().replace('.', '/')
+								+ ";";
+						if (!sig.equals(genSig)) {
+							int priority = LOW_PRIORITY;
+							if (implementsSerializableDirectly
+									|| seenTransientField)
+								priority--;
+							if (isSerializable <= 0.1)
+								priority--;
+
+							fieldWarningList.add(new BugInstance(this,
+									"SE_BAD_FIELD_STORE", priority).addClass(
+									getThisClass().getClassName()).addField(f)
+									.addClass(classStored).addSourceLine(this));
+						}
+					}
+				} catch (Exception e) {
+					// ignore it
+				}
 			}
-			
-			} catch (Exception e) {
-				// ignore it
-			}}
 		        
 		}
 		 stack.sawOpcode(this,seen);
@@ -375,7 +387,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 					    priority = NORMAL_PRIORITY;
 					if (implementsSerializableDirectly || sawSerialVersionUID)
 						priority--;
-					else if (isGUIClass) {
+					else if (false && isGUIClass) {
 						priority++;
 						if (priority < LOW_PRIORITY)
 						  priority = LOW_PRIORITY;
