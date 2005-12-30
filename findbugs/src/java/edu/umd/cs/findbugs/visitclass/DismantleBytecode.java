@@ -367,7 +367,9 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 					if (opcode == LOOKUPSWITCH) {
 						int pad = 4 - (i & 3);
 						if (pad == 4) pad = 0;
-						byteStream.skipBytes(pad);
+						int count = pad;
+						while (count > 0) 
+						  count -= byteStream.skipBytes(count);
 						i += pad;
 						defaultSwitchOffset = byteStream.readInt();
 						branchOffset = defaultSwitchOffset;
@@ -386,7 +388,9 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 					} else if (opcode == TABLESWITCH) {
 						int pad = 4 - (i & 3);
 						if (pad == 4) pad = 0;
-						byteStream.skipBytes(pad);
+						int count = pad;
+						while (count > 0) 
+						  count -= byteStream.skipBytes(count);
 						i += pad;
 						defaultSwitchOffset = byteStream.readInt();
 						branchOffset = defaultSwitchOffset;
