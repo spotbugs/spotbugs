@@ -216,10 +216,15 @@ public class MineBugHistory {
 		mineBugHistory.setBugCollection(bugCollection);
 
 		mineBugHistory.execute();
+		PrintStream out = System.out;
+		
+		try {
 		if (argCount < args.length)  
-			mineBugHistory.dump(new PrintStream(args[argCount++]));
-		else 
-			mineBugHistory.dump(System.out);
+			out = new PrintStream(args[argCount++]);
+		mineBugHistory.dump(out);
+		} finally {
+		out.close();
+		}
 		
 	}
 }
