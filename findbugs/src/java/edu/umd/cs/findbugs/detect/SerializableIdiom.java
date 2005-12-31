@@ -339,13 +339,10 @@ public class SerializableIdiom extends BytecodeScanningDetector
 								+ classStored.getClassName().replace('.', '/')
 								+ ";";
 						if (!sig.equals(genSig)) {
-							int priority = LOW_PRIORITY;
-							if (implementsSerializableDirectly
-									|| seenTransientField)
-								priority--;
-							if (isSerializable <= 0.1)
-								priority--;
-
+							double bias = 0.0;
+							if (!getMethodName().equals("<init>")) bias = 1.0;
+							int priority = computePriority(isSerializable, bias);
+							
 							fieldWarningList.add(new BugInstance(this,
 									"SE_BAD_FIELD_STORE", priority).addClass(
 									getThisClass().getClassName()).addField(f)
@@ -381,19 +378,10 @@ public class SerializableIdiom extends BytecodeScanningDetector
 					// Priority is LOW for GUI classes (unless explicitly marked Serializable),
 					// HIGH if the class directly implements Serializable,
 					// NORMAL otherwise.
-					int priority = (int)(1.9+isSerializable*3);
+					int priority = computePriority(isSerializable, 0);
 					if (priority > NORMAL_PRIORITY
-						&& obj.getName().startsWith("this$"))
-					    priority = NORMAL_PRIORITY;
-					if (implementsSerializableDirectly || sawSerialVersionUID)
-						priority--;
-					else if (false && isGUIClass) {
-						priority++;
-						if (priority < LOW_PRIORITY)
-						  priority = LOW_PRIORITY;
-						}
-					if (!implementsSerializableDirectly && priority == HIGH_PRIORITY)
-						priority = NORMAL_PRIORITY;
+							&& obj.getName().startsWith("this$"))
+						    priority = NORMAL_PRIORITY;
 					if (false)
 					System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName()
 						+" " +  obj.getName()	
@@ -438,6 +426,16 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			return;
 		}
 		sawSerialVersionUID = true;
+	}
+
+	private int computePriority(double isSerializable, double bias) {
+		int priority = (int)(1.9+isSerializable*3 + bias);
+		
+		if (implementsSerializableDirectly || sawSerialVersionUID)
+			priority--;
+		if (!implementsSerializableDirectly && priority == HIGH_PRIORITY)
+			priority = NORMAL_PRIORITY;
+		return priority;
 	}
 
 
