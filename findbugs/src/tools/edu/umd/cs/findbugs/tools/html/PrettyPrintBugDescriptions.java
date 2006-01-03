@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 

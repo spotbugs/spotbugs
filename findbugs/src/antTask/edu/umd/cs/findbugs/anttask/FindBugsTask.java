@@ -54,18 +54,17 @@
 
 package edu.umd.cs.findbugs.anttask;
 
-import edu.umd.cs.findbugs.ExitCodes;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
-import org.apache.tools.ant.taskdefs.Java;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import edu.umd.cs.findbugs.ExitCodes;
 
 
 /**
@@ -107,7 +106,7 @@ import java.util.List;
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  *
- * @version $Revision: 1.37 $
+ * @version $Revision: 1.38 $
  *
  * @since Ant 1.5
  *

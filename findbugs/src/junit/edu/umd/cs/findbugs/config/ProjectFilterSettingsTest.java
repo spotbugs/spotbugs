@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.config;
 
-import java.util.Iterator;
-
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import edu.umd.cs.findbugs.Detector;

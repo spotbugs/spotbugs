@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -132,14 +133,41 @@ public class DetectorFactoryCollection {
 		factoriesByDetectorClassName.put(factory.getFullName(), factory);
 	}
 
+	private static void determinePlugins() {
+		if (pluginList != null)
+			return;
+		String homeDir = FindBugs.getHome();
+		if (homeDir == null)
+			return;
+
+		File pluginDir = new File(homeDir + File.separator + "plugin");
+		File[] contentList = pluginDir.listFiles();
+		if (contentList == null) {
+			System.err.println("Error: The path " + pluginDir.getPath()
+					+ " does not seem to be a directory!");
+			System.err.println("No FindBugs plugins could be loaded");
+			pluginList = new File[0];
+			return;
+		}
+
+		ArrayList<File> arr = new ArrayList<File>();
+		for (File aContentList : contentList) {
+			if (aContentList.getName().endsWith(".jar")) {
+				if (FindBugs.DEBUG)
+					System.out.println("Found plugin: " + aContentList.toString());
+				arr.add(aContentList);
+			}
+		}
+		pluginList = arr.toArray(new File[arr.size()]);
+
+	}
 	/**
-	 * Load all plugins.
-	 * If a setPluginList() has been called, then those plugins
-	 * are loaded.  Otherwise, the "findbugs.home" property is checked
-	 * to determine where FindBugs is installed, and the plugin files
-	 * are dynamically loaded from the plugin directory.
+	 * Load all plugins. If a setPluginList() has been called, then those
+	 * plugins are loaded. Otherwise, the "findbugs.home" property is checked to
+	 * determine where FindBugs is installed, and the plugin files are
+	 * dynamically loaded from the plugin directory.
 	 */
-	private void loadPlugins() {
+	private  void loadPlugins() {
 		// Load all detector plugins.
 	
 		//If we are running under jaws, just use the loaded plugin
@@ -156,29 +184,7 @@ public class DetectorFactoryCollection {
 		    }
 		}
 		
-		if (pluginList == null) {
-			String homeDir = FindBugs.getHome();
-			if (homeDir == null)
-				return;
-
-			File pluginDir = new File(homeDir + File.separator + "plugin");
-			File[] contentList = pluginDir.listFiles();
-			if (contentList == null) {
-				System.err.println("Error: The path " + pluginDir.getPath() + " does not seem to be a directory!");
-				System.err.println("No FindBugs plugins could be loaded");
-				pluginList = new File[0];
-				return;
-			}
-
-			ArrayList<File> arr = new ArrayList<File>();
-			for (File aContentList : contentList) {
-				if (aContentList.getName().endsWith(".jar")) {
-					if (FindBugs.DEBUG) System.out.println("Found plugin: " + aContentList.toString());
-					arr.add(aContentList);
-				}
-			}
-			pluginList = arr.toArray(new File[arr.size()]);
-		}
+	    determinePlugins();
 
 		int numLoaded = 0;
 		for (File file : pluginList) {
@@ -212,12 +218,18 @@ public class DetectorFactoryCollection {
 				}
 
 				++numLoaded;
-			} catch (Exception e) {
+			} catch (PluginException e) {
+				System.err.println("Warning: could not load plugin " + file.getPath() + ": " + e.toString());
+				if (FindBugs.DEBUG)
+					e.printStackTrace();
+			}
+			catch (MalformedURLException e) {
 				System.err.println("Warning: could not load plugin " + file.getPath() + ": " + e.toString());
 				if (FindBugs.DEBUG)
 					e.printStackTrace();
 			}
 		}
+		
 	
 		//System.out.println("Loaded " + numLoaded + " plugins");
 	}

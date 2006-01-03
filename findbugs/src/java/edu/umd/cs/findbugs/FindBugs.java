@@ -62,7 +62,6 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.filter.FilterException;
-import edu.umd.cs.findbugs.gui.Hello;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;

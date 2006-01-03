@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -37,12 +36,10 @@ import org.apache.bcel.classfile.Synthetic;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class SerializableIdiom extends BytecodeScanningDetector
         {

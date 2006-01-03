@@ -63,7 +63,6 @@ import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
-import edu.umd.cs.findbugs.visitclass.LVTHelper;
 
 /**
  * Find dead stores to local variables.

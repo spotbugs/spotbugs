@@ -28,6 +28,7 @@ import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.StackConsumer;
+import static edu.umd.cs.findbugs.ba.Debug.*;
 
 /**
  * Generic class for representing a Java stack frame as a dataflow value.
@@ -56,7 +57,7 @@ import org.apache.bcel.generic.StackConsumer;
  * @author David Hovemeyer
  * @see FrameDataflowAnalysis
  */
-public abstract class Frame <ValueType> implements Debug {
+public abstract class Frame <ValueType>   {
 
 	////////////////////////////////////////////////////////////////////////////////////
 	// Instance variables
