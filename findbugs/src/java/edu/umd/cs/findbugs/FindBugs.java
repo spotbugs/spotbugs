@@ -1698,8 +1698,14 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	private static JavaClass parseClass(URL url) throws IOException {
 		if (DEBUG) System.out.println("About to parse " + url.toString());
-		InputStream in = url.openStream();
-		return parseFromStream(in, url.toString());
+		InputStream in = null;
+		try {
+			in = url.openStream();
+			return parseFromStream(in, url.toString());
+		} finally {
+			if (in != null)
+				in.close();
+		}
 	}
 
 	/**
