@@ -185,6 +185,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					} catch (NumberFormatException e) {
 						throw new SAXException("Bad integer value in Int");
 					}
+				} else if (qName.equals("String")) {
+						String value = getRequiredAttribute(attributes, "value", qName);
+						bugAnnotation = new StringAnnotation(value);
 				} else if (qName.equals("LocalVariable")) {
 					try {
 						String varName = getRequiredAttribute(attributes, "name", qName);
@@ -199,9 +202,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					String propName = getRequiredAttribute(attributes, "name", qName);
 					String propValue = getRequiredAttribute(attributes, "value", qName);
 					bugInstance.setProperty(propName, propValue);
-				}
+				} else throw new IllegalArgumentException("Unknown bug annotation named " + qName);
 
 				if (bugAnnotation != null) {
+					String role = attributes.getValue("role");
+					if (role != null)
+						bugAnnotation.setDescription(role);
 					setAnnotationRole(attributes, bugAnnotation);
 					bugInstance.add(bugAnnotation);
 				}
