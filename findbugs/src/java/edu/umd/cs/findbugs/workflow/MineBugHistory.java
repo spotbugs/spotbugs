@@ -116,7 +116,7 @@ public class MineBugHistory {
 		
 		AppVersion currentAppVersion = bugCollection.getCurrentAppVersion();
 		sequenceToAppVersionMap.put(
-			Long.valueOf(sequenceNumber),
+			TigerSubstitutes.valueOf(sequenceNumber),
 			currentAppVersion);
 		
 		for (Iterator<BugInstance> j = bugCollection.iterator(); j.hasNext();) {
