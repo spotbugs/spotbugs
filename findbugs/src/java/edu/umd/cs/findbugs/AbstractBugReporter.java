@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
@@ -124,7 +125,9 @@ public abstract class AbstractBugReporter implements BugReporter {
 
 			analysisUnderway = true;
 		}
-		
+		ClassAnnotation primaryClass = bugInstance.getPrimaryClass();
+		if (primaryClass != null && !AnalysisContext.currentAnalysisContext().isApplicationClass(primaryClass.getClassName()))
+				return;
 		if (bugInstance.getPriority() <= priorityThreshold || relaxed)
 			doReportBug(bugInstance);
 	}
