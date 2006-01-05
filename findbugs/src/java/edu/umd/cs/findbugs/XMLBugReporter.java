@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class XMLBugReporter extends BugCollectionBugReporter {
 	private boolean addMessages;
 	private boolean started;
+	private boolean sorted = false;
 	private XMLOutput xmlOutput;
 
 	public XMLBugReporter(Project project) {
@@ -57,7 +58,8 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 		super.doReportBug(bugInstance);
 		
 		// Write it to output
-		try {
+		if (!sorted) 
+			try {
 			getReady();
 			bugInstance.writeXML(xmlOutput, addMessages);
 		} catch (IOException e) {
@@ -76,7 +78,10 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 	public void finish() {
 		try {
 			getReady(); // If no warnings were issued, then nothing has been written yet
-
+			if (sorted) {
+				for(BugInstance bugInstance : getBugCollection().getCollection())
+					bugInstance.writeXML(xmlOutput, addMessages);
+			}
 			if (addMessages) {
 				writeBugCategories();
 				writeBugPatterns();
