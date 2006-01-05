@@ -31,8 +31,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -50,7 +51,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  */
 public class ProjectStats implements XMLWriteable, Cloneable {
 	private static final String TIMESTAMP_FORMAT = "EEE, d MMM yyyy HH:mm:ss Z";
-	private HashMap<String, PackageStats> packageStatsMap;
+	private SortedMap<String, PackageStats> packageStatsMap;
 	private int[] totalErrors = new int[] { 0, 0, 0, 0, 0 };
 	private int totalClasses;
 	private int totalSize;
@@ -60,7 +61,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 * Constructor. Creates an empty object.
 	 */
 	public ProjectStats() {
-		this.packageStatsMap = new HashMap<String, PackageStats>();
+		this.packageStatsMap = new TreeMap<String, PackageStats>();
 		this.totalClasses = 0;
 		this.timestamp = new Date();
 	}
