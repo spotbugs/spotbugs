@@ -558,9 +558,6 @@
 			<fileset dir="${scripts.dir}" includes="*" excludes="findbugs.bat"/>
 		</delete>
 		<delete dir="build"/>
-		<delete>
-			<fileset dir="${test.dir}" includes="**/*.class,*.jar"/>
-		</delete>
 		<delete dir="${doc.dir}"/>
 		<delete dir="${web.dir}"/>
 		<delete file="${engine.jar}"/>
