@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashSet;
@@ -96,7 +97,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 			bugCollection.readXML(System.in, new Project());
 		
 		if (argCount < args.length)
-			reporter.setOutputStream(new PrintStream(args[argCount++]));
+			reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));
 		
 		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
 			BugInstance warning = i.next();

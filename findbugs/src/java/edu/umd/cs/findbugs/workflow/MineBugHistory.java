@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.workflow;
 
+import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.HashMap;
@@ -219,8 +220,9 @@ public class MineBugHistory {
 		PrintStream out = System.out;
 		
 		try {
-		if (argCount < args.length)  
-			out = new PrintStream(args[argCount++]);
+		if (argCount < args.length)  {
+			out = new PrintStream(new FileOutputStream(args[argCount++]), true);
+			}
 		mineBugHistory.dump(out);
 		} finally {
 		out.close();
