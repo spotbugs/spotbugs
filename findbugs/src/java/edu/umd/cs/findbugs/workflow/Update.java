@@ -29,6 +29,7 @@ import java.util.TreeMap;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.AppVersion;
+import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -84,13 +85,13 @@ public class Update {
 				if (optionExtraPart.length() == 0)
 					overrideRevisionNames = true;
 				else
-					overrideRevisionNames = Boolean.parseBoolean(optionExtraPart);
+					overrideRevisionNames = TigerSubstitutes.parseBoolean(optionExtraPart);
 			}
 			else if (option.equals("-noPackageMoves")) {
 				if (optionExtraPart.length() == 0)
 					noPackageMoves = true;
 				else
-					noPackageMoves = Boolean.parseBoolean(optionExtraPart);
+					noPackageMoves = TigerSubstitutes.parseBoolean(optionExtraPart);
 			}
 			else 	if (option.equals("-precisePriorityMatch")) 
 				versionInsensitiveBugComparator.setComparePriorities(true);
@@ -356,14 +357,14 @@ public class Update {
 					q = new LinkedList<BugInstance>();
 					set.put(bug, q);
 				}
-				q.offer(bug);
+				q.add(bug);
 			}
 		for (BugInstance bug : newCollection.getCollection()) if (!mapFromNewToOldBug.containsKey(bug)) {
 			newBugs++;
 			LinkedList<BugInstance> q = set.get(bug);
 			if (q != null && !q.isEmpty()) {
 				matchedBugs++;
-				BugInstance matchedBug = q.remove();
+				BugInstance matchedBug = q.removeFirst();
 				mapFromNewToOldBug.put(bug, matchedBug);
 				matchedOldBugs.add(matchedBug);
 			}

@@ -134,11 +134,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					
 					String introducedByChange = attributes.getValue("introducedByChange");
 					if (introducedByChange != null) {
-						bugInstance.setIntroducedByChangeOfExistingClass(Boolean.parseBoolean(introducedByChange));
+						bugInstance.setIntroducedByChangeOfExistingClass(TigerSubstitutes.parseBoolean(introducedByChange));
 					}
 					String removedByChange = attributes.getValue("removedByChange");
 					if (removedByChange != null) {
-						bugInstance.setRemovedByChangeOfPersistingClass(Boolean.parseBoolean(removedByChange));
+						bugInstance.setRemovedByChangeOfPersistingClass(TigerSubstitutes.parseBoolean(removedByChange));
 					}
 					
 					

@@ -116,7 +116,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			if (catchSize <= 1) priority+=2;
 			else if (catchSize <= 2) priority += 1;
 			if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen) 
-					&& !callSeen.getSignature().endsWith(callSeen.getClassName().replace(".","/")+";")) priority++;
+					&& !callSeen.getSignature().endsWith(callSeen.getClassName().replace('.','/')+";")) priority++;
 			BugInstance warning =
 				new BugInstance(this, "RV_RETURN_VALUE_IGNORED", priority)
 					.addClassAndMethod(this)

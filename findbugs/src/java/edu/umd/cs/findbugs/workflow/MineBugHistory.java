@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
@@ -110,7 +111,7 @@ public class MineBugHistory {
 		for (Iterator<AppVersion> i = bugCollection.appVersionIterator(); i.hasNext();) {
 			AppVersion appVersion = i.next();
 			long versionSequenceNumber = appVersion.getSequenceNumber();
-			sequenceToAppVersionMap.put(Long.valueOf(versionSequenceNumber), appVersion);
+			sequenceToAppVersionMap.put(TigerSubstitutes.valueOf(versionSequenceNumber), appVersion);
 		}
 		
 		AppVersion currentAppVersion = bugCollection.getCurrentAppVersion();

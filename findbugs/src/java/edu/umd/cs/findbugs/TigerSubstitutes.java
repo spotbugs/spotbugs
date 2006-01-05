@@ -19,22 +19,20 @@
 
 package edu.umd.cs.findbugs;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
- * use to mark classes than cannot be effectively compiled using target=jsr14
- * (e.g., classes that use enums).
+ * This class provides substitutes for 1.5 methods that we don't want to depend upon in
+ * FindBugs.
  * 
- * @author pugh
  */
-@Documented
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.CLASS)
-public @interface RequiresJavaVersion {
-	String value() default "1.5";
-
+public class TigerSubstitutes {
+	public static boolean parseBoolean(String s) {
+		// return Boolean.parseBoolean(s);
+		return new Boolean(s).booleanValue();
+	}
+	public static Long valueOf(long value) {
+		// return Long.valueOf(value);
+		return  new Long(value);
+	}
+	
 }
