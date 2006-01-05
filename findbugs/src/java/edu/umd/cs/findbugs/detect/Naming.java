@@ -219,7 +219,9 @@ public class Naming extends PreorderVisitor implements Detector {
 			&& !Character.isLowerCase(getFieldName().charAt(0))
 			&& getFieldName().indexOf("_") == -1
 			&& Character.isLetter(getFieldName().charAt(1))
-			&& Character.isLowerCase(getFieldName().charAt(1)))
+			&& Character.isLowerCase(getFieldName().charAt(1))) {
+			if (getClassName().indexOf("EUC_TW") >= 0) 
+				System.out.println("Found iut");
 			bugReporter.reportBug(new BugInstance(this, 
 				"NM_FIELD_NAMING_CONVENTION", 
 				classIsPublicOrProtected 
@@ -229,6 +231,7 @@ public class Naming extends PreorderVisitor implements Detector {
 			        .addClass(this)
 			        .addVisitedField(this)
 				);
+		}
 		}
 	private static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
 	public void visit(Method obj) {
@@ -311,9 +314,8 @@ public class Naming extends PreorderVisitor implements Detector {
 
 	private static String removePackageNamesFromSignature(String sig) {
 		int end = sig.indexOf(")");
-		Matcher m = sigType.matcher(sig);
-		m.region(0,end);
-		return m.replaceAll("L$2");
+		Matcher m = sigType.matcher(sig.substring(0,end));
+		return m.replaceAll("L$2") + sig.substring(end);
 	}
 
 
