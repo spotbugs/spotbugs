@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class XMLBugReporter extends BugCollectionBugReporter {
 	private boolean addMessages;
 	private boolean started;
-	private boolean sorted = false;
+	private boolean sorted = true;
 	private XMLOutput xmlOutput;
 
 	public XMLBugReporter(Project project) {
