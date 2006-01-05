@@ -1714,29 +1714,25 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * matter what.
 	 */
 	private static JavaClass parseFromStream(InputStream in, String fileName) throws IOException {
-		boolean parsed = false;
 		try {
-			JavaClass jclass = new ClassParser(in, fileName).parse();
-			parsed = true;
-			return jclass;
+			return new ClassParser(in, fileName).parse();
 		} finally {
-			if (!parsed) {
-				// BCEL does not close the input stream unless
-				// parsing was successful.
-				try {
-					in.close();
-				} catch (IOException ignore) {
-					// Ignore
-				}
+			try {
+				in.close();
+			} catch (IOException ignore) {
+				// Ignore
 			}
 		}
 	}
+	
 
 	/**
 	 * Process -bugCategories option.
 	 * 
-	 * @param userPreferences UserPreferences representing which Detectors are enabled
-	 * @param categories      comma-separated list of bug categories
+	 * @param userPreferences
+	 *            UserPreferences representing which Detectors are enabled
+	 * @param categories
+	 *            comma-separated list of bug categories
 	 * @return Set of categories to be used
 	 */
 	private static Set<String> handleBugCategories(UserPreferences userPreferences, String categories) {
