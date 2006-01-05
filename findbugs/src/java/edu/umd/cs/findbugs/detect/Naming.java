@@ -220,8 +220,6 @@ public class Naming extends PreorderVisitor implements Detector {
 			&& getFieldName().indexOf("_") == -1
 			&& Character.isLetter(getFieldName().charAt(1))
 			&& Character.isLowerCase(getFieldName().charAt(1))) {
-			if (getClassName().indexOf("EUC_TW") >= 0) 
-				System.out.println("Found iut");
 			bugReporter.reportBug(new BugInstance(this, 
 				"NM_FIELD_NAMING_CONVENTION", 
 				classIsPublicOrProtected 
