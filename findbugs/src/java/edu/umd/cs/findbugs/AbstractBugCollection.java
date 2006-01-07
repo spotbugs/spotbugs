@@ -251,8 +251,14 @@ public abstract class AbstractBugCollection implements BugCollection {
 	 */
 	public void readXML(String fileName, Project project)
 	        throws IOException, DocumentException {
+		try {
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileName));
 		readXML(in, project);
+		} catch (IOException e) {
+			IOException e2 = new IOException("Error reading " + fileName + ": " + e.getMessage());
+			e2.setStackTrace(e.getStackTrace());
+			throw e2;
+		}
 	}
 
 	/**
@@ -280,9 +286,9 @@ public abstract class AbstractBugCollection implements BugCollection {
 	public void readXML(InputStream in, Project project)
 	        throws IOException, DocumentException {
 		if (in == null) throw new IllegalArgumentException();
-		if (project == null) throw new IllegalArgumentException();
-
+		
 		try {
+			if (project == null) throw new IllegalArgumentException();
 			doReadXML(in, project);
 		} finally {
 			in.close();
