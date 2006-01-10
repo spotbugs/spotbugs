@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -51,6 +52,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 //	private ClassHash classHash;
 	private ClassFeatureSet classFeatureSet;
 	private ArrayList<String> stackTrace;
+	private int nestingOfIgnoredElements = 0;
 
 	public SAXBugCollectionHandler(BugCollection bugCollection, Project project) {
 		this.bugCollection = bugCollection;
@@ -66,13 +68,24 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 	public void endDocument() {
 	}
+	
+	Pattern ignoredElement = Pattern.compile("Message|ShortMessage|LongMessage|BugCategory|BugPattern|BugCode");
+	
+	public boolean discardedElement(String qName) {
+		return ignoredElement.matcher(qName).matches();
+		
+	}
 
 	public void startElement(String uri, String name, String qName, Attributes attributes)
 		throws SAXException {
 		// URI should always be empty.
 		// So, qName is the name of the element.
 
-		if (elementStack.isEmpty()) {
+		if (discardedElement(qName)) {
+			nestingOfIgnoredElements++;
+		} else if (nestingOfIgnoredElements > 0) {
+			// ignore it
+		} else if (elementStack.isEmpty()) {
 			// We should be parsing the outer BugCollection element.
 			if (!qName.equals("BugCollection"))
 				throw new SAXException(
@@ -202,7 +215,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					String propName = getRequiredAttribute(attributes, "name", qName);
 					String propValue = getRequiredAttribute(attributes, "value", qName);
 					bugInstance.setProperty(propName, propValue);
-				} else throw new IllegalArgumentException("Unknown bug annotation named " + qName);
+				} else throw new SAXException("Unknown bug annotation named " + qName);
 
 				if (bugAnnotation != null) {
 					String role = attributes.getValue("role");
@@ -361,7 +374,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		// URI should always be empty.
 		// So, qName is the name of the element.
 
-		if (elementStack.size() > 1) {
+		if (discardedElement(qName)) {
+			nestingOfIgnoredElements--;
+		} else if (nestingOfIgnoredElements > 0) {
+			// ignore it
+		} else if (elementStack.size() > 1) {
 			String outerElement = elementStack.get(elementStack.size() - 2);
 
 			if (outerElement.equals("BugCollection")) {
