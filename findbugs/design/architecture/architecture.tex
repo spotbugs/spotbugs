@@ -1,6 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{fullpage}
 \usepackage{graphicx}
+\usepackage{url}
 
 \title{The Architecture of FindBugs}
 \author{David Hovemeyer}
@@ -20,10 +21,17 @@
 }
 
 \newcommand{\Indent}{\hskip .25in}
+\newcommand{\ForEach}{{\bf for each}}
+\newcommand{\Do}{{\bf do}}
+\newcommand{\If}{{\bf if}}
+\newcommand{\Then}{{\bf then}}
+\newcommand{\EndFor}{{\bf end for}}
+\newcommand{\EndIf}{{\bf end if}}
 
 \begin{document}
 
 \maketitle
+\tableofcontents
 
 \section*{Introduction}
 
@@ -34,7 +42,7 @@ the tool works and how to extend its capabilities.
 This information is accurate as of FindBugs version 0.9.4.
 The document revision is
 \begin{quote}
-\verb+$Revision: 1.2 $+
+\verb+$Revision: 1.3 $+
 \end{quote}
 
 Note that FindBugs has fairly complete javadoc API documentation.
@@ -180,9 +188,11 @@ Thus, all application classes are in memory during the entire analysis.
 \Note{
 The BCEL Repository is implemented using static fields and static methods.
 This makes FindBugs non-reentrant, so it is not possible to create two
-FindBugs objects and perform two separate analyses at the same time.
-Unfortunately, BCEL uses the static Repository extensively, so really the
-only long-term solution to this problem is to drop BCEL.
+FindBugs objects and perform two separate analysis sessions at the same time.
+Unfortunately, BCEL uses the static Repository extensively in its
+internal implementation, meaning that the Repository is very tightly coupled
+with the rest of of BCEL.
+The only long-term solution to this problem is to drop BCEL.
 (Which we should do anyway.)
 }
 
@@ -206,14 +216,14 @@ explicitly specify referenced classes.
 
 \begin{figure}
 \begin{tabbing}
-{\bf for each} analysis pass in the execution plan {\bf do} \\
-\Indent \= {\bf for each} application class {\bf do} \\
-        \> \Indent \= {\bf for each} detector in the analysis pass {\bf do} \\
-        \>         \>         \= create a ClassContext for the class\\
-        \>         \> \Indent \> apply the detector to the ClassContext\\
-        \>         \> {\bf end for} \\
-        \>  {\bf end for} \\
-{\bf end for}
+\ForEach\  analysis pass in the execution plan \Do \\
+\Indent \= \ForEach\  application class \Do \\
+        \> \Indent \= \ForEach\  detector in the analysis pass \Do \\
+        \>         \> \Indent \= create a ClassContext for the class\\
+        \>         \>         \> apply the detector to the ClassContext\\
+        \>         \> \EndFor \\
+        \>  \EndFor \\
+\EndFor
 \end{tabbing}
 \caption{Performing the analysis using the execution plan.}\label{fig:performingTheAnalysis}
 \end{figure}
@@ -222,19 +232,362 @@ Once the execution plan is in place and all of the application classes have been
 we're ready to perform the analysis.  This is done more or less according to the
 pseudo-code shown in Figure~\ref{fig:performingTheAnalysis}.
 
-Each bug detector is an object implementing the BugDetector interface,
+Each bug detector is an object implementing the Detector interface,
 which specifies a visitClassContext() method.  This method takes
 an instance of ClassContext created from the analyzed class.  The ClassContext serves
 as a cache for analysis results from a single class, because many
 kinds of analysis (such as type inference) are used by many detectors.
 By performing an analysis only once and then sharing it among multiple
 detectors, we decrease CPU time (at the cost of increasing memory use).
+(ClassContext is described in more detail in Section~\ref{sec:bytecodeAnalysisPackage}.)
 
 \subsubsection{Finishing Up}
 
 After all analysis passes have executed, we call finish() and
 reportQueuedErrors() on the BugReporter, and then clear the BCEL Repository
 (since we no longer need to access classes contained therein).
+
+\section{Bug Detectors}
+
+This section presents a high-level overview of bug detectors and
+how they work.  The bug detectors implemented in FindBugs can be divided into
+two basic categories: visitor-based and CFG-based.  Ultimately, FindBugs
+does not place any constraints on how bug detectors are implemented:
+any analysis technique that works can and should be used.  However,
+the visitor-based detectors tend to be used for simpler ``peephole''
+analyses, and the CFG-based detectors tend to be used for more
+complex analyses, especially ones that use the dataflow analysis
+framework.
+
+Ultimately, the task of a bug detector is very straightforward:
+look at a single classfile and find potential bugs in it.
+Potential bugs are reported by creating a warning object (instance
+of the BugInstance class), decorating it with information about
+the context of the warning and the reasons for reporting it,
+and then reporting it via the BugReporter object.
+
+All of the ``core'' bug detectors---those that we include with FindBugs
+and are enabled by default---live in the edu.umd.cs.findbugs.detect
+package.  However, FindBugs has a plugin architecture that allows users
+to create their own detectors and use them without modifying FindBugs.
+By dropping a FindBugs plugin (which is just a jar file with an XML descriptor,
+message translation files, and detector classes) in the
+{\tt plugin} directory of a FindBugs installation, new detectors can
+easily be added.  For example, FindBugs core team member Dave Brosius maintains
+the fb-contrib project (\url{fb-contrib.sourceforge.net}), which
+provides additional bug detectors.
+
+\subsection{Visitor-Based Detectors}
+
+The visitor-based detectors are generally subclasses of BytecodeScanningVisitor,
+which itself is a subclass of DismantleBytecode.  The base classes perform
+a top-down traversal of the features of the classfile, decoding all
+of the symbolic information.  When a feature of the classfile is encountered,
+such as a field, method, instruction, and so forth, a callback method is
+invoked.  By overriding these callback methods, a visitor-based detector
+can inspect the classfile looking for suspicious features that may
+indicate bugs.  For example, the FindUnconditionalWait detector looks for
+methods containing a {\tt monitorenter} instruction followed by an {\tt invokevirtual}
+instruction that invokes {\tt Object.wait()}.
+
+One important idiom used in visitor-based detectors is a state machine
+recognizer over the sequence of instructions in a method.
+Each invocation of {\tt sawOpcode()}, which is the callback method
+that handles individual instructions, is a single input symbol to
+the state machine.  The overall state machine is essentially a finite-state
+automaton that accepts some regular language, where the language is a
+pattern that, if it appears in the bytecode for a method, indicates
+a probable bug.  In other words, if the string of input symbols (instructions)
+causes the state machine to accept the string, then a warning is issued.
+Even though this kind of analysis is very simple,
+especially in its simplistic treatment of control flow, detectors implemented
+this way can be surprisingly effective for many kinds of bugs.
+
+In addition to being simple and concise, visitor-based detectors
+tend to be {\em much} faster than the CFG-based detectors.  Back when FindBugs
+used visitor-based detectors exclusively, it was possible to analyze a large
+jar file such as {\tt rt.jar} in several seconds.
+
+A recent improvement to the visitor-based detectors is the OpcodeStack
+class, which attempts to maintain information about the operand stack as
+each instruction in a method is visited.  However, it does this in a fairly
+ad-hoc way.  In the future we may implement something more sophisticated
+to take the place of OpcodeStack.  (For example, we could use the existing
+dataflow analyses to populate the operand stack contents, providing a bridge
+from the visitor-based detectors to the more sophisticated CFG-based
+analyses.)
+
+\subsection{CFG-Based Detectors}
+
+CFG stands for ``Control Flow Graph''.  The CFG-based detectors use a
+CFG representation of Java methods to perform somewhat more sophisticated
+analysis than the visitor-based detectors.  In particular, FindBugs
+implements many kinds of dataflow analysis that can be used in CFG-based
+bug detectors.
+
+Unlike the visitor-based detectors, which generally inherit from
+BytecodeScanningVisitor,
+CFG-based detectors generally just implement the Detector interface
+directly.
+
+\begin{figure}
+\begin{tabbing}
+\ForEach\ method in the class \Do\\
+\Indent \= request a CFG for the method from the ClassContext \\
+        \> request one or more analysis objects on the method from the ClassContext \\
+        \> \ForEach\ location in the method \Do \\
+        \> \Indent \= get the the dataflow facts at the location \\
+        \>         \> inspect the dataflow facts \\
+        \>         \> \If\ a dataflow fact indicates an error \Then \\
+        \>         \> \Indent \= report a warning \\
+        \>         \> \EndIf \\
+        \> \EndFor \\
+\EndFor
+\end{tabbing}
+\caption{Pseudo-code for a CFG-based detector.}\label{fig:cfgBasedDetector}
+\end{figure}
+
+Figure~\ref{fig:cfgBasedDetector} shows the pseudo-code for the
+visitClassContext() method of a CFG-based detector.
+The basic idea is to visit each method of an analyzed class in turn,
+requesting some number of analysis objects.  An analysis object
+is simply the end product of some analysis: it records facts 
+(or probable facts) about the method based on some form of program
+analysis, usually dataflow analysis.
+After getting the required analyses, the detector iterates through
+each location in the control flow graph.  A location is
+the point in execution just before a particular instruction is executed
+(or after the instruction, for backwards analyses).  Locations are not quite synonymous
+with instructions because of {\tt jsr} subroutines---more on those
+in Section~\ref{sec:bytecodeAnalysisPackage}.  At each location,
+the detector checks the dataflow facts to see if anything suspicious is
+going on.  For example, the null dereference detector uses a null value
+dataflow analysis to see if any instructions that have a runtime null
+check are used on a value that is either definitely null, or is null
+on a path that through the CFG that is likely to be feasible.
+If suspicious facts are detected at a location, then the detector issues a warning.
+
+CFG-based detectors are useful for any kind of analysis that can be
+defined as a forward or backward dataflow problem.  Unfortunately,
+they tend to be far slower than the visitor-based detectors, but hey,
+computers are fast.\footnote{I am not sure if we know exactly why the
+CFG-based detectors are so much slower.  They do require BCEL to create
+heavier-weight representations of the class, methods, and instructions,
+which takes up time and memory.  Constructing the CFG and performing the
+dataflow analyses takes additional time.  I suspect that at least a 2x or 3x
+speedup is possible.}
+
+\section{The Bytecode Analysis (BA) Package}\label{sec:bytecodeAnalysisPackage}
+
+The edu.umd.cs.findbugs.ba package is the ``bytecode analysis'' package
+(hereafter referred to as the ``BA package''),
+and is intended to be a generic library of classes for doing static analysis
+of Java classes.  As such, the classes defined in this package (and subpackages)
+should not refer to any of the ``bug-finding'' classes, such as the
+FindBugs warning object model or detector classes.  References to BCEL
+and the FindBugs generic graph library are necessary and permitted.
+
+\Note{
+Although parts of the bytecode analysis package, such as the CFG builder,
+might be useful in other contexts, most of the analyses implemented in
+the BA package are probably not that useful in other contexts.
+In particular, no analysis used in FindBugs is designed to be {\em sound},
+meaning that it deduces only facts that are true.  Many, many liberties are
+taken by the analyses implemented in the BA package: while useful for
+finding probable bugs, you wouldn't want to use these analyses in a compiler
+or in a program verifier for safety critical systems.
+}
+
+\Note{
+Until recently the BA package was a single flat Java package.  Due to
+the large number of classes, we have started to organize it into subpackages.
+This work is still ongoing.  Also, you may find that there are some unused
+or experimental subpackages, such as the ``type2'' subpackage.
+}
+
+\subsection{AnalysisContext and ClassContext}
+
+The AnalysisContext and ClassContext classes described earlier are part
+of the BA package.  An AnalysisContext object is first created,
+and its repository populated with classes to analyze (as well as
+the codebases of referenced classes).  Analyses may be performed
+on a particular class by submitting the JavaClass representing the
+class to the AnalysisContext, getting back the ClassContext for the
+class, and then requesting particular analyses directly from the
+ClassContext.
+
+Initially, a ClassContext has only a reference to the JavaClass object.
+Particular analyses are performed on demand and then cached.  A few of
+the analyses, such as the AssignedFieldMap, are global to the class
+as a whole, and are obtained via a no-argument method.  Most of the
+analyses, however, are performed on methods individually, and are obtained
+via methods that take a BCEL Method object as a parameter.  In any case,
+whenever an analysis is requested from the ClassContext a cache is first checked.
+If the analysis has already been performed, the cached version is returned.
+Otherwise, the analysis is performed, added to the cache, and returned.
+
+Almost all methods that request an analysis can throw both CFGBuilderException
+and DataflowAnalysisException.  Therefore, detectors using the BA package will generally need to
+be able to handle these exceptions.  A typical strategy is to surround the
+handling of each method in a detector with a try/catch that catches these exceptions and
+reports them to the BugReporter if they occur.  Even if an exception occurs
+in the checking of a single method, the detector should generally continue
+with the other methods in the analyzed class.
+
+\subsection{Control Flow Graphs}
+
+The Control Flow Graph implementation consists of the CFG, BasicBlock, Edge,
+and BetterCFGBuilder2\footnote{This class was preceeded by the
+SimpleCFGBuilder and BetterCFGBuilder classes.  Constructing a CFG from
+Java bytecode is surprisingly difficult.  BetterCFGBuilder2 has proven
+to be very robust, so further evolution will probably not be needed.} classes.
+
+CFG, BasicBlock, and Edge are a very this layer on top of the BCEL MethodGen,
+InstructionHandle, and Instruction classes.  FindBugs uses BCEL InstructionHandle
+objects to represent single instructions.  Thus, if you ask a BasicBlock
+for the instructions it contains, it will give you back InstructionHandle
+objects.
+
+BetterCFGBuilder2 takes a MethodGen and uses it to construct a CFG object.
+This process is complicated by the fact that Java methods may use
+the {\tt jsr} instruction, usually the result of a try/finally construct.
+Code reachable from a {\tt jsr} instruction is known as a ``jsr subroutine''.
+FindBugs handles jsr subroutines by simply inlining them into the control flow graph.
+Because they are guaranteed not to be recursive, this process is guaranteed to
+terminate for any valid Java method.
+
+Because of jsr subroutines, an individual bytecode instruction (InstructionHandle) may appear
+multiple times in the CFG, once for each expansion of the subroutine it appears in.
+This is the reason for the Location class: a Location is a BasicBlock, InstructionHandle
+pair.  All dataflow analyses use Location objects as a key to retrieve computed
+analysis facts.  The CFG class has a locationIterator() method that returns an
+Iterator over all defined locations in a CFG.
+
+Another subtlety of FindBugs CFGs is how exception control flow is
+represented.  Generally, any instruction that can throw an exception is
+preceeded by an Exception Throwing Block (ETB).  The exception control
+edge coming from an ETB represents what will happen if the exception occurs:
+either transferring control to an exception handler, or throwing it out
+of the method.  The fall-through edge coming from the ETB represents
+what will happen if no exception occurs.  One surprising feature of
+ETB blocks is that they appear to be empty: that is, they contain no
+actual instruction.  Instead, they represent an implicit ``conditionally throw an
+exception'' instruction: for example, a null check.  ETBs may be
+identified by calling the isExceptionThrower() method on a BasicBlock.
+
+Initially, a FindBugs CFG will assume that any ETB can transfer control
+to any exception handler in the method.  This conservative assumption results
+from the fact that, during CFG construction, we don't really know what
+methods are being called, and what exceptions those methods can throw.
+A CFG with conservative exception edges is a ``raw'' CFG---you can see
+some evidence of raw CFGs in ClassContext, and a few other places.
+To the extent possible, ClassContext tries to convert raw CFGs into 
+``pruned'' CFGs by removing obviously infeasible exception edges.
+The more accurate the exception edges, the more accurate analyses that
+use CFGs can be.
+
+\subsection{Dataflow Analysis}
+
+FindBugs implements a very generic dataflow analysis framework.
+It is generic in the sense that any kind of object can be used as
+a dataflow fact, and also in the sense that type parameters are used
+whereever appropriate.  Thus, adding a new kind of dataflow analysis
+to FindBugs tends to be a fairly simple exercise.
+
+This section will briefly discuss the generic parts of the dataflow framework,
+and also discuss some of the most important concrete dataflow analysis
+classes.
+
+\subsubsection{Dataflow and DataflowAnalysis}
+
+The DataflowAnalysis interface is the supertype for all concrete dataflow
+analysis classes.  It defines methods for creating and manipulating dataflow
+facts.  The Dataflow class implements the actual dataflow analysis algorithm
+using a CFG and an instance of DataflowAnalysis.
+
+AbstractDataflowAnalysis is an abstract class implementing DataflowAnalysis,
+and providing implementations of some of its methods.  In addition,
+AbstractDataflowAnalysis defines the notion of implementing the dataflow transfer
+function at the level of individual instructions rather than complete basic
+blocks, and automatically implements a cache of analysis facts at each
+CFG location.  Most dataflow analyses will want to inherit from
+AbstractDataflowAnalysis.  However, there are some exceptions.
+For example, DominatorsAnalysis is a dataflow analysis where the transfer
+function makes sense only at the level of complete basic blocks:
+individual instructions have no effect on dataflow facts.
+
+ForwardDataflowAnalysis and BackwardDataflowAnalysis, as their names suggest,
+are generic base classes for forward and backward dataflow analyses.
+Both of these classes inherit from AbstractDataflowAnalysis.
+So, when defining a new dataflow analysis class, inheriting from one of these
+classes is a reasonable choice.  The StackDepthAnalysis class is a very good
+example of how to implement a forward dataflow analysis in FindBugs.
+It uses the StackDepth class to represent dataflow facts, and computes the
+depth of the Java operand stack at each location in the analyzed CFG.
+
+\subsubsection{Frame, FrameDataflowAnalysis, and AbstractFrameModelingVisitor}
+
+In many dataflow analyses, we want to know something about the
+values of local variables and stack operands.  The Frame class represents
+the Java stack frame at a single CFG location.  Frame is parameterized
+with the type of the values stored in the locals and stack locations;
+generally, you should inherit from Frame to create a Frame subtype that
+is specific to your analysis.  For example, IsNullValueFrame is a frame
+subtype where the locals and stack operands are of type IsNullValue,
+and is used (no surprise) by IsNullValueAnalysis.
+
+FrameDataflowAnalysis is a convenient abstract base class for dataflow analysis
+classes that will use Frames as dataflow facts.  Its specific purpose is
+to allow the dataflow merge function to be specified on individual values
+rather than entire frames.
+
+AbstractFrameModelingVisitor is a useful base class for defining a visitor
+that models the effect of bytecode instructions on a Frame of values.
+Using the notion of a ``default'' dataflow value, it provides generic implementations
+for all Java bytecode instructions.  You can then simply override the
+instruction-visiting methods that are actually important for the particular
+analysis.
+
+\subsubsection{Using the Results of a Dataflow Analysis}
+
+The most convenient way to access and use the results of applying
+a particular dataflow analysis to a method is to get a reference to the
+Dataflow object that was used to perform an analysis.  For example,
+to get the results of applying IsNullValueAnalysis, get a reference to
+the IsNullValueDataflow object that executed the analysis.  (You can get
+this object directly from the ClassContext using the
+getIsNullValueDataflow, passing the Method object you want to analyze.)
+
+All Dataflow subclasses support the methods getStartFact() and getResultFact(),
+which get the dataflow fact before or after a particular basic block, respectively.
+Most Dataflow subclasses also support methods called getFactAtLocation() and
+getFactAfterLocation(), which return the dataflow fact immediately before
+or after a particular Location in the CFG.
+
+\subsubsection{TypeAnalysis and TypeDataflow}
+
+One of the most important dataflow analyses in FindBugs is TypeAnalysis/TypeDataflow.
+This frame-based analysis performs type inference on a Java method, computing
+types for all local variables and stack operands.
+
+The dataflow merge in this analysis computes the least upper bound
+of the merged values in the {\em class} inheritance hierarchy.
+Note that the least upper bound for superinterfaces of two types
+is not guaranteed to yield a unique result in Java, due to multiple inheritance
+of interfaces.  Therefore, TypeAnalysis in FindBugs uses the same recourse
+as the JVM verifier, which is to consider only superclasses.
+One consequence of this limitation is that the type of a receiver object in an
+{\tt invokeinterface} instruction is often only known as java.lang.Object,
+because dataflow merges tend to lose information about implemented interfaces.
+
+\Note{
+In the long term, it would be nice to have type information that was based on
+{\em sets} of types.
+}
+
+\subsection{Class Hierarchy Queries}
+
+\section{The Warning Object Model}
 
 
 \end{document}
