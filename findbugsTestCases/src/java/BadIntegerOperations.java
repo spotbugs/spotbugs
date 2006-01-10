@@ -36,6 +36,14 @@ class BadIntegerOperations {
 		return a[r.nextInt() % a.length];
 	}
 
+
+	public void operationsOnBooleanArrays(String[] args)
+	{
+	final boolean[] values = { false };
+	values[0] |= (args.length > 0);
+	}
+
+
 	public BadIntegerOperations() {
 	}
 }
