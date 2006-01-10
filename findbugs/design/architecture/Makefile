@@ -7,6 +7,9 @@ PDFS = $(TEX_SRCS:.tex=.pdf)
 
 all : $(PDFS)
 
+clean :
+	rm -f *.aux *.log
+
 depend :
 	./mkdep.pl $(TEX_SRCS) > depend.mak
 
