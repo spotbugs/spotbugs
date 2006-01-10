@@ -1,10 +1,25 @@
-\documentclass{article}
+\documentclass[11pt]{article}
 \usepackage{fullpage}
 \usepackage{graphicx}
 
 \title{The Architecture of FindBugs}
 \author{David Hovemeyer}
 \date{}
+
+\newcommand{\Note}[1]{
+\begin{quote}
+\fbox{
+\parbox{.5in}{
+\includegraphics[width=.4in]{attention}
+}
+\parbox{5in}{
+{\bf Note}: #1
+}
+}
+\end{quote}
+}
+
+\newcommand{\Indent}{\hskip .25in}
 
 \begin{document}
 
@@ -17,7 +32,10 @@ of FindBugs.  It should be helpful for anyone trying to understand how
 the tool works and how to extend its capabilities.
 
 This information is accurate as of FindBugs version 0.9.4.
-The document revision is \verb+$Revision: 1.1 $+.
+The document revision is
+\begin{quote}
+\verb+$Revision: 1.2 $+
+\end{quote}
 
 Note that FindBugs has fairly complete javadoc API documentation.
 The {\tt apiJavadoc} target in the Ant build.xml file will generate
@@ -78,6 +96,8 @@ to organize many of these parameters into a single object.
 Once the FindBugs object has been created and configured, the execute() method
 starts the analysis.
 
+\subsubsection{The Analysis Context}
+
 First, an AnalysisContext object is created.  This object is the repository for
 all global information pertaining to the current analysis session.
 Examples of information stored in the analysis context:
@@ -98,6 +118,124 @@ whole-program analysis.  Most FindBugs analysis is local: but as deeper
 analysis is implemented in FindBugs (e.g., interprocedural analysis,
 whole-program call graph construction, etc.), this functionality should
 be available from the AnalysisContext.
+
+Originally, the reference to the AnalysisContext object was explicitlyJennifer Polack <polack@umw.edu>
+
+passed to all bug detector objects using a setAnalysisContext() method.
+More recently, the AnalysisContext is stored in an InheritableThreadLocal, and is accessible
+from a static method, AnalysisContext.currentAnalysisContext().
+
+Once the AnalysisContext has been created, the ``analysis features'' are configured.
+Analysis features are configuration properties stored in the AnalysisContext that
+affect how the analysis is performed.
+
+\subsubsection{Analysis Features and Training Databases}
+
+Around the same time as configuration of analysis features, training
+databases are created and configured.  A training database records analysis facts
+pertaining to a particular method or field, and allow information collected
+in one analysis run to be re-used in a later run.  For example, methods that
+unconditionally dereference method parameters can be recorded in one run,
+and loaded in a later run.  Any time a null value is passed for an unconditionally
+dereferenced parameter, FindBugs can issue a warning about a possible null pointer
+dereference.  Training databases are thus a simple way to do limited interprocedural
+analysis.
+
+\subsubsection{Execution Plan}
+
+The next main task of the execute() method is to create an execution plan.
+FindBugs has recently acquired the ability to define ordering constraints
+among bug detectors, including the ability to specify that a detector must
+run in an earlier or later pass than another detector.
+The execution plan explicitly organizes bug detectors into passes,
+and orders the execution of detectors within passes.
+Analysis passes can be used in much the same way as training databases:
+information about methods and fields is collected in the first pass,
+and then used in the second pass.  The advantage over training databases
+is that both passes run in the context of a single
+invocation of FindBugs.
+It is also sometimes useful to specify that within a single analysis pass,
+one detector runs before another.  With a single pass, each analyzed class
+is considered (in no particular order).  The detectors in the pass are
+applied to the class in order.  Therefore, by specifying an ordering
+constraint between two detectors, the earlier detector can collect information
+on the class that can then be used by a later detector (or detectors).
+
+\Note{
+The implementation of ExecutionPlan and related classes is needlessly complicated,
+and should probably be rewritten at some point.
+}
+
+\subsubsection{Scanning for Application Classes}
+
+After the execution plan has been created, the next task of execute() is
+to determine which classes will be analyzed.  This is done by scanning
+all class files, archive files, and directories specified to be part of
+the analyzed application by the Project.  As each class is scanned,
+it is parsed into a BCEL JavaClass object and placed in the BCEL Repository
+(via the AnalysisContext).
+Thus, all application classes are in memory during the entire analysis.
+(This is one reason why FindBugs requires a lot of memory.)
+
+\Note{
+The BCEL Repository is implemented using static fields and static methods.
+This makes FindBugs non-reentrant, so it is not possible to create two
+FindBugs objects and perform two separate analyses at the same time.
+Unfortunately, BCEL uses the static Repository extensively, so really the
+only long-term solution to this problem is to drop BCEL.
+(Which we should do anyway.)
+}
+
+One subtlety of the class scanning process is that we look for things like
+Class-Path attributes in Jar manifests in order to discover referenced
+libraries.  When analyzing Java bytecode, it is often necessary to inspect
+classes that are referenced by analyzed code in order to make the analysis
+as accurate as possible.  For example, when analyzing a method call,
+you can't tell what exceptions can be thrown unless you can examine the
+classfile of the class specified as the receiver of the method.  Another reason
+that referenced classes are necessary is that any analysis of the inheritance
+hierarchy (including the analysis needed to perform type inference on
+class files) requires access to referenced classes.  Thus, FindBugs wants
+the auxiliary classpath to be as complete as possible.  The additional codebases
+discovered from class scanning are themselves examined for additional classpath
+references: in the end, we should have the transitive closure of codebases
+referenced in this way.  Hopefully, the user has also made an effort to
+explicitly specify referenced classes.
+
+\subsubsection{Performing the Analysis}
+
+\begin{figure}
+\begin{tabbing}
+{\bf for each} analysis pass in the execution plan {\bf do} \\
+\Indent \= {\bf for each} application class {\bf do} \\
+        \> \Indent \= {\bf for each} detector in the analysis pass {\bf do} \\
+        \>         \>         \= create a ClassContext for the class\\
+        \>         \> \Indent \> apply the detector to the ClassContext\\
+        \>         \> {\bf end for} \\
+        \>  {\bf end for} \\
+{\bf end for}
+\end{tabbing}
+\caption{Performing the analysis using the execution plan.}\label{fig:performingTheAnalysis}
+\end{figure}
+
+Once the execution plan is in place and all of the application classes have been collected,
+we're ready to perform the analysis.  This is done more or less according to the
+pseudo-code shown in Figure~\ref{fig:performingTheAnalysis}.
+
+Each bug detector is an object implementing the BugDetector interface,
+which specifies a visitClassContext() method.  This method takes
+an instance of ClassContext created from the analyzed class.  The ClassContext serves
+as a cache for analysis results from a single class, because many
+kinds of analysis (such as type inference) are used by many detectors.
+By performing an analysis only once and then sharing it among multiple
+detectors, we decrease CPU time (at the cost of increasing memory use).
+
+\subsubsection{Finishing Up}
+
+After all analysis passes have executed, we call finish() and
+reportQueuedErrors() on the BugReporter, and then clear the BCEL Repository
+(since we no longer need to access classes contained therein).
+
 
 \end{document}
 
