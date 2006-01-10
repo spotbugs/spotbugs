@@ -146,6 +146,7 @@ public class PackageStats implements XMLWriteable {
 		return result;
 	}
 	public void addError(BugInstance bug) {
+		if (bug.getPriority() >= nBugs.length) return;
 		++nBugs[bug.getPriority()];
 		++nBugs[0];
 
