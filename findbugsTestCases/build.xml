@@ -22,8 +22,12 @@
 	<target name="build" depends="classes,runfindbugs" />
 
 	<target name="classes">
+		<mkdir dir="build/classes"/>
 		<javac srcdir="src/java" destdir="build/classes" source="1.5" debug="on">
-			<classpath refid="build/classes:{${findbugs.home}/lib/annotations.jar" />
+			<classpath>
+				<pathelement location="build/classes"/>
+				<pathelement location="${findbugs.home}/lib/annotations.jar" />
+			</classpath>
 		</javac>
 	</target>
 
