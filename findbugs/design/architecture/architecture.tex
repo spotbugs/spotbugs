@@ -42,7 +42,7 @@ the tool works and how to extend its capabilities.
 This information is accurate as of FindBugs version 0.9.4.
 The document revision is
 \begin{quote}
-\verb+$Revision: 1.5 $+
+\verb+$Revision: 1.6 $+
 \end{quote}
 
 Note that FindBugs has fairly complete javadoc API documentation.
@@ -569,7 +569,7 @@ Dataflow object that was used to perform an analysis.  For example,
 to get the results of applying IsNullValueAnalysis, get a reference to
 the IsNullValueDataflow object that executed the analysis.  (You can get
 this object directly from the ClassContext using the
-getIsNullValueDataflow, passing the Method object you want to analyze.)
+getIsNullValueDataflow() method, passing a reference to the Method object you want to analyze.)
 
 All Dataflow subclasses support the methods getStartFact() and getResultFact(),
 which get the dataflow fact before or after a particular basic block, respectively.
@@ -695,7 +695,7 @@ the current lookup failure callback (generally the bug reporter)
 and pass the exception along.
 
 The last two examples are {\em downwards} queries: they attempt to answer
-questions about possible subtypes.  This is closed world assumption that
+questions about possible subtypes.  This is a closed world assumption that
 is generally unsound, because Java allows classes to be loaded dynamically.
 However, in a static analysis to find bugs we don't require soundness,
 and for most real applications it a reasonable assumption that the user
@@ -742,6 +742,17 @@ A BugInstance is created with three parameters:
 
 \Note{
 NORMAL\_PRIORITY should have been called MEDIUM\_-PRIORITY.
+}
+
+\Note{
+The current single-valued priority scheme conflates two distinct notions:
+the {\em confidence} that a warning is accurate, and the {\em severity}
+of the warning if it is accurate.  We should change the object model
+so that these values are represented separately.  In addition, having
+only three discrete values for priority is too coarse: sometimes it would
+be nice to make finer distinctions between warnings.  Therefore,
+priority, confidence, and/or severity reports should be real-valued
+within the range 0.0 (least confident/severe) to 1.0 (most confident/severe).
 }
 
 \subsection{BugPatterns}
@@ -826,7 +837,7 @@ The XML format supported by FindBugs is a very straightfoward representation of
 the underlying object model.  As such, it is great for being able to store
 a BugCollection and later load it without loss of information.  However,
 because it does not contain human-readable messages, it is not very good
-for conversion to other formats, e.g. via an XML stylesheet.
+for conversion to other formats, e.g.\ via an XML stylesheet.
 
 In recent versions, FindBugs supports an {\tt -xml:withMessages}
 option that adds formatted strings (reflecting the current language/locale
