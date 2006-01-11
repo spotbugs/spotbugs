@@ -42,7 +42,7 @@ the tool works and how to extend its capabilities.
 This information is accurate as of FindBugs version 0.9.4.
 The document revision is
 \begin{quote}
-\verb+$Revision: 1.3 $+
+\verb+$Revision: 1.4 $+
 \end{quote}
 
 Note that FindBugs has fairly complete javadoc API documentation.
@@ -529,7 +529,21 @@ depth of the Java operand stack at each location in the analyzed CFG.
 
 In many dataflow analyses, we want to know something about the
 values of local variables and stack operands.  The Frame class represents
-the Java stack frame at a single CFG location.  Frame is parameterized
+the Java stack frame at a single CFG location, and represents both
+stack operands and local variables.  Note that both stack operands
+and locals are considered to be ``slots'': there is really nothing
+fundamentally different about them, other than the way that they
+are accessed by instructions.  Most Java instructions operate exclusively
+on stack operands.
+
+\Note{
+A peculiarity of Frame-based dataflow analysis in FindBugs is that
+long and double values are considered to occupy two stack slots, or
+two local variable slots.  This quirk is inherited from BCEL,
+which inherits it from the original JVM specification from Sun.
+}
+
+The Frame class is parameterized
 with the type of the values stored in the locals and stack locations;
 generally, you should inherit from Frame to create a Frame subtype that
 is specific to your analysis.  For example, IsNullValueFrame is a frame
@@ -585,10 +599,241 @@ In the long term, it would be nice to have type information that was based on
 {\em sets} of types.
 }
 
-\subsection{Class Hierarchy Queries}
+\subsubsection{ValueNumberAnalysis and ValueNumberDataflow}
+
+A common problem in analysis of Java bytecode is determining when
+two locations in a stack frame have the same value.  This problem is
+especially important when you consider that Java bytecode is stack-based:
+most instructions can only manipulate stack values, not values in
+local variables.  Information gained when modeling an instruction
+that affects values on the stack should also be applied to identical
+values elsewhere on the stack, or in local variables.
+
+ValueNumberAnalysis and ValueNumberDataflow attempt to assign value numbers
+to each location in each frame.  If two frame slots have the same value number,
+then at runtime then definitely contain the same value.
+
+One application of value numbers is in the null dereference detector,
+which makes use of the various {\tt if} comparison instructions:
+when a value is compared against null, then we learn something about
+the value: depending on which branch is taken, the value is either definitely
+null or definitely not null.  The {\tt if} comparison instructions---{\tt ifnull},
+{\tt ifnonnull}, {\tt ifacmp\_eq}, and {\tt ifacmp\_ne}---operate on
+values that are on top of the operand stack.  On the edges leading from
+these instructions, we can use the information gained about the value
+compared to null on the top of the operand stack to update other occurrences of
+the same value elsewhere on the operand stack, or in local variables.
+
+One feature of the value number analysis in FindBugs is that it
+performs redundant load elimination and forward substitution.
+This is required in blocks of code like the following:
+\begin{quote}
+\begin{verbatim}
+synchronized (this.lock) {
+    while (!someCondition()) {
+        this.lock.wait();
+    }
+}
+\end{verbatim}
+\end{quote}
+%
+Without redundant load elimination, the value number analysis would not
+assume that the two references to {\tt this.lock} refer to the same value.
+While the Java memory model does allow the two loads to return
+different values (e.g., another thread might update the field between
+accesses), by far the most likely behavior is that both loads will
+return the same value (and most JVMs will optimize the code to
+guarantee this outcome).  Without redundant load elimination, FindBugs
+might assume that the {\tt wait()} call is made to a different object
+than the one synchronized on.
+
+\subsubsection{IsNullValueAnalysis and IsNullValueDataflow}
+
+IsNullValueAnalysis determines which frame slots contain definitely-null
+values, definitely non-null values, and various kinds of conditionally-null
+or uncertain values.  This information is used by the FindNullDeref
+detector to detect possible null pointer dereferences and redundant null
+comparisons.
+
+\subsubsection{LockAnalysis and LockDataflow}
+
+LockAnalysis computes LockSet values at each CFG location.  A LockSet is
+the set of value numbers that are known to be locked.  This analysis
+is used, for example, by the FindInconsistentSync2 detector, which looks for
+unsynchronized field accesses that might be reachable from multiple threads.
+Note that this analysis is strictly intra-procedural: it does not consider
+that some values might be locked in a calling method.
+
+\subsection{Class Hierarchy Queries and Missing Classes/Interfaces}
+
+A very common task in bug detectors and static analysis in general
+is to perform class hierarchy queries.  Some examples:
+\begin{enumerate}
+\item Find immediate superclass and superinterfaces of a type
+\item Find transitive superclasses and superinterfaces of a type
+\item Find the superclass method that a particular method overrides or implements
+\item Find all subtypes of a particular class or interface
+\item Find all possible methods that might be called by a particular
+      {\tt invokevirtual} instruction
+\end{enumerate}
+
+The first three examples are {\em upwards} queries: they only require
+superclasses and superinterfaces to answer.  Since superclasses and superinterfaces
+must be present for a class to be loaded by the JVM, it is reasonable
+to assume that a static analysis can find them.  Therefore, we
+make the assumption that upwards queries can always be answered definitively,
+and that if a superclass or superinterface cannot be found, it is
+a serious error.  In fact, many methods in BCEL implicitly do
+upwards queries using the BCEL Repository class, and throw
+ClassNotFoundException if a required superclass or superinterface
+cannot be found.  Any time you are in a context where you need to
+handle ClassNotFoundException, you should find a RepositoryLookupFailureCallback
+object and pass the exception to its reportMissingClass() method.
+All BugReporter objects implement RepositoryLookupFailureCallback,
+so you can use the BugReporter.  You can also call the static
+reportMissingClass() method in AnalysisContext, which will also locate
+the current lookup failure callback (generally the bug reporter)
+and pass the exception along.
+
+The last two examples are {\em downwards} queries: they attempt to answer
+questions about possible subtypes.  This is closed world assumption that
+is generally unsound, because Java allows classes to be loaded dynamically.
+However, in a static analysis to find bugs we don't require soundness,
+and for most real applications it a reasonable assumption that the user
+will give the analysis access to the complete application.  Therefore,
+FindBugs uses both upwards and downwards class hierarchy queries.
+(Upwards queries are used much more extensively.)
+
+It would be nice to say that there is a single well-designed interface
+for class hierarchy queries in FindBugs.  However, this is not quite the
+case.  The Subtypes class provides a nice interface for downwards queries.
+The Hierarchy class provides a number of upwards query methods,
+although these are somewhat less well thought-out.
+
+\Note{
+Designing and implementing a better API for class hierarchy queries 
+would be a good idea.
+}
 
 \section{The Warning Object Model}
 
+This section describes the object model used to represent FindBugs warnings.
+
+\subsection{BugInstance}
+
+When a detector finds code that is likely to be an error, it should
+report a warning.  In FindBugs, the BugInstance class represents a single
+warning, including the type of warning and associated context information.
+
+\Note{
+The BugInstance class really should have been called ``Warning''.
+}
+
+A BugInstance is created with three parameters:
+\begin{description}
+\item[Detector:] A reference to the Detector reporting the warning.
+\item[Bug type:] This is a String that contains the warning's {\em bug code}.
+\item[Priority:] One of HIGH\_PRIORITY, NORMAL\_PRIORITY,
+                and LOW\_PRIORITY.  (These are integer constants that
+                are defined in the Detector interface.)  By convention, normal or high
+                priority is only used when there is a high degree of confidence
+                that the user will consider the warning to represent a serious
+                problem.
+\end{description}
+
+\Note{
+NORMAL\_PRIORITY should have been called MEDIUM\_-PRIORITY.
+}
+
+\subsection{BugPatterns}
+
+The bug type used to create a BugInstance
+is a unique key that defines a particular {\em bug pattern}.
+Behind the scenes, there is a BugPattern class that represents the
+bug patterns defined by a particular FindBugs plugin.
+Each bug pattern has some meta-information associated with it
+that can be accessed through the BugPattern.
+
+\subsection{BugAnnotation}
+
+In its raw form, the BugInstance doesn't have any information about
+important details such as what class the warning is being reported in,
+what method, which source lines are affected, and so forth.
+BugAnnotation objects provide this information.  Some kinds of BugAnnotations
+include:
+\begin{description}
+\item[ClassAnnotation:] A class
+\item[MethodAnnotation:] A method in a class
+\item[FieldAnnotation:] A field of a class
+\item[SourceLineAnnotation:] A range of source lines in a source file
+\item[IntAnnotation:] An integer value
+\end{description}
+
+BugAnnotations should be added to a BugInstance in a well-defined order.
+The order and types of BugAnnotations vary by bug pattern, but there are
+some conventions.  The most important convention is that the first BugAnnotation
+must be a ClassAnnotation: every warning is associated with a single class.
+If the warning pertains to code, then the second BugAnnotation should be
+a MethodAnnotation and the third should be a SourceLineAnnotation;
+together, these define the code affected by the warning.  Otherwise,
+BugAnnotations can be added in more or less free-form.  BugInstances sharing
+a common bug type may even have different numbers of BugAnnotations,
+depending on the exact circumstances in which the warnings were reported.
+
+\subsection{I18N}
+
+Formatting BugInstance and BugAnnotation objects in human readable
+form is done using format strings.  The BugAnnotation format strings
+are stored directly in findbugs.jar, and accessed through resource
+bundles.  The BugInstance format strings are loaded through
+XML files in the plugin containing the bug detector reporting the
+warning.  The reason for this division is that BugAnnotations
+are part of the core object model, and are not defined by detectors.
+Bug patterns, on the other hand, are defined by individual plugins,
+so their messages are local to the plugin.
+
+A single BugAnnotation class can have multiple format strings,
+depending on the {\em role} of the BugAnnotation.  For example,
+a MethodAnnotation might be the method in which the warning is
+reported (this is the default role), or could be a method called
+at a call site reported by the method (the METHOD\_CALLED role).
+
+Formatting model objects as human-readable Strings is done by
+the I18N class.
+
+\subsection{BugCollection}
+
+The BugCollection class defines (no surprise) a collection of BugInstance
+objects: generally, the output of a single analysis session.
+In addition to storing BugInstance objects, the BugCollection also
+stores some meta-information about the analysis session, such
+as missing classes, reported analysis errors, etc.
+In recent versions of FindBugs, a single BugCollection can represent
+a history of analysis sessions on a single software artifact, where
+each BugInstance may be present in multiple sessions.
+The {\em workflow} tools can use this functionality to do data mining
+on analysis results over time.
+
+There is only one concrete BugCollection class, called
+SortedBugCollection.
+
+\Note{
+BugCollection and SortedBugCollection are not a particularly elegant design.
+}
+
+\subsection{Reading and Writing XML}
+
+The XML format supported by FindBugs is a very straightfoward representation of
+the underlying object model.  As such, it is great for being able to store
+a BugCollection and later load it without loss of information.  However,
+because it does not contain human-readable messages, it is not very good
+for conversion to other formats, e.g. via an XML stylesheet.
+
+In recent versions, FindBugs supports an {\tt -xml:withMessages}
+option that adds formatted strings (reflecting the current language/locale
+settings) to the saved XML.  If the saved XML is re-loaded, these
+messages will be discarded.  However, they are useful for creating
+human-readable output (such as HTML reports) from the saved XML.
 
 \end{document}
 
