@@ -42,7 +42,7 @@ the tool works and how to extend its capabilities.
 This information is accurate as of FindBugs version 0.9.4.
 The document revision is
 \begin{quote}
-\verb+$Revision: 1.4 $+
+\verb+$Revision: 1.5 $+
 \end{quote}
 
 Note that FindBugs has fairly complete javadoc API documentation.
@@ -127,8 +127,7 @@ analysis is implemented in FindBugs (e.g., interprocedural analysis,
 whole-program call graph construction, etc.), this functionality should
 be available from the AnalysisContext.
 
-Originally, the reference to the AnalysisContext object was explicitlyJennifer Polack <polack@umw.edu>
-
+Originally, the reference to the AnalysisContext object was explicitly
 passed to all bug detector objects using a setAnalysisContext() method.
 More recently, the AnalysisContext is stored in an InheritableThreadLocal, and is accessible
 from a static method, AnalysisContext.currentAnalysisContext().
