@@ -137,11 +137,9 @@ public class SortedBugCollection extends AbstractBugCollection {
 		this.projectStats = projectStats;
 		this.comparator = comparator;
 		bugSet = new TreeSet<BugInstance>(comparator);
-		bugSet = new TreeSet<BugInstance>(comparator);
 		errorList = new LinkedList<AnalysisError>();
 		missingClassSet = new TreeSet<String>();
 		summaryHTML = "";
-//		classHashMap = new TreeMap<String, ClassHash>();
 		classFeatureSetMap = new TreeMap<String, ClassFeatureSet>();
 		uniqueIdToBugInstanceMap = new HashMap<String, BugInstance>();
 		generatedUniqueIdCount = 0;
