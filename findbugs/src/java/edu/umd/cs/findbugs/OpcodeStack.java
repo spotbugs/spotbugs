@@ -187,10 +187,10 @@ public class OpcodeStack implements Constants2
 				m.specialKind = i1.specialKind;
 			return m;
 		}
- 		public Item(String s, int reg) {
-			signature = s;
-			registerNumber = reg;
+		public Item(String s, int constValue) {
+			this(s, (Object)(Integer)constValue);
  		}
+
  		public Item(String s) {
  			this(s, UNKNOWN);
  		}
@@ -213,10 +213,17 @@ public class OpcodeStack implements Constants2
  		public Item(String s, Object v) {
  			signature = s;
  			constValue = v;
- 			if (v instanceof Integer && (((Integer) v) & 0xff) == 0)
- 				specialKind = LOW_8_BITS_CLEAR;
- 			else if (v instanceof Long && (((Long)v).intValue() & 0xff) == 0)
- 				specialKind = LOW_8_BITS_CLEAR;
+ 			if (v instanceof Integer) {
+ 				int value = (Integer) v;
+ 				if (value != 0 && (value & 0xff) == 0)
+ 					specialKind = LOW_8_BITS_CLEAR;
+ 			}
+ 			else if (v instanceof Long) {
+ 				long value = (Long) v;
+ 				if (value != 0 && (value & 0xff) == 0)
+ 					specialKind = LOW_8_BITS_CLEAR;
+ 			}
+ 			
  		}
  		
  		public Item() {
@@ -1077,8 +1084,10 @@ public class OpcodeStack implements Constants2
 	 	finally {
 	 		if (exceptionHandlers.get(dbc.getNextPC()))
 	 			push(new Item());
-	 		if (DEBUG)
+	 		if (DEBUG) {
 	 			System.out.println(OPCODE_NAMES[seen] + "  stack depth: " + getStackDepth());
+	 			System.out.println(this);
+	 		}
 	 	}
  	}
  	
@@ -1199,32 +1208,40 @@ public class OpcodeStack implements Constants2
 		 if (DEBUG) System.out.println("pushByIntMath: " + it.getConstant()  + " " + it2.getConstant() );
  		Item newValue  = new Item("I");
  		try {
- 		if ((it.getConstant() != null) && it2.getConstant() != null) {
+ 	
+		if ((it.getConstant() != null) && it2.getConstant() != null) {
+			Integer intValue2 = (Integer) it2.getConstant();
+			Integer intValue1 = (Integer) it.getConstant();
 			if (seen == IADD)
-				newValue = new Item("I", ((Integer) it2.getConstant()) + ((Integer) it.getConstant()));
+				newValue = new Item("I",intValue2 + intValue1);
 			else if (seen == ISUB)
-				newValue = new Item("I", ((Integer) it2.getConstant()) - ((Integer) it.getConstant()));
+				newValue = new Item("I",intValue2 - intValue1);
 			else if (seen == IMUL)
-				newValue = new Item("I", ((Integer) it2.getConstant()) * ((Integer) it.getConstant()));
+				newValue = new Item("I", intValue2 * intValue1);
 			else if (seen == IDIV)
-				newValue = new Item("I", ((Integer) it2.getConstant()) / ((Integer) it.getConstant()));
-			else if (seen == IAND)
-				newValue = new Item("I", ((Integer) it2.getConstant()) & ((Integer) it.getConstant()));
-			else if (seen == IOR)
-				newValue = new Item("I", ((Integer) it2.getConstant()) | ((Integer) it.getConstant()));
+				newValue = new Item("I", intValue2 / intValue1);
+			else if (seen == IAND) {
+				newValue = new Item("I", intValue2 & intValue1);
+				if ((intValue1&0xff) == 0 && intValue1 != 0 || (intValue2&0xff) == 0 && intValue2 != 0 ) 	
+					newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+			
+			} else if (seen == IOR)
+				newValue = new Item("I",intValue2 | intValue1);
 			else if (seen == IXOR)
-				newValue = new Item("I", ((Integer) it2.getConstant()) ^ ((Integer) it.getConstant()));
-			else if (seen == ISHL)
-				newValue = new Item("I", ((Integer) it2.getConstant()) << ((Integer) it.getConstant()));
+				newValue = new Item("I",intValue2 ^ intValue1);
+			else if (seen == ISHL) {
+				newValue = new Item("I",intValue2 << intValue1);
+				if (intValue1 >= 8) 	newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+			}
 			else if (seen == ISHR)
-				newValue = new Item("I", ((Integer) it2.getConstant()) >> ((Integer) it.getConstant()));
+				newValue = new Item("I",intValue2 >> intValue1);
 			else if (seen == IREM)
-				newValue = new Item("I", ((Integer) it2.getConstant()) % ((Integer) it.getConstant()));
+				newValue = new Item("I", intValue2 % intValue1);
 			else if (seen == IUSHR)
-				newValue = new Item("I", ((Integer) it2.getConstant()) >>> ((Integer) it.getConstant()));
-		} else if (it2.getConstant() != null && seen == ISHL  && ((Integer) it2.getConstant()) >= 8)
+				newValue = new Item("I", intValue2 >>> intValue1);
+		} else if (it2.getConstant() != null && seen == ISHL  && (Integer) it2.getConstant() >= 8)
 			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
- 		else if (it2.getConstant() != null && seen == IAND  && (((Integer) it2.getConstant()) & 0xff) == 0)
+ 		else if (it2.getConstant() != null && seen == IAND  && ((Integer) it2.getConstant() & 0xff) == 0)
 			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
  		} catch (RuntimeException e) {
  			// ignore it
@@ -1236,30 +1253,42 @@ public class OpcodeStack implements Constants2
 	private void pushByLongMath(int seen, Item it, Item it2) {
 		Item newValue  = new Item("J");
 		try {
+	
 		if ((it.getConstant() != null) && it2.getConstant() != null) {
-			if (seen == LADD)
-				newValue  = new Item("J", ((Long) it2.getConstant()) + ((Long) it.getConstant()));
-			else if (seen == LSUB)
-				newValue  = new Item("J", ((Long) it2.getConstant()) - ((Long) it.getConstant()));
-			else if (seen == LMUL)
-				newValue  = new Item("J", ((Long) it2.getConstant()) * ((Long) it.getConstant()));
-			else if (seen == LDIV)
-				newValue  =new Item("J", ((Long) it2.getConstant()) / ((Long) it.getConstant()));
-			else if (seen == LAND)
-				newValue  = new Item("J", ((Long) it2.getConstant()) & ((Long) it.getConstant()));
-			else if (seen == LOR)
-				newValue  = new Item("J", ((Long) it2.getConstant()) | ((Long) it.getConstant()));
-			else if (seen == LXOR)
-				newValue  =new Item("J", ((Long) it2.getConstant()) ^ ((Long) it.getConstant()));
-			else if (seen == LSHL)
-				newValue  =new Item("J", ((Long) it2.getConstant()) << ((Number) it.getConstant()).intValue());
+			
+			Long longValue2 = ((Long) it2.getConstant());
+			 if (seen == LSHL) {
+				newValue  =new Item("J", longValue2 << ((Number) it.getConstant()).intValue());
+				if (((Number) it.getConstant()).intValue()  >= 8) 	newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+			 }
 			else if (seen == LSHR)
-				newValue  =new Item("J", ((Long) it2.getConstant()) >> ((Number) it.getConstant()).intValue());
-			else if (seen == LREM)
-				newValue  =new Item("J", ((Long) it2.getConstant()) % ((Long) it.getConstant()));
+				newValue  =new Item("J", longValue2 >> ((Number) it.getConstant()).intValue());
 			else if (seen == LUSHR)
-				newValue  =new Item("J", ((Long) it2.getConstant()) >>> ((Number) it.getConstant()).intValue());
-		}
+				newValue  =new Item("J", longValue2 >>> ((Number) it.getConstant()).intValue());
+		
+			else  {
+				Long longValue1 = ((Long) it.getConstant());
+			if (seen == LADD)
+				newValue  = new Item("J", longValue2 + longValue1);
+			else if (seen == LSUB)
+				newValue  = new Item("J", longValue2 - longValue1);
+			else if (seen == LMUL)
+				newValue  = new Item("J", longValue2 * longValue1);
+			else if (seen == LDIV)
+				newValue  =new Item("J", longValue2 / longValue1);
+			else if (seen == LAND) {
+				newValue  = new Item("J", longValue2 & longValue1);
+			if ((longValue1&0xff) == 0 && longValue1 != 0 || (longValue2&0xff) == 0 && longValue2 != 0 ) 	
+				newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+			}
+			else if (seen == LOR)
+				newValue  = new Item("J", longValue2 | longValue1);
+			else if (seen == LXOR)
+				newValue  =new Item("J", longValue2 ^ longValue1);
+			else if (seen == LREM)
+				newValue  =new Item("J", longValue2 % longValue1);
+			}
+			}
 		 else if (it2.getConstant() != null && seen == LSHR  && ((Integer) it2.getConstant()) >= 8)
 			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
  		else if (it2.getConstant() != null && seen == LAND  && (((Long) it2.getConstant()) & 0xff) == 0)
@@ -1327,8 +1356,12 @@ public class OpcodeStack implements Constants2
  	
  	private void pushByLocalLoad(String signature, int register) {
 		Item it = getLVValue(register);
-		if (it == null)
-			push(new Item(signature, register));
+		
+		if (it == null) {
+			Item item = new Item(signature);
+			item.registerNumber = register;
+			push(item);
+		}
 		else if (it.getRegisterNumber() >= 0)
 			push(it);
 		else  {
