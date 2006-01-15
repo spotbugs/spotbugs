@@ -2,6 +2,7 @@
 \usepackage{fullpage}
 \usepackage{graphicx}
 \usepackage{url}
+\usepackage{hyperref}
 
 \title{The Architecture of FindBugs}
 \author{David Hovemeyer}
@@ -42,7 +43,7 @@ the tool works and how to extend its capabilities.
 This information is accurate as of FindBugs version 0.9.4.
 The document revision is
 \begin{quote}
-\verb+$Revision: 1.6 $+
+\verb+$Revision: 1.7 $+
 \end{quote}
 
 Note that FindBugs has fairly complete javadoc API documentation.
@@ -51,18 +52,13 @@ this documentation in the {\tt apiJavaDoc} subdirectory.
 
 \section{Walkthrough}
 
-This section will provide a walkthrough of an analysis session,
-such as an invocation of the command line interface, or the analysis
+This section will walk through an analysis session,
+such as an invocation of the command line interface or the analysis
 started by the ``Find Bugs!'' button in the Swing GUI.
 
 \subsection{The FindBugs class}
 
-%The FindBugs class serves as both the main engine and the command line
-%user interface.  When the {\tt bin/findbugs} script is run, most of the
-%command line arguments are passed along verbatim to the main() method of
-%the FindBugs class.
-
-First, an instance of the FindBugs class is created.
+To start, we create an instance of the FindBugs class.
 The FindBugs class serves as the main engine that sets up and executes the
 analysis.  The FindBugs constructor takes
 two parameters: a BugReporter and a Project.
@@ -79,9 +75,9 @@ containing classes to analyze.  These classes are the ``application classes''.
 The Project also contains a list of
 files and directories containing classes that are {\em referenced}
 by the application classes, but which should not themselves be analyzed.
-These are the ``auxiliary classpath'' classes.  The Project contains
+These are the ``auxiliary classpath'' classes.  Finally, the Project also contains
 a list of source directories and archives: this list can be consulted to
-find the source code for a range of code reported in a warning.
+find the source code for a range of instructions reported in a warning.
 
 \subsection{Configuring the FindBugs object}
 
@@ -90,9 +86,10 @@ Some examples:
 \begin{itemize}
 \item Which detectors are enabled and disabled
 \item Default reporting threshold (low, medium, high)
-\item Which bug categories to report
+\item Which bug categories to report (correctness, multithreaded correctness,
+      malicious code vulnerability, etc.)
 \item Rule-based filtering of warnings
-\item The analysis effort level: greater effort, more bugs found and longer running time
+\item The analysis effort level: greater effort means more bugs found and longer running time
 \end{itemize}
 
 These parameters are generally configured using accessor methods which
@@ -132,15 +129,15 @@ passed to all bug detector objects using a setAnalysisContext() method.
 More recently, the AnalysisContext is stored in an InheritableThreadLocal, and is accessible
 from a static method, AnalysisContext.currentAnalysisContext().
 
+\subsubsection{Analysis Features and Training Databases}
+
 Once the AnalysisContext has been created, the ``analysis features'' are configured.
 Analysis features are configuration properties stored in the AnalysisContext that
 affect how the analysis is performed.
 
-\subsubsection{Analysis Features and Training Databases}
-
 Around the same time as configuration of analysis features, training
 databases are created and configured.  A training database records analysis facts
-pertaining to a particular method or field, and allow information collected
+pertaining to a particular method or field, and allows information collected
 in one analysis run to be re-used in a later run.  For example, methods that
 unconditionally dereference method parameters can be recorded in one run,
 and loaded in a later run.  Any time a null value is passed for an unconditionally
@@ -157,8 +154,8 @@ run in an earlier or later pass than another detector.
 The execution plan explicitly organizes bug detectors into passes,
 and orders the execution of detectors within passes.
 Analysis passes can be used in much the same way as training databases:
-information about methods and fields is collected in the first pass,
-and then used in the second pass.  The advantage over training databases
+information about methods and fields is collected in an earlier pass
+and then used in a later pass.  The advantage over training databases
 is that both passes run in the context of a single
 invocation of FindBugs.
 It is also sometimes useful to specify that within a single analysis pass,
@@ -175,7 +172,7 @@ and should probably be rewritten at some point.
 
 \subsubsection{Scanning for Application Classes}
 
-After the execution plan has been created, the next task of execute() is
+After it creates the execution plan, the next task of execute() is
 to determine which classes will be analyzed.  This is done by scanning
 all class files, archive files, and directories specified to be part of
 the analyzed application by the Project.  As each class is scanned,
@@ -195,7 +192,7 @@ The only long-term solution to this problem is to drop BCEL.
 (Which we should do anyway.)
 }
 
-One subtlety of the class scanning process is that we look for things like
+One subtlety of the class scanning process is that we look for
 Class-Path attributes in Jar manifests in order to discover referenced
 libraries.  When analyzing Java bytecode, it is often necessary to inspect
 classes that are referenced by analyzed code in order to make the analysis
@@ -218,7 +215,7 @@ explicitly specify referenced classes.
 \ForEach\  analysis pass in the execution plan \Do \\
 \Indent \= \ForEach\  application class \Do \\
         \> \Indent \= \ForEach\  detector in the analysis pass \Do \\
-        \>         \> \Indent \= create a ClassContext for the class\\
+        \>         \> \Indent \= request ClassContext for the class from the AnalysisContext\\
         \>         \>         \> apply the detector to the ClassContext\\
         \>         \> \EndFor \\
         \>  \EndFor \\
@@ -228,7 +225,7 @@ explicitly specify referenced classes.
 \end{figure}
 
 Once the execution plan is in place and all of the application classes have been collected,
-we're ready to perform the analysis.  This is done more or less according to the
+we're ready to perform the analysis.  This is done according to the
 pseudo-code shown in Figure~\ref{fig:performingTheAnalysis}.
 
 Each bug detector is an object implementing the Detector interface,
@@ -237,7 +234,7 @@ an instance of ClassContext created from the analyzed class.  The ClassContext s
 as a cache for analysis results from a single class, because many
 kinds of analysis (such as type inference) are used by many detectors.
 By performing an analysis only once and then sharing it among multiple
-detectors, we decrease CPU time (at the cost of increasing memory use).
+detectors, we decrease CPU time at the expense of increasing memory use.
 (ClassContext is described in more detail in Section~\ref{sec:bytecodeAnalysisPackage}.)
 
 \subsubsection{Finishing Up}
@@ -248,7 +245,7 @@ reportQueuedErrors() on the BugReporter, and then clear the BCEL Repository
 
 \section{Bug Detectors}
 
-This section presents a high-level overview of bug detectors and
+This section presents an overview of bug detectors and
 how they work.  The bug detectors implemented in FindBugs can be divided into
 two basic categories: visitor-based and CFG-based.  Ultimately, FindBugs
 does not place any constraints on how bug detectors are implemented:
@@ -260,20 +257,20 @@ framework.
 
 Ultimately, the task of a bug detector is very straightforward:
 look at a single classfile and find potential bugs in it.
-Potential bugs are reported by creating a warning object (instance
-of the BugInstance class), decorating it with information about
+The detector reports potential bugs by creating a BugInstance object,
+decorating it with information about
 the context of the warning and the reasons for reporting it,
-and then reporting it via the BugReporter object.
+and then reporting it via the BugReporter.
 
 All of the ``core'' bug detectors---those that we include with FindBugs
-and are enabled by default---live in the edu.umd.cs.findbugs.detect
-package.  However, FindBugs has a plugin architecture that allows users
+and which are enabled by default---live in the edu.umd.cs.findbugs.detect
+package.  However, FindBugs has a plugin architecture allowing users
 to create their own detectors and use them without modifying FindBugs.
 By dropping a FindBugs plugin (which is just a jar file with an XML descriptor,
 message translation files, and detector classes) in the
 {\tt plugin} directory of a FindBugs installation, new detectors can
 easily be added.  For example, FindBugs core team member Dave Brosius maintains
-the fb-contrib project (\url{fb-contrib.sourceforge.net}), which
+the fb-contrib project (\url{http://fb-contrib.sourceforge.net}), which
 provides additional bug detectors.
 
 \subsection{Visitor-Based Detectors}
@@ -282,8 +279,9 @@ The visitor-based detectors are generally subclasses of BytecodeScanningVisitor,
 which itself is a subclass of DismantleBytecode.  The base classes perform
 a top-down traversal of the features of the classfile, decoding all
 of the symbolic information.  When a feature of the classfile is encountered,
-such as a field, method, instruction, and so forth, a callback method is
-invoked.  By overriding these callback methods, a visitor-based detector
+such as a field, method, instruction, and so forth, 
+DismantleBytecode invokes a callback method.
+By overriding these callback methods, a visitor-based detector
 can inspect the classfile looking for suspicious features that may
 indicate bugs.  For example, the FindUnconditionalWait detector looks for
 methods containing a {\tt monitorenter} instruction followed by an {\tt invokevirtual}
@@ -297,9 +295,9 @@ the state machine.  The overall state machine is essentially a finite-state
 automaton that accepts some regular language, where the language is a
 pattern that, if it appears in the bytecode for a method, indicates
 a probable bug.  In other words, if the string of input symbols (instructions)
-causes the state machine to accept the string, then a warning is issued.
+causes the state machine to accept the string, then the detector issues a warning.
 Even though this kind of analysis is very simple,
-especially in its simplistic treatment of control flow, detectors implemented
+especially in its treatment of control flow, detectors implemented
 this way can be surprisingly effective for many kinds of bugs.
 
 In addition to being simple and concise, visitor-based detectors
@@ -313,7 +311,7 @@ each instruction in a method is visited.  However, it does this in a fairly
 ad-hoc way.  In the future we may implement something more sophisticated
 to take the place of OpcodeStack.  (For example, we could use the existing
 dataflow analyses to populate the operand stack contents, providing a bridge
-from the visitor-based detectors to the more sophisticated CFG-based
+between the visitor-based detectors and the more sophisticated CFG-based
 analyses.)
 
 \subsection{CFG-Based Detectors}
@@ -321,13 +319,15 @@ analyses.)
 CFG stands for ``Control Flow Graph''.  The CFG-based detectors use a
 CFG representation of Java methods to perform somewhat more sophisticated
 analysis than the visitor-based detectors.  In particular, FindBugs
-implements many kinds of dataflow analysis that can be used in CFG-based
+implements many kinds of dataflow analysis for use by CFG-based
 bug detectors.
 
 Unlike the visitor-based detectors, which generally inherit from
-BytecodeScanningVisitor,
-CFG-based detectors generally just implement the Detector interface
-directly.
+BytecodeScanningVisitor, CFG-based detectors usually implement
+the Detector interface directly.
+
+\Note{Some common functionality could be factored out of the
+CFG-based detectors in order to simplify the code.}
 
 \begin{figure}
 \begin{tabbing}
@@ -416,7 +416,7 @@ class, and then requesting particular analyses directly from the
 ClassContext.
 
 Initially, a ClassContext has only a reference to the JavaClass object.
-Particular analyses are performed on demand and then cached.  A few of
+Specific analyses are performed on demand and then cached.  A few of
 the analyses, such as the AssignedFieldMap, are global to the class
 as a whole, and are obtained via a no-argument method.  Most of the
 analyses, however, are performed on methods individually, and are obtained
@@ -428,17 +428,19 @@ Otherwise, the analysis is performed, added to the cache, and returned.
 Almost all methods that request an analysis can throw both CFGBuilderException
 and DataflowAnalysisException.  Therefore, detectors using the BA package will generally need to
 be able to handle these exceptions.  A typical strategy is to surround the
-handling of each method in a detector with a try/catch that catches these exceptions and
-reports them to the BugReporter if they occur.  Even if an exception occurs
-in the checking of a single method, the detector should generally continue
-with the other methods in the analyzed class.
+handling of each method in a detector with a try/catch that catches these exceptions and,
+if they occur,
+reports them to the BugReporter via one of the logError() methods.
+Even if an exception occurs
+while checking one of the methods in the analyzed class, the detector should generally continue
+analyzing the remaining methods.
 
 \subsection{Control Flow Graphs}
 
 The Control Flow Graph implementation consists of the CFG, BasicBlock, Edge,
-and BetterCFGBuilder2\footnote{This class was preceeded by the
+and BetterCFGBuilder2\footnote{This class was preceded by the
 SimpleCFGBuilder and BetterCFGBuilder classes.  Constructing a CFG from
-Java bytecode is surprisingly difficult.  BetterCFGBuilder2 has proven
+Java bytecode is surprisingly difficult.  BetterCFGBuilder2 has proved
 to be very robust, so further evolution will probably not be needed.} classes.
 
 CFG, BasicBlock, and Edge are a very this layer on top of the BCEL MethodGen,
@@ -447,36 +449,79 @@ objects to represent single instructions.  Thus, if you ask a BasicBlock
 for the instructions it contains, it will give you back InstructionHandle
 objects.
 
-BetterCFGBuilder2 takes a MethodGen and uses it to construct a CFG object.
+The edges of the CFG have an {\em edge type} that describes the kind
+of control flow represented by the edge.
+The constants describing edge types are defined in the EdgeTypes interface.
+{\em Exception edges} represent
+exceptions that lead to an exception handler, or to the exit block of the
+CFG: these edges have type {\tt HANDLED\_EXCEPTION\_EDGE} and
+{\tt UNHANDLED\_EXCEPTION\_EDGE} respectively.
+Edges with type {\tt IFCMP\_EDGE} represent branches taken by
+the {\tt ifcmp}, {\tt ifacmp}, {\tt ifnull}, or {\tt ifnonnull}
+instructions when the condition tested by the instruction
+evaluates to true.
+Edges with type {\tt SWITCH\_EDGE} or {\tt SWITCH\_DEFAULT\_EDGE} represent
+the cases of a switch instruction.
+Edges with type {\tt GOTO\_EDGE} represent unconditional branches.
+The {\tt JSR\_EDGE} and {\tt RET\_EDGE} edge types are used to transfer control
+to and from inlined {\tt jsr} subroutines: for all practical purposes,
+these can be considered to be equivalent to {\tt GOTO\_EDGE}.
+An edge with type {\tt FALL\_THROUGH\_EDGE}
+represents control falling through to the next instruction.
+Edges with type {\tt RETURN\_EDGE} transfer control to the exit block
+of the CFG, representing either an explicit {\tt return} statement or
+reaching the end of a void method without an explicit {\tt return}
+statement.
+
+BetterCFGBuilder2 takes a MethodGen and uses it to construct a CFG object
+representing the control flow graph for the method.
 This process is complicated by the fact that Java methods may use
-the {\tt jsr} instruction, usually the result of a try/finally construct.
+the {\tt jsr} instruction, usually because of a try/finally construct.
 Code reachable from a {\tt jsr} instruction is known as a ``jsr subroutine''.
 FindBugs handles jsr subroutines by simply inlining them into the control flow graph.
 Because they are guaranteed not to be recursive, this process is guaranteed to
-terminate for any valid Java method.
+terminate for any valid Java method, and produces a CFG that is equivalent to the
+original method.
 
 Because of jsr subroutines, an individual bytecode instruction (InstructionHandle) may appear
 multiple times in the CFG, once for each expansion of the subroutine it appears in.
 This is the reason for the Location class: a Location is a BasicBlock, InstructionHandle
 pair.  All dataflow analyses use Location objects as a key to retrieve computed
-analysis facts.  The CFG class has a locationIterator() method that returns an
+analysis facts
+because different dataflow facts will be true in different expansions
+of jsr subroutines.
+The CFG class has a locationIterator() method that returns an
 Iterator over all defined locations in a CFG.
 
-Another subtlety of FindBugs CFGs is how exception control flow is
-represented.  Generally, any instruction that can throw an exception is
-preceeded by an Exception Throwing Block (ETB).  The exception control
+Another subtlety of FindBugs CFGs
+the representation of exception control flow.
+Generally, any instruction that can throw an exception is
+preceded by an Exception Throwing Block (ETB).  The exception control
 edge coming from an ETB represents what will happen if the exception occurs:
 either transferring control to an exception handler, or throwing it out
 of the method.  The fall-through edge coming from the ETB represents
 what will happen if no exception occurs.  One surprising feature of
 ETB blocks is that they appear to be empty: that is, they contain no
-actual instruction.  Instead, they represent an implicit ``conditionally throw an
+actual instruction.
+The instruction responsible for throwing the exception will be the first instruction in
+the block reachable from the outgoing fall through edge from
+the ETB; however, the occurrence of the instruction in the fall through
+block represents the case where the exception does {\em not} occur.
+Although this may seem confusing, it means that code that models the
+semantics of bytecode instructions in a dataflow analysis
+can completely ignore exceptions, because whenever an instruction appears
+in a basic block, no exception occurs within the basic block.
+Instead, they represent an implicit ``conditionally throw an
 exception'' instruction: for example, a null check.  ETBs may be
 identified by calling the isExceptionThrower() method on a BasicBlock.
 
 Initially, a FindBugs CFG will assume that any ETB can transfer control
-to any exception handler in the method.  This conservative assumption results
-from the fact that, during CFG construction, we don't really know what
+to any reachable exception handler in the method,
+and unless there is a reachable handler that handles {\em all}
+exception types (subtypes of Throwable), will assume that the exception
+can be thrown out of the method.
+This conservative assumption results
+from the fact that, during initial CFG construction, we don't really know what
 methods are being called, and what exceptions those methods can throw.
 A CFG with conservative exception edges is a ``raw'' CFG---you can see
 some evidence of raw CFGs in ClassContext, and a few other places.
@@ -490,7 +535,7 @@ use CFGs can be.
 FindBugs implements a very generic dataflow analysis framework.
 It is generic in the sense that any kind of object can be used as
 a dataflow fact, and also in the sense that type parameters are used
-whereever appropriate.  Thus, adding a new kind of dataflow analysis
+wherever appropriate.  Thus, adding a new kind of dataflow analysis
 to FindBugs tends to be a fairly simple exercise.
 
 This section will briefly discuss the generic parts of the dataflow framework,
@@ -505,11 +550,13 @@ facts.  The Dataflow class implements the actual dataflow analysis algorithm
 using a CFG and an instance of DataflowAnalysis.
 
 AbstractDataflowAnalysis is an abstract class implementing DataflowAnalysis,
-and providing implementations of some of its methods.  In addition,
+and providing default implementations of some of its methods.  In addition,
 AbstractDataflowAnalysis defines the notion of implementing the dataflow transfer
 function at the level of individual instructions rather than complete basic
-blocks, and automatically implements a cache of analysis facts at each
-CFG location.  Most dataflow analyses will want to inherit from
+blocks, and automatically implements a cache recording analysis facts at each
+CFG location.  Most dataflow analyses 
+where dataflow facts are modeled at the instruction level
+will want to inherit from
 AbstractDataflowAnalysis.  However, there are some exceptions.
 For example, DominatorsAnalysis is a dataflow analysis where the transfer
 function makes sense only at the level of complete basic blocks:
@@ -522,15 +569,16 @@ So, when defining a new dataflow analysis class, inheriting from one of these
 classes is a reasonable choice.  The StackDepthAnalysis class is a very good
 example of how to implement a forward dataflow analysis in FindBugs.
 It uses the StackDepth class to represent dataflow facts, and computes the
-depth of the Java operand stack at each location in the analyzed CFG.
+depth of the Java operand stack at each Location in the analyzed CFG.
 
 \subsubsection{Frame, FrameDataflowAnalysis, and AbstractFrameModelingVisitor}
 
 In many dataflow analyses, we want to know something about the
 values of local variables and stack operands.  The Frame class represents
-the Java stack frame at a single CFG location, and represents both
+the Java stack frame at a single CFG location, and models
 stack operands and local variables.  Note that both stack operands
-and locals are considered to be ``slots'': there is really nothing
+and locals are considered to be ``slots'' that contain a single
+symbolic value: there is really nothing
 fundamentally different about them, other than the way that they
 are accessed by instructions.  Most Java instructions operate exclusively
 on stack operands.
@@ -542,20 +590,21 @@ two local variable slots.  This quirk is inherited from BCEL,
 which inherits it from the original JVM specification from Sun.
 }
 
-The Frame class is parameterized
-with the type of the values stored in the locals and stack locations;
-generally, you should inherit from Frame to create a Frame subtype that
+The Frame class is parametrized
+with the type (class) representing the symbolic values stored in the locals and stack locations.
+By convention,
+you should inherit from Frame to create a Frame subtype that
 is specific to your analysis.  For example, IsNullValueFrame is a frame
 subtype where the locals and stack operands are of type IsNullValue,
 and is used (no surprise) by IsNullValueAnalysis.
 
 FrameDataflowAnalysis is a convenient abstract base class for dataflow analysis
 classes that will use Frames as dataflow facts.  Its specific purpose is
-to allow the dataflow merge function to be specified on individual values
+to allow the dataflow meet function to be specified on individual symbolic values
 rather than entire frames.
 
 AbstractFrameModelingVisitor is a useful base class for defining a visitor
-that models the effect of bytecode instructions on a Frame of values.
+that models the effect of bytecode instructions on a Frame.
 Using the notion of a ``default'' dataflow value, it provides generic implementations
 for all Java bytecode instructions.  You can then simply override the
 instruction-visiting methods that are actually important for the particular
@@ -565,7 +614,7 @@ analysis.
 
 The most convenient way to access and use the results of applying
 a particular dataflow analysis to a method is to get a reference to the
-Dataflow object that was used to perform an analysis.  For example,
+Dataflow object that was used to execute the analysis.  For example,
 to get the results of applying IsNullValueAnalysis, get a reference to
 the IsNullValueDataflow object that executed the analysis.  (You can get
 this object directly from the ClassContext using the
@@ -583,7 +632,7 @@ One of the most important dataflow analyses in FindBugs is TypeAnalysis/TypeData
 This frame-based analysis performs type inference on a Java method, computing
 types for all local variables and stack operands.
 
-The dataflow merge in this analysis computes the least upper bound
+The dataflow meet operation for types in this analysis computes the least upper bound
 of the merged values in the {\em class} inheritance hierarchy.
 Note that the least upper bound for superinterfaces of two types
 is not guaranteed to yield a unique result in Java, due to multiple inheritance
@@ -601,7 +650,7 @@ In the long term, it would be nice to have type information that was based on
 \subsubsection{ValueNumberAnalysis and ValueNumberDataflow}
 
 A common problem in analysis of Java bytecode is determining when
-two locations in a stack frame have the same value.  This problem is
+two slots in a stack frame contain the same value.  This problem is
 especially important when you consider that Java bytecode is stack-based:
 most instructions can only manipulate stack values, not values in
 local variables.  Information gained when modeling an instruction
@@ -609,19 +658,19 @@ that affects values on the stack should also be applied to identical
 values elsewhere on the stack, or in local variables.
 
 ValueNumberAnalysis and ValueNumberDataflow attempt to assign value numbers
-to each location in each frame.  If two frame slots have the same value number,
-then at runtime then definitely contain the same value.
+to each slot in each frame.  If two frame slots have the same value number,
+then at runtime they definitely contain the same value.
 
-One application of value numbers is in the null dereference detector,
-which makes use of the various {\tt if} comparison instructions:
-when a value is compared against null, then we learn something about
+One application of value numbers is in the null value dataflow analysis,
+which makes use of the various {\tt if} comparison instructions.
+When a value is compared against null, we learn something about
 the value: depending on which branch is taken, the value is either definitely
 null or definitely not null.  The {\tt if} comparison instructions---{\tt ifnull},
 {\tt ifnonnull}, {\tt ifacmp\_eq}, and {\tt ifacmp\_ne}---operate on
 values that are on top of the operand stack.  On the edges leading from
 these instructions, we can use the information gained about the value
 compared to null on the top of the operand stack to update other occurrences of
-the same value elsewhere on the operand stack, or in local variables.
+the same value elsewhere on the operand stack or in local variables.
 
 One feature of the value number analysis in FindBugs is that it
 performs redundant load elimination and forward substitution.
@@ -643,7 +692,7 @@ different values (e.g., another thread might update the field between
 accesses), by far the most likely behavior is that both loads will
 return the same value (and most JVMs will optimize the code to
 guarantee this outcome).  Without redundant load elimination, FindBugs
-might assume that the {\tt wait()} call is made to a different object
+will assume that the {\tt wait()} call is made to a different object
 than the one synchronized on.
 
 \subsubsection{IsNullValueAnalysis and IsNullValueDataflow}
@@ -685,18 +734,20 @@ and that if a superclass or superinterface cannot be found, it is
 a serious error.  In fact, many methods in BCEL implicitly do
 upwards queries using the BCEL Repository class, and throw
 ClassNotFoundException if a required superclass or superinterface
-cannot be found.  Any time you are in a context where you need to
+is missing.  Any time you are in a context where you need to
 handle ClassNotFoundException, you should find a RepositoryLookupFailureCallback
 object and pass the exception to its reportMissingClass() method.
 All BugReporter objects implement RepositoryLookupFailureCallback,
 so you can use the BugReporter.  You can also call the static
 reportMissingClass() method in AnalysisContext, which will also locate
 the current lookup failure callback (generally the bug reporter)
-and pass the exception along.
+and pass the exception along.  (The latter approach is necessary
+within the BA package, since it should not have any dependencies
+on the bug-finding code.)
 
 The last two examples are {\em downwards} queries: they attempt to answer
 questions about possible subtypes.  This is a closed world assumption that
-is generally unsound, because Java allows classes to be loaded dynamically.
+is generally unsound because Java allows classes to be loaded dynamically.
 However, in a static analysis to find bugs we don't require soundness,
 and for most real applications it a reasonable assumption that the user
 will give the analysis access to the complete application.  Therefore,
@@ -711,7 +762,7 @@ although these are somewhat less well thought-out.
 
 \Note{
 Designing and implementing a better API for class hierarchy queries 
-would be a good idea.
+would be a good project.
 }
 
 \section{The Warning Object Model}
@@ -732,8 +783,8 @@ A BugInstance is created with three parameters:
 \begin{description}
 \item[Detector:] A reference to the Detector reporting the warning.
 \item[Bug type:] This is a String that contains the warning's {\em bug code}.
-\item[Priority:] One of HIGH\_PRIORITY, NORMAL\_PRIORITY,
-                and LOW\_PRIORITY.  (These are integer constants that
+\item[Priority:] One of {\tt HIGH\_PRIORITY}, {\tt NORMAL\_PRIORITY},
+                and {\tt LOW\_PRIORITY}.  (These are integer constants that
                 are defined in the Detector interface.)  By convention, normal or high
                 priority is only used when there is a high degree of confidence
                 that the user will consider the warning to represent a serious
@@ -741,7 +792,7 @@ A BugInstance is created with three parameters:
 \end{description}
 
 \Note{
-NORMAL\_PRIORITY should have been called MEDIUM\_-PRIORITY.
+{\tt NORMAL\_PRIORITY} should have been called {\tt MEDIUM\_PRIORITY}.
 }
 
 \Note{
@@ -762,7 +813,7 @@ is a unique key that defines a particular {\em bug pattern}.
 Behind the scenes, there is a BugPattern class that represents the
 bug patterns defined by a particular FindBugs plugin.
 Each bug pattern has some meta-information associated with it
-that can be accessed through the BugPattern.
+that can be accessed through the BugPattern object.
 
 \subsection{BugAnnotation}
 
@@ -782,7 +833,7 @@ include:
 BugAnnotations should be added to a BugInstance in a well-defined order.
 The order and types of BugAnnotations vary by bug pattern, but there are
 some conventions.  The most important convention is that the first BugAnnotation
-must be a ClassAnnotation: every warning is associated with a single class.
+must be a ClassAnnotation: every warning is associated with a single primary class.
 If the warning pertains to code, then the second BugAnnotation should be
 a MethodAnnotation and the third should be a SourceLineAnnotation;
 together, these define the code affected by the warning.  Otherwise,
@@ -806,10 +857,15 @@ A single BugAnnotation class can have multiple format strings,
 depending on the {\em role} of the BugAnnotation.  For example,
 a MethodAnnotation might be the method in which the warning is
 reported (this is the default role), or could be a method called
-at a call site reported by the method (the METHOD\_CALLED role).
+at a call site reported by the method (the {\tt METHOD\_CALLED} role).
 
 Formatting model objects as human-readable Strings is done by
 the I18N class.
+The default language is English, but partial or full translations
+contributed by FindBugs users
+also exist for French, German, and Japanese.
+Any missing message translations fall back to the default
+English translations.
 
 \subsection{BugCollection}
 
@@ -833,7 +889,7 @@ BugCollection and SortedBugCollection are not a particularly elegant design.
 
 \subsection{Reading and Writing XML}
 
-The XML format supported by FindBugs is a very straightfoward representation of
+The XML format supported by FindBugs is a very straightforward representation of
 the underlying object model.  As such, it is great for being able to store
 a BugCollection and later load it without loss of information.  However,
 because it does not contain human-readable messages, it is not very good
