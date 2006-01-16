@@ -106,6 +106,8 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		try {
 
 		if (seen == IREM) {
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			Object constant0 = item0.getConstant();
 			OpcodeStack.Item item1 = stack.getStackItem(1);
 			int special = item1.getSpecialKind();
 			if (special == OpcodeStack.Item.RANDOM_INT) {
@@ -113,6 +115,12 @@ public class DumbMethods extends BytecodeScanningDetector  {
 						.addClassAndMethod(this)
 						.addSourceLine(this);
 						}
+			else if (constant0 instanceof Integer && ((Integer)constant0).intValue() == 1)
+			pendingRemOfRandomIntBug = new BugInstance(this, "INT_BAD_REM_BY_0", HIGH_PRIORITY)
+			.addClassAndMethod(this)
+			.addSourceLine(this);
+			
+			
 		}
 		if (checkForBitIorofSignedByte && seen != I2B) {
 			  bugReporter.reportBug(new BugInstance(this, "BIT_IOR_OF_SIGNED_BYTE", 
@@ -133,7 +141,6 @@ public class DumbMethods extends BytecodeScanningDetector  {
 			else checkForBitIorofSignedByte = false;
 		} else checkForBitIorofSignedByte = false;
 
-		  
 	if (prevOpcodeWasReadLine && seen == INVOKEVIRTUAL
 		&& getClassConstantOperand().equals("java/lang/String")) {
 	  bugReporter.reportBug(new BugInstance(this, "NP_IMMEDIATE_DEREFERENCE_OF_READLINE", NORMAL_PRIORITY)

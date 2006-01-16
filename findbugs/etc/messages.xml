@@ -3328,6 +3328,17 @@ consider using the Random.nextInt(int) method instead.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="INT_BAD_REM_BY_0">
+    <ShortDescription>Integer remainder modulo 1</ShortDescription>
+    <LongDescription>Integer remainder modulo 1 computed in {1} </LongDescription>
+    <Details>
+<![CDATA[
+<p> Any expression (exp % 1) is guaranteed to always return zero.
+Did you mean (exp & 1) or (exp % 2) instead?
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="BIT_IOR_OF_SIGNED_BYTE">
     <ShortDescription>Bitwise OR of signed byte value</ShortDescription>
     <LongDescription>Bitwise OR of signed byte value computed in {1} </LongDescription>
@@ -4432,6 +4443,7 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="EC">Suspicious equals() comparison</BugCode>
   <BugCode abbrev="MWN">Mismatched wait() or notify()</BugCode>
   <BugCode abbrev="SA">Useless self-assignment</BugCode>
+  <BugCode abbrev="INT">Suspicious integer expression</BugCode>
   <BugCode abbrev="BIT">Suspicious bitwise logical expression</BugCode>
   <BugCode abbrev="LI">Unsynchronized Lazy Initialization</BugCode>
   <BugCode abbrev="JLM">Synchronization on JSR166 Lock</BugCode>
