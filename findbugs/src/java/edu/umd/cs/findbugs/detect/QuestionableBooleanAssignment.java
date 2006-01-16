@@ -75,7 +75,7 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 			break;
 			
 			case SEEN_ISTORE:
-				if (seen == IFEQ)
+				if (seen == IFEQ || seen == IFNE)
 				{
 					bugReporter.reportBug( new BugInstance( this, "QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT", HIGH_PRIORITY)
 						.addClassAndMethod(this)
