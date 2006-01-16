@@ -27,6 +27,7 @@
 			<classpath>
 				<pathelement location="build/classes"/>
 				<pathelement location="${findbugs.home}/lib/annotations.jar" />
+				<pathelement location="${junit.home}/junit.jar"/>
 			</classpath>
 		</javac>
 	</target>
