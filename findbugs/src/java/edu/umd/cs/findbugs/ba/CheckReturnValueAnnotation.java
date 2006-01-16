@@ -47,7 +47,7 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration {
 	
 
 	@CheckForNull public static CheckReturnValueAnnotation parse(String s, String priority) {
-		if (!s.endsWith("CheckForNull")) return null;
+		if (!s.endsWith("CheckReturnValue")) return null;
 		if (priority == null) return CHECK_RETURN_VALUE_MEDIUM;
 		if (priority.endsWith("HIGH"))
 			return CHECK_RETURN_VALUE_HIGH;
