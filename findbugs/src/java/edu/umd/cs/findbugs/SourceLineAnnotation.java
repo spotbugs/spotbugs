@@ -717,16 +717,22 @@ public class SourceLineAnnotation implements BugAnnotation {
 	}
 
 	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
+		String classname = getClassName();
+		String packageName = "";
+		if (classname.indexOf('.') > 0) 
+			packageName = classname.substring(0,1+classname.lastIndexOf('.'));
 		XMLAttributeList attributeList = new XMLAttributeList()
-			.addAttribute("classname", getClassName())
+			.addAttribute("classname", classname)
 			.addAttribute("start", String.valueOf(getStartLine()))
 			.addAttribute("end", String.valueOf(getEndLine()))
 			.addAttribute("startBytecode", String.valueOf(getStartBytecode()))
 			.addAttribute("endBytecode", String.valueOf(getEndBytecode()))
 			.addAttribute("opcodes", surroundingOpcodes);
 		
-		if (isSourceFileKnown())
+		if (isSourceFileKnown()) {
 			attributeList.addAttribute("sourcefile", sourceFile);
+			attributeList.addAttribute("sourcepath", packageName.replace('.', '/')+sourceFile);
+		}
 		
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
