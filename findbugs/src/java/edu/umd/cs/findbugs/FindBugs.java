@@ -23,6 +23,7 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -523,6 +524,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		private String trainingOutputDir;
 		private String trainingInputDir;
 		private String releaseName = "";
+		private String sourceInfoFile = null;
 
 		public TextUICommandLine() {
 			super();
@@ -548,6 +550,8 @@ public class FindBugs implements Constants2, ExitCodes {
 					"Save training data (experimental); output dir defaults to '.'");
 			addSwitchWithOptionalExtraPart("-useTraining", "inputDir",
 					"Use training data (experimental); input dir defaults to '.'");
+			addOption("-sourceInfo", "filename",
+					"Specify source info file (line numbers for fields/classes)");
 			addOption("-outputFile", "filename", "Save output in named file");
 			addOption("-visitors", "v1[,v2...]", "run only named visitors");
 			addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
@@ -658,6 +662,8 @@ public class FindBugs implements Constants2, ExitCodes {
 				}
 			} else if (option.equals("-release")) {
 				this.releaseName = argument;
+			} else if (option.equals("-sourceInfo")) {
+				sourceInfoFile = argument;
 			} else if (option.equals("-visitors") || option.equals("-omitVisitors")) {
 				boolean omit = option.equals("-omitVisitors");
 
@@ -852,6 +858,10 @@ public class FindBugs implements Constants2, ExitCodes {
 				findBugs.enableTrainingInput(trainingInputDir);
 			}
 			
+			if (sourceInfoFile != null) {
+				findBugs.setSourceInfoFile(sourceInfoFile);
+			}
+			
 			findBugs.setAnalysisFeatureSettings(settingList);
 			
 			findBugs.setReleaseName(releaseName);
@@ -918,6 +928,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	private String releaseName;
 	
 	private int passCount;
+	private String sourceInfoFile;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -1079,6 +1090,16 @@ public class FindBugs implements Constants2, ExitCodes {
 	}
 	
 	/**
+	 * Set the filename of the source info file containing line numbers for fields
+	 * and classes.
+	 * 
+	 * @param sourceInfoFile the source info filename
+	 */
+	public void setSourceInfoFile(String sourceInfoFile) {
+		this.sourceInfoFile = sourceInfoFile;
+	}
+	
+	/**
 	 * Execute FindBugs on the Project.
 	 * All bugs found are reported to the BugReporter object which was set
 	 * when this object was constructed.
@@ -1090,6 +1111,9 @@ public class FindBugs implements Constants2, ExitCodes {
 		// Configure the analysis context
 		analysisContext = new AnalysisContext(bugReporter);
 		analysisContext.setSourcePath(project.getSourceDirList());
+		if (sourceInfoFile != null) {
+			analysisContext.getSourceInfoMap().read(new FileInputStream(sourceInfoFile));
+		}
 		
 		// Enable/disable relaxed reporting mode
 		FindBugsAnalysisFeatures.setRelaxedMode(relaxedReportingMode);

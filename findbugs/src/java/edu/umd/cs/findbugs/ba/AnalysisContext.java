@@ -62,7 +62,7 @@ public class AnalysisContext {
 	public Map<Object,Object> analysisLocals = 
 		Collections.synchronizedMap(new HashMap<Object,Object>());
 	private BitSet boolPropertySet;
-
+	private final SourceInfoMap sourceInfoMap;
 	
 	// Interprocedural fact databases
 	private String databaseInputDir;
@@ -99,6 +99,7 @@ public class AnalysisContext {
 		this.sourceFinder = new SourceFinder();
 		this.subtypes = new Subtypes();
 		this.boolPropertySet = new BitSet();
+		this.sourceInfoMap = new SourceInfoMap();
 		
 		currentAnalysisContext.set(this);
 		
@@ -305,6 +306,13 @@ public class AnalysisContext {
 	 */
 	public boolean getBoolProperty(int prop) {
 		return boolPropertySet.get(prop);
+	}
+	
+	/**
+	 * Get the SourceInfoMap.
+	 */
+	public SourceInfoMap getSourceInfoMap() {
+		return sourceInfoMap;
 	}
 	
 	/**
