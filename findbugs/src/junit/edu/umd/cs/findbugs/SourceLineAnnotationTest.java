@@ -35,34 +35,34 @@ public class SourceLineAnnotationTest extends TestCase{
 	//@Override
 	protected void setUp() throws Exception {
 		sl = new SourceLineAnnotation("com.foo.Bar", "com/foo/Bar.java", 10, 20, 30, 40);
-		sl.setSurroundingOpcodes("1,2,3,4,5|6,7,8|9,10,11");
+//		sl.setSurroundingOpcodes("1,2,3,4,5|6,7,8|9,10,11");
 	}
 	
-	public void testEarlierOpcodes() {
-		Assert.assertEquals(sl.getEarlierOpcodesAsString(5), "1,2,3,4,5");
-		Assert.assertEquals(sl.getEarlierOpcodesAsString(69), "1,2,3,4,5");
-	}
-	
-	public void testSomeEarlierOpcodes() {
-		Assert.assertEquals(sl.getEarlierOpcodesAsString(2), "4,5");
-		Assert.assertEquals(sl.getEarlierOpcodesAsString(1), "5");
-		Assert.assertEquals(sl.getEarlierOpcodesAsString(0), "");
-	}
-	
-	public void testSelectedOpcodes() {
-		Assert.assertEquals(sl.getSelectedOpcodesAsString(), "6,7,8");
-		
-	}
-	
-	public void testLaterOpcodes() {
-		Assert.assertEquals(sl.getLaterOpcodesAsString(5), "9,10,11");
-		Assert.assertEquals(sl.getLaterOpcodesAsString(3), "9,10,11");
-		Assert.assertEquals(sl.getLaterOpcodesAsString(69), "9,10,11");
-	}
-	
-	public void testSomeLaterOpcodes() {
-		Assert.assertEquals(sl.getLaterOpcodesAsString(2), "9,10");
-		Assert.assertEquals(sl.getLaterOpcodesAsString(1), "9");
-		Assert.assertEquals(sl.getLaterOpcodesAsString(0), "");
-	}
+//	public void testEarlierOpcodes() {
+//		Assert.assertEquals(sl.getEarlierOpcodesAsString(5), "1,2,3,4,5");
+//		Assert.assertEquals(sl.getEarlierOpcodesAsString(69), "1,2,3,4,5");
+//	}
+//	
+//	public void testSomeEarlierOpcodes() {
+//		Assert.assertEquals(sl.getEarlierOpcodesAsString(2), "4,5");
+//		Assert.assertEquals(sl.getEarlierOpcodesAsString(1), "5");
+//		Assert.assertEquals(sl.getEarlierOpcodesAsString(0), "");
+//	}
+//	
+//	public void testSelectedOpcodes() {
+//		Assert.assertEquals(sl.getSelectedOpcodesAsString(), "6,7,8");
+//		
+//	}
+//	
+//	public void testLaterOpcodes() {
+//		Assert.assertEquals(sl.getLaterOpcodesAsString(5), "9,10,11");
+//		Assert.assertEquals(sl.getLaterOpcodesAsString(3), "9,10,11");
+//		Assert.assertEquals(sl.getLaterOpcodesAsString(69), "9,10,11");
+//	}
+//	
+//	public void testSomeLaterOpcodes() {
+//		Assert.assertEquals(sl.getLaterOpcodesAsString(2), "9,10");
+//		Assert.assertEquals(sl.getLaterOpcodesAsString(1), "9");
+//		Assert.assertEquals(sl.getLaterOpcodesAsString(0), "");
+//	}
 }
