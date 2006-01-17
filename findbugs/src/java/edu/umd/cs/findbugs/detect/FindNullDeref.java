@@ -678,7 +678,10 @@ public class FindNullDeref
 		} else {
 			boolean bothNull =  redundantBranch.firstValue.isDefinitelyNull() && redundantBranch.secondValue.isDefinitelyNull();		
 			if (redundantBranch.secondValue.isChecked()) isChecked = true;
-			if (redundantBranch.secondValue.wouldHaveBeenAKaboom()) wouldHaveBeenAKaboom = true;
+			if (redundantBranch.secondValue.wouldHaveBeenAKaboom()) {
+				wouldHaveBeenAKaboom = true;
+				locationOfKaBoom = redundantBranch.secondValue.getLocationOfKaBoom();
+			}
 			if (bothNull) {
 				warning = "RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES";
 				priority = NORMAL_PRIORITY;
