@@ -7,7 +7,7 @@ public class RedundantNullCheck {
 		int j = i + k;
 		System.out.println(j);
 
-		if (s != null) { // bug
+		if (s != null) { // bug, or defensive coding?
 			System.out.println("Yeah");
 
 			if (s != null) { // not as bad - low priority warning
