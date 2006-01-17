@@ -246,23 +246,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						getRequiredAttribute(attributes, "size", qName));
 					bugCollection.getProjectStats().addClass(className, isInterface, size);
 				}
-//			} else if (outerElement.equals(BugCollection.CLASS_HASHES_ELEMENT_NAME)) {
-//				if (qName.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
-//					String className = getRequiredAttribute(attributes, "class", qName);
-//					byte[] hash = extractHash(qName, attributes);
-//					classHash = new ClassHash(className, hash);
-//					bugCollection.setClassHash(className, classHash);
-//				}
-//			} else if (outerElement.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
-//				if (qName.equals(ClassHash.METHOD_HASH_ELEMENT_NAME) && classHash != null) {
-//					String methodName = getRequiredAttribute(attributes, "name", qName);
-//					String methodSig = getRequiredAttribute(attributes, "signature", qName);
-//					boolean isStatic = Boolean.valueOf(getRequiredAttribute(attributes, "isStatic", qName)).booleanValue();
-//					byte[] hash = extractHash(qName, attributes);
-//					classHash.setMethodHash(
-//							XFactory.createXMethod(classHash.getClassName(), methodName, methodSig, isStatic),
-//							hash);
-//				}
 			} else if (outerElement.equals("ClassFeatures")) {
 				if (qName.equals(ClassFeatureSet.ELEMENT_NAME)) {
 					String className = getRequiredAttribute(attributes, "class", qName);
@@ -350,7 +333,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		String endLine = getRequiredAttribute(attributes, "end", qName);
 		String startBytecode = attributes.getValue("startBytecode");
 		String endBytecode = attributes.getValue("endBytecode");
-		String surroundingOpcodes = attributes.getValue("opcodes");
 
 		try {
 			int sl = Integer.parseInt(startLine);
@@ -360,10 +342,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 			SourceLineAnnotation annotation =
 				new SourceLineAnnotation(classname, sourceFile, sl, el, sb, eb);
-			
-			if (surroundingOpcodes != null) {
-				annotation.setSurroundingOpcodes(surroundingOpcodes);
-			}
 			
 			return annotation;
 		} catch (NumberFormatException e) {
@@ -423,10 +401,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				} else if (qName.equals(BugCollection.ERROR_STACK_TRACE_ELEMENT_NAME)) {
 					stackTrace.add(textBuffer.toString());
 				}
-//			} else if (outerElement.equals(BugCollection.CLASS_HASHES_ELEMENT_NAME)) {
-//				if (qName.equals(ClassHash.CLASS_HASH_ELEMENT_NAME)) {
-//					classHash = null;
-//				}
 			} else if (outerElement.equals("ClassFeatures")) {
 				if (qName.equals(ClassFeatureSet.ELEMENT_NAME)) {
 					bugCollection.setClassFeatureSet(classFeatureSet);

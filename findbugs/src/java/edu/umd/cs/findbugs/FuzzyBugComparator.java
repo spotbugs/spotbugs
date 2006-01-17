@@ -125,23 +125,7 @@ public class FuzzyBugComparator implements WarningComparator {
 	 * @param bugCollection a BugCollection
 	 */
 	public void registerBugCollection(BugCollection bugCollection) {
-//		if (USE_HASHES) {
-//			for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ) {
-//				bugCollectionMap.put(i.next(), bugCollection);
-//			}
-//			
-//			// For each distinct ClassHash, keep track of the lexicographically
-//			// least class name.  This serves as the "representative" for all (equivalent)
-//			// classes sharing that hash value.  This allows us to ensure that the
-//			// class ordering induced by this comparator is transitive.
-//			for (Iterator<ClassHash> i = bugCollection.classHashIterator(); i.hasNext();) {
-//				ClassHash classHash = i.next();
-//				String canonicalClassName = classHashToCanonicalClassNameMap.get(classHash);
-//				if (canonicalClassName == null || classHash.getClassName().compareTo(canonicalClassName) < 0) {
-//					classHashToCanonicalClassNameMap.put(classHash, classHash.getClassName());
-//				}
-//			}
-//		}
+		// For now, nothing to do
 	}
 
 	/* (non-Javadoc)
@@ -241,13 +225,6 @@ public class FuzzyBugComparator implements WarningComparator {
 			return 0;
 	}
 	
-//	private static ClassHash getClassHash(BugCollection bugCollection, String className) {
-//		if (bugCollection == null)
-//			return null;
-//		else
-//			return bugCollection.getClassHash(className);
-//	}
-	
 	public int compareClasses(BugCollection lhsCollection, BugCollection rhsCollection, ClassAnnotation lhsClass, ClassAnnotation rhsClass) {
 		if (lhsClass == null || rhsClass == null) {
 			return compareNullElements(lhsClass, rhsClass);
@@ -258,21 +235,6 @@ public class FuzzyBugComparator implements WarningComparator {
 	
 	// Compare classes: either exact fully qualified name must match, or class hash must match
 	public int compareClassesByName(BugCollection lhsCollection, BugCollection rhsCollection, String lhsClassName, String rhsClassName) {
-		
-
-//		if (USE_HASHES) {
-//			// Get class hashes
-//			ClassHash lhsHash = getClassHash(lhsCollection, lhsClassName);
-//			ClassHash rhsHash = getClassHash(rhsCollection, rhsClassName);
-//			
-//			// Convert to canonical class names based on the class hashes.
-//			// This has the effect that classes with the same hash compare as equal,
-//			// while ensuring that all class names have a consistent ordering.
-//			if (lhsHash != null)
-//				lhsClassName = classHashToCanonicalClassNameMap.get(lhsHash);
-//			if (rhsHash != null)
-//				rhsClassName = classHashToCanonicalClassNameMap.get(rhsHash);
-//		}
 		
 		lhsClassName = rewriteClassName(lhsClassName);
 		rhsClassName = rewriteClassName(rhsClassName);
@@ -299,26 +261,6 @@ public class FuzzyBugComparator implements WarningComparator {
 
 		// Compare for exact match
 		int cmp = lhsMethod.compareTo(rhsMethod);
-		
-//		if (USE_HASHES) {
-//			if (cmp == 0)
-//				return 0;
-//
-//			// Get class hashes for primary classes
-//			ClassHash lhsClassHash = getClassHash(lhsCollection, lhsMethod.getClassName());
-//			ClassHash rhsClassHash = getClassHash(rhsCollection, rhsMethod.getClassName());
-//			if (lhsClassHash == null || rhsClassHash == null)
-//				return cmp;
-//			
-//			// Look up method hashes
-//			MethodHash lhsHash = lhsClassHash.getMethodHash(lhsMethod.toXMethod());
-//			MethodHash rhsHash = rhsClassHash.getMethodHash(rhsMethod.toXMethod());
-//			if (lhsHash == null || rhsHash == null)
-//				return cmp;
-//			
-//			if (lhsHash.isSameHash(rhsHash))
-//				return 0;
-//		}
 		
 		return cmp;
 	}
@@ -347,32 +289,6 @@ public class FuzzyBugComparator implements WarningComparator {
 		int cmp = compareClassesByName(lhsCollection, rhsCollection, lhs.getClassName(), rhs.getClassName());
 		if (cmp != 0)
 			return cmp;
-		
-		// If both annotations refer to entire methods, as opposed to
-		// a specific instruction or range of instructions, consider them
-		// equal.  This handles the case where a warning may refer to
-		// another method (i.e., it was called).
-		// Even if the referred-to method changes between versions, we want
-		// the warning to be considered equivalent in both versions.
-		if (!lhs.hasSpecificInstructions() && !rhs.hasSpecificInstructions())
-			return 0;
-		
-		// Compare earlier opcodes
-		if ((cmp = lhs.getEarlierOpcodesAsString(NUM_CONTEXT_OPCODES).compareTo(
-				rhs.getEarlierOpcodesAsString(NUM_CONTEXT_OPCODES))) != 0) {
-			return cmp;
-		}
-		
-		// Compare selected opcodes
-		if ((cmp = lhs.getSelectedOpcodesAsString().compareTo(rhs.getSelectedOpcodesAsString())) != 0) {
-			return cmp;
-		}
-		
-		// Compare later opcodes
-		if ((cmp = lhs.getLaterOpcodesAsString(NUM_CONTEXT_OPCODES).compareTo(
-				rhs.getLaterOpcodesAsString(NUM_CONTEXT_OPCODES))) != 0) {
-			return cmp;
-		}
 		
 		return 0;
 	}
