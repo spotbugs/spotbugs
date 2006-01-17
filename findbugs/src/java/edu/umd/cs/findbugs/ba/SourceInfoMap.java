@@ -75,6 +75,8 @@ public class SourceInfoMap {
 		}
 	}
 	
+	private static final boolean DEBUG = Boolean.getBoolean("sourceinfo.debug");
+	
 	private Map<ClassAndFieldName, Integer> fieldLineMap;
 	private Map<String, Integer> classLineMap;
 	
@@ -153,12 +155,17 @@ public class SourceInfoMap {
 				String next = tokenizer.nextToken();
 				if (DIGITS.matcher(next).matches()) {
 					// Line number for class
-					classLineMap.put(className, Integer.valueOf(next));
+					Integer value = Integer.valueOf(next);
+					classLineMap.put(className, value);
+					if (DEBUG) System.out.println("class:" + className + "," + value);
 				} else {
 					// Line number for field
+					Integer value = Integer.valueOf(tokenizer.nextToken()); 
 					fieldLineMap.put(
 							new ClassAndFieldName(className, next),
-							Integer.valueOf(tokenizer.nextToken()));
+							value);
+					if (DEBUG) System.out.println("field:" + className + "," +
+							next + "," + value);
 				}
 				
 				// Note: we could complain if there are more tokens,
