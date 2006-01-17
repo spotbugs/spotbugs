@@ -64,6 +64,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	private int startBytecode;
 	private int endBytecode;
 	private String surroundingOpcodes;
+	private boolean synthetic = false;
 
 	/**
 	 * Constructor.
@@ -728,6 +729,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 			.addAttribute("startBytecode", String.valueOf(getStartBytecode()))
 			.addAttribute("endBytecode", String.valueOf(getEndBytecode()))
 			.addAttribute("opcodes", surroundingOpcodes);
+	
 		
 		if (isSourceFileKnown()) {
 			attributeList.addAttribute("sourcefile", sourceFile);
@@ -737,7 +739,8 @@ public class SourceLineAnnotation implements BugAnnotation {
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", getDescription());
-
+		if (synthetic) 
+			attributeList.addAttribute("synthetic", "true");
 		if (addMessages) {
 			xmlOutput.openTag(ELEMENT_NAME, attributeList);
 			xmlOutput.openTag("Message");
@@ -747,6 +750,20 @@ public class SourceLineAnnotation implements BugAnnotation {
 		} else {
 			xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
 		}
+	}
+
+	/**
+	 * @param synthetic The synthetic to set.
+	 */
+	public void setSynthetic(boolean synthetic) {
+		this.synthetic = synthetic;
+	}
+
+	/**
+	 * @return Returns the synthetic.
+	 */
+	public boolean isSynthetic() {
+		return synthetic;
 	}
 }
 

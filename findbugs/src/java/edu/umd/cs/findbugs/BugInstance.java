@@ -1182,8 +1182,18 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			xmlOutput.closeTag("LongMessage");
 		}
 
+		boolean foundSourceAnnotation = false;
 		for (BugAnnotation annotation : annotationList) {
+			if (annotation instanceof SourceLineAnnotation) 
+				foundSourceAnnotation = true;
 			annotation.writeXML(xmlOutput, addMessages);
+		}
+		if (!foundSourceAnnotation) {
+			SourceLineAnnotation synth = getPrimarySourceLineAnnotation();
+			if (synth != null) {
+				synth.setSynthetic(true);
+				synth.writeXML(xmlOutput, addMessages);
+			}
 		}
 		
 		if (propertyListHead != null) {

@@ -190,7 +190,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 								Boolean.valueOf(isStatic));
 					}
 				} else if (qName.equals("SourceLine")) {
-					bugAnnotation = createSourceLineAnnotation(qName, attributes);
+					SourceLineAnnotation sourceAnnotation = createSourceLineAnnotation(qName, attributes);
+					if (!sourceAnnotation.isSynthetic())
+						bugAnnotation = sourceAnnotation;
 				} else if (qName.equals("Int")) {
 					try {
 						String value = getRequiredAttribute(attributes, "value", qName);
