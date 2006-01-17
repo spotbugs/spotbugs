@@ -48,7 +48,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	private String methodSig;
 	private String fullMethod;
 	private boolean isStatic;
-	private SourceLineAnnotation sourceLines;
+	
 
 	/**
 	 * Constructor.
@@ -133,25 +133,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		return XFactory.createXMethod(className, methodName, methodSig, isStatic);
 	}
 
-	/**
-	 * Set a SourceLineAnnotation describing the source lines
-	 * where the method is defined.
-	 */
-	public void setSourceLines(SourceLineAnnotation sourceLines) {
-		this.sourceLines = sourceLines;
-	}
-
-	/**
-	 * Get the SourceLineAnnotation describing the source lines
-	 * where the method is defined.
-	 *
-	 * @return the SourceLineAnnotation, or null if there is no source information
-	 *         for this method
-	 */
-	public SourceLineAnnotation getSourceLines() {
-		return sourceLines;
-	}
-
+	
 	public void accept(BugAnnotationVisitor visitor) {
 		visitor.visitMethodAnnotation(this);
 	}

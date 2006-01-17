@@ -32,7 +32,8 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	
 	protected String className;
 	protected String description;
-
+	 SourceLineAnnotation sourceLines;
+	 
 	/**
 	 * Constructor.
 	 *
@@ -128,6 +129,26 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
 		return format.format(new BugAnnotation[]{this});
 	}
+	
+	/**
+	 * Set a SourceLineAnnotation describing the source lines
+	 * where the method is defined.
+	 */
+	public void setSourceLines(SourceLineAnnotation sourceLines) {
+		this.sourceLines = sourceLines;
+	}
+
+	/**
+	 * Get the SourceLineAnnotation describing the source lines
+	 * where the method is defined.
+	 *
+	 * @return the SourceLineAnnotation, or null if there is no source information
+	 *         for this method
+	 */
+	public SourceLineAnnotation getSourceLines() {
+		return sourceLines;
+	}
+
 }
 
 // vim:ts=4
