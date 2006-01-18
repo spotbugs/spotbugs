@@ -43,7 +43,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	 * @param className the name of the class
 	 */
 	public ClassAnnotation(String className) {
-		super(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className), DEFAULT_ROLE);
+		super(className, DEFAULT_ROLE);
 	}
 
 	public void accept(BugAnnotationVisitor visitor) {

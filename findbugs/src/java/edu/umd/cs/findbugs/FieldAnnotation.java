@@ -61,7 +61,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * @param fieldSig  the type signature of the field
 	 */
 	public FieldAnnotation(String className, String fieldName, String fieldSig, boolean isStatic) {
-		super(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className), DEFAULT_ROLE);
+		super(className, DEFAULT_ROLE);
 		this.fieldName = fieldName;
 		this.fieldSig = fieldSig;
 		this.isStatic = isStatic;

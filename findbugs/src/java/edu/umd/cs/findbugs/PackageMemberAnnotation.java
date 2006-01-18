@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+
 /**
  * Abstract base class for BugAnnotations describing constructs
  * which are contained in a Java package.  Specifically,
@@ -40,9 +42,11 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	 *
 	 * @param className name of the class
 	 */
-	public PackageMemberAnnotation(String className, String sourceFileName, String description) {
+	protected PackageMemberAnnotation(String className, String description) {
 		this.className = className;
-		this.sourceFileName = sourceFileName;
+		AnalysisContext context = AnalysisContext.currentAnalysisContext();
+		if (context != null) this.sourceFileName = context.lookupSourceFile(className);
+		else this.sourceFileName = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
 		this.description = description;
 	}
 	

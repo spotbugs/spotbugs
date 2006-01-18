@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -60,7 +59,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param isStatic   true if the method is static, false if not
 	 */
 	public MethodAnnotation(String className, String methodName, String methodSig, boolean isStatic) {
-		super(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className), DEFAULT_ROLE);
+		super(className, DEFAULT_ROLE);
 		this.methodName = methodName;
 		this.methodSig = methodSig;
 		this.isStatic = isStatic;
