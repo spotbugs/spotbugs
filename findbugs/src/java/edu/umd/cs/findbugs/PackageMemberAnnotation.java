@@ -42,6 +42,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	 */
 	public PackageMemberAnnotation(String className, String sourceFileName, String description) {
 		this.className = className;
+		this.sourceFileName = sourceFileName;
 		this.description = description;
 	}
 	
