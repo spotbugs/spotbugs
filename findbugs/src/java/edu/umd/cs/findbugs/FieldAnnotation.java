@@ -211,6 +211,24 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			return cmp;
 		return fieldSig.compareTo(other.fieldSig);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.PackageMemberAnnotation#getSourceLines()
+	 */
+	public SourceLineAnnotation getSourceLines() {
+		if (sourceLines == null) {
+			// Create source line annotation for field on demand
+			
+			Integer fieldLine = AnalysisContext.currentAnalysisContext().getSourceInfoMap()
+				.getFieldLine(className, fieldName);
+			
+			int fieldLineNumber = fieldLine != null ? fieldLine.intValue() : -1;
+			
+			sourceLines = new SourceLineAnnotation(
+					className, sourceFileName, fieldLineNumber, fieldLineNumber, -1, -1);
+		}
+		return sourceLines;
+	}
 
 	/* ----------------------------------------------------------------------
 	 * XML Conversion support
