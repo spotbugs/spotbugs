@@ -140,10 +140,11 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	
 	/**
 	 * Set a SourceLineAnnotation describing the source lines
-	 * where the method is defined.
+	 * where the package element is defined.
 	 */
 	public void setSourceLines(SourceLineAnnotation sourceLines) {
 		this.sourceLines = sourceLines;
+		sourceFileName = sourceLines.getSourceFile();
 	}
 
 	/**
@@ -151,12 +152,15 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	 * where the method is defined.
 	 *
 	 * @return the SourceLineAnnotation, or null if there is no source information
-	 *         for this method
+	 *         for this package element
 	 */
 	public SourceLineAnnotation getSourceLines() {
 		return sourceLines;
 	}
+	
+	
 
+	
 }
 
 // vim:ts=4

@@ -168,7 +168,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				BugAnnotation bugAnnotation = null;
 				if (qName.equals("Class")) {
 					String className = getRequiredAttribute(attributes, "classname", qName);
-					bugAnnotation = packageMemberAnnotation = new ClassAnnotation(className);
+					bugAnnotation = packageMemberAnnotation = new ClassAnnotation(className, SourceLineAnnotation.UNKNOWN_SOURCE_FILE);
 				} else if (qName.equals("Method") || qName.equals("Field")) {
 					String classname = getRequiredAttribute(attributes, "classname", qName);
 					String fieldOrMethodName = getRequiredAttribute(attributes, "name", qName);
@@ -180,12 +180,12 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						}
 
 						bugAnnotation = packageMemberAnnotation = 
-							new MethodAnnotation(classname, fieldOrMethodName, signature, Boolean.valueOf(isStatic));
+							new MethodAnnotation(classname, SourceLineAnnotation.UNKNOWN_SOURCE_FILE, fieldOrMethodName, signature, Boolean.valueOf(isStatic));
 
 					} else {
 						String isStatic = getRequiredAttribute(attributes, "isStatic", qName);
 						bugAnnotation = packageMemberAnnotation = 
-							new FieldAnnotation(classname, fieldOrMethodName, signature,
+							new FieldAnnotation(classname, SourceLineAnnotation.UNKNOWN_SOURCE_FILE, fieldOrMethodName, signature,
 								Boolean.valueOf(isStatic));
 					}
 					
