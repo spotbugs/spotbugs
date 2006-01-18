@@ -266,14 +266,31 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			if (annotation instanceof SourceLineAnnotation)
 				return (SourceLineAnnotation) annotation;
 		}
+		
+		// Next: Try primary method, primary field, primary class
+		SourceLineAnnotation srcLine;
+		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryMethod())) != null)
+			return srcLine;
+		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryField())) != null)
+			return srcLine;
+		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryClass())) != null)
+			return srcLine;
+		
+		// Last resort: give up and return null.
+		// This actually should never happen.
+		return null;
+	}
 
-		// Second priority: return the source line annotation describing the
-		// primary method
-		MethodAnnotation primaryMethodAnnotation = getPrimaryMethod();
-		if (primaryMethodAnnotation != null)
-			return primaryMethodAnnotation.getSourceLines();
-		else
-			return null;
+	/**
+	 * If given PackageMemberAnnotation is non-null,
+	 * return its SourceLineAnnotation.
+	 * 
+	 * @param packageMember a PackageMemberAnnotation
+	 * @return the PackageMemberAnnotation's SourceLineAnnotation, or null
+	 *         if there is no SourceLineAnnotation
+	 */
+	private SourceLineAnnotation inspectPackageMemberSourceLines(PackageMemberAnnotation packageMember) {
+		return (packageMember != null) ? packageMember.getSourceLines() : null;
 	}
 
 	/**
