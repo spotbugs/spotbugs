@@ -40,9 +40,10 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	 * Constructor.
 	 *
 	 * @param className the name of the class
+	 * @param sourceFileName the name of the source file containing the class
 	 */
-	public ClassAnnotation(String className) {
-		super(className, DEFAULT_ROLE);
+	public ClassAnnotation(String className, String sourceFileName) {
+		super(className, sourceFileName, DEFAULT_ROLE);
 	}
 
 	public void accept(BugAnnotationVisitor visitor) {

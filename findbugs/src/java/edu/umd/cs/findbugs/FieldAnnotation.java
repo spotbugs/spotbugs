@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 
 import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.GETFIELD;
@@ -30,6 +31,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -55,11 +57,12 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * Constructor.
 	 *
 	 * @param className the name of the class containing the field
+	 * @param sourceFileName the name of the source file containing the field's class
 	 * @param fieldName the name of the field
 	 * @param fieldSig  the type signature of the field
 	 */
-	public FieldAnnotation(String className, String fieldName, String fieldSig, boolean isStatic) {
-		super(className, DEFAULT_ROLE);
+	public FieldAnnotation(String className, String sourceFileName, String fieldName, String fieldSig, boolean isStatic) {
+		super(className, sourceFileName, DEFAULT_ROLE);
 		this.fieldName = fieldName;
 		this.fieldSig = fieldSig;
 		this.isStatic = isStatic;
@@ -73,8 +76,9 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * @return the FieldAnnotation object
 	 */
 	public static FieldAnnotation fromVisitedField(PreorderVisitor visitor) {
-		return new FieldAnnotation(visitor.getDottedClassName(), visitor.getFieldName(), visitor.getFieldSig(),
-		        visitor.getFieldIsStatic());
+		return new FieldAnnotation(visitor.getDottedClassName(),
+				visitor.getSourceFile(), visitor.getFieldName(),
+				visitor.getFieldSig(), visitor.getFieldIsStatic());
 	}
 
 	/**
@@ -86,8 +90,11 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * @return the FieldAnnotation object
 	 */
 	public static FieldAnnotation fromReferencedField(DismantleBytecode visitor) {
-		return new FieldAnnotation(visitor.getDottedClassConstantOperand(), visitor.getNameConstantOperand(), visitor.getSigConstantOperand(),
-		        visitor.getRefFieldIsStatic());
+		String className = visitor.getDottedClassConstantOperand();
+		return new FieldAnnotation(className,
+				AnalysisContext.currentAnalysisContext().lookupSourceFile(className),
+				visitor.getNameConstantOperand(), visitor.getSigConstantOperand(),
+				visitor.getRefFieldIsStatic());
 	}
 
 	/**
@@ -97,7 +104,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * @param field     the BCEL Field object
 	 */
 	public static FieldAnnotation fromBCELField(String className, Field field) {
-		return new FieldAnnotation(className, field.getName(), field.getSignature(), field.isStatic());
+		return new FieldAnnotation(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className), field.getName(), field.getSignature(), field.isStatic());
 	}
 
 	/**
@@ -131,7 +138,9 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	public static FieldAnnotation isRead(Instruction ins, ConstantPoolGen cpg) {
 		if (ins instanceof GETFIELD || ins instanceof GETSTATIC) {
 			FieldInstruction fins = (FieldInstruction) ins;
-			return new FieldAnnotation(fins.getClassName(cpg), fins.getName(cpg), fins.getSignature(cpg), fins instanceof GETSTATIC);
+			String className = fins.getClassName(cpg);
+			String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
+			return new FieldAnnotation(className, sourceFileName, fins.getName(cpg), fins.getSignature(cpg), fins instanceof GETSTATIC);
 		} else
 			return null;
 	}
@@ -146,7 +155,9 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	public static FieldAnnotation isWrite(Instruction ins, ConstantPoolGen cpg) {
 		if (ins instanceof PUTFIELD || ins instanceof PUTSTATIC) {
 			FieldInstruction fins = (FieldInstruction) ins;
-			return new FieldAnnotation(fins.getClassName(cpg), fins.getName(cpg), fins.getSignature(cpg), fins instanceof PUTSTATIC);
+			String className = fins.getClassName(cpg);
+			String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
+			return new FieldAnnotation(className, sourceFileName, fins.getName(cpg), fins.getSignature(cpg), fins instanceof PUTSTATIC);
 		} else
 			return null;
 	}

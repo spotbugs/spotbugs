@@ -38,6 +38,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.XField;
@@ -564,7 +565,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addClassAndMethod(MethodAnnotation methodAnnotation) {
-		addClass(methodAnnotation.getClassName());
+		addClass(methodAnnotation.getClassName(), methodAnnotation.getSourceFileName());
 		addMethod(methodAnnotation);
 		return this;
 	}
@@ -577,7 +578,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addClassAndMethod(MethodGen methodGen, String sourceFile) {
-		addClass(methodGen.getClassName());
+		addClass(methodGen.getClassName(), sourceFile);
 		addMethod(methodGen, sourceFile);
 		return this;
 	}
@@ -591,7 +592,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addClassAndMethod(JavaClass javaClass, Method method) {
-		addClass(javaClass.getClassName());
+		addClass(javaClass.getClassName(), javaClass.getSourceFileName());
 		addMethod(javaClass, method);
 		return this;
 	}
@@ -605,12 +606,25 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * it becomes the primary class annotation.
 	 *
 	 * @param className the name of the class
+	 * @param sourceFileName the source file of the class
+	 * @return this object
+	 */
+	public BugInstance addClass(String className, String sourceFileName) {
+		ClassAnnotation classAnnotation = new ClassAnnotation(className, sourceFileName);
+		add(classAnnotation);
+		return this;
+	}
+
+	/**
+	 * Add a class annotation, but
+	 * look up the source file name from the class name (using currentAnalysisContext)
+	 *
+	 * @param className the name of the class
 	 * @return this object
 	 */
 	public BugInstance addClass(String className) {
-		ClassAnnotation classAnnotation = new ClassAnnotation(className);
-		add(classAnnotation);
-		return this;
+		String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
+		return addClass(className, sourceFileName);
 	}
 
 	/**
@@ -621,7 +635,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addClass(JavaClass jclass) {
-		addClass(jclass.getClassName());
+		addClass(jclass.getClassName(), jclass.getSourceFileName());
 		return this;
 	}
 
@@ -633,7 +647,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance addClass(PreorderVisitor visitor) {
 		String className = visitor.getDottedClassName();
-		addClass(className);
+		addClass(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className));
 		return this;
 	}
 
@@ -646,7 +660,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance addSuperclass(PreorderVisitor visitor) {
 		String className = visitor.getSuperclassName();
-		addClass(className);
+		addClass(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className));
 		return this;
 	}
 
@@ -664,7 +678,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addField(String className, String fieldName, String fieldSig, boolean isStatic) {
-		addField(new FieldAnnotation(className, fieldName, fieldSig, isStatic));
+		String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
+		addField(new FieldAnnotation(className, sourceFileName, fieldName, fieldSig, isStatic));
 		return this;
 	}
 
@@ -744,13 +759,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * it becomes the primary method annotation.
 	 *
 	 * @param className  name of the class containing the method
+	 * @param sourceFileName  name of the source file of the method's class
 	 * @param methodName name of the method
 	 * @param methodSig  type signature of the method
 	 * @param isStatic   true if the method is static, false otherwise
 	 * @return this object
 	 */
-	public BugInstance addMethod(String className, String methodName, String methodSig, boolean isStatic) {
-		addMethod(new MethodAnnotation(className, methodName, methodSig, isStatic));
+	public BugInstance addMethod(String className, String sourceFileName, String methodName, String methodSig, boolean isStatic) {
+		addMethod(new MethodAnnotation(className, sourceFileName, methodName, methodSig, isStatic));
 		return this;
 	}
 
@@ -765,8 +781,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addMethod(MethodGen methodGen, String sourceFile) {
+		String className = methodGen.getClassName();
+		String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
 		MethodAnnotation methodAnnotation =
-		        new MethodAnnotation(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature(), methodGen.isStatic());
+		        new MethodAnnotation(className, sourceFileName, methodGen.getName(), methodGen.getSignature(), methodGen.isStatic());
 		addMethod(methodAnnotation);
 		addSourceLinesForMethod(methodAnnotation, SourceLineAnnotation.fromVisitedMethod(methodGen, sourceFile));
 		return this;
@@ -784,7 +802,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance addMethod(JavaClass javaClass, Method method) {
 		MethodAnnotation methodAnnotation =
-			new MethodAnnotation(javaClass.getClassName(), method.getName(), method.getSignature(), method.isStatic());
+			new MethodAnnotation(javaClass.getClassName(), javaClass.getSourceFileName(), method.getName(), method.getSignature(), method.isStatic());
 		SourceLineAnnotation methodSourceLines = SourceLineAnnotation.forEntireMethod(
 				javaClass,
 				method);
@@ -832,9 +850,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance addCalledMethod(DismantleBytecode visitor) {
 		String className = visitor.getDottedClassConstantOperand();
+		String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
 		String methodName = visitor.getNameConstantOperand();
 		String methodSig = visitor.getDottedSigConstantOperand();
-		addMethod(className, methodName, methodSig, visitor.getMethod().isStatic());
+		addMethod(className, sourceFileName, methodName, methodSig, visitor.getMethod().isStatic());
 		describe("METHOD_CALLED");
 		return this;
 	}
@@ -843,13 +862,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * Add a method annotation.
 	 *
 	 * @param className  name of class containing called method
+	 * @param sourceFileName  name of source file of the method's class
 	 * @param methodName name of called method
 	 * @param methodSig  signature of called method
 	 * @param isStatic   true if called method is static, false if not
 	 * @return this object
 	 */
-	public BugInstance addCalledMethod(String className, String methodName, String methodSig, boolean isStatic) {
-		addMethod(className, methodName, methodSig, isStatic);
+	public BugInstance addCalledMethod(String className, String sourceFileName, String methodName, String methodSig, boolean isStatic) {
+		addMethod(className, sourceFileName, methodName, methodSig, isStatic);
 		describe("METHOD_CALLED");
 		return this;
 	}
@@ -865,9 +885,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public BugInstance addCalledMethod(MethodGen methodGen, InvokeInstruction inv) {
 		ConstantPoolGen cpg = methodGen.getConstantPool();
 		String className = inv.getClassName(cpg);
+		String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
 		String methodName = inv.getMethodName(cpg);
 		String methodSig = inv.getSignature(cpg);
-		addMethod(className, methodName, methodSig, inv.getOpcode() == Constants.INVOKESTATIC);
+		addMethod(className, sourceFileName, methodName, methodSig, inv.getOpcode() == Constants.INVOKESTATIC);
 		describe("METHOD_CALLED");
 		return this;
 	}

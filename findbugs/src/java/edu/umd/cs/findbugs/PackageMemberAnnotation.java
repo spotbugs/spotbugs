@@ -31,15 +31,16 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	private static final long serialVersionUID = -8208567669352996892L;
 	
 	protected String className;
+	protected String sourceFileName;
 	protected String description;
-	 SourceLineAnnotation sourceLines;
+	protected SourceLineAnnotation sourceLines;
 	 
 	/**
 	 * Constructor.
 	 *
 	 * @param className name of the class
 	 */
-	public PackageMemberAnnotation(String className, String description) {
+	public PackageMemberAnnotation(String className, String sourceFileName, String description) {
 		this.className = className;
 		this.description = description;
 	}
@@ -51,6 +52,13 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 		} catch (CloneNotSupportedException e) {
 			throw new IllegalStateException("impossible", e);
 		}
+	}
+
+	/**
+	 * Get the source file name.
+	 */
+	public final String getSourceFileName() {
+		return sourceFileName;
 	}
 
 	/**
