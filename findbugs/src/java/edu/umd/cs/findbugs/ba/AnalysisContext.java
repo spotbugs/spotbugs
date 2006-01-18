@@ -30,6 +30,7 @@ import java.util.Map;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
@@ -248,6 +249,21 @@ public class AnalysisContext {
 	public JavaClass lookupClass(String className) throws ClassNotFoundException {
 		// TODO: eventually we should move to our own thread-safe repository implementation
 		return Repository.lookupClass(className);
+	}
+	
+	/**
+	 * Lookup a class's sourfe file
+	 * 
+	 * @param className the name of the class
+	 * @return the source file for the class, or SourceLineAnnotation.UNKNOWN_SOURCE_FILE if unable to determine
+	 */
+	public String lookupSourceFile(String className) {
+		try {
+			JavaClass jc = AnalysisContext.currentAnalysisContext().lookupClass(className);
+			return jc.getSourceFileName();
+		} catch (ClassNotFoundException cnfe) {
+		  return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
+		}
 	}
 
 	/**

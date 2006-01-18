@@ -56,7 +56,7 @@ public class ConfusedInheritance extends PreorderVisitor  implements Detector, S
 				new BugInstance( this, "CI_CONFUSED_INHERITANCE", LOW_PRIORITY)
 					.addClass(cls)
 					.addField(
-						new FieldAnnotation(cls.getClassName(), obj.getName(), obj.getSignature(), obj.isStatic())));
+						new FieldAnnotation(cls.getClassName(), cls.getSourceFileName(), obj.getName(), obj.getSignature(), obj.isStatic())));
 		}
 	}
 	

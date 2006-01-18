@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.MethodWarningSuppressor;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.PackageWarningSuppressor;
 import edu.umd.cs.findbugs.SuppressionMatcher;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
@@ -107,7 +108,8 @@ public class NoteSuppressedWarnings extends AnnotationVisitor
 
         private void suppressWarning(String pattern) {
 		String className = getDottedClassName();
-		ClassAnnotation clazz = new ClassAnnotation(getDottedClassName());
+		String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
+		ClassAnnotation clazz = new ClassAnnotation(className, sourceFileName);
 		if (className.endsWith("package-info") && recursiveDetector == null) 
 			suppressionMatcher.addPackageSuppressor(
 			new PackageWarningSuppressor(pattern,

@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class FindMaskedFields extends BytecodeScanningDetector {
@@ -81,7 +82,9 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 						if (classFields.containsKey(fieldName)) {
 							maskedFields.add(fld);
 							Field maskingField = classFields.get(fieldName);
-							FieldAnnotation fa = new FieldAnnotation(getDottedClassName(),
+							String mClassName = getDottedClassName();
+							String mSourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(mClassName);
+							FieldAnnotation fa = new FieldAnnotation(mClassName, mSourceFileName,
 									maskingField.getName(),
 									maskingField.getSignature(),
 									maskingField.isStatic());

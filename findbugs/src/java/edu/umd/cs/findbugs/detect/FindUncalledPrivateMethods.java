@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -71,8 +72,11 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 		case INVOKESPECIAL:
 		case INVOKESTATIC:
 			if (getDottedClassConstantOperand().equals(className)) {
+				String className = getDottedClassConstantOperand();
+				String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
 				MethodAnnotation called = new MethodAnnotation(
-						getDottedClassConstantOperand(),
+						className,
+						sourceFileName,
 						getNameConstantOperand(),
 						getSigConstantOperand(),
 						seen == INVOKESTATIC);

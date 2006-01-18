@@ -117,10 +117,11 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			else if (catchSize <= 2) priority += 1;
 			if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen) 
 					&& !callSeen.getSignature().endsWith(callSeen.getClassName().replace('.','/')+";")) priority++;
+			String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
 			BugInstance warning =
 				new BugInstance(this, "RV_RETURN_VALUE_IGNORED", priority)
 					.addClassAndMethod(this)
-					.addMethod(className, methodName, signature, seen == Constants.INVOKESTATIC).describe("METHOD_CALLED")
+					.addMethod(className, sourceFileName, methodName, signature, seen == Constants.INVOKESTATIC).describe("METHOD_CALLED")
 					.addSourceLine(this, callPC);
 			bugReporter.reportBug(warning);
 			}
