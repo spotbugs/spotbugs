@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="javadoc">
+<target name="javadoc">
+<javadoc access="public" author="true" classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-full.jar:lib/AppleJavaExtensions.jar" destdir="doc/annotationDoc" doctitle="FindBugs Annotation Documentation" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="edu.umd.cs.findbugs.annotations" source="1.5" sourcepath="src/tools:src/java:src/junit" splitindex="true" use="true" version="true"/>
+</target>
+</project>
