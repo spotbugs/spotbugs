@@ -256,9 +256,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	
 	/**
 	 * Get the primary source line annotation.
+	 * There is guaranteed to be one (unless some Detector constructed
+	 * an invalid BugInstance).
 	 *
-	 * @return the source line annotation, or null if there is
-	 *         no source line annotation
+	 * @return the source line annotation
 	 */
 	public SourceLineAnnotation getPrimarySourceLineAnnotation() {
 		// Highest priority: return the first top level source line annotation
@@ -276,9 +277,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryClass())) != null)
 			return srcLine;
 		
-		// Last resort: give up and return null.
-		// This actually should never happen.
-		return null;
+		// Last resort: throw exception
+		throw new IllegalStateException("BugInstance must contain at least one class, method, or field annotation");
 	}
 
 	/**
