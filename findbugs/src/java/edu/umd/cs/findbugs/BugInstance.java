@@ -1209,7 +1209,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 				foundSourceAnnotation = true;
 			annotation.writeXML(xmlOutput, addMessages);
 		}
-		if (!foundSourceAnnotation) {
+		if (!foundSourceAnnotation && addMessages) {
 			SourceLineAnnotation synth = getPrimarySourceLineAnnotation();
 			if (synth != null) {
 				synth.setSynthetic(true);
