@@ -222,7 +222,14 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", role);
 		
-		BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
+		xmlOutput.openTag(ELEMENT_NAME, attributeList);
+		getSourceLines().writeXML(xmlOutput, addMessages);
+		if (addMessages) {
+			xmlOutput.openTag(BugAnnotation.MESSAGE_TAG);
+			xmlOutput.writeText(this.toString());
+			xmlOutput.closeTag(BugAnnotation.MESSAGE_TAG);
+		}
+		xmlOutput.closeTag(ELEMENT_NAME);
 	}
 }
 
