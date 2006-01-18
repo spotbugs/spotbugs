@@ -58,11 +58,6 @@ public class Naming extends PreorderVisitor implements Detector {
 			return className;
 		}
 
-		/** for now this just does a lookup via currentAnalysisContext */
-		public String getSourceFileName() {
-			 return AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
-		}
-
 		public boolean equals(Object o) {
 			if (!(o instanceof MyMethod)) return false;
 			MyMethod m2 = (MyMethod) o;
@@ -127,9 +122,9 @@ public class Naming extends PreorderVisitor implements Detector {
 					if (r) continue;
 					bugReporter.reportBug(new BugInstance(this, "NM_VERY_CONFUSING", HIGH_PRIORITY)
 							.addClass(m.getClassName())
-							.addMethod(m.getClassName(), m.getSourceFileName(), m.methodName, m.methodSig, m.isStatic)
+							.addMethod(m.getClassName(), m.methodName, m.methodSig, m.isStatic)
 							.addClass(m2.getClassName())
-							.addMethod(m2.getClassName(), m2.getSourceFileName(), m2.methodName, m2.methodSig, m2.isStatic));
+							.addMethod(m2.getClassName(), m2.methodName, m2.methodSig, m2.isStatic));
 					return true;
 				}
 			} catch (ClassNotFoundException e) {
@@ -143,9 +138,9 @@ public class Naming extends PreorderVisitor implements Detector {
 			if (m.confusingMethodNames(m2)) {
 				bugReporter.reportBug(new BugInstance(this, "NM_CONFUSING", LOW_PRIORITY)
 						.addClass(m.getClassName())
-						.addMethod(m.getClassName(), m.getSourceFileName(), m.methodName, m.methodSig, m.isStatic)
+						.addMethod(m.getClassName(), m.methodName, m.methodSig, m.isStatic)
 						.addClass(m2.getClassName())
-						.addMethod(m2.getClassName(), m2.getSourceFileName(), m2.methodName, m2.methodSig, m2.isStatic));
+						.addMethod(m2.getClassName(), m2.methodName, m2.methodSig, m2.isStatic));
 				return true;
 			}
 		}

@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.io.PrintStream;
 import java.util.BitSet;
 
 import org.apache.bcel.classfile.Code;
@@ -43,6 +44,10 @@ public class FindBugsSummaryStats extends PreorderVisitor
 	   int methods = 0;
 	   int fields = 0;
 	   int classCodeSize;
+	   int totalNCSS = 0;
+	   int totalCodeSize = 0;
+	   int totalMethods = 0;
+	   int totalFields = 0;
 	   boolean sawLineNumbers;
 
 
@@ -69,23 +74,29 @@ public class FindBugsSummaryStats extends PreorderVisitor
 			   linesNCSS += lines.cardinality();
 		   else
 			   linesNCSS += classCodeSize / 10;
+		   if (stats != null) 
 			stats.addClass(getDottedClassName(), obj.isInterface(),
 					linesNCSS);
+			totalCodeSize += classCodeSize;
+			totalNCSS += linesNCSS;
+			totalMethods += methods;
+			totalFields += fields;
 
 		}
 
 	   public void visit(LineNumber obj) {
 	   	sawLineNumbers = true;
 		int line = obj.getLineNumber();
-
 		lines.set(line);
-
 	        }
 	
 
 	public FindBugsSummaryStats(BugReporter bugReporter) {
 		this.stats = bugReporter.getProjectStats();
 		bugReporter.addObserver(this);
+	}
+	public FindBugsSummaryStats() {
+		this.stats =null;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -94,9 +105,17 @@ public class FindBugsSummaryStats extends PreorderVisitor
 
 	public void report() {
 	}
+	public void report(PrintStream out) {
+		out.println("NCSS\t" + totalNCSS);
+		out.println("codeSz\t" + totalCodeSize);
+		out.println("methods\t" + totalMethods);
+		out.println("fields\t" + totalFields);
+	}
 	
 	public void reportBug(BugInstance bug) {
 		stats.addBug(bug);
 	}
+
+
 
 }

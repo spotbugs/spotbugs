@@ -83,9 +83,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 							maskedFields.add(fld);
 							Field maskingField = classFields.get(fieldName);
 							String mClassName = getDottedClassName();
-							String mSourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(mClassName);
-							FieldAnnotation fa = new FieldAnnotation(mClassName, mSourceFileName,
-									maskingField.getName(),
+							FieldAnnotation fa = new FieldAnnotation(mClassName, maskingField.getName(),
 									maskingField.getSignature(),
 									maskingField.isStatic());
 							int priority = NORMAL_PRIORITY;

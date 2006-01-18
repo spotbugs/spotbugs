@@ -148,12 +148,11 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 							if (alreadyReported.contains(nameCons.getBytes()))
 								return;
 							alreadyReported.add(nameCons.getBytes());
-							String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(getClassName());
 							bugReporter.reportBug(new BugInstance(this,
 									STRUTS_ACTION_NAME.equals(mtClassName) ? "MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" : "MTIA_SUSPECT_SERVLET_INSTANCE_FIELD",
 									LOW_PRIORITY)
 									.addClass(this).addSourceLine(this)
-									.addField(new FieldAnnotation(getClassName(), sourceFileName, nameCons.getBytes(), typeCons.getBytes(), false)));
+									.addField(new FieldAnnotation(getClassName(), nameCons.getBytes(), typeCons.getBytes(), false)));
 						}
 						break;
 					}

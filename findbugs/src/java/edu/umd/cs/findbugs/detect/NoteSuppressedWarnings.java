@@ -108,8 +108,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor
 
         private void suppressWarning(String pattern) {
 		String className = getDottedClassName();
-		String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
-		ClassAnnotation clazz = new ClassAnnotation(className, sourceFileName);
+		ClassAnnotation clazz = new ClassAnnotation(className);
 		if (className.endsWith("package-info") && recursiveDetector == null) 
 			suppressionMatcher.addPackageSuppressor(
 			new PackageWarningSuppressor(pattern,
