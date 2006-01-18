@@ -57,12 +57,11 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * Constructor.
 	 *
 	 * @param className the name of the class containing the field
-	 * @param sourceFileName the name of the source file containing the field's class
 	 * @param fieldName the name of the field
 	 * @param fieldSig  the type signature of the field
 	 */
-	public FieldAnnotation(String className, String sourceFileName, String fieldName, String fieldSig, boolean isStatic) {
-		super(className, sourceFileName, DEFAULT_ROLE);
+	public FieldAnnotation(String className, String fieldName, String fieldSig, boolean isStatic) {
+		super(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className), DEFAULT_ROLE);
 		this.fieldName = fieldName;
 		this.fieldSig = fieldSig;
 		this.isStatic = isStatic;
@@ -77,8 +76,8 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 */
 	public static FieldAnnotation fromVisitedField(PreorderVisitor visitor) {
 		return new FieldAnnotation(visitor.getDottedClassName(),
-				visitor.getSourceFile(), visitor.getFieldName(),
-				visitor.getFieldSig(), visitor.getFieldIsStatic());
+				visitor.getFieldName(), visitor.getFieldSig(),
+				visitor.getFieldIsStatic());
 	}
 
 	/**
@@ -92,9 +91,8 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	public static FieldAnnotation fromReferencedField(DismantleBytecode visitor) {
 		String className = visitor.getDottedClassConstantOperand();
 		return new FieldAnnotation(className,
-				AnalysisContext.currentAnalysisContext().lookupSourceFile(className),
-				visitor.getNameConstantOperand(), visitor.getSigConstantOperand(),
-				visitor.getRefFieldIsStatic());
+				visitor.getNameConstantOperand(),
+				visitor.getSigConstantOperand(), visitor.getRefFieldIsStatic());
 	}
 
 	/**
@@ -104,7 +102,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * @param field     the BCEL Field object
 	 */
 	public static FieldAnnotation fromBCELField(String className, Field field) {
-		return new FieldAnnotation(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className), field.getName(), field.getSignature(), field.isStatic());
+		return new FieldAnnotation(className, field.getName(), field.getSignature(), field.isStatic());
 	}
 
 	/**
@@ -140,7 +138,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			FieldInstruction fins = (FieldInstruction) ins;
 			String className = fins.getClassName(cpg);
 			String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
-			return new FieldAnnotation(className, sourceFileName, fins.getName(cpg), fins.getSignature(cpg), fins instanceof GETSTATIC);
+			return new FieldAnnotation(className, fins.getName(cpg), fins.getSignature(cpg), fins instanceof GETSTATIC);
 		} else
 			return null;
 	}
@@ -157,7 +155,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			FieldInstruction fins = (FieldInstruction) ins;
 			String className = fins.getClassName(cpg);
 			String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
-			return new FieldAnnotation(className, sourceFileName, fins.getName(cpg), fins.getSignature(cpg), fins instanceof PUTSTATIC);
+			return new FieldAnnotation(className, fins.getName(cpg), fins.getSignature(cpg), fins instanceof PUTSTATIC);
 		} else
 			return null;
 	}

@@ -55,13 +55,12 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * Constructor.
 	 *
 	 * @param className  the name of the class containing the method
-	 * @param sourceFileName  the name of the source file of the method's class
 	 * @param methodName the name of the method
 	 * @param methodSig  the Java type signature of the method
 	 * @param isStatic   true if the method is static, false if not
 	 */
-	public MethodAnnotation(String className, String sourceFileName, String methodName, String methodSig, boolean isStatic) {
-		super(className, sourceFileName, DEFAULT_ROLE);
+	public MethodAnnotation(String className, String methodName, String methodSig, boolean isStatic) {
+		super(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className), DEFAULT_ROLE);
 		this.methodName = methodName;
 		this.methodSig = methodSig;
 		this.isStatic = isStatic;
@@ -79,7 +78,6 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		String className = visitor.getDottedClassName();
 		MethodAnnotation result = new MethodAnnotation(
 				className,
-				AnalysisContext.currentAnalysisContext().lookupSourceFile(className),
 				visitor.getMethodName(),
 				visitor.getMethodSig(),
 				visitor.getMethod().isStatic());
@@ -101,7 +99,6 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		String className = xmethod.getClassName();
 		return new MethodAnnotation(
 				className,
-				AnalysisContext.currentAnalysisContext().lookupSourceFile(className),
 				xmethod.getName(),
 				xmethod.getSignature(),
 				xmethod.isStatic());

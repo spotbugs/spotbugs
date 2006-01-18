@@ -31,6 +31,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
@@ -246,8 +247,9 @@ public class AnalysisContext {
 	 * @return the JavaClass representing the class
 	 * @throws ClassNotFoundException
 	 */
-	public JavaClass lookupClass(String className) throws ClassNotFoundException {
+	public JavaClass lookupClass(@NonNull String className) throws ClassNotFoundException {
 		// TODO: eventually we should move to our own thread-safe repository implementation
+		if (className == null) throw new IllegalArgumentException("className is null");
 		return Repository.lookupClass(className);
 	}
 	
@@ -257,10 +259,17 @@ public class AnalysisContext {
 	 * @param className the name of the class
 	 * @return the source file for the class, or SourceLineAnnotation.UNKNOWN_SOURCE_FILE if unable to determine
 	 */
-	public String lookupSourceFile(String className) {
+	public String lookupSourceFile(@NonNull String className) {
+		if (className == null) 
+			throw new IllegalArgumentException("className is null");
 		try {
 			JavaClass jc = AnalysisContext.currentAnalysisContext().lookupClass(className);
-			return jc.getSourceFileName();
+			String name = jc.getSourceFileName();
+			if (name == null) {
+				System.out.println("No sourcefile for " + className);
+				return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
+			}
+			return name;
 		} catch (ClassNotFoundException cnfe) {
 		  return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
 		}

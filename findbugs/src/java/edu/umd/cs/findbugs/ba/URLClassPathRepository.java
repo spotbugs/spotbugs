@@ -30,6 +30,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.util.ClassPath;
 import org.apache.bcel.util.Repository;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 
 /**
  * BCEL Repository implementation that uses an URLClassPath
@@ -109,7 +111,7 @@ public class URLClassPathRepository implements Repository {
 	/* (non-Javadoc)
 	 * @see org.apache.bcel.util.Repository#findClass(java.lang.String)
 	 */
-	public JavaClass findClass(String className) {
+	public JavaClass findClass(@NonNull String className) {
 		// Make sure we handle class names with slashes.
 		// If we don't, we can get into serious trouble: a previously
 		// loaded class will appear to be missing (because we're using the
@@ -123,7 +125,8 @@ public class URLClassPathRepository implements Repository {
 	/* (non-Javadoc)
 	 * @see org.apache.bcel.util.Repository#loadClass(java.lang.String)
 	 */
-	public JavaClass loadClass(String className) throws ClassNotFoundException {
+	public JavaClass loadClass(@NonNull String className) throws ClassNotFoundException {
+		if (className == null) throw new IllegalArgumentException("className is null");
 		//if (className.indexOf('/') >= 0) throw new IllegalStateException();
 		JavaClass javaClass = findClass(className);
 		if (javaClass == null) {

@@ -23,7 +23,6 @@ import java.util.Iterator;
 
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 
 /**
@@ -93,7 +92,6 @@ public abstract class ClassNameRewriterUtil {
 		if (classNameRewriter != IdentityClassNameRewriter.instance()) {
 			annotation = new MethodAnnotation(
 					classNameRewriter.rewriteClassName(annotation.getClassName()),
-					SourceLineAnnotation.UNKNOWN_SOURCE_FILE,
 					annotation.getMethodName(),
 					rewriteMethodSignature(classNameRewriter, annotation.getMethodSignature()),
 					annotation.isStatic());
@@ -114,7 +112,6 @@ public abstract class ClassNameRewriterUtil {
 		if (classNameRewriter != IdentityClassNameRewriter.instance()) {
 			annotation = new FieldAnnotation(
 					classNameRewriter.rewriteClassName(annotation.getClassName()),
-					SourceLineAnnotation.UNKNOWN_SOURCE_FILE,
 					annotation.getFieldName(),
 					rewriteSignature(classNameRewriter, annotation.getFieldSignature()),
 					annotation.isStatic());
