@@ -47,7 +47,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private ArrayList<String> elementStack;
 	private StringBuffer textBuffer;
 	private BugInstance bugInstance;
-	private MethodAnnotation methodAnnotation;
+	private PackageMemberAnnotation packageMemberAnnotation;
 	private AnalysisError analysisError;
 //	private ClassHash classHash;
 	private ClassFeatureSet classFeatureSet;
@@ -168,7 +168,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				BugAnnotation bugAnnotation = null;
 				if (qName.equals("Class")) {
 					String className = getRequiredAttribute(attributes, "classname", qName);
-					bugAnnotation = new ClassAnnotation(className);
+					bugAnnotation = packageMemberAnnotation = new ClassAnnotation(className);
 				} else if (qName.equals("Method") || qName.equals("Field")) {
 					String classname = getRequiredAttribute(attributes, "classname", qName);
 					String fieldOrMethodName = getRequiredAttribute(attributes, "name", qName);
@@ -179,16 +179,16 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 							isStatic = "false"; // Hack for old data
 						}
 
-						// Save in field in case of nested SourceLine elements.
-						methodAnnotation =
+						bugAnnotation = packageMemberAnnotation = 
 							new MethodAnnotation(classname, fieldOrMethodName, signature, Boolean.valueOf(isStatic));
-						
-						bugAnnotation = methodAnnotation;
+
 					} else {
 						String isStatic = getRequiredAttribute(attributes, "isStatic", qName);
-						bugAnnotation = new FieldAnnotation(classname, fieldOrMethodName, signature,
+						bugAnnotation = packageMemberAnnotation = 
+							new FieldAnnotation(classname, fieldOrMethodName, signature,
 								Boolean.valueOf(isStatic));
 					}
+					
 				} else if (qName.equals("SourceLine")) {
 					SourceLineAnnotation sourceAnnotation = createSourceLineAnnotation(qName, attributes);
 					if (!sourceAnnotation.isSynthetic())
@@ -226,10 +226,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					setAnnotationRole(attributes, bugAnnotation);
 					bugInstance.add(bugAnnotation);
 				}
-			} else if (outerElement.equals("Method")) {
+			} else if (outerElement.equals("Method") || outerElement.equals("Field") || outerElement.equals("Class")) {
 				if (qName.equals("SourceLine")) {
-					// Method elements can contain nested SourceLine elements.
-					methodAnnotation.setSourceLines(createSourceLineAnnotation(qName, attributes));
+					// package member elements can contain nested SourceLine elements.
+					packageMemberAnnotation.setSourceLines(createSourceLineAnnotation(qName, attributes));
 				}
 			} else if (outerElement.equals(BugCollection.ERRORS_ELEMENT_NAME)) {
 				if (qName.equals(BugCollection.ANALYSIS_ERROR_ELEMENT_NAME) ||
