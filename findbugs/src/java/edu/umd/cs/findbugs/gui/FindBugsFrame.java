@@ -501,7 +501,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 
         priorityButtonGroup = new javax.swing.ButtonGroup();
         effortButtonGroup = new javax.swing.ButtonGroup();
-        consoleSplitter = new javax.swing.JSplitPane();
+        //consoleSplitter = new javax.swing.JSplitPane();
         viewPanel = new javax.swing.JPanel();
         emptyPanel = new javax.swing.JPanel();
         reportPanel = new javax.swing.JPanel();
@@ -564,8 +564,6 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         sourceTextArea = new javax.swing.JTextArea();
         annotationTextAreaScrollPane = new javax.swing.JScrollPane();
         annotationTextArea = new javax.swing.JTextArea();
-        consoleScrollPane = new javax.swing.JScrollPane();
-        consoleMessageArea = new javax.swing.JTextArea();
         urlLabel = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         logoLabel = new javax.swing.JLabel();
@@ -592,7 +590,6 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         jSeparator10 = new javax.swing.JSeparator();
         selectAllItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
-        viewConsoleItem = new javax.swing.JCheckBoxMenuItem();
         viewBugDetailsItem = new javax.swing.JCheckBoxMenuItem();
         fullDescriptionsItem = new javax.swing.JCheckBoxMenuItem();
         jSeparator7 = new javax.swing.JSeparator();
@@ -622,15 +619,6 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
             }
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
-            }
-        });
-
-        consoleSplitter.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        consoleSplitter.setResizeWeight(1.0);
-        consoleSplitter.setOneTouchExpandable(true);
-        consoleSplitter.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                consoleSplitterPropertyChange(evt);
             }
         });
 
@@ -1233,8 +1221,6 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 
         viewPanel.add(bugTreePanel, "BugTree");
 
-        consoleSplitter.setTopComponent(viewPanel);
-
         {
             equalizeControls( new JComponent[]
                 {
@@ -1262,22 +1248,6 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
                 bugDetailsTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.sourcecode_tab", "Source Code"));
                 bugDetailsTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.annotations_tab", "Annotations"));
             }
-            consoleScrollPane.setMinimumSize(new java.awt.Dimension(22, 100));
-            consoleScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
-            consoleMessageArea.setBackground(new java.awt.Color(204, 204, 204));
-            consoleMessageArea.setEditable(false);
-            consoleMessageArea.setFont(SOURCE_FONT);
-            consoleMessageArea.setAutoscrolls(false);
-            consoleMessageArea.setMinimumSize(new java.awt.Dimension(0, 0));
-            consoleMessageArea.addFocusListener(new java.awt.event.FocusAdapter() {
-                public void focusGained(java.awt.event.FocusEvent evt) {
-                    focusGainedHandler(evt);
-                }
-            });
-
-            consoleScrollPane.setViewportView(consoleMessageArea);
-
-            consoleSplitter.setBottomComponent(consoleScrollPane);
 
             gridBagConstraints = new java.awt.GridBagConstraints();
             gridBagConstraints.gridx = 0;
@@ -1286,7 +1256,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
             gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
             gridBagConstraints.weightx = 1.0;
             gridBagConstraints.weighty = 1.0;
-            getContentPane().add(consoleSplitter, gridBagConstraints);
+            getContentPane().add(viewPanel, gridBagConstraints);
 
             urlLabel.setFont(BUTTON_FONT);
             urlLabel.setText("FindBugs - http://findbugs.sourceforge.net/");
@@ -1504,17 +1474,6 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
                     viewMenuMenuSelected(evt);
                 }
             });
-
-            viewConsoleItem.setFont(BUTTON_FONT);
-            viewConsoleItem.setText("Console");
-            localiseButton(viewConsoleItem, "menu.console_item", "&Console", true);
-            viewConsoleItem.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    viewConsoleItemActionPerformed(evt);
-                }
-            });
-
-            viewMenu.add(viewConsoleItem);
 
             viewBugDetailsItem.setFont(BUTTON_FONT);
             viewBugDetailsItem.setSelected(true);
@@ -2141,26 +2100,6 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		about();
 	}//GEN-LAST:event_aboutItemActionPerformed
 
-	private void consoleSplitterPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_consoleSplitterPropertyChange
-		// The idea here is to keep the View:Console checkbox up to date with
-		// the real location of the divider of the consoleSplitter.
-		// What we want is if any part of the console window is visible,
-		// then the checkbox should be checked.
-		String propertyName = evt.getPropertyName();
-		if (propertyName.equals(JSplitPane.DIVIDER_LOCATION_PROPERTY)) {
-			boolean isMaximized = isSplitterMaximized(consoleSplitter, evt);
-			viewConsoleItem.setSelected(!isMaximized);
-		}
-	}//GEN-LAST:event_consoleSplitterPropertyChange
-
-	private void viewConsoleItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewConsoleItemActionPerformed
-		if (viewConsoleItem.isSelected()) {
-			consoleSplitter.resetToPreferredSizes();
-		} else {
-			consoleSplitter.setDividerLocation(1.0);
-		}
-	}//GEN-LAST:event_viewConsoleItemActionPerformed
-
 	private void findBugsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findBugsButtonActionPerformed
 		Project project = getCurrentProject();
 
@@ -2484,9 +2423,6 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		}
 		
 		viewPanelLayout = (CardLayout) viewPanel.getLayout();
-		
-		// Console starts out disabled
-		consoleSplitter.setDividerLocation(1.0);
 		
 		// List of bug group tabs.
 		// This must be in the same order as GROUP_BY_ORDER_LIST!
@@ -3587,8 +3523,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * @param message the message to write
 	 */
 	public void writeToLog(String message) {
-		consoleMessageArea.append(message);
-		consoleMessageArea.append("\n");
+//		consoleMessageArea.append(message);
+//		consoleMessageArea.append("\n");
 	}
 	
 	/**
@@ -3817,9 +3753,6 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
     private javax.swing.JButton classpathUpButton;
     private javax.swing.JMenuItem closeProjectItem;
     private javax.swing.JMenuItem configureDetectorsItem;
-    private javax.swing.JTextArea consoleMessageArea;
-    private javax.swing.JScrollPane consoleScrollPane;
-    private javax.swing.JSplitPane consoleSplitter;
     private javax.swing.JMenuItem copyItem;
     private javax.swing.JMenuItem cutItem;
     private javax.swing.JMenu editMenu;
@@ -3891,7 +3824,6 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
     private javax.swing.JLabel urlLabel;
     private javax.swing.JCheckBoxMenuItem viewBugDetailsItem;
     private javax.swing.JRadioButtonMenuItem viewBugsItem;
-    private javax.swing.JCheckBoxMenuItem viewConsoleItem;
     private javax.swing.JMenu viewMenu;
     private javax.swing.JPanel viewPanel;
     private javax.swing.JRadioButtonMenuItem viewProjectItem;
