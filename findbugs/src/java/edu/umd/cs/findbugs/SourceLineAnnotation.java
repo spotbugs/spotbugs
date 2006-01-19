@@ -30,6 +30,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
@@ -102,12 +103,38 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * Factory method to create an unknown source line annotation.
 	 *
 	 * @param className the class name
+	 * @param sourceFile the source file name
 	 * @return the SourceLineAnnotation
 	 */
 	public static SourceLineAnnotation createUnknown(String className, String sourceFile) {
 		return createUnknown(className, sourceFile, -1, -1);
 	}
 
+	/**
+	 * Factory method to create an unknown source line annotation.
+	 * This variant looks up the source filename automatically
+	 * based on the class using best effort.
+	 *
+	 * @param className the class name
+	 * @return the SourceLineAnnotation
+	 */
+	public static SourceLineAnnotation createUnknown(String className) {
+		return createUnknown(
+				className,
+				AnalysisContext.currentAnalysisContext().lookupSourceFile(className),
+				-1,
+				-1);
+	}
+
+	/**
+	 * Factory method to create an unknown source line annotation.
+	 * This variant is used when bytecode offsets are known,
+	 * but not source lines.
+	 *
+	 * @param className the class name
+	 * @param sourceFile the source file name
+	 * @return the SourceLineAnnotation
+	 */
 	public static SourceLineAnnotation createUnknown(String className, String sourceFile, int startBytecode, int endBytecode) {
 		SourceLineAnnotation result = new SourceLineAnnotation(className, sourceFile, -1, -1, startBytecode, endBytecode);
 		// result.setDescription("SOURCE_LINE_UNKNOWN");
