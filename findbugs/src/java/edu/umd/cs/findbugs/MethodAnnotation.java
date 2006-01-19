@@ -21,9 +21,16 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.JavaClass;
+
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -87,6 +94,77 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
 		return result;
 	}
+
+	/**
+	 * Factory method to create a MethodAnnotation from a method
+	 * called by the instruction the given visitor is currently visiting.
+	 * 
+	 * @param visitor the visitor
+	 * @return the MethodAnnotation representing the called method
+	 */
+	public static MethodAnnotation fromCalledMethod(DismantleBytecode visitor) {
+		String className = visitor.getDottedClassConstantOperand();
+		String methodName = visitor.getNameConstantOperand();
+		String methodSig = visitor.getDottedSigConstantOperand();
+		
+		return fromCalledMethod(className, methodName, methodSig,
+				visitor.getOpcode() == Constants.INVOKESTATIC);
+	}
+	
+	public static MethodAnnotation fromForeignMethod(
+			String className, String methodName, String methodSig, boolean isStatic) {
+		// Create MethodAnnotation.
+		// It won't have source lines yet.
+		MethodAnnotation methodAnnotation =
+			new MethodAnnotation(className, methodName, methodSig, isStatic);
+		
+		// Try to find source lines by looking up the exact class and method.
+		SourceLineAnnotation sourceLines = null;
+		try {
+			JavaClass targetClass = AnalysisContext.currentAnalysisContext()
+				.lookupClass(className);
+			JavaClassAndMethod targetMethod = Hierarchy.findMethod(targetClass, methodName, methodSig);
+			if (targetMethod != null) {
+				sourceLines = SourceLineAnnotation.forEntireMethod(
+						targetMethod.getJavaClass(), targetMethod.getMethod());
+			}
+		} catch (ClassNotFoundException e) {
+			// Can't find the class
+		}
+		
+		// If we couldn't find the source lines,
+		// create an unknown source line annotation referencing
+		// the class and source file.
+		if (sourceLines == null) {
+			sourceLines = SourceLineAnnotation.createUnknown(className);
+		}
+		
+		methodAnnotation.setSourceLines(sourceLines);
+		
+		return methodAnnotation;
+	}
+	
+	/**
+	 * Create a MethodAnnotation from a method that is not
+	 * directly accessible.  We will use the repository to
+	 * try to find its class in order to populate the information
+	 * as fully as possible.
+	 * 
+	 * @param className  class containing called method
+	 * @param methodName name of called method
+	 * @param methodSig  signature of called method
+	 * @param isStatic   true if called method is static
+	 * @return the MethodAnnotation for the called method
+	 */
+	public static MethodAnnotation fromCalledMethod(
+			String className, String methodName, String methodSig, boolean isStatic) {
+		
+		MethodAnnotation methodAnnotation =
+			fromForeignMethod(className, methodName, methodSig, isStatic);
+		methodAnnotation.setDescription("METHOD_CALLED");
+		return methodAnnotation;
+		
+	}
 	
 	/**
 	 * Create a MethodAnnotation from an XMethod.
@@ -95,9 +173,8 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @return the MethodAnnotation
 	 */
 	public static MethodAnnotation fromXMethod(XMethod xmethod) {
-		String className = xmethod.getClassName();
-		return new MethodAnnotation(
-				className,
+		return fromForeignMethod(
+				xmethod.getClassName(),
 				xmethod.getName(),
 				xmethod.getSignature(),
 				xmethod.isStatic());
