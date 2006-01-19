@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.Location;
 
 /**
@@ -31,7 +32,7 @@ import edu.umd.cs.findbugs.ba.Location;
  * @see IsNullValueFrame
  * @see IsNullValueAnalysis
  */
-public class IsNullValue implements IsNullValueAnalysisFeatures {
+public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	private static final boolean DEBUG_EXCEPTION = Boolean.getBoolean("inv.debugException");
 
 	/** Definitely null. */
@@ -92,7 +93,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 					new IsNullValue(CHECKED_NULL | flags),
 					new IsNullValue(NN | flags),
 					new IsNullValue(CHECKED_NN | flags),
-					new IsNullValue(NO_KABOOM_NN | flags),
+					null, // NO_KABOOM_NN values must be allocated dynamically
 					new IsNullValue(NSP | flags),
 					new IsNullValue(NN_UNKNOWN | flags),
 					new IsNullValue(NCP2 | flags),
@@ -110,10 +111,19 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	private IsNullValue(int kind) {
 		this.kind = kind;
 		locationOfKaBoom = null;
+		if (VERIFY_INTEGRITY) checkNoKaboomNNLocation();
 	}
+	
 	private IsNullValue(int kind, Location ins) {
 		this.kind = kind;
 		locationOfKaBoom = ins;
+		if (VERIFY_INTEGRITY) checkNoKaboomNNLocation();
+	}
+	
+	private void checkNoKaboomNNLocation() {
+		if (getBaseKind() == NO_KABOOM_NN && locationOfKaBoom == null) {
+			throw new IllegalStateException("construction of no-KaBoom NN without Location");
+		}
 	}
 
 	public boolean equals(Object o) {
@@ -127,7 +137,10 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 	}
 
 	public int hashCode() {
-		return kind + locationOfKaBoom.hashCode();
+		int hashCode =  kind;
+		if (locationOfKaBoom != null)
+			hashCode += locationOfKaBoom.hashCode();
+		return hashCode;
 	}
 
 	private int getBaseKind() {
@@ -306,12 +319,9 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 		assert aKind >= bKind;
 		int result = mergeMatrix[aKind][bKind];
 		
-		
-		IsNullValue resultValue;
-		if (result == NO_KABOOM_NN) 
-			resultValue = noKaboomNonNullValue(a.locationOfKaBoom);
-		else resultValue = instanceByFlagsList[combinedFlags >> FLAG_SHIFT][result];
-		
+		IsNullValue resultValue = (result == NO_KABOOM_NN)
+				? noKaboomNonNullValue(a.locationOfKaBoom)
+				: instanceByFlagsList[combinedFlags >> FLAG_SHIFT][result];
 
 		return resultValue;
 	}
@@ -371,6 +381,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures {
 				if ((flags & RETURN_VAL) != 0) pfx += "r";
 			}
 		}
+		if (locationOfKaBoom == null) pfx += "[XXX]";
 		switch (getBaseKind()) {
 		case NULL:
 			return pfx + "n";
