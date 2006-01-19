@@ -75,6 +75,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 	}
 	
 	public void doReportBug(edu.umd.cs.findbugs.BugInstance bugInstance) {
+		checkBugInstance(bugInstance);
 		if (bugCollection.add(bugInstance))
 			notifyObservers(bugInstance);
 	}
