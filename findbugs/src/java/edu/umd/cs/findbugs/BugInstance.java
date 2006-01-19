@@ -782,7 +782,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addMethod(String className, String methodName, String methodSig, boolean isStatic) {
-		addMethod(new MethodAnnotation(className, methodName, methodSig, isStatic));
+		addMethod(MethodAnnotation.fromForeignMethod(className, methodName, methodSig, isStatic));
 		return this;
 	}
 
@@ -865,13 +865,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addCalledMethod(DismantleBytecode visitor) {
-		String className = visitor.getDottedClassConstantOperand();
-		String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
-		String methodName = visitor.getNameConstantOperand();
-		String methodSig = visitor.getDottedSigConstantOperand();
-		addMethod(className, methodName, methodSig, visitor.getMethod().isStatic());
-		describe("METHOD_CALLED");
-		return this;
+		return addMethod(MethodAnnotation.fromCalledMethod(visitor));
 	}
 
 	/**
@@ -881,14 +875,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param methodName name of called method
 	 * @param methodSig  signature of called method
 	 * @param isStatic   true if called method is static, false if not
-	 * @param sourceFileName  name of source file of the method's class
 	 * @return this object
 	 */
 	public BugInstance addCalledMethod(String className, String methodName, String methodSig, boolean isStatic) {
-		String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
-		addMethod(className, methodName, methodSig, isStatic);
-		describe("METHOD_CALLED");
-		return this;
+		return addMethod(MethodAnnotation.fromCalledMethod(className, methodName, methodSig, isStatic));
 	}
 
 	/**
