@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Base class for BugReporters which provides convenient formatting
@@ -178,6 +179,26 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	public BugReporter getRealBugReporter() {
 		return this;
 	}
+	
+	/**
+	 * For debugging: check a BugInstance to make sure it
+	 * is valid.
+	 * 
+	 * @param bugInstance the BugInstance to check
+	 */
+	protected void checkBugInstance(BugInstance bugInstance) {
+		for (Iterator<BugAnnotation> i = bugInstance.annotationIterator(); i.hasNext();) {
+			BugAnnotation bugAnnotation = i.next();
+			if (bugAnnotation instanceof PackageMemberAnnotation) {
+				PackageMemberAnnotation pkgMember = (PackageMemberAnnotation) bugAnnotation;
+				if (pkgMember.getSourceLines() == null) {
+					throw new IllegalStateException("Package member " + pkgMember +
+							" reported without source lines!");
+				}
+			}
+		}
+	}
+
 }
 
 // vim:ts=4
