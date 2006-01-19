@@ -7,3 +7,5 @@ plugin
 *.zip
 foo
 web
+*.fpr
+*.fvdl
