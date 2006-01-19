@@ -21,10 +21,11 @@ package edu.umd.cs.findbugs;
 
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 
-public abstract class BugCollectionBugReporter extends TextUIBugReporter {
+public abstract class BugCollectionBugReporter extends TextUIBugReporter implements Debug {
 	private SortedBugCollection bugCollection;
 	private Project project;
 
@@ -71,10 +72,11 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter {
 	}
 
 	public void doReportBug(BugInstance bugInstance) {
+		if (VERIFY_INTEGRITY) checkBugInstance(bugInstance);
 		if (bugCollection.add(bugInstance))
 			notifyObservers(bugInstance);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
 	 */
