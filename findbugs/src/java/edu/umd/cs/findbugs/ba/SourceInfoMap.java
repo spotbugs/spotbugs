@@ -237,6 +237,18 @@ public class SourceInfoMap {
 	}
 	
 	/**
+	 * Look up the line number range for a method.
+	 * 
+	 * @param className       name of class containing the method
+	 * @param methodName      name of method
+	 * @param methodSignature signature of method
+	 * @return the line number range, or null if no line number is known for the method
+	 */
+	public SourceLineRange getMethodLine(String className, String methodName, String methodSignature) {
+		return methodLineMap.get(new MethodDescriptor(className, methodName, methodSignature));
+	}
+	
+	/**
 	 * Look up the line number range for a class.
 	 * 
 	 * @param className name of the class
@@ -278,6 +290,12 @@ public class SourceInfoMap {
 					// Line number for method
 					String methodName = next.substring(0, lparen);
 					String methodSignature = next.substring(lparen);
+					
+					if (methodName.equals("init^"))
+						methodName = "<init>";
+					else if (methodName.equals("clinit^"))
+						methodName = "<clinit>";
+					
 					SourceLineRange range = createRange(tokenizer.nextToken(), tokenizer.nextToken());
 					methodLineMap.put(new MethodDescriptor(className, methodName, methodSignature), range);
 					if (DEBUG) System.out.println("method:" + methodName+methodSignature + "," + range);
