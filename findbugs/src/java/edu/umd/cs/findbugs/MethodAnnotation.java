@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -130,6 +131,22 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			}
 		} catch (ClassNotFoundException e) {
 			// Can't find the class
+		}
+		
+		// Try consulting the SourceInfoMap
+		if (sourceLines == null) {
+			SourceInfoMap.SourceLineRange range = AnalysisContext.currentAnalysisContext()
+				.getSourceInfoMap()
+				.getMethodLine(className, methodName, methodSig);
+			if (range != null) {
+				sourceLines = new SourceLineAnnotation(
+						className,
+						AnalysisContext.currentAnalysisContext().lookupSourceFile(className),
+						range.getStart(),
+						range.getEnd(),
+						-1,
+						-1);
+			}
 		}
 		
 		// If we couldn't find the source lines,
