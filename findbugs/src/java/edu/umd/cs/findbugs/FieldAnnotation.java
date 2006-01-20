@@ -33,6 +33,7 @@ import org.apache.bcel.generic.PUTSTATIC;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -217,13 +218,12 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		if (sourceLines == null) {
 			// Create source line annotation for field on demand
 			
-			Integer fieldLine = AnalysisContext.currentAnalysisContext().getSourceInfoMap()
+			SourceInfoMap.SourceLineRange fieldLine = AnalysisContext.currentAnalysisContext()
+				.getSourceInfoMap()
 				.getFieldLine(className, fieldName);
 			
-			int fieldLineNumber = fieldLine != null ? fieldLine.intValue() : -1;
-			
 			sourceLines = new SourceLineAnnotation(
-					className, sourceFileName, fieldLineNumber, fieldLineNumber, -1, -1);
+					className, sourceFileName, fieldLine.getStart(), fieldLine.getEnd(), -1, -1);
 		}
 		return sourceLines;
 	}

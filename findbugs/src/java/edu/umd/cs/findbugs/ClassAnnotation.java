@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -82,13 +83,12 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 		if (sourceLines == null) {
 			// Create source line annotation for class on demand
 			
-			Integer classLine = AnalysisContext.currentAnalysisContext().getSourceInfoMap()
+			SourceInfoMap.SourceLineRange classLine = AnalysisContext.currentAnalysisContext()
+				.getSourceInfoMap()
 				.getClassLine(className);
 			
-			int classLineNumber = classLine != null ? classLine.intValue() : -1;
-			
 			sourceLines = new SourceLineAnnotation(
-					className, sourceFileName, classLineNumber, classLineNumber, -1, -1);
+					className, sourceFileName, classLine.getStart(), classLine.getEnd(), -1, -1);
 		}
 		return sourceLines;
 	}

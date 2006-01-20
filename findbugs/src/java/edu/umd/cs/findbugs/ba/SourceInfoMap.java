@@ -29,20 +29,24 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 /**
  * Global information about the source code for an application.
- * Currently, this is just a map of source line information
+ * Currently, this object contains a map of source line information
  * for fields and classes (items we don't get line number information
- * for directly in classfiles).
+ * for directly in classfiles), and also source line information
+ * for methods that don't appear directly in classfiles,
+ * such as abstract and native methods.
  * 
  * @author David Hovemeyer
  */
 public class SourceInfoMap {
-	static class ClassAndFieldName implements Comparable<ClassAndFieldName> {
+	static class FieldDescriptor implements Comparable<FieldDescriptor> {
 		String className;
 		String fieldName;
 		
-		public ClassAndFieldName(String className, String fieldName) {
+		public FieldDescriptor(String className, String fieldName) {
 			this.className = className;
 			this.fieldName = fieldName;
 		}
@@ -50,7 +54,7 @@ public class SourceInfoMap {
 		/* (non-Javadoc)
 		 * @see java.lang.Comparable#compareTo(T)
 		 */
-		public int compareTo(ClassAndFieldName o) {
+		public int compareTo(FieldDescriptor o) {
 			int cmp = className.compareTo(o.className);
 			if (cmp != 0)
 				return cmp;
@@ -60,6 +64,7 @@ public class SourceInfoMap {
 		/* (non-Javadoc)
 		 * @see java.lang.Object#hashCode()
 		 */
+		@Override
 		public int hashCode() {
 			return 1277 * className.hashCode() +fieldName.hashCode(); 
 		}
@@ -67,26 +72,123 @@ public class SourceInfoMap {
 		/* (non-Javadoc)
 		 * @see java.lang.Object#equals(java.lang.Object)
 		 */
+		@Override
 		public boolean equals(Object obj) {
 			if (obj == null || obj.getClass() != this.getClass())
 				return false;
-			ClassAndFieldName other = (ClassAndFieldName) obj;
+			FieldDescriptor other = (FieldDescriptor) obj;
 			return className.equals(other.className) && fieldName.equals(other.fieldName);
+		}
+	}
+	
+	static class MethodDescriptor implements Comparable<MethodDescriptor> {
+		private String className;
+		private String methodName;
+		private String methodSignature;
+		
+		public MethodDescriptor(String className, String methodName, String methodSignature) {
+			this.className = className;
+			this.methodName = methodName;
+			this.methodSignature = methodSignature;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.lang.Comparable#compareTo(T)
+		 */
+		public int compareTo(MethodDescriptor o) {
+			int cmp;
+			if ((cmp = className.compareTo(o.className)) != 0)
+				return cmp;
+			if ((cmp = methodName.compareTo(o.methodName)) != 0)
+				return cmp;
+			return methodSignature.compareTo(o.methodSignature);
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			return 1277 * className.hashCode()
+				+ 37 * methodName.hashCode()
+				+ methodSignature.hashCode();
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null || obj.getClass() != this.getClass())
+				return false;
+			MethodDescriptor other = (MethodDescriptor) obj;
+			return className.equals(other.className)
+				&& methodName.equals(other.methodName)
+				&& methodSignature.equals(other.methodSignature);
+		}
+	}
+	
+	/**
+	 * A range of source lines.
+	 */
+	public static class SourceLineRange {
+		private final Integer start, end;
+
+		/**
+		 * Constructor for a single line.
+		 */
+		public SourceLineRange(@NonNull Integer line) {
+			this.start = this.end = line;
+		}
+		
+		/**
+		 * Constructor for a range of lines.
+		 * 
+		 * @param start start line in range
+		 * @param end   end line in range
+		 */
+		public SourceLineRange(@NonNull Integer start, @NonNull Integer end) {
+			this.start = start;
+			this.end = end;
+		}
+		
+		/**
+		 * @return Returns the start.
+		 */
+		public @NonNull Integer getStart() {
+			return start;
+		}
+		
+		/**
+		 * @return Returns the end.
+		 */
+		public @NonNull Integer getEnd() {
+			return end;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return start + (start.equals(end) ? "" : "-" + end);
 		}
 	}
 	
 	private static final boolean DEBUG = Boolean.getBoolean("sourceinfo.debug");
 	
-	private Map<ClassAndFieldName, Integer> fieldLineMap;
-	private Map<String, Integer> classLineMap;
+	private Map<FieldDescriptor, SourceLineRange> fieldLineMap;
+	private Map<MethodDescriptor, SourceLineRange> methodLineMap;
+	private Map<String, SourceLineRange> classLineMap;
 	
 	/**
 	 * Constructor.
 	 * Creates an empty object.
 	 */
 	public SourceInfoMap() {
-		this.fieldLineMap = new HashMap<ClassAndFieldName, Integer>();
-		this.classLineMap = new HashMap<String, Integer>();
+		this.fieldLineMap = new HashMap<FieldDescriptor, SourceLineRange>();
+		this.methodLineMap = new HashMap<MethodDescriptor, SourceLineRange>();
+		this.classLineMap = new HashMap<String, SourceLineRange>();
 	}
 	
 	/**
@@ -96,8 +198,21 @@ public class SourceInfoMap {
 	 * @param fieldName name of field
 	 * @param line      the line number of the field
 	 */
-	public void addFieldLine(String className, String fieldName, int line) {
-		fieldLineMap.put(new ClassAndFieldName(className, fieldName), new Integer(line));
+	public void addFieldLine(String className, String fieldName, SourceLineRange range) {
+		fieldLineMap.put(new FieldDescriptor(className, fieldName), range);
+	}
+	
+	/**
+	 * Add a line number entry for a method.
+	 * 
+	 * @param className       name of class containing the method
+	 * @param methodName      name of method
+	 * @param methodSignature signature of method
+	 * @param range           the line number of the method
+	 */
+	public void addMethodLine(String className, String methodName, String methodSignature,
+			SourceLineRange range) {
+		methodLineMap.put(new MethodDescriptor(className, methodName, methodSignature), range);
 	}
 	
 	/**
@@ -106,28 +221,28 @@ public class SourceInfoMap {
 	 * @param className name of class
 	 * @param line      the line number of the class
 	 */
-	public void addClassLine(String className, int line) {
-		classLineMap.put(className, new Integer(line));
+	public void addClassLine(String className, SourceLineRange range) {
+		classLineMap.put(className, range);
 	}
 	
 	/**
-	 * Look up the line number for a field.
+	 * Look up the line number range for a field.
 	 * 
 	 * @param className name of class containing the field
 	 * @param fieldName name of field
-	 * @return the line number, or null if no line number is known for the field
+	 * @return the line number range, or null if no line number is known for the field
 	 */
-	public Integer getFieldLine(String className, String fieldName) {
-		return fieldLineMap.get(new ClassAndFieldName(className, fieldName));
+	public SourceLineRange getFieldLine(String className, String fieldName) {
+		return fieldLineMap.get(new FieldDescriptor(className, fieldName));
 	}
 	
 	/**
-	 * Look up the line number for a class.
+	 * Look up the line number range for a class.
 	 * 
 	 * @param className name of the class
-	 * @return the line number, or null if no line number is known for the class
+	 * @return the line number range, or null if no line number is known for the class
 	 */
-	public Integer getClassLine(String className) {
+	public SourceLineRange getClassLine(String className) {
 		return classLineMap.get(className);
 	}
 	
@@ -146,6 +261,7 @@ public class SourceInfoMap {
 		int lineNumber = 0;
 		try {
 			String line;
+			int lparen;
 			
 			while ((line = reader.readLine()) != null) {
 				++lineNumber;
@@ -155,17 +271,25 @@ public class SourceInfoMap {
 				String next = tokenizer.nextToken();
 				if (DIGITS.matcher(next).matches()) {
 					// Line number for class
-					Integer value = Integer.valueOf(next);
-					classLineMap.put(className, value);
-					if (DEBUG) System.out.println("class:" + className + "," + value);
+					SourceLineRange range = createRange(next, tokenizer.nextToken());
+					classLineMap.put(className, range);
+					if (DEBUG) System.out.println("class:" + className + "," + range);
+				} else if ((lparen = next.indexOf('(')) >= 0) {
+					// Line number for method
+					String methodName = next.substring(0, lparen);
+					String methodSignature = next.substring(lparen);
+					SourceLineRange range = createRange(tokenizer.nextToken(), tokenizer.nextToken());
+					methodLineMap.put(new MethodDescriptor(className, methodName, methodSignature), range);
+					if (DEBUG) System.out.println("method:" + methodName+methodSignature + "," + range);
 				} else {
 					// Line number for field
-					Integer value = Integer.valueOf(tokenizer.nextToken()); 
+					String fieldName = next;
+					SourceLineRange range = createRange(tokenizer.nextToken(), tokenizer.nextToken());
 					fieldLineMap.put(
-							new ClassAndFieldName(className, next),
-							value);
+							new FieldDescriptor(className, fieldName),
+							range);
 					if (DEBUG) System.out.println("field:" + className + "," +
-							next + "," + value);
+							fieldName + "," + range);
 				}
 				
 				// Note: we could complain if there are more tokens,
@@ -183,5 +307,9 @@ public class SourceInfoMap {
 				// ignore
 			}
 		}
+	}
+	
+	private static SourceLineRange createRange(String start, String end) {
+		return new SourceLineRange(Integer.valueOf(start), Integer.valueOf(end));
 	}
 }
