@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -154,8 +155,23 @@ public class SourceLineAnnotation implements BugAnnotation {
 		String sourceFile = visitor.getSourceFile();
 		Code code = visitor.getMethod().getCode();
 		int codeSize = (code != null) ? code.getCode().length : 0;
-		if (lineNumberTable == null)
-			return createUnknown(className, sourceFile, 0, codeSize - 1);
+		if (lineNumberTable == null) {
+			// Try SourceInfoMap
+			SourceInfoMap.SourceLineRange range = AnalysisContext.currentAnalysisContext()
+				.getSourceInfoMap()
+				.getMethodLine(className, visitor.getMethodName(), visitor.getMethodSig());
+			if (range != null) {
+				return new SourceLineAnnotation(
+						className,
+						visitor.getSourceFile(),
+						range.getStart().intValue(),
+						range.getEnd().intValue(),
+						0,
+						codeSize - 1);
+			} else {
+				return createUnknown(className, sourceFile, 0, codeSize - 1);
+			}
+		}
 		return forEntireMethod(className, sourceFile, lineNumberTable, codeSize);
 	}
 
