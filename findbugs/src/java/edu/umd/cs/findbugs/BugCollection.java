@@ -66,18 +66,32 @@ public interface BugCollection
 	public ProjectStats getProjectStats();
 
 	/**
-	 * Set the analysis timestamp.
+	 * Get the timestamp for the analyzed code
 	 * 
-	 * @param timestamp the analysis timestamp.
+	 * @param timestamp the  timestamp.
 	 */
 	public void setTimestamp(long timestamp);
 	
 	/**
-	 * Get the analysis timestamp.
-	 * 
-	 * return the analysis timestamp.
+	 * Get the timestamp for the analyzed code
+	 * return the  timestamp.
 	 */
 	public long getTimestamp();
+	
+	/**
+	 * Get the timestamp for when the analysis was performed.
+	 * 
+	 * @param timestamp the analysis timestamp.
+	 */
+	public void setAnalysisTimestamp(long timestamp);
+	
+	/**
+	 * Get the timestamp for when the analysis was performed.
+	 * 
+	 * @param timestamp the analysis timestamp.
+	 */
+	public long getAnalysisTimestamp();
+	
 
 	/**
 	 * Set the sequence number of the BugCollection.

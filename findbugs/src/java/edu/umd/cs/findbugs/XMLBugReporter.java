@@ -20,6 +20,9 @@
 package edu.umd.cs.findbugs;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -75,10 +78,37 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 		}
 	}
 	
+	public void computeBugHashes() {
+		MessageDigest digest = null;
+		try { digest = MessageDigest.getInstance("MD5");
+		} catch (Exception e2) {
+			// OK, we won't digest
+		}
+		
+		HashMap<String, Integer> seen = new HashMap<String, Integer>();
+		for(BugInstance bugInstance : getBugCollection().getCollection()) {
+			String hash = bugInstance.getInstanceKey();
+			if (digest != null) {
+				byte [] data = digest.digest(hash.getBytes());
+				hash = new BigInteger(1,data).toString(16);
+			}
+			bugInstance.setInstanceHash(hash);
+			Integer count = seen.get(hash);
+			if (count == null) {
+				bugInstance.setInstanceOccurrenceNum(0);
+				seen.put(hash,1);
+			} else {
+				bugInstance.setInstanceOccurrenceNum(count);
+				seen.put(hash, count+1);
+			}
+		}
+	
+	}
 	public void finish() {
 		try {
 			getReady(); // If no warnings were issued, then nothing has been written yet
 			if (sorted) {
+				if (addMessages) computeBugHashes();
 				for(BugInstance bugInstance : getBugCollection().getCollection())
 					bugInstance.writeXML(xmlOutput, addMessages);
 			}

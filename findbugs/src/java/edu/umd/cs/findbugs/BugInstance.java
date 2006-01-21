@@ -84,6 +84,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	@NonNull private String annotationText;
 	private BugProperty propertyListHead, propertyListTail;
 	private String uniqueId;
+	private String instanceHash;
+	private int instanceOccurrenceNum;
+	
 	
 	/*
 	 * The following fields are used for tracking Bug instances across multiple versions of software.
@@ -281,6 +284,18 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		throw new IllegalStateException("BugInstance must contain at least one class, method, or field annotation");
 	}
 
+	public String getInstanceKey() {
+		StringBuffer buf = new StringBuffer(type);
+		for (BugAnnotation annotation : annotationList) {
+			if (annotation instanceof SourceLineAnnotation) {
+				// do nothing
+			}
+			else {buf.append(":");
+				buf.append(annotation.format(""));
+			}
+		}
+		return buf.toString();
+	}
 	/**
 	 * If given PackageMemberAnnotation is non-null,
 	 * return its SourceLineAnnotation.
@@ -1126,6 +1141,20 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 *
 	 * @return the description
 	 */
+	public String getMessageWithoutPrefix() {
+		BugPattern bugPattern = I18N.instance().lookupBugPattern(type);
+		String pattern;
+		if (bugPattern == null)
+			 pattern =  "Error: missing bug pattern for key " + type;
+		else pattern = bugPattern.getLongDescription();
+		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
+		return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]));
+	}
+	/**
+	 * Format a string describing this bug instance.
+	 *
+	 * @return the description
+	 */
 	public String getMessage() {
 		String pattern = I18N.instance().getMessage(type);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
@@ -1163,6 +1192,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		writeXML(xmlOutput, false);
 	}
 	
+
 	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("type", type)
@@ -1180,16 +1210,20 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		}
 		
 		// Add a uid attribute, if we have a unique id.
-		if (getUniqueId() != null) {
+		if (false && getUniqueId() != null) {
 			attributeList.addAttribute("uid", getUniqueId());
 		}
-		
+		if (addMessages) {
+		attributeList.addAttribute("instanceHash", getInstanceHash());
+		attributeList.addAttribute("instanceOccurenceNum", ""+getInstanceOccurrenceNum());
+		}
 		if (firstVersion > 0) attributeList.addAttribute("first", Long.toString(firstVersion));
 		if (lastVersion >= 0) 	attributeList.addAttribute("last", Long.toString(lastVersion));
 		if (introducedByChangeOfExistingClass) 
 			attributeList.addAttribute("introducedByChange", "true");
 		if (removedByChangeOfPersistingClass) 
 			attributeList.addAttribute("removedByChange", "true");
+
 		xmlOutput.openTag(ELEMENT_NAME, attributeList);
 
 		if (!annotationText.equals("")) {
@@ -1206,7 +1240,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			xmlOutput.closeTag("ShortMessage");
 			
 			xmlOutput.openTag("LongMessage");
-			xmlOutput.writeText(this.getMessage());
+			xmlOutput.writeText(this.getMessageWithoutPrefix());
 			xmlOutput.closeTag("LongMessage");
 		}
 
@@ -1384,6 +1418,34 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public boolean isRemovedByChangeOfPersistingClass() {
 		return removedByChangeOfPersistingClass;
+	}
+
+	/**
+	 * @param instanceHash The instanceHash to set.
+	 */
+	public void setInstanceHash(String instanceHash) {
+		this.instanceHash = instanceHash;
+	}
+
+	/**
+	 * @return Returns the instanceHash.
+	 */
+	public String getInstanceHash() {
+		return instanceHash;
+	}
+
+	/**
+	 * @param instanceOccurrenceNum The instanceOccurrenceNum to set.
+	 */
+	public void setInstanceOccurrenceNum(int instanceOccurrenceNum) {
+		this.instanceOccurrenceNum = instanceOccurrenceNum;
+	}
+
+	/**
+	 * @return Returns the instanceOccurrenceNum.
+	 */
+	public int getInstanceOccurrenceNum() {
+		return instanceOccurrenceNum;
 	}
 }
 

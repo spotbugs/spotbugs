@@ -59,7 +59,15 @@ import edu.umd.cs.findbugs.xml.XMLOutputUtil;
  */
 public abstract class AbstractBugCollection implements BugCollection {
 
+	long analysisTimestamp = System.currentTimeMillis();
+	
+	public long getAnalysisTimestamp() {
+		return analysisTimestamp;
+	}
 
+	public void setAnalysisTimestamp(long timestamp) {
+		analysisTimestamp = timestamp;
+	}
 	/**
 	 * Add a Collection of BugInstances to this BugCollection object.
 	 * This just calls add(BugInstance) for each instance in the input collection.
@@ -385,6 +393,8 @@ public abstract class AbstractBugCollection implements BugCollection {
 				.addAttribute("version",Version.RELEASE)
 				.addAttribute("sequence",String.valueOf(getSequenceNumber()))
 				.addAttribute("timestamp", String.valueOf(getTimestamp()))
+				.addAttribute("analysisTimestamp", String.valueOf(getAnalysisTimestamp()))
+				
 				.addAttribute("release", getReleaseName())
 		);
 		project.writeXML(xmlOutput);
