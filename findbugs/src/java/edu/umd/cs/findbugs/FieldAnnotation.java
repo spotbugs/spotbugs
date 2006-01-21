@@ -221,8 +221,9 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			SourceInfoMap.SourceLineRange fieldLine = AnalysisContext.currentAnalysisContext()
 				.getSourceInfoMap()
 				.getFieldLine(className, fieldName);
-			
-			sourceLines = new SourceLineAnnotation(
+			if (fieldLine == null) 	sourceLines = new SourceLineAnnotation(
+					className, sourceFileName, -1, -1, -1, -1);
+			else sourceLines = new SourceLineAnnotation(
 					className, sourceFileName, fieldLine.getStart(), fieldLine.getEnd(), -1, -1);
 		}
 		return sourceLines;

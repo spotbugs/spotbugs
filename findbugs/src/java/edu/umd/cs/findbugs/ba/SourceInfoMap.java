@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
@@ -232,7 +233,7 @@ public class SourceInfoMap {
 	 * @param fieldName name of field
 	 * @return the line number range, or null if no line number is known for the field
 	 */
-	public SourceLineRange getFieldLine(String className, String fieldName) {
+	public @CheckForNull SourceLineRange getFieldLine(String className, String fieldName) {
 		return fieldLineMap.get(new FieldDescriptor(className, fieldName));
 	}
 	
@@ -244,7 +245,7 @@ public class SourceInfoMap {
 	 * @param methodSignature signature of method
 	 * @return the line number range, or null if no line number is known for the method
 	 */
-	public SourceLineRange getMethodLine(String className, String methodName, String methodSignature) {
+	public @CheckForNull SourceLineRange getMethodLine(String className, String methodName, String methodSignature) {
 		return methodLineMap.get(new MethodDescriptor(className, methodName, methodSignature));
 	}
 	
@@ -254,7 +255,7 @@ public class SourceInfoMap {
 	 * @param className name of the class
 	 * @return the line number range, or null if no line number is known for the class
 	 */
-	public SourceLineRange getClassLine(String className) {
+	public @CheckForNull SourceLineRange getClassLine(String className) {
 		return classLineMap.get(className);
 	}
 	
