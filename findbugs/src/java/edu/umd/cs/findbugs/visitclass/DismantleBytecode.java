@@ -107,9 +107,7 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 	/**
 	 * Meaning of bytecode operands
 	 */
-
-	// REVIEW brian@quiotix.com -- Either this array should be byte[][], or the constants above should be short
-	static final short[][] MEANING_OF_OPERANDS = {
+	static final byte[][] MEANING_OF_OPERANDS = {
 		// 0   1   2   3   4   5   6   7   8   9
 		{}, {}, {}, {}, {}, {}, {}, {}, {}, {},
 		{}, {}, {}, {}, {}, {}, {M_INT}, {M_INT}, {M_CP}, {M_CP},
@@ -269,7 +267,7 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 	 * @return true if instruction is a branch, false if not
 	 */
 	public static boolean isBranch(int opcode) {
-		short[] operands = MEANING_OF_OPERANDS[opcode];
+		byte[] operands = MEANING_OF_OPERANDS[opcode];
 		return operands.length > 0 && operands[0] == M_BR;
 	}
 	
