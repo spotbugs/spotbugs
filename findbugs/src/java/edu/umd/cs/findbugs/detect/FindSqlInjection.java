@@ -95,6 +95,7 @@ public class FindSqlInjection implements Detector {
 			= classContext.getConstantDataflow(method);
 	    boolean sawOpenQuote = false;
 	    boolean sawCloseQuote = false;
+	    boolean sawComma = false;
 	    boolean sawAppend = false;
 	    
 	    for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
@@ -104,9 +105,12 @@ public class FindSqlInjection implements Detector {
 					LDC load = (LDC) ins;
 					Object value = load.getValue(cpg);
 					if (value instanceof String) {
-						if (((String)value).endsWith("'"))
+						String stringValue = ((String)value).trim();
+						if (stringValue.startsWith(",") || stringValue.endsWith(","))
+							sawComma = true;
+						if (stringValue.endsWith("'"))
 							sawOpenQuote = true;
-						if (((String)value).startsWith("'"))
+						if (stringValue.startsWith("'"))
 							sawCloseQuote = true;
 					}
 				} else if (ins instanceof INVOKEVIRTUAL) {
@@ -134,8 +138,8 @@ public class FindSqlInjection implements Detector {
 		    
 			if (!value.isConstantString()) {
 				int priority = LOW_PRIORITY;
-				if (sawAppend) priority--;
-				if (sawOpenQuote && sawCloseQuote) priority--;
+				if (sawAppend && sawOpenQuote && sawCloseQuote) priority = HIGH_PRIORITY;
+				else if (sawAppend && sawComma) priority = NORMAL_PRIORITY;
 			    bugReporter.reportBug(
 				new BugInstance(this, 
 						methodName.equals("prepareStatement")
