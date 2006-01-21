@@ -448,6 +448,10 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
             speed="fast"
             reports="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION"
 	    />
+  <Detector class="edu.umd.cs.findbugs.detect.VarArgsProblems"
+            speed="fast"
+            reports="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG"
+	    />
   <Detector class="edu.umd.cs.findbugs.detect.FindPuzzlers"
             speed="fast"
             reports="EC_BAD_ARRAY_COMPARE,DLS_OVERWRITTEN_INCREMENT,ICAST_BAD_SHIFT_AMOUNT,ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT,DMI_BAD_MONTH,IM_MULTIPLYING_RESULT_OF_IREM"
@@ -666,6 +670,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UL" type="UL_UNRELEASED_LOCK_EXCEPTION_PATH" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RC" type="RC_REF_COMPARISON" category="CORRECTNESS" />
+  <BugPattern abbrev="VA" type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_UNRELATED_TYPES" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_NULL_ARG" category="CORRECTNESS"/>
   <BugPattern abbrev="EC" type="EC_UNRELATED_INTERFACES" category="CORRECTNESS"/>

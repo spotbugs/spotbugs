@@ -26,6 +26,13 @@ This plugin contains all of the standard FindBugs detectors.
    -->
 
 
+  <Detector class="edu.umd.cs.findbugs.detect.VarArgsProblems">
+    <Details>
+<![CDATA[
+<p> Looks for problems with arising from Java 1.5 var args.</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings">
     <Details>
 <![CDATA[
@@ -1289,7 +1296,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
   </BugPattern>
 
 <BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED">
-    <ShortDescription>Method invokes method that should be only be invoked inside a doPrivileged block</ShortDescription>
+    <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
     <LongDescription>{1} invokes {2}, which should be invoked from within a doPrivileged block</LongDescription>
     <Details>
 <![CDATA[
@@ -4049,6 +4056,18 @@ If the object is, indeed, non-serializable, an error will result.
 
 
 
+  <BugPattern type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG">
+    <ShortDescription>Primitive array passed to function expecting a variable number of object arguments</ShortDescription>
+    <LongDescription>Primitive array passed to {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code passes a primitive array to a function that takes a variable number of object arguments.
+This creates an array of length one to hold the primitive array and passes it to the function.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
     <ShortDescription>Questionable cast to abstract collection </ShortDescription>
     <LongDescription>Questionable cast from Collection to abstract class {4} in {1}</LongDescription>
@@ -4480,6 +4499,7 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="SQL">SQL Injection</BugCode>
   <BugCode abbrev="ESync">Empty Synchronized blocks</BugCode>
   <BugCode abbrev="QF">Questionable for loops</BugCode>
+  <BugCode abbrev="VA">Var arg problems</BugCode>
   <BugCode abbrev="BC">Bad casts of object references</BugCode>
   <BugCode abbrev="IM">Questionable integer math</BugCode>
   <BugCode abbrev="ST">Misuse of static fields</BugCode>
@@ -4494,5 +4514,5 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="CI">Confused Inheritance</BugCode>
   <BugCode abbrev="QBA">Questionable Boolean Assignment</BugCode>
   <BugCode abbrev="VR">Version compatibility issue</BugCode>
-  <BugCode abbrev="DP">Do Inside doPrivileged</BugCode>
+  <BugCode abbrev="DP">Use doPrivileged</BugCode>
   </MessageCollection>
