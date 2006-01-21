@@ -87,7 +87,10 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 				.getSourceInfoMap()
 				.getClassLine(className);
 			
-			sourceLines = new SourceLineAnnotation(
+			if (classLine == null)
+				sourceLines = new SourceLineAnnotation(
+						className, sourceFileName, -1,-1, -1, -1);
+			else sourceLines = new SourceLineAnnotation(
 					className, sourceFileName, classLine.getStart(), classLine.getEnd(), -1, -1);
 		}
 		return sourceLines;
