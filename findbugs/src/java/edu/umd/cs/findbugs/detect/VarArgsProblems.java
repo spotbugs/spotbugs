@@ -127,6 +127,7 @@ public class VarArgsProblems extends BytecodeScanningDetector implements
 //					System.out.println(getClassConstantOperand());
 //					System.out.println(getNameConstantOperand());
 //					System.out.println(getSigConstantOperand());
+					if (getSigConstantOperand().indexOf("Ljava/lang/Object;)") == -1) break;
 					int priority = NORMAL_PRIORITY;
 					if (getNameConstantOperand().equals("asList") 
 							&& getClassConstantOperand().equals("java/util/Arrays"))
