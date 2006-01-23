@@ -83,7 +83,11 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 		if (sourceLines == null) {
 			// Create source line annotation for class on demand
 			
-			SourceInfoMap.SourceLineRange classLine = AnalysisContext.currentAnalysisContext()
+			AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
+			if (currentAnalysisContext == null)
+				sourceLines = new SourceLineAnnotation(className, sourceFileName, -1, -1, -1, -1);
+			else {
+			SourceInfoMap.SourceLineRange classLine = currentAnalysisContext
 				.getSourceInfoMap()
 				.getClassLine(className);
 			
@@ -92,6 +96,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 						className, sourceFileName, -1,-1, -1, -1);
 			else sourceLines = new SourceLineAnnotation(
 					className, sourceFileName, classLine.getStart(), classLine.getEnd(), -1, -1);
+			}
 		}
 		return sourceLines;
 	}

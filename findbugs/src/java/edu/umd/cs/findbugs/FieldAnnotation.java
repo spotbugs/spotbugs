@@ -217,14 +217,18 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	public SourceLineAnnotation getSourceLines() {
 		if (sourceLines == null) {
 			// Create source line annotation for field on demand
-			
-			SourceInfoMap.SourceLineRange fieldLine = AnalysisContext.currentAnalysisContext()
+			AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
+			if (currentAnalysisContext == null)
+				sourceLines = new SourceLineAnnotation(className, sourceFileName, -1, -1, -1, -1);
+			else {
+			SourceInfoMap.SourceLineRange fieldLine = currentAnalysisContext
 				.getSourceInfoMap()
 				.getFieldLine(className, fieldName);
 			if (fieldLine == null) 	sourceLines = new SourceLineAnnotation(
 					className, sourceFileName, -1, -1, -1, -1);
 			else sourceLines = new SourceLineAnnotation(
 					className, sourceFileName, fieldLine.getStart(), fieldLine.getEnd(), -1, -1);
+			}
 		}
 		return sourceLines;
 	}
