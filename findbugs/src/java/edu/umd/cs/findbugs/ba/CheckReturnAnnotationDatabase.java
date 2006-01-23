@@ -61,7 +61,6 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		addMethodAnnotation("java.util.concurrent.BlockingQueue",      "poll",        "(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addMethodAnnotation("java.util.Queue",                         "poll",        "()Ljava/lang/Object;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		
-		
 		addDefaultMethodAnnotation("java.lang.String", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.lang.String", "getBytes", "(Ljava/lang/String;)[B", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addDefaultMethodAnnotation("java.math.BigDecimal", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
@@ -69,7 +68,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		addDefaultMethodAnnotation("java.math.BigInteger", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.math.BigInteger", "addOne", "([IIII)I", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addMethodAnnotation("java.math.BigInteger", "subN", "([I[II)I", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
-		addDefaultMethodAnnotation("java.sql.Connection", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+		addDefaultMethodAnnotation("java.sql.Connection", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addDefaultMethodAnnotation("java.net.InetAddress", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		try {
 			throwableClass = Repository.lookupClass("java.lang.Throwable");
