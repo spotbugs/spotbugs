@@ -273,5 +273,15 @@ public interface BugCollection
 	 * @return a new empty BugCollection with the same metadata as this one
 	 */
 	public BugCollection createEmptyCollectionWithMetadata();
+	
+	/**
+	 * Set whether textual messages should be added to any generated XML
+	 */
+	public void setWithMessages(boolean withMessages);
+
+	/**
+	 * Return whether textual messages will be added to any generated XML
+	 */
+	public boolean getWithMessages();
 
 }
