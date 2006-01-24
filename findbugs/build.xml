@@ -100,6 +100,17 @@
 				debug="on">
 			<classpath refid="findbugs.classpath"/>
 		</javac>
+		<!-- Casual inspection shows that the above javac element does compile the annotation classes,
+		     despite the excludes attribute. This is a problem because they don't work right when
+		     compiled with target="jsr14".
+		     So how do we solve it? We simply delete the directories in which the compiled annotation
+		     classes have been placed. Then the javac element below will recompile the missing classes
+		     with target="1.5". (The includes attribute does seem to be doing something, but again
+		     perhaps not exactly what we are expecting. For instance, it does compile the jcip stuff.) -->
+		<echo level="info" message="About to delete annotations (since they were compiled with target=jsr14)"/>
+		<delete dir="${classes.dir}/${pkg.base}/annotations"/>
+		<delete dir="${classes.dir}/net/jcip/annotations"/>
+		<echo level="info" message="About to compile annotations with target=1.5"/>
 		<javac srcdir="${src.dir}"
 						includes="${pkg.base}/annotations/**"
 						destdir="${classes.dir}"
