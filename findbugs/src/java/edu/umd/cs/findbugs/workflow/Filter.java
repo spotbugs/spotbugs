@@ -91,7 +91,7 @@ public class Filter {
 		public boolean classifiedSpecified = false;
 
 
-
+		public boolean withMessages = false;
 		public boolean serious = false;
 		public boolean seriousSpecified = false;
 		
@@ -108,6 +108,8 @@ public class Filter {
 			
 			addOption("-annotation", "text", "allow only warnings containing this text in an annotation");
 			addSwitchWithOptionalExtraPart("-classified", "truth", "allow only classified warnings");
+			addSwitchWithOptionalExtraPart("-withMessages", "truth", "generated XML should contain textual messages");
+			
 			addSwitchWithOptionalExtraPart("-serious", "truth", "allow only warnings classified as serious");
 			
 			addOption("-after", "when", "allow only warnings that first occurred after this version");
@@ -372,16 +374,17 @@ public class Filter {
 		int argCount = commandLine.parse(args, 0, 2, "Usage: " + Filter.class.getName()
 				+ " [options] [<orig results> [<new results]] ");
 		Project project = new Project();
-		BugCollection origCollection = new SortedBugCollection();
+		SortedBugCollection origCollection = new SortedBugCollection();
 
 		if (argCount == args.length)
 			origCollection.readXML(System.in, project);
 		else
 			origCollection.readXML(args[argCount++], project);
 		boolean verbose = argCount < args.length;
-		BugCollection resultCollection = origCollection.createEmptyCollectionWithMetadata();
+		SortedBugCollection resultCollection = origCollection.createEmptyCollectionWithMetadata();
 		int passed = 0;
 		int dropped = 0;
+		resultCollection.setWithMessages(commandLine.withMessages);
 		sourceFinder.setSourceBaseList(project.getSourceDirList());
 		commandLine.adjustFilter(resultCollection);
 		resultCollection.getProjectStats().clearBugCounts();
