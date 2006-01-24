@@ -39,7 +39,6 @@ import java.util.Map.Entry;
 
 import org.dom4j.DocumentException;
 
-import edu.umd.cs.findbugs.AbstractBugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.FuzzyBugComparator;
 import edu.umd.cs.findbugs.Project;
@@ -255,7 +254,7 @@ public class BugHistory {
 		
 		// Clone the actual BugInstances selected by the set operation.
 		Collection<BugInstance> selected = new LinkedList<BugInstance>();
-		AbstractBugCollection.cloneAll(selected, result);
+		SortedBugCollection.cloneAll(selected, result);
 		
 		// Duplicate the collection from which the results came,
 		// in order to copy all metadata, such as analysis errors,
