@@ -28,7 +28,7 @@ package edu.umd.cs.findbugs;
 public class TigerSubstitutes {
 	public static boolean parseBoolean(String s) {
 		// return Boolean.parseBoolean(s);
-		return new Boolean(s).booleanValue();
+		return Boolean.valueOf(s).booleanValue();
 	}
 	public static Long valueOf(long value) {
 		// return Long.valueOf(value);
