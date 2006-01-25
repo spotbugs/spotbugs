@@ -281,6 +281,7 @@ public class SourceInfoMap {
 				++lineNumber;
 				
 				if (lineNumber == 1) {
+					if (DEBUG) System.out.println("First line: " + line);
 					// Try to parse the version number string from the first line.
 					// null means that the line does not appear to be a version number.
 					version = parseVersionNumber(line);
@@ -372,7 +373,11 @@ public class SourceInfoMap {
 	 * @return true if the expected token was returned, false if not
 	 */
 	private static boolean expect(StringTokenizer tokenizer, String token) {
-		return tokenizer.hasMoreTokens() && tokenizer.nextToken().equals(token);
+		if (!tokenizer.hasMoreTokens())
+			return false;
+		String s = tokenizer.nextToken();
+		if (DEBUG) System.out.println("token="+s);
+		return s.equals(token);
 	}
 
 	private static SourceLineRange createRange(String start, String end) {
