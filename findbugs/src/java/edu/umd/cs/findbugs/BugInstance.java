@@ -1210,12 +1210,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		}
 		
 		// Add a uid attribute, if we have a unique id.
-		if (false && getUniqueId() != null) {
+		if (getUniqueId() != null) {
 			attributeList.addAttribute("uid", getUniqueId());
 		}
 		if (addMessages) {
 		attributeList.addAttribute("instanceHash", getInstanceHash());
-		attributeList.addAttribute("instanceOccurenceNum", ""+getInstanceOccurrenceNum());
+		attributeList.addAttribute("instanceOccurrenceNum", ""+getInstanceOccurrenceNum());
 		}
 		if (firstVersion > 0) attributeList.addAttribute("first", Long.toString(firstVersion));
 		if (lastVersion >= 0) 	attributeList.addAttribute("last", Long.toString(lastVersion));
