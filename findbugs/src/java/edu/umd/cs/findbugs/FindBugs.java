@@ -1110,6 +1110,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	public void execute() throws java.io.IOException, InterruptedException {
 		// Configure the analysis context
 		analysisContext = new AnalysisContext(bugReporter);
+		// We still need to call analysisContext.initDatabases(), but not until after we have set up the repository.
 		analysisContext.setSourcePath(project.getSourceDirList());
 		if (sourceInfoFile != null) {
 			analysisContext.getSourceInfoMap().read(new FileInputStream(sourceInfoFile));
@@ -1185,6 +1186,9 @@ public class FindBugs implements Constants2, ExitCodes {
 		// skipped classes can be referenced.
 		addCollectionToClasspath(additionalAuxClasspathEntryList);
 
+		// finish up initializing analysisContext
+        analysisContext.initDatabases();
+		
 		// Examine all classes for bugs.
 		// Don't examine the same class more than once.
 		// (The user might specify two jar files that contain

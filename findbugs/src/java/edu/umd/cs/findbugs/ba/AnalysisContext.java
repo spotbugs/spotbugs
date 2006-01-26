@@ -108,6 +108,27 @@ public class AnalysisContext {
 		//CheckReturnAnnotationDatabase may reportMissingClass, so do it after the currentAnalysisContext is set.
 		//Otherwise null ptr exceptions will happen.
 		
+		/*
+		checkReturnAnnotationDatabase = new CheckReturnAnnotationDatabase();
+
+		To take the above comment one step further, there is a circular dependency here.
+		CheckReturnAnnotationDatabase calls Repository.lookupClass() when it is initializing,
+		so we don't want to instantiate it until after we have set up the repository.
+		Unfortunately, we can't set up the repository properly without an AnalysisContext,
+		and therefore not until after this AnalysisContext constructor returns.
+
+		To handle this, we no longer instantiate the CheckReturnAnnotationDatabase here in
+		the constructor, but instead require that initDatabases() be called later on, after 
+		the repository has been set up.
+		Yes this is ugly, but it will do for now. It's not worth the effort to redisign out
+		the circular dependency properly if we plan to move from BCEL to ASM soon anyway.
+		*/
+	}
+
+	/** Instantiate the CheckReturnAnnotationDatabase.
+	 * Do this after the repository has been set up.
+	 */
+	public void initDatabases() {
 		checkReturnAnnotationDatabase = new CheckReturnAnnotationDatabase();
 	}
 
