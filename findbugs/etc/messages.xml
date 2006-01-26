@@ -4292,7 +4292,21 @@ and the next method is supposed to change the state of the iterator.
    <Details>
       <![CDATA[
       <p>
-      This method uses the same code to implement two branches of an if/else or switch statement.
+      This method uses the same code to implement two branches of a conditional branch.
+	Check to ensure that this isn't a coding mistake.
+      </p>
+      ]]>
+   </Details>
+  </BugPattern>
+  <BugPattern type="DB_DUPLICATE_SWITCH_CLAUSES">
+   <ShortDescription>Method uses the same code for two switch clauses</ShortDescription>
+   <LongDescription>Method {1} uses the same code for two switch clauses</LongDescription>
+   <Details>
+      <![CDATA[
+      <p>
+      This method uses the same code to implement two clauses of a switch statement.
+	This could be a case of duplicate code, but it might also indicate
+	a coding mistake.
       </p>
       ]]>
    </Details>

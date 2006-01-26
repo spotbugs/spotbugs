@@ -124,7 +124,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		if (!Arrays.equals(thenBytes, elseBytes))
 			return;
 		
-		bugReporter.reportBug(new BugInstance(this, "DB_DUPLICATE_BRANCHES", LOW_PRIORITY)
+		bugReporter.reportBug(new BugInstance(this, "DB_DUPLICATE_BRANCHES", NORMAL_PRIORITY)
 				.addClass(classContext.getJavaClass())
 				.addMethod(classContext.getJavaClass(), method)
 				.addSourceLineRange(this.classContext, this, 
@@ -187,7 +187,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 				if (!Arrays.equals(s1Bytes, s2Bytes))
 					continue;
 				
-				bugReporter.reportBug(new BugInstance(this, "DB_DUPLICATE_BRANCHES", LOW_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "DB_DUPLICATE_SWITCH_CLAUSES", LOW_PRIORITY)
 						.addClass(classContext.getJavaClass())
 						.addMethod(classContext.getJavaClass(), method)
 						.addSourceLineRange(this.classContext, this, 

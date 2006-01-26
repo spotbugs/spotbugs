@@ -470,7 +470,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   			
   <Detector class="edu.umd.cs.findbugs.detect.DuplicateBranches"
   			speed="fast"
-  			reports="DB_DUPLICATE_BRANCHES"/>
+  			reports="DB_DUPLICATE_BRANCHES,DB_DUPLICATE_SWITCH_CLAUSES"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.XMLFactoryBypass"
   			speed="fast"
@@ -746,6 +746,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="J2EE" type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION" category="CORRECTNESS"/>
   <BugPattern abbrev="DMI" type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN" category="CORRECTNESS"/>
   <BugPattern abbrev="DB" type="DB_DUPLICATE_BRANCHES" category="STYLE" experimental="true"/>
+  <BugPattern abbrev="DB" type="DB_DUPLICATE_SWITCH_CLAUSES" category="STYLE" experimental="true"/>
   <BugPattern abbrev="IMA" type="IMA_INEFFICIENT_MEMBER_ACCESS" category="PERFORMANCE" experimental="true"/>
   <BugPattern abbrev="XFB" type="XFB_XML_FACTORY_BYPASS" category="STYLE" experimental="true"/>
   <BugPattern abbrev="USM" type="USM_USELESS_SUBCLASS_METHOD" category="STYLE" experimental="true"/>
