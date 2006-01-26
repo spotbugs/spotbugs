@@ -80,7 +80,8 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}
-		new Exception("trace lookup Throwable "+(throwableClass!=null)).printStackTrace();//***
+		// WTF!
+		// new Exception("trace lookup Throwable "+(throwableClass!=null)).printStackTrace();//***
 	}
 	
 	 @Override
