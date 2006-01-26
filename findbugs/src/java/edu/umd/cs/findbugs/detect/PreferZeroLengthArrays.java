@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import org.apache.bcel.classfile.Code;
 
@@ -42,7 +42,7 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
 		return super.clone();
 	}
 
-	Set<SourceLineAnnotation> found = new HashSet<SourceLineAnnotation>();
+	Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
 	public void visit(Code obj) {
 		found.clear();
 		String returnType = getMethodSig().substring(getMethodSig().indexOf(")") + 1);

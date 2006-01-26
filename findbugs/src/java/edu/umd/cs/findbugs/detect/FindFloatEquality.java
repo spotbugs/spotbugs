@@ -19,11 +19,10 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -48,7 +47,7 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
-	Set<SourceLineAnnotation> found = new HashSet<SourceLineAnnotation>();
+	Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
 	
 	public void visit(Code obj) {
 		found.clear();
