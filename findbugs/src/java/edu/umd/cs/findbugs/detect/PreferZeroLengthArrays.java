@@ -19,11 +19,15 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 
 public class PreferZeroLengthArrays extends BytecodeScanningDetector implements  StatelessDetector {
@@ -38,11 +42,21 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
 		return super.clone();
 	}
 
+	Set<SourceLineAnnotation> found = new HashSet<SourceLineAnnotation>();
 	public void visit(Code obj) {
+		found.clear();
 		String returnType = getMethodSig().substring(getMethodSig().indexOf(")") + 1);
 		if (returnType.startsWith("[")) {
 			nullOnTOS = false;
 			super.visit(obj);
+			if (!found.isEmpty()) {
+				BugInstance bug = new BugInstance(this, "PZLA_PREFER_ZERO_LENGTH_ARRAYS", LOW_PRIORITY)
+				        .addClassAndMethod(this);
+				for(SourceLineAnnotation s : found)
+					bug.add(s);
+				bugReporter.reportBug(bug);
+				found.clear();
+			}
 		}
 	}
 
@@ -54,10 +68,13 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
 			nullOnTOS = true;
 			return;
 		case ARETURN:
-			if (nullOnTOS)
-				bugReporter.reportBug(new BugInstance(this, "PZLA_PREFER_ZERO_LENGTH_ARRAYS", LOW_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addSourceLine(this, getPC()));
+			if (nullOnTOS) {
+				SourceLineAnnotation sourceLineAnnotation =
+					SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, getPC());
+				if (sourceLineAnnotation != null)
+					found.add(sourceLineAnnotation);
+			}
+				
 			break;
 		}
 		nullOnTOS = false;

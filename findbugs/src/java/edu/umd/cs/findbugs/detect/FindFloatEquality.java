@@ -19,12 +19,17 @@
  */
 
 package edu.umd.cs.findbugs.detect;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 
 public class FindFloatEquality extends BytecodeScanningDetector implements StatelessDetector 
@@ -43,12 +48,24 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
-
-	public void visit(Method obj) {
-                opStack.resetForMethodEntry(this);
+	Set<SourceLineAnnotation> found = new HashSet<SourceLineAnnotation>();
+	
+	public void visit(Code obj) {
+		found.clear();
+		
+        opStack.resetForMethodEntry(this);
 		state = SAW_NOTHING;
+	
+		super.visit(obj);
+		if (!found.isEmpty()) {
+				BugInstance bug = new BugInstance(this, "FE_FLOATING_POINT_EQUALITY", LOW_PRIORITY)
+				        .addClassAndMethod(this);
+				for(SourceLineAnnotation s : found)
+					bug.add(s);
+				bugReporter.reportBug(bug);
+				found.clear();
+		}
 	}
-
 	public void sawOpcode(int seen) {
 		try {
 			switch ( seen ) {
@@ -74,13 +91,10 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 				case IFEQ:
 				case IFNE:
 					if (state == SAW_COMP) {
-						bugReporter.reportBug(
-							new BugInstance(
-								"FE_FLOATING_POINT_EQUALITY",
-								LOW_PRIORITY)
-							.addClassAndMethod(this)
-							.addSourceLine(this)
-							);
+						SourceLineAnnotation sourceLineAnnotation =
+							SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, getPC());
+						if (sourceLineAnnotation != null)
+							found.add(sourceLineAnnotation);
 					}
 					state = SAW_NOTHING;
 				break;
