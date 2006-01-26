@@ -1187,7 +1187,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		addCollectionToClasspath(additionalAuxClasspathEntryList);
 
 		// finish up initializing analysisContext
-        analysisContext.initDatabases();
+		analysisContext.initDatabases();
 		
 		// Examine all classes for bugs.
 		// Don't examine the same class more than once.
