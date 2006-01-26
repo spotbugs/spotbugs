@@ -20,8 +20,12 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BranchInstruction;
@@ -164,39 +168,32 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		if (switchPos.length < 2)
 			return;
 						
-		for (int i = 0; i < switchPos.length-2; i++) {
-			int s1Length = switchPos[i+1] - switchPos[i];
-			if (s1Length == 0)
-				continue;
+		HashMap<BigInteger, Collection<Integer>> map = new HashMap<BigInteger,Collection<Integer>>();
+		for (int i = 0; i < switchPos.length-1; i++) {
+			if (switchPos[i] +1 >=  switchPos[i+1]) continue;
+
+			byte[] clause = getCodeBytes(method, switchPos[i], switchPos[i+1]);
 			
-			byte[] s1Bytes = null;
+			BigInteger clauseAsInt = new BigInteger(clause);
 			
-			for (int j = i+1; j < switchPos.length-1; j++) {
-				int s2Length = switchPos[j+1] - switchPos[j];
-				if (s2Length == 0)
-					continue;
-				
-				if (s1Length != s2Length)
-					continue;
-				
-				if (s1Bytes == null)
-					s1Bytes = getCodeBytes(method, switchPos[i], switchPos[i+1]);
-								
-				byte[] s2Bytes = getCodeBytes(method, switchPos[j], switchPos[j+1]);
-				
-				if (!Arrays.equals(s1Bytes, s2Bytes))
-					continue;
-				
-				bugReporter.reportBug(new BugInstance(this, "DB_DUPLICATE_SWITCH_CLAUSES", LOW_PRIORITY)
+			Collection<Integer> values = map.get(clauseAsInt);
+			
+			if (values == null) {
+				values = new LinkedList<Integer>();
+				map.put(clauseAsInt,values);
+			}
+			values.add((Integer)i);
+		}
+		for(Collection<Integer> clauses : map.values()) {
+			if (clauses.size() > 1) {
+				BugInstance bug = new BugInstance(this, "DB_DUPLICATE_SWITCH_CLAUSES", LOW_PRIORITY)
 						.addClass(classContext.getJavaClass())
-						.addMethod(classContext.getJavaClass(), method)
-						.addSourceLineRange(this.classContext, this, 
-								switchPos[i],
-								switchPos[i+1]-1)
-						.addSourceLineRange(this.classContext, this, 
-								switchPos[j],
-								switchPos[j+1]-1));
-				j = switchPos.length;
+						.addMethod(classContext.getJavaClass(), method);
+				for(int i : clauses) 
+					bug.addSourceLineRange(this.classContext, this, 
+							switchPos[i],
+							switchPos[i+1]-1);
+				bugReporter.reportBug(bug);
 			}
 		}
 	}
