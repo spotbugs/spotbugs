@@ -47,7 +47,7 @@ public class Version {
 	 * Release candidate number.
 	 * "0" indicates that the version is not a release candidate.
 	 */
-	public static final int RELEASE_CANDIDATE = 1;
+	public static final int RELEASE_CANDIDATE = 2;
 
 	private static final String RELEASE_SUFFIX_WORD =
 		(RELEASE_CANDIDATE > 0 ? "rc" + RELEASE_CANDIDATE : "dev");
@@ -61,13 +61,13 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = "January 18, 2006";
+	public static final String DATE = "January 27, 2006";
 
 	/**
 	 * Version of Eclipse plugin.
 	 */
 	public static final String ECLIPSE_UI_VERSION =
-		"0.0.18" + (IS_DEVELOPMENT ? "." + RELEASE_SUFFIX_WORD: "");
+		"0.0.19" + (IS_DEVELOPMENT ? "." + RELEASE_SUFFIX_WORD: "");
 
 	/**
 	 * FindBugs website.
