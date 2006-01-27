@@ -567,10 +567,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * 
 	 * @param annotationCollection Collection of BugAnnotations
 	 */
-	public void addAnnotations(Collection<BugAnnotation> annotationCollection) {
+	public BugInstance addAnnotations(Collection<? extends BugAnnotation> annotationCollection) {
 		for (BugAnnotation annotation : annotationCollection) {
 			add(annotation);
 		}
+		return this;
 	}
 
 	/* ----------------------------------------------------------------------

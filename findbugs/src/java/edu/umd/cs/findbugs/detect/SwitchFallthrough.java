@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.detect;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import org.apache.bcel.classfile.Code;
 
@@ -59,19 +61,31 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		classContext.getJavaClass().accept(this);
 	}
 
+	Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
+	
 	public void visit(Code obj) {
 		reachable = false;
 		lastPC = 0;
+		found.clear();
 		switchHdlr = new SwitchHandler();
 		super.visit(obj);
+		if (!found.isEmpty() && found.size() < 4) {
+			BugInstance bug = new BugInstance(this, "SF_SWITCH_FALLTHROUGH", NORMAL_PRIORITY)
+        			.addClassAndMethod(this).addAnnotations(found);
+			bugReporter.reportBug(bug);
+			
+		}
 	}
 
 	public void sawOpcode(int seen) {
 		if (reachable && switchHdlr.isOnSwitchOffset(this)) {
-			if (!hasFallThruComment(lastPC + 1, getPC() - 1))
-				bugReporter.reportBug(new BugInstance(this, "SF_SWITCH_FALLTHROUGH", NORMAL_PRIORITY)
-        			.addClassAndMethod(this)
-        			.addSourceLineRange(this, lastPC, getPC()));
+			if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
+				SourceLineAnnotation sourceLineAnnotation =
+					SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(), this, lastPC, getPC());
+				if (sourceLineAnnotation != null)
+					found.add(sourceLineAnnotation);
+			}
+			
 		}
 		
 		switch (seen) {
