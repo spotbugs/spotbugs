@@ -91,6 +91,7 @@ public class Filter {
 		public boolean classifiedSpecified = false;
 
 
+		public boolean withMessagesSpecified = false;
 		public boolean withMessages = false;
 		public boolean serious = false;
 		public boolean seriousSpecified = false;
