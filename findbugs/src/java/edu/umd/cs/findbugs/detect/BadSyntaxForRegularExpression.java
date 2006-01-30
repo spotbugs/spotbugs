@@ -76,7 +76,7 @@ extends BytecodeScanningDetector implements  StatelessDetector {
     }
 
     public void sawOpcode(int seen) {
-
+    	stack.mergeJumps(this);
         if (seen == INVOKESTATIC 
             && getClassConstantOperand().equals("java/util/regex/Pattern")
             && getNameConstantOperand().equals("compile")

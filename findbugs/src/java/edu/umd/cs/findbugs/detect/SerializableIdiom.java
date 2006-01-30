@@ -314,6 +314,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	}
 	@Override
 	public void sawOpcode(int seen) {
+		stack.mergeJumps(this);
 		if (seen == PUTFIELD) {
 			String nameOfClass = getClassConstantOperand();
 			String nameOfField = getNameConstantOperand();

@@ -22,7 +22,9 @@ package edu.umd.cs.findbugs;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.apache.bcel.Repository;
@@ -67,7 +69,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class OpcodeStack implements Constants2
 {
 	private static final boolean DEBUG 
-			 = Boolean.getBoolean("ocstack.debug");
+		= Boolean.getBoolean("ocstack.debug");
 	private List<Item> stack;
 	private List<Item> lvValues;
 	private int jumpTarget;
@@ -340,40 +342,38 @@ public class OpcodeStack implements Constants2
 		jumpStack = new Stack<List<Item>>();
 	}
 
+	boolean needToMerge = true;
 	
+	public void mergeJumps(DismantleBytecode dbc) {
+		if (!needToMerge) return;
+		needToMerge = false;
+		List<Item> jumpEntry = jumpEntries.get(dbc.getPC());
+ 		if (jumpEntry != null) {
+// 			System.out.println("************");
+// 			System.out.println("jump entry at " + dbc.getPC() + " -> " + jumpEntry);
+// 			System.out.println(" current lvValues " + lvValues);
+ 			
+ 			mergeLists(lvValues, jumpEntry);
+// 			System.out.println(" merged lvValues " + lvValues);
+ 		}
+		if (dbc.getPC() == jumpTarget) {
+			jumpTarget = -1;
+			if (!jumpStack.empty()) {
+				List<Item> stackToMerge = jumpStack.pop();
+
+				mergeLists(stack, stackToMerge);
+			}
+		}
+	}
  	public void sawOpcode(DismantleBytecode dbc, int seen) {
  		int register;
  		String signature;
  		Item it, it2, it3;
  		Constant cons;
 
-		if (dbc.getPC() == jumpTarget) {
-			jumpTarget = -1;
-			if (!jumpStack.empty()) {
-			List<Item> stackToMerge = jumpStack.pop();
-			
-			// merge stacks
-			if (stack.size() != stackToMerge.size()) {
-				if (DEBUG)  {
-				System.out.println("Bad merging stacks");
-				System.out.println("current stack: " + stack);
-				System.out.println("jump stack: " + stackToMerge);
-				}
-			} else {
-				if (DEBUG)  {
-				System.out.println("Merging stacks");
-				System.out.println("current stack: " + stack);
-				System.out.println("jump stack: " + stackToMerge);
-				}
-				
-				for(int i = 0; i < stack.size(); i++)
-					stack.set(i, Item.merge(stack.get(i), stackToMerge.get(i)));
-				if (DEBUG)  {
-				System.out.println("merged stack: " + stack);
-				}
-				}
-			}
-			}
+ 		mergeJumps(dbc);
+ 		needToMerge = true;
+ 	
  		
  		try
  		{
@@ -1068,17 +1068,13 @@ public class OpcodeStack implements Constants2
 	 				throw new UnsupportedOperationException("OpCode not supported yet" );
 	 		}
 	 	}
-/*
-		// FIXME: This class currently relies on catching runtime exceptions.
-		// This should be fixed so they don't occur.
-		catch (RuntimeException e) {
-			throw e;
-		}
-*/
+
 	 	catch (RuntimeException e) {
 	 		//If an error occurs, we clear the stack and locals. one of two things will occur. 
 	 		//Either the client will expect more stack items than really exist, and so they're condition check will fail, 
 	 		//or the stack will resync with the code. But hopefully not false positives
+	 		if (DEBUG) 
+	 			e.printStackTrace();
 	 		clear();
 	 	}
 	 	finally {
@@ -1090,6 +1086,29 @@ public class OpcodeStack implements Constants2
 	 		}
 	 	}
  	}
+
+	private void mergeLists(List<Item> mergeInto, List<Item> stackToMerge) {
+		// merge stacks
+		if (mergeInto.size() != stackToMerge.size()) {
+			if (DEBUG) {
+				System.out.println("Bad merging stacks");
+				System.out.println("current stack: " + mergeInto);
+				System.out.println("jump stack: " + stackToMerge);
+			}
+		} else {
+			if (DEBUG) {
+				System.out.println("Merging stacks");
+				System.out.println("current stack: " + mergeInto);
+				System.out.println("jump stack: " + stackToMerge);
+			}
+
+			for (int i = 0; i < mergeInto.size(); i++)
+				mergeInto.set(i, Item.merge(mergeInto.get(i), stackToMerge.get(i)));
+			if (DEBUG) {
+				System.out.println("merged stack: " + mergeInto);
+			}
+		}
+	}
  	
  	public void clear() {
  		stack.clear();
@@ -1097,20 +1116,60 @@ public class OpcodeStack implements Constants2
 		jumpStack.clear();
  	}
  	BitSet exceptionHandlers = new BitSet();
- 	public int resetForMethodEntry(PreorderVisitor v) {
- 
- 		if (DEBUG) System.out.println(" --- ");
+ 	private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
+ 	private void addJumpValue(int target) {
+ 		List<Item> atTarget = jumpEntries.get(target);
+ 		if (atTarget == null) {
+ 			jumpEntries.put(target, new ArrayList(lvValues));
+ 			return;
+ 		}
+ 		mergeLists(atTarget, lvValues);
+ 	}
+ 	public int resetForMethodEntry(final DismantleBytecode v) {
+		jumpEntries.clear();
+ 		int result= resetForMethodEntry0(v);
+ 		Code code = v.getMethod().getCode();
+		if (code == null) return result;
+	
+		if (false) {
+			// Be clever
+			
+ 		DismantleBytecode branchAnalysis = new DismantleBytecode() {
+ 	 		@Override
+ 	 		public void sawOpcode(int seen) {
+ 	 			OpcodeStack.this.sawOpcode(this,seen);
+ 	 		}
+ 	 		@Override
+ 	 		public void sawBranchTo(int pc) {
+ 	 			addJumpValue(pc);
+ 	 		}
+ 	 	};
+ 	 	branchAnalysis.setupVisitorForClass(v.getThisClass());
+ 	 	branchAnalysis.doVisitMethod(v.getMethod());
+ 	 	resetForMethodEntry0(v);
+		}
+ 	
+ 		return result;
+ 	
+		}
+
+ 	
+	private int resetForMethodEntry0(PreorderVisitor v) {
+		if (DEBUG) System.out.println(" --- ");
  		stack.clear();
 		jumpTarget = -1;
  		lvValues.clear();
 		jumpStack.clear();
+
 		seenTransferOfControl = false;
 		String className = v.getClassName();
-		Method m = v.getMethod();
+	
 		String signature = v.getMethodSig();
 		exceptionHandlers.clear();
-		Code code = m.getCode();
-		if (code != null) {
+ 		Method m = v.getMethod();
+ 		Code code = m.getCode();
+		if (code != null) 
+	 {
 			CodeException[] exceptionTable = code.getExceptionTable();
 			if (exceptionTable != null)
 				for(CodeException ex : exceptionTable) 
@@ -1133,7 +1192,7 @@ public class OpcodeStack implements Constants2
 			 setLVValue(reg++, it);
 		 }
 		return reg;
-		}
+	}
 		
  	public int getStackDepth() {
  		return stack.size();

@@ -86,7 +86,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 	 * has been no transfer of control.	
 	 */
 	public void sawOpcode(int seen) {
-
+		stack.mergeJumps(this);
 		if (seenReturn && seenTransferOfControl && seenStateChange)
 			return;
 

@@ -92,6 +92,7 @@ public class FindBadCast extends BytecodeScanningDetector implements  StatelessD
 
 
 	public void sawOpcode(int seen) {
+		stack.mergeJumps(this);
 		if (DEBUG) {
 			System.out.println(stack);
 			printOpCode(seen);

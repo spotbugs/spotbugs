@@ -61,6 +61,7 @@ public class TestingGround extends BytecodeScanningDetector  {
 
 
 	public void sawOpcode(int seen) {
+		stack.mergeJumps(this);
 		if (seen == INVOKESTATIC
 			&& getNameConstantOperand().equals("forName")
 			&& getClassConstantOperand().equals("java/lang/Class")

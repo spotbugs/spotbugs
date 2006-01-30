@@ -168,6 +168,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	private int previousOpcode;
 	private int previousPreviousOpcode;
 	public void visit(Code obj) {
+	
 		count_aload_1 = 0;
 		previousOpcode = -1;
 		previousPreviousOpcode = -1;
@@ -199,7 +200,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 
 	public void sawOpcode(int seen) {
 		
-
+		opcodeStack.mergeJumps(this);
 		if (seen == GETSTATIC) {
 			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
                 	staticFieldsReadInThisMethod.add(f);

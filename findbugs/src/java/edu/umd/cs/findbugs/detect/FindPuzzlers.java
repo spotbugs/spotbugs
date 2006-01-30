@@ -49,7 +49,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	boolean constantArgumentToShift;
 	OpcodeStack stack = new OpcodeStack();
 	public void sawOpcode(int seen) {
-
+		stack.mergeJumps(this);
          if ((seen == INVOKEVIRTUAL)
                 &&   getNameConstantOperand().equals("equals")
                 &&   getSigConstantOperand().equals("(Ljava/lang/Object;)Z")

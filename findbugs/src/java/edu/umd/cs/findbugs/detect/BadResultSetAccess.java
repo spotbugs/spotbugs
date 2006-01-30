@@ -77,11 +77,12 @@ public class BadResultSetAccess extends BytecodeScanningDetector implements  Sta
 	}
 	
 	public void visit(Method obj) {
-                stack.resetForMethodEntry(this);
+        stack.resetForMethodEntry(this);
 		super.visit(obj);
 	}
 
 	public void sawOpcode(int seen) {
+		stack.mergeJumps(this);
 		try {
 			if (seen == INVOKEINTERFACE) {
 				String methodName = getNameConstantOperand();

@@ -97,6 +97,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 
 	BugInstance pendingRemOfRandomIntBug;
 	public void sawOpcode(int seen) {
+		stack.mergeJumps(this);
 		if (pendingRemOfRandomIntBug != null && !(seen == INVOKESTATIC
 				&& getClassConstantOperand().equals("java/lang/Math")
 				&& getNameConstantOperand().equals("abs"))) 

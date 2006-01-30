@@ -61,6 +61,7 @@ public class FindBadForLoop extends BytecodeScanningDetector implements  Statele
 
 	int lastRegStore;
 	public void sawOpcode(int seen) {
+		stack.mergeJumps(this);
 		try {
 		if (seen == ISTORE
 			|| seen == ISTORE_0

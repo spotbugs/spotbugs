@@ -66,6 +66,7 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 		}
 	}
 	public void sawOpcode(int seen) {
+		opStack.mergeJumps(this);
 		try {
 			switch ( seen ) {
 				case FCMPG:

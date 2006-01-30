@@ -197,6 +197,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 	}
 
 	public void sawOpcode(int seen) {
+		stack.mergeJumps(this);
 		try {
 			switch (seen) {
 			case ATHROW:

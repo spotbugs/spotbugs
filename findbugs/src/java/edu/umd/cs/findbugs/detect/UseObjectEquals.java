@@ -47,7 +47,8 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Statele
         stack.resetForMethodEntry(this);
 	}
 		
-	public void sawOpcode(int seen) {					
+	public void sawOpcode(int seen) {		
+		stack.mergeJumps(this);
 		if ((seen == INVOKEVIRTUAL) 
 		&&   getNameConstantOperand().equals("equals")
 		&&   getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
