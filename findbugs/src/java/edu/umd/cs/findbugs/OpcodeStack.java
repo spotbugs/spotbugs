@@ -355,7 +355,7 @@ public class OpcodeStack implements Constants2
  			System.out.println(" current lvValues " + lvValues);
 			}
  			
- 			mergeLists(lvValues, jumpEntry);
+ 			mergeLists(lvValues, jumpEntry, false);
 			if (DEBUG)
  			System.out.println(" merged lvValues " + lvValues);
  		}
@@ -369,7 +369,7 @@ public class OpcodeStack implements Constants2
 					System.out.println("merging stacks at " + dbc.getPC() + " -> " + stackToMerge);
 					System.out.println(" current stack " + stack);
 					}
-				mergeLists(stack, stackToMerge);
+				mergeLists(stack, stackToMerge, true);
 				if (DEBUG) 
 					System.out.println(" updated stack " + stack);
 			} }
@@ -1096,23 +1096,25 @@ public class OpcodeStack implements Constants2
 	 	}
  	}
 
-	private void mergeLists(List<Item> mergeInto, List<Item> stackToMerge) {
+	private void mergeLists(List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
 		// merge stacks
-		if (mergeInto.size() != stackToMerge.size()) {
+		int intoSize = mergeInto.size();
+		int fromSize = mergeFrom.size();
+		if (errorIfSizesDoNotMatch && intoSize != fromSize) {
 			if (DEBUG) {
 				System.out.println("Bad merging stacks");
 				System.out.println("current stack: " + mergeInto);
-				System.out.println("jump stack: " + stackToMerge);
+				System.out.println("jump stack: " + mergeFrom);
 			}
 		} else {
 			if (DEBUG) {
 				System.out.println("Merging stacks");
 				System.out.println("current stack: " + mergeInto);
-				System.out.println("jump stack: " + stackToMerge);
+				System.out.println("jump stack: " + mergeFrom);
 			}
 
-			for (int i = 0; i < mergeInto.size(); i++)
-				mergeInto.set(i, Item.merge(mergeInto.get(i), stackToMerge.get(i)));
+			for (int i = 0; i < Math.min(intoSize, fromSize); i++)
+				mergeInto.set(i, Item.merge(mergeInto.get(i), mergeFrom.get(i)));
 			if (DEBUG) {
 				System.out.println("merged stack: " + mergeInto);
 			}
@@ -1132,7 +1134,7 @@ public class OpcodeStack implements Constants2
  			jumpEntries.put(target, new ArrayList(lvValues));
  			return;
  		}
- 		mergeLists(atTarget, lvValues);
+ 		mergeLists(atTarget, lvValues, false);
  	}
  	public int resetForMethodEntry(final DismantleBytecode v) {
 		jumpEntries.clear();
@@ -1142,25 +1144,26 @@ public class OpcodeStack implements Constants2
 	
 		if (false) {
 			// Be clever
-			
- 		DismantleBytecode branchAnalysis = new DismantleBytecode() {
- 	 		@Override
- 	 		public void sawOpcode(int seen) {
- 	 			OpcodeStack.this.sawOpcode(this,seen);
- 	 		}
- 	 		@Override
- 	 		public void sawBranchTo(int pc) {
- 	 			addJumpValue(pc);
- 	 		}
- 	 	};
- 	 	branchAnalysis.setupVisitorForClass(v.getThisClass());
- 	 	branchAnalysis.doVisitMethod(v.getMethod());
-		if (DEBUG && !jumpEntries.isEmpty()) {
-			System.out.println("Found dataflow for jumps");
-			for(Integer pc : jumpEntries.keySet())
-				System.out.println(pc + " -> " + jumpEntries.get(pc));
+
+			DismantleBytecode branchAnalysis = new DismantleBytecode() {
+				@Override
+				public void sawOpcode(int seen) {
+					OpcodeStack.this.sawOpcode(this, seen);
+				}
+
+				@Override
+				public void sawBranchTo(int pc) {
+					addJumpValue(pc);
+				}
+			};
+			branchAnalysis.setupVisitorForClass(v.getThisClass());
+			branchAnalysis.doVisitMethod(v.getMethod());
+			if (DEBUG && !jumpEntries.isEmpty()) {
+				System.out.println("Found dataflow for jumps in " + v.getMethodName());
+				for (Integer pc : jumpEntries.keySet())
+					System.out.println(pc + " -> " + jumpEntries.get(pc));
 			}
- 	 	resetForMethodEntry0(v);
+			resetForMethodEntry0(v);
 		}
  	
  		return result;
