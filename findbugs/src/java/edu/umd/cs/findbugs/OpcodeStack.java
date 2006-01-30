@@ -349,22 +349,31 @@ public class OpcodeStack implements Constants2
 		needToMerge = false;
 		List<Item> jumpEntry = jumpEntries.get(dbc.getPC());
  		if (jumpEntry != null) {
-// 			System.out.println("************");
-// 			System.out.println("jump entry at " + dbc.getPC() + " -> " + jumpEntry);
-// 			System.out.println(" current lvValues " + lvValues);
+			if (DEBUG) {
+ 			System.out.println("XXXXXXX");
+ 			System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + jumpEntry);
+ 			System.out.println(" current lvValues " + lvValues);
+			}
  			
  			mergeLists(lvValues, jumpEntry);
-// 			System.out.println(" merged lvValues " + lvValues);
+			if (DEBUG)
+ 			System.out.println(" merged lvValues " + lvValues);
  		}
 		if (dbc.getPC() == jumpTarget) {
 			jumpTarget = -1;
 			if (!jumpStack.empty()) {
+				
 				List<Item> stackToMerge = jumpStack.pop();
-
+				if (DEBUG) {
+					System.out.println("************");
+					System.out.println("merging stacks at " + dbc.getPC() + " -> " + stackToMerge);
+					System.out.println(" current stack " + stack);
+					}
 				mergeLists(stack, stackToMerge);
-			}
+				if (DEBUG) 
+					System.out.println(" updated stack " + stack);
+			} }
 		}
-	}
  	public void sawOpcode(DismantleBytecode dbc, int seen) {
  		int register;
  		String signature;
@@ -1146,6 +1155,11 @@ public class OpcodeStack implements Constants2
  	 	};
  	 	branchAnalysis.setupVisitorForClass(v.getThisClass());
  	 	branchAnalysis.doVisitMethod(v.getMethod());
+		if (DEBUG && !jumpEntries.isEmpty()) {
+			System.out.println("Found dataflow for jumps");
+			for(Integer pc : jumpEntries.keySet())
+				System.out.println(pc + " -> " + jumpEntries.get(pc));
+			}
  	 	resetForMethodEntry0(v);
 		}
  	
