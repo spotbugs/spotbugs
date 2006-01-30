@@ -116,7 +116,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 						.addSourceLine(this);
 						}
 			else if (constant0 instanceof Integer && ((Integer)constant0).intValue() == 1)
-			pendingRemOfRandomIntBug = new BugInstance(this, "INT_BAD_REM_BY_0", HIGH_PRIORITY)
+			pendingRemOfRandomIntBug = new BugInstance(this, "INT_BAD_REM_BY_1", HIGH_PRIORITY)
 			.addClassAndMethod(this)
 			.addSourceLine(this);
 			

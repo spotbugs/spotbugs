@@ -3336,7 +3336,7 @@ consider using the Random.nextInt(int) method instead.
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="INT_BAD_REM_BY_0">
+  <BugPattern type="INT_BAD_REM_BY_1">
     <ShortDescription>Integer remainder modulo 1</ShortDescription>
     <LongDescription>Integer remainder modulo 1 computed in {1} </LongDescription>
     <Details>
