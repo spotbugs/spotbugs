@@ -179,7 +179,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		}
 	}
 
-	private void doVisitMethod(Method method) {
+	public void doVisitMethod(Method method) {
 		if (visitingMethod)
 			throw new IllegalStateException("doVisitMethod called when already visiting a method");
 		visitingMethod = true;
