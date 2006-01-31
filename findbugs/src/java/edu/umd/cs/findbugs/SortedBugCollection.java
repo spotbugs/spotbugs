@@ -286,6 +286,7 @@ public class SortedBugCollection implements BugCollection {
 		}
 		
 		HashMap<String, Integer> seen = new HashMap<String, Integer>();
+		
 		for(BugInstance bugInstance : getCollection()) {
 			String hash = bugInstance.getInstanceKey();
 			if (digest != null) {
@@ -296,12 +297,14 @@ public class SortedBugCollection implements BugCollection {
 			Integer count = seen.get(hash);
 			if (count == null) {
 				bugInstance.setInstanceOccurrenceNum(0);
-				seen.put(hash,1);
+				seen.put(hash,0);
 			} else {
 				bugInstance.setInstanceOccurrenceNum(count);
 				seen.put(hash, count+1);
 			}
 		}
+		for(BugInstance bugInstance : getCollection()) 
+			bugInstance.setInstanceOccurrenceMax(seen.get(bugInstance.getInstanceHash()));
 	
 	}
 	/**

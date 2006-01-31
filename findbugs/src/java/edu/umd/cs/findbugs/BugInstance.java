@@ -86,6 +86,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	private String uniqueId;
 	private String instanceHash;
 	private int instanceOccurrenceNum;
+	private int instanceOccurrenceMax;
 	
 	
 	/*
@@ -711,7 +712,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addField(String className, String fieldName, String fieldSig, boolean isStatic) {
-		String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
 		addField(new FieldAnnotation(className, fieldName, fieldSig, isStatic));
 		return this;
 	}
@@ -814,7 +814,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance addMethod(MethodGen methodGen, String sourceFile) {
 		String className = methodGen.getClassName();
-		String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
 		MethodAnnotation methodAnnotation =
 		        new MethodAnnotation(className, methodGen.getName(), methodGen.getSignature(), methodGen.isStatic());
 		addMethod(methodAnnotation);
@@ -908,7 +907,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public BugInstance addCalledMethod(MethodGen methodGen, InvokeInstruction inv) {
 		ConstantPoolGen cpg = methodGen.getConstantPool();
 		String className = inv.getClassName(cpg);
-		String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
 		String methodName = inv.getMethodName(cpg);
 		String methodSig = inv.getSignature(cpg);
 		addMethod(className, methodName, methodSig, inv.getOpcode() == Constants.INVOKESTATIC);
@@ -1216,7 +1214,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		}
 		if (addMessages) {
 		attributeList.addAttribute("instanceHash", getInstanceHash());
-		attributeList.addAttribute("instanceOccurrenceNum", ""+getInstanceOccurrenceNum());
+		attributeList.addAttribute("instanceOccurrenceNum", Integer.toString(getInstanceOccurrenceNum()));
+		attributeList.addAttribute("instanceOccurrenceMax", Integer.toString(getInstanceOccurrenceMax()));
+		
 		}
 		if (firstVersion > 0) attributeList.addAttribute("first", Long.toString(firstVersion));
 		if (lastVersion >= 0) 	attributeList.addAttribute("last", Long.toString(lastVersion));
@@ -1447,6 +1447,20 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public int getInstanceOccurrenceNum() {
 		return instanceOccurrenceNum;
+	}
+
+	/**
+	 * @param instanceOccurrenceMax The instanceOccurrenceMax to set.
+	 */
+	public void setInstanceOccurrenceMax(int instanceOccurrenceMax) {
+		this.instanceOccurrenceMax = instanceOccurrenceMax;
+	}
+
+	/**
+	 * @return Returns the instanceOccurrenceMax.
+	 */
+	public int getInstanceOccurrenceMax() {
+		return instanceOccurrenceMax;
 	}
 }
 
