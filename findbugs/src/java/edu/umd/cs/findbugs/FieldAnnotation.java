@@ -138,7 +138,6 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		if (ins instanceof GETFIELD || ins instanceof GETSTATIC) {
 			FieldInstruction fins = (FieldInstruction) ins;
 			String className = fins.getClassName(cpg);
-			String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
 			return new FieldAnnotation(className, fins.getName(cpg), fins.getSignature(cpg), fins instanceof GETSTATIC);
 		} else
 			return null;
@@ -155,7 +154,6 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		if (ins instanceof PUTFIELD || ins instanceof PUTSTATIC) {
 			FieldInstruction fins = (FieldInstruction) ins;
 			String className = fins.getClassName(cpg);
-			String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
 			return new FieldAnnotation(className, fins.getName(cpg), fins.getSignature(cpg), fins instanceof PUTSTATIC);
 		} else
 			return null;
