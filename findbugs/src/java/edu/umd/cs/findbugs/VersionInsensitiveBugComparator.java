@@ -34,6 +34,8 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 	
 	private ClassNameRewriter classNameRewriter = IdentityClassNameRewriter.instance();
 	
+	private boolean exactBugPatternMatch = true;
+	
 	private boolean comparePriorities = false;
 	public VersionInsensitiveBugComparator() {
 	}
@@ -154,6 +156,8 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 			// cause loss of precision.
 			if ((cmp = lhsPattern.getAbbrev().compareTo(rhsPattern.getAbbrev())) != 0)
 				return cmp;
+			if (isExactBugPatternMatch() && (cmp = lhsPattern.getType().compareTo(rhsPattern.getType())) != 0)
+				return cmp;
 		}
 		
 
@@ -232,6 +236,20 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 			return 1;
 		else
 			return 0;
+	}
+
+	/**
+	 * @param exactBugPatternMatch The exactBugPatternMatch to set.
+	 */
+	public void setExactBugPatternMatch(boolean exactBugPatternMatch) {
+		this.exactBugPatternMatch = exactBugPatternMatch;
+	}
+
+	/**
+	 * @return Returns the exactBugPatternMatch.
+	 */
+	public boolean isExactBugPatternMatch() {
+		return exactBugPatternMatch;
 	}
 }
 

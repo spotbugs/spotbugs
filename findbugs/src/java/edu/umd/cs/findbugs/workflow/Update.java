@@ -154,9 +154,18 @@ public class Update {
 				origCollection, newCollection);
 		matchBugs(versionInsensitiveBugComparator, origCollection,
 				newCollection);
+		{
+		VersionInsensitiveBugComparator fuzzyBugPatternMatcher = new VersionInsensitiveBugComparator();
+		fuzzyBugPatternMatcher.setExactBugPatternMatch(false);
+		matchBugs(fuzzyBugPatternMatcher, origCollection,
+			newCollection);
+		}
 		if (!noPackageMoves) {
 			VersionInsensitiveBugComparator movedBugComparator = new VersionInsensitiveBugComparator();
 			movedBugComparator.setClassNameRewriter(new MovedClassMap(origCollection,newCollection).execute());
+			matchBugs(movedBugComparator, origCollection,
+					newCollection);
+			movedBugComparator.setExactBugPatternMatch(false);
 			matchBugs(movedBugComparator, origCollection,
 				newCollection);
 		}
