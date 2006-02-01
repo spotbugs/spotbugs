@@ -63,6 +63,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 		visibleOutsidePackage = obj.isPublic() || obj.isProtected();
 		String whereEqual = getDottedClassName();
 		boolean classThatDefinesEqualsIsAbstract = false;
+		boolean classThatDefinesHashCodeIsAbstract = false;
 		boolean inheritedHashCodeIsFinal = false;
 		boolean inheritedEqualsIsFinal = false;
 		boolean inheritedEqualsIsAbstract = false;
@@ -88,6 +89,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 				whereHashCode = "java.lang.Object";
 			} else {
 				whereHashCode = wh.getClassName();
+				classThatDefinesHashCodeIsAbstract = wh.isAbstract();
 				Method m = findMethod(wh, "hashCode", "()I");
 				if (m != null && m.isFinal()) inheritedHashCodeIsFinal = true;
 			}
@@ -161,8 +163,9 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 				        priority).addClass(getDottedClassName());
 				if (equalsMethod != null) bug.addMethod(equalsMethod);
 				bugReporter.reportBug(bug);
-			} else if (!inheritedHashCodeIsFinal) {
+			} else if (!inheritedHashCodeIsFinal  && !whereHashCode.startsWith("java.util.Abstract")) {
 				int priority = LOW_PRIORITY;
+				
 				if (hasEqualsObject && inheritedEqualsIsAbstract)
 					priority++;
 				if (hasFields) priority--;
