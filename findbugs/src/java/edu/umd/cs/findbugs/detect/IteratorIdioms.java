@@ -90,7 +90,7 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 		        || seen == INVOKEVIRTUAL
 		        || seen == INVOKEINTERFACE) {
 			// System.out.println("Saw call to " + nameConstant);
-			if (getNameConstantOperand().indexOf("next") >= 0)
+			if (getNameConstantOperand().equals("next") || getNameConstantOperand().equals("previous") || getNameConstantOperand().equals("hasNext"))
 				sawNoSuchElement = true;
 		}
 	}
