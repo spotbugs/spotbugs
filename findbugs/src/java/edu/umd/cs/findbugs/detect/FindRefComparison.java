@@ -611,9 +611,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			if (!lhs.equals(rhs))
 				return;
 
-			if (lhs.equals("java.lang.String") && rhs.equals("java.lang.String")) {
+			if (lhs.equals("java.lang.String")) {
 				handleStringComparison(jclass, methodGen, visitor, stringComparisonList, location, lhsType, rhsType);
-			} else if (suspiciousSet.contains(lhs) && suspiciousSet.contains(rhs)) {
+			} else if (suspiciousSet.contains(lhs)) {
 				handleSuspiciousRefComparison(jclass, methodGen, refComparisonList, location, lhs);
 			}
 		}
@@ -677,7 +677,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			Location location,
 			String lhs) {
 		String sourceFile = jclass.getSourceFileName();
-		BugInstance instance = new BugInstance(this, "RC_REF_COMPARISON", NORMAL_PRIORITY)
+		BugInstance instance = new BugInstance(this, "RC_REF_COMPARISON", lhs.equals("java.lang.Boolean") ? NORMAL_PRIORITY : HIGH_PRIORITY)
 		        .addClassAndMethod(methodGen, sourceFile)
 		        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 		        .addClass(lhs).describe("CLASS_REFTYPE");
