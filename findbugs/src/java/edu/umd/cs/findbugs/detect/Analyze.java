@@ -13,6 +13,7 @@ public class Analyze {
 	static private JavaClass serializable;
 
 	static private JavaClass collection;
+	static private JavaClass comparator;
 
 	static private JavaClass map;
 	static private JavaClass remote;
@@ -23,6 +24,8 @@ public class Analyze {
 			serializable = Repository.lookupClass("java.io.Serializable");
 			collection = Repository.lookupClass("java.util.Collection");
 			map = Repository.lookupClass("java.util.Map");
+			comparator = Repository.lookupClass("java.util.Comparator");
+			
 		} catch (ClassNotFoundException e) {
 			storedException = e;
 		}
@@ -109,6 +112,11 @@ public class Analyze {
 		if (result >= 0.9)
 			return result;
 		result = Math.max(result, deepInstanceOf(x, map));
+		if (result >= 0.9)
+			return result;
+		result = Math.max(result, 0.5*deepInstanceOf(x, comparator));
+		if (result >= 0.9)
+			return result;
 		return result;
 	}
 
