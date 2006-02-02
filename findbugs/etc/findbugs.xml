@@ -95,7 +95,7 @@
           
  <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPriviledged" 
             speed="fast"
-            reports="TESTING"/>  
+            reports="DP_DO_INSIDE_DO_PRIVILEDGED,DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED"/>  
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
@@ -532,6 +532,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="CORRECTNESS" 
 />
 <BugPattern abbrev="DP" type="DP_DO_INSIDE_DO_PRIVILEDGED" category="CORRECTNESS" />
+<BugPattern abbrev="DP" type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED" category="CORRECTNESS" />
   
   <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="CORRECTNESS" />
   <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS" />

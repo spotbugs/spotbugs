@@ -56,6 +56,7 @@ public class DoInsideDoPriviledged  extends BytecodeScanningDetector {
 		try {
 		if (seen == NEW) {
 			String classOfConstructedClass = getClassConstantOperand();
+			if (classOfConstructedClass.equals(getClassName())) return;
 			JavaClass constructedClass = Repository.lookupClass(classOfConstructedClass);
 			if (Repository.instanceOf(constructedClass,"java/lang/ClassLoader")) 
 				bugReporter.reportBug(new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEDGED",
