@@ -51,6 +51,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	private static final long serialVersionUID = 1L;
 
 	private static final String DEFAULT_ROLE = "SOURCE_LINE_DEFAULT";
+	private static final String DEFAULT_ROLE_UNKNOWN_LINE = "SOURCE_LINE_DEFAULT_UNKNOWN_LINE";
 
 	/**
 	 * String returned if the source file is unknown.
@@ -510,6 +511,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	}
 
 	private void appendLines(StringBuffer buf) {
+		if (isUnknown()) return;
 		buf.append(":[");
 		if (startLine == endLine) {
 			buf.append("line ");
@@ -532,7 +534,10 @@ public class SourceLineAnnotation implements BugAnnotation {
 	}
 
 	public String toString() {
-		String pattern = I18N.instance().getAnnotationDescription(description);
+		String desc = description;
+		if (desc.equals(DEFAULT_ROLE) && isUnknown())
+			desc = DEFAULT_ROLE_UNKNOWN_LINE;
+		String pattern = I18N.instance().getAnnotationDescription(desc);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
 		return format.format(new BugAnnotation[]{this});
 	}
