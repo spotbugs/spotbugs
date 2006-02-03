@@ -227,6 +227,14 @@ cloneable classes. It is a fast detector.</p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ComparatorIdiom">
+    <Details>
+<![CDATA[
+<p> This detector looks for violations of the idioms for writing
+classes that implement <code>Comparator</code>. It is a fast detector.</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException">
     <Details>
 <![CDATA[
@@ -2395,6 +2403,22 @@ be confusing to users of this class.</p>
    references to class objects or inner classes.
    To ensure interoperability of Serializable across versions,
    consider adding an explicit serialVersionUID.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE">
+    <ShortDescription>Comparator doesn't implement Serializable</ShortDescription>
+    <LongDescription>{0} implements Comparator but not Serializable</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class implements the <code>Comparator</code> interface. You
+should consider whether or not it should also implement the <code>Serializable</code>
+interface. If a comparator is used to construct an ordered collection
+such as a <code>TreeMap</code>, then the <code>TreeMap</code>
+will be serializable only if the comparator is also serializable.
+As most comparators have little or no state, making them serializable
+is generally easy and good defensive programming.
+</p>
 ]]>
     </Details>
   </BugPattern>

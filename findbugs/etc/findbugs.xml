@@ -121,6 +121,10 @@
             speed="fast" 
             reports="CN_IDIOM,CN_IDIOM_NO_SUPER_CALL" />
             
+  <Detector class="edu.umd.cs.findbugs.detect.ComparatorIdiom" 
+            speed="fast" 
+            reports="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE" />
+            
   <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" 
             speed="fast"
             reports="SA_FIELD_SELF_ASSIGNMENT" />
@@ -619,6 +623,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="RR" type="SR_NOT_CHECKED" category="CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR" category="CORRECTNESS" />
   <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION" category="CORRECTNESS" />
+  <BugPattern abbrev="Se" type="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE" category="CORRECTNESS" />
   <BugPattern abbrev="SnVI" type="SE_NO_SERIALVERSIONID" category="CORRECTNESS" />
   <BugPattern abbrev="WS" type="WS_WRITEOBJECT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RS" type="RS_READOBJECT_SYNC" category="MT_CORRECTNESS" />
