@@ -1,10 +1,10 @@
 <!--
-	FindBugs Ant build script.
+	FindBugs Test Cases Ant build script.
 	Based on original FindBugs Ant Script by Mike Fagan.
-	Rewritten 1/5/2005 by David Hovemeyer.
+	Rewritten 1/5/2005 by David Hovemeyer, 2/6/2006 by Brian Cole.
 -->
 
-<project name="findbugs" default="build">
+<project name="findbugsTestCases" default="build">
 
 	<property file="build.properties" />
 
@@ -17,7 +17,8 @@
 	-->
 	<property file="local.properties" />
 	<property name="findbugs.home" value="../findbugs"/>
-		
+	<property name="history.dir" value="history"/>
+
 
 	<target name="build" depends="classes,runfindbugs" />
 
@@ -32,44 +33,64 @@
 		</javac>
 	</target>
 
-	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"  classpath="../findbugs/lib/findbugs-ant.jar"/>
+	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.home}/lib/findbugs-ant.jar"/>
 
 
-	<target name="runfindbugs" depends="classes">
-		
-		<parallel>
-		<sequential>
+	<target name="runfindbugs" depends="classes">	
+		<parallel threadsPerProcessor="1">
+			<!--antcall target="historyNormal"/> <!   run findbugs effort=default, then merge or copy results -->
+			<antcall target="historyMax"/>       <!-- run findbugs effort=max, then merge or copy results -->
+		</parallel>
+	</target>
+
+	<target name="runNormal" depends="classes">
 		<findbugs home="${findbugs.home}" output="xml" timestampNow="true" reportLevel="low" effort="default" outputFile="build/normal.xml">
 			<sourcePath path="${basedir}/src/java" />
 			<auxclasspath location="${junit.home}/junit.jar"/>
 			<class location="${basedir}/build/classes" />
 		</findbugs>
-		<exec dir="." executable="computeBugHistory">
-			<arg value="-output" />
-			<arg file="history/max.xml" />
-			<arg file="history/max.xml" />
-			<arg file="build/max.xml" />
-		</exec>
-		</sequential>
-	<!--
-		<sequential>
+	</target>
+
+	<target name="runMax" depends="classes">
 		<findbugs home="${findbugs.home}" output="xml" timestampNow="true" reportLevel="low" effort="max" outputFile="build/max.xml">
 			<sourcePath path="${basedir}/src/java" />
 			<auxclasspath location="${junit.home}/junit.jar"/>
 			<class location="${basedir}/build/classes" />
 		</findbugs>
-		<exec dir="." executable="computeBugHistory">
+	</target>
+
+	<target name="historyNormal" depends="mergeNormal,copyNormal"/>
+	<target name="historyMax" depends="mergeMax,copyMax"/>
+
+	<target name="mergeNormal" depends="runNormal,existance" if="exists.normal">
+		<exec dir="." executable="${findbugs.home}/bin/computeBugHistory">
 					<arg value="-output" />
-					<arg file="history/normal.xml" />
-					<arg file="history/normal.xml" />
+					<arg file="${history.dir}/normal.xml" />
+					<arg file="${history.dir}/normal.xml" />
 					<arg file="build/normal.xml" />
 		</exec>
-		</sequential>
-	-->
-			</parallel>
-		
+	</target>
 
+	<target name="mergeMax" depends="runMax,existance" if="exists.max">
+		<exec dir="." executable="${findbugs.home}/bin/computeBugHistory">
+			<arg value="-output" />
+			<arg file="${history.dir}/max.xml" />
+			<arg file="${history.dir}/max.xml" />
+			<arg file="build/max.xml" />
+		</exec>
+	</target>
 
+	<target name="existance">
+		<available property="exists.normal" file="${history.dir}/normal.xml"/>
+		<available property="exists.max" file="${history.dir}/max.xml"/>
+	</target>
+
+	<target name="copyNormal" depends="runNormal,existance" unless="exists.normal">
+		<copy file="build/normal.xml" todir="${history.dir}"/>
+	</target>
+
+	<target name="copyMax" depends="runMax,existance" unless="exists.max">
+		<copy file="build/max.xml" todir="${history.dir}"/>
 	</target>
 
 
