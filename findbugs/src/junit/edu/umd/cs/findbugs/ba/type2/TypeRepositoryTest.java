@@ -56,8 +56,6 @@ public class TypeRepositoryTest extends TestCase {
 	ArrayType mySuperclassArray2Type;
 	ArrayType myInterfaceArrayType;
 	ArrayType mySubinterfaceArrayType;
-	ArrayType unrelatedThingArrayType;
-	ArrayType unrelatedThingArray2Type;
 
 	ArrayType javaLangObjectArray1Type;
 	ArrayType javaLangObjectArray2Type;
@@ -153,8 +151,6 @@ public class TypeRepositoryTest extends TestCase {
 		javaLangObjectArray2Type = repos.arrayTypeFromDimensionsAndBaseType(2, javaLangObjectType);
 		booleanArray1Type = repos.arrayTypeFromDimensionsAndBaseType(1, booleanType);
 		booleanArray2Type = repos.arrayTypeFromDimensionsAndBaseType(2, booleanType);
-		unrelatedThingArrayType = repos.arrayTypeFromDimensionsAndBaseType(1, unrelatedThingType);
-		unrelatedThingArray2Type = repos.arrayTypeFromDimensionsAndBaseType(2, unrelatedThingType);
 	}
 
 	public void testClassFromSlashedClassName() {
