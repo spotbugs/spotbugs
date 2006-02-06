@@ -69,15 +69,17 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 	}
 	
 	boolean sawNoSuchElement;
+	boolean sawCall;
 
 	public void visit(Code obj) {
 		if (getMethodName().equals("next")
 		        && getMethodSig().equals("()Ljava/lang/Object;")) {
 			sawNoSuchElement = false;
+			sawCall = false;
 			super.visit(obj);
 			if (!sawNoSuchElement)
-//			bugReporter.reportBug(BugInstance.inMethod("IT_NO_SUCH_ELEMENT", UNKNOWN_PRIORITY, this));
-				bugReporter.reportBug(new BugInstance(this, "IT_NO_SUCH_ELEMENT", NORMAL_PRIORITY).addClassAndMethod(this));
+
+				bugReporter.reportBug(new BugInstance(this, "IT_NO_SUCH_ELEMENT", sawCall ? LOW_PRIORITY : NORMAL_PRIORITY).addClassAndMethod(this));
 		}
 	}
 
@@ -89,6 +91,7 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 		else if (seen == INVOKESPECIAL
 		        || seen == INVOKEVIRTUAL
 		        || seen == INVOKEINTERFACE) {
+			sawCall = true;
 			// System.out.println("Saw call to " + nameConstant);
 			if (getNameConstantOperand().toLowerCase().indexOf("next")  >= 0 || getNameConstantOperand().toLowerCase().indexOf("previous") >= 0 )
 				sawNoSuchElement = true;
