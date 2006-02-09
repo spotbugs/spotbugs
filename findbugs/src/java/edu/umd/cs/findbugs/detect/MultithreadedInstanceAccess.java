@@ -62,7 +62,7 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 	}
 	
 	private Set<JavaClass> getMtClasses() {
-		if (mtClasses != null) 
+		if (mtClasses != null) // TODO: This isn't working--have to make mtClasses static.
 			return mtClasses;
 		
 		mtClasses = new HashSet<JavaClass>();
@@ -97,8 +97,13 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 			}
 			else {
 				for (JavaClass mtClass : getMtClasses()) {
-					if (cls.implementationOf(mtClass)
-							|| cls.instanceOf(mtClass)) {
+					/* note: We could just call cls.instanceOf(mtClass) and it would work for both
+					 * classes and interfaces, but if mtClass is an interface it is more efficient
+					 * to call cls.implementationOf() and since we're doing this on each visit that's
+					 * what we'll do.
+					 * also note: implementationOf(mtClass) throws an IllegalArgumentException when
+					 * mtClass is not an interface. See bug#1428253. */
+					if (mtClass.isClass() ? cls.instanceOf(mtClass) : cls.implementationOf(mtClass)) {
 						mtClassName = mtClass.getClassName();
 						super.visitClassContext(classContext);
 						return;
