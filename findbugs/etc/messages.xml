@@ -4348,8 +4348,8 @@ and the next method is supposed to change the state of the iterator.
   </BugPattern>
 
   <BugPattern type="IMA_INEFFICIENT_MEMBER_ACCESS">
-    <ShortDescription>Method writes to a private member variable of owning class</ShortDescription>
-    <LongDescription>Method {1} writes to a private member variable of owning class</LongDescription>
+    <ShortDescription>Method accesses a private member variable of owning class</ShortDescription>
+    <LongDescription>Method {1} accesses to a private member variable of owning class</LongDescription>
     <Details>
       <![CDATA[
       <p>
