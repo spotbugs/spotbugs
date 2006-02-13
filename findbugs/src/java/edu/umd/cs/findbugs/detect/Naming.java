@@ -26,6 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -33,7 +34,6 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -249,15 +249,22 @@ public class Naming extends PreorderVisitor implements Detector {
 				: LOW_PRIORITY)
 			        .addClassAndMethod(this));
 		String sig = getMethodSig();
-		if (getMethodName().equals(baseClassName)) {
-			bugReporter.reportBug(new BugInstance(this, "NM_METHOD_CONSTRUCTOR_CONFUSION",
-			        (sig.equals("()V") 
-					&& obj.getCode().getCode().length > 1
-					&& !obj.isNative()
-					)
-			        ? HIGH_PRIORITY : NORMAL_PRIORITY)
-			        .addClassAndMethod(this));
-			return;
+
+		if (getMethodName().equals(baseClassName) && sig.equals("()V")) {
+			Code code = obj.getCode();
+			if (code != null) {
+				byte [] codeBytes = code.getCode();
+				int priority = NORMAL_PRIORITY;
+				if (codeBytes.length > 1) {
+					priority--;
+					int lastOpcode = codeBytes[codeBytes.length-1] & 0xff;
+					if (codeBytes.length < 10 && lastOpcode == ATHROW) return;
+				}
+				if (!obj.isPublic() && getThisClass().isPublic()) 
+					priority--;
+				bugReporter.reportBug( new BugInstance(this, "NM_METHOD_CONSTRUCTOR_CONFUSION", priority).addClassAndMethod(this));
+				return;
+			}
 		}
 
 		if (obj.isAbstract()) return;
