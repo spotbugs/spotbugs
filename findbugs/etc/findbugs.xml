@@ -30,6 +30,10 @@
 	</SplitPass>
 
 	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.Methods"/>
+		<Later class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod"/>
+	</SplitPass>
+	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations"/>
 		<Later class="edu.umd.cs.findbugs.detect.MethodReturnCheck"/>
 	</SplitPass>
@@ -55,6 +59,17 @@
 	        speed="fast"
 	        reports="TESTING"
 			hidden="true" /> 
+	        
+  <Detector class="edu.umd.cs.findbugs.detect.Methods" 
+	        speed="fast"
+	        reports="TESTING"
+			disabled="true"
+			hidden="false" /> 
+  <Detector class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod" 
+	        speed="moderate"
+	        reports="TESTING"
+			disabled="true"
+			hidden="false" /> 
 	        
   <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue" 
 	        speed="fast"

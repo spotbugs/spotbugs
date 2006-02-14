@@ -40,6 +40,21 @@ This plugin contains all of the standard FindBugs detectors.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.Methods">
+    <Details>
+<![CDATA[
+<p> Builds of database of all methods defined in analyzed classes, for use
+by other detectors.</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod">
+    <Details>
+<![CDATA[
+<p> Looks for potential confusion between inherited and outer methods.</p>
+]]>
+    </Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue">
     <Details>
