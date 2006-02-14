@@ -70,7 +70,8 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 			if (i == -1) break;
 			possibleTargetClass = possibleTargetClass.substring(0,i);
         	 XMethod alternativeMethod = XFactory.createXMethod(possibleTargetClass, getNameConstantOperand(), getSigConstantOperand(), false);
-        	 if (Methods.getMethods().contains(alternativeMethod)) System.out.println("Did you mean to invoke " + alternativeMethod);
+        	 if (Methods.getMethods().contains(alternativeMethod)) System.out.println("Did you mean to invoke " + alternativeMethod 
+        			 + " in " + getFullyQualifiedMethodName());
          };
          
          
