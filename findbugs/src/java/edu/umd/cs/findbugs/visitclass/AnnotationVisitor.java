@@ -34,6 +34,22 @@ import org.apache.bcel.classfile.Unknown;
 
 public class AnnotationVisitor extends PreorderVisitor {
 
+	/**
+	 * 
+	 */
+	private static final String RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS = "RuntimeInvisibleParameterAnnotations";
+	/**
+	 * 
+	 */
+	private static final String RUNTIME_INVISIBLE_ANNOTATIONS = "RuntimeInvisibleAnnotations";
+	/**
+	 * 
+	 */
+	private static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
+	/**
+	 * 
+	 */
+	private static final String RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS = "RuntimeVisibleParameterAnnotations";
 	static final boolean DEBUG = false;
 
 	/**
@@ -83,9 +99,9 @@ public class AnnotationVisitor extends PreorderVisitor {
 				byte[] b = obj.getBytes();
 				DataInputStream bytes = new DataInputStream(
 						new ByteArrayInputStream(b));
-				boolean runtimeVisible = name.equals("RuntimeVisibleParameterAnnotations");
-				if (name.equals("RuntimeVisibleAnnotations")
-						|| name.equals("RuntimeInvisibleAnnotations")) {
+				boolean runtimeVisible = name.equals(RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS);
+				if (name.equals(RUNTIME_VISIBLE_ANNOTATIONS)
+						|| name.equals(RUNTIME_INVISIBLE_ANNOTATIONS)) {
 
 					int numAnnotations = bytes.readUnsignedShort();
 					if (DEBUG)
@@ -97,11 +113,11 @@ public class AnnotationVisitor extends PreorderVisitor {
 						Map<String, Object> values = readAnnotationValues(
 								bytes, numPairs);
 						visitAnnotation(annotationName, values, name
-								.equals("RuntimeVisibleAnnotations"));
+								.equals(RUNTIME_VISIBLE_ANNOTATIONS));
 					}
 
 				} else if (runtimeVisible
-						|| name.equals("RuntimeInvisibleParameterAnnotations")) {
+						|| name.equals(RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS)) {
 					int numParameters = bytes.readUnsignedByte();
 					if (DEBUG) System.out.println("Number of parameters: " + numParameters);
 					int numParametersToMethod = getMethod().getArgumentTypes().length;
