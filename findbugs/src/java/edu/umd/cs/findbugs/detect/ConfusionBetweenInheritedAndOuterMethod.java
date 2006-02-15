@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -70,8 +71,10 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 			if (i == -1) break;
 			possibleTargetClass = possibleTargetClass.substring(0,i);
         	 XMethod alternativeMethod = XFactory.createXMethod(possibleTargetClass, getNameConstantOperand(), getSigConstantOperand(), false);
-        	 if (Methods.getMethods().contains(alternativeMethod)) System.out.println("Did you mean to invoke " + alternativeMethod 
-        			 + " in " + getFullyQualifiedMethodName());
+        	 if (Methods.getMethods().contains(alternativeMethod)) 	bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addMethod(alternativeMethod)
+				        .addSourceLine(this, getPC()));
          };
          
          
