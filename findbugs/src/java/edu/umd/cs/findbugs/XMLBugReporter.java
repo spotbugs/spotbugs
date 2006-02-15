@@ -33,9 +33,6 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Report warnings as an XML document.
- * To the extent possible, warnings are written incrementally.
- * So, if the analysis is terminated unexpectedly, the output
- * may still be salvaged.
  * 
  * @author David Hovemeyer
  */

@@ -44,10 +44,10 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
 	public void finish() {
 		try {
 			BugCollection bugCollection = getBugCollection();
-
+			bugCollection.setWithMessages(true);
 			// Decorate the XML with messages to display
 			Document document = bugCollection.toDocument(getProject());
-			new AddMessages(bugCollection, document).execute();
+			// new AddMessages(bugCollection, document).execute();
 
 			// Get the stylesheet as a StreamSource.
 			// First, try to load the stylesheet from the filesystem.
