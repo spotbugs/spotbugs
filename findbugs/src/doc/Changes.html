@@ -15,6 +15,90 @@
 
 <h1>FindBugs Change Log</h1>
 	
+<p>Changes since verson 0.9.4:</p>
+<ul>
+<li>New detectors
+    <ul><li>VarArgsProblems.java</li>
+        <li>FindSqlInjection.java: now enabled</li>
+        <li>ComparatorIdiom.java: comparators usually implement serializable</li>
+        <li>Naming.java: detect methods not overridden due to eponymously typed args from different packages</li>
+    </ul></li>
+<li>Updated detectors
+    <ul><li>SwitchFallthrough.java: surpress some false positives</li>
+        <li>DuplicateBranches.java: surpress some false positives</li>
+        <li>IteratorIdioms.java: surpress some false positives</li>
+        <li>FindHEmismatch.java: surpress some false positives</li>
+        <li>QuestionableBooleanAssignment.java: finds more cases of <tt>if (b=true)</tt> ilk</li>
+        <li>DumbMethods.java: detect int remainder by 1, delayed gc errors</li>
+        <li>SerializableIdiom.java: detect store of nonserializable object into field of serializable class</li>
+        <li>FindNullDeref.java: fix potential exception</li>
+        <li>IsNullValue.java: fix potential exception</li>
+        <li>MultithreadedInstanceAccess.java: fix potential exception</li>
+        <li>PreferZeroLengthArrays.java: flag the method, not the line</li>
+    </ul></li>
+<li>Remove some inadvertent dependencies on JDK 1.5</li>
+<li>Sort order should be more consistent</li>
+<li>XML output changes
+    <ul><li>Option to sort XML bug output</li>
+        <li>Now contains instance IDs</li>
+        <li>uid no longer missing (was causing problems with fancy HTML output)</li>
+        <li>Typo fixed</li>
+    </ul></li>
+<li>Internal changes to track source files, <tt>-sourceInfo</tt> option</li>
+<li>Bug matching: first try exact bug pattern matching, option to compare priorities, option to disable package moves</li>
+<li>Architecture documentation in <tt>design/architecture</tt></li>
+<li>Test cases move into their own CVS project</li>
+<li>Don't report warnings that occur outside the analyzed classes</li>
+<li>Fixes to the build.xml files</li>
+<li>Better handling of @CheckReturnValue and @CheckForNull annotations (also, some additional methods seached for check return value and check for null)</li>
+<li>Fixed some stream-closing bugs (one by <tt>z-fb-user</tt>/Dave Brosius)</li>
+<li>Bug priority changes
+    <ul><li>increase priority of ignoring return value of java.sql.Connection methods</li>
+        <li>increase priority of comparing classes like Integer using <tt>==</tt></li>
+        <li>decrease priority of IT_NO_SUCH_ELEMENT if we see any call to <tt>next()</tt></li>
+        <li>tweak priority of NM_METHOD_CONSTRUCTOR_CONFUSION
+        <li>decrease priority of RV_RETURN_VALUE_IGNORED for an inherited annotation that doesn't return same type as class</li>
+    </ul></li>
+<li>Updated bug explanations
+    <ul><li>RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE</li>
+        <li>DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED</li>
+        <li>IMA_INEFFICIENT_MEMBER_ACCESS (Dave Brosius)</li>
+        <li>some Japanese improvements to messages_ja.xml (<tt>ruimo</tt>)</li>
+        <li>some German improvements to findbugs_de.properties (Dave Brosius, <tt>dvholten</tt>)</li>
+    </ul></li>
+<li>Updated test case files
+    <ul><li>BadIntegerOperations.java</li>
+        <li>SecondKaboom.java</li>
+        <li>OpenDatabase.java (Dave Brosius)</li>
+        <li>FindOpenStream.java (Dave Brosius)</li>
+        <li>BadRandomInt.java</li>
+    </ul></li>
+<li>Source-lines info maintained for methods (handy for abstract and native methods)</li>
+<li>Remove surrounding opcodes from source line annotations</li>
+<li>Better error when can't read file</li>
+<li>Swing GUI: removed console pane from FindBugsFrame, fix missing classes bug</li>
+<li>Fixes to OpcodeStack.java</li>
+<li>Detectors may attach a custom value to an OpcodeStack.Item (Dave Brosius)</li>
+<li>Filter.java: ability to add text messages to XML output, fix bug with <tt>-withMessages</tt></li>
+<li>SourceInfoMap supports ranges of source lines</li>
+<li>Ant task supports the <tt>timestampNow</tt> attribute</li>
+</ul>
+
+<p>Changes since verson 0.9.3:</p>
+<ul>
+<li>Substantial rework of datamining code</li>
+<li>Removed bogus warnings about await on things other than Condition not
+being in a loop</li>
+<li>Fixed bug in OpcodeStack handling of dup2 of long/double values</li>
+<li>Don't report array types as missing classes</li>
+<li>Adjustment of some warnings on ignored return values</li>
+<li>Added thread safety annotations from Java Concurrency in Practice (no
+detectors written for these yet)</li>
+<li>Added annotation for methods that, if overridden, should be invoked
+by overriding methods via a call to super</li>
+<li>Updated -html:fancy.xsl (Etienne Giraudy)</li>
+</ul>
+
 <p>Note: there was no version 0.9.2</p>
 
 <p>Changes since version 0.9.1:</p>
