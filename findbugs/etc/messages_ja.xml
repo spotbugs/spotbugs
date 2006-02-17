@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="Shift_JIS"?>
 
-<!-- This messages file is based on revision 1.257 of message.xml. -->
+<!-- This messages file is based on revision 1.261 of message.xml. -->
 
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:noNamespaceSchemaLocation="messagecollection.xsd">
@@ -111,6 +111,14 @@ nullが戻るかもしれないメソッド呼び出しを発見する第一パス。後方のパスでFindNullDr
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop2">
+   <Details>
+<![CDATA[
+<p>無限再起呼び出しのループを検出します。低速ディテクタです。</p>
+]]>
+   </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage">
     <Details>
 <![CDATA[
@@ -135,10 +143,18 @@ nullが戻るかもしれないメソッド呼び出しを発見する第一パス。後方のパスでFindNullDr
     </Details>
   </Detector>
 
+ <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPriviledged">
+    <Details>
+<![CDATA[
+<p> doPrivilegedブロックの中で実行しなければならないコードを発見します。</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.ResolveAllReferences">
     <Details>
 <![CDATA[
-<p> Checks that all references call be resolved.  </p>
+<p> 全ての参照の呼び出しが解決されているかどうかを調査します。</p>
 ]]>
     </Details>
   </Detector>
@@ -831,6 +847,17 @@ nullが戻るかもしれないメソッド呼び出しを発見する第一パス。後方のパスでFindNullDr
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindBadEqualsImplementation">
+   <Details>
+<![CDATA[
+<p>
+このディテクタはequals(Object)メソッドの実装のうち、引数を無条件に参照外ししているコードを発見します。このようなコードはjava.lang.Object.equals()で定義されている、null引数に対してfalseを返すことという規約に違反することになります。
+</p>
+<p>低速ディテクタです。</p>
+]]>
+   </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.UselessSubclassMethod">
    <Details>
       <![CDATA[
@@ -1071,6 +1098,16 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
     <Details>
 <![CDATA[
 <p> このメソッドは例外を無視している可能性があります。一般に、例外が発生したら何らかの形で報告するか、呼び出し元に渡すべきです。</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED">
+    <ShortDescription>doPrivilegedブロックの中で呼び出さなければならないメソッドが呼び出されています。</ShortDescription>
+    <LongDescription>{1} は {2} を呼び出していますが、これはdoPrivilegedブロックの中で呼び出さなければなりません。</LongDescription>
+    <Details>
+<![CDATA[
+<p> このコードはセキュリティの許可チェックが必要なメソッドを呼び出しています。もしもこのコードにセキュリティ許可が与えられていても、セキュリティ許可を持たないコードから呼び出されるのであれば、doPrivilegedブロックの中から呼び出す必要があります。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2002,6 +2039,16 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
     <Details>
 <![CDATA[
 <p> この直列化可能クラスは、transientでもなく、直列化可能でもなく、<code>java.lang.Object</code>でもないインスタンスフィールドを持っています。また、<code>Externalizable</code> インターフェースも実装していませんし、<code>readObject()</code> も <code>writeObject()</code> メソッドも定義していません。このフィールドに実際に非直列化可能クラスのインスタンスを保持している場合、このクラスのオブジェクトは、直列化復元を正しく行えません。</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="SE_BAD_FIELD_STORE">
+    <ShortDescription>直列化出来ない値が、直列化可能と宣言されたクラスのインスタンスフィールドに格納されています。</ShortDescription>
+    <LongDescription>{2} が、{1} のtransientでないフィールドに格納されています。</LongDescription>
+    <Details>
+<![CDATA[
+<p> 直列化出来ない値が、直列化可能と宣言されたクラスのtransientでないフィールドに格納されています。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2947,7 +2994,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
 
   <BugPattern type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN">
     <ShortDescription>パラメータへの変更内容は、上書きではなく単に捨てられます。</ShortDescription>
-    <LongDescription>{1} へのパラメータを書き変えても、内容の上書きにはならず単に捨てられます。</LongDescription>
+    <LongDescription>{1} へのパラメータ {2} を書き変えても、内容の上書きにはならず単に捨てられます。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -2959,7 +3006,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
 
   <BugPattern type="DLS_DEAD_LOCAL_STORE">
     <ShortDescription>ローカル変数への意味の無い代入。</ShortDescription>
-    <LongDescription>メソッド {1} で、ローカル変数への意味の無い代入が行なわれています。</LongDescription>
+    <LongDescription>メソッド {1} で、ローカル変数 {2} への意味の無い代入が行なわれています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3578,4 +3625,5 @@ hasNext() で next() を呼び出しています。hasNext()はイテレータの状態を変えるもの�
   <BugCode abbrev="CI">紛らわしい継承</BugCode>
   <BugCode abbrev="QBA">疑わしいboolean値の代入</BugCode>
   <BugCode abbrev="VR">バージョン互換性の問題</BugCode>
+  <BugCode abbrev="DP">doPrivilegedの中からの呼び出しが必要</BugCode>
 </MessageCollection>
