@@ -64,7 +64,8 @@
 	        speed="fast"
 	        reports="TESTING"
 			disabled="true"
-			hidden="false" /> 
+			hidden="true" /> 
+			
   <Detector class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod" 
 	        speed="moderate"
 	        reports="TESTING"
