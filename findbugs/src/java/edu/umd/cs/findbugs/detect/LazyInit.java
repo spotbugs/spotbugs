@@ -151,8 +151,7 @@ public class LazyInit extends ByteCodePatternDetector implements StatelessDetect
 				return;
 			}
 
-			// TODO:
-			// - Strings are safe to pass by data race in 1.5
+			// TODO:  Strings are safe to pass by data race in 1.5
 
 			// Get locations matching the beginning of the object creation,
 			// and the final field store.
