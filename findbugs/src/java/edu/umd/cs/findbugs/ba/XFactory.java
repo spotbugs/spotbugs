@@ -52,6 +52,23 @@ public abstract class XFactory {
 			return new InstanceMethod(className, methodName, methodSig, accessFlags);
 	}
 	/**
+	 * Create an XField object
+	 * 
+	 * @param className
+	 * @param fieldName
+	 * @param fieldSignature
+	 * @param isStatic
+	 * @param accessFlags
+	 * @return the created XField
+	 */
+	public static XField createXField(String className, String fieldName, String fieldSignature, boolean isStatic, int accessFlags) {
+
+		if (isStatic)
+			return new StaticField(className, fieldName, fieldSignature, accessFlags);
+		else
+			return new InstanceField(className, fieldName, fieldSignature, accessFlags);
+	}
+	/**
 	 * Create an XField object from a BCEL Field.
 	 * 
 	 * @param javaClass the JavaClass containing the field
