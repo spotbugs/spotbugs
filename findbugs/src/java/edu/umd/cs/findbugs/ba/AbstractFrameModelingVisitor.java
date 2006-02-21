@@ -51,7 +51,7 @@ import org.apache.bcel.generic.*;
 public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Frame<Value>> implements Visitor {
 	private FrameType frame;
 	private Location location;
-	private ConstantPoolGen cpg;
+	protected ConstantPoolGen cpg;
 
 	/**
 	 * Constructor.
