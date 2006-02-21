@@ -323,6 +323,15 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 
 	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+		if (obj.getMethodName(cpg).equals("initCause") && obj.getSignature(cpg).equals("(Ljava/lang/Throwable;)Ljava/lang/Throwable;") && obj.getClassName(cpg).endsWith("Exception")) {
+			try {
+				TypeFrame frame = getFrame();
+				frame.popValue();
+				return;
+			} catch (DataflowAnalysisException e) {
+				
+			}
+		}
 		consumeStack(obj);
 		pushReturnType(obj);
 	}
