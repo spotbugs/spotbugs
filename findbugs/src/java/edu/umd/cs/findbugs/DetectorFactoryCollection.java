@@ -20,8 +20,10 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -179,6 +181,11 @@ public class DetectorFactoryCollection {
 		        path = path.substring("jar:file:".length());
 		        path = path.substring(0, path.length() - 1);
 		        System.out.println("Jaws uses plugin: " + path);
+		        try {
+		        	path = URLDecoder.decode(path, "UTF-8");
+		        } catch (UnsupportedEncodingException uee) {
+		        }
+		        System.out.println("Jaws uses plugin: " + path);
 		        plugins[0] = new File(path);
 		        setPluginList(plugins);
 		    }
@@ -233,7 +240,6 @@ public class DetectorFactoryCollection {
 	
 		//System.out.println("Loaded " + numLoaded + " plugins");
 	}
-
 }
 
 // vim:ts=4
