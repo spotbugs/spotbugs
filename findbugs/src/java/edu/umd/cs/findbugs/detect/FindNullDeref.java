@@ -36,6 +36,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionTargeter;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.Type;
 
@@ -58,6 +59,7 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
@@ -245,6 +247,8 @@ public class FindNullDeref
 					examineCallSite(location, cpg, typeDataflow);
 				} else if (methodAnnotation == NullnessAnnotation.NONNULL && ins.getOpcode() == Constants.ARETURN) {
 					examineReturnInstruction(location);
+				} else if (ins instanceof PUTFIELD) {
+					examinePutfieldInstruction(location, (PUTFIELD) ins, cpg);
 				}
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
@@ -321,6 +325,31 @@ public class FindNullDeref
 		
 	}
 	
+	private void examinePutfieldInstruction(Location location, PUTFIELD ins, 		ConstantPoolGen cpg) throws DataflowAnalysisException, CFGBuilderException {
+		
+		IsNullValueDataflow invDataflow = classContext.getIsNullValueDataflow(method);
+		IsNullValueFrame frame = invDataflow.getFactAtLocation(location);
+		if (!frame.isValid())
+			return;
+		IsNullValue tos = frame.getTopValue();
+		if (tos.mightBeNull()) {
+			XField field = XFactory.createXField(ins.getClassName(cpg), ins.getFieldName(cpg), ins.getSignature(cpg), false, 0);
+			NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase().getResolvedAnnotation(field, false);
+			if (annotation == NullnessAnnotation.NONNULL) {
+		
+			MethodGen methodGen = classContext.getMethodGen(method);
+			String sourceFile = classContext.getJavaClass().getSourceFileName();
+						
+			BugInstance warning = new BugInstance("NP_STORE_INTO_NONNULL_FIELD", tos.isDefinitelyNull() ?
+					HIGH_PRIORITY : NORMAL_PRIORITY)
+				.addClassAndMethod(methodGen, sourceFile)
+				.addField(field)
+				.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
+			
+			bugReporter.reportBug(warning);
+			}
+		}
+	}
 	private void examineReturnInstruction(Location location) throws DataflowAnalysisException, CFGBuilderException {
 		if (DEBUG_NULLRETURN) {
 			System.out.println("Checking null return at " + location);

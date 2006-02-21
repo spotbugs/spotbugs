@@ -2879,7 +2879,15 @@ dateString = dateString.trim();
 ]]>
     </Details>
   </BugPattern>
-
+  <BugPattern type="NP_STORE_INTO_NONNULL_FIELD">
+    <ShortDescription>Store of null value into field annotated NonNull</ShortDescription>
+    <LongDescription>Store of null value into field {2} annotated NonNull at {1}</LongDescription>
+    <Details>
+      <![CDATA[
+<p> A value that could be null is stored into a field that has been annotated as NonNull. </p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="NP_ALWAYS_NULL_EXCEPTION">
     <ShortDescription>Null pointer dereference in method on exception path</ShortDescription>
     <LongDescription>Null pointer dereference in {1} on exception path</LongDescription>
@@ -4033,12 +4041,12 @@ just use the constant. Methods detected are:
     </BugPattern>
 
   <BugPattern type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL">
-    <ShortDescription>Integer value cast to double and then passed to Math.ceil</ShortDescription>
-    <LongDescription>Integer value cast to double and then passed to Math.ceil in {1}</LongDescription>
+    <ShortDescription>int value cast to double and then passed to Math.ceil</ShortDescription>
+    <LongDescription>int value cast to double and then passed to Math.ceil in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-This code converts an integer value to a double precision
+This code converts an int value to a double precision
 floating point number and then
 passing the result to the Math.ceil() function, which rounds a double to
 the next higher integer value. This operation should always be a no-op,
@@ -4053,8 +4061,8 @@ floating point arithmetic.
   </BugPattern>
 
   <BugPattern type="ICAST_IDIV_CAST_TO_DOUBLE">
-    <ShortDescription>Integer division result cast to double</ShortDescription>
-    <LongDescription>Integer division result cast to double in {1}</LongDescription>
+    <ShortDescription>int division result cast to double</ShortDescription>
+    <LongDescription>int division result cast to double in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>

@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.npe;
 import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKESTATIC;
@@ -40,6 +41,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisitor<IsNullValue, IsNullValueFrame> {
@@ -148,6 +150,29 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 				}
 			}
 		}
+	}
+	
+	@Override
+	public void visitGETFIELD(GETFIELD obj) {
+		if (getNumWordsProduced(obj) != 1) {
+			super.visitGETFIELD(obj);
+			return;
+		}
+
+		XField field = XFactory.createXField(obj.getClassName(cpg), obj.getFieldName(cpg), obj.getSignature(cpg), false, 0);
+		NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase().getResolvedAnnotation(field, false);
+		if (annotation == NullnessAnnotation.NONNULL) {
+			modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
+			produce(IsNullValue.nonNullValue());
+		}
+		else if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
+				modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
+				produce(IsNullValue.nullOnSimplePathValue());
+			}
+		else 
+			super.visitGETFIELD(obj);
+
+
 	}
 @Override
 	public void visitACONST_NULL(ACONST_NULL obj) {
