@@ -180,7 +180,6 @@ public class DetectorFactoryCollection {
 		        String path = new File(u.toString()).getParent();
 		        path = path.substring("jar:file:".length());
 		        path = path.substring(0, path.length() - 1);
-		        System.out.println("Jaws uses plugin: " + path);
 		        try {
 		        	path = URLDecoder.decode(path, "UTF-8");
 		        } catch (UnsupportedEncodingException uee) {
