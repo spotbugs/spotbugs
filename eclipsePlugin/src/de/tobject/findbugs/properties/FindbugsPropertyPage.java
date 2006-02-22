@@ -77,10 +77,10 @@ import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
- * Project properties page for setting FindBugs properties. 
- *  
+ * Project properties page for setting FindBugs properties.
+ *
  * @author Andrei Loskutov
- * @author Peter Friese 
+ * @author Peter Friese
  * @author David Hovemeyer
  * @author Phil Crosby
  * @version 1.0
@@ -124,9 +124,9 @@ public class FindbugsPropertyPage extends PropertyPage {
 		// in our case this is a Java Project (IJavaProject).
 		IAdaptable resource = getElement();
 		this.project = (IProject) resource.getAdapter(IProject.class);
-		
+
 		collectUserPreferences();
-		
+
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
@@ -139,11 +139,11 @@ public class FindbugsPropertyPage extends PropertyPage {
 		Composite prioGroup = new Composite(composite, SWT.NONE);
 		GridLayout prioLayout = new GridLayout(3, false);
 		prioGroup.setLayout(prioLayout);
-		
+
 		Label minPrioLabel = new Label(prioGroup, SWT.NONE);
 		minPrioLabel.setText("Minimum priority to report: ");
 		minPrioLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-		
+
 		minPriorityCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
 		minPriorityCombo.add(ProjectFilterSettings.HIGH_PRIORITY);
 		minPriorityCombo.add(ProjectFilterSettings.MEDIUM_PRIORITY);
@@ -157,7 +157,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 				currentUserPreferences.getFilterSettings().setMinPriority(data);
 			}
 		});
-		
+
 		/*
 		chkDisplayFalseWarnings = new Button(prioGroup, SWT.CHECK);
 		chkDisplayFalseWarnings.setText("Display false warnings");
@@ -168,16 +168,14 @@ public class FindbugsPropertyPage extends PropertyPage {
 		chkDisplayFalseWarnings.setSelection(
 				origUserPreferences.getFilterSettings().displayFalseWarnings());
 		*/
-		
+
 		Composite categoryGroup = new Composite(composite, SWT.NONE);
 		categoryGroup.setLayout(new GridLayout(2, true));
-		
+
 		Label activeCategoriesLabel = new Label(categoryGroup, SWT.NONE);
 		activeCategoriesLabel.setText("Enable bug categories:");
 		activeCategoriesLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		buildBugCategoryList(categoryGroup, project);
-		
-		addSeparator(composite);
 
 		buildLabel(composite, "Select bug patterns to check for:");
 		Table availableRulesTable =
@@ -192,7 +190,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		availableRulesTable.setLayoutData(tableLayoutData);
 
 		addSeparator(composite);
-		
+
 		restoreDefaultsButton = new Button(composite, SWT.NONE);
 		restoreDefaultsButton.setText("Restore default settings");
 		restoreDefaultsButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
@@ -204,7 +202,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 				restoreDefaultSettings();
 			}
 		});
-		
+
 		return composite;
 	}
 
@@ -228,15 +226,15 @@ public class FindbugsPropertyPage extends PropertyPage {
 	private void restoreDefaultSettings() {
 		// By default, don't run FindBugs automatically
 		chkEnableFindBugs.setSelection(false);
-		
+
 		// Use the default minimum priority (which is medium)
 		minPriorityCombo.setText(ProjectFilterSettings.DEFAULT_PRIORITY);
-		
+
 		// By default, all bug categories are enabled
 		for (int i = 0; i < chkEnableBugCategoryList.length; ++i) {
 			chkEnableBugCategoryList[i].setSelection(true);
 		}
-		
+
 		// Enable only those detectors that are enabled by default
 		TableItem[] itemList =
 			availableFactoriesTableViewer.getTable().getItems();
@@ -249,7 +247,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 	/**
 	 * Add a horizontal separator to given panel.
-	 * 
+	 *
 	 * @param composite the panel
 	 */
 	private void addSeparator(Composite composite) {
@@ -264,7 +262,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	/**
 	 * Build list of bug categories to be enabled or disabled.
 	 * Populates chkEnableBugCategoryList and bugCategoryList fields.
-	 * 
+	 *
 	 * @param categoryGroup control checkboxes should be added to
 	 * @param project       the project being configured
 	 */
@@ -276,28 +274,28 @@ public class FindbugsPropertyPage extends PropertyPage {
 			Button checkBox = new Button(categoryGroup, SWT.CHECK);
 			checkBox.setText(I18N.instance().getBugCategoryDescription(category));
 			checkBox.setSelection(origUserPreferences.getFilterSettings().containsCategory(category));
-			
+
 			GridData layoutData = new GridData();
 			layoutData.horizontalIndent = 15;
 			checkBox.setLayoutData(layoutData);
-			
+
 			// Every time a checkbox is clicked, rebuild the detector factory table
 			// to show only relevant entries
-			
-			checkBox.addListener(SWT.Selection, 
+
+			checkBox.addListener(SWT.Selection,
 				new Listener(){
 					public void handleEvent(Event e){
 						System.out.println("Category preferences changed!");
 						syncSelectedCategories();
 						populateAvailableRulesTable(project);
 					}
-				} 
+				}
 			);
 
-			
+
 			checkBoxList.add(checkBox);
 		}
-		
+
 		this.chkEnableBugCategoryList = checkBoxList.toArray(new Button[checkBoxList.size()]);
 		this.bugCategoryList =  bugCategoryList.toArray(new String[bugCategoryList.size()]);
 	}
@@ -315,7 +313,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 				currentUserPreferences.getFilterSettings().removeCategory(category);
 			}
 		}
-	}				
+	}
 
 	/**
 	 * Build rule table viewer
@@ -357,7 +355,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		factoryNameColumn.setWidth(200);
 		addColumnSelectionListener(sorter, factoryNameColumn, ++currentColumnIdx);
 
-		
+
 
 		TableColumn bugsDescriptionColumn =
 			new TableColumn(factoriesTable, SWT.FILL);
@@ -401,11 +399,11 @@ public class FindbugsPropertyPage extends PropertyPage {
 			}
 		});
 	}
-	
+
 	/**
 	 * Return whether or not given DetectorFactory reports bug patterns
 	 * in one of the currently-enabled set of bug categories.
-	 * 
+	 *
 	 * @param factory the DetectorFactory
 	 * @return true if the factory reports bug patterns in one of the
 	 *         currently-enabled bug categories, false if not
@@ -418,7 +416,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Populate the rule table
 	 */
@@ -429,17 +427,17 @@ public class FindbugsPropertyPage extends PropertyPage {
 			DetectorFactoryCollection.instance().factoryIterator();
 		while (iterator.hasNext()) {
 			DetectorFactory factory = (DetectorFactory) iterator.next();
-			
+
 			// Only configure non-hidden factories
 			if (factory.isHidden()) {
 				//System.out.println("Factory " + factory.getFullName() + " is hidden");
 				continue;
 			}
-			
+
 			// Only add items for detectors which report in currently-enabled categories
 			if (!reportsInEnabledCategory(factory))
 				continue;
-			
+
 			allAvailableList.add(factory);
 			addBugsAbbreviation(factory);
 		}
@@ -510,7 +508,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	public boolean performOk() {
 		boolean selection = this.chkEnableFindBugs.getSelection();
 		boolean result = true;
-		
+
 		// Keep of track of whether we need to update
 		// which warning markers are shown.
 		boolean filterOptionsChanged = false;
@@ -526,7 +524,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			} catch (IOException e) {
 				FindbugsPlugin.getDefault().logException(e, "Could not store FindBugs preferences for project");
 			}
-			
+
 			// Have filter settings changed?
 			// If so, we need to redisplay warnings.
 			if (!currentUserPreferences.getFilterSettings().equals(
@@ -535,7 +533,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 				filterOptionsChanged = true;
 			}
 		}
-		
+
 		// Update whether or not FindBugs is run automatically.
 		if (!this.initialEnabled && selection == true) {
 			result = addNature();
@@ -543,12 +541,12 @@ public class FindbugsPropertyPage extends PropertyPage {
 		else if (this.initialEnabled && selection == false) {
 			result = removeNature();
 		}
-		
+
 		if (result && filterOptionsChanged) {
 			//System.out.println("Redisplaying markers!");
 			MarkerUtil.redisplayMarkers(project, getShell());
 		}
-		
+
 		return result;
 	}
 
@@ -665,10 +663,10 @@ public class FindbugsPropertyPage extends PropertyPage {
 			availableFactoriesTableViewer.getTable().getItems();
 		for (int i = 0; i < itemList.length; i++) {
 			DetectorFactory factory = (DetectorFactory) itemList[i].getData();
-			
+
 			//set enabled if defined in configuration
 			currentUserPreferences.enableDetector(factory, itemList[i].getChecked());
-		}	
+		}
 	}
 
 	/**
@@ -710,7 +708,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 					s1 = "" + factory1.getShortName(); //$NON-NLS-1$
 					s2 = factory2.getShortName();
 					break;
-				
+
 			}
 
 			result = s1.compareTo(s2);
