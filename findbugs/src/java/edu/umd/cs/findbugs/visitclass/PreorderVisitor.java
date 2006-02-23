@@ -122,14 +122,19 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 					}
 				}
 			}
-			if (size < Integer.MAX_VALUE) {
-				if (code.getLineNumberTable() == null) return size;
-				int firstLineNumber = code.getLineNumberTable().getSourceLine(tightStartPC);
-				int lastLineNumber = code.getLineNumberTable().getSourceLine(tightEndPC);
-				int diff = lastLineNumber - firstLineNumber + 1;
-				if (diff >= size && diff <= size/8) return diff;
+			if (size == Integer.MAX_VALUE) return size;
+			
+			// try to guestimate number of lines that correspond
+			size = (size+7) / 8;
+			LineNumberTable lineNumberTable = code.getLineNumberTable();
+			if (lineNumberTable == null) return size;
+		
+			int count = 0;
+			for(LineNumber line : lineNumberTable.getLineNumberTable()) {
+				if (line.getStartPC() > tightEndPC) break;
+				if (line.getStartPC() >= tightStartPC) count++;
 			}
-			return size / 8;
+			return count;
 
 	 }
 	// Attributes
