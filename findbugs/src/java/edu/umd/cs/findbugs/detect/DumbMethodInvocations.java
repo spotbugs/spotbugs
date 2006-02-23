@@ -102,7 +102,7 @@ public class DumbMethodInvocations implements Detector {
 					String v = operandValue.getConstantString();
 					if (isAbsoluteFileName(v))
 						bugReporter.reportBug(new BugInstance(this,
-								"DMI_HARDCODED_ABSOLUTE_FILENAME", NORMAL_PRIORITY)
+								"DMI_HARDCODED_ABSOLUTE_FILENAME", v.startsWith("/tmp") ? LOW_PRIORITY  : NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
 								.addString(v).describe("FILE_NAME")
 								.addSourceLine(
