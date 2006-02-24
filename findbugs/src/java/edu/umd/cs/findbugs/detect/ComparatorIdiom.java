@@ -40,11 +40,15 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
 		classContext.getJavaClass().accept(this);
 	}
 
+
 	public void visit(JavaClass obj) {
 		try {
 			if (Repository.instanceOf(obj, "java.util.Comparator")
 					&& !Repository.instanceOf(obj, "java.io.Serializable")) {
-
+				int priority = NORMAL_PRIORITY;
+				int lastDollar = getClassName().lastIndexOf('$');
+				if (lastDollar > 0 && Character.isDigit(getClassName().charAt(lastDollar+1)))
+					priority = LOW_PRIORITY;
 				bugReporter
 						.reportBug(new BugInstance(this,
 								"SE_COMPARATOR_SHOULD_BE_SERIALIZABLE",
