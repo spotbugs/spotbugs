@@ -24,9 +24,11 @@ import java.util.Iterator;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.MethodGen;
 
@@ -97,7 +99,7 @@ public class FindSqlInjection implements Detector {
 	    boolean sawCloseQuote = false;
 	    boolean sawComma = false;
 	    boolean sawAppend = false;
-	    
+	    boolean sawUnsafeAppend = false;
 	    for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 				Location location = i.next();
 				Instruction ins = location.getHandle().getInstruction();
@@ -115,9 +117,17 @@ public class FindSqlInjection implements Detector {
 					}
 				} else if (ins instanceof INVOKEVIRTUAL) {
 					INVOKEVIRTUAL invoke = (INVOKEVIRTUAL) ins;
+
 					if (invoke.getMethodName(cpg).equals("append")
 						&& invoke.getClassName(cpg).startsWith("java.lang.StringB")) {
 						sawAppend = true;
+						InstructionHandle prev = location.getHandle().getPrev();
+						if (prev != null) {
+							Instruction prevIns = prev.getInstruction();
+							if (!(prevIns instanceof LDC || prevIns instanceof GETSTATIC))
+								sawUnsafeAppend = true;
+						}
+						else sawUnsafeAppend = true;
 					}
 				}
 	    }
@@ -140,6 +150,7 @@ public class FindSqlInjection implements Detector {
 				int priority = LOW_PRIORITY;
 				if (sawAppend && sawOpenQuote && sawCloseQuote) priority = HIGH_PRIORITY;
 				else if (sawAppend && sawComma) priority = NORMAL_PRIORITY;
+				if (!sawUnsafeAppend) priority+=2;
 			    bugReporter.reportBug(
 				new BugInstance(this, 
 						methodName.equals("prepareStatement")
