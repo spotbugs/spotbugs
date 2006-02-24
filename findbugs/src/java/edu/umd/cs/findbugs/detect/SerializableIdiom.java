@@ -259,27 +259,39 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		// System.out.println(methodName + isSynchronized);
 
 		if (getMethodName().equals("readExternal")
-		        && getMethodSig().equals("(Ljava/io/ObjectInput;)V")) {
+				&& getMethodSig().equals("(Ljava/io/ObjectInput;)V")) {
 			sawReadExternal = true;
 			if (false && !obj.isPrivate())
 				System.out.println("Non-private readExternal method in: " + getDottedClassName());
 		} else if (getMethodName().equals("writeExternal")
-		        && getMethodSig().equals("(Ljava/io/Objectoutput;)V")) {
+				&& getMethodSig().equals("(Ljava/io/Objectoutput;)V")) {
 			sawWriteExternal = true;
 			if (false && !obj.isPrivate())
 				System.out.println("Non-private writeExternal method in: " + getDottedClassName());
-		} else if (getMethodName().equals("readObject")
-		        && getMethodSig().equals("(Ljava/io/ObjectInputStream;)V")
-		        && isSerializable) {
+		}
+		else if (getMethodName().equals("readObject")
+				&& getMethodSig().equals("(Ljava/io/ObjectInputStream;)V")
+				&& isSerializable) {
 			sawReadObject = true;
-			if (false && !obj.isPrivate())
-				System.out.println("Non-private readObject method in: " + getDottedClassName());
-		} else if (getMethodName().equals("writeObject")
-		        && getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
-		        && isSerializable) {
+			if (!obj.isPrivate())
+				bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY)
+						.addClassAndMethod(this));
+			
+		} else if (getMethodName().equals("readObjectNoData")
+				&& getMethodSig().equals("()V")
+				&& isSerializable) {
+
+			if (!obj.isPrivate())
+				bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY)
+						.addClassAndMethod(this));
+			
+		}else if (getMethodName().equals("writeObject")
+				&& getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
+				&& isSerializable) {
 			sawReadObject = true;
-			if (false && !obj.isPrivate())
-				System.out.println("Non-private writeObject method in: " + getDottedClassName());
+			if (!obj.isPrivate())
+				bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY)
+						.addClassAndMethod(this));
 		}
 
 		if (isSynchronized) {

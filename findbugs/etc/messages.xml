@@ -2373,6 +2373,18 @@ be confusing to users of this class.</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SE_METHOD_MUST_BE_PRIVATE">
+    <ShortDescription>Method must be private in order for serialization to work</ShortDescription>
+    <LongDescription>The method {1.givenClass} must be private to be invoked in serialization/deserialization of {0}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class implements the <code>Serializable</code> interface, and defines a method
+  for custom  serialization/deserialization. But since that method isn't declared private,
+  it will be silently ignored by the serialization/deserialization API.</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION">
     <ShortDescription>Class is Externalizable but doesn't define a void constructor</ShortDescription>
     <LongDescription>{0} is Externalizable but doesn't define a void constructor</LongDescription>

@@ -237,24 +237,25 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	protected String formatPackageMember(String key) {
 		if (key.equals(""))
 			return UGLY_METHODS ? getUglyMethod() : getFullMethod();
+		else if (key.equals("givenClass")) return getNameInClass();
 		else if (key.equals("shortMethod"))
 			return className + "." + methodName + "()";
 		else
 			throw new IllegalArgumentException("unknown key " + key);
 	}
 
+	String nameInClass = null;
 	/**
 	 * Get the "full" method name.
 	 * This is a format which looks sort of like a method signature
 	 * that would appear in Java source code.
 	 */
-	public String getFullMethod() {
-		if (fullMethod == null) {
+	public String getNameInClass() {
+		if (nameInClass == null) {
 			// Convert to "nice" representation
+			StringBuffer args = new StringBuffer();
 			SignatureConverter converter = new SignatureConverter(methodSig);
 			String pkgName = getPackageName();
-
-			StringBuffer args = new StringBuffer();
 
 			if (converter.getFirst() != '(')
 				throw new IllegalStateException("bad method signature " + methodSig);
@@ -267,22 +268,27 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			}
 			converter.skip();
 
-			// NOTE: we omit the return type.
-			// It is not needed to disambiguate the method,
-			// and would just clutter the output.
-
-			// Actually, GJ implements covariant return types at the source level,
-			// so perhaps it really is necessary.
-
 			StringBuffer result = new StringBuffer();
-			result.append(className);
-			result.append('.');
 			result.append(methodName);
 			result.append('(');
 			result.append(args);
 			result.append(')');
 
-			fullMethod = result.toString();
+			nameInClass = result.toString();
+		}
+
+		return nameInClass;
+	}
+
+	
+	/**
+	 * Get the "full" method name.
+	 * This is a format which looks sort of like a method signature
+	 * that would appear in Java source code.
+	 */
+	public String getFullMethod() {
+		if (fullMethod == null) {
+			fullMethod = className + "." + getNameInClass();
 		}
 
 		return fullMethod;
