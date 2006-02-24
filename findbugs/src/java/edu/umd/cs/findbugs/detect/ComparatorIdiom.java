@@ -52,7 +52,7 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
 				bugReporter
 						.reportBug(new BugInstance(this,
 								"SE_COMPARATOR_SHOULD_BE_SERIALIZABLE",
-								NORMAL_PRIORITY).addClass(this));
+								priority).addClass(this));
 
 			}
 		} catch (ClassNotFoundException e) {
