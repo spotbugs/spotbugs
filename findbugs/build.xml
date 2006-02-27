@@ -359,6 +359,7 @@
 		Generate all bug description HTML files.
 	-->
 	<target name="bugdesc" depends="checkbugdesc" unless="bugdesc.uptodate">
+		<loadproperties srcFile="${doc.props.file}"/>
 		<!-- Generate bug descriptions. -->
 		<antcall target="generatebugdesc">
 			<param name="bugdesc.output" value="${docsrc.dir}/bugDescriptions.html"/>
@@ -384,9 +385,10 @@
 		bugdesc.unabridged	- true if generating all bug descriptions,
 							  false if only default-enabled
 	-->
-	<target name="generatebugdesc">
+	<target name="generatebugdesc" depends="jars">
 		<java classname="edu.umd.cs.findbugs.tools.html.PrettyPrintBugDescriptions"
 			fork="true"
+			logError="true"
 			output="${bugdesc.output}">
 			<jvmarg value="-Dfindbugs.home=."/>
 			<jvmarg value="-Dfindbugs.desc.unabridged=${bugdesc.unabridged}"/>
