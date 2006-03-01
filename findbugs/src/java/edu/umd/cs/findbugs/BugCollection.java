@@ -87,8 +87,6 @@ public interface BugCollection
 	
 	/**
 	 * Get the timestamp for when the analysis was performed.
-	 * 
-	 * @param timestamp the analysis timestamp.
 	 */
 	public long getAnalysisTimestamp();
 	

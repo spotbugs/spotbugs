@@ -60,7 +60,7 @@ public class ClassScreener {
 
 	/** replace the dots in a fully-qualified class/package name to a
 	 *  regular expression fragment that will match file names.
-	 * @param String such as "java.io" or "java.io.File"
+	 * @param dotsName such as "java.io" or "java.io.File"
 	 * @return regex fragment such as "java[/\\\\]io" (single backslash escaped twice)
 	 */
 	private static String dotsToRegex(String dotsName) {
