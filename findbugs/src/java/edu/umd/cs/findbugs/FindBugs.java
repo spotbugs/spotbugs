@@ -155,7 +155,7 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		/**
 		 * Return the latest creation/modification time of any of the class files scanned. 
-		 * @return
+		 * @return the last modification time
 		 */
 		public long getLastModificationTime();
 		/**
@@ -1376,7 +1376,6 @@ public class FindBugs implements Constants2, ExitCodes {
 	/**
 	 * Based on Project settings, set the classpath to be used
 	 * by the Repository when looking up classes.
-	 * @throws IOException
 	 */
 	private void setRepositoryClassPath() {
 		// Set aux classpath entries
@@ -1406,7 +1405,6 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * continue.
 	 * 
 	 * @param collection classpath entries to add
-	 * @param repository URLClassPathRepository to add the entries to
 	 */
 	private void addCollectionToClasspath(Collection<String> collection) {
 		for (String entry : collection) {
@@ -1885,7 +1883,7 @@ public class FindBugs implements Constants2, ExitCodes {
 
 	@SuppressWarnings("DM_EXIT")
 	private static void runMain(FindBugs findBugs, TextUICommandLine commandLine)
-	        throws java.io.IOException, RuntimeException, FilterException {
+	        throws java.io.IOException, RuntimeException {
 		try {
 			findBugs.execute();
 		} catch (InterruptedException e) {
