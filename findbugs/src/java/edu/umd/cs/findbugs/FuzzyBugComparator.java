@@ -206,7 +206,7 @@ public class FuzzyBugComparator implements WarningComparator {
 
 	/**
 	 * @param type
-	 * @return
+	 * @return the code of the Bug
 	 */
 	private String getCode(String type) {
 		int bar = type.indexOf('_');
@@ -244,7 +244,7 @@ public class FuzzyBugComparator implements WarningComparator {
 	
 	/**
 	 * @param className
-	 * @return
+	 * @return the rewritten class name
 	 */
 	private String rewriteClassName(String className) {
 		if (classNameRewriter != null) {
