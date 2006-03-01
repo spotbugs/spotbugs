@@ -27,13 +27,25 @@ import java.util.regex.Pattern;
  * Class to pre-screen class files, so that only a subset are
  * analyzed.  This supports the -onlyAnalyze command line option.
  *
+ * Modified February 2006 in four ways:
+ * a) don't break windows platform by hard-coding '/' as the directory separator
+ * b) store list of Matchers, not Patterns, so we don't keep instantiating Matchers
+ * c) fix suffix bug, so FooBar and Foo$Bar no longer match Bar
+ * d) addAllowedPackage() can now handle unicode chars in filenames, though we
+ *    still may not be handling every case mentioned in section 7.2.1 of the JLS
+ *
  * @see FindBugs
  * @author David Hovemeyer
  */
 public class ClassScreener {
 	private static final boolean DEBUG = Boolean.getBoolean("findbugs.classscreener.debug");
+	
+	/** regular expression fragment to match a directory separator. note: could use
+	 *  File.separatorChar instead, but that could be argued to be not general enough */
+	private static final String SEP = "[/\\\\]"; // could include ':' for classic macOS
+	private static final String START = "(?:^|"+SEP+")"; // (?:) is a non-capturing group
 
-	private LinkedList<Pattern> patternList;
+	private LinkedList<Matcher> patternList;
 
 	/**
 	 * Constructor.
@@ -43,18 +55,28 @@ public class ClassScreener {
 	 * and packages.
 	 */
 	public ClassScreener() {
-		this.patternList = new LinkedList<Pattern>();
+		this.patternList = new LinkedList<Matcher>();
 	}
 
+	/** replace the dots in a fully-qualified class/package name to a
+	 *  regular expression fragment that will match file names.
+	 * @param String such as "java.io" or "java.io.File"
+	 * @return regex fragment such as "java[/\\\\]io" (single backslash escaped twice)
+	 */
+	private static String dotsToRegex(String dotsName) {
+		return dotsName.replace("$", "\\$").replace(".", SEP);
+		// note: The original code used the \Q and \E regex quoting constructs to escape $.
+	}
+	
 	/**
 	 * Add the name of a class to be matched by the screener.
 	 *
 	 * @param className name of a class to be matched
 	 */
 	public void addAllowedClass(String className) {
-		String classRegex = "\\Q" + className.replace('.', '/') + "\\E\\.class$";
+		String classRegex = START+dotsToRegex(className)+".class$";
 		if (DEBUG) System.out.println("Class regex: " + classRegex);
-		patternList.add(Pattern.compile(classRegex));
+		patternList.add(Pattern.compile(classRegex).matcher(""));
 	}
 
 	/**
@@ -68,11 +90,9 @@ public class ClassScreener {
 			packageName = packageName.substring(0, packageName.length() - 1);
 		}
 		
-		// Note: \u0024 is the dollar sign ("$")
-		String packageRegex = "\\Q" + packageName.replace('.', '/') + "\\E" +
-			"\\/[A-Za-z_\\u0024][A-Za-z_\\u0024\\d]*\\.class$";
+		String packageRegex = START+dotsToRegex(packageName)+SEP+"\\p{javaJavaIdentifierPart}+.class$";
 		if (DEBUG) System.out.println("Package regex: " + packageRegex);
-		patternList.add(Pattern.compile(packageRegex));
+		patternList.add(Pattern.compile(packageRegex).matcher(""));
 	}
 
 	/**
@@ -83,10 +103,13 @@ public class ClassScreener {
 	 * @param prefix name of the prefix to be matched
 	 */
 	public void addAllowedPrefix(String prefix) {
+		if (prefix.endsWith(".")) {
+			prefix = prefix.substring(0, prefix.length()-1);
+		}
 		if (DEBUG) System.out.println("Allowed prefix: " + prefix);
-		String packageRegex = "\\Q" + prefix.replace('.', '/') + "\\E";
+		String packageRegex = START+dotsToRegex(prefix)+SEP;
 		if (DEBUG) System.out.println("Prefix regex: " + packageRegex);
-		patternList.add(Pattern.compile(packageRegex));
+		patternList.add(Pattern.compile(packageRegex).matcher(""));
 	}
 
 	/**
@@ -101,9 +124,9 @@ public class ClassScreener {
 		if (DEBUG) System.out.println("Matching: " + fileName);
 
 		// Scan through list of regexes
-		for (Pattern pattern : patternList) {
-			if (DEBUG) System.out.print("\tTrying [" + pattern.toString());
-			Matcher matcher = pattern.matcher(fileName);
+		for (Matcher matcher : patternList) {
+			if (DEBUG) System.out.print("\tTrying [" + matcher.pattern());
+			matcher.reset(fileName);
 			if (matcher.find()) {
 				if (DEBUG) System.out.println("]: yes!");
 				return true;
