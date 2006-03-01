@@ -79,7 +79,6 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 			InstructionHandle handle = location.getHandle();
-			int pc = handle.getPosition();
 			Instruction ins = handle.getInstruction();
 
 			if (!(ins instanceof INVOKEINTERFACE))
