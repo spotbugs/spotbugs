@@ -75,7 +75,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 				        .addClassAndMethod(this)
 				        .addMethod(alternativeMethod)
 				        .addSourceLine(this, getPC()));
-         };
+         }
          
          
 		} finally {
