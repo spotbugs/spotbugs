@@ -94,6 +94,11 @@
 	        speed="fast"
             reports="IL_INFINITE_RECURSIVE_LOOP,IL_CONTAINER_ADDED_TO_ITSELF" /> 
 
+  <Detector class="edu.umd.cs.findbugs.detect.InfiniteLoop" 
+	        speed="fast"
+		disabled="true"
+            reports="IL_INFINITE_LOOP" /> 
+
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop2"
             speed="slow" reports="IL_INFINITE_RECURSIVE_LOOP,IL_CONTAINER_ADDED_TO_ITSELF" disabled="true"/>
             
@@ -538,6 +543,8 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS"
     experimental="true"/>
+  <BugPattern abbrev="IL" type="IL_INFINITE_LOOP" category="CORRECTNESS" 
+/>
   <BugPattern abbrev="IL" type="IL_INFINITE_RECURSIVE_LOOP" category="CORRECTNESS" 
 />
   <BugPattern abbrev="IL" type="IL_CONTAINER_ADDED_TO_ITSELF" category="CORRECTNESS" 

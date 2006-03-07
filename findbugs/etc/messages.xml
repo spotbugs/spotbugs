@@ -141,6 +141,13 @@ another package. It is a fast detector</p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.InfiniteLoop">
+    <Details>
+<![CDATA[
+<p> Looks for an infinite loop. It is a fast detector.</p>
+]]>
+    </Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop2">
    <Details>
@@ -1141,6 +1148,17 @@ visible), they could trigger listener notification on the event dispatch thread.
     </Details>
   </BugPattern>
 
+
+  <BugPattern type="IL_INFINITE_LOOP">
+    <ShortDescription>An apparent infinite loop.</ShortDescription>
+    <LongDescription>There is an apparent infinite loop in {1}.</LongDescription>
+    <Details>
+<![CDATA[
+<p>This loop doesn't seem to have a way to terminate (other than by perhaps
+throwing an exception).</p>
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="IL_INFINITE_RECURSIVE_LOOP">
     <ShortDescription>An apparent infinite recursive loop.</ShortDescription>
