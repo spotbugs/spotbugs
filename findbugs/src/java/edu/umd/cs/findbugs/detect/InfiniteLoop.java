@@ -77,6 +77,15 @@ public class InfiniteLoop extends BytecodeScanningDetector  {
 	@Override
 	public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
+		switch(seen) {
+		case ARETURN:
+		case IRETURN:
+		case RETURN:
+		case DRETURN:
+		case FRETURN:
+		case LRETURN:
+		lastBranch = getPC();
+		}
 		// System.out.println(getPC() + "\t" + OPCODE_NAMES[seen] + "\t" + state);
 		if (isRegisterStore()) lastUpdate[getRegisterOperand()] = getPC();
 		else {
@@ -99,6 +108,9 @@ public class InfiniteLoop extends BytecodeScanningDetector  {
 				case BIPUSH:
 				case SIPUSH:
 					state = 2;
+					break;
+				default:
+					state = 0;
 				}
 				break;
 			case 2:
@@ -114,6 +126,7 @@ public class InfiniteLoop extends BytecodeScanningDetector  {
 				        .addClassAndMethod(this).addSourceLine(this,getPC());
 			
 						bugReporter.reportBug(bug);
+						System.out.println("Found it");
 						
 					}
 				}
