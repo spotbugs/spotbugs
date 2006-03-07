@@ -530,6 +530,10 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 
 				}
 				switch (opcode) {
+				case IINC:
+					isRegisterLoad = true;
+					isRegisterStore = true;
+					break;
 				case ILOAD_0:
 				case ILOAD_1:
 				case ILOAD_2:
