@@ -6,6 +6,7 @@
 	<classpathentry excluding="**/CVS/*" kind="src" path="src/junit"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<accessrules>
+			<accessrule kind="accessible" pattern="com/sun/management/*"/>
 			<accessrule kind="nonaccessible" pattern="com/sun/**"/>
 		</accessrules>
 	</classpathentry>
