@@ -30,6 +30,23 @@ class BadIntegerOperations {
 		return l;
 	}
 
+	/** (bug 1291650) false positive: Bitwise OR of signed byte value computed */
+	void boolFalse(String[] args) {
+		final boolean[] values = { false };
+		values[0] |= (args.length > 0);
+	}
+
+	void boolTrue(String[] args) {
+		final boolean[] values = { true };
+		values[0] |= (args.length > 0);
+	}
+
+	void byteZero(final byte len) {
+		final byte[] values = { 0 };
+		values[0] |= len;
+	}
+
+	
 	Random r = new Random();
 
 	int getRandomElement(int a[]) {
