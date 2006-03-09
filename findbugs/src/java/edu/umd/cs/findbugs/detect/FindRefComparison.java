@@ -702,9 +702,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		Type lhsType_ = frame.getValue(numSlots - 2);
 		Type rhsType_ = frame.getValue(numSlots - 1);
 
-		if (lhsType_.equals(rhsType_))
-			return;
-
+	
 		// Ignore top and bottom values
 		if (lhsType_.getType() == T_TOP || lhsType_.getType() == T_BOTTOM
 		        || rhsType_.getType() == T_TOP || rhsType_.getType() == T_BOTTOM)
@@ -729,7 +727,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			}
 			return;
 		}
-
+		
 		if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
 			bugReporter.reportBug(new BugInstance(this, "EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
 			        .addClassAndMethod(methodGen, sourceFile)
@@ -763,7 +761,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			         );
 		}
-		
+		if (lhsType_.equals(rhsType_))
+			return;
+
 		// For now, ignore the case where either reference is not
 		// of an object type.  (It could be either an array or null.)
 		if (!(lhsType_ instanceof ObjectType) || !(rhsType_ instanceof ObjectType))
