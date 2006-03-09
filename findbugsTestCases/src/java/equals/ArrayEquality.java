@@ -23,5 +23,9 @@ public class ArrayEquality {
 	boolean reportProblemsWithArrayEquality7(int[] a, String []b) {
 		return a.equals(b);
 	}
+	boolean reportProblemsWithArrayEquality8(StringBuffer[] a, String []b) {
+		return a.equals(b);
+	}
+	
 
 }
