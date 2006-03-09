@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import java.util.List;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
 
 /**
 * Class to maintain a snapshot of a processes's time and memory usage.
@@ -31,21 +34,21 @@ package edu.umd.cs.findbugs;
 */
 public class Footprint {
 
-	private long cpuTime = -1;
-	private long clockTime = -1;
-	private long heap = -1;
+	private long cpuTime = -1;   // in nanoseconds
+	private long clockTime = -1; // in milliseconds
+	private long peakMem = -1;      // in bytes
 
 	public Footprint() {
 		pullData();
 	}
-	
+
 	public Footprint(Footprint base) {
 		pullData();
 		cpuTime -= base.cpuTime;
 		clockTime -= base.clockTime;
-		heap -= base.heap;
+		//peakMem -= base.peakMem;
 	}
-	
+
 	private void pullData() {
 
 		try {
@@ -57,8 +60,8 @@ public class Footprint {
 		clockTime = new java.util.Date().getTime() ;		
 
 		try {
-			heap = new MemoryBeanWrapper().getHeapMemoryUsage();
-		} catch (NoClassDefFoundError ncdfe) { heap = -9; }
+			peakMem = new MemoryBeanWrapper().getPeakUsage();
+		} catch (NoClassDefFoundError ncdfe) { peakMem = -9; }
 	}
 
 	public long getCpuTime() {
@@ -67,46 +70,56 @@ public class Footprint {
 	public long getClockTime() {
 		return clockTime;
 	}
-	public long getHeap() {
-		return heap;
+	public long getPeakMemory() {
+		return peakMem;
 	}
 
 	public String toString() {
-		return "cpuTime="+cpuTime+", clockTime="+clockTime+", heap="+heap;
+		return "cpuTime="+cpuTime+", clockTime="+clockTime+", peakMemory="+peakMem;
 	}
-	
+
 	public static void main(String[] argv) {
 		System.out.println(new Footprint());
 	}
-	
+
 	// -------- begin static inner classes --------
 
 	/** Wrapper so that possbile NoClassDefFoundError can be caught. Instantiating
 	 *  this class will throw a NoClassDefFoundError on JDK 1.4 and earlier. */
 	public static class MemoryBeanWrapper {
-		java.lang.management.	MemoryMXBean memBean =
-			java.lang.management.ManagementFactory.getMemoryMXBean();
-		java.lang.management.MemoryUsage memUsage = memBean.getHeapMemoryUsage();
+		List<MemoryPoolMXBean> mlist = ManagementFactory.getMemoryPoolMXBeans();
+		//java.lang.management.MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
+		//java.lang.management.MemoryUsage memUsage = memBean.getHeapMemoryUsage();
 	  
-		public long getHeapMemoryUsage() {
-		  return memUsage.getUsed(); // gets current usage--some stuff may have been reclaimed
+		public long getPeakUsage() {
+			long sum = 0;
+			// problem: sum of the peaks is not necessarily the peak of the sum.
+			// For example, bjects migrate from the 'eden' to the 'survivor' area.
+			for (MemoryPoolMXBean mpBean : mlist) {
+				java.lang.management.MemoryUsage memUsage = mpBean.getPeakUsage();
+				if (memUsage != null) sum += memUsage.getUsed(); // or getCommitted()
+				System.out.println(mpBean.getType()+", "+mpBean.getName()+", "+memUsage.getUsed());
+				//System.out.println("Memory type="+mpBean.getType()+", Pool name="+mpBean.getName()+", Memory usage="+mpBean.getPeakUsage());
+			}
+			System.out.println();
+			return sum;
 		}
 	}
-	
+
 	/** Wrapper so that possbile NoClassDefFoundError can be caught. Instantiating this
-	 *  class will throw a NoClassDefFoundError os JDK 1.4 and earlier, or will throw a
-	 *  ClassCastException on a non-sun 1.5-compliant JDK where the osBean is not a sunBean.
+	 *  class will throw a NoClassDefFoundError on JDK 1.4 and earlier, or will throw a
+	 *  ClassCastException on a 1.5-compliant non-sun JRE where the osBean is not a sunBean.
 	 *  (If compiled by Eclipse, instantiating it will throw an unsubclassed java.lang.Error.) */
 	public static class OperatingSystemBeanWrapper {
-		java.lang.management.	OperatingSystemMXBean osBean =
-			java.lang.management.ManagementFactory.getOperatingSystemMXBean();
-		// next line compiles fine with sun JDK 1.5 but the eclipse compiler complains: The type
-		// OperatingSystemMXBean is not accessible due to restriction on required library classes.jar
+		java.lang.management.	OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+		// next line compiles fine with sun JDK 1.5 but the eclipse compiler may complain "The type
+		// OperatingSystemMXBean is not accessible due to restriction on required library classes.jar"
+		// depending on the contents of the .classpath file.
 		com.sun.management.OperatingSystemMXBean sunBean = (com.sun.management.OperatingSystemMXBean)osBean;
 	  
 		public long getProcessCpuTime() {
 			return sunBean.getProcessCpuTime();
 		}
 	}
-	
+
 }
