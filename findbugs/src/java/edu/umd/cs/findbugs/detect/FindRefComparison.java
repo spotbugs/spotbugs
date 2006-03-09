@@ -30,6 +30,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.GETFIELD;
@@ -729,6 +730,40 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			return;
 		}
 
+		if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
+			bugReporter.reportBug(new BugInstance(this, "EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
+			        .addClassAndMethod(methodGen, sourceFile)
+			        .addClass(lhsType_.getSignature()).describe("CLASS_REFTYPE")
+			        .addClass(rhsType_.getSignature()).describe("CLASS_REFTYPE")
+			        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+			         );
+		do {
+			lhsType_ = ((ArrayType)lhsType_).getElementType();
+			rhsType_ = ((ArrayType)rhsType_).getElementType();
+		} while  (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType);
+		}
+		
+		if (lhsType_ instanceof ArrayType) {
+			int priority = HIGH_PRIORITY;
+			if (rhsType_.equals(ObjectType.OBJECT)) priority = LOW_PRIORITY;
+			bugReporter.reportBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", priority)
+			        .addClassAndMethod(methodGen, sourceFile)
+			        .addClass(lhsType_.getSignature()).describe("CLASS_REFTYPE")
+			        .addClass(rhsType_.getSignature()).describe("CLASS_REFTYPE")
+			        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+			         );
+		}
+		if (rhsType_ instanceof ArrayType) {
+			int priority = HIGH_PRIORITY;
+			if (lhsType_.equals(ObjectType.OBJECT)) priority = LOW_PRIORITY;
+			bugReporter.reportBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", priority)
+			        .addClassAndMethod(methodGen, sourceFile)
+			        .addClass(rhsType_.getSignature()).describe("CLASS_REFTYPE")
+			        .addClass(lhsType_.getSignature()).describe("CLASS_REFTYPE")
+			        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+			         );
+		}
+		
 		// For now, ignore the case where either reference is not
 		// of an object type.  (It could be either an array or null.)
 		if (!(lhsType_ instanceof ObjectType) || !(rhsType_ instanceof ObjectType))
@@ -784,9 +819,10 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		if (priority <= LOW_PRIORITY) {
 			bugReporter.reportBug(new BugInstance(this, bugType, priority)
 			        .addClassAndMethod(methodGen, sourceFile)
-			        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			        .addClass(lhsType.getClassName()).describe("CLASS_REFTYPE")
-			        .addClass(rhsType.getClassName()).describe("CLASS_REFTYPE"));
+			        .addClass(rhsType.getClassName()).describe("CLASS_REFTYPE")
+			        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+			        );
 		}
 	}
 	
