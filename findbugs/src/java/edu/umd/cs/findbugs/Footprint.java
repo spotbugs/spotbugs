@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.util.List;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 
@@ -36,17 +37,22 @@ public class Footprint {
 
 	private long cpuTime = -1;   // in nanoseconds
 	private long clockTime = -1; // in milliseconds
-	private long peakMem = -1;      // in bytes
+	private long peakMem = -1;   // in bytes
 
 	public Footprint() {
 		pullData();
 	}
 
+	/** uses deltas from base for cpuTime and clockTime (but not peakMemory) */
 	public Footprint(Footprint base) {
 		pullData();
-		cpuTime -= base.cpuTime;
-		clockTime -= base.clockTime;
-		//peakMem -= base.peakMem;
+		if (cpuTime >= 0) {
+			cpuTime = (base.cpuTime >= 0) ? cpuTime-base.cpuTime : base.cpuTime;
+		}
+		if (clockTime >= 0) {
+			clockTime = (base.clockTime >= 0) ? clockTime-base.clockTime : base.clockTime;
+		}
+		// leave peakMem alone
 	}
 
 	private void pullData() {
@@ -55,9 +61,9 @@ public class Footprint {
 			cpuTime = new OperatingSystemBeanWrapper().getProcessCpuTime();
 		} catch (NoClassDefFoundError ncdfe) { cpuTime = -9; }
 	      catch (ClassCastException cce) { cpuTime = -8; }
-	      catch (Error error) { cpuTime = -7; } // catch the Error thrown when complied by the Eclipse compiler
+	      catch (Error error) { cpuTime = -7; } // catch possible Error thrown when complied by the Eclipse compiler
 
-		clockTime = new java.util.Date().getTime() ;		
+		clockTime = System.currentTimeMillis(); // or new java.util.Date().getTime()	;
 
 		try {
 			peakMem = new MemoryBeanWrapper().getPeakUsage();
@@ -77,7 +83,7 @@ public class Footprint {
 	public String toString() {
 		return "cpuTime="+cpuTime+", clockTime="+clockTime+", peakMemory="+peakMem;
 	}
-
+	
 	public static void main(String[] argv) {
 		System.out.println(new Footprint());
 	}
@@ -94,7 +100,7 @@ public class Footprint {
 		public long getPeakUsage() {
 			long sum = 0;
 			// problem: sum of the peaks is not necessarily the peak of the sum.
-			// For example, bjects migrate from the 'eden' to the 'survivor' area.
+			// For example, objects migrate from the 'eden' to the 'survivor' area.
 			for (MemoryPoolMXBean mpBean : mlist) {
 				java.lang.management.MemoryUsage memUsage = mpBean.getPeakUsage();
 				if (memUsage != null) sum += memUsage.getUsed(); // or getCommitted()
