@@ -29,6 +29,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
@@ -56,6 +57,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	private int totalClasses;
 	private int totalSize;
 	private Date timestamp;
+	private Footprint baseFootprint;
 
 	/**
 	 * Constructor. Creates an empty object.
@@ -64,6 +66,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		this.packageStatsMap = new TreeMap<String, PackageStats>();
 		this.totalClasses = 0;
 		this.timestamp = new Date();
+		this.baseFootprint = new Footprint();
 	}
 	
 	public Object clone() {
@@ -178,6 +181,24 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		xmlOutput.addAttribute("total_bugs", String.valueOf(totalErrors[0]));
 		xmlOutput.addAttribute("total_size", String.valueOf(totalSize));
 		xmlOutput.addAttribute("num_packages", String.valueOf(packageStatsMap.size()));
+		
+		Footprint delta = new Footprint(baseFootprint);
+		NumberFormat twoPlaces = NumberFormat.getInstance(Locale.ENGLISH);
+		twoPlaces.setMinimumFractionDigits(2);
+		twoPlaces.setMaximumFractionDigits(2);
+		twoPlaces.setGroupingUsed(false);
+		long cpuTime = delta.getCpuTime(); // nanoseconds
+		if (cpuTime >= 0) {
+			xmlOutput.addAttribute("cpu_seconds", twoPlaces.format(cpuTime / 1000000000.0));
+		}
+		long clockTime = delta.getClockTime(); // milliseconds
+		if (clockTime >= 0) {
+			xmlOutput.addAttribute("clock_seconds", twoPlaces.format(clockTime / 1000.0));
+		}
+		long peakMemory = delta.getPeakMemory(); // bytes
+		if (peakMemory >= 0) {
+			xmlOutput.addAttribute("peak_mbytes", twoPlaces.format(peakMemory / (1024.0*1024)));
+		}
 		
 		PackageStats.writeBugPriorities(xmlOutput, totalErrors);
 		
