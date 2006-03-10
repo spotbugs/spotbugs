@@ -364,7 +364,9 @@ These options are only accepted by the Text User Interface.
       package), and packages should be specified in the same way
       they would in a Java <literal>import</literal> statement to
       import all classes in the package (i.e., add <literal>.*</literal>
-      to the full name of the package.)
+      to the full name of the package).
+      Replace <literal>.*</literal> with <literal>.-</literal> to also
+      analyze all subpackages.
       </para>
     </listitem>
   </varlistentry>
@@ -1331,8 +1333,9 @@ and JRE/JDK 1.4.0 or later.
 Download the plugin from the following link:
 <ulink url="@DOWNLOADS_WEBSITE@/de.tobject.findbugs_@ECLIPSE_UI_VERSION@.zip?download"
 >@DOWNLOADS_WEBSITE@/de.tobject.findbugs_@ECLIPSE_UI_VERSION@.zip?download</ulink>.
-Extract it in the directory in which you installed Eclipse.  This should be
-the parent directory of the "plugins" directory within the Eclipse installation.
+Extract it in Eclipse's "plugins" subdirectory.
+(So &lt;eclipse_install_dir&gt;/plugins/de.tobject.findbugs_@ECLIPSE_UI_VERSION@/findbugs.png
+should be the path to the &FindBugs; logo.)
 
 </para>
 
@@ -2406,7 +2409,8 @@ You can find the latest version of FindBugs, along with its source code, from th
 
 <para>&FindBugs; was originally written by Bill Pugh (<email>pugh@cs.umd.edu</email>).
 David Hovemeyer (<email>daveho@cs.umd.edu</email>) implemented some of the
-detectors, added the Swing GUI, and is a co-maintainer.</para>
+detectors, added the Swing GUI, and is a co-maintainer.
+Brian Cole (<email>tuc@cs.umd.edu</email>) is a co-maintainer.</para>
 
 <para>Mike Fagan (<email>mfagan@tde.com</email>) contributed the &Ant; build script,
 the &Ant; task, and several enhancements and bug fixes to the GUI.</para>
@@ -2518,7 +2522,7 @@ in the Ant task.</para>
 in the Ant task.</para>
 
 <para>If you have contributed to &FindBugs;, but aren't mentioned above,
-please send email to <email>daveho@cs.umd.edu</email> (and also accept
+please send email to <email>tuc@cs.umd.edu</email> (and also accept
 our humble apologies).</para>
 
 </sect1>
