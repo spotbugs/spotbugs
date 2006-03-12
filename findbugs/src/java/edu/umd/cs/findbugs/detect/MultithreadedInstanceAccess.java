@@ -58,7 +58,7 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector
 	}
 	
 	private Set<JavaClass> getMtClasses() {
-		if (mtClasses != null) // TODO: This isn't working--have to make mtClasses static.
+		if (mtClasses != null)
 			return mtClasses;
 		
 		mtClasses = new HashSet<JavaClass>();
