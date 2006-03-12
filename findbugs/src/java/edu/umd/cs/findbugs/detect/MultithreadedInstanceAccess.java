@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 
-public class MultithreadedInstanceAccess extends BytecodeScanningDetector implements  StatelessDetector
+public class MultithreadedInstanceAccess extends BytecodeScanningDetector
 {
 	private static final String STRUTS_ACTION_NAME = "org.apache.struts.action.Action";
 	private static final String SERVLET_NAME = "javax.servlet.Servlet";
@@ -55,10 +55,6 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector implem
 	
 	public MultithreadedInstanceAccess(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-	}
-	
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
 	}
 	
 	private Set<JavaClass> getMtClasses() {
