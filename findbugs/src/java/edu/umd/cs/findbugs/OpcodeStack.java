@@ -946,7 +946,7 @@ public class OpcodeStack implements Constants2
 	 			case D2I:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("I", new Integer((Integer) it.getConstant())));
+	 					push(new Item("I", (Integer) it.getConstant()));
 	 				} else {
 	 					push(new Item("I"));
 	 				}
