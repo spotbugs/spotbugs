@@ -104,10 +104,10 @@ public class Footprint {
 			for (MemoryPoolMXBean mpBean : mlist) {
 				java.lang.management.MemoryUsage memUsage = mpBean.getPeakUsage();
 				if (memUsage != null) sum += memUsage.getUsed(); // or getCommitted()
-				System.out.println(mpBean.getType()+", "+mpBean.getName()+", "+memUsage.getUsed());
+				// System.out.println(mpBean.getType()+", "+mpBean.getName()+", "+memUsage.getUsed());
 				//System.out.println("Memory type="+mpBean.getType()+", Pool name="+mpBean.getName()+", Memory usage="+mpBean.getPeakUsage());
 			}
-			System.out.println();
+			// System.out.println();
 			return sum;
 		}
 	}
