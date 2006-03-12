@@ -155,6 +155,13 @@ public class IsNullValueAnalysis
 		copy(cachedEntryFact, result);
 	}
 
+	
+	@Override
+	public void transfer(BasicBlock basicBlock, InstructionHandle end, IsNullValueFrame start, IsNullValueFrame result)
+	throws DataflowAnalysisException {
+		super.transfer(basicBlock, end, start, result);
+	}
+	
 /*
 	// FIXME: because of a bug in the 2.2 generics-enabled javac,
 	// we can't override this method.  Javac doesn't emit the needed
@@ -437,12 +444,16 @@ public class IsNullValueAnalysis
 	private IsNullConditionDecision getDecision(BasicBlock basicBlock,  IsNullValueFrame lastFrame)
 	        throws DataflowAnalysisException {
 
+		
 		assert lastFrame != null;
-
+		  String methodName = methodGen.getMethod().getName();
+				
 		final InstructionHandle lastInSourceHandle = basicBlock.getLastInstruction();
 		if (lastInSourceHandle == null)
 			return null; // doesn't end in null comparison
-
+		  if (false && methodName.startsWith("notifyText"))
+				System.out.println("XX " + methodGen.getClassName() + "." + methodName + " : " + lastInSourceHandle.getPosition());
+	
 		final short lastInSourceOpcode = lastInSourceHandle.getInstruction().getOpcode();
 		// System.out.println("last opcode: " + Constants.OPCODE_NAMES[lastInSourceOpcode]);
 		if (lastInSourceOpcode == Constants.IFEQ || lastInSourceOpcode == Constants.IFNE ) {
@@ -455,7 +466,8 @@ public class IsNullValueAnalysis
 			boolean isNotInstanceOf = (secondToLastOpcode != Constants.IFNE);
 			Location atInstanceOf = new Location(prev, basicBlock);
 			ValueNumberFrame instanceOfVnaFrame = vnaDataflow.getFactAtLocation(atInstanceOf);
-			// System.out.println("Checking..." + tos);
+	
+			if (false) System.out.println("Checking... " + methodGen.getClassName() + "." + methodName + " : " + prev.getPosition());
 			// Initially, assume neither branch is feasible.
 			IsNullValue ifcmpDecision = null;
 			IsNullValue fallThroughDecision = null;
@@ -467,16 +479,14 @@ public class IsNullValueAnalysis
 				else // ifnonnull
 					fallThroughDecision = tos;
 			} else if (tos.isDefinitelyNotNull()) {
-				// Predetermined comparison - one branch is infeasible
-				if (isNotInstanceOf)
-					fallThroughDecision = tos;
-				else // ifnonnull
-					ifcmpDecision = tos;
+				return null;
 			} else {
 				// As far as we know, both branches feasible
 				ifcmpDecision = isNotInstanceOf ? tos : IsNullValue.pathSensitiveNonNullValue();
 				fallThroughDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNonNullValue() : tos;
 			}
+			 if (false) System.out.println("Checking..." + tos + " -> " + ifcmpDecision + " or " + fallThroughDecision);
+				
 			return new IsNullConditionDecision(instanceOfVnaFrame.getTopValue(), ifcmpDecision, fallThroughDecision);
 
 		}
