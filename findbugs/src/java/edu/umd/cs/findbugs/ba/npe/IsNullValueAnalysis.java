@@ -463,11 +463,12 @@ public class IsNullValueAnalysis
 			// System.out.println("Second last opcode: " +  Constants.OPCODE_NAMES[secondToLastOpcode]);
 			if (secondToLastOpcode != Constants.INSTANCEOF) return null;
 			IsNullValue tos = instanceOfFrame.getTopValue();
-			boolean isNotInstanceOf = (secondToLastOpcode != Constants.IFNE);
+			boolean isNotInstanceOf = (lastInSourceOpcode != Constants.IFNE);
 			Location atInstanceOf = new Location(prev, basicBlock);
 			ValueNumberFrame instanceOfVnaFrame = vnaDataflow.getFactAtLocation(atInstanceOf);
 	
-			if (false) System.out.println("Checking... " + methodGen.getClassName() + "." + methodName + " : " + prev.getPosition());
+			if (false) System.out.println("Checking... " + methodGen.getClassName() + "." + methodName + " : " + prev.getPosition() 
+					+ " " + Constants.OPCODE_NAMES[lastInSourceOpcode]+ " " + tos);
 			// Initially, assume neither branch is feasible.
 			IsNullValue ifcmpDecision = null;
 			IsNullValue fallThroughDecision = null;
