@@ -23,6 +23,8 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static edu.umd.cs.findbugs.util.Strings.replace;
+
 /**
  * Class to pre-screen class files, so that only a subset are
  * analyzed.  This supports the -onlyAnalyze command line option.
@@ -64,7 +66,12 @@ public class ClassScreener {
 	 * @return regex fragment such as "java[/\\\\]io" (single backslash escaped twice)
 	 */
 	private static String dotsToRegex(String dotsName) {
+		/* oops, next line requires JDK 1.5
 		return dotsName.replace("$", "\\$").replace(".", SEP);
+		 * could use String.replaceAll(regex, repl) but that can be problematic--javadoc says
+		 * "Note that backslashes (\) and dollar signs ($) in the replacement string may cause
+		 * the results to be different than if it were being treated as a literal replacement" */
+		return replace(replace(dotsName, "$", "\\$"), ".", SEP);
 		// note: The original code used the \Q and \E regex quoting constructs to escape $.
 	}
 	
