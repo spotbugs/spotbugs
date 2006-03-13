@@ -498,29 +498,7 @@ public class IsNullValueAnalysis
 		ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
 
 		switch (lastInSourceOpcode) {
-		case Constants.INSTANCEOF:
-		{
-			IsNullValue tos = lastFrame.getTopValue();
-			IsNullValue ifcmpDecision = null;
-			IsNullValue fallThroughDecision = null;
-			if (tos.isDefinitelyNull()) {
-				// Predetermined comparison - one branch is infeasible
-					fallThroughDecision = tos;
-			} else if (tos.isDefinitelyNotNull()) {
-				// Predetermined comparison - one branch is infeasible
-
-					ifcmpDecision = tos;
-			} else {
-				// As far as we know, both branches feasible
-				ifcmpDecision = IsNullValue.pathSensitiveNonNullValue();
-				fallThroughDecision =  tos;
-			}
-			System.out.println("InstanceOf");
-			System.out.println(ifcmpDecision);
-			System.out.println(fallThroughDecision);
-			return new IsNullConditionDecision(prevVnaFrame.getTopValue(), ifcmpDecision, fallThroughDecision);
 	
-		}
 		case Constants.IFNULL:
 		case Constants.IFNONNULL:
 			{

@@ -381,7 +381,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 				if ((flags & RETURN_VAL) != 0) pfx += "r";
 			}
 		}
-		if (locationOfKaBoom == null) pfx += "[XXX]";
+		if (locationOfKaBoom == null) pfx += "[?]";
 		switch (getBaseKind()) {
 		case NULL:
 			return pfx + "n";
