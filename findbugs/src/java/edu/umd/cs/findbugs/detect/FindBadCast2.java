@@ -32,6 +32,9 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.npe.IsNullValue;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.TopType;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
@@ -115,6 +118,7 @@ public class FindBadCast2 implements Detector {
 		
 		CFG cfg = classContext.getCFG(method);
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+		IsNullValueDataflow isNullDataflow = classContext.getIsNullValueDataflow(method);
 		ValueNumberDataflow vnaDataflow = classContext
 				.getValueNumberDataflow(method);
 		// get the ValueNumberFrame at entry to a method:
@@ -177,11 +181,14 @@ public class FindBadCast2 implements Detector {
 			int occurrences = cfg.getLocationsContainingInstructionWithOffset(
 					pc).size();
 			boolean split = occurrences > 1;
-
+			IsNullValueFrame nullFrame = isNullDataflow.getFactAtLocation(location);
+			IsNullValue operandNullness = nullFrame.getTopValue();
 			if (DEBUG) {
 				System.out
 						.println(kind + " at pc: " + pc + " in " + methodName);
 				System.out.println(" occurrences: " + occurrences);
+				System.out.println("XXX: " + operandNullness);
+				
 			}
 
 			if (split && !isCast) {
@@ -200,28 +207,37 @@ public class FindBadCast2 implements Detector {
 				// unreachable
 				continue;
 			}
+			Type castType = ((TypedInstruction) ins).getType(cpg);
+
+			if (!(castType instanceof ReferenceType)) {
+				// This shouldn't happen either
+				continue;
+			}
+			String castSig = castType.getSignature();
+			
+			if (operandType.equals(NullType.instance()) || operandNullness.isDefinitelyNull()) {
+				SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
+				.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
+				if (!isCast) bugReporter.reportBug(new BugInstance(this,
+						"BC_NULL_INSTANCEOF", NORMAL_PRIORITY)
+						.addClassAndMethod(methodGen, sourceFile)
+						.addSourceLine(sourceLineAnnotation)
+						);
+				continue;
+
+			}
 			if (!(operandType instanceof ReferenceType)) {
 				// Shouldn't happen - illegal bytecode
 				continue;
 			}
 			ReferenceType refType = (ReferenceType) operandType;
 
-			Type castType = ((TypedInstruction) ins).getType(cpg);
-			if (!(castType instanceof ReferenceType)) {
-				// This shouldn't happen either
-				continue;
-			}
+		
 			if (refType.equals(castType)) {
 				// System.out.println("self-cast to " + castType.getSignature());
 				continue;
 			}
-			if (refType.equals(NullType.instance())) {
-				// Value is a literal null
-				System.out.println("cast of null value to "
-						+ castType.getSignature() + " in " + methodName);
-				continue;
-			}
-			String castSig = castType.getSignature();
+			
 			String refSig = refType.getSignature();
 			String castSig2 = castSig;
 			String refSig2 = refSig;

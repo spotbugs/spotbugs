@@ -4201,6 +4201,19 @@ This cast will always throw a ClassCastException.
     </Details>
   </BugPattern>
 
+  <BugPattern type="BC_NULL_INSTANCEOF">
+    <ShortDescription>A known null value is checked to see if it is an instance of a type</ShortDescription>
+    <LongDescription>A known null value is checked to see if it is an instance of a type in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This instanceof test will always return false, since the value being checked is guaranteed to be null.
+Although this is safe, make sure it isn't
+an indication of some misunderstanding or some other logic error.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="BC_IMPOSSIBLE_INSTANCEOF">
     <ShortDescription>instanceof will always return false</ShortDescription>
     <LongDescription>instanceof will always return false in {1}, since a {3} can't be a {4}</LongDescription>
@@ -4213,6 +4226,8 @@ an indication of some misunderstanding or some other logic error.
 ]]>
     </Details>
   </BugPattern>
+
+
   <BugPattern type="BC_VACUOUS_INSTANCEOF">
     <ShortDescription>instanceof will always return true</ShortDescription>
     <LongDescription>instanceof will always return true in {1}, since all {3} are instances of {4}</LongDescription>
