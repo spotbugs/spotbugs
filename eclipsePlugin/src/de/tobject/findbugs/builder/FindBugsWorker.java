@@ -97,7 +97,7 @@ public class FindBugsWorker {
 
 		String findBugsHome = FindbugsPlugin.getFindBugsEnginePluginLocation();
 		if (DEBUG) {
-			System.out.println("Looking for detecors in: " + findBugsHome); //$NON-NLS-1$
+			System.out.println("Looking for detectors in: " + findBugsHome); //$NON-NLS-1$
 		}
 
 		// FIXME hardcoded findbugs.home property
