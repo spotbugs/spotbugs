@@ -31,6 +31,7 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 	private BugReporter bugReporter;
 	private int previousLoadOf = -1;
 	private int previousGotoTarget;
+	private int gotoCount;
 	public FindLocalSelfAssignment2(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
@@ -42,26 +43,29 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 	public void visit(Code obj) {
 		previousLoadOf = -1;
 		previousGotoTarget = -1;
+		gotoCount = 0;
 		super.visit(obj);
 	}
 
 
 	public void sawOpcode(int seen) {
-		if (seen == GOTO)
+		if (seen == GOTO) {
 			previousGotoTarget = getBranchTarget();
-		else if (isRegisterLoad()) 
-			previousLoadOf = getRegisterOperand();
-		else {
-			if (isRegisterStore() && previousLoadOf == getRegisterOperand() && getPC() != previousGotoTarget)
-			       bugReporter.reportBug(
-				new BugInstance(this, 
-						"SA_LOCAL_SELF_ASSIGNMENT", NORMAL_PRIORITY)
-                                        .addClassAndMethod(this)
-                                        .addSourceLine(this));
-
-			previousLoadOf = -1;
+			gotoCount++;
+		} else {
+			if (isRegisterLoad()) 
+				previousLoadOf = getRegisterOperand();
+			else {
+				if (isRegisterStore() && previousLoadOf == getRegisterOperand() && gotoCount < 2 && getPC() != previousGotoTarget)
+				       bugReporter.reportBug(
+					new BugInstance(this, 
+							"SA_LOCAL_SELF_ASSIGNMENT", NORMAL_PRIORITY)
+	                                        .addClassAndMethod(this)
+	                                        .addSourceLine(this));
+	
+				previousLoadOf = -1;
+				gotoCount = 0;
 			}
-
+		}
 	}
-
 }
