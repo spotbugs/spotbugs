@@ -22,6 +22,11 @@ package edu.umd.cs.findbugs.detect;
 import java.util.BitSet;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantMethodref;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -289,10 +294,21 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		// We can ignore classes that were compiled for anything
 		// less than JDK 1.5.  This should avoid lots of unnecessary work
 		// when analyzing code for older VM targets.
-		if (jclass.getMajor() > JDK15_MAJOR ||
-			(jclass.getMajor() == JDK15_MAJOR && jclass.getMinor() >= JDK15_MINOR)) {
-			super.visitClassContext(classContext);
-		}
+		
+		if (jclass.getMajor() < JDK15_MAJOR ||
+			(jclass.getMajor() == JDK15_MAJOR && jclass.getMinor() < JDK15_MINOR))  return;
+		
+		boolean  sawUtilConcurrentLocks = false;
+		for(Constant c :  jclass.getConstantPool().getConstantPool()) 
+			if (c instanceof ConstantMethodref) {
+				ConstantMethodref m = (ConstantMethodref) c;
+				ConstantClass cl = (ConstantClass) jclass.getConstantPool().getConstant(m.getClassIndex());
+				ConstantUtf8 name =  (ConstantUtf8) jclass.getConstantPool().getConstant(cl.getNameIndex());
+				String nameAsString = name.getBytes();
+				if (nameAsString.startsWith("java/util/concurrent/locks")) sawUtilConcurrentLocks = true;
+				
+			}
+		if (sawUtilConcurrentLocks) super.visitClassContext(classContext);
 	}
 
 	
