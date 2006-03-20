@@ -19,8 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Field;
@@ -30,6 +32,7 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 
 public class MutableStaticFields extends BytecodeScanningDetector {
 
@@ -65,6 +68,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 	Set<String> interfaces = new HashSet<String>();
 	Set<String> notFinal = new HashSet<String>();
 	Set<String> outsidePackage = new HashSet<String>();
+	Map<String, SourceLineAnnotation> firstFieldUse = new HashMap<String, SourceLineAnnotation>();
 	private BugReporter bugReporter;
 
 	public MutableStaticFields(BugReporter bugReporter) {
@@ -123,6 +127,11 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 
 			if (!safeValue)
 				unsafeValue.add(name);
+			
+			if (!firstFieldUse.containsKey(name)) {
+				SourceLineAnnotation sla = SourceLineAnnotation.fromVisitedInstruction(this);
+				firstFieldUse.put(name, sla);
+			}
 			break;
 		case ANEWARRAY:
 		case NEWARRAY:
@@ -226,9 +235,13 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 				throw new IllegalStateException("impossible");
 
 
-			bugReporter.reportBug(new BugInstance(this, bugType, priority)
-					.addClass(className)
-					.addField(className, fieldName, fieldSig, true));
+			BugInstance bug = new BugInstance(this, bugType, priority)
+												.addClass(className)
+												.addField(className, fieldName, fieldSig, true);
+			SourceLineAnnotation firstPC = firstFieldUse.get(className + "." + fieldName);
+			if (firstPC != null)
+				bug.addSourceLine(firstPC);
+			bugReporter.reportBug(bug);
 
 		}
 	}
