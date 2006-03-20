@@ -2288,7 +2288,8 @@ Names of fields that are not final should be in mixed case with a lowercase firs
     <LongDescription>VERY confusing to have methods {1} and {3}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The referenced methods have names that differ only by capitalization.</p>
+  <p> The referenced methods have names that differ only by capitalization. It is very confusing
+  because the classes that contain these methods are related by inheritance.</p>
 ]]>
     </Details>
   </BugPattern>
