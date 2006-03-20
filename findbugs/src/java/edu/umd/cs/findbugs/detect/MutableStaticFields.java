@@ -128,7 +128,9 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 			if (!safeValue)
 				unsafeValue.add(name);
 			
-			if (!firstFieldUse.containsKey(name)) {
+			//Remove inStaticInitializer check to report all source lines of first use
+			//doing so, however adds quite a bit of memory bloat.
+			if (inStaticInitializer && !firstFieldUse.containsKey(name)) {
 				SourceLineAnnotation sla = SourceLineAnnotation.fromVisitedInstruction(this);
 				firstFieldUse.put(name, sla);
 			}
