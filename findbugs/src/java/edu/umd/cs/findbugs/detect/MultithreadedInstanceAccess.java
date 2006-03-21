@@ -118,7 +118,7 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector
 	}
 	
 	public void visitCode(Code obj) {
-		if (!getMethodName().equals("<init>"))
+		if (!getMethodName().equals("<init>") && !getMethodName().equals("init"))
 			super.visitCode(obj);
 	}
 	
