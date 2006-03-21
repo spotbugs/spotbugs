@@ -106,6 +106,11 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 			case GOTO:
 				reachable = false;
 				break;
+				
+			case INVOKESTATIC:
+				reachable = !("exit".equals(getNameConstantOperand()) && "java/lang/System".equals(getClassConstantOperand()));
+				break;
+			
 			default:
 				reachable = true;
 		}
