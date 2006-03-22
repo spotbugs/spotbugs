@@ -1496,7 +1496,7 @@ In other words, each of the children must be true for the predicate to be true.
    <term><literal>&lt;BugCode&gt;</literal></term>
    <listitem><para>
     This element specifies abbreviations of bugs.
-   The <literal>name</literal> attribute is a comma-seperated list of abbreviations.
+   The <literal>name</literal> attribute is a comma-separated list of abbreviations.
    </para></listitem>
  </varlistentry>
  
@@ -1531,7 +1531,7 @@ In other words, each of the children must be true for the predicate to be true.
    <term><literal>&lt;Method&gt;</literal></term>
 
    <listitem><para>This element specifies a method.  The <literal>name</literal> attribute is the name
-   of the method.  The <literal>params</literal> attribute is a comma separated list
+   of the method.  The <literal>params</literal> attribute is a comma-separated list
    of the types of the method's parameters.  The <literal>returns</literal> attribute is
    the method's return type.  In <literal>params</literal> and <literal>returns</literal>, class names
    must be fully qualified.  (E.g., "java.lang.String" instead of just
@@ -1777,7 +1777,7 @@ The list of configurable analysis properties is shown in
 -->
     <row>
       <entry>findbugs.assertionmethods</entry>
-      <entry>Comma separated list of fully qualified method names:
+      <entry>Comma-separated list of fully qualified method names:
       e.g., "com.foo.MyClass.checkAssertion"</entry>
       <entry>This property specifies the names of methods that are used
       to check program assertions.  Specifying these methods allows
@@ -1961,8 +1961,8 @@ timestamp for a list of XML bug databases</para>
 			<title>unionBugs</title>
 
 		<para>
-		If you have, for example, seperately analyzing each jar file used in an application,
-		you can use this command to combine the seperately generated xml bug warning files into
+		If you have, for example, separately analyzing each jar file used in an application,
+		you can use this command to combine the separately generated xml bug warning files into
 		a single file containing all of the warnings.</para>
 
 			<para>Do <emphasis>not</emphasis> use this command to combine results from analyzing different versions of the same
@@ -2019,7 +2019,7 @@ to the second file name.</para>
   				<tbody>
 <row><entry>-not</entry>                        <entry>reverse (all) switches for the filter</entry></row>
 <row><entry>-withSource[:truth]</entry>         <entry>only warnings for switch source is available</entry></row>
-<row><entry>exclude &lt;filter file&gt;</entry> <entry>exclude bugs matching given filter</entry></row>
+<row><entry>-exclude &lt;filter file&gt;</entry><entry>exclude bugs matching given filter</entry></row>
 <row><entry>-include &lt;filter file&gt;</entry><entry>include only bugs matching given filter</entry></row>
 <row><entry>-annotation &lt;text&gt;</entry>    <entry>allow only warnings containing this text in a manual annotation</entry></row>
 <row><entry>-classified[:truth]</entry>         <entry>allow only classified warnings</entry></row>
@@ -2060,6 +2060,20 @@ in each version of a multiversion bug database.</para>
 						</para>
 					</listitem>
 				</varlistentry>
+				<varlistentry>
+					<term><option>-noTabs</option></term>
+					<listitem>
+						<para>
+							delimit columns with groups of spaces instead of tabs.
+							This can be easier to read from a shell with a fixed-width font.
+						</para>
+						<para>
+							Because numeric columns are right-justified, spaces may precede the
+							first column value. This option also causes <option>-formatDates</option>
+							to render dates in terser format without embedded whitespace.
+						</para>
+					</listitem>
+				</varlistentry>
 				<!--
 				<varlistentry>
 					<term><option></option></term>
@@ -2071,7 +2085,7 @@ in each version of a multiversion bug database.</para>
 				</varlistentry>
 				-->
 			</variablelist>
-<para>The table is a tab seperated table with the following columns:</para>
+<para>The table is a tab-separated (barring <option>-noTabs</option>) table with the following columns:</para>
 
 		<table id="mineBugHistoryColumns">
 			<title>Columns in mineBugHistory output</title>
