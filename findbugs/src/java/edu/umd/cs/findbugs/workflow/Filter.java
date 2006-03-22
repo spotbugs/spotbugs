@@ -65,6 +65,7 @@ public class Filter {
 		
 		long last;
 		String lastAsString; 
+		String fixedAsString; // alternate way to specify 'last'
 		long present;
 		String presentAsString; 
 		long absent;
@@ -117,6 +118,7 @@ public class Filter {
 			addOption("-before", "when", "allow only warnings that first occurred before this version");
 			addOption("-first", "when", "allow only warnings that first occurred in this version");
 			addOption("-last", "when", "allow only warnings that last occurred in this version");
+			addOption("-fixed", "when", "allow only warnings that last occurred in the previous version (clobbers last)");
 			addOption("-present", "when", "allow only warnings present in this version");
 			addOption("-absent", "when", "allow only warnings absent in this version");
 			addSwitchWithOptionalExtraPart("-active", "truth", "allow only warnings alive in the last sequence number");
@@ -179,14 +181,22 @@ public class Filter {
 				versions.put(v.getReleaseName(), v);
 				timeStamps.put(v.getTimestamp(), v);
 			}
+			// add current version to the maps
+			AppVersion v = collection.getCurrentAppVersion();
+			versions.put(v.getReleaseName(), v);
+			timeStamps.put(v.getTimestamp(), v);
+			
 			first = getVersionNum(versions, timeStamps, firstAsString, true);
 			last = getVersionNum(versions, timeStamps, lastAsString, true);
 			before = getVersionNum(versions, timeStamps, beforeAsString, true);
 			after = getVersionNum(versions, timeStamps, afterAsString, false);
 			present = getVersionNum(versions, timeStamps, presentAsString, true);
 			absent = getVersionNum(versions, timeStamps, absentAsString, true);
-			
+
+			long fixed = getVersionNum(versions, timeStamps, fixedAsString, true);
+			if (fixed >= 0) last = fixed - 1; // fixed means last on previous sequence (ok if -1)
 		}
+
 		boolean accept(BugInstance bug) {
 			boolean result = evaluate(bug);
 			if (not) return !result;
@@ -229,7 +239,7 @@ public class Filter {
 				return false;
 			if (beforeAsString != null && bug.getFirstVersion() >= before)
 				return false;
-			if (lastAsString != null && bug.getLastVersion() != last)
+			if ((lastAsString != null || fixedAsString != null) && (last < 0 || bug.getLastVersion() != last))
 				return false;
 			if (presentAsString != null && !bugLiveAt(bug, present))
 				return false;
@@ -322,6 +332,8 @@ public class Filter {
 				firstAsString = argument;
 			else if (option.equals("-last")) 
 				lastAsString = argument;
+			else if (option.equals("-fixed")) 
+				fixedAsString = argument;
 			else if (option.equals("-after")) 
 				afterAsString = argument;
 			else if (option.equals("-before")) 
