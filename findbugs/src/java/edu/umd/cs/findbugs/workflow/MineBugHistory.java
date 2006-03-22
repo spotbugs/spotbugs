@@ -86,6 +86,7 @@ public class MineBugHistory {
 	Version[] versionList;
 	Map<Long, AppVersion> sequenceToAppVersionMap = new HashMap<Long, AppVersion>();
 	boolean formatDates = false;
+	boolean noTabs = false;
 	
 	public MineBugHistory() {
 	}
@@ -99,6 +100,10 @@ public class MineBugHistory {
 
 	public void setFormatDates(boolean value) {
 		this.formatDates = value;
+	}
+
+	public void setNoTabs(boolean value) {
+		this.noTabs = value;
 	}
 
 	
@@ -143,6 +148,11 @@ public class MineBugHistory {
 
 	
 	
+	public void dump(PrintStream out) {
+		if (noTabs) dumpNoTabs(out);
+		else dumpOriginal(out);
+	}
+
 	/** This is how dump() was implemented up to and including version 0.9.5. */
 	public void dumpOriginal(PrintStream out) {
 		out.println("seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active");
@@ -195,7 +205,7 @@ public class MineBugHistory {
 	 *  Also, timestamps are formatted more tersely (-formatDates option).
 	 *  The bad news is that it requires a minimum of 112 columns.
 	 * @see dumpOriginal(PrintStream) */
-	public void dump(PrintStream out) {
+	public void dumpNoTabs(PrintStream out) {
 		//out.println("seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active");
 		print(3, true, out, "seq");
 		out.print(' ');
@@ -260,11 +270,14 @@ public class MineBugHistory {
 
 		MineBugHistoryCommandLine() {
 			addSwitch("-formatDates", "render dates in textual form");
+			addSwitch("-noTabs", "delimit columns with groups of spaces for better alignment");
 		}
 
 		public void handleOption(String option, String optionalExtraPart) {
 			if  (option.equals("-formatDates")) 
 				setFormatDates(true);
+			else 
+			if (option.equals("-noTabs")) setNoTabs(true);
 			else 
 			throw new IllegalArgumentException("unknown option: " + option);
 		}
