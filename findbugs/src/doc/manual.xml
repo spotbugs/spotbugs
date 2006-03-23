@@ -2028,6 +2028,7 @@ to the second file name.</para>
 <row><entry>-before &lt;when&gt;</entry>        <entry>allow only warnings that first occurred before this version</entry></row>
 <row><entry>-first &lt;when&gt;</entry>         <entry>allow only warnings that first occurred in this version</entry></row>
 <row><entry>-last &lt;when&gt;</entry>          <entry>allow only warnings that last occurred in this version</entry></row>
+<row><entry>-fixed &lt;when&gt;</entry>         <entry>allow only warnings that last occurred in the previous version (clobbers <option>-last</option>)</entry></row>
 <row><entry>-present &lt;when&gt;</entry>       <entry>allow only warnings present in this version</entry></row>
 <row><entry>-absent &lt;when&gt;</entry>        <entry>allow only warnings absent in this version</entry></row>
 <row><entry>-active[:truth]</entry>             <entry>allow only warnings alive in the last sequence number</entry></row>
