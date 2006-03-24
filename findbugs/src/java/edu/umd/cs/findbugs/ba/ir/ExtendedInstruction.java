@@ -37,10 +37,12 @@ public abstract class ExtendedInstruction extends Instruction {
 		super(opcode, len);
 	}
 	
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		throw new UnsupportedOperationException("hashCode not supported on Instructions");
 	}
-	public void accept(Visitor visitor) {
+	@Override
+         public void accept(Visitor visitor) {
 		if (visitor instanceof ExtendedVisitor) {
 			accept((ExtendedVisitor) visitor);
 		}

@@ -19,44 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.BitSet;
-import java.util.Iterator;
 
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.bcp.*;
+import java.util.*;
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.NEW;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.ByteCodePatternDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.DominatorsAnalysis;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.LockDataflow;
-import edu.umd.cs.findbugs.ba.LockSet;
-import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.bcp.Binding;
-import edu.umd.cs.findbugs.ba.bcp.BindingSet;
-import edu.umd.cs.findbugs.ba.bcp.ByteCodePattern;
-import edu.umd.cs.findbugs.ba.bcp.ByteCodePatternMatch;
-import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
-import edu.umd.cs.findbugs.ba.bcp.IfNull;
-import edu.umd.cs.findbugs.ba.bcp.Load;
-import edu.umd.cs.findbugs.ba.bcp.PatternElementMatch;
-import edu.umd.cs.findbugs.ba.bcp.Store;
-import edu.umd.cs.findbugs.ba.bcp.Wild;
+import org.apache.bcel.classfile.*;
+import org.apache.bcel.generic.*;
 
 /*
  * Look for lazy initialization of fields which
@@ -88,19 +58,23 @@ public class LazyInit extends ByteCodePatternDetector implements StatelessDetect
 		this.bugReporter = bugReporter;
 	}
 	
-	public BugReporter getBugReporter() {
+	@Override
+         public BugReporter getBugReporter() {
 		return bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public ByteCodePattern getPattern() {
+	@Override
+         public ByteCodePattern getPattern() {
 		return pattern;
 	}
 
-	public boolean prescreen(Method method, ClassContext classContext) {
+	@Override
+         public boolean prescreen(Method method, ClassContext classContext) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
 		if (bytecodeSet == null) return false;
 		// The pattern requires a get/put pair accessing the same field.
@@ -116,7 +90,8 @@ public class LazyInit extends ByteCodePatternDetector implements StatelessDetect
 		return true;
 	}
 
-	public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
+	@Override
+         public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
 	        throws CFGBuilderException, DataflowAnalysisException {
 		JavaClass javaClass = classContext.getJavaClass();
 		MethodGen methodGen = classContext.getMethodGen(method);

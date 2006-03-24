@@ -38,7 +38,8 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
 		return (getAccessFlags() & Constants.ACC_SYNCHRONIZED) != 0;
 	}
 	
-	public String toString() {
+	@Override
+         public String toString() {
 		return SignatureConverter.convertMethodSignature(this);
 	}
 }

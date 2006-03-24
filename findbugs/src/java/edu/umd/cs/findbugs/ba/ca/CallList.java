@@ -103,7 +103,8 @@ public class CallList {
 	}
 	
 	//@Override
-	public boolean equals(Object obj) {
+	@Override
+         public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
 		CallList other = (CallList) obj;
@@ -111,11 +112,13 @@ public class CallList {
 	}
 	
 	//@Override
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return callList.hashCode();
 	}
 	
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		for (Call call : callList) {
 			if (buf.length() > 0)

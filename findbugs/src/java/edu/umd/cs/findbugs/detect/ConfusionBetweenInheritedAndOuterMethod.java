@@ -38,14 +38,16 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 	}
 
 
-	public void visitJavaClass(JavaClass obj) {
+	@Override
+         public void visitJavaClass(JavaClass obj) {
 		// totally skip methods not defined in inner classes
 		if (false && obj.getClassName().indexOf('$') >= 0) super.visitJavaClass(obj);
 		
 	}
 
 	OpcodeStack stack = new OpcodeStack();
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		stack.resetForMethodEntry(this);
 		super.visit(obj);
 	}
@@ -55,7 +57,8 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 		if (i == -1) throw new IllegalArgumentException();
 		return s.substring(0,i);
 	}
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		try {
          if (seen != INVOKEVIRTUAL) return;

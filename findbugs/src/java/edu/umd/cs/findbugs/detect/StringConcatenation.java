@@ -20,12 +20,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.Method;
 
 /**
  * Find occurrences of using the String "+" or "+=" operators
@@ -59,11 +56,13 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		if (DEBUG)
 			System.out.println("------------------- Analyzing " + obj.getName() + " ----------------");
 		reset();
@@ -100,7 +99,8 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 		}
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (reportedThisMethod) return;
 		int oldState = state;
 		if (DEBUG) System.out.println("Opcode: " + OPCODE_NAMES[seen]);

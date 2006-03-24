@@ -47,11 +47,13 @@ public class DontCatchIllegalMonitorStateException
 			msgs = new HashSet<String>();
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(ExceptionTable obj) {
+	@Override
+         public void visit(ExceptionTable obj) {
 		if (DEBUG) {
 			String names[] = obj.getExceptionNames();
 			for (String name : names)
@@ -61,7 +63,8 @@ public class DontCatchIllegalMonitorStateException
 		}
 	}
 
-	public void visit(CodeException obj) {
+	@Override
+         public void visit(CodeException obj) {
 		int type = obj.getCatchType();
 		if (type == 0) return;
 		String name = getConstantPool().constantToString(getConstantPool().getConstant(type));

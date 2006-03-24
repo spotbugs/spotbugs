@@ -17,7 +17,8 @@ public class ArrayTypeTest extends TestCase {
 
 	private ArrayType stringArray3;
 
-	protected void setUp() throws InvalidSignatureException {
+	@Override
+         protected void setUp() throws InvalidSignatureException {
 		byteType = new BasicType(Constants.T_BYTE);
 		intType = new BasicType(Constants.T_INT);
 		stringType = new ClassType("Ljava/lang/String;");

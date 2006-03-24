@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 
 public class DumbMethods extends BytecodeScanningDetector  {
 	
@@ -70,12 +71,14 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		jdk15ChecksEnabled = JavaVersion.getRuntimeVersion().isSameOrNewerThan(JavaVersion.JAVA_1_5);
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 	OpcodeStack stack = new OpcodeStack();
 	
-	public void visit(Method method) {
+	@Override
+         public void visit(Method method) {
 		String cName = getDottedClassName();
 		stack.resetForMethodEntry(this);
 		
@@ -96,7 +99,8 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	}
 
 	BugInstance pendingRemOfRandomIntBug;
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		if (pendingRemOfRandomIntBug != null && !(seen == INVOKESTATIC
 				&& getClassConstantOperand().equals("java/lang/Math")
@@ -466,7 +470,8 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		super.visit(obj);
 		flush();
 	}
-	public void report() {
+	@Override
+         public void report() {
 	}
 
 	/**

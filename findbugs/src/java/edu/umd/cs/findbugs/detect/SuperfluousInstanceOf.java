@@ -20,16 +20,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.LocalVariable;
-import org.apache.bcel.classfile.LocalVariableTable;
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
+import org.apache.bcel.classfile.*;
 
 /**
  * Find occurrences of a instanceof b where it can be determined
@@ -52,24 +46,28 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
 		this.bugReporter = bugReporter;
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		state = SEEN_NOTHING;
 		varTable = obj.getLocalVariableTable();
 		if (varTable != null)
 			super.visit(obj);
 	}
 	
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		if (varTable != null)
 			super.visit(obj);
 	}
 	
 	
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		switch (state) {
 			case SEEN_NOTHING:
 				if (seen == ALOAD)

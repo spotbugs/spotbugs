@@ -95,11 +95,13 @@ public class ObligationAnalysis
 		return new StateSet();
 	}
 
-	public boolean isFactValid(StateSet fact) {
+	@Override
+         public boolean isFactValid(StateSet fact) {
 		return fact.isValid();
 	}
 
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
+	@Override
+         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
 			throws DataflowAnalysisException {
 		
 		Obligation obligation;
@@ -116,7 +118,8 @@ public class ObligationAnalysis
 
 	}
 	
-	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result_) throws DataflowAnalysisException {
+	@Override
+         public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result_) throws DataflowAnalysisException {
 		StateSet result = (StateSet) result_;
 		
 		// Append this block id to the Paths of all States

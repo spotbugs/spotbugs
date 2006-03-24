@@ -19,13 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.*;
 
 public class InheritanceUnsafeGetResource extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -43,17 +39,20 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		classIsFinal = obj.isFinal();
 		reportedForThisClass = false;
 		classIsVisibleToOtherPackages = obj.isPublic() || obj.isProtected();
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 //		methodIsFinal = obj.isFinal();
 		methodIsStatic = obj.isStatic();
 //		methodIsVisibleToOtherPackages = obj.isPublic() || obj.isProtected();
@@ -61,7 +60,8 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 		sawGetClass = -100;
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (reportedForThisClass) return;
 
 		switch (seen) {

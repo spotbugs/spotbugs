@@ -161,7 +161,8 @@ public class BlockTypeAnalysis implements DataflowAnalysis<BlockType> {
 
 			if (Boolean.getBoolean("blocktype.printcfg")) {
 				CFGPrinter cfgPrinter = new CFGPrinter(cfg) {
-					public String blockAnnotate(BasicBlock block) {
+					@Override
+                                         public String blockAnnotate(BasicBlock block) {
 						BlockType blockType = analysis.getResultFact(block);
 						return " [Block type: " + blockType.toString() + "]";
 					}

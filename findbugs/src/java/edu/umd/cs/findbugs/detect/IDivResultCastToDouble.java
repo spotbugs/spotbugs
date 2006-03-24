@@ -1,10 +1,8 @@
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.Method;
 
 public class IDivResultCastToDouble extends BytecodeScanningDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("idcd.debug");
@@ -17,11 +15,13 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
 	}
 	
 	//@Override
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		if (DEBUG) System.out.println("Visiting " + obj);
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		
 		if (DEBUG) System.out.println("Saw opcode " + seen);
 	

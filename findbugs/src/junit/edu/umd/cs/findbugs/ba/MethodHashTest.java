@@ -41,7 +41,8 @@ public class MethodHashTest extends TestCase {
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	//@Override
-	protected void setUp() throws Exception {
+	@Override
+         protected void setUp() throws Exception {
 		hash = new byte[]{0x06, 0x04, (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF};
 		s = "0604deadbeef";
 		sameHash = new byte[]{0x06, 0x04, (byte)0xDE, (byte)0xAD, (byte)0xBE, (byte)0xEF};

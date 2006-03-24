@@ -19,36 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.*;
+import java.util.*;
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantMethodref;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.Type;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.ResourceCollection;
-import edu.umd.cs.findbugs.ResourceTrackingDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.Dataflow;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.ResourceValueAnalysis;
-import edu.umd.cs.findbugs.ba.ResourceValueAnalysisTestDriver;
-import edu.umd.cs.findbugs.ba.ResourceValueFrame;
+import org.apache.bcel.classfile.*;
+import org.apache.bcel.generic.*;
 
 /**
  * A Detector to look for streams that are opened in a method,
@@ -238,7 +215,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		this.potentialOpenStreamList = new LinkedList<PotentialOpenStream>();
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 	
@@ -252,7 +230,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
 	 */
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 		JavaClass jclass = classContext.getJavaClass();
 
 		// Check to see if the class references any other classes
@@ -288,7 +267,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		}
 	}
 
-	public boolean prescreen(ClassContext classContext, Method method) {
+	@Override
+         public boolean prescreen(ClassContext classContext, Method method) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
 		if (bytecodeSet == null) return false;
 		return bytecodeSet.get(Constants.NEW)
@@ -298,7 +278,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		        || bytecodeSet.get(Constants.INVOKEVIRTUAL);
 	}
 
-	public StreamResourceTracker getResourceTracker(ClassContext classContext, Method method) {
+	@Override
+         public StreamResourceTracker getResourceTracker(ClassContext classContext, Method method) {
 		return new StreamResourceTracker(streamFactoryList, bugReporter);
 	}
 
@@ -308,7 +289,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		        && method.getSignature().equals("([Ljava/lang/String;)V");
 	}
 
-	public void analyzeMethod(ClassContext classContext, Method method,
+	@Override
+         public void analyzeMethod(ClassContext classContext, Method method,
 	                          StreamResourceTracker resourceTracker,
 	                          ResourceCollection<Stream> resourceCollection)
 	        throws CFGBuilderException, DataflowAnalysisException {
@@ -422,7 +404,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 		}
 	}
 
-	public void inspectResult(ClassContext classContext, MethodGen methodGen, CFG cfg,
+	@Override
+         public void inspectResult(ClassContext classContext, MethodGen methodGen, CFG cfg,
 	                          Dataflow<ResourceValueFrame, ResourceValueAnalysis<Stream>> dataflow, Stream stream) {
 		
 		ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
@@ -463,7 +446,8 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 
 		ResourceValueAnalysisTestDriver<Stream, StreamResourceTracker> driver =
 		        new ResourceValueAnalysisTestDriver<Stream, StreamResourceTracker>() {
-			        public StreamResourceTracker createResourceTracker(ClassContext classContext, Method method) {
+			        @Override
+                                 public StreamResourceTracker createResourceTracker(ClassContext classContext, Method method) {
 				        return new StreamResourceTracker(streamFactoryList, classContext.getLookupFailureCallback());
 			        }
 		        };

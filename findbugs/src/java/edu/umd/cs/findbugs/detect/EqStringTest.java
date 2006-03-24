@@ -19,12 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.Method;
 
 public class EqStringTest extends BytecodeScanningDetector implements  StatelessDetector {
 	boolean constantOnTOS = false;
@@ -36,18 +33,21 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 		this.bugReporter = bugReporter;
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		super.visit(obj);
 		constantOnTOS = false;
 		callToInternSeen = false;
 	}
 
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 
 		switch (seen) {
 		case LDC:

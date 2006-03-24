@@ -36,7 +36,8 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 		super(cpg);
 	}
 
-	public ResourceValue getDefaultValue() {
+	@Override
+         public ResourceValue getDefaultValue() {
 		return ResourceValue.notInstance();
 	}
 
@@ -66,11 +67,13 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 		handleNormalInstruction(ins);
 	}
 
-	public void visitPUTFIELD(PUTFIELD putfield) {
+	@Override
+         public void visitPUTFIELD(PUTFIELD putfield) {
 		handleFieldStore(putfield);
 	}
 
-	public void visitPUTSTATIC(PUTSTATIC putstatic) {
+	@Override
+         public void visitPUTSTATIC(PUTSTATIC putstatic) {
 		handleFieldStore(putstatic);
 	}
 
@@ -108,23 +111,28 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 		handleNormalInstruction(inv);
 	}
 
-	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL inv) {
+	@Override
+         public void visitINVOKEVIRTUAL(INVOKEVIRTUAL inv) {
 		handleInvoke(inv);
 	}
 
-	public void visitINVOKEINTERFACE(INVOKEINTERFACE inv) {
+	@Override
+         public void visitINVOKEINTERFACE(INVOKEINTERFACE inv) {
 		handleInvoke(inv);
 	}
 
-	public void visitINVOKESPECIAL(INVOKESPECIAL inv) {
+	@Override
+         public void visitINVOKESPECIAL(INVOKESPECIAL inv) {
 		handleInvoke(inv);
 	}
 
-	public void visitINVOKESTATIC(INVOKESTATIC inv) {
+	@Override
+         public void visitINVOKESTATIC(INVOKESTATIC inv) {
 		handleInvoke(inv);
 	}
 
-	public void visitARETURN(ARETURN ins) {
+	@Override
+         public void visitARETURN(ARETURN ins) {
 		try {
 			ResourceValueFrame frame = getFrame();
 			ResourceValue topValue = frame.getTopValue();

@@ -19,17 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-import org.apache.bcel.classfile.Field;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import java.util.*;
+import org.apache.bcel.classfile.Field;
 
 public class VolatileUsage extends BytecodeScanningDetector  {
 	  private BugReporter bugReporter;
@@ -38,7 +32,8 @@ public class VolatileUsage extends BytecodeScanningDetector  {
             this.bugReporter = bugReporter;
     }
     	
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 	            classContext.getJavaClass().accept(this);
 	}
 
@@ -55,7 +50,8 @@ static class FieldRecord {
 	Set<String> otherWrites = new HashSet<String>();
 	
 
-	public void visit(Field obj) {
+	@Override
+         public void visit(Field obj) {
 		super.visit(obj);
 		int flags = obj.getAccessFlags();
 		if ((flags & ACC_VOLATILE) == 0) return;
@@ -70,6 +66,7 @@ static class FieldRecord {
 		}
 	}
 
+    @Override
     public void sawOpcode(int seen) {
                 switch (seen) {
                 case PUTSTATIC:
@@ -96,7 +93,8 @@ static class FieldRecord {
 		}
 				
 
-	public void report() {
+	@Override
+         public void report() {
 
 		for(Map.Entry<String, FieldRecord> r : fieldInfo.entrySet()) {	
 		   String name = r.getKey();

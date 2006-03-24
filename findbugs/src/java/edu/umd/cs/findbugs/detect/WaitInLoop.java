@@ -19,12 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.Code;
 
 public class WaitInLoop extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -41,11 +38,13 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		sawWait = false;
 		sawAwait = false;
 		waitHasTimeout = false;
@@ -64,7 +63,8 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 			        .addSourceLine(this, notifyPC));
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 
 		if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
 		        && getNameConstantOperand().equals("notify")

@@ -112,7 +112,8 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 		return getLabel();
 	}
 	
-	public String toString() {
+	@Override
+         public String toString() {
 		return "block " + String.valueOf(getLabel());
 	}
 
@@ -249,14 +250,16 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 			return new InstructionIterator(next, last);
 		}
 
-		public boolean equals(Object o) {
+		@Override
+                 public boolean equals(Object o) {
 			if (!(o instanceof InstructionIterator))
 				return false;
 			InstructionIterator other = (InstructionIterator) o;
 			return this.next == other.next && this.last == other.last;
 		}
 
-		public int hashCode() {
+		@Override
+                 public int hashCode() {
 			int code = getBasicBlock().hashCode() * 227;
 			if (next != null)
 				code += next.getPosition() + 1;
@@ -267,7 +270,8 @@ public class BasicBlock extends AbstractVertex<Edge, BasicBlock> implements Debu
 			return BasicBlock.this;
 		}
 
-		public String toString() {
+		@Override
+                 public String toString() {
 			StringBuffer buf = new StringBuffer();
 			buf.append("[basicBlock=");
 			buf.append(getBasicBlock().getId());

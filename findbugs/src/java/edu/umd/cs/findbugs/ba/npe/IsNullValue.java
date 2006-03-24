@@ -126,7 +126,8 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		}
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null || this.getClass() != o.getClass())
 			return false;
 		IsNullValue other = (IsNullValue) o;
@@ -136,7 +137,8 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		return locationOfKaBoom.equals(other.locationOfKaBoom);
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		int hashCode =  kind;
 		if (locationOfKaBoom != null)
 			hashCode += locationOfKaBoom.hashCode();
@@ -369,7 +371,8 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		return baseKind == NN || baseKind == CHECKED_NN || baseKind == NO_KABOOM_NN;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		String pfx = "";
 		if (DEBUG_EXCEPTION) {
 			int flags = getFlags();

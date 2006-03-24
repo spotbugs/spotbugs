@@ -335,7 +335,8 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 		return opcode;
 		}
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		sizePrevOpcodeBuffer = 0;
 		currentPosInPrevOpcodeBuffer = prevOpcode.length-1;
 

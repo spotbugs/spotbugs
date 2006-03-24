@@ -179,7 +179,8 @@ public class StateSet {
 		}, updatedStateMap);
 	}
 	
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null || o.getClass() != this.getClass())
 			return false;
 		StateSet other = (StateSet) o;
@@ -188,11 +189,13 @@ public class StateSet {
 			&& this.stateMap.equals(other.stateMap);
 	}
 	
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		throw new UnsupportedOperationException();
 	}
 	
-	public String toString() {
+	@Override
+         public String toString() {
 		if (isTop)
 			return "TOP";
 		else if (isBottom)

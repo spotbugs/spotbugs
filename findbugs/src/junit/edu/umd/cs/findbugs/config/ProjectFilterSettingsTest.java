@@ -32,7 +32,8 @@ public class ProjectFilterSettingsTest extends TestCase {
 	ProjectFilterSettings changed3;
 	ProjectFilterSettings changed4;
 
-	protected void setUp() {
+	@Override
+         protected void setUp() {
 		plain = ProjectFilterSettings.createDefault();
 
 		otherPlain = ProjectFilterSettings.createDefault();

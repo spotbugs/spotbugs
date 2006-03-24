@@ -58,7 +58,8 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 		fact.setDepth(TOP);
 	}
 
-	public boolean isFactValid(StackDepth fact) {
+	@Override
+         public boolean isFactValid(StackDepth fact) {
 		int depth = fact.getDepth();
 		return depth != TOP && depth != BOTTOM;
 	}
@@ -79,7 +80,8 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 		return fact1.getDepth() == fact2.getDepth();
 	}
 
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StackDepth fact) throws DataflowAnalysisException {
+	@Override
+         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StackDepth fact) throws DataflowAnalysisException {
 		Instruction ins = handle.getInstruction();
 		int produced = ins.produceStack(cpg);
 		int consumed = ins.consumeStack(cpg);
@@ -120,7 +122,8 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 		}
 
 		DataflowTestDriver<StackDepth, StackDepthAnalysis> driver = new DataflowTestDriver<StackDepth, StackDepthAnalysis>() {
-			public Dataflow<StackDepth, StackDepthAnalysis> createDataflow(ClassContext classContext, Method method)
+			@Override
+                         public Dataflow<StackDepth, StackDepthAnalysis> createDataflow(ClassContext classContext, Method method)
 			        throws CFGBuilderException, DataflowAnalysisException {
 
 				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);

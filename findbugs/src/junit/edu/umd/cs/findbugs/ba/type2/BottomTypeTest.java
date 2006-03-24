@@ -6,7 +6,8 @@ import junit.framework.TestCase;
 public class BottomTypeTest extends TestCase {
 	private BottomType bottom;
 
-	protected void setUp() {
+	@Override
+         protected void setUp() {
 		bottom = new BottomType();
 	}
 

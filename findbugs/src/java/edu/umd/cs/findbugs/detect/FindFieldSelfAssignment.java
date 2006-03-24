@@ -19,12 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.Code;
 
 public class FindFieldSelfAssignment extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;
@@ -35,11 +32,13 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 		this.bugReporter = bugReporter;
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		state = 0;
 		super.visit(obj);
 	}
@@ -47,7 +46,8 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 
 	String f;
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 
 		switch (state) {
 		case 0:

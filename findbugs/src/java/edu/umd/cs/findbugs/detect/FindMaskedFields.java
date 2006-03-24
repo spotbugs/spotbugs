@@ -20,22 +20,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LocalVariable;
-import org.apache.bcel.classfile.LocalVariableTable;
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import java.util.*;
+import org.apache.bcel.classfile.*;
 
 public class FindMaskedFields extends BytecodeScanningDetector {
 	private BugReporter bugReporter;
@@ -48,13 +37,15 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 		JavaClass obj = classContext.getJavaClass();
 		if (!obj.isInterface())
 			classContext.getJavaClass().accept(this);
 	}
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		classFields.clear();
 
 		Field[] fields = obj.getFields();
@@ -119,7 +110,8 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 		super.visit(obj);
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		super.visit(obj);
 		numParms = obj.getArgumentTypes().length;
 		if (!obj.isStatic()) numParms++;
@@ -135,7 +127,8 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 	private static final boolean ENABLE_LOCALS =
 		Boolean.getBoolean("findbugs.maskedfields.locals");
 
-	public void visit(LocalVariableTable obj) {
+	@Override
+         public void visit(LocalVariableTable obj) {
 		if (ENABLE_LOCALS) {
 			if (staticMethod)
 				return;

@@ -36,7 +36,8 @@ import edu.umd.cs.findbugs.ba.XMethod;
 public abstract class MethodPropertyDatabase<Property>
 		extends PropertyDatabase<XMethod, Property> {
 
-	protected XMethod parseKey(String methodStr) throws PropertyDatabaseFormatException {
+	@Override
+         protected XMethod parseKey(String methodStr) throws PropertyDatabaseFormatException {
 		String[] tuple = methodStr.split(",");
 		if (tuple.length != 4)
 			throw new PropertyDatabaseFormatException("Invalid method tuple: " + methodStr);
@@ -53,7 +54,8 @@ public abstract class MethodPropertyDatabase<Property>
 		}
 	}
 
-	protected void writeKey(Writer writer, XMethod method) throws IOException {
+	@Override
+         protected void writeKey(Writer writer, XMethod method) throws IOException {
 		writer.write(method.getClassName());
 		writer.write(",");
 		writer.write(method.getName());

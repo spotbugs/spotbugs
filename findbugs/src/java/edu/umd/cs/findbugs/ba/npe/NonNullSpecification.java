@@ -44,7 +44,8 @@ public class NonNullSpecification {
 		return possiblyNullProperty;
 	}
 	
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(classAndMethod);
 		buf.append(":");

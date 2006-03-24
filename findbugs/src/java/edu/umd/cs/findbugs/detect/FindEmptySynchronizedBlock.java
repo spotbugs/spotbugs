@@ -20,9 +20,8 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
+
+import edu.umd.cs.findbugs.*;
 
 public class FindEmptySynchronizedBlock 
 	extends BytecodeScanningDetector  {
@@ -33,12 +32,14 @@ public class FindEmptySynchronizedBlock
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (seen == MONITOREXIT && getPrevOpcode(2) == MONITORENTER)
 		  bugReporter.reportBug(new BugInstance(this, "ESync_EMPTY_SYNC", NORMAL_PRIORITY)
                                 .addClassAndMethod(this)

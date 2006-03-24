@@ -44,7 +44,8 @@ public class DetectorOrderingConstraint {
 		return later;
 	}
 	
-	public String toString() {
+	@Override
+         public String toString() {
 		return earlier.toString() + " -> " + later.toString();
 	}
 }

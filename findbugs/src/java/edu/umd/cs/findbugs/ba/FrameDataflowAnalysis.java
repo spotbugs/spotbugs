@@ -50,7 +50,8 @@ public abstract class FrameDataflowAnalysis <ValueType, FrameType extends Frame<
 		return fact1.sameAs(fact2);
 	}
 
-	public boolean isFactValid(FrameType fact) {
+	@Override
+         public boolean isFactValid(FrameType fact) {
 		return fact.isValid();
 	}
 

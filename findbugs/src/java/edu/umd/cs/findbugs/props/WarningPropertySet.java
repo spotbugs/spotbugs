@@ -18,12 +18,9 @@
  */
 package edu.umd.cs.findbugs.props;
 
-import java.util.HashMap;
-import java.util.Map;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+import edu.umd.cs.findbugs.*;
+import java.util.*;
 
 /**
  * A Set of WarningProperty objects, each with an optional attribute Object.
@@ -36,7 +33,8 @@ import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 public class WarningPropertySet implements Cloneable {
 	private Map<WarningProperty, Object> map;
 
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer("{ ");
 		for (Map.Entry<WarningProperty, Object> entry : map.entrySet()) {
 			WarningProperty prop = entry.getKey();
@@ -62,7 +60,8 @@ public class WarningPropertySet implements Cloneable {
 	}
 
 	//@Override
-	public Object clone() {
+	@Override
+         public Object clone() {
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException e) {

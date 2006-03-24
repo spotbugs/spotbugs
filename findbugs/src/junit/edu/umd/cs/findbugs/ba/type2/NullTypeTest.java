@@ -6,7 +6,8 @@ import junit.framework.TestCase;
 public class NullTypeTest extends TestCase {
 	private NullType nullType;
 
-	protected void setUp() {
+	@Override
+         protected void setUp() {
 		nullType = new NullType();
 	}
 

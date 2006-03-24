@@ -86,7 +86,8 @@ public class Path {
 		this.cachedHashCode = INVALID_HASH_CODE;
 	}
 	
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		if (cachedHashCode == INVALID_HASH_CODE) {
 			int value = 0;
 			for (int i = 0; i < this.length; ++i) {
@@ -97,7 +98,8 @@ public class Path {
 		return cachedHashCode;
 	}
 	
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null || o.getClass() != this.getClass())
 			return false;
 		Path other = (Path) o;
@@ -113,7 +115,8 @@ public class Path {
 	private static final String SYMBOLS =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()";
 	
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < length; ++i) {
 			int block = blockIdList[i];

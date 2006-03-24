@@ -98,14 +98,16 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
 		return targetList.iterator();
 	}
 
-	public void visitGotoInstruction(GotoInstruction ins) {
+	@Override
+         public void visitGotoInstruction(GotoInstruction ins) {
 		isBranch = true;
 		InstructionHandle target = ins.getTarget();
 		if (target == null) throw new IllegalStateException();
 		targetList.add(new Target(target, GOTO_EDGE));
 	}
 
-	public void visitIfInstruction(IfInstruction ins) {
+	@Override
+         public void visitIfInstruction(IfInstruction ins) {
 		isBranch = true;
 		InstructionHandle target = ins.getTarget();
 		if (target == null) throw new IllegalStateException();
@@ -114,7 +116,8 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
 		targetList.add(new Target(fallThrough, FALL_THROUGH_EDGE));
 	}
 
-	public void visitSelect(Select ins) {
+	@Override
+         public void visitSelect(Select ins) {
 		isBranch = true;
 
 		// Add non-default switch edges.
@@ -131,15 +134,18 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
 		targetList.add(new Target(defaultTarget, SWITCH_DEFAULT_EDGE));
 	}
 
-	public void visitReturnInstruction(ReturnInstruction ins) {
+	@Override
+         public void visitReturnInstruction(ReturnInstruction ins) {
 		isReturn = true;
 	}
 
-	public void visitATHROW(ATHROW ins) {
+	@Override
+         public void visitATHROW(ATHROW ins) {
 		isThrow = true;
 	}
 
-	public void visitINVOKESTATIC(INVOKESTATIC ins) {
+	@Override
+         public void visitINVOKESTATIC(INVOKESTATIC ins) {
 		// Find calls to System.exit(), since this effectively terminates the basic block.
 
 		String className = ins.getClassName(constPoolGen);

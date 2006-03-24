@@ -41,7 +41,8 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
 	}
 
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		try {
 			if (Repository.instanceOf(obj, "java.util.Comparator")
 					&& !Repository.instanceOf(obj, "java.io.Serializable")) {

@@ -19,18 +19,13 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
 
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.JavaClass;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.util.*;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.JavaClass;
 
 public class RedundantInterfaces extends PreorderVisitor implements Detector, StatelessDetector
 {
@@ -40,7 +35,8 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, St
 		this.bugReporter = bugReporter;
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 	

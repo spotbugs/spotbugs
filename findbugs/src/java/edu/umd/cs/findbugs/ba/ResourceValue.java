@@ -45,7 +45,8 @@ public class ResourceValue {
 		return this == instance;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		return (this == instance) ? "I" : "-";
 	}
 }

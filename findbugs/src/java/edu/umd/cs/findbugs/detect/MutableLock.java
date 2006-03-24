@@ -19,15 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
 
+import edu.umd.cs.findbugs.*;
+import java.util.*;
 import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
 
 public class MutableLock extends BytecodeScanningDetector implements  StatelessDetector {
 	Set<String> setFields = new HashSet<String>();
@@ -38,17 +33,20 @@ public class MutableLock extends BytecodeScanningDetector implements  StatelessD
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		super.visit(obj);
 		setFields.clear();
 		thisOnTOS = false;
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 
 		switch (seen) {
 		case ALOAD_0:

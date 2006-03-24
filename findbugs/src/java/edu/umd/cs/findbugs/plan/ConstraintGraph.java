@@ -35,7 +35,8 @@ import edu.umd.cs.findbugs.graph.AbstractGraph;
 public class ConstraintGraph
 	extends AbstractGraph<ConstraintEdge, DetectorNode>
 {
-	protected ConstraintEdge allocateEdge(DetectorNode source, DetectorNode target) {
+	@Override
+         protected ConstraintEdge allocateEdge(DetectorNode source, DetectorNode target) {
 		return new ConstraintEdge(source, target);
 	}
 }

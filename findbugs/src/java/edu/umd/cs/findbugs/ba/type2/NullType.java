@@ -59,12 +59,14 @@ public class NullType implements ReferenceType {
 		visitor.visitNullType(this);
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null) return false;
 		return this.getClass() == o.getClass();
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return NullType.class.getName().hashCode();
 	}
 }

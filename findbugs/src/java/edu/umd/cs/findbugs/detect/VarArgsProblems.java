@@ -19,14 +19,10 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+
+import edu.umd.cs.findbugs.*;
 import java.util.regex.Pattern;
-
 import org.apache.bcel.classfile.Code;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
 
 /* Look for sequences of the form:
  *   ICONST_1
@@ -49,11 +45,13 @@ public class VarArgsProblems extends BytecodeScanningDetector implements
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visitCode(Code obj) {
+	@Override
+         public void visitCode(Code obj) {
 		state = SEEN_NOTHING;
 		super.visitCode(obj);
 	}
@@ -75,7 +73,8 @@ public class VarArgsProblems extends BytecodeScanningDetector implements
 	public static final int SEEN_GOTO = 7;
 
 	Pattern primitiveArray = Pattern.compile("\\[[IJDFSCB]");
-	public void sawOpcode( int seen) {
+	@Override
+         public void sawOpcode( int seen) {
 		// System.out.println("State:" + state);
 		if (seen == GOTO && getBranchOffset() == 4) {
 			state = SEEN_GOTO;

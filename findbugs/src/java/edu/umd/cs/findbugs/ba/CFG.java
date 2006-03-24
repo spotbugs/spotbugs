@@ -370,7 +370,8 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		}
 	}
 
-	protected Edge allocateEdge(BasicBlock source, BasicBlock target) {
+	@Override
+         protected Edge allocateEdge(BasicBlock source, BasicBlock target) {
 		return new Edge(source, target);
 	}
 }

@@ -54,7 +54,8 @@ public class BindingSet {
 		return parent != null ? parent.lookup(varName) : null;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		BindingSet cur = this;
 		buf.append('[');

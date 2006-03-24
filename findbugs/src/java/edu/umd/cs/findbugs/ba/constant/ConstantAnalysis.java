@@ -62,7 +62,8 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 		}
 	}
 	
-	public void transferInstruction(
+	@Override
+         public void transferInstruction(
 			InstructionHandle handle,
 			BasicBlock basicBlock,
 			ConstantFrame frame) throws DataflowAnalysisException {
@@ -92,7 +93,8 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 		mergeInto(fact, result);
 	}
 	
-	protected void mergeValues(ConstantFrame otherFrame, ConstantFrame resultFrame, int slot)
+	@Override
+         protected void mergeValues(ConstantFrame otherFrame, ConstantFrame resultFrame, int slot)
 			throws DataflowAnalysisException {
 		Constant value = Constant.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
 		resultFrame.setValue(slot, value);
@@ -109,7 +111,8 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 		
 		DataflowTestDriver<ConstantFrame, ConstantAnalysis> driver =
 			new DataflowTestDriver<ConstantFrame, ConstantAnalysis>() {
-				public Dataflow<ConstantFrame, ConstantAnalysis> createDataflow(
+				@Override
+                                 public Dataflow<ConstantFrame, ConstantAnalysis> createDataflow(
 						ClassContext classContext,
 						Method method) throws CFGBuilderException, DataflowAnalysisException {
 					return classContext.getConstantDataflow(method);

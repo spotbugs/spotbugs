@@ -124,11 +124,13 @@ public class ExceptionSet implements Serializable {
 		return dup;
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return exceptionSet.hashCode() + explicitSet.hashCode();
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null) return false;
 		if (o.getClass() != this.getClass()) return false;
 
@@ -293,7 +295,8 @@ public class ExceptionSet implements Serializable {
 		return false;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append('{');
 		boolean first = true;

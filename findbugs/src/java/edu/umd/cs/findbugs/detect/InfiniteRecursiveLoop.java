@@ -19,14 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.*;
 
 public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements 
 		StatelessDetector {
@@ -49,16 +44,19 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 	}
 
 	int parameters;
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		seenTransferOfControl = false;
 		seenStateChange = false;
 		seenReturn = false;
@@ -72,7 +70,8 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 		}
 	}
 
-	public void sawBranchTo(int seen) {
+	@Override
+         public void sawBranchTo(int seen) {
 		if (largestBranchTarget < seen)
 			largestBranchTarget = seen;
 		seenTransferOfControl = true;
@@ -85,7 +84,8 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 	 * we see a call to the same (dynamically dispatched method), and there
 	 * has been no transfer of control.	
 	 */
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		if (seenReturn && seenTransferOfControl && seenStateChange)
 			return;

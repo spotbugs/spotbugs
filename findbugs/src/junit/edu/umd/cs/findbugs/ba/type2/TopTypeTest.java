@@ -6,7 +6,8 @@ import junit.framework.TestCase;
 public class TopTypeTest extends TestCase {
 	private TopType top;
 
-	protected void setUp() {
+	@Override
+         protected void setUp() {
 		top = new TopType();
 	}
 

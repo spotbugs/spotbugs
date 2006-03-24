@@ -19,9 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import java.util.Map;
-
-import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
@@ -30,15 +27,11 @@ import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.BackwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
-import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -51,19 +44,20 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * 
  * @author David Hovemeyer
  */
-public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<UnconditionalDerefSet> {
+public class WillBeDereferencedAnalysis extends BackwardDataflowAnalysis<WillBeDereferencedInfo> {
+	 
+
 	private static final boolean DEBUG = Boolean.getBoolean("npe.deref.debug");
 	
 	private final CFG cfg;
 	private final MethodGen methodGen;
 	private final TypeDataflow typeDataflow;
 	private final ValueNumberDataflow vnaDataflow;
-	private final Map<ValueNumber, Integer> valueNumberToParamMap;
-	private final int numParams;
-	private final int topBit;
-	private final int bottomBit;
+	private final int maxBit;
 	
-	public UnconditionalDerefAnalysis(
+
+	
+	public WillBeDereferencedAnalysis(
 			ReverseDepthFirstSearch rdfs,
 			CFG cfg,
 			MethodGen methodGen,
@@ -74,70 +68,62 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 		this.methodGen = methodGen;
 		this.typeDataflow = typeDataflow;
 		this.vnaDataflow = vnaDataflow;
-		this.valueNumberToParamMap = vnaDataflow.getValueNumberToParamMap(methodGen.getSignature(), methodGen.isStatic());
-		this.numParams = new SignatureParser(methodGen.getSignature()).getNumParameters();
-		this.topBit = numParams;
-		this.bottomBit = numParams + 1;
+		this.maxBit = methodGen.getMaxLocals();
+
 	}
 
-	public void copy(UnconditionalDerefSet source, UnconditionalDerefSet dest) {
-		dest.clear();
-		dest.or(source);
+	public void copy(WillBeDereferencedInfo source, WillBeDereferencedInfo dest) {
+		dest.copyFrom(source);
 	}
 	
-	public UnconditionalDerefSet createFact() {
-		return new UnconditionalDerefSet(numParams);
+	public WillBeDereferencedInfo createFact() {
+		return new WillBeDereferencedInfo();
 	}
 	
-	public void initEntryFact(UnconditionalDerefSet result) throws DataflowAnalysisException {
+	public void initEntryFact(WillBeDereferencedInfo result) throws DataflowAnalysisException {
 		// At entry (really the CFG exit, since this is a backwards analysis)
 		// no dereferences have been seen
-		result.clear();
+		result.value.clear();
+		result.isTop = false;
 	}
 	
-	public void initResultFact(UnconditionalDerefSet result) {
+	public void initResultFact(WillBeDereferencedInfo result) {
 		makeFactTop(result);
 	}
 	
-	public void makeFactTop(UnconditionalDerefSet fact) {
-		fact.setTop();
+	public void makeFactTop(WillBeDereferencedInfo fact) {
+		fact.isTop = true;
+		fact.value.clear();
 	}
 	
-	public void meetInto(UnconditionalDerefSet fact, Edge edge, UnconditionalDerefSet result) throws DataflowAnalysisException {
+	public void meetInto(WillBeDereferencedInfo fact, Edge edge, WillBeDereferencedInfo result) throws DataflowAnalysisException {
 		// Ignore implicit exceptions
 		if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS)
 				&& edge.isExceptionEdge()
 				&& !edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG)) {
 			return;
 		}
-		
-		if (result.isTop() || fact.isBottom()) {
-			copy(fact, result);
-		} else if (result.isBottom() || fact.isTop()) {
-			// Nothing to do
-		} else {
-			// Meet is intersection
-			result.and(fact);
-		}
+		result.meet(fact);
 	}
 	
-	public boolean same(UnconditionalDerefSet fact1, UnconditionalDerefSet fact2) {
+	public boolean same(WillBeDereferencedInfo fact1, WillBeDereferencedInfo fact2) {
 		return fact1.equals(fact2);
 	}
 	
-	//@Override
 	@Override
-         public boolean isFactValid(UnconditionalDerefSet fact) {
-		return fact.isValid();
+	public boolean isFactValid(WillBeDereferencedInfo fact) {
+		return !fact.isTop;
 	}
 	
 	@Override
-         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, UnconditionalDerefSet fact)
+         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, WillBeDereferencedInfo fact)
 		throws DataflowAnalysisException {
 		
-		if (!fact.isValid())
+
+		if (!isFactValid(fact))
 			throw new IllegalStateException();
 
+		
 		// See if this instruction has a null check.
 		if (handle != basicBlock.getFirstInstruction())
 			return;
@@ -157,30 +143,10 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 		if (DEBUG) {
 			System.out.println("[Null check of value " + instance.getNumber() + "]");
 		}
-
-		Integer param = valueNumberToParamMap.get(instance);
-		if (param == null)
-			return;
+		fact.value.add(instance);
 		
-		if (DEBUG) {
-			System.out.println("[Value is a parameter!]");
-		}
-		fact.set(param.intValue());
+		
 	}
 
-	public static void main(String[] argv) throws Exception {
-		if (argv.length != 1) {
-			System.err.println("Usage: " + UnconditionalDerefAnalysis.class.getName() + " <class file>");
-			System.exit(1);
-		}
-		DataflowTestDriver<UnconditionalDerefSet, UnconditionalDerefAnalysis> driver =
-			new DataflowTestDriver<UnconditionalDerefSet, UnconditionalDerefAnalysis>() {
-				@Override
-                                 public UnconditionalDerefDataflow createDataflow(ClassContext classContext, Method method)
-						throws CFGBuilderException, DataflowAnalysisException {
-					return classContext.getUnconditionalDerefDataflow(method);
-				}
-		};
-		driver.execute(argv[0]);
-	}
+	
 }

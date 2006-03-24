@@ -19,28 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+
+import edu.umd.cs.findbugs.*;
+import java.util.*;
 import java.util.regex.Pattern;
-
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.ConstantValue;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.Type;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 
 public class UnreadFields extends BytecodeScanningDetector  {
 	private static final boolean DEBUG = Boolean.getBoolean("unreadfields.debug");
@@ -88,7 +73,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	}
 
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		hasNativeMethods = false;
 		sawSelfCallInConstructor = false;
 		publicOrProtectedConstructor = false;
@@ -130,7 +116,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		super.visit(obj);
 	}
 
-	public void visitAfter(JavaClass obj) {
+	@Override
+         public void visitAfter(JavaClass obj) {
 		declaredFields.addAll(myFields);
 		if (hasNativeMethods || isSerializable)
 			fieldsOfSerializableOrNativeClassed.addAll(myFields);
@@ -141,7 +128,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	}
 
 
-	public void visit(Field obj) {
+	@Override
+         public void visit(Field obj) {
 		super.visit(obj);
 		FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
 		allMyFields.add(f);
@@ -154,7 +142,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		}
 	}
 
-	public void visit(ConstantValue obj) {
+	@Override
+         public void visit(ConstantValue obj) {
 		// ConstantValue is an attribute of a field, so the instance variables
 		// set during visitation of the Field are still valid here
 		FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
@@ -167,7 +156,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	private OpcodeStack opcodeStack = new OpcodeStack();
 	private int previousOpcode;
 	private int previousPreviousOpcode;
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 	
 		count_aload_1 = 0;
 		previousOpcode = -1;
@@ -185,7 +175,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		}
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		if (getMethodName().equals("<init>")
 			&& (obj.isPublic() 
 			    || obj.isProtected() ))
@@ -198,7 +189,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 
 	boolean seenInvokeStatic;
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		
 		opcodeStack.mergeJumps(this);
 		if (seen == GETSTATIC) {
@@ -368,7 +360,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	}
 
 	Pattern dontComplainAbout = Pattern.compile("class[$]");
-	public void report() {
+	@Override
+         public void report() {
 
 		TreeSet<FieldAnnotation> notInitializedInConstructors =
 		        new TreeSet<FieldAnnotation>(declaredFields);

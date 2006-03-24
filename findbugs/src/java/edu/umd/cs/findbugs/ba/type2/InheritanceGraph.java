@@ -30,7 +30,8 @@ public class InheritanceGraph
 		return edge;
 	}
 
-	protected InheritanceGraphEdge allocateEdge(ObjectType subtype, ObjectType supertype) {
+	@Override
+         protected InheritanceGraphEdge allocateEdge(ObjectType subtype, ObjectType supertype) {
 		return new InheritanceGraphEdge(subtype, supertype);
 	}
 

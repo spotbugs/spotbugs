@@ -19,14 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import org.apache.bcel.classfile.*;
 
 public class StartInConstructor extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;
@@ -35,22 +31,26 @@ public class StartInConstructor extends BytecodeScanningDetector implements Stat
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
 	boolean isFinal;
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		isFinal = (obj.getAccessFlags() & ACC_FINAL) != 0
 		        || (obj.getAccessFlags() & ACC_PUBLIC) == 0;
 	}
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		if (getMethodName().equals("<init>")) super.visit(obj);
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (!isFinal && seen == INVOKEVIRTUAL && getNameConstantOperand().equals("start")
 		        && getSigConstantOperand().equals("()V")) {
 			try {

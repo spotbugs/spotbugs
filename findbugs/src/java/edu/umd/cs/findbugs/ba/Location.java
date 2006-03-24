@@ -93,18 +93,21 @@ public class Location implements Comparable<Location> {
 		return handle.getPosition() - other.handle.getPosition();
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return System.identityHashCode(basicBlock) + handle.getPosition();
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (!(o instanceof Location))
 			return false;
 		Location other = (Location) o;
 		return basicBlock == other.basicBlock && handle == other.handle;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		return handle.toString() + " in basic block " + basicBlock.getId();
 	}
 }

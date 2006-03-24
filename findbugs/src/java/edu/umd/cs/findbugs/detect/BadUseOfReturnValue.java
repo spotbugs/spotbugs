@@ -34,21 +34,24 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector implements Sta
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
 
 	boolean readLineOnTOS = false;
 	boolean stringIndexOfOnTOS= false;
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		stringIndexOfOnTOS= false;
 		readLineOnTOS = false;
 		super.visit(obj);
 	}
 
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (seen == INVOKEVIRTUAL && 
 			getNameConstantOperand().equals("indexOf")
 			&& getClassConstantOperand().equals("java/lang/String")

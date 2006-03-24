@@ -7,7 +7,8 @@ import edu.umd.cs.findbugs.ba.type.ExtendedTypes;
 public class DoubleExtraTypeTest extends TestCase {
 	private DoubleExtraType doubleExtraType;
 
-	protected void setUp() {
+	@Override
+         protected void setUp() {
 		doubleExtraType = new DoubleExtraType();
 	}
 

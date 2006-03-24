@@ -19,22 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.NonReportingDetector;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.ba.bcp.Invoke;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
+import java.io.*;
+import java.util.*;
 
 /**
  * @author William Pugh
@@ -67,7 +58,8 @@ public class NoteCheckReturnValue extends AnnotationVisitor
 		classContext.getJavaClass().accept(this);
 	}
 
-		public void visitAnnotation(String annotationClass, Map<String, Object> map,
+		@Override
+                 public void visitAnnotation(String annotationClass, Map<String, Object> map,
  boolean runtimeVisible)  {
 		if (!annotationClass.endsWith("CheckReturnValue")) return;
 		if (!visitingMethod()) return;

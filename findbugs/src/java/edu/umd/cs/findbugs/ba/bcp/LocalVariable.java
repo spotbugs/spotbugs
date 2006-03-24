@@ -35,7 +35,8 @@ public class LocalVariable implements Variable {
 		return valueNumber.equals(otherLocal.valueNumber);
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		return valueNumber.toString();
 	}
 }

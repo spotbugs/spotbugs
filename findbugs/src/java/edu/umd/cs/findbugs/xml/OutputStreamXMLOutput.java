@@ -45,7 +45,8 @@ public class OutputStreamXMLOutput implements XMLOutput {
 			super(text, textMetaCharacterMap);
 		}
 
-		public void emitLiteral(String s) throws IOException {
+		@Override
+                 public void emitLiteral(String s) throws IOException {
 			out.write(s);
 			newLine = s.endsWith("\n");
 		}

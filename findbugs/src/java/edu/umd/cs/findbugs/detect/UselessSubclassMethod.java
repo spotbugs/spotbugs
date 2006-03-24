@@ -19,23 +19,13 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.Synthetic;
-import org.apache.bcel.generic.Type;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import java.util.*;
+import org.apache.bcel.*;
+import org.apache.bcel.classfile.*;
+import org.apache.bcel.generic.Type;
 
 public class UselessSubclassMethod extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -60,11 +50,13 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 	
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 		try {
 			JavaClass cls = classContext.getJavaClass();
 			superclassName = cls.getSuperclassName();
@@ -91,7 +83,8 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 		super.visitAfter(obj);
 	}
 	
-	public void visitMethod(Method obj) {
+	@Override
+         public void visitMethod(Method obj) {
 		if ((interfaceMethods != null) && ((obj.getAccessFlags() & Constants.ACC_ABSTRACT) != 0)) {
 			String curDetail = obj.getName() + obj.getSignature();
 			for (String infMethodDetail : interfaceMethods) {
@@ -103,7 +96,8 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 		super.visitMethod(obj);
 	}
 	
-	public void visitCode(Code obj)
+	@Override
+         public void visitCode(Code obj)
 	{
 		try {
 			String methodName = getMethodName();
@@ -143,7 +137,8 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 		}
 	}
 	
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		switch (state) {
 			case SEEN_NOTHING:
 				if (seen == ALOAD_0) {

@@ -78,13 +78,15 @@ public class TypeFrame extends Frame<Type> {
 	}
 	
 	//@Override
-	public void setTop() {
+	@Override
+         public void setTop() {
 		super.setTop();
 		clearExactSet();
 	}
  	
 	//@Override
-	public void copyFrom(Frame<Type> other_) {
+	@Override
+         public void copyFrom(Frame<Type> other_) {
 		clearExactSet();
 		exactTypeSet.or(((TypeFrame) other_).exactTypeSet);
 		super.copyFrom(other_);
@@ -127,7 +129,8 @@ public class TypeFrame extends Frame<Type> {
 		return instanceOfType;
 	}
 
-	protected String valueToString(Type value) {
+	@Override
+         protected String valueToString(Type value) {
 		return value.toString() + ",";
 	}
 

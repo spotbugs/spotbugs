@@ -110,7 +110,8 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
 		dest.copyFrom(source);
 	}
 
-	public void transferInstruction(
+	@Override
+         public void transferInstruction(
 			InstructionHandle handle, BasicBlock basicBlock, CallList fact) throws DataflowAnalysisException {
 		Call call = callMap.get(handle);
 		if (call != null) {
@@ -118,7 +119,8 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
 		}
 	}
 	
-	public boolean isFactValid(CallList fact) {
+	@Override
+         public boolean isFactValid(CallList fact) {
 		return fact.isValid();
 	}
 	
@@ -130,7 +132,8 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
 		
 		DataflowTestDriver<CallList, CallListAnalysis> driver =
 			new DataflowTestDriver<CallList, CallListAnalysis>() {
-				public Dataflow<CallList, CallListAnalysis> createDataflow(
+				@Override
+                                 public Dataflow<CallList, CallListAnalysis> createDataflow(
 						ClassContext classContext,
 						Method method) throws CFGBuilderException, DataflowAnalysisException {
 					CallListAnalysis analysis = new CallListAnalysis(

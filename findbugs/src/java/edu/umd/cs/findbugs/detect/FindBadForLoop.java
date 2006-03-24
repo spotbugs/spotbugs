@@ -19,16 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LineNumberTable;
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.*;
 
 public class FindBadForLoop extends BytecodeScanningDetector implements  StatelessDetector {
 
@@ -40,18 +33,22 @@ public class FindBadForLoop extends BytecodeScanningDetector implements  Statele
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 	}
 
                 LineNumberTable lineNumbers; 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 			lastRegStore = -1;
 			lineNumbers = obj.getLineNumberTable();
 			stack.resetForMethodEntry(this);
@@ -60,7 +57,8 @@ public class FindBadForLoop extends BytecodeScanningDetector implements  Statele
 
 
 	int lastRegStore;
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		try {
 		if (seen == ISTORE

@@ -19,15 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.*;
 
 public class InfiniteLoop extends BytecodeScanningDetector  {
 
@@ -45,17 +39,21 @@ public class InfiniteLoop extends BytecodeScanningDetector  {
 	int state = 0;
 	int age = 0;
 	int lastBranch;
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 	}
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		// System.out.println(getFullyQualifiedMethodName());
 		// unless active, don't bother dismantling bytecode
 		if (active) {

@@ -19,18 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InvokeInstruction;
 
-import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.ResourceValue;
-import edu.umd.cs.findbugs.ba.ResourceValueFrame;
-import edu.umd.cs.findbugs.ba.ResourceValueFrameModelingVisitor;
+import edu.umd.cs.findbugs.ba.*;
+import org.apache.bcel.Constants;
+import org.apache.bcel.generic.*;
 
 /**
  * A visitor to model the effect of instructions on the status
@@ -48,7 +40,8 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 		this.stream = stream;
 	}
 
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) throws DataflowAnalysisException {
+	@Override
+         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) throws DataflowAnalysisException {
 		// Record what Location we are analyzing
 		this.location = new Location(handle, basicBlock);
 
@@ -93,7 +86,8 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 
 	}
 
-	protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
+	@Override
+         protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
 		//ConstantPoolGen cpg = getCPG();
 		// String className = inv.getClassName(cpg);
 

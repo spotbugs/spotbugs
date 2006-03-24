@@ -134,11 +134,13 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		this.database = database;
 	}
 
-	public Type getDefaultValue() {
+	@Override
+         public Type getDefaultValue() {
 		return TypeFrame.getBottomType();
 	}
 	
-	public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
+	@Override
+         public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
 		Location location = getLocation();
 		
 		if (location.isFirstInstructionInBasicBlock()) {
@@ -219,7 +221,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	 * This is overridden only to ensure that we don't rely on the
 	 * base class to handle instructions that produce stack operands.
 	 */
-	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
+	@Override
+         public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
 		if (VERIFY_INTEGRITY) {
 			if (numWordsProduced > 0)
 				throw new InvalidBytecodeException("missing visitor method for " + ins);
@@ -240,47 +243,58 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	// - Instructions that consume and produce should call
 	//   consumeStack(Instruction) and then explicitly push produced operands.
 
-	public void visitACONST_NULL(ACONST_NULL obj) {
+	@Override
+         public void visitACONST_NULL(ACONST_NULL obj) {
 		pushValue(TypeFrame.getNullType());
 	}
 
-	public void visitDCONST(DCONST obj) {
+	@Override
+         public void visitDCONST(DCONST obj) {
 		pushValue(Type.DOUBLE);
 	}
 
-	public void visitFCONST(FCONST obj) {
+	@Override
+         public void visitFCONST(FCONST obj) {
 		pushValue(Type.FLOAT);
 	}
 
-	public void visitICONST(ICONST obj) {
+	@Override
+         public void visitICONST(ICONST obj) {
 		pushValue(Type.INT);
 	}
 
-	public void visitLCONST(LCONST obj) {
+	@Override
+         public void visitLCONST(LCONST obj) {
 		pushValue(Type.LONG);
 	}
 
-	public void visitLDC(LDC obj) {
+	@Override
+         public void visitLDC(LDC obj) {
 		pushValue(obj.getType(getCPG()));
 	}
 
-	public void visitLDC2_W(LDC2_W obj) {
+	@Override
+         public void visitLDC2_W(LDC2_W obj) {
 		pushValue(obj.getType(getCPG()));
 	}
 
-	public void visitBIPUSH(BIPUSH obj) {
+	@Override
+         public void visitBIPUSH(BIPUSH obj) {
 		pushValue(Type.INT);
 	}
 
-	public void visitSIPUSH(SIPUSH obj) {
+	@Override
+         public void visitSIPUSH(SIPUSH obj) {
 		pushValue(Type.INT);
 	}
 
-	public void visitGETSTATIC(GETSTATIC obj) {
+	@Override
+         public void visitGETSTATIC(GETSTATIC obj) {
 		modelFieldLoad(obj);
 	}
 
-	public void visitGETFIELD(GETFIELD obj) {
+	@Override
+         public void visitGETFIELD(GETFIELD obj) {
 		modelFieldLoad(obj);
 	}
 	
@@ -307,22 +321,26 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		pushValue(loadType);
 	}
 
-	public void visitINVOKESTATIC(INVOKESTATIC obj) {
+	@Override
+         public void visitINVOKESTATIC(INVOKESTATIC obj) {
 		consumeStack(obj);
 		pushReturnType(obj);
 	}
 
-	public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
+	@Override
+         public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
 		consumeStack(obj);
 		pushReturnType(obj);
 	}
 
-	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
+	@Override
+         public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
 		consumeStack(obj);
 		pushReturnType(obj);
 	}
 
-	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+	@Override
+         public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
 		if (obj.getMethodName(cpg).equals("initCause") && obj.getSignature(cpg).equals("(Ljava/lang/Throwable;)Ljava/lang/Throwable;") && obj.getClassName(cpg).endsWith("Exception")) {
 			try {
 				TypeFrame frame = getFrame();
@@ -336,12 +354,14 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		pushReturnType(obj);
 	}
 
-	public void visitCHECKCAST(CHECKCAST obj) {
+	@Override
+         public void visitCHECKCAST(CHECKCAST obj) {
 		consumeStack(obj);
 		pushValue(obj.getType(getCPG()));
 	}
 
-	public void visitINSTANCEOF(INSTANCEOF obj) {
+	@Override
+         public void visitINSTANCEOF(INSTANCEOF obj) {
 		if (valueNumberDataflow != null) {
 			// Record the value number of the value checked by this instruction,
 			// and the type the value was compared to.
@@ -360,287 +380,346 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		pushValue(Type.INT);
 	}
 
-	public void visitFCMPL(FCMPL obj) {
+	@Override
+         public void visitFCMPL(FCMPL obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitFCMPG(FCMPG obj) {
+	@Override
+         public void visitFCMPG(FCMPG obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitDCMPL(DCMPL obj) {
+	@Override
+         public void visitDCMPL(DCMPL obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitDCMPG(DCMPG obj) {
+	@Override
+         public void visitDCMPG(DCMPG obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitLCMP(LCMP obj) {
+	@Override
+         public void visitLCMP(LCMP obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitD2F(D2F obj) {
+	@Override
+         public void visitD2F(D2F obj) {
 		consumeStack(obj);
 		pushValue(Type.FLOAT);
 	}
 
-	public void visitD2I(D2I obj) {
+	@Override
+         public void visitD2I(D2I obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitD2L(D2L obj) {
+	@Override
+         public void visitD2L(D2L obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitF2D(F2D obj) {
+	@Override
+         public void visitF2D(F2D obj) {
 		consumeStack(obj);
 		pushValue(Type.DOUBLE);
 	}
 
-	public void visitF2I(F2I obj) {
+	@Override
+         public void visitF2I(F2I obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitF2L(F2L obj) {
+	@Override
+         public void visitF2L(F2L obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitI2B(I2B obj) {
+	@Override
+         public void visitI2B(I2B obj) {
 		consumeStack(obj);
 		pushValue(Type.BYTE);
 	}
 
-	public void visitI2C(I2C obj) {
+	@Override
+         public void visitI2C(I2C obj) {
 		consumeStack(obj);
 		pushValue(Type.CHAR);
 	}
 
-	public void visitI2D(I2D obj) {
+	@Override
+         public void visitI2D(I2D obj) {
 		consumeStack(obj);
 		pushValue(Type.DOUBLE);
 	}
 
-	public void visitI2F(I2F obj) {
+	@Override
+         public void visitI2F(I2F obj) {
 		consumeStack(obj);
 		pushValue(Type.FLOAT);
 	}
 
-	public void visitI2L(I2L obj) {
+	@Override
+         public void visitI2L(I2L obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitI2S(I2S obj) {
+	@Override
+         public void visitI2S(I2S obj) {
 	} // no change
 
-	public void visitL2D(L2D obj) {
+	@Override
+         public void visitL2D(L2D obj) {
 		consumeStack(obj);
 		pushValue(Type.DOUBLE);
 	}
 
-	public void visitL2F(L2F obj) {
+	@Override
+         public void visitL2F(L2F obj) {
 		consumeStack(obj);
 		pushValue(Type.FLOAT);
 	}
 
-	public void visitL2I(L2I obj) {
+	@Override
+         public void visitL2I(L2I obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitIAND(IAND obj) {
+	@Override
+         public void visitIAND(IAND obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitLAND(LAND obj) {
+	@Override
+         public void visitLAND(LAND obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitIOR(IOR obj) {
+	@Override
+         public void visitIOR(IOR obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitLOR(LOR obj) {
+	@Override
+         public void visitLOR(LOR obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitIXOR(IXOR obj) {
+	@Override
+         public void visitIXOR(IXOR obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitLXOR(LXOR obj) {
+	@Override
+         public void visitLXOR(LXOR obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitISHR(ISHR obj) {
+	@Override
+         public void visitISHR(ISHR obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitIUSHR(IUSHR obj) {
+	@Override
+         public void visitIUSHR(IUSHR obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitLSHR(LSHR obj) {
+	@Override
+         public void visitLSHR(LSHR obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitLUSHR(LUSHR obj) {
+	@Override
+         public void visitLUSHR(LUSHR obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitISHL(ISHL obj) {
+	@Override
+         public void visitISHL(ISHL obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitLSHL(LSHL obj) {
+	@Override
+         public void visitLSHL(LSHL obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitDADD(DADD obj) {
+	@Override
+         public void visitDADD(DADD obj) {
 		consumeStack(obj);
 		pushValue(Type.DOUBLE);
 	}
 
-	public void visitFADD(FADD obj) {
+	@Override
+         public void visitFADD(FADD obj) {
 		consumeStack(obj);
 		pushValue(Type.FLOAT);
 	}
 
-	public void visitIADD(IADD obj) {
+	@Override
+         public void visitIADD(IADD obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitLADD(LADD obj) {
+	@Override
+         public void visitLADD(LADD obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitDSUB(DSUB obj) {
+	@Override
+         public void visitDSUB(DSUB obj) {
 		consumeStack(obj);
 		pushValue(Type.DOUBLE);
 	}
 
-	public void visitFSUB(FSUB obj) {
+	@Override
+         public void visitFSUB(FSUB obj) {
 		consumeStack(obj);
 		pushValue(Type.FLOAT);
 	}
 
-	public void visitISUB(ISUB obj) {
+	@Override
+         public void visitISUB(ISUB obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitLSUB(LSUB obj) {
+	@Override
+         public void visitLSUB(LSUB obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitDMUL(DMUL obj) {
+	@Override
+         public void visitDMUL(DMUL obj) {
 		consumeStack(obj);
 		pushValue(Type.DOUBLE);
 	}
 
-	public void visitFMUL(FMUL obj) {
+	@Override
+         public void visitFMUL(FMUL obj) {
 		consumeStack(obj);
 		pushValue(Type.FLOAT);
 	}
 
-	public void visitIMUL(IMUL obj) {
+	@Override
+         public void visitIMUL(IMUL obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitLMUL(LMUL obj) {
+	@Override
+         public void visitLMUL(LMUL obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitDDIV(DDIV obj) {
+	@Override
+         public void visitDDIV(DDIV obj) {
 		consumeStack(obj);
 		pushValue(Type.DOUBLE);
 	}
 
-	public void visitFDIV(FDIV obj) {
+	@Override
+         public void visitFDIV(FDIV obj) {
 		consumeStack(obj);
 		pushValue(Type.FLOAT);
 	}
 
-	public void visitIDIV(IDIV obj) {
+	@Override
+         public void visitIDIV(IDIV obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitLDIV(LDIV obj) {
+	@Override
+         public void visitLDIV(LDIV obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitDREM(DREM obj) {
+	@Override
+         public void visitDREM(DREM obj) {
 		consumeStack(obj);
 		pushValue(Type.DOUBLE);
 	}
 
-	public void visitFREM(FREM obj) {
+	@Override
+         public void visitFREM(FREM obj) {
 		consumeStack(obj);
 		pushValue(Type.FLOAT);
 	}
 
-	public void visitIREM(IREM obj) {
+	@Override
+         public void visitIREM(IREM obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitLREM(LREM obj) {
+	@Override
+         public void visitLREM(LREM obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitIINC(IINC obj) {
+	@Override
+         public void visitIINC(IINC obj) {
 	} // no change to types of stack or locals
 
-	public void visitDNEG(DNEG obj) {
+	@Override
+         public void visitDNEG(DNEG obj) {
 	} // no change
 
-	public void visitFNEG(FNEG obj) {
+	@Override
+         public void visitFNEG(FNEG obj) {
 	} // no change
 
-	public void visitINEG(INEG obj) {
+	@Override
+         public void visitINEG(INEG obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitLNEG(LNEG obj) {
+	@Override
+         public void visitLNEG(LNEG obj) {
 	} // no change
 
-	public void visitARRAYLENGTH(ARRAYLENGTH obj) {
+	@Override
+         public void visitARRAYLENGTH(ARRAYLENGTH obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitAALOAD(AALOAD obj) {
+	@Override
+         public void visitAALOAD(AALOAD obj) {
 		// To determine the type pushed on the stack,
 		// we look at the type of the array reference which was
 		// popped off of the stack.
@@ -659,44 +738,52 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		}
 	}
 
-	public void visitBALOAD(BALOAD obj) {
+	@Override
+         public void visitBALOAD(BALOAD obj) {
 		consumeStack(obj);
 		pushValue(Type.BYTE);
 	}
 
-	public void visitCALOAD(CALOAD obj) {
+	@Override
+         public void visitCALOAD(CALOAD obj) {
 		consumeStack(obj);
 		pushValue(Type.CHAR);
 	}
 
-	public void visitDALOAD(DALOAD obj) {
+	@Override
+         public void visitDALOAD(DALOAD obj) {
 		consumeStack(obj);
 		pushValue(Type.DOUBLE);
 	}
 
-	public void visitFALOAD(FALOAD obj) {
+	@Override
+         public void visitFALOAD(FALOAD obj) {
 		consumeStack(obj);
 		pushValue(Type.FLOAT);
 	}
 
-	public void visitIALOAD(IALOAD obj) {
+	@Override
+         public void visitIALOAD(IALOAD obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}
 
-	public void visitLALOAD(LALOAD obj) {
+	@Override
+         public void visitLALOAD(LALOAD obj) {
 		consumeStack(obj);
 		pushValue(Type.LONG);
 	}
 
-	public void visitSALOAD(SALOAD obj) {
+	@Override
+         public void visitSALOAD(SALOAD obj) {
 		consumeStack(obj);
 		pushValue(Type.SHORT);
 	}
 
 	// The various xASTORE instructions only consume stack.
 
-	public void visitNEW(NEW obj) {
+	@Override
+         public void visitNEW(NEW obj) {
 		// FIXME: type is technically "uninitialized"
 		// However, we don't model that yet.
 		pushValue(obj.getType(getCPG()));
@@ -705,7 +792,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		setTopOfStackIsExact();
 	}
 
-	public void visitNEWARRAY(NEWARRAY obj) {
+	@Override
+         public void visitNEWARRAY(NEWARRAY obj) {
 		consumeStack(obj);
 		Type elementType = obj.getType();
 		pushValue(new ArrayType(elementType, 1));
@@ -714,7 +802,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		setTopOfStackIsExact();
 	}
 
-	public void visitANEWARRAY(ANEWARRAY obj) {
+	@Override
+         public void visitANEWARRAY(ANEWARRAY obj) {
 		consumeStack(obj);
 		Type elementType = obj.getType(getCPG());
 		pushValue(new ArrayType(elementType, 1));
@@ -723,7 +812,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		setTopOfStackIsExact();
 	}
 
-	public void visitMULTIANEWARRAY(MULTIANEWARRAY obj) {
+	@Override
+         public void visitMULTIANEWARRAY(MULTIANEWARRAY obj) {
 		consumeStack(obj);
 		Type elementType = obj.getType(getCPG());
 		pushValue(new ArrayType(elementType, obj.getDimensions()));
@@ -737,36 +827,43 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		frame.setExact(frame.getNumSlots() - 1, true);
 	}
 
-	public void visitJSR(JSR obj) {
+	@Override
+         public void visitJSR(JSR obj) {
 		pushValue(ReturnaddressType.NO_TARGET);
 	}
 
-	public void visitJSR_W(JSR_W obj) {
+	@Override
+         public void visitJSR_W(JSR_W obj) {
 		pushValue(ReturnaddressType.NO_TARGET);
 	}
 
-	public void visitRET(RET obj) {
+	@Override
+         public void visitRET(RET obj) {
 	} // no change
 
-	public void visitIFEQ(IFEQ obj) {
+	@Override
+         public void visitIFEQ(IFEQ obj) {
 		if (lastOpcode == Constants.INSTANCEOF)
 			instanceOfFollowedByBranch = true;
 		super.visitIFEQ(obj);
 	}
 
-	public void visitIFGT(IFGT obj) {
+	@Override
+         public void visitIFGT(IFGT obj) {
 		if (lastOpcode == Constants.INSTANCEOF)
 			instanceOfFollowedByBranch = true;
 		super.visitIFGT(obj);
 	}
 
-	public void visitIFLE(IFLE obj) {
+	@Override
+         public void visitIFLE(IFLE obj) {
 		if (lastOpcode == Constants.INSTANCEOF)
 			instanceOfFollowedByBranch = true;
 		super.visitIFLE(obj);
 	}
 
-	public void visitIFNE(IFNE obj) {
+	@Override
+         public void visitIFNE(IFNE obj) {
 		if (lastOpcode == Constants.INSTANCEOF)
 			instanceOfFollowedByBranch = true;
 		super.visitIFNE(obj);

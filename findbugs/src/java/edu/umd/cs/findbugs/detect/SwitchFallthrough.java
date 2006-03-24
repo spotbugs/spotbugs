@@ -19,24 +19,12 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.LinkedList;
 
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.*;
+import java.io.*;
+import java.util.*;
 import org.apache.bcel.classfile.Code;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.SwitchHandler;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.SourceFile;
-import edu.umd.cs.findbugs.ba.SourceFinder;
 
 
 public class SwitchFallthrough extends BytecodeScanningDetector implements StatelessDetector {
@@ -53,17 +41,20 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 		classContext.getJavaClass().accept(this);
 	}
 
 	Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
 	
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		reachable = false;
 		lastPC = 0;
 		found.clear();
@@ -77,7 +68,8 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		}
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (reachable && switchHdlr.isOnSwitchOffset(this)) {
 			if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
 				SourceLineAnnotation sourceLineAnnotation =

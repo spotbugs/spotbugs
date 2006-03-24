@@ -19,16 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
+import edu.umd.cs.findbugs.*;
+import java.util.*;
 import org.apache.bcel.classfile.Code;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 public class InitializationChain extends BytecodeScanningDetector {
 	Set<String> requires = new TreeSet<String>();
@@ -46,7 +40,8 @@ public class InitializationChain extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		instanceCreated = false;
 		instanceCreatedWarningGiven = false;
 		if (!getMethodName().equals("<clinit>")) return;
@@ -66,7 +61,8 @@ public class InitializationChain extends BytecodeScanningDetector {
 	}
 
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 
 
 		if (seen == PUTSTATIC && getClassConstantOperand().equals(getClassName())) {
@@ -111,7 +107,8 @@ public class InitializationChain extends BytecodeScanningDetector {
 		}
 	}
 
-	public void report() {
+	@Override
+         public void report() {
 
 		if (DEBUG) System.out.println("Finishing computation");
 		compute();

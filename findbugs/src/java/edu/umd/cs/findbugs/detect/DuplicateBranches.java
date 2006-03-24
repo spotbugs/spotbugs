@@ -19,33 +19,16 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-
+import java.util.*;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.BranchInstruction;
-import org.apache.bcel.generic.GotoInstruction;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.LOOKUPSWITCH;
-import org.apache.bcel.generic.TABLESWITCH;
+import org.apache.bcel.generic.*;
 import org.apache.bcel.util.ByteSequence;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.Edge;
-import edu.umd.cs.findbugs.ba.EdgeTypes;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class DuplicateBranches extends PreorderVisitor implements Detector, StatelessDetector
 {
@@ -56,7 +39,8 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		this.bugReporter = bugReporter;
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
@@ -65,7 +49,8 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 		classContext.getJavaClass().accept(this);
 	}
 
-	public void visitMethod(Method method) {
+	@Override
+         public void visitMethod(Method method) {
 		try {
 			if (method.getCode() == null)
 				return;

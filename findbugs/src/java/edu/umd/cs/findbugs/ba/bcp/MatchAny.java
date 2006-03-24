@@ -52,14 +52,16 @@ public class MatchAny extends PatternElement {
 		this.childList = childList;
 	}
 
-	public PatternElement label(String label) {
+	@Override
+         public PatternElement label(String label) {
 		for (PatternElement aChildList : childList) {
 			aChildList.label(label);
 		}
 		return this;
 	}
 
-	public PatternElement setAllowTrailingEdges(boolean allowTrailingEdges) {
+	@Override
+         public PatternElement setAllowTrailingEdges(boolean allowTrailingEdges) {
 		// Just forward this on to all children,
 		// since it is the children that the PatternMatcher will ask
 		// about edges.
@@ -69,7 +71,8 @@ public class MatchAny extends PatternElement {
 		return this;
 	}
 
-	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
+	@Override
+         public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
 	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		for (PatternElement child : childList) {
@@ -82,17 +85,20 @@ public class MatchAny extends PatternElement {
 
 	}
 
-	public boolean acceptBranch(Edge edge, InstructionHandle source) {
+	@Override
+         public boolean acceptBranch(Edge edge, InstructionHandle source) {
 		// Note: when selecting branch instructions, only the actual
 		// (child) PatternElement should be used.
 		throw new IllegalStateException("shouldn't happen");
 	}
 
-	public int minOccur() {
+	@Override
+         public int minOccur() {
 		return 1;
 	}
 
-	public int maxOccur() {
+	@Override
+         public int maxOccur() {
 		return 1;
 	}
 }

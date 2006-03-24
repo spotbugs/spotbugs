@@ -19,13 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.*;
 
 //   2:   astore_1
 //   3:   monitorenter
@@ -45,16 +41,19 @@ public class FindNakedNotify extends BytecodeScanningDetector implements  Statel
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		int flags = obj.getAccessFlags();
 		synchronizedMethod = (flags & ACC_SYNCHRONIZED) != 0;
 	}
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		stage = synchronizedMethod ? 1 : 0;
 		super.visit(obj);
 		if (synchronizedMethod && stage == 4)
@@ -63,7 +62,8 @@ public class FindNakedNotify extends BytecodeScanningDetector implements  Statel
 			        .addSourceLine(this, notifyPC));
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		switch (stage) {
 		case 0:
 			if (seen == MONITORENTER)

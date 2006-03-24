@@ -50,7 +50,8 @@ public class StackDepth {
 		this.depth = depth;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		if (getDepth() == StackDepthAnalysis.TOP)
 			return "[TOP]";
 		else if (getDepth() == StackDepthAnalysis.BOTTOM)

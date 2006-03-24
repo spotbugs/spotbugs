@@ -38,7 +38,8 @@ public class NullCheck extends ExtendedInstruction {
 	}
 
 	//@Override
-	public void accept(ExtendedVisitor visitor) {
+	@Override
+         public void accept(ExtendedVisitor visitor) {
 		visitor.visitNullCheck(this);
 	}
 

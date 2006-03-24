@@ -56,18 +56,21 @@ public class BasicType implements Type {
 		visitor.visitBasicType(this);
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null || o.getClass() != this.getClass())
 			return false;
 		BasicType other = (BasicType) o;
 		return this.typeCode == other.typeCode;
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return 1003 * typeCode;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		return Constants.TYPE_NAMES[typeCode];
 	}
 }

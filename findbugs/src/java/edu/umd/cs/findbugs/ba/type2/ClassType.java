@@ -93,18 +93,21 @@ public class ClassType extends ObjectType {
 		visitor.visitClassType(this);
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null || o.getClass() != this.getClass())
 			return false;
 		ClassType other = (ClassType) o;
 		return this.getSignature().equals(other.getSignature());
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return getSignature().hashCode();
 	}
 
-	public boolean isInterface() {
+	@Override
+         public boolean isInterface() {
 		if (getState() != KNOWN)
 			throw new IllegalStateException("Don't know whether type " + getClassName() +
 			        " is a class or interface");
@@ -112,11 +115,13 @@ public class ClassType extends ObjectType {
 		return isInterface;
 	}
 
-	public boolean isArray() {
+	@Override
+         public boolean isArray() {
 		return false;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		return getClassName();
 	}
 }

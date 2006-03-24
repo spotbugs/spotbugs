@@ -141,7 +141,8 @@ public class PatternElementMatch {
 		return patternElement.allowTrailingEdges();
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		PatternElementMatch cur = this;
 		buf.append(cur.patternElement.toString());
@@ -152,12 +153,14 @@ public class PatternElementMatch {
 		return buf.toString();
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		// Do the simplest thing possible that works
 		throw new UnsupportedOperationException();
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (!(o instanceof PatternElementMatch))
 			return false;
 		PatternElementMatch lhs = this;

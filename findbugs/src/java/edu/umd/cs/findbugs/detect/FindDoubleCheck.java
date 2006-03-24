@@ -19,18 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
 
+import edu.umd.cs.findbugs.*;
+import java.util.*;
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.FieldAnnotation;
+import org.apache.bcel.classfile.*;
 
 public class FindDoubleCheck extends BytecodeScanningDetector {
 	static final boolean DEBUG = false;
@@ -50,7 +43,8 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		if (DEBUG) System.out.println(getFullyQualifiedMethodName());
 		super.visit(obj);
 		fields.clear();
@@ -63,7 +57,8 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 		pendingFieldLoad = null;
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (DEBUG) System.out.println(getPC() + "	" + OPCODE_NAMES[seen] + "	" + stage + "	" + count + "	" + countSinceGetReference);
 
 		if (seen == MONITORENTER) sawMonitorEnter = true;

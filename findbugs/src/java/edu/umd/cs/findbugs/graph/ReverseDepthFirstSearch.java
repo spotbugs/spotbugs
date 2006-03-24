@@ -46,15 +46,18 @@ public class ReverseDepthFirstSearch
 		super(graph);
 	}
 
-	protected Iterator<EdgeType> outgoingEdgeIterator(GraphType graph, VertexType vertex) {
+	@Override
+         protected Iterator<EdgeType> outgoingEdgeIterator(GraphType graph, VertexType vertex) {
 		return graph.incomingEdgeIterator(vertex);
 	}
 
-	protected VertexType getTarget(EdgeType edge) {
+	@Override
+         protected VertexType getTarget(EdgeType edge) {
 		return edge.getSource();
 	}
 
-	protected VertexType getSource(EdgeType edge) {
+	@Override
+         protected VertexType getSource(EdgeType edge) {
 		return edge.getTarget();
 	}
 

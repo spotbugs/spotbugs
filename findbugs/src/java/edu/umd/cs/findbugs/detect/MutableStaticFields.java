@@ -19,20 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
 
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.*;
+import java.util.*;
+import org.apache.bcel.classfile.*;
 
 public class MutableStaticFields extends BytecodeScanningDetector {
 
@@ -75,7 +65,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		super.visit(obj);
 		int flags = obj.getAccessFlags();
 		publicClass = (flags & ACC_PUBLIC) != 0
@@ -87,13 +78,15 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 		packageName = extractPackage(getClassName());
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		zeroOnTOS = false;
 		// System.out.println(methodName);
 		inStaticInitializer = getMethodName().equals("<clinit>");
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		// System.out.println("saw	"	+ OPCODE_NAMES[seen] + "	" + zeroOnTOS);
 		switch (seen) {
 		case GETSTATIC:
@@ -150,7 +143,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 		emptyArrayOnTOS = false;
 	}
 
-	public void visit(Field obj) {
+	@Override
+         public void visit(Field obj) {
 		super.visit(obj);
 		int flags = obj.getAccessFlags();
 		boolean isStatic = (flags & ACC_STATIC) != 0;
@@ -179,7 +173,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 
 	}
 
-	public void report() {
+	@Override
+         public void report() {
 		/*
 		for(Iterator i = unsafeValue.iterator(); i.hasNext(); ) {
 			System.out.println("Unsafe: " + i.next());

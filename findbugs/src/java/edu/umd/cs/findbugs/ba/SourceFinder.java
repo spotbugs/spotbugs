@@ -53,7 +53,8 @@ public class SourceFinder {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		protected boolean removeEldestEntry(Map.Entry<String, SourceFile> eldest) {
+		@Override
+                 protected boolean removeEldestEntry(Map.Entry<String, SourceFile> eldest) {
 			return size() >= CACHE_SIZE;
 		}
 	}

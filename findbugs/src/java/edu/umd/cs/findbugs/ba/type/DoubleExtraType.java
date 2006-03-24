@@ -43,11 +43,13 @@ public class DoubleExtraType extends Type implements ExtendedTypes {
 		super(T_DOUBLE_EXTRA, "<double extra>");
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return System.identityHashCode(this);
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		return o == this;
 	}
 

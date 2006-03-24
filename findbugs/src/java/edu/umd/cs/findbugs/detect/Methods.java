@@ -19,18 +19,12 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.NonReportingDetector;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.util.*;
+import org.apache.bcel.classfile.Method;
 
 public class Methods extends PreorderVisitor implements NonReportingDetector {
 
@@ -50,7 +44,8 @@ public class Methods extends PreorderVisitor implements NonReportingDetector {
 		classContext.getJavaClass().accept(this);
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		methods.add(XFactory.createXMethod(this));
 	}
 

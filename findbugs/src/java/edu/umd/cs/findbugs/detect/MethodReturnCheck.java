@@ -18,21 +18,12 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.*;
 import java.util.BitSet;
-
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
-import edu.umd.cs.findbugs.ba.CheckReturnValueAnnotation;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethod;
+import org.apache.bcel.classfile.*;
 
 /**
  * Look for calls to methods where the return value is
@@ -71,18 +62,21 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 	
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 		this.classContext = classContext;
 		checkReturnAnnotationDatabase = AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase();
 		super.visitClassContext(classContext);
 		this.classContext = null;
 	}
 	
-	public void visit(Method method) {
+	@Override
+         public void visit(Method method) {
 		this.method = method;
 	}
 	
-	public void visitCode(Code code) {
+	@Override
+         public void visitCode(Code code) {
 		// Prescreen to find methods with POP or POP2 instructions,
 		// and at least one method invocation
 		if (!prescreen())
@@ -103,7 +97,8 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		return true;
 	}
 	
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		
 		if (state == SAW_INVOKE && isPop(seen)) {
 			CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase.getResolvedAnnotation(callSeen, false);

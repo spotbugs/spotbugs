@@ -52,7 +52,8 @@ public class ValueNumberCache {
 			this.cachedHashCode = 0;
 		}
 
-		public boolean equals(Object o) {
+		@Override
+                 public boolean equals(Object o) {
 			if (!(o instanceof Entry))
 				return false;
 			Entry other = (Entry) o;
@@ -68,7 +69,8 @@ public class ValueNumberCache {
 			return true;
 		}
 
-		public int hashCode() {
+		@Override
+                 public int hashCode() {
 			if (cachedHashCode == 0) {
 				int code = handle.getPosition();
 				for (ValueNumber aInputValueList : inputValueList) {
@@ -81,7 +83,8 @@ public class ValueNumberCache {
 			return cachedHashCode;
 		}
 
-		public String toString() {
+		@Override
+                 public String toString() {
 			StringBuffer buf = new StringBuffer();
 			buf.append(handle.toString());
 			for (ValueNumber aInputValueList : inputValueList) {

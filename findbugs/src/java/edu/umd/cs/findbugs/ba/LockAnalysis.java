@@ -97,7 +97,8 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 		result.meetWith(fact);
 	}
 
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, LockSet fact)
+	@Override
+         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, LockSet fact)
 	        throws DataflowAnalysisException {
 
 		Instruction ins = handle.getInstruction();
@@ -127,7 +128,8 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 		fact.setLockCount(lockNumber, value);
 	}
 
-	public boolean isFactValid(LockSet fact) {
+	@Override
+         public boolean isFactValid(LockSet fact) {
 		return true;
 	}
 
@@ -138,7 +140,8 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 		}
 
 		DataflowTestDriver<LockSet, LockAnalysis> driver = new DataflowTestDriver<LockSet, LockAnalysis>() {
-			public Dataflow<LockSet, LockAnalysis> createDataflow(ClassContext classContext, Method method)
+			@Override
+                         public Dataflow<LockSet, LockAnalysis> createDataflow(ClassContext classContext, Method method)
 			        throws CFGBuilderException, DataflowAnalysisException {
 				return classContext.getLockDataflow(method);
 			}

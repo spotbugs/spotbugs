@@ -41,7 +41,8 @@ public class ReverseDepthFirstSearch
 		this.firstRoot = cfg.getExit();
 	}
 
-	protected BasicBlock getNextSearchTreeRoot() {
+	@Override
+         protected BasicBlock getNextSearchTreeRoot() {
 		BasicBlock result = firstRoot;
 		firstRoot = null;
 		return result;

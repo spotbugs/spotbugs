@@ -58,7 +58,8 @@ public class XMLAttributeList {
 			this.buf = buf;
 		}
 
-		public void process() {
+		@Override
+                 public void process() {
 			try {
 				super.process();
 			} catch (java.io.IOException e) {
@@ -66,7 +67,8 @@ public class XMLAttributeList {
 			}
 		}
 
-		public void emitLiteral(String s) {
+		@Override
+                 public void emitLiteral(String s) {
 			buf.append(s);
 		}
 	}
@@ -111,7 +113,8 @@ public class XMLAttributeList {
 	 * Return the attribute list as a String which can be
 	 * directly output as part of an XML tag.
 	 */
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		for (NameValuePair pair : nameValuePairList) {
 			buf.append(' ');

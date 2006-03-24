@@ -44,7 +44,8 @@ public class Opcode extends PatternElement {
 		this.opcode = opcode;
 	}
 
-	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
+	@Override
+         public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
 	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		if (handle.getInstruction().getOpcode() == opcode)
@@ -54,15 +55,18 @@ public class Opcode extends PatternElement {
 
 	}
 
-	public boolean acceptBranch(Edge edge, InstructionHandle source) {
+	@Override
+         public boolean acceptBranch(Edge edge, InstructionHandle source) {
 		return true;
 	}
 
-	public int minOccur() {
+	@Override
+         public int minOccur() {
 		return 1;
 	}
 
-	public int maxOccur() {
+	@Override
+         public int maxOccur() {
 		return 1;
 	}
 }

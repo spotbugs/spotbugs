@@ -472,7 +472,8 @@ public abstract class Frame <ValueType>   {
 	/**
 	 * Convert to string.
 	 */
-	public String toString() {
+	@Override
+         public String toString() {
 		if (isTop()) return "[TOP]";
 		if (isBottom()) return "[BOTTOM]";
 		StringBuffer buf = new StringBuffer();

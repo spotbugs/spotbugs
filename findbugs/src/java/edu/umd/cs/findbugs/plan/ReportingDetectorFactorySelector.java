@@ -48,7 +48,8 @@ public class ReportingDetectorFactorySelector implements DetectorFactorySelector
 			&& factory.isReportingDetector();
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		String s = "All reporting detectors";
 		if (plugin != null) {
 			s += " in plugin " + plugin.getPluginId();

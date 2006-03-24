@@ -30,11 +30,13 @@ public class LoadAnalysis extends FieldSetAnalysis {
 	}
 
 	//@Override
-	protected void sawLoad(FieldSet fact, XField field) {
+	@Override
+         protected void sawLoad(FieldSet fact, XField field) {
 		fact.addField(field);
 	}
 
 	//@Override
-	protected void sawStore(FieldSet fact, XField field) {
+	@Override
+         protected void sawStore(FieldSet fact, XField field) {
 	}
 }

@@ -19,23 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.util.*;
+import java.util.regex.*;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.*;
 
 public class Naming extends PreorderVisitor implements Detector {
 	String baseClassName;
@@ -58,7 +49,8 @@ public class Naming extends PreorderVisitor implements Detector {
 			return className;
 		}
 
-		public boolean equals(Object o) {
+		@Override
+                 public boolean equals(Object o) {
 			if (!(o instanceof MyMethod)) return false;
 			MyMethod m2 = (MyMethod) o;
 			return
@@ -67,7 +59,8 @@ public class Naming extends PreorderVisitor implements Detector {
 			        && methodSig.equals(m2.methodSig);
 		}
 
-		public int hashCode() {
+		@Override
+                 public int hashCode() {
 			return className.hashCode()
 			        + methodName.hashCode()
 			        + methodSig.hashCode();
@@ -85,7 +78,8 @@ public class Naming extends PreorderVisitor implements Detector {
 				
 		}
 
-		public String toString() {
+		@Override
+                 public String toString() {
 			return className
 			        + "." + methodName
 			        + ":" + methodSig;
@@ -167,7 +161,8 @@ public class Naming extends PreorderVisitor implements Detector {
 	}
 	}
 
-	public void visitJavaClass(JavaClass obj) {
+	@Override
+         public void visitJavaClass(JavaClass obj) {
 		if (obj.isInterface()) return;
 		String name = obj.getClassName();
 		if (!visited.add(name)) return;
@@ -182,7 +177,8 @@ public class Naming extends PreorderVisitor implements Detector {
 		super.visitJavaClass(obj);
 	}
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		String name = obj.getClassName();
 		String[] parts = name.split("[$+.]");
 		baseClassName = parts[parts.length - 1];
@@ -212,7 +208,8 @@ public class Naming extends PreorderVisitor implements Detector {
 		super.visit(obj);
 	}
 
-	public void visit(Field obj) {
+	@Override
+         public void visit(Field obj) {
 		if (getFieldName().length() == 1) return;
 
 		if (!obj.isFinal() 
@@ -233,7 +230,8 @@ public class Naming extends PreorderVisitor implements Detector {
 		}
 		}
 	private static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		if (getMethodName().length() == 1) return;
 
 		if (Character.isLetter(getMethodName().charAt(0))

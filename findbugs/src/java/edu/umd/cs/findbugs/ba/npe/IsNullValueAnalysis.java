@@ -186,13 +186,15 @@ public class IsNullValueAnalysis
 */
 
 	// FIXME: This is a workaround for the generics-java bug.
-	public void startTransfer(BasicBlock basicBlock, Object start_) throws DataflowAnalysisException {
+	@Override
+         public void startTransfer(BasicBlock basicBlock, Object start_) throws DataflowAnalysisException {
 		lastFrame = null;
 		instanceOfFrame = null;
 	}
 
 	// FIXME: This is a workaround for the generics-java bug.
-	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result_) throws DataflowAnalysisException {
+	@Override
+         public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result_) throws DataflowAnalysisException {
 		IsNullValueFrame result = (IsNullValueFrame) result_;
 
 		// Determine if this basic block ends in a redundant branch.
@@ -209,7 +211,8 @@ public class IsNullValueAnalysis
 		instanceOfFrame = null;
 	}
 
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)
+	@Override
+         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)
 	        throws DataflowAnalysisException {
 
 		// If this is the last instruction in the block,
@@ -424,7 +427,8 @@ public class IsNullValueAnalysis
 		return value;
 	}
 	
-	protected void mergeValues(IsNullValueFrame otherFrame, IsNullValueFrame resultFrame, int slot)
+	@Override
+         protected void mergeValues(IsNullValueFrame otherFrame, IsNullValueFrame resultFrame, int slot)
 			throws DataflowAnalysisException {
 		IsNullValue value = IsNullValue.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
 		resultFrame.setValue(slot, value);
@@ -635,7 +639,8 @@ public class IsNullValueAnalysis
 		}
 
 		DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis> driver = new DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis>() {
-			public Dataflow<IsNullValueFrame, IsNullValueAnalysis> createDataflow(ClassContext classContext, Method method)
+			@Override
+                         public Dataflow<IsNullValueFrame, IsNullValueAnalysis> createDataflow(ClassContext classContext, Method method)
 			        throws CFGBuilderException, DataflowAnalysisException {
 
 				return classContext.getIsNullValueDataflow(method);

@@ -89,7 +89,8 @@ public class AnnotationVisitor extends PreorderVisitor {
 	public void visitSyntheticParameterAnnotation(int p,  boolean runtimeVisible) {
 	}
 	
-	public void visit(Unknown obj) {
+	@Override
+         public void visit(Unknown obj) {
 		try {
 			
 				String name = obj.getName();

@@ -1,29 +1,13 @@
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
 
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantCP;
-import org.apache.bcel.classfile.ConstantClass;
-import org.apache.bcel.classfile.ConstantDouble;
-import org.apache.bcel.classfile.ConstantFieldref;
-import org.apache.bcel.classfile.ConstantLong;
-import org.apache.bcel.classfile.ConstantNameAndType;
-import org.apache.bcel.classfile.ConstantPool;
-import org.apache.bcel.classfile.ConstantUtf8;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.util.*;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.*;
 
 public class ResolveAllReferences extends PreorderVisitor implements Detector {
 
@@ -93,7 +77,8 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 						signatureIndex, CONSTANT_Utf8)).getBytes();
 	}
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		compute();
 		ConstantPool cp = obj.getConstantPool();
 		Constant[] constants = cp.getConstantPool();

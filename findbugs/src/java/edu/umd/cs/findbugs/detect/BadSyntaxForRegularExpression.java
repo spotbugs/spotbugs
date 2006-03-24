@@ -41,17 +41,21 @@ extends BytecodeScanningDetector implements  StatelessDetector {
         this.bugReporter = bugReporter;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
 
+    @Override
     public void visit(JavaClass obj) {
     }
 
+    @Override
     public void visit(Method obj) {
     }
 
     OpcodeStack stack = new OpcodeStack();
+    @Override
     public void visit(Code obj) {
 	stack.resetForMethodEntry(this);
         super.visit(obj);
@@ -75,6 +79,7 @@ extends BytecodeScanningDetector implements  StatelessDetector {
         }
     }
 
+    @Override
     public void sawOpcode(int seen) {
     	stack.mergeJumps(this);
         if (seen == INVOKESTATIC 

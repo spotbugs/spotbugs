@@ -19,28 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.JavaClass;
-
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.ClassAnnotation;
-import edu.umd.cs.findbugs.ClassWarningSuppressor;
-import edu.umd.cs.findbugs.DelegatingBugReporter;
-import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.FieldWarningSuppressor;
-import edu.umd.cs.findbugs.FilterBugReporter;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.MethodWarningSuppressor;
-import edu.umd.cs.findbugs.NonReportingDetector;
-import edu.umd.cs.findbugs.PackageWarningSuppressor;
-import edu.umd.cs.findbugs.SuppressionMatcher;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
+import java.util.*;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.JavaClass;
 
 public class NoteSuppressedWarnings extends AnnotationVisitor 
   implements NonReportingDetector {
@@ -76,6 +61,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor
 		classContext.getJavaClass().accept(this);
 	}
 
+        @Override
         public void visit(JavaClass obj) {
 		if (recursiveDetector == null) return;
 		try {
@@ -92,6 +78,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor
 			// ignore 
 		}
 	}
+        @Override
         public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible)  {
 		if (!annotationClass.endsWith("SuppressWarnings")) return;
 		Object value = map.get("value");

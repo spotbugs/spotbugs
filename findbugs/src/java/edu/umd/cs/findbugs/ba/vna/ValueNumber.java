@@ -82,7 +82,8 @@ public class ValueNumber implements Comparable<ValueNumber> {
 		return (flags & flag) == flag;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		return number + ",";
 	}
 

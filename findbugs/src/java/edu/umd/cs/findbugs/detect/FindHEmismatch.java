@@ -19,18 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.Lookup;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.*;
 
 public class FindHEmismatch extends BytecodeScanningDetector implements StatelessDetector {
 	boolean hasFields = false;
@@ -51,11 +43,13 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visitAfter(JavaClass obj) {
+	@Override
+         public void visitAfter(JavaClass obj) {
 		if (!obj.isClass()) return;
 		if (getDottedClassName().equals("java.lang.Object")) return;
 		int accessFlags = obj.getAccessFlags();
@@ -189,7 +183,8 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 		}
 	}
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		extendsObject = getDottedSuperclassName().equals("java.lang.Object");
 		hasFields = false;
 		hasHashCode = false;
@@ -203,14 +198,16 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 		equalsMethod = null;
 	}
 
-	public void visit(Field obj) {
+	@Override
+         public void visit(Field obj) {
 		int accessFlags = obj.getAccessFlags();
 		if ((accessFlags & ACC_STATIC) != 0) return;
 		if (!obj.getName().startsWith("this$"))
 			hasFields = true;
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		int accessFlags = obj.getAccessFlags();
 		if ((accessFlags & ACC_STATIC) != 0) return;
 		String name = obj.getName();

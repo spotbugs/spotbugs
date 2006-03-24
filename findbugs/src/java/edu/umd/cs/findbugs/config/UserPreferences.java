@@ -365,7 +365,8 @@ public class UserPreferences implements Cloneable {
 		filterSettings.setMinPriority(threshold);
 	}
 	//@Override
-	public boolean equals(Object obj) {
+	@Override
+         public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
 		
@@ -377,14 +378,16 @@ public class UserPreferences implements Cloneable {
 	}
 	
 	//@Override
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return recentProjectsList.hashCode()
 			+ detectorEnablementMap.hashCode()
 			+ filterSettings.hashCode();
 	}
 	
 	//@Override
-	public Object clone() {
+	@Override
+         public Object clone() {
 		try {
 			UserPreferences dup = (UserPreferences) super.clone();
 			

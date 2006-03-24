@@ -19,27 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.*;
+import java.util.*;
 import java.util.regex.Pattern;
-
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Attribute;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.FieldOrMethod;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.Synthetic;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XField;
+import org.apache.bcel.classfile.*;
 
 public class SerializableIdiom extends BytecodeScanningDetector
         {
@@ -81,7 +67,8 @@ public class SerializableIdiom extends BytecodeScanningDetector
 				}
 	}
 
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 		classContext.getJavaClass().accept(this);
 		flush();
 	}
@@ -95,14 +82,16 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		fieldWarningList.clear();
 	}
 
-	public void report() {
+	@Override
+         public void report() {
 	}
 
 	static Pattern anonymousInnerClassNamePattern =
 			Pattern.compile(".+\\$\\d+");
 	boolean isAnonymousInnerClass;
 	private boolean isEnum;
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		String superClassname = obj.getSuperclassName();
 		// System.out.println("superclass of " + getClassName() + " is " + superClassname);
 		isEnum = superClassname.equals("java.lang.Enum");
@@ -208,7 +197,8 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		sawReadExternal = sawWriteExternal = sawReadObject = sawWriteObject = false;
 	}
 
-	public void visitAfter(JavaClass obj) {
+	@Override
+         public void visitAfter(JavaClass obj) {
 		if (isEnum) return;
 		if (false) {
 			System.out.println(getDottedClassName());
@@ -245,7 +235,8 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			bugReporter.reportBug(new BugInstance(this, "WS_WRITEOBJECT_SYNC", LOW_PRIORITY).addClass(this));
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		
 		int accessFlags = obj.getAccessFlags();
 		boolean isSynchronized = (accessFlags & ACC_SYNCHRONIZED) != 0;
@@ -318,7 +309,8 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	}
 
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		if (isSerializable) {
 			stack.resetForMethodEntry(this);
 			super.visit(obj);
@@ -369,7 +361,8 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	}
 	private OpcodeStack stack = new OpcodeStack();
 	
-	public void visit(Field obj) {
+	@Override
+         public void visit(Field obj) {
 		int flags = obj.getAccessFlags();
 
 		if (obj.isTransient())

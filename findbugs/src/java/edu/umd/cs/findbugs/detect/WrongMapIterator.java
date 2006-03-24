@@ -20,13 +20,9 @@
  
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.Method;
 
 public class WrongMapIterator extends BytecodeScanningDetector implements   StatelessDetector {
     private BugReporter bugReporter;
@@ -56,11 +52,13 @@ public class WrongMapIterator extends BytecodeScanningDetector implements   Stat
         this.bugReporter = bugReporter;
     }
     
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
     	state = SAW_NOTHING;
     	loadedRegister = -1;
     	mapRegister = -1;
@@ -69,6 +67,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements   Stat
     	keyRegister = -1;
     }
     
+    @Override
     public void sawOpcode(int seen) {
     	switch (state)
     	{

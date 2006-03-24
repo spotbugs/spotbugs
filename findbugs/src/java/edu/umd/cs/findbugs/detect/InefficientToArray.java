@@ -20,15 +20,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.*;
 
 /**
  * Find occurrences of collection.toArray( new Foo[0] );
@@ -61,23 +57,27 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 		if (collectionClass != null)
 			classContext.getJavaClass().accept(this);
 	}
 	
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		if (DEBUG)
 			System.out.println("------------------- Analyzing " + obj.getName() + " ----------------");
 		state = SEEN_NOTHING;
 		super.visit(obj);
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (DEBUG) System.out.println("State: " + state + "  Opcode: " + OPCODE_NAMES[seen]);
 
 		switch (state) {

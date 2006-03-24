@@ -80,7 +80,8 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 	}
 	
 	//@Override
-	public boolean isFactValid(FieldSet fact) {
+	@Override
+         public boolean isFactValid(FieldSet fact) {
 		return fact.isValid();
 	}
 	
@@ -88,7 +89,8 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 		dest.copyFrom(source);
 	}
 	
-	public void transferInstruction(
+	@Override
+         public void transferInstruction(
 			InstructionHandle handle,
 			BasicBlock basicBlock,
 			FieldSet fact) throws DataflowAnalysisException {

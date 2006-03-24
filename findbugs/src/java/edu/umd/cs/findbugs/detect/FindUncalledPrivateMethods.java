@@ -19,17 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
 
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.MethodAnnotation;
-import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import java.util.HashSet;
+import org.apache.bcel.classfile.Method;
 
 /**
  * Detector to find private methods that are never called.
@@ -44,11 +38,13 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 	
-	public void visitMethod(Method obj) {
+	@Override
+         public void visitMethod(Method obj) {
 		super.visitMethod(obj);
 		if (obj.isPrivate()
 		        && !getMethodName().equals("writeReplace")
@@ -66,7 +62,8 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 			definedPrivateMethods.add(MethodAnnotation.fromVisitedMethod(this));
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		switch (seen) {
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
@@ -89,7 +86,8 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 		}
 	}
 
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 		definedPrivateMethods = new HashSet<MethodAnnotation>();
 		calledMethods = new HashSet<MethodAnnotation>();
 		calledMethodNames = new HashSet<String>();

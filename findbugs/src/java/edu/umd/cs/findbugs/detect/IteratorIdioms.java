@@ -19,15 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.*;
 
 public class IteratorIdioms extends BytecodeScanningDetector implements  StatelessDetector {
 
@@ -38,11 +34,13 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 		findJavaUtilIterator();
 
 	    if (iteratorClass == null)
@@ -71,7 +69,8 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 	boolean sawNoSuchElement;
 	boolean sawCall;
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		if (getMethodName().equals("next")
 		        && getMethodSig().equals("()Ljava/lang/Object;")) {
 			sawNoSuchElement = false;
@@ -84,7 +83,8 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 	}
 
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (seen == NEW
 		        && getClassConstantOperand().equals("java/util/NoSuchElementException"))
 			sawNoSuchElement = true;

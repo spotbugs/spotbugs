@@ -33,15 +33,18 @@ import edu.umd.cs.findbugs.ba.Edge;
  * @see PatternElement
  */
 public abstract class SingleInstruction extends PatternElement {
-	public boolean acceptBranch(Edge edge, InstructionHandle source) {
+	@Override
+         public boolean acceptBranch(Edge edge, InstructionHandle source) {
 		return true;
 	}
 
-	public int minOccur() {
+	@Override
+         public int minOccur() {
 		return 1;
 	}
 
-	public int maxOccur() {
+	@Override
+         public int maxOccur() {
 		return 1;
 	}
 

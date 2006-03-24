@@ -78,7 +78,8 @@ public class ReturnPath {
 		this.kind = mergeMatrix[max][min];
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		switch (kind) {
 		case TOP:
 			return "[TOP]";

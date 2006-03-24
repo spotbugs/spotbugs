@@ -32,7 +32,8 @@ public class ClassTypeTest extends TestCase {
 
 	private ClassType fooType;
 
-	protected void setUp() {
+	@Override
+         protected void setUp() {
 		fooType = new ClassType(FOO_SIG);
 	}
 

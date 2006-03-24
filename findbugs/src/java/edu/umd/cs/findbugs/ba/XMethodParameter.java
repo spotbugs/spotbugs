@@ -35,12 +35,14 @@ public class XMethodParameter implements Comparable<XMethodParameter>{
 	public int getParameterNumber() {
 		return parameter;
 	}
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (!(o instanceof XMethodParameter)) return false;
 		XMethodParameter mp2 = (XMethodParameter) o;
 		return method.equals(mp2.method) && parameter == mp2.parameter;
 	}
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return method.hashCode() + parameter;
 	}
 	public int compareTo(XMethodParameter mp2) {
@@ -48,7 +50,8 @@ public class XMethodParameter implements Comparable<XMethodParameter>{
 		if (result != 0) return result;
 		return parameter - mp2.parameter;
 	}
-	public String toString() {
+	@Override
+         public String toString() {
 		return "parameter " + parameter + " of " + method;
 	}
 }

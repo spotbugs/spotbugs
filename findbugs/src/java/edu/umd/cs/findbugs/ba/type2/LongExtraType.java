@@ -53,11 +53,13 @@ public class LongExtraType implements Type, ExtendedTypes {
 		visitor.visitLongExtraType(this);
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		return o != null && this.getClass() == o.getClass();
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return LongExtraType.class.getName().hashCode();
 	}
 }

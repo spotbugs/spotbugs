@@ -19,22 +19,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.io.PrintStream;
-import java.util.BitSet;
 
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LineNumber;
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BugReporterObserver;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.ProjectStats;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+import java.io.PrintStream;
+import java.util.BitSet;
+import org.apache.bcel.classfile.*;
 
 public class FindBugsSummaryStats extends PreorderVisitor
         implements Detector, BugReporterObserver {
@@ -51,24 +42,29 @@ public class FindBugsSummaryStats extends PreorderVisitor
 	   boolean sawLineNumbers;
 
 
-	   public void visit(JavaClass obj) {
+	   @Override
+            public void visit(JavaClass obj) {
 		lines.clear();
 		methods = 0;
 		fields = 0;
 		classCodeSize = 0;
 	   	sawLineNumbers = false;
 		}
-	   public void visit(Method obj) {
+	   @Override
+            public void visit(Method obj) {
 		methods++;
 		}
-	   public void visit(Field obj) {
+	   @Override
+            public void visit(Field obj) {
 		fields++;
 		}
-	   public void visit(Code obj) {
+	   @Override
+            public void visit(Code obj) {
 		classCodeSize += obj.getCode().length;
 		}
 
-	   public void visitAfter(JavaClass obj) {
+	   @Override
+            public void visitAfter(JavaClass obj) {
 		   int linesNCSS = 1 + methods + fields;
 		   if (sawLineNumbers) 
 			   linesNCSS += lines.cardinality();
@@ -84,7 +80,8 @@ public class FindBugsSummaryStats extends PreorderVisitor
 
 		}
 
-	   public void visit(LineNumber obj) {
+	   @Override
+            public void visit(LineNumber obj) {
 	   	sawLineNumbers = true;
 		int line = obj.getLineNumber();
 		lines.set(line);
@@ -105,7 +102,8 @@ public class FindBugsSummaryStats extends PreorderVisitor
 
 	public void report() {
 	}
-	public void report(PrintStream out) {
+	@Override
+         public void report(PrintStream out) {
 		out.println("NCSS\t" + totalNCSS);
 		out.println("codeSz\t" + totalCodeSize);
 		out.println("methods\t" + totalMethods);

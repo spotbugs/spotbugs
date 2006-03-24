@@ -19,16 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Collection;
-import java.util.LinkedList;
 
+import edu.umd.cs.findbugs.*;
+import java.util.*;
 import org.apache.bcel.classfile.Code;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.StatelessDetector;
 
 public class PreferZeroLengthArrays extends BytecodeScanningDetector implements  StatelessDetector {
 	boolean nullOnTOS = false;
@@ -38,12 +32,14 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
 	Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		found.clear();
 		String returnType = getMethodSig().substring(getMethodSig().indexOf(")") + 1);
 		if (returnType.startsWith("[")) {
@@ -61,7 +57,8 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
 	}
 
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 
 		switch (seen) {
 		case ACONST_NULL:

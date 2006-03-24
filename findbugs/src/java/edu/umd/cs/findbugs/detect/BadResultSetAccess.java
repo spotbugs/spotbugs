@@ -72,16 +72,19 @@ public class BadResultSetAccess extends BytecodeScanningDetector implements  Sta
 		this.bugReporter = bugReporter;
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 	
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
         stack.resetForMethodEntry(this);
 		super.visit(obj);
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		try {
 			if (seen == INVOKEINTERFACE) {

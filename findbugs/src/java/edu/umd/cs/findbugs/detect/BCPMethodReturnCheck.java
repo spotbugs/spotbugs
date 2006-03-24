@@ -64,11 +64,13 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 			= new AnalysisLocal<ArrayList<PatternElement>>();
 
     
+    @Override
     public Object clone() throws CloneNotSupportedException {
     	return super.clone();
     }
     
-	public ByteCodePattern  getPattern() {
+	@Override
+         public ByteCodePattern  getPattern() {
 		ByteCodePattern  result = localByteCodePattern.get();
 		if (result == null) {
 			ArrayList<PatternElement> list = getPatternElementList();
@@ -241,19 +243,22 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 	}
 
 	//@Override
-	protected BugReporter getBugReporter() {
+	@Override
+         protected BugReporter getBugReporter() {
 		return bugReporter;
 	}
 
 
-	public boolean prescreen(Method method, ClassContext classContext) {
+	@Override
+         public boolean prescreen(Method method, ClassContext classContext) {
 		// Pre-screen for methods with POP or POP2 bytecodes.
 		// This gives us a speedup close to 5X.
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
 		return bytecodeSet != null && (bytecodeSet.get(Constants.POP) || bytecodeSet.get(Constants.POP2));
 	}
 
-	public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match) {
+	@Override
+         public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match) {
 		MethodGen methodGen = classContext.getMethodGen(method);
 		if (methodGen == null) return;
 		JavaClass javaClass = classContext.getJavaClass();

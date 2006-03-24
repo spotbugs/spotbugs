@@ -136,7 +136,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 			result.setValue(i, entryLocalValueList[i]);
 	}
 
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact)
+	@Override
+         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact)
 	        throws DataflowAnalysisException {
 
 		Location location = new Location(handle, basicBlock);
@@ -174,12 +175,14 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		mergeInto(fact, result);
 	}
 
-	protected void mergeInto(ValueNumberFrame frame, ValueNumberFrame result) throws DataflowAnalysisException {
+	@Override
+         protected void mergeInto(ValueNumberFrame frame, ValueNumberFrame result) throws DataflowAnalysisException {
 		result.mergeAvailableLoadSets(frame);
 		super.mergeInto(frame, result);
 	}
 	
-	protected void mergeValues(ValueNumberFrame otherFrame, ValueNumberFrame resultFrame, int slot) throws DataflowAnalysisException {
+	@Override
+         protected void mergeValues(ValueNumberFrame otherFrame, ValueNumberFrame resultFrame, int slot) throws DataflowAnalysisException {
 		ValueNumber value =
 			mergeValues(resultFrame, slot, resultFrame.getValue(slot), otherFrame.getValue(slot));
 		resultFrame.setValue(slot, value);
@@ -223,7 +226,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		return mergedValue;
 	}
 
-	public ValueNumberFrame getFactAtLocation(Location location) {
+	@Override
+         public ValueNumberFrame getFactAtLocation(Location location) {
 		ValueNumberFrame fact = factAtLocationMap.get(location);
 		if (fact == null) {
 			fact = createFact();
@@ -233,7 +237,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		return fact;
 	}
 
-	public ValueNumberFrame getFactAfterLocation(Location location) {
+	@Override
+         public ValueNumberFrame getFactAfterLocation(Location location) {
 		ValueNumberFrame fact = factAfterLocationMap.get(location);
 		if (fact == null) {
 			fact = createFact();
@@ -356,7 +361,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 			DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis> driver =
 			        new DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis>() {
-				        public Dataflow<ValueNumberFrame, ValueNumberAnalysis> createDataflow(ClassContext classContext, Method method)
+				        @Override
+                                         public Dataflow<ValueNumberFrame, ValueNumberAnalysis> createDataflow(ClassContext classContext, Method method)
 				                throws CFGBuilderException, DataflowAnalysisException {
 					        return classContext.getValueNumberDataflow(method);
 				        }

@@ -40,7 +40,8 @@ public abstract class FieldPropertyDatabase<Property>
 	 * @see edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#parseKey(java.lang.String)
 	 */
 	//@Override
-	protected XField parseKey(String s) throws PropertyDatabaseFormatException {
+	@Override
+         protected XField parseKey(String s) throws PropertyDatabaseFormatException {
 		String[] tuple = s.split(",");
 		if (tuple.length != 4) {
 			throw new PropertyDatabaseFormatException("Invalid field tuple: " + s);
@@ -65,7 +66,8 @@ public abstract class FieldPropertyDatabase<Property>
 	 * @see edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#writeKey(java.io.Writer, KeyType)
 	 */
 	//@Override
-	protected void writeKey(Writer writer, XField key) throws IOException {
+	@Override
+         protected void writeKey(Writer writer, XField key) throws IOException {
 		writer.write(key.getClassName());
 		writer.write(",");
 		writer.write(key.getName());

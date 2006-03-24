@@ -31,17 +31,20 @@ public class AnnotationEnumeration <E extends AnnotationEnumeration<E>> implemen
 		name = s;
 		index = i;
 	}
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (!(o instanceof AnnotationEnumeration))
 			return false;
 		return index == ((AnnotationEnumeration) o).getIndex();
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return index;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		return name;
 	}
 	/**

@@ -38,7 +38,8 @@ public class BasicTypeTest extends TestCase {
 	private BasicType doubleType;
 	private BasicType voidType;
 
-	protected void setUp() {
+	@Override
+         protected void setUp() {
 		booleanType = new BasicType(Constants.T_BOOLEAN);
 		byteType = new BasicType(Constants.T_BYTE);
 		charType = new BasicType(Constants.T_CHAR);

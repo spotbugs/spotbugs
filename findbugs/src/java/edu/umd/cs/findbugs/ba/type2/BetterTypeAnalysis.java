@@ -95,7 +95,8 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 		}
 	}
 
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BetterTypeFrame fact)
+	@Override
+         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BetterTypeFrame fact)
 	        throws DataflowAnalysisException {
 		// TODO: implement
 	}
@@ -130,7 +131,8 @@ public class BetterTypeAnalysis extends FrameDataflowAnalysis<Type, BetterTypeFr
 	}
 	
 	//@Override
-	protected void mergeValues(BetterTypeFrame otherFrame, BetterTypeFrame resultFrame, int slot) throws DataflowAnalysisException {
+	@Override
+         protected void mergeValues(BetterTypeFrame otherFrame, BetterTypeFrame resultFrame, int slot) throws DataflowAnalysisException {
 		try {
 			Type value = typeMerger.mergeTypes(resultFrame.getValue(slot), otherFrame.getValue(slot));
 			resultFrame.setValue(slot, value);

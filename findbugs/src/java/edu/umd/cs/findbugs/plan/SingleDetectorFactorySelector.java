@@ -41,7 +41,8 @@ public class SingleDetectorFactorySelector implements DetectorFactorySelector {
 			 (factory.getFullName().equals(className) || factory.getShortName().equals(className));
 	}
 	
-	public String toString() {
+	@Override
+         public String toString() {
 		return className;
 	}
 	

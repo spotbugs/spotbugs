@@ -19,18 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
 
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import java.util.*;
+import org.apache.bcel.classfile.*;
 
 public class FindUninitializedGet extends BytecodeScanningDetector implements StatelessDetector {
 	Set<FieldAnnotation> initializedFields = new HashSet<FieldAnnotation>();
@@ -45,16 +37,19 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 	
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		declaredFields.clear();
 		super.visit(obj);
 	}
 
-	public void visit(Field obj) {
+	@Override
+         public void visit(Field obj) {
 		super.visit(obj);
 		//declaredFields.add(fieldName);
 		FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
@@ -64,7 +59,8 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 		*/
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		super.visit(obj);
 		initializedFields.clear();
 		/*
@@ -81,7 +77,8 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 	}
 
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (!inConstructor) return;
 
 		/*

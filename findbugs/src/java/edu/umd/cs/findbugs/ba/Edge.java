@@ -102,7 +102,8 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 		return type == HANDLED_EXCEPTION_EDGE || type == UNHANDLED_EXCEPTION_EDGE;
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null || this.getClass() != o.getClass())
 			return false;
 		Edge other = (Edge) o;
@@ -110,21 +111,24 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 		        && this.getType() == other.getType();
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return 2003 * getSource().getLabel() + getTarget().getLabel();
 	}
 
 	/**
 	 * Compare with other edge.
 	 */
-	public int compareTo(Edge other) {
+	@Override
+         public int compareTo(Edge other) {
 		int cmp = super.compareTo(other);
 		if (cmp != 0)
 			return cmp;
 		return type - other.type;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		return formatAsString(false);
 	}
 

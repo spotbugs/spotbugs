@@ -50,7 +50,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		this.bugReporter = bugReporter;
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
@@ -62,13 +63,15 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 	public void report() {
 	}
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		if (getMethodName().equals("clone") &&
 		        getMethodSig().startsWith("()"))
 			super.visit(obj);
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (seen == INVOKESPECIAL
 		        && getNameConstantOperand().equals("clone")
 		        && getSigConstantOperand().startsWith("()")) {
@@ -81,7 +84,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		}
 	}
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		implementsCloneableDirectly = false;
 		invokesSuperClone = false;
 		//isCloneable = false;
@@ -113,7 +117,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		super.visit(obj);
 	}
 
-	public void visitAfter(JavaClass obj) {
+	@Override
+         public void visitAfter(JavaClass obj) {
 		if (!check) return;
 		if (implementsCloneableDirectly && !hasCloneMethod) {
 			if (!referencesCloneMethod)
@@ -137,7 +142,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		*/
 	}
 
-	public void visit(ConstantNameAndType obj) {
+	@Override
+         public void visit(ConstantNameAndType obj) {
 		String methodName = obj.getName(getConstantPool());
 		String methodSig = obj.getSignature(getConstantPool());
 		if (!methodName.equals("clone")) return;
@@ -145,7 +151,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		referencesCloneMethod = true;
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		if (obj.isAbstract()) return;
 		if (!obj.isPublic()) return;
 		if (!getMethodName().equals("clone")) return;

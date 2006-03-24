@@ -19,14 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
+
+import edu.umd.cs.findbugs.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -43,11 +39,13 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		sawAvailable = 0;
 		sawRead = false;
 		sawSkip = false;
@@ -55,7 +53,8 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector implemen
 	}
 
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 
 		boolean isInputStream = false;
 		boolean isBufferedInputStream = false;

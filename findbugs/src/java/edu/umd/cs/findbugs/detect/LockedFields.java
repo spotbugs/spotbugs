@@ -19,19 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.*;
+import java.util.*;
+import org.apache.bcel.classfile.*;
 
 public class LockedFields extends BytecodeScanningDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("lockedfields.debug");
@@ -100,7 +91,8 @@ public class LockedFields extends BytecodeScanningDetector {
 		}
 	}
 
-	public void visit(Field obj) {
+	@Override
+         public void visit(Field obj) {
 		super.visit(obj);
 
 		FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
@@ -115,7 +107,8 @@ public class LockedFields extends BytecodeScanningDetector {
 			volatileOrFinalFields.add(f);
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		super.visit(obj);
 		int flags = obj.getAccessFlags();
 		publicMethod = (flags & ACC_PUBLIC) != 0;
@@ -141,7 +134,8 @@ public class LockedFields extends BytecodeScanningDetector {
 	}
 
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		if (inConstructor) return;
 		thisOnTopOfStack = false;
 		thisLocked = false;
@@ -156,7 +150,8 @@ public class LockedFields extends BytecodeScanningDetector {
 		}
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		// state: 0 - unlocked
 		// state: 1 - locked
 		// state: 2 - saw unlocked, but might still be locked
@@ -228,7 +223,8 @@ public class LockedFields extends BytecodeScanningDetector {
 		doubleThisOnTopOfStack = false;
 	}
 
-	public void report() {
+	@Override
+         public void report() {
 
 		int noLocked = 0;
 		int noUnlocked = 0;

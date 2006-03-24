@@ -9,7 +9,8 @@ public class SignatureParserTest extends TestCase {
 	SignatureParser noParams;
 	SignatureParser manyParams;
 
-	protected void setUp() {
+	@Override
+         protected void setUp() {
 		noParams = new SignatureParser("()V");
 		manyParams = new SignatureParser("(IJFDZLjava/lang/String;B)Ljava/lang/Object;");
 	}

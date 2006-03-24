@@ -309,7 +309,8 @@ public final class LockSet {
 		array[index + 1] = lockCount;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append('[');
 		boolean first = true;

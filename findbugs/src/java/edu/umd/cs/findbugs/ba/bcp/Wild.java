@@ -77,19 +77,23 @@ public class Wild extends PatternElement {
 		this.max = max;
 	}
 
-	public int minOccur() {
+	@Override
+         public int minOccur() {
 		return min;
 	}
 
-	public int maxOccur() {
+	@Override
+         public int maxOccur() {
 		return max;
 	}
 
-	public boolean acceptBranch(Edge edge, InstructionHandle source) {
+	@Override
+         public boolean acceptBranch(Edge edge, InstructionHandle source) {
 		return true;
 	}
 
-	public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
+	@Override
+         public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
 	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 		return new MatchResult(this, bindingSet);
 	}

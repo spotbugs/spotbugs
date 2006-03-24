@@ -63,15 +63,18 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
 		return new ExceptionObjectType(exceptionSupertype.getClassName(), exceptionSet);
 	}
 
-	public byte getType() {
+	@Override
+         public byte getType() {
 		return T_EXCEPTION;
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return getSignature().hashCode();
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null) return false;
 		if (o.getClass() != this.getClass()) return false;
 
@@ -89,7 +92,8 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
 		return exceptionSet;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("<exception:");
 		boolean first = true;

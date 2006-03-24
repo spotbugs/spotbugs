@@ -19,14 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.Lookup;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.*;
 
 public class FindFinalizeInvocations extends BytecodeScanningDetector implements StatelessDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("ffi.debug");
@@ -37,13 +32,15 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 		this.bugReporter = bugReporter;
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
 	boolean sawSuperFinalize;
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		if (DEBUG) System.out.println("FFI: visiting " + getFullyQualifiedMethodName());
 		if (getMethodName().equals("finalize")
 		        && getMethodSig().equals("()V")
@@ -52,7 +49,8 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 			bugReporter.reportBug(new BugInstance(this, "FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY).addClassAndMethod(this));
 	}
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		sawSuperFinalize = false;
 		super.visit(obj);
 		if (!getMethodName().equals("finalize")
@@ -79,7 +77,8 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 			        .addClass(overridesFinalizeIn));
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("finalize"))
 			bugReporter.reportBug(new BugInstance(this, "FI_EXPLICIT_INVOCATION", NORMAL_PRIORITY)
 			        .addClassAndMethod(this)

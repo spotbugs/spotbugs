@@ -138,7 +138,8 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 
 	 }
 	// Attributes
-	public void visitCode(Code obj) {
+	@Override
+         public void visitCode(Code obj) {
 		code = obj;
 		super.visitCode(obj);
 		CodeException[] exceptions = obj.getExceptionTable();
@@ -151,7 +152,8 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	}
 
 	// Constants
-	public void visitConstantPool(ConstantPool obj) {
+	@Override
+         public void visitConstantPool(ConstantPool obj) {
 		super.visitConstantPool(obj);
 		Constant[] constant_pool = obj.getConstantPool();
 		for (int i = 1; i < constant_pool.length; i++) {
@@ -214,7 +216,8 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	}
 
 	// Extra classes (i.e. leaves in this context)
-	public void visitInnerClasses(InnerClasses obj) {
+	@Override
+         public void visitInnerClasses(InnerClasses obj) {
 		super.visitInnerClasses(obj);
 		InnerClass[] inner_classes = obj.getInnerClasses();
 		for (InnerClass inner_class : inner_classes)
@@ -225,7 +228,8 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	}
 
 	// General classes
-	public void visitJavaClass(JavaClass obj) {
+	@Override
+         public void visitJavaClass(JavaClass obj) {
 		setupVisitorForClass(obj);
 		constantPool.accept(this);
 		Field[] fields = obj.getFields();
@@ -254,14 +258,16 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		super.visitJavaClass(obj);
 	}
 
-	public void visitLineNumberTable(LineNumberTable obj) {
+	@Override
+         public void visitLineNumberTable(LineNumberTable obj) {
 		super.visitLineNumberTable(obj);
 		LineNumber[] line_number_table = obj.getLineNumberTable();
 		for (LineNumber aLine_number_table : line_number_table)
 			aLine_number_table.accept(this);
 	}
 
-	public void visitLocalVariableTable(LocalVariableTable obj) {
+	@Override
+         public void visitLocalVariableTable(LocalVariableTable obj) {
 		super.visitLocalVariableTable(obj);
 		LocalVariable[] local_variable_table = obj.getLocalVariableTable();
 		for (LocalVariable aLocal_variable_table : local_variable_table)

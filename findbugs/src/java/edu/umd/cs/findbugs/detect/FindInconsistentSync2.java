@@ -19,56 +19,16 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.FieldInstruction;
-import org.apache.bcel.generic.INVOKESTATIC;
-import org.apache.bcel.generic.Instruction;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.Type;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.CallGraph;
-import edu.umd.cs.findbugs.CallGraphEdge;
-import edu.umd.cs.findbugs.CallGraphNode;
-import edu.umd.cs.findbugs.CallSite;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
-import edu.umd.cs.findbugs.SelfCalls;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.InnerClassAccess;
-import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
-import edu.umd.cs.findbugs.ba.InstanceField;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.LockChecker;
-import edu.umd.cs.findbugs.ba.LockSet;
-import edu.umd.cs.findbugs.ba.SignatureConverter;
-import edu.umd.cs.findbugs.ba.XField;
-import edu.umd.cs.findbugs.ba.type.TypeDataflow;
-import edu.umd.cs.findbugs.ba.type.TypeFrame;
-import edu.umd.cs.findbugs.ba.vna.ValueNumber;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.ba.type.*;
+import edu.umd.cs.findbugs.ba.vna.*;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
+import java.util.*;
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.*;
+import org.apache.bcel.generic.*;
 
 /**
  * Find instance fields which are sometimes accessed (read or written)
@@ -217,7 +177,8 @@ public class FindInconsistentSync2 implements Detector {
 		
 		// Build self-call graph
 		SelfCalls selfCalls = new SelfCalls(classContext) {
-			public boolean wantCallsFor(Method method) {
+			@Override
+                         public boolean wantCallsFor(Method method) {
 				return !method.isPublic();
 			}
 		};

@@ -19,12 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.Code;
 
 public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -36,11 +33,13 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		previousLoadOf = -1;
 		previousGotoTarget = -1;
 		gotoCount = 0;
@@ -48,7 +47,8 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 	}
 
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (seen == GOTO) {
 			previousGotoTarget = getBranchTarget();
 			gotoCount++;

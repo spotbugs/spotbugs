@@ -41,7 +41,8 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		return decision;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		String result = super.toString();
 		if (decision != null) {
 			result = result + ", [decision=" + decision.toString() + "]";

@@ -65,7 +65,8 @@ public class State {
 		return dup;
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null || o.getClass() != this.getClass())
 			return false;
 		State other = (State) o;
@@ -73,11 +74,13 @@ public class State {
 			|| this.path.equals(other.path);
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return obligationSet.hashCode() + (1009 * path.hashCode());
 	}
 	
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("[");
 		buf.append(obligationSet.toString());

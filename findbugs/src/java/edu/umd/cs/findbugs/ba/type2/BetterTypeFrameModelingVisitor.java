@@ -142,7 +142,8 @@ public class BetterTypeFrameModelingVisitor extends AbstractFrameModelingVisitor
 		this.methodGen = methodGen;
 	}
 
-	public Type getDefaultValue() {
+	@Override
+         public Type getDefaultValue() {
 		return typeRepository.getBottomType();
 	}
 
@@ -214,7 +215,8 @@ public class BetterTypeFrameModelingVisitor extends AbstractFrameModelingVisitor
 	 * This is overridden only to ensure that we don't rely on the
 	 * base class to handle instructions that produce stack operands.
 	 */
-	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
+	@Override
+         public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
 		if (Debug.VERIFY_INTEGRITY) {
 			if (numWordsProduced > 0)
 				throw new AnalysisException("Missing visitor method", methodGen, ins);
@@ -235,363 +237,439 @@ public class BetterTypeFrameModelingVisitor extends AbstractFrameModelingVisitor
 	// - Instructions that consume and produce should call
 	//   consumeStack(Instruction) and then explicitly push produced operands.
 
-	public void visitACONST_NULL(ACONST_NULL obj) {
+	@Override
+         public void visitACONST_NULL(ACONST_NULL obj) {
 		pushValue(typeRepository.getNullType());
 	}
 
-	public void visitDCONST(DCONST obj) {
+	@Override
+         public void visitDCONST(DCONST obj) {
 		pushValue(typeRepository.getDoubleType());
 	}
 
-	public void visitFCONST(FCONST obj) {
+	@Override
+         public void visitFCONST(FCONST obj) {
 		pushValue(typeRepository.getFloatType());
 	}
 
-	public void visitICONST(ICONST obj) {
+	@Override
+         public void visitICONST(ICONST obj) {
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLCONST(LCONST obj) {
+	@Override
+         public void visitLCONST(LCONST obj) {
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitLDC(LDC obj) {
+	@Override
+         public void visitLDC(LDC obj) {
 		pushValue(obj);
 	}
 
-	public void visitLDC2_W(LDC2_W obj) {
+	@Override
+         public void visitLDC2_W(LDC2_W obj) {
 		pushValue(obj);
 	}
 
-	public void visitBIPUSH(BIPUSH obj) {
+	@Override
+         public void visitBIPUSH(BIPUSH obj) {
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitSIPUSH(SIPUSH obj) {
+	@Override
+         public void visitSIPUSH(SIPUSH obj) {
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitGETSTATIC(GETSTATIC obj) {
+	@Override
+         public void visitGETSTATIC(GETSTATIC obj) {
 		consumeStack(obj);
 		pushValue(obj);
 	}
 
-	public void visitGETFIELD(GETFIELD obj) {
+	@Override
+         public void visitGETFIELD(GETFIELD obj) {
 		consumeStack(obj);
 		pushValue(obj);
 	}
 
-	public void visitINVOKESTATIC(INVOKESTATIC obj) {
+	@Override
+         public void visitINVOKESTATIC(INVOKESTATIC obj) {
 		consumeStack(obj);
 		pushReturnType(obj);
 	}
 
-	public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
+	@Override
+         public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
 		consumeStack(obj);
 		pushReturnType(obj);
 	}
 
-	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
+	@Override
+         public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
 		consumeStack(obj);
 		pushReturnType(obj);
 	}
 
-	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+	@Override
+         public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
 		consumeStack(obj);
 		pushReturnType(obj);
 	}
 
-	public void visitCHECKCAST(CHECKCAST obj) {
+	@Override
+         public void visitCHECKCAST(CHECKCAST obj) {
 		consumeStack(obj);
 		pushValue(obj);
 	}
 
-	public void visitINSTANCEOF(INSTANCEOF obj) {
+	@Override
+         public void visitINSTANCEOF(INSTANCEOF obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitFCMPL(FCMPL obj) {
+	@Override
+         public void visitFCMPL(FCMPL obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitFCMPG(FCMPG obj) {
+	@Override
+         public void visitFCMPG(FCMPG obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitDCMPL(DCMPL obj) {
+	@Override
+         public void visitDCMPL(DCMPL obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitDCMPG(DCMPG obj) {
+	@Override
+         public void visitDCMPG(DCMPG obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLCMP(LCMP obj) {
+	@Override
+         public void visitLCMP(LCMP obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitD2F(D2F obj) {
+	@Override
+         public void visitD2F(D2F obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getFloatType());
 	}
 
-	public void visitD2I(D2I obj) {
+	@Override
+         public void visitD2I(D2I obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitD2L(D2L obj) {
+	@Override
+         public void visitD2L(D2L obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitF2D(F2D obj) {
+	@Override
+         public void visitF2D(F2D obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getDoubleType());
 	}
 
-	public void visitF2I(F2I obj) {
+	@Override
+         public void visitF2I(F2I obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitF2L(F2L obj) {
+	@Override
+         public void visitF2L(F2L obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitI2B(I2B obj) {
+	@Override
+         public void visitI2B(I2B obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getByteType());
 	}
 
-	public void visitI2C(I2C obj) {
+	@Override
+         public void visitI2C(I2C obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getCharType());
 	}
 
-	public void visitI2D(I2D obj) {
+	@Override
+         public void visitI2D(I2D obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getDoubleType());
 	}
 
-	public void visitI2F(I2F obj) {
+	@Override
+         public void visitI2F(I2F obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getFloatType());
 	}
 
-	public void visitI2L(I2L obj) {
+	@Override
+         public void visitI2L(I2L obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitI2S(I2S obj) {
+	@Override
+         public void visitI2S(I2S obj) {
 	} // no change
 
-	public void visitL2D(L2D obj) {
+	@Override
+         public void visitL2D(L2D obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getDoubleType());
 	}
 
-	public void visitL2F(L2F obj) {
+	@Override
+         public void visitL2F(L2F obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getFloatType());
 	}
 
-	public void visitL2I(L2I obj) {
+	@Override
+         public void visitL2I(L2I obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitIAND(IAND obj) {
+	@Override
+         public void visitIAND(IAND obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLAND(LAND obj) {
+	@Override
+         public void visitLAND(LAND obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitIOR(IOR obj) {
+	@Override
+         public void visitIOR(IOR obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLOR(LOR obj) {
+	@Override
+         public void visitLOR(LOR obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitIXOR(IXOR obj) {
+	@Override
+         public void visitIXOR(IXOR obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLXOR(LXOR obj) {
+	@Override
+         public void visitLXOR(LXOR obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitISHR(ISHR obj) {
+	@Override
+         public void visitISHR(ISHR obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitIUSHR(IUSHR obj) {
+	@Override
+         public void visitIUSHR(IUSHR obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLSHR(LSHR obj) {
+	@Override
+         public void visitLSHR(LSHR obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitLUSHR(LUSHR obj) {
+	@Override
+         public void visitLUSHR(LUSHR obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitISHL(ISHL obj) {
+	@Override
+         public void visitISHL(ISHL obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLSHL(LSHL obj) {
+	@Override
+         public void visitLSHL(LSHL obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitDADD(DADD obj) {
+	@Override
+         public void visitDADD(DADD obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getDoubleType());
 	}
 
-	public void visitFADD(FADD obj) {
+	@Override
+         public void visitFADD(FADD obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getFloatType());
 	}
 
-	public void visitIADD(IADD obj) {
+	@Override
+         public void visitIADD(IADD obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLADD(LADD obj) {
+	@Override
+         public void visitLADD(LADD obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitDSUB(DSUB obj) {
+	@Override
+         public void visitDSUB(DSUB obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getDoubleType());
 	}
 
-	public void visitFSUB(FSUB obj) {
+	@Override
+         public void visitFSUB(FSUB obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getFloatType());
 	}
 
-	public void visitISUB(ISUB obj) {
+	@Override
+         public void visitISUB(ISUB obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLSUB(LSUB obj) {
+	@Override
+         public void visitLSUB(LSUB obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitDMUL(DMUL obj) {
+	@Override
+         public void visitDMUL(DMUL obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getDoubleType());
 	}
 
-	public void visitFMUL(FMUL obj) {
+	@Override
+         public void visitFMUL(FMUL obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getFloatType());
 	}
 
-	public void visitIMUL(IMUL obj) {
+	@Override
+         public void visitIMUL(IMUL obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLMUL(LMUL obj) {
+	@Override
+         public void visitLMUL(LMUL obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitDDIV(DDIV obj) {
+	@Override
+         public void visitDDIV(DDIV obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getDoubleType());
 	}
 
-	public void visitFDIV(FDIV obj) {
+	@Override
+         public void visitFDIV(FDIV obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getFloatType());
 	}
 
-	public void visitIDIV(IDIV obj) {
+	@Override
+         public void visitIDIV(IDIV obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLDIV(LDIV obj) {
+	@Override
+         public void visitLDIV(LDIV obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitDREM(DREM obj) {
+	@Override
+         public void visitDREM(DREM obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getDoubleType());
 	}
 
-	public void visitFREM(FREM obj) {
+	@Override
+         public void visitFREM(FREM obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getFloatType());
 	}
 
-	public void visitIREM(IREM obj) {
+	@Override
+         public void visitIREM(IREM obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLREM(LREM obj) {
+	@Override
+         public void visitLREM(LREM obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitIINC(IINC obj) {
+	@Override
+         public void visitIINC(IINC obj) {
 	} // no change to types of stack or locals
 
-	public void visitDNEG(DNEG obj) {
+	@Override
+         public void visitDNEG(DNEG obj) {
 	} // no change
 
-	public void visitFNEG(FNEG obj) {
+	@Override
+         public void visitFNEG(FNEG obj) {
 	} // no change
 
-	public void visitINEG(INEG obj) {
+	@Override
+         public void visitINEG(INEG obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLNEG(LNEG obj) {
+	@Override
+         public void visitLNEG(LNEG obj) {
 	} // no change
 
-	public void visitARRAYLENGTH(ARRAYLENGTH obj) {
+	@Override
+         public void visitARRAYLENGTH(ARRAYLENGTH obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitAALOAD(AALOAD obj) {
+	@Override
+         public void visitAALOAD(AALOAD obj) {
 		// To determine the type pushed on the stack,
 		// we look at the type of the array reference which was
 		// popped off of the stack.
@@ -610,50 +688,59 @@ public class BetterTypeFrameModelingVisitor extends AbstractFrameModelingVisitor
 		}
 	}
 
-	public void visitBALOAD(BALOAD obj) {
+	@Override
+         public void visitBALOAD(BALOAD obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getByteType());
 	}
 
-	public void visitCALOAD(CALOAD obj) {
+	@Override
+         public void visitCALOAD(CALOAD obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getCharType());
 	}
 
-	public void visitDALOAD(DALOAD obj) {
+	@Override
+         public void visitDALOAD(DALOAD obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getDoubleType());
 	}
 
-	public void visitFALOAD(FALOAD obj) {
+	@Override
+         public void visitFALOAD(FALOAD obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getFloatType());
 	}
 
-	public void visitIALOAD(IALOAD obj) {
+	@Override
+         public void visitIALOAD(IALOAD obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getIntType());
 	}
 
-	public void visitLALOAD(LALOAD obj) {
+	@Override
+         public void visitLALOAD(LALOAD obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getLongType());
 	}
 
-	public void visitSALOAD(SALOAD obj) {
+	@Override
+         public void visitSALOAD(SALOAD obj) {
 		consumeStack(obj);
 		pushValue(typeRepository.getShortType());
 	}
 
 	// The various xASTORE instructions only consume stack.
 
-	public void visitNEW(NEW obj) {
+	@Override
+         public void visitNEW(NEW obj) {
 		// FIXME: type is technically "uninitialized"
 		// However, we don't model that yet.
 		pushValue(obj);
 	}
 
-	public void visitNEWARRAY(NEWARRAY obj) {
+	@Override
+         public void visitNEWARRAY(NEWARRAY obj) {
 		consumeStack(obj);
 		try {
 			Type elementType = typeRepository.typeFromSignature(obj.getType().getSignature());
@@ -663,7 +750,8 @@ public class BetterTypeFrameModelingVisitor extends AbstractFrameModelingVisitor
 		}
 	}
 
-	public void visitANEWARRAY(ANEWARRAY obj) {
+	@Override
+         public void visitANEWARRAY(ANEWARRAY obj) {
 		consumeStack(obj);
 		try {
 			Type elementType = typeRepository.typeFromSignature(obj.getType(getCPG()).getSignature());
@@ -673,7 +761,8 @@ public class BetterTypeFrameModelingVisitor extends AbstractFrameModelingVisitor
 		}
 	}
 
-	public void visitMULTIANEWARRAY(MULTIANEWARRAY obj) {
+	@Override
+         public void visitMULTIANEWARRAY(MULTIANEWARRAY obj) {
 		consumeStack(obj);
 		try {
 			Type elementType = typeRepository.typeFromSignature(obj.getType(getCPG()).getSignature());
@@ -683,15 +772,18 @@ public class BetterTypeFrameModelingVisitor extends AbstractFrameModelingVisitor
 		}
 	}
 
-	public void visitJSR(JSR obj) {
+	@Override
+         public void visitJSR(JSR obj) {
 		pushValue(typeRepository.getReturnAddressType());
 	}
 
-	public void visitJSR_W(JSR_W obj) {
+	@Override
+         public void visitJSR_W(JSR_W obj) {
 		pushValue(typeRepository.getReturnAddressType());
 	}
 
-	public void visitRET(RET obj) {
+	@Override
+         public void visitRET(RET obj) {
 	} // no change
 
 }

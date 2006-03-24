@@ -67,7 +67,8 @@ public class ObligationSet {
 //		return getCount(obligation.getId());
 //	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null || o.getClass() != this.getClass())
 			return false;
 
@@ -84,7 +85,8 @@ public class ObligationSet {
 		return true;
 	}
 	
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("{");
 		int count = 0;
@@ -113,7 +115,8 @@ public class ObligationSet {
 		return dup;
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		if (cachedHashCode == INVALID_HASH_CODE) {
 			int value = 0;
 			for (int i = 0; i < countList.length; ++i) {

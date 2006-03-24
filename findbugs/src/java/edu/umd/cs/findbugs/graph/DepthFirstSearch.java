@@ -45,15 +45,18 @@ public class DepthFirstSearch
 		super(graph);
 	}
 
-	protected Iterator<EdgeType> outgoingEdgeIterator(GraphType graph, VertexType vertex) {
+	@Override
+         protected Iterator<EdgeType> outgoingEdgeIterator(GraphType graph, VertexType vertex) {
 		return graph.outgoingEdgeIterator(vertex);
 	}
 
-	protected VertexType getTarget(EdgeType edge) {
+	@Override
+         protected VertexType getTarget(EdgeType edge) {
 		return edge.getTarget();
 	}
 
-	protected VertexType getSource(EdgeType edge) {
+	@Override
+         protected VertexType getSource(EdgeType edge) {
 		return edge.getSource();
 	}
 

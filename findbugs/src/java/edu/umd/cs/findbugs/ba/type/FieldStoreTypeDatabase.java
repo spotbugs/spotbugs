@@ -34,7 +34,8 @@ public class FieldStoreTypeDatabase
 	public static final String DEFAULT_FILENAME = "fieldStoreTypes.db";
 
 	//@Override
-	protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {
+	@Override
+         protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {
 		FieldStoreType property = new FieldStoreType();
 		StringTokenizer t = new StringTokenizer(propStr, ",");
 		while (t.hasMoreTokens()) {
@@ -45,7 +46,8 @@ public class FieldStoreTypeDatabase
 	}
 
 	//@Override
-	protected String encodeProperty(FieldStoreType property) {
+	@Override
+         protected String encodeProperty(FieldStoreType property) {
 		StringBuffer buf = new StringBuffer();
 		for (Iterator<String> i = property.signatureIterator(); i.hasNext();) {
 			if (buf.length() > 0) {

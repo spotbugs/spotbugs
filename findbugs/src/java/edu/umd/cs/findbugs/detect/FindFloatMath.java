@@ -19,10 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+
+import edu.umd.cs.findbugs.*;
 
 public class FindFloatMath extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;
@@ -31,11 +29,13 @@ public class FindFloatMath extends BytecodeScanningDetector implements Stateless
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		switch (seen) {
 		case FMUL:
 		case FDIV:

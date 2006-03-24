@@ -39,7 +39,8 @@ public class ConfusedInheritance extends PreorderVisitor  implements Detector, S
 		this.bugReporter = bugReporter;
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 	
@@ -50,7 +51,8 @@ public class ConfusedInheritance extends PreorderVisitor  implements Detector, S
 		}
 	}
 	
-	public void visitField(Field obj) {
+	@Override
+         public void visitField(Field obj) {
 		if (obj.isProtected()) {
 			bugReporter.reportBug( 
 				new BugInstance( this, "CI_CONFUSED_INHERITANCE", LOW_PRIORITY)

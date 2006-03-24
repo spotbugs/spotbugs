@@ -219,7 +219,8 @@ public class BlockType extends BitSet {
 		push(FINALLY);
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		if (isTop())
 			return "<top>";
 		else if (isBottom())

@@ -20,18 +20,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.Map;
 
+import edu.umd.cs.findbugs.*;
+import java.util.*;
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import org.apache.bcel.classfile.*;
 
 
 public class InstantiateStaticClass extends BytecodeScanningDetector {
@@ -43,7 +36,8 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 	
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		try {
 			if ((seen == INVOKESPECIAL)
 			&&  getNameConstantOperand().equals("<init>")

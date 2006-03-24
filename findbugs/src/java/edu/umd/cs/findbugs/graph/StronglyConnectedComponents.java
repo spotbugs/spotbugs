@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.15 $
+// $Revision: 1.16 $
 
 package edu.umd.cs.findbugs.graph;
 
@@ -100,7 +100,8 @@ public class StronglyConnectedComponents
 		final Iterator<VertexType> vertexIter = descendingByFinishTimeSet.iterator();
 		DepthFirstSearch<GraphType, EdgeType, VertexType> transposeDFS =
 		        new DepthFirstSearch<GraphType, EdgeType, VertexType>(transpose) {
-			protected VertexType getNextSearchTreeRoot() {
+			@Override
+                         protected VertexType getNextSearchTreeRoot() {
 				while(vertexIter.hasNext()) {
 					VertexType vertex = vertexIter.next();
 					if (visitMe(vertex))

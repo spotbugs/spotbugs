@@ -96,7 +96,8 @@ public class IsNullConditionDecision implements EdgeTypes {
 			return fallThroughDecision;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(value != null ? value.toString() : "NoValue,");
 		buf.append("ifcmp=");

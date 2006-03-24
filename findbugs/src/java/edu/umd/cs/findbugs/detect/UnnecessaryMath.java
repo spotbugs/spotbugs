@@ -20,19 +20,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
 
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantDouble;
-import org.apache.bcel.classfile.ConstantFloat;
-import org.apache.bcel.classfile.ConstantLong;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import java.util.*;
+import org.apache.bcel.classfile.*;
 
 /**
  * Find occurrences of Math using constants, where the result of the
@@ -94,11 +85,13 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
 		this.bugReporter = bugReporter;
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		// Don't complain about unnecessary math calls in class initializers,
 		// since they may be there to improve readability.
 		if (getMethod().getName().equals("<clinit>"))
@@ -108,7 +101,8 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
 		super.visit(obj);
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (state == SEEN_NOTHING) {
 			if ((seen == DCONST_0) || (seen == DCONST_1)) {
 				constValue = (double) (seen - DCONST_0);

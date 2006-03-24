@@ -42,7 +42,8 @@ public class Call {
 	}
 	
 	//@Override
-	public boolean equals(Object obj) {
+	@Override
+         public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
 		Call other = (Call) obj;
@@ -52,7 +53,8 @@ public class Call {
 	}
 	
 	//@Override
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return className.hashCode() + methodName.hashCode() + methodSig.hashCode();
 	}
 }

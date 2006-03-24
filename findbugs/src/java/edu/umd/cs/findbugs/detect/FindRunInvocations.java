@@ -19,13 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import org.apache.bcel.classfile.Code;
 
 public class FindRunInvocations extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -36,7 +33,8 @@ public class FindRunInvocations extends BytecodeScanningDetector implements Stat
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
@@ -49,12 +47,14 @@ public class FindRunInvocations extends BytecodeScanningDetector implements Stat
 		}
 	}
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		alreadySawStart = false;
 		super.visit(obj);
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (alreadySawStart) return;
 		if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
 		        && getSigConstantOperand().equals("()V")

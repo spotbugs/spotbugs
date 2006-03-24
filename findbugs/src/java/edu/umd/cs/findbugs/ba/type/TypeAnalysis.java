@@ -271,11 +271,13 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			result.setValue(slot++, TypeFrame.getBottomType());
 	}
 
-	public void copy(TypeFrame source, TypeFrame dest) {
+	@Override
+         public void copy(TypeFrame source, TypeFrame dest) {
 		dest.copyFrom(source);
 	}
 
-	public void initResultFact(TypeFrame result) {
+	@Override
+         public void initResultFact(TypeFrame result) {
 		// This is important.  Sometimes we need to use a result value
 		// before having a chance to initialize it.  We don't want such
 		// values to corrupt other TypeFrame values that we merge them with.
@@ -283,25 +285,30 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		result.setTop();
 	}
 
-	public void makeFactTop(TypeFrame fact) {
+	@Override
+         public void makeFactTop(TypeFrame fact) {
 		fact.setTop();
 	}
 
-	public boolean isFactValid(TypeFrame fact) {
+	@Override
+         public boolean isFactValid(TypeFrame fact) {
 		return fact.isValid();
 	}
 
-	public boolean same(TypeFrame fact1, TypeFrame fact2) {
+	@Override
+         public boolean same(TypeFrame fact1, TypeFrame fact2) {
 		return fact1.sameAs(fact2);
 	}
 
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeFrame fact)
+	@Override
+         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeFrame fact)
 	        throws DataflowAnalysisException {
 		visitor.setFrameAndLocation(fact, new Location(handle, basicBlock));
 		visitor.analyzeInstruction(handle.getInstruction());
 	}
 
-	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result)
+	@Override
+         public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result)
 	        throws DataflowAnalysisException {
 
 		// Do nothing if we're not computing propagated exceptions
@@ -455,7 +462,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	}
 	
 	//@Override
-	protected void mergeValues(TypeFrame otherFrame, TypeFrame resultFrame, int slot) throws DataflowAnalysisException {
+	@Override
+         protected void mergeValues(TypeFrame otherFrame, TypeFrame resultFrame, int slot) throws DataflowAnalysisException {
 		Type value = typeMerger.mergeTypes(resultFrame.getValue(slot), otherFrame.getValue(slot));
 		resultFrame.setValue(slot, value);
 		resultFrame.setExact(slot, resultFrame.isExact(slot) && otherFrame.isExact(slot));
@@ -723,7 +731,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		}
 
 		DataflowTestDriver<TypeFrame, TypeAnalysis> driver = new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
-			public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
+			@Override
+                         public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
 			        throws CFGBuilderException, DataflowAnalysisException {
 				return classContext.getTypeDataflow(method);
 			}

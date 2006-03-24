@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+
 import edu.umd.cs.findbugs.ba.Location;
 
 /**
@@ -49,7 +50,8 @@ public class StreamEscape implements Comparable<StreamEscape> {
 		return target.compareTo(other.target);
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		return source + " to " + target;
 	}
 }

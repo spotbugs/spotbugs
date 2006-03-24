@@ -19,12 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.Method;
 
 public class FindNonShortCircuit extends BytecodeScanningDetector implements  StatelessDetector {
 
@@ -39,18 +36,21 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements  St
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		stage1 = 0;
 		stage2 = 0;
 		distance = 1000000;
 		//distance2 = 1000000;
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		/* prototype for short-circuit bug */
 		distance++;
 		switch (seen) {

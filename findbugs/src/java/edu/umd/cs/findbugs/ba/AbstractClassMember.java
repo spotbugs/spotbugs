@@ -87,14 +87,16 @@ public abstract class AbstractClassMember implements ClassMember {
 		return signature.compareTo(other.getSignature());
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		if (cachedHashCode == 0) {
 			cachedHashCode = className.hashCode() ^ name.hashCode() ^ signature.hashCode();
 		}
 		return cachedHashCode;
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null || this.getClass() != o.getClass())
 			return false;
 		AbstractClassMember other = (AbstractClassMember) o;
@@ -103,7 +105,8 @@ public abstract class AbstractClassMember implements ClassMember {
 		        && signature.equals(other.signature);
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		return className + "." + name;
 	}
 

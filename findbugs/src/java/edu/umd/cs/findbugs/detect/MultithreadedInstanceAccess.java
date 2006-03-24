@@ -19,27 +19,12 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
 
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantFieldref;
-import org.apache.bcel.classfile.ConstantNameAndType;
-import org.apache.bcel.classfile.ConstantPool;
-import org.apache.bcel.classfile.ConstantUtf8;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import java.util.*;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.*;
 
 
 public class MultithreadedInstanceAccess extends BytecodeScanningDetector
@@ -76,7 +61,8 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector
 		return mtClasses;
 	}
 	
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 		try {
 			JavaClass cls = classContext.getJavaClass();
 			String superClsName = cls.getSuperclassName();
@@ -111,18 +97,21 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector
 		}
 	}
 	
-	public void visitMethod(Method obj) {
+	@Override
+         public void visitMethod(Method obj) {
 		monitorCount = 0;
 		alreadyReported = new HashSet<String>();
 		writingField = false;
 	}
 	
-	public void visitCode(Code obj) {
+	@Override
+         public void visitCode(Code obj) {
 		if (!getMethodName().equals("<init>") && !getMethodName().equals("init"))
 			super.visitCode(obj);
 	}
 	
-	public void sawField() {
+	@Override
+         public void sawField() {
 		if ((monitorCount > 0) || (!writingField))
 			return;
 		
@@ -162,7 +151,8 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector
 		}
 	}
 	
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (seen == MONITORENTER)
 			monitorCount++;
 		else if (seen == MONITOREXIT)

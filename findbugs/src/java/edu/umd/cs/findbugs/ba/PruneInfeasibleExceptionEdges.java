@@ -49,7 +49,8 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	static {
 		if (STATS) {
 			Runtime.getRuntime().addShutdownHook(new Thread() {
-				public void run() {
+				@Override
+                                 public void run() {
 					System.err.println("Exception edges pruned: " + numEdgesPruned);
 				}
 			});

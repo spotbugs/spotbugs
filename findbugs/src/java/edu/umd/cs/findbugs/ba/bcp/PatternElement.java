@@ -198,7 +198,8 @@ public abstract class PatternElement {
 		return bindingSet;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		String className = this.getClass().getName();
 		buf.append(className.substring(className.lastIndexOf('.') + 1));

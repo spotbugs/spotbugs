@@ -19,12 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.Method;
 
 //   2:   astore_1
 //   3:   monitorenter
@@ -42,19 +39,23 @@ public class FindUnconditionalWait extends BytecodeScanningDetector implements S
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 	
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		stage = 0;
 	}
 
-	public void sawOffset(int offset) {
+	@Override
+         public void sawOffset(int offset) {
 		if (stage == 1) stage = 0;
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		switch (stage) {
 		case 0:
 			if (seen == MONITORENTER)

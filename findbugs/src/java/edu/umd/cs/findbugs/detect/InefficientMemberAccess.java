@@ -19,14 +19,11 @@
  */
 package edu.umd.cs.findbugs.detect;
 
+
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class InefficientMemberAccess extends BytecodeScanningDetector implements StatelessDetector {
 	
@@ -38,18 +35,21 @@ public class InefficientMemberAccess extends BytecodeScanningDetector implements
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 	
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 		JavaClass cls = classContext.getJavaClass();
 		clsName = cls.getClassName();
 		if (clsName.indexOf("$") >= 0)
 			super.visitClassContext(classContext);
 	}
 		
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		int varSlot;
 		if (seen == INVOKESTATIC) {
 			String methodName = getNameConstantOperand();

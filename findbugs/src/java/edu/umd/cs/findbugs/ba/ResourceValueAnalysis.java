@@ -155,7 +155,8 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 		mergeInto(fact, result);
 	}
 
-	protected void mergeInto(ResourceValueFrame frame, ResourceValueFrame result)
+	@Override
+         protected void mergeInto(ResourceValueFrame frame, ResourceValueFrame result)
 	        throws DataflowAnalysisException {
 		// Merge slots
 		super.mergeInto(frame, result);
@@ -165,12 +166,14 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 	}
 	
 	//@Override
-	protected void mergeValues(ResourceValueFrame otherFrame, ResourceValueFrame resultFrame, int slot) throws DataflowAnalysisException {
+	@Override
+         protected void mergeValues(ResourceValueFrame otherFrame, ResourceValueFrame resultFrame, int slot) throws DataflowAnalysisException {
 		ResourceValue value = ResourceValue.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
 		resultFrame.setValue(slot, value);
 	}
 
-	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ResourceValueFrame fact)
+	@Override
+         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ResourceValueFrame fact)
 	        throws DataflowAnalysisException {
 
 		visitor.setFrameAndLocation(fact, new Location(handle, basicBlock));

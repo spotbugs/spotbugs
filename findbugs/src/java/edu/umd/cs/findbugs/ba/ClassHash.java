@@ -307,7 +307,8 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 	 * @see java.lang.Object#toString()
 	 */
 	//@Override
-	public String toString() {
+	@Override
+         public String toString() {
 		return getClassName() + ":" + hashToString(this.classHash);
 	}
 }

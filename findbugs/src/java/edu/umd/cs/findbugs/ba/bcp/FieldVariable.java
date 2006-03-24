@@ -94,7 +94,8 @@ public class FieldVariable implements Variable {
 		        && fieldSig.equals(otherField.fieldSig);
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(className);
 		buf.append('.');

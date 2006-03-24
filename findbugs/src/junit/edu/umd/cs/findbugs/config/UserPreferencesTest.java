@@ -7,7 +7,8 @@ public class UserPreferencesTest extends TestCase {
 	UserPreferences prefs;
 	
 	//@Override
-	protected void setUp() throws Exception {
+	@Override
+         protected void setUp() throws Exception {
 		prefs = UserPreferences.createDefaultUserPreferences();
 	}
 	

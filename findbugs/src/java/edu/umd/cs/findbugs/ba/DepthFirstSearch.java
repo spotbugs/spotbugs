@@ -40,7 +40,8 @@ public class DepthFirstSearch
 		firstRoot = cfg.getEntry();
 	}
 
-	protected BasicBlock getNextSearchTreeRoot() {
+	@Override
+         protected BasicBlock getNextSearchTreeRoot() {
 		BasicBlock result = firstRoot;
 		firstRoot = null;
 		return result;

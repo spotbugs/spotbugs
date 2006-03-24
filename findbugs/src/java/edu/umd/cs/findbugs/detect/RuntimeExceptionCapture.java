@@ -20,35 +20,13 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.*;
+import java.util.*;
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.CodeException;
-import org.apache.bcel.classfile.ExceptionTable;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.ASTORE;
-import org.apache.bcel.generic.InstructionHandle;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.StatelessDetector;
-import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.CFGBuilderException;
-import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.LiveLocalStoreDataflow;
-import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.SignatureConverter;
+import org.apache.bcel.classfile.*;
+import org.apache.bcel.generic.*;
 ;
 
 /**
@@ -96,11 +74,13 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visitMethod(Method method) {
+	@Override
+         public void visitMethod(Method method) {
 		this.method = method;
 		if (DEBUG) {
 			System.out.println("RuntimeExceptionCapture visiting " + method);
@@ -108,7 +88,8 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 		super.visitMethod(method);
 	}
 
-	public void visitCode(Code obj) {
+	@Override
+         public void visitCode(Code obj) {
 		catchList = new ArrayList<ExceptionCaught>();
 		throwList = new ArrayList<ExceptionThrown>();
                 stack.resetForMethodEntry(this);
@@ -154,7 +135,8 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 		}
 	}
 
-	public void visit(CodeException obj) {
+	@Override
+         public void visit(CodeException obj) {
 		super.visit(obj);
 		int type = obj.getCatchType();
 		if (type == 0) return;
@@ -196,7 +178,8 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 		}
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		try {
 			switch (seen) {

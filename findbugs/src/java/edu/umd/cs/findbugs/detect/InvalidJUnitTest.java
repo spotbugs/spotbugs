@@ -21,16 +21,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.Lookup;
+import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.*;
 
 public class InvalidJUnitTest extends BytecodeScanningDetector {
 
@@ -48,13 +43,15 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
 	boolean directChildOfTestCase;
 
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 		if (!enabled())
 			return;
 		
@@ -111,7 +108,8 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 		return haveTestCaseClass;
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		if (getMethodName().equals("suite") && !obj.isStatic())
 			bugReporter.reportBug(new BugInstance(this, "IJU_SUITE_NOT_STATIC",
 					NORMAL_PRIORITY).addClassAndMethod(this));
@@ -120,7 +118,8 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 
 	private boolean sawSuperCall;
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		if (!directChildOfTestCase
 				&& (getMethodName().equals("setUp") || getMethodName().equals(
 						"tearDown"))
@@ -141,7 +140,8 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 		}
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		switch (state) {
 		case SEEN_NOTHING:
 			if (seen == ALOAD_0)

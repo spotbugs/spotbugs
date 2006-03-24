@@ -97,11 +97,13 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 			return reference.compareTo(other.reference);
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return (reference == null ? 0 : reference.hashCode()) ^ field.hashCode();
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null || this.getClass() != o.getClass())
 			return false;
 		AvailableLoad other = (AvailableLoad) o;
@@ -110,7 +112,8 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 		        && field.equals(other.field);
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		return (reference == null ? "" : reference.getNumber() + ".") + field;
 	}
 }

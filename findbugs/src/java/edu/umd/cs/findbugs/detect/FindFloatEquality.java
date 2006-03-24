@@ -19,17 +19,10 @@
  */
 
 package edu.umd.cs.findbugs.detect;
-import java.util.Collection;
-import java.util.LinkedList;
 
+import edu.umd.cs.findbugs.*;
+import java.util.*;
 import org.apache.bcel.classfile.Code;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.StatelessDetector;
 
 public class FindFloatEquality extends BytecodeScanningDetector implements StatelessDetector 
 {
@@ -44,12 +37,14 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 		this.bugReporter = bugReporter;
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 	Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
 	
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		found.clear();
 		
         opStack.resetForMethodEntry(this);
@@ -65,7 +60,8 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 				found.clear();
 		}
 	}
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		opStack.mergeJumps(this);
 		try {
 			switch ( seen ) {

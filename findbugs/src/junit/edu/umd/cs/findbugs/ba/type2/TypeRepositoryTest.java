@@ -87,7 +87,8 @@ public class TypeRepositoryTest extends TestCase {
 		Assert.assertEquals(repos.getFirstCommonSuperclass(b, a), expectedCommonSuperclass);
 	}
 
-	protected void setUp() {
+	@Override
+         protected void setUp() {
 		if (Boolean.getBoolean("tr.debug")) System.out.println("----- Set up -----");
 
 		// In this test, all class types are explicitly marked as

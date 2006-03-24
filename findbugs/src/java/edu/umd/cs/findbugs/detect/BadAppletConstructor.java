@@ -46,11 +46,13 @@ public class BadAppletConstructor extends BytecodeScanningDetector implements  S
 		}
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visitClassContext(ClassContext classContext) {
+	@Override
+         public void visitClassContext(ClassContext classContext) {
 		if (appletClass == null)
 			return;
 			
@@ -63,16 +65,19 @@ public class BadAppletConstructor extends BytecodeScanningDetector implements  S
 		}
 	}
 	
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		inConstructor = obj.getName().equals("<init>");
 	}
 	
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		if (inConstructor)
 			super.visit(obj);
 	}
 	
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (seen == INVOKEVIRTUAL) {
 			String method = getNameConstantOperand();
 			String signature = getSigConstantOperand();

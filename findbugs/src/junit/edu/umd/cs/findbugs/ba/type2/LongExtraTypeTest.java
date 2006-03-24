@@ -7,7 +7,8 @@ import edu.umd.cs.findbugs.ba.type.ExtendedTypes;
 public class LongExtraTypeTest extends TestCase {
 	private LongExtraType longExtraType;
 
-	protected void setUp() {
+	@Override
+         protected void setUp() {
 		longExtraType = new LongExtraType();
 	}
 

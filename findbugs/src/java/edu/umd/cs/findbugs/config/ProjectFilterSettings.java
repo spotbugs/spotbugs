@@ -335,14 +335,16 @@ public class ProjectFilterSettings implements Cloneable {
 		return buf.toString();
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		return toEncodedString();
 	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	public boolean equals(Object obj) {
+	@Override
+         public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
 		ProjectFilterSettings other = (ProjectFilterSettings) obj;
@@ -363,7 +365,8 @@ public class ProjectFilterSettings implements Cloneable {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#clone()
 	 */
-	public Object clone()  {
+	@Override
+         public Object clone()  {
 		try {
 			// Create shallow copy
 			ProjectFilterSettings clone = (ProjectFilterSettings) super.clone();
@@ -385,7 +388,8 @@ public class ProjectFilterSettings implements Cloneable {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return minPriority.hashCode()
 			+ 1009 * activeBugCategorySet.hashCode()
 			+ (displayFalseWarnings ? 7919 : 0);

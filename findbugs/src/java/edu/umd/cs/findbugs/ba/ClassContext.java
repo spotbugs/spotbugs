@@ -268,7 +268,8 @@ public class ClassContext {
 			super(analysisName);
 		}
 
-		public Analysis getAnalysis(Method method) {
+		@Override
+                 public Analysis getAnalysis(Method method) {
 			try {
 				return super.getAnalysis(method);
 			} catch (DataflowAnalysisException e) {
@@ -284,7 +285,8 @@ public class ClassContext {
 			super(analysisName);
 		}
 
-		public Analysis getAnalysis(Method method) throws CFGBuilderException {
+		@Override
+                 public Analysis getAnalysis(Method method) throws CFGBuilderException {
 			try {
 				return super.getAnalysis(method);
 			} catch (DataflowAnalysisException e) {
@@ -301,7 +303,8 @@ public class ClassContext {
 			super("CFG construction");
 		}
 
-		public CFG getAnalysis(Method method) throws CFGBuilderException {
+		@Override
+                 public CFG getAnalysis(Method method) throws CFGBuilderException {
 			try {
 				return super.getAnalysis(method);
 			} catch (DataflowAnalysisException e) {
@@ -369,7 +372,8 @@ public class ClassContext {
 			return cfg;
 		}
 
-		protected CFG analyze(Method method) throws CFGBuilderException {
+		@Override
+                 protected CFG analyze(Method method) throws CFGBuilderException {
 			MethodGen methodGen = getMethodGen(method);
 			if (methodGen == null) {
 				JavaClassAndMethod javaClassAndMethod = new JavaClassAndMethod(jclass, method);
@@ -392,7 +396,8 @@ public class ClassContext {
 	static private Map<Method, MethodGen> cachedMethodGen = new IdentityHashMap<Method,MethodGen>();
 	private NoExceptionAnalysisFactory<MethodGen> methodGenFactory =
 	        new NoExceptionAnalysisFactory<MethodGen>("MethodGen construction") {
-		        @CheckForNull protected MethodGen analyze(Method method) {
+		        @CheckForNull@Override
+                          protected MethodGen analyze(Method method) {
 			        if (method.getCode() == null)
 				        return null;
 			        MethodGen result = cachedMethodGen.get(method);
@@ -440,7 +445,8 @@ public class ClassContext {
 
 	private AnalysisFactory<ValueNumberDataflow> vnaDataflowFactory =
 	        new AnalysisFactory<ValueNumberDataflow>("value number analysis") {
-		        protected ValueNumberDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+		        @Override
+                         protected ValueNumberDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
 			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
 			        DepthFirstSearch dfs = getDepthFirstSearch(method);
@@ -457,7 +463,8 @@ public class ClassContext {
 
 	private AnalysisFactory<IsNullValueDataflow> invDataflowFactory =
 	        new AnalysisFactory<IsNullValueDataflow>("null value analysis") {
-		        protected IsNullValueDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+		        @Override
+                         protected IsNullValueDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
 			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
 			        CFG cfg = getCFG(method);
@@ -479,7 +486,8 @@ public class ClassContext {
 
 	private AnalysisFactory<TypeDataflow> typeDataflowFactory =
 	        new AnalysisFactory<TypeDataflow>("type analysis") {
-		        protected TypeDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+		        @Override
+                         protected TypeDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
 			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
 			        CFG cfg = getRawCFG(method);
@@ -507,7 +515,8 @@ public class ClassContext {
 
 	private NoDataflowAnalysisFactory<DepthFirstSearch> dfsFactory =
 	        new NoDataflowAnalysisFactory<DepthFirstSearch>("depth first search") {
-		        protected DepthFirstSearch analyze(Method method) throws CFGBuilderException {
+		        @Override
+                         protected DepthFirstSearch analyze(Method method) throws CFGBuilderException {
 			        CFG cfg = getRawCFG(method);
 			        DepthFirstSearch dfs = new DepthFirstSearch(cfg);
 			        dfs.search();
@@ -517,7 +526,8 @@ public class ClassContext {
 
 	private NoDataflowAnalysisFactory<ReverseDepthFirstSearch> rdfsFactory =
 	        new NoDataflowAnalysisFactory<ReverseDepthFirstSearch>("reverse depth first search") {
-		        protected ReverseDepthFirstSearch analyze(Method method) throws CFGBuilderException {
+		        @Override
+                         protected ReverseDepthFirstSearch analyze(Method method) throws CFGBuilderException {
 			        CFG cfg = getRawCFG(method);
 			        ReverseDepthFirstSearch rdfs = new ReverseDepthFirstSearch(cfg);
 			        rdfs.search();
@@ -548,7 +558,8 @@ public class ClassContext {
 
 	private NoExceptionAnalysisFactory<UnpackedCode> unpackedCodeFactory =
 	        new NoExceptionAnalysisFactory<UnpackedCode>("unpacked bytecode") {
-		        protected UnpackedCode analyze(Method method) {
+		        @Override
+                         protected UnpackedCode analyze(Method method) {
 
 			        Code code = method.getCode();
 			        if (code == null)
@@ -569,7 +580,8 @@ public class ClassContext {
 
 	private AnalysisFactory<LockDataflow> lockDataflowFactory =
 	        new AnalysisFactory<LockDataflow>("lock set analysis") {
-		        protected LockDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+		        @Override
+                         protected LockDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
 			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
 			        ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
@@ -588,7 +600,8 @@ public class ClassContext {
 				/* (non-Javadoc)
 				 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#analyze(org.apache.bcel.classfile.Method)
 				 */
-				protected LockChecker analyze(Method method) throws CFGBuilderException,
+				@Override
+                                 protected LockChecker analyze(Method method) throws CFGBuilderException,
 						DataflowAnalysisException {
 					LockChecker lockChecker = new LockChecker(ClassContext.this, method);
 					lockChecker.execute();
@@ -598,7 +611,8 @@ public class ClassContext {
 	        
 	private AnalysisFactory<ReturnPathDataflow> returnPathDataflowFactory =
 	        new AnalysisFactory<ReturnPathDataflow>("return path analysis") {
-		        protected ReturnPathDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+		        @Override
+                         protected ReturnPathDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        CFG cfg = getCFG(method);
 			        DepthFirstSearch dfs = getDepthFirstSearch(method);
 			        ReturnPathAnalysis analysis = new ReturnPathAnalysis(dfs);
@@ -610,7 +624,8 @@ public class ClassContext {
 
 	private AnalysisFactory<DominatorsAnalysis> nonExceptionDominatorsAnalysisFactory =
 	        new AnalysisFactory<DominatorsAnalysis>("non-exception dominators analysis") {
-		        protected DominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+		        @Override
+                         protected DominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        CFG cfg = getCFG(method);
 			        DepthFirstSearch dfs = getDepthFirstSearch(method);
 			        DominatorsAnalysis analysis = new DominatorsAnalysis(cfg, dfs, true);
@@ -623,7 +638,8 @@ public class ClassContext {
 
 	private AnalysisFactory<PostDominatorsAnalysis> nonExceptionPostDominatorsAnalysisFactory =
 	        new AnalysisFactory<PostDominatorsAnalysis>("non-exception postdominators analysis") {
-		        protected PostDominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+		        @Override
+                         protected PostDominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        CFG cfg = getCFG(method);
 			        ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(method);
 			        PostDominatorsAnalysis analysis = new PostDominatorsAnalysis(cfg, rdfs, true);
@@ -636,7 +652,8 @@ public class ClassContext {
 
 	private AnalysisFactory<PostDominatorsAnalysis> nonImplicitExceptionPostDominatorsAnalysisFactory =
 		new AnalysisFactory<PostDominatorsAnalysis>("non-implicit-exception postdominators analysis") {
-			protected PostDominatorsAnalysis analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+			@Override
+                         protected PostDominatorsAnalysis analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
 				CFG cfg = getCFG(method);
 				PostDominatorsAnalysis analysis = new PostDominatorsAnalysis(
 						cfg,
@@ -658,14 +675,16 @@ public class ClassContext {
 			
 	private NoExceptionAnalysisFactory<ExceptionSetFactory> exceptionSetFactoryFactory =
 	        new NoExceptionAnalysisFactory<ExceptionSetFactory>("exception set factory") {
-		        protected ExceptionSetFactory analyze(Method method) {
+		        @Override
+                         protected ExceptionSetFactory analyze(Method method) {
 			        return new ExceptionSetFactory();
 		        }
 	        };
 
 	private NoExceptionAnalysisFactory<String[]> parameterSignatureListFactory =
 	        new NoExceptionAnalysisFactory<String[]>("parameter signature list factory") {
-		        protected String[] analyze(Method method) {
+		        @Override
+                         protected String[] analyze(Method method) {
 			        SignatureParser parser = new SignatureParser(method.getSignature());
 			        ArrayList<String> resultList = new ArrayList<String>();
 			        for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
@@ -773,7 +792,8 @@ public class ClassContext {
 	 */
 	private NoExceptionAnalysisFactory<LoadedFieldSet> loadedFieldSetFactory =
 			new NoExceptionAnalysisFactory<LoadedFieldSet>("loaded field set factory") {
-				protected LoadedFieldSet analyze(Method method) {
+				@Override
+                                 protected LoadedFieldSet analyze(Method method) {
 					MethodGen methodGen = getMethodGen(method);
 					if (methodGen == null) return null;
 					InstructionList il = methodGen.getInstructionList();
@@ -823,7 +843,8 @@ public class ClassContext {
 
 	private AnalysisFactory<LiveLocalStoreDataflow> liveLocalStoreDataflowFactory =
 			new AnalysisFactory<LiveLocalStoreDataflow>("live local stores analysis") {
-				protected LiveLocalStoreDataflow analyze(Method method)
+				@Override
+                                 protected LiveLocalStoreDataflow analyze(Method method)
 					throws DataflowAnalysisException, CFGBuilderException {
 						MethodGen methodGen = getMethodGen(method);
 						if (methodGen == null) return null;
@@ -842,7 +863,8 @@ public class ClassContext {
 
 	private AnalysisFactory<Dataflow<BlockType, BlockTypeAnalysis>> blockTypeDataflowFactory =
 			new AnalysisFactory<Dataflow<BlockType, BlockTypeAnalysis>>("block type analysis") {
-				protected Dataflow<BlockType, BlockTypeAnalysis> analyze(Method method)
+				@Override
+                                 protected Dataflow<BlockType, BlockTypeAnalysis> analyze(Method method)
 						throws DataflowAnalysisException, CFGBuilderException {
 					CFG cfg = getCFG(method);
 					DepthFirstSearch dfs = getDepthFirstSearch(method);
@@ -859,7 +881,8 @@ public class ClassContext {
 	private AnalysisFactory<CallListDataflow> callListDataflowFactory =
 		new AnalysisFactory<CallListDataflow>("call list analysis") {
 			//@Override
-			protected CallListDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+			@Override
+                         protected CallListDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
 
 				CallListAnalysis analysis = new CallListAnalysis(
 						getCFG(method),

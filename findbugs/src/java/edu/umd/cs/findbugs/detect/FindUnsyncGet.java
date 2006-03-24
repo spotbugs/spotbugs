@@ -19,17 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.*;
+import java.util.*;
+import org.apache.bcel.classfile.*;
 
 public class FindUnsyncGet extends BytecodeScanningDetector {
 	String prevClassName = " none ";
@@ -44,7 +37,8 @@ public class FindUnsyncGet extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 
-	public void report() {
+	@Override
+         public void report() {
 		// Find the set of properties for which we have both
 		// unsynchronized get and synchronized set methods
 		Set<String> commonProperties = new HashSet<String>(getMethods.keySet());
@@ -64,12 +58,14 @@ public class FindUnsyncGet extends BytecodeScanningDetector {
 		setMethods.clear();
 	}
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		report();
 		prevClassName = getDottedClassName();
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		int flags = obj.getAccessFlags();
 		if ((flags & doNotConsider) != 0) return;
 		String name = obj.getName();

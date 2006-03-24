@@ -83,7 +83,8 @@ public class RedundantBranch {
 		this.infeasibleEdge = infeasibleEdge;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		return location.toString() + ": line " + lineNumber;
 	}
 }

@@ -19,14 +19,10 @@
 
 package edu.umd.cs.findbugs.detect;
 
+
+import edu.umd.cs.findbugs.*;
 import java.util.BitSet;
-
 import org.apache.bcel.Constants;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
 
 /**
  * A Detector to look for useless control flow.  For example,
@@ -71,11 +67,13 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 	
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if (ifInstructionSet.get(seen)) {
 			if (getBranchTarget() == getBranchFallThrough()) {
 				bugReporter.reportBug(new BugInstance(this, "UCF_USELESS_CONTROL_FLOW", NORMAL_PRIORITY)

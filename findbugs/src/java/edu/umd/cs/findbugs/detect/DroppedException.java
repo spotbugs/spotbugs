@@ -89,7 +89,8 @@ public class DroppedException extends PreorderVisitor implements Detector {
 		        | asUnsignedByte(a[i + 1]);
 	}
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 
 		CodeException[] exp = obj.getExceptionTable();
 		LineNumberTable lineNumbers = obj.getLineNumberTable();

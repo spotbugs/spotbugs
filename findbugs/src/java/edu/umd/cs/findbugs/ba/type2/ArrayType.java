@@ -96,15 +96,18 @@ public class ArrayType extends ObjectType {
 		visitor.visitArrayType(this);
 	}
 
-	public boolean isInterface() {
+	@Override
+         public boolean isInterface() {
 		return false;
 	}
 
-	public boolean isArray() {
+	@Override
+         public boolean isArray() {
 		return true;
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		if (o == null)
 			return false;
 		if (o.getClass() != this.getClass())
@@ -114,11 +117,13 @@ public class ArrayType extends ObjectType {
 		        && this.baseType.equals(other.baseType);
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return baseType.hashCode() + numDimensions;
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(baseType.toString());
 		for (int i = 0; i < numDimensions; ++i)

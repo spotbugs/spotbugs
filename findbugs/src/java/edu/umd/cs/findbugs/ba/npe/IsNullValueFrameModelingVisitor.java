@@ -55,7 +55,8 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		this.assertionMethods = assertionMethods;
 	}
 	
-	public IsNullValue getDefaultValue() {
+	@Override
+         public IsNullValue getDefaultValue() {
 		return IsNullValue.nonReportingNotNullValue();
 	}
 

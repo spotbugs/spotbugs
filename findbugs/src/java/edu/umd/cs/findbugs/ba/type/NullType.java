@@ -42,11 +42,13 @@ public class NullType extends Type implements ExtendedTypes {
 		super(T_NULL, "<null type>");
 	}
 
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return System.identityHashCode(this);
 	}
 
-	public boolean equals(Object o) {
+	@Override
+         public boolean equals(Object o) {
 		return o == this;
 	}
 

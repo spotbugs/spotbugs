@@ -19,16 +19,12 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashSet;
-import java.util.Set;
 
+import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import java.util.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class XMLFactoryBypass extends BytecodeScanningDetector  {
     private BugReporter bugReporter;
@@ -56,12 +52,14 @@ public class XMLFactoryBypass extends BytecodeScanningDetector  {
 		this.bugReporter = bugReporter;
 	}
     
+    @Override
     public void visitClassContext(ClassContext classContext) {
     	curClass = classContext.getJavaClass();
     	super.visitClassContext(classContext);
     }
     	
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 	    try {
 		    if (seen == INVOKESPECIAL) {
 		        String newClsName = getClassConstantOperand();

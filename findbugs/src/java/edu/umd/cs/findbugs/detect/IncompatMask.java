@@ -19,12 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.Method;
 
 /**
  * Find comparisons involving values computed with bitwise
@@ -44,11 +41,13 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 		this.bugReporter = bugReporter;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		super.visit(obj);
 		this.state = 0;
 	}
@@ -70,15 +69,18 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 		state++;
 	}
 
-	public void sawInt(int val) {
+	@Override
+         public void sawInt(int val) {
 		noteVal(val);
 	}
 
-	public void sawLong(long val) {
+	@Override
+         public void sawLong(long val) {
 		noteVal(val);
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		// System.out.println("BIT: " + state + ": " + OPCODE_NAMES[seen]);
 
 		switch (seen) {

@@ -107,7 +107,8 @@ public class Constant {
 	}
 	
 	//@Override
-	public boolean equals(Object obj) {
+	@Override
+         public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
 		Constant other = (Constant) obj;
@@ -120,11 +121,13 @@ public class Constant {
 	}
 	
 	//@Override
-	public int hashCode() {
+	@Override
+         public int hashCode() {
 		return (value == null) ? 123 : value.hashCode();
 	}
 	
-	public String toString() {
+	@Override
+         public String toString() {
 		if (!isConstant()) {
 			return "-";
 		} else {

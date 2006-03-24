@@ -19,13 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
 
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.*;
 
 public class FindReturnRef extends BytecodeScanningDetector {
 	boolean check = false;
@@ -48,12 +44,14 @@ public class FindReturnRef extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		publicClass = obj.isPublic();
 		super.visit(obj);
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		check = publicClass && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0;
 		if (!check) return;
 		dangerousToStoreIntoField = false;
@@ -78,11 +76,13 @@ public class FindReturnRef extends BytecodeScanningDetector {
 	}
 
 
-	public void visit(Code obj) {
+	@Override
+         public void visit(Code obj) {
 		if (check) super.visit(obj);
 	}
 
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		assert check;
 		/*
 		System.out.println("Saw " + PC + ": " + OPCODE_NAMES[seen] + "	"

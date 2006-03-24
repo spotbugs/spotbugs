@@ -105,7 +105,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		mergedValueList.set(slot, value);
 	}
 
-	public void copyFrom(Frame<ValueNumber> other) {
+	@Override
+         public void copyFrom(Frame<ValueNumber> other) {
 		// If merged value list hasn't been created yet, create it.
 		if (mergedValueList == null && other.isValid()) {
 			// This is where this frame gets its size.
@@ -125,7 +126,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		super.copyFrom(other);
 	}
 
-	public String toString() {
+	@Override
+         public String toString() {
 		String frameValues = super.toString();
 		if (RLE_DEBUG) {
 			StringBuffer buf = new StringBuffer();

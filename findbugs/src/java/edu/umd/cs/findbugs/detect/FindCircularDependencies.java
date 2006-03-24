@@ -19,18 +19,10 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
 
+import edu.umd.cs.findbugs.*;
+import java.util.*;
 import org.apache.bcel.classfile.JavaClass;
-
-import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 public class FindCircularDependencies extends BytecodeScanningDetector
 {
@@ -44,11 +36,13 @@ public class FindCircularDependencies extends BytecodeScanningDetector
 		this.dependencyGraph = new HashMap<String,Set<String>>();
 	}
 	
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		clsName = obj.getClassName();
 	}
 	
-	public void sawOpcode(int seen) {
+	@Override
+         public void sawOpcode(int seen) {
 		if ((seen == INVOKESPECIAL)
 		||  (seen == INVOKESTATIC)
 		||  (seen == INVOKEVIRTUAL)) {
@@ -76,7 +70,8 @@ public class FindCircularDependencies extends BytecodeScanningDetector
 		}
 	}
 	
-	public void report() {
+	@Override
+         public void report() {
 		removeDependencyLeaves(dependencyGraph);
 		
 		LoopFinder lf = new LoopFinder();

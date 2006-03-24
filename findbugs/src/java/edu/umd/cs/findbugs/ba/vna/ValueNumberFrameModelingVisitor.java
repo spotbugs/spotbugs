@@ -103,7 +103,8 @@ public class ValueNumberFrameModelingVisitor
 		this.lookupFailureCallback = lookupFailureCallback;
 	}
 
-	public ValueNumber getDefaultValue() {
+	@Override
+         public ValueNumber getDefaultValue() {
 		return factory.createFreshValue();
 	}
 
@@ -197,7 +198,8 @@ public class ValueNumberFrameModelingVisitor
 	/**
 	 * This is the default instruction modeling method.
 	 */
-	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
+	@Override
+         public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
 
 		int flags = (ins instanceof InvokeInstruction) ? ValueNumber.RETURN_VALUE : 0;
 
@@ -217,7 +219,8 @@ public class ValueNumberFrameModelingVisitor
 		pushOutputValues(outputValueList);
 	}
 
-	public void visitGETFIELD(GETFIELD obj) {
+	@Override
+         public void visitGETFIELD(GETFIELD obj) {
 		if (doRedundantLoadElimination()) {
 
 			try {
@@ -233,7 +236,8 @@ public class ValueNumberFrameModelingVisitor
 		handleNormalInstruction(obj);
 	}
 
-	public void visitPUTFIELD(PUTFIELD obj) {
+	@Override
+         public void visitPUTFIELD(PUTFIELD obj) {
 		if (doForwardSubstitution()) {
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
@@ -250,7 +254,8 @@ public class ValueNumberFrameModelingVisitor
 
 	private static final ValueNumber[] EMPTY_INPUT_VALUE_LIST = new ValueNumber[0];
 
-	public void visitGETSTATIC(GETSTATIC obj) {
+	@Override
+         public void visitGETSTATIC(GETSTATIC obj) {
 		if (doRedundantLoadElimination()) {
 			ValueNumberFrame frame = getFrame();
 			ConstantPoolGen cpg = getCPG();
@@ -281,7 +286,8 @@ public class ValueNumberFrameModelingVisitor
 		handleNormalInstruction(obj);
 	}
 
-	public void visitPUTSTATIC(PUTSTATIC obj) {
+	@Override
+         public void visitPUTSTATIC(PUTSTATIC obj) {
 		if (doForwardSubstitution()) {
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
@@ -296,7 +302,8 @@ public class ValueNumberFrameModelingVisitor
 		handleNormalInstruction(obj);
 	}
 
-	public void visitINVOKESTATIC(INVOKESTATIC obj) {
+	@Override
+         public void visitINVOKESTATIC(INVOKESTATIC obj) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			ConstantPoolGen cpg = getCPG();
 			String methodName = obj.getName(cpg);
@@ -366,7 +373,8 @@ public class ValueNumberFrameModelingVisitor
 	}
 */
 
-	public void visitLDC(LDC obj) {
+	@Override
+         public void visitLDC(LDC obj) {
 		ValueNumber value = constantValueMap.get(handle);
 		if (value == null) {
 			ConstantPoolGen cpg = getCPG();
@@ -384,7 +392,8 @@ public class ValueNumberFrameModelingVisitor
 	}
 	
 	//@Override
-	public void visitIINC(IINC obj) {
+	@Override
+         public void visitIINC(IINC obj) {
 		if (obj.getIncrement() == 0) {
 			// A no-op.
 			return;

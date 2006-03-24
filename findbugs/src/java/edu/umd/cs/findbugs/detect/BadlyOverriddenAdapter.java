@@ -43,11 +43,13 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements 
 		badOverrideMap = new HashMap<String,BugInstance>();
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	@Override
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	public void visit(JavaClass obj) {
+	@Override
+         public void visit(JavaClass obj) {
 		try {
 			methodMap.clear();
 			badOverrideMap.clear();
@@ -70,14 +72,16 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements 
 		}
 	}
 	
-	public void visitAfter(JavaClass obj) {
+	@Override
+         public void visitAfter(JavaClass obj) {
 		for (BugInstance bi : badOverrideMap.values()) {
 			if (bi != null)
 				bugReporter.reportBug(bi);
 		}
 	}
 
-	public void visit(Method obj) {
+	@Override
+         public void visit(Method obj) {
 		if (isAdapter) {
 			String methodName = obj.getName();
 			String signature = methodMap.get(methodName);
