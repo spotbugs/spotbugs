@@ -99,16 +99,16 @@
          <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
                id="de.tobject.findbugs.removeMarkers"
-               label="&amp;Clear Bug Markers"
+               label="%menu.clearMarkers"
                menubarPath="findbugs/additions"
-               tooltip="Removes all bug markers from the selected element."/>
+               tooltip="%menu.clearMarkersPopup"/>
          <action
                class="de.tobject.findbugs.actions.FindBugsAction"
                icon="icons/bug.gif"
                id="de.tobject.findbugs.findBugs"
                label="&amp;Find Bugs"
                menubarPath="findbugs/additions"
-               tooltip="Scan the selected element for bugs."/>
+               tooltip="%menu.findBugsPopup"/>
       </objectContribution>
       <!-- Special case context menu for simple projects that have java natures -->
       <objectContribution
@@ -121,9 +121,9 @@
          <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
                id="de.tobject.findbugs.removeMarkers"
-               label="&amp;Clear Bug Markers"
+               label="%menu.clearMarkers"
                menubarPath="findbugs/additions"
-               tooltip="Removes all bug markers from the selected element.">
+               tooltip="%menu.clearMarkersPopup">
          <enablement>
             <objectState
                   name="nature"

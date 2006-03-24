@@ -140,7 +140,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		
 		// initialize resource strings
 		try {
-			resourceBundle = ResourceBundle.getBundle("de.tobject.findbugs.FindbugsPluginResources"); //$NON-NLS-1$
+			//resourceBundle = ResourceBundle.getBundle("de.tobject.findbugs.FindbugsPluginResources"); //$NON-NLS-1$
+			resourceBundle = ResourceBundle.getBundle("de.tobject.findbugs.messages"); //$NON-NLS-1$
 		}
 		catch (MissingResourceException x) {
 			resourceBundle = null;
@@ -297,7 +298,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 */
 	public String getMessage(String key) {
 		// TODO implement me!
-		return key;
+		return getResourceString(key);
 	}
 
 	/**

@@ -132,7 +132,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		composite.setLayout(layout);
 
 		chkEnableFindBugs = new Button(composite, SWT.CHECK);
-		chkEnableFindBugs.setText("Run FindBugs automatically");
+		chkEnableFindBugs.setText(getMessage("property.runAuto"));
 		initialEnabled = isEnabled();
 		chkEnableFindBugs.setSelection(initialEnabled);
 
@@ -141,7 +141,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		prioGroup.setLayout(prioLayout);
 
 		Label minPrioLabel = new Label(prioGroup, SWT.NONE);
-		minPrioLabel.setText("Minimum priority to report: ");
+		minPrioLabel.setText(getMessage("property.minPriority"));
 		minPrioLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 
 		minPriorityCombo = new Combo(prioGroup, SWT.DROP_DOWN | SWT.READ_ONLY);
@@ -173,11 +173,13 @@ public class FindbugsPropertyPage extends PropertyPage {
 		categoryGroup.setLayout(new GridLayout(2, true));
 
 		Label activeCategoriesLabel = new Label(categoryGroup, SWT.NONE);
-		activeCategoriesLabel.setText("Enable bug categories:");
+		activeCategoriesLabel.setText(getMessage("property.enableCategory"));
 		activeCategoriesLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		buildBugCategoryList(categoryGroup, project);
 
-		buildLabel(composite, "Select bug patterns to check for:");
+		//addSeparator(composite);
+
+		buildLabel(composite, "property.selectPattern"); // ok without getMessage()
 		Table availableRulesTable =
 			buildAvailableRulesTableViewer(composite, project);
 		GridData tableLayoutData = new GridData();
@@ -192,7 +194,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		addSeparator(composite);
 
 		restoreDefaultsButton = new Button(composite, SWT.NONE);
-		restoreDefaultsButton.setText("Restore default settings");
+		restoreDefaultsButton.setText(getMessage("property.restoreSettings"));
 		restoreDefaultsButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		restoreDefaultsButton.addSelectionListener(new SelectionAdapter() {
 			/* (non-Javadoc)
@@ -345,22 +347,21 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 		TableColumn bugsAbbrevColumn = new TableColumn(factoriesTable, SWT.LEFT);
 		bugsAbbrevColumn.setResizable(true);
-		bugsAbbrevColumn.setText(getMessage("Bug codes"));
+		bugsAbbrevColumn.setText(getMessage("property.bugCodes"));
 		bugsAbbrevColumn.setWidth(100);
 		addColumnSelectionListener(sorter, bugsAbbrevColumn, ++currentColumnIdx);
 
 		TableColumn factoryNameColumn = new TableColumn(factoriesTable, SWT.LEFT);
 		factoryNameColumn.setResizable(true);
-		factoryNameColumn.setText(getMessage("Detector name"));
+		factoryNameColumn.setText(getMessage("property.detectorName"));
 		factoryNameColumn.setWidth(200);
 		addColumnSelectionListener(sorter, factoryNameColumn, ++currentColumnIdx);
-
 
 
 		TableColumn bugsDescriptionColumn =
 			new TableColumn(factoriesTable, SWT.FILL);
 		bugsDescriptionColumn.setResizable(true);
-		bugsDescriptionColumn.setText(getMessage("Detector description"));
+		bugsDescriptionColumn.setText(getMessage("property.detectorDescription"));
 		bugsDescriptionColumn.setWidth(280);
 
 		factoriesTable.setLinesVisible(true);
