@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Set;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -41,7 +43,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 	@Override
          public void visitJavaClass(JavaClass obj) {
 		// totally skip methods not defined in inner classes
-		if (false && obj.getClassName().indexOf('$') >= 0) super.visitJavaClass(obj);
+		if (obj.getClassName().indexOf('$') >= 0) super.visitJavaClass(obj);
 		
 	}
 
@@ -74,8 +76,10 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 			if (i == -1) break;
 			possibleTargetClass = possibleTargetClass.substring(0,i);
         	 XMethod alternativeMethod = XFactory.createXMethod(possibleTargetClass, getNameConstantOperand(), getSigConstantOperand(), false);
-        	 if (Methods.getMethods().contains(alternativeMethod)) 	bugReporter.reportBug(new BugInstance(this, "TESTING", NORMAL_PRIORITY)
+        	 Set<XMethod> definedMethods = Methods.getMethods();
+        	 if (definedMethods.contains(alternativeMethod)) 	bugReporter.reportBug(new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
+				          .addMethod(invokedMethod)
 				        .addMethod(alternativeMethod)
 				        .addSourceLine(this, getPC()));
          }

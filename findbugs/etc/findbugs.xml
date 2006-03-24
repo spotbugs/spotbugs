@@ -63,13 +63,13 @@
   <Detector class="edu.umd.cs.findbugs.detect.Methods" 
 	        speed="fast"
 	        reports="TESTING"
-			disabled="true"
+			disabled="false"
 			hidden="true" /> 
 			
   <Detector class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod" 
 	        speed="moderate"
-	        reports="TESTING"
-			disabled="true"
+	        reports="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD"
+			disabled="false"
 			hidden="false" /> 
 	        
   <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue" 
@@ -641,6 +641,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="Nm" type="NM_LCASE_HASHCODE" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_LCASE_TOSTRING" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_BAD_EQUAL" category="CORRECTNESS"/>
+  <BugPattern abbrev="IA" type="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD" category="CORRECTNESS"/>
   <BugPattern abbrev="Nm" type="NM_CLASS_NOT_EXCEPTION" category="STYLE"/>
   <BugPattern abbrev="RR" type="RR_NOT_CHECKED" category="CORRECTNESS" />
   <BugPattern abbrev="RR" type="SR_NOT_CHECKED" category="CORRECTNESS" />

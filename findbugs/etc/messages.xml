@@ -2248,6 +2248,21 @@ defined in an interface references a mutable
     </Details>
   </BugPattern>
 
+  <BugPattern type="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD">
+    <ShortDescription>Ambiguous invocation of either an inherited or outer method</ShortDescription>
+    <LongDescription>Ambiguous invocation of either an inherited or outer method {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> An inner class is invoking a method that could be resolved to either a inherited method or a method defined in an outer class. By the Java semantics,
+it will be resolved to invoke the inherited method, but this may not be want
+you intend. If you really intend to invoke the inherited method,
+invoke it by invoking the method on super (e.g., invoke super.foo(17)), and
+thus it will be clear to other readers of your code and to FindBugs
+that you want to invoke the inherited method, not the method in the outer class.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="NM_CLASS_NAMING_CONVENTION">
     <ShortDescription>Class names should start with an upper case letter</ShortDescription>
     <LongDescription>The class name {0} doesn't start with an upper case letter</LongDescription>
