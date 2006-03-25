@@ -246,6 +246,8 @@ public abstract class AbstractBugReporter implements BugReporter {
 
 	/**
 	 * This should be called when a bug is reported by a subclass.
+	 *
+	 * @param bugInstance the bug to inform observers of
 	 */
 	protected void notifyObservers(BugInstance bugInstance) {
 		for (BugReporterObserver aObserverList : observerList)
@@ -255,6 +257,8 @@ public abstract class AbstractBugReporter implements BugReporter {
 	/**
 	 * Subclasses must override this.
 	 * It will be called only for bugs which meet the priority threshold.
+	 *
+	 * @param bugInstance the bug to report
 	 */
 	protected abstract void doReportBug(BugInstance bugInstance);
 
@@ -268,7 +272,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 	/**
 	 * Report a missing class.
 	 * 
-	 * @param string
+	 * @param string the name of the class
 	 */
 	public abstract void reportMissingClass(String string);
 }
