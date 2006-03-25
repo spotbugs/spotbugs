@@ -81,6 +81,12 @@
 			debug="on">
 			<classpath refid="tools.classpath"/>
 		</javac>
+		<!-- Copy the .properties files from the source directory. -->
+		<copy todir="${bin.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**/*.properties"/>
+			</fileset>
+		</copy>
 	</target>
 
 	
@@ -93,7 +99,10 @@
 			<fileset file="welcome.xml" />
 			<fileset file="RELEASENOTES" />
 			<fileset file="plugin.xml" />
-			<fileset file="plugin.properties" />
+			<!--fileset file="plugin.properties" /-->
+			<fileset dir=".">
+				<include name="plugin*.properties"/> <!--match plugin.properties and plugin_ja.properties -->
+			</fileset>
 			<fileset dir="${fbeclipse.dir}">
 				  <include name="*.jar"/>
 				  <include name="*.png"/>
