@@ -36,7 +36,7 @@ public class Version {
 	/**
 	 * Patch level.
 	 */
-	public static final int PATCHLEVEL = 5;
+	public static final int PATCHLEVEL = 6;
 
 	/**
 	 * Development version or release candidate?
@@ -61,13 +61,13 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = "February 17, 2006";
+	public static final String DATE = "March 25, 2006";
 
 	/**
 	 * Version of Eclipse plugin.
 	 */
 	public static final String ECLIPSE_UI_VERSION =
-		"0.0.19" + (IS_DEVELOPMENT ? "." + RELEASE_SUFFIX_WORD: "");
+		"0.0.20" + (IS_DEVELOPMENT ? "." + RELEASE_SUFFIX_WORD: "");
 
 	/**
 	 * FindBugs website.

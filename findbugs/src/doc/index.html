@@ -54,74 +54,56 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
 
 <h1>News</h1>
 	
-<p>Changes since verson 0.9.4:</p>
+<p>Changes since verson 0.9.5:</p>
 
 <ul>
-<li>New detectors
-    <ul><li>VarArgsProblems.java</li>
-        <li>FindSqlInjection.java: now enabled</li>
-        <li>ComparatorIdiom.java: comparators usually implement serializable</li>
-        <li>Naming.java: detect methods not overridden due to eponymously typed args from different packages</li>
-    </ul></li>
 <li>Updated detectors
-    <ul><li>SwitchFallthrough.java: surpress some false positives</li>
-        <li>DuplicateBranches.java: surpress some false positives</li>
-        <li>IteratorIdioms.java: surpress some false positives</li>
-        <li>FindHEmismatch.java: surpress some false positives</li>
-        <li>QuestionableBooleanAssignment.java: finds more cases of <tt>if (b=true)</tt> ilk</li>
-        <li>DumbMethods.java: detect int remainder by 1, delayed gc errors</li>
-        <li>SerializableIdiom.java: detect store of nonserializable object into field of serializable class</li>
-        <li>FindNullDeref.java: fix potential exception</li>
-        <li>IsNullValue.java: fix potential exception</li>
-        <li>MultithreadedInstanceAccess.java: fix potential exception</li>
-        <li>PreferZeroLengthArrays.java: flag the method, not the line</li>
+    <ul><li>FindNullDeref.java: respect NonNull and CheckForNull field annotations</li>
+        <li>SerializableIdiom.java: detect non-private readObject and writeObject methods</li>
+        <li>FindRefComparison.java: smarter array comparison detection</li>
+        <li>IsNullValueAnalysis.java: dectect <tt>null instanceof</tt></li>
+        <li>FindLocalSelfAssignment2.java: suppress some false positives (Dave Brosius)</li>
+        <li>FindUnreleasedLock.java: don't waste time processing classes that don't refer to java.util.concurrent.locks</li>
+        <li>MutableStaticFields.java: report the source line (Dave Brosius)</li>
+        <li>SwitchFallthrough.java: better handling of System.exit() (Dave Brosius)</li>
+        <li>MultithreadedInstanceAccess.java: better handling of Servlet.init() (Dave Brosius)</li>
+        <li>ConfusionBetweenInheritedAndOuterMethod.java: now enabled</li>
     </ul></li>
-<li>Remove some inadvertent dependencies on JDK 1.5</li>
-<li>Sort order should be more consistent</li>
-<li>XML output changes
-    <ul><li>Option to sort XML bug output</li>
-        <li>Now contains instance IDs</li>
-        <li>uid no longer missing (was causing problems with fancy HTML output)</li>
-        <li>Typo fixed</li>
+<li>Eclipse plugin
+    <ul><li>background processing (Peter Friese)</li>
+        <li>internationalization, Japanese localization (Takashi Okamoto)</li>
     </ul></li>
-<li>Internal changes to track source files, <tt>-sourceInfo</tt> option</li>
-<li>Bug matching: first try exact bug pattern matching, option to compare priorities, option to disable package moves</li>
-<li>Architecture documentation in <tt>design/architecture</tt></li>
-<li>Test cases move into their own CVS project</li>
-<li>Don't report warnings that occur outside the analyzed classes</li>
-<li>Fixes to the build.xml files</li>
-<li>Better handling of @CheckReturnValue and @CheckForNull annotations (also, some additional methods seached for check return value and check for null)</li>
-<li>Fixed some stream-closing bugs (one by <tt>z-fb-user</tt>/Dave Brosius)</li>
+<li>findbugs <tt>-onlyAnalyze</tt> option now works on windows platforms</li>
+<li>mineBugHistory <tt>-noTabs</tt> option for better alignment of output columns</li>
+<li>filterBugs <tt>-fixed</tt> option (also: will now recognize the most recent version string)</li>
+<li>XML output includes running time and memory usage data</li>
+<li>miscellaneous minor corrections to the manual</li>
+<li>better bytecode analysis of the <tt>iinc</tt> instruction</li>
+<li>fix bug in null pointer analysis</li>
+<li>improved catch block heuristics</li>
+<li>some type analysis tweaks</li>
 <li>Bug priority changes
-    <ul><li>increase priority of ignoring return value of java.sql.Connection methods</li>
-        <li>increase priority of comparing classes like Integer using <tt>==</tt></li>
-        <li>decrease priority of IT_NO_SUCH_ELEMENT if we see any call to <tt>next()</tt></li>
-        <li>tweak priority of NM_METHOD_CONSTRUCTOR_CONFUSION
-        <li>decrease priority of RV_RETURN_VALUE_IGNORED for an inherited annotation that doesn't return same type as class</li>
+    <ul><li>DumbMethodInvocations.java: decrease priority of hard-coded <tt>/tmp</tt> filenames</li>
+        <li>ComparatorIdiom.java: decrease priority of non-serializable anonymous comparators</li>
+        <li>FindSqlInjection.java: decrease priority of appending a constant or a static</li>
     </ul></li>
 <li>Updated bug explanations
-    <ul><li>RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE</li>
-        <li>DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED</li>
-        <li>IMA_INEFFICIENT_MEMBER_ACCESS (Dave Brosius)</li>
-        <li>some Japanese improvements to messages_ja.xml (<tt>ruimo</tt>)</li>
-        <li>some German improvements to findbugs_de.properties (Dave Brosius, <tt>dvholten</tt>)</li>
+    <ul><li>NM_VERY_CONFUSING (Dave Brosius)</li>
     </ul></li>
 <li>Updated test case files
-    <ul><li>BadIntegerOperations.java</li>
-        <li>SecondKaboom.java</li>
-        <li>OpenDatabase.java (Dave Brosius)</li>
-        <li>FindOpenStream.java (Dave Brosius)</li>
+    <ul><li>BadStoreOfNonSerializableObject.java</li>
         <li>BadRandomInt.java</li>
+        <li>TestFieldAnnotations.java</li>
+        <li>UseInitCause.java</li>
+        <li>SqlInjection.java</li>
+        <li>ArrayEquality.java</li>
+        <li>BadIntegerOperations.java</li>
+        <li>Pilhuhn.java</li>
+        <li>InstanceOf.java</li>
+        <li>SwitchFallthrough.java (Dave Brosius)</li>
     </ul></li>
-<li>Source-lines info maintained for methods (handy for abstract and native methods)</li>
-<li>Remove surrounding opcodes from source line annotations</li>
-<li>Better error when can't read file</li>
-<li>Swing GUI: removed console pane from FindBugsFrame, fix missing classes bug</li>
-<li>Fixes to OpcodeStack.java</li>
-<li>Detectors may attach a custom value to an OpcodeStack.Item (Dave Brosius)</li>
-<li>Filter.java: ability to add text messages to XML output, fix bug with <tt>-withMessages</tt></li>
-<li>SourceInfoMap supports ranges of source lines</li>
-<li>Ant task supports the <tt>timestampNow</tt> attribute</li>
+<li>fix URL decoding bug when running under Java Web Start (Dave Brosius)</li>
+<li>distribution includes <tt>project.xml</tt> file for NetBeans</li>
 </ul>
 
 <p> <a href="Changes.html">Older versions...</a></p>

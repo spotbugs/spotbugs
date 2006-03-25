@@ -15,6 +15,58 @@
 
 <h1>FindBugs Change Log</h1>
 	
+<p>Changes since verson 0.9.5:</p>
+
+<ul>
+<li>Updated detectors
+    <ul><li>FindNullDeref.java: respect NonNull and CheckForNull field annotations</li>
+        <li>SerializableIdiom.java: detect non-private readObject and writeObject methods</li>
+        <li>FindRefComparison.java: smarter array comparison detection</li>
+        <li>IsNullValueAnalysis.java: dectect <tt>null instanceof</tt></li>
+        <li>FindLocalSelfAssignment2.java: suppress some false positives (Dave Brosius)</li>
+        <li>FindUnreleasedLock.java: don't waste time processing classes that don't refer to java.util.concurrent.locks</li>
+        <li>MutableStaticFields.java: report the source line (Dave Brosius)</li>
+        <li>SwitchFallthrough.java: better handling of System.exit() (Dave Brosius)</li>
+        <li>MultithreadedInstanceAccess.java: better handling of Servlet.init() (Dave Brosius)</li>
+        <li>ConfusionBetweenInheritedAndOuterMethod.java: now enabled</li>
+    </ul></li>
+<li>Eclipse plugin
+    <ul><li>background processing (Peter Friese)</li>
+        <li>internationalization, Japanese localization (Takashi Okamoto)</li>
+    </ul></li>
+<li>findbugs <tt>-onlyAnalyze</tt> option now works on windows platforms</li>
+<li>mineBugHistory <tt>-noTabs</tt> option for better alignment of output columns</li>
+<li>filterBugs <tt>-fixed</tt> option (also: wull now recognize the most recent version string)</li>
+<li>XML output includes running time and memory usage data</li>
+<li>miscellaneous minor corrections to the manual</li>
+<li>better bytecode analysis of the <tt>iinc</tt> instruction</li>
+<li>fix bug in null pointer analysis</li>
+<li>improved catch block heuristics</li>
+<li>some type analysis tweaks</li>
+<li>Bug priority changes
+    <ul><li>DumbMethodInvocations.java: decrease priority of hard-coded <tt>/tmp</tt> filenames</li>
+        <li>ComparatorIdiom.java: decrease priority of non-serializable anonymous comparators</li>
+        <li>FindSqlInjection.java: decrease priority of appending a constant or a static</li>
+    </ul></li>
+<li>Updated bug explanations
+    <ul><li>NM_VERY_CONFUSING (Dave Brosius)</li>
+    </ul></li>
+<li>Updated test case files
+    <ul><li>BadStoreOfNonSerializableObject.java</li>
+        <li>BadRandomInt.java</li>
+        <li>TestFieldAnnotations.java</li>
+        <li>UseInitCause.java</li>
+        <li>SqlInjection.java</li>
+        <li>ArrayEquality.java</li>
+        <li>BadIntegerOperations.java</li>
+        <li>Pilhuhn.java</li>
+        <li>InstanceOf.java</li>
+        <li>SwitchFallthrough.java (Dave Brosius)</li>
+    </ul></li>
+<li>fix URL decoding bug when running under Java Web Start (Dave Brosius)</li>
+<li>distribution includes <tt>project.xml</tt> file for NetBeans</li>
+</ul>
+
 <p>Changes since verson 0.9.4:</p>
 <ul>
 <li>New detectors
@@ -56,7 +108,7 @@
     <ul><li>increase priority of ignoring return value of java.sql.Connection methods</li>
         <li>increase priority of comparing classes like Integer using <tt>==</tt></li>
         <li>decrease priority of IT_NO_SUCH_ELEMENT if we see any call to <tt>next()</tt></li>
-        <li>tweak priority of NM_METHOD_CONSTRUCTOR_CONFUSION
+        <li>tweak priority of NM_METHOD_CONSTRUCTOR_CONFUSION</li>
         <li>decrease priority of RV_RETURN_VALUE_IGNORED for an inherited annotation that doesn't return same type as class</li>
     </ul></li>
 <li>Updated bug explanations
