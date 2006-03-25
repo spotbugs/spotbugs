@@ -24,7 +24,7 @@ package edu.umd.cs.findbugs.util;
  */
 public class Strings {
 
-	/** This is intended to be semantically equivalent to <code>source.replace(find, repl)</crode>
+	/** This is intended to be semantically equivalent to <code>source.replace(find, repl)</code>
 	 *  but also compatible with JDK 1.4.
 	 * @param source The String on which to operate
 	 * @param find   The literal substring to be replaced
