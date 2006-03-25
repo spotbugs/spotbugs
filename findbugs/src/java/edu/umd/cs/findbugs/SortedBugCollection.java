@@ -556,7 +556,7 @@ public class SortedBugCollection implements BugCollection {
 	}
 
 	public static class BugInstanceComparator implements Comparator<BugInstance> {
-		private BugInstanceComparator() {};
+		private BugInstanceComparator() {}
 		public int compare(BugInstance lhs, BugInstance rhs) {
 			ClassAnnotation lca = lhs.getPrimaryClass();
 			ClassAnnotation rca = rhs.getPrimaryClass();
