@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.Locale;
+
 import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.graph.AbstractEdge;
@@ -218,7 +220,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 	 * Get numeric edge type from string representation.
 	 */
 	public static int stringToEdgeType(String s) {
-		s = s.toUpperCase();
+		s = s.toUpperCase(Locale.ENGLISH);
 
 		if (s.equals("FALL_THROUGH"))
 			return FALL_THROUGH_EDGE;
