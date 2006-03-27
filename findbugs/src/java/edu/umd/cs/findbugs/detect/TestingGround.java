@@ -85,6 +85,8 @@ public class TestingGround extends BytecodeScanningDetector {
 		try {
 			if (isInnerClass) {
 				if (getMethodName().equals("<init>")) return;
+				if (getMethodName().startsWith("access$")) return;
+				if (obj.isSynthetic()) return;
 				JavaClass clazz = getThisClass();
 				XMethod xmethod = XFactory.createXMethod(clazz, obj);
 				if (!definedInSuperClassOrInterface(clazz, obj.getName()+":"+obj.getSignature()) && !CalledMethods.isCalled(xmethod))
