@@ -239,7 +239,7 @@
 	</td>
 
 	<td>
-	<xsl:value-of select="substring-after(LongMessage,':')"/>
+	<xsl:value-of select="LongMessage"/>
 	</td>
 
 	</tr>

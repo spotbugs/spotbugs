@@ -166,7 +166,7 @@
 			<a href="#{@type}"><xsl:value-of select="ShortMessage"/></a>
 		</td>
 		<td width="80%">
-		    <p><xsl:value-of select="substring-after(LongMessage,':')"/><br/><br/>
+		    <p><xsl:value-of select="LongMessage"/><br/><br/>
 		    
 		    	<!--  add source filename and line number(s), if any -->
 				<xsl:if test="SourceLine">
