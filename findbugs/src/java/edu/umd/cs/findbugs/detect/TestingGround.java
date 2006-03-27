@@ -58,7 +58,7 @@ public class TestingGround extends BytecodeScanningDetector {
 			throws ClassNotFoundException {
 		if (clazz == null)
 			return false;
-		System.out.println("Checking to see if " + method + " is defined in " + clazz.getClassName());
+		// System.out.println("Checking to see if " + method + " is defined in " + clazz.getClassName());
 		for (Method m : clazz.getMethods())
 			if (method.equals(m.getName()+":"+m.getSignature()))
 				return true;
@@ -87,8 +87,9 @@ public class TestingGround extends BytecodeScanningDetector {
 				if (getMethodName().equals("<init>")) return;
 				JavaClass clazz = getThisClass();
 				XMethod xmethod = XFactory.createXMethod(clazz, obj);
-				if (!definedInSuperClassOrInterface(clazz, obj.getName()+":"+obj.getSignature()))
-					System.out.println("XXXX");
+				if (!definedInSuperClassOrInterface(clazz, obj.getName()+":"+obj.getSignature()) && !CalledMethods.isCalled(xmethod))
+					bugReporter.reportBug(new BugInstance("TESTING", NORMAL_PRIORITY)
+							.addClassAndMethod(this));
 			}
 		} catch (ClassNotFoundException e) {
 			System.out.println("FOFO");

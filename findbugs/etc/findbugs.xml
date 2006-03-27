@@ -30,6 +30,10 @@
 	</SplitPass>
 
 	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.CalledMethods"/>
+		<Later class="edu.umd.cs.findbugs.detect.TestingGround"/>
+	</SplitPass>
+	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.Methods"/>
 		<Later class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod"/>
 	</SplitPass>
@@ -64,6 +68,11 @@
 	        speed="fast"
 	        reports="TESTING"
 			disabled="false"
+			hidden="true" /> 
+  <Detector class="edu.umd.cs.findbugs.detect.CalledMethods" 
+	        speed="fast"
+	        reports="TESTING"
+			disabled="true"
 			hidden="true" /> 
 			
   <Detector class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod" 

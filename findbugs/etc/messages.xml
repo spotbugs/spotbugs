@@ -48,6 +48,14 @@ by other detectors.</p>
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.CalledMethods">
+    <Details>
+<![CDATA[
+<p> Builds of database of all methods invoked in analyzed classes, for use
+by other detectors.</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod">
     <Details>
 <![CDATA[

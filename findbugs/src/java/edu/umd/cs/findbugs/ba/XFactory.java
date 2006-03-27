@@ -51,6 +51,7 @@ public abstract class XFactory {
 		else
 			return new InstanceMethod(className, methodName, methodSig, accessFlags);
 	}
+
 	/**
 	 * Create an XField object
 	 * 
