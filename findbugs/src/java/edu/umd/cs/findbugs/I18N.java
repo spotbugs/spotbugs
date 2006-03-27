@@ -27,6 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 /**
  * Singleton responsible for returning localized strings for information
  * returned to the user.
@@ -71,7 +74,7 @@ public class I18N {
 	 * @param bugType the bug type for the bug pattern
 	 * @return the BugPattern, or null if it can't be found
 	 */
-	public BugPattern lookupBugPattern(String bugType) {
+	public @CheckForNull BugPattern lookupBugPattern(String bugType) {
 		return bugPatternMap.get(bugType);
 	}
 
@@ -97,7 +100,7 @@ public class I18N {
 	 *
 	 * @param key which message to retrieve
 	 */
-	public String getMessage(String key) {
+	public @NonNull String getMessage(String key) {
 		BugPattern bugPattern = bugPatternMap.get(key);
 		if (bugPattern == null)
 			return "Error: missing bug pattern for key " + key;
@@ -111,7 +114,7 @@ public class I18N {
 	 *
 	 * @param key which short message to retrieve
 	 */
-	public String getShortMessage(String key) {
+	public @NonNull String getShortMessage(String key) {
 		BugPattern bugPattern = bugPatternMap.get(key);
 		if (bugPattern == null)
 			return "Error: missing bug pattern for key " + key;
@@ -123,7 +126,7 @@ public class I18N {
 	 *
 	 * @param key which HTML details for retrieve
 	 */
-	public String getDetailHTML(String key) {
+	public @NonNull String getDetailHTML(String key) {
 		BugPattern bugPattern = bugPatternMap.get(key);
 		if (bugPattern == null)
 			return "Error: missing bug pattern for key " + key;
@@ -152,7 +155,7 @@ public class I18N {
 	 * @param shortBugType the short bug type code
 	 * @return the description of that short bug type code means
 	 */
-	public String getBugTypeDescription(String shortBugType) {
+	public @NonNull String getBugTypeDescription(String shortBugType) {
 		BugCode bugCode = bugCodeMap.get(shortBugType);
 		if (bugCode == null)
 			return "Error: missing bug code for key " + shortBugType;
