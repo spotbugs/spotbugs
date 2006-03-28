@@ -19,118 +19,68 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.XFactory;
-import edu.umd.cs.findbugs.ba.XMethod;
 
+import edu.umd.cs.findbugs.*;
 import org.apache.bcel.classfile.*;
 
-public class TestingGround extends BytecodeScanningDetector {
+public class TestingGround extends BytecodeScanningDetector  {
 
-	private static final boolean active = Boolean.getBoolean("findbugs.tg.active");
+	private static final boolean active 
+		 = Boolean.getBoolean("findbugs.tg.active");
+	
 
 	BugReporter bugReporter;
 
 	OpcodeStack stack = new OpcodeStack();
-
 	public TestingGround(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 	@Override
-	public Object clone() throws CloneNotSupportedException {
+         public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 
-	boolean isInnerClass = false;
-
 	@Override
-	public void visit(JavaClass obj) {
-		isInnerClass = false;
-		String name = getClassName();
-		int i = name.lastIndexOf('$');
-		if (i >= 0 && i + 1 < name.length()) {
-			isInnerClass = Character.isDigit(name.charAt(i + 1));
-		}
-	}
-
-	boolean definedInThisClassOrSuper(JavaClass clazz, String method)
-			throws ClassNotFoundException {
-		if (clazz == null)
-			return false;
-		// System.out.println("Checking to see if " + method + " is defined in " + clazz.getClassName());
-		for (Method m : clazz.getMethods())
-			if (method.equals(m.getName()+":"+m.getSignature()))
-				return true;
-
-		return definedInSuperClassOrInterface(clazz, method);
-
-	}
-
-	boolean definedInSuperClassOrInterface(JavaClass clazz, String method)
-			throws ClassNotFoundException {
-		if (clazz == null)
-			return false;
-		JavaClass superClass = clazz.getSuperClass();
-		if (definedInThisClassOrSuper(superClass, method))
-			return true;
-		for (JavaClass i : clazz.getInterfaces())
-			if (definedInThisClassOrSuper(i, method))
-				return true;
-		return false;
+         public void visit(JavaClass obj) {
 	}
 
 	@Override
-	public void visit(Method obj) {
-		try {
-			if (isInnerClass) {
-				if (getMethodName().equals("<init>")) return;
-				if (getMethodName().startsWith("access$")) return;
-				if (obj.isSynthetic()) return;
-				JavaClass clazz = getThisClass();
-				XMethod xmethod = XFactory.createXMethod(clazz, obj);
-				if (!definedInSuperClassOrInterface(clazz, obj.getName()+":"+obj.getSignature()) && !CalledMethods.isCalled(xmethod))
-					bugReporter.reportBug(new BugInstance("TESTING", NORMAL_PRIORITY)
-							.addClassAndMethod(this));
-			}
-		} catch (ClassNotFoundException e) {
-			System.out.println("FOFO");
-		}
-
+         public void visit(Method obj) {
 	}
 
 	@Override
-	public void visit(Code obj) {
+         public void visit(Code obj) {
 		// unless active, don't bother dismantling bytecode
-		if (false && active) {
-			// System.out.println("TestingGround: " +
-			// getFullyQualifiedMethodName());
-			stack.resetForMethodEntry(this);
+		if (active) {
+			// System.out.println("TestingGround: " + getFullyQualifiedMethodName());
+                	stack.resetForMethodEntry(this);
 			super.visit(obj);
 		}
 	}
 
+
 	@Override
-	public void sawOpcode(int seen) {
+         public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
-		if (seen == INVOKESTATIC && getNameConstantOperand().equals("forName")
-				&& getClassConstantOperand().equals("java/lang/Class")
-				&& getSigConstantOperand().equals("(Ljava/lang/String;)Ljava/lang/Class;"))
-			if (stack.getStackDepth() == 0)
+		if (seen == INVOKESTATIC
+			&& getNameConstantOperand().equals("forName")
+			&& getClassConstantOperand().equals("java/lang/Class")
+			&& getSigConstantOperand().equals("(Ljava/lang/String;)Ljava/lang/Class;"))
+			if (stack.getStackDepth() == 0) 
 				System.out.println("empty stack");
 			else {
 
-				OpcodeStack.Item item = stack.getStackItem(0);
-				Object constantValue = item.getConstant();
-				if (constantValue != null && constantValue instanceof String)
-					System.out.println("XXYYZ: " + getFullyQualifiedMethodName()
-							+ " Class.forName(" + constantValue + ")");
-				else
-					System.out.println("XXYYZ: " + getFullyQualifiedMethodName()
-							+ " Class.forName(???)");
+			OpcodeStack.Item item = stack.getStackItem(0);
+			Object constantValue = item.getConstant();
+			if (constantValue != null
+				&& constantValue instanceof String)
+				System.out.println("XXYYZ: " + getFullyQualifiedMethodName() + " Class.forName("+constantValue+")");
+			else
+				System.out.println("XXYYZ: " + getFullyQualifiedMethodName() + " Class.forName(???)");
 
 			}
 
-		stack.sawOpcode(this, seen);
+		stack.sawOpcode(this,seen);
 	}
 }

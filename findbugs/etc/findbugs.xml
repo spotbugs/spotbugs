@@ -31,7 +31,7 @@
 
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.CalledMethods"/>
-		<Later class="edu.umd.cs.findbugs.detect.TestingGround"/>
+		<Later class="edu.umd.cs.findbugs.detect.UncallableMethodOfAnonymousClass"/>
 	</SplitPass>
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.Methods"/>
@@ -69,10 +69,11 @@
 	        reports="TESTING"
 			disabled="false"
 			hidden="true" /> 
+
   <Detector class="edu.umd.cs.findbugs.detect.CalledMethods" 
 	        speed="fast"
 	        reports="TESTING"
-			disabled="true"
+			disabled="false"
 			hidden="true" /> 
 			
   <Detector class="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod" 
@@ -357,6 +358,10 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <Detector class="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods" 
             speed="fast"
             reports="UPM_UNCALLED_PRIVATE_METHOD" />
+            
+  <Detector class="edu.umd.cs.findbugs.detect.UncallableMethodOfAnonymousClass" 
+            speed="fast"
+            reports="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS" />
             
   <Detector class="edu.umd.cs.findbugs.detect.StringConcatenation" 
             speed="fast"
@@ -730,6 +735,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="LI" type="LI_LAZY_INIT_STATIC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="JLM" type="JLM_JSR166_LOCK_MONITORENTER" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UPM" type="UPM_UNCALLED_PRIVATE_METHOD" category="PERFORMANCE"/>
+  <BugPattern abbrev="UMAC" type="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS" category="CORRECTNESS"/>
   <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE" category="CORRECTNESS" />
   <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH" category="CORRECTNESS" />
   <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION" category="PERFORMANCE" />
@@ -745,8 +751,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
     experimental="true"/>
   <BugPattern abbrev="BAC" type="BAC_BAD_APPLET_CONSTRUCTOR" category="CORRECTNESS"
     experimental="true"/>
-  <BugPattern abbrev="UOE" type="UOE_USE_OBJECT_EQUALS" category="STYLE"
-    experimental="true"/>  
+  <BugPattern abbrev="UOE" type="UOE_USE_OBJECT_EQUALS" category="STYLE" experimental="true"/>  
   <BugPattern abbrev="EC" type="EC_BAD_ARRAY_COMPARE" category="CORRECTNESS"/>
   <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_CURRENTTHREAD" category="CORRECTNESS"
     experimental="true"/>

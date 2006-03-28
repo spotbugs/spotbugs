@@ -181,6 +181,16 @@ another package. It is a fast detector</p>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.UncallableMethodOfAnonymousClass">
+    <Details>
+<![CDATA[
+<p> This detector looks for anonymous inner classes that define methods
+that are probably intended to but do not override methods in a superclass.
+</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround">
     <Details>
 <![CDATA[
@@ -189,6 +199,9 @@ Normally, this detector does nothing.</p>
 ]]>
     </Details>
   </Detector>
+
+
+
  <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPriviledged">
     <Details>
 <![CDATA[
@@ -3572,6 +3585,21 @@ the <code>lock()</code> and <code>unlock()</code> methods instead.
 possible that the method will be invoked through reflection,
 it is more likely that the method is never used, and should be
 removed.
+</p>
+]]>
+</Details>
+  </BugPattern>
+  <BugPattern type="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS">
+    <ShortDescription>Uncallable method defined in anonymous class</ShortDescription>
+    <LongDescription>Uncallable method {1} defined in anonymous class</LongDescription>
+<Details>
+<![CDATA[
+<p> This anonymous class defined a method that is not directly invoked and does not override
+a method in a superclass. Since methods in other classes cannot directly invoke methods
+declared in an anonymous class, it seems that this method is uncallable. The method
+might simply be dead code, but it is also possible that the method is intended to
+override a method declared in a superclass, and due to an type or other error does not,
+in fact, override the method it is intended to.
 </p>
 ]]>
 </Details>
