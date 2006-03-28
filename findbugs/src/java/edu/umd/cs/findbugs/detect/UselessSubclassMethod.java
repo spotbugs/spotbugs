@@ -43,7 +43,6 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 	private int curParmOffset;
 	private int invokePC;
 	private Type[] argTypes;
-	private int register;
 	private Set<String> interfaceMethods = null;
 	
 	public UselessSubclassMethod(BugReporter bugReporter) {
