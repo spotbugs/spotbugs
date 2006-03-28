@@ -66,7 +66,6 @@ public class SourceLineAnnotation implements BugAnnotation {
 	private int endLine;
 	private int startBytecode;
 	private int endBytecode;
-	private String surroundingOpcodes;
 	private boolean synthetic = false;
 
 	/**
