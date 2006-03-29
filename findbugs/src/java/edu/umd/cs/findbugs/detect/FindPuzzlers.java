@@ -124,7 +124,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 
 	   if (seen == INVOKEVIRTUAL && stack.getStackDepth() > 0
                         && getClassConstantOperand().equals("java/util/Date")
-                        && getNameConstantOperand().equals("setDate")
+                        && getNameConstantOperand().equals("setMonth")
                         && getSigConstantOperand().equals("(I)V")) {
 			OpcodeStack.Item item = stack.getStackItem(0);
 			Object o = item.getConstant();
