@@ -30,5 +30,13 @@ class Mwn {
 			done.notifyAll();
 		}
 	}
+	
+	public static final String DOMAINCFG = "Hi";
+	
+	public void falsePositive() throws InterruptedException {
+		synchronized (DOMAINCFG) {
+			DOMAINCFG.wait();
+		}
+	}
 
 }
