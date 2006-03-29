@@ -48,10 +48,12 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 
 
 	@Override
-         public void sawOpcode(int seen) {
+    public void sawOpcode(int seen) {
 		if (seen == GOTO) {
 			previousGotoTarget = getBranchTarget();
 			gotoCount++;
+			if (previousGotoTarget < getPC())
+				previousLoadOf = -1;
 		} else {
 			if (isRegisterLoad()) 
 				previousLoadOf = getRegisterOperand();
