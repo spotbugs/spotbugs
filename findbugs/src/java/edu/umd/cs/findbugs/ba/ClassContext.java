@@ -63,6 +63,7 @@ import edu.umd.cs.findbugs.ba.vna.LoadedFieldSet;
 import edu.umd.cs.findbugs.ba.vna.MergeTree;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * A ClassContext caches all of the auxiliary objects used to analyze
@@ -269,7 +270,7 @@ public class ClassContext {
 		}
 
 		@Override
-                 public Analysis getAnalysis(Method method) {
+       public Analysis getAnalysis(Method method) {
 			try {
 				return super.getAnalysis(method);
 			} catch (DataflowAnalysisException e) {
@@ -1059,6 +1060,7 @@ public class ClassContext {
 		return rdfsFactory.getAnalysis(method);
 	}
 
+	static MapCache<Method,BitSet> cachedBitsets = new MapCache<Method, BitSet>(64);
 	/**
 	 * Get a BitSet representing the bytecodes that are used in the given method.
 	 * This is useful for prescreening a method for the existence of particular instructions.
@@ -1070,9 +1072,30 @@ public class ClassContext {
 	 * @return the BitSet containing the opcodes which appear in the method,
 	 *          or null if the method has no code
 	 */
-	@CheckForNull public BitSet getBytecodeSet(Method method) {
-		UnpackedCode unpackedCode = unpackedCodeFactory.getAnalysis(method);
-		return unpackedCode != null ? unpackedCode.getBytecodeSet() : null;
+	@CheckForNull static public BitSet getBytecodeSet(Method method) {
+
+
+				if (cachedBitsets.containsKey(method)) {
+					return cachedBitsets.get(method);
+				}
+		        Code code = method.getCode();
+		        if (code == null)
+			        return null;
+
+		        byte[] instructionList = code.getCode();
+
+		        // Create callback
+		        UnpackedBytecodeCallback callback = new UnpackedBytecodeCallback(instructionList.length);
+
+		        // Scan the method.
+		        BytecodeScanner scanner = new BytecodeScanner();
+		        scanner.scan(instructionList, callback);
+
+		        UnpackedCode unpackedCode = callback.getUnpackedCode();
+				BitSet result =  null;
+		        if (unpackedCode != null) result =  unpackedCode.getBytecodeSet();
+		        cachedBitsets.put(method, result);
+		        return result;
 	}
 	
 	/**
