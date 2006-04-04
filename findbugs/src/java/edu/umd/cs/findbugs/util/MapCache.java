@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.util;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.bcel.classfile.JavaClass;
+
 /**
  * Provide a HashMap that can only grow to a specified maximum capacity,
  * with entries discarded using a LRU policy to keep the size of the HashMap
@@ -39,10 +41,44 @@ public class MapCache<K,V> extends LinkedHashMap<K,V> {
 	public MapCache(int maxCapacity) {
 		super(16, 0.75f, true);
 		this.maxCapacity = maxCapacity;
+		count = new int[maxCapacity];
+	}
+	int [] count;
+	@Override
+	public V get(Object k) { 
+		if (false) {
+		int age = count.length-1;
+		for(Map.Entry<K,V> e : entrySet()) {
+			if (e.getKey().equals(k)) {
+				count[age]++;
+				if (age > 20 && k instanceof JavaClass) {
+					
+					System.out.println("Reusing value from " + age + " steps ago ");
+					System.out.println("Class " + ((JavaClass)k).getClassName());
+					new RuntimeException().printStackTrace(System.out);
+				}
+				break;
+			}
+			age--;
+			
+		}
+		}
+		return super.get(k);
 	}
 	@Override
 	protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
-        return size() > maxCapacity;
+        boolean result = size() > maxCapacity;
+        K key = eldest.getKey();
+        if (false && result && key instanceof JavaClass)
+        		System.out.println("Dropping " + ((JavaClass)key).getClassName());
+		return result;
      }
+	
+	public String getStatistics() {
+		StringBuffer b = new StringBuffer();
+		for(int c : count) 
+			b.append(c).append(" ");
+		return b.toString();
+	}
 
 }
