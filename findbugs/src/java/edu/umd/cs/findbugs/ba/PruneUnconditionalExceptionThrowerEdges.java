@@ -92,8 +92,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				if (!methodSig.endsWith("V")) 
 					continue;
 				JavaClass javaClass = Repository.lookupClass(className);
-				ClassContext classContext = analysisContext.getClassContext(javaClass);
-
+				
 				if (DEBUG) System.out.println("\tlooking up method for " + basicBlock.getExceptionThrower());
 				JavaClassAndMethod classAndMethod = Hierarchy.findExactMethod(inv, cpg);
 				if (classAndMethod == null) {
@@ -112,12 +111,14 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				
 				// Ignore abstract and native methods
 				if (method.getCode() == null) continue;
-				
-				BitSet bytecodeSet = classContext.getBytecodeSet(method);
-				if (bytecodeSet == null) continue;
-				
 				Boolean isUnconditionalThrower = cachedResults.get(xMethod);
+				
+				
 				if (isUnconditionalThrower == null) {
+
+					BitSet bytecodeSet = ClassContext.getBytecodeSet(method);
+					if (bytecodeSet == null) continue;
+				
 					if (DEBUG) System.out.println("\tChecking " + xMethod);
 					isUnconditionalThrower = !bytecodeSet.intersects(RETURN_OPCODE_SET);
 					if (DEBUG && isUnconditionalThrower) {
@@ -127,8 +128,10 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 						
 					}
 					cachedResults.put(xMethod, isUnconditionalThrower);
+					
 				}
 				if (false && isUnconditionalThrower.booleanValue()) {
+					ClassContext classContext = analysisContext.getClassContext(javaClass);
 				    MethodGen calledMethodGen = classContext.getMethodGen(method);
 					// Ignore abstract and native methods
 
