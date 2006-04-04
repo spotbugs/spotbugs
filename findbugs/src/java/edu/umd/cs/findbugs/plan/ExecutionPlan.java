@@ -260,23 +260,20 @@ public class ExecutionPlan {
 
 	private void buildPassList(ConstraintGraph constraintGraph)
 			throws OrderingConstraintException {
+
 		while (constraintGraph.getNumVertices() > 0) {
 			List<DetectorNode> inDegreeZeroList = new LinkedList<DetectorNode>();
-
 			// Get all of the detectors nodes with in-degree 0.
 			// These have no unsatisfied prerequisites, and thus can
 			// be chosen for the current pass.
-			int inDegreeZeroCount = 0;
 			for (Iterator<DetectorNode> i = constraintGraph.vertexIterator(); i.hasNext(); ) {
 				DetectorNode node = i.next();
-
-				if (constraintGraph.getNumIncomingEdges(node) == 0) {
-					++inDegreeZeroCount;
+				if (constraintGraph.getNumIncomingEdges(node) == 0) 
 					inDegreeZeroList.add(node);
-				}
+				
 			}
 
-			if (inDegreeZeroCount == 0)
+			if (inDegreeZeroList.isEmpty())
 				throw new OrderingConstraintException("Cycle in inter-pass ordering constraints");
 
 			// Remove all of the chosen detectors from the constraint graph.
@@ -292,6 +289,7 @@ public class ExecutionPlan {
 			for (DetectorNode node : inDegreeZeroList) {
 				assignToPass(node.getFactory(), pass);
 			}
+
 		}
 	}
 	
