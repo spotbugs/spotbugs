@@ -59,7 +59,7 @@ public class AnalysisContext {
 	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
-	private Map<JavaClass, ClassContext> classContextCache;
+	private MapCache<JavaClass, ClassContext> classContextCache;
 	private Subtypes subtypes;
 	public Map<Object,Object> analysisLocals = 
 		Collections.synchronizedMap(new HashMap<Object,Object>());
@@ -91,7 +91,7 @@ public class AnalysisContext {
 	 * Default maximum number of ClassContext objects to cache.
 	 * FIXME: need to evaluate this parameter. Need to keep stats about accesses.
 	 */
-	private static final int DEFAULT_CACHE_SIZE = 60;
+	private static final int DEFAULT_CACHE_SIZE = 3;
 
 	/**
 	 * Constructor.
@@ -302,6 +302,8 @@ public class AnalysisContext {
 	 * @param javaClass the class
 	 * @return the ClassContext for that class
 	 */
+	int hits = 0;
+	int misses = 0;
 	public ClassContext getClassContext(JavaClass javaClass) {
 		if (classContextCache == null) {
 		int cacheSize = getBoolProperty(AnalysisFeatures.CONSERVE_SPACE) ? 1 : DEFAULT_CACHE_SIZE;
@@ -311,10 +313,15 @@ public class AnalysisContext {
 		if (classContext == null) {
 			classContext = new ClassContext(javaClass, this);
 			classContextCache.put(javaClass, classContext);
-		}
+			misses++;
+		} else hits++;
 		return classContext;
 	}
 
+	public String getClassContextStats() {
+		if (classContextCache == null) return null;
+		return hits + "/" + misses + ":" + classContextCache.getStatistics();
+	}
 	/**
 	 * If possible, load interprocedural property databases.
 	 */
