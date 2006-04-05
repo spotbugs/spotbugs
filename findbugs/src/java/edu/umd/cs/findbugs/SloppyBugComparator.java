@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.Serializable;
+
 import edu.umd.cs.findbugs.model.ClassNameRewriter;
 import edu.umd.cs.findbugs.model.ClassNameRewriterUtil;
 import edu.umd.cs.findbugs.model.IdentityClassNameRewriter;
@@ -29,7 +31,7 @@ import edu.umd.cs.findbugs.model.IdentityClassNameRewriter;
  * 
  * @author David Hovemeyer
  */
-public class SloppyBugComparator implements  WarningComparator {
+public class SloppyBugComparator implements  WarningComparator, Serializable {
 	
 	private static final boolean DEBUG = Boolean.getBoolean("sloppyComparator.debug");
 	

@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -44,7 +45,7 @@ import edu.umd.cs.findbugs.model.ClassNameRewriter;
  * @see edu.umd.cs.findbugs.VersionInsensitiveBugComparator
  * @author David Hovemeyer
  */
-public class FuzzyBugComparator implements WarningComparator {
+public class FuzzyBugComparator implements WarningComparator, Serializable {
 	private static final boolean DEBUG = false;
 
 	// Don't use hashes for now.  Still ironing out issues there.
