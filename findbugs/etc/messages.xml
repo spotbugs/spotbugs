@@ -4653,6 +4653,7 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="LI">Unsynchronized Lazy Initialization</BugCode>
   <BugCode abbrev="JLM">Synchronization on JSR166 Lock</BugCode>
   <BugCode abbrev="UPM">Private method is never called</BugCode>
+  <BugCode abbrev="UMAC">Uncallable method of anonymous class</BugCode>
   <BugCode abbrev="EI2">Storing reference to mutable object</BugCode>
   <BugCode abbrev="NS">Suspicious use of non-short-circuit boolean operator</BugCode>
   <BugCode abbrev="ODR">Database resource not closed on all paths</BugCode>
