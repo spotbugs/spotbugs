@@ -156,32 +156,17 @@ public class Analyze {
 
 		Set<JavaClass> ySubtypes = subtypes.getTransitiveSubtypes(y);
 
-		Set<JavaClass> both = new HashSet<JavaClass>(xSubtypes);
-		both.retainAll(ySubtypes);
-		Set<JavaClass> xButNotY = new HashSet<JavaClass>(xSubtypes);
-		xButNotY.removeAll(ySubtypes);
-
-		if (false && yIsSubtypeOfX && both.isEmpty()) {
-			System.out.println("Strange: y is subtype of x, but no classes in both");
-			System.out.println("X : " + x.getClassName());
-			System.out.println("Immediate subtypes:");
-			for(JavaClass c : subtypes.getImmediateSubtypes(x))
-				System.out.println("  " + c.getClassName());
-			System.out.println("transitive subtypes:");
-			for(JavaClass c : xSubtypes)
-				System.out.println("  " + c.getClassName());
-			System.out.println("Y : " + y.getClassName());
-			System.out.println("Immediate subtypes:");
-			for(JavaClass c : subtypes.getImmediateSubtypes(y))
-				System.out.println("  " + c.getClassName());
-			System.out.println("transitive subtypes:");
-			for(JavaClass c : ySubtypes)
-				System.out.println("  " + c.getClassName());
-			
+		boolean emptyIntersection = true;
+		
+		boolean concreteClassesInXButNotY = false;
+		for(JavaClass s : xSubtypes) {
+			if (ySubtypes.contains(s)) emptyIntersection = false;
+			else if (!s.isInterface() && !s.isAbstract())
+				concreteClassesInXButNotY = true;
 		}
-		boolean concreteClassesInXButNotY = containsConcreteClasses(xButNotY);
 
-		if (both.isEmpty()) {
+		
+		if (emptyIntersection) {
 			if (concreteClassesInXButNotY) {
 				if (x.isAbstract() || x.isInterface()) return 0.2;
 				return 0.1;

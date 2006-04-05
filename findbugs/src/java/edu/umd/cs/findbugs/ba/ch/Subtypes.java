@@ -143,8 +143,7 @@ public class Subtypes {
 		return result;
 	}
 
-	private Set<JavaClass> getReferencedClasses(JavaClass c) {
-		Set<JavaClass> result = new HashSet<JavaClass>();
+	private void addReferencedClasses(JavaClass c) {
 		if (DEBUG_HIERARCHY)
 			System.out.println("adding referenced classes for "
 					+ c.getClassName());
@@ -159,7 +158,7 @@ public class Subtypes {
 				name = extractClassName(name);
 				if (DEBUG_HIERARCHY)
 					System.out.println(i + " : " + name);
-				addNamedClass(result, name);
+				addNamedClass(name);
 			} else if (co instanceof ConstantCP) {
 				ConstantCP co2 = (ConstantCP) co;
 				ConstantNameAndType nt = (ConstantNameAndType) cp
@@ -174,23 +173,22 @@ public class Subtypes {
 					String name = sig.substring(j + 1, k);
 					if (DEBUG_HIERARCHY)
 						System.out.println(i + " : " + name);
-					addNamedClass(result, name);
+					addNamedClass(name);
 					sig = sig.substring(k + 1);
 				}
 
 			}
 		}
-		return result;
 	}
 
-	private void addNamedClass(Set<JavaClass> result, String name) {
+	private void addNamedClass(String name) {
 		name = name.replace('/', '.');
 
 		if (referenced.add(name))
 			try {
 				
 				JavaClass clazz = Repository.lookupClass(name);
-				result.add(clazz);
+				addClass(clazz);
 			} catch (ClassNotFoundException e) {
 				if (name.length() > 1)
 					AnalysisContext.reportMissingClass(e);
@@ -259,8 +257,7 @@ public class Subtypes {
 		transitiveSubtypes.clear();
 		for (JavaClass c : applicationClasses) {
 			addClass(c);
-			for (JavaClass r : getReferencedClasses(c))
-				addClass(r);
+			addReferencedClasses(c);
 		}
 
 		for (JavaClass c : new HashSet<JavaClass>(allClasses)) {
