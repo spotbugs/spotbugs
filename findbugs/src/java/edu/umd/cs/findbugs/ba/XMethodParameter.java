@@ -39,7 +39,7 @@ public class XMethodParameter implements Comparable<XMethodParameter>{
          public boolean equals(Object o) {
 		if (!(o instanceof XMethodParameter)) return false;
 		XMethodParameter mp2 = (XMethodParameter) o;
-		return method.equals(mp2.method) && parameter == mp2.parameter;
+		return parameter == mp2.parameter && method.equals(mp2.method);
 	}
 	@Override
          public int hashCode() {
