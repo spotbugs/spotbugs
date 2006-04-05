@@ -51,7 +51,7 @@ public class MapCache<K,V> extends LinkedHashMap<K,V> {
 		for(Map.Entry<K,V> e : entrySet()) {
 			if (e.getKey().equals(k)) {
 				count[age]++;
-				if (age > 20 && k instanceof JavaClass) {
+				if (false && age > 20 && k instanceof JavaClass) {
 					
 					System.out.println("Reusing value from " + age + " steps ago ");
 					System.out.println("Class " + ((JavaClass)k).getClassName());
