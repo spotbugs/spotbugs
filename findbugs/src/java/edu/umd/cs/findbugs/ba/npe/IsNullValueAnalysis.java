@@ -448,16 +448,12 @@ public class IsNullValueAnalysis
 	private IsNullConditionDecision getDecision(BasicBlock basicBlock,  IsNullValueFrame lastFrame)
 	        throws DataflowAnalysisException {
 
-		
 		assert lastFrame != null;
-		  String methodName = methodGen.getMethod().getName();
-				
+
 		final InstructionHandle lastInSourceHandle = basicBlock.getLastInstruction();
 		if (lastInSourceHandle == null)
 			return null; // doesn't end in null comparison
-		  if (false && methodName.startsWith("notifyText"))
-				System.out.println("XX " + methodGen.getClassName() + "." + methodName + " : " + lastInSourceHandle.getPosition());
-	
+		
 		final short lastInSourceOpcode = lastInSourceHandle.getInstruction().getOpcode();
 		// System.out.println("last opcode: " + Constants.OPCODE_NAMES[lastInSourceOpcode]);
 		if (lastInSourceOpcode == Constants.IFEQ || lastInSourceOpcode == Constants.IFNE ) {
@@ -471,8 +467,6 @@ public class IsNullValueAnalysis
 			Location atInstanceOf = new Location(prev, basicBlock);
 			ValueNumberFrame instanceOfVnaFrame = vnaDataflow.getFactAtLocation(atInstanceOf);
 	
-			if (false) System.out.println("Checking... " + methodGen.getClassName() + "." + methodName + " : " + prev.getPosition() 
-					+ " " + Constants.OPCODE_NAMES[lastInSourceOpcode]+ " " + tos);
 			// Initially, assume neither branch is feasible.
 			IsNullValue ifcmpDecision = null;
 			IsNullValue fallThroughDecision = null;
