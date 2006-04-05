@@ -23,8 +23,10 @@ package edu.umd.cs.findbugs;
 /**
  * is a marker interface for detectors that don't save state from one
  * class file to the next.
+ * 
+ * If a detector implements this interface, a clone will be generated for each element it is applied to.
  */
 public interface StatelessDetector extends Cloneable
 {
-	public Object clone() throws CloneNotSupportedException;
+	public Object clone();
 }
