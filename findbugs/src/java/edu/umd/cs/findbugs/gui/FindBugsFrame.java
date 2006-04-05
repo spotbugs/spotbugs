@@ -52,6 +52,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -214,7 +215,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * Note that all instances with the same package name will compare
 	 * as equal.
 	 */
-	private static class BugInstancePackageComparator implements Comparator<BugInstance> {
+	private static class BugInstancePackageComparator implements Comparator<BugInstance>, Serializable {
 		public int compare(BugInstance lhs, BugInstance rhs) {
 			return lhs.getPrimaryClass().getPackageName().compareTo(rhs.getPrimaryClass().getPackageName());
 		}
@@ -231,7 +232,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * Note that all instances with the same bug type will compare
 	 * as equal.
 	 */
-	private static class BugInstanceTypeComparator implements Comparator<BugInstance> {
+	private static class BugInstanceTypeComparator implements Comparator<BugInstance>, Serializable {
 		public int compare(BugInstance lhs, BugInstance rhs) {
 			String lhsString = lhs.toString();
 			String rhsString = rhs.toString();
@@ -250,7 +251,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * Note that all instances with the same bug category will compare
 	 * as equal.
 	 */
-	private static class BugInstanceCategoryComparator implements Comparator<BugInstance> {
+	private static class BugInstanceCategoryComparator implements Comparator<BugInstance>, Serializable {
 		public int compare(BugInstance lhs, BugInstance rhs) {
 			return getCategory(lhs).compareTo(getCategory(rhs));
 		}
@@ -276,7 +277,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * Two-level comparison of bug instances by class name and
 	 * BugInstance natural ordering.
 	 */
-	private static class BugInstanceByClassComparator implements Comparator<BugInstance> {
+	private static class BugInstanceByClassComparator implements Comparator<BugInstance>, Serializable {
 		public int compare(BugInstance a, BugInstance b) {
 			int cmp = bugInstanceClassComparator.compare(a, b);
 			if (cmp != 0)
@@ -312,7 +313,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * Two-level comparison of bug instances by bug type and
 	 * BugInstance natural ordering.
 	 */
-	private static class BugInstanceByTypeComparator implements Comparator<BugInstance> {
+	private static class BugInstanceByTypeComparator implements Comparator<BugInstance>, Serializable {
 		public int compare(BugInstance a, BugInstance b) {
 			int cmp = bugInstanceTypeComparator.compare(a, b);
 			if (cmp != 0)
@@ -330,7 +331,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * Two-level comparison of bug instances by bug category and
 	 * BugInstance natural ordering.
 	 */
-	private static class BugInstanceByCategoryComparator implements Comparator<BugInstance> {
+	private static class BugInstanceByCategoryComparator implements Comparator<BugInstance>, Serializable {
 		public int compare(BugInstance a, BugInstance b) {
 			int cmp = bugInstanceCategoryComparator.compare(a, b);
 			if (cmp != 0)
