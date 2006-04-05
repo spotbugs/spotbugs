@@ -25,8 +25,14 @@ package edu.umd.cs.findbugs;
  * class file to the next.
  * 
  * If a detector implements this interface, a clone will be generated for each element it is applied to.
+ * 
+ * The idea of using this interface is questionable. Better for people writing
+ * stateless detectors to just not keep around state they don't need, rather than
+ * depending on cloning and garbage collection.
+ * 
  */
+
 public interface StatelessDetector extends Cloneable
 {
-	public Object clone();
+	public Object clone() throws CloneNotSupportedException;
 }

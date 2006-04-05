@@ -1613,7 +1613,11 @@ public class FindBugs implements Constants2, ExitCodes {
 				Detector detector = detector1;
 				// MUSTFIX: Evaluate whether this makes a difference
 				if (true && detector instanceof StatelessDetector) {
-						detector = (Detector) ((StatelessDetector) detector).clone();
+						try {
+							detector = (Detector) ((StatelessDetector) detector).clone();
+						} catch (CloneNotSupportedException e) {
+							throw new RuntimeException(e);
+						}
 				}
 
 
