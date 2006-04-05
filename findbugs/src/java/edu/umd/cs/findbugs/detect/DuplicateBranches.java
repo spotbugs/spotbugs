@@ -30,7 +30,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
 import org.apache.bcel.util.ByteSequence;
 
-public class DuplicateBranches extends PreorderVisitor implements Detector, StatelessDetector
+public class DuplicateBranches extends PreorderVisitor implements Detector
 {
 	private ClassContext classContext;
 	private BugReporter bugReporter;
@@ -38,11 +38,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector, Stat
 	public DuplicateBranches(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	public void visitClassContext(ClassContext classContext) {
 		this.classContext = classContext;

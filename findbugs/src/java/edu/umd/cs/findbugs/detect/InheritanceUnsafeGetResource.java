@@ -39,10 +39,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	@Override
          public void visit(JavaClass obj) {

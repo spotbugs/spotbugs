@@ -41,10 +41,7 @@ public class FindNakedNotify extends BytecodeScanningDetector implements  Statel
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	@Override
          public void visit(Method obj) {

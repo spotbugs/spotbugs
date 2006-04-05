@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
 
 public class BadSyntaxForRegularExpression 
-extends BytecodeScanningDetector implements  StatelessDetector {
+extends BytecodeScanningDetector {
 
     BugReporter bugReporter;
 
@@ -41,10 +41,7 @@ extends BytecodeScanningDetector implements  StatelessDetector {
         this.bugReporter = bugReporter;
     }
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
+
 
     @Override
     public void visit(JavaClass obj) {

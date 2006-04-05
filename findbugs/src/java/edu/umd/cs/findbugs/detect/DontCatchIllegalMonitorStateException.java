@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class DontCatchIllegalMonitorStateException
-        extends PreorderVisitor implements Detector, StatelessDetector {
+        extends PreorderVisitor implements Detector {
 
 	private static final boolean DEBUG = Boolean.getBoolean("dcimse.debug");
 
@@ -47,10 +47,7 @@ public class DontCatchIllegalMonitorStateException
 			msgs = new HashSet<String>();
 	}
 	
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	@Override
          public void visit(ExceptionTable obj) {

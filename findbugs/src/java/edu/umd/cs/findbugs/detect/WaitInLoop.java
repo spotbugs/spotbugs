@@ -38,10 +38,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	@Override
          public void visit(Code obj) {

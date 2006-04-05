@@ -33,9 +33,9 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
 
 
-public class BadResultSetAccess extends BytecodeScanningDetector implements  StatelessDetector {
+public class BadResultSetAccess extends BytecodeScanningDetector {
 
-	private static Set<String> dbFieldTypesSet = new HashSet<String>() 
+	private static final Set<String> dbFieldTypesSet = new HashSet<String>() 
 	{
 		static final long serialVersionUID = -3510636899394546735L;
 		{ 
@@ -72,11 +72,7 @@ public class BadResultSetAccess extends BytecodeScanningDetector implements  Sta
 		this.bugReporter = bugReporter;
 	}
 	
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
-	
+
 	@Override
          public void visit(Method obj) {
         stack.resetForMethodEntry(this);

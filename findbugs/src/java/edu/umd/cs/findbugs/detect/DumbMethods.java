@@ -71,10 +71,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		jdk15ChecksEnabled = JavaVersion.getRuntimeVersion().isSameOrNewerThan(JavaVersion.JAVA_1_5);
 	}
 	
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+	
 	OpcodeStack stack = new OpcodeStack();
 	
 	@Override

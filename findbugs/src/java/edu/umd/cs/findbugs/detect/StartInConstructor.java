@@ -31,10 +31,7 @@ public class StartInConstructor extends BytecodeScanningDetector implements Stat
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	boolean isFinal;
 

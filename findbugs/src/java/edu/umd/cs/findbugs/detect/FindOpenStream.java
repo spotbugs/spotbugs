@@ -216,8 +216,12 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	}
 	
 	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	// List of words that must appear in names of classes which

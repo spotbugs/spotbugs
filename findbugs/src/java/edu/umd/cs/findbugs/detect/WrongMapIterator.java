@@ -52,10 +52,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements   Stat
         this.bugReporter = bugReporter;
     }
     
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	@Override
          public void visit(Method obj) {

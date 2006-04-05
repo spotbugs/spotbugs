@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 
-public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements  StatelessDetector {
+public class BadlyOverriddenAdapter extends BytecodeScanningDetector  {
 	private BugReporter bugReporter;
 	private boolean isAdapter;
 	private Map<String, String> methodMap;
@@ -43,10 +43,7 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector implements 
 		badOverrideMap = new HashMap<String,BugInstance>();
 	}
 	
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	@Override
          public void visit(JavaClass obj) {

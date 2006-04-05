@@ -32,10 +32,7 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 		this.bugReporter = bugReporter;
 	}
 	
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	boolean sawSuperFinalize;
 

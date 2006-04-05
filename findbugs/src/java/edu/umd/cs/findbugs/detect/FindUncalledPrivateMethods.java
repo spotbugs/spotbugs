@@ -38,10 +38,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 	
 	@Override
          public void visitMethod(Method obj) {

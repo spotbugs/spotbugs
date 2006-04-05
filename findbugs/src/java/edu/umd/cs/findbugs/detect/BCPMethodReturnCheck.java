@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.ba.bcp.PatternElement;
  * @author David Hovemeyer
  * @author Bill Pugh
  */
-public class BCPMethodReturnCheck extends ByteCodePatternDetector implements StatelessDetector {
+public class BCPMethodReturnCheck extends ByteCodePatternDetector  {
 	private final BugReporter bugReporter;
 
 	private static final boolean CHECK_ALL = Boolean.getBoolean("mrc.checkall");
@@ -64,10 +64,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector implements Sta
 			= new AnalysisLocal<ArrayList<PatternElement>>();
 
     
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-    	return super.clone();
-    }
+
     
 	@Override
          public ByteCodePattern  getPattern() {

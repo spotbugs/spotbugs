@@ -38,10 +38,7 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 	
 	@Override
          public void visitCode(Code obj) {

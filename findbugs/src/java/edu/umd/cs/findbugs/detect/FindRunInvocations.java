@@ -33,10 +33,6 @@ public class FindRunInvocations extends BytecodeScanningDetector implements Stat
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
 
 	private boolean isThread(String clazz) {
 		try {

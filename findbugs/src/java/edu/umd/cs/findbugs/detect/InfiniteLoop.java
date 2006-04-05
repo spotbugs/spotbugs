@@ -39,10 +39,6 @@ public class InfiniteLoop extends BytecodeScanningDetector  {
 	int state = 0;
 	int age = 0;
 	int lastBranch;
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
 
 	@Override
          public void visit(JavaClass obj) {

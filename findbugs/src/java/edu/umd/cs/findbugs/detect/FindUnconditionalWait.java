@@ -39,10 +39,7 @@ public class FindUnconditionalWait extends BytecodeScanningDetector implements S
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 	
 	@Override
          public void visit(Method obj) {

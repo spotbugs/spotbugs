@@ -39,8 +39,12 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 	}
 
 	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void visitClassContext(ClassContext classContext) {

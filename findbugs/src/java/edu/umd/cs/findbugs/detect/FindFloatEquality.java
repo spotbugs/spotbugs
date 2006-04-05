@@ -37,10 +37,7 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 		this.bugReporter = bugReporter;
 	}
 	
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 	Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
 	
 	@Override

@@ -43,10 +43,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	@Override
          public void visitAfter(JavaClass obj) {

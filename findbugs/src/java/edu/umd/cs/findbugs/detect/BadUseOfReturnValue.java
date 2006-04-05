@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 
-public class BadUseOfReturnValue extends BytecodeScanningDetector implements StatelessDetector {
+public class BadUseOfReturnValue extends BytecodeScanningDetector {
 
 	BugReporter bugReporter;
 
@@ -34,10 +34,6 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector implements Sta
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
 
 
 	boolean readLineOnTOS = false;

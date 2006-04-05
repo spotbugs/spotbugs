@@ -67,10 +67,6 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
 	
 	@Override
          public void sawOpcode(int seen) {

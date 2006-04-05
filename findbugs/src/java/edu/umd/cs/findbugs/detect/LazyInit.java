@@ -57,16 +57,20 @@ public class LazyInit extends ByteCodePatternDetector implements StatelessDetect
 	public LazyInit(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 	@Override
          public BugReporter getBugReporter() {
 		return bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	@Override
          public ByteCodePattern getPattern() {

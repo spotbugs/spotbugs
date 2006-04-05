@@ -43,10 +43,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	boolean directChildOfTestCase;
 

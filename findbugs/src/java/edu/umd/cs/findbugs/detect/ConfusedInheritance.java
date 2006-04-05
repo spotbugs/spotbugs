@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-public class ConfusedInheritance extends PreorderVisitor  implements Detector, StatelessDetector {
+public class ConfusedInheritance extends PreorderVisitor  implements Detector {
 	
 	private BugReporter bugReporter;
 	private JavaClass cls;
@@ -39,10 +39,7 @@ public class ConfusedInheritance extends PreorderVisitor  implements Detector, S
 		this.bugReporter = bugReporter;
 	}
 	
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 	
 	public void visitClassContext(ClassContext classContext) {
 		cls = classContext.getJavaClass();

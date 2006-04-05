@@ -50,10 +50,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		this.bugReporter = bugReporter;
 	}
 	
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+	
 
 	public void visitClassContext(ClassContext classContext) {
 		classContext.getJavaClass().accept(this);

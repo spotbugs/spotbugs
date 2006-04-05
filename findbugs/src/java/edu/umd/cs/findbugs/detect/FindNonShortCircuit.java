@@ -36,10 +36,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements  St
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	@Override
          public void visit(Method obj) {

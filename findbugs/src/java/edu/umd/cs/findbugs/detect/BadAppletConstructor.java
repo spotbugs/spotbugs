@@ -31,25 +31,23 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
-public class BadAppletConstructor extends BytecodeScanningDetector implements  StatelessDetector {
+public class BadAppletConstructor extends BytecodeScanningDetector  {
 	private BugReporter bugReporter;
-	private JavaClass appletClass;
+	private final JavaClass appletClass;
 	private boolean inConstructor;
 
 	public BadAppletConstructor(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		JavaClass appletClass = null;
 		try {
 			appletClass = Repository.lookupClass("java.applet.Applet");
 		} catch (ClassNotFoundException cnfe) {
 			bugReporter.reportMissingClass(cnfe);
-			appletClass = null;
 		}
+		this.appletClass = appletClass;
 	}
 	
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	@Override
          public void visitClassContext(ClassContext classContext) {

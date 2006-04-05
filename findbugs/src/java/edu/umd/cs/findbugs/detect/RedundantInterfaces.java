@@ -35,10 +35,7 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, St
 		this.bugReporter = bugReporter;
 	}
 	
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 	
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass obj = classContext.getJavaClass();

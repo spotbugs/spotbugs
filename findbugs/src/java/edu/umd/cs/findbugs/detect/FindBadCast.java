@@ -55,10 +55,7 @@ public class FindBadCast extends BytecodeScanningDetector implements  StatelessD
 	private Set<String> concreteCollectionClasses = new HashSet<String>();
 	private Set<String> abstractCollectionClasses = new HashSet<String>();
 
-	@Override
-         public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+
 
 	@Override
          public void visit(JavaClass obj) {

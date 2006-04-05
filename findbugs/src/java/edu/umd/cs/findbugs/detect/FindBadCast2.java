@@ -110,27 +110,29 @@ public class FindBadCast2 implements Detector {
 		}
 		return false;
 	}
-	
-	private void analyzeMethod(ClassContext classContext, Method method)
-			throws CFGBuilderException, DataflowAnalysisException {
-		if (isSynthetic(method))
-			return;
-		
-		CFG cfg = classContext.getCFG(method);
-		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
-		IsNullValueDataflow isNullDataflow = classContext.getIsNullValueDataflow(method);
-		ValueNumberDataflow vnaDataflow = classContext
-				.getValueNumberDataflow(method);
-		// get the ValueNumberFrame at entry to a method:
+	private Set<ValueNumber> getParameterValueNumbers(ClassContext classContext, Method method,  CFG cfg ) throws DataflowAnalysisException, CFGBuilderException {
+		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
 		ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(cfg
 				.getEntry());
-
-		// get Set of parameter values
 		Set<ValueNumber> paramValueNumberSet = new HashSet<ValueNumber>();
 		int firstParam = method.isStatic() ? 0 : 1;
 		for (int i = firstParam; i < vnaFrameAtEntry.getNumLocals(); ++i) {
 			paramValueNumberSet.add(vnaFrameAtEntry.getValue(i));
 		}
+		return paramValueNumberSet;
+	}
+	private void analyzeMethod(ClassContext classContext, Method method)
+			throws CFGBuilderException, DataflowAnalysisException {
+		if (isSynthetic(method) || !prescreen(classContext, method))
+			return;
+		
+		
+		CFG cfg = classContext.getCFG(method);
+		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+		IsNullValueDataflow isNullDataflow = classContext.getIsNullValueDataflow(method);
+		Set<ValueNumber> paramValueNumberSet = null;
+		
+		ValueNumberDataflow vnaDataflow = null;
 
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		MethodGen methodGen = classContext.getMethodGen(method);
@@ -270,7 +272,12 @@ public class FindBadCast2 implements Detector {
 			String refName = refSig2.substring(1, refSig2.length() - 1)
 					.replace('/', '.');
 
+			if (vnaDataflow == null)
+				vnaDataflow = classContext
+				.getValueNumberDataflow(method);
 			ValueNumberFrame vFrame = vnaDataflow.getFactAtLocation(location);
+			if (paramValueNumberSet == null) 
+				paramValueNumberSet = getParameterValueNumbers(classContext, method, cfg);
 			boolean isParameter = paramValueNumberSet.contains(vFrame
 					.getTopValue());
 			try {
