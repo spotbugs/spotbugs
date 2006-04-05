@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.tools.html;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -40,7 +41,7 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 
 	private static final String[] TABLE_COLORS = new String[]{ "#eeeeee", "#ffffff" };
 
-	private static class BugPatternComparator implements Comparator<BugPattern> {
+	private static class BugPatternComparator implements Comparator<BugPattern>, Serializable {
 		public int compare(BugPattern a, BugPattern b) {
 			int cmp = a.getCategory().compareTo(b.getCategory());
 			if (cmp != 0) return cmp;
