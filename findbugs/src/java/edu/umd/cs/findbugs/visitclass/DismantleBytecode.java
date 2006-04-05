@@ -156,6 +156,15 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 	public String getRefConstantOperand() {
 		if (refConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getRefConstantOperand called but value not available");
+		if (refConstantOperand == null) {
+			StringBuffer ref = new StringBuffer(dottedClassConstantOperand.length() + nameConstantOperand.length() + dottedSigConstantOperand.length() + 5);
+		ref.append(dottedSigConstantOperand)
+        .append(".")
+        .append(nameConstantOperand)
+        .append(" : ")
+        .append(dottedSigConstantOperand);
+		refConstantOperand = ref.toString();
+		}
 		return refConstantOperand;
 	}
 
@@ -508,16 +517,8 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 								nameConstantOperand = getStringFromIndex(sig.getNameIndex());
 								sigConstantOperand = getStringFromIndex(sig.getSignatureIndex());
 								dottedSigConstantOperand = replaceSlashesWithDots(sigConstantOperand);
-								StringBuffer ref = new StringBuffer(5 + dottedClassConstantOperand.length()
-								        + nameConstantOperand.length()
-								        + dottedSigConstantOperand.length());
 
-								ref.append(dottedClassConstantOperand)
-								        .append(".")
-								        .append(nameConstantOperand)
-								        .append(" : ")
-								        .append(dottedSigConstantOperand);
-								refConstantOperand = ref.toString();
+								refConstantOperand = null;
 							}
 							break;
 						case M_R:
