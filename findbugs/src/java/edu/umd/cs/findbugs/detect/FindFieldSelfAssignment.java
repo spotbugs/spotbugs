@@ -42,6 +42,7 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 
 
 	String f;
+	String className;
 
 	@Override
          public void sawOpcode(int seen) {
@@ -61,11 +62,12 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 			if (seen == GETFIELD) {
 				state = 3;
 				f = getRefConstantOperand();
+				className = getClassConstantOperand();
 			} else
 				state = 0;
 			break;
 		case 3:
-			if (seen == PUTFIELD && getRefConstantOperand().equals(f)) {
+			if (seen == PUTFIELD && getRefConstantOperand().equals(f) && getClassConstantOperand().equals(className)) {
 
 				bugReporter.reportBug(new BugInstance(this, "SA_FIELD_SELF_ASSIGNMENT", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
