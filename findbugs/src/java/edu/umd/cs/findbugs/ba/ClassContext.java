@@ -27,6 +27,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -195,7 +196,7 @@ public class ClassContext {
 	 */
 	private abstract class AnalysisFactory <Analysis> {
 		private String analysisName;
-		private HashMap<Method, ClassContext.AnalysisResult<Analysis>> map =
+		private HashMap<Method, AnalysisResult<Analysis>> map =
 			new HashMap<Method, ClassContext.AnalysisResult<Analysis>>();
 
 		/**
@@ -270,7 +271,7 @@ public class ClassContext {
 		}
 
 		@Override
-       public Analysis getAnalysis(Method method) {
+         public Analysis getAnalysis(Method method) {
 			try {
 				return super.getAnalysis(method);
 			} catch (DataflowAnalysisException e) {
@@ -393,54 +394,25 @@ public class ClassContext {
 
 	private JavaClass jclass;
 	private AnalysisContext analysisContext;
-	// TODO: Evaluate whether the memory requirements of this can grow too big
-	static private Map<Method, MethodGen> cachedMethodGen = new IdentityHashMap<Method,MethodGen>();
 	private NoExceptionAnalysisFactory<MethodGen> methodGenFactory =
-	        new NoExceptionAnalysisFactory<MethodGen>("MethodGen construction") {
-		        @CheckForNull@Override
-                          protected MethodGen analyze(Method method) {
-			        if (method.getCode() == null)
-				        return null;
-			        MethodGen result = cachedMethodGen.get(method);
+		new NoExceptionAnalysisFactory<MethodGen>("MethodGen construction") {
+		@CheckForNull@Override
+		protected MethodGen analyze(Method method) {
+			if (method.getCode() == null)
+				return null;
+			String methodName = method.getName();
+			if (analysisContext.getBoolProperty(AnalysisFeatures.SKIP_HUGE_METHODS)) {
+				int codeLength = method.getCode().getLength();
+				if (codeLength > 3000 
+						|| (methodName.equals("<clinit>") || methodName.equals("getContents")) && codeLength > 1000) {
+					getLookupFailureCallback().reportSkippedAnalysis(new JavaClassAndMethod(jclass, method));
+					return null;
+				}
+			}
+			return  new MethodGen(method, jclass.getClassName(), getConstantPoolGen());
 
-			        
-			         if (result != null) {
-			        	// System.out.println("got cached value " + System.identityHashCode(result));
-			        	return result;
-			        }
-			         String methodName = method.getName();
-					if (false) System.out.println("methodGen: " + jclass.getClassName() + "." 
-				        		+ methodName + " : " + method.getSignature() + " " + System.identityHashCode(method));
-				       
-					if (false && jclass.getClassName().indexOf("edu.umd.cs.findbugs.xml.XMLOutputUtil") >= 0) {
-						try {
-							throw new RuntimeException("get methodGen for XMLOutputUtil");
-						}catch (RuntimeException e) {
-							e.printStackTrace(System.out);
-						}
-					}
-					if (analysisContext.getBoolProperty(AnalysisFeatures.SKIP_HUGE_METHODS)) {
-						int codeLength = method.getCode().getLength();
-						if (codeLength > 3000 
-								|| (methodName.equals("<clinit>") || methodName.equals("getContents")) && codeLength > 1000) {
-							getLookupFailureCallback().reportSkippedAnalysis(new JavaClassAndMethod(jclass, method));
-							return null;
-						}
-					}
-					
-					result = new MethodGen(method, jclass.getClassName(), getConstantPoolGen());
-
-					if (!analysisContext.getBoolProperty(AnalysisFeatures.CONSERVE_SPACE)) {
-						Runtime runtime = Runtime.getRuntime();
-						// TODO: Find a smarter way to do this.
-						if (cachedMethodGen.size() > 500 
-								&& runtime.freeMemory() < runtime.totalMemory()/5) cachedMethodGen.clear();
-						if (true) cachedMethodGen.put(method, result);
-					}
-					// System.out.println("Returning " + System.identityHashCode(result));
-					return result;
-		        }
-	        };
+		}
+	};
 
 	private CFGFactory cfgFactory = new CFGFactory();
 
