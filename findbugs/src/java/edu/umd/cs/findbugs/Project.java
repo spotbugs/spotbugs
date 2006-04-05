@@ -641,7 +641,9 @@ public class Project implements XMLWriteable {
 		int lastSep = name.lastIndexOf(File.separatorChar);
 		if (lastSep >= 0)
 			name = name.substring(lastSep + 1);
-		int dot = name.lastIndexOf('.');
+		//int dot = name.lastIndexOf('.');
+		//Don't hide every suffix--some are informative and/or disambiguative.
+		int dot = (name.endsWith(".fb") ? name.length()-3 : -1);
 		if (dot >= 0)
 			name = name.substring(0, dot);
 		return name;

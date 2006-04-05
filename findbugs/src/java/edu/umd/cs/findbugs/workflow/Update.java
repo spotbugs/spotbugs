@@ -134,6 +134,7 @@ public class Update {
 			AppVersion appVersion = i.next();
 			resultCollection.addAppVersion((AppVersion) appVersion.clone());
 		}
+		//why not do: AppVersion origCollectionVersion = origCollection.getCurrentAppVersion();
 		AppVersion origCollectionVersion = new AppVersion(lastSequence);
 		origCollectionVersion.setTimestamp(origCollection
 				.getCurrentAppVersion().getTimestamp());
@@ -145,8 +146,7 @@ public class Update {
 		resultCollection.addAppVersion(origCollectionVersion);
 
 		// We assign a sequence number to the new collection as one greater than
-		// the
-		// original collection.
+		// the original collection.
 		long currentSequence = origCollection.getSequenceNumber() + 1;
 		resultCollection.setSequenceNumber(currentSequence);
 

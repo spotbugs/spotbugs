@@ -1895,6 +1895,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 
 		analysisRun.loadBugsFromFile(selectedFile);
 
+		project.setProjectFileName(file.getName()); // otherwise frame will show "<<unnamed project>>"
 		setProject(project);
 		synchAnalysisRun(analysisRun);
 	}
