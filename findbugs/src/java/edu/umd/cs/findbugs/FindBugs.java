@@ -1202,7 +1202,9 @@ public class FindBugs implements Constants2, ExitCodes {
 			AnalysisPass analysisPass = i.next();
 			analysisPass.createDetectors(bugReporter);
 			executeAnalysisPass(analysisPass, repositoryClassList);
-			
+
+			if (false) 
+				System.out.println("Class content stats: " + analysisContext.getClassContextStats());
 			// Clear the ClassContext cache.
 			// It may contain data that should be recomputed on the next pass.
 			analysisContext.clearClassContextCache();
@@ -1216,6 +1218,9 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		// Free up memory for reports
 		analysisContext.clearRepository();
+		
+		if (false)
+		System.out.println(analysisContext.getClassContextStats());
 	}
 
 	/**
@@ -1606,12 +1611,9 @@ public class FindBugs implements Constants2, ExitCodes {
 				if (Thread.interrupted())
 					throw new InterruptedException();
 				Detector detector = detector1;
-				if (detector instanceof StatelessDetector) {
-					try {
+				// MUSTFIX: Evaluate whether this makes a difference
+				if (true && detector instanceof StatelessDetector) {
 						detector = (Detector) ((StatelessDetector) detector).clone();
-					} catch (CloneNotSupportedException cnfe) {
-						detector = detector1; // this shouldn't happen
-					}
 				}
 
 
