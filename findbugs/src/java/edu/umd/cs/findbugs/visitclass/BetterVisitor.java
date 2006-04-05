@@ -66,6 +66,16 @@ import org.apache.bcel.classfile.Visitor;
  */
 public abstract class BetterVisitor implements Visitor {
 
+	
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	////////////////// In short form //////////////////////
 	// General classes
 	public void visit(JavaClass obj) {
