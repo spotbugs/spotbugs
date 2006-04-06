@@ -55,6 +55,7 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 		this.vna = vnaDataflow.getAnalysis();
 		this.isSynchronized = methodGen.isSynchronized();
 		this.isStatic = methodGen.isStatic();
+		if (DEBUG) System.out.println("Analyzing Locks in " +  methodGen.getClassName() + "." + methodGen.getName());
 	}
 
 	public LockSet createFact() {
@@ -117,14 +118,14 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 		}
 	}
 
-	private static void lockOp(LockSet fact, int lockNumber, int delta) {
+	private  void lockOp(LockSet fact, int lockNumber, int delta) {
 		int value = fact.getLockCount(lockNumber);
 		if (value < 0) // can't modify TOP or BOTTOM value
 			return;
 		value += delta;
 		if (value < 0)
 			value = LockSet.BOTTOM;
-		if (DEBUG) System.out.println("Setting " + lockNumber + " to " + value);
+		if (DEBUG) System.out.println("Setting " + lockNumber + " to " + value + " in " + methodGen.getClassName() + "." + methodGen.getName());
 		fact.setLockCount(lockNumber, value);
 	}
 

@@ -208,6 +208,7 @@ public class FindInconsistentSync2 implements Detector {
 		for (Method method : publicReachableMethods) {
 			if (classContext.getMethodGen(method) == null)
 				continue;
+
 			/*
 			                                 if (isConstructor(method.getName()))
 			                                 continue;
@@ -424,7 +425,12 @@ public class FindInconsistentSync2 implements Detector {
 				LockSet lockSet = lockChecker.getFactAtLocation(location);
 				InstructionHandle handle = location.getHandle();
 				ValueNumber instance = frame.getInstance(handle.getInstruction(), cpg);
-			
+				if (DEBUG) {
+					System.out.println("Lock set: " + lockSet);
+					System.out.println("value number: " + instance.getNumber());
+					System.out.println("Lock count: " + lockSet.getLockCount(instance.getNumber()));
+				}
+				
 				// Is the instance locked?
 				// We consider the access to be locked if either
 				//   - the object is explicitly locked, or

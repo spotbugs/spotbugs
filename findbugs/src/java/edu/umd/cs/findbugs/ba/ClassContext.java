@@ -1032,7 +1032,7 @@ public class ClassContext {
 		return rdfsFactory.getAnalysis(method);
 	}
 
-	static MapCache<Method,BitSet> cachedBitsets = new MapCache<Method, BitSet>(64);
+	static MapCache<XMethod,BitSet> cachedBitsets = new MapCache<XMethod, BitSet>(64);
 	/**
 	 * Get a BitSet representing the bytecodes that are used in the given method.
 	 * This is useful for prescreening a method for the existence of particular instructions.
@@ -1044,11 +1044,25 @@ public class ClassContext {
 	 * @return the BitSet containing the opcodes which appear in the method,
 	 *          or null if the method has no code
 	 */
-	@CheckForNull static public BitSet getBytecodeSet(Method method) {
+	@CheckForNull   public BitSet getBytecodeSet(Method method) {
+		return getBytecodeSet(jclass, method);
+	}
+	/**
+	 * Get a BitSet representing the bytecodes that are used in the given method.
+	 * This is useful for prescreening a method for the existence of particular instructions.
+	 * Because this step doesn't require building a MethodGen, it is very
+	 * fast and memory-efficient.  It may allow a Detector to avoid some
+	 * very expensive analysis, which is a Big Win for the user.
+	 *
+	 * @param method the method
+	 * @return the BitSet containing the opcodes which appear in the method,
+	 *          or null if the method has no code
+	 */
+	@CheckForNull static public BitSet getBytecodeSet(JavaClass clazz, Method method) {
 
-
-				if (cachedBitsets.containsKey(method)) {
-					return cachedBitsets.get(method);
+				XMethod xmethod = XFactory.createXMethod(clazz, method);
+				if (cachedBitsets.containsKey(xmethod)) {
+					return cachedBitsets.get(xmethod);
 				}
 		        Code code = method.getCode();
 		        if (code == null)
@@ -1066,7 +1080,7 @@ public class ClassContext {
 		        UnpackedCode unpackedCode = callback.getUnpackedCode();
 				BitSet result =  null;
 		        if (unpackedCode != null) result =  unpackedCode.getBytecodeSet();
-		        cachedBitsets.put(method, result);
+		        cachedBitsets.put(xmethod, result);
 		        return result;
 	}
 	

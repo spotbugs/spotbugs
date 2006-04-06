@@ -97,7 +97,7 @@ public class FindBadCast2 implements Detector {
 	}
 
 	public boolean prescreen(ClassContext classContext, Method method) {
-		BitSet bytecodeSet = ClassContext.getBytecodeSet(method);
+		BitSet bytecodeSet = ClassContext.getBytecodeSet(classContext.getJavaClass(), method);
 		return bytecodeSet != null && (bytecodeSet.get(Constants.CHECKCAST)
 				|| bytecodeSet.get(Constants.INSTANCEOF));
 	}
