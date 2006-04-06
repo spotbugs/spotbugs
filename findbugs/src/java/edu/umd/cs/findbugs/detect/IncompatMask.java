@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004,2005 Tom Truscott <trt@unx.sas.com>
+ * Copyright (C) 2004-2006 University of Maryland
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,7 @@ import org.apache.bcel.classfile.Method;
  * Find comparisons involving values computed with bitwise
  * operations whose outcomes are fixed at compile time.
  *
- * @author Tom Truscott
+ * @author Tom Truscott <trt@unx.sas.com>
  */
 public class IncompatMask extends BytecodeScanningDetector implements StatelessDetector {
 	int state;
