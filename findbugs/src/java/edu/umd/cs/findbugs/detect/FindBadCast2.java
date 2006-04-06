@@ -221,7 +221,7 @@ public class FindBadCast2 implements Detector {
 				SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
 				.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
 				if (!isCast) bugReporter.reportBug(new BugInstance(this,
-						"BC_NULL_INSTANCEOF", NORMAL_PRIORITY)
+						"NP_NULL_INSTANCEOF", NORMAL_PRIORITY)
 						.addClassAndMethod(methodGen, sourceFile)
 						.addSourceLine(sourceLineAnnotation)
 						);
