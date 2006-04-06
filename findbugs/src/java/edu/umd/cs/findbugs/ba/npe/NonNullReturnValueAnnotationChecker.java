@@ -18,7 +18,8 @@ public class NonNullReturnValueAnnotationChecker implements JavaClassAndMethodCh
 	private MayReturnNullPropertyDatabase database;
 	private JavaClassAndMethod annotatedMethod;
 	private Boolean property;
-	
+
+	/** @deprecated */
 	public NonNullReturnValueAnnotationChecker(MayReturnNullPropertyDatabase database) {
 		this.database = database;
 	}
