@@ -36,7 +36,6 @@ public class LineNumberer extends JComponent
 	
 	private JTextArea textArea;
 	private FontMetrics fm;
-	private int lnWidth;
 	
 	public LineNumberer(JTextArea ta) {
 		setFont( ta.getFont() );
@@ -44,7 +43,6 @@ public class LineNumberer extends JComponent
 		setForeground( Color.BLUE );
 		
 		fm = this.getFontMetrics(ta.getFont());
-		lnWidth = fm.stringWidth(PROTOTYPE);
 		setWidths();
 	}
 	
