@@ -199,6 +199,10 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		if (peakMemory >= 0) {
 			xmlOutput.addAttribute("peak_mbytes", twoPlaces.format(peakMemory / (1024.0*1024)));
 		}
+		long gcTime = delta.getCollectionTime(); // milliseconds
+		if (gcTime >= 0) {
+			xmlOutput.addAttribute("gc_seconds", twoPlaces.format(gcTime / 1000.0));
+		}
 		
 		PackageStats.writeBugPriorities(xmlOutput, totalErrors);
 		

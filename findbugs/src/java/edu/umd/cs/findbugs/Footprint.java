@@ -23,6 +23,7 @@ import java.util.List;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.GarbageCollectorMXBean;
 
 /**
 * Class to maintain a snapshot of a processes's time and memory usage.
@@ -38,6 +39,7 @@ public class Footprint {
 	private long cpuTime = -1;   // in nanoseconds
 	private long clockTime = -1; // in milliseconds
 	private long peakMem = -1;   // in bytes
+	private long collectionTime = -1; // in milliseconds
 
 	public Footprint() {
 		pullData();
@@ -53,6 +55,9 @@ public class Footprint {
 			clockTime = (base.clockTime >= 0) ? clockTime-base.clockTime : base.clockTime;
 		}
 		// leave peakMem alone
+		if (collectionTime >= 0) {
+			collectionTime = (base.collectionTime >= 0) ? collectionTime-base.collectionTime : base.collectionTime;
+		}
 	}
 
 	private void pullData() {
@@ -68,6 +73,10 @@ public class Footprint {
 		try {
 			peakMem = new MemoryBeanWrapper().getPeakUsage();
 		} catch (NoClassDefFoundError ncdfe) { peakMem = -9; }
+
+		try {
+			collectionTime = new CollectionBeanWrapper().getCollectionTime();
+		} catch (NoClassDefFoundError ncdfe) { collectionTime = -9; }
 	}
 
 	public long getCpuTime() {
@@ -78,6 +87,9 @@ public class Footprint {
 	}
 	public long getPeakMemory() {
 		return peakMem;
+	}
+	public long getCollectionTime() {
+		return collectionTime;
 	}
 
 	public String toString() {
@@ -125,6 +137,20 @@ public class Footprint {
 	  
 		public long getProcessCpuTime() {
 			return sunBean.getProcessCpuTime();
+		}
+	}
+
+	/** Wrapper so that possbile NoClassDefFoundError can be caught. Instantiating
+	 *  this class will throw a NoClassDefFoundError on JDK 1.4 and earlier. */
+	public static class CollectionBeanWrapper {
+		List<GarbageCollectorMXBean> clist = ManagementFactory.getGarbageCollectorMXBeans();
+	  
+		public long getCollectionTime() {
+			long sum = 0;
+			for (GarbageCollectorMXBean gcBean : clist) {
+				sum += gcBean.getCollectionTime();
+			}
+			return sum;
 		}
 	}
 
