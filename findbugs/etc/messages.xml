@@ -4253,7 +4253,7 @@ This cast will always throw a ClassCastException.
     </Details>
   </BugPattern>
 
-  <BugPattern type="BC_NULL_INSTANCEOF">
+  <BugPattern type="NP_NULL_INSTANCEOF">
     <ShortDescription>A known null value is checked to see if it is an instance of a type</ShortDescription>
     <LongDescription>A known null value is checked to see if it is an instance of a type in {1}</LongDescription>
     <Details>
