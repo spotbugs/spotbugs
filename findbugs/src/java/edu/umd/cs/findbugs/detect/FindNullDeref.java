@@ -103,7 +103,6 @@ public class FindNullDeref
 	
 	// Cached database stuff
 	private ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase;
-	private boolean checkUnconditionalDeref;
 	private boolean checkedDatabases = false;
 
 	
