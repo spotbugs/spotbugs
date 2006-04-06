@@ -120,7 +120,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 					if (bytecodeSet == null) continue;
 				
 					if (DEBUG) System.out.println("\tChecking " + xMethod);
-					isUnconditionalThrower = !bytecodeSet.intersects(RETURN_OPCODE_SET);
+					isUnconditionalThrower = Boolean.valueOf(!bytecodeSet.intersects(RETURN_OPCODE_SET));
 					if (DEBUG && isUnconditionalThrower) {
 						System.out.println("Return opcode set: " + RETURN_OPCODE_SET);
 						System.out.println("Code opcode set: " + bytecodeSet);
