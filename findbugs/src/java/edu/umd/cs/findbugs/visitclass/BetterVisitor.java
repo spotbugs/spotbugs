@@ -66,16 +66,16 @@ import org.apache.bcel.classfile.Visitor;
  */
 public abstract class BetterVisitor implements Visitor {
 
-	/*
+
+	/** clone() is overridden to change access control from protected
+	 *  to public. Originally we compelled subclasses not to throw
+	 *  CloneNotSupportedException, but that was unfriendly to some
+	 *  third-parties with existing code. */
 	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
-	*/
+
 
 	////////////////// In short form //////////////////////
 	// General classes
