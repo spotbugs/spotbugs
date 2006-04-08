@@ -64,7 +64,8 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 
 	static Map<XMethod,Boolean> cachedResults = new HashMap<XMethod,Boolean>();
 	public void execute() throws CFGBuilderException, DataflowAnalysisException {
-		if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.CONSERVE_SPACE))
+		AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
+		if (currentAnalysisContext.getBoolProperty(AnalysisFeatures.CONSERVE_SPACE))
 			throw new IllegalStateException("This should not happen");
 
 		Set<Edge> deletedEdgeSet = new HashSet<Edge>();
@@ -115,8 +116,8 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				
 				
 				if (isUnconditionalThrower == null) {
-
-					BitSet bytecodeSet = ClassContext.getBytecodeSet(javaClass, method);
+					ClassContext classContext = currentAnalysisContext.getClassContext(javaClass);
+					BitSet bytecodeSet = classContext.getBytecodeSet(method);
 					if (bytecodeSet == null) continue;
 				
 					if (DEBUG) System.out.println("\tChecking " + xMethod);
