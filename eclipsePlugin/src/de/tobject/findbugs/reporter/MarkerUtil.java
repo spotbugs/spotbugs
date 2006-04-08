@@ -60,7 +60,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
 /**
  * Utility methods for converting FindBugs BugInstance objects
  * into Eclipse markers.
- * 
+ *
  * @author Peter Friese
  * @author David Hovemeyer
  */
@@ -68,7 +68,7 @@ public abstract class MarkerUtil {
 
 	/**
 	 * Create an Eclipse marker for given BugInstance.
-	 * 
+	 *
 	 * @param bug     the BugInstance
 	 * @param project the project
 	 */
@@ -87,7 +87,7 @@ public abstract class MarkerUtil {
 			+ bug.getAnnotationText() + " / Source Line: " //$NON-NLS-1$
 			+ bug.getPrimarySourceLineAnnotation());
 		}
-		
+
 		IResource resource = null;
 		try {
 			resource = getUnderlyingResource(bug, project);
@@ -98,15 +98,15 @@ public abstract class MarkerUtil {
 		}
 		if (resource != null) {
 			// default - first class line
-		
-			int startLine = 1; 
-			if (bug.getPrimarySourceLineAnnotation() != null) 
+
+			int startLine = 1;
+			if (bug.getPrimarySourceLineAnnotation() != null)
 				  startLine = bug.getPrimarySourceLineAnnotation().getStartLine();
 			/* TODO: DHH - Eclipse can help us find the line number for fields.
 			 * Need a way to distinguish bugs where the field is the primary item
 			 * of interest.
 			 */
-			 
+
 			if (Reporter.DEBUG) {
 				System.out.println("Creating marker for " //$NON-NLS-1$
 				+ resource.getLocation() + ": line " //$NON-NLS-1$
@@ -124,7 +124,7 @@ public abstract class MarkerUtil {
 
 	/**
 	 * Get the underlying resource (Java class) for given BugInstance.
-	 * 
+	 *
 	 * @param bug     the BugInstance
 	 * @param project the project
 	 * @return the IResource representing the Java class
@@ -150,7 +150,7 @@ public abstract class MarkerUtil {
 		if (qualifiedClassName == null) {
 			return null;
 		}
-		
+
 		if (Reporter.DEBUG) {
 			System.out.println("Looking up class: " //$NON-NLS-1$
 			+ packageName + ", " //$NON-NLS-1$
@@ -164,7 +164,7 @@ public abstract class MarkerUtil {
 		//        boolean isAnonInnerClass = Character.isDigit(qualifiedClassName
 		//            .charAt(lastDollar + 1));
 		IType type = null;
-		if (primarySourceLineAnnotation == null && isInnerClass) {
+		if (isInnerClass) {
 			// cut the useless number value
 			String innerName = qualifiedClassName.substring(lastDollar + 1);
 			String shortQualifiedClassName =
@@ -180,7 +180,7 @@ public abstract class MarkerUtil {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @param innerName
 	 * @param type
@@ -206,7 +206,7 @@ public abstract class MarkerUtil {
 				0,
 				0));
 	}
-	
+
 	/**
 	 * @param source
 	 * @return
@@ -233,7 +233,7 @@ public abstract class MarkerUtil {
 		// start line of enclosing type
 		return 1;
 	}
-	
+
 	public static int findChildSourceLine(IJavaElement javaElement, String name) throws JavaModelException {
 		if (!Character.isDigit(name.charAt(0))) {
 			return findInnerClassSourceLine(javaElement, name);
@@ -248,7 +248,7 @@ public abstract class MarkerUtil {
 		}
 		return -1;
 	}
-	
+
 	/**
 	 * @param javaElement
 	 * @return
@@ -298,7 +298,7 @@ public abstract class MarkerUtil {
 		}
 		return -1;
 	}
-	
+
 	/**
 	 * @param javaElement
 	 * @param name
@@ -329,7 +329,7 @@ public abstract class MarkerUtil {
 
 	/**
 	 * Remove all FindBugs problem markers for given project.
-	 * 
+	 *
 	 * @param project the project
 	 * @throws CoreException
 	 */
@@ -340,12 +340,12 @@ public abstract class MarkerUtil {
 			true,
 			IResource.DEPTH_INFINITE);
 	}
-	
+
 	/**
 	 * Given current active bug category set, minimum warning priority,
 	 * and previous user classification, return whether or not a warning
 	 * (bug instance) should be displayed using a marker.
-	 * 
+	 *
 	 * @param bugInstance    the warning
 	 * @param filterSettings project filter settings
 	 * @return true if the warning should be displayed, false if not
@@ -353,40 +353,40 @@ public abstract class MarkerUtil {
 	public static boolean displayWarning(BugInstance bugInstance, ProjectFilterSettings filterSettings) {
 		// Detector plugins need to be loaded for category filtering to work!
 		DetectorFactoryCollection.instance();
-		
+
 		return filterSettings.displayWarning(bugInstance);
 	}
-	
+
 	/**
 	 * Attempt to redisplay FindBugs problem markers for
 	 * given project.
-	 * 
+	 *
 	 * @param project the project
 	 * @param shell   Shell the progress dialog should be tied to
 	 */
 	public static void redisplayMarkers(final IProject project, Shell shell) {
 		ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(shell);
-		
-		
+
+
 		try {
 			progressDialog.run(false, false, new IRunnableWithProgress() {
-				
+
 				public void run(IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
-					
+
 					try {
 						// Get user preferences for project,
 						// so we know what to diplay
 						UserPreferences userPrefs = FindbugsPlugin.getUserPreferences(project);
-						
+
 						// Get the saved bug collection for the project
 						SortedBugCollection bugCollection =
 							FindbugsPlugin.getBugCollection(project, monitor);
-						
+
 						if (bugCollection != null) {
 							// Remove old markers
 							MarkerUtil.removeMarkers(project);
-							
+
 							// Display warnings
 							for (Iterator i = bugCollection.iterator(); i.hasNext();) {
 								BugInstance bugInstance = (BugInstance) i.next();
@@ -395,7 +395,7 @@ public abstract class MarkerUtil {
 								}
 							}
 						}
-						
+
 					} catch (RuntimeException e) {
 						throw e;
 					} catch (Exception e) {
@@ -404,7 +404,7 @@ public abstract class MarkerUtil {
 								e, "Error redisplaying FindBugs warning markers");
 					}
 				}
-				
+
 			});
 		} catch (RuntimeException e) {
 			throw e;
@@ -419,7 +419,7 @@ public abstract class MarkerUtil {
 
 	/**
 	 * Find the BugInstance associated with given FindBugs marker.
-	 * 
+	 *
 	 * @param marker a FindBugs marker
 	 * @return the BugInstance associated with the marker,
 	 *         or null if we can't find the BugInstance
@@ -440,21 +440,21 @@ public abstract class MarkerUtil {
 		try {
 			String markerType = marker.getType();
 			//System.out.println("Marker type is " + markerType);
-			
+
 			if (!markerType.equals(FindBugsMarker.NAME)) {
 				FindbugsPlugin.getDefault().logError("Selected marker is not a FindBugs marker");
 				return null;
 			}
-				
+
 			// We have a FindBugs marker.  Get the corresponding BugInstance.
 			String uniqueId = marker.getAttribute(FindBugsMarker.UNIQUE_ID, null);
 			if (uniqueId == null) {
 				FindbugsPlugin.getDefault().logError("Marker does not contain unique id for warning");
 				return null;
 			}
-				
+
 			BugCollection bugCollection = FindbugsPlugin.getBugCollection(project, null);
-			
+
 			return bugCollection.lookupFromUniqueId(uniqueId);
 		} catch (RuntimeException e) {
 			throw e;
@@ -464,17 +464,17 @@ public abstract class MarkerUtil {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Return the marker for given warning.
-	 * 
+	 *
 	 * @param project the project in which the warning was reported
 	 * @param warning the warning
 	 * @return the marker, or null if no marker is displayed for this warning
 	 *         (or we can't find the marker for some reason)
 	 */
 	public IMarker findMarkerForWarning(IProject project, BugInstance warning) {
-		String warningUID = warning.getUniqueId(); 
+		String warningUID = warning.getUniqueId();
 		if (warningUID == null) {
 			FindbugsPlugin.getDefault().logError("Bug instance has no unique id");
 			return null;
@@ -486,7 +486,7 @@ public abstract class MarkerUtil {
 			for (int i = 0; i < markerList.length; ++i) {
 				IMarker marker = markerList[i];
 				String markerUID = marker.getAttribute(FindBugsMarker.UNIQUE_ID, "");
-				
+
 				if (warningUID.equals(markerUID))
 					return marker;
 			}
@@ -502,7 +502,7 @@ public abstract class MarkerUtil {
 
 	/**
 	 * Fish an IMarker out of given selection.
-	 * 
+	 *
 	 * @param selection the selection
 	 * @return the selected IMarker, or null if we can't find an IMarker
 	 *         in the selection
@@ -510,7 +510,7 @@ public abstract class MarkerUtil {
 	public static IMarker getMarkerFromSelection(ISelection selection) {
 		if (selection instanceof StructuredSelection) {
 			StructuredSelection structuredSelection = (StructuredSelection) selection;
-			
+
 			for (Iterator i = structuredSelection.iterator(); i.hasNext(); ) {
 				Object selectedObj = i.next();
 				//System.out.println("\tSelection element: " + selectedObj.getClass().getName());
@@ -520,7 +520,7 @@ public abstract class MarkerUtil {
 				}
 			}
 		}
-		
+
 		return null;
 	}
 }
