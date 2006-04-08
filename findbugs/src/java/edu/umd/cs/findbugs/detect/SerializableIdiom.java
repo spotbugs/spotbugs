@@ -82,10 +82,6 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		fieldWarningList.clear();
 	}
 
-	@Override
-         public void report() {
-	}
-
 	static Pattern anonymousInnerClassNamePattern =
 			Pattern.compile(".+\\$\\d+");
 	boolean isAnonymousInnerClass;

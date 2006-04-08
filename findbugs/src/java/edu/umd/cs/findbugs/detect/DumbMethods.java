@@ -468,9 +468,6 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		super.visit(obj);
 		flush();
 	}
-	@Override
-         public void report() {
-	}
 
 	/**
 	 * A heuristic - how long a catch block for OutOfMemoryError might be.

@@ -63,12 +63,6 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		this.stackTrace = new ArrayList<String>();
 	}
 
-	public void startDocument() {
-	}
-
-	public void endDocument() {
-	}
-	
 	Pattern ignoredElement = Pattern.compile("Message|ShortMessage|LongMessage|BugCategory|BugPattern|BugCode");
 	
 	public boolean discardedElement(String qName) {
