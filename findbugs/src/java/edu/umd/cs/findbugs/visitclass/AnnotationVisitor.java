@@ -121,7 +121,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 						|| name.equals(RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS)) {
 					int numParameters = bytes.readUnsignedByte();
 					if (DEBUG) System.out.println("Number of parameters: " + numParameters);
-					int numParametersToMethod = getMethod().getArgumentTypes().length;
+					int numParametersToMethod = getNumberMethodArguments();
 					if (DEBUG) System.out.println("Number of parameters to method: " + numParametersToMethod);
 					int offset = 0;
 					if (numParametersToMethod > numParameters) {

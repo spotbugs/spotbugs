@@ -57,7 +57,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 		dangerousToStoreIntoField = false;
 		staticMethod = (obj.getAccessFlags() & (ACC_STATIC)) != 0;
 		//variableNames = obj.getLocalVariableTable();
-		parameterCount = obj.getArgumentTypes().length;
+		parameterCount = getNumberMethodArguments();
 		/*
 		System.out.println(betterMethodName);
 		for(int i = 0; i < parameterCount; i++)

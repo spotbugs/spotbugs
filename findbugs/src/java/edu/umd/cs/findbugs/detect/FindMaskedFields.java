@@ -113,7 +113,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 	@Override
          public void visit(Method obj) {
 		super.visit(obj);
-		numParms = obj.getArgumentTypes().length;
+		numParms = getNumberMethodArguments();
 		if (!obj.isStatic()) numParms++;
 		// System.out.println(obj);
 		// System.out.println(numParms);

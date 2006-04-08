@@ -63,6 +63,7 @@ import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * Find dead stores to local variables.
@@ -165,7 +166,7 @@ public class FindDeadLocalStores implements Detector {
 		BitSet complainedAbout = new BitSet();
 		
 		// Get number of locals that are parameters.
-		int localsThatAreParameters = method.getArgumentTypes().length;
+		int localsThatAreParameters = PreorderVisitor.getNumberArguments(method.getSignature());
 		if (!method.isStatic()) localsThatAreParameters++;
 		
 		// Scan method to determine number of loads, stores, and increments

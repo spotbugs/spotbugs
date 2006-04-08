@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -170,11 +173,8 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		visitingField = true;
 		this.field = field;
 		try {
-			fieldName = getStringFromIndex(field.getNameIndex());
-			fieldSig = getStringFromIndex(field.getSignatureIndex());
-			dottedFieldSig = fieldSig.replace('/', '.');
-			fullyQualifiedFieldName = dottedClassName + "." + fieldName
-			        + " : " + dottedFieldSig;
+			fieldName = fieldSig = dottedFieldSig = fullyQualifiedFieldName = null;
+			
 			fieldIsStatic = field.isStatic();
 			field.accept(this);
 			Attribute[] attributes = field.getAttributes();
@@ -192,19 +192,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		visitingMethod = true;
 		try {
 			this.method = method;
-			methodName = getStringFromIndex(method.getNameIndex());
-			methodSig = getStringFromIndex(method.getSignatureIndex());
-			dottedMethodSig = methodSig.replace('/', '.');
-			StringBuffer ref = new StringBuffer(5 + dottedClassName.length()
-			        + methodName.length()
-			        + dottedMethodSig.length());
-
-			ref.append(dottedClassName)
-			        .append(".")
-			        .append(methodName)
-			        .append(" : ")
-			        .append(dottedMethodSig);
-			fullyQualifiedMethodName = ref.toString();
+			methodName = methodSig = dottedMethodSig = fullyQualifiedMethodName = null;
 
 			this.method.accept(this);
 			Attribute[] attributes = method.getAttributes();
@@ -320,6 +308,21 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	public String getFullyQualifiedMethodName() {
 		if (!visitingMethod)
 			throw new IllegalStateException("getFullyQualifiedMethodName called while not visiting method");
+		if (fullyQualifiedMethodName == null) {
+			getDottedSuperclassName();
+			getMethodName();
+			getDottedMethodSig();
+			StringBuffer ref = new StringBuffer(5 + dottedClassName.length()
+			        + methodName.length()
+			        + dottedMethodSig.length());
+
+			ref.append(dottedClassName)
+			        .append(".")
+			        .append(methodName)
+			        .append(" : ")
+			        .append(dottedMethodSig);
+			fullyQualifiedMethodName = ref.toString();
+		}
 		return fullyQualifiedMethodName;
 	}
 
@@ -352,13 +355,35 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	public String getMethodName() {
 		if (!visitingMethod)
 			throw new IllegalStateException("getMethodName called while not visiting method");
+		if (methodName == null) 
+			methodName = getStringFromIndex(method.getNameIndex());
+		
 		return methodName;
 	}
 
+	static Pattern argumentSignature = Pattern.compile("\\[*([BCDFIJSZ]|L[^;*];)");
+	
+	public static int getNumberArguments(String signature) {
+		int paren = signature.indexOf(')');
+		
+		if (paren == -1) throw new IllegalArgumentException(signature);
+		Matcher m = argumentSignature.matcher(signature.substring(1, paren));
+		int result = 0;
+		while(m.find()) result++;
+		return result;
+		
+	}
+	
+	
+	public int getNumberMethodArguments() {
+		return getNumberArguments(getMethodSig());
+	}
 	/** If currently visiting a method, get the method's slash-formatted signature */
 	public String getMethodSig() {
 		if (!visitingMethod)
 			throw new IllegalStateException("getMethodSig called while not visiting method");
+		if (methodSig == null)
+			methodSig = getStringFromIndex(method.getSignatureIndex());
 		return methodSig;
 	}
 
@@ -366,6 +391,8 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	public String getDottedMethodSig() {
 		if (!visitingMethod)
 			throw new IllegalStateException("getDottedMethodSig called while not visiting method");
+		if (dottedMethodSig == null) 
+			dottedMethodSig = getMethodSig().replace('/', '.');
 		return dottedMethodSig;
 	}
 
@@ -373,6 +400,11 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	public String getFieldName() {
 		if (!visitingField)
 			throw new IllegalStateException("getFieldName called while not visiting field");
+		if (fieldName == null)
+			fieldName = getStringFromIndex(field.getNameIndex());
+	
+		
+
 		return fieldName;
 	}
 
@@ -380,6 +412,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	public String getFieldSig() {
 		if (!visitingField)
 			throw new IllegalStateException("getFieldSig called while not visiting field");
+		if (fieldSig == null) 	fieldSig = getStringFromIndex(field.getSignatureIndex());
 		return fieldSig;
 	}
 
@@ -394,6 +427,9 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	public String getFullyQualifiedFieldName() {
 		if (!visitingField)
 			throw new IllegalStateException("getFullyQualifiedFieldName called while not visiting field");
+		if (fullyQualifiedFieldName == null)
+			fullyQualifiedFieldName = getDottedClassName() + "." + getFieldName()
+	        + " : " + getDottedFieldSig();
 		return fullyQualifiedFieldName;
 	}
 
@@ -401,6 +437,8 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	public String getDottedFieldSig() {
 		if (!visitingField)
 			throw new IllegalStateException("getDottedFieldSig called while not visiting field");
+		if (dottedFieldSig == null) 
+			dottedFieldSig = fieldSig.replace('/', '.');
 		return dottedFieldSig;
 	}
 
