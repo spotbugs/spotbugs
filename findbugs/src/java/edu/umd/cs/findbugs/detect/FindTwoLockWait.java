@@ -33,7 +33,6 @@ public class FindTwoLockWait implements Detector, StatelessDetector {
 
 	private Collection<BugInstance> possibleWaitBugs = new LinkedList<BugInstance>();
 	private Collection<SourceLineAnnotation> possibleNotifyLocations = new LinkedList<SourceLineAnnotation>();
-	private boolean sawTwoLockNotify = false;
 	public FindTwoLockWait(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
