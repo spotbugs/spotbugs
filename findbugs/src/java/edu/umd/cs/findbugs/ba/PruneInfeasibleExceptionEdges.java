@@ -83,7 +83,6 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	}
 
 	private CFG cfg;
-	private MethodGen methodGen;
 	private TypeDataflow typeDataflow;
 
 	/**
@@ -96,7 +95,6 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	 */
 	public PruneInfeasibleExceptionEdges(CFG cfg, MethodGen methodGen, TypeDataflow typeDataflow) {
 		this.cfg = cfg;
-		this.methodGen = methodGen;
 		this.typeDataflow = typeDataflow;
 	}
 
