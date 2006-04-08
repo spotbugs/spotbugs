@@ -331,9 +331,30 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		// with the set of exceptions which can be propagated
 		// along the edge.
 
+		int exceptionEdgeCount = 0;
+		Edge lastExceptionEdge = null;
+		
+		for (Iterator<Edge> i = cfg.outgoingEdgeIterator(basicBlock); i.hasNext();) {
+			Edge e = i.next();
+			if (e.isExceptionEdge()) {
+				exceptionEdgeCount++;
+				lastExceptionEdge = e;
+			}
+		}
+		
+		if (exceptionEdgeCount == 0) {
+			// System.out.println("Shouldn't all blocks have an exception edge");
+			return;
+		}
 		// Compute exceptions that can be thrown by the
 		// basic block.
 		cachedExceptionSet = computeBlockExceptionSet(basicBlock, (TypeFrame) result);
+		
+		if (exceptionEdgeCount == 1) {
+			cachedExceptionSet.setEdgeExceptionSet(lastExceptionEdge, cachedExceptionSet.getExceptionSet());
+			return;
+		}
+		
 
 		// For each outgoing exception edge, compute exceptions
 		// that can be thrown.  This assumes that the exception
@@ -343,10 +364,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		ExceptionSet thrownExceptionSet = cachedExceptionSet.getExceptionSet().duplicate();
 		for (Iterator<Edge> i = cfg.outgoingEdgeIterator(basicBlock); i.hasNext();) {
 			Edge edge = i.next();
-			if (!edge.isExceptionEdge())
-				continue;
-
-			cachedExceptionSet.setEdgeExceptionSet(edge, computeEdgeExceptionSet(edge, thrownExceptionSet));
+			if (edge.isExceptionEdge())
+				cachedExceptionSet.setEdgeExceptionSet(edge, computeEdgeExceptionSet(edge, thrownExceptionSet));
 		}
 	}
 
@@ -552,6 +571,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	 */
 	private ExceptionSet computeEdgeExceptionSet(Edge edge, ExceptionSet thrownExceptionSet) {
 
+
+		if (thrownExceptionSet.isEmpty()) return thrownExceptionSet;
 		ExceptionSet result = exceptionSetFactory.createExceptionSet();
 
 		if (edge.getType() == UNHANDLED_EXCEPTION_EDGE) {
