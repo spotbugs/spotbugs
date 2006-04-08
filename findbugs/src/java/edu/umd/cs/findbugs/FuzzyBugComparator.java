@@ -111,12 +111,12 @@ public class FuzzyBugComparator implements WarningComparator, Serializable {
 	/**
 	 * Map of class hashes to canonicate class names used for comparison purposes.
 	 */
-	private Map<ClassHash, String> classHashToCanonicalClassNameMap;
+	//private Map<ClassHash, String> classHashToCanonicalClassNameMap;
 	
 	public FuzzyBugComparator() {
 		if (DEBUG) System.out.println("Created fuzzy comparator");
 		this.bugCollectionMap = new IdentityHashMap<BugInstance, BugCollection>();
-		this.classHashToCanonicalClassNameMap = new TreeMap<ClassHash, String>();
+		//this.classHashToCanonicalClassNameMap = new TreeMap<ClassHash, String>();
 	}
 	
 	/**
