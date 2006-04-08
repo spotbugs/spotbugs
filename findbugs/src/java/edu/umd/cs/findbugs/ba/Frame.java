@@ -461,8 +461,14 @@ public abstract class Frame <ValueType>   {
 	 * @param other the Frame to make this object the same as
 	 */
 	public void copyFrom(Frame<ValueType> other) {
-		slotList.clear();
-		slotList.addAll(other.slotList);
+		if (slotList.size() == other.slotList.size()) {
+			for(int i = 0; i < slotList.size(); i++)
+				slotList.set(i, other.slotList.get(i));
+		} else {
+			slotList.clear();
+			for(ValueType v : other.slotList) 
+				slotList.add(v);
+		}
 		isTop = other.isTop;
 		isBottom = other.isBottom;
 	}

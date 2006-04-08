@@ -30,6 +30,7 @@ import org.apache.bcel.generic.ReferenceType;
 
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
@@ -62,7 +63,7 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 	 * @param methodSig  signature of the method called
 	 */
 	public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig) {
-		this.baseClassType = new ObjectType(baseClass);
+		this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
 		this.methodName = methodName;
 		this.methodSig = methodSig;
 		this.isUninteresting = true;
@@ -81,7 +82,7 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 	 */
 	public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig,
 	                                      String bugType) {
-		this.baseClassType = new ObjectType(baseClass);
+		this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
 		this.methodName = methodName;
 		this.methodSig = methodSig;
 		this.isUninteresting = false;

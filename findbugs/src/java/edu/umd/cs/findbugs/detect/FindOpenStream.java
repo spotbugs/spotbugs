@@ -48,13 +48,13 @@ public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResou
 	 * List of base classes of tracked resources.
 	 */
 	static final ObjectType[] streamBaseList =
-	        {new ObjectType("java.io.InputStream"),
-	         new ObjectType("java.io.OutputStream"),
-	         new ObjectType("java.io.Reader"),
-	         new ObjectType("java.io.Writer"),
-	         new ObjectType("java.sql.Connection"),
-	         new ObjectType("java.sql.Statement"),
-	         new ObjectType("java.sql.ResultSet")};
+	        {ObjectTypeFactory.getInstance("java.io.InputStream"),
+	         ObjectTypeFactory.getInstance("java.io.OutputStream"),
+	         ObjectTypeFactory.getInstance("java.io.Reader"),
+	         ObjectTypeFactory.getInstance("java.io.Writer"),
+	         ObjectTypeFactory.getInstance("java.sql.Connection"),
+	         ObjectTypeFactory.getInstance("java.sql.Statement"),
+	         ObjectTypeFactory.getInstance("java.sql.ResultSet")};
 
 	/**
 	 * StreamFactory objects used to detect resources

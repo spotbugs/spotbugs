@@ -26,6 +26,7 @@ import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
@@ -42,7 +43,7 @@ public class AnyMethodReturnValueStreamFactory implements StreamFactory {
 	private String bugType;
 
 	public AnyMethodReturnValueStreamFactory(String streamBase) {
-		this.baseClassType = new ObjectType(streamBase);
+		this.baseClassType = ObjectTypeFactory.getInstance(streamBase);
 		this.bugType = null;
 	}
 

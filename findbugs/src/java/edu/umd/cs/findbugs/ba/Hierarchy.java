@@ -57,15 +57,15 @@ public class Hierarchy {
 	/**
 	 * Type of java.lang.Exception.
 	 */
-	public static final ObjectType EXCEPTION_TYPE = new ObjectType("java.lang.Exception");
+	public static final ObjectType EXCEPTION_TYPE = ObjectTypeFactory.getInstance("java.lang.Exception");
 	/**
 	 * Type of java.lang.Error.
 	 */
-	public static final ObjectType ERROR_TYPE = new ObjectType("java.lang.Error");
+	public static final ObjectType ERROR_TYPE = ObjectTypeFactory.getInstance("java.lang.Error");
 	/**
 	 * Type of java.lang.RuntimeException.
 	 */
-	public static final ObjectType RUNTIME_EXCEPTION_TYPE = new ObjectType("java.lang.RuntimeException");
+	public static final ObjectType RUNTIME_EXCEPTION_TYPE = ObjectTypeFactory.getInstance("java.lang.RuntimeException");
 
 	/**
 	 * Determine whether one class (or reference type) is a subtype
@@ -77,8 +77,8 @@ public class Hierarchy {
 	 *         false if not
 	 */
 	public static boolean isSubtype(String clsName, String possibleSupertypeClassName) throws ClassNotFoundException {
-		ObjectType cls = new ObjectType(clsName);
-		ObjectType superCls = new ObjectType(possibleSupertypeClassName);
+		ObjectType cls = ObjectTypeFactory.getInstance(clsName);
+		ObjectType superCls = ObjectTypeFactory.getInstance(possibleSupertypeClassName);
 		return isSubtype(cls, superCls);
 	}
 
@@ -369,7 +369,7 @@ public class Hierarchy {
 		String[] exNameList = exTable.getExceptionNames();
 		ObjectType[] result = new ObjectType[exNameList.length];
 		for (int i = 0; i < exNameList.length; ++i) {
-			result[i] = new ObjectType(exNameList[i]);
+			result[i] = ObjectTypeFactory.getInstance(exNameList[i]);
 		}
 		return result;
 	}
@@ -585,7 +585,7 @@ public class Hierarchy {
 		if (opcode == Constants.INVOKESPECIAL) {
 			// invokespecial instructions are dispatched to EXACTLY
 			// the class specified by the instruction
-			receiverType = new ObjectType(invokeInstruction.getClassName(cpg));
+			receiverType = ObjectTypeFactory.getInstance(invokeInstruction.getClassName(cpg));
 			receiverTypeIsExact = false; // Doesn't actually matter
 		} else {
 			// For invokevirtual and invokeinterface instructions, we have

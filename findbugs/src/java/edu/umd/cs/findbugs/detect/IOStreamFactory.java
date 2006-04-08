@@ -26,6 +26,7 @@ import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
@@ -38,10 +39,10 @@ public class IOStreamFactory implements StreamFactory {
 	private String bugType;
 
 	public IOStreamFactory(String baseClass, String[] uninterestingSubclassList, String bugType) {
-		this.baseClassType = new ObjectType(baseClass);
+		this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
 		this.uninterestingSubclassTypeList = new ObjectType[uninterestingSubclassList.length];
 		for (int i = 0; i < uninterestingSubclassList.length; ++i) {
-			this.uninterestingSubclassTypeList[i] = new ObjectType(uninterestingSubclassList[i]);
+			this.uninterestingSubclassTypeList[i] = ObjectTypeFactory.getInstance(uninterestingSubclassList[i]);
 		}
 		this.bugType = bugType;
 	}

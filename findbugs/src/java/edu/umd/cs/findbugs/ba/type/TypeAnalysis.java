@@ -54,6 +54,7 @@ import edu.umd.cs.findbugs.ba.FrameDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -246,7 +247,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 
 		// Add local for "this" pointer, if present
 		if (!methodGen.isStatic())
-			result.setValue(slot++, new ObjectType(methodGen.getClassName()));
+			result.setValue(slot++, ObjectTypeFactory.getInstance(methodGen.getClassName()));
 
 		// Add locals for parameters.
 		// Note that long and double parameters need to be handled
@@ -635,7 +636,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		ExceptionThrower exceptionThrower = (ExceptionThrower) ins;
 		Class[] exceptionList = exceptionThrower.getExceptions();
 		for (Class aExceptionList : exceptionList) {
-			exceptionTypeSet.addImplicit(new ObjectType(aExceptionList.getName()));
+			exceptionTypeSet.addImplicit(ObjectTypeFactory.getInstance(aExceptionList.getName()));
 		}
 
 		// Assume that an Error may be thrown by any instruction.

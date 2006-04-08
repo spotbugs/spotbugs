@@ -153,7 +153,7 @@ public class PruneInfeasibleExceptionEdges2 implements EdgeTypes {
 				// These are the "implicit" exceptions.
 				Class[] thrownExceptionTypes = ((ExceptionThrower) ins).getExceptions();
 				for (Class thrownException : thrownExceptionTypes) {
-					exceptionSet.add(new ObjectType(thrownException.getName()));
+					exceptionSet.add(ObjectTypeFactory.getInstance(thrownException.getName()));
 				}
 				
 				if (ins instanceof InvokeInstruction) {

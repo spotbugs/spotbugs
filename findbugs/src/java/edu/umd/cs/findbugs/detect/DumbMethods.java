@@ -39,12 +39,13 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 
 public class DumbMethods extends BytecodeScanningDetector  {
 	
-	private static final ObjectType CONDITION_TYPE = new ObjectType("java.util.concurrent.locks.Condition");
+	private static final ObjectType CONDITION_TYPE = ObjectTypeFactory.getInstance("java.util.concurrent.locks.Condition");
 
 	private HashSet<String> alreadyReported = new HashSet<String>();
 	private BugReporter bugReporter;
