@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -91,9 +93,20 @@ public class Hierarchy {
 	 *         false if not
 	 */
 	public static boolean isSubtype(ReferenceType t, ReferenceType possibleSupertype) throws ClassNotFoundException {
-		return t.isAssignmentCompatibleWith(possibleSupertype);
+		Map<ReferenceType, Boolean> subtypes = subtypeCache.get(possibleSupertype);
+		if (subtypes == null) {
+			subtypes = new HashMap<ReferenceType, Boolean>();
+			subtypeCache.put(possibleSupertype, subtypes);
+		}
+		Boolean result = subtypes.get(t);
+		if (result == null) {
+			result = t.isAssignmentCompatibleWith(possibleSupertype);
+			subtypes.put(t, result);
+		}
+		return result;
 	}
 
+	static Map<ReferenceType, Map<ReferenceType, Boolean>> subtypeCache = new HashMap<ReferenceType, Map<ReferenceType, Boolean>> ();
 	/**
 	 * Determine if the given ObjectType reference represents
 	 * a <em>universal</em> exception handler.  That is,

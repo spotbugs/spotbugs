@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.bcel.generic.ObjectType;
 
@@ -30,7 +30,7 @@ import org.apache.bcel.generic.ObjectType;
  */
 public class ObjectTypeFactory {
 
-	private static Map<String, ObjectType> map = new ConcurrentHashMap<String, ObjectType>();
+	private static Map<String, ObjectType> map = new HashMap<String, ObjectType>();
 	
     public static ObjectType getInstance(String s) {
     	ObjectType result = map.get(s);
