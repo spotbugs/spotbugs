@@ -109,7 +109,7 @@ public class PackageStats implements XMLWriteable {
 	private int size;
 
 	// list of errors for this package
-	private LinkedList<BugInstance> packageErrors = new LinkedList<BugInstance>();
+	//private LinkedList<BugInstance> packageErrors = new LinkedList<BugInstance>();
 
 	// all classes and interfaces in this package
 	private SortedMap<String, ClassStats> packageMembers = 
