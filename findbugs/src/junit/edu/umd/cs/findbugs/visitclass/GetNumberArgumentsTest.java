@@ -50,5 +50,9 @@ public class GetNumberArgumentsTest extends TestCase {
 			assertEquals(2, PreorderVisitor.getNumberArguments("([[" + s + "Ljava/lang/String;)I"));
 		}
 	}
+	
+	public void testSimpleObjectArgument() {
+		assertEquals(1, PreorderVisitor.getNumberArguments("(Ledu/umd/cs/findbugs/ba/ClassContext;)V"));
+	}
 
 }
