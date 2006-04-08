@@ -100,7 +100,7 @@ public class Hierarchy {
 		}
 		Boolean result = subtypes.get(t);
 		if (result == null) {
-			result = t.isAssignmentCompatibleWith(possibleSupertype);
+			result = Boolean.valueOf(t.isAssignmentCompatibleWith(possibleSupertype));
 			subtypes.put(t, result);
 		}
 		return result;
