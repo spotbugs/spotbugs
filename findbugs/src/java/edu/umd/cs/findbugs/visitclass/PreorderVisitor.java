@@ -361,7 +361,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		return methodName;
 	}
 
-	static Pattern argumentSignature = Pattern.compile("\\[*([BCDFIJSZ]|L[^;*];)");
+	static Pattern argumentSignature = Pattern.compile("\\[*([BCDFIJSZ]|L[^;]*;)");
 	
 	public static int getNumberArguments(String signature) {
 		int paren = signature.indexOf(')');
@@ -369,7 +369,8 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		if (paren == -1) throw new IllegalArgumentException(signature);
 		Matcher m = argumentSignature.matcher(signature.substring(1, paren));
 		int result = 0;
-		while(m.find()) result++;
+		while(m.find())
+			result++;
 		return result;
 		
 	}
