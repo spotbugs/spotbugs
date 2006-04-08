@@ -51,20 +51,20 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	private boolean hasPublicVoidConstructor;
 	private boolean superClassHasVoidConstructor;
 	private boolean directlyImplementsExternalizable;
-	private JavaClass serializable;
-	private JavaClass collection;
-	private JavaClass map;
+	//private JavaClass serializable;
+	//private JavaClass collection;
+	//private JavaClass map;
 	//private boolean isRemote;
 
 	public SerializableIdiom(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		try {
-			serializable = Repository.lookupClass("java.io.Serializable");
-			collection = Repository.lookupClass("java.util.Collection");
-			map = Repository.lookupClass("java.util.Map");
-			} catch (ClassNotFoundException e) {
+		//try {
+			//serializable = Repository.lookupClass("java.io.Serializable");
+			//collection = Repository.lookupClass("java.util.Collection");
+			//map = Repository.lookupClass("java.util.Map");
+			//} catch (ClassNotFoundException e) {
 				// can't do anything
-				}
+				//}
 	}
 
 	@Override
