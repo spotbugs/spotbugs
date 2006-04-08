@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
+
 import java.util.*;
 import java.util.regex.Pattern;
 import org.apache.bcel.Repository;
@@ -233,8 +235,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE
 			|| seen == INVOKESPECIAL)  {
 				String sig = getSigConstantOperand();
-				Type[] argTypes = Type.getArgumentTypes(sig);
-				int pos = argTypes.length;
+				int pos = PreorderVisitor.getNumberArguments(sig);
 				if (opcodeStack.getStackDepth() > pos) {
 				OpcodeStack.Item item = opcodeStack.getStackItem(pos);
 				if (DEBUG)
@@ -279,8 +280,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			case INVOKEINTERFACE:
 			case INVOKESPECIAL:
 				String sig = getSigConstantOperand();
-				Type[] argTypes = Type.getArgumentTypes(sig);
-				pos = argTypes.length;
+				pos = PreorderVisitor.getNumberArguments(sig);
 				break;
 			case PUTFIELD :
 			case IALOAD :

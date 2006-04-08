@@ -1409,8 +1409,7 @@ public class OpcodeStack implements Constants2
 	
 	private void pushByInvoke(DismantleBytecode dbc, boolean popThis) {
 		String signature = dbc.getSigConstantOperand();
-		Type[] argTypes = Type.getArgumentTypes(signature);
-		pop(argTypes.length+(popThis ? 1 : 0));
+		pop(PreorderVisitor.getNumberArguments(signature)+(popThis ? 1 : 0));
 		pushBySignature(Type.getReturnType(signature).getSignature());
 	}
  	

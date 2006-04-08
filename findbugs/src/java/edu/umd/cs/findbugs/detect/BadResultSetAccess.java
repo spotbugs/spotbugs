@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 
 public class BadResultSetAccess extends BytecodeScanningDetector {
@@ -92,8 +93,7 @@ public class BadResultSetAccess extends BytecodeScanningDetector {
 			    ||   ((clsConstant.equals("java/sql/PreparedStatement") &&  
 			    		((methodName.startsWith("set") && dbFieldTypesSet.contains(methodName.substring(3))))))) {
 					String signature = getSigConstantOperand();
-					Type[] argTypes = Type.getArgumentTypes(signature);
-					int numParms = argTypes.length;
+					int numParms = PreorderVisitor.getNumberArguments(signature);
 					if (stack.getStackDepth() >= numParms) {
 						OpcodeStack.Item item = stack.getStackItem(numParms-1);
 						Object cons = item.getConstant();
