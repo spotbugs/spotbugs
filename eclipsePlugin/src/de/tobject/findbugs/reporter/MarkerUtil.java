@@ -193,7 +193,7 @@ public abstract class MarkerUtil {
 		// should be always first line, if not found
 		lineNbr = lineNbr <= 0 ? 1 : lineNbr;
 		String sourceFileStr = ""; //$NON-NLS-1$
-		IResource res = type.getUnderlyingResource();
+		IResource res = type==null ? null : type.getUnderlyingResource();
 		if (res != null) {
 			sourceFileStr = res.getRawLocation().toOSString();
 		}
@@ -235,6 +235,10 @@ public abstract class MarkerUtil {
 	}
 
 	public static int findChildSourceLine(IJavaElement javaElement, String name) throws JavaModelException {
+		if (javaElement == null) {
+			//new Exception("trace: javaElement is null").printStackTrace();
+			return -1;
+		}
 		if (!Character.isDigit(name.charAt(0))) {
 			return findInnerClassSourceLine(javaElement, name);
 		}
