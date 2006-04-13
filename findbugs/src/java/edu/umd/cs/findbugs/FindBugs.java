@@ -1612,7 +1612,7 @@ public class FindBugs implements Constants2, ExitCodes {
 					throw new InterruptedException();
 				Detector detector = detector1;
 				// MUSTFIX: Evaluate whether this makes a difference
-				if (true && detector instanceof StatelessDetector) {
+				if (false && detector instanceof StatelessDetector) {
 						try {
 							detector = (Detector) ((StatelessDetector) detector).clone();
 						} catch (CloneNotSupportedException e) {
