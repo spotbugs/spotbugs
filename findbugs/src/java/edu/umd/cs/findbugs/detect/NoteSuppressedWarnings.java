@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
@@ -27,8 +26,7 @@ import java.util.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
-public class NoteSuppressedWarnings extends AnnotationVisitor 
-  implements NonReportingDetector {
+public class NoteSuppressedWarnings extends AnnotationVisitor implements NonReportingDetector {
 
 	private static Set<String> packages = new HashSet<String>();
 
@@ -40,19 +38,19 @@ public class NoteSuppressedWarnings extends AnnotationVisitor
 
 	public NoteSuppressedWarnings(BugReporter bugReporter) {
 		this(bugReporter, false);
-		}
+	}
+
 	public NoteSuppressedWarnings(BugReporter bugReporter, boolean recursive) {
 		if (!recursive) {
-		  DelegatingBugReporter b = (DelegatingBugReporter) bugReporter;
-                  BugReporter origBugReporter = b.getDelegate();
-		  suppressionMatcher = new SuppressionMatcher();
-                  BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, suppressionMatcher, false);
-                  b.setDelegate(filterBugReporter);
-		  recursiveDetector = new NoteSuppressedWarnings(bugReporter,true);
-		  recursiveDetector.suppressionMatcher = 
-				suppressionMatcher;
-		  }
-	
+			DelegatingBugReporter b = (DelegatingBugReporter) bugReporter;
+			BugReporter origBugReporter = b.getDelegate();
+			suppressionMatcher = new SuppressionMatcher();
+			BugReporter filterBugReporter = new FilterBugReporter(origBugReporter,
+					suppressionMatcher, false);
+			b.setDelegate(filterBugReporter);
+			recursiveDetector = new NoteSuppressedWarnings(bugReporter, true);
+			recursiveDetector.suppressionMatcher = suppressionMatcher;
+		}
 
 		this.bugReporter = bugReporter;
 	}
@@ -61,63 +59,63 @@ public class NoteSuppressedWarnings extends AnnotationVisitor
 		classContext.getJavaClass().accept(this);
 	}
 
-        @Override
-        public void visit(JavaClass obj) {
-		if (recursiveDetector == null) return;
+	@Override
+	public void visit(JavaClass obj) {
+		if (recursiveDetector == null)
+			return;
 		try {
-		if (getClassName().endsWith("package-info")) return;
-		String packageName = getPackageName().replace('/', '.');
-		if (!packages.add(packageName)) return;
-		String packageInfo = "package-info";
-		if (packageName.length() > 0)
-			packageInfo = packageName + "." + packageInfo;
-			
-		JavaClass packageInfoClass = Repository.lookupClass(packageInfo);
-		recursiveDetector.visitJavaClass(packageInfoClass);
+			if (getClassName().endsWith("package-info"))
+				return;
+			String packageName = getPackageName().replace('/', '.');
+			if (!packages.add(packageName))
+				return;
+			String packageInfo = "package-info";
+			if (packageName.length() > 0)
+				packageInfo = packageName + "." + packageInfo;
+
+			JavaClass packageInfoClass = Repository.lookupClass(packageInfo);
+			recursiveDetector.visitJavaClass(packageInfoClass);
 		} catch (ClassNotFoundException e) {
-			// ignore 
+			// ignore
 		}
 	}
-        @Override
-        public void visitAnnotation(String annotationClass, Map<String, Object> map, boolean runtimeVisible)  {
-		if (!annotationClass.endsWith("SuppressWarnings")) return;
+
+	@Override
+	public void visitAnnotation(String annotationClass, Map<String, Object> map,
+			boolean runtimeVisible) {
+		if (!annotationClass.endsWith("SuppressWarnings"))
+			return;
 		Object value = map.get("value");
-		if (value == null || !(value instanceof Object[]))  {
+		if (value == null || !(value instanceof Object[])) {
 			suppressWarning(null);
 			return;
-			}
-		Object [] suppressedWarnings = (Object[]) value;
+		}
+		Object[] suppressedWarnings = (Object[]) value;
 		if (suppressedWarnings.length == 0)
 			suppressWarning(null);
-		else for (Object suppressedWarning : suppressedWarnings)
-			suppressWarning((String) suppressedWarning);
-		}
+		else
+			for (Object suppressedWarning : suppressedWarnings)
+				suppressWarning((String) suppressedWarning);
+	}
 
-        private void suppressWarning(String pattern) {
+	private void suppressWarning(String pattern) {
 		String className = getDottedClassName();
 		ClassAnnotation clazz = new ClassAnnotation(className);
-		if (className.endsWith("package-info") && recursiveDetector == null) 
-			suppressionMatcher.addPackageSuppressor(
-			new PackageWarningSuppressor(pattern,
-				getPackageName().replace('/', '.')));
+		if (className.endsWith("package-info") && recursiveDetector == null)
+			suppressionMatcher.addPackageSuppressor(new PackageWarningSuppressor(pattern,
+					getPackageName().replace('/', '.')));
 		else if (visitingMethod())
-		suppressionMatcher.addSuppressor(
-			new MethodWarningSuppressor(pattern,
-				clazz, MethodAnnotation.fromVisitedMethod(this)));
+			suppressionMatcher.addSuppressor(new MethodWarningSuppressor(pattern, clazz,
+					MethodAnnotation.fromVisitedMethod(this)));
 		else if (visitingField())
-		suppressionMatcher.addSuppressor(
-			new FieldWarningSuppressor(pattern,
-				clazz, FieldAnnotation.fromVisitedField(this)));
-		else 
-		suppressionMatcher.addSuppressor(
-			new ClassWarningSuppressor(pattern,
-				clazz));
-		}
-
+			suppressionMatcher.addSuppressor(new FieldWarningSuppressor(pattern, clazz,
+					FieldAnnotation.fromVisitedField(this)));
+		else
+			suppressionMatcher.addSuppressor(new ClassWarningSuppressor(pattern, clazz));
+	}
 
 	public void report() {
 
-		}
-
+	}
 
 }
