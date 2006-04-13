@@ -232,13 +232,13 @@ public class Naming extends PreorderVisitor implements Detector {
 	private static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
 	@Override
          public void visit(Method obj) {
-		if (getMethodName().length() == 1) return;
-
-		if (Character.isLetter(getMethodName().charAt(0))
-			&& !Character.isLowerCase(getMethodName().charAt(0))
-			&& Character.isLetter(getMethodName().charAt(1))
-			&& Character.isLowerCase(getMethodName().charAt(1))
-			&& getMethodName().indexOf("_") == -1 )
+		String mName = getMethodName();
+		if (mName.length() == 1) return;
+		if (Character.isLetter(mName.charAt(0))
+			&& !Character.isLowerCase(mName.charAt(0))
+			&& Character.isLetter(mName.charAt(1))
+			&& Character.isLowerCase(mName.charAt(1))
+			&& mName.indexOf("_") == -1 )
 			bugReporter.reportBug(new BugInstance(this, 
 				"NM_METHOD_NAMING_CONVENTION", 
 				classIsPublicOrProtected 
@@ -248,7 +248,7 @@ public class Naming extends PreorderVisitor implements Detector {
 			        .addClassAndMethod(this));
 		String sig = getMethodSig();
 
-		if (getMethodName().equals(baseClassName) && sig.equals("()V")) {
+		if (mName.equals(baseClassName) && sig.equals("()V")) {
 			Code code = obj.getCode();
 			if (code != null) {
 				byte [] codeBytes = code.getCode();
@@ -268,17 +268,17 @@ public class Naming extends PreorderVisitor implements Detector {
 		if (obj.isAbstract()) return;
 		if (obj.isPrivate()) return;
 
-		if (getMethodName().equals("equal") && sig.equals("(Ljava/lang/Object;)Z")) {
+		if (mName.equals("equal") && sig.equals("(Ljava/lang/Object;)Z")) {
 			bugReporter.reportBug(new BugInstance(this, "NM_BAD_EQUAL", HIGH_PRIORITY)
 			        .addClassAndMethod(this));
 			return;
 		}
-		if (getMethodName().equals("hashcode") && sig.equals("()I")) {
+		if (mName.equals("hashcode") && sig.equals("()I")) {
 			bugReporter.reportBug(new BugInstance(this, "NM_LCASE_HASHCODE", HIGH_PRIORITY)
 			        .addClassAndMethod(this));
 			return;
 		}
-		if (getMethodName().equals("tostring") && sig.equals("()Ljava/lang/String;")) {
+		if (mName.equals("tostring") && sig.equals("()Ljava/lang/String;")) {
 			bugReporter.reportBug(new BugInstance(this, "NM_LCASE_TOSTRING", HIGH_PRIORITY)
 			        .addClassAndMethod(this));
 			return;
@@ -287,16 +287,16 @@ public class Naming extends PreorderVisitor implements Detector {
 
 		if (obj.isPrivate()
 		        || obj.isStatic()
-		        || getMethodName().equals("<init>")
+		        || mName.equals("<init>")
 		)
 			return;
 
-		String trueName = getMethodName() + sig;
+		String trueName = mName + sig;
 		String sig2 = removePackageNamesFromSignature(sig);
-		String allSmall = getMethodName().toLowerCase() + sig2;
+		String allSmall = mName.toLowerCase() + sig2;
 	
 
-		MyMethod mm = new MyMethod(getThisClass().getClassName(), getMethodName(), sig, obj.isStatic());
+		MyMethod mm = new MyMethod(getThisClass().getClassName(), mName, sig, obj.isStatic());
 		{
 			HashSet<String> s = canonicalToTrueMapping.get(allSmall);
 			if (s == null) {
