@@ -361,7 +361,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		// edges are enumerated in decreasing order of priority.
 		// In the process, this will remove exceptions from
 		// the thrown exception set.
-		ExceptionSet thrownExceptionSet = cachedExceptionSet.getExceptionSet().duplicate();
+		ExceptionSet thrownExceptionSet = cachedExceptionSet.getExceptionSet();
+		if (!thrownExceptionSet.isEmpty()) thrownExceptionSet = thrownExceptionSet.duplicate();
 		for (Iterator<Edge> i = cfg.outgoingEdgeIterator(basicBlock); i.hasNext();) {
 			Edge edge = i.next();
 			if (edge.isExceptionEdge())
