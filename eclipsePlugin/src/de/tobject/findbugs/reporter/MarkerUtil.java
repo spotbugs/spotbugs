@@ -114,7 +114,10 @@ public abstract class MarkerUtil {
 			}
 			try {
 				project.getWorkspace().run(
-					new MarkerReporter(bug, resource, startLine), /* Progress window*/ null);
+					new MarkerReporter(bug, resource, startLine), // action
+					null,  // scheduling rule (null if there are no scheduling restrictions)
+					0,     // flags (could specify IWorkspace.AVOID_UPDATE)
+					null); // progress monitor (null if progress reporting is not desired)
 			}
 			catch (CoreException e) {
 				e.printStackTrace();
