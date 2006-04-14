@@ -37,6 +37,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
+
 import de.tobject.findbugs.builder.AbstractFilesCollector;
 import de.tobject.findbugs.builder.FilesCollectorFactory;
 import de.tobject.findbugs.builder.FindBugsWorker;
@@ -51,6 +53,9 @@ import de.tobject.findbugs.util.Util;
  * @since 25.09.2003
  */
 public class FindBugsAction implements IObjectActionDelegate {
+
+	/** schuduling rule to force no more than one findBugs.execute() task at a time */
+	protected static final MutexSchedulingRule findbugsExecuteMutex = new MutexSchedulingRule();
 
 	/** The current selection. */
 	private ISelection selection;
@@ -140,14 +145,17 @@ public class FindBugsAction implements IObjectActionDelegate {
 	private void work(final IResource resource) {
 		try {
 			final Collection files = filesInResource(resource);
-			Job runFindBugs = new Job("Finding bugs...") {
+			Job runFindBugs = new Job("Finding bugs in "+resource.getName()+"...") {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
-					FindBugsWorker worker = new FindBugsWorker(resource
-							.getProject(), monitor);
+					FindBugsWorker worker =
+						new FindBugsWorker(resource.getProject(), monitor);
 					try {
-						worker.work(files);
+						// this job will run with the mutex scheduling rule
+						Job updateJob = worker.workExecute(files);
+						// updateJob will run without a scheduling rule
+						if (updateJob != null) updateJob.schedule();
 					} catch (CoreException e) {
 						e.printStackTrace();
 						return Status.CANCEL_STATUS;
@@ -156,6 +164,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 				}
 			};
 
+			runFindBugs.setRule(findbugsExecuteMutex);
 			runFindBugs.setUser(true);
 			runFindBugs.schedule();
 		} catch (CoreException e1) {
