@@ -30,6 +30,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -84,11 +87,37 @@ public class FindBugsWorker {
 
 	/**
 	 * Run FindBugs on the given collection of files.
+	 * @see #workExecute(Collection) which handles synchronization better
 	 *  
 	 * @param files A collection of {@link IResource}s. 
 	 * @throws CoreException
 	 */
 	public void work(Collection files) throws CoreException {
+		UpdateJob uj = workExecute(files);
+		if (uj != null) uj.update();
+	}
+
+	/**
+	 * Run FindBugs on the given collection of files up
+	 * through findBugs.execute(), and return a Job object
+	 * which can be used to update the found bugs.
+	 * 
+	 * The returned Job object may be null if something
+	 * unexpected occurs. Call its update() method to
+	 * update the found bugs directly, or schedule it
+	 * as an Eclipse task.
+	 * 
+	 * The reason for splitting the work is that a mutex
+	 * should be held to run findBugs.execute(), but this
+	 * causes trouble when updateBugCollection() attempts
+	 * to write to the .fbwarnings file. So the invoker can
+	 * release the lock before executing the returned Job.
+	 *  
+	 * @param files A collection of {@link IResource}s.
+	 * @return an UpdateJob to update found bugs, or null on error
+	 * @throws CoreException
+	 */
+	public UpdateJob workExecute(Collection files) throws CoreException {
 		if (files == null) {
 			if (DEBUG) {
 				System.out.println("No files to build"); //$NON-NLS-1$
@@ -148,8 +177,9 @@ public class FindBugsWorker {
 			// Perform the analysis!
 			findBugs.execute();
 			
-			// Merge new results into existing results.
-			updateBugCollection(findBugsProject, bugReporter);
+			// return a job that will Merge new results into existing results.
+			return new UpdateJob(findBugsProject, bugReporter);
+			// was: updateBugCollection(findBugsProject, bugReporter);
 		}
 		catch (InterruptedException e) {
 			if (DEBUG) {
@@ -162,6 +192,7 @@ public class FindBugsWorker {
 		} catch (Exception e) {
 			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs analysis");
 		}
+		return null;
 	}
 
 	/**
@@ -255,4 +286,41 @@ public class FindBugsWorker {
 		}
 		return new String[0];
 	}
+
+	/** A nested class that is prepared to call updateBugCollection().
+	 *  You may ignore the fact that it extends <tt>Job</tt> and call
+	 *  update() directly, or you may use the eclipse scheduler.
+	 *  @see #workExecute(Collection)
+	 */
+	public class UpdateJob extends Job {
+		private Project findBugsProject;
+		private Reporter bugReporter;
+
+		public UpdateJob(Project findBugsProject, Reporter bugReporter) {
+			super("Updating found bugs...");
+			//setUser(true); // don't want this, since not _directly_ initiated by end user
+			this.findBugsProject = findBugsProject;
+			this.bugReporter = bugReporter;
+		}
+
+		public IStatus update() {
+			try {
+				// Merge new results into existing results.
+				updateBugCollection(findBugsProject, bugReporter);
+			}
+			catch (RuntimeException re) {
+				throw re;
+			} catch (Exception e) {
+				FindbugsPlugin.getDefault().logException(e, "Error updating FindBugs analysis");
+				return Status.CANCEL_STATUS; // is this what we want?
+			}
+			return Status.OK_STATUS;
+		}
+		
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			return update();
+		}
+	}
+
 }
