@@ -36,10 +36,10 @@ public class TrainUnconditionalDerefParams
 		implements TrainingDetector {
 	private static final boolean VERBOSE_DEBUG = Boolean.getBoolean("upd.debug"); 
 	
-	private BugReporter bugReporter;
+	//private BugReporter bugReporter;
 	
 	public TrainUnconditionalDerefParams(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		//this.bugReporter = bugReporter;
 	}
 
 	/* (non-Javadoc)

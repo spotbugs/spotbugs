@@ -30,10 +30,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * @author daveho
  */
 public class NoteNonNullAnnotations extends BuildNonNullAnnotationDatabase implements NonReportingDetector {
-	private BugReporter bugReporter;
+	//private BugReporter bugReporter;
 	
 	public NoteNonNullAnnotations(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		//this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

@@ -57,7 +57,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		private LockResourceTracker resourceTracker;
 		private Lock lock;
 		private ValueNumberDataflow vnaDataflow;
-		private IsNullValueDataflow isNullDataflow;
+		//private IsNullValueDataflow isNullDataflow;
 
 		public LockFrameModelingVisitor(
 				ConstantPoolGen cpg,
@@ -69,7 +69,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			this.resourceTracker = resourceTracker;
 			this.lock = lock;
 			this.vnaDataflow = vnaDataflow;
-			this.isNullDataflow = isNullDataflow;
+			//this.isNullDataflow = isNullDataflow;
 		}
 
 		@Override

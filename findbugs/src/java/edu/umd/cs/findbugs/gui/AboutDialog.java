@@ -46,14 +46,14 @@ import edu.umd.cs.findbugs.Version;
 public class AboutDialog extends javax.swing.JDialog {
 	private static final long serialVersionUID = 3546076956480385584L;
 
-	private JFrame parent;
+	//private JFrame parent;
 
 	/**
 	 * Creates new form AboutDialog
 	 */
 	public AboutDialog(JFrame parent, Logger l, boolean modal) {
 		super(parent, modal);
-		this.parent = parent;
+		//this.parent = parent;
 
 		initComponents();
 

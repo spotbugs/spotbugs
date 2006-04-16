@@ -29,10 +29,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * @author daveho
  */
 public class NoteCheckReturnValueAnnotations extends BuildCheckReturnAnnotationDatabase implements NonReportingDetector {
-	private BugReporter bugReporter;
+	//private BugReporter bugReporter;
 	
 	public NoteCheckReturnValueAnnotations(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		//this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

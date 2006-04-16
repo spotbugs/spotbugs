@@ -51,9 +51,9 @@ public class WillBeDereferencedAnalysis extends BackwardDataflowAnalysis<WillBeD
 	
 	private final CFG cfg;
 	private final MethodGen methodGen;
-	private final TypeDataflow typeDataflow;
+	//private final TypeDataflow typeDataflow;
 	private final ValueNumberDataflow vnaDataflow;
-	private final int maxBit;
+	//private final int maxBit;
 	
 
 	
@@ -66,9 +66,9 @@ public class WillBeDereferencedAnalysis extends BackwardDataflowAnalysis<WillBeD
 		super(rdfs);
 		this.cfg = cfg;
 		this.methodGen = methodGen;
-		this.typeDataflow = typeDataflow;
+		//this.typeDataflow = typeDataflow;
 		this.vnaDataflow = vnaDataflow;
-		this.maxBit = methodGen.getMaxLocals();
+		//this.maxBit = methodGen.getMaxLocals();
 
 	}
 

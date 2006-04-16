@@ -32,7 +32,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements NonRepo
 
 	private SuppressionMatcher suppressionMatcher;
 
-	private BugReporter bugReporter;
+	//private BugReporter bugReporter;
 
 	private NoteSuppressedWarnings recursiveDetector;
 
@@ -52,7 +52,7 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements NonRepo
 			recursiveDetector.suppressionMatcher = suppressionMatcher;
 		}
 
-		this.bugReporter = bugReporter;
+		//this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

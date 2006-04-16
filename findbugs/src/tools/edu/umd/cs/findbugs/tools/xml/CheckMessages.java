@@ -125,14 +125,13 @@ public class CheckMessages {
 		}
 	}
 
-	private XMLFile pluginDescriptorDoc;
 	private Set<String> declaredDetectorsSet;
 	private Set<String> declaredAbbrevsSet;
 
 	public CheckMessages(String pluginDescriptorFilename)
 		throws DocumentException, MalformedURLException {
 
-		pluginDescriptorDoc = new XMLFile(pluginDescriptorFilename);
+		XMLFile pluginDescriptorDoc = new XMLFile(pluginDescriptorFilename);
 
 		declaredDetectorsSet =
 			pluginDescriptorDoc.collectAttributes("/FindbugsPlugin/Detector", "class");

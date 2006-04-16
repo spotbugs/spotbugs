@@ -57,7 +57,6 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 	private MethodGen methodGen;
 	private ValueNumberFactory factory;
-	private ValueNumberCache cache;
 	private ValueNumberFrameModelingVisitor visitor;
 	private ValueNumber[] entryLocalValueList;
 	private IdentityHashMap<BasicBlock, ValueNumber> exceptionHandlerValueNumberMap;
@@ -73,7 +72,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		super(dfs);
 		this.methodGen = methodGen;
 		this.factory = new ValueNumberFactory();
-		this.cache = new ValueNumberCache();
+		ValueNumberCache cache = new ValueNumberCache();
 		this.visitor = new ValueNumberFrameModelingVisitor(methodGen, factory, cache,
 				loadedFieldSet,
 		        lookupFailureCallback);

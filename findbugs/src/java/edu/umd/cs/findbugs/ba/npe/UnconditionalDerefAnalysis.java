@@ -56,12 +56,12 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 	
 	private final CFG cfg;
 	private final MethodGen methodGen;
-	private final TypeDataflow typeDataflow;
+	//private final TypeDataflow typeDataflow;
 	private final ValueNumberDataflow vnaDataflow;
 	private final Map<ValueNumber, Integer> valueNumberToParamMap;
 	private final int numParams;
-	private final int topBit;
-	private final int bottomBit;
+	//private final int topBit;
+	//private final int bottomBit;
 	
 	public UnconditionalDerefAnalysis(
 			ReverseDepthFirstSearch rdfs,
@@ -72,12 +72,12 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 		super(rdfs);
 		this.cfg = cfg;
 		this.methodGen = methodGen;
-		this.typeDataflow = typeDataflow;
+		//this.typeDataflow = typeDataflow;
 		this.vnaDataflow = vnaDataflow;
 		this.valueNumberToParamMap = vnaDataflow.getValueNumberToParamMap(methodGen.getSignature(), methodGen.isStatic());
 		this.numParams = new SignatureParser(methodGen.getSignature()).getNumParameters();
-		this.topBit = numParams;
-		this.bottomBit = numParams + 1;
+		//this.topBit = numParams;
+		//this.bottomBit = numParams + 1;
 	}
 
 	public void copy(UnconditionalDerefSet source, UnconditionalDerefSet dest) {
