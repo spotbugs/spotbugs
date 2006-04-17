@@ -87,37 +87,30 @@ public class FindBugsWorker {
 
 	/**
 	 * Run FindBugs on the given collection of files.
-	 * @see #workExecute(Collection) which handles synchronization better
-	 *  
+	 * 
+	 * This has been broken into three steps, so that
+	 * the middle step can be executed with a mutex lock.
+	 * @see #workPrepare(Collection) the 1st step
+	 * @see #workExecute(Project) the 2nd step
+	 * @see UpdateJob#update() the 3rd step
+	 * 
 	 * @param files A collection of {@link IResource}s. 
 	 * @throws CoreException
 	 */
 	public void work(Collection files) throws CoreException {
-		UpdateJob uj = workExecute(files);
+		Project proj = workPrepare(files);
+		UpdateJob uj = workExecute(proj);
 		if (uj != null) uj.update();
 	}
 
 	/**
-	 * Run FindBugs on the given collection of files up
-	 * through findBugs.execute(), and return a Job object
-	 * which can be used to update the found bugs.
-	 * 
-	 * The returned Job object may be null if something
-	 * unexpected occurs. Call its update() method to
-	 * update the found bugs directly, or schedule it
-	 * as an Eclipse task.
-	 * 
-	 * The reason for splitting the work is that a mutex
-	 * should be held to run findBugs.execute(), but this
-	 * causes trouble when updateBugCollection() attempts
-	 * to write to the .fbwarnings file. So the invoker can
-	 * release the lock before executing the returned Job.
+	 * Prepare to run FindBugs on the given collection of files.
 	 *  
 	 * @param files A collection of {@link IResource}s.
-	 * @return an UpdateJob to update found bugs, or null on error
+	 * @return a findbugs Project that may be passed to workExecute
 	 * @throws CoreException
 	 */
-	public UpdateJob workExecute(Collection files) throws CoreException {
+	public static Project workPrepare(Collection files) throws CoreException {
 		if (files == null) {
 			if (DEBUG) {
 				System.out.println("No files to build"); //$NON-NLS-1$
@@ -158,6 +151,29 @@ public class FindBugsWorker {
 				findBugsProject.addFile(fileName);
 			}
 		}
+		return findBugsProject;
+	}
+
+	/**
+	 * Run FindBugs on the given findBugsProject's files up
+	 * through findBugs.execute(), and return a Job object
+	 * which can be used to update the found bugs.
+	 * 
+	 * The returned Job object may be null if something
+	 * unexpected occurs. Call its update() method to
+	 * update the found bugs directly, or schedule it
+	 * as an Eclipse task.
+	 * 
+	 * The reason for splitting the work is that a mutex
+	 * should be held to run findBugs.execute(), but this
+	 * causes trouble when updateBugCollection() attempts
+	 * to write to the .fbwarnings file. So the invoker can
+	 * release the lock before executing the returned Job.
+	 *  
+	 * @param findBugsProject to which files have already been added
+	 * @return an UpdateJob to update found bugs, or null on error
+	 */
+	public UpdateJob workExecute(Project findBugsProject) {
 
 		Reporter bugReporter = new Reporter(this.project, this.monitor, findBugsProject);
 		bugReporter.setPriorityThreshold(Detector.LOW_PRIORITY);

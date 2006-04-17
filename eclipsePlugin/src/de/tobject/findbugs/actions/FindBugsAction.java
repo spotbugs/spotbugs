@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.eclipse.core.internal.jobs.JobManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -37,6 +38,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 
 import de.tobject.findbugs.builder.AbstractFilesCollector;
@@ -149,13 +151,29 @@ public class FindBugsAction implements IObjectActionDelegate {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
+					JobManager manager = JobManager.getInstance();
 					FindBugsWorker worker =
 						new FindBugsWorker(resource.getProject(), monitor);
 					try {
-						// this job will run with the mutex scheduling rule
-						Job updateJob = worker.workExecute(files);
-						// updateJob will run without a scheduling rule
-						if (updateJob != null) updateJob.schedule();
+						monitor.subTask("preparing");
+						Project findbugsProject = FindBugsWorker.workPrepare(files);
+
+						//call worker.workExecute(files) but with mutex rule
+						FindBugsWorker.UpdateJob updateJob = null;
+						try {
+							monitor.subTask("waiting to detect");
+							manager.beginRule(findbugsExecuteMutex, monitor);
+							monitor.subTask("detecting");
+							updateJob = worker.workExecute(findbugsProject);
+						} finally {
+							manager.endRule(findbugsExecuteMutex);
+						}						
+
+						monitor.subTask("updating");
+						if (updateJob != null) {
+							//updateJob.schedule();
+							updateJob.update(); // update directly
+						}
 					} catch (CoreException e) {
 						e.printStackTrace();
 						return Status.CANCEL_STATUS;
@@ -164,7 +182,6 @@ public class FindBugsAction implements IObjectActionDelegate {
 				}
 			};
 
-			runFindBugs.setRule(findbugsExecuteMutex);
 			runFindBugs.setUser(true);
 			runFindBugs.schedule();
 		} catch (CoreException e1) {
