@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.core.internal.jobs.JobManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -31,15 +30,14 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
-
-import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
 
 import de.tobject.findbugs.builder.AbstractFilesCollector;
 import de.tobject.findbugs.builder.FilesCollectorFactory;
@@ -56,8 +54,12 @@ import de.tobject.findbugs.util.Util;
  */
 public class FindBugsAction implements IObjectActionDelegate {
 
-	/** schuduling rule to force no more than one findBugs.execute() task at a time */
-	protected static final MutexSchedulingRule findbugsExecuteMutex = new MutexSchedulingRule();
+	/** lock to force no more than one findBugs.execute() task at a time. see
+	  * http://help.eclipse.org/help30/topic/org.eclipse.platform.doc.isv/guide/runtime_jobs_locks.htm
+	  * Alas, this is less pretty than a edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule
+	  * from the user's point of view, but it doesn't have the IllegalArgumentException
+	  * problem ("does not match outer scope rule") so this the ILock is preferred. */
+	protected static final ILock findbugsExecuteLock = Platform.getJobManager().newLock();
 
 	/** The current selection. */
 	private ISelection selection;
@@ -151,32 +153,17 @@ public class FindBugsAction implements IObjectActionDelegate {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
-					JobManager manager = JobManager.getInstance();
 					FindBugsWorker worker =
 						new FindBugsWorker(resource.getProject(), monitor);
 					try {
-						monitor.subTask("preparing");
-						Project findbugsProject = FindBugsWorker.workPrepare(files);
-
-						//call worker.workExecute(files) but with mutex rule
-						FindBugsWorker.UpdateJob updateJob = null;
-						try {
-							monitor.subTask("waiting to detect");
-							manager.beginRule(findbugsExecuteMutex, monitor);
-							monitor.subTask("detecting");
-							updateJob = worker.workExecute(findbugsProject);
-						} finally {
-							manager.endRule(findbugsExecuteMutex);
-						}						
-
-						monitor.subTask("updating");
-						if (updateJob != null) {
-							//updateJob.schedule();
-							updateJob.update(); // update directly
-						}
+						findbugsExecuteLock.acquire();
+						worker.work(files);
 					} catch (CoreException e) {
 						e.printStackTrace();
 						return Status.CANCEL_STATUS;
+					}
+					finally {
+						findbugsExecuteLock.release();
 					}
 					return Status.OK_STATUS;
 				}
