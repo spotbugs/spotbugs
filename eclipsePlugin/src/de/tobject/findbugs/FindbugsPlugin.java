@@ -20,6 +20,7 @@
 
 package de.tobject.findbugs;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +33,7 @@ import java.util.StringTokenizer;
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -62,6 +64,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.plugin.eclipse.ExtendedPreferences;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -118,6 +121,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "bugcollection.dirty");
 	public static final QualifiedName SESSION_PROPERTY_USERPREFS =
 		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "userprefs");
+	public static final QualifiedName SESSION_PROPERTY_EXTENDEDPREFS = 
+		new QualifiedName(FindbugsPlugin.PLUGIN_ID + ".sessionprops", "extendedprefs");
+	
 	public static final String LIST_DELIMITER = ";"; //$NON-NLS-1$
 	
 	/** The shared instance. */
@@ -598,6 +604,26 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		}
 		return prefs;
 	}
+	
+	/**
+	 * Get the extended preferences for the given project.
+	 * 
+	 * @param project The project to get extended preferences for.
+	 * 
+	 * @return The ExtendedPreferences for the project.
+	 * @throws CoreException 
+	 */
+	public static ExtendedPreferences getExtendedPreferences(IProject project) throws CoreException {
+		ExtendedPreferences prefs = (ExtendedPreferences) project.getSessionProperty(SESSION_PROPERTY_EXTENDEDPREFS);
+		if (prefs == null) {
+			prefs = readExtendedPreferences(project);
+			if (prefs == null) {
+				prefs = new ExtendedPreferences();
+			}
+			project.setSessionProperty(SESSION_PROPERTY_EXTENDEDPREFS, prefs);
+		}
+		return prefs;
+	}
 
 	/**
 	 * Save current UserPreferences for given project.
@@ -625,6 +651,28 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		
 		IO.writeFile(userPrefsFile, userPrefsOutput, null);
 	}
+	
+	/**
+	 * Save current UserPreferences for given project.
+	 * 
+	 * @param project the project
+	 * @throws CoreException 
+	 * @throws IOException 
+	 */
+	public static void saveExtendedPreferences(IProject project, final ExtendedPreferences extendedPrefs)
+			throws CoreException, IOException {
+		// Make the new extended preferences current for the project
+		project.setSessionProperty(SESSION_PROPERTY_EXTENDEDPREFS, extendedPrefs);
+		
+		IFile userPrefsFile = getUserPreferencesFile(project);
+		if (!userPrefsFile.exists()) {
+			throw new IOException("User preferences file not present yet. Save UserPreferences first.");
+		}		
+		File prefsFile = userPrefsFile.getLocation().toFile();
+		
+		extendedPrefs.write(prefsFile);
+		userPrefsFile.refreshLocal(IResource.DEPTH_INFINITE, null);
+	}
 
 	/**
 	 * Read UserPreferences for project from the file in the project directory.
@@ -645,6 +693,22 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			UserPreferences userPrefs = UserPreferences.createDefaultUserPreferences();
 			userPrefs.read(in);
 			return userPrefs;
+		} catch (IOException e) {
+			FindbugsPlugin.getDefault().logException(
+					e, "Could not read user preferences for project");
+			return null;
+		}
+	}
+	
+	private static ExtendedPreferences readExtendedPreferences(IProject project) {
+		IFile userPrefsFile = getUserPreferencesFile(project);
+		if (!userPrefsFile.exists())
+			return null;
+
+		try {
+			ExtendedPreferences prefs = new ExtendedPreferences();
+			prefs.read(userPrefsFile.getLocation().toFile());
+			return prefs;
 		} catch (IOException e) {
 			FindbugsPlugin.getDefault().logException(
 					e, "Could not read user preferences for project");

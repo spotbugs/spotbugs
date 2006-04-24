@@ -46,6 +46,14 @@ import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
@@ -61,10 +69,17 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.dialogs.PropertyPage;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.model.BaseWorkbenchContentProvider;
+import org.eclipse.ui.model.IWorkbenchAdapter;
+import org.eclipse.ui.model.WorkbenchAdapter;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.reporter.MarkerUtil;
@@ -75,6 +90,8 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.plugin.eclipse.ExtendedPreferences;
+import edu.umd.cs.findbugs.plugin.eclipse.util.FileSelectionDialog;
 
 /**
  * Project properties page for setting FindBugs properties.
@@ -106,6 +123,11 @@ public class FindbugsPropertyPage extends PropertyPage {
 	protected Map<DetectorFactory, String> factoriesToBugAbbrev;
 	private Button restoreDefaultsButton;
 
+	private ComboViewer effortViewer;
+	private ExtendedPreferences origExtendedPreferences;
+	private ExtendedPreferences currentExtendedPreferences;
+	private EffortPlaceHolder[] effortLevels;
+
 	/**
 	 * Constructor for FindbugsPropertyPage.
 	 */
@@ -127,7 +149,10 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 		collectUserPreferences();
 
-		Composite composite = new Composite(parent, SWT.NONE);
+		TabFolder tabFolder = new TabFolder(parent, SWT.NONE);
+		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		Composite composite = new Composite(tabFolder, SWT.NONE);
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
 
@@ -205,7 +230,182 @@ public class FindbugsPropertyPage extends PropertyPage {
 			}
 		});
 
+		TabItem generalTab = new TabItem(tabFolder, SWT.NONE);
+		generalTab.setText(getMessage("property.tabgeneral"));
+		generalTab.setControl(composite);
+		TabItem extendedTab = new TabItem(tabFolder, SWT.NONE);
+		extendedTab.setText(getMessage("property.tabextended"));
+		extendedTab.setControl(createExtendedComposite(tabFolder));
+
 		return composite;
+	}
+
+	private Composite createExtendedComposite(Composite parent) {
+		collectExtendedPreferences();
+		Composite extendedComposite = new Composite(parent, SWT.NONE);
+		extendedComposite.setLayout(new GridLayout(2, false));
+
+		// effort
+		Label effortLabel = new Label(extendedComposite, SWT.NULL);
+		effortLabel.setText(getMessage("property.effort"));
+		effortLabel.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false,
+				false));
+		effortViewer = new ComboViewer(extendedComposite, SWT.DROP_DOWN
+				| SWT.READ_ONLY);
+		effortViewer.setLabelProvider(new WorkbenchLabelProvider());
+		effortViewer.setContentProvider(new BaseWorkbenchContentProvider());
+		effortLevels = new EffortPlaceHolder[] {
+				new EffortPlaceHolder(getMessage("property.effortmin"),
+						ExtendedPreferences.EFFORT_MIN),
+				new EffortPlaceHolder(getMessage("property.effortdefault"),
+						ExtendedPreferences.EFFORT_DEFAULT),
+				new EffortPlaceHolder(getMessage("property.effortmax"),
+						ExtendedPreferences.EFFORT_MAX) };
+		effortViewer.add(effortLevels);
+
+		String effort = currentExtendedPreferences.getEffort();
+		for (int i = 0; i < effortLevels.length; i++) {
+			if (effortLevels[i].getEffortLevel().equals(effort)) {
+				effortViewer.setSelection(new StructuredSelection(
+						effortLevels[i]), true);
+			}
+		}
+		effortViewer
+				.addSelectionChangedListener(new ISelectionChangedListener() {
+
+					public void selectionChanged(SelectionChangedEvent event) {
+						EffortPlaceHolder placeHolder = (EffortPlaceHolder) ((IStructuredSelection) event
+								.getSelection()).getFirstElement();
+						currentExtendedPreferences.setEffort(placeHolder
+								.getEffortLevel());
+					}
+				});
+
+		createFilterTable(extendedComposite, true);
+		createFilterTable(extendedComposite, false);
+
+		return extendedComposite;
+	}
+
+	private void createFilterTable(Composite parent, final boolean includeFilter) {
+		Composite tableComposite = new Composite(parent, SWT.NULL);
+		GridLayout layout = new GridLayout(2, false);
+		layout.marginHeight = 0;
+		layout.marginWidth = 0;
+		tableComposite.setLayout(layout);
+		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+				true, 2, 1));
+		Label titleLabel = new Label(tableComposite, SWT.NULL);
+		final String title;
+		if (includeFilter) {
+			title = getMessage("property.includefilter");
+		} else {
+			title = getMessage("property.excludefilter");
+		}
+		titleLabel.setText(title);
+		titleLabel.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true,
+				false, 2, 1));
+		final TableViewer viewer = new TableViewer(tableComposite, SWT.MULTI
+				| SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		viewer.setContentProvider(new BaseWorkbenchContentProvider());
+		viewer.setLabelProvider(new WorkbenchLabelProvider());
+		viewer.getControl().setLayoutData(
+				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
+		String[] filterFiles;
+		if (includeFilter) {
+			filterFiles = currentExtendedPreferences.getIncludeFilterFiles();
+		} else {
+			filterFiles = currentExtendedPreferences.getExcludeFilterFiles();
+		}
+
+		//final List<FilePlaceHolder> filters = new ArrayList<FilePlaceHolder>();
+		final List filters = new ArrayList();
+		if (filterFiles != null) {
+			for (int i = 0; i < filterFiles.length; i++) {
+				filters.add(new FilePlaceHolder(project.getFile(filterFiles[i])));
+			}
+		}
+		viewer.add(filters.toArray());
+		final Button addButton = new Button(tableComposite, SWT.PUSH);
+		String addButtonLabel;
+		if (includeFilter) {
+			addButtonLabel = getMessage("property.includefilteraddbutton");
+		} else {
+			addButtonLabel = getMessage("property.excludefilteraddbutton");
+		}
+		addButton.setText(addButtonLabel);
+		addButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false,
+				false));
+		addButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				FileSelectionDialog dialog = new FileSelectionDialog(addButton
+						.getShell(), title, ".xml");
+				dialog.setInput(project);
+				dialog.setAllowMultiple(true);
+				if (dialog.open() == ElementTreeSelectionDialog.OK) {
+					Object[] result = dialog.getResult();
+					for (int i = 0; i < result.length; i++) {
+						FilePlaceHolder holder = new FilePlaceHolder((IFile) result[i]);
+						filters.add(holder);
+						viewer.add(holder);
+					}
+
+					if (includeFilter) {
+						currentExtendedPreferences
+								.setIncludeFilterFiles(filesToStrings(filters));
+					} else {
+						currentExtendedPreferences
+								.setExcludeFilterFiles(filesToStrings(filters));
+					}
+				}
+			}
+		});
+		final Button removeButton = new Button(tableComposite, SWT.PUSH);
+		removeButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false,
+				true));
+		String removeButtonLabel;
+		if (includeFilter) {
+			removeButtonLabel = getMessage("property.includefilterremovebutton");
+		} else {
+			removeButtonLabel = getMessage("property.excludefilterremovebutton");
+		}
+
+		removeButton.setText(removeButtonLabel);
+		removeButton.setEnabled(false);
+		removeButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Iterator selectionIter = ((IStructuredSelection) viewer
+						.getSelection()).iterator();
+				while (selectionIter.hasNext()) {
+					Object element = selectionIter.next();
+					FilePlaceHolder holder = (FilePlaceHolder) element;
+					filters.remove(holder);
+					viewer.remove(holder);
+				}
+				if (includeFilter) {
+					currentExtendedPreferences
+							.setIncludeFilterFiles(filesToStrings(filters));
+				} else {
+					currentExtendedPreferences
+							.setExcludeFilterFiles(filesToStrings(filters));
+				}
+			}
+		});
+
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				removeButton.setEnabled(!event.getSelection().isEmpty());
+			}
+		});
+	}
+
+	private String[] filesToStrings(List filters) {
+		String[] result = new String[filters.size()];
+		for (int i = 0; i < filters.size(); i++) {
+			FilePlaceHolder holder = (FilePlaceHolder) filters.get(i);
+			result[i] = holder.getFile().getProjectRelativePath().toString();
+		}
+		return result;
 	}
 
 	private void collectUserPreferences() {
@@ -218,6 +418,21 @@ public class FindbugsPropertyPage extends PropertyPage {
 			this.origUserPreferences = UserPreferences.createDefaultUserPreferences();
 		}
 		this.currentUserPreferences = (UserPreferences) origUserPreferences.clone();
+	}
+
+	private void collectExtendedPreferences() {
+		// Get current extended preferences for project
+		try {
+			origExtendedPreferences = FindbugsPlugin
+					.getExtendedPreferences(project);
+		} catch (CoreException e) {
+			// Use default settings
+			FindbugsPlugin.getDefault().logException(e,
+					"Could not get user preferences for project");
+			origExtendedPreferences = new ExtendedPreferences();
+		}
+		currentExtendedPreferences = (ExtendedPreferences) origExtendedPreferences
+				.clone();
 	}
 
 	/**
@@ -533,6 +748,26 @@ public class FindbugsPropertyPage extends PropertyPage {
 				//System.out.println("Filter setting for project changed!");
 				filterOptionsChanged = true;
 			}
+		} else if (!currentExtendedPreferences.equals(origExtendedPreferences)) {
+			try {
+				// If user prefs do not exist save them to be sure a base prefs
+				// file exist.
+				if (!FindbugsPlugin.getUserPreferencesFile(project).exists()) {
+					FindbugsPlugin.saveUserPreferences(project,
+							currentUserPreferences);
+				}
+				FindbugsPlugin.saveExtendedPreferences(project,
+						currentExtendedPreferences);
+			} catch (CoreException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"Could not store FindBugs preferences for project");
+			} catch (IOException e) {
+				FindbugsPlugin.getDefault().logException(e,
+						"Could not store FindBugs preferences for project");
+			}
+
+			// TODO: The project needs to be rebuilt here because the extended prefs
+			// influence the warnings report
 		}
 
 		// Update whether or not FindBugs is run automatically.
@@ -864,6 +1099,91 @@ public class FindbugsPropertyPage extends PropertyPage {
 				return list.toArray();
 			}
 			return null;
+		}
+	}
+
+	/**
+	 * Helper class to hold an effort level and internationalizable label value.
+	 * 
+	 * @author Peter Hendriks
+	 */
+	private static final class EffortPlaceHolder extends WorkbenchAdapter
+			implements IAdaptable {
+
+		private final String name;
+		private final String effortLevel;
+
+		public EffortPlaceHolder(String name, String effortLevel) {
+			this.name = name;
+			this.effortLevel = effortLevel;
+		}
+
+		public String getLabel(Object object) {
+			return name;
+		}
+
+		public String getEffortLevel() {
+			return effortLevel;
+		}
+
+		public Object getAdapter(Class adapter) {
+			if (adapter.equals(IWorkbenchAdapter.class)) {
+				return this;
+			}
+			return null;
+		}
+	}
+
+	private static final class FilePlaceHolder extends WorkbenchAdapter
+			implements IAdaptable {
+
+		private final IFile file;
+
+		public FilePlaceHolder(IFile file) {
+			this.file = file;
+		}
+
+		public String getLabel(Object object) {
+			return file.getProjectRelativePath().toString();
+		}
+
+		public ImageDescriptor getImageDescriptor(Object object) {
+			IWorkbenchAdapter adapter = (IWorkbenchAdapter) file
+					.getAdapter(IWorkbenchAdapter.class);
+			if (adapter != null) {
+				return adapter.getImageDescriptor(file);
+			}
+
+			return super.getImageDescriptor(object);
+		}
+
+		public Object getAdapter(Class adapter) {
+			if (adapter.equals(IWorkbenchAdapter.class)) {
+				return this;
+			}
+			return null;
+		}
+
+		public IFile getFile() {
+			return file;
+		}
+
+		public boolean equals(Object obj) {
+			if (obj == null) {
+				return false;
+			}
+			if (obj == this) {
+				return true;
+			}
+			if (obj instanceof FilePlaceHolder) {
+				return file.equals(((FilePlaceHolder) obj).file);
+			}
+
+			return false;
+		}
+
+		public int hashCode() {
+			return file.hashCode();
 		}
 	}
 

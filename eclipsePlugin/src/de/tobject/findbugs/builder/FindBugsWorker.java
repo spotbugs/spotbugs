@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.dom4j.DocumentException;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -45,6 +46,8 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.filter.FilterException;
+import edu.umd.cs.findbugs.plugin.eclipse.ExtendedPreferences;
 
 /**
  * Execute FindBugs on a collection of Java resources in a project.
@@ -61,6 +64,7 @@ public class FindBugsWorker {
 
 	private IProgressMonitor monitor;
 	private UserPreferences userPrefs;
+	private ExtendedPreferences extendedPrefs;
 	private IProject project;
 
 	/**
@@ -75,6 +79,7 @@ public class FindBugsWorker {
 		this.monitor = monitor;
 		try {
 			this.userPrefs = FindbugsPlugin.getUserPreferences(project);
+			extendedPrefs = FindbugsPlugin.getExtendedPreferences(project);
 		}
 		catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Could not get selected detectors for project");
@@ -143,6 +148,7 @@ public class FindBugsWorker {
 
 		// configure detectors.
 		findBugs.setUserPreferences(this.userPrefs);
+		configureExtended(findBugs);
 
 		try {
 			// Perform the analysis! (note: This is not thread-safe.)
@@ -240,6 +246,42 @@ public class FindBugsWorker {
 		for (Iterator i = newBugCollection.iterator(); i.hasNext(); ) {
 			BugInstance newWarning = (BugInstance) i.next();
 			oldBugCollection.add(newWarning);
+		}
+	}
+
+	private void configureExtended(FindBugs findBugs) {
+		// configure extended preferences
+		findBugs.setAnalysisFeatureSettings(extendedPrefs.getAnalysisFeatureSettings());
+		String[] includeFilterFiles = extendedPrefs.getIncludeFilterFiles();
+		for (int i = 0; i < includeFilterFiles.length; i++) {
+			IFile file = project.getFile(includeFilterFiles[i]);
+			// TODO: some error reporting here to indicate that a filter no longer exists
+			if (file.exists()) {
+				String filterName = file.getLocation().toOSString();
+				try {
+				findBugs.addFilter(filterName, true);
+				} catch (FilterException e) {
+					FindbugsPlugin.getDefault().logException(e, "Error while loading filter \"" + filterName + "\".");
+				} catch (IOException e) {
+					FindbugsPlugin.getDefault().logException(e, "Error while reading filter \"" + filterName + "\".");
+				}
+			}
+		}
+		
+		String[] excludeFilterFiles = extendedPrefs.getExcludeFilterFiles();
+		for (int i = 0; i < excludeFilterFiles.length; i++) {
+			IFile file = project.getFile(excludeFilterFiles[i]);
+			// TODO: some error reporting here to indicate that a filter no longer exists
+			if (file.exists()) {
+				String filterName = file.getLocation().toOSString();
+				try {
+				findBugs.addFilter(filterName, false);
+				} catch (FilterException e) {
+					FindbugsPlugin.getDefault().logException(e, "Error while loading filter \"" + filterName + "\".");
+				} catch (IOException e) {
+					FindbugsPlugin.getDefault().logException(e, "Error while reading filter \"" + filterName + "\".");
+				}
+			}
 		}
 	}
 
