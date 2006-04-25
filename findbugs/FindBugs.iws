@@ -13,6 +13,8 @@
     <option name="DATE_AFTER" value="" />
     <option name="CHANGE_BEFORE" value="" />
     <option name="CHANGE_AFTER" value="" />
+    <option name="USE_USER_FILTER" value="false" />
+    <option name="USER" value="" />
   </component>
   <component name="CheckinPanelState" />
   <component name="Commander">
@@ -68,9 +70,6 @@
     <option name="UPDATE_KEYWORD_SUBSTITUTION" value="NONE" />
     <option name="MAKE_NEW_FILES_READONLY" value="false" />
     <option name="SHOW_CORRUPTED_PROJECT_FILES" value="0" />
-    <option name="TAG_AFTER_FILE_COMMIT" value="false" />
-    <option name="OVERRIDE_EXISTING_TAG_FOR_FILE" value="true" />
-    <option name="TAG_AFTER_FILE_COMMIT_NAME" value="" />
     <option name="TAG_AFTER_PROJECT_COMMIT" value="false" />
     <option name="OVERRIDE_EXISTING_TAG_FOR_PROJECT" value="true" />
     <option name="TAG_AFTER_PROJECT_COMMIT_NAME" value="" />
@@ -82,6 +81,21 @@
   </component>
   <component name="DebuggerManager">
     <breakpoint_any>
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
         <option name="NOTIFY_UNCAUGHT" value="true" />
@@ -120,19 +134,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="BugHistory.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/workflow/BugHistory.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="578" column="40" selection-start="18226" selection-end="18226" vertical-scroll-proportion="0.03076923">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="ClassWarningSuppressor.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/ClassWarningSuppressor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="11" selection-start="129" selection-end="129" vertical-scroll-proportion="0.21538462">
+            <state line="7" column="11" selection-start="129" selection-end="129" vertical-scroll-proportion="0.09824561">
               <folding />
             </state>
           </provider>
@@ -141,7 +146,7 @@
       <file leaf-file-name="LocalVariableAnnotation.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/LocalVariableAnnotation.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="94" column="21" selection-start="2733" selection-end="2733" vertical-scroll-proportion="0.8384615">
+            <state line="94" column="21" selection-start="2733" selection-end="2733" vertical-scroll-proportion="0.38245615">
               <folding />
             </state>
           </provider>
@@ -150,10 +155,8 @@
       <file leaf-file-name="OpcodeStack.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/OpcodeStack.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="211" column="15" selection-start="6484" selection-end="6484" vertical-scroll-proportion="0.03076923">
-              <folding>
-                <marker date="1136830317000" expanded="true" signature="8791:8796" placeholder="{...}" />
-              </folding>
+            <state line="211" column="15" selection-start="6514" selection-end="6514" vertical-scroll-proportion="0.014035088">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -161,7 +164,7 @@
       <file leaf-file-name="SAXBugCollectionHandler.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/SAXBugCollectionHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="269" column="63" selection-start="11410" selection-end="11410" vertical-scroll-proportion="0.03076923">
+            <state line="269" column="63" selection-start="11127" selection-end="11127" vertical-scroll-proportion="0.014035088">
               <folding />
             </state>
           </provider>
@@ -170,7 +173,7 @@
       <file leaf-file-name="FindPuzzlers.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/detect/FindPuzzlers.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="113" column="23" selection-start="4044" selection-end="4044" vertical-scroll-proportion="0.03076923">
+            <state line="113" column="23" selection-start="4069" selection-end="4069" vertical-scroll-proportion="0.014035088">
               <folding />
             </state>
           </provider>
@@ -179,7 +182,7 @@
       <file leaf-file-name="InstantiateStaticClass.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/detect/InstantiateStaticClass.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="67" column="20" selection-start="2325" selection-end="2325" vertical-scroll-proportion="0.31538463">
+            <state line="67" column="20" selection-start="2325" selection-end="2325" vertical-scroll-proportion="0.14385965">
               <folding />
             </state>
           </provider>
@@ -188,7 +191,7 @@
       <file leaf-file-name="BugInstance.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/BugInstance.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1231" column="15" selection-start="38329" selection-end="38329" vertical-scroll-proportion="0.03076923">
+            <state line="1231" column="15" selection-start="38851" selection-end="38851" vertical-scroll-proportion="0.014035088">
               <folding />
             </state>
           </provider>
@@ -197,7 +200,7 @@
       <file leaf-file-name="DismantleBytecode.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/visitclass/DismantleBytecode.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="184" column="18" selection-start="7145" selection-end="7145" vertical-scroll-proportion="0.03076923">
+            <state line="184" column="18" selection-start="7116" selection-end="7116" vertical-scroll-proportion="0.014035088">
               <folding />
             </state>
           </provider>
@@ -206,7 +209,7 @@
       <file leaf-file-name="FindBugs.iws" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/FindBugs.iws">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="146" column="82" selection-start="6839" selection-end="6839" vertical-scroll-proportion="0.36923078">
+            <state line="146" column="82" selection-start="6522" selection-end="6522" vertical-scroll-proportion="0.014035088">
               <folding />
             </state>
           </provider>
@@ -230,6 +233,7 @@
     <option name="GROUP_BY_SEVERITY" value="false" />
     <option name="ANALYZE_TEST_SOURCES" value="false" />
     <option name="SCOPE_TYPE" value="1" />
+    <option name="CUSTOM_SCOPE_NAME" value="" />
     <profile name="Default" />
   </component>
   <component name="J2EEProjectPane">
@@ -259,13 +263,10 @@
     </PATH>
   </component>
   <component name="PerforceChangeBrowserSettings">
-    <option name="USE_USER_FILTER" value="true" />
     <option name="USE_CLIENT_FILTER" value="true" />
-    <option name="USER" value="" />
     <option name="CLIENT" value="" />
   </component>
   <component name="PerforceDirect.Settings">
-    <option name="CURRENT_CHANGE_LIST" value="-1" />
     <option name="useP4CONFIG" value="true" />
     <option name="port" value="jasper:1666" />
     <option name="client" value="" />
@@ -283,6 +284,10 @@
     <option name="ENABLED" value="true" />
     <option name="USE_LOGIN" value="false" />
     <option name="LOGIN_SILENTLY" value="false" />
+    <option name="INTEGRATE_BRANCH_NAME" />
+    <option name="INTEGRATE_CHANGELIST_NUM" value="-1" />
+    <option name="INTEGRATE_RUN_RESOLVE" value="true" />
+    <option name="INTEGRATE_REVERT_UNCHANGED" value="true" />
     <option name="INTEGRATE_CHANGE_LIST_NUMBER" value="" />
     <option name="INTEGRATE_CHANGE_LIST" value="false" />
     <option name="INTEGRATE_REVERSE" value="false" />
@@ -392,6 +397,32 @@
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
       </PATH_ELEMENT>
     </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="FindBugs.ipr" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="FindBugs" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/java" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/src/java/edu/umd/cs/findbugs" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+      </PATH_ELEMENT>
+    </PATH>
   </component>
   <component name="ProjectReloadState">
     <option name="STATE" value="0" />
@@ -422,134 +453,9 @@
     <option name="SHOW_DIALOG" value="true" />
   </component>
   <component name="RecentsManager" />
-  <component name="RestoreUpdateTree">
-    <UpdateInfo date="1/9/06 1:12 PM" ActionInfo="Update">
-      <UpdatedFiles>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Updated from server" />
-          <option name="myStatusName" value="Changed on server" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="CHANGED_ON_SERVER" />
-          <FILE-GROUP>
-            <option name="myUpdateName" value="Updated" />
-            <option name="myStatusName" value="Changed" />
-            <option name="mySupportsDeletion" value="false" />
-            <option name="myCanBeAbsent" value="false" />
-            <option name="myId" value="UPDATED" />
-          </FILE-GROUP>
-          <FILE-GROUP>
-            <option name="myUpdateName" value="Created" />
-            <option name="myStatusName" value="Created" />
-            <option name="mySupportsDeletion" value="false" />
-            <option name="myCanBeAbsent" value="false" />
-            <option name="myId" value="CREATED" />
-          </FILE-GROUP>
-          <FILE-GROUP>
-            <option name="myUpdateName" value="Deleted" />
-            <option name="myStatusName" value="Deleted" />
-            <option name="mySupportsDeletion" value="false" />
-            <option name="myCanBeAbsent" value="true" />
-            <option name="myId" value="REMOVED_FROM_REPOSITORY" />
-          </FILE-GROUP>
-          <FILE-GROUP>
-            <option name="myUpdateName" value="Restored" />
-            <option name="myStatusName" value="Will be restored" />
-            <option name="mySupportsDeletion" value="false" />
-            <option name="myCanBeAbsent" value="false" />
-            <option name="myId" value="RESTORED" />
-          </FILE-GROUP>
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Modified" />
-          <option name="myStatusName" value="Modified" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="MODIFIED" />
-          <PATH>$PROJECT_DIR$/FindBugs.iws</PATH>
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Merged with conflicts" />
-          <option name="myStatusName" value="Will be merged with conflicts" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="MERGED_WITH_CONFLICTS" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Merged" />
-          <option name="myStatusName" value="Will be merged" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="MERGED" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Not in repository" />
-          <option name="myStatusName" value="Not in repository" />
-          <option name="mySupportsDeletion" value="true" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="UNKNOWN" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Locally added" />
-          <option name="myStatusName" value="Locally added" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="LOCALLY_ADDED" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Locally removed" />
-          <option name="myStatusName" value="Locally removed" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="LOCALLY_REMOVED" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Unknown" />
-          <option name="myStatusName" value="Unknown" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="UNKNOWN_TYPE" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Locally modified removed from server" />
-          <option name="myStatusName" value="Locally modified removed from server" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="MOD_REMOVED_FROM_SERVER" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Locally removed modified on server" />
-          <option name="myStatusName" value="Locally removed modified on server" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="LOCALLY_REMOVED_MODIFIED_ON_SERVER" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Created by second party" />
-          <option name="myStatusName" value="Created by second party" />
-          <option name="mySupportsDeletion" value="true" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="CREATED_BY_SECOND_PARTY" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Binary file has to be merged" />
-          <option name="myStatusName" value="Binary file has to be merged" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="BINARY_MERGED" />
-        </FILE-GROUP>
-      </UpdatedFiles>
-    </UpdateInfo>
-  </component>
+  <component name="RestoreUpdateTree" />
   <component name="RunManager">
     <activeType name="Application" />
-    <configuration selected="false" default="true" type="Remote" factoryName="Remote">
-      <option name="USE_SOCKET_TRANSPORT" value="true" />
-      <option name="SERVER_MODE" value="false" />
-      <option name="SHMEM_ADDRESS" value="javadebug" />
-      <option name="HOST" value="localhost" />
-      <option name="PORT" value="5005" />
-    </configuration>
     <configuration selected="false" default="true" type="JUnit" factoryName="JUnit">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -566,6 +472,22 @@
         <value defaultName="wholeProject" />
       </option>
     </configuration>
+    <configuration selected="false" default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+    </configuration>
+    <configuration selected="false" default="true" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <module name="" />
+    </configuration>
     <configuration selected="false" default="true" type="Applet" factoryName="Applet">
       <module name="" />
       <option name="MAIN_CLASS_NAME" />
@@ -577,15 +499,6 @@
       <option name="VM_PARAMETERS" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-    </configuration>
-    <configuration selected="false" default="true" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <module name="" />
     </configuration>
   </component>
   <component name="SelectInManager">
@@ -620,6 +533,7 @@
   <component name="SvnConfiguration">
     <option name="USER" value="" />
     <option name="PASSWORD" value="" />
+    <option name="PROCESS_UNRESOLVED" value="false" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -636,13 +550,13 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="57" y="184" width="2540" height="1002" extended-state="0" />
-    <editor active="false" />
+    <frame x="348" y="107" width="2540" height="1002" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="6" />
       <window_info id="Project" active="false" anchor="left" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.24919744" order="0" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.33022255" order="1" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.32928178" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="docked" type="docked" visible="false" weight="0.33022255" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.34099066" order="5" />
@@ -655,7 +569,7 @@
       <window_info id="File View" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="3" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="sliding" type="sliding" visible="false" weight="0.4" order="0" />
-      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.50607735" order="8" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.50607735" order="8" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="2" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="0" />
       <window_info id="EJB" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="3" />
@@ -671,6 +585,7 @@
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="PUT_FOCUS_INTO_COMMENT" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="LAST_COMMIT_MESSAGE" value="Use Java 5.0 foreach loops&#10;Various other quickfixes suggested by IntelliJ." />
@@ -777,13 +692,6 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/ml/ConvertToARFF.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="585" column="55" selection-start="16756" selection-end="16756" vertical-scroll-proportion="0.00893522">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/ba/vna/ValueNumberFactory.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="71" column="109" selection-start="2331" selection-end="2331" vertical-scroll-proportion="0.47356665">
@@ -812,74 +720,72 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/visitclass/DismantleBytecode.java">
+    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/workflow/BugHistory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="184" column="18" selection-start="7145" selection-end="7145" vertical-scroll-proportion="0.03076923">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/BugInstance.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1231" column="15" selection-start="38329" selection-end="38329" vertical-scroll-proportion="0.03076923">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/detect/InstantiateStaticClass.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="67" column="20" selection-start="2325" selection-end="2325" vertical-scroll-proportion="0.31538463">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/detect/FindPuzzlers.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="113" column="23" selection-start="4044" selection-end="4044" vertical-scroll-proportion="0.03076923">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/SAXBugCollectionHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="269" column="63" selection-start="11410" selection-end="11410" vertical-scroll-proportion="0.03076923">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/OpcodeStack.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="211" column="15" selection-start="6484" selection-end="6484" vertical-scroll-proportion="0.03076923">
-          <folding>
-            <marker date="1136830317000" expanded="true" signature="8791:8796" placeholder="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/LocalVariableAnnotation.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="94" column="21" selection-start="2733" selection-end="2733" vertical-scroll-proportion="0.8384615">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/ClassWarningSuppressor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="11" selection-start="129" selection-end="129" vertical-scroll-proportion="0.21538462">
+        <state line="7" column="11" selection-start="129" selection-end="129" vertical-scroll-proportion="0.09824561">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/workflow/BugHistory.java">
+    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/LocalVariableAnnotation.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="578" column="40" selection-start="18226" selection-end="18226" vertical-scroll-proportion="0.03076923">
+        <state line="94" column="21" selection-start="2733" selection-end="2733" vertical-scroll-proportion="0.38245615">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/OpcodeStack.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="211" column="15" selection-start="6514" selection-end="6514" vertical-scroll-proportion="0.014035088">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/SAXBugCollectionHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="269" column="63" selection-start="11127" selection-end="11127" vertical-scroll-proportion="0.014035088">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/detect/FindPuzzlers.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="113" column="23" selection-start="4069" selection-end="4069" vertical-scroll-proportion="0.014035088">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/detect/InstantiateStaticClass.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="67" column="20" selection-start="2325" selection-end="2325" vertical-scroll-proportion="0.14385965">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/BugInstance.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1231" column="15" selection-start="38851" selection-end="38851" vertical-scroll-proportion="0.014035088">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/java/edu/umd/cs/findbugs/visitclass/DismantleBytecode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="184" column="18" selection-start="7116" selection-end="7116" vertical-scroll-proportion="0.014035088">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/FindBugs.iws">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="146" column="82" selection-start="6839" selection-end="6839" vertical-scroll-proportion="0.36923078">
+        <state line="146" column="82" selection-start="6522" selection-end="6522" vertical-scroll-proportion="0.014035088">
           <folding />
         </state>
       </provider>
