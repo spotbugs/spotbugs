@@ -35,6 +35,8 @@ public class SloppyBugComparator implements  WarningComparator, Serializable {
 	
 	private static final boolean DEBUG = Boolean.getBoolean("sloppyComparator.debug");
 	
+	private static final long serialVersionUID = 1L;
+	
 	private ClassNameRewriter classNameRewriter = IdentityClassNameRewriter.instance();
 	
 	/**

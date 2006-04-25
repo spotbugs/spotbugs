@@ -19,15 +19,19 @@
 
 package edu.umd.cs.findbugs.model;
 
+import java.io.Serializable;
+
 /**
  * ClassNameRewriter that leaves classe names unchanged.
  * 
  * @author David Hovemeyer
  */
-public class IdentityClassNameRewriter implements ClassNameRewriter {
+public class IdentityClassNameRewriter implements ClassNameRewriter, Serializable {
 	
 	private static final IdentityClassNameRewriter theInstance = new IdentityClassNameRewriter();
-	
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Get the single instance.
 	 * 
@@ -35,7 +39,7 @@ public class IdentityClassNameRewriter implements ClassNameRewriter {
 	 */
 	public static IdentityClassNameRewriter instance() { return theInstance; }
 
-	/* (non-Javadoc)
+	/**
 	 * @see edu.umd.cs.findbugs.model.ClassNameRewriter#rewriteClassName(java.lang.String)
 	 */
 	public String rewriteClassName(String className) {

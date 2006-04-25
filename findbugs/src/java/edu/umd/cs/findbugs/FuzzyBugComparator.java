@@ -50,7 +50,9 @@ public class FuzzyBugComparator implements WarningComparator, Serializable {
 
 	// Don't use hashes for now.  Still ironing out issues there.
 	private static final boolean USE_HASHES = false;
-	
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Filter ignored BugAnnotations from given Iterator.
 	 */

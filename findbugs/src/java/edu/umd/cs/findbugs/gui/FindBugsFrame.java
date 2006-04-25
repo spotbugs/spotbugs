@@ -216,6 +216,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * as equal.
 	 */
 	private static class BugInstancePackageComparator implements Comparator<BugInstance>, Serializable {
+		private static final long serialVersionUID = 1L;
 		public int compare(BugInstance lhs, BugInstance rhs) {
 			return lhs.getPrimaryClass().getPackageName().compareTo(rhs.getPrimaryClass().getPackageName());
 		}
@@ -233,6 +234,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * as equal.
 	 */
 	private static class BugInstanceTypeComparator implements Comparator<BugInstance>, Serializable {
+		private static final long serialVersionUID = 1L;
 		public int compare(BugInstance lhs, BugInstance rhs) {
 			String lhsString = lhs.toString();
 			String rhsString = rhs.toString();
@@ -252,10 +254,12 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * as equal.
 	 */
 	private static class BugInstanceCategoryComparator implements Comparator<BugInstance>, Serializable {
+		private static final long serialVersionUID = 1L;
+
 		public int compare(BugInstance lhs, BugInstance rhs) {
 			return getCategory(lhs).compareTo(getCategory(rhs));
 		}
-		
+
 		private String getCategory(BugInstance warning) {
 			BugPattern bugPattern = warning.getBugPattern();
 			if (bugPattern == null) {
@@ -278,6 +282,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * BugInstance natural ordering.
 	 */
 	private static class BugInstanceByClassComparator implements Comparator<BugInstance>, Serializable {
+		private static final long serialVersionUID = 1L;
 		public int compare(BugInstance a, BugInstance b) {
 			int cmp = bugInstanceClassComparator.compare(a, b);
 			if (cmp != 0)
@@ -314,6 +319,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * BugInstance natural ordering.
 	 */
 	private static class BugInstanceByTypeComparator implements Comparator<BugInstance>, Serializable {
+		private static final long serialVersionUID = 1L;
 		public int compare(BugInstance a, BugInstance b) {
 			int cmp = bugInstanceTypeComparator.compare(a, b);
 			if (cmp != 0)
@@ -332,6 +338,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * BugInstance natural ordering.
 	 */
 	private static class BugInstanceByCategoryComparator implements Comparator<BugInstance>, Serializable {
+		private static final long serialVersionUID = 1L;
 		public int compare(BugInstance a, BugInstance b) {
 			int cmp = bugInstanceCategoryComparator.compare(a, b);
 			if (cmp != 0)
