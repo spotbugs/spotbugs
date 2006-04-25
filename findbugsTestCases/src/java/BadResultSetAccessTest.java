@@ -16,6 +16,16 @@ public class BadResultSetAccessTest {
 		}
 	}
 
+	public void test0noloop(ResultSet rs) throws SQLException {
+		ResultSetMetaData rsmd = rs.getMetaData();
+		int numCols = rsmd.getColumnCount();
+
+		if (numCols > 0) {
+			String s = rs.getString(0); // error: first column is 1
+			System.out.println(s);
+		}
+	}
+
 	public void test1(ResultSet rs) throws SQLException {
 		int i = rs.getInt(0);
 		i++;
