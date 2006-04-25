@@ -24,6 +24,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -196,8 +200,16 @@ public class DetectorFactoryCollection {
 		for (File file : pluginList) {
 			try {
 				if (FindBugs.DEBUG) System.out.println("Loading plugin: " + file.toString());
-				URL url = file.toURI().toURL();
-				PluginLoader pluginLoader = new PluginLoader(url, this.getClass().getClassLoader());
+				final URL url = file.toURI().toURL();
+				PluginLoader pluginLoader =
+					AccessController.doPrivileged(new PrivilegedExceptionAction<PluginLoader>() {
+
+						public PluginLoader run() throws PluginException {
+							return	new PluginLoader(url, this.getClass().getClassLoader());
+						}
+						
+					});
+			
 
 				Plugin plugin = pluginLoader.getPlugin();
 				pluginByIdMap.put(plugin.getPluginId(), plugin);
@@ -230,6 +242,10 @@ public class DetectorFactoryCollection {
 					e.printStackTrace();
 			}
 			catch (MalformedURLException e) {
+				System.err.println("Warning: could not load plugin " + file.getPath() + ": " + e.toString());
+				if (FindBugs.DEBUG)
+					e.printStackTrace();
+			} catch (PrivilegedActionException e) {
 				System.err.println("Warning: could not load plugin " + file.getPath() + ": " + e.toString());
 				if (FindBugs.DEBUG)
 					e.printStackTrace();

@@ -22,6 +22,9 @@ package edu.umd.cs.findbugs.tools.junit;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessControlContext;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
@@ -68,7 +71,7 @@ public class JUnitJarRunner {
 	public TestSuite buildTestSuite() throws Exception {
 		TestSuite suite = new TestSuite();
 
-		ArrayList<URL> urlList = new ArrayList<URL>();
+		final ArrayList<URL> urlList = new ArrayList<URL>();
 		urlList.add(new URL("file:" + jarFileName));
 		if (classpath != null) {
 			StringTokenizer tok = new StringTokenizer(classpath, File.pathSeparator);
@@ -77,8 +80,14 @@ public class JUnitJarRunner {
 			}
 		}
 
-		ClassLoader cl = new URLClassLoader(urlList.toArray(new URL[urlList.size()]));
+		ClassLoader cl = 
+			AccessController.doPrivileged(new PrivilegedExceptionAction<URLClassLoader>() {
 
+				public URLClassLoader run() throws Exception {
+					return new URLClassLoader(urlList.toArray(new URL[urlList.size()]));
+
+				}});
+		
 		Class<?> testCaseClass = cl.loadClass("junit.framework.TestCase");
 
 		JarFile jarFile = new JarFile(jarFileName);

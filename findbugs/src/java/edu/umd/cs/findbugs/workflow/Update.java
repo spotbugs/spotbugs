@@ -262,7 +262,7 @@ public class Update {
 
 	}
 
-	public static boolean verbose = false;
+	 static boolean verbose = false;
 
 	public static String [] getFilePathParts(String filePath) {
 		return filePath.split(File.separator);
