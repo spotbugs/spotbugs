@@ -68,9 +68,8 @@ public class MapCache<K,V> extends LinkedHashMap<K,V> {
 	@Override
 	protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
         boolean result = size() > maxCapacity;
-        K key = eldest.getKey();
-        if (false && result && key instanceof JavaClass)
-        		System.out.println("Dropping " + ((JavaClass)key).getClassName());
+        if (false && result && eldest.getKey() instanceof JavaClass)
+        		System.out.println("Dropping " + ((JavaClass)eldest.getKey()).getClassName());
 		return result;
      }
 	
