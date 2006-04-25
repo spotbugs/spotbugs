@@ -45,6 +45,8 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
@@ -579,7 +581,7 @@ public class OpcodeStack implements Constants2
 	 				register = dbc.getRegisterOperand();
 	 				it = getLVValue( register );
 	 				it2 = new Item("I", new Integer(dbc.getIntConstant()));
-	 				pushByIntMath( IADD, it, it2);
+	 				pushByIntMath( IADD, it2, it);
 	 				pushByLocalStore(register);
 	 			break;
 
@@ -755,7 +757,7 @@ public class OpcodeStack implements Constants2
 	 			case IUSHR:
 	 				it = pop();
 	 				it2 = pop();
-	 				pushByIntMath(seen, it, it2);
+	 				pushByIntMath(seen, it2, it);
 	 			break;
 	 			
 	 			case INEG:
@@ -802,7 +804,7 @@ public class OpcodeStack implements Constants2
 	 				it = pop();
 	 				it2 = pop();
 	 				try {
-	 				pushByLongMath(seen, it, it2);
+	 				pushByLongMath(seen, it2, it);
 	 				}
 	 				catch (Exception e) {
 	 					e.printStackTrace();
@@ -1085,7 +1087,7 @@ public class OpcodeStack implements Constants2
 	 		if (exceptionHandlers.get(dbc.getNextPC()))
 	 			push(new Item());
 	 		if (DEBUG) {
-	 			System.out.println(OPCODE_NAMES[seen] + "  stack depth: " + getStackDepth());
+	 			System.out.println(dbc.getNextPC() + " : " + OPCODE_NAMES[seen] + "  stack depth: " + getStackDepth());
 	 			System.out.println(this);
 	 		}
 	 	}
@@ -1182,8 +1184,8 @@ public class OpcodeStack implements Constants2
  		Code code = v.getMethod().getCode();
 		if (code == null) return result;
 	
-		if (false) {
-			// Be clever
+		if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS)) {
+			// FIXME: Be clever
 
 			DismantleBytecode branchAnalysis = new DismantleBytecode() {
 				@Override
@@ -1320,94 +1322,98 @@ public class OpcodeStack implements Constants2
 		pushByLocalLoad("", register);
  	}
  	
- 	private void pushByIntMath(int seen, Item it, Item it2) {
-		 if (DEBUG) System.out.println("pushByIntMath: " + it.getConstant()  + " " + it2.getConstant() );
+ 	private void pushByIntMath(int seen, Item lhs, Item rhs) {
+		 if (DEBUG) System.out.println("pushByIntMath: " + rhs.getConstant()  + " " + lhs.getConstant() );
  		Item newValue  = new Item("I");
  		try {
  	
-		if ((it.getConstant() != null) && it2.getConstant() != null) {
-			Integer intValue2 = (Integer) it2.getConstant();
-			Integer intValue1 = (Integer) it.getConstant();
+		if ((rhs.getConstant() != null) && lhs.getConstant() != null) {
+			Integer lhsValue = (Integer) lhs.getConstant();
+			Integer rhsValue = (Integer) rhs.getConstant();
 			if (seen == IADD)
-				newValue = new Item("I",intValue2 + intValue1);
+				newValue = new Item("I",lhsValue + rhsValue);
 			else if (seen == ISUB)
-				newValue = new Item("I",intValue2 - intValue1);
+				newValue = new Item("I",lhsValue - rhsValue);
 			else if (seen == IMUL)
-				newValue = new Item("I", intValue2 * intValue1);
+				newValue = new Item("I", lhsValue * rhsValue);
 			else if (seen == IDIV)
-				newValue = new Item("I", intValue2 / intValue1);
+				newValue = new Item("I", lhsValue / rhsValue);
 			else if (seen == IAND) {
-				newValue = new Item("I", intValue2 & intValue1);
-				if ((intValue1&0xff) == 0 && intValue1 != 0 || (intValue2&0xff) == 0 && intValue2 != 0 ) 	
+				newValue = new Item("I", lhsValue & rhsValue);
+				if ((rhsValue&0xff) == 0 && rhsValue != 0 || (lhsValue&0xff) == 0 && lhsValue != 0 ) 	
 					newValue.specialKind = Item.LOW_8_BITS_CLEAR;
 			
 			} else if (seen == IOR)
-				newValue = new Item("I",intValue2 | intValue1);
+				newValue = new Item("I",lhsValue | rhsValue);
 			else if (seen == IXOR)
-				newValue = new Item("I",intValue2 ^ intValue1);
+				newValue = new Item("I",lhsValue ^ rhsValue);
 			else if (seen == ISHL) {
-				newValue = new Item("I",intValue2 << intValue1);
-				if (intValue1 >= 8) 	newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+				newValue = new Item("I",lhsValue << rhsValue);
+				if (rhsValue >= 8) 	newValue.specialKind = Item.LOW_8_BITS_CLEAR;
 			}
 			else if (seen == ISHR)
-				newValue = new Item("I",intValue2 >> intValue1);
+				newValue = new Item("I",lhsValue >> rhsValue);
 			else if (seen == IREM)
-				newValue = new Item("I", intValue2 % intValue1);
+				newValue = new Item("I", lhsValue % rhsValue);
 			else if (seen == IUSHR)
-				newValue = new Item("I", intValue2 >>> intValue1);
-		} else if (it2.getConstant() != null && seen == ISHL  && (Integer) it2.getConstant() >= 8)
+				newValue = new Item("I", lhsValue >>> rhsValue);
+		} else if (rhs.getConstant() != null && seen == ISHL  && (Integer) rhs.getConstant() >= 8)
 			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
- 		else if (it2.getConstant() != null && seen == IAND  && ((Integer) it2.getConstant() & 0xff) == 0)
+ 		else if (lhs.getConstant() != null && seen == IAND  && ((Integer) lhs.getConstant() & 0xff) == 0)
 			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
- 		} catch (RuntimeException e) {
+ 		else if (rhs.getConstant() != null && seen == IAND  && ((Integer) rhs.getConstant() & 0xff) == 0)
+			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+		} catch (RuntimeException e) {
  			// ignore it
  		}
  		if (DEBUG) System.out.println("push: " + newValue);
  		push(newValue);
 	}
 	
-	private void pushByLongMath(int seen, Item it, Item it2) {
+	private void pushByLongMath(int seen, Item lhs, Item rhs) {
 		Item newValue  = new Item("J");
 		try {
 	
-		if ((it.getConstant() != null) && it2.getConstant() != null) {
+		if ((rhs.getConstant() != null) && lhs.getConstant() != null) {
 			
-			Long longValue2 = ((Long) it2.getConstant());
+			Long lhsValue = ((Long) lhs.getConstant());
 			 if (seen == LSHL) {
-				newValue  =new Item("J", longValue2 << ((Number) it.getConstant()).intValue());
-				if (((Number) it.getConstant()).intValue()  >= 8) 	newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+				newValue  =new Item("J", lhsValue << ((Number) rhs.getConstant()).intValue());
+				if (((Number) rhs.getConstant()).intValue()  >= 8) 	newValue.specialKind = Item.LOW_8_BITS_CLEAR;
 			 }
 			else if (seen == LSHR)
-				newValue  =new Item("J", longValue2 >> ((Number) it.getConstant()).intValue());
+				newValue  =new Item("J", lhsValue >> ((Number) rhs.getConstant()).intValue());
 			else if (seen == LUSHR)
-				newValue  =new Item("J", longValue2 >>> ((Number) it.getConstant()).intValue());
+				newValue  =new Item("J", lhsValue >>> ((Number) rhs.getConstant()).intValue());
 		
 			else  {
-				Long longValue1 = ((Long) it.getConstant());
+				Long rhsValue = ((Long) rhs.getConstant());
 			if (seen == LADD)
-				newValue  = new Item("J", longValue2 + longValue1);
+				newValue  = new Item("J", lhsValue + rhsValue);
 			else if (seen == LSUB)
-				newValue  = new Item("J", longValue2 - longValue1);
+				newValue  = new Item("J", lhsValue - rhsValue);
 			else if (seen == LMUL)
-				newValue  = new Item("J", longValue2 * longValue1);
+				newValue  = new Item("J", lhsValue * rhsValue);
 			else if (seen == LDIV)
-				newValue  =new Item("J", longValue2 / longValue1);
+				newValue  =new Item("J", lhsValue / rhsValue);
 			else if (seen == LAND) {
-				newValue  = new Item("J", longValue2 & longValue1);
-			if ((longValue1&0xff) == 0 && longValue1 != 0 || (longValue2&0xff) == 0 && longValue2 != 0 ) 	
+				newValue  = new Item("J", lhsValue & rhsValue);
+			if ((rhsValue&0xff) == 0 && rhsValue != 0 || (lhsValue&0xff) == 0 && lhsValue != 0 ) 	
 				newValue.specialKind = Item.LOW_8_BITS_CLEAR;
 			}
 			else if (seen == LOR)
-				newValue  = new Item("J", longValue2 | longValue1);
+				newValue  = new Item("J", lhsValue | rhsValue);
 			else if (seen == LXOR)
-				newValue  =new Item("J", longValue2 ^ longValue1);
+				newValue  =new Item("J", lhsValue ^ rhsValue);
 			else if (seen == LREM)
-				newValue  =new Item("J", longValue2 % longValue1);
+				newValue  =new Item("J", lhsValue % rhsValue);
 			}
 			}
-		 else if (it2.getConstant() != null && seen == LSHR  && ((Integer) it2.getConstant()) >= 8)
+		 else if (rhs.getConstant() != null && seen == LSHL  && ((Integer) rhs.getConstant()) >= 8)
 			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
- 		else if (it2.getConstant() != null && seen == LAND  && (((Long) it2.getConstant()) & 0xff) == 0)
+ 		else if (lhs.getConstant() != null && seen == LAND  && (((Long) lhs.getConstant()) & 0xff) == 0)
+			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+ 		else if (rhs.getConstant() != null && seen == LAND  && (((Long) rhs.getConstant()) & 0xff) == 0)
 			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
 		} catch (RuntimeException e) {
 			// ignore it

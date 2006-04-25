@@ -50,6 +50,10 @@ public interface AnalysisFeatures {
 	 */
 	public static final int SKIP_HUGE_METHODS = 3;
 	
+	/**
+	 * Perform interative opcode stack analysis
+	 */
+	public static final int INTERATIVE_OPCODE_STACK_ANALYSIS = 3;
 	
 	/**
 	 * Number of boolean analysis properties reserved for the bytecode analysis framework.
