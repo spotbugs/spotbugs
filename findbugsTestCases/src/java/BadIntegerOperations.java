@@ -30,6 +30,38 @@ class BadIntegerOperations {
 		return l;
 	}
 
+	int shiftInByte(int partialResult, byte b[], int i) {
+		return  partialResult << 8 | b[i];
+	}
+	
+	int shiftInByte2(int partialResult, byte b[], int i) {
+		return  b[i] | partialResult << 8;
+	}
+	
+	int orInByte(int partialResult, byte b[], int i) {
+		return  (partialResult &0xffffff00) | b[i];
+	}
+	
+	int orInByte2(int partialResult, byte b[], int i) {
+		return  b[i] | (partialResult &0xffffff00) ;
+	}
+	
+	long shiftInByte(long partialResult, byte b[], int i) {
+		return  partialResult << 8 | b[i];
+	}
+	
+	long shiftInByte2(long partialResult, byte b[], int i) {
+		return  b[i] | partialResult << 8;
+	}
+	
+	long orInByte(long partialResult, byte b[], int i) {
+		return  (partialResult &0xffffffffffffff00L) | b[i];
+	}
+	
+	long orInByte2(long partialResult, byte b[], int i) {
+		return  b[i] | (partialResult & 0xffffffffffffff00L) ;
+	}
+
 	/** (bug 1291650) false positive: Bitwise OR of signed byte value computed */
 	void boolFalse(String[] args) {
 		final boolean[] values = { false };
