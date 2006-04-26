@@ -53,7 +53,7 @@ public interface AnalysisFeatures {
 	/**
 	 * Perform interative opcode stack analysis
 	 */
-	public static final int INTERATIVE_OPCODE_STACK_ANALYSIS = 3;
+	public static final int INTERATIVE_OPCODE_STACK_ANALYSIS = 4;
 	
 	/**
 	 * Number of boolean analysis properties reserved for the bytecode analysis framework.
