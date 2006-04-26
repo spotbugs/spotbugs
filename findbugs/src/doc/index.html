@@ -60,7 +60,8 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
 <li>performance improvements</li>
 <li>ObjectType instances are cached to reduce memory footprint</li>
 <li>for performance and memory reasons stateless detectors are no longer cloned, must clear their own state between .class files</li>
-<li>fixed bug in bytecode set lookup for methods--was causing bad results for IS2 (and perhaps others)</li>
+<li>fixed bug in bytecode-set lookup for methods (was causing bad results for IS2, perhaps others)</li>
+<li>fix some OpcodeStack bugs with integer and long operations, perform iterative analysis when effort is <tt>max</tt></li>
 <li>HTML output includes LongMessage text again (regression in 0.95 - 0.96)</li>
 <li>New detectors
     <ul><li>CalledMethods.java: builds a list of invoked methods for other detectors to consult (non-reporting)</li>
@@ -74,6 +75,7 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
     </ul></li>
 <li>Eclipse plugin
     <ul><li>fix serious threading bug</li>
+        <li>preferences for Filters and effort (Peter Hendriks)</li>
         <li>French localization (David Cotton)</li>
         <li>fix bug when reporting inner classes (Peter Friese)</li>
     </ul></li>
@@ -92,7 +94,9 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
         <li>DumbMethodInvocations.java (Anto paul/Dave Brosius)</li> <!--sic-->
     </ul></li>
 <li>XML output includes garbage collection duration</li>
+<li>French messages updated (David Cotton)</li>
 <li>Swing GUI shows file name after Load Bugs command</li>
+<li>Ant task to launch the findbugs frame (Mark McKay)</li>
 <li>miscellaneous code cleanup</li>
 </ul>
 
