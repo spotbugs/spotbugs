@@ -76,6 +76,16 @@ extends BytecodeScanningDetector {
         }
     }
 
+    /** return true on int constant that has Pattern.LITERAL bit set */
+    private boolean isFlaggedLiteral(int stackDepth) {
+        if (stack.getStackDepth() < stackDepth) return false;
+        OpcodeStack.Item it = stack.getStackItem(stackDepth);
+        Object value = it.getConstant();
+        if (value == null || !(value instanceof Integer)) return false;
+        int flags = ((Number)value).intValue();
+        return 0 != (flags & Pattern.LITERAL);
+    }
+
     @Override
     public void sawOpcode(int seen) {
     	stack.mergeJumps(this);
@@ -83,6 +93,7 @@ extends BytecodeScanningDetector {
             && getClassConstantOperand().equals("java/util/regex/Pattern")
             && getNameConstantOperand().equals("compile")
             && getSigConstantOperand().startsWith("(Ljava/lang/String;I)")
+            && !isFlaggedLiteral(0)
             ) 
             sawRegExPattern(1);
         else if (seen == INVOKESTATIC 
