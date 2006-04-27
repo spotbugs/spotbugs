@@ -26,4 +26,12 @@ class BadRegEx {
 		return Pattern.compile("][");
 	}
 
+	Pattern literalOne(String s) throws Exception {
+		return Pattern.compile("][", Pattern.LITERAL); // not a bug
+	}
+
+	Pattern literalTwo(String s) throws Exception {
+		return Pattern.compile("][", Pattern.CASE_INSENSITIVE | Pattern.LITERAL); // not a bug
+	}
+
 }
