@@ -2,6 +2,7 @@ import java.util.concurrent.locks.*;
 
 class JSR166 {
 	Lock l = new ReentrantLock();
+	ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock();
 
 	int x;
 
@@ -28,6 +29,15 @@ class JSR166 {
 			x++;
 		} finally {
 			l.unlock();
+		}
+	}
+
+	Object bug1479629() {
+		try {
+			rwlock.readLock().lock();
+			return null;
+		} finally {
+			rwlock.readLock().unlock();
 		}
 	}
 
