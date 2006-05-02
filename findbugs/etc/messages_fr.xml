@@ -2821,7 +2821,7 @@ String s = buf.toString();
  </BugPattern>
  <BugPattern type="FE_FLOATING_POINT_EQUALITY">
   <ShortDescription>Test d'égalité en virgule flottante.</ShortDescription>
-  <LongDescription>Test d'égalité en virgule flottane dans {1}.</LongDescription>
+  <LongDescription>Test d'égalité en virgule flottante dans {1}.</LongDescription>
   <Details>
 <![CDATA[
 <p>Cette opération teste l'égalité de deux valeurs en virgule flottante. Les calculs en virgule flottante pouvant introduire des arrondis, les valeurs flottantes ou doubles peuvent être imprécises. Pour les valeurs qui doivent être précises, telles que les valeurs monétaires, pensez à utiliser un type à précision fixe tel qu'un <code>BigDecimal</code>. Pour les valeurs qui n'ont pas besoin d'être précises, pensez à tester l'égalité sur une portée quelconque, par exemple : <code>if ( Math.abs(x - y) &lt; .0000001 )</code>. Cf section 4.2.4 des spécifications du langage Java.</p>
