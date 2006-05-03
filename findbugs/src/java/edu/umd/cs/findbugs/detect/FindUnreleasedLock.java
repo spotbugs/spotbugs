@@ -80,12 +80,15 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
 			int status = -1;
 
+			if (DEBUG) System.out.println("PC : " + handle.getPosition() + " " + ins);
 			// Is a lock acquired or released by this instruction?
 			Location creationPoint = lock.getLocation();
 			if (handle == creationPoint.getHandle() && basicBlock == creationPoint.getBasicBlock()) {
 				status = ResourceValueFrame.OPEN;
+				if (DEBUG) System.out.println("OPEN");
 			} else if (resourceTracker.isResourceClose(basicBlock, handle, cpg, lock, frame)) {
 				status = ResourceValueFrame.CLOSED;
+				if (DEBUG) System.out.println("CLOSE");
 			}
 
 			// Model use of instance values in frame slots
@@ -97,20 +100,25 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			ValueNumberFrame vnaFrame = vnaDataflow.getFactAfterLocation(new Location(handle, basicBlock));
 			if (DEBUG) System.out.println("vna frame after instruction: " + vnaFrame.toString());
 			for (int i = 0; i < updatedNumSlots; ++i) {
-				if (vnaFrame.getValue(i).equals(lock.getLockValue())) {
-					if (DEBUG) System.out.println("Saw lock value!");
+				if (lock.getLockValue().hasFlag(ValueNumber.RETURN_VALUE) 
+						&& vnaFrame.getValue(i).hasFlag(ValueNumber.RETURN_VALUE) 
+						|| vnaFrame.getValue(i).equals(lock.getLockValue())) {
+					if (false && DEBUG) System.out.println("Saw lock value!");
 					frame.setValue(i, ResourceValue.instance());
 				}
 			}
-
+			
 			// If needed, update frame status
 			if (status != -1) {
 				frame.setStatus(status);
 			}
+			if (DEBUG) System.out.println("resource frame after instruction: " + frame.toString());
+
+
 		}
 
 		@Override
-                 protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
+           protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
 			return false;
 		}
 	}
