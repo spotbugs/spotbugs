@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- French translation provided by David Cotton -->
-<!-- based on revision 1.279 of messages.xml -->
+<!-- based on revision 1.279 of messages.xml (with 1.284 arg order) -->
 
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:noNamespaceSchemaLocation="messagecollection.xsd">
@@ -2966,7 +2966,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
   <ShortDescription>Transtypage douteux d'un type Collection vers une classe abstraite</ShortDescription>
-  <LongDescription>Transtypage douteux d'un type Collection vers une classe abstraite {4} dans {1}</LongDescription>
+  <LongDescription>Transtypage douteux d'un type Collection vers une classe abstraite {3} dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce code transtype un object de type <code>Collection</code> vers un type de collection abstrait (tel que <code>Collection</code>). Assurez vous que l'objet est bien du type précisé. Si vous désirez par exemple faire une itération sur une collection, le transtypage vers <code>Set</code> ou <code>List</code> est inutile.</p>
@@ -2975,7 +2975,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="BC_IMPOSSIBLE_CAST">
   <ShortDescription>Transtypage impossible</ShortDescription>
-  <LongDescription>Transtypage impossible de {3} vers {4} dans {1}</LongDescription>
+  <LongDescription>Transtypage impossible de {2} vers {3} dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce trantypage lancera toujours une exception <code>ClassCastException</code>.</p>
@@ -2993,7 +2993,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="BC_IMPOSSIBLE_INSTANCEOF">
   <ShortDescription>instanceof renverra toujours faux</ShortDescription>
-  <LongDescription>instanceof renvoyant toujours faux dans {1}, puisque qu'aucun  {3} ne peut être un {4}</LongDescription>
+  <LongDescription>instanceof renvoyant toujours faux dans {1}, puisque qu'aucun {2} ne peut être un {3}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce test <code>instanceof</code> renverra toujours faux. Même s'il est sûr, assurez-vous qu'il ne s'agisse pas d'une erreur logique ou d'une mauvaise compréhension.</p>
@@ -3002,7 +3002,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="BC_VACUOUS_INSTANCEOF">
   <ShortDescription>instanceof renverra toujours vrai</ShortDescription>
-  <LongDescription>instanceof renverra toujours vrai dans {1}, puisque chaque {3} est une instance de {4}</LongDescription>
+  <LongDescription>instanceof renverra toujours vrai dans {1}, puisque chaque {2} est une instance de {3}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce test <code>instanceof</code> renverra toujours vrai. Même s'il est sûr, assurez-vous qu'il ne s'agit pas d'une erreur logique ou d'une mauvaise compréhension.</p>
@@ -3011,7 +3011,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="BC_UNCONFIRMED_CAST">
   <ShortDescription>Transtypage non vérifié/non confirmé</ShortDescription>
-  <LongDescription>Transtypage non vérifié/non confirmé de {3} vers {4} dans {1}</LongDescription>
+  <LongDescription>Transtypage non vérifié/non confirmé de {2} vers {3} dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>La faisablité du transtypage n'est pas vérifiée, et tous les objets candidats au transtypage ne sont pas légitimes. Assurez vous que la logique du programme est correcte et que le transtypage n'échouera pas.</p>
@@ -3020,7 +3020,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="BC_BAD_CAST_TO_CONCRETE_COLLECTION">
   <ShortDescription>Transtypage douteux vers une collection concrète</ShortDescription>
-  <LongDescription>Transtypage douteux de {3} vers une collection concrète {4} dans {1}</LongDescription>
+  <LongDescription>Transtypage douteux de {2} vers une collection concrète {3} dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce code transtype une collection abstraite (telles que <code>Collection</code>, <code>List</code>, ou <code>Set</code>) vers une implémentation concrète spécifique (telles que <code>ArrayList</code> ou <code>HashSet</code>). Ceci n'est pas forcément correct, et peut rendre votre code plus fragile, puisqu'il un éventuel refactoring futur avec une autre implémentation concrète plus difficile. A défaut d'une raison valable, l'utilisation des classes abstraites est recommandée.</p>
