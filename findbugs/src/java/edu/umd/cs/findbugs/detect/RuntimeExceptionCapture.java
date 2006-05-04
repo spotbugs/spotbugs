@@ -45,6 +45,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 	private List<ExceptionCaught> catchList;
 	private List<ExceptionThrown> throwList;
 
+	private BugAccumulator accumulator;
 	private static class ExceptionCaught {
 		public String exceptionClass;
 		public int startOffset, endOffset, sourcePC;
@@ -72,6 +73,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 
 	public RuntimeExceptionCapture(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		accumulator = new BugAccumulator(bugReporter);
 	}
 
 
@@ -83,6 +85,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 			System.out.println("RuntimeExceptionCapture visiting " + method);
 		}
 		super.visitMethod(method);
+		accumulator.reportAccumulatedBugs();
 	}
 
 	@Override
@@ -123,10 +126,10 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 					if (catchClauses > 1) priority++;
 					if (thrownSet.size() > 1) priority--;
 					if (caughtException.dead) priority--;
-					bugReporter.reportBug(new BugInstance(this, "REC_CATCH_EXCEPTION",
+					accumulator.accumulateBug(new BugInstance(this, "REC_CATCH_EXCEPTION",
 							priority)
-							.addClassAndMethod(this)
-							.addSourceLine(this, caughtException.sourcePC));
+							.addClassAndMethod(this), 
+							SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, caughtException.sourcePC));
 				}
 			}
 		}
