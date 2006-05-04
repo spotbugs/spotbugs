@@ -3241,7 +3241,7 @@ double value2 =  x / (double) y;
 
   <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
     <ShortDescription>抽象コレクション型への疑わしいキャスト。</ShortDescription>
-    <LongDescription>{1}でコレクションが抽象コレクション型{4}にキャストされています。</LongDescription>
+    <LongDescription>{1}でコレクションが抽象コレクション型{3}にキャストされています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3253,7 +3253,7 @@ double value2 =  x / (double) y;
 
   <BugPattern type="BC_IMPOSSIBLE_CAST">
     <ShortDescription>不可能なキャスト。</ShortDescription>
-    <LongDescription>{1}で{3}から{4}クラスへの不可能なキャストが行なわれています。</LongDescription>
+    <LongDescription>{1}で{2}から{3}クラスへの不可能なキャストが行なわれています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3265,7 +3265,7 @@ double value2 =  x / (double) y;
 
   <BugPattern type="BC_IMPOSSIBLE_INSTANCEOF">
     <ShortDescription>常にfalseを返すinstanceof。</ShortDescription>
-    <LongDescription>{3}は{4}ではないため、{1}のinstanceofは常にfalseを返します。</LongDescription>
+    <LongDescription>{2}は{3}ではないため、{1}のinstanceofは常にfalseを返します。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3276,7 +3276,7 @@ double value2 =  x / (double) y;
   </BugPattern>
   <BugPattern type="BC_VACUOUS_INSTANCEOF">
     <ShortDescription>常にtrueを返すinstanceof。</ShortDescription>
-    <LongDescription>{3}は常に{4}であるため、{1}のinstanceofは常にtrueを返します。</LongDescription>
+    <LongDescription>{2}は常に{3}であるため、{1}のinstanceofは常にtrueを返します。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3288,7 +3288,7 @@ double value2 =  x / (double) y;
 
   <BugPattern type="BC_UNCONFIRMED_CAST">
     <ShortDescription>チェック/確認されていないキャスト。</ShortDescription>
-    <LongDescription>{1}における{3}から{4}クラスへのキャストはチェック/確認されていません。</LongDescription>
+    <LongDescription>{1}における{2}から{3}クラスへのキャストはチェック/確認されていません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3300,7 +3300,7 @@ double value2 =  x / (double) y;
 
   <BugPattern type="BC_BAD_CAST_TO_CONCRETE_COLLECTION">
     <ShortDescription>具象コレクションクラスへの疑わしいキャスト。</ShortDescription>
-    <LongDescription>{1}で{3}から{4}具象コレクションへの疑わしいキャストが行なわれています。</LongDescription>
+    <LongDescription>{1}で{2}から{3}具象コレクションへの疑わしいキャストが行なわれています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
