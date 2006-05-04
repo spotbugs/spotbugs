@@ -23,6 +23,21 @@ public class DeadStore {
 		return a;
 	}
 
+	public void duplicateDeadStores() {
+		try {
+			Object o = new Object();
+		} catch (RuntimeException e) {
+		}
+		try {
+			Object o = new Object();
+		} catch (RuntimeException e) {
+		}
+		try {
+			Object o = new Object();
+		} catch (RuntimeException e) {
+		}
+	}
+
 	public int storeNullDNR(int a) {
 		Object foo = null;
 		return a;
@@ -48,7 +63,7 @@ public class DeadStore {
 	public int notReportedin086(Object o) {
 		if (o instanceof String) {
 			String s = (String) o; // Not reported in 0.8.6 but reported in
-									// 0.8.5 (Bug: 1105217)
+			// 0.8.5 (Bug: 1105217)
 		}
 		return o.hashCode();
 	}
