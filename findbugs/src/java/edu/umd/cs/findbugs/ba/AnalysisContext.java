@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
+import edu.umd.cs.findbugs.detect.NoteAnnotationRetention;
 import edu.umd.cs.findbugs.util.MapCache;
 
 
@@ -84,6 +85,10 @@ public class AnalysisContext {
 		return checkReturnAnnotationDatabase;
 	}
 	
+	private AnnotationRetentionDatabase annotationRetentionDatabase;
+	public AnnotationRetentionDatabase getAnnotationRetentionDatabase() {
+		return annotationRetentionDatabase;
+	}
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
 		= new InheritableThreadLocal<AnalysisContext>();
 
@@ -130,6 +135,7 @@ public class AnalysisContext {
 	 */
 	public void initDatabases() {
 		checkReturnAnnotationDatabase = new CheckReturnAnnotationDatabase();
+		annotationRetentionDatabase = new AnnotationRetentionDatabase();
 	}
 
 	/**

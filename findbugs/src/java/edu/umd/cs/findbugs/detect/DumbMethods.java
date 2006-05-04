@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.JavaVersion;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
@@ -222,6 +223,26 @@ public class DumbMethods extends BytecodeScanningDetector  {
 //			}
 //		}
 	
+		if ((seen == INVOKEVIRTUAL)
+				&& getNameConstantOperand().equals("isAnnotationPresent")
+				&& getSigConstantOperand().equals("(Ljava/lang/Class;)Z")
+				&& stack.getStackDepth() > 0) {
+			OpcodeStack.Item item = stack.getStackItem(0);
+			Object value = item.getConstant();
+			if (value instanceof String) {
+				String annotationClassName = (String) value;
+				boolean hasClassfileRetention 
+				= AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase().hasClassfileRetention(
+						annotationClassName.replace('/','.'));
+				if (!hasClassfileRetention) 
+					bugReporter.reportBug(new BugInstance(this, "DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION",
+						HIGH_PRIORITY)
+				        .addClassAndMethod(this)
+				        .addSourceLine(this)
+				        .addCalledMethod(this));
+			}
+
+		}
 		if ((seen == INVOKEVIRTUAL)
 				&& getNameConstantOperand().equals("next")
 				&& getSigConstantOperand().equals("()Ljava/lang/Object;")

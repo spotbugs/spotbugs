@@ -40,6 +40,13 @@ This plugin contains all of the standard FindBugs detectors.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention">
+    <Details>
+<![CDATA[
+<p> Records annotation retention.</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.Methods">
     <Details>
 <![CDATA[
@@ -1380,6 +1387,18 @@ to use Object.clone(), which always returns an object of the correct type.</p>
     </Details>
   </BugPattern>
 
+  <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
+    <ShortDescription>Can't use reflection to check for presense of annotation with default retention</ShortDescription>
+    <LongDescription>{1} uses reflection to check for the presense of an annotation that has default retention</LongDescription>
+    <Details>
+<![CDATA[
+  <p> Unless an annotation has itself been annotated with a @Retention other than the default
+of source-only retention, the annotation isn't retained in the classfile and can't be observed using reflection
+	(e.g., by using the isAnnotationPresent method).
+   .</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DM_EXIT">
     <ShortDescription>Method invokes System.exit(...)</ShortDescription>
     <LongDescription>{1} invokes System.exit(...), which shuts down the entire virtual machine</LongDescription>
@@ -1392,6 +1411,8 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
+
+
   <BugPattern type="DM_RUN_FINALIZERS_ON_EXIT">
     <ShortDescription>Method invokes runFinalizersOnExit, one of the most dangerous methods in the Java libraries.  </ShortDescription>
     <LongDescription>{1} invokes runFinalizersOnExit, one of the most dangerous methods in the Java libraries.  </LongDescription>

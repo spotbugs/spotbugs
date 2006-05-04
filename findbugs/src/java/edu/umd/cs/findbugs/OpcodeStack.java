@@ -1291,7 +1291,7 @@ public class OpcodeStack implements Constants2
  	private void pushByConstant(DismantleBytecode dbc, Constant c) {
  		
 		if (c instanceof ConstantClass)
-			push(new Item("Ljava/lang/Class;", null));
+			push(new Item("Ljava/lang/Class;", ((ConstantClass)c).getConstantValue(dbc.getConstantPool())));
 		else if (c instanceof ConstantInteger)
 			push(new Item("I", new Integer(((ConstantInteger) c).getBytes())));
 		else if (c instanceof ConstantString) {
