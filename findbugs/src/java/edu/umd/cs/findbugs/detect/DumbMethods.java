@@ -399,9 +399,8 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		        && getClassConstantOperand().equals("java/lang/Object")
 		        && getNameConstantOperand().equals("getClass")
 		        && getSigConstantOperand().equals("()Ljava/lang/Class;")) {
-					bugReporter.reportBug(new BugInstance(this, "DM_NEW_FOR_GETCLASS", LOW_PRIORITY)
-					        .addClassAndMethod(this)
-					        .addSourceLine(this));
+					accumulator.accumulateBug(new BugInstance(this, "DM_NEW_FOR_GETCLASS", LOW_PRIORITY)
+					        .addClassAndMethod(this), this);
 			ctorSeen = false;
 		} else {
 			ctorSeen = false;

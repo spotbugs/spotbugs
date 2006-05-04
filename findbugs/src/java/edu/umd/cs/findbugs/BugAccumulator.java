@@ -44,11 +44,17 @@ public class BugAccumulator {
 		}
 		where.add(sourceLine);
 	}
+	
+
+	public void accumulateBug(BugInstance bug, BytecodeScanningDetector visitor) {
+		SourceLineAnnotation source = SourceLineAnnotation.fromVisitedInstruction(visitor);
+		accumulateBug(bug, source);
+	}
 	public void reportAccumulatedBugs() {
 		for(Map.Entry<BugInstance,LinkedList<SourceLineAnnotation>> e : map.entrySet()) {
 			BugInstance bug = e.getKey();
 			for(SourceLineAnnotation source : e.getValue())
-				bug.addSourceLine(source);
+				if (source != null) bug.addSourceLine(source);
 			reporter.reportBug(bug);
 		}
 		map.clear();
