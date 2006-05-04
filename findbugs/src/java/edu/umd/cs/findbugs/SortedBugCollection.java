@@ -299,7 +299,7 @@ public class SortedBugCollection implements BugCollection {
 				bugInstance.setInstanceOccurrenceNum(0);
 				seen.put(hash,0);
 			} else {
-				bugInstance.setInstanceOccurrenceNum(count);
+				bugInstance.setInstanceOccurrenceNum(count+1);
 				seen.put(hash, count+1);
 			}
 		}
