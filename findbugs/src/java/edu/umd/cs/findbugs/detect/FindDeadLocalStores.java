@@ -49,11 +49,13 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.StoreInstruction;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -153,6 +155,7 @@ public class FindDeadLocalStores implements Detector {
 		
 		JavaClass javaClass = classContext.getJavaClass();
 		
+		BugAccumulator accumulator = new BugAccumulator(bugReporter);
 		Dataflow<BitSet, LiveLocalStoreAnalysis> llsaDataflow =
 			classContext.getLiveLocalStoreDataflow(method);
 		
@@ -324,17 +327,9 @@ public class FindDeadLocalStores implements Detector {
 				// Report the warning				
 				BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", priority)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
-					.add(lvAnnotation)
-					.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle());
+					.add(lvAnnotation);
+				
 
-				if (DEBUG) {
-				System.out.println(
-					javaClass.getSourceFileName() + " : " +
-						methodGen.getName());
-				System.out.println("priority: " + priority);
-				System.out.println("Reporting " + bugInstance);
-				System.out.println(propertySet);
-				}
 				
 				// If in relaxed reporting mode, encode heuristic information.
 				if (FindBugsAnalysisFeatures.isRelaxedMode()) {
@@ -348,10 +343,23 @@ public class FindDeadLocalStores implements Detector {
 					// Turn all warning properties into BugProperties
 					propertySet.decorateBugInstance(bugInstance);
 				}
+				SourceLineAnnotation sourceLineAnnotation =
+					SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, javaClass.getSourceFileName(), 
+							location.getHandle());
 				
-				bugReporter.reportBug(bugInstance);
+
+				if (DEBUG) {
+				System.out.println(
+					javaClass.getSourceFileName() + " : " +
+						methodGen.getName());
+				System.out.println("priority: " + priority);
+				System.out.println("Reporting " + bugInstance);
+				System.out.println(propertySet);
+				}
+				accumulator.accumulateBug(bugInstance, sourceLineAnnotation);
 			}
 		}
+		accumulator.reportAccumulatedBugs();
 	}
 	
 	/**

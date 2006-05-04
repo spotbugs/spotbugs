@@ -23,6 +23,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -125,6 +126,7 @@ public class FindBadCast2 implements Detector {
 			throws CFGBuilderException, DataflowAnalysisException {
 		if (isSynthetic(method) || !prescreen(classContext, method))
 			return;
+		BugAccumulator accumulator = new BugAccumulator(bugReporter);
 		
 		
 		CFG cfg = classContext.getCFG(method);
@@ -220,11 +222,12 @@ public class FindBadCast2 implements Detector {
 			if (operandType.equals(NullType.instance()) || operandNullness.isDefinitelyNull()) {
 				SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
 				.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
-				if (!isCast) bugReporter.reportBug(new BugInstance(this,
+				String castName = castSig.substring(1, castSig.length() - 1)
+				.replace('/', '.');
+				if (!isCast) accumulator.accumulateBug(new BugInstance(this,
 						"NP_NULL_INSTANCEOF", NORMAL_PRIORITY)
 						.addClassAndMethod(methodGen, sourceFile)
-						.addSourceLine(sourceLineAnnotation)
-						);
+						.addClass(castName), sourceLineAnnotation);
 				continue;
 
 			}
@@ -287,12 +290,13 @@ public class FindBadCast2 implements Detector {
 						castJavaClass);
 				if (upcast) {
 					if (!isCast)
-						bugReporter.reportBug(new BugInstance(this,
+						accumulator.accumulateBug(new BugInstance(this,
 								"BC_VACUOUS_INSTANCEOF", NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
-								.addSourceLine(sourceLineAnnotation).addClass(
-										refName.replace('/', '.')).addClass(
-										castName.replace('/', '.')));
+							
+								.addClass(refName.replace('/', '.'))
+								.addClass(castName.replace('/', '.'))
+								,sourceLineAnnotation);
 				} else {
 					boolean downcast = Repository.instanceOf(castJavaClass,
 							refJavaClass);
@@ -349,9 +353,10 @@ public class FindBadCast2 implements Detector {
 										: "BC_IMPOSSIBLE_INSTANCEOF",
 								isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
-								.addSourceLine(sourceLineAnnotation).addClass(
-										refName.replace('/', '.')).addClass(
-										castName.replace('/', '.')));
+								
+								.addClass(refName.replace('/', '.'))
+								.addClass(castName.replace('/', '.'))
+								.addSourceLine(sourceLineAnnotation));
 					else if (isCast && rank < 0.9) {
 
 						int priority = NORMAL_PRIORITY;
@@ -406,12 +411,12 @@ public class FindBadCast2 implements Detector {
 							else if (castToAbstractCollection)
 								bug = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION";
 
-							bugReporter.reportBug(new BugInstance(this, bug,
-									priority).addClassAndMethod(methodGen,
-									sourceFile).addSourceLine(
-									sourceLineAnnotation).addClass(
-									refName.replace('/', '.')).addClass(
-									castName.replace('/', '.')));
+							accumulator.accumulateBug(new BugInstance(this, bug, priority)
+									.addClassAndMethod(methodGen, sourceFile)
+									.addClass(refName.replace('/', '.'))
+									.addClass(castName.replace('/', '.')),
+									sourceLineAnnotation
+									);
 						}
 
 					}
@@ -420,6 +425,7 @@ public class FindBadCast2 implements Detector {
 			} catch (ClassNotFoundException e) {
 			}
 		}
+		accumulator.reportAccumulatedBugs();
 	}
 
 	public void report() {

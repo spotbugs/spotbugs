@@ -4247,7 +4247,7 @@ This creates an array of length one to hold the primitive array and passes it to
   </BugPattern>
   <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
     <ShortDescription>Questionable cast to abstract collection </ShortDescription>
-    <LongDescription>Questionable cast from Collection to abstract class {4} in {1}</LongDescription>
+    <LongDescription>Questionable cast from Collection to abstract class {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4264,7 +4264,7 @@ to iterate through a collection, you don't need to cast it to a Set or List.
 
   <BugPattern type="BC_IMPOSSIBLE_CAST">
     <ShortDescription>Impossible cast</ShortDescription>
-    <LongDescription>Impossible cast from {3} to class {4} in {1}</LongDescription>
+    <LongDescription>Impossible cast from {2} to class {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4276,7 +4276,7 @@ This cast will always throw a ClassCastException.
 
   <BugPattern type="NP_NULL_INSTANCEOF">
     <ShortDescription>A known null value is checked to see if it is an instance of a type</ShortDescription>
-    <LongDescription>A known null value is checked to see if it is an instance of a type in {1}</LongDescription>
+    <LongDescription>A known null value is checked to see if it is an instance of {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4289,7 +4289,7 @@ an indication of some misunderstanding or some other logic error.
   </BugPattern>
   <BugPattern type="BC_IMPOSSIBLE_INSTANCEOF">
     <ShortDescription>instanceof will always return false</ShortDescription>
-    <LongDescription>instanceof will always return false in {1}, since a {3} can't be a {4}</LongDescription>
+    <LongDescription>instanceof will always return false in {1}, since a {2} can't be a {3}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4303,7 +4303,7 @@ an indication of some misunderstanding or some other logic error.
 
   <BugPattern type="BC_VACUOUS_INSTANCEOF">
     <ShortDescription>instanceof will always return true</ShortDescription>
-    <LongDescription>instanceof will always return true in {1}, since all {3} are instances of {4}</LongDescription>
+    <LongDescription>instanceof will always return true in {1}, since all {2} are instances of {3}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4318,7 +4318,7 @@ an indication of some misunderstanding or some other logic error.
 
   <BugPattern type="BC_UNCONFIRMED_CAST">
     <ShortDescription>Unchecked/unconfirmed cast</ShortDescription>
-    <LongDescription>Unchecked/unconfirmed cast from {3} to class {4} in {1}</LongDescription>
+    <LongDescription>Unchecked/unconfirmed cast from {2} to class {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4331,7 +4331,7 @@ cast will not fail.
   </BugPattern>
   <BugPattern type="BC_BAD_CAST_TO_CONCRETE_COLLECTION">
     <ShortDescription>Questionable cast to concrete collection</ShortDescription>
-    <LongDescription>Questionable cast from {3} to concrete class {4} in {1}</LongDescription>
+    <LongDescription>Questionable cast from {2} to concrete class {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
