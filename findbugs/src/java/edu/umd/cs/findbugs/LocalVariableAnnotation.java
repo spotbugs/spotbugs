@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
- * Bug annotation class for integer values.
+ * Bug annotation class for local variable names
  *
  * @author William Pugh
  * @see BugAnnotation
