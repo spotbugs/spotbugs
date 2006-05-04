@@ -26,23 +26,25 @@ import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.JavaVersion;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
-import edu.umd.cs.findbugs.OpcodeStack.Item;
 
 public class DumbMethods extends BytecodeScanningDetector  {
 	
@@ -67,15 +69,20 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	
 	private boolean jdk15ChecksEnabled;
 
+	private BugAccumulator accumulator;
 	public DumbMethods(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-		
+		accumulator = new BugAccumulator(bugReporter);
 		jdk15ChecksEnabled = JavaVersion.getRuntimeVersion().isSameOrNewerThan(JavaVersion.JAVA_1_5);
 	}
 	
 	
 	OpcodeStack stack = new OpcodeStack();
 	
+	@Override
+	public void visitAfter(JavaClass obj) {
+		accumulator.reportAccumulatedBugs();
+	}
 	@Override
          public void visit(Method method) {
 		String cName = getDottedClassName();
@@ -297,10 +304,10 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		        && getMethodName().indexOf("die") == -1
 		        && getMethodName().indexOf("Die") == -1
 		        && getMethodName().indexOf("main") == -1)
-			bugReporter.reportBug(new BugInstance(this, "DM_EXIT", 
+			accumulator.accumulateBug(new BugInstance(this, "DM_EXIT", 
 				getMethod().isStatic() ? LOW_PRIORITY : NORMAL_PRIORITY)
-			        .addClassAndMethod(this)
-			        .addSourceLine(this));
+			        .addClassAndMethod(this), 
+						SourceLineAnnotation.fromVisitedInstruction(this));
 		if (((seen == INVOKESTATIC
 		        && getClassConstantOperand().equals("java/lang/System"))
 		        || (seen == INVOKEVIRTUAL
