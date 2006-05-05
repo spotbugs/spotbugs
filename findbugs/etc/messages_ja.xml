@@ -1084,7 +1084,7 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
 
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription>メソッドで例外を落としている可能性があります。</ShortDescription>
-    <LongDescription>{1} は {3} を落としている可能性があります。</LongDescription>
+    <LongDescription>{1} は {2} を落としている可能性があります。</LongDescription>
     <Details>
 <![CDATA[
 <p> このメソッドは例外を握りつぶしている可能性があります。一般に、例外が発生したら何らかの形で報告するか、呼び出し元に渡すべきです。</p>
@@ -1094,7 +1094,7 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
 
   <BugPattern type="DE_MIGHT_IGNORE">
     <ShortDescription>メソッドで例外を無視している可能性があります。</ShortDescription>
-    <LongDescription>{1} は {3} を無視している可能性があります。</LongDescription>
+    <LongDescription>{1} は {2} を無視している可能性があります。</LongDescription>
     <Details>
 <![CDATA[
 <p> このメソッドは例外を無視している可能性があります。一般に、例外が発生したら何らかの形で報告するか、呼び出し元に渡すべきです。</p>
@@ -1611,7 +1611,7 @@ public int hashCode() {
 
   <BugPattern type="SP_SPIN_ON_FIELD">
     <ShortDescription>メソッドはフィールドのスピンロックを利用しています。</ShortDescription>
-    <LongDescription>{3} を使って {1} でスピンロックを使っています。</LongDescription>
+    <LongDescription>{2} を使って {1} でスピンロックを使っています。</LongDescription>
     <Details>
 <![CDATA[
 <p> このメソッドは、フィールドの値をループの終了条件としていますが、仕様上、コンパイラはフィールドの読み出しをループの外に出しても良い事になっています。このためループは無限ループとなる可能性があります。フィールド読みだしを正しく同期化(wait/notify)する事が必要です。</p>
@@ -3218,7 +3218,7 @@ double value2 =  x / (double) y;
 
   <BugPattern type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION">
     <ShortDescription>HttpSessionへの直列化できないオブジェクトの格納。</ShortDescription>
-    <LongDescription>{1}で、直列化できないオブジェクト {3} をHttpSessionに格納しています。</LongDescription>
+    <LongDescription>{1}で、直列化できないオブジェクト {2} をHttpSessionに格納しています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3230,7 +3230,7 @@ double value2 =  x / (double) y;
 
   <BugPattern type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN">
     <ShortDescription>直列化できないオブジェクトのObjectOutputへの書き込み。</ShortDescription>
-    <LongDescription>{1} で直列化できないオブジェクト {3} がObjectOutputに書き込まれています。</LongDescription>
+    <LongDescription>{1} で直列化できないオブジェクト {2} がObjectOutputに書き込まれています。</LongDescription>
     <Details>
 <![CDATA[
 <p>

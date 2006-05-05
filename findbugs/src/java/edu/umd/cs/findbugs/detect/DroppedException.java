@@ -281,10 +281,8 @@ public class DroppedException extends PreorderVisitor implements Detector {
 					BugInstance bugInstance = new BugInstance(this, exitInTryBlock ? "DE_MIGHT_DROP" : "DE_MIGHT_IGNORE",
 							priority)
 							.addClassAndMethod(this);
-
-					bugInstance.addSourceLine(srcLine);
-
 					bugInstance.addClass(c).describe("CLASS_EXCEPTION");
+					bugInstance.addSourceLine(srcLine);
 					bugReporter.reportBug(bugInstance);
 				}
 

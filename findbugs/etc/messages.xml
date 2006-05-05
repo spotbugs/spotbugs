@@ -1343,7 +1343,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription>Method might drop exception</ShortDescription>
-    <LongDescription>{1} might drop {3}</LongDescription>
+    <LongDescription>{1} might drop {2}</LongDescription>
     <Details>
 <![CDATA[
   <p> This method might drop an exception.&nbsp; In general, exceptions
@@ -1354,7 +1354,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
   </BugPattern>
   <BugPattern type="DE_MIGHT_IGNORE">
     <ShortDescription>Method might ignore exception</ShortDescription>
-    <LongDescription>{1} might ignore {3}</LongDescription>
+    <LongDescription>{1} might ignore {2}</LongDescription>
     <Details>
 <![CDATA[
   <p> This method might ignore an exception.&nbsp; In general, exceptions
@@ -2016,7 +2016,7 @@ using the <code>equals(Object)</code> method instead.</p>
   </BugPattern>
   <BugPattern type="SP_SPIN_ON_FIELD">
     <ShortDescription>Method spins on field</ShortDescription>
-    <LongDescription>Spinning on {3} in {1}</LongDescription>
+    <LongDescription>Spinning on {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This method spins in a loop which reads a field.&nbsp; The compiler
@@ -4208,7 +4208,7 @@ double value2 =  x / (double) y;
 
   <BugPattern type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION">
     <ShortDescription>Store of non serializable object into HttpSession</ShortDescription>
-    <LongDescription>Store of non serializable {3} into HttpSession in {1}</LongDescription>
+    <LongDescription>Store of non serializable {2} into HttpSession in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4220,7 +4220,7 @@ If this session is passivated or migrated, an error will result.
   </BugPattern>
   <BugPattern type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN">
     <ShortDescription>Non serializable object written to ObjectOutput</ShortDescription>
-    <LongDescription>Non serializable {3} written to ObjectOutput in {1}</LongDescription>
+    <LongDescription>Non serializable {2} written to ObjectOutput in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>

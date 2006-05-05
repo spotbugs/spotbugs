@@ -131,8 +131,9 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 											: isSerializable > 0.5 ? LOW_PRIORITY
 													: NORMAL_PRIORITY)
 									.addClassAndMethod(methodGen, sourceFile)
+									.addClass(Analyze.getComponentClass(refSig))
 									.addSourceLine(sourceLineAnnotation)
-									.addClass(Analyze.getComponentClass(refSig)));
+									);
 				}
 			} catch (ClassNotFoundException e) {
 				// ignore

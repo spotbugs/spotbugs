@@ -80,8 +80,9 @@ public class FindSpinLoop extends BytecodeScanningDetector implements StatelessD
 			if (stage == 2 && getBranchTarget() == start) {
 				bugReporter.reportBug(new BugInstance(this, "SP_SPIN_ON_FIELD", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
+				        .addReferencedField(lastFieldSeen)
 				        .addSourceLine(this, start)
-				        .addReferencedField(lastFieldSeen));
+				        );
 				stage = 0;
 			} else if (getBranchTarget() < getPC())
 				stage = 0;

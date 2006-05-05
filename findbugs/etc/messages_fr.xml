@@ -1026,7 +1026,7 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
  </BugPattern>
  <BugPattern type="DE_MIGHT_DROP">
   <ShortDescription>La méthode peut déclencher une exception</ShortDescription>
-  <LongDescription>{1} peut déclencher {3}</LongDescription>
+  <LongDescription>{1} peut déclencher {2}</LongDescription>
   <Details>
 <![CDATA[
 <p>Cette méthode peut déclencher une exception. En général, les exceptions doivent être gérées ou transmises hors de la méthode.</p>
@@ -1035,7 +1035,7 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
  </BugPattern>
  <BugPattern type="DE_MIGHT_IGNORE">
   <ShortDescription>La méthode peut ignorer une exception</ShortDescription>
-  <LongDescription>{1} peut ignorer {3}</LongDescription>
+  <LongDescription>{1} peut ignorer {2}</LongDescription>
   <Details>
 <![CDATA[
 <p>Cette méthode peut ignorer une exception. En général, les exceptions doivent être gérées ou transmises hors de la méthode.</p>
@@ -1486,7 +1486,7 @@ public int hashCode() {
  </BugPattern>
  <BugPattern type="SP_SPIN_ON_FIELD">
   <ShortDescription>Méthode bouclant sur un champ</ShortDescription>
-  <LongDescription>Boucle sur {3} dans {1}</LongDescription>
+  <LongDescription>Boucle sur {2} dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Cette méthode tourne en rond sur une boucle qui lit un champ. Le compilateur est autorisé à sortir la lecture de la boucle, créant ainsi une boucle infinie. La classe devrait être modifiée afin d'être correctement synchronisée (avec des appels à <code>wait()</code> et <code>notify()</code>).</p>
@@ -2939,7 +2939,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION">
   <ShortDescription>Stockage d'un objet non serialisable dans une session Http</ShortDescription>
-  <LongDescription>Stockage de l'objet non sérialisable {3} dans la session Http de {1}</LongDescription>
+  <LongDescription>Stockage de l'objet non sérialisable {2} dans la session Http de {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce code semble stocker un objet non sérialisable dans un <code>HttpSession</code>. Une erreur se produira si cette session est rendue passive ou migrée.</p>
@@ -2948,7 +2948,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN">
   <ShortDescription>Objet non sérialisable écrit dans un ObjectOutput</ShortDescription>
-  <LongDescription>L'objet non sérialisable {3} est écrit dans ObjectOutput dans {1}</LongDescription>
+  <LongDescription>L'objet non sérialisable {2} est écrit dans ObjectOutput dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce code semble transmettre un objet non sérialisable à la méthode <code>ObjectOutput.writeObject</code>. Une erreur se produira si cet objet est effectivement non sérialisable.</p>

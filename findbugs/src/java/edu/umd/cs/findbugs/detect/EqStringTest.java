@@ -61,6 +61,7 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 			if (constantOnTOS && !callToInternSeen)
 				bugReporter.reportBug(new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
+				        .addClass("java.lang.String").describe("CLASS_REFTYPE")
 				        .addSourceLine(this, getPC()));
 			break;
 		default:

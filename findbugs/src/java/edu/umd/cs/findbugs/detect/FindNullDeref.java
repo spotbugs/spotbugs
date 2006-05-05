@@ -566,8 +566,8 @@ public class FindNullDeref
 						definitelyNull ? HIGH_PRIORITY : NORMAL_PRIORITY)
 						.addClassAndMethod(methodGen, sourceFile)
 						.addMethod(m).describe("METHOD_CALLED")
+						.addInt(i).describe("INT_NONNULL_PARAM")
 						.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
-				warning.addInt(i).describe("INT_NONNULL_PARAM");
 				
 				bugReporter.reportBug(warning);
 			}

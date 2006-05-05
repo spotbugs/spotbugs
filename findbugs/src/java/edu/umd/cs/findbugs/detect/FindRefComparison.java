@@ -635,8 +635,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		BugInstance instance =
 			new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
-			.addClass("java.lang.String").describe("CLASS_REFTYPE");
+			.addClass("java.lang.String").describe("CLASS_REFTYPE")
+			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle());
 		
 		WarningWithProperties warn = new WarningWithProperties(instance, propertySet, location);
 		stringComparisonList.add(warn);
