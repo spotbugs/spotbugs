@@ -150,7 +150,7 @@ public class FindDeadLocalStores implements Detector {
 			throws DataflowAnalysisException, CFGBuilderException {
 		
 		if (DEBUG) {
-			System.out.println("    Analyzing method " + method.toString());
+			System.out.println("    Analyzing method " + classContext.getJavaClass().getClassName() + "." + method.getName());
 		}
 		
 		JavaClass javaClass = classContext.getJavaClass();
