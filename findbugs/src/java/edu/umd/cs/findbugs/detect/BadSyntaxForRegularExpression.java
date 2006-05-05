@@ -60,13 +60,16 @@ extends BytecodeScanningDetector {
 
 
     private void sawRegExPattern(int stackDepth) {
+        sawRegExPattern(stackDepth, 0);
+    }
+    private void sawRegExPattern(int stackDepth, int flags) {
         if (stack.getStackDepth() < stackDepth) return;
         OpcodeStack.Item it = stack.getStackItem(stackDepth);
         Object value = it.getConstant();
         if (value == null || !(value instanceof String)) return;
         String regex = (String) value;
         try {
-            Pattern.compile(regex);
+            Pattern.compile(regex, flags);
         } catch (PatternSyntaxException e) {
 		  bugReporter.reportBug(new BugInstance(this, "RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION", 
 				NORMAL_PRIORITY)
@@ -76,14 +79,13 @@ extends BytecodeScanningDetector {
         }
     }
 
-    /** return true on int constant that has Pattern.LITERAL bit set */
-    private boolean isFlaggedLiteral(int stackDepth) {
-        if (stack.getStackDepth() < stackDepth) return false;
+    /** return an int on the stack, or 'defaultValue' if can't determine */
+    private int getIntValue(int stackDepth, int defaultValue) {
+        if (stack.getStackDepth() < stackDepth) return defaultValue;
         OpcodeStack.Item it = stack.getStackItem(stackDepth);
         Object value = it.getConstant();
-        if (value == null || !(value instanceof Integer)) return false;
-        int flags = ((Number)value).intValue();
-        return 0 != (flags & Pattern.LITERAL);
+        if (value == null || !(value instanceof Integer)) return defaultValue;
+        return ((Number)value).intValue();
     }
 
     @Override
@@ -93,9 +95,8 @@ extends BytecodeScanningDetector {
             && getClassConstantOperand().equals("java/util/regex/Pattern")
             && getNameConstantOperand().equals("compile")
             && getSigConstantOperand().startsWith("(Ljava/lang/String;I)")
-            && !isFlaggedLiteral(0)
             ) 
-            sawRegExPattern(1);
+            sawRegExPattern(1, getIntValue(0, 0));
         else if (seen == INVOKESTATIC 
             && getClassConstantOperand().equals("java/util/regex/Pattern")
             && getNameConstantOperand().equals("compile")
