@@ -2,6 +2,22 @@ import java.util.Random;
 
 class BadIntegerOperations {
 
+	
+	boolean lessThanOrEqualToMaxInt(int i) {
+		return i <= Integer.MAX_VALUE;
+	}
+	
+	boolean lessThanMaxInt(int i) {
+		return i < Integer.MAX_VALUE;
+	}
+	
+	boolean greaterThanMinInt(int i) {
+		return i > Integer.MIN_VALUE;
+	}
+	
+	boolean greaterThanOrEqualToMinInt(int i) {
+		return i >= Integer.MIN_VALUE;
+	}
 	int getBytesAsInt(byte b[]) {
 		int l = 0;
 		for (int i = 0; i < b.length; i++)
