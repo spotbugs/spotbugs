@@ -58,6 +58,20 @@ extends BytecodeScanningDetector {
         super.visit(obj);
     }
 
+    private void singleDotPatternWouldBeSilly(int stackDepth) {
+        if (stack.getStackDepth() < stackDepth) return;
+        OpcodeStack.Item it = stack.getStackItem(stackDepth);
+        Object value = it.getConstant();
+        if (value == null || !(value instanceof String)) return;
+        String regex = (String) value;
+        if (!regex.equals(".")) return;
+        
+       bugReporter.reportBug(new BugInstance(this, "RE_POSSIBLE_UNINTENDED_PATTERN", 
+				NORMAL_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addSourceLine(this)
+				);
+    }
 
     private void sawRegExPattern(int stackDepth) {
         sawRegExPattern(stackDepth, 0);
@@ -72,7 +86,7 @@ extends BytecodeScanningDetector {
             Pattern.compile(regex, flags);
         } catch (PatternSyntaxException e) {
 		  bugReporter.reportBug(new BugInstance(this, "RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION", 
-				NORMAL_PRIORITY)
+				HIGH_PRIORITY)
                                 .addClassAndMethod(this)
                                 .addSourceLine(this)
 				);
@@ -111,23 +125,34 @@ extends BytecodeScanningDetector {
         else if (seen == INVOKEVIRTUAL 
             && getClassConstantOperand().equals("java/lang/String")
             && getNameConstantOperand().equals("replaceAll")
-            ) 
+            ) {
             sawRegExPattern(1);
+            singleDotPatternWouldBeSilly(1);
+        	}
         else if (seen == INVOKEVIRTUAL 
             && getClassConstantOperand().equals("java/lang/String")
             && getNameConstantOperand().equals("replaceFirst")
             ) 
+        {
             sawRegExPattern(1);
+            singleDotPatternWouldBeSilly(1);
+        	}
         else if (seen == INVOKEVIRTUAL 
             && getClassConstantOperand().equals("java/lang/String")
             && getNameConstantOperand().equals("matches")
             ) 
+        {
             sawRegExPattern(0);
+            singleDotPatternWouldBeSilly(0);
+        	}
         else if (seen == INVOKEVIRTUAL 
             && getClassConstantOperand().equals("java/lang/String")
             && getNameConstantOperand().equals("split")
             ) 
+        {
             sawRegExPattern(0);
+            singleDotPatternWouldBeSilly(0);
+        	}
 
         stack.sawOpcode(this,seen);
     }

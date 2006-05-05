@@ -3482,6 +3482,17 @@ consider using the Random.nextInt(int) method instead.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="INT_VACUOUS_COMPARISON">
+    <ShortDescription>Vacuous comparison of integer value</ShortDescription>
+    <LongDescription>Vacuous comparison of integer value {1} </LongDescription>
+    <Details>
+<![CDATA[
+<p> There is an integer comparison that always returns
+the same value (e.g., x <= Integer.MAX_VALUE).
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="INT_BAD_REM_BY_1">
     <ShortDescription>Integer remainder modulo 1</ShortDescription>
     <LongDescription>Integer remainder modulo 1 computed in {1} </LongDescription>
@@ -4346,6 +4357,21 @@ collection class.
     </Details>
   </BugPattern>
 
+  <BugPattern type="RE_POSSIBLE_UNINTENDED_PATTERN">
+    <ShortDescription>"." used for regular expression</ShortDescription>
+    <LongDescription>"." used for regular expression in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+A String function is being invoked and "." is being passed
+to a parameter that takes a regular expression as an argument. Is this what you intended?
+For example
+s.replaceAll(".", "/") will return a String in which <em>every</em>
+character has been replaced by a / character.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION">
     <ShortDescription>Invalid syntax for regular expression</ShortDescription>
     <LongDescription>Invalid syntax for regular expression in {1}</LongDescription>
@@ -4359,6 +4385,9 @@ executed.
 ]]>
     </Details>
   </BugPattern>
+
+
+
   <BugPattern type="DLS_OVERWRITTEN_INCREMENT">
     <ShortDescription>Overwritten increment</ShortDescription>
     <LongDescription>Overwritten increment in {1}</LongDescription>

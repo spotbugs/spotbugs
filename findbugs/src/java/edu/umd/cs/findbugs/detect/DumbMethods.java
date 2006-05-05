@@ -108,6 +108,24 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	@Override
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
+		
+		if (seen ==  IF_ICMPGT || seen ==  IF_ICMPLE) {
+			OpcodeStack.Item rhs = stack.getStackItem(0);
+			Object rhsConstant = rhs.getConstant();
+			if (rhsConstant instanceof Integer && ((Integer)rhsConstant).intValue() == Integer.MAX_VALUE)
+				bugReporter.reportBug(new BugInstance(this, "INT_VACUOUS_COMPARISON", HIGH_PRIORITY)
+						.addClassAndMethod(this)
+						.addSourceLine(this));
+		}
+		if (seen ==  IF_ICMPLT || seen ==  IF_ICMPGE) {
+			OpcodeStack.Item rhs = stack.getStackItem(0);
+			Object rhsConstant = rhs.getConstant();
+			if (rhsConstant instanceof Integer && ((Integer)rhsConstant).intValue() == Integer.MIN_VALUE)
+				bugReporter.reportBug(new BugInstance(this, "INT_VACUOUS_COMPARISON", HIGH_PRIORITY)
+						.addClassAndMethod(this)
+						.addSourceLine(this));
+		}
+		
 		if (pendingRemOfRandomIntBug != null && !(seen == INVOKESTATIC
 				&& getClassConstantOperand().equals("java/lang/Math")
 				&& getNameConstantOperand().equals("abs"))) 
