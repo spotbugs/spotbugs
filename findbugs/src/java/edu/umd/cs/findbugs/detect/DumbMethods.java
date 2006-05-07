@@ -109,23 +109,35 @@ public class DumbMethods extends BytecodeScanningDetector  {
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		
+		{
+			boolean foundVacuousComparison = false;
 		if (seen ==  IF_ICMPGT || seen ==  IF_ICMPLE) {
 			OpcodeStack.Item rhs = stack.getStackItem(0);
 			Object rhsConstant = rhs.getConstant();
 			if (rhsConstant instanceof Integer && ((Integer)rhsConstant).intValue() == Integer.MAX_VALUE)
-				bugReporter.reportBug(new BugInstance(this, "INT_VACUOUS_COMPARISON", HIGH_PRIORITY)
-						.addClassAndMethod(this)
-						.addSourceLine(this));
+				foundVacuousComparison = true;
+			OpcodeStack.Item lhs = stack.getStackItem(1);
+			Object lhsConstant = lhs.getConstant();
+			if (lhsConstant instanceof Integer && ((Integer)lhsConstant).intValue() == Integer.MIN_VALUE)
+				foundVacuousComparison = true;
+		
 		}
 		if (seen ==  IF_ICMPLT || seen ==  IF_ICMPGE) {
 			OpcodeStack.Item rhs = stack.getStackItem(0);
 			Object rhsConstant = rhs.getConstant();
 			if (rhsConstant instanceof Integer && ((Integer)rhsConstant).intValue() == Integer.MIN_VALUE)
-				bugReporter.reportBug(new BugInstance(this, "INT_VACUOUS_COMPARISON", HIGH_PRIORITY)
-						.addClassAndMethod(this)
-						.addSourceLine(this));
+				foundVacuousComparison = true;
+			OpcodeStack.Item lhs = stack.getStackItem(1);
+			Object lhsConstant = lhs.getConstant();
+			if (lhsConstant instanceof Integer && ((Integer)lhsConstant).intValue() == Integer.MAX_VALUE)
+				foundVacuousComparison = true;
+			
+			}
+		if (foundVacuousComparison) 
+			bugReporter.reportBug(new BugInstance(this, "INT_VACUOUS_COMPARISON", HIGH_PRIORITY)
+				.addClassAndMethod(this)
+				.addSourceLine(this));
 		}
-		
 		if (pendingRemOfRandomIntBug != null && !(seen == INVOKESTATIC
 				&& getClassConstantOperand().equals("java/lang/Math")
 				&& getNameConstantOperand().equals("abs"))) 
