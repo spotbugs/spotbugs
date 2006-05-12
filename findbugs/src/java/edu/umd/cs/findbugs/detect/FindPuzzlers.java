@@ -37,12 +37,15 @@ public class FindPuzzlers extends BytecodeScanningDetector {
          public void visit(Code obj) {
 		prevOpcodeIncrementedRegister = -1;
 		stack.resetForMethodEntry(this);
+		badlyComputingOddState = 0;
 		super.visit(obj);
 	}
 
 	int prevOpcodeIncrementedRegister;
 	int valueOfConstantArgumentToShift;
 	boolean constantArgumentToShift;
+	
+	int badlyComputingOddState;
 	OpcodeStack stack = new OpcodeStack();
 	@Override
          public void sawOpcode(int seen) {
@@ -179,6 +182,53 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 			}
 		else
 			prevOpcodeIncrementedRegister = -1;
+		
+		
+		// Java Puzzlers, Chapter 2, puzzle 1
+		  // Look for ICONST_2 IREM ICONST_1  IF_ICMPNE L1
+		
+		switch (badlyComputingOddState) {
+		case 0:
+			if (seen == ICONST_2) badlyComputingOddState++;
+			break;
+		case 1:
+			if (seen == IREM) badlyComputingOddState++;
+			else badlyComputingOddState = 0;
+			break;
+		case 2:
+			if (seen == ICONST_1) badlyComputingOddState++;
+			else badlyComputingOddState = 0;
+			break;
+		case 3:
+			if (seen == IF_ICMPEQ || seen == IF_ICMPNE) 
+				 bugReporter.reportBug(new BugInstance(this, "IM_BAD_CHECK_FOR_ODD", NORMAL_PRIORITY)
+                         .addClassAndMethod(this)
+                         .addSourceLine(this));
+				badlyComputingOddState = 0;
+			break;
+		}
+		
+		// Java Puzzlers, chapter 3, puzzle 12
+		  if (seen == INVOKEVIRTUAL && stack.getStackDepth() > 0 
+                  && (getNameConstantOperand().equals("toString")
+                      && getSigConstantOperand().equals("()Ljava/lang/String;")
+                      || getNameConstantOperand().equals("append")
+                      && getSigConstantOperand().equals("(Ljava/lang/Object;)Ljava/lang/StringBuilder;") && getClassConstantOperand().equals("java/lang/StringBuilder")
+                      || getNameConstantOperand().equals("append")
+                      && getSigConstantOperand().equals("(Ljava/lang/Object;)Ljava/lang/StringBuffer;") && getClassConstantOperand().equals("java/lang/StringBuffer")
+                      )
+                  ) {
+			  String classConstants = getClassConstantOperand();
+			  OpcodeStack.Item item = stack.getStackItem(0);
+			  String signature = item.getSignature();
+			  if (signature != null && signature.startsWith("[")) 
+					 bugReporter.reportBug(new BugInstance(this, "DMI_INVOKING_TOSTRING_ON_ARRAY", NORMAL_PRIORITY)
+	                         .addClassAndMethod(this)
+	                         .addSourceLine(this));
+		  }
+
+	
+	
 		stack.sawOpcode(this,seen);
 	}
 

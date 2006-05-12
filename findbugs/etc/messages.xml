@@ -4443,6 +4443,39 @@ i % 60 * 1000 is (i % 60) * 1000, not i % (60 * 1000).
 ]]>
     </Details>
   </BugPattern>
+
+
+  <BugPattern type="DMI_INVOKING_TOSTRING_ON_ARRAY">
+    <ShortDescription>Invocation of toString on an array</ShortDescription>
+    <LongDescription>Invocation of toString on an array in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The code invokes toString on an array, which will generate a fairly useless result
+such as [C@16f0472. Consider using String.valueOf to convert the array into a readable
+String that gives the contents of the array. See Programming Puzzlers, Chapter 3, problem 12.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+  <BugPattern type="IM_BAD_CHECK_FOR_ODD">
+    <ShortDescription>Check for oddness that won't work for negative numbers </ShortDescription>
+    <LongDescription>Check for oddness that won't work for negative numbers in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The code uses x % 2 == 1 to check to see if a value is odd, but this won't work
+for negative numbers (e.g., (-5) % 2 == -1). If this code is intending to check
+for oddness, consider using x & 1 == 1, or x % 2 != 0.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
   <BugPattern type="DMI_HARDCODED_ABSOLUTE_FILENAME">
     <ShortDescription>Code contains a hard coded reference to an absolute pathname</ShortDescription>
     <LongDescription>Hard coded reference to an absolute pathname in {1}</LongDescription>
