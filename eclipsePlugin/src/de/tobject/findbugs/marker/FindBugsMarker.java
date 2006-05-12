@@ -30,8 +30,9 @@ package de.tobject.findbugs.marker;
 public class FindBugsMarker {
 	/**
 	 * Marker type for FindBugs warnings.
+	 * (should be the plugin id concatenated with ".findbugsMarker")
 	 */
-	public static final String NAME = "de.tobject.findbugs.findbugsMarker";
+	public static final String NAME = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker";
 	
 	/**
 	 * Marker attribute recording the bug type.

@@ -20,7 +20,7 @@ public class AnnotationClasspathInitializer extends
 
 	@Override
 	public void initialize(String variable) {
-		Bundle bundle = Platform.getBundle("de.tobject.findbugs"); //$NON-NLS-1$
+		Bundle bundle = Platform.getBundle(FindbugsPlugin.PLUGIN_ID); //$NON-NLS-1$
 		boolean setVariable = false;
 		if (bundle != null)
 			try {
@@ -28,17 +28,18 @@ public class AnnotationClasspathInitializer extends
 				URL local = Platform.asLocalURL(installLocation);
 
 				String fullPath = new File(local.getPath()).getAbsolutePath();
-				JavaCore.setClasspathVariable(FINDBUGS_ANNOTATIONS, 
-						new Path(fullPath), null);
+				JavaCore.setClasspathVariable(FINDBUGS_ANNOTATIONS, new Path(fullPath), null);
 				setVariable = true;
 			} catch (JavaModelException e1) {
+				FindbugsPlugin.getDefault().logException(e1, "unable to set annotations classpath");
 				// will clear variable below
 
 			} catch (IOException e) {
+				FindbugsPlugin.getDefault().logException(e, "unable to set annotations classpath");
 				// will clear variable below
 			}
 
-		if (!setVariable)
+		if (false && !setVariable) // don't do this -- causes infinite recursive loop
 			JavaCore.removeClasspathVariable(FINDBUGS_ANNOTATIONS, null);
 
 	}

@@ -75,15 +75,16 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	
 	/**
 	 * The plug-in identifier of the FindBugs Plug-in
-	 * (value <code>"de.tobject.findbugs"</code>).
+	 * (value "edu.umd.cs.findbugs.plugin.eclipse", was <code>"de.tobject.findbugs"</code>).
 	 */
-	public static final String PLUGIN_ID = "de.tobject.findbugs"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse"; //$NON-NLS-1$
+	public static final String CODEBASE_ID = "de.tobject.findbugs"; //$NON-NLS-1$
 	
 	/**
 	 * The identifier for the FindBugs builder
 	 * (value <code>"de.tobject.findbugs.findbugsbuilder"</code>).
 	 */
-	public static final String BUILDER_ID = PLUGIN_ID + ".findbugsBuilder"; //$NON-NLS-1$
+	public static final String BUILDER_ID = CODEBASE_ID + ".findbugsBuilder"; //$NON-NLS-1$
 	
 	/**
 	 * The identifier for the FindBugs nature
@@ -91,7 +92,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 *
 	 * @see org.eclipse.core.resources.IProject#hasNature(java.lang.String)
 	 */
-	public static final String NATURE_ID = PLUGIN_ID + ".findbugsNature"; //$NON-NLS-1$
+	public static final String NATURE_ID = CODEBASE_ID + ".findbugsNature"; //$NON-NLS-1$
 	
 	// Debugging options
 	private static final String PLUGIN_DEBUG = PLUGIN_ID + "/debug/plugin"; //$NON-NLS-1$
@@ -146,8 +147,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		
 		// initialize resource strings
 		try {
-			//resourceBundle = ResourceBundle.getBundle("de.tobject.findbugs.FindbugsPluginResources"); //$NON-NLS-1$
-			resourceBundle = ResourceBundle.getBundle("de.tobject.findbugs.messages"); //$NON-NLS-1$
+			resourceBundle = ResourceBundle.getBundle("de.tobject.findbugs.messages"); //this is correct //$NON-NLS-1$
 		}
 		catch (MissingResourceException x) {
 			resourceBundle = null;
