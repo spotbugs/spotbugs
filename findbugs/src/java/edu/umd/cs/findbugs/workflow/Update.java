@@ -314,6 +314,7 @@ public class Update {
 			if (verbose)
 				System.out.println("Merging " + newFilename);
 			project = new Project();
+			try {
 			newCollection.readXML(newFilename, project);
 
 
@@ -321,7 +322,11 @@ public class Update {
 					newCollection.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
 
 			origCollection = mergeCollections(origCollection, newCollection);
-
+			} catch (IOException e) {
+				if (verbose) 
+					System.out.println(e);
+				else throw e;
+			}
 		}
 
 		if (commandLine.outputFilename != null) 
