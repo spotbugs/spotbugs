@@ -7,6 +7,10 @@ class BadIntegerOperations {
 		return i <= Integer.MAX_VALUE;
 	}
 	
+	boolean maxIntGreaterThanOrEqualTo(int i) {
+		return Integer.MAX_VALUE >= i;
+	}
+
 	boolean lessThanMaxInt(int i) {
 		return i < Integer.MAX_VALUE;
 	}
@@ -18,6 +22,10 @@ class BadIntegerOperations {
 	boolean greaterThanOrEqualToMinInt(int i) {
 		return i >= Integer.MIN_VALUE;
 	}
+	boolean minIntLessThanOrEqualTo(int i) {
+		return Integer.MIN_VALUE <= i;
+	}
+	
 	int getBytesAsInt(byte b[]) {
 		int l = 0;
 		for (int i = 0; i < b.length; i++)

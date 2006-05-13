@@ -12,4 +12,24 @@ public class InstanceOf {
 		System.out.println(o.hashCode());
 	}
 
+	public static void doNotReport(Object o) {
+		if (o instanceof String || o instanceof StringBuffer) {
+			System.out.println(o.hashCode());
+		}
+		
+	}
+	public static void test2(Object o) {
+		if (o instanceof String || o instanceof StringBuffer) {
+			if (o == null) System.out.println("Huh?");
+		}
+	}
+	
+	public static void test3() {
+		Object o = null;
+		if (o instanceof String) {
+			System.out.println(o.hashCode());
+		} else {
+			System.out.println(o.hashCode());
+		}
+	}
 }
