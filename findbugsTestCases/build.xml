@@ -33,6 +33,22 @@
 		</javac>
 	</target>
 
+   <target name="jarFile" depends ="classes">
+		<delete quiet="true">
+			<fileset dir="build/all.jar"/>
+		</delete>
+		<jar destfile="build/all.jar">
+			<fileset dir="build/classes"/>
+
+		</jar>
+	</target>
+		
+
+        <target name="clean">
+                <delete dir="build/classes"/>
+                <delete file="build/all.jar"/>
+        </target>
+
 	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.home}/lib/findbugs-ant.jar"/>
 
 
