@@ -22,19 +22,20 @@
 
 <p> This is the web page for FindBugs, a program which looks for bugs
 in Java code.&nbsp; It is free software, distributed under the terms
-of the <a href="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public License</a>.</p>
-<p>The name FindBugs&trade; and the <a href="buggy-sm.png">Findbugs logo</a>
-are trademarked by <a href="http://www.umd.edu">The University of Maryland</a>.
+of the <a href="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public License</a>.
+The name FindBugs&trade; and the <a href="buggy-sm.png">Findbugs logo</a>
+are trademarked by <a href="http://www.umd.edu">The University of Maryland</a>.</p>
+
+
+<p><a href="http://fortifysoftware.com/"><img src="Fortify.png" alt="Fortify logo" border="0"  align="right"/></a>FindBugs is sponsored by <a href="http://fortifysoftware.com/">Fortify Software</a>, which 
+sells security tools, including Fortify Source Code Analysis, 
+which scans for security vunerabilities (<a href="pressRelease.pdf">press release</a>).
 
 <p> FindBugs requires JRE (or JDK) 1.4.0 or later to run.&nbsp; However, it
-can analyze programs compiled for any version of Java.</p>
-
-<p> The current version of FindBugs is @VERSION@,
+can analyze programs compiled for any version of Java. The current version of FindBugs is @VERSION@,
 released on @RELEASE_DATE@.</p>
 
-<p> FindBugs is beta quality software.&nbsp; You may find bugs in it,
-and the features and source code may change significantly in future releases.&nbsp;
-We are very interested in getting feedback on how to improve FindBugs.&nbsp;
+<p>  We are very interested in getting feedback on how to improve FindBugs.&nbsp;
 Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@users.sourceforge.net</a>.</p>
 
 <h1>Sample output</h1>
@@ -61,7 +62,7 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
 <li>Updated detectors
     <ul><li>BadRegEx.java: understands Pattern.LITERAL, warns about "."</li>
         <li>FindUnreleasedLock.java: fewer false positives</li>
-        <li>DumbMethods.java: check for using reflection on annotations with source only retention, check for vacuous comparisons to MAX_INTEGER or MIN_INTEGER</li>
+        <li>DumbMethods.java: check for vacuous comparisons to MAX_INTEGER or MIN_INTEGER</li>
         <li>FindPuzzlers.java: detect <tt>n%2==1</tt>, detect toString() on array types
         <li>FindDeadLocalStores.java, FindBadCast2.java, DumbMethods.java, RuntimeExceptionCapture.java:
             coalesce similar bugs within a method into a single bug instance with multiple source lines</li>
@@ -93,11 +94,15 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
 
 <p> <a href="Changes.html">Older versions...</a></p>
 
-<h1>Sponsors</h1>
+<h1>Support</h1>
 
-<p> This work has been supported by the National Science Foundation grants
-ASC9720199 and CCR-0098162, and by an IBM Eclipse Innovation award.</p>
-
+<p> This work has been supported by 
+<a href="http://fortifysoftware.com">Fortify Software</a>, <a href="http://www.google.com">Google</a>,
+<a href="http://www.sun.com">Sun Microsystems</a>, 
+ <a href="http://www.nsf.gov">National Science Foundation</a> grants
+ASC9720199 and CCR-0098162, and by an <a href="http://www-306.ibm.com/software/info/university/products/eclipse/eig-2004.html">IBM Eclipse Innovation award</a>.</p>
+<p>Any opinions, findings and conclusions or recomendations expressed 
+in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation (NSF).
 @HTML_FOOTER@
 
 </td></tr></table>
