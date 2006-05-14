@@ -48,7 +48,7 @@ public class DefectDensity {
 		if (argCount == args.length)
 			origCollection.readXML(System.in, project);
 		else
-			origCollection.readXML(args[argCount++], project);
+			origCollection.readXML(args[argCount], project);
 		ProjectStats stats = origCollection.getProjectStats();
 		printRow("kind", "name", "density/KNCSS", "bugs", "NCSS");
 		printRow("project", origCollection.getCurrentAppVersion().getReleaseName(), 1000 * stats.getTotalBugs() / stats.getCodeSize(), stats.getTotalBugs(),

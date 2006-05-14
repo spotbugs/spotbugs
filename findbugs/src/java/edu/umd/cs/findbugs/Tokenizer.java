@@ -124,8 +124,7 @@ public class Tokenizer {
 		StringBuffer result = new StringBuffer();
 		result.append((char) delimiter);
 		int state = SCAN;
-		// TODO: Why is this labeled? Did someone intend to break out of the loop?
-		loop:
+
 			while (state != DONE) {
 				int c = reader.read();
 				if (c < 0)

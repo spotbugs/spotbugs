@@ -829,12 +829,14 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		DataflowTestDriver<TypeFrame, TypeAnalysis> driver =
 		        new DataflowTestDriver<TypeFrame, TypeAnalysis>() {
 			        @Override
-                                 public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
+                        public Dataflow<TypeFrame, TypeAnalysis> createDataflow(ClassContext classContext, Method method)
 			                throws CFGBuilderException, DataflowAnalysisException {
 
 				        RepositoryLookupFailureCallback lookupFailureCallback =
 				                classContext.getLookupFailureCallback();
 				        MethodGen methodGen = classContext.getMethodGen(method);
+				        if (methodGen == null)
+				        	throw new DataflowAnalysisException("Could not get methodGen for " + method.toString());
 				        DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 				        CFG cfg = classContext.getCFG(method);
 				        ExceptionSetFactory exceptionSetFactory = classContext.getExceptionSetFactory(method);
