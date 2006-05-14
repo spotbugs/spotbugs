@@ -160,16 +160,14 @@ to specify how to find the missing classes, and then run FindBugs again.
 <p> The symptom of this problem is that Eclipse fails to load
 the FindBugs UI plugin with the message:
 <blockquote>
-Plug-in "de.tobject.findbugs" was disabled due to missing or disabled
+Plug-in "edu.umd.cs.findbugs.plugin.eclipse" was disabled due to missing or disabled
 prerequisite plug-in "org.eclipse.ui.ide"
 </blockquote>
 
 <p> The reason for this problem is that the Eclipse
-plugin distributed with FindBugs version 0.7.3 
-did not work with 2.x versions of Eclipse.&nbsp; The plugin should
-work on recent 3.0 milestones (for example, 3.0 M8).&nbsp;
-In FindBugs 0.7.4, the Eclipse plugin was fixed so
-that it runs on 2.x versions of Eclipse.
+plugin distributed with FindBugs
+does not work with 2.x versions of Eclipse.
+Please use Eclipse version 3.0 (June 2004) or newer.
 
 <h2><a name="q6">Q6: I'm getting a lot of false "OS" and "ODR" warnings</a></h2>
 

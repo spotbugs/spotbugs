@@ -1331,10 +1331,10 @@ and JRE/JDK 1.4.0 or later.
 
 <para>
 Download the plugin from the following link:
-<ulink url="@DOWNLOADS_WEBSITE@/de.tobject.findbugs_@ECLIPSE_UI_VERSION@.zip?download"
->@DOWNLOADS_WEBSITE@/de.tobject.findbugs_@ECLIPSE_UI_VERSION@.zip?download</ulink>.
+<ulink url="@DOWNLOADS_WEBSITE@/edu.umd.cs.findbugs.plugin.eclipse_@ECLIPSE_UI_VERSION@.zip?download"
+>@DOWNLOADS_WEBSITE@/edu.umd.cs.findbugs.plugin.eclipse_@ECLIPSE_UI_VERSION@.zip?download</ulink>.
 Extract it in Eclipse's "plugins" subdirectory.
-(So &lt;eclipse_install_dir&gt;/plugins/de.tobject.findbugs_@ECLIPSE_UI_VERSION@/findbugs.png
+(So &lt;eclipse_install_dir&gt;/plugins/edu.umd.cs.findbugs.plugin.eclipse_@ECLIPSE_UI_VERSION@/findbugs.png
 should be the path to the &FindBugs; logo.)
 
 </para>
