@@ -457,6 +457,15 @@ These options are only accepted by the Text User Interface.
   </varlistentry>
 
   <varlistentry>
+  <term><command>-xdocs</command></term>
+  <listitem>
+    <para>
+    Produce the bug reports in xdoc XML format for use with Apache Maven.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
   <term><command>-auxclasspath</command> <replaceable>classpath</replaceable></term>
   <listitem>
     <para>
@@ -1095,8 +1104,10 @@ using the &FindBugs; task.
 	   If set to "xml:withMessages", output is in XML format augmented with
 	   human-readable messages.  (You should use this format if you plan
 		to generate a report using an XSL stylesheet.)
+	   If set to "html", output is in HTML formatted (default stylesheet is default.xsl).
 		If set to "text", output is in ad-hoc text format.
        If set to "emacs", output is in <ulink url="http://www.gnu.org/software/emacs/">Emacs</ulink> error message format.
+	   If set to "xdocs", output is xdoc XML for use with Apache Maven.
        </para>
     </listitem>
   </varlistentry>
