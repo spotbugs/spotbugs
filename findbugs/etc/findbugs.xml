@@ -806,7 +806,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="ICAST" type="ICAST_BAD_SHIFT_AMOUNT" category="CORRECTNESS"/>
   <BugPattern abbrev="IM" type="IM_MULTIPLYING_RESULT_OF_IREM" category="CORRECTNESS"/>
   <BugPattern abbrev="IM" type="IM_BAD_CHECK_FOR_ODD" category="STYLE"/>
-  <BugPattern abbrev="IM" type="DMI_INVOKING_TOSTRING_ON_ARRAY" category="STYLE"/>
+  <BugPattern abbrev="DMI" type="DMI_INVOKING_TOSTRING_ON_ARRAY" category="STYLE"/>
   <BugPattern abbrev="ICAST" type="ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT" category="STYLE"/>
   <BugPattern abbrev="DMI" type="DMI_HARDCODED_ABSOLUTE_FILENAME" category="CORRECTNESS"/>
   <BugPattern abbrev="DMI" type="DMI_BAD_MONTH" category="CORRECTNESS"/>
