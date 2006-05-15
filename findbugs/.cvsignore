@@ -9,3 +9,4 @@ foo
 web
 *.fpr
 *.fvdl
+.fbwarnings

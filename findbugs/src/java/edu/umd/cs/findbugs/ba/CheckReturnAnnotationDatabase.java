@@ -93,7 +93,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		else if (m.getName().equals("<init>")) {
 			try {
 				if (throwableClass != null && Repository.instanceOf(m.getClassName(), throwableClass))
-					return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH;
+					return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_VERY_HIGH;
 			} catch (ClassNotFoundException e) {
 				AnalysisContext.reportMissingClass(e);
 			}

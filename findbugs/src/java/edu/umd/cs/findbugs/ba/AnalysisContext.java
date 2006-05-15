@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.jcip.annotations.NotThreadSafe;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -48,6 +50,7 @@ import edu.umd.cs.findbugs.util.MapCache;
  *
  * @author David Hovemeyer
  */
+@NotThreadSafe
 public class AnalysisContext {
 	private static final boolean DEBUG = Boolean.getBoolean("findbugs.analysiscontext.debug");
 	private static final boolean DEBUG_HIERARCHY = Boolean.getBoolean("findbugs.debug.hierarchy");
@@ -88,6 +91,11 @@ public class AnalysisContext {
 	private AnnotationRetentionDatabase annotationRetentionDatabase;
 	public AnnotationRetentionDatabase getAnnotationRetentionDatabase() {
 		return annotationRetentionDatabase;
+	}
+	
+	private JCIPAnnotationDatabase jcipAnnotationDatabase;
+	public JCIPAnnotationDatabase getJCIPAnnotationDatabase() {
+		return jcipAnnotationDatabase;
 	}
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
 		= new InheritableThreadLocal<AnalysisContext>();
@@ -136,6 +144,7 @@ public class AnalysisContext {
 	public void initDatabases() {
 		checkReturnAnnotationDatabase = new CheckReturnAnnotationDatabase();
 		annotationRetentionDatabase = new AnnotationRetentionDatabase();
+		 jcipAnnotationDatabase = new JCIPAnnotationDatabase();
 	}
 
 	/**

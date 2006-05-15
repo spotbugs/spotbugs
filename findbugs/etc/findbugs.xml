@@ -52,6 +52,10 @@
 		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
 	</SplitPass>
 	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation"/>
+		<Later class="edu.umd.cs.findbugs.detect.FindInconsistentSync2"/>
+	</SplitPass>
+	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
 	</SplitPass>
@@ -71,7 +75,12 @@
 	        speed="fast"
 	        reports="TESTING"
 			hidden="true" /> 
-	        
+	       
+  <Detector class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation"
+                speed="fast"
+                reports="TESTING"
+                        hidden="true" />
+                 
   <Detector class="edu.umd.cs.findbugs.detect.Methods" 
 	        speed="fast"
 	        reports="TESTING"
@@ -344,7 +353,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
 
   <Detector class="edu.umd.cs.findbugs.detect.FindInconsistentSync2" 
             speed="slow"
-            reports="IS2_INCONSISTENT_SYNC" />
+            reports="IS2_INCONSISTENT_SYNC,IS_FIELD_NOT_GUARDED" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment2" 
             speed="fast" 
@@ -629,7 +638,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="Eq" type="EQ_ABSTRACT_SELF" category="CORRECTNESS" />
   <BugPattern abbrev="Co" type="CO_ABSTRACT_SELF" category="CORRECTNESS" />
   <BugPattern abbrev="ESync" type="ESync_EMPTY_SYNC" category="MT_CORRECTNESS" />
-  <BugPattern abbrev="IS2" type="IS2_INCONSISTENT_SYNC" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="IS" type="IS2_INCONSISTENT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="NN" type="NN_NAKED_NOTIFY" category="MT_CORRECTNESS" />
   <BugPattern abbrev="MS" type="MS_EXPOSE_REP" category="MALICIOUS_CODE" />
   <BugPattern abbrev="EI" type="EI_EXPOSE_REP" category="MALICIOUS_CODE" />
@@ -647,6 +656,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="SI" type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED" category="CORRECTNESS" />
   <BugPattern abbrev="It" type="IT_NO_SUCH_ELEMENT" category="CORRECTNESS" />
   <BugPattern abbrev="IS" type="IS_INCONSISTENT_SYNC" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="IS" type="IS_FIELD_NOT_GUARDED" category="MT_CORRECTNESS" />
   <BugPattern abbrev="ML" type="ML_SYNC_ON_UPDATED_FIELD" category="MT_CORRECTNESS" />
   <BugPattern abbrev="MS" type="MS_OOI_PKGPROTECT" category="MALICIOUS_CODE" />
   <BugPattern abbrev="MS" type="MS_FINAL_PKGPROTECT" category="MALICIOUS_CODE" />

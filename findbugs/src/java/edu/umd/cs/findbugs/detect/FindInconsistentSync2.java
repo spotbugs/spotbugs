@@ -230,7 +230,13 @@ public class FindInconsistentSync2 implements Detector {
 	public void report() {
 		for (XField xfield : statMap.keySet()) {
 			FieldStats stats = statMap.get(xfield);
-
+			JCIPAnnotationDatabase jcipAnotationDatabase = AnalysisContext.currentAnalysisContext()
+								.getJCIPAnnotationDatabase();
+			boolean guardedByThis = "this".equals(jcipAnotationDatabase.getFieldAnnotation(xfield, "GuardedBy"));
+			boolean notThreadSafe = jcipAnotationDatabase.hasClassAnnotation(xfield.getClassName(), "NotThreadSafe");
+			boolean threadSafe = jcipAnotationDatabase.hasClassAnnotation(xfield.getClassName().replace('/','.'), "ThreadSafe");
+			if (!threadSafe) continue;
+			
 			WarningPropertySet propertySet = new WarningPropertySet();
 
 			int numReadUnlocked = stats.getNumAccesses(READ_UNLOCKED);
@@ -244,19 +250,29 @@ public class FindInconsistentSync2 implements Detector {
 			int biasedUnlocked = numReadUnlocked + (int) (WRITE_BIAS * numWriteUnlocked);
 			int writes = numWriteLocked + numWriteUnlocked;
 
-			if (locked == 0) {
-				continue;
-//				propertySet.addProperty(InconsistentSyncWarningProperty.NEVER_LOCKED);
-			}
-
 			if (unlocked == 0) {
 				continue;
 //				propertySet.addProperty(InconsistentSyncWarningProperty.NEVER_UNLOCKED);
 			}
 
+			
+			if (guardedByThis) {
+					propertySet.addProperty(InconsistentSyncWarningProperty.ANNOTATED_AS_GUARDED_BY_THIS);
+			
+			}
+			
+			if (threadSafe) {
+				propertySet.addProperty(InconsistentSyncWarningProperty.ANNOTATED_AS_THREAD_SAFE);
+		
+		}
+			if (!guardedByThis && locked == 0) {
+				continue;
+//				propertySet.addProperty(InconsistentSyncWarningProperty.NEVER_LOCKED);
+			}
 
 			if (DEBUG) {
 				System.out.println("IS2: " + xfield);
+				if (guardedByThis) System.out.println("Guarded by this");
 				System.out.println("  RL: " + numReadLocked);
 				System.out.println("  WL: " + numWriteLocked);
 				System.out.println("  RU: " + numReadUnlocked);
@@ -309,7 +325,7 @@ public class FindInconsistentSync2 implements Detector {
 			// At this point, we report the field as being inconsistently synchronized
 			int priority = propertySet.computePriority(NORMAL_PRIORITY);
 			if (!propertySet.isFalsePositive(priority)) {
-				BugInstance bugInstance = new BugInstance("IS2_INCONSISTENT_SYNC", priority)
+				BugInstance bugInstance = new BugInstance(guardedByThis? "IS_FIELD_NOT_GUARDED" : "IS2_INCONSISTENT_SYNC", priority)
 						.addClass(xfield.getClassName())
 						.addField(xfield)
 						.addInt(freq).describe("INT_SYNC_PERCENT");
@@ -430,6 +446,7 @@ public class FindInconsistentSync2 implements Detector {
 					System.out.println("value number: " + instance.getNumber());
 					System.out.println("Lock count: " + lockSet.getLockCount(instance.getNumber()));
 				}
+				
 				
 				// Is the instance locked?
 				// We consider the access to be locked if either

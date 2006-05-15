@@ -30,6 +30,7 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration {
 	 final int priority;
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_UNKNOWN = new CheckReturnValueAnnotation(
 			"UnknownCheckReturnValue", 0, Detector.EXP_PRIORITY);
+
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_HIGH = new CheckReturnValueAnnotation(
 			"CheckReturnValueHigh", 1, Detector.HIGH_PRIORITY);
 
@@ -39,6 +40,8 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration {
 			"CheckReturnValueLow", 3, Detector.LOW_PRIORITY);
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_IGNORE = new CheckReturnValueAnnotation(
 			"OkToIgnoreReturnValue", 4, Detector.IGNORE_PRIORITY);
+	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_VERY_HIGH = new CheckReturnValueAnnotation(
+			"CheckReturnValueVeryHigh", 5, Detector.HIGH_PRIORITY-1);
 
 
 

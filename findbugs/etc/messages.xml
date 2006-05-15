@@ -33,6 +33,13 @@ This plugin contains all of the standard FindBugs detectors.
 ]]>
     </Details>
   </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation">
+    <Details>
+<![CDATA[
+<p> Record annotations from the net.jcip.annotations package.</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings">
     <Details>
 <![CDATA[
@@ -1892,6 +1899,19 @@ using the <code>equals(Object)</code> method instead.</p>
 ]]>
     </Details>
   </BugPattern>
+
+
+  <BugPattern type="IS_FIELD_NOT_GUARDED">
+    <ShortDescription>Field not guarded against conconcurrent access</ShortDescription>
+    <LongDescription>{1} not guarded againsts concurrent access; locked {2}% of time</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This field is annotated with net.jcip.annotations.GuardedBy, 
+but can be accessed in a way that seems to violate the annotation.</p>
+]]>
+</Details>
+</BugPattern>
+
   <BugPattern type="IS2_INCONSISTENT_SYNC">
     <ShortDescription>Inconsistent synchronization</ShortDescription>
     <LongDescription>Inconsistent synchronization of {1}; locked {2}% of time</LongDescription>
@@ -4689,7 +4709,6 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="IC" >Initialization circularity</BugCode>
   <BugCode abbrev="SI" >Suspicious static initializer</BugCode>
   <BugCode abbrev="IS" >Inconsistent synchronization</BugCode>
-  <BugCode abbrev="IS2" >Inconsistent synchronization</BugCode>
   <BugCode abbrev="Eq" >Covariant equals()</BugCode>
   <BugCode abbrev="Co" >Covariant compareTo()</BugCode>
   <BugCode abbrev="HE" >Equal objects must have equal hashcodes</BugCode>

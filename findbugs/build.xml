@@ -121,6 +121,15 @@
 						debug="on">
 					<classpath refid="findbugs.classpath"/>
 				</javac>
+		<javac srcdir="${src.dir}"
+						includes="net/jcip/annotations/**"
+						destdir="${classes.dir}"
+						source="1.5"
+						target="1.5"
+						deprecation="on"
+						debug="on">
+					<classpath refid="findbugs.classpath"/>
+				</javac>
 		<!-- Copy codebase data files. -->
 		<copy todir="${classes.dir}">
 			<fileset dir="${src.dir}">

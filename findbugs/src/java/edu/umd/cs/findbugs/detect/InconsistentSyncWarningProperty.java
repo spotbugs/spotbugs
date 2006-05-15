@@ -61,5 +61,9 @@ public class InconsistentSyncWarningProperty extends AbstractWarningProperty {
 	/** The only unlocked accesses are in getter methods. */
 	public static final InconsistentSyncWarningProperty ONLY_UNSYNC_IN_GETTERS =
 		new InconsistentSyncWarningProperty("ONLY_UNSYNC_IN_GETTERS", PriorityAdjustment.LOWER_PRIORITY);
+	public static final InconsistentSyncWarningProperty ANNOTATED_AS_GUARDED_BY_THIS =
+		new InconsistentSyncWarningProperty("ANNOTATED_AS_GUARDED_BY_THIS", PriorityAdjustment.RAISE_PRIORITY_TO_AT_LEAST_NORMAL);
+	public static final InconsistentSyncWarningProperty ANNOTATED_AS_THREAD_SAFE =
+		new InconsistentSyncWarningProperty("ANNOTATED_AS_THREAD_SAFE", PriorityAdjustment.RAISE_PRIORITY);
 
 }

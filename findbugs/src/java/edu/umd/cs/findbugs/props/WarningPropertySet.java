@@ -150,19 +150,30 @@ public class WarningPropertySet implements Cloneable {
 	 */
 	public int computePriority(int basePriority) {
 		boolean relaxedReporting = FindBugsAnalysisFeatures.isRelaxedMode();
-		
+	
+		boolean atLeastMedium = false;
+		boolean falsePositive = false;
 		int priority = basePriority;
 		if (!relaxedReporting) {
 			for (WarningProperty warningProperty : map.keySet()) {
 				PriorityAdjustment adj = warningProperty.getPriorityAdjustment();
-				if (adj == PriorityAdjustment.FALSE_POSITIVE)
-					return Detector.EXP_PRIORITY + 1;
-				else if (adj == PriorityAdjustment.RAISE_PRIORITY)
+				if (adj == PriorityAdjustment.FALSE_POSITIVE) {
+					falsePositive = true;
+				}else if (adj == PriorityAdjustment.RAISE_PRIORITY)
+					
 					--priority;
-				else if (adj == PriorityAdjustment.LOWER_PRIORITY)
+				else if (adj == PriorityAdjustment.RAISE_PRIORITY_TO_AT_LEAST_NORMAL) {
+					
+					--priority;
+					atLeastMedium = true;
+				} else if (adj == PriorityAdjustment.LOWER_PRIORITY)
 					++priority;
 			}
 			
+			if (atLeastMedium && priority > Detector.NORMAL_PRIORITY) priority = Detector.NORMAL_PRIORITY;
+			else if (falsePositive && !atLeastMedium) return Detector.EXP_PRIORITY+1;
+			
+				
 			if (priority < Detector.HIGH_PRIORITY)
 				priority = Detector.HIGH_PRIORITY;
 			else if (priority > Detector.EXP_PRIORITY)
