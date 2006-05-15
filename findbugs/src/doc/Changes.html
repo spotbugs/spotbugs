@@ -15,6 +15,34 @@
 
 <h1>FindBugs Change Log</h1>
 	
+<p>Changes since verson 0.9.7:</p>
+
+<ul>
+<li>fix ObjectTypeFactory bug that was supressing some bugs</li>
+<li>Updated detectors
+    <ul><li>BadRegEx.java: understands Pattern.LITERAL, warns about "."</li>
+        <li>FindUnreleasedLock.java: fewer false positives</li>
+        <li>DumbMethods.java: check for vacuous comparisons to MAX_INTEGER or MIN_INTEGER</li>
+        <li>FindPuzzlers.java: detect <tt>n%2==1</tt>, detect toString() on array types
+        <li>FindDeadLocalStores.java, FindBadCast2.java, DumbMethods.java, RuntimeExceptionCapture.java:
+            coalesce similar bugs within a method into a single bug instance with multiple source lines</li>
+    </ul></li>
+<li>Eclipse plugin
+    <ul><li>plugin ID changed from <tt>de.tobject.findbugs</tt> to <tt>edu.umd.cs.findbugs.plugin.eclipse</tt></li>
+        <li>support for findbugs eclipse auto-update site</li>
+    </ul></li>
+<li>Updated test case files
+    <ul><li>BadRegEx.java</li>
+        <li>JSR166.java</li>
+        <li>ConcurrentModificationBug.java</li>
+        <li>DeadStore.java</li>
+        <li>InstanceOf.java</li>
+    </ul></li>
+<li>fix bug that was generating duplicate uids</li>
+<li>reordered some bugInstances so that source line annotations come last</li>
+<li>references to cvs hostname updated to findbugs.cvs.sourceforge.net</li>
+</ul>
+
 <p>Changes since verson 0.9.6:</p>
 
 <ul>
