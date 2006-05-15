@@ -26,17 +26,17 @@ public class Version {
 	/**
 	 * Major version number.
 	 */
-	public static final int MAJOR = 0;
+	public static final int MAJOR = 1;
 
 	/**
 	 * Minor version number.
 	 */
-	public static final int MINOR = 9;
+	public static final int MINOR = 0;
 
 	/**
 	 * Patch level.
 	 */
-	public static final int PATCHLEVEL = 8;
+	public static final int PATCHLEVEL = 0;
 
 	/**
 	 * Development version or release candidate?
@@ -47,7 +47,7 @@ public class Version {
 	 * Release candidate number.
 	 * "0" indicates that the version is not a release candidate.
 	 */
-	public static final int RELEASE_CANDIDATE = 2;
+	public static final int RELEASE_CANDIDATE = 1;
 
 	private static final String RELEASE_SUFFIX_WORD =
 		(RELEASE_CANDIDATE > 0 ? "rc" + RELEASE_CANDIDATE : "dev");
@@ -61,15 +61,13 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = "May 12, 2006";
+	public static final String DATE = "May 15, 2006";
 
 	/**
 	 * Version of Eclipse plugin.
 	 */
-	public static final String ECLIPSE_UI_VERSION =
-		"0.0.33";// + (IS_DEVELOPMENT ? "." + RELEASE_SUFFIX_WORD: "");
-	//public static final String ECLIPSE_UI_VERSION = // same as RELEASE except dot before RELEASE_SUFFIX_WORD
-	//	MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "." + RELEASE_SUFFIX_WORD : "");
+	public static final String ECLIPSE_UI_VERSION = // same as RELEASE except dot before RELEASE_SUFFIX_WORD
+		MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "." + RELEASE_SUFFIX_WORD : "");
 
 	/**
 	 * FindBugs website.
