@@ -235,7 +235,7 @@ public class FindInconsistentSync2 implements Detector {
 			boolean guardedByThis = "this".equals(jcipAnotationDatabase.getFieldAnnotation(xfield, "GuardedBy"));
 			boolean notThreadSafe = jcipAnotationDatabase.hasClassAnnotation(xfield.getClassName(), "NotThreadSafe");
 			boolean threadSafe = jcipAnotationDatabase.hasClassAnnotation(xfield.getClassName().replace('/','.'), "ThreadSafe");
-			if (!threadSafe) continue;
+			if (notThreadSafe) continue;
 			
 			WarningPropertySet propertySet = new WarningPropertySet();
 
