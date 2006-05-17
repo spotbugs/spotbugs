@@ -108,7 +108,7 @@ public class FindDeadLocalStores implements Detector {
 		defensiveConstantValueOpcodes.set(Constants.DCONST_1);
 		defensiveConstantValueOpcodes.set(Constants.FCONST_0);
 		defensiveConstantValueOpcodes.set(Constants.FCONST_1);
-		// defensiveConstantValueOpcodes.set(Constants.ACONST_NULL);
+		defensiveConstantValueOpcodes.set(Constants.ACONST_NULL);
 		defensiveConstantValueOpcodes.set(Constants.ICONST_0);
 		defensiveConstantValueOpcodes.set(Constants.ICONST_1);
 	}
