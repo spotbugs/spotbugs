@@ -1403,7 +1403,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 
   <BugPattern type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS">
     <ShortDescription>Fields of immutable classes should be final</ShortDescription>
-    <LongDescription>The field {2} should be final since the class {1} is marked as Immutable.  </LongDescription>
+    <LongDescription>{1} should be final since {0} is marked as Immutable.  </LongDescription>
     <Details>
 <![CDATA[
   <p> The class is annotated with net.jcip.annotations.Immutable, and the rules for that annotation require
