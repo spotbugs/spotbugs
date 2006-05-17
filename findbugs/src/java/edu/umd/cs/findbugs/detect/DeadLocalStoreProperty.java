@@ -53,5 +53,8 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
 	/** many stores */
 	public static final DeadLocalStoreProperty MANY_STORES =
 		new DeadLocalStoreProperty("MANY_STORES", PriorityAdjustment.LOWER_PRIORITY);
+	
+	public static final DeadLocalStoreProperty STORE_OF_NULL =
+		new DeadLocalStoreProperty("STORE_OF_NULL", PriorityAdjustment.NO_ADJUSTMENT);
 
 }

@@ -108,7 +108,7 @@ public class FindDeadLocalStores implements Detector {
 		defensiveConstantValueOpcodes.set(Constants.DCONST_1);
 		defensiveConstantValueOpcodes.set(Constants.FCONST_0);
 		defensiveConstantValueOpcodes.set(Constants.FCONST_1);
-		defensiveConstantValueOpcodes.set(Constants.ACONST_NULL);
+		// defensiveConstantValueOpcodes.set(Constants.ACONST_NULL);
 		defensiveConstantValueOpcodes.set(Constants.ICONST_0);
 		defensiveConstantValueOpcodes.set(Constants.ICONST_1);
 	}
@@ -229,11 +229,16 @@ public class FindDeadLocalStores implements Detector {
 				complainedAbout.set(local);
 			}
 			
+			boolean storeOfNull = false;
 			InstructionHandle prevInsHandle = location.getHandle().getPrev();
 			if (prevInsHandle != null) {
 				Instruction prevIns = prevInsHandle.getInstruction();
-				if (prevIns instanceof LDC || prevIns instanceof ConstantPushInstruction || prevIns instanceof ACONST_NULL) 
+				if (prevIns instanceof LDC || prevIns instanceof ConstantPushInstruction)
 					continue;
+				if ( prevIns instanceof ACONST_NULL) {
+					storeOfNull = true;
+					propertySet.addProperty(DeadLocalStoreProperty.STORE_OF_NULL);
+				}
 				
 			}
 
@@ -263,7 +268,7 @@ public class FindDeadLocalStores implements Detector {
 				prevOpCode = prev.getInstruction().getOpcode();
 				}
 
-                        InstructionHandle prev2 = prev == null ? null : prev.getPrev();
+           InstructionHandle prev2 = prev == null ? null : prev.getPrev();
 
 			if (prev2 != null
                                 && prev2.getInstruction() instanceof ALOAD
@@ -325,7 +330,7 @@ public class FindDeadLocalStores implements Detector {
 						localName.equals("?") ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
 				
 				// Report the warning				
-				BugInstance bugInstance = new BugInstance(this, "DLS_DEAD_LOCAL_STORE", priority)
+				BugInstance bugInstance = new BugInstance(this, storeOfNull ? "DLS_DEAD_LOCAL_STORE_OF_NULL" : "DLS_DEAD_LOCAL_STORE", priority)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
 					.add(lvAnnotation);
 				

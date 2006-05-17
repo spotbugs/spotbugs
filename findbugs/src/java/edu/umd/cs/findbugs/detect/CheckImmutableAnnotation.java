@@ -47,8 +47,8 @@ public class CheckImmutableAnnotation extends PreorderVisitor implements
 
 	@Override
 	public void visit(Field obj) {
-		if (false && !obj.isFinal())
-			bugReporter.reportBug(new BugInstance(this, "TESTING",
+		if (!obj.isFinal())
+			bugReporter.reportBug(new BugInstance(this, "JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS",
 					NORMAL_PRIORITY).addClass(this).addVisitedField(this));
 	}
 

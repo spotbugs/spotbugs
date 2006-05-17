@@ -26,6 +26,13 @@ This plugin contains all of the standard FindBugs detectors.
    -->
 
 
+  <Detector class="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation">
+    <Details>
+<![CDATA[
+<p> Looks for violations of the rules for classes annotated as net.jcip.annotations.Immutable.</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.VarArgsProblems">
     <Details>
 <![CDATA[
@@ -1394,6 +1401,17 @@ to use Object.clone(), which always returns an object of the correct type.</p>
     </Details>
   </BugPattern>
 
+  <BugPattern type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS">
+    <ShortDescription>Fields of immutable classes should be final</ShortDescription>
+    <LongDescription>The field {2} should be final since the class {1} is marked as Immutable.  </LongDescription>
+    <Details>
+<![CDATA[
+  <p> The class is annotated with net.jcip.annotations.Immutable, and the rules for that annotation require
+that all fields are final.
+   .</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
     <ShortDescription>Can't use reflection to check for presense of annotation with default retention</ShortDescription>
     <LongDescription>{1} uses reflection to check for the presense of an annotation that has default retention</LongDescription>
@@ -3942,6 +3960,19 @@ there is no easy way to eliminate these false positives.
     </Details>
   </BugPattern>
 
+  <BugPattern type="DLS_DEAD_LOCAL_STORE_OF_NULL">
+    <ShortDescription>Dead store of null to local variable</ShortDescription>
+    <LongDescription>Dead store of null to {2} in method {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>The code stores null into a local variable, and stored value is not
+read. This store may have been introduced in assist the garbage collector, but
+as of Java SE 6.0, this is no longer needed or useful.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
    <BugPattern type="MF_METHOD_MASKS_FIELD">
     <ShortDescription>Method defines a variable that obscures a field</ShortDescription>
     <LongDescription>Method {1} defines a variable that obscures field {2}</LongDescription>
@@ -4791,6 +4822,7 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="BC">Bad casts of object references</BugCode>
   <BugCode abbrev="IM">Questionable integer math</BugCode>
   <BugCode abbrev="ST">Misuse of static fields</BugCode>
+  <BugCode abbrev="JCIP">Violation of net.jcip annotations</BugCode>
   <BugCode abbrev="DMI">Dubious method invocation</BugCode>
   <BugCode abbrev="PZ">Bug inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
   <BugCode abbrev="SWL">Sleep with lock held</BugCode>

@@ -155,6 +155,9 @@
             disabled="true"
             hidden="true" />
             
+  <Detector class="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation" 
+	        speed="fast"
+            reports="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS" />
   <Detector class="edu.umd.cs.findbugs.detect.DontCatchIllegalMonitorStateException" 
 	        speed="fast"
             reports="IMSE_DONT_CATCH_IMSE" />
@@ -420,7 +423,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
 
   <Detector class="edu.umd.cs.findbugs.detect.FindDeadLocalStores"
             speed="moderate"
-            reports="DLS_DEAD_LOCAL_STORE,IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN" />
+            reports="DLS_DEAD_LOCAL_STORE,IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN,DLS_DEAD_LOCAL_STORE_OF_NULL" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindMaskedFields"
             speed="fast"
@@ -599,6 +602,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_EXIT" category="CORRECTNESS" />
+  <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_RUN_FINALIZERS_ON_EXIT" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_STRING_CTOR" category="PERFORMANCE" />
@@ -778,6 +782,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_UNKNOWNTHREAD" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE" category="STYLE"/>
+  <BugPattern abbrev="DLS" type="DLS_DEAD_LOCAL_STORE_OF_NULL" category="STYLE"/>
   <BugPattern abbrev="IP" type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN" category="CORRECTNESS"/>
   <BugPattern abbrev="MF" type="MF_METHOD_MASKS_FIELD" category="CORRECTNESS"/>
   <BugPattern abbrev="MF" type="MF_CLASS_MASKS_FIELD" category="CORRECTNESS"/>
