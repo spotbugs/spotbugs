@@ -18,7 +18,6 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
 import java.util.BitSet;
@@ -26,19 +25,21 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 
 /**
- * Look for calls to methods where the return value is
- * erroneously ignored.  This detector is meant as a simpler
- * and faster replacement for BCPMethodReturnCheck.
+ * Look for calls to methods where the return value is erroneously ignored. This
+ * detector is meant as a simpler and faster replacement for
+ * BCPMethodReturnCheck.
  * 
  * @author David Hovemeyer
  */
 public class MethodReturnCheck extends BytecodeScanningDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("mrc.debug");
+
 	private static final boolean CHECK_ALL = Boolean.getBoolean("mrc.checkall");
-	
-	private static final int SCAN =0;
+
+	private static final int SCAN = 0;
+
 	private static final int SAW_INVOKE = 1;
-	
+
 	private static final BitSet INVOKE_OPCODE_SET = new BitSet();
 	static {
 		INVOKE_OPCODE_SET.set(Constants.INVOKEINTERFACE);
@@ -46,78 +47,84 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 		INVOKE_OPCODE_SET.set(Constants.INVOKESTATIC);
 		INVOKE_OPCODE_SET.set(Constants.INVOKEVIRTUAL);
 	}
-	
-	
-		
+
+	boolean previousOpcodeWasNEW;
+
 	private BugReporter bugReporter;
+
 	private ClassContext classContext;
+
 	private CheckReturnAnnotationDatabase checkReturnAnnotationDatabase;
+
 	private Method method;
+
 	private XMethod callSeen;
+
 	private int state;
+
 	private int callPC;
+
 	private String className, methodName, signature;
-	
+
 	public MethodReturnCheck(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 	@Override
-         public void visitClassContext(ClassContext classContext) {
+	public void visitClassContext(ClassContext classContext) {
 		this.classContext = classContext;
-		checkReturnAnnotationDatabase = AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase();
+		checkReturnAnnotationDatabase = AnalysisContext
+				.currentAnalysisContext().getCheckReturnAnnotationDatabase();
 		super.visitClassContext(classContext);
 		this.classContext = null;
 	}
-	
+
 	@Override
-         public void visit(Method method) {
+	public void visit(Method method) {
 		this.method = method;
 	}
-	
+
 	@Override
-         public void visitCode(Code code) {
+	public void visitCode(Code code) {
 		// Prescreen to find methods with POP or POP2 instructions,
 		// and at least one method invocation
-		if (!prescreen())
-			return;
-		
-		if (DEBUG) System.out.println("Visiting " + method);
+
+		if (DEBUG)
+			System.out.println("Visiting " + method);
 		super.visitCode(code);
 	}
 
-	private boolean prescreen() {
-		BitSet bytecodeSet = classContext.getBytecodeSet(method);
-		if (bytecodeSet == null) return false;
-		if (!(bytecodeSet.get(Constants.POP) || bytecodeSet.get(Constants.POP2))) {
-			return false;
-		} else if (!bytecodeSet.intersects(INVOKE_OPCODE_SET)) {
-			return false;
-		}
-		return true;
-	}
-	
 	@Override
-         public void sawOpcode(int seen) {
-		
+	public void sawOpcode(int seen) {
+
 		if (state == SAW_INVOKE && isPop(seen)) {
-			CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase.getResolvedAnnotation(callSeen, false);
-			if (annotation != null && annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
-			int popPC = getPC();
-			if (DEBUG) System.out.println("Saw POP @"+popPC);
-			int catchSize = getSizeOfSurroundingTryBlock(popPC);
-			
-			int priority = annotation.getPriority();
-			if (catchSize <= 1) priority+=2;
-			else if (catchSize <= 2) priority += 1;
-			if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen) 
-					&& !callSeen.getSignature().endsWith(callSeen.getClassName().replace('.','/')+";")) priority++;
-			BugInstance warning =
-				new BugInstance(this, "RV_RETURN_VALUE_IGNORED", priority)
-					.addClassAndMethod(this)
-					.addMethod(className, methodName, signature, seen == Constants.INVOKESTATIC).describe("METHOD_CALLED")
-					.addSourceLine(this, callPC);
-			bugReporter.reportBug(warning);
+			CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase
+					.getResolvedAnnotation(callSeen, false);
+			if (annotation != null
+					&& annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
+				int popPC = getPC();
+				if (DEBUG)
+					System.out.println("Saw POP @" + popPC);
+				int catchSize = getSizeOfSurroundingTryBlock(popPC);
+
+				int priority = annotation.getPriority();
+				if (catchSize <= 1)
+					priority += 2;
+				else if (catchSize <= 2)
+					priority += 1;
+				if (!checkReturnAnnotationDatabase.annotationIsDirect(callSeen)
+						&& !callSeen.getSignature()
+								.endsWith(
+										callSeen.getClassName().replace('.',
+												'/')
+												+ ";"))
+					priority++;
+				BugInstance warning = new BugInstance(this,
+						"RV_RETURN_VALUE_IGNORED", priority).addClassAndMethod(
+						this).addMethod(className, methodName, signature,
+						seen == Constants.INVOKESTATIC).describe(
+						"METHOD_CALLED").addSourceLine(this, callPC);
+				bugReporter.reportBug(warning);
 			}
 			state = SCAN;
 		} else if (INVOKE_OPCODE_SET.get(seen)) {
@@ -125,15 +132,40 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			className = getDottedClassConstantOperand();
 			methodName = getNameConstantOperand();
 			signature = getSigConstantOperand();
-			callSeen = XFactory.createXMethod(className, methodName, signature, seen == INVOKESTATIC);
+			callSeen = XFactory.createXMethod(className, methodName, signature,
+					seen == INVOKESTATIC);
 			state = SAW_INVOKE;
 		} else
 			state = SCAN;
+
+		if (seen == NEW) {
+			previousOpcodeWasNEW = true;
+		} else {
+			if (seen == INVOKESPECIAL && previousOpcodeWasNEW) {
+				CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase
+						.getResolvedAnnotation(callSeen, false);
+				if (annotation != null
+						&& annotation != CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE) {
+					int priority = annotation.getPriority();
+					if (!checkReturnAnnotationDatabase
+							.annotationIsDirect(callSeen)
+							&& !callSeen.getSignature().endsWith(
+									callSeen.getClassName().replace('.', '/')
+											+ ";"))
+						priority++;
+					bugReporter.reportBug(new BugInstance(this,
+							"RV_RETURN_VALUE_IGNORED", priority)
+							.addClassAndMethod(this).addMethod(this).describe(
+									"METHOD_CALLED").addSourceLine(this));
+				}
+				previousOpcodeWasNEW = false;
+			}
 		}
+
+	}
 
 	private boolean isPop(int seen) {
 		return seen == Constants.POP || seen == Constants.POP2;
 	}
 
-	
 }
