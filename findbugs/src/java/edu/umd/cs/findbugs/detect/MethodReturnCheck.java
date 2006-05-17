@@ -155,7 +155,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 						priority++;
 					bugReporter.reportBug(new BugInstance(this,
 							"RV_RETURN_VALUE_IGNORED", priority)
-							.addClassAndMethod(this).addMethod(this).describe(
+							.addClassAndMethod(this).addCalledMethod(this).describe(
 									"METHOD_CALLED").addSourceLine(this));
 				}
 				previousOpcodeWasNEW = false;
