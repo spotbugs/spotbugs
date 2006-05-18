@@ -80,7 +80,9 @@ public class OpcodeStack implements Constants2
 
 	private boolean seenTransferOfControl = false;
 
-
+    private boolean useIterativeAnalysis 
+    = AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS);
+		
 	
 	public static class Item
 	{ 		
@@ -136,7 +138,11 @@ public class OpcodeStack implements Constants2
 				&& equals(this.field, that.field)
 				&& this.isNull == that.isNull
 				&& this.specialKind == that.specialKind
-				&& this.registerNumber == that.registerNumber;
+				&& this.registerNumber == that.registerNumber
+				&& this.isInitialParameter == that.isInitialParameter
+				&& this.couldBeZero == that.couldBeZero
+				&& this.userValue == that.userValue;
+				
 			}
 
 		public String toString() {
@@ -1186,7 +1192,7 @@ public class OpcodeStack implements Constants2
  	private void addJumpValue(int target) {
  		List<Item> atTarget = jumpEntries.get(target);
  		if (atTarget == null) {
- 			jumpEntries.put(target, new ArrayList(lvValues));
+ 			jumpEntries.put(target, new ArrayList<Item>(lvValues));
  			return;
  		}
  		mergeLists(atTarget, lvValues, false);
@@ -1197,7 +1203,7 @@ public class OpcodeStack implements Constants2
  		Code code = v.getMethod().getCode();
 		if (code == null) return result;
 	
-		if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS)) {
+		if (useIterativeAnalysis) {
 			// FIXME: Be clever
 
 			DismantleBytecode branchAnalysis = new DismantleBytecode() {
@@ -1507,7 +1513,7 @@ public class OpcodeStack implements Constants2
  		int addCount = index - lvValues.size() + 1;
  		while ((addCount--) > 0)
  			lvValues.add(null);
-		if (seenTransferOfControl) 
+		if (!useIterativeAnalysis && seenTransferOfControl) 
 			value = Item.merge(value, lvValues.get(index) );
  		lvValues.set(index, value);
  	}
