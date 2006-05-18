@@ -54,6 +54,16 @@ public class DoInsideDoPriviledged  extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		try {
+		if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("setAccessible")) {
+			String className = getDottedClassConstantOperand();
+			if (className.equals("java.lang.reflect.Field") || className.equals("java.lang.reflect.Method"))
+				bugReporter.reportBug(new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEDGED",
+						NORMAL_PRIORITY)
+					        .addClassAndMethod(this)
+					        .addCalledMethod(this)
+					        .addSourceLine(this)
+					        );
+		}
 		if (seen == NEW) {
 			String classOfConstructedClass = getClassConstantOperand();
 			JavaClass constructedClass = Repository.lookupClass(classOfConstructedClass);
