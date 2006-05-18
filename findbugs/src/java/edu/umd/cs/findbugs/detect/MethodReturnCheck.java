@@ -158,8 +158,9 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 							.addClassAndMethod(this).addCalledMethod(this).describe(
 									"METHOD_CALLED").addSourceLine(this));
 				}
-				previousOpcodeWasNEW = false;
+				
 			}
+			previousOpcodeWasNEW = false;
 		}
 
 	}
