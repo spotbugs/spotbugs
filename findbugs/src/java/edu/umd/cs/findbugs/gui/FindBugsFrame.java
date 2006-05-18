@@ -3432,7 +3432,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 */
 	void about() {
 		AboutDialog dialog = new AboutDialog(this, logger, true);
-		dialog.setSize(500, 354);
+		dialog.setSize(600, 554);
 		dialog.setLocationRelativeTo(null); // center the dialog
 		dialog.setVisible(true);
 	}

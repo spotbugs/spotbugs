@@ -58,7 +58,7 @@ public class AboutDialog extends javax.swing.JDialog {
 		initComponents();
 
 		try {
-			processPage(aboutEditorPane, "edu/umd/cs/findbugs/gui/help/About.html");
+			aboutEditorPane.setPage(getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/About.html"));
 			licenseEditorPane.setPage(getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/License.html"));
 			acknowldgementsEditorPane.setPage(getClass().getClassLoader().getResource("edu/umd/cs/findbugs/gui/help/Acknowledgements.html"));
 		} catch (IOException e) {
@@ -68,6 +68,7 @@ public class AboutDialog extends javax.swing.JDialog {
 		setTitle(MessageFormat.format(L10N.getLocalString("dlg.aboutfindbugs_ttl", "About FindBugs {0}"), new Object[]{Version.RELEASE}));
 	}
 
+	static Pattern pattern = Pattern.compile("@VERSION@");
 	/**
 	 * Process an HTML page to replace certain substitution patterns.
 	 * Right now, we just expand @VERSION@.
@@ -86,7 +87,7 @@ public class AboutDialog extends javax.swing.JDialog {
 			 reader = new BufferedReader(new InputStreamReader(in));
 
 			// Replace instances of @VERSION@ with actual version number
-			Pattern pattern = Pattern.compile("@VERSION@");
+	
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = pattern.matcher(line).replaceAll(Version.RELEASE);
