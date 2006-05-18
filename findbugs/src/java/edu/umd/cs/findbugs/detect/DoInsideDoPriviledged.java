@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -45,6 +46,11 @@ public class DoInsideDoPriviledged  extends BytecodeScanningDetector {
 		} catch (ClassNotFoundException e) {
 			isDoPriviledged = true;
 		}
+	}
+	
+	@Override
+	public void visit(Method obj) {
+		if (!obj.isPrivate()) super.visit(obj);
 	}
 	@Override
 	public void visit(Code obj) {
