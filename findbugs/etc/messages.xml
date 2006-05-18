@@ -3813,6 +3813,17 @@ get called when the event occurs.</p>
     </Details>
   </BugPattern>
 
+  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS">
+    <ShortDescription>Method attempts to access a result set field with index 0</ShortDescription>
+    <LongDescription>Method {1} attempts to access a result set field with index 0</LongDescription>
+    <Details>
+<![CDATA[
+<p> A call to getXXX or updateXXX methods of a result set was made where the
+field index is 0. As ResultSet fields start at index 1, this is always a mistake.</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="SQL_BAD_RESULTSET_ACCESS">
     <ShortDescription>Method attempts to access a result set field with index 0</ShortDescription>
     <LongDescription>Method {1} attempts to access a result set field with index 0</LongDescription>
