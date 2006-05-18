@@ -401,7 +401,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
              
    <Detector class="edu.umd.cs.findbugs.detect.BadResultSetAccess" 
              speed="fast"
-   	         reports="BRSA_BAD_RESULTSET_ACCESS" />
+   	         reports="SQL_BAD_RESULTSET_ACCESS,SQL_BAD_PREPARED_STATEMENT_ACCESS" />
    	         
    <Detector class="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf" 
              speed="fast"
@@ -769,8 +769,8 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="IJU" type="IJU_SUITE_NOT_STATIC" category="CORRECTNESS" />
   <BugPattern abbrev="IJU" type="IJU_NO_TESTS" category="CORRECTNESS" />
   <BugPattern abbrev="BOA" type="BOA_BADLY_OVERRIDDEN_ADAPTER" category="CORRECTNESS" />
-  <BugPattern abbrev="BRSA" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"
-    experimental="true"/>
+  <BugPattern abbrev="SQL" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"/>
+  <BugPattern abbrev="SQL" type="BRSA_BAD_PREPARED_STATEMENT_ACCESS" category="CORRECTNESS" />
   <BugPattern abbrev="SIO" type="SIO_SUPERFLUOUS_INSTANCEOF" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="BAC" type="BAC_BAD_APPLET_CONSTRUCTOR" category="CORRECTNESS"

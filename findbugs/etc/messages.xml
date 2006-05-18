@@ -3813,13 +3813,24 @@ get called when the event occurs.</p>
     </Details>
   </BugPattern>
 
-  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS">
+  <BugPattern type="SQL_BAD_RESULTSET_ACCESS">
     <ShortDescription>Method attempts to access a result set field with index 0</ShortDescription>
     <LongDescription>Method {1} attempts to access a result set field with index 0</LongDescription>
     <Details>
 <![CDATA[
 <p> A call to getXXX or updateXXX methods of a result set was made where the
 field index is 0. As ResultSet fields start at index 1, this is always a mistake.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="SQL_BAD_PREPARED_STATEMENT_ACCESS">
+    <ShortDescription>Method attempts to access a prepared statement parameter with index 0</ShortDescription>
+    <LongDescription>Method {1} attempts to access a prepared statement parameter with index 0</LongDescription>
+    <Details>
+<![CDATA[
+<p> A call to a setXXX method of a prepared statement was made where the
+parameter index is 0. As parameter indexes start at index 1, this is always a mistake.</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4796,7 +4807,6 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="IJU">Improperly implemented JUnit TestCase</BugCode>
   <BugCode abbrev="BOA">Badly Overridden Adapter</BugCode>
   <BugCode abbrev="SF">Switch case falls thru</BugCode>
-  <BugCode abbrev="BRSA">Bad ResultSet access</BugCode>
   <BugCode abbrev="SIO">Superfluous instanceof</BugCode>
   <BugCode abbrev="BAC">Bad Applet Constructor</BugCode>
   <BugCode abbrev="UOE">Use Object Equals</BugCode>
@@ -4815,7 +4825,7 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="PS">Public Semaphores</BugCode>
   <BugCode abbrev="ICAST">Casting from integer values</BugCode>
   <BugCode abbrev="RE">Regular expressions</BugCode>
-  <BugCode abbrev="SQL">SQL Injection</BugCode>
+  <BugCode abbrev="SQL">SQL Problem</BugCode>
   <BugCode abbrev="ESync">Empty Synchronized blocks</BugCode>
   <BugCode abbrev="QF">Questionable for loops</BugCode>
   <BugCode abbrev="VA">Var arg problems</BugCode>

@@ -96,9 +96,12 @@ public class BadResultSetAccess extends BytecodeScanningDetector {
 					int numParms = PreorderVisitor.getNumberArguments(signature);
 					if (stack.getStackDepth() >= numParms) {
 						OpcodeStack.Item item = stack.getStackItem(numParms-1);
-						Object cons = item.getConstant();
-						if ((cons != null) && ("I".equals(item.getSignature())) && (((Integer) cons).intValue() == 0)) {
-							bugReporter.reportBug(new BugInstance(this, "BRSA_BAD_RESULTSET_ACCESS", NORMAL_PRIORITY)
+						
+
+						if ("I".equals(item.getSignature()) && item.couldBeZero()) {
+							bugReporter.reportBug(new BugInstance(this, 
+									clsConstant.equals("java/sql/PreparedStatement") ? "BRSA_BAD_PREPARED_STATEMENT_ACCESS" : "SQL_BAD_RESULTSET_ACCESS", 
+											NORMAL_PRIORITY)
 							        .addClassAndMethod(this)
 							        .addSourceLine(this));
 						}

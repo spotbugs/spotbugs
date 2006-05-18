@@ -95,6 +95,7 @@ public class OpcodeStack implements Constants2
  		private boolean isNull = false;
 		private int registerNumber = -1;
 		private boolean isInitialParameter = false;
+		private boolean couldBeZero = false;
 		private Object userValue = null;
 
 		
@@ -166,6 +167,7 @@ public class OpcodeStack implements Constants2
 				buf.append(", r");
 				buf.append(registerNumber);
 				}
+			if (couldBeZero) buf.append(", cbz");
 			buf.append(" >");
 			return buf.toString();
 			}
@@ -177,6 +179,7 @@ public class OpcodeStack implements Constants2
 			if (i1.equals(i2)) return i1;
 			Item m = new Item();
 			m.isNull = false;	
+			m.couldBeZero = i1.couldBeZero || i2.couldBeZero;
 			if (equals(i1.signature,i2.signature))
 				m.signature = i1.signature;
 			if (equals(i1.constValue,i2.constValue))
@@ -209,6 +212,10 @@ public class OpcodeStack implements Constants2
 			this.field = it.field;
 			this.isNull = it.isNull;
 			this.registerNumber = reg;
+			this.couldBeZero = it.couldBeZero;
+			this.userValue = it.userValue;
+			this.isInitialParameter = it.isInitialParameter;
+			this.specialKind = it.specialKind;
  		}
  		public Item(String s, FieldAnnotation f) {
 			this(s, f, -1);
@@ -221,11 +228,14 @@ public class OpcodeStack implements Constants2
  				int value = (Integer) v;
  				if (value != 0 && (value & 0xff) == 0)
  					specialKind = LOW_8_BITS_CLEAR;
+ 				if (value == 0) couldBeZero = true;
+ 
  			}
  			else if (v instanceof Long) {
  				long value = (Long) v;
  				if (value != 0 && (value & 0xff) == 0)
  					specialKind = LOW_8_BITS_CLEAR;
+ 				if (value == 0) couldBeZero = true;
  			}
  			
  		}
@@ -323,6 +333,9 @@ public class OpcodeStack implements Constants2
 			userValue = value;
 		}
 		
+		public boolean couldBeZero() {
+			return couldBeZero;
+		}
 		/**
 		 * gets the detector specified value for this item
 		 * 
