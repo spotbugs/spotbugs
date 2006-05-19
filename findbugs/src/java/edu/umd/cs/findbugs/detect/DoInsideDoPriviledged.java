@@ -64,7 +64,7 @@ public class DoInsideDoPriviledged  extends BytecodeScanningDetector {
 			String className = getDottedClassConstantOperand();
 			if (className.equals("java.lang.reflect.Field") || className.equals("java.lang.reflect.Method"))
 				bugReporter.reportBug(new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEDGED",
-						NORMAL_PRIORITY)
+						LOW_PRIORITY)
 					        .addClassAndMethod(this)
 					        .addCalledMethod(this)
 					        .addSourceLine(this)
