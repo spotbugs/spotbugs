@@ -49,12 +49,9 @@ public class DoInsideDoPriviledged  extends BytecodeScanningDetector {
 	}
 	
 	@Override
-	public void visit(Method obj) {
-		if (!obj.isPrivate()) super.visit(obj);
-	}
-	@Override
 	public void visit(Code obj) {
 		if (isDoPriviledged && getMethodName().equals("run")) return;
+		if (getMethod().isPrivate()) return;
 		super.visit(obj);
 	}
 	@Override
