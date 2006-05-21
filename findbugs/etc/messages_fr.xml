@@ -18,11 +18,25 @@
 <p>Recherche les problêmes liés aux arguments variables de Java 5.</p>
 ]]>
   </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation">
+  <Details>
+<![CDATA[
+<p>Enregistrement des annotations du package net.jcip.annotations package</p>
+]]>
+  </Details>
  </Detector>
  <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings">
   <Details>
 <![CDATA[
 <p>Supprime les alarmes marquées par l'annotation <code>edu.umd.cs.findbugs.annotations.NoteSuppressWarnings</code>.</p>
+]]>
+  </Details>
+ </Detector>
+ <Detector class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention">
+  <Details>
+<![CDATA[
+<p>Enregistre la rétention d'annotations.</p>
 ]]>
   </Details>
  </Detector>
@@ -1026,7 +1040,7 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
  </BugPattern>
  <BugPattern type="DE_MIGHT_DROP">
   <ShortDescription>La méthode peut déclencher une exception</ShortDescription>
-  <LongDescription>{1} peut déclencher {2}</LongDescription>
+  <LongDescription>{1} peut déclencher {3}</LongDescription>
   <Details>
 <![CDATA[
 <p>Cette méthode peut déclencher une exception. En général, les exceptions doivent être gérées ou transmises hors de la méthode.</p>
@@ -1035,7 +1049,7 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
  </BugPattern>
  <BugPattern type="DE_MIGHT_IGNORE">
   <ShortDescription>La méthode peut ignorer une exception</ShortDescription>
-  <LongDescription>{1} peut ignorer {2}</LongDescription>
+  <LongDescription>{1} peut ignorer {3}</LongDescription>
   <Details>
 <![CDATA[
 <p>Cette méthode peut ignorer une exception. En général, les exceptions doivent être gérées ou transmises hors de la méthode.</p>
@@ -1057,6 +1071,15 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
   <Details>
 <![CDATA[
 <p>Ce code créé un chargeur de classes, ce qui nécessite un test de sécurité. Même si ce code possède des droits suffisants, la création du chargeur de classes devrait être effectuée dans un block <code>doPrivileged</code> au cas ou il serait appelé par du code ne possédant pas les droits requis.</p>
+]]>
+  </Details>
+ </BugPattern>
+ <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
+  <ShortDescription>La réflexion ne peut pas être utilisée pour vérifier la présence d'une annotation avec la rétention par défaut</ShortDescription>
+  <LongDescription>{1} utilise la réflexion pour vérifier la présence d'une annotation qui a la rétention par défaut</LongDescription>
+  <Details>
+<![CDATA[
+<p>A moins qu'une annotation ait elle même été annotée avec une <code>@Retention</code> différente de la rétention "source uniquement" par défaut, l'annotation n'est pas conservée dans le fichier .class et ne peut pas être utilisée par réflexion (par exemple avec la méthode <code>isAnnotationPresent()</code>).</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1411,6 +1434,15 @@ public int hashCode() {
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="IS_FIELD_NOT_GUARDED">
+  <ShortDescription>Champ non protégé contre les accès concurrents</ShortDescription>
+  <LongDescription>{1} n'est pas protégé contre les accès concurrents : il est verrouillé {2}% du temps</LongDescription>
+  <Details>
+<![CDATA[
+<p>Ce champ est annoté avec <code>net.jcip.annotations.GuardedBy</code>, mais peut être utilisé d'une façon qui contredit l'annotation.</p>
+]]>
+  </Details>
+ </BugPattern>
  <BugPattern type="IS2_INCONSISTENT_SYNC">
   <ShortDescription>Synchronisation incohérente</ShortDescription>
   <LongDescription>Synchronisation incohérente de {1}; verrouillée à {2}%</LongDescription>
@@ -1486,7 +1518,7 @@ public int hashCode() {
  </BugPattern>
  <BugPattern type="SP_SPIN_ON_FIELD">
   <ShortDescription>Méthode bouclant sur un champ</ShortDescription>
-  <LongDescription>Boucle sur {2} dans {1}</LongDescription>
+  <LongDescription>Boucle sur {3} dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Cette méthode tourne en rond sur une boucle qui lit un champ. Le compilateur est autorisé à sortir la lecture de la boucle, créant ainsi une boucle infinie. La classe devrait être modifiée afin d'être correctement synchronisée (avec des appels à <code>wait()</code> et <code>notify()</code>).</p>
@@ -2494,6 +2526,15 @@ public void foo() {
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="INT_VACUOUS_COMPARISON">
+  <ShortDescription>Comparaison inutile de valeurs entières</ShortDescription>
+  <LongDescription>Comparaison inutile de la valeur entière {1}</LongDescription>
+  <Details>
+<![CDATA[
+<p>Il y a une comparaison entière qui renvoie toujours la même valeur (Ex. : <code>x <= Integer.MAX_VALUE</code>).</p>
+]]>
+  </Details>
+ </BugPattern>
  <BugPattern type="INT_BAD_REM_BY_1">
   <ShortDescription>Reste entier modulo 1</ShortDescription>
   <LongDescription>Reste entier modulo 1 calculé dans {1}</LongDescription>
@@ -2939,7 +2980,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION">
   <ShortDescription>Stockage d'un objet non serialisable dans une session Http</ShortDescription>
-  <LongDescription>Stockage de l'objet non sérialisable {2} dans la session Http de {1}</LongDescription>
+  <LongDescription>Stockage de l'objet non sérialisable {3} dans la session Http de {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce code semble stocker un objet non sérialisable dans un <code>HttpSession</code>. Une erreur se produira si cette session est rendue passive ou migrée.</p>
@@ -2948,7 +2989,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN">
   <ShortDescription>Objet non sérialisable écrit dans un ObjectOutput</ShortDescription>
-  <LongDescription>L'objet non sérialisable {2} est écrit dans ObjectOutput dans {1}</LongDescription>
+  <LongDescription>L'objet non sérialisable {3} est écrit dans ObjectOutput dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce code semble transmettre un objet non sérialisable à la méthode <code>ObjectOutput.writeObject</code>. Une erreur se produira si cet objet est effectivement non sérialisable.</p>
@@ -2966,7 +3007,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
   <ShortDescription>Transtypage douteux d'un type Collection vers une classe abstraite</ShortDescription>
-  <LongDescription>Transtypage douteux d'un type Collection vers une classe abstraite {3} dans {1}</LongDescription>
+  <LongDescription>Transtypage douteux d'un type Collection vers une classe abstraite {4} dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce code transtype un object de type <code>Collection</code> vers un type de collection abstrait (tel que <code>Collection</code>). Assurez vous que l'objet est bien du type précisé. Si vous désirez par exemple faire une itération sur une collection, le transtypage vers <code>Set</code> ou <code>List</code> est inutile.</p>
@@ -2975,7 +3016,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="BC_IMPOSSIBLE_CAST">
   <ShortDescription>Transtypage impossible</ShortDescription>
-  <LongDescription>Transtypage impossible de {2} vers {3} dans {1}</LongDescription>
+  <LongDescription>Transtypage impossible de {3} vers {4} dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce trantypage lancera toujours une exception <code>ClassCastException</code>.</p>
@@ -2993,7 +3034,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="BC_IMPOSSIBLE_INSTANCEOF">
   <ShortDescription>instanceof renverra toujours faux</ShortDescription>
-  <LongDescription>instanceof renvoyant toujours faux dans {1}, puisque qu'aucun {2} ne peut être un {3}</LongDescription>
+  <LongDescription>instanceof renvoyant toujours faux dans {1}, puisque qu'aucun  {3} ne peut être un {4}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce test <code>instanceof</code> renverra toujours faux. Même s'il est sûr, assurez-vous qu'il ne s'agisse pas d'une erreur logique ou d'une mauvaise compréhension.</p>
@@ -3002,7 +3043,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="BC_VACUOUS_INSTANCEOF">
   <ShortDescription>instanceof renverra toujours vrai</ShortDescription>
-  <LongDescription>instanceof renverra toujours vrai dans {1}, puisque chaque {2} est une instance de {3}</LongDescription>
+  <LongDescription>instanceof renverra toujours vrai dans {1}, puisque chaque {3} est une instance de {4}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce test <code>instanceof</code> renverra toujours vrai. Même s'il est sûr, assurez-vous qu'il ne s'agit pas d'une erreur logique ou d'une mauvaise compréhension.</p>
@@ -3011,7 +3052,7 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="BC_UNCONFIRMED_CAST">
   <ShortDescription>Transtypage non vérifié/non confirmé</ShortDescription>
-  <LongDescription>Transtypage non vérifié/non confirmé de {2} vers {3} dans {1}</LongDescription>
+  <LongDescription>Transtypage non vérifié/non confirmé de {3} vers {4} dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>La faisablité du transtypage n'est pas vérifiée, et tous les objets candidats au transtypage ne sont pas légitimes. Assurez vous que la logique du programme est correcte et que le transtypage n'échouera pas.</p>
@@ -3020,10 +3061,19 @@ double value2 =  x / (double) y;
  </BugPattern>
  <BugPattern type="BC_BAD_CAST_TO_CONCRETE_COLLECTION">
   <ShortDescription>Transtypage douteux vers une collection concrète</ShortDescription>
-  <LongDescription>Transtypage douteux de {2} vers une collection concrète {3} dans {1}</LongDescription>
+  <LongDescription>Transtypage douteux de {3} vers une collection concrète {4} dans {1}</LongDescription>
   <Details>
 <![CDATA[
 <p>Ce code transtype une collection abstraite (telles que <code>Collection</code>, <code>List</code>, ou <code>Set</code>) vers une implémentation concrète spécifique (telles que <code>ArrayList</code> ou <code>HashSet</code>). Ceci n'est pas forcément correct, et peut rendre votre code plus fragile, puisqu'il un éventuel refactoring futur avec une autre implémentation concrète plus difficile. A défaut d'une raison valable, l'utilisation des classes abstraites est recommandée.</p>
+]]>
+  </Details>
+ </BugPattern>
+ <BugPattern type="RE_POSSIBLE_UNINTENDED_PATTERN">
+  <ShortDescription>"." utilisé dans une expression régulière</ShortDescription>
+  <LongDescription>"." est utilisé dans une expression régulier dans {1}</LongDescription>
+  <Details>
+<![CDATA[
+<p>Une fonction <code>String</code> attendant une expression régulière reçoit "." en paramètre. Est-ce voulu ? Par exemple, <code>s.replaceAll(".", "/")</code> renverra une chaine dont <b>chaque</b> caractère aura été remplacé par le caractère '/'.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -3069,6 +3119,24 @@ double value2 =  x / (double) y;
   <Details>
 <![CDATA[
 <p>Ce code mutilplie le résultat d'un modulo avec une constante entière. Faîtes attention à la précédence des opérateurs. Par exemple, <code>i % 60 * 1000</code> correspond à <code>(i % 60) * 1000</code>, non à <code>i % (60 * 1000)</code>.</p>
+]]>
+  </Details>
+ </BugPattern>
+ <BugPattern type="DMI_INVOKING_TOSTRING_ON_ARRAY">
+  <ShortDescription>Invocation de toString sur un tableau</ShortDescription>
+  <LongDescription>Invocation de toString sur un tableau dans {1}</LongDescription>
+  <Details>
+<![CDATA[
+<p>Le code invoque <code>toString</code> sur un tableau, ce qui va générer un résultat assez inutile du genre <code>[C@16f0472</code>. Envisagez d'utiliser <code>String.valueOf</code> pour convertir un tableau en une chaine lisible contenant les valeurs du tableau. Cf Programming Puzzlers, chapitre 3, problème 12.</p>
+]]>
+  </Details>
+ </BugPattern>
+ <BugPattern type="IM_BAD_CHECK_FOR_ODD">
+  <ShortDescription>Test d'impaire ne fonctionnant pas avec les négatifs</ShortDescription>
+  <LongDescription>Un test d'impaire ne fonctionnera pas avec les négatifs dans {1}</LongDescription>
+  <Details>
+<![CDATA[
+<p>Le code utilise <code>x % 2 == 1</code> pour véifier si une valeur est impaire, mais cela ne fonctionera pas avec une valeur négative (Ex. : <code>(-5) % 2 == -1</code>). Si ce code doit tester si une valeur est impaire, envisagez d'utiliser <code>x & 1 == 1</code> ou <code>x % 2 != 0</code>.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -3220,7 +3288,6 @@ double value2 =  x / (double) y;
  <BugCode abbrev="IC">Initialisation circulaire</BugCode>
  <BugCode abbrev="SI">Initialisation statique suspecte</BugCode>
  <BugCode abbrev="IS">Synchronisation incohérente</BugCode>
- <BugCode abbrev="IS2">Synchronisation incohérente</BugCode>
  <BugCode abbrev="Eq">Méthodes equals() covariantes</BugCode>
  <BugCode abbrev="Co">Méthodes compareTo() covariantes</BugCode>
  <BugCode abbrev="HE">Les objets égaux doivent avoir des codes de hachage égaux</BugCode>
@@ -3267,6 +3334,7 @@ double value2 =  x / (double) y;
  <BugCode abbrev="LI">Initialisation paresseuse non synchronisée</BugCode>
  <BugCode abbrev="JLM">Synchronisation sur un verrou JSR166</BugCode>
  <BugCode abbrev="UPM">Méthode privée jamais invoquée</BugCode>
+ <BugCode abbrev="UMAC">Méthode inaccessible dans une classe anonyme</BugCode>
  <BugCode abbrev="EI2">Stockage d'une référence vers un objet modifiable</BugCode>
  <BugCode abbrev="NS">Utilisation suspecte d'un opérateur binaire</BugCode>
  <BugCode abbrev="ODR">Ressource de base données pas toujours fermée dans tous les chemins d'éxécution</BugCode>
