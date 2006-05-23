@@ -2855,7 +2855,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
     <Details>
 <![CDATA[
 <p> このメソッドで、Collectionの実装クラスのtoArray()メソッドに長さ0の配列を引数に渡しています。
-<quote>myCollection.toArray(new Foo[myCollection.size()])</quote>
+<code>myCollection.toArray(new Foo[myCollection.size()])</code>
 とする方が、効率の良いやり方です。もしも引数のサイズが、Collectionの中身を格納するのに十分な大きさであれば、そのまま、その配列に格納されて返送されます。さもなければリフレクションによって、新たに配列を生成しなければなりません。</p>
 ]]>
     </Details>

@@ -3748,7 +3748,7 @@ a StringBuffer (or StringBuilder in Java 1.5) explicitly.</p>
 <![CDATA[
 <p> This method uses the toArray() method of a collection derived class, and passes
 in a zero-length prototype array argument.  It is more efficient to use
-<quote>myCollection.toArray(new Foo[myCollection.size()])</quote>
+<code>myCollection.toArray(new Foo[myCollection.size()])</code>
 If the array passed in is big enough to store all of the
 elements of the collection, then it is populated and returned
 directly. This avoids the need to create a second array
