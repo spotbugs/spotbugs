@@ -22,19 +22,72 @@ gives information if the field is set to true.
 	<tr bgColor="#F0F0F0"><th>System Property</th><th>Description</th></tr>
 	
 	<tr>
-		<td>findbugs.gui.noSummary</td>
-		<td>Don't create the report summary</td>
+		<td>findbugs.assertionmethods</td>
+		<td>methods supplied by user that have assertions</td>
+	</tr>
+	<tr>
+		<td>findbugs.checkreturn.loadtraining
+			<br/>findbugs.checkreturn.savetraining</td>
+		<td>file name to read/write list of methods whose return values must be checked</td>
 	</tr>
 	<tr>
 		<td>findbugs.de.comment</td>
 		<td>Don't report empty catch blocks if a source comment is found in the block.</td>
 	</tr>
 	<tr>
+		<td>findbugs.dls.exclusions</td>
+		<td>local variables that will be excluded from Dead Local Store</td>
+	</tr>
+	<tr>
+		<td>findbugs.fis.unsyncFactor</td>
+		<td>Default value is 2.0, which means that we report a bug if more than 1/3 of accesses are unsynchronized.</td>
+	</tr>
+	<tr>
+		<td>findbugs.fis.writeBias</td>
+		<td>Default value is 2.0. The idea is that this should be above 1.0, because unsynchronized writes are more dangerous than unsynchronized reads.</td>
+	</tr>
+	<tr>
+		<td>fundbugs.gui.bugCount</td>
+		<td>?</td>
+	</tr>
+	<tr>
 		<td>findbugs.maskedfields.locals</td>
 		<td>Report on local variables that mask fields.</td>
 	</tr>
 	<tr>
+		<td>findbugs.noSummary</td>
+		<td>Don't create the report summary</td>
+	</tr>
+	<tr>
+		<td>findbugs.nullderef.assumensp</td>
+		<td>sets value for IsNullValueAnalysisFeatures.UNKNOWN_VALUES_ARE_NSP, but is not used by FindBugs</td>
+	</tr>
+	<tr>
 		<td>findbugs.refcomp.reportAll</td>
+		<td>?</td>
+	</tr>
+	<tr>
+		<td>findbugs.report.SummaryHTML</td>
+		<td>emit SummaryHTML element</td>
+	</tr>
+	<tr>
+		<td>findbugs.sf.comment</td>
+		<td>Ignore switch fall thru bugs if a comment is found with 'fall' or 'nobreak'
+	</tr>
+	<tr>
+		<td>ba.checkAssertions</td>
+		<td>throw excptions on certain illegal class type signatures</td>
+	</tr>
+	<tr>
+		<td>ba.verifyIntegrity</td>
+		<td>enable data structure integrity checks</td>
+	</tr>
+	<tr>
+		<td>BCPMethodReturnCheck.java</td>
+		<td>Add methods to the list requiring a check. (format: "class:method:sig|...")</td>
+	</tr>
+	<tr>
+		<td>dataflow.stackonly</td>
 		<td>?</td>
 	</tr>
 	<tr>
@@ -43,7 +96,7 @@ gives information if the field is set to true.
 	</tr>
 	<tr>
 		<td>fis.noAdjustSubclass</td>
-		<td>?</td>
+		<td>Adjust field so its class name is the same as the type of reference it is accessed through.</td>
 	</tr>
 	<tr>
 		<td>fos.allowWUS</td>
@@ -54,31 +107,11 @@ gives information if the field is set to true.
 		<td>?</td>
 	</tr>
 	<tr>
-		<td>mrc.checkall</td>
-		<td>Check for 1.5 specific method return values being ignored</td>
-	</tr>
-	<tr>
-		<td>sf.comment</td>
-		<td>Ignore switch fall thru cases if a source comment is found with the word 'fall' in it.</td>
-	</tr>
-	<tr>
-		<td>findbugs.sf.comment</td>
-		<td>Ignore switch fall thru bugs if a comment is found with 'fall' or 'nobreak'
-	</tr>
-	<tr>
-		<td>findbugs.assertionmethods</td>
-		<td>methods supplied by user that have assertions</td>
-	</tr>
-	<tr>
-		<td>cfgbuilder.staticFieldExceptions</td>
+		<td>inva.ncpExtraBranch</td>
 		<td>?</td>
 	</tr>
 	<tr>
-		<td>cfgbuilder.ldcExceptions</td>
-		<td>?</td>
-	</tr>
-	<tr>
-		<td>dataflow.stackonly</td>
+		<td>inva.noAssertHack</td>
 		<td>?</td>
 	</tr>
 	<tr>
@@ -87,11 +120,19 @@ gives information if the field is set to true.
 	</tr>
 	<tr>
 		<td>inva.noSwitchDefaultAsException</td>
-		<td>?</td>
+		<td>Don't consider switch default cases as exception paths.</td>
 	</tr>
 	<tr>
-		<td>findbugs.nullderef.assumensp</td>
-		<td>?</td>
+		<td>lineNumberBug</td>
+		<td>Disable the workaround for the bug in BCEL 5.0's LineNumberTable class.</td>
+	</tr>
+	<tr>
+		<td>ma.ugly</td>
+		<td>Report method signature with method class and name.</td>
+	</tr>
+	<tr>
+		<td>mrc.checkall</td>
+		<td>Check for 1.5-specific method return values being ignored even if runtime Java predates 1.5.</td>
 	</tr>
 	<tr>
 		<td>ta.accurateExceptions</td>
@@ -99,7 +140,7 @@ gives information if the field is set to true.
 	</tr>
 	<tr>
 		<td>vna.noRLE</td>
-		<td>?</td>
+		<td>Perform redundant load elimination and forward substitution (but not in a correctness-preserving way).</td>
 	</tr>
 
 </table>
