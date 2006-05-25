@@ -1,3 +1,5 @@
+import java.util.HashSet;
+
 public class DeadStore {
 
 	int x, y;
@@ -10,6 +12,15 @@ public class DeadStore {
 		args = new String[0];
 	}
 
+	public void storeOfNull() {
+		for(int i = 0; i < 10; i++) {
+			HashSet<Integer> set = new HashSet<Integer>();
+			set.add(i);
+			System.out.println(set.hashCode());
+			set = null;
+		}	
+	}
+	
 	public int finalLocalDNR(int a) {
 		final int SCAN = 0; // <<---- complains about this line
 		final int STAR = 1;

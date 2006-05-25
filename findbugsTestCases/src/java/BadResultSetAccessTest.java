@@ -16,6 +16,17 @@ public class BadResultSetAccessTest {
 		}
 	}
 
+	public void test01(ResultSet rs, int n) throws SQLException {
+		int i;
+		for(i = 0; i < n; i++)
+			System.out.println(i);
+
+		for (i = 1; i < n; i++) {
+			rs.getString(i);
+		}
+	}
+
+	
 	public void test0noloop(ResultSet rs) throws SQLException {
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int numCols = rsmd.getColumnCount();
@@ -65,4 +76,8 @@ public class BadResultSetAccessTest {
 	public void test7(PreparedStatement ps) throws SQLException {
 		ps.setAsciiStream(0, new ByteArrayInputStream(new byte[0]), 0);
 	}
+	public void test8(ResultSet rs, boolean get0) throws SQLException {
+		String name = rs.getString(get0 ? 0 : 1);
+	}
+
 }
