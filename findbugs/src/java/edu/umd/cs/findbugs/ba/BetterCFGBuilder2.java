@@ -64,12 +64,6 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 	private static final boolean DEBUG = Boolean.getBoolean("cfgbuilder.debug");
 
-	private static final boolean NO_STATIC_FIELD_EXCEPTIONS =
-	        !Boolean.getBoolean("cfgbuilder.staticFieldExceptions");
-
-	private static final boolean NO_LOAD_CONSTANT_EXCEPTIONS =
-	        !Boolean.getBoolean("cfgbuilder.ldcExceptions");
-
 	// TODO: don't forget to change BasicBlock so ATHROW is considered to have a null check
 
 	/* ----------------------------------------------------------------------

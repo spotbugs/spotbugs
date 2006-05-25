@@ -53,7 +53,6 @@ import edu.umd.cs.findbugs.util.MapCache;
 @NotThreadSafe
 public class AnalysisContext {
 	private static final boolean DEBUG = Boolean.getBoolean("findbugs.analysiscontext.debug");
-	private static final boolean DEBUG_HIERARCHY = Boolean.getBoolean("findbugs.debug.hierarchy");
 	
 	public static final String DEFAULT_NONNULL_PARAM_DATABASE_FILENAME = "nonnullParam.db";
 	public static final String DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME = "checkForNullParam.db";

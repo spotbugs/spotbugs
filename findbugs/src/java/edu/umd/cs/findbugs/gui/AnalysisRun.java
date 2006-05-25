@@ -132,7 +132,7 @@ public class AnalysisRun {
 		}
 	}
 
-	private static final boolean CREATE_SUMMARY = !Boolean.getBoolean("findbugs.gui.noSummary");
+	private static final boolean CREATE_SUMMARY = !Boolean.getBoolean("findbugs.noSummary");
 
 	/**
 	 * Load bugs from a file.

@@ -34,8 +34,6 @@ import org.apache.bcel.classfile.*;
 public class MethodReturnCheck extends BytecodeScanningDetector {
 	private static final boolean DEBUG = Boolean.getBoolean("mrc.debug");
 
-	private static final boolean CHECK_ALL = Boolean.getBoolean("mrc.checkall");
-
 	private static final int SCAN = 0;
 
 	private static final int SAW_INVOKE = 1;

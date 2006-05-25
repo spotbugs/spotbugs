@@ -42,8 +42,6 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
  */
 
 public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
-	private static final boolean DEBUG = Boolean
-			.getBoolean("frv.debug.annotation");
 
 	private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 

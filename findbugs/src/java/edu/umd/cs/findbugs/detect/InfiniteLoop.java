@@ -25,9 +25,7 @@ import org.apache.bcel.classfile.*;
 
 public class InfiniteLoop extends BytecodeScanningDetector  {
 
-	private static final boolean active 
-		 = true || Boolean.getBoolean("findbugs.tg.active");
-	
+	private static final boolean active = true;
 
 	BugReporter bugReporter;
 
