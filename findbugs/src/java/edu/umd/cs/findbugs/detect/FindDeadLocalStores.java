@@ -268,13 +268,13 @@ public class FindDeadLocalStores implements Detector {
 				prevOpCode = prev.getInstruction().getOpcode();
 				}
 
-           InstructionHandle prev2 = prev == null ? null : prev.getPrev();
+			if (prev != null && prev.getInstruction() instanceof GETFIELD) {
+				InstructionHandle prev2 = prev.getPrev();
 
-			if (prev2 != null
-                                && prev2.getInstruction() instanceof ALOAD
-                                && prev.getInstruction() instanceof GETFIELD)
-				propertySet.addProperty(DeadLocalStoreProperty.CACHING_VALUE);
-
+				if (prev2 != null
+                                && prev2.getInstruction() instanceof ALOAD)
+					propertySet.addProperty(DeadLocalStoreProperty.CACHING_VALUE);
+			}
 
 			
 			if (ins instanceof IINC) {
