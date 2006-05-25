@@ -50,11 +50,4 @@ public interface IsNullValueAnalysisFeatures {
 	public static final boolean NCP_EXTRA_BRANCH =
 		Boolean.getBoolean("inva.ncpExtraBranch");
 	
-	/**
-	 * If this property is true, then we assume parameters
-	 * and return values can be null (but aren't definitely null).
-	 */
-	public static final boolean UNKNOWN_VALUES_ARE_NSP =
-		Boolean.getBoolean("findbugs.nullderef.assumensp");
-
 }
