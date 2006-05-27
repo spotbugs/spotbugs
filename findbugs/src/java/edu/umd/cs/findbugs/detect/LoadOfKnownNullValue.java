@@ -86,7 +86,9 @@ public class LoadOfKnownNullValue implements Detector {
 				int index = load.getIndex();
 				IsNullValue v = frame.getValue(index);
 				if (!v.isDefinitelyNull()) {
-					linesWithLoadsOfNotDefinitelyNullValues.set(lineNumbers.getSourceLine(handle.getPosition()));
+					int sourceLine = lineNumbers.getSourceLine(handle.getPosition());
+					if (sourceLine > 0)
+					linesWithLoadsOfNotDefinitelyNullValues.set(sourceLine);
 				}
 		}
 		}
