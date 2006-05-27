@@ -1,7 +1,9 @@
 package edu.umd.cs.findbugs.detect;
 
+import java.util.BitSet;
 import java.util.Iterator;
 
+import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ARETURN;
@@ -51,12 +53,44 @@ public class LoadOfKnownNullValue implements Detector {
 
 	private void analyzeMethod(ClassContext classContext, Method method)
 			throws CFGBuilderException, DataflowAnalysisException {
+		BitSet lineMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
+		BitSet linesWithLoadsOfNotDefinitelyNullValues = null;
+		
 		CFG cfg = classContext.getCFG(method);
 		IsNullValueDataflow nullValueDataflow = classContext
 				.getIsNullValueDataflow(method);
 		MethodGen methodGen = classContext.getMethodGen(method);
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 
+		if (lineMentionedMultipleTimes.cardinality() > 0) {
+			linesWithLoadsOfNotDefinitelyNullValues = new BitSet();
+			LineNumberTable lineNumbers = method.getLineNumberTable();
+			for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+				Location location = i.next();
+
+				InstructionHandle handle = location.getHandle();
+				Instruction ins = handle.getInstruction();
+				if (!(ins instanceof ALOAD))
+					continue;
+
+				IsNullValueFrame frame = nullValueDataflow
+						.getFactAtLocation(location);
+				if (!frame.isValid()) {
+					// This basic block is probably dead
+					continue;
+				}
+				// System.out.println(handle.getPosition() + "\t" + ins.getName() +  "\t" + frame);
+				
+				ALOAD load = (ALOAD) ins;
+
+				int index = load.getIndex();
+				IsNullValue v = frame.getValue(index);
+				if (!v.isDefinitelyNull()) {
+					linesWithLoadsOfNotDefinitelyNullValues.set(lineNumbers.getSourceLine(handle.getPosition()));
+				}
+		}
+		}
+		// System.out.println(nullValueDataflow);
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 
@@ -64,7 +98,6 @@ public class LoadOfKnownNullValue implements Detector {
 			Instruction ins = handle.getInstruction();
 			if (!(ins instanceof ALOAD))
 				continue;
-			ALOAD load = (ALOAD) ins;
 
 			IsNullValueFrame frame = nullValueDataflow
 					.getFactAtLocation(location);
@@ -72,6 +105,10 @@ public class LoadOfKnownNullValue implements Detector {
 				// This basic block is probably dead
 				continue;
 			}
+			// System.out.println(handle.getPosition() + "\t" + ins.getName() +  "\t" + frame);
+			
+			ALOAD load = (ALOAD) ins;
+
 			int index = load.getIndex();
 			IsNullValue v = frame.getValue(index);
 			if (v.isDefinitelyNull()) {
@@ -86,7 +123,11 @@ public class LoadOfKnownNullValue implements Detector {
 					// probably stored for duration of finally block
 					continue;
 				}
-				if (sourceLineAnnotation.getStartLine() > prevSourceLineAnnotation.getEndLine()) {
+				int startLine = sourceLineAnnotation.getStartLine();
+				if (startLine > 0 && lineMentionedMultipleTimes.get(startLine) && linesWithLoadsOfNotDefinitelyNullValues.get(startLine))
+					continue;
+				
+				if (startLine > prevSourceLineAnnotation.getEndLine()) {
 					// probably stored for duration of finally block
 					// System.out.println("Inverted line");
 					continue;
@@ -94,6 +135,8 @@ public class LoadOfKnownNullValue implements Detector {
 				int priority = NORMAL_PRIORITY;
 				
 				if (!v.isChecked()) priority++;
+				// System.out.println("lineMentionedMultipleTimes: " + lineMentionedMultipleTimes);
+				// System.out.println("linesWithLoadsOfNonNullValues: " + linesWithLoadsOfNotDefinitelyNullValues);
 				
 				bugReporter.reportBug(new BugInstance(this,
 						"NP_LOAD_OF_KNOWN_NULL_VALUE",
