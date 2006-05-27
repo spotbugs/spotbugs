@@ -195,7 +195,7 @@ public class FindDeadLocalStores implements Detector {
 			
 			IndexedInstruction ins = (IndexedInstruction) location.getHandle().getInstruction();
 			int local = ins.getIndex();
-			int position = location.getHandle().getPosition()+1;
+			int position = location.getHandle().getNext().getPosition();
 			// Heuristic: name of local variable.
 			LocalVariableTable localVariableTable = method.getLocalVariableTable();
 			String localName = "?";
@@ -203,10 +203,23 @@ public class FindDeadLocalStores implements Detector {
 
 				LocalVariable lv1 = localVariableTable.getLocalVariable(local, position);
 				// System.out.println("Local variable " + local + " at " +  position + " = " + lv1);
+				if (lv1 == null) {
+					 // System.out.println("Local variable " + local + " at " +  position + " = " + lv1);
+					
+					position = location.getHandle().getPosition();
+					lv1 = localVariableTable.getLocalVariable(local, position);
+					 // System.out.println("Local variable " + local + " at " +  position + " = " + lv1);
+						
+				}
 				if (lv1 != null) {
 					localName = lv1.getName();
 					if (EXCLUDED_LOCALS.contains(localName)) continue;
 					propertySet.setProperty(DeadLocalStoreProperty.LOCAL_NAME, localName);
+				} else if (false) {
+					System.out.println("Analyzing method " + classContext.getJavaClass().getClassName() + "." + method.getName());
+
+					System.out.println("   Can't find name for " + local + "@" + position);
+					System.out.println(localVariableTable); 
 				}
 			}
 			
