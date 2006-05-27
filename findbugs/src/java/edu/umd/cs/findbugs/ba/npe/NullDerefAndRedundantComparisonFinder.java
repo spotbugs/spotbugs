@@ -84,21 +84,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		this.method = method;
 		this.invDataflow = invDataflow;
 		this.collector = collector;
-		this.lineMentionedMultipleTimes = new BitSet();
-		BitSet foundOnce = new BitSet();
-		int lineNum = -1;
-
-		LineNumberTable lineNumberTable = method.getLineNumberTable();
-		if (lineNumberTable != null) 
-		for(LineNumber  line : lineNumberTable.getLineNumberTable()) {
-			int newLine = line.getLineNumber();
-			if (newLine == lineNum || newLine == -1) continue;
-			lineNum = newLine;
-			if (foundOnce.get(lineNum))
-				this.lineMentionedMultipleTimes.set(lineNum);
-			else 
-				foundOnce.set(lineNum);	
-		}
+		this.lineMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
 		
 		this.redundantBranchList = new LinkedList<RedundantBranch>();
 		this.definitelySameBranchSet = new BitSet();

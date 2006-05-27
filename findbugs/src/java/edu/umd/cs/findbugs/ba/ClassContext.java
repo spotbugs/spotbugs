@@ -32,6 +32,8 @@ import java.util.WeakHashMap;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LineNumber;
+import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -1312,6 +1314,26 @@ public class ClassContext {
 	public CallListDataflow getCallListDataflow(Method method)
 			throws CFGBuilderException, DataflowAnalysisException {
 		return callListDataflowFactory.getAnalysis(method);
+	}
+	
+	public static BitSet linesMentionedMultipleTimes(Method method) {
+		BitSet lineMentionedMultipleTimes = new BitSet();
+		Code code = method.getCode();
+		if (code == null || code.getExceptionTable() == null) return lineMentionedMultipleTimes;
+		BitSet foundOnce = new BitSet();
+		LineNumberTable lineNumberTable = method.getLineNumberTable();
+		int lineNum = -1;
+		if (lineNumberTable != null) 
+			for(LineNumber  line : lineNumberTable.getLineNumberTable()) {
+				int newLine = line.getLineNumber();
+				if (newLine == lineNum || newLine == -1) continue;
+				lineNum = newLine;
+				if (foundOnce.get(lineNum))
+					lineMentionedMultipleTimes.set(lineNum);
+				else 
+					foundOnce.set(lineNum);	
+			}
+		return lineMentionedMultipleTimes;
 	}
 }
 
