@@ -161,7 +161,7 @@
          </action>
          <filter
                name="type"
-               value="de.tobject.findbugs.findbugsMarker">
+               value="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
          </filter>
       </objectContribution>
      
@@ -207,7 +207,7 @@
    <extension
          point="org.eclipse.ui.ide.markerImageProviders">
       <imageprovider
-            markertype="de.tobject.findbugs.findbugsMarker"
+            markertype="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"
             icon="icons/bugAnnotation.gif"
             id="de.tobject.findbugs.imageprovider">
       </imageprovider>
