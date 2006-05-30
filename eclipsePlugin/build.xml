@@ -32,6 +32,7 @@
 	<property name="tools.dir" value="tools"/>
 	<!-- the binaries/classes, built by eclipse. -->
 	<property name="bin.dir" value="bin" />
+	<property name="site.dir" value="${bin.dir}/site" />
 
 	<path id="plugin.classpath">
 		<fileset dir="${eclipsePlugin.dir}">
@@ -135,6 +136,37 @@
 		<zip destfile="${bin.dir}/${plugin.id}_${plugin.version}.zip">
 			<zipfileset prefix="${plugin.id}_${plugin.version}" dir="${dist.dir}" includes="**"/>
 		</zip>
+	</target>
+
+	<target name="site" depends="dist" description="create files for eclipse auto-update site">
+		<filterset id="sitevars">
+			  <filter token="PLUGIN_ID" value="${plugin.id}"/>
+			  <filter token="PLUGIN_VERSION" value="${plugin.version}"/>
+			  <filter token="FEATURE_ID" value="${plugin.id}"/>
+			  <filter token="FEATURE_VERSION" value="${plugin.version}"/>
+		</filterset>
+
+		<mkdir dir="${site.dir}"/>
+		<mkdir dir="${site.dir}/features"/>
+		<mkdir dir="${site.dir}/plugins"/>
+
+		<!-- plugin.jar: rename the .zip file from the 'dist' target -->
+		<copy file="${bin.dir}/${plugin.id}_${plugin.version}.zip" toFile="${site.dir}/plugins/${plugin.id}_${plugin.version}.jar"/>
+
+		<!-- feature.jar -->
+		<copy file="${fbeclipse.dir}/plugin_feature.xml" toFile="${site.dir}/feature.xml">
+		  <filterset refid="sitevars"/>
+		</copy>
+		<!-- use zip task, not jar task, since we don't want a manifest -->
+		<zip destfile="${site.dir}/features/${plugin.id}_${plugin.version}.jar" compress="false">
+			<fileset file="${site.dir}/feature.xml"/>
+		</zip>
+		<move file="${site.dir}/feature.xml" tofile="${site.dir}/.feature.xml"/>
+
+		<!-- site.xml -->
+		<copy file="${fbeclipse.dir}/plugin_site.xml" toFile="${site.dir}/site.xml">
+		  <filterset refid="sitevars"/>
+		</copy>
 	</target>
 
 	<target name="fbjars" description="Copy required jar files from the main findbugs project (which should be a sibling of this project)">

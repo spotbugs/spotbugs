@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+
+   <description url="http://findbugs.cs.umd.edu/eclipse">
+      This is the Eclipse update site for FindBugs features.
+   </description>
+
+   <feature url="features/@FEATURE_ID@_@FEATURE_VERSION@.jar"
+            id="@FEATURE_ID@"
+            version="@FEATURE_VERSION@">
+      <category name="FindBugs"/>
+   </feature>
+
+   <category-def name="FindBugs" label="FindBugs">
+      <description>
+         This is the Eclipse category for FindBugs features.
+      </description>
+   </category-def>
+
+</site>
