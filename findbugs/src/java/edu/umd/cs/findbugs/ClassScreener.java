@@ -33,8 +33,8 @@ import static edu.umd.cs.findbugs.util.Strings.replace;
  * a) don't break windows platform by hard-coding '/' as the directory separator
  * b) store list of Matchers, not Patterns, so we don't keep instantiating Matchers
  * c) fix suffix bug, so FooBar and Foo$Bar no longer match Bar
- * d) addAllowedPackage() in 1.5 can now handle unicode chars in filenames, though
- *    we still may not be handling every case mentioned in section 7.2.1 of the JLS
+ * d) addAllowedPackage() can now handle unicode chars in filenames, though we
+ *    still may not be handling every case mentioned in section 7.2.1 of the JLS
  *
  * @see FindBugs
  * @author David Hovemeyer
@@ -48,11 +48,8 @@ public class ClassScreener {
 	private static final String START = "(?:^|"+SEP+")"; // (?:) is a non-capturing group
 
 	/** regular expression fragment to match a char of a class or package name.
-	 *  For unicode goodness we use the \p{javaJavaIdentifierPart} construct, but
-	 *  that requires jdk1.5 so fall back to an alternate if we're running in 1.4. */
-	private static final String JAVA_IDENTIFIER_PART =
-		JavaVersion.getRuntimeVersion().isSameOrNewerThan(JavaVersion.JAVA_1_5)
-		? "\\p{javaJavaIdentifierPart}" : "[\\p{Alnum}_$]";
+	 *  Actually, we just allow any char except a dot or a directory separator. */
+	private static final String JAVA_IDENTIFIER_PART = "[^./\\\\]";
 
 	private LinkedList<Matcher> patternList;
 
