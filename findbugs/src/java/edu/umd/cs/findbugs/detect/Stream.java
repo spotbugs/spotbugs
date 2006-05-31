@@ -60,6 +60,9 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 	private int instanceParam;
 	private boolean isClosed;
 
+	public String toString() {
+		return streamBase +":" + openLocation;
+	}
 	/**
 	 * Constructor.
 	 * By default, Stream objects are marked as uninteresting.
