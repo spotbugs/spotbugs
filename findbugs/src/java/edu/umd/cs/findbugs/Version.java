@@ -47,7 +47,7 @@ public class Version {
 	 * Release candidate number.
 	 * "0" indicates that the version is not a release candidate.
 	 */
-	public static final int RELEASE_CANDIDATE = 1;
+	public static final int RELEASE_CANDIDATE = 2;
 
 	private static final String RELEASE_SUFFIX_WORD =
 		(RELEASE_CANDIDATE > 0 ? "rc" + RELEASE_CANDIDATE : "dev");
@@ -61,7 +61,7 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = "May 15, 2006";
+	public static final String DATE = "May 31, 2006";
 
 	/**
 	 * Version of Eclipse plugin.
