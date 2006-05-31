@@ -150,9 +150,11 @@
 		<mkdir dir="${site.dir}/features"/>
 		<mkdir dir="${site.dir}/plugins"/>
 
-		<!-- plugin.jar: rename the .zip file from the 'dist' target -->
-		<copy file="${bin.dir}/${plugin.id}_${plugin.version}.zip" toFile="${site.dir}/plugins/${plugin.id}_${plugin.version}.jar"/>
-
+		<!-- plugin.jar: can't rename the .zip file from the 'dist' target because of the prefix -->
+		<zip destfile="${site.dir}/plugins/${plugin.id}_${plugin.version}.jar">
+			<fileset dir="${dist.dir}" includes="**"/>
+		</zip>
+		
 		<!-- feature.jar -->
 		<copy file="${fbeclipse.dir}/plugin_feature.xml" toFile="${site.dir}/feature.xml">
 		  <filterset refid="sitevars"/>
