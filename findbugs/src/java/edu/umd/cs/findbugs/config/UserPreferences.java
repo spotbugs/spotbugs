@@ -43,6 +43,7 @@ import java.util.Properties;
 
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 
 /**
  * User Preferences outside of any one Project.
@@ -178,7 +179,7 @@ public class UserPreferences implements Cloneable {
 			File prefFile = new File(System.getProperty("user.home"), PREF_FILE_NAME); 
 			write(new FileOutputStream(prefFile));
 		} catch (IOException e) {
-			// Ignore
+			if (FindBugs.DEBUG) e.printStackTrace(); // Ignore
 		}
 	}
 
