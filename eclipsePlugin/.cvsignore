@@ -1,5 +1,5 @@
 .fbwarnings
-build
+bin
 dist
 local.properties
 *.patch
