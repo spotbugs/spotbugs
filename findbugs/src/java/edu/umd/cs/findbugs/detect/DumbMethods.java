@@ -194,7 +194,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		&& getNameConstantOperand().equals("readLine")
 		&& getSigConstantOperand().equals("()Ljava/lang/String;");
 
-		System.out.println(randomNextIntState + " " + OPCODE_NAMES[seen] + " " + getMethodName());
+		// System.out.println(randomNextIntState + " " + OPCODE_NAMES[seen] + " " + getMethodName());
 	switch(randomNextIntState) {
 		case 0:
 			if (seen == INVOKEVIRTUAL
