@@ -194,12 +194,12 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		&& getNameConstantOperand().equals("readLine")
 		&& getSigConstantOperand().equals("()Ljava/lang/String;");
 
-		
+		System.out.println(randomNextIntState + " " + OPCODE_NAMES[seen] + " " + getMethodName());
 	switch(randomNextIntState) {
 		case 0:
 			if (seen == INVOKEVIRTUAL
 				&& getClassConstantOperand().equals("java/util/Random")
-				&& getNameConstantOperand().equals("nextLong")
+				&& getNameConstantOperand().equals("nextDouble")
 			   || seen == INVOKESTATIC
 				&& getClassConstantOperand().equals("java/lang/Math")
 				&& getNameConstantOperand().equals("random"))
@@ -212,10 +212,12 @@ public class DumbMethods extends BytecodeScanningDetector  {
 			        .addSourceLine(this));
 			  randomNextIntState = 0;
 			  }
+			else if (seen == DMUL) randomNextIntState = 4;
 			else randomNextIntState = 2;
 			break;
 		case 2:
 			if (seen == I2D) randomNextIntState = 3;
+			else if (seen == DMUL) randomNextIntState = 4;
 			else randomNextIntState = 0;
 			break;
 		case 3:
