@@ -78,21 +78,20 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * (value "edu.umd.cs.findbugs.plugin.eclipse", was <code>"de.tobject.findbugs"</code>).
 	 */
 	public static final String PLUGIN_ID = "edu.umd.cs.findbugs.plugin.eclipse"; //$NON-NLS-1$
-	public static final String CODEBASE_ID = "de.tobject.findbugs"; //$NON-NLS-1$
 	
 	/**
 	 * The identifier for the FindBugs builder
-	 * (value <code>"de.tobject.findbugs.findbugsbuilder"</code>).
+	 * (value <code>"edu.umd.cs.findbugs.plugin.eclipse.findbugsbuilder"</code>).
 	 */
-	public static final String BUILDER_ID = CODEBASE_ID + ".findbugsBuilder"; //$NON-NLS-1$
+	public static final String BUILDER_ID = PLUGIN_ID + ".findbugsBuilder"; //$NON-NLS-1$
 	
 	/**
 	 * The identifier for the FindBugs nature
-	 * (value <code>"de.tobject.findbugs.findbugsnature"</code>).
+	 * (value <code>"edu.umd.cs.findbugs.plugin.eclipse.findbugsnature"</code>).
 	 *
 	 * @see org.eclipse.core.resources.IProject#hasNature(java.lang.String)
 	 */
-	public static final String NATURE_ID = CODEBASE_ID + ".findbugsNature"; //$NON-NLS-1$
+	public static final String NATURE_ID = PLUGIN_ID + ".findbugsNature"; //$NON-NLS-1$
 	
 	// Debugging options
 	private static final String PLUGIN_DEBUG = PLUGIN_ID + "/debug/plugin"; //$NON-NLS-1$
