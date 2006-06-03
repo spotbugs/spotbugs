@@ -33,9 +33,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferencePage;
@@ -748,7 +750,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 				//System.out.println("Filter setting for project changed!");
 				filterOptionsChanged = true;
 			}
-		} else if (!currentExtendedPreferences.equals(origExtendedPreferences)) {
+		} 
+		if (!currentExtendedPreferences.equals(origExtendedPreferences)) {
 			try {
 				// If user prefs do not exist save them to be sure a base prefs
 				// file exist.
@@ -765,9 +768,11 @@ public class FindbugsPropertyPage extends PropertyPage {
 				FindbugsPlugin.getDefault().logException(e,
 						"Could not store FindBugs preferences for project");
 			}
-
-			// TODO: The project needs to be rebuilt here because the extended prefs
-			// influence the warnings report
+			
+			// If already enabled (and still enabled) trigger a Findbugs rebuild here
+			if (this.initialEnabled && selection) {
+				runFindbugsBuilder();
+			}
 		}
 
 		// Update whether or not FindBugs is run automatically.
@@ -804,6 +809,36 @@ public class FindbugsPropertyPage extends PropertyPage {
 			System.err.println("Exception: " + e); //$NON-NLS-1$
 		}
 		return result;
+	}
+	
+	protected IProject getProject() {
+		return project;
+	}
+	
+	private void runFindbugsBuilder() {
+		ProgressMonitorDialog monitor = new ProgressMonitorDialog(getShell());
+		try {
+			monitor.run(true, true, new IRunnableWithProgress() {
+
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {					
+					try {
+						getProject().build(IncrementalProjectBuilder.CLEAN_BUILD, FindbugsPlugin.BUILDER_ID, null, monitor);
+					} catch (OperationCanceledException e) { 
+						// Do nothing when operation cancelled.
+					}catch (CoreException e) {
+						FindbugsPlugin.getDefault().logException(e,
+						"Error while runnning FindBugs builder for project");
+					}
+				}
+				
+			});
+		} catch (InvocationTargetException e) {
+			FindbugsPlugin.getDefault().logException(e,
+			"Error while runnning FindBugs builder for project");
+		} catch (InterruptedException e) {
+			FindbugsPlugin.getDefault().logException(e,
+			"Findbugs builder was interrupted");	
+		}
 	}
 
 	/**
