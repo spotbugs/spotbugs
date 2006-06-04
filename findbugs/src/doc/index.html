@@ -68,7 +68,7 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
 <li>Updated detectors
     <ul><li>BadRegEx.java: understands Pattern.LITERAL, warns about "."</li>
         <li>FindUnreleasedLock.java: fewer false positives</li>
-        <li>DumbMethods.java: check for vacuous comparisons to MAX_INTEGER or MIN_INTEGER</li>
+        <li>DumbMethods.java: check for vacuous comparisons to MAX_INTEGER or MIN_INTEGER, fix bugs detecting DM_NEXTINT_VIA_NEXTDOUBLE</li>
         <li>FindPuzzlers.java: detect <tt>n%2==1</tt>, detect toString() on array types
         <li>FindInconsistentSync2.java: detects IS_FIELD_NOT_GUARDED</li>
         <li>MethodReturnCheck.java: add check for discarded newly constructed values, increase priority of some ignored constructed exceptions</li>
@@ -108,6 +108,7 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
     </ul></li>
 <li>fix bug that was generating duplicate uids</li>
 <li>fix bug with <code>-onlyAnalyze some.package.*</code> on jdk1.4</li>
+<li>fix regression bug in DismantleByteCode.getRefConstantOperand()</li>
 <li>reordered some bugInstances so that source line annotations come last</li>
 <li>removed references to unused java system properties</li>
 <li>French translation updates (David Cotton)</li>
