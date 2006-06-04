@@ -159,10 +159,10 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 		if (refConstantOperand == null) {
 			StringBuffer ref = new StringBuffer(dottedClassConstantOperand.length() + nameConstantOperand.length() + dottedSigConstantOperand.length() + 5);
 		ref.append(dottedClassConstantOperand)
-        .append(".")
-        .append(nameConstantOperand)
-        .append(" : ")
-        .append(dottedSigConstantOperand);
+			.append(".")
+			.append(nameConstantOperand)
+			.append(" : ")
+			.append(dottedSigConstantOperand);
 		refConstantOperand = ref.toString();
 		}
 		return refConstantOperand;
@@ -257,10 +257,10 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 		return PC;
 	}
 
-	/** 
-  	 * return previous opcode; 
+	/**
+	 * return previous opcode; 
 	 * @param offset 0 for current opcode, 1 for one before that, etc.
-	*/
+	 */
 	public int getPrevOpcode(int offset) {
 		if (offset >= prevOpcode.length || offset > sizePrevOpcodeBuffer)
 			return NOP;
@@ -345,7 +345,7 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 		}
 
 	@Override
-         public void visit(Code obj) {
+	public void visit(Code obj) {
 		sizePrevOpcodeBuffer = 0;
 		currentPosInPrevOpcodeBuffer = prevOpcode.length-1;
 
@@ -377,7 +377,7 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 						if (pad == 4) pad = 0;
 						int count = pad;
 						while (count > 0) 
-						  count -= byteStream.skipBytes(count);
+							count -= byteStream.skipBytes(count);
 						i += pad;
 						defaultSwitchOffset = byteStream.readInt();
 						branchOffset = defaultSwitchOffset;
@@ -398,7 +398,7 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 						if (pad == 4) pad = 0;
 						int count = pad;
 						while (count > 0) 
-						  count -= byteStream.skipBytes(count);
+							count -= byteStream.skipBytes(count);
 						i += pad;
 						defaultSwitchOffset = byteStream.readInt();
 						branchOffset = defaultSwitchOffset;
@@ -509,11 +509,11 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 							} else if (constantRefOperand instanceof ConstantCP) {
 								ConstantCP cp = (ConstantCP) constantRefOperand;
 								ConstantClass clazz
-								        = (ConstantClass) getConstantPool().getConstant(cp.getClassIndex());
+									= (ConstantClass) getConstantPool().getConstant(cp.getClassIndex());
 								classConstantOperand = getStringFromIndex(clazz.getNameIndex());
 								dottedClassConstantOperand = replaceSlashesWithDots(classConstantOperand);
 								ConstantNameAndType sig
-								        = (ConstantNameAndType) getConstantPool().getConstant(cp.getNameAndTypeIndex());
+									= (ConstantNameAndType) getConstantPool().getConstant(cp.getNameAndTypeIndex());
 								nameConstantOperand = getStringFromIndex(sig.getNameIndex());
 								sigConstantOperand = getStringFromIndex(sig.getSignatureIndex());
 								dottedSigConstantOperand = replaceSlashesWithDots(sigConstantOperand);
@@ -782,7 +782,7 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 		formatter.setMinimumIntegerDigits(4);
 		formatter.setGroupingUsed(false);
 	}
-	public   void printOpCode( int seen) {
+	public void printOpCode( int seen) {
 		System.out.print("  TestingGround: [" + formatter.format(getPC()) + "]  " + OPCODE_NAMES[seen]);
 		if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC))
 			System.out.print("   " + getClassConstantOperand() + "." + getNameConstantOperand() + " " + getSigConstantOperand());
