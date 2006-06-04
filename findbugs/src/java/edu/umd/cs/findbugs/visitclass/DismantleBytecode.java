@@ -158,7 +158,7 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 			throw new IllegalStateException("getRefConstantOperand called but value not available");
 		if (refConstantOperand == null) {
 			StringBuffer ref = new StringBuffer(dottedClassConstantOperand.length() + nameConstantOperand.length() + dottedSigConstantOperand.length() + 5);
-		ref.append(dottedSigConstantOperand)
+		ref.append(dottedClassConstantOperand)
         .append(".")
         .append(nameConstantOperand)
         .append(" : ")
