@@ -188,7 +188,7 @@ public class DetectorFactoryCollection {
 		        	path = URLDecoder.decode(path, "UTF-8");
 		        } catch (UnsupportedEncodingException uee) {
 		        }
-		        System.out.println("Jaws uses plugin: " + path);
+		        if (FindBugs.DEBUG) System.out.println("Jaws uses plugin: " + path);
 		        plugins[0] = new File(path);
 		        setPluginList(plugins);
 		    }
