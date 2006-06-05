@@ -246,15 +246,9 @@ public class UserPreferences implements Cloneable {
 	 * @param projectName project filename
 	 */
 	public void useProject(String projectName) {
-		for (int i = 0; i < recentProjectsList.size(); i++) {
-			if (projectName.equals(recentProjectsList.get(i))) {
-				recentProjectsList.remove(i);
-				recentProjectsList.addFirst(projectName);
-				return;
-			}
-		}
+		removeProject(projectName);
 		recentProjectsList.addFirst(projectName);
-		if (recentProjectsList.size() > MAX_RECENT_FILES)
+		while (recentProjectsList.size() > MAX_RECENT_FILES)
 			recentProjectsList.removeLast();
 	}
 
@@ -264,12 +258,11 @@ public class UserPreferences implements Cloneable {
 	 * @param projectName project filename
 	 */
 	public void removeProject(String projectName) {
-		//It really should always be in slot 0, but...
-		for (int i = 0; i < recentProjectsList.size(); i++) {
-			if (projectName.equals(recentProjectsList.get(i))) {
-				recentProjectsList.remove(i);
-				break;
-			}
+		//It should only be in list once (usually in slot 0) but check entire list...
+		Iterator it = recentProjectsList.iterator();
+		while (it.hasNext()) {
+			//LinkedList, so remove() via iterator is faster than remove(index).
+			if (projectName.equals(it.next())) it.remove();
 		}
 	}
 	
