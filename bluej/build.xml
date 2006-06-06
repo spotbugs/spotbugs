@@ -39,8 +39,8 @@
 		</target>
 	
 	<target name="dist" depends="clean,classes" description="Build a plugin distributable">
-			<jar destfile="${dist.dir}/test.jar">
-				 <fileset dir="${bin.dir}/classes"/>
+			<jar destfile="${dist.dir}/FindBugs.jar">
+				 <fileset dir="${bin.dir}"/>
 
 				 <zipfileset src="lib/findbugs.jar"/>
 				 <zipfileset src="lib/coreplugin.jar"/>

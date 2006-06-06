@@ -12,9 +12,9 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 
 
 public class RunFindbugs {
-	public static void main(String args[]) throws IOException, InterruptedException {
+	public static SortedBugCollection getBugs(String[] classes) throws IOException, InterruptedException {
 		Project findBugsProject = new Project();
-		for(String f : args)
+		for(String f : classes)
 			findBugsProject.addFile(f);
 		final SortedBugCollection bugs = new SortedBugCollection();
 		BugReporter reporter = new MyReporter(bugs);
@@ -27,7 +27,10 @@ public class RunFindbugs {
 		System.setProperty("findbugs.jaws", "true");
 		
 		findBugs.execute();
-		for(BugInstance bug : bugs.getCollection()) {
+		
+		return bugs;
+		
+/*		for(BugInstance bug : bugs.getCollection()) {
 			SourceLineAnnotation source = bug.getPrimarySourceLineAnnotation();
 
 			System.out.println(bug.getPrimarySourceLineAnnotation());
@@ -35,7 +38,7 @@ public class RunFindbugs {
 			System.out.println(bug.getBugPattern().getDetailHTML());
 			
 		}
-
+*/
 			
 	}
 
