@@ -1,0 +1,59 @@
+<project name="fbbluej" default="dist">
+	<property name="src.dir" value="src"/>
+		<property name="lib.dir" value="lib"/>
+		<property name="dist.dir" value="dist"/>
+		<property name="bin.dir" value="bin" />
+
+
+		<path id="classpath">
+			<fileset dir="${lib.dir}">
+				<include name="*.jar"/>
+			</fileset>
+		</path>
+
+	<target name="init">
+			<mkdir dir="${dist.dir}"/>
+			<mkdir dir="${bin.dir}"/>
+		</target>
+	<target name="clean" depends="init" description="Clean up temporary files">
+			<delete>
+				<fileset dir="${dist.dir}" includes="**"/>
+			</delete>
+			<delete>
+				<fileset dir="${bin.dir}" excludes=".cvsignore" includes="**" />
+			</delete>
+			<mkdir dir="${dist.dir}"/>
+			<mkdir dir="${bin.dir}"/>
+		</target>
+	<target name="classes" depends="init" description="Compile java source files">
+
+	        <!-- Compile Java source files. -->
+	        <javac srcdir="${src.dir}"
+			  destdir="${bin.dir}"
+	                source="1.5"
+	                target="1.5"
+	                debug="on">
+	            <classpath refid="classpath"/>
+	        </javac>
+		
+		</target>
+	
+	<target name="dist" depends="clean,classes" description="Build a plugin distributable">
+			<jar destfile="${dist.dir}/test.jar">
+				 <fileset dir="${bin.dir}/classes"/>
+
+				 <zipfileset src="lib/findbugs.jar"/>
+				 <zipfileset src="lib/coreplugin.jar"/>
+				 <zipfileset src="lib/bcel.jar"/>
+				 <zipfileset src="lib/dom4j-full.jar"/>
+			
+				
+				<manifest>
+							<attribute name="Main-Class" value="edu.umd.cs.findbugs.bluej.test.HelloWorldExtension"/>
+							</manifest>
+				</jar>
+
+		</target>
+
+	</project>
+	
