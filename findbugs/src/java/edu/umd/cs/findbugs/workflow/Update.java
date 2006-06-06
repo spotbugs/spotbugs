@@ -75,7 +75,9 @@ public class Update {
 			"only consider two warnings to be the same if their priorities match exactly");
 			addOption("-output", "output file",
 					"explicit filename for merged results (standard out used if not specified)");
-	
+			addSwitch("-quiet", 
+			"don't generate any outout to standard out unless there is an error");
+
 		}
 
 		@Override
@@ -95,7 +97,7 @@ public class Update {
 			}
 			else 	if (option.equals("-precisePriorityMatch")) 
 				versionInsensitiveBugComparator.setComparePriorities(true);
-				
+			else if (option.equals("-quiet")) verbose = false;
 			else throw new IllegalArgumentException("no option " + option);
 
 		}
@@ -262,7 +264,7 @@ public class Update {
 
 	}
 
-	 static boolean verbose = false;
+	 static boolean verbose = true;
 
 	public static String [] getFilePathParts(String filePath) {
 		return filePath.split(File.separator);
@@ -274,7 +276,7 @@ public class Update {
 		UpdateCommandLine commandLine = new UpdateCommandLine();
 		int argCount = commandLine.parse(args, 2, Integer.MAX_VALUE, USAGE);
 
-		verbose = commandLine.outputFilename != null;
+		if (commandLine.outputFilename == null) verbose = false;
 		String[] firstPathParts = getFilePathParts(args[argCount]);
 		int commonPrefix = firstPathParts.length;
 		for(int i = argCount+1; i <= (args.length - 1); i++) {
