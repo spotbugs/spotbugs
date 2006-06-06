@@ -24,7 +24,7 @@ public class RunFindbugs {
 	    
 		
 		System.setProperty("findbugs.home", "/Users/pugh/Documents/eclipse-3.2/workspace/findbugs");
-		// System.setProperty("findbugs.jaws", "true");
+		System.setProperty("findbugs.jaws", "true");
 		
 		findBugs.execute();
 		for(BugInstance bug : bugs.getCollection()) {
