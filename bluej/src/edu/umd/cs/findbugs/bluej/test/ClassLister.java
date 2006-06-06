@@ -12,34 +12,35 @@ import bluej.extensions.ExtensionException;
 import bluej.extensions.event.CompileEvent;
 import bluej.extensions.event.CompileListener;
 
+/**
+ * Waits for compile events and, when a compile finishes, pops
+ * a list of all the classes modified in the time since it began.
+ * @author Reuven Lazarus
+ */
 public class ClassLister implements CompileListener
 {
 
-	long startTime = -1;
+	private long startTime = -1;
 	private BlueJ bluej;
-	
+
 	public ClassLister(BlueJ bluej)
 	{
 		this.bluej = bluej;
 	}
 	
+	/**
+	 * When a compile starts, make a note of the time.
+	 */
 	public void compileStarted(CompileEvent evt)
 	{
 		startTime = new Date().getTime();
 	}
 
-	public void compileError(CompileEvent evt)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	public void compileWarning(CompileEvent evt)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
+	/**
+	 * When the compile has completed successfully, generate a
+	 * list of all the .class files modified since it started,
+	 * and pop a dialog box.
+	 */
 	public void compileSucceeded(CompileEvent evt)
 	{
 		StringBuilder msg = new StringBuilder();
@@ -65,10 +66,13 @@ public class ClassLister implements CompileListener
 		JOptionPane.showMessageDialog(null, msg);
 	}
 
-	public void compileFailed(CompileEvent evt)
-	{
-		// TODO Auto-generated method stub
-
-	}
+	/** NOOP, but required by CompileListener interface */
+	public void compileError(CompileEvent evt) {}
+	
+	/** NOOP, but required by CompileListener interface */
+	public void compileWarning(CompileEvent evt) {}
+	
+	/** NOOP, but required by CompileListener interface */
+	public void compileFailed(CompileEvent evt) {}
 
 }

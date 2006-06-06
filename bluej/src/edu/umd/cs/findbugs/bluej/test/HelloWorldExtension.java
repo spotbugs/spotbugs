@@ -1,3 +1,5 @@
+// This line added to make sure I can do a CVS commit.
+
 package edu.umd.cs.findbugs.bluej.test;
 import bluej.extensions.BlueJ;
 import bluej.extensions.Extension;
