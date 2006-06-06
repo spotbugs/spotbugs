@@ -1,5 +1,3 @@
-// This line added to make sure I can do a CVS commit.
-
 package edu.umd.cs.findbugs.bluej.test;
 import bluej.extensions.BlueJ;
 import bluej.extensions.Extension;
@@ -18,6 +16,7 @@ public class HelloWorldExtension extends Extension
 	 * extension we can be less lazy and write the JAR manifest by hand, so we
 	 * won't need this.
 	 */
+	//This is Kristin's added comment.
 	public static void main(String[] args)
 	{
 		System.out.println("JAR is not executable.  Run the extension by"
