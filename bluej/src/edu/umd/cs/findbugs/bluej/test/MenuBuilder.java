@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JOptionPane;
 
 import bluej.extensions.BClass;
@@ -27,8 +28,9 @@ public class MenuBuilder extends MenuGenerator
 	@Override
 	public JMenuItem getToolsMenuItem(BPackage pckg)
 	{
-		JMenuItem result = new JMenuItem(new MenuAction());
-		result.setText("Hello, extension!");
+		JCheckBoxMenuItem result = new JCheckBoxMenuItem("CheckBox Something");
+		//JCheckBoxMenuItem result = new JCheckBoxMenuItem(new MenuAction());
+		//result.setText("CheckBox Something");
 		return result;
 	}
 
