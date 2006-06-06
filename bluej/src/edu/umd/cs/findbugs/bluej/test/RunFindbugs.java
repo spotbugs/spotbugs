@@ -22,7 +22,10 @@ public class RunFindbugs {
 		FindBugs findBugs = new FindBugs(reporter, findBugsProject);
 		reporter.setPriorityThreshold(Detector.NORMAL_PRIORITY);
 	    
+		
 		System.setProperty("findbugs.home", "/Users/pugh/Documents/eclipse-3.2/workspace/findbugs");
+		// System.setProperty("findbugs.jaws", "true");
+		
 		findBugs.execute();
 		for(BugInstance bug : bugs.getCollection()) {
 			SourceLineAnnotation source = bug.getPrimarySourceLineAnnotation();
