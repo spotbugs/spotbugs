@@ -87,6 +87,7 @@ public class MineBugHistory {
 	Map<Long, AppVersion> sequenceToAppVersionMap = new HashMap<Long, AppVersion>();
 	boolean formatDates = false;
 	boolean noTabs = false;
+	boolean summary = false;
 	
 	public MineBugHistory() {
 	}
@@ -102,8 +103,13 @@ public class MineBugHistory {
 		this.formatDates = value;
 	}
 
-	public void setNoTabs(boolean value) {
-		this.noTabs = value;
+	public void setNoTabs() {
+		this.noTabs = true;
+		this.summary = false;
+	}
+	public void setSummary() {
+		this.summary = true;
+		this.noTabs = false;
 	}
 
 	
@@ -148,11 +154,37 @@ public class MineBugHistory {
 
 	
 	
+
 	public void dump(PrintStream out) {
 		if (noTabs) dumpNoTabs(out);
+		else if (summary) dumpSummary(out);
 		else dumpOriginal(out);
 	}
 
+	public void dumpSummary(PrintStream out) {
+	
+		StringBuffer b = new StringBuffer();
+		
+		for (int i = Math.max(0,versionList.length - 10); i < versionList.length; ++i) {
+			Version version = versionList[i];
+			int added = version.get(ADDED) + version.get(NEWCODE);
+			int removed = version.get(REMOVED) + version.get(REMOVEDCODE);
+			b.append(" ");
+			if (added > 0) {
+				b.append('+'); b.append(added);
+			}
+			if (removed > 0) {
+				b.append('-'); b.append(removed); 
+			}
+			if (added == 0 && removed == 0) b.append('0');
+			
+			int paddingNeeded = 8 - b.length() % 8;
+			if (paddingNeeded > 0) b.append("        ".substring(0,paddingNeeded));
+		}
+			
+		out.println(b.toString());
+	}
+	
 	/** This is how dump() was implemented up to and including version 0.9.5. */
 	public void dumpOriginal(PrintStream out) {
 		out.println("seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active");
@@ -271,15 +303,16 @@ public class MineBugHistory {
 		MineBugHistoryCommandLine() {
 			addSwitch("-formatDates", "render dates in textual form");
 			addSwitch("-noTabs", "delimit columns with groups of spaces for better alignment");
+			addSwitch("-summary", "just summarize changes over the last ten entries");
 		}
 
 		public void handleOption(String option, String optionalExtraPart) {
 			if  (option.equals("-formatDates")) 
 				setFormatDates(true);
+			else if (option.equals("-noTabs")) setNoTabs();
+			else if (option.equals("-summary")) setSummary();
 			else 
-			if (option.equals("-noTabs")) setNoTabs(true);
-			else 
-			throw new IllegalArgumentException("unknown option: " + option);
+				throw new IllegalArgumentException("unknown option: " + option);
 		}
 
 		public void handleOptionWithArgument(String option, String argument) {
