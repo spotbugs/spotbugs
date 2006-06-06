@@ -20,13 +20,22 @@ public class MenuBuilder extends MenuGenerator
 {
 	private BlueJ bluej;
 
-	private Map<BProject, Boolean> isRunning = new HashMap<BProject, Boolean>();
+	private static Map<BProject, Boolean> isRunning = new HashMap<BProject, Boolean>();
+	
+	private static final boolean DEFAULT_RUNNING = false;
 	
 	public MenuBuilder(BlueJ bluej)
 	{
 		this.bluej = bluej;
 	}
 
+	public static boolean isRunning(BProject project)
+	{
+		if (!isRunning.containsKey(project))
+			return DEFAULT_RUNNING;
+		return isRunning.get(project);
+	}
+	
 	/**
 	 * @see bluej.extensions.MenuGenerator#getToolsMenuItem(bluej.extensions.BPackage)
 	 */
@@ -59,7 +68,7 @@ public class MenuBuilder extends MenuGenerator
 		{
 			BProject project = pckg.getProject();
 			if (!isRunning.containsKey(project))
-				isRunning.put(project, true);
+				isRunning.put(project, DEFAULT_RUNNING);
 			menu.setSelected(isRunning.get(project));
 		}
 		catch (ProjectNotOpenException notGonnaHappen)
@@ -79,6 +88,9 @@ public class MenuBuilder extends MenuGenerator
 			this.project = project;
 		}
 		
+		/**
+		 * Clicked. Update our records as to whether it's checked or not.
+		 */
 		public void actionPerformed(ActionEvent evt)
 		{
 			isRunning.put(project, ((JCheckBoxMenuItem)evt.getSource()).isSelected());
