@@ -68,9 +68,6 @@ public class RegularMenuBuilder extends MenuGenerator
 	private String[] allClassFileNames(BProject project) throws ProjectNotOpenException
 	{
 		ArrayList<String> classes = new ArrayList<String>();
-//		for (BPackage bp : pckg.getProject().getPackages())
-//			for (BClass bc : bp.getClasses())
-//				classes.add(bc.getClassFile().getAbsolutePath());
 
 		FilenameFilter isClassFile = new FilenameFilter()
 		{

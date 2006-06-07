@@ -16,6 +16,7 @@ public class FindBugsExtension extends Extension
 	public void startup(BlueJ bluej)
 	{
 		bluej.setMenuGenerator(new RegularMenuBuilder());
+		bluej.addCompileListener(new RunFindbugs(bluej));
 	}
 
 	@Override
