@@ -18,9 +18,14 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import bluej.extensions.BProject;
+import bluej.extensions.PackageNotFoundException;
+import bluej.extensions.ProjectNotOpenException;
+import bluej.extensions.editor.Editor;
+import bluej.extensions.editor.TextLocation;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 
 @SuppressWarnings("serial")
 public class ResultsFrame extends JFrame
@@ -30,8 +35,11 @@ public class ResultsFrame extends JFrame
 	
 	private JEditorPane description;
 	
+	private BProject currProject;
+	
 	public ResultsFrame(final SortedBugCollection bugs, BProject project)
 	{
+		currProject = project;
 		final ArrayList<BugInstance> bugList = new ArrayList<BugInstance>(bugs.getCollection());
 		
 		final JTable table = new JTable(new MyTableModel(bugList));
@@ -71,11 +79,44 @@ public class ResultsFrame extends JFrame
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 	}
 	
+	/*
+	 * Finds the editor that corresponds with the class the bug in the BugInstance
+	 * is in. Opens the editor and then highlights the bug and places the cursor 
+	 * at the beginning.
+	 */
 	private void showEditorAndHighlight(BugInstance instance) {
-		
-		
+		SourceLineAnnotation srcLine = instance.getPrimarySourceLineAnnotation();
+		try {
+			Editor srcEditor = currProject.getPackage(srcLine.getPackageName()).getBClass(getClassName(srcLine)).getEditor();
+			srcEditor.setVisible(true);
+			
+			//srcStartLine and srcEndLine created in case returned -1
+			int srcStartLine = srcLine.getStartLine();
+			int srcEndLine = srcLine.getEndLine();
+			
+			if(srcStartLine < 0)
+				srcStartLine++;
+			
+			if(srcEndLine < 0)
+				srcEndLine++;
+			
+			srcEditor.setCaretLocation(new TextLocation(srcStartLine, 0));
+			srcEditor.setSelection(new TextLocation(srcStartLine, 0), new TextLocation(srcEndLine, 0));
+		} catch (ProjectNotOpenException e) {
+			Log.recordBug(e);
+		} catch (PackageNotFoundException e) {
+			Log.recordBug(e);
+		}
 	}
-
+	
+	/*
+	 * Gets the source file and gets the name of the class from that.
+	 */
+	private String getClassName(SourceLineAnnotation srcLine) {
+		String str = srcLine.getSourceFile();
+		return str.substring(0, str.indexOf("."));
+	}
+	
 //	private ArrayList<String[]> parseBugInstances(SortedBugCollection bugs)
 //	{
 //		ArrayList<String[]> result = new ArrayList<String[]>();
@@ -124,7 +165,7 @@ public class ResultsFrame extends JFrame
 				return bugList.get(row).getPrimarySourceLineAnnotation().getSourceFile();
 			case 1:
 				int line = bugList.get(row).getPrimarySourceLineAnnotation().getStartLine();
-				return (line != -1 ? line : "");
+				return (line != -1 ? String.valueOf(line) : "");
 			case 2:
 				return bugList.get(row).getMessageWithoutPrefix();
 			default:

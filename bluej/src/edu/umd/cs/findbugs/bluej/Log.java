@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 public class Log {
-	final static boolean DEBUG = true;
-	static ArrayList<Exception> exceptionList = new ArrayList<Exception>();
+	private final static boolean DEBUG = true;
+	private static ArrayList<Exception> exceptionList = new ArrayList<Exception>();
 	
 	/**
 	 * Takes the exception and dependi on DEBUG either posts onto a dialog
