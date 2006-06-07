@@ -1,8 +1,11 @@
 package edu.umd.cs.findbugs.bluej;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -13,6 +16,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+
+import bluej.extensions.BProject;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -25,12 +30,7 @@ public class ResultsFrame extends JFrame
 	
 	private JEditorPane description;
 	
-	public ResultsFrame()
-	{
-		this(new SortedBugCollection());
-	}
-	
-	public ResultsFrame(final SortedBugCollection bugs)
+	public ResultsFrame(final SortedBugCollection bugs, BProject project)
 	{
 		final ArrayList<BugInstance> bugList = new ArrayList<BugInstance>(bugs.getCollection());
 		
@@ -59,10 +59,23 @@ public class ResultsFrame extends JFrame
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topScroll, bottomScroll);
 		setContentPane(splitPane);
 		
+		JButton showCode = new JButton("Show Code");
+		add(showCode);
+		showCode.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				showEditorAndHighlight(bugList.get(table.getSelectedRow()));
+			}
+		});
+		
 		pack();
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 	}
 	
+	private void showEditorAndHighlight(BugInstance instance) {
+		
+		
+	}
+
 //	private ArrayList<String[]> parseBugInstances(SortedBugCollection bugs)
 //	{
 //		ArrayList<String[]> result = new ArrayList<String[]>();
