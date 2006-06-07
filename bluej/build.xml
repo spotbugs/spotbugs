@@ -31,7 +31,7 @@
 	        <javac srcdir="${src.dir}"
 			  destdir="${bin.dir}"
 	                source="1.5"
-	                target="1.5"
+	                target="jsr14"
 	                debug="on">
 	            <classpath refid="classpath"/>
 	        </javac>
