@@ -2096,7 +2096,7 @@ This not necessarily a bug, but is worth examining
 ]]>
     </Details>
   </BugPattern>
-   <BugPattern type="TLW_TWO_LOCK_NOTIFY">
+   <BugPattern type="TLW_TWO_LOCK_NOTIFY"> <!-- deprecated (actually, never generated) -->
     <ShortDescription>Notify with two locks held</ShortDescription>
     <LongDescription>notify() or notifyAll*() with two locks held in {1}</LongDescription>
     <Details>
@@ -4371,6 +4371,20 @@ an indication of some misunderstanding or some other logic error.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="BC_NULL_INSTANCEOF"> <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
+    <ShortDescription>A known null value is checked to see if it is an instance of a type</ShortDescription>
+    <LongDescription>A known null value is checked to see if it is an instance of {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This instanceof test will always return false, since the value being checked is guaranteed to be null.
+Although this is safe, make sure it isn't
+an indication of some misunderstanding or some other logic error.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="BC_IMPOSSIBLE_INSTANCEOF">
     <ShortDescription>instanceof will always return false</ShortDescription>
     <LongDescription>instanceof will always return false in {1}, since a {2} can't be a {3}</LongDescription>
