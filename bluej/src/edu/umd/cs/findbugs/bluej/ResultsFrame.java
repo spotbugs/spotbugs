@@ -52,6 +52,7 @@ public class ResultsFrame extends JFrame
 			public void valueChanged(ListSelectionEvent evt)
 			{
 				description.setText(bugList.get(table.getSelectedRow()).getBugPattern().getDetailHTML());
+				showEditorAndHighlight(bugList.get(table.getSelectedRow()));
 			}	
 		});
 		
@@ -67,13 +68,14 @@ public class ResultsFrame extends JFrame
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topScroll, bottomScroll);
 		setContentPane(splitPane);
 		
+		/*Code here not work.
 		JButton showCode = new JButton("Show Code");
 		add(showCode);
 		showCode.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				showEditorAndHighlight(bugList.get(table.getSelectedRow()));
 			}
-		});
+		});*/
 		
 		pack();
 		setDefaultCloseOperation(HIDE_ON_CLOSE);

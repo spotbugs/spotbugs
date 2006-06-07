@@ -35,12 +35,6 @@ public class RegularMenuBuilder extends MenuGenerator
 					{
 						try
 						{
-							StringBuffer msg = new StringBuffer();
-							// XXX Testing purposes only
-							for (String i : allClassFileNames(pckg.getProject()))
-								msg.append(i + "\n");
-							JOptionPane.showMessageDialog(null, msg);
-							
 							final SortedBugCollection bugs = RunFindbugs.getBugs(allClassFileNames(pckg.getProject()));
 							SwingUtilities.invokeLater(new Runnable()
 							{
@@ -50,7 +44,7 @@ public class RegularMenuBuilder extends MenuGenerator
 									{
 										new ResultsFrame(bugs, pckg.getProject()).setVisible(true);
 									}
-									catch (ProjectNotOpenException e)
+									catch (Exception e)
 									{
 										Log.recordBug(e);
 									}
