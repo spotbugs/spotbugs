@@ -68,15 +68,6 @@ public class ResultsFrame extends JFrame
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topScroll, bottomScroll);
 		setContentPane(splitPane);
 		
-		/*Code here not work.
-		JButton showCode = new JButton("Show Code");
-		add(showCode);
-		showCode.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				showEditorAndHighlight(bugList.get(table.getSelectedRow()));
-			}
-		});*/
-		
 		pack();
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 	}
@@ -92,18 +83,13 @@ public class ResultsFrame extends JFrame
 			Editor srcEditor = currProject.getPackage(srcLine.getPackageName()).getBClass(getClassName(srcLine)).getEditor();
 			srcEditor.setVisible(true);
 			
-			//srcStartLine and srcEndLine created in case returned -1
+			//srcStartLine in case returned -1
 			int srcStartLine = srcLine.getStartLine();
-			int srcEndLine = srcLine.getEndLine();
 			
-			if(srcStartLine < 0)
-				srcStartLine++;
-			
-			if(srcEndLine < 0)
-				srcEndLine++;
-			
-			srcEditor.setCaretLocation(new TextLocation(srcStartLine, 0));
-			srcEditor.setSelection(new TextLocation(srcStartLine, 0), new TextLocation(srcEndLine, 0));
+			if(srcStartLine > 0){
+				srcEditor.setCaretLocation(new TextLocation(srcStartLine-1, 0));
+				srcEditor.setSelection(new TextLocation(srcStartLine-1, 0), new TextLocation(srcLine.getEndLine(), 0));
+			}
 		} catch (ProjectNotOpenException e) {
 			Log.recordBug(e);
 		} catch (PackageNotFoundException e) {
