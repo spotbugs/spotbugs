@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.bluej;
 import java.awt.event.ActionEvent;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
@@ -20,7 +21,8 @@ public class CheckBoxMenuBuilder extends MenuGenerator
 {
 	private BlueJ bluej;
 
-	private static Map<BProject, Boolean> isRunning = new HashMap<BProject, Boolean>();
+	private static Map<BProject, Boolean> isRunningMap = new HashMap<BProject, Boolean>();
+	private static Map<BProject, HashSet<JCheckBoxMenuItem>> projectToMenuItem = new HashMap<BProject, HashSet<JCheckBoxMenuItem>>();
 	
 	private static final boolean DEFAULT_RUNNING = false;
 	
@@ -31,9 +33,9 @@ public class CheckBoxMenuBuilder extends MenuGenerator
 
 	public static boolean isRunning(BProject project)
 	{
-		if (!isRunning.containsKey(project))
+		if (!isRunningMap.containsKey(project))
 			return DEFAULT_RUNNING;
-		return isRunning.get(project);
+		return isRunningMap.get(project);
 	}
 	
 	/**
@@ -42,11 +44,10 @@ public class CheckBoxMenuBuilder extends MenuGenerator
 	@Override
 	public JMenuItem getToolsMenuItem(BPackage pckg)
 	{
-		//JCheckBoxMenuItem result = new JCheckBoxMenuItem("CheckBox Something");
 		try
 		{
-			JCheckBoxMenuItem result = new JCheckBoxMenuItem(new CheckBoxMenuAction(pckg.getProject()));
-			result.setText("CheckBox Something");
+			JCheckBoxMenuItem result = new JCheckBoxMenuItem("Run FindBugs on Compile");
+			result.addActionListener(new CheckBoxMenuAction(pckg.getProject(), result));
 			return result;
 		}
 		catch (ProjectNotOpenException e)
@@ -61,15 +62,15 @@ public class CheckBoxMenuBuilder extends MenuGenerator
 	 * this project, make sure the menu item is checked.  (If we've never seen this project
 	 * before, start it off checked.) 
 	 */
-	@Override
+	/*@Override
 	public void notifyPostToolsMenu(BPackage pckg, JMenuItem menu)
 	{
 		try
 		{
 			BProject project = pckg.getProject();
-			if (!isRunning.containsKey(project))
-				isRunning.put(project, DEFAULT_RUNNING);
-			menu.setSelected(isRunning.get(project));
+			if (!isRunningMap.containsKey(project))
+				isRunningMap.put(project, DEFAULT_RUNNING);
+			menu.setSelected(isRunningMap.get(project));
 		}
 		// Checked exception will never occur, since the 
 		// package (and therefore the project) must be open.
@@ -77,16 +78,21 @@ public class CheckBoxMenuBuilder extends MenuGenerator
 		{
 			Log.recordBug(e);
 		}
-	}
+	*/
 	
 	@SuppressWarnings("serial")
 	class CheckBoxMenuAction extends AbstractAction
 	{
 		private BProject project;
 		
-		public CheckBoxMenuAction(BProject project)
+		public CheckBoxMenuAction(BProject project, JCheckBoxMenuItem menuItem)
 		{
 			this.project = project;
+			if(!projectToMenuItem.containsKey(project))
+				projectToMenuItem.put(project, new HashSet<JCheckBoxMenuItem>());
+			
+			menuItem.setSelected(isRunning(project));			
+			projectToMenuItem.get(project).add(menuItem);
 		}
 		
 		/**
@@ -94,7 +100,11 @@ public class CheckBoxMenuBuilder extends MenuGenerator
 		 */
 		public void actionPerformed(ActionEvent evt)
 		{
-			isRunning.put(project, ((JCheckBoxMenuItem)evt.getSource()).isSelected());
+			isRunningMap.put(project, ((JCheckBoxMenuItem)evt.getSource()).isSelected());
+			HashSet<JCheckBoxMenuItem> projectItems = projectToMenuItem.get(project);
+			for(JCheckBoxMenuItem mItem : projectItems){
+				mItem.setSelected(isRunningMap.get(project));
+			}
 		}
 	}
 }
