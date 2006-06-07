@@ -69,27 +69,27 @@
 				
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" 
 	        speed="fast"
-	        reports="TESTING"
+	        reports=""
 			hidden="true" /> 
   <Detector class="edu.umd.cs.findbugs.detect.NoteAnnotationRetention" 
 	        speed="fast"
-	        reports="TESTING"
+	        reports=""
 			hidden="true" /> 
 	       
   <Detector class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation"
                 speed="fast"
-                reports="TESTING"
-                        hidden="true" />
+                reports=""
+                hidden="true" />
                  
   <Detector class="edu.umd.cs.findbugs.detect.Methods" 
 	        speed="fast"
-	        reports="TESTING"
+	        reports=""
 			disabled="false"
 			hidden="true" /> 
 
   <Detector class="edu.umd.cs.findbugs.detect.CalledMethods" 
 	        speed="fast"
-	        reports="TESTING"
+	        reports=""
 			disabled="false"
 			hidden="true" /> 
 			
@@ -101,12 +101,12 @@
 	        
   <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValue" 
 	        speed="fast"
-	        reports="TESTING"
+	        reports=""
             hidden="true" /> 
  <Detector class="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations" 
 	        speed="fast"
-	        reports="TESTING"
-		requirejre="1.5"
+	        reports=""
+	        requirejre="1.5"
             hidden="true" /> 
   <Detector class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"
             speed="fast"
@@ -114,7 +114,9 @@
 			hidden="true"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"
-	        speed="slow" reports="" hidden="true"/>
+	        speed="slow"
+	        reports=""
+	        hidden="true"/>
 
 	        
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" 
@@ -127,7 +129,9 @@
             reports="IL_INFINITE_LOOP" /> 
 
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop2"
-            speed="slow" reports="IL_INFINITE_RECURSIVE_LOOP,IL_CONTAINER_ADDED_TO_ITSELF" disabled="true"/>
+            speed="slow"
+            reports="IL_INFINITE_RECURSIVE_LOOP,IL_CONTAINER_ADDED_TO_ITSELF"
+            disabled="true"/>
             
   <Detector class="edu.umd.cs.findbugs.detect.VolatileUsage" 
 	        speed="fast"
@@ -187,7 +191,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" 
             speed="fast"
             disabled="false"
-            reports="TESTING"
+            reports="NP_LOAD_OF_KNOWN_NULL_VALUE"
 	    />
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethodInvocations" 
             speed="fast"
@@ -196,7 +200,7 @@
 	    />
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethods" 
             speed="fast"
-            reports="NP_IMMEDIATE_DEREFERENCE_OF_READLINE,RV_01_TO_INT,DM_RUN_FINALIZERS_ON_EXIT,DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_STRING_EMPTY_EQUALS,DM_EXIT,DM_CONVERT_CASE,SW_SWING_METHODS_INVOKED_IN_SWING_THREAD,DM_BOXED_PRIMITIVE_TOSTRING,DM_NEW_FOR_GETCLASS,DM_NEXTINT_VIA_NEXTDOUBLE,DM_USELESS_THREAD,DM_MONITOR_WAIT_ON_CONDITION,DMI_CALLING_NEXT_FROM_HASNEXT,DMI_USELESS_SUBSTRING,BIT_IOR_OF_SIGNED_BYTE,INT_BAD_REM_BY_1,DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION,INT_VACUOUS_COMPARISON" />
+            reports="NP_IMMEDIATE_DEREFERENCE_OF_READLINE,RV_01_TO_INT,DM_RUN_FINALIZERS_ON_EXIT,DM_STRING_CTOR,DM_STRING_VOID_CTOR,DM_STRING_TOSTRING,DM_GC,DM_BOOLEAN_CTOR,DM_STRING_EMPTY_EQUALS,DM_EXIT,DM_CONVERT_CASE,SW_SWING_METHODS_INVOKED_IN_SWING_THREAD,DM_BOXED_PRIMITIVE_TOSTRING,DM_NEW_FOR_GETCLASS,DM_NEXTINT_VIA_NEXTDOUBLE,DM_USELESS_THREAD,DM_MONITOR_WAIT_ON_CONDITION,DMI_CALLING_NEXT_FROM_HASNEXT,RV_REM_OF_RANDOM_INT,BIT_IOR_OF_SIGNED_BYTE,INT_BAD_REM_BY_1,DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION,INT_VACUOUS_COMPARISON" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindSqlInjection" 
             speed="moderate"
@@ -242,7 +246,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" 
             speed="slow"
-            reports="TLW_TWO_LOCK_WAIT,TLW_TWO_LOCK_NOTIFY" />
+            reports="TLW_TWO_LOCK_WAIT" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindUnconditionalWait" 
             speed="fast" reports="UW_UNCOND_WAIT" />
@@ -309,7 +313,7 @@
 		/>
   <Detector class="edu.umd.cs.findbugs.detect.UnreadFields" 
             speed="fast"
-            reports="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD,NP_UNWRITTEN_FIELD,NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,UWF_NULL_FIELD,UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" />
+            reports="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD,NP_UNWRITTEN_FIELD,UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR,UWF_NULL_FIELD,UWF_UNWRITTEN_FIELD,SS_SHOULD_BE_STATIC,UUF_UNUSED_FIELD,URF_UNREAD_FIELD,SIC_INNER_SHOULD_BE_STATIC,SIC_INNER_SHOULD_BE_STATIC_ANON,SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS" />
             
   <Detector class="edu.umd.cs.findbugs.detect.WaitInLoop" 
             speed="fast"
@@ -318,16 +322,13 @@
   <Detector class="edu.umd.cs.findbugs.detect.BCPMethodReturnCheck" 
             speed="slow"
             reports="RV_RETURN_VALUE_IGNORED2"
-		disabled="true"
-		hidden="true"
+            disabled="true"
+            hidden="true"
 		 />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindNullDeref" 
             speed="slow"
-            reports="NP_ALWAYS_NULL_EXCEPTION,NP_ALWAYS_NULL,NP_STORE_INTO_NONNULL_FIELD,NP_NULL_ON_SOME_PATH_EXCEPTION,NP_NULL_ON_SOME_PATH,NP_NULL_PARAM_DEREF_NONVIRTUAL,NP_NULL_PARAM_DEREF_MONOMORPHIC,NP_NULL_PARAM_DEREF,RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE,RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE,RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES,RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE,NP_NONNULL_PARAM_VIOLATION,NP_NONNULL_RETURN_VIOLATION,NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
-<!--
-RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFFERENT,
--->
+            reports="NP_ALWAYS_NULL_EXCEPTION,NP_ALWAYS_NULL,NP_STORE_INTO_NONNULL_FIELD,NP_NULL_ON_SOME_PATH_EXCEPTION,NP_NULL_ON_SOME_PATH,NP_NULL_PARAM_DEREF_NONVIRTUAL,NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS,NP_NULL_PARAM_DEREF,RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE,RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE,RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES,RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE,NP_NONNULL_PARAM_VIOLATION,NP_NONNULL_RETURN_VIOLATION,NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindOpenStream" 
             speed="slow"
@@ -344,7 +345,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
             
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison" 
             speed="slow"
-            reports="ES_COMPARING_STRINGS_WITH_EQ,RC_REF_COMPARISON,EC_UNRELATED_TYPES,EC_NULL_ARG,EC_UNRELATED_CLASS_AND_INTERFACE,EC_UNRELATED_INTERFACES,EC_ARRAY_AND_NONARRAY" />
+            reports="ES_COMPARING_STRINGS_WITH_EQ,RC_REF_COMPARISON,EC_UNRELATED_TYPES,EC_NULL_ARG,EC_UNRELATED_CLASS_AND_INTERFACE,EC_UNRELATED_INTERFACES,EC_ARRAY_AND_NONARRAY,EC_BAD_ARRAY_COMPARE" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify" 
             speed="moderate"
@@ -415,7 +416,7 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
    <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals" 
              speed="fast"
              reports="UOE_USE_OBJECT_EQUALS"
-	     disabled="true" />
+             disabled="true" />
              
    <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted" 
              speed="fast"
@@ -487,9 +488,9 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   			
   <Detector class="edu.umd.cs.findbugs.detect.FindBadCast"
             speed="fast"
-	    disabled="true"
-	    hidden="true"
-            reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF,BC_VACUOUS_INSTANCEOF"
+            disabled="true"
+            hidden="true"
+            reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF"
 	    />
   <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2"
             speed="fast"
@@ -517,14 +518,14 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
 	    />
 
   <Detector class="edu.umd.cs.findbugs.detect.FindSleepWithLockHeld"
-	speed="slow"
-	reports="SWL_SLEEP_WITH_LOCK_HELD"
+		speed="slow"
+		reports="SWL_SLEEP_WITH_LOCK_HELD"
 	 />
 	 
   <Detector class="edu.umd.cs.findbugs.detect.InefficientMemberAccess"
-  	speed="fast" 
-  	disabled="true" 
-  	reports="IMA_INEFFICIENT_MEMBER_ACCESS"
+  		speed="fast" 
+  		disabled="true" 
+  		reports="IMA_INEFFICIENT_MEMBER_ACCESS"
   	 />
   			
   <Detector class="edu.umd.cs.findbugs.detect.DuplicateBranches"
@@ -537,8 +538,8 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
 
   <Detector class="edu.umd.cs.findbugs.detect.FindBadEqualsImplementation"
             speed="slow"
-	    disabled="true"
-	    hidden="true"
+            disabled="true"
+            hidden="true"
             reports="NP_DOES_NOT_HANDLE_NULL"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.UselessSubclassMethod"
@@ -577,10 +578,10 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
 
   <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS"
     experimental="true"/>
-  <BugPattern abbrev="IL" type="IL_INFINITE_LOOP" category="CORRECTNESS" 
-/>
-  <BugPattern abbrev="IL" type="IL_INFINITE_RECURSIVE_LOOP" category="CORRECTNESS" 
-/>
+  <BugPattern abbrev="IL" type="IL_INFINITE_LOOP" category="CORRECTNESS" />
+
+  <BugPattern abbrev="IL" type="IL_INFINITE_RECURSIVE_LOOP" category="CORRECTNESS" />
+
   <BugPattern abbrev="IL" type="IL_CONTAINER_ADDED_TO_ITSELF" category="CORRECTNESS" 
     experimental="true"/>
   <BugPattern abbrev="VO" type="VO_VOLATILE_REFERENCE_TO_ARRAY" category="MT_CORRECTNESS" 
@@ -588,12 +589,12 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="CORRECTNESS" 
     experimental="true"/>
   <BugPattern abbrev="TEST" type="TESTING" category="STYLE" />
-  <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="CORRECTNESS" 
- />
-  <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="CORRECTNESS" 
-/>
-<BugPattern abbrev="DP" type="DP_DO_INSIDE_DO_PRIVILEDGED" category="CORRECTNESS" />
-<BugPattern abbrev="DP" type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED" category="CORRECTNESS" />
+  <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="CORRECTNESS" />
+
+  <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="CORRECTNESS" />
+
+  <BugPattern abbrev="DP" type="DP_DO_INSIDE_DO_PRIVILEDGED" category="CORRECTNESS" />
+  <BugPattern abbrev="DP" type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED" category="CORRECTNESS" />
   
   <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="CORRECTNESS" />
   <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS" />
@@ -652,7 +653,8 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="SP" type="SP_SPIN_ON_FIELD" category="MT_CORRECTNESS" />
   <BugPattern abbrev="NS" type="NS_NON_SHORT_CIRCUIT" category="CORRECTNESS" />
   <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_WAIT" category="MT_CORRECTNESS" />
-   <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_NOTIFY" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_NOTIFY" category="MT_CORRECTNESS"
+         experimental="true" />  <!-- has never been generated -->
   <BugPattern abbrev="UW" type="UW_UNCOND_WAIT" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UR" type="UR_UNINIT_READ" category="CORRECTNESS" />
   <BugPattern abbrev="UG" type="UG_SYNC_SET_UNSYNC_GET" category="MT_CORRECTNESS" />
@@ -700,7 +702,8 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE" />
   <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="PERFORMANCE" />
   <BugPattern abbrev="QF" type="QF_QUESTIONABLE_FOR_LOOP" category="CORRECTNESS" />
-  <BugPattern abbrev="NP" type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="STYLE" />
+  <BugPattern abbrev="NP" type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="STYLE"
+         experimental="true" />  <!-- deprecated in favor of UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR -->
   <BugPattern abbrev="NP" type="NP_UNWRITTEN_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="UwF" type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="STYLE" />
   <BugPattern abbrev="UwF" type="UWF_NULL_FIELD" category="CORRECTNESS" />
@@ -755,7 +758,8 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="BIT" type="BIT_AND_ZZ" category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_IOR"    category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_FIELD_SELF_ASSIGNMENT" category="CORRECTNESS" />
-  <BugPattern abbrev="LI" type="LI_LAZY_INIT_INSTANCE" category="MT_CORRECTNESS" />
+  <BugPattern abbrev="LI" type="LI_LAZY_INIT_INSTANCE" category="MT_CORRECTNESS"
+         experimental="true" />  <!-- has never been generated? -->
   <BugPattern abbrev="LI" type="LI_LAZY_INIT_STATIC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="JLM" type="JLM_JSR166_LOCK_MONITORENTER" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UPM" type="UPM_UNCALLED_PRIVATE_METHOD" category="PERFORMANCE"/>
@@ -769,14 +773,16 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="IJU" type="IJU_SUITE_NOT_STATIC" category="CORRECTNESS" />
   <BugPattern abbrev="IJU" type="IJU_NO_TESTS" category="CORRECTNESS" />
   <BugPattern abbrev="BOA" type="BOA_BADLY_OVERRIDDEN_ADAPTER" category="CORRECTNESS" />
-  <BugPattern abbrev="SQL" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"/>
+  <BugPattern abbrev="SQL" type="BRSA_BAD_RESULTSET_ACCESS" category="CORRECTNESS"
+         experimental="true" />  <!-- deprecated in favor of SQL_BAD_RESULTSET_ACCESS -->
   <BugPattern abbrev="SQL" type="SQL_BAD_RESULTSET_ACCESS" category="CORRECTNESS"/>
   <BugPattern abbrev="SQL" type="SQL_BAD_PREPARED_STATEMENT_ACCESS" category="CORRECTNESS" />
   <BugPattern abbrev="SIO" type="SIO_SUPERFLUOUS_INSTANCEOF" category="CORRECTNESS"
     experimental="true"/>
   <BugPattern abbrev="BAC" type="BAC_BAD_APPLET_CONSTRUCTOR" category="CORRECTNESS"
     experimental="true"/>
-  <BugPattern abbrev="UOE" type="UOE_USE_OBJECT_EQUALS" category="STYLE" experimental="true"/>  
+  <BugPattern abbrev="UOE" type="UOE_USE_OBJECT_EQUALS" category="STYLE"
+        experimental="true"/>
   <BugPattern abbrev="EC" type="EC_BAD_ARRAY_COMPARE" category="CORRECTNESS"/>
   <BugPattern abbrev="STI" type="STI_INTERRUPTED_ON_CURRENTTHREAD" category="CORRECTNESS"
     experimental="true"/>
@@ -789,17 +795,27 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="MF" type="MF_CLASS_MASKS_FIELD" category="CORRECTNESS"/>
   <BugPattern abbrev="WMI" type="WMI_WRONG_MAP_ITERATOR" category="PERFORMANCE"/>
   <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="CORRECTNESS"/>
-  <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE" experimental="true" />
-  <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="CORRECTNESS" experimental="true" />
-  <BugPattern abbrev="UM" type="UM_UNNECESSARY_MATH" category="STYLE" experimental="true"/>
-  <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="STYLE" experimental="true"/>
-  <BugPattern abbrev="RI" type="RI_REDUNDANT_INTERFACES" category="STYLE" experimental="true"/>
-  <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" category="STYLE" experimental="true"/>
-  <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD" category="STYLE" experimental="true"/>
-  <BugPattern abbrev="PS" type="PS_PUBLIC_SEMAPHORES" category="STYLE" experimental="true"/>
+  <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE"
+        experimental="true" />
+  <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="CORRECTNESS"
+        experimental="true" />
+  <BugPattern abbrev="UM" type="UM_UNNECESSARY_MATH" category="STYLE"
+        experimental="true"/>
+  <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="STYLE"
+        experimental="true"/>
+  <BugPattern abbrev="RI" type="RI_REDUNDANT_INTERFACES" category="STYLE"
+        experimental="true"/>
+  <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" category="STYLE"
+        experimental="true"/>
+  <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD" category="STYLE"
+        experimental="true"/>
+  <BugPattern abbrev="PS" type="PS_PUBLIC_SEMAPHORES" category="STYLE"
+        experimental="true"/>
   <BugPattern abbrev="ICAST" type="ICAST_IDIV_CAST_TO_DOUBLE" category="CORRECTNESS"/>
   <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL" category="CORRECTNESS"/>
   <BugPattern abbrev="NP" type="NP_NULL_INSTANCEOF" category="CORRECTNESS"/>
+  <BugPattern abbrev="NP" type="BC_NULL_INSTANCEOF" category="CORRECTNESS"
+         experimental="true" />  <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
   <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_CONCRETE_COLLECTION" category="STYLE"/>
   <BugPattern abbrev="BC" type="BC_UNCONFIRMED_CAST" category="STYLE"/>
   <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_CAST" category="CORRECTNESS"/>
@@ -822,12 +838,18 @@ RCN_REDUNDANT_COMPARISON_TO_NULL_BOTH_NULL,RCN_REDUNDANT_COMPARISON_TO_NULL_DIFF
   <BugPattern abbrev="SWL" type="SWL_SLEEP_WITH_LOCK_HELD" category="MT_CORRECTNESS"/>
   <BugPattern abbrev="J2EE" type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION" category="CORRECTNESS"/>
   <BugPattern abbrev="DMI" type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN" category="CORRECTNESS"/>
-  <BugPattern abbrev="DB" type="DB_DUPLICATE_BRANCHES" category="STYLE" experimental="true"/>
-  <BugPattern abbrev="DB" type="DB_DUPLICATE_SWITCH_CLAUSES" category="STYLE" experimental="true"/>
-  <BugPattern abbrev="IMA" type="IMA_INEFFICIENT_MEMBER_ACCESS" category="PERFORMANCE" experimental="true"/>
-  <BugPattern abbrev="XFB" type="XFB_XML_FACTORY_BYPASS" category="STYLE" experimental="true"/>
-  <BugPattern abbrev="USM" type="USM_USELESS_SUBCLASS_METHOD" category="STYLE" experimental="true"/>
-  <BugPattern abbrev="USM" type="USM_USELESS_ABSTRACT_METHOD" category="STYLE" experimental="true"/>
+  <BugPattern abbrev="DB" type="DB_DUPLICATE_BRANCHES" category="STYLE"
+        experimental="true"/>
+  <BugPattern abbrev="DB" type="DB_DUPLICATE_SWITCH_CLAUSES" category="STYLE"
+        experimental="true"/>
+  <BugPattern abbrev="IMA" type="IMA_INEFFICIENT_MEMBER_ACCESS" category="PERFORMANCE"
+        experimental="true"/>
+  <BugPattern abbrev="XFB" type="XFB_XML_FACTORY_BYPASS" category="STYLE"
+        experimental="true"/>
+  <BugPattern abbrev="USM" type="USM_USELESS_SUBCLASS_METHOD" category="STYLE"
+        experimental="true"/>
+  <BugPattern abbrev="USM" type="USM_USELESS_ABSTRACT_METHOD" category="STYLE"
+        experimental="true"/>
   <BugPattern abbrev="CI" type="CI_CONFUSED_INHERITANCE" category="STYLE"/>
   <BugPattern abbrev="QBA" type="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT" category="CORRECTNESS"/>
 </FindbugsPlugin>
