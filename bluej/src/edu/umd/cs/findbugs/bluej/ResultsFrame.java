@@ -123,7 +123,8 @@ public class ResultsFrame extends JFrame
 			case 0:
 				return bugList.get(row).getPrimarySourceLineAnnotation().getSourceFile();
 			case 1:
-				return bugList.get(row).getPrimarySourceLineAnnotation().getStartLine();
+				int line = bugList.get(row).getPrimarySourceLineAnnotation().getStartLine();
+				return (line != -1 ? line : "");
 			case 2:
 				return bugList.get(row).getMessageWithoutPrefix();
 			default:

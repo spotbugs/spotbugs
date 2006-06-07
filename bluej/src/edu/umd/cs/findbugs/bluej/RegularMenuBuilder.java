@@ -1,18 +1,24 @@
 package edu.umd.cs.findbugs.bluej;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import edu.umd.cs.findbugs.SortedBugCollection;
 
 import bluej.extensions.BClass;
 import bluej.extensions.BPackage;
+import bluej.extensions.BProject;
 import bluej.extensions.MenuGenerator;
+import bluej.extensions.PackageNotFoundException;
+import bluej.extensions.ProjectNotOpenException;
 
 public class RegularMenuBuilder extends MenuGenerator
 {
@@ -22,27 +28,25 @@ public class RegularMenuBuilder extends MenuGenerator
 		JMenuItem jmi = new JMenuItem(new AbstractAction()
 		{
 			public void actionPerformed(ActionEvent evt)
-			{
+			{				
 				new Thread(new Runnable()
 				{
 					public void run()
 					{
 						try
 						{
-							ArrayList<String> classes = new ArrayList<String>();
-							for (BPackage bp : pckg.getProject().getPackages())
-								for (BClass bc : bp.getClasses())
-									classes.add(bc.getClassFile().getAbsolutePath());
-
-							String[] classesArray = new String[classes.size()];
-							classesArray = classes.toArray(classesArray);
-
-							final SortedBugCollection bugs = RunFindbugs.getBugs(classesArray);
+							StringBuffer msg = new StringBuffer();
+							// XXX Testing purposes only
+							for (String i : allClassFileNames(pckg.getProject()))
+								msg.append(i + "\n");
+							JOptionPane.showMessageDialog(null, msg);
+							
+							final SortedBugCollection bugs = RunFindbugs.getBugs(allClassFileNames(pckg.getProject()));
 							SwingUtilities.invokeLater(new Runnable()
 							{
 								public void run()
 								{
-									new ResultsFrame(bugs).setVisible(true);
+									new ResultsFrame(bugs, pckg.getProject()).setVisible(true);
 								}
 							});
 
@@ -53,10 +57,58 @@ public class RegularMenuBuilder extends MenuGenerator
 						}
 					}
 				}).start();
-
 			}
 		});
 		jmi.setText("Run FindBugs");
 		return jmi;
+	}
+	
+	/**
+	 * @param BProject the current project
+	 * @return Absolute paths for every .class file in the project
+	 */
+	private String[] allClassFileNames(BProject project) throws ProjectNotOpenException
+	{
+		ArrayList<String> classes = new ArrayList<String>();
+//		for (BPackage bp : pckg.getProject().getPackages())
+//			for (BClass bc : bp.getClasses())
+//				classes.add(bc.getClassFile().getAbsolutePath());
+
+		FilenameFilter isClassFile = new FilenameFilter()
+		{
+			public boolean accept(File dir, String name)
+			{
+				return name.endsWith(".class");
+			}
+		};
+		for (BPackage bp : project.getPackages())
+		{
+			try
+			{
+				for (File f : bp.getDir().listFiles(isClassFile))
+				{
+					if (bp.getBClass(f.getName().substring(0, f.getName().length() - ".class".length())) != null)
+						// The class found has a BClass, meaning it's the public top-level class for its source file
+						// and it's still in the project.
+						classes.add(f.getAbsolutePath());
+					else
+						if (f.getName().contains("$"))
+						{
+							// Not a top-level class: accept it if its top-level is still in the project,
+							// and if they were compiled within 30 seconds of each other	
+							String topLevelName = f.getName().substring(0, f.getName().indexOf("$"));
+							if (bp.getBClass(topLevelName) != null && f.lastModified() >= bp.getBClass(topLevelName).getClassFile().lastModified() - 30000)
+								classes.add(f.getAbsolutePath());
+						}
+				}
+			}
+			catch (PackageNotFoundException e)
+			{
+				Log.recordBug(e);
+			}
+		}
+		String[] classesArray = new String[classes.size()];
+		classesArray = classes.toArray(classesArray);
+		return classesArray;
 	}
 }
