@@ -1,4 +1,4 @@
-package edu.umd.cs.findbugs.bluej.test;
+package edu.umd.cs.findbugs.bluej;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugCollection;

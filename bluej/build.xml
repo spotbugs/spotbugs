@@ -49,7 +49,7 @@
 			
 				
 				<manifest>
-							<attribute name="Main-Class" value="edu.umd.cs.findbugs.bluej.test.HelloWorldExtension"/>
+							<attribute name="Main-Class" value="edu.umd.cs.findbugs.bluej.FindBugsExtension"/>
 							</manifest>
 				</jar>
 

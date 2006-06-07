@@ -1,4 +1,4 @@
-package edu.umd.cs.findbugs.bluej.test;
+package edu.umd.cs.findbugs.bluej;
 
 import java.util.ArrayList;
 import javax.swing.JOptionPane;

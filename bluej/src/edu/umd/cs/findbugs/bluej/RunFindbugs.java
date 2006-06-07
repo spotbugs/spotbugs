@@ -1,6 +1,9 @@
-package edu.umd.cs.findbugs.bluej.test;
+package edu.umd.cs.findbugs.bluej;
 
 import java.io.IOException;
+
+import bluej.extensions.event.CompileEvent;
+import bluej.extensions.event.CompileListener;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -11,7 +14,8 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 
 
-public class RunFindbugs {
+public class RunFindbugs implements CompileListener {
+	
 	public static SortedBugCollection getBugs(String[] classes) throws IOException, InterruptedException {
 		Project findBugsProject = new Project();
 		for(String f : classes)
@@ -40,6 +44,36 @@ public class RunFindbugs {
 		}
 */
 			
+	}
+
+	public void compileStarted(CompileEvent arg0)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void compileError(CompileEvent arg0)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void compileWarning(CompileEvent arg0)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void compileSucceeded(CompileEvent arg0)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void compileFailed(CompileEvent arg0)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }
