@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -34,6 +35,7 @@ public class ResultsFrame extends JFrame
 	private static final int[] columnWidths = {150, 50, 475};
 	
 	private JEditorPane description;
+	private JScrollPane bottomScroll;
 	
 	private BProject currProject;
 	
@@ -52,8 +54,15 @@ public class ResultsFrame extends JFrame
 			public void valueChanged(ListSelectionEvent evt)
 			{
 				description.setText(bugList.get(table.getSelectedRow()).getBugPattern().getDetailHTML());
+				SwingUtilities.invokeLater(new Runnable()
+						{
+							public void run()
+							{
+								bottomScroll.getVerticalScrollBar().setValue(bottomScroll.getVerticalScrollBar().getMinimum());
+							}
+						});
 				showEditorAndHighlight(bugList.get(table.getSelectedRow()));
-			}	
+			}
 		});
 		
 		JScrollPane topScroll = new JScrollPane(table);
@@ -62,11 +71,12 @@ public class ResultsFrame extends JFrame
 		
 		description = new JEditorPane();
 		description.setContentType("text/html");
-		JScrollPane bottomScroll = new JScrollPane(description);
+		bottomScroll = new JScrollPane(description);
 		bottomScroll.setPreferredSize(new Dimension(675, 100));
 		
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topScroll, bottomScroll);
 		setContentPane(splitPane);
+			
 		
 		pack();
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
