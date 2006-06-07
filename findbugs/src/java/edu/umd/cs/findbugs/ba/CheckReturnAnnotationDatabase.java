@@ -60,7 +60,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		
 		addMethodAnnotation("java.util.concurrent.BlockingQueue",      "poll",        "(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addMethodAnnotation("java.util.Queue",                         "poll",        "()Ljava/lang/Object;", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
-		
+			
 		addDefaultMethodAnnotation("java.lang.String", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addMethodAnnotation("java.lang.String", "getBytes", "(Ljava/lang/String;)[B", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addDefaultMethodAnnotation("java.math.BigDecimal", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
@@ -97,7 +97,10 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 			} catch (ClassNotFoundException e) {
 				AnalysisContext.reportMissingClass(e);
 			}
+			if (m.getClassName().equals("java.lang.Thread"))
+				return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_VERY_HIGH;
 			try {
+			
 				if (threadClass != null && Repository.instanceOf(m.getClassName(), threadClass))
 					return CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW;
 			} catch (ClassNotFoundException e) {

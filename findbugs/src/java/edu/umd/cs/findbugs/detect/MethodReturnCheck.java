@@ -95,6 +95,9 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 
+		if (DEBUG) 
+			System.out.println(state + " " + OPCODE_NAMES[seen]);
+		
 		if (state == SAW_INVOKE && isPop(seen)) {
 			CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase
 					.getResolvedAnnotation(callSeen, false);
@@ -133,6 +136,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 			callSeen = XFactory.createXMethod(className, methodName, signature,
 					seen == INVOKESTATIC);
 			state = SAW_INVOKE;
+			if (DEBUG) System.out.println("  invoking " + callSeen);
 		} else
 			state = SCAN;
 
@@ -164,7 +168,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 	}
 
 	private boolean isPop(int seen) {
-		return seen == Constants.POP || seen == Constants.POP2;
+		return seen == Constants.POP || seen == Constants.POP2 || seen == RETURN;
 	}
 
 }
