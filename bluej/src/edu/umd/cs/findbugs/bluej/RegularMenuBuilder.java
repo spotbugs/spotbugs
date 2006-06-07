@@ -46,7 +46,14 @@ public class RegularMenuBuilder extends MenuGenerator
 							{
 								public void run()
 								{
-									new ResultsFrame(bugs, pckg.getProject()).setVisible(true);
+									try
+									{
+										new ResultsFrame(bugs, pckg.getProject()).setVisible(true);
+									}
+									catch (ProjectNotOpenException e)
+									{
+										Log.recordBug(e);
+									}
 								}
 							});
 
