@@ -16,6 +16,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import bluej.extensions.BClass;
 import bluej.extensions.BProject;
 import bluej.extensions.PackageNotFoundException;
 import bluej.extensions.ProjectNotOpenException;
@@ -92,6 +93,7 @@ public class ResultsFrame extends JFrame
 
 		description = new JEditorPane();
 		description.setContentType("text/html");
+		description.setEditable(false);
 		bottomScroll = new JScrollPane(description);
 		bottomScroll.setPreferredSize(new Dimension(675, 100));
 
@@ -115,20 +117,20 @@ public class ResultsFrame extends JFrame
 				.getPrimarySourceLineAnnotation();
 		try
 		{
-			Editor srcEditor = currProject.getPackage(srcLine.getPackageName())
-					.getBClass(getClassName(srcLine)).getEditor();
+			BClass srcClass = currProject.getPackage(srcLine.getPackageName())
+			.getBClass(getClassName(srcLine));
+			Editor srcEditor = srcClass.getEditor();
 			srcEditor.setVisible(true);
 
 			// srcStartLine in case returned -1
 			int srcStartLine = srcLine.getStartLine();
 
-			if (srcStartLine > 0)
+			if (srcStartLine > 0 && srcClass.isCompiled())
 			{
-				srcEditor
-						.setCaretLocation(new TextLocation(srcStartLine - 1, 0));
+				srcEditor.setCaretLocation(new TextLocation(srcStartLine - 1, 0));
 				srcEditor.setSelection(new TextLocation(srcStartLine - 1, 0),
 						new TextLocation(srcLine.getEndLine(), 0));
-			}
+			}			
 		}
 		catch (ProjectNotOpenException e)
 		{
