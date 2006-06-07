@@ -46,6 +46,7 @@
 				 <zipfileset src="lib/coreplugin.jar"/>
 				 <zipfileset src="lib/bcel.jar"/>
 				 <zipfileset src="lib/dom4j-full.jar"/>
+				 <fileset file="smallBuggy.png"/>
 			
 				
 				<manifest>
