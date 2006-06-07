@@ -1,21 +1,19 @@
 package edu.umd.cs.findbugs.bluej;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JButton;
+import javax.imageio.ImageIO;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import bluej.extensions.BProject;
@@ -31,114 +29,135 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 @SuppressWarnings("serial")
 public class ResultsFrame extends JFrame
 {
-	private static final String[] columnNames = {"File", "Line", "Description"};
-	private static final int[] columnWidths = {150, 50, 475};
-	
+	private static final String[] columnNames = { "File", "Line", "Description" };
+	private static final int[] columnWidths = { 150, 50, 475 };
+
 	private JEditorPane description;
 	private JScrollPane bottomScroll;
-	
+
 	private BProject currProject;
+
+	private static ResultsFrame instance;
+	public static ResultsFrame getInstance() {
+		if (instance == null)
+			instance = new ResultsFrame();
+		return instance;
+	}
+	private ResultsFrame() {}
 	
-	public ResultsFrame(final SortedBugCollection bugs, BProject project)
+	public void update(final SortedBugCollection bugs, BProject project)
 	{
+		setTitle("FindBugs results");
+		try
+		{
+			setIconImage(ImageIO.read(ResultsFrame.class.getResource("/smallBuggy.png")));
+		}
+		catch (IOException e)
+		{
+			Log.recordBug(e);
+		}
+		
 		currProject = project;
-		final ArrayList<BugInstance> bugList = new ArrayList<BugInstance>(bugs.getCollection());
-		
+		final ArrayList<BugInstance> bugList = new ArrayList<BugInstance>(bugs
+				.getCollection());
+
 		final JTable table = new JTable(new MyTableModel(bugList));
-		
+
 		for (int i = 0; i < columnNames.length; i++)
 			table.getColumn(columnNames[i]).setPreferredWidth(columnWidths[i]);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+		table.addMouseListener(new MouseAdapter()
 		{
-			public void valueChanged(ListSelectionEvent evt)
+			@Override
+			public void mouseClicked(MouseEvent evt)
 			{
-				description.setText(bugList.get(table.getSelectedRow()).getBugPattern().getDetailHTML());
-				SwingUtilities.invokeLater(new Runnable()
+				if (evt.getClickCount() == 2)
+					showEditorAndHighlight(bugList.get(table.getSelectedRow()));
+				else
+				{
+					description.setText(bugList.get(table.getSelectedRow()).getBugPattern().getDetailHTML());
+					SwingUtilities.invokeLater(new Runnable()
+					{
+						public void run()
 						{
-							public void run()
-							{
-								bottomScroll.getVerticalScrollBar().setValue(bottomScroll.getVerticalScrollBar().getMinimum());
-							}
-						});
-				showEditorAndHighlight(bugList.get(table.getSelectedRow()));
-			}
+							bottomScroll.getVerticalScrollBar().setValue(bottomScroll.getVerticalScrollBar().getMinimum());
+						}
+					});
+				}
+			} 
 		});
-		
+
 		JScrollPane topScroll = new JScrollPane(table);
 		topScroll.setPreferredSize(new Dimension(675, 275));
-			
-		
+
 		description = new JEditorPane();
 		description.setContentType("text/html");
 		bottomScroll = new JScrollPane(description);
 		bottomScroll.setPreferredSize(new Dimension(675, 100));
-		
-		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topScroll, bottomScroll);
+
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+				topScroll, bottomScroll);
 		setContentPane(splitPane);
-			
-		
+
 		pack();
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
+		setVisible(true);
 	}
-	
+
 	/*
-	 * Finds the editor that corresponds with the class the bug in the BugInstance
-	 * is in. Opens the editor and then highlights the bug and places the cursor 
-	 * at the beginning.
+	 * Finds the editor that corresponds with the class the bug in the
+	 * BugInstance is in. Opens the editor and then highlights the bug and
+	 * places the cursor at the beginning.
 	 */
-	private void showEditorAndHighlight(BugInstance instance) {
-		SourceLineAnnotation srcLine = instance.getPrimarySourceLineAnnotation();
-		try {
-			Editor srcEditor = currProject.getPackage(srcLine.getPackageName()).getBClass(getClassName(srcLine)).getEditor();
+	private void showEditorAndHighlight(BugInstance instance)
+	{
+		SourceLineAnnotation srcLine = instance
+				.getPrimarySourceLineAnnotation();
+		try
+		{
+			Editor srcEditor = currProject.getPackage(srcLine.getPackageName())
+					.getBClass(getClassName(srcLine)).getEditor();
 			srcEditor.setVisible(true);
-			
-			//srcStartLine in case returned -1
+
+			// srcStartLine in case returned -1
 			int srcStartLine = srcLine.getStartLine();
-			
-			if(srcStartLine > 0){
-				srcEditor.setCaretLocation(new TextLocation(srcStartLine-1, 0));
-				srcEditor.setSelection(new TextLocation(srcStartLine-1, 0), new TextLocation(srcLine.getEndLine(), 0));
+
+			if (srcStartLine > 0)
+			{
+				srcEditor
+						.setCaretLocation(new TextLocation(srcStartLine - 1, 0));
+				srcEditor.setSelection(new TextLocation(srcStartLine - 1, 0),
+						new TextLocation(srcLine.getEndLine(), 0));
 			}
-		} catch (ProjectNotOpenException e) {
+		}
+		catch (ProjectNotOpenException e)
+		{
 			Log.recordBug(e);
-		} catch (PackageNotFoundException e) {
+		}
+		catch (PackageNotFoundException e)
+		{
 			Log.recordBug(e);
 		}
 	}
-	
+
 	/*
 	 * Gets the source file and gets the name of the class from that.
 	 */
-	private String getClassName(SourceLineAnnotation srcLine) {
+	private String getClassName(SourceLineAnnotation srcLine)
+	{
 		String str = srcLine.getSourceFile();
 		return str.substring(0, str.indexOf("."));
 	}
-	
-//	private ArrayList<String[]> parseBugInstances(SortedBugCollection bugs)
-//	{
-//		ArrayList<String[]> result = new ArrayList<String[]>();
-//		Iterator<BugInstance> i = bugs.iterator();
-//		while (i.hasNext())
-//		{
-//			BugInstance bug = i.next();
-//			result.add(new String[3]);
-//			result.get(result.size() - 1)[0] = bug.getPrimarySourceLineAnnotation().getSourceFile();
-//			result.get(result.size() - 1)[1] = String.valueOf(bug.getPrimarySourceLineAnnotation().getStartLine());
-//			result.get(result.size() - 1)[2] = bug.getMessageWithoutPrefix();
-//		}
-//		return result;
-//	}
-	
+
 	private class MyTableModel extends AbstractTableModel
 	{
 		private ArrayList<BugInstance> bugList;
-		
+
 		public MyTableModel(ArrayList<BugInstance> bugList)
 		{
 			this.bugList = bugList;
 		}
-		
+
 		public int getRowCount()
 		{
 			return bugList.size();
@@ -154,22 +173,25 @@ public class ResultsFrame extends JFrame
 		{
 			return columnNames[column];
 		}
-		
+
 		public Object getValueAt(int row, int column)
 		{
 			switch (column)
 			{
 			case 0:
-				return bugList.get(row).getPrimarySourceLineAnnotation().getSourceFile();
+				return bugList.get(row).getPrimarySourceLineAnnotation()
+						.getSourceFile();
 			case 1:
-				int line = bugList.get(row).getPrimarySourceLineAnnotation().getStartLine();
+				int line = bugList.get(row).getPrimarySourceLineAnnotation()
+						.getStartLine();
 				return (line != -1 ? String.valueOf(line) : "");
 			case 2:
 				return bugList.get(row).getMessageWithoutPrefix();
 			default:
-				throw new ArrayIndexOutOfBoundsException("Column " + column + " must be < 3");
+				throw new ArrayIndexOutOfBoundsException("Column " + column
+						+ " must be < 3");
 			}
 		}
-		
+
 	}
 }

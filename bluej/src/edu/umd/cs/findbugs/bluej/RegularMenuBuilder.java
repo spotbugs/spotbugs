@@ -3,17 +3,14 @@ package edu.umd.cs.findbugs.bluej;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import edu.umd.cs.findbugs.SortedBugCollection;
 
-import bluej.extensions.BClass;
 import bluej.extensions.BPackage;
 import bluej.extensions.BProject;
 import bluej.extensions.MenuGenerator;
@@ -42,7 +39,7 @@ public class RegularMenuBuilder extends MenuGenerator
 								{
 									try
 									{
-										new ResultsFrame(bugs, pckg.getProject()).setVisible(true);
+										ResultsFrame.getInstance().update(bugs, pckg.getProject());
 									}
 									catch (Exception e)
 									{

@@ -5,13 +5,11 @@ import java.io.IOException;
 import bluej.extensions.event.CompileEvent;
 import bluej.extensions.event.CompileListener;
 
-import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 
 
 public class RunFindbugs implements CompileListener {
