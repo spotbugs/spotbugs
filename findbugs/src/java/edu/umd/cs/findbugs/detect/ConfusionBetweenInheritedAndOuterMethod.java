@@ -65,12 +65,12 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 		try {
          if (seen != INVOKEVIRTUAL) return;
          if (!getClassName().equals(getClassConstantOperand())) return;
-         XMethod invokedMethod = XFactory.createXMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false);
+         XMethod invokedMethod = XFactory.createXMethod(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false);
          if (Methods.getMethods().contains(invokedMethod)) {
 
         	 return;
          }
-         String possibleTargetClass = getClassName();
+         String possibleTargetClass = getDottedClassName();
          while(true) {
         	 int i = possibleTargetClass.lastIndexOf('$');
 			if (i == -1) break;
