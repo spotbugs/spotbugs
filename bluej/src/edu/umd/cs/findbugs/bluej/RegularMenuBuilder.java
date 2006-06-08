@@ -3,22 +3,34 @@ package edu.umd.cs.findbugs.bluej;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import edu.umd.cs.findbugs.SortedBugCollection;
 
+import bluej.extensions.BClass;
 import bluej.extensions.BPackage;
 import bluej.extensions.BProject;
+import bluej.extensions.BlueJ;
+import bluej.extensions.ExtensionException;
 import bluej.extensions.MenuGenerator;
 import bluej.extensions.PackageNotFoundException;
 import bluej.extensions.ProjectNotOpenException;
 
 public class RegularMenuBuilder extends MenuGenerator
 {
+	private BlueJ bluej;
+	
+	public RegularMenuBuilder(BlueJ bluej)
+	{
+		this.bluej = bluej;
+	}
+	
 	@SuppressWarnings("serial")
 	@Override
 	public JMenuItem getToolsMenuItem(final BPackage pckg)
@@ -27,28 +39,52 @@ public class RegularMenuBuilder extends MenuGenerator
 		{
 			public void actionPerformed(ActionEvent evt)
 			{				
-				new Thread(new Runnable()
-				{
+				new Thread(new Runnable() {
 					public void run()
 					{
+						// First see if all classes are compiled
+						ArrayList<BClass> notCompiled = new ArrayList<BClass>();
 						try
 						{
-							final SortedBugCollection bugs = RunFindbugs.getBugs(allClassFileNames(pckg.getProject()));
-							SwingUtilities.invokeLater(new Runnable()
+							for (BPackage bp : bluej.getCurrentPackage().getProject().getPackages())
+								for (BClass bc : bp.getClasses())
+									if (!bc.isCompiled())
+										notCompiled.add(bc);
+							
+							if (notCompiled.size() > 0)
 							{
-								public void run()
-								{
-									try
-									{
-										ResultsFrame.getInstance().update(bugs, pckg.getProject());
-									}
-									catch (Exception e)
-									{
-										Log.recordBug(e);
-									}
+								int response;
+								String strButton = bluej.getExtensionPropertyString(FindBugsPreferences.PROFILE_LABEL,"");
+														
+								if(strButton.equals(FindBugsPreferences.radioCommand[0]))
+									response = JOptionPane.YES_OPTION;
+								else if(strButton.equals(FindBugsPreferences.radioCommand[1]))
+									response = JOptionPane.NO_OPTION;
+								else{
+									// At least one class in the project is not compiled.
+									StringBuffer msg = new StringBuffer();
+									msg.append("The following class" + (notCompiled.size() == 1 ? " is " : "es are ") + "not compiled:\n\n");
+									for (BClass bc : notCompiled)
+										msg.append(bc.getName() + "\n");
+									msg.append("\nCompile before running FindBugs?");
+									response = JOptionPane.showConfirmDialog(null, msg);
 								}
-							});
+								
+								switch (response)
+								{
+								case JOptionPane.YES_OPTION:
+									for (BPackage bp : bluej.getCurrentPackage().getProject().getPackages())
+										bp.compile(true);
+									break;
+								case JOptionPane.NO_OPTION:
+									// Don't do anything - get out of the switch and just run
+									break;
+								case JOptionPane.CANCEL_OPTION:
+									return;
+								}
+							}
 
+							getAllClassesAndRun();
 						}
 						catch (Exception e)
 						{
@@ -60,6 +96,25 @@ public class RegularMenuBuilder extends MenuGenerator
 		});
 		jmi.setText("Run FindBugs");
 		return jmi;
+	}
+	
+	private void getAllClassesAndRun() throws IOException, InterruptedException, ExtensionException
+	{
+		final SortedBugCollection bugs = RunFindbugs.getBugs(allClassFileNames(bluej.getCurrentPackage().getProject()));
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				try
+				{
+					ResultsFrame.getInstance().update(bugs, bluej.getCurrentPackage().getProject());
+				}
+				catch (Exception e)
+				{
+					Log.recordBug(e);
+				}
+			}
+		});
 	}
 	
 	/**

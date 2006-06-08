@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.bluej;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -18,8 +19,8 @@ public class FindBugsExtension extends Extension
 	@Override
 	public void startup(BlueJ bluej)
 	{
-		bluej.setMenuGenerator(new CheckBoxMenuBuilder());
-		bluej.addCompileListener(new RunFindbugs(bluej));
+		Log.setPath(new File(bluej.getSystemLibDir(), "findbugs.errlog")); 
+		bluej.setMenuGenerator(new RegularMenuBuilder(bluej));
 		bluej.setPreferenceGenerator(new FindBugsPreferences(bluej));
 	}
 
