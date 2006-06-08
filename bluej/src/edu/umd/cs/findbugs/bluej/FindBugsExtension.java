@@ -18,7 +18,6 @@ public class FindBugsExtension extends Extension
 	@Override
 	public void startup(BlueJ bluej)
 	{
-		bluej.setMenuGenerator(new RegularMenuBuilder());
 		bluej.setMenuGenerator(new CheckBoxMenuBuilder());
 		bluej.addCompileListener(new RunFindbugs(bluej));
 	}
@@ -48,6 +47,6 @@ public class FindBugsExtension extends Extension
 		{
 			return new URL("http://findbugs.sourceforge.net");
 		}
-		catch (MalformedURLException ignored) {return null;}
+		catch (MalformedURLException e) {return null;}
 	}
 }
