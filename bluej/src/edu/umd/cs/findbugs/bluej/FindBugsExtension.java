@@ -20,6 +20,7 @@ public class FindBugsExtension extends Extension
 	{
 		bluej.setMenuGenerator(new CheckBoxMenuBuilder());
 		bluej.addCompileListener(new RunFindbugs(bluej));
+		bluej.setPreferenceGenerator(new FindBugsPreferences(bluej));
 	}
 
 	@Override

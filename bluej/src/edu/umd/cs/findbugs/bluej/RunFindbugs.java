@@ -119,16 +119,27 @@ public class RunFindbugs implements CompileListener {
 						for (BClass bc : bp.getClasses())
 							if (!bc.isCompiled())
 								notCompiled.add(bc);
-				
+					
 					if (notCompiled.size() > 0)
 					{
-						// At least one class in the project is not compiled.
-						StringBuffer msg = new StringBuffer();
-						msg.append("The following class" + (notCompiled.size() == 1 ? " is " : "es are ") + "not compiled:\n\n");
-						for (BClass bc : notCompiled)
-							msg.append(bc.getName() + "\n");
-						msg.append("\nCompile before running FindBugs?");
-						switch (JOptionPane.showConfirmDialog(null, msg))
+						int response;
+						String strButton = bluej.getExtensionPropertyString(FindBugsPreferences.PROFILE_LABEL,"");
+												
+						if(strButton.equals(FindBugsPreferences.radioCommand[0]))
+							response = JOptionPane.YES_OPTION;
+						else if(strButton.equals(FindBugsPreferences.radioCommand[1]))
+							response = JOptionPane.NO_OPTION;
+						else{
+							// At least one class in the project is not compiled.
+							StringBuffer msg = new StringBuffer();
+							msg.append("The following class" + (notCompiled.size() == 1 ? " is " : "es are ") + "not compiled:\n\n");
+							for (BClass bc : notCompiled)
+								msg.append(bc.getName() + "\n");
+							msg.append("\nCompile before running FindBugs?");
+							response = JOptionPane.showConfirmDialog(null, msg);
+						}
+						
+						switch (response)
 						{
 						case JOptionPane.YES_OPTION:
 							for (BPackage bp : bluej.getCurrentPackage().getProject().getPackages())
