@@ -19,6 +19,7 @@ import bluej.extensions.ProjectNotOpenException;
 
 public class RegularMenuBuilder extends MenuGenerator
 {
+	@SuppressWarnings("serial")
 	@Override
 	public JMenuItem getToolsMenuItem(final BPackage pckg)
 	{

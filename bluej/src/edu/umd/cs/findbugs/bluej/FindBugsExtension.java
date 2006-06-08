@@ -1,5 +1,8 @@
 package edu.umd.cs.findbugs.bluej;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import bluej.extensions.BlueJ;
 import bluej.extensions.Extension;
 
@@ -16,7 +19,7 @@ public class FindBugsExtension extends Extension
 	public void startup(BlueJ bluej)
 	{
 		bluej.setMenuGenerator(new RegularMenuBuilder());
-		bluej.setMenuGenerator(new CheckBoxMenuBuilder(bluej));
+		bluej.setMenuGenerator(new CheckBoxMenuBuilder());
 		bluej.addCompileListener(new RunFindbugs(bluej));
 	}
 
@@ -35,7 +38,16 @@ public class FindBugsExtension extends Extension
 	@Override
 	public String getDescription()
 	{
-		return "Plugin for FindBugs, a static analysis tool that finds coding errors.";
+		return "Extension for FindBugs, a static analysis tool that looks for coding errors.";
 	}
 	
+	@Override
+	public URL getURL()
+	{
+		try
+		{
+			return new URL("http://findbugs.sourceforge.net");
+		}
+		catch (MalformedURLException ignored) {return null;}
+	}
 }

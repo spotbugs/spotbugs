@@ -7,30 +7,19 @@ import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JOptionPane;
 
-import bluej.extensions.BClass;
 import bluej.extensions.BPackage;
 import bluej.extensions.BProject;
-import bluej.extensions.BlueJ;
-import bluej.extensions.ExtensionException;
 import bluej.extensions.MenuGenerator;
 import bluej.extensions.ProjectNotOpenException;
 
 public class CheckBoxMenuBuilder extends MenuGenerator
 {
-	private BlueJ bluej;
-
 	private static Map<BProject, Boolean> isRunningMap = new HashMap<BProject, Boolean>();
 	private static Map<BProject, HashSet<JCheckBoxMenuItem>> projectToMenuItem = new HashMap<BProject, HashSet<JCheckBoxMenuItem>>();
 	
 	private static final boolean DEFAULT_RUNNING = false;
 	
-	public CheckBoxMenuBuilder(BlueJ bluej)
-	{
-		this.bluej = bluej;
-	}
-
 	public static boolean isRunning(BProject project)
 	{
 		if (!isRunningMap.containsKey(project))
