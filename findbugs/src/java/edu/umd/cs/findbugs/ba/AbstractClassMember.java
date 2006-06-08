@@ -26,10 +26,26 @@ public abstract class AbstractClassMember implements ClassMember {
 	private final String signature;
 	private final int accessFlags;
 	private int cachedHashCode = 0;
+	static public int slashCountClass = 0;
+	static public int dottedCountClass = 0;
+	static public int slashCountSignature= 0;
+	static public int dottedCountSignature = 0;
+	
 
 	protected AbstractClassMember(String className, String name, String signature, int accessFlags) {
-		if (className.indexOf('/') >= 0) className = className.replace('/','.');
-		if (signature.indexOf('/') >= 0) signature = signature.replace('/','.');
+		if (className.indexOf('.') >= 0) {
+			// className = className.replace('.','/');
+			dottedCountClass++;
+		} else if (className.indexOf('/') >= 0)  {
+			slashCountClass++;
+			className = className.replace('/','.');
+			assert false;
+		}
+		if (signature.indexOf('.') >= 0) {
+			signature = signature.replace('.','/');
+			dottedCountSignature++;
+			assert false;
+		} else if (signature.indexOf('/') >= 0)  slashCountSignature++;
 		this.className = className;
 		this.name = name;
 		this.signature = signature;
