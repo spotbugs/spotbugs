@@ -15,7 +15,8 @@ public class MyReporter extends TextUIBugReporter {
 	}
 	@Override
 	protected void doReportBug(BugInstance bugInstance) {
-		bugs.add(bugInstance);
+		if (bugInstance.getBugPattern().getCategory().equals("CORRECTNESS"))
+			bugs.add(bugInstance);
 		
 	}
 
