@@ -89,6 +89,7 @@ public class OpcodeStack implements Constants2
 		public static final int BYTE_ARRAY_LOAD = 1;
 		public static final int RANDOM_INT = 2;
 		public static final int LOW_8_BITS_CLEAR = 3;
+		public static final int HASHCODE_INT = 4;
 		public static final Object UNKNOWN = null;
 		private int specialKind;
  		private String signature;
@@ -1150,11 +1151,17 @@ public class OpcodeStack implements Constants2
  			return;
  		}
  		
-		if (methodName.equals("nextInt")) {
+		if (clsName.equals("java/util/Random") && methodName.equals("nextInt") && signature.equals("()I")) {
 			Item i = pop();
 			i.setSpecialKind(Item.RANDOM_INT);
 			push(i);
 		}
+		else if (methodName.equals("hashCode") && signature.equals("()I")) {
+			Item i = pop();
+			i.setSpecialKind(Item.HASHCODE_INT);
+			push(i);
+		}
+ 
  	}
  	
 	private void mergeLists(List<Item> mergeInto, List<Item> mergeFrom, boolean errorIfSizesDoNotMatch) {
@@ -1278,7 +1285,7 @@ public class OpcodeStack implements Constants2
  
  	public Item getStackItem(int stackOffset) {
 		if (stackOffset < 0 || stackOffset >= stack.size()) {
-			assert false;
+			assert false : "Can't get stack offset " + stackOffset + " from " + stack.toString();
 			return new Item("Lfindbugs/OpcodeStackError;");
 			
 		}
