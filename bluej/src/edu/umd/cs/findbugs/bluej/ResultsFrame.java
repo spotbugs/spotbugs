@@ -18,6 +18,7 @@ import javax.swing.table.AbstractTableModel;
 
 import bluej.extensions.BClass;
 import bluej.extensions.BProject;
+import bluej.extensions.ExtensionException;
 import bluej.extensions.PackageNotFoundException;
 import bluej.extensions.ProjectNotOpenException;
 import bluej.extensions.editor.Editor;
@@ -48,7 +49,14 @@ public class ResultsFrame extends JFrame
 	
 	public void update(final SortedBugCollection bugs, BProject project)
 	{
-		setTitle("FindBugs results");
+		try
+		{
+			setTitle("FindBugs results [" + project.getName() + "]");
+		}
+		catch (ProjectNotOpenException e)
+		{
+			setTitle("FindBugs results");
+		}
 		try
 		{
 			setIconImage(ImageIO.read(ResultsFrame.class.getResource("/smallBuggy.png")));
@@ -89,13 +97,36 @@ public class ResultsFrame extends JFrame
 		});
 
 		JScrollPane topScroll = new JScrollPane(table);
-		topScroll.setPreferredSize(new Dimension(675, 275));
+		topScroll.setPreferredSize(new Dimension(675, 200));
 
 		description = new JEditorPane();
 		description.setContentType("text/html");
 		description.setEditable(false);
+		
+		boolean allCompiled = true;
+		for (BugInstance bug : bugs.getCollection())
+		{
+			try
+			{
+				if (!project.getPackage(bug.getPrimarySourceLineAnnotation().getPackageName()).getBClass(getClassName(bug.getPrimarySourceLineAnnotation())).isCompiled())
+				{
+					allCompiled = false;
+					break;
+				}
+			}
+			catch (ExtensionException e)
+			{
+				Log.recordBug(e);
+				continue;
+			}
+		}
+		description.setText("<html><body><p>Click on a bug to view a detailed description.</p><p>Double-click to be " +
+			"taken to its location in the source code.</p>" + (allCompiled ? "" : "<p>* Classes marked with an " +
+			"asterisk were not compiled when Findbugs ran, so this list may not reflect recent changes in the " +
+			"source code.</p>"));
+		
 		bottomScroll = new JScrollPane(description);
-		bottomScroll.setPreferredSize(new Dimension(675, 100));
+		bottomScroll.setPreferredSize(new Dimension(675, 200));
 
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 				topScroll, bottomScroll);
@@ -178,14 +209,26 @@ public class ResultsFrame extends JFrame
 
 		public Object getValueAt(int row, int column)
 		{
+			SourceLineAnnotation annotation = bugList.get(row).getPrimarySourceLineAnnotation();
+			
 			switch (column)
 			{
 			case 0:
-				return bugList.get(row).getPrimarySourceLineAnnotation()
-						.getSourceFile();
+				boolean notCompiled = false;
+				
+				try
+				{
+					BClass srcClass = currProject.getPackage(annotation.getPackageName()).getBClass(getClassName(annotation));
+					notCompiled = !srcClass.isCompiled();
+				}
+				catch (ExtensionException e)
+				{
+					Log.recordBug(e);
+				}
+				
+				return (notCompiled ? "*" : "") + annotation.getSourceFile();
 			case 1:
-				int line = bugList.get(row).getPrimarySourceLineAnnotation()
-						.getStartLine();
+				int line = annotation.getStartLine();
 				return (line != -1 ? String.valueOf(line) : "");
 			case 2:
 				return bugList.get(row).getMessageWithoutPrefix();

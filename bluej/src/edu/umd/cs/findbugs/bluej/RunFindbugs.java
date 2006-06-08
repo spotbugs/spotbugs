@@ -96,6 +96,18 @@ public class RunFindbugs implements CompileListener {
 	 */
 	public void compileSucceeded(CompileEvent evt)
 	{
+		// First thing, make sure we're supposed to be running
+		try
+		{
+			if (!CheckBoxMenuBuilder.isRunning(bluej.getCurrentPackage().getProject()))
+				return;
+		}
+		catch (ExtensionException e)
+		{
+			Log.recordBug(e);
+			return;
+		}
+		
 		new Thread(new Runnable() {
 			public void run()
 			{
@@ -112,7 +124,7 @@ public class RunFindbugs implements CompileListener {
 					{
 						// At least one class in the project is not compiled.
 						StringBuffer msg = new StringBuffer();
-						msg.append("The following class" + (notCompiled.size() == 1 ? " is " : "es are ") + "not compiled:");
+						msg.append("The following class" + (notCompiled.size() == 1 ? " is " : "es are ") + "not compiled:\n\n");
 						for (BClass bc : notCompiled)
 							msg.append(bc.getName() + "\n");
 						msg.append("\nCompile before running FindBugs?");
@@ -120,7 +132,7 @@ public class RunFindbugs implements CompileListener {
 						{
 						case JOptionPane.YES_OPTION:
 							for (BPackage bp : bluej.getCurrentPackage().getProject().getPackages())
-								bp.compileAll(true);
+								bp.compile(true);
 							break;
 						case JOptionPane.NO_OPTION:
 							// Don't do anything - get out of the switch and just run
@@ -137,7 +149,7 @@ public class RunFindbugs implements CompileListener {
 					Log.recordBug(e);
 				}
 			}
-		});
+		}).start();
 	}
 	
 	/**
