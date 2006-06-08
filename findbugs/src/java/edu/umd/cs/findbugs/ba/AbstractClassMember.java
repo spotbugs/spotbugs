@@ -28,6 +28,8 @@ public abstract class AbstractClassMember implements ClassMember {
 	private int cachedHashCode = 0;
 
 	protected AbstractClassMember(String className, String name, String signature, int accessFlags) {
+		assert className.indexOf('/') == -1;
+		assert signature.indexOf('/') == -1;
 		this.className = className;
 		this.name = name;
 		this.signature = signature;
