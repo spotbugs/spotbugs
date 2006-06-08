@@ -168,7 +168,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 	}
 
 	private boolean isPop(int seen) {
-		return seen == Constants.POP || seen == Constants.POP2 || seen == RETURN;
+		return seen == Constants.POP || seen == Constants.POP2;
 	}
 
 }
