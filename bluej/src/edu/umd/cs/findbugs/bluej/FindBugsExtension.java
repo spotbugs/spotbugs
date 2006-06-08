@@ -32,4 +32,10 @@ public class FindBugsExtension extends Extension
 		return "0.1";
 	}
 
+	@Override
+	public String getDescription()
+	{
+		return "Plugin for FindBugs, a static analysis tool that finds coding errors.";
+	}
+	
 }
