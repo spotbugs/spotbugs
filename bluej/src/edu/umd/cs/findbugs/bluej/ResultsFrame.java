@@ -165,7 +165,9 @@ public class ResultsFrame extends JFrame
 	/*
 	 * Finds the editor that corresponds with the class the bug in the
 	 * BugInstance is in. Opens the editor and then highlights the bug and
-	 * places the cursor at the beginning.
+	 * places the cursor at the beginning if class is compiled. If the class
+	 * is not compiled than just opens the editor and moves the caret to the
+	 * last known startline of that bug.
 	 */
 	private void showEditorAndHighlight(BugInstance instance)
 	{
@@ -181,12 +183,13 @@ public class ResultsFrame extends JFrame
 			// srcStartLine in case returned -1
 			int srcStartLine = srcLine.getStartLine();
 
+			srcEditor.setCaretLocation(new TextLocation(srcStartLine - 1, 0));
+			
 			if (srcStartLine > 0 && srcClass.isCompiled())
-			{
-				srcEditor.setCaretLocation(new TextLocation(srcStartLine - 1, 0));
+			{				
 				srcEditor.setSelection(new TextLocation(srcStartLine - 1, 0),
 						new TextLocation(srcLine.getEndLine(), 0));
-			}			
+			}	
 		}
 		catch (ProjectNotOpenException e)
 		{
