@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -2118,6 +2119,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		}
 
 		bugDescriptionEditorPane.setText("");
+		currentBugDetailsKey = null;
 		sourceTextArea.setText("");
 		AnalysisRun analysisRun = new AnalysisRun(project, this);
 
@@ -2900,9 +2902,9 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	
 	private void setSummary(String summaryXML) {
 		bugSummaryEditorPane.setContentType("text/html");
+		/*
 		bugSummaryEditorPane.setText(summaryXML);
-		
-		// FIXME: unfortunately, using setText() on the editor pane
+		//      : unfortunately, using setText() on the editor pane
 		// results in the contents being scrolled to the bottom of the pane.
 		// An immediate inline call to set the scroll position does nothing.
 		// So, use invokeLater(), even though this results in flashing.
@@ -2913,6 +2915,17 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 				bySummary.getViewport().setViewPosition(new Point(0, 0));
 			}
 		});
+		*/
+		StringReader reader = new StringReader(summaryXML); // no need for BufferedReader
+		try {
+			bugSummaryEditorPane.read(reader, "html summary");
+		} catch (IOException e) {
+			bugSummaryEditorPane.setText("Could not set summary: " + e.getMessage());
+			logger.logMessage(Logger.WARNING, e.getMessage());
+		} finally {
+			reader.close(); // polite, but doesn't do much in StringReader
+		}
+		
 	}
 	
 	/**
@@ -3274,12 +3287,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		
 		try {
 			reader = new BufferedReader(new InputStreamReader(in));
-			
-			String line;
-			while ((line = reader.readLine()) != null) {
-				// TODO: evaluate whether this is inefficient
-				sourceTextArea.append(line + "\n");
-			}
+			sourceTextArea.read(reader, sourceFile); // 2nd arg is mostly ignored
 		} finally {
 			if (reader != null)
 				reader.close();
@@ -3287,11 +3295,9 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		
 		if (srcLine.isUnknown()) {
 			// No line number information, so can't highlight anything
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					sourceTextAreaScrollPane.getViewport().setViewPosition(new Point(0, 0));
-				}
-			});
+			
+			// There was code here to scroll to the top, but that isn't
+			// needed because sourceTextArea.read() does that for us.
 			return true;
 		}
 		
@@ -3303,6 +3309,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		// to compute the visibility of text in the text area.
 		// So, post some code to do the update to the Swing event queue.
 		// Not really an ideal solution, but it seems to work.
+		// note: Could reimplement this to use sourceTextArea.scrollRectToVisible(),
+		// but if it ain't broke...
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				// Highlight the lines from the source annotation.
@@ -3357,10 +3365,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		// Display the details
 		String html = I18N.instance().getDetailHTML(bugDetailsKey);
 		bugDescriptionEditorPane.setContentType("text/html");
-		bugDescriptionEditorPane.setText(html);
 		currentBugDetailsKey = bugDetailsKey;
+		/*
+		bugDescriptionEditorPane.setText(html);
 		
-		// FIXME: unfortunately, using setText() on the editor pane
+		//      : unfortunately, using setText() on the editor pane
 		// results in the contents being scrolled to the bottom of the pane.
 		// An immediate inline call to set the scroll position does nothing.
 		// So, use invokeLater(), even though this results in flashing.
@@ -3371,6 +3380,16 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 				bugDescriptionScrollPane.getViewport().setViewPosition(new Point(0, 0));
 			}
 		});
+		*/
+		StringReader reader = new StringReader(html); // no need for BufferedReader
+		try {
+			bugDescriptionEditorPane.read(reader, "html bug description");
+		} catch (IOException e) {
+			bugDescriptionEditorPane.setText("Could not find bug description: " + e.getMessage());
+			logger.logMessage(Logger.WARNING, e.getMessage());
+		} finally {
+			reader.close(); // polite, but doesn't do much in StringReader
+		}
 	}
 	
 	/**
@@ -3385,7 +3404,22 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			currentBugInstance.setAnnotationText(text);
 		}
 		
-		annotationTextArea.setText(selected.getAnnotationText());
+		//annotationTextArea.setText(selected.getAnnotationText());
+		String userAnnotation = selected.getAnnotationText();
+		if (userAnnotation==null || userAnnotation.length()==0) {
+			// this is the common case, so might as well optimize it
+			annotationTextArea.setText("");
+			return;
+		}
+		StringReader reader = new StringReader(userAnnotation); // no need for BufferedReader
+		try {
+			annotationTextArea.read(reader, "user annotation");
+		} catch (IOException e) {
+			annotationTextArea.setText("Could not find user annotation: " + e.getMessage());
+			logger.logMessage(Logger.WARNING, e.getMessage());
+		} finally {
+			reader.close(); // polite, but doesn't do much in StringReader
+		}
 	}
 	
 	/**
