@@ -39,15 +39,14 @@ public class ResultsFrame extends JFrame
 	private JScrollPane bottomScroll;
 
 	private BProject currProject;
-
-//	private static ResultsFrame instance;
-//	public static ResultsFrame getInstance() {
-//		if (instance == null)
-//			instance = new ResultsFrame();
-//		return instance;
-//	}
 	
 	private static HashMap<BProject, ResultsFrame> instanceMap = new HashMap<BProject, ResultsFrame>();
+	/**
+	 * "Multipleton" design pattern: return one ResultsFrame per BProject.
+	 * @param project The BProject to get the frame for
+	 * @param createIfNeeded If there's not already a frame, should one be created?
+	 * @return A ResultsFrame, or null if none exists and createIfNeeded is false
+	 */
 	public static ResultsFrame getInstance(BProject project, boolean createIfNeeded)
 	{
 		if (!instanceMap.containsKey(project))
@@ -61,6 +60,9 @@ public class ResultsFrame extends JFrame
 	}
 	private ResultsFrame() {}
 	
+	/**
+	 * Update the view
+	 */
 	public void update(final SortedBugCollection bugs, BProject project)
 	{
 		try

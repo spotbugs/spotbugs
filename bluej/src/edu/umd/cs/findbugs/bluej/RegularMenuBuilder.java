@@ -22,6 +22,9 @@ import bluej.extensions.MenuGenerator;
 import bluej.extensions.PackageNotFoundException;
 import bluej.extensions.ProjectNotOpenException;
 
+/**
+ * Adds our menu entry to the BlueJ tools menu.
+ */
 public class RegularMenuBuilder extends MenuGenerator
 {
 	private BlueJ bluej;
@@ -53,6 +56,7 @@ public class RegularMenuBuilder extends MenuGenerator
 							
 							if (notCompiled.size() > 0)
 							{
+								// At least one class in the project is not compiled.
 								int response;
 								String strButton = bluej.getExtensionPropertyString(FindBugsPreferences.PROFILE_LABEL,"");
 														
@@ -61,7 +65,6 @@ public class RegularMenuBuilder extends MenuGenerator
 								else if(strButton.equals(FindBugsPreferences.radioCommand[1]))
 									response = JOptionPane.NO_OPTION;
 								else{
-									// At least one class in the project is not compiled.
 									StringBuffer msg = new StringBuffer();
 									msg.append("The following class" + (notCompiled.size() == 1 ? " is " : "es are ") + "not compiled:\n\n");
 									for (BClass bc : notCompiled)
