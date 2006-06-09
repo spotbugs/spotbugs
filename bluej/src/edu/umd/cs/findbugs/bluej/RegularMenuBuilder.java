@@ -84,18 +84,21 @@ public class RegularMenuBuilder extends MenuGenerator
 								switch (response)
 								{
 								case JOptionPane.YES_OPTION:
+									bluej.addCompileListener(new FindBugsCompileListener(bluej, notCompiled.size(), RegularMenuBuilder.this));
+									
 									for (BPackage bp : bluej.getCurrentPackage().getProject().getPackages())
 										bp.compile(true);
 									break;
 								case JOptionPane.NO_OPTION:
-									// Don't do anything - get out of the switch and just run
+									getAllClassesAndRun();
 									break;
 								case JOptionPane.CANCEL_OPTION:
 									return;
 								}
 							}
-
-							getAllClassesAndRun();
+							else
+								getAllClassesAndRun();
+							
 						}
 						catch (Exception e)
 						{
@@ -109,7 +112,7 @@ public class RegularMenuBuilder extends MenuGenerator
 		return jmi;
 	}
 	
-	private void getAllClassesAndRun() throws IOException, InterruptedException, ExtensionException
+	void getAllClassesAndRun() throws IOException, InterruptedException, ExtensionException
 	{
 		final SortedBugCollection bugs = RunFindbugs.getBugs(allClassFileNames(bluej.getCurrentPackage().getProject()));
 		SwingUtilities.invokeLater(new Runnable()

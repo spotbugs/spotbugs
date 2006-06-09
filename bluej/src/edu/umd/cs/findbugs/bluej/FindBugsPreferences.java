@@ -13,7 +13,7 @@ import bluej.extensions.PreferenceGenerator;
  * Creates a panel for the extension preference panel in BlueJ preferences.
  * Holds three radio buttons that are linked together with the different choices of either
  * compiling all uncompiled classes when FindBugs is run, not compiling the classes,
- * or popping up a dialogue box each time there are uncompiled classes when FindBugs
+ * or popping up a dialog box each time there are uncompiled classes when FindBugs
  * is called.
  * @author Kristin Stephens
  *
@@ -27,11 +27,11 @@ public class FindBugsPreferences extends JPanel implements PreferenceGenerator {
 	//Description of each radioButton.
 	private static String[] radioDescription = {"Compile all classes not already compiled.", 
 			"Do not compile classes not already compiled.",
-			"Show dialogue box."};
+			"Show dialog box."};
 	
 	//Warning if this is changed must check and/or change loadValues()
 	//and RunFindbugs method compileSucceeded()
-	static String[] radioCommand = {"Compile", "DoNotCompile", "DialogueBox"};
+	static String[] radioCommand = {"Compile", "DoNotCompile", "DialogBox"};
 	
 	static final String PROFILE_LABEL = "FindBugsPreference";
 	private ButtonGroup compileGroup;
