@@ -90,14 +90,6 @@
 ]]>
   </Details>
  </Detector>
- <Detector class="edu.umd.cs.findbugs.detect.NoteNullReturnValues">
-  <Details>
-<![CDATA[
-<p>Passe préalable recherchant les méthodes qui pourraient renvoyer <code>null</code>. Les informations récoltées sont utilisées par la suite par <i>FindNullDeref</i>.</p>
-<p>C'est un détecteur lent.</p>
-]]>
-  </Details>
- </Detector>
  <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue">
   <Details>
 <![CDATA[
@@ -369,7 +361,7 @@
 ]]>
   </Details>
  </Detector>
- <Detector class="edu.umd.cs.findbugs.detect.LockedFields" disabled="true">
+ <Detector class="edu.umd.cs.findbugs.detect.LockedFields">
   <Details>
 <![CDATA[
 <p>Ce détecteur recherche les champs accédés de façon inconsistante par rapport aux verrous.</p>
@@ -1543,7 +1535,7 @@ public int hashCode() {
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="TLW_TWO_LOCK_NOTIFY">
+ <BugPattern type="TLW_TWO_LOCK_NOTIFY" deprecated="true">
   <ShortDescription>Notify avec deux verrous en cours</ShortDescription>
   <LongDescription>notify() ou notifyAll*() avec deux verrous en cours dans {1}</LongDescription>
   <Details>
@@ -2041,7 +2033,7 @@ Si c'est bien le cas, retirez la déclaration d'une valeur de retour.</p>
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
+ <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" deprecated="true">
   <ShortDescription>Lecture d'un champ non initalisé dans le constructeur</ShortDescription>
   <LongDescription>Lecture d'un champ non initalisé dans le constructeur {1}</LongDescription>
   <Details>
@@ -2372,7 +2364,7 @@ if (argv.length == 1);
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON">
+ <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true">
   <ShortDescription>Comparaison redondante à null d'une valeur préalablement vérifiée</ShortDescription>
   <LongDescription>Comparaison redondante à null d'une valeur préalablement vérifiée dans {1}</LongDescription>
   <Details>
@@ -2581,7 +2573,7 @@ public void foo() {
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="LI_LAZY_INIT_INSTANCE">
+ <BugPattern type="LI_LAZY_INIT_INSTANCE" deprecated="true">
   <ShortDescription>Initialisation paresseuse incorrecte d'un champ d'instance</ShortDescription>
   <LongDescription>Initialisation paresseuse incorrecte du champ d'instance {2} dans {1}</LongDescription>
   <Details>
@@ -2723,7 +2715,7 @@ String s = buf.toString();
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="BRSA_BAD_RESULTSET_ACCESS">
+ <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true">
   <ShortDescription>La méthode essaye d'accéder à un champ de ResultSet avec l'index 0</ShortDescription>
   <LongDescription>La méthode {1} essaye au champ d'index 0 d'un ResultSet</LongDescription>
   <Details>
@@ -3023,7 +3015,7 @@ double value2 =  x / (double) y;
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="BC_NULL_INSTANCEOF">
+ <BugPattern type="BC_NULL_INSTANCEOF" deprecated="true">
   <ShortDescription>Une valeur connue pour être à null est vérifiée pour savoir si elle est une instance d'un type</ShortDescription>
   <LongDescription>Une valeur connue pour être à null est vérifiée pour savoir si elle est une instance d'un type dans {1}</LongDescription>
   <Details>

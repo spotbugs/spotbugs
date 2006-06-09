@@ -132,18 +132,6 @@ by other detectors.</p>
    </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.NoteNullReturnValues">
-   <Details>
-      <![CDATA[
-      <p>
-      First pass to find methods which may return null.
-      Produces information used by FindNullDeref in a later pass.
-      </p>
-      <p>This is a slow detector.</p>
-      ]]>
-   </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue">
     <Details>
 <![CDATA[
@@ -451,7 +439,7 @@ It is a fast detector.</p>
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.LockedFields" disabled="true" >
+  <Detector class="edu.umd.cs.findbugs.detect.LockedFields" >
     <Details>
 <![CDATA[
 <p> This detector looks for fields that are accessed in an inconsistent manner
@@ -2096,7 +2084,7 @@ This not necessarily a bug, but is worth examining
 ]]>
     </Details>
   </BugPattern>
-   <BugPattern type="TLW_TWO_LOCK_NOTIFY"> <!-- deprecated (actually, never generated) -->
+   <BugPattern type="TLW_TWO_LOCK_NOTIFY" deprecated="true"> <!-- never generated -->
     <ShortDescription>Notify with two locks held</ShortDescription>
     <LongDescription>notify() or notifyAll*() with two locks held in {1}</LongDescription>
     <Details>
@@ -2810,7 +2798,7 @@ Deferencing this value will generate a null pointer exception.
 
 
 
-  <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
+  <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" deprecated="true">  <!-- deprecated in favor of UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR -->
     <ShortDescription>Read of field not initialized in constructor</ShortDescription>
     <LongDescription>Read of field not initialized in constructor at {1}</LongDescription>
     <Details>
@@ -3036,17 +3024,6 @@ be an exception path, since the default case is often infeasible.</p>
     <Details>
 <![CDATA[
 <p> A reference value dereferenced here might be null at runtime.&nbsp;
-This may lead to a <code>NullPointerException</code> when the code is executed.</p>
-]]>
-    </Details>
-  </BugPattern>
-  <BugPattern type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE">
-    <ShortDescription>Possible null pointer returned by method could be dereferenced </ShortDescription>
-    <LongDescription>Possible null pointer returned by method could be dereferenced {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p> A reference value dereferenced could be returned by a method that could have
-returned a null value.
 This may lead to a <code>NullPointerException</code> when the code is executed.</p>
 ]]>
     </Details>
@@ -3288,7 +3265,7 @@ known to be null.</p>
 
 
 
-  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON">
+  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true">   <!-- deprecated in favor of two separate RCN_ patterns -->
     <ShortDescription>Redundant comparison to null of previously checked value</ShortDescription>
     <LongDescription>Redundant comparison to null of previously checked value in {1}</LongDescription>
     <Details>
@@ -3599,7 +3576,7 @@ operator ("|") instead of bitwise AND ("&amp;").</p>
     </Details>
   </BugPattern>
 
-  <BugPattern type="LI_LAZY_INIT_INSTANCE">
+  <BugPattern type="LI_LAZY_INIT_INSTANCE" deprecated="true">  <!-- never generated? -->
     <ShortDescription>Incorrect lazy initialization of instance field</ShortDescription>
     <LongDescription>Incorrect lazy initialization of instance field {2} in {1}</LongDescription>
     <Details>
@@ -3813,7 +3790,7 @@ get called when the event occurs.</p>
     </Details>
   </BugPattern>
 
-  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS">
+  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true">  <!-- deprecated in favor of SQL_BAD_RESULTSET_ACCESS -->
     <ShortDescription>Method attempts to access a result set field with index 0</ShortDescription>
     <LongDescription>Method {1} attempts to access a result set field with index 0</LongDescription>
     <Details>
@@ -4219,7 +4196,7 @@ just use the constant. Methods detected are:
    <![CDATA[
     <p>
     This class extends from a Servlet class, and uses a instance member variable. Since only
-    one instance of a Servlet class is created by the j2ee framework, and used in a
+    one instance of a Servlet class is created by the J2EE framework, and used in a
     multithreaded way, this paradigm is highly discouraged and most likely problematic. Consider
     only using method local variables.
     </p>
@@ -4371,7 +4348,7 @@ an indication of some misunderstanding or some other logic error.
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="BC_NULL_INSTANCEOF"> <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
+  <BugPattern type="BC_NULL_INSTANCEOF" deprecated="true"> <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
     <ShortDescription>A known null value is checked to see if it is an instance of a type</ShortDescription>
     <LongDescription>A known null value is checked to see if it is an instance of {2} in {1}</LongDescription>
     <Details>

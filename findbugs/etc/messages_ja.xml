@@ -108,17 +108,6 @@
     </Details>
   </Detector>
   
-  <Detector class="edu.umd.cs.findbugs.detect.NoteNullReturnValues">
-    <Details>
-<![CDATA[
-<p>
-null‚ª–ß‚é‚©‚à‚µ‚ê‚È‚¢ƒƒ\ƒbƒhŒÄ‚Ño‚µ‚ð”­Œ©‚·‚é‘æˆêƒpƒXBŒã•û‚ÌƒpƒX‚ÅFindNullDrefƒfƒBƒeƒNƒ^‚ÉŽg—p‚³‚ê‚éî•ñ‚ð¶¬‚µ‚Ü‚·B
-</p>
-<p>’á‘¬ƒfƒBƒeƒNƒ^‚Å‚·B</p>
-]]>
-    </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue">
     <Details>
 <![CDATA[
@@ -402,7 +391,7 @@ null‚ª–ß‚é‚©‚à‚µ‚ê‚È‚¢ƒƒ\ƒbƒhŒÄ‚Ño‚µ‚ð”­Œ©‚·‚é‘æˆêƒpƒXBŒã•û‚ÌƒpƒX‚ÅFindNullDr
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.LockedFields" disabled="true" >
+  <Detector class="edu.umd.cs.findbugs.detect.LockedFields" >
     <Details>
 <![CDATA[
 <p> ‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒƒbƒN‚ÌŽg—p‚ÉŠÖ‚µ‚ÄAˆêŠÑ«‚Ì–³‚¢‚â‚è•û‚ÅƒtƒB[ƒ‹ƒh‚ÉƒAƒNƒZƒX‚µ‚Ä‚¢‚éƒR[ƒh‚ð”­Œ©‚µ‚Ü‚·B‚‘¬ƒfƒBƒeƒNƒ^‚Å‚·B</p>
@@ -1726,7 +1715,7 @@ public int hashCode() {
     </Details>
   </BugPattern>
 
-   <BugPattern type="TLW_TWO_LOCK_NOTIFY">
+   <BugPattern type="TLW_TWO_LOCK_NOTIFY" deprecated="true">
     <ShortDescription>2‚Â‚ÌƒƒbƒN‚ð•ÛŽ‚µ‚½‚Ü‚Ü‚Å‚ÌnotifyB</ShortDescription>
     <LongDescription>{1} ‚Å2‚Â‚ÌƒƒbƒN‚ð•ÛŽ‚µ‚½‚Ü‚Ünotify()‚ ‚é‚¢‚ÍnotifyAll*()‚ðŽÀs‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
@@ -2296,7 +2285,7 @@ final‚Å‚È‚¢ƒtƒB[ƒ‹ƒh–¼‚ÍAÅ‰‚Ì•¶ŽšˆÈŠO‚Ì\¬’PŒê‚ÌÅ‰‚Ì•¶Žš‚ð‘å•¶Žš‚Æ‚µ‚ÄAŽ
     </Details>
   </BugPattern>
 
-  <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
+  <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" deprecated="true">
     <ShortDescription>ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Å‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ƒtƒB[ƒ‹ƒh‚Ì“Ç‚Ýo‚µB</ShortDescription>
     <LongDescription>ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Å‰Šú‰»‚³‚ê‚½‚¢‚È‚¢ƒtƒB[ƒ‹ƒh‚ª{1}‚Å“Ç‚Ýo‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
@@ -2671,7 +2660,7 @@ null‚ð•Ô‚·‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÉA‚±‚Ìƒƒ\ƒbƒh(‚ ‚é‚¢‚ÍAeƒNƒ‰ƒX‚ÌŠY“–ƒƒ\ƒbƒh)‚Í@Non
     </Details>
   </BugPattern>
 
-  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON">
+  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true">
     <ShortDescription>Šù‚Éƒ`ƒFƒbƒNÏ‚Ý‚Ì’l‚ð–³‘Ê‚Énull‚Æ”äŠr‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
     <LongDescription>{1}‚ÅŠù‚Éƒ`ƒFƒbƒNÏ‚Ý‚Ì’l‚ð–³‘Ê‚Énull‚Æ”äŠr‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
@@ -2909,7 +2898,7 @@ null‚ð•Ô‚·‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÉA‚±‚Ìƒƒ\ƒbƒh(‚ ‚é‚¢‚ÍAeƒNƒ‰ƒX‚ÌŠY“–ƒƒ\ƒbƒh)‚Í@Non
     </Details>
   </BugPattern>
 
-  <BugPattern type="LI_LAZY_INIT_INSTANCE">
+  <BugPattern type="LI_LAZY_INIT_INSTANCE" deprecated="true">
     <ShortDescription>ƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚Ì•s³‚È’x‰„‰Šú‰»‚ª‚¨‚±‚È‚í‚ê‚Ä‚¢‚Ü‚·B</ShortDescription>
     <LongDescription>{1} ‚Å {2} ƒtƒB[ƒ‹ƒh‚Ì•s³‚È’x‰„‰Šú‰»‚ª‚¨‚±‚È‚í‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
@@ -3078,7 +3067,7 @@ null‚ð•Ô‚·‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÉA‚±‚Ìƒƒ\ƒbƒh(‚ ‚é‚¢‚ÍAeƒNƒ‰ƒX‚ÌŠY“–ƒƒ\ƒbƒh)‚Í@Non
     </Details>
   </BugPattern>
   
-  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS">
+  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true">
     <ShortDescription>‚±‚Ìƒƒ\ƒbƒh‚ÍAResultSet‚ÌƒCƒ“ƒfƒbƒNƒX0‚ÌƒtƒB[ƒ‹ƒh‚ÉƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
     <LongDescription>ƒƒ\ƒbƒh {1} ‚ÍAƒCƒ“ƒfƒbƒNƒX0‚ÌƒtƒB[ƒ‹ƒh‚ÉƒAƒNƒZƒX‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
     <Details>
@@ -3463,6 +3452,18 @@ double value2 =  x / (double) y;
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="BC_NULL_INSTANCEOF" deprecated="true">
+    <ShortDescription>null‚Æ•ª‚©‚Á‚Ä‚¢‚é’l‚ðinstanceof‚ÅŒ^ƒ`ƒFƒbƒN‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚Ånull‚Æ•ª‚©‚Á‚Ä‚¢‚é’l‚ÌŒ^‚ª {2} ‚Å‚ ‚é‚©‚Ç‚¤‚©instanceof‚Åƒ`ƒFƒbƒN‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+‚±‚Ìinstanceof‚Íí‚Éfalse‚ð•Ô‚µ‚Ü‚·B‚È‚º‚È‚ç‚±‚Ì’l‚Ínull‚Å‚ ‚é‚±‚Æ‚ª–¾‚ç‚©‚¾‚©‚ç‚Å‚·B‚±‚ÌƒR[ƒh‚ÍˆÀ‘S‚Å‚Í‚ ‚è‚Ü‚·‚ªA‰½‚ç‚©‚Ì˜_—‚ÌŠÔˆá‚¢AŒë‰ð‚ðŽ¦´‚µ‚Ä‚¢‚Ü‚·B
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="BC_IMPOSSIBLE_INSTANCEOF">
     <ShortDescription>í‚Éfalse‚ð•Ô‚·instanceofB</ShortDescription>
     <LongDescription>{2}‚Í{3}‚Å‚Í‚È‚¢‚½‚ßA{1}‚Ìinstanceof‚Íí‚Éfalse‚ð•Ô‚µ‚Ü‚·B</LongDescription>

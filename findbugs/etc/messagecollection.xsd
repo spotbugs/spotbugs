@@ -25,7 +25,6 @@
 			<xsd:element name="Details" type="xsd:string"/>
 		</xsd:sequence>
 		<xsd:attribute name="class" type="ClassType"/>
-		<xsd:attribute name="disabled" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="BugPatternType">
@@ -35,6 +34,7 @@
 			<xsd:element name="Details" type="xsd:string"/>
 		</xsd:sequence>
 		<xsd:attribute name="type" type="IdentifierType"/>
+		<xsd:attribute name="deprecated" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
 	
 	<xsd:complexType name="BugCodeType" mixed="true">
