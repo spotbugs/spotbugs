@@ -197,7 +197,7 @@ public class SourceInfoMap {
 	 * 
 	 * @param className name of class containing the field
 	 * @param fieldName name of field
-	 * @param line      the line number of the field
+	 * @param range      the line number(s) of the field
 	 */
 	public void addFieldLine(String className, String fieldName, SourceLineRange range) {
 		fieldLineMap.put(new FieldDescriptor(className, fieldName), range);
@@ -220,7 +220,7 @@ public class SourceInfoMap {
 	 * Add line number entry for a class.
 	 * 
 	 * @param className name of class
-	 * @param line      the line number of the class
+	 * @param range      the line numbers of the class
 	 */
 	public void addClassLine(String className, SourceLineRange range) {
 		classLineMap.put(className, range);

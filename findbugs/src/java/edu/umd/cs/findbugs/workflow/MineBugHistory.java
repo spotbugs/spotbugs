@@ -236,7 +236,7 @@ public class MineBugHistory {
 	 *  with a fixed-width font) by padding with spaces instead of using tabs.
 	 *  Also, timestamps are formatted more tersely (-formatDates option).
 	 *  The bad news is that it requires a minimum of 112 columns.
-	 * @see dumpOriginal(PrintStream) */
+	 * @see #dumpOriginal(PrintStream) */
 	public void dumpNoTabs(PrintStream out) {
 		//out.println("seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active");
 		print(3, true, out, "seq");
