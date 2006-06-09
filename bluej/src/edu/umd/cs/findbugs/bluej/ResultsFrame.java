@@ -48,10 +48,15 @@ public class ResultsFrame extends JFrame
 //	}
 	
 	private static HashMap<BProject, ResultsFrame> instanceMap = new HashMap<BProject, ResultsFrame>();
-	public static ResultsFrame getInstance(BProject project)
+	public static ResultsFrame getInstance(BProject project, boolean createIfNeeded)
 	{
 		if (!instanceMap.containsKey(project))
-			instanceMap.put(project, new ResultsFrame());
+		{
+			if (createIfNeeded)
+				instanceMap.put(project, new ResultsFrame());
+			else
+				return null;
+		}
 		return instanceMap.get(project);
 	}
 	private ResultsFrame() {}
