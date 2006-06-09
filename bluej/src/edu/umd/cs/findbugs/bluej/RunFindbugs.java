@@ -8,9 +8,16 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 
-
 public class RunFindbugs {
 	
+	/**
+	 * Returns a SortBugCollection of bugs that are in the classes that
+	 * are passed to it.
+	 * @param classes String[] of classes in the project
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public static SortedBugCollection getBugs(String[] classes) throws IOException, InterruptedException {
 		Project findBugsProject = new Project();
 		for(String f : classes)

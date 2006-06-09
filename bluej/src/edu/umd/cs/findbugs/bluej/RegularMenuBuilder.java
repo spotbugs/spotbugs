@@ -59,7 +59,15 @@ public class RegularMenuBuilder extends MenuGenerator
 								// At least one class in the project is not compiled.
 								int response;
 								String strButton = bluej.getExtensionPropertyString(FindBugsPreferences.PROFILE_LABEL,"");
-														
+										
+								/*
+								 * Checks the preference of BlueJ to see if user wants to compile classes
+								 * that are not compiled already when FindBugs runs, don't compile them, 
+								 * or pop a dialogue box.
+								 * 
+								 * Warning! The numbers are hardcoded in here. If FindBugsPreferences's radioButtons
+								 * are changed need to check for correctness here.
+								 */
 								if(strButton.equals(FindBugsPreferences.radioCommand[0]))
 									response = JOptionPane.YES_OPTION;
 								else if(strButton.equals(FindBugsPreferences.radioCommand[1]))

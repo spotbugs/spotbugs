@@ -9,12 +9,22 @@ import javax.swing.JRadioButton;
 import bluej.extensions.BlueJ;
 import bluej.extensions.PreferenceGenerator;
 
+/**
+ * Creates a panel for the extension preference panel in BlueJ preferences.
+ * Holds three radio buttons that are linked together with the different choices of either
+ * compiling all uncompiled classes when FindBugs is run, not compiling the classes,
+ * or popping up a dialogue box each time there are uncompiled classes when FindBugs
+ * is called.
+ * @author Kristin Stephens
+ *
+ */
 @SuppressWarnings("serial")
 public class FindBugsPreferences extends JPanel implements PreferenceGenerator {
 
 	private	BlueJ bluej;
 	private static JRadioButton[] radioList = new JRadioButton[3];
 	
+	//Description of each radioButton.
 	private static String[] radioDescription = {"Compile all classes not already compiled.", 
 			"Do not compile classes not already compiled.",
 			"Show dialogue box."};
@@ -26,7 +36,11 @@ public class FindBugsPreferences extends JPanel implements PreferenceGenerator {
 	static final String PROFILE_LABEL = "FindBugsPreference";
 	private ButtonGroup compileGroup;
 	
-	public	FindBugsPreferences(BlueJ bluej){
+	/**
+	 * Creates the preference panel and loads the value.
+	 * @param bluej Instance of BlueJ
+	 */
+	public FindBugsPreferences(BlueJ bluej){
 		this.bluej = bluej;
 		compileGroup = new ButtonGroup();
 				
@@ -44,10 +58,16 @@ public class FindBugsPreferences extends JPanel implements PreferenceGenerator {
 		loadValues();
 	}
 	
+	/**
+	 * @see bluej.extensions.PreferenceGenerator
+	 */
 	public JPanel getPanel() {
 		return this;
 	}
 
+	/**
+	 * @see bluej.extensions.PreferenceGenerator
+	 */
 	public void loadValues() {
 		String strButton = bluej.getExtensionPropertyString(PROFILE_LABEL,"");
 		
@@ -60,6 +80,9 @@ public class FindBugsPreferences extends JPanel implements PreferenceGenerator {
 			}
 	}
 
+	/**
+	 * @see bluej.extensions.PreferenceGenerator
+	 */
 	public void saveValues() {
 		bluej.setExtensionPropertyString(PROFILE_LABEL, compileGroup.getSelection().getActionCommand());
 	}

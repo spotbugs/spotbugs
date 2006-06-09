@@ -85,14 +85,16 @@ public class ResultsFrame extends JFrame
 		currProject = project;
 		final ArrayList<BugInstance> bugList = new ArrayList<BugInstance>(bugs
 				.getCollection());
-
+		
 		final JTable table = new JTable(new MyTableModel(bugList));
-
+		
 		for (int i = 0; i < columnNames.length; i++)
 			table.getColumn(columnNames[i]).setPreferredWidth(columnWidths[i]);
+		
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
 		table.addMouseListener(new MouseAdapter()
-		{
+				{
 			@Override
 			public void mouseClicked(MouseEvent evt)
 			{
