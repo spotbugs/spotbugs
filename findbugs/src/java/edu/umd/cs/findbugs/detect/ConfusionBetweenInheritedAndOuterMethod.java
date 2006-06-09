@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -42,16 +43,25 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 
 	@Override
          public void visitJavaClass(JavaClass obj) {
+		hasThisDollarZero = false;
 		// totally skip methods not defined in inner classes
 		if (obj.getClassName().indexOf('$') >= 0) super.visitJavaClass(obj);
 		
 	}
 
+	boolean hasThisDollarZero;
+	
+	@Override
+	public void visit(Field f) {
+		if (f.getName().equals("this$0")) hasThisDollarZero = true;
+	}
 	OpcodeStack stack = new OpcodeStack();
 	@Override
          public void visit(Code obj) {
+		if (hasThisDollarZero) {
 		stack.resetForMethodEntry(this);
 		super.visit(obj);
+		}
 	}
 
 	private static String stripLastDollar(String s) {
@@ -71,10 +81,12 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
         	 return;
          }
          String possibleTargetClass = getDottedClassName();
+         String superClassName = getDottedSuperclassName();
          while(true) {
         	 int i = possibleTargetClass.lastIndexOf('$');
 			if (i == -1) break;
 			possibleTargetClass = possibleTargetClass.substring(0,i);
+			if (possibleTargetClass.equals(superClassName)) break;
         	 XMethod alternativeMethod = XFactory.createXMethod(possibleTargetClass, getNameConstantOperand(), getSigConstantOperand(), false);
         	 Set<XMethod> definedMethods = Methods.getMethods();
         	 if (definedMethods.contains(alternativeMethod)) 	
