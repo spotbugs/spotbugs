@@ -120,10 +120,17 @@ public class ResultsFrame extends JFrame
 				continue;
 			}
 		}
-		description.setText("<html><body><p>Click on a bug to view a detailed description.</p><p>Double-click to be " +
-			"taken to its location in the source code.</p>" + (allCompiled ? "" : "<p>* Classes marked with an " +
-			"asterisk were not compiled when Findbugs ran, so this list may not reflect recent changes in the " +
-			"source code.</p>"));
+	
+			try {
+				description.setPage(ResultsFrame.class.getResource("about.html"));
+			} catch (IOException e) {
+				description.setText("<html><body><p>XXXX Click on a bug to view a detailed description.</p><p>Double-click to be " +
+					"taken to its location in the source code.</p>" + (allCompiled ? "" : "<p>* Classes marked with an " +
+					"asterisk were not compiled when Findbugs ran, so this list may not reflect recent changes in the " +
+					"source code.</p>"
+					+ "<p>Bug: " + e.toString()));
+			}
+
 		
 		bottomScroll = new JScrollPane(description);
 		bottomScroll.setPreferredSize(new Dimension(675, 200));

@@ -4,7 +4,11 @@
 		<property name="dist.dir" value="dist"/>
 		<property name="bin.dir" value="bin" />
 
-
+	<patternset id="codebase.data.pats">
+			<include name="**/*.properties"/>
+			<include name="**/*.png"/>
+			<include name="**/*.html"/>
+		</patternset>
 		<path id="classpath">
 			<fileset dir="${lib.dir}">
 				<include name="*.jar"/>
@@ -35,6 +39,13 @@
 	                debug="on">
 	            <classpath refid="classpath"/>
 	        </javac>
+		<copy todir="${bin.dir}">
+					<fileset dir="${src.dir}">
+						<patternset refid="codebase.data.pats"/>
+					</fileset>
+					
+				</copy>
+				
 		
 		</target>
 	
