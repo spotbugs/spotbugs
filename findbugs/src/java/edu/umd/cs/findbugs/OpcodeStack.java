@@ -1149,11 +1149,13 @@ public class OpcodeStack implements Constants2
  		if (appenderValue != null) {
  			Item i = this.getStackItem(0);
  			i.constValue = appenderValue;
- 			i.registerNumber = sbItem.registerNumber;
- 			i.field = sbItem.field;
- 			i.userValue = sbItem.userValue;
- 			if (sbItem.registerNumber >= 0)
- 				setLVValue(sbItem.registerNumber, i );
+ 			if (sbItem != null) {
+ 				 i.registerNumber = sbItem.registerNumber;
+ 				 i.field = sbItem.field;
+ 				 i.userValue = sbItem.userValue;
+ 				 if (sbItem.registerNumber >= 0)
+ 					 setLVValue(sbItem.registerNumber, i );
+ 			}
  			return;
  		}
  		
