@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- French translation provided by David Cotton -->
-<!-- based on revision 1.279 of messages.xml (with 1.284 arg order) -->
+<!-- based on revision 1.279 of messages.xml (with several updates) -->
 
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:noNamespaceSchemaLocation="messagecollection.xsd">
@@ -2192,15 +2192,6 @@ dateString = dateString.trim();
   <Details>
 <![CDATA[
 <p>Une valeur par référence déréférencée ici peut-être à <code>null</code> à l'exécution. Celà peut conduire à une <code>NullPointerException</code> quand le code est exécuté.</p>
-]]>
-  </Details>
- </BugPattern>
- <BugPattern type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE">
-  <ShortDescription>Pointeur à null renvoyé par une méthode qui risque d'être déréférencé</ShortDescription>
-  <LongDescription>Un pointeur à null renvoyé par une méthode risque d'être déréférencé dans {1}</LongDescription>
-  <Details>
-<![CDATA[
-<p>La valeur renvoyée par une méthode est déréférencée alors que cette méthode peut renvoyer <code>null</code>. Ceci peut conduire à une <code>NullPointerException</code> quand le code sera exécuté.</p>
 ]]>
   </Details>
  </BugPattern>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="Shift_JIS"?>
 
-<!-- This messages file is based on revision 1.287 of message.xml. -->
+<!-- This messages file is based on revision 1.287 of message.xml (with some updates). -->
 
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:noNamespaceSchemaLocation="messagecollection.xsd">
@@ -2460,16 +2460,6 @@ dateString = dateString.trim();
     <Details>
 <![CDATA[
 <p> この参照変数を通したアクセスは、実行時に参照変数がnullとなる可能性があります。これは、実行時に<code>NullPointerException</code>を発生させる可能性があります。</p>
-]]>
-    </Details>
-  </BugPattern>
-
-  <BugPattern type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE">
-    <ShortDescription>nullが返る可能性のあるメソッド呼び出しの結果が参照外しされるかもしれません。</ShortDescription>
-    <LongDescription>nullが返る可能性のあるメソッド呼び出しの結果が {1} で参照外しされるかもしれません。</LongDescription>
-    <Details>
-<![CDATA[
-<p> nullが返る可能性のあるメソッド呼び出しの結果が参照外しされるかもしれません。コード実行中に<code>NullPointerException</code>がスローされるかもしれません。</p>
 ]]>
     </Details>
   </BugPattern>
