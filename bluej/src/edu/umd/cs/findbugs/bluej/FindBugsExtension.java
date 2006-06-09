@@ -22,6 +22,7 @@ public class FindBugsExtension extends Extension
 		Log.setPath(new File(bluej.getSystemLibDir(), "findbugs.errlog")); 
 		bluej.setMenuGenerator(new RegularMenuBuilder(bluej));
 		bluej.setPreferenceGenerator(new FindBugsPreferences(bluej));
+		bluej.addPackageListener(new PackageClosingListener());
 	}
 
 	@Override
