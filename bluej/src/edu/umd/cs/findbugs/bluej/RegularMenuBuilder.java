@@ -107,7 +107,7 @@ public class RegularMenuBuilder extends MenuGenerator
 			{
 				try
 				{
-					ResultsFrame.getInstance().update(bugs, bluej.getCurrentPackage().getProject());
+					ResultsFrame.getInstance(bluej.getCurrentPackage().getProject()).update(bugs, bluej.getCurrentPackage().getProject());
 				}
 				catch (Exception e)
 				{

@@ -5,6 +5,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.JEditorPane;
@@ -39,11 +40,19 @@ public class ResultsFrame extends JFrame
 
 	private BProject currProject;
 
-	private static ResultsFrame instance;
-	public static ResultsFrame getInstance() {
-		if (instance == null)
-			instance = new ResultsFrame();
-		return instance;
+//	private static ResultsFrame instance;
+//	public static ResultsFrame getInstance() {
+//		if (instance == null)
+//			instance = new ResultsFrame();
+//		return instance;
+//	}
+	
+	private static HashMap<BProject, ResultsFrame> instanceMap = new HashMap<BProject, ResultsFrame>();
+	public static ResultsFrame getInstance(BProject project)
+	{
+		if (!instanceMap.containsKey(project))
+			instanceMap.put(project, new ResultsFrame());
+		return instanceMap.get(project);
 	}
 	private ResultsFrame() {}
 	
