@@ -36,7 +36,7 @@ public class Log
 	 */
 	static void recordBug(Exception e)
 	{
-		StringBuilder msg = new StringBuilder();
+		StringBuffer msg = new StringBuffer();
 		msg.append(e.getClass().getName() + ": " + e.getMessage() + "\n");
 		for (StackTraceElement i : e.getStackTrace())
 			msg.append(i + "\n");
