@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="Shift_JIS"?>
 
-<!-- This messages file is based on revision 1.287 of message.xml (with some updates). -->
+<!-- This messages file is based on revision 1.295 of message.xml. -->
 
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:noNamespaceSchemaLocation="messagecollection.xsd">
@@ -26,10 +26,24 @@
   **********************************************************************
    -->
 
+  <Detector class="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation">
+    <Details>
+<![CDATA[
+<p> net.jcip.annotations.Immutableアノテーションが付けられたクラスが守るべきルールを破っているものを発見します。</p>
+]]>
+    </Details>
+  </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.VarArgsProblems">
     <Details>
 <![CDATA[
 <p> Java 5.0から導入された可変引数に関する問題を発見します。</p>
+]]>
+    </Details>
+  </Detector>
+  <Detector class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation">
+    <Details>
+<![CDATA[
+<p> net.jcip.annotationsパッケージのアノテーションを記録します。</p>
 ]]>
     </Details>
   </Detector>
@@ -93,7 +107,7 @@
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs">
     <Details>
 <![CDATA[
@@ -182,7 +196,7 @@
     </Details>
   </Detector>
 
- <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPriviledged">
+<Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPriviledged">
     <Details>
 <![CDATA[
 <p> doPrivilegedブロックの中で実行しなければならないコードを発見します。</p>
@@ -264,7 +278,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue">
     <Details>
 <![CDATA[
-<p> Looks for loads of values known to be null.
+<p> nullと分かっている値のロード。
 </p>
 ]]>
     </Details>
@@ -272,8 +286,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.DumbMethodInvocations">
     <Details>
 <![CDATA[
-<p> This detector looks for bad arguments being passed to methods
-(e.g., substring(0)).
+<p> このディテクタはメソッドへの引数が間違っているものを発見します(例：substring(0)).
 </p>
 ]]>
     </Details>
@@ -626,7 +639,7 @@
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.BadlyOverriddenAdapter">
     <Details>
 <![CDATA[
@@ -635,7 +648,7 @@
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.BadResultSetAccess">
     <Details>
 <![CDATA[
@@ -651,7 +664,7 @@
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.BadAppletConstructor">
     <Details>
 <![CDATA[
@@ -661,14 +674,14 @@
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.UseObjectEquals">
     <Details>
 <![CDATA[
 <p>
 このディテクタは、配列オブジェクトのequals(java.lang.Object)メソッドや、equalsメソッドをオーバーライドしていないfinalクラスのequalsメソッドの呼び出しを発見します。これらは意味的には==と同じであり、恐らく間違っていると思われます。
 </p>
-]]>    
+]]>   
     </Details>
   </Detector>
   <Detector class="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted">
@@ -677,7 +690,7 @@
 <p>
 このディテクタは、非staticコンテキストでのThread.interrupted()呼び出しを発見します。Thread.currentThread().interrupted()といった呼び出しは、無駄でありThread.interrupted()で十分です。また、任意のスレッドオブジェクトに対して、interrupted()メソッドを呼び出すのは、ほぼ間違いなく誤りです。interrupted()メソッドは、常に自スレッドが割り込まれたかどうかを返します。
 </p>
-]]>    
+]]>   
     </Details>
   </Detector>
 
@@ -723,7 +736,7 @@
 ]]>
    </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture">
     <Details>
 <![CDATA[
@@ -738,8 +751,8 @@
 <p> このディテクタは、浮動小数の同値比較を発見します。高速ディテクタです。 </p>
 ]]>
       </Details>
-  </Detector>  
-  
+  </Detector> 
+ 
   <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation">
     <Details>
 <![CDATA[
@@ -771,7 +784,7 @@
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.MultithreadedInstanceAccess">
     <Details>
 <![CDATA[
@@ -779,7 +792,7 @@
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.PublicSemaphores">
     <Details>
 <![CDATA[
@@ -787,7 +800,7 @@
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.MethodReturnCheck">
     <Details>
 <![CDATA[
@@ -795,7 +808,7 @@
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble">
     <Details>
 <![CDATA[
@@ -821,7 +834,7 @@
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession">
     <Details>
 <![CDATA[
@@ -829,7 +842,7 @@
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject">
     <Details>
 <![CDATA[
@@ -855,7 +868,7 @@
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.FindSleepWithLockHeld">
     <Details>
 <![CDATA[
@@ -874,13 +887,13 @@
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.InefficientMemberAccess">
     <Details>
 <![CDATA[
 <p> 内部クラスがエンクロージングクラスのprivateフィールドに書き込んでいるコードを発見します。この場合フィールドへの書き込みを行なうためのアクセサメソッドをコンパイラが生成します。アクセス制限をprotectedに緩和することで、直接フィールドにアクセスするコードとすることができます。</p>
 <p>高速ディテクタです。</p>
- ]]>
+]]>
     </Details>
   </Detector>
 
@@ -943,7 +956,7 @@ TrainNullReturnValuesはnullを返すかもしれないメソッドを発見し、その結果をファイ�
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.TrainUnconditionalDerefParams">
     <Details>
 <![CDATA[
@@ -956,7 +969,7 @@ TrainUnconditionalParamDerefsは引数を無条件に参照外ししているメソッドを発見し、�
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.TrainFieldStoreTypes">
     <Details>
 <![CDATA[
@@ -969,7 +982,7 @@ TrainFieldStoreTypesディテクタはフィールドに格納される型を調査して、その結果をデ
 ]]>
     </Details>
   </Detector>
-  
+ 
   <Detector class="edu.umd.cs.findbugs.detect.TrainNonNullAnnotations">
     <Details>
 <![CDATA[
@@ -987,7 +1000,7 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
 ]]>
     </Details>
   </Detector>
-	  
+	 
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats">
     <Details>
 <![CDATA[
@@ -1174,10 +1187,19 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
     <Details>
 <![CDATA[
   <p> このコードはクラスローダを生成していますが、これはセキュリティマネージャを必要とします。このコード自体がセキュリティ許可を得る予定でも、セキュリティ許可を持たないコードから呼び出されるのであれば、クラスローダの生成コードは、doPrivilegedブロックの中で行う必要があります。
- ]]>
+]]>
      </Details>
   </BugPattern>
- 
+  <BugPattern type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS">
+    <ShortDescription>イミュータブルクラスのフィールドはfinal宣言すべきです。</ShortDescription>
+    <LongDescription>{0} はイミュータブルと宣言されているので、{1} はfinal宣言すべきです。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> このクラスにはnet.jcip.annotations.Immutableアノテーションが付けられており、全てのフィールドはfinal宣言しなければなりません。
+   </p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
     <ShortDescription>デフォルトのretentionレベルのアノテーションの有無をリフレクションで確認することはできません。</ShortDescription>
     <LongDescription>{1} でリフレクションを用いてアノテーションの有無を確認していますが、このアノテーションのretentionレベルはデフォルトになっています。</LongDescription>
@@ -1312,7 +1334,7 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
   <p>このメソッドは、getClass()を呼び出すためだけに、インスタンスを生成しています。あるクラスのクラスオブジェクトを得るには、.classプロパティを使用した方が単純です。</p>
 ]]>
     </Details>
-  </BugPattern>  
+  </BugPattern> 
 
   <BugPattern type="DM_MONITOR_WAIT_ON_CONDITION">
 	<ShortDescription>Conditionオブジェクトに対するwait()呼び出し。</ShortDescription>
@@ -1334,7 +1356,7 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
 </p>
 ]]>
     </Details>
-  </BugPattern>  
+  </BugPattern> 
 
   <BugPattern type="DM_NEXTINT_VIA_NEXTDOUBLE">
     <ShortDescription>整数の乱数値を得たいのであれば、nextDoubleではなくnextIntメソッドを使用してください。</ShortDescription>
@@ -1345,7 +1367,7 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
 </p>
 ]]>
     </Details>
-  </BugPattern>  
+  </BugPattern> 
 
   <BugPattern type="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE">
     <ShortDescription>SQLのStatementオブジェクトのexecuteメソッドに定数でない文字列が渡されています。</ShortDescription>
@@ -1356,7 +1378,7 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
 </p>
 ]]>
     </Details>
-  </BugPattern>  
+  </BugPattern> 
 
   <BugPattern type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING">
     <ShortDescription>PreparedStatementが定数でないStringから生成されています。</ShortDescription>
@@ -1377,8 +1399,8 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
 </p>
 ]]>
     </Details>
-  </BugPattern>  
-  
+  </BugPattern> 
+ 
   <BugPattern type="DC_DOUBLECHECK">
     <ShortDescription>フィールドのダブルチェックをおこなっている可能性があります。</ShortDescription>
     <LongDescription>{1} において {2} のダブルチェックをおこなっている可能性があります。</LongDescription>
@@ -1484,7 +1506,7 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
 ]]>
 	</Details>
   </BugPattern>
-  
+ 
   <BugPattern type="CO_SELF_NO_OBJECT">
     <ShortDescription>共変な compareTo() メソッドが定義されています。</ShortDescription>
     <LongDescription>{0} は compareTo({0}) メソッドを定義していますが、 comparesTo(Object) は定義されていません。</LongDescription>
@@ -1598,6 +1620,16 @@ public int hashCode() {
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="IS_FIELD_NOT_GUARDED">
+    <ShortDescription>フィールドが同時並行アクセスに対して無防備です。</ShortDescription>
+    <LongDescription>{1} は同時並行アクセスに対して無防備です({2}% 期間のロック)。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> このフィールドにはnet.jcip.annotations.GuardedByアノテーションが付けられていますが、そのアクセスのされ方は、アノテーションが定めたルールを破っているようです。</p>
+]]>
+</Details>
+</BugPattern>
 
   <BugPattern type="IS2_INCONSISTENT_SYNC">
     <ShortDescription>同期化が考慮されていません。</ShortDescription>
@@ -1816,7 +1848,7 @@ synchronized() {}
     <Details>
 <![CDATA[
 <p> このメソッドは、変更可能なフィールドが参照しているオブジェクトを同期化しています。このコードの意図は、うまく実現されないと思われます。なぜなら、別のスレッドは、別のオブジェクトで同期化を行ってしまうかもしれないからです。</p>
-]]>  
+]]> 
     </Details>
   </BugPattern>
 
@@ -1836,7 +1868,7 @@ synchronized() {}
     <LongDescription>{1} フィールドはfinal 且つ パッケージプライベートにすべきです。</LongDescription>
     <Details>
 <![CDATA[
- <p>変更可能なstaticフィールドは、悪意を持ったコードによって、あるいは間違って、別のパッケージから書き換えられてしまう可能性があります。フィールドは、パッケージプライベートにするか、final宣言して(あるいは、この両方を行って)ください。</p>
+<p>変更可能なstaticフィールドは、悪意を持ったコードによって、あるいは間違って、別のパッケージから書き換えられてしまう可能性があります。フィールドは、パッケージプライベートにするか、final宣言して(あるいは、この両方を行って)ください。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1917,7 +1949,7 @@ synchronized() {}
     <LongDescription>メソッド名 {1} が小文字で始まっていません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> 
+  <p>
 メソッド名には動詞を採用し、メソッド名の最初の文字以外の構成単語の最初の文字を大文字として、残りを小文字とすべきです。
 </p>
 ]]>
@@ -1929,7 +1961,7 @@ synchronized() {}
     <LongDescription>フィールド名 {1} が小文字で始まっていません。</LongDescription>
     <Details>
 <![CDATA[
-  <p> 
+  <p>
 finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、残りを小文字とすべきです。
 </p>
 ]]>
@@ -1995,7 +2027,6 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
 ]]>
     </Details>
   </BugPattern>
- 
   <BugPattern type="NM_CLASS_NOT_EXCEPTION">
     <ShortDescription>例外クラスのような名前を持った、非例外クラス。</ShortDescription>
     <LongDescription>クラス {0} はExceptionの継承クラスではないのに、例外クラスのごとく命名されています。</LongDescription>
@@ -2006,7 +2037,7 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
     </Details>
   </BugPattern>
 
- <BugPattern type="RR_NOT_CHECKED">
+<BugPattern type="RR_NOT_CHECKED">
     <ShortDescription>メソッドは InputStream.read() の戻り値を無視しています。</ShortDescription>
     <LongDescription>{1} は {2} の戻り値を無視しています。</LongDescription>
     <Details>
@@ -2038,7 +2069,7 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
 ]]>
     </Details>
   </BugPattern>
-  
+ 
   <BugPattern type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION">
     <ShortDescription>クラスはExternalizableを実装していますが、引数無しコンストラクタを定義していません。</ShortDescription>
     <LongDescription>{0} はExternalizableを実装していますが、アクセス可能な引数無しコンストラクタを定義していません。</LongDescription>
@@ -2087,7 +2118,7 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
 <![CDATA[
   <p> このメソッド内のswitch文の中には、breakしていないcaseがあります。この場合、制御は次のcaseにフォールスルーします。大抵の場合caseはbreakかreturnで終了する必要があります。</p>
 ]]>
-    </Details>  
+    </Details> 
   </BugPattern>
 
   <BugPattern type="WS_WRITEOBJECT_SYNC">
@@ -2347,7 +2378,7 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
 ]]>
     </Details>
   </BugPattern>
-  
+ 
   <BugPattern type="NO_NOTIFY_NOT_NOTIFYALL">
     <ShortDescription>メソッドで、notifyAll() ではなく notify() を使っています。</ShortDescription>
     <LongDescription>{1} において、notifyAll ではなく notify を使っています。</LongDescription>
@@ -2484,7 +2515,7 @@ dateString = dateString.trim();
 ]]>
     </Details>
   </BugPattern>
-  
+ 
   <BugPattern type="NP_NULL_PARAM_DEREF_NONVIRTUAL">
 	<ShortDescription>無条件に引数の参照外しを行なう仮想メソッドにnullを渡しています。</ShortDescription>
 	<LongDescription>無条件に引数の参照外しを行う仮想メソッド {2} に {1} でnullを渡しています。</LongDescription>
@@ -2508,7 +2539,7 @@ dateString = dateString.trim();
 ]]>
 	</Details>
   </BugPattern>
-  
+ 
   <BugPattern type="NP_NULL_PARAM_DEREF">
     <ShortDescription>メソッド内で無条件に参照外しされる引数へのnullの引き渡し。</ShortDescription>
     <LongDescription>{1} におけるメソッド呼び出しでnullを渡していますが、{2}のパラメータは無条件に参照外しされます。</LongDescription>
@@ -2520,7 +2551,7 @@ dateString = dateString.trim();
 ]]>
     </Details>
   </BugPattern>
-  
+ 
   <BugPattern type="NP_NONNULL_PARAM_VIOLATION">
     <ShortDescription>@NonNullと宣言された引数にnullを渡しています。</ShortDescription>
     <LongDescription>{1} でnullをメソッドに渡していますが、この引数は {2} で@NonNull宣言されています。</LongDescription>
@@ -2532,7 +2563,7 @@ nullをメソッドに渡していますが、この引数は@NonNullと宣言されています。(注：@NonN
 ]]>
 	</Details>
   </BugPattern>
-  
+ 
   <BugPattern type="NP_NONNULL_RETURN_VIOLATION">
     <ShortDescription>このメソッドはnullを返すかもしれないのに@NonNull宣言されています。</ShortDescription>
     <LongDescription>メソッド {1} はnullを返すかもしれないのに@NonNull宣言されています。</LongDescription>
@@ -2646,7 +2677,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
     <Details>
 <![CDATA[
 <p> このメソッドで非nullと分かっている参照をnullと分かっている参照と比較しています。</p>
- ]]>
+]]>
     </Details>
   </BugPattern>
 
@@ -3015,7 +3046,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 <p> このクラスはJUnitのTestCaseで、tearDownを定義しています。tearDownは、super.tearDown()を呼び出さなければなりませんが、呼び出していません。</p>
 ]]>
     </Details>
-  </BugPattern>  
+  </BugPattern> 
 
   <BugPattern type="IJU_SUITE_NOT_STATIC">
     <ShortDescription>TestCase は suite メソッドを定義していますが、staticメソッドになっていません。</ShortDescription>
@@ -3025,7 +3056,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 <p> このクラスは、JUnitのTestCaseで、suite()メソッドを定義しています。suiteメソッドは、staticメソッドとしなければなりませんが、そうなっていません。</p>
 ]]>
     </Details>
-  </BugPattern>  
+  </BugPattern> 
 
   <BugPattern type="IJU_NO_TESTS">
     <ShortDescription>テストを持たないTestCase。</ShortDescription>
@@ -3056,7 +3087,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 ]]>
     </Details>
   </BugPattern>
-  
+ 
   <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true">
     <ShortDescription>このメソッドは、ResultSetのインデックス0のフィールドにアクセスしようとしています。</ShortDescription>
     <LongDescription>メソッド {1} は、インデックス0のフィールドにアクセスしようとしています。</LongDescription>
@@ -3066,7 +3097,27 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 ]]>
     </Details>
   </BugPattern>
-  
+ 
+  <BugPattern type="SQL_BAD_RESULTSET_ACCESS">
+    <ShortDescription>リザルトセットの添字0にアクセスしようとしています。</ShortDescription>
+    <LongDescription>{1} メソッドはリザルトセッの添字0にアクセスしようとしています。</LongDescription>
+    <Details>
+<![CDATA[
+<p> リザルトセットのgetXXX、updateXXXメソッド呼び出しで添字に0を指定しています。リザルトセットの添字は1から開始するので、これは常に間違いです。</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="SQL_BAD_PREPARED_STATEMENT_ACCESS">
+    <ShortDescription>PreparedStatementのパラメータに添字0を指定しています。</ShortDescription>
+    <LongDescription>{1} メソッドで、PreparedStatementのパラメータを指定するのに添字0を指定しています。</LongDescription>
+    <Details>
+<![CDATA[
+<p> PreparedStatementのsetXXXメソッドで、添字に0を指定しています。この添字は1から開始するので、これは常に間違いです。</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="SIO_SUPERFLUOUS_INSTANCEOF">
     <ShortDescription>instanceof演算子で型チェックをする必要はありません。</ShortDescription>
     <LongDescription>メソッド {1} はinstanceofを使って不要な型チェックを行なっています。これは静的に行うことが可能です。</LongDescription>
@@ -3088,7 +3139,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 ]]>
     </Details>
   </BugPattern>
-  
+ 
   <BugPattern type="EC_ARRAY_AND_NONARRAY">
     <ShortDescription>配列オブジェクトと非配列オブジェクトのequals()による比較。</ShortDescription>
     <LongDescription>{1} でequalsメソッドを使って配列オブジェクトと非配列オブジェクトを比較しています。</LongDescription>
@@ -3108,7 +3159,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 <p>
 このメソッドは配列オブジェクトの.equals(Object o)メソッドを呼び出しています。配列はequalsメソッドをオーバーライドしていないため、これは参照の比較しか行ないません。配列の内容を比較するならjava.util.Array.equals(Object[], Object[])を用いなければなりません。
 </p>
-]]>    
+]]>   
     </Details>
   </BugPattern>
 
@@ -3121,10 +3172,10 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メソッドが呼び出されています。これは==による参照の比較と同値です。equalsメソッドを使うのは良いのですが、このクラスでequalsメソッドをオーバーライドすることを検討してください。
 </p>
 <p>[Bill Pugh]: すみません、私はこの警告の出力には強く反対で、あなたのコードは全く正しいと思います。ユーザのコードはequals()の実装がどうなっているかを意識すべきではなく、==でのインスタンス比較に依存すべきではありません。このようにしてしまうと、ライブラリ側でオブジェクトの同値性を制御することができなくなってしまいます。</p>
-]]>    
+]]>   
     </Details>
   </BugPattern>
-  
+ 
   <BugPattern type="STI_INTERRUPTED_ON_CURRENTTHREAD">
     <ShortDescription>interrupted()を呼び出すために無駄なcurrentThread()呼び出しを行なっています。</ShortDescription>
     <LongDescription>メソッド {1} は、interrupted()を呼び出すために無駄なcurrentThread()呼び出しを行なっています。</LongDescription>
@@ -3133,7 +3184,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
 <p>
 このメソッドは、interrupted()メソッドを呼び出すためだけにThread.currentThread()を呼び出しています。interrupted()メソッドはstaticメソッドなので、単にThread.interrupted()とすれのが、より単純明解です。
 </p>
-]]>    
+]]>   
     </Details>
   </BugPattern>
 
@@ -3145,7 +3196,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
 <p>
 このメソッドはThread.interrupted()が、自スレッドではないと思われるスレッドに対して呼び出されています。このinterrupted()メソッドはstaticメソッドであり常に自スレッドに対して呼び出されるため、コード作成者の意図とは異なるスレッドに対して呼び出されることになります。
 </p>
-]]>    
+]]>   
     </Details>
   </BugPattern>
 
@@ -3171,6 +3222,17 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
 </p>
 ]]>
      </Details>
+  </BugPattern>
+
+  <BugPattern type="DLS_DEAD_LOCAL_STORE_OF_NULL">
+    <ShortDescription>ローカル変数への無駄なnull代入。</ShortDescription>
+    <LongDescription>ローカル変数 {2} への無駄なnull代入が {1} メソッドにあります。</LongDescription>
+    <Details>
+<![CDATA[
+<p>このコードはローカル変数にnullを代入していますが、この変数は、その後読み出されていません。恐らくnullを代入することで、ガーベージコレクタにヒントを与えることを意図したと思われますが、Java SE 6.0からは、このような記述は不要です。
+</p>
+]]>
+    </Details>
   </BugPattern>
 
   <BugPattern type="MF_METHOD_MASKS_FIELD">
@@ -3203,7 +3265,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
 ]]>
         </Details>
     </BugPattern>
-  
+ 
   <BugPattern type="ISC_INSTANTIATE_STATIC_CLASS">
         <ShortDescription>staticメソッドしか提供していないクラスのインスタンスを無駄に生成しています。</ShortDescription>
         <LongDescription>メソッド {1} は、staticメソッドしか提供していないクラスのインスタンスを無駄に生成しています。</LongDescription>
@@ -3240,7 +3302,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
     ]]>
   	  </Details>
     </BugPattern>
-    
+   
   <BugPattern type="UM_UNNECESSARY_MATH">
     <ShortDescription>定数に対するMathクラスのstaticメソッド呼び出し。</ShortDescription>
     <LongDescription>定数に対してMathクラスのstaticメソッドが呼び出されています。</LongDescription>
@@ -3277,7 +3339,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
 ]]>
     </Details>
   </BugPattern>
-  
+ 
     <BugPattern type="CD_CIRCULAR_DEPENDENCY">
 	  <ShortDescription>クラス間の循環依存関係。</ShortDescription>
 	  <LongDescription>クラス {0} は、他のクラスと循環依存関係にあります。</LongDescription>
@@ -3289,7 +3351,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
     ]]>
   	  </Details>
     </BugPattern>
-    
+   
     <BugPattern type="RI_REDUNDANT_INTERFACES">
 	  <ShortDescription>親クラスが実装しているインターフェースをもう一度実装宣言しています。</ShortDescription>
 	  <LongDescription>クラス {0} は親クラスが実装しているインターフェースをもう一度実装宣言しています。</LongDescription>
@@ -3301,7 +3363,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
     ]]>
   	  </Details>
     </BugPattern>
-    
+   
     <BugPattern type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD">
 	  <ShortDescription>Struts Actionの継承クラスでのインスタンスフィールドの使用。</ShortDescription>
 	  <LongDescription>クラス {0} はStruts Actionクラスを継承しており、インスタンスフィールドを使用しています。</LongDescription>
@@ -3350,7 +3412,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
 ]]>
     </Details>
   </BugPattern>
-   
+  
   <BugPattern type="ICAST_IDIV_CAST_TO_DOUBLE">
     <ShortDescription>intの除算結果のdoubleへのキャスト。</ShortDescription>
     <LongDescription>{1}でintの除算結果をdoubleにキャストしています。</LongDescription>
@@ -3500,7 +3562,7 @@ double value2 =  x / (double) y;
 ]]>
     </Details>
   </BugPattern>
-   
+  
   <BugPattern type="RE_POSSIBLE_UNINTENDED_PATTERN">
     <ShortDescription>"."は正規表現です。</ShortDescription>
     <LongDescription>{1} で使用されている"."は正規表現のメタキャラクタです。</LongDescription>
@@ -3583,14 +3645,12 @@ Stringの正規表現を受け取るメソッドに"."が渡されています。これは意図通りですか？<
 
 
   <BugPattern type="IM_BAD_CHECK_FOR_ODD">
-    <ShortDescription>Check for oddness that won't work for negative numbers </ShortDescription>
-    <LongDescription>Check for oddness that won't work for negative numbers in {1}</LongDescription>
+    <ShortDescription>この奇数判定は、負の数では正しく動作しません。</ShortDescription>
+    <LongDescription>{1} で使用されている奇数判定は、負の数に対しては正しく動作しません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-The code uses x % 2 == 1 to check to see if a value is odd, but this won't work
-for negative numbers (e.g., (-5) % 2 == -1). If this code is intending to check
-for oddness, consider using x & 1 == 1, or x % 2 != 0.
+ここで使用されている x % 2 == 1 という式は奇数であるかを判定していると思われますが、これは負の数に対しては正しく動作しないことに注意してください(例：(-5) % 2 == -1)。かわりに x & 1 == 1 か x % 2 != 0を使用することを検討してください。
 </p>
 ]]>
     </Details>
@@ -3617,7 +3677,7 @@ for oddness, consider using x & 1 == 1, or x % 2 != 0.
 ]]>
     </Details>
   </BugPattern>
-  
+ 
   <BugPattern type="DMI_USELESS_SUBSTRING">
     <ShortDescription>substring(0)の呼び出しは元と同じ値を返します。</ShortDescription>
     <LongDescription>{1} でのsubstring(0)の呼び出しは元と同じ値を返します。</LongDescription>
@@ -3652,7 +3712,6 @@ hasNext() で next() を呼び出しています。hasNext()はイテレータの状態を変えるもの�
 		]]>
 	</Details>
   </BugPattern>
- 
   <BugPattern type="DB_DUPLICATE_BRANCHES">
     <ShortDescription>両条件でのコードが同一。</ShortDescription>
     <LongDescription>{1}で両方の条件に同じコードが記述されています。</LongDescription>
@@ -3664,7 +3723,7 @@ hasNext() で next() を呼び出しています。hasNext()はイテレータの状態を変えるもの�
 ]]>
     </Details>
   </BugPattern>
-  
+ 
   <BugPattern type="DB_DUPLICATE_SWITCH_CLAUSES">
    <ShortDescription>switch文の中に同じコードがあります。</ShortDescription>
    <LongDescription>メソッド {1} の中のswitch文の中に同じコードがあります。</LongDescription>
@@ -3722,7 +3781,7 @@ hasNext() で next() を呼び出しています。hasNext()はイテレータの状態を変えるもの�
       ]]>
     </Details>
   </BugPattern>
-  
+ 
     <BugPattern type="CI_CONFUSED_INHERITANCE">
     <ShortDescription>finalクラスでのprotectedフィールド宣言。</ShortDescription>
     <LongDescription>クラス {0} はfinalですが、protectedフィールド {1} を宣言しています。</LongDescription>
@@ -3834,7 +3893,6 @@ hasNext() で next() を呼び出しています。hasNext()はイテレータの状態を変えるもの�
   <BugCode abbrev="BAC">間違ったアプレットのコンストラクタ</BugCode>
   <BugCode abbrev="UOE">Objectのequalsの使用</BugCode>
   <BugCode abbrev="STI">疑わしいThreadのinterrupted呼び出し</BugCode>
-  <BugCode abbrev="DMI">疑わしいメソッド呼び出し</BugCode>
   <BugCode abbrev="DLS">意味の無いローカル変数への代入</BugCode>
   <BugCode abbrev="IP">引数の無視</BugCode>
   <BugCode abbrev="MF">マスクフィールド</BugCode>
@@ -3849,13 +3907,15 @@ hasNext() で next() を呼び出しています。hasNext()はイテレータの状態を変えるもの�
   <BugCode abbrev="PS">公開セマフォ</BugCode>
   <BugCode abbrev="ICAST">整数のキャスト</BugCode>
   <BugCode abbrev="RE">正規表現</BugCode>
-  <BugCode abbrev="SQL">SQLインジェクション</BugCode>
+  <BugCode abbrev="SQL">SQLの問題</BugCode>
   <BugCode abbrev="ESync">空のsynchronizedブロック</BugCode>
   <BugCode abbrev="QF">疑わしいforループ</BugCode>
   <BugCode abbrev="VA">可変引数の問題</BugCode>
   <BugCode abbrev="BC">間違った参照のキャスト</BugCode>
   <BugCode abbrev="IM">疑わしい整数計算</BugCode>
   <BugCode abbrev="ST">staticフィールドの間違った使用</BugCode>
+  <BugCode abbrev="JCIP">net.jcip annotationsアノテーションの違反</BugCode>
+  <BugCode abbrev="DMI">疑わしいメソッド呼び出し</BugCode>
   <BugCode abbrev="PZ">Josh BlochとNeal Gafterによるプログラミングパズルのバグパターン</BugCode>
   <BugCode abbrev="SWL">ロックを持ったままでのSleep</BugCode>
   <BugCode abbrev="J2EE">J2EEに関するエラー</BugCode>
