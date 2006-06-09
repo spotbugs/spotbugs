@@ -2087,6 +2087,15 @@ in each version of a multiversion bug database.</para>
 						</para>
 					</listitem>
 				</varlistentry>
+				<varlistentry>
+					<term><option>-summary</option></term>
+					<listitem>
+						<para>
+							Output will be only a terse summary of changes over the last ten entries.
+							(The output format is subject to change.)
+						</para>
+					</listitem>
+				</varlistentry>
 				<!--
 				<varlistentry>
 					<term><option></option></term>
