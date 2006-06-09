@@ -1118,7 +1118,7 @@ public class OpcodeStack implements Constants2
  		String methodName = dbc.getNameConstantOperand();
  		String signature = dbc.getSigConstantOperand();
  		String appenderValue = null;
- 		int reg = -1;
+ 		Item sbItem = null;
  		
  		//TODO: stack merging for trinaries kills the constant.. would be nice to maintain.
  		if ("java/lang/StringBuffer".equals(clsName)
@@ -1134,13 +1134,12 @@ public class OpcodeStack implements Constants2
  				Item i = getStackItem(0);
  				appenderValue = (String)i.getConstant();
  			} else if ("append".equals(methodName)) {
- 				Item sb = getStackItem(1);
+ 				sbItem = getStackItem(1);
  				Item i = getStackItem(0);
- 				String sbVal = (String)sb.getConstant();
+ 				String sbVal = (String)sbItem.getConstant();
  				Object sVal = (Object)i.getConstant();
  				if ((sbVal != null) && (sVal != null)) {
  					appenderValue = sbVal + sVal.toString();
- 					reg = sb.registerNumber;
  				}
  			}
  		}
@@ -1150,9 +1149,11 @@ public class OpcodeStack implements Constants2
  		if (appenderValue != null) {
  			Item i = this.getStackItem(0);
  			i.constValue = appenderValue;
- 			i.registerNumber = reg;
- 			if (reg >= 0)
- 				setLVValue(reg, i );
+ 			i.registerNumber = sbItem.registerNumber;
+ 			i.field = sbItem.field;
+ 			i.userValue = sbItem.userValue;
+ 			if (sbItem.registerNumber >= 0)
+ 				setLVValue(sbItem.registerNumber, i );
  			return;
  		}
  		
