@@ -135,6 +135,7 @@
 				destdir="${classes.dir}"
 				source="1.5"
 				target="jsr14"
+				deprecation="on"
 				debug="on">
 			<classpath refid="tools.classpath"/>
 		</javac>
@@ -144,6 +145,7 @@
 				source="1.5"
 				target="jsr14"
 				debug="on"
+				deprecation="on"
 				excludes="${pkg.base}/tools/patcomp/**">
 			<classpath refid="tools.classpath"/>
 		</javac>
@@ -152,6 +154,7 @@
 			destdir="${classes.dir}"
 			source="1.5"
 			target="jsr14"
+			deprecation="on"
 			debug="on">
 			<classpath refid="tools.classpath"/>
 		</javac>
@@ -579,7 +582,7 @@
 		<delete file="${anttask.jar}"/>
 	</target>
 
-    <target name="apiJavadoc">
+    <target name="apiJavadoc" depends="version">
        <delete dir="${apiDoc.dir}"/>
        <mkdir dir="${apiDoc.dir}"/>
       <javadoc access="protected" 
@@ -588,6 +591,8 @@
        classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-full.jar:lib/AppleJavaExtensions.jar"
         destdir="${apiDoc.dir}" 
         doctitle="FindBugs API Documentation" 
+        Header="&lt;b&gt;FindBugs&amp;trade; ${release.number}&lt;/b&gt;"
+        	Windowtitle="FindBugs ${release.number} API"
 	    nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false" 
         sourcepath="src/java" splitindex="true" use="true" version="true"/>
 		</target>
