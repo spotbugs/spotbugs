@@ -1,8 +1,5 @@
 package edu.umd.cs.findbugs.bluej;
 
-import java.io.File;
-
-import javax.swing.JOptionPane;
 
 import bluej.extensions.BlueJ;
 import bluej.extensions.event.CompileEvent;
