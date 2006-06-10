@@ -1989,22 +1989,68 @@ of software you are analyzing.
 History is taken from the first file provided as input; any following
 files should be single version bug databases (if they contain history the history in those
 files will be ignored).</para>
-<para>The file the combined history is written to can be provided using the -output option, otherwise
-it is written to standard output. The output file is not written until all input files are read, so
-you can overwrite one of the input files if you wish.
+<para>By default, output is written to the standard output.
 </para>
-<para>
-The <command>computeBugHistory</command> command can take a single
-(optional) argument: adding </para>
-<screen>
-<command>-output</command> <replaceable>filename</replaceable>
-</screen>
+		  <para>The options are:</para>
+		  
+		  <variablelist>
+		    <varlistentry>
+		      <term><option>-output</option> <replaceable>filename</replaceable></term>
+		      <listitem>
+		        <para>
+		          specify that the output should be saved in the file <replaceable>filename</replaceable>
+		        </para>
+		        <para>
+		          The output file is not written until all input files are read,
+		          so you may overwrite one of the input files if you wish.
+		        </para>
+		      </listitem>
+		    </varlistentry>
+		    <varlistentry>
+		      <term><option>-overrideRevisionNames</option></term>
+		      <listitem>
+		        <para>
+		          override revision names for each version with names computed from the filenames
+		        </para>
+		      </listitem>
+		    </varlistentry>
+		    <varlistentry>
+		      <term><option>-noPackageMoves</option></term>
+		      <listitem>
+		        <para>
+		          if a class seems to have moved from one package to another, treat
+		          warnings in that class as two seperate warnings
+		        </para>
+		      </listitem>
+		    </varlistentry>
+		    <varlistentry>
+		      <term><option>-precisePriorityMatch</option></term>
+		      <listitem>
+		        <para>
+		          only consider two warnings to be the same if their priorities match exactly
+		        </para>
+		      </listitem>
+		    </varlistentry>
+		    <varlistentry>
+		      <term><option>-quiet</option></term>
+		      <listitem>
+		        <para>
+		          don't generate any outout to standard out unless there is an error
+		        </para>
+		      </listitem>
+		    </varlistentry>
+		    <!--
+		      <varlistentry>
+		      <term><option></option></term>
+		      <listitem>
+		      <para>
+		      
+		      </para>
+		      </listitem>
+		      </varlistentry>
+		    -->
+		  </variablelist>
 
-<para>
-will specify that the output should be saved in the file
-<replaceable>filename</replaceable>. (By default, output is
-written to the standard output.)
-</para>
 		</sect2>	
 		<sect2 id="filterBugs">
 			<title>filterBugs</title>
