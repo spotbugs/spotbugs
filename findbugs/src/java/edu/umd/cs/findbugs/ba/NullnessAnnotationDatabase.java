@@ -46,6 +46,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		;
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$Index", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
+		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$SubMap", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListSet$ConcurrentSkipListSubSet", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.LinkedBlockingDeque$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$TransferQueue", NullnessAnnotation.UNKNOWN_NULLNESS);
