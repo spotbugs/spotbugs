@@ -30,12 +30,13 @@
   <year>2003</year>
   <year>2004</year>
   <year>2005</year>
+  <year>2006</year>
   <holder>University of Maryland</holder>
 </copyright>
 
 <legalnotice>
 <para>
-This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike License.
+This manual is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike License.
 To view a copy of this license, visit
 <ulink url="http://creativecommons.org/licenses/by-nc-sa/1.0/">http://creativecommons.org/licenses/by-nc-sa/1.0/</ulink>
 or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
@@ -2548,7 +2549,7 @@ in the Swing GUI.</para>
 <para>Tanel Lebedev contributed Estonian translations of items
 in the Swing GUI.</para>
 
-<para>Hanai Shisei contributed full Japanese translations of
+<para>Hanai Shisei (ruimo) contributed full Japanese translations of
 bug messages, and text used in the Swing GUI.</para>
 
 <para>David Cotton contributed Fresh translations for bug
@@ -2595,13 +2596,22 @@ in the Ant task.</para>
 	
 <para>
 	Takashi Okamoto fixed bugs in the project preferences dialog
-	in the Eclipse plugin.
+	in the Eclipse plugin, and contributed to its internationalization and localization.
 </para>
 	
 <para>Thomas Einwaller fixed bugs in the project preferences dialog in the Eclipse plugin.</para>
 	
 <para>Jeff Knox contributed support for the warningsProperty attribute
 in the Ant task.</para>
+
+<para>Peter Hendriks extended the Eclipse plugin preferences,
+and fixed a bug related to renaming the Eclipse plugin ID.</para>
+
+<para>Mark McKay contributed an Ant task to launch the findbugs frame.</para>
+
+<para>Dieter von Holten (dvholten) contributed 
+some German improvements to findbugs_de.properties.</para>
+
 
 <para>If you have contributed to &FindBugs;, but aren't mentioned above,
 please send email to <email>tuc@cs.umd.edu</email> (and also accept
