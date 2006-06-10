@@ -4524,6 +4524,28 @@ String that gives the contents of the array. See Programming Puzzlers, Chapter 3
   </BugPattern>
 
 
+  <BugPattern type="IM_AVERAGE_COMPUTATION_COULD_OVERFLOW">
+    <ShortDescription>Computation of average could overflow</ShortDescription>
+    <LongDescription>Computation of average could overflow in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>The code computes the average of two integers using either division or right shift,
+and then uses the result as the index of an array.
+If the values being averaged are very large, this can overflow (resulting in the computation
+of a negative average).  Assuming that the result is intended to be nonnegative, you 
+can use an unsigned right shift instead.
+</p>
+<p>This bug existed in almost all implementations of binary search and merge sort
+until it 
+was <a href="http://googleresearch.blogspot.com/2006/06/extra-extra-read-all-about-it-nearly.html">identified by 
+Joshua Bloch</a>.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
   <BugPattern type="IM_BAD_CHECK_FOR_ODD">
     <ShortDescription>Check for oddness that won't work for negative numbers </ShortDescription>
     <LongDescription>Check for oddness that won't work for negative numbers in {1}</LongDescription>

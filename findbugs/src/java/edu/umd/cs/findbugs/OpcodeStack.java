@@ -90,6 +90,8 @@ public class OpcodeStack implements Constants2
 		public static final int RANDOM_INT = 2;
 		public static final int LOW_8_BITS_CLEAR = 3;
 		public static final int HASHCODE_INT = 4;
+		public static final int INTEGER_SUM = 5;
+		public static final int AVERAGE_COMPUTED_USING_DIVISION = 6;
 		public static final Object UNKNOWN = null;
 		private int specialKind;
  		private String signature;
@@ -155,6 +157,12 @@ public class OpcodeStack implements Constants2
 				buf.append(", random_int");
 			else if (specialKind == LOW_8_BITS_CLEAR)
 				buf.append(", low8clear");
+			else if (specialKind == HASHCODE_INT)
+				buf.append(", hashcode_int");
+			else if (specialKind == INTEGER_SUM)
+				buf.append(", int_sum");
+			else if (specialKind == AVERAGE_COMPUTED_USING_DIVISION)
+				buf.append(", averageComputingUsingDivision");
 			if (constValue != UNKNOWN) {
 				buf.append(", ");
 				buf.append(constValue);
@@ -365,6 +373,7 @@ public class OpcodeStack implements Constants2
 	}
 
 	boolean needToMerge = true;
+	boolean reachOnlyByBranch = false;
 	
 	public void mergeJumps(DismantleBytecode dbc) {
 		if (!needToMerge) return;
@@ -372,16 +381,17 @@ public class OpcodeStack implements Constants2
 		List<Item> jumpEntry = jumpEntries.get(dbc.getPC());
  		if (jumpEntry != null) {
 			if (DEBUG) {
- 			System.out.println("XXXXXXX");
+ 			System.out.println("XXXXXXX " + reachOnlyByBranch);
  			System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + jumpEntry);
  			System.out.println(" current lvValues " + lvValues);
 			}
  			
- 			mergeLists(lvValues, jumpEntry, false);
+			if (reachOnlyByBranch) lvValues = new ArrayList<Item>(jumpEntry);
+			else mergeLists(lvValues, jumpEntry, false);
 			if (DEBUG)
  			System.out.println(" merged lvValues " + lvValues);
  		}
-		if (dbc.getPC() == jumpTarget) {
+ 		else if (dbc.getPC() == jumpTarget) {
 			jumpTarget = -1;
 			if (!jumpStack.empty()) {
 				
@@ -391,10 +401,12 @@ public class OpcodeStack implements Constants2
 					System.out.println("merging stacks at " + dbc.getPC() + " -> " + stackToMerge);
 					System.out.println(" current stack " + stack);
 					}
-				mergeLists(stack, stackToMerge, true);
+				if (reachOnlyByBranch) lvValues = new ArrayList<Item>(stackToMerge);
+				else mergeLists(stack, stackToMerge, true);
 				if (DEBUG) 
 					System.out.println(" updated stack " + stack);
 			} }
+ 		reachOnlyByBranch = false;
 		}
  	public void sawOpcode(DismantleBytecode dbc, int seen) {
  		int register;
@@ -607,6 +619,8 @@ public class OpcodeStack implements Constants2
 
 	 			case ATHROW:
 					pop();
+					seenTransferOfControl = true;
+					reachOnlyByBranch = true;
 					break;
 
 	 			case CHECKCAST:
@@ -615,11 +629,13 @@ public class OpcodeStack implements Constants2
 	 			case RET:
 	 			case RETURN:
 					seenTransferOfControl = true;
+					reachOnlyByBranch = true;
 					break;
 	 			
 	 			case GOTO:
 	 			case GOTO_W:					//It is assumed that no stack items are present when
 					seenTransferOfControl = true;
+					reachOnlyByBranch = true;
 					if (getStackDepth() > 0) {
 						jumpStack.push(new ArrayList<Item>(stack));
 						pop();
@@ -1214,6 +1230,7 @@ public class OpcodeStack implements Constants2
  	}
  	public int resetForMethodEntry(final DismantleBytecode v) {
 		jumpEntries.clear();
+		reachOnlyByBranch = false;
  		int result= resetForMethodEntry0(v);
  		Code code = v.getMethod().getCode();
 		if (code == null) return result;
@@ -1253,7 +1270,7 @@ public class OpcodeStack implements Constants2
 		jumpTarget = -1;
  		lvValues.clear();
 		jumpStack.clear();
-
+		reachOnlyByBranch = false;
 		seenTransferOfControl = false;
 		String className = v.getClassName();
 	
@@ -1400,6 +1417,13 @@ public class OpcodeStack implements Constants2
 		} catch (RuntimeException e) {
  			// ignore it
  		}
+		if (lhs.specialKind == Item.INTEGER_SUM && rhs.getConstant() != null ) {
+			int rhsValue = (Integer) rhs.getConstant();
+			if (seen == IDIV && rhsValue ==2  || seen == ISHR  && rhsValue == 1)
+				newValue.specialKind = Item.AVERAGE_COMPUTED_USING_DIVISION;
+		}
+		if (seen == IADD && newValue.specialKind == 0 &&   lhs.getConstant() == null && rhs.getConstant() == null ) 
+			newValue.specialKind = Item.INTEGER_SUM;
  		if (DEBUG) System.out.println("push: " + newValue);
  		push(newValue);
 	}

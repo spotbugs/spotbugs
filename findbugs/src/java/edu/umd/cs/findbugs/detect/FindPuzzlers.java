@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
+
 import org.apache.bcel.classfile.Code;
 
 public class FindPuzzlers extends BytecodeScanningDetector {
@@ -65,6 +67,13 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 		}
  
 
+         if (seen >= IALOAD && seen <= SALOAD || seen >= IASTORE && seen <= SASTORE ) {
+        	 Item index  = stack.getStackItem(0);
+        	 if (index.getSpecialKind() == Item.AVERAGE_COMPUTED_USING_DIVISION)
+        		 bugReporter.reportBug(new BugInstance(this, "IM_AVERAGE_COMPUTATION_COULD_OVERFLOW", HIGH_PRIORITY)
+                 .addClassAndMethod(this)
+                 .addSourceLine(this));
+         }
 
 		if ((seen == IFEQ || seen == IFNE) && getPrevOpcode(1) == IMUL
 			&& ( getPrevOpcode(2) == SIPUSH
