@@ -70,7 +70,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
          if (seen >= IALOAD && seen <= SALOAD || seen >= IASTORE && seen <= SASTORE ) {
         	 Item index  = stack.getStackItem(0);
         	 if (index.getSpecialKind() == Item.AVERAGE_COMPUTED_USING_DIVISION)
-        		 bugReporter.reportBug(new BugInstance(this, "IM_AVERAGE_COMPUTATION_COULD_OVERFLOW", HIGH_PRIORITY)
+        		 bugReporter.reportBug(new BugInstance(this, "IM_AVERAGE_COMPUTATION_COULD_OVERFLOW", NORMAL_PRIORITY)
                  .addClassAndMethod(this)
                  .addSourceLine(this));
          }
