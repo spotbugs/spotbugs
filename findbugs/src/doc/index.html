@@ -60,8 +60,11 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
 <ul>
 <li>fix ObjectTypeFactory bug that was supressing some bugs</li>
 <li>opcode stack may determine definite zeros on some paths</li>
+<li>opcode stack can track some constant string concatenations (dbrosius)</li>
 <li>default effort performs iterative opcode analysis (but min effort does not)</li>
 <li>default heap size upped to 384m</li>
+<li>schema for XML output available: bugcollection.xsd</li>
+<li>fixed some internal confusion between dotted and slashed class names</li>
 <li>New detectors
     <ul><li>CheckImmutableAnnotation.java: checks JCIP annotations</li>
     </ul></li>
@@ -71,9 +74,12 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
         <li>DumbMethods.java: check for vacuous comparisons to MAX_INTEGER or MIN_INTEGER, fix bugs detecting DM_NEXTINT_VIA_NEXTDOUBLE</li>
         <li>FindPuzzlers.java: detect <tt>n%2==1</tt>, detect toString() on array types
         <li>FindInconsistentSync2.java: detects IS_FIELD_NOT_GUARDED</li>
-        <li>MethodReturnCheck.java: add check for discarded newly constructed values, increase priority of some ignored constructed exceptions</li>
+        <li>MethodReturnCheck.java: add check for discarded newly constructed values, increase priority of some ignored constructed exceptions, better handling of bytecode compiled by Eclipse</li>
+        <li>FindEmptySynchronizedBlock.java: better handling of bytecode compiled by Eclipse</li>
         <li>DoInsideDoPriviledged.java: warn if call to setAccessible isn't in doPriviledged, don't report private methods</li>
         <li>LoadOfKnownNullValue.java: fix bug that was reporting false positives on <code>finally</code> blocks</li>
+        <li>CheckReturnAnnotationDatabase.java: better checks for unstarted threads</li>
+        <li>ConfusionBetweenInheritedAndOuterMethod.java: fewer false positives, fixed a package-handling bug</li>
         <li>BadResultSetAccess.java: separate bug pattern for PreparedStatements, <code>BRZA</code> category folded into <code>SQL</code> category</li>
         <li>FindDeadLocalStores.java, FindBadCast2.java, DumbMethods.java, RuntimeExceptionCapture.java:
             coalesce similar bugs within a method into a single bug instance with multiple source lines</li>
@@ -105,16 +111,20 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
         <li>TestNonNull2.java</li>
         <li>TestImmutable.java</li>
         <li>TestGuardedBy.java</li>
+        <li>BadRandomInt.java</li>
+        <li>six test cases added to new <code>TigerTraps</code> directory</li>
     </ul></li>
 <li>fix bug that was generating duplicate uids</li>
 <li>fix bug with <code>-onlyAnalyze some.package.*</code> on jdk1.4</li>
 <li>fix regression bug in DismantleByteCode.getRefConstantOperand()</li>
+<li>fix some minor bugs with the Swing GUI</li>
 <li>reordered some bugInstances so that source line annotations come last</li>
 <li>removed references to unused java system properties</li>
 <li>French translation updates (David Cotton)</li>
-<li>Japanese translation updates (ruimo)</li>
+<li>Japanese translation updates (Hanai Shisei)</li>
+<li>content cleanup for findbugs.xml and messages.xml</li>
 <li>references to cvs hostname updated to findbugs.cvs.sourceforge.net</li>
-<li>documented xdoc output options</li>
+<li>documented xdoc output options, new mineBugHistory/computeBugHistory options, </li>
 </ul>
 
 <p> <a href="Changes.html">Older versions...</a></p>
