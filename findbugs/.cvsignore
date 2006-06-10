@@ -7,6 +7,9 @@ plugin
 *.zip
 foo
 web
+jnlp
+apiJavaDoc
+annotationJavaDoc
 *.fpr
 *.fvdl
 .fbwarnings
