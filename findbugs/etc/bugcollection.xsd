@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:annotation>
+		<xs:documentation>This scheme describes the XML format used by FindBugs to store the results of analysis.</xs:documentation>
+	</xs:annotation>
+	<xs:element name="BugCollection">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Project">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Jar" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+							<xs:element name="AuxClasspathEntry" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+							<xs:element name="SrcDir" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+						<xs:attribute name="filename" type="xs:string" use="required" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="BugInstance" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:annotation>
+							<xs:documentation>Each BugInstance can have a sequence of annotations</xs:documentation>
+						</xs:annotation>
+						<xs:sequence>
+							<xs:element name="ShortMessage" type="xs:string" minOccurs="0" />
+							<xs:element name="LongMessage" type="xs:string" minOccurs="0" />
+							
+							<xs:choice maxOccurs="unbounded">
+																	
+								<xs:element name="Class">
+									<xs:annotation>
+										<xs:documentation>This annotation describes a class</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element ref="SourceLine" />
+											<xs:element ref="Message" minOccurs="0" />
+										</xs:sequence>
+										<xs:attribute name="classname" type="xs:string" use="required" />
+										<xs:attribute name="role" type="xs:string" use="optional" />
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Method">
+									<xs:annotation>
+										<xs:documentation>This annotation describes a method</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence minOccurs="0">
+											<xs:element ref="SourceLine" />
+											<xs:element ref="Message" minOccurs="0" />
+										</xs:sequence>
+										<xs:attribute name="classname" type="xs:string" use="required" />
+										<xs:attribute name="name" type="xs:string" use="required" />
+										<xs:attribute name="signature" type="xs:string" use="required" />
+										<xs:attribute name="isStatic" type="xs:boolean" use="required" />
+										<xs:attribute name="role" type="xs:string" use="optional" />
+									</xs:complexType>
+								</xs:element>
+								<xs:element ref="SourceLine" />
+								<xs:element name="LocalVariable">
+									<xs:annotation>
+										<xs:documentation>This annotation describes a local variable</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element ref="Message" minOccurs="0" />
+										</xs:sequence>
+										<xs:attribute name="name" type="xs:string" use="required" />
+										<xs:attribute name="register" type="xs:unsignedShort" use="required" />
+										<xs:attribute name="pc" type="xs:unsignedInt" use="required" />
+										<xs:attribute name="role" type="xs:string" use="required" />
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Field">
+									<xs:annotation>
+										<xs:documentation>This annotation describes a field</xs:documentation>
+									</xs:annotation>
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element ref="SourceLine" />
+											<xs:element ref="Message" minOccurs="0" />
+										</xs:sequence>
+										<xs:attribute name="classname" type="xs:string" use="required" />
+										<xs:attribute name="name" type="xs:string" use="required" />
+										<xs:attribute name="signature" type="xs:string" use="required" />
+										<xs:attribute name="isStatic" type="xs:boolean" use="required" />
+										<xs:attribute name="role" type="xs:string" use="optional" />
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Int">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element ref="Message" minOccurs="0" />
+										</xs:sequence>
+										<xs:attribute name="value" type="xs:long" use="required" />
+										<xs:attribute name="role" type="xs:string" use="optional" />
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="String">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element ref="Message" minOccurs="0" />
+										</xs:sequence>
+										<xs:attribute name="value" type="xs:string" use="required" />
+										<xs:attribute name="role" type="xs:string" use="optional" />
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="Property">
+									<xs:complexType>
+										<xs:attribute name="name" type="xs:string" use="required" />
+										<xs:attribute name="value" type="xs:string" use="required" />
+									</xs:complexType>
+								</xs:element>
+								
+							</xs:choice>
+							<xs:element name="UserAnnotation" type="xs:string" minOccurs="0"/>
+						</xs:sequence>
+						<xs:attribute name="type" type="xs:string" use="required" />
+						<xs:attribute name="priority" type="xs:unsignedByte" use="required" />
+						<xs:attribute name="abbrev" type="xs:string" use="required" />
+						<xs:attribute name="category" type="xs:string" use="required" />
+						<xs:attribute name="uid" type="xs:unsignedLong" use="optional" />
+						<xs:attribute name="instanceHash" type="xs:string" use="optional" />
+						<xs:attribute name="instanceOccurrenceNum" type="xs:unsignedInt" use="optional" />
+						<xs:attribute name="instanceOccurrenceMax" type="xs:unsignedInt" use="optional" />
+						<xs:attribute name="last" type="xs:unsignedInt" use="optional" />
+						<xs:attribute name="removedByChange" type="xs:boolean" use="optional" />
+						<xs:attribute name="first" type="xs:unsignedInt" use="optional" />
+						<xs:attribute name="introducedByChange" type="xs:boolean" use="optional" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="BugCategory" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Description" type="xs:string" />
+						</xs:sequence>
+						<xs:attribute name="category" type="xs:string" use="required" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="BugPattern" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ShortDescription" type="xs:string" />
+							<xs:element name="Details" type="xs:string" />
+						</xs:sequence>
+						<xs:attribute name="type" type="xs:string" use="required" />
+						<xs:attribute name="abbrev" type="xs:string" use="required" />
+						<xs:attribute name="category" type="xs:string" use="required" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="BugCode" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Description" type="xs:string" />
+						</xs:sequence>
+						<xs:attribute name="abbrev" type="xs:string" use="required" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Errors">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="MissingClass" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+				<xs:element name="FindBugsSummary">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="PackageStats" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ClassStats" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:attribute name="class" type="xs:string" use="required" />
+												<xs:attribute name="interface" type="xs:boolean" use="required" />
+												<xs:attribute name="size" type="xs:unsignedLong" use="required" />
+												<xs:attribute name="bugs" type="xs:unsignedInt" use="required" />
+												<xs:attribute name="priority_1" type="xs:unsignedInt" use="optional" />
+												<xs:attribute name="priority_2" type="xs:unsignedInt" use="optional" />
+												<xs:attribute name="priority_3" type="xs:unsignedInt" use="optional" />
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="package" type="xs:string" use="required" />
+									<xs:attribute name="total_bugs" type="xs:unsignedInt" use="required" />
+									<xs:attribute name="total_types" type="xs:unsignedInt" use="required" />
+									<xs:attribute name="total_size" type="xs:unsignedLong" use="required" />
+									<xs:attribute name="priority_1" type="xs:unsignedInt" use="optional" />
+									<xs:attribute name="priority_2" type="xs:unsignedInt" use="optional" />
+									<xs:attribute name="priority_3" type="xs:unsignedInt" use="optional" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="timestamp" type="xs:string" use="required" />
+						<xs:attribute name="total_classes" type="xs:unsignedInt" use="required" />
+						<xs:attribute name="total_bugs" type="xs:unsignedInt" use="required" />
+						<xs:attribute name="total_size" type="xs:unsignedInt" use="required" />
+						<xs:attribute name="num_packages" type="xs:unsignedInt" use="required" />
+						<xs:attribute name="cpu_seconds" type="xs:float" use="optional" /> <!-- could move to xs:duration -->
+						<xs:attribute name="clock_seconds" type="xs:float" use="optional" />
+						<xs:attribute name="peak_mbytes" type="xs:float" use="optional" />
+						<xs:attribute name="gc_seconds" type="xs:float" use="optional" />
+						<xs:attribute name="priority_1" type="xs:unsignedInt" use="optional" />
+						<xs:attribute name="priority_2" type="xs:unsignedInt" use="optional" />
+						<xs:attribute name="priority_3" type="xs:unsignedInt" use="optional" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="SummaryHTML" type="xs:string" minOccurs="0" />
+				<xs:element name="ClassFeatures">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ClassFeatureSet" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Feature" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:attribute name="value" type="xs:string" use="required" />
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="class" type="xs:string" use="required" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="History">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="AppVersion" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="sequence" type="xs:unsignedInt" use="required" />
+									<xs:attribute name="timestamp" type="xs:unsignedLong" use="required" />
+									<xs:attribute name="release" type="xs:string" use="required" />
+									<xs:attribute name="codeSize" type="xs:unsignedInt" use="required" />
+									<xs:attribute name="numClasses" type="xs:unsignedInt" use="required" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="version" type="xs:string" use="required" />
+			<xs:attribute name="sequence" type="xs:unsignedInt" use="required" />
+			<xs:attribute name="timestamp" type="xs:unsignedLong" use="required" />
+			<xs:attribute name="analysisTimestamp" type="xs:unsignedLong" use="required" />
+			<xs:attribute name="release" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SourceLine">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Message" minOccurs="0" />
+			</xs:sequence>
+			<xs:attribute name="classname" type="xs:string" use="required" />
+			<xs:attribute name="start" type="xs:int" use="required" />
+			<xs:attribute name="end" type="xs:int" use="required" />
+			<xs:attribute name="startBytecode" type="xs:int" use="required" />
+			<xs:attribute name="endBytecode" type="xs:int" use="required" />
+			<xs:attribute name="opcodes" type="xs:string" use="optional" /> <!-- no longer generated -->
+			<xs:attribute name="sourcefile" type="xs:string" use="optional" />
+			<xs:attribute name="sourcepath" type="xs:string" use="optional" />
+			<xs:attribute name="synthetic" type="xs:boolean" use="optional" />
+			<xs:attribute name="role" type="xs:string" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Message" type="xs:string" />
+</xs:schema>
