@@ -6,7 +6,7 @@
       provider-name="FindBugs Project"
       plugin="@PLUGIN_ID@">
 
-   <description url="http://findbugs.sourceforge.com">
+   <description url="http://findbugs.sourceforge.net">
       This feature is a wrapper for the FindBugs plugin for installation via the Eclipse Update Manager.
    </description>
 
