@@ -342,7 +342,7 @@
 	</target>
 
 	<!-- Generate website. -->
-	<target name="web" depends="classes,version,bugdesc,checkweb">
+	<target name="web" depends="classes,version,bugdesc,checkweb,apiJavadoc">
 		<loadproperties srcFile="${doc.props.file}"/>
 
 		<antcall target="generatedocs">
@@ -353,6 +353,10 @@
 			<param name="docoutput.dir" value="${web.dir}"/>
 			<param name="googleanalytics.fragment" value="${doc.html.googleanalytics}"/>
 		</antcall>
+		<!-- move javadocs from 'apiJavadoc' target (could use <copy/> instead of <move/>, but slower) -->
+		<move todir="${web.dir}/api">
+			<fileset dir="${apiDoc.dir}"/>
+		</move>
 	</target>
 
 	<target name="checkbugdesc">
@@ -592,7 +596,8 @@
         destdir="${apiDoc.dir}" 
         doctitle="FindBugs API Documentation" 
         Header="&lt;b&gt;FindBugs&amp;trade; ${release.number}&lt;/b&gt;"
-        	Windowtitle="FindBugs ${release.number} API"
+        Windowtitle="FindBugs ${release.number} API"
+        bottom="&lt;font size='-1'&gt;&lt;a href='http://findbugs.sourceforge.net/'&gt;FindBugs&lt;/a&gt;&amp;trade; is licenced under the LGPL. Copyright &amp;copy; 2006 University of Maryland.&lt;/font&gt;"
 	    nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false" 
         sourcepath="src/java" splitindex="true" use="true" version="true"/>
 		</target>
