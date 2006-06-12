@@ -105,10 +105,13 @@ class BadIntegerOperations {
 	
 	Random r = new Random();
 
-	int getRandomElement(int a[]) {
+	public int getRandomElement(int a[]) {
 		return a[r.nextInt() % a.length];
 	}
 
+	public static Object getHashBucket(Object a[], Object x) {
+		return a[x.hashCode() % a.length];
+	}
 
 	public void operationsOnBooleanArrays(String[] args)
 	{
