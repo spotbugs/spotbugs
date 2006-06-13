@@ -156,6 +156,11 @@ public class DumbMethods extends BytecodeScanningDetector  {
 						.addClassAndMethod(this)
 						.addSourceLine(this);
 						}
+			else if (special == OpcodeStack.Item.HASHCODE_INT) {
+				pendingRemOfRandomIntBug = new BugInstance(this, "RV_REM_OF_HASHCODE", HIGH_PRIORITY)
+			.addClassAndMethod(this)
+			.addSourceLine(this);
+			}
 			else if (constant0 instanceof Integer && ((Integer)constant0).intValue() == 1)
 			bugReporter.reportBug(new BugInstance(this, "INT_BAD_REM_BY_1", HIGH_PRIORITY)
 			.addClassAndMethod(this)

@@ -3497,6 +3497,32 @@ consider using the Random.nextInt(int) method instead.
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="RV_REM_OF_HASHCODE">
+    <ShortDescription>Remainder of hashCode could be negative</ShortDescription>
+    <LongDescription>Remainder of hashCode could be negative in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This code computes a hashCode, and then computes
+the remainder of that value modulo another value. Since the hashCode
+can be negative, the result of the remainder operation
+can also be negative. </p>
+<p> Assuming you want to ensure that the result of your computation is nonnegative,
+you may need to change your code.
+If you know the divisor is a power of 2,
+you can use a bitwise and operator instead (i.e., instead of
+using <code>x.hashCode()%n</code>, use <code>x.hashCode()&amp;(n-1)</code>. 
+This is probably faster than computing the remainer as well.
+If you dont know that the divisor is a power of 2, take the absolute
+value of the result of the remainer operation (i.e., use
+<code>Math.abs(x.hashCode()%n)</code>
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
   <BugPattern type="INT_VACUOUS_COMPARISON">
     <ShortDescription>Vacuous comparison of integer value</ShortDescription>
     <LongDescription>Vacuous comparison of integer value {1} </LongDescription>
@@ -4529,11 +4555,12 @@ String that gives the contents of the array. See Programming Puzzlers, Chapter 3
     <LongDescription>Computation of average could overflow in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p>The code computes the average of two integers using either division or right shift,
+<p>The code computes the average of two integers using either division or signed right shift,
 and then uses the result as the index of an array.
 If the values being averaged are very large, this can overflow (resulting in the computation
 of a negative average).  Assuming that the result is intended to be nonnegative, you 
-can use an unsigned right shift instead.
+can use an unsigned right shift instead. In other words, rather that using <code>(low+high)/2</code>,
+use <code>(low+high) &gt;&gt;&gt; 1</code>
 </p>
 <p>This bug existed in almost all implementations of binary search and merge sort
 until it 
