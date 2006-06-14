@@ -60,4 +60,17 @@ public class DuplicateBranches {
 		}
 		return j;
 	}
+
+	/** false positive??  bug1481642 */
+	public int g_korland(int a) {
+		//int a = 1;
+		switch(a) {
+		  case 1:
+		    return 1;
+		  case 2:
+		    return 2;
+		}
+		return -1;
+	}
+
 }
