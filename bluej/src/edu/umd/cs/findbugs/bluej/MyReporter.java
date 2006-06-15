@@ -3,6 +3,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.TextUIBugReporter;
 
 
@@ -15,7 +16,12 @@ public class MyReporter extends TextUIBugReporter {
 	}
 	@Override
 	protected void doReportBug(BugInstance bugInstance) {
-		if (bugInstance.getBugPattern().getCategory().equals("CORRECTNESS"))
+		BugPattern bugPattern = bugInstance.getBugPattern();
+		if (bugPattern.getCategory().equals("CORRECTNESS")
+				&& ! bugPattern.getType().startsWith("DE_")
+				&& ! bugPattern.getType().startsWith("HE_")
+				&& ! bugPattern.getType().startsWith("SE_")
+			)
 			bugs.add(bugInstance);
 		
 	}
