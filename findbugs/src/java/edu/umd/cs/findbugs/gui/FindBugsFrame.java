@@ -2916,14 +2916,20 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			}
 		});
 		*/
-		StringReader reader = new StringReader(summaryXML); // no need for BufferedReader
+		StringReader reader = null;
 		try {
-			bugSummaryEditorPane.read(reader, "html summary");
+			if (summaryXML != null) {
+				reader = new StringReader(summaryXML); // no need for BufferedReader
+				bugSummaryEditorPane.read(reader, "html summary");
+			} else {
+				bugSummaryEditorPane.setText("");
+			}
 		} catch (IOException e) {
 			bugSummaryEditorPane.setText("Could not set summary: " + e.getMessage());
 			logger.logMessage(Logger.WARNING, e.getMessage());
 		} finally {
-			reader.close(); // polite, but doesn't do much in StringReader
+			if (reader != null)
+				reader.close(); // polite, but doesn't do much in StringReader
 		}
 		
 	}
