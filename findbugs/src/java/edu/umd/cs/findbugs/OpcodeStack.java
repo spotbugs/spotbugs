@@ -1156,7 +1156,11 @@ public class OpcodeStack implements Constants2
  				Object sVal = (Object)i.getConstant();
  				if ((sbVal != null) && (sVal != null)) {
  					appenderValue = sbVal + sVal.toString();
- 				}
+ 				} else if (sbItem.registerNumber >= 0) {
+                    OpcodeStack.Item item = getLVValue(sbItem.registerNumber);
+                    if (item != null)
+                        item.constValue = null;
+                }
  			}
  		}
  		
