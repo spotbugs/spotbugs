@@ -108,11 +108,12 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 				 = stack.getStackItem(0).getConstant();
 			Object leftHandSide 
 				=  stack.getStackItem(1).getConstant();
-			if (rightHandSide != null && rightHandSide instanceof Integer) {
+			if (rightHandSide instanceof Integer) {
 				constantArgumentToShift = true;
 				valueOfConstantArgumentToShift = ((Integer) rightHandSide);
 				if (valueOfConstantArgumentToShift < 0 || valueOfConstantArgumentToShift >= 32)
-				 bugReporter.reportBug(new BugInstance(this, "ICAST_BAD_SHIFT_AMOUNT", NORMAL_PRIORITY)
+				 bugReporter.reportBug(new BugInstance(this, "ICAST_BAD_SHIFT_AMOUNT", 
+						 	valueOfConstantArgumentToShift < 0 ? LOW_PRIORITY : NORMAL_PRIORITY)
 						.addClassAndMethod(this)
 						.addInt(valueOfConstantArgumentToShift)
 						.addSourceLine(this)
