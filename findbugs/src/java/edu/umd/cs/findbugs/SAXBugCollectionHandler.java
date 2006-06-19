@@ -210,6 +210,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					String propName = getRequiredAttribute(attributes, "name", qName);
 					String propValue = getRequiredAttribute(attributes, "value", qName);
 					bugInstance.setProperty(propName, propValue);
+				} else if (qName.equals("UserAnnotation")) {
+					// ignore it; will handle in endElement
 				} else throw new SAXException("Unknown bug annotation named " + qName);
 
 				if (bugAnnotation != null) {
