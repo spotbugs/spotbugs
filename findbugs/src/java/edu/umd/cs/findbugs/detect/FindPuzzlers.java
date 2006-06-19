@@ -55,7 +55,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 		stack.mergeJumps(this);
 		
 		
-		if (getMethodName().equals("<clinit>") && (seen == PUTSTATIC || seen == NEW || seen == GETSTATIC || seen == INVOKESTATIC)) {
+		if (getMethodName().equals("<clinit>") && (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC)) {
 			 String clazz = getClassConstantOperand();
 			 if (!clazz.equals(getClassName())) {
 				 try {
@@ -63,7 +63,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 						 bugReporter.reportBug(new BugInstance(this, 
 								 "IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION", 
 								 seen == GETSTATIC  ? HIGH_PRIORITY : NORMAL_PRIORITY)
-						 .addClassAndMethod(this).addClass(clazz)
+						 .addClassAndMethod(this).addClass(getDottedClassConstantOperand())
 						 .addSourceLine(this)
 							);
 				} catch (ClassNotFoundException e) {
