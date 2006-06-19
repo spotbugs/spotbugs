@@ -2137,6 +2137,7 @@ This not necessarily a bug, but is worth examining
 ]]>
     </Details>
   </BugPattern>
+
   <BugPattern type="IC_INIT_CIRCULARITY">
     <ShortDescription>Initialization circularity</ShortDescription>
     <LongDescription>Initialization circularity between {0} and {1}</LongDescription>
@@ -2148,6 +2149,32 @@ This not necessarily a bug, but is worth examining
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION">
+    <ShortDescription>Superclass uses subclass during initialization</ShortDescription>
+    <LongDescription>Initialization of {0} accesses class {2}, which isn't initialized yet</LongDescription>
+    <Details>
+<![CDATA[
+  <p> During the initialization of a class, the class makes an active use of a subclass.
+That subclass will not yet be initialized at the time of this use.
+For example, in the following code, <code>foo</code> will be null.</p>
+
+<p><code><pre>
+public class CircularClassInitialization {
+	static class InnerClassSingleton extends CircularClassInitialization {
+		static InnerClassSingleton singleton = new InnerClassSingleton();
+	}
+	
+	static CircularClassInitialization foo = InnerClassSingleton.singleton;
+}
+</pre></code></p>
+
+]]>
+    </Details>
+  </BugPattern>
+
+
+
   <BugPattern type="IT_NO_SUCH_ELEMENT">
     <ShortDescription>Iterator next() method can't throw NoSuchElement exception</ShortDescription>
     <LongDescription>{1} can't throw NoSuchElement exception</LongDescription>

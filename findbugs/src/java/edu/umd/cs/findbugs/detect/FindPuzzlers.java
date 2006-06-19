@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 
 public class FindPuzzlers extends BytecodeScanningDetector {
@@ -52,6 +53,25 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	@Override
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
+		
+		
+		if (getMethodName().equals("<clinit>") && (seen == PUTSTATIC || seen == NEW || seen == GETSTATIC || seen == INVOKESTATIC)) {
+			 String clazz = getClassConstantOperand();
+			 if (!clazz.equals(getClassName())) {
+				 try {
+					if (Repository.instanceOf(clazz, getThisClass()))
+						 bugReporter.reportBug(new BugInstance(this, 
+								 "IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION", 
+								 seen == GETSTATIC  ? HIGH_PRIORITY : NORMAL_PRIORITY)
+						 .addClassAndMethod(this).addClass(clazz)
+						 .addSourceLine(this)
+							);
+				} catch (ClassNotFoundException e) {
+					// ignore it
+				}
+				 
+			 }
+		}
          if (false && (seen == INVOKEVIRTUAL)
                 &&   getNameConstantOperand().equals("equals")
                 &&   getSigConstantOperand().equals("(Ljava/lang/Object;)Z")
