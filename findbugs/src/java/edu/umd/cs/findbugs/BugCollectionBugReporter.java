@@ -44,6 +44,7 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter impleme
 		return bugCollection;
 	}
 
+	// TODO: Document this method
 	public void observeClass(JavaClass javaClass) {
 	}
 
