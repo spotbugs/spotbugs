@@ -64,7 +64,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 			 if (!clazz.equals(getClassName())) {
 				 try {
 					 JavaClass targetClass = Repository.lookupClass(clazz);
-					if (Repository.instanceOf(clazz, targetClass)) {
+					if (Repository.instanceOf(targetClass, getThisClass())) {
 						int priority = NORMAL_PRIORITY;
 						if (seen == GETSTATIC) priority--;
 						if (!targetClass.isPublic()) priority++;
