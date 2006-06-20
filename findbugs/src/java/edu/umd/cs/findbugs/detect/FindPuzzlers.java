@@ -20,11 +20,15 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.OpcodeStack.Item;
-
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 
 public class FindPuzzlers extends BytecodeScanningDetector {
 
@@ -59,13 +63,18 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 			 String clazz = getClassConstantOperand();
 			 if (!clazz.equals(getClassName())) {
 				 try {
-					if (Repository.instanceOf(clazz, getThisClass()))
+					 JavaClass targetClass = Repository.lookupClass(clazz);
+					if (Repository.instanceOf(clazz, targetClass)) {
+						int priority = NORMAL_PRIORITY;
+						if (seen == GETSTATIC) priority--;
+						if (!targetClass.isPublic()) priority++;
 						 bugReporter.reportBug(new BugInstance(this, 
 								 "IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION", 
-								 seen == GETSTATIC  ? HIGH_PRIORITY : NORMAL_PRIORITY)
+								priority)
 						 .addClassAndMethod(this).addClass(getDottedClassConstantOperand())
 						 .addSourceLine(this)
 							);
+					}
 				} catch (ClassNotFoundException e) {
 					// ignore it
 				}
