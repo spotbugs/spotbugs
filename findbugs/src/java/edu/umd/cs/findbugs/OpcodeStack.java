@@ -624,6 +624,18 @@ public class OpcodeStack implements Constants2
 					break;
 
 	 			case CHECKCAST:
+	 			{
+	 				String castTo = dbc.getClassConstantOperand();
+	 				
+	 				if (castTo.charAt(0) != '[') castTo = "L" + castTo + ";";
+	 				it = pop();
+	 				it.signature = castTo;
+	 				push(it);
+	 				
+	 				break;
+	 				
+	 					
+	 			}
 	 			case NOP:
 					break;
 	 			case RET:

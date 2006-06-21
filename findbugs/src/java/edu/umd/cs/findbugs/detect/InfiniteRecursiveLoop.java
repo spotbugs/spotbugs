@@ -148,7 +148,9 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 					// Have to check if first parmeter is the same
 					// know there must be a this argument
 					OpcodeStack.Item p = stack.getStackItem(parameters - 1);
-					sameMethod = p.isInitialParameter() && p.getRegisterNumber() == 0;
+					String sig = p.getSignature(); 
+					sameMethod =  p.isInitialParameter() && p.getRegisterNumber() == 0 && sig.equals("L" + getClassName() +";");
+
 				}
 
 				// match2 and match3 are two different ways of seeing if the call site
