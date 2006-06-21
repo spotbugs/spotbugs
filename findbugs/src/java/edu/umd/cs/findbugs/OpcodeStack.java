@@ -221,6 +221,17 @@ public class OpcodeStack implements Constants2
 			field = f;
 			registerNumber = reg;
  		}
+ 		public Item(Item it) {
+			this.signature = it.signature;
+			this.constValue = it.constValue;
+			this.field = it.field;
+			this.isNull = it.isNull;
+			this.registerNumber = it.registerNumber;
+			this.couldBeZero = it.couldBeZero;
+			this.userValue = it.userValue;
+			this.isInitialParameter = it.isInitialParameter;
+			this.specialKind = it.specialKind;
+ 		}
  		public Item(Item it, int reg) {
 			this.signature = it.signature;
 			this.constValue = it.constValue;
@@ -628,7 +639,7 @@ public class OpcodeStack implements Constants2
 	 				String castTo = dbc.getClassConstantOperand();
 	 				
 	 				if (castTo.charAt(0) != '[') castTo = "L" + castTo + ";";
-	 				it = pop();
+	 				it = new Item(pop());
 	 				it.signature = castTo;
 	 				push(it);
 	 				
