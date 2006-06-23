@@ -31,6 +31,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,6 +51,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.util.ClassPath;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.ba.AbstractClassMember;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -1200,8 +1202,21 @@ public class FindBugs implements Constants2, ExitCodes {
 		if (DEBUG)
 			detectorTimings = new HashMap<String,Long>();
 
+		Iterator<AnalysisPass> i = executionPlan.passIterator();
+		AnalysisPass firstPass = i.next();
+		firstPass.createDetectors(bugReporter);
+		 // Do this to force referenced classes to be loaded
+		Set<JavaClass> allReferencedClasses = analysisContext.getSubtypes().getAllClasses();
+		ArrayList<String> listOfReferencedClasses = new ArrayList<String>(allReferencedClasses.size());
+		for(JavaClass c : allReferencedClasses)
+			listOfReferencedClasses.add(c.getClassName());
+		executeAnalysisPass(firstPass, listOfReferencedClasses);
+
+		analysisContext.clearClassContextCache();
+		
+		
 		// Execute each analysis pass in the execution plan
-		for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext();) {
+		while (i.hasNext()) {
 			AnalysisPass analysisPass = i.next();
 			analysisPass.createDetectors(bugReporter);
 			executeAnalysisPass(analysisPass, repositoryClassList);
@@ -1902,7 +1917,12 @@ public class FindBugs implements Constants2, ExitCodes {
 		int bugCount = findBugs.getBugCount();
 		int missingClassCount = findBugs.getMissingClassCount();
 		int errorCount = findBugs.getErrorCount();
-
+		if (false) 
+		System.err.println("Slashed/Dotted Slashed/Dotted: " 
+				+ AbstractClassMember.slashCountClass +"/" + AbstractClassMember.dottedCountClass
+				+ " " + AbstractClassMember.slashCountSignature +"/" + AbstractClassMember.dottedCountSignature
+				);
+		
 		if (!commandLine.quiet() || commandLine.setExitCode()) {
 			if (bugCount > 0)
 				System.err.println("Warnings generated: " + bugCount);
