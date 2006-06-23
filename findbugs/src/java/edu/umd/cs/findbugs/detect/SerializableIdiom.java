@@ -20,12 +20,29 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
+
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.FieldOrMethod;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Synthetic;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 
 public class SerializableIdiom extends BytecodeScanningDetector
         {
@@ -45,6 +62,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	private HashMap<String, XField> fieldsThatMightBeAProblem = new HashMap<String, XField>();
 	private HashMap<String, XField> transientFields = new HashMap<String, XField>();
 	private HashMap<String, Integer> transientFieldsUpdates = new HashMap<String, Integer>();
+	private HashSet<String> transientFieldsSetInConstructor = new HashSet<String>();
 	
 	private boolean sawReadExternal;
 	private boolean sawWriteExternal;
@@ -114,6 +132,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		fieldsThatMightBeAProblem.clear();
 		transientFields.clear();
 		transientFieldsUpdates.clear();
+		transientFieldsSetInConstructor.clear();
 		//isRemote = false;
 
 		// Does this class directly implement Serializable?
@@ -212,12 +231,23 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		}
 		if (isSerializable && !sawReadObject && seenTransientField) {
 			for(Map.Entry<String,Integer> e : transientFieldsUpdates.entrySet()) {
-				if (e.getValue() > 1) 
+				if (e.getValue() > 2) {
+					XField fieldX = transientFields.get(e.getKey());
+					int priority = NORMAL_PRIORITY;
+
+					try {
+						double isSerializable = Analyze.isDeepSerializable(fieldX.getSignature());
+						if (isSerializable < 0.6) priority++;
+					} catch (ClassNotFoundException e1) {
+						e1.printStackTrace();
+					}
+					if (transientFieldsSetInConstructor.contains(e.getKey()))
+						priority--;
 					bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_NOT_RESTORED",
-					        HIGH_PRIORITY )
+					        priority )
 					        .addClass(getThisClass())
-					        .addField(transientFields.get(e.getKey())));
-					        
+					        .addField(fieldX));
+				}
 			}
 			
 		}
@@ -344,8 +374,9 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			String nameOfClass = getClassConstantOperand();
 			if ( getClassName().equals(nameOfClass))  {
 			String nameOfField = getNameConstantOperand();
-			if (transientFieldsUpdates.containsKey(nameOfField) && !getMethodName().equals("<init>")) {
-				transientFieldsUpdates.put(nameOfField, transientFieldsUpdates.get(nameOfField)+1);
+			if (transientFieldsUpdates.containsKey(nameOfField) ) {
+				if (getMethodName().equals("<init>")) transientFieldsSetInConstructor.add(nameOfField);
+				else transientFieldsUpdates.put(nameOfField, transientFieldsUpdates.get(nameOfField)+1);
 			} else if (fieldsThatMightBeAProblem.containsKey(nameOfField)) {
 			try {
 			OpcodeStack.Item first = stack.getStackItem(0);
@@ -460,7 +491,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	private int computePriority(double isSerializable, double bias) {
 		int priority = (int)(1.9+isSerializable*3 + bias);
 		
-		if (implementsSerializableDirectly || sawSerialVersionUID)
+		if (implementsSerializableDirectly || sawSerialVersionUID || sawReadObject)
 			priority--;
 		if (!implementsSerializableDirectly && priority == HIGH_PRIORITY)
 			priority = NORMAL_PRIORITY;
