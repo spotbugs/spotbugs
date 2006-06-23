@@ -2502,6 +2502,30 @@ be confusing to users of this class.</p>
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SE_READ_RESOLVE_MUST_RETURN_OBJECT">
+    <ShortDescription>The readResolve method must be declared with a return type
+of Object. </ShortDescription>
+    <LongDescription>The method {1} must be declared with a return type of Object rather than {1.returnType}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> In order for the readResolve method to be recognized by the serialization
+mechanism.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SE_TRANSIENT_FIELD_NOT_RESTORED">
+    <ShortDescription>Transient field that isn't set by deserialization. </ShortDescription>
+    <LongDescription>The field {1} is transient but isn't set by deserialization</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class contains a field that is updated at multiple places in the class, thus it seems to be part of the start of the class. However, since the field is marked as transient and not set in readObject or readResolve, it will contain the default value in any 
+deserialized instance of the class.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="SE_METHOD_MUST_BE_PRIVATE">
     <ShortDescription>Method must be private in order for serialization to work</ShortDescription>
     <LongDescription>The method {1.givenClass} must be private to be invoked in serialization/deserialization of {0}</LongDescription>

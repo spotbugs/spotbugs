@@ -240,7 +240,13 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		else if (key.equals("givenClass")) return getNameInClass();
 		else if (key.equals("shortMethod"))
 			return className + "." + methodName + "()";
-		else
+		else if (key.equals("returnType")) {
+			int i = methodSig.indexOf(')');
+			String returnType = methodSig.substring(i+1);
+			String pkgName = getPackageName();
+			SignatureConverter converter = new SignatureConverter(returnType);
+			return shorten(pkgName, converter.parseNext());
+		}	else
 			throw new IllegalArgumentException("unknown key " + key);
 	}
 

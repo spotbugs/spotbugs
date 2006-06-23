@@ -43,9 +43,13 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	boolean isAbstract;
 	private List<BugInstance> fieldWarningList = new LinkedList<BugInstance>();
 	private HashMap<String, XField> fieldsThatMightBeAProblem = new HashMap<String, XField>();
+	private HashMap<String, XField> transientFields = new HashMap<String, XField>();
+	private HashMap<String, Integer> transientFieldsUpdates = new HashMap<String, Integer>();
+	
 	private boolean sawReadExternal;
 	private boolean sawWriteExternal;
 	private boolean sawReadObject;
+	private boolean sawReadResolve;
 	private boolean sawWriteObject;
 	private boolean superClassImplementsSerializable;
 	private boolean hasPublicVoidConstructor;
@@ -108,7 +112,8 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		seenTransientField = false;
 		boolean isEnum = obj.getSuperclassName().equals("java.lang.Enum");
 		fieldsThatMightBeAProblem.clear();
-		
+		transientFields.clear();
+		transientFieldsUpdates.clear();
 		//isRemote = false;
 
 		// Does this class directly implement Serializable?
@@ -205,11 +210,22 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			System.out.println("  isAbstract: " + isAbstract);
 			System.out.println("  superClassImplementsSerializable: " + superClassImplementsSerializable);
 		}
+		if (isSerializable && !sawReadObject && seenTransientField) {
+			for(Map.Entry<String,Integer> e : transientFieldsUpdates.entrySet()) {
+				if (e.getValue() > 1) 
+					bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_NOT_RESTORED",
+					        HIGH_PRIORITY )
+					        .addClass(getThisClass())
+					        .addField(transientFields.get(e.getKey())));
+					        
+			}
+			
+		}
 		if (isSerializable && !isExternalizable
 		        && !superClassHasVoidConstructor
 		        && !superClassImplementsSerializable)
 			bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR",
-			        implementsSerializableDirectly ? HIGH_PRIORITY : 
+			        implementsSerializableDirectly|| seenTransientField ? HIGH_PRIORITY : 
 			        	( sawSerialVersionUID ?  NORMAL_PRIORITY : LOW_PRIORITY))
 			        .addClass(getThisClass().getClassName()));
 		// Downgrade class-level warnings if it's a GUI class.
@@ -222,6 +238,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			        HIGH_PRIORITY : NORMAL_PRIORITY)
 			        .addClass(getThisClass().getClassName()));
 		if (!foundSynthetic) priority++;
+		if (seenTransientField) priority--;
 		if (!isAnonymousInnerClass 
 			&& !isExternalizable && !isGUIClass
 		        && isSerializable && !isAbstract && !sawSerialVersionUID)
@@ -256,7 +273,15 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			if (false && !obj.isPrivate())
 				System.out.println("Non-private writeExternal method in: " + getDottedClassName());
 		}
-		else if (getMethodName().equals("readObject")
+		else if (getMethodName().equals("readResolve")
+				&& getMethodSig().startsWith("()")
+				&& isSerializable) {
+			sawReadResolve = true;
+			if (!getMethodSig().equals("()Ljava/lang/Object;"))
+				bugReporter.reportBug(new BugInstance(this, "SE_READ_RESOLVE_MUST_RETURN_OBJECT", HIGH_PRIORITY)
+						.addClassAndMethod(this));
+			
+		}else if (getMethodName().equals("readObject")
 				&& getMethodSig().equals("(Ljava/io/ObjectInputStream;)V")
 				&& isSerializable) {
 			sawReadObject = true;
@@ -317,10 +342,11 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		stack.mergeJumps(this);
 		if (seen == PUTFIELD) {
 			String nameOfClass = getClassConstantOperand();
+			if ( getClassName().equals(nameOfClass))  {
 			String nameOfField = getNameConstantOperand();
-			if ( getClassName().equals(nameOfClass) &&
-		
-				fieldsThatMightBeAProblem.containsKey(nameOfField)) {
+			if (transientFieldsUpdates.containsKey(nameOfField) && !getMethodName().equals("<init>")) {
+				transientFieldsUpdates.put(nameOfField, transientFieldsUpdates.get(nameOfField)+1);
+			} else if (fieldsThatMightBeAProblem.containsKey(nameOfField)) {
 			try {
 			OpcodeStack.Item first = stack.getStackItem(0);
 					JavaClass classStored = first.getJavaClass();
@@ -351,6 +377,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 					// ignore it
 				}
 			}
+			}
 		        
 		}
 		 stack.sawOpcode(this,seen);
@@ -361,9 +388,12 @@ public class SerializableIdiom extends BytecodeScanningDetector
          public void visit(Field obj) {
 		int flags = obj.getAccessFlags();
 
-		if (obj.isTransient())
+		if (obj.isTransient()) {
 			seenTransientField = true;
-		if (getClassName().indexOf("ObjectStreamClass") == -1
+			transientFields.put(obj.getName(), XFactory.createXField(this));
+			transientFieldsUpdates.put(obj.getName(), 0);
+		}
+		else if (getClassName().indexOf("ObjectStreamClass") == -1
 		        && isSerializable
 		        && !isExternalizable
 		        && getFieldSig().indexOf("L") >= 0 && !obj.isTransient() && !obj.isStatic()) {
