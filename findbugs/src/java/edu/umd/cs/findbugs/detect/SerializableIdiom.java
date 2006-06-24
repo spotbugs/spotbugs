@@ -230,7 +230,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			System.out.println("  isAbstract: " + isAbstract);
 			System.out.println("  superClassImplementsSerializable: " + superClassImplementsSerializable);
 		}
-		if (isSerializable && !sawReadObject && seenTransientField) {
+		if (isSerializable && !sawReadObject && !sawReadResolve && seenTransientField) {
 			for(Map.Entry<String,Integer> e : transientFieldsUpdates.entrySet()) {
 
 					XField fieldX = transientFields.get(e.getKey());
