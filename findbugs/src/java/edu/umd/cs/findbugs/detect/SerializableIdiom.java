@@ -231,24 +231,28 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		}
 		if (isSerializable && !sawReadObject && seenTransientField) {
 			for(Map.Entry<String,Integer> e : transientFieldsUpdates.entrySet()) {
-				if (true) {
+
 					XField fieldX = transientFields.get(e.getKey());
 					int priority = NORMAL_PRIORITY;
-					if (e.getValue() < 3) priority++;
+					if (transientFieldsSetInConstructor.contains(e.getKey()))
+						priority--;
+					else {
+						if (isGUIClass) priority++;
+						if (e.getValue() < 3) 
+							priority++;
+					}
 					try {
 						double isSerializable = Analyze.isDeepSerializable(fieldX.getSignature());
 						if (isSerializable < 0.6) priority++;
 					} catch (ClassNotFoundException e1) {
 						e1.printStackTrace();
 					}
-					if (transientFieldsSetInConstructor.contains(e.getKey()))
-						priority--;
-					else if (isGUIClass) priority++;
+					
 					bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_NOT_RESTORED",
 					        priority )
 					        .addClass(getThisClass())
 					        .addField(fieldX));
-				}
+				
 			}
 			
 		}
