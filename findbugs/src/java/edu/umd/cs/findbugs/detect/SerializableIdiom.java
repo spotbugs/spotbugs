@@ -231,10 +231,10 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		}
 		if (isSerializable && !sawReadObject && seenTransientField) {
 			for(Map.Entry<String,Integer> e : transientFieldsUpdates.entrySet()) {
-				if (e.getValue() > 2) {
+				if (true) {
 					XField fieldX = transientFields.get(e.getKey());
 					int priority = NORMAL_PRIORITY;
-
+					if (e.getValue() < 3) priority++;
 					try {
 						double isSerializable = Analyze.isDeepSerializable(fieldX.getSignature());
 						if (isSerializable < 0.6) priority++;
@@ -243,6 +243,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 					}
 					if (transientFieldsSetInConstructor.contains(e.getKey()))
 						priority--;
+					else if (isGUIClass) priority++;
 					bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_NOT_RESTORED",
 					        priority )
 					        .addClass(getThisClass())
