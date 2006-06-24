@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -378,13 +379,17 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		if (seen == PUTFIELD) {
 			String nameOfClass = getClassConstantOperand();
 			if ( getClassName().equals(nameOfClass))  {
+				Item first = stack.getStackItem(0);
+				boolean isPutOfDefaultValue = first.isNull() || first.getConstant() != null
+				&& first.getConstant().equals(0);
+				if (!isPutOfDefaultValue) {
 			String nameOfField = getNameConstantOperand();
 			if (transientFieldsUpdates.containsKey(nameOfField) ) {
 				if (getMethodName().equals("<init>")) transientFieldsSetInConstructor.add(nameOfField);
 				else transientFieldsUpdates.put(nameOfField, transientFieldsUpdates.get(nameOfField)+1);
 			} else if (fieldsThatMightBeAProblem.containsKey(nameOfField)) {
 			try {
-			OpcodeStack.Item first = stack.getStackItem(0);
+			
 					JavaClass classStored = first.getJavaClass();
 					double isSerializable = Analyze
 							.isDeepSerializable(classStored);
@@ -412,6 +417,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 				} catch (Exception e) {
 					// ignore it
 				}
+			}
 			}
 			}
 		        
