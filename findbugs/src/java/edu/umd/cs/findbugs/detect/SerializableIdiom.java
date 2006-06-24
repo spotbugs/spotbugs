@@ -215,7 +215,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		foundSynchronizedMethods = false;
 		writeObjectIsSynchronized = false;
 
-		sawReadExternal = sawWriteExternal = sawReadObject = sawWriteObject = false;
+		sawReadExternal = sawWriteExternal = sawReadObject = sawReadResolve = sawWriteObject = false;
 	}
 
 	@Override
