@@ -245,7 +245,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 						double isSerializable = Analyze.isDeepSerializable(fieldX.getSignature());
 						if (isSerializable < 0.6) priority++;
 					} catch (ClassNotFoundException e1) {
-						e1.printStackTrace();
+						// ignore it
 					}
 					
 					bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_NOT_RESTORED",
