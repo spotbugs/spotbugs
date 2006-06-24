@@ -62,7 +62,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 		try {
 		parameters = stack.resetForMethodEntry(this);
 		} catch (Throwable e) {
-			throw new RuntimeException("error in " + getFullyQualifiedMethodName(), e);
+			throw new RuntimeException("error in " + getFullyQualifiedMethodName() + " " + e.getMessage(), e);
 		}
 		if (DEBUG) {
 			System.out.println();

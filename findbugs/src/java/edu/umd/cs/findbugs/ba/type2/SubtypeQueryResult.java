@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.type2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -88,7 +89,7 @@ public class SubtypeQueryResult {
 		// if the query is negative (meaning that parts of the
 		// class hierarchy were not explored).
 		if (missingClassList.length > 0 && !isSupertype)
-			throw new ClassNotFoundException("Class not found: " + missingClassList);
+			throw new ClassNotFoundException("Class not found: " + Arrays.toString(missingClassList));
 
 		return isSupertype;
 	}
@@ -107,7 +108,7 @@ public class SubtypeQueryResult {
 		// Throw ClassNotFoundException if we can't answer the
 		// query authoritatively
 		if (missingClassList.length > 0)
-			throw new ClassNotFoundException("Class not found: " + missingClassList);
+			throw new ClassNotFoundException("Class not found: " + Arrays.toString(missingClassList));
 
 		return new HashSet<ObjectType>(supertypeListInBFSOrder);
 	}
