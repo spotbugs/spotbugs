@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -47,9 +48,27 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
 			if (Repository.instanceOf(obj, "java.util.Comparator")
 					&& !Repository.instanceOf(obj, "java.io.Serializable")) {
 				int priority = NORMAL_PRIORITY;
+				if (obj.isInterface() || obj.isAbstract()) {
+					priority = LOW_PRIORITY;
+				} else {
+				double easilySerializable = 1.0;
+				for(Field f : obj.getFields()) {
+					try {
+					String signature = f.getSignature();
+					char firstChar = signature.charAt(0);
+					if (firstChar == 'L' || firstChar == '[')
+						easilySerializable *= Analyze.isDeepSerializable(signature);
+					} catch (ClassNotFoundException e) {
+						easilySerializable = 0.0;
+						break;
+					}
+				}
+				
+				if (easilySerializable < 0.9) priority = LOW_PRIORITY;
 				int lastDollar = getClassName().lastIndexOf('$');
 				if (lastDollar > 0 && Character.isDigit(getClassName().charAt(lastDollar+1)))
 					priority = LOW_PRIORITY;
+				}
 				bugReporter
 						.reportBug(new BugInstance(this,
 								"SE_COMPARATOR_SHOULD_BE_SERIALIZABLE",
