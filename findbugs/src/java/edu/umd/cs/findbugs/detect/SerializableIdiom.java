@@ -380,49 +380,55 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			String nameOfClass = getClassConstantOperand();
 			if ( getClassName().equals(nameOfClass))  {
 				Item first = stack.getStackItem(0);
-				boolean isPutOfDefaultValue = first.isNull() || first.getConstant() != null
-				&& first.getConstant().equals(0);
-				if (!isPutOfDefaultValue) {
-			String nameOfField = getNameConstantOperand();
-			if (transientFieldsUpdates.containsKey(nameOfField) ) {
-				if (getMethodName().equals("<init>")) transientFieldsSetInConstructor.add(nameOfField);
-				else transientFieldsUpdates.put(nameOfField, transientFieldsUpdates.get(nameOfField)+1);
-			} else if (fieldsThatMightBeAProblem.containsKey(nameOfField)) {
-			try {
-			
-					JavaClass classStored = first.getJavaClass();
-					double isSerializable = Analyze
-							.isDeepSerializable(classStored);
-					if (isSerializable <= 0.2) {
-						XField f = fieldsThatMightBeAProblem.get(nameOfField);
+				boolean isPutOfDefaultValue = first.isNull() || first.isInitialParameter();
+				if (!isPutOfDefaultValue && first.getConstant() != null) {
+					Object constant = first.getConstant();
+					if (constant instanceof Number && ((Number)constant).intValue() == 0 
+							|| constant.equals(Boolean.FALSE))
+						isPutOfDefaultValue = true;
+				}
 
-						String sig = f.getSignature();
-						// System.out.println("Field signature: " + sig);
-						// System.out.println("Class stored: " +
-						// classStored.getClassName());
-						String genSig = "L"
-								+ classStored.getClassName().replace('.', '/')
-								+ ";";
-						if (!sig.equals(genSig)) {
-							double bias = 0.0;
-							if (!getMethodName().equals("<init>")) bias = 1.0;
-							int priority = computePriority(isSerializable, bias);
-							
-							fieldWarningList.add(new BugInstance(this,
-									"SE_BAD_FIELD_STORE", priority).addClass(
-									getThisClass().getClassName()).addField(f)
-									.addClass(classStored).addSourceLine(this));
+				if (!isPutOfDefaultValue) {
+					String nameOfField = getNameConstantOperand();
+					if (transientFieldsUpdates.containsKey(nameOfField) ) {
+						if (getMethodName().equals("<init>")) transientFieldsSetInConstructor.add(nameOfField);
+						else transientFieldsUpdates.put(nameOfField, transientFieldsUpdates.get(nameOfField)+1);
+					} else if (fieldsThatMightBeAProblem.containsKey(nameOfField)) {
+						try {
+
+							JavaClass classStored = first.getJavaClass();
+							double isSerializable = Analyze
+							.isDeepSerializable(classStored);
+							if (isSerializable <= 0.2) {
+								XField f = fieldsThatMightBeAProblem.get(nameOfField);
+
+								String sig = f.getSignature();
+								// System.out.println("Field signature: " + sig);
+								// System.out.println("Class stored: " +
+								// classStored.getClassName());
+								String genSig = "L"
+									+ classStored.getClassName().replace('.', '/')
+									+ ";";
+								if (!sig.equals(genSig)) {
+									double bias = 0.0;
+									if (!getMethodName().equals("<init>")) bias = 1.0;
+									int priority = computePriority(isSerializable, bias);
+
+									fieldWarningList.add(new BugInstance(this,
+											"SE_BAD_FIELD_STORE", priority).addClass(
+													getThisClass().getClassName()).addField(f)
+													.addClass(classStored).addSourceLine(this));
+								}
+							}
+						} catch (Exception e) {
+							// ignore it
 						}
 					}
-				} catch (Exception e) {
-					// ignore it
 				}
 			}
-			}
-			}
-		        
+
 		}
-		 stack.sawOpcode(this,seen);
+		stack.sawOpcode(this,seen);
 	}
 	private OpcodeStack stack = new OpcodeStack();
 	
