@@ -1138,6 +1138,7 @@ public class OpcodeStack implements Constants2
 	 		//If an error occurs, we clear the stack and locals. one of two things will occur. 
 	 		//Either the client will expect more stack items than really exist, and so they're condition check will fail, 
 	 		//or the stack will resync with the code. But hopefully not false positives
+	 		// TODO: log this
 	 		if (DEBUG) 
 	 			e.printStackTrace();
 	 		clear();
@@ -1172,11 +1173,11 @@ public class OpcodeStack implements Constants2
  			} else if ("toString".equals(methodName)) {
  				Item i = getStackItem(0);
  				appenderValue = (String)i.getConstant();
- 			} else if ("append".equals(methodName)) {
+ 			} else if ("append".equals(methodName) && signature.indexOf("II)") == -1) {
  				sbItem = getStackItem(1);
  				Item i = getStackItem(0);
- 				String sbVal = (String)sbItem.getConstant();
- 				Object sVal = (Object)i.getConstant();
+ 				Object sbVal = sbItem.getConstant();
+ 				Object sVal = i.getConstant();
  				if ((sbVal != null) && (sVal != null)) {
  					appenderValue = sbVal + sVal.toString();
  				} else if (sbItem.registerNumber >= 0) {
