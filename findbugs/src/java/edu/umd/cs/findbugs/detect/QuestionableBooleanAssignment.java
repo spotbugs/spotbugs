@@ -30,10 +30,12 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 	public static final int SEEN_DUP = 2;
 	public static final int SEEN_ISTORE = 3;
 	public static final int SEEN_GOTO = 4;
+	public static final int SEEN_IF = 5;
 	
 	private BugReporter bugReporter;
 	private int state;
 	
+	private BugInstance bug;
 	public QuestionableBooleanAssignment(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
@@ -44,6 +46,7 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
          public void visitCode(Code obj) {
 		state = SEEN_NOTHING;
 		super.visitCode(obj);
+		bug = null;
 	}
 	
 	@Override
@@ -71,16 +74,28 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 					state = SEEN_NOTHING;
 			break;
 			
-			case SEEN_ISTORE:
+			case SEEN_ISTORE: 
 				if (seen == IFEQ || seen == IFNE)
 				{
-					bugReporter.reportBug( new BugInstance( this, "QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT", HIGH_PRIORITY)
+					bug = new BugInstance( this, "QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT", HIGH_PRIORITY)
 						.addClassAndMethod(this)
-						.addSourceLine(this));
+						.addSourceLine(this);
+					state = SEEN_IF;
 				}
-				state = SEEN_NOTHING;
+				else state = SEEN_NOTHING;
 			break;
+			
 
+			case SEEN_IF:
+				state = SEEN_NOTHING;
+				if (seen == NEW) {
+					String cName = getClassConstantOperand();
+					if (cName.equals("java/lang/AssertionError")) break;
+				}
+				bugReporter.reportBug(bug);
+				
+					
+				break;
 			case SEEN_GOTO:
 				state = SEEN_NOTHING;
 				break;
