@@ -1,0 +1,87 @@
+Visiting and caching classes and analyses
+
+Goal: implement a mechanism for visiting classes (and caching
+classfile representations and analyses) that is not tightly coupled
+to any particular bytecode framework.
+
+  *** Avoid duplicating work if possible.
+  
+  *** "Multicast" visitors?
+
+Sketch of algorithm
+
+1. user provides list of codebases to analyze, along with
+   the aux classpath and source path
+   
+2. scan to identify classes within the codebases
+
+   Need to scan enough information to build global type repository:
+   i.e., identify supertype/subtype relationships.
+
+3. compute execution plan
+
+4. run execution plan
+
+   *** detectors (really, visitors) are invoked with the
+       _unique descriptor_ of the class being visited.
+       (Should identify class name and code base)
+       
+   *** things a detector can do (these are not mutually exclusive: any combination
+       is possible):
+   
+       1. Register as wanting to inspect the class using a DismantleBytecode.
+          Initially, we can create one DismantleBytecode per detector.
+          Later we can group detectors wanting to dismantle bytecode that
+          are contiguous in the execution plan in order to "multicast"
+          the classfile visitation/dismantling.
+          
+          [Maybe we should eliminate the distinction between BetterVisitor/
+          PreorderVisitor/DismantleBytecode, and just have a single implementation
+          that dismantles bytecode.  Detectors that don't care about bytecode
+          can simply have a no-op sawOpcode(), etc.]
+          
+          Note that detectors do not extend DismantleBytecode.  Instead
+          they implement an interface (describing the visitation methods)
+          and register themselves with a DismantleBytecode object.
+          (Internally, the DismantleBytecode object has a list of visitors (detectors)
+          that are called back on each event.)
+          
+       2. Request a tree-based representation of the class.  I guess
+          we will have to develop our own framework-independent
+          representation.
+       
+       3. Request analyses of the class or methods in the class.
+          These are cached to avoid computing them redundantly.
+
+Classes and infrastructure needed:
+
+CodeBase (a jar file, nested jar file, directory, URL, etc.)
+ClassPath (a list of CodeBases)
+ClassDescriptor (uniquely identify a class in a CodeBase)
+MethodDescriptor (uniquely identify a method in a class)
+FieldDescriptor (uniquely identify a field in a class)
+TypeDescriptor (a type)
+TypeRepository (global type repository)
+
+
+IClassVisitor (interface defining vistation methods)
+IDismantleBytecode (interface allowing an IClassVisitor to register
+  itself as wanting to dismantle the class that the
+  IDismantleBytecode object represents)
+  *** perhaps we should call this something different to distinguish
+      it from the previous inheritance-based DismantleBytecode class
+  
+BetterVisitor
+PreorderVisitor
+DismantleBytecode
+   --- These are all abstract implementations of IClassVisitor.
+       They can be subclassed by detectors to ease the transition
+       away from the current (BCEL-based) visitor framework.
+       
+   --- better idea: one class called AbstractClassVisitor that is
+       a no-op implementation of IClassVisitor.  All
+       visitor-based detectors change to inherit from AbstractClassVisitor
+       (or possibly a subclass that automates some of the work
+       of connecting to the IDismantleBytecode object).
+
+ASMDismantleBytecode (dismantle bytecode using the ASM framework)
