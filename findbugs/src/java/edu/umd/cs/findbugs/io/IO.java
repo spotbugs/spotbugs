@@ -118,6 +118,30 @@ public class IO {
 		}
 		return total;
 	}
+	
+	/**
+	 * Close given InputStream, ignoring any resulting exception.
+	 * 
+	 * @param inputStream the InputStream to close
+	 */
+	public static void close(InputStream inputStream) {
+		try {
+			inputStream.close();
+		} catch (IOException e) {
+			// Ignore
+		}
+	}
+	
+	/**
+	 * Close given OutputStream, ignoring any resulting exception.
+	 * 
+	 * @param outputStream the OutputStream to close
+	 */
+	public static void close(OutputStream outputStream) {
+		try {
+			outputStream.close();
+		} catch (IOException e) {
+			// Ignore
+		}
+	}
 }
-
-
