@@ -60,6 +60,8 @@ Notes:
 - We should standardize on VM (slashed) type descriptors in all places
   where a JVM type is being referred to.  Dotted classnames should
   go away except when displaying such types to the user.
+  
+  *** This is how ASM represents types -> efficient
 
   *** We should probably develop a richer type abstraction eventually
       for the dataflow-based detectors, etc.
