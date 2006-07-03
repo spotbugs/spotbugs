@@ -207,17 +207,18 @@ public class OpcodeStack implements Constants2
 				m.registerNumber = i1.registerNumber;
 			if (i1.specialKind == i2.specialKind)
 				m.specialKind = i1.specialKind;
+			if (DEBUG) System.out.println("Merge " + i1 + " and " + i2 + " gives " + m);
 			return m;
 		}
-		public Item(String s, int constValue) {
-			this(s, (Object)(Integer)constValue);
+		public Item(String signature, int constValue) {
+			this(signature, (Object)(Integer)constValue);
  		}
 
- 		public Item(String s) {
- 			this(s, UNKNOWN);
+ 		public Item(String signature) {
+ 			this(signature, UNKNOWN);
  		}
- 		public Item(String s, FieldAnnotation f, int reg) {
-			signature = s;
+ 		public Item(String signature, FieldAnnotation f, int reg) {
+			this.signature = signature;
 			field = f;
 			registerNumber = reg;
  		}
@@ -243,22 +244,22 @@ public class OpcodeStack implements Constants2
 			this.isInitialParameter = it.isInitialParameter;
 			this.specialKind = it.specialKind;
  		}
- 		public Item(String s, FieldAnnotation f) {
-			this(s, f, -1);
+ 		public Item(String signature, FieldAnnotation f) {
+			this(signature, f, -1);
  		}
  		
- 		public Item(String s, Object v) {
- 			signature = s;
- 			constValue = v;
- 			if (v instanceof Integer) {
- 				int value = (Integer) v;
+ 		public Item(String signature, Object constantValue) {
+ 			this.signature = signature;
+ 			constValue = constantValue;
+ 			if (constantValue instanceof Integer) {
+ 				int value = (Integer) constantValue;
  				if (value != 0 && (value & 0xff) == 0)
  					specialKind = LOW_8_BITS_CLEAR;
  				if (value == 0) couldBeZero = true;
  
  			}
- 			else if (v instanceof Long) {
- 				long value = (Long) v;
+ 			else if (constantValue instanceof Long) {
+ 				long value = (Long) constantValue;
  				if (value != 0 && (value & 0xff) == 0)
  					specialKind = LOW_8_BITS_CLEAR;
  				if (value == 0) couldBeZero = true;
@@ -393,7 +394,7 @@ public class OpcodeStack implements Constants2
  		if (jumpEntry != null) {
 			if (DEBUG) {
  			System.out.println("XXXXXXX " + reachOnlyByBranch);
- 			System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + jumpEntry);
+ 			System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + Integer.toString(System.identityHashCode(jumpEntry),16) + " " + jumpEntry);
  			System.out.println(" current lvValues " + lvValues);
 			}
  			
@@ -507,11 +508,7 @@ public class OpcodeStack implements Constants2
 					pop();
 					push(new Item("I"));
 				break;
-	 			
-	 			case ARETURN:
-	 			case DRETURN:
-	 			case FRETURN:
-	 			case IFEQ:
+				case IFEQ:
 	 			case IFNE:
 	 			case IFLT:
 	 			case IFLE:
@@ -519,10 +516,29 @@ public class OpcodeStack implements Constants2
 	 			case IFGE:
 	 			case IFNONNULL:
 	 			case IFNULL:
-	 			case IRETURN:
+				seenTransferOfControl = true;
+ 				pop();
+ 				addJumpValue(dbc.getBranchTarget());
+				
+ 			break;
 	 			case LOOKUPSWITCH:
-	 			case LRETURN:
+	 		 		
 	 			case TABLESWITCH:
+					seenTransferOfControl = true;
+	 				pop();
+	 				addJumpValue(dbc.getBranchTarget());
+	 				int pc = dbc.getBranchOffset() - dbc.getBranchTarget();
+	 				for(int offset : dbc.getSwitchOffsets())
+	 					addJumpValue(offset+pc);
+	 			
+	 			break;
+	 			case ARETURN:
+	 			case DRETURN:
+	 			case FRETURN:
+	 		
+	 			case IRETURN:
+	 			case LRETURN:
+	 			
 					seenTransferOfControl = true;
 	 				pop();
 	 			break;
@@ -541,10 +557,17 @@ public class OpcodeStack implements Constants2
 	 			case IF_ICMPLE:
 	 			case IF_ICMPGT:
 	 			case IF_ICMPGE:
+	 				
 					seenTransferOfControl = true;
 	 				pop(2);
+	 				addJumpValue(dbc.getBranchTarget());
 					break;
+					
+					
 	 			case POP2:
+	 				it = pop();
+	 				if (it.getSize() == 1) pop();
+	 				break;
 	 			case PUTFIELD:
 	 				pop(2);
 	 			break;
@@ -664,6 +687,8 @@ public class OpcodeStack implements Constants2
 						pop();
 						jumpTarget = dbc.getBranchTarget();
 						}
+					addJumpValue(dbc.getBranchTarget());
+					
 	 			break;
 	 				
 	 			
@@ -1147,7 +1172,7 @@ public class OpcodeStack implements Constants2
 	 		if (exceptionHandlers.get(dbc.getNextPC()))
 	 			push(new Item());
 	 		if (DEBUG) {
-	 			System.out.println(dbc.getNextPC() + " : " + OPCODE_NAMES[seen] + "  stack depth: " + getStackDepth());
+	 			System.out.println(dbc.getNextPC() + "pc : " + OPCODE_NAMES[seen] + "  stack depth: " + getStackDepth());
 	 			System.out.println(this);
 	 		}
 	 	}
@@ -1222,21 +1247,21 @@ public class OpcodeStack implements Constants2
 		int fromSize = mergeFrom.size();
 		if (errorIfSizesDoNotMatch && intoSize != fromSize) {
 			if (DEBUG) {
-				System.out.println("Bad merging stacks");
-				System.out.println("current stack: " + mergeInto);
-				System.out.println("jump stack: " + mergeFrom);
+				System.out.println("Bad merging items");
+				System.out.println("current items: " + mergeInto);
+				System.out.println("jump items: " + mergeFrom);
 			}
 		} else {
 			if (DEBUG) {
-				System.out.println("Merging stacks");
-				System.out.println("current stack: " + mergeInto);
-				System.out.println("jump stack: " + mergeFrom);
+				System.out.println("Merging items");
+				System.out.println("current items: " + mergeInto);
+				System.out.println("jump items: " + mergeFrom);
 			}
 
 			for (int i = 0; i < Math.min(intoSize, fromSize); i++)
 				mergeInto.set(i, Item.merge(mergeInto.get(i), mergeFrom.get(i)));
 			if (DEBUG) {
-				System.out.println("merged stack: " + mergeInto);
+				System.out.println("merged items: " + mergeInto);
 			}
 		}
 	}
@@ -1249,15 +1274,31 @@ public class OpcodeStack implements Constants2
  	BitSet exceptionHandlers = new BitSet();
  	private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
  	private void addJumpValue(int target) {
+ 		if (DEBUG)
+ 			System.out.println("Set jump entry at " + methodName + ":" + target + "pc to " + lvValues);
  		List<Item> atTarget = jumpEntries.get(target);
  		if (atTarget == null) {
+ 			if (DEBUG)
+ 	 			System.out.println("Was null");
+ 	 		
  			jumpEntries.put(target, new ArrayList<Item>(lvValues));
+ 			if (false) {
+ 			System.out.println("jump entires are now...");
+ 			for (Integer pc : jumpEntries.keySet()) {
+				List<Item> list = jumpEntries.get(pc);
+				System.out.println(pc + "pc -> " + Integer.toString(System.identityHashCode(list),16) + " " + list);
+ 			}}
  			return;
  		}
  		mergeLists(atTarget, lvValues, false);
+			if (DEBUG)
+ 	 			System.out.println("merge target for " + methodName + ":" + target + "pc is " + atTarget);
  	}
+ 	private String methodName;
  	public int resetForMethodEntry(final DismantleBytecode v) {
+ 		methodName = v.getMethodName();
 		jumpEntries.clear();
+		
 		reachOnlyByBranch = false;
  		int result= resetForMethodEntry0(v);
  		Code code = v.getMethod().getCode();
@@ -1265,26 +1306,35 @@ public class OpcodeStack implements Constants2
 	
 		if (useIterativeAnalysis) {
 			// FIXME: Be clever
-
+			if (DEBUG) 
+				System.out.println(" --- Iterative analysis");
 			DismantleBytecode branchAnalysis = new DismantleBytecode() {
 				@Override
 				public void sawOpcode(int seen) {
 					OpcodeStack.this.sawOpcode(this, seen);
 				}
 
-				@Override
-				public void sawBranchTo(int pc) {
-					addJumpValue(pc);
-				}
+				// perhaps we don't need this
+//				@Override
+//				public void sawBranchTo(int pc) {
+//					addJumpValue(pc);
+//				}
 			};
 			branchAnalysis.setupVisitorForClass(v.getThisClass());
 			branchAnalysis.doVisitMethod(v.getMethod());
+			if (false && !jumpEntries.isEmpty()) 
+				branchAnalysis.doVisitMethod(v.getMethod());
 			if (DEBUG && !jumpEntries.isEmpty()) {
 				System.out.println("Found dataflow for jumps in " + v.getMethodName());
-				for (Integer pc : jumpEntries.keySet())
-					System.out.println(pc + " -> " + jumpEntries.get(pc));
+				for (Integer pc : jumpEntries.keySet()) {
+					List<Item> list = jumpEntries.get(pc);
+					System.out.println(pc + " -> " + Integer.toString(System.identityHashCode(list),16) + " " + list);
+				}
 			}
 			resetForMethodEntry0(v);
+			if (DEBUG) 
+				System.out.println(" --- End of Iterative analysis");
+			
 		}
  	
  		return result;
