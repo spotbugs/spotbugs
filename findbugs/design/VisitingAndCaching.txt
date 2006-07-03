@@ -1,5 +1,8 @@
 Visiting and caching classes and analyses
 
+Document history:
+DHH 7/3/2006: Created
+
 Goal: implement a mechanism for visiting classes (and caching
 classfile representations and analyses) that is not tightly coupled
 to any particular bytecode framework.
