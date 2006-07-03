@@ -1,0 +1,65 @@
+Decoupling FindBugs from BCEL
+
+Document history:
+DHH 7/3/2006: Created
+
+Goals:
+
+- eliminate tight coupling between FindBugs and BCEL
+
+- Allow other bytecode frameworks (such as ASM and maybe Soot) to
+  be used by detectors
+
+   *** Detectors could even do their own scanning on the raw classfile
+       data, without any bytecode framework
+       (on either stream or byte array)
+
+- Allow visitor-based detectors to use information from
+  dataflow analysis framework.
+
+
+Issues:
+
+- We are reliant on BCEL's Constants and Visitor classes
+
+- The bytecode analysis (ba) package makes heavy use of
+  BCEL tree-based reprentation (generic package) and also
+  the BCEL Repository and type classes (both of which have
+  significant shortcomings).  The detectors which use
+  the bytecode analysis package are also tightly coupled
+  to these classes.
+
+
+Strategy:
+
+- Change the basic visitation strategy to remove dependence
+  on the BCEL Repository and JavaClass classes.
+
+  *** We should develop our own CodeBase and Repository abstractions
+
+- The visitor classes and detectors will probably be the easiest
+  to convert.  We can develop our own Visitor/DismantleBytecode
+  interfaces, which can be concretely implemented using ASM,
+  (or any other bytecode framework).  Obviously the detectors
+  should not be aware which bytecode framework is being used.
+
+  We will probably need to add our own equivalent of the
+  BCEL Constants interface.   We will need some kind of
+  general classfile representation package (to hide framework-specific
+  details).
+
+- After visitor-based detectors are working using new visitor framework,
+  start work on developing new classes/APIs for more sophisticated
+  (e.g., dataflow) analysis.  We should try to separate WHAT information
+  is computed (types, values, nullness, etc.) from HOW the
+  information is computed.  Clients (Detectors) should only be coupled
+  to the classes representing WHAT is computed.
+
+Notes:
+
+- We should standardize on VM (slashed) type descriptors in all places
+  where a JVM type is being referred to.  Dotted classnames should
+  go away except when displaying such types to the user.
+
+  *** We should probably develop a richer type abstraction eventually
+      for the dataflow-based detectors, etc.
