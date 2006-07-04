@@ -41,18 +41,13 @@ public interface IClassPath {
 	 */
 	public void addCodeBase(ICodeBase codeBase);
 
-//	/**
-//	 * Open an input stream to read from named resource.
-//	 * The code bases that are part of the classpath are tried
-//	 * in order.
-//	 * 
-//	 * @param resourceName the name of the resource to open
-//	 * @return an InputStream reading from the code base
-//	 * @throws ResourceNotFoundException if the named resource cannot be found
-//	 * @throws IOException if the named resource is found but cannot be opened
-//	 */
-//	public InputStream openResource(String resourceName) throws ResourceNotFoundException, IOException;
-	
+	/**
+	 * Lookup a resource by name.
+	 * 
+	 * @param resourceName name of the resource to look up
+	 * @return ICodeBaseEntry representing the resource
+	 * @throws ResourceNotFoundException if the resource is not found
+	 */
 	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException;
 	
 	/**

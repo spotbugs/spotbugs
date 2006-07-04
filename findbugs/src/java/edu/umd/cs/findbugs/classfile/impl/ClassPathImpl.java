@@ -53,27 +53,18 @@ public class ClassPathImpl implements IClassPath {
 		codeBaseList.add(codeBase);
 	}
 
-//	/* (non-Javadoc)
-//	 * @see edu.umd.cs.findbugs.classfile.IClassPath#openResource(java.lang.String)
-//	 */
-//	public InputStream openResource(String resourceName) throws ResourceNotFoundException, IOException {
-//		for (ICodeBase codeBase : codeBaseList) {
-//			try {
-//				return codeBase.openResource(resourceName);
-//			} catch (ResourceNotFoundException e) {
-//				// do nothing, continue with next code base, if any
-//			}
-//		}
-//		
-//		throw new ResourceNotFoundException("Resource not found on class path: " + resourceName);
-//	}
-
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IClassPath#lookupResource(java.lang.String)
 	 */
 	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
+		for (ICodeBase codeBase : codeBaseList) {
+			try {
+				return codeBase.lookupResource(resourceName);
+			} catch (ResourceNotFoundException e) {
+				// do nothing, continue with next code base, if any
+			}
+		}
+		throw new ResourceNotFoundException(resourceName);
 	}
 	
 	/* (non-Javadoc)
