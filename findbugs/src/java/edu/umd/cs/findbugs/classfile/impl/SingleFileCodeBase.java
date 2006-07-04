@@ -109,7 +109,6 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
 	 */
 	public void close() {
-		// TODO Auto-generated method stub
-		
+		// Nothing to do
 	}
 }
