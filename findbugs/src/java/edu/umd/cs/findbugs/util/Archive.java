@@ -41,4 +41,20 @@ public class Archive {
 		ARCHIVE_EXTENSION_SET.add(".sar");
 	}
 
+	/**
+	 * Determine whether or not the given filename appears to
+	 * identify a zip/jar archive. 
+	 * 
+	 * @param fileName the filename
+	 * @return true if the filename appears to identify an archive,
+	 *          false otherwise
+	 */
+	public static boolean isArchiveFileName(String fileName) {
+		int lastDot = fileName.lastIndexOf('.');
+		if (lastDot < 0) {
+			return false;
+		}
+		String extension = fileName.substring(lastDot + 1);
+		return ARCHIVE_EXTENSION_SET.contains(extension);
+	}
 }
