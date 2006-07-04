@@ -19,11 +19,17 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
+import edu.umd.cs.findbugs.RecursiveFileSearch;
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
@@ -35,27 +41,75 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * @author David Hovemeyer
  */
 public class DirectoryCodeBase extends AbstractScannableCodeBase implements IScannableCodeBase {
+	private class DirectoryCodeBaseIterator implements ICodeBaseIterator {
+		Iterator<String> fileNameIterator = rfs.fileNameIterator();
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
+		 */
+		public boolean hasNext() throws InterruptedException {
+			return fileNameIterator.hasNext();
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
+		 */
+		public ICodeBaseEntry next() throws InterruptedException {
+			final String fileName = fileNameIterator.next();
+			
+			return new ICodeBaseEntry() {
+				/* (non-Javadoc)
+				 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
+				 */
+				public String getResourceName() {
+					return fileName;
+				}
+				
+				/* (non-Javadoc)
+				 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
+				 */
+				public InputStream openResource() throws IOException {
+					return openFile(fileName);
+				}
+			};
+		}
+	}
+
 	private File directory;
+	private RecursiveFileSearch rfs;
+	private boolean searchPerformed;
 	
 	public DirectoryCodeBase(File directory) {
 		if (!directory.isDirectory()) throw new IllegalArgumentException();
 		this.directory = directory;
+		this.rfs = new RecursiveFileSearch(directory.getPath(), new FileFilter(){
+			/* (non-Javadoc)
+			 * @see java.io.FileFilter#accept(java.io.File)
+			 */
+			public boolean accept(File pathname) {
+				return true;
+			}
+		});
+		this.searchPerformed = false;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
 	 */
-	public ICodeBaseIterator iterator() {
-		// TODO Auto-generated method stub
-		return null;
+	public ICodeBaseIterator iterator() throws InterruptedException {
+		if (!searchPerformed) {
+			rfs.search();
+			searchPerformed = true;
+		}
+		
+		return new DirectoryCodeBaseIterator();
 	}
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
 	 */
 	public void close() {
-		// TODO Auto-generated method stub
-
+		// Nothing to do
 	}
 
 	/* (non-Javadoc)
@@ -63,8 +117,15 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 	 */
 	public InputStream openResource(String resourceName)
 			throws ResourceNotFoundException, IOException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return openFile(resourceName);
+		} catch (FileNotFoundException e) {
+			throw new ResourceNotFoundException(resourceName, e);
+		}
 	}
 
+	private InputStream openFile(String resourceName) throws FileNotFoundException, IOException {
+		File path = new File(directory, resourceName);
+		return new BufferedInputStream(new FileInputStream(path));
+	}
 }
