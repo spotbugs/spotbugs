@@ -30,14 +30,32 @@ import java.io.InputStream;
  * @author David Hovemeyer
  */
 public interface IClassPath {
+//	
+//	/**
+//	 * Add an application code base to the class path.
+//	 * Application code bases take precedence over aux codebases
+//	 * when looking up a resource.
+//	 * 
+//	 * @param appCodeBase an application code base
+//	 */
+//	public void addApplicationCodeBase(IScannableCodeBase appCodeBase);
+//
+//	/**
+//	 * Add an auxiliary code base to the classpath. 
+//	 * Application code bases take precedence over aux codebases
+//	 * when looking up a resource.
+//	 * 
+//	 * @param auxCodeBase an auxiliary code base
+//	 */
+//	public void addAuxCodeBase(ICodeBase auxCodeBase);
 	
 	/**
-	 * Add a CodeBase to the class path.
-	 * The order in which code bases are added is the
-	 * order in which they will be tried when a resource is
-	 * requested.
+	 * Add a codebase.
+	 * The object will be interrogated to determine whether it is an
+	 * application codebase or an auxiliary codebase.
+	 * Application codebases must be scannable.
 	 * 
-	 * @param codeBase
+	 * @param codeBase the codebase to add
 	 */
 	public void addCodeBase(ICodeBase codeBase);
 

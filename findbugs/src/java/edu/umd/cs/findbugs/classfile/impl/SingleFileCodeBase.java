@@ -38,6 +38,22 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * @author David Hovemeyer
  */
 public class SingleFileCodeBase implements IScannableCodeBase {
+	private boolean isAppCodeBase;
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
+	 */
+	public void setApplicationCodeBase(boolean isAppCodeBase) {
+		this.isAppCodeBase = isAppCodeBase;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#isApplicationCodeBase()
+	 */
+	public boolean isApplicationCodeBase() {
+		return isAppCodeBase;
+	}
+	
 	/**
 	 * @author Dave
 	 */

@@ -28,6 +28,7 @@ import java.util.List;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
+import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
@@ -36,43 +37,58 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * @author David Hovemeyer
  */
 public class ClassPathImpl implements IClassPath {
-	private List<ICodeBase> codeBaseList;
-
-	/**
-	 * Constructor.
-	 * Creates an empty classpath.
-	 */
+	private List<IScannableCodeBase> appCodeBaseList;
+	private List<ICodeBase> auxCodeBaseList;
+	
 	public ClassPathImpl() {
-		this.codeBaseList = new LinkedList<ICodeBase>();
+		this.appCodeBaseList = new LinkedList<IScannableCodeBase>();
+		this.auxCodeBaseList = new LinkedList<ICodeBase>();
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IClassPath#addCodeBase(edu.umd.cs.findbugs.classfile.ICodeBase)
 	 */
 	public void addCodeBase(ICodeBase codeBase) {
-		codeBaseList.add(codeBase);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IClassPath#lookupResource(java.lang.String)
-	 */
-	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
-		for (ICodeBase codeBase : codeBaseList) {
-			try {
-				return codeBase.lookupResource(resourceName);
-			} catch (ResourceNotFoundException e) {
-				// do nothing, continue with next code base, if any
+		if (codeBase.isApplicationCodeBase()) {
+			if (!(codeBase instanceof IScannableCodeBase)) {
+				throw new IllegalStateException();
 			}
+			appCodeBaseList.add((IScannableCodeBase) codeBase);
+		} else {
+			auxCodeBaseList.add(codeBase);
 		}
-		throw new ResourceNotFoundException(resourceName);
 	}
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IClassPath#close()
 	 */
 	public void close() {
-		for (ICodeBase codeBase : codeBaseList) {
+		for (ICodeBase codeBase : appCodeBaseList) {
 			codeBase.close();
 		}
+		for (ICodeBase codeBase : auxCodeBaseList) {
+			codeBase.close();
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IClassPath#lookupResource(java.lang.String)
+	 */
+	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
+		for (ICodeBase codeBase : appCodeBaseList) {
+			try {
+				return codeBase.lookupResource(resourceName);
+			} catch (ResourceNotFoundException e) {
+				// ignore, continue trying other codebases
+			}
+		}
+		for (ICodeBase codeBase : auxCodeBaseList) {
+			try {
+				return codeBase.lookupResource(resourceName);
+			} catch (ResourceNotFoundException e) {
+				// ignore, continue trying other codebases
+			}
+		}
+		throw new ResourceNotFoundException(resourceName);
 	}
 }

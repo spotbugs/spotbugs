@@ -34,16 +34,6 @@ import java.util.Iterator;
 public interface ICodeBase {
 	// capabilities:
 	// open stream for named resource (resources are named by strings)
-	
-//	/**
-//	 * Open an InputStream on named resource.
-//	 * 
-//	 * @param resourceName the name of the resource to open
-//	 * @return an InputStream reading the named resource
-//	 * @throws ResourceNotFoundException if the named resource is not found
-//	 * @throws IOException if the named resource exists but cannot be opened
-//	 */
-//	public InputStream openResource(String resourceName) throws ResourceNotFoundException, IOException;
 
 	/**
 	 * Look up a resource in this code base.
@@ -53,6 +43,20 @@ public interface ICodeBase {
 	 * @throws ResourceNotFoundException if the resource cannot be found in this code base
 	 */
 	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException;
+
+	/**
+	 * Designate this code base as an application codebase.
+	 * 
+	 * @param isAppCodeBase true if this is an application codebase, false if not
+	 */
+	public void setApplicationCodeBase(boolean isAppCodeBase);
+	
+	/**
+	 * Return whether or not this codebase is an application codebase.
+	 * 
+	 * @return true if this is an application codebase, false if not
+	 */
+	public boolean isApplicationCodeBase();
 	
 	/**
 	 * This method should be called when done using the code base.

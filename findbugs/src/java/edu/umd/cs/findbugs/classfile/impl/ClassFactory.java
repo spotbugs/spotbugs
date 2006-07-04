@@ -21,12 +21,10 @@ package edu.umd.cs.findbugs.classfile.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import edu.umd.cs.findbugs.classfile.IClassPath;
-import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
+import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Factory to create codebase/classpath/classfile objects. 
@@ -60,5 +58,11 @@ public class ClassFactory {
 		} else {
 			return new ZipFileCodeBase(file);
 		}
+	}
+	
+	public IScannableCodeBase createNestedArchiveCodeBase(
+			IScannableCodeBase parentCodeBase, String resourceName)
+			throws ResourceNotFoundException, IOException {
+		return new NestedZipFileCodeBase(parentCodeBase, resourceName);
 	}
 }

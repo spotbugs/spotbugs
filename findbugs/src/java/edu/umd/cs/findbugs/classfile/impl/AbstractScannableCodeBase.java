@@ -30,13 +30,15 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Abstract base class for implementations of IScannableCodeBase.
- * Provides an implementation of the containsSourceFiles() method.
+ * Provides an implementation of the containsSourceFiles(),
+ * setApplicationCodeBase(), and isApplicationCodeBase() methods.
  * 
  * @author David Hovemeyer
  */
 public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 	private boolean checkedForSourceFiles;
 	private boolean containsSourceFiles;
+	private boolean isAppCodeBase;
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()
@@ -54,5 +56,19 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 			checkedForSourceFiles = true;
 		}
 		return containsSourceFiles;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
+	 */
+	public void setApplicationCodeBase(boolean isAppCodeBase) {
+		this.isAppCodeBase = isAppCodeBase;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#isApplicationCodeBase()
+	 */
+	public boolean isApplicationCodeBase() {
+		return isAppCodeBase;
 	}
 }
