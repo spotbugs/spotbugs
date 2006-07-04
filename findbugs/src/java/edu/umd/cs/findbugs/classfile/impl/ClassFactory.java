@@ -48,7 +48,6 @@ public class ClassFactory {
 	}
 	
 	public IScannableCodeBase createLocalCodeBase(String fileName) throws IOException {
-		// FIXME: support single files
 		// FIXME: check for URL protocol, reject non-file URLs
 		// TODO: support remote archives?
 		
@@ -56,13 +55,10 @@ public class ClassFactory {
 		
 		if (file.isDirectory()) {
 			return new DirectoryCodeBase(file);
+		} else if (fileName.endsWith(".class")) {
+			return new SingleFileCodeBase(fileName);
 		} else {
 			return new ZipFileCodeBase(file);
 		}
-	}
-	
-	public ICodeBase createRemoteCodeBase(String urlSpec) throws MalformedURLException {
-		// TODO
-		return null;
 	}
 }
