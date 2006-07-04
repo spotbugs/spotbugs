@@ -38,6 +38,7 @@ import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.util.Archive;
 
 /**
  * A work-alike class to use instead of BCEL's ClassPath class.
@@ -445,7 +446,7 @@ public class URLClassPath implements Serializable {
 	 *   false otherwise
 	 */
 	public static boolean isArchiveExtension(String fileExtension) {
-		return FindBugs.archiveExtensionSet.contains(fileExtension);
+		return Archive.ARCHIVE_EXTENSION_SET.contains(fileExtension);
 	}
 }
 

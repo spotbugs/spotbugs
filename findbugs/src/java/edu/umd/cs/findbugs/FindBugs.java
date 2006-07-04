@@ -68,6 +68,7 @@ import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
+import edu.umd.cs.findbugs.util.Archive;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**
@@ -275,7 +276,7 @@ public class FindBugs implements Constants2, ExitCodes {
 							long modTime = zipEntry.getTime();
 							if (modTime > time) time = modTime;
 							return parseClass(url.toString(), new NoCloseInputStream(zipInputStream), entryName);
-						} else if (archiveExtensionSet.contains(fileExtension)) {
+						} else if (Archive.ARCHIVE_EXTENSION_SET.contains(fileExtension)) {
 							// Add nested archive to archive work list
 							if (url.toString().indexOf("!/") < 0) {
 							ArchiveWorkListItem nestedItem =
@@ -887,18 +888,6 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * FindBugs home directory.
 	 */
 	private static String home;
-
-	/**
-	 * File extensions that indicate an archive (zip, jar, or similar).
-	 */
-	static public final Set<String> archiveExtensionSet = new HashSet<String>();
-	static {
-		archiveExtensionSet.add(".jar");
-		archiveExtensionSet.add(".zip");
-		archiveExtensionSet.add(".war");
-		archiveExtensionSet.add(".ear");
-		archiveExtensionSet.add(".sar");
-	}
 
 	/**
 	 * Known URL protocols.
