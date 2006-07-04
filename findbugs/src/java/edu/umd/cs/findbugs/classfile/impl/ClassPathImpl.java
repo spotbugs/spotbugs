@@ -27,6 +27,7 @@ import java.util.List;
 
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
@@ -52,21 +53,29 @@ public class ClassPathImpl implements IClassPath {
 		codeBaseList.add(codeBase);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IClassPath#openResource(java.lang.String)
-	 */
-	public InputStream openResource(String resourceName) throws ResourceNotFoundException, IOException {
-		for (ICodeBase codeBase : codeBaseList) {
-			try {
-				return codeBase.openResource(resourceName);
-			} catch (ResourceNotFoundException e) {
-				// do nothing, continue with next code base, if any
-			}
-		}
-		
-		throw new ResourceNotFoundException("Resource not found on class path: " + resourceName);
-	}
+//	/* (non-Javadoc)
+//	 * @see edu.umd.cs.findbugs.classfile.IClassPath#openResource(java.lang.String)
+//	 */
+//	public InputStream openResource(String resourceName) throws ResourceNotFoundException, IOException {
+//		for (ICodeBase codeBase : codeBaseList) {
+//			try {
+//				return codeBase.openResource(resourceName);
+//			} catch (ResourceNotFoundException e) {
+//				// do nothing, continue with next code base, if any
+//			}
+//		}
+//		
+//		throw new ResourceNotFoundException("Resource not found on class path: " + resourceName);
+//	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IClassPath#lookupResource(java.lang.String)
+	 */
+	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IClassPath#close()
 	 */

@@ -61,16 +61,16 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 	public ZipFileCodeBase(File file) throws IOException {
 		this.zipFile = new ZipFile(file);
 	}
-
+	
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#openResource(java.lang.String)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
-	public InputStream openResource(String resourceName) throws ResourceNotFoundException, IOException {
+	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
 		ZipEntry entry = zipFile.getEntry(resourceName);
 		if (entry == null) {
 			throw new ResourceNotFoundException(resourceName);
 		}
-		return zipFile.getInputStream(entry);
+		return new ZipCodeBaseEntry(entry);
 	}
 	
 	class ZipCodeBaseEntry implements ICodeBaseEntry {
@@ -78,6 +78,13 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 		
 		public ZipCodeBaseEntry(ZipEntry zipEntry) {
 			this.zipEntry = zipEntry;
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
+		 */
+		public int getNumBytes() {
+			return (int) zipEntry.getSize();
 		}
 		
 		/* (non-Javadoc)

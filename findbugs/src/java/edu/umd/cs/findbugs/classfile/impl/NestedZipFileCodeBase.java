@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.util.Iterator;
 
 import edu.umd.cs.findbugs.classfile.ICodeBase;
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
@@ -66,7 +67,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 			tempFile.deleteOnExit(); // just in case we crash before the codebase is closed
 			
 			// Copy nested zipfile to the temporary file
-			inputStream = parentCodeBase.openResource(resourceName);
+			inputStream = parentCodeBase.lookupResource(resourceName).openResource();
 			outputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
 			IO.copy(inputStream, outputStream);
 			outputStream.flush();
@@ -90,13 +91,12 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 	public ICodeBaseIterator iterator() {
 		return delegate.iterator();
 	}
-
+	
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#openResource(java.lang.String)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
-	public InputStream openResource(String resourceName)
-			throws ResourceNotFoundException, IOException {
-		return delegate.openResource(resourceName);
+	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
+		return delegate.lookupResource(resourceName);
 	}
 	
 	/* (non-Javadoc)

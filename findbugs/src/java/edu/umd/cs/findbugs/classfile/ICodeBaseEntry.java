@@ -23,10 +23,31 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * Object representing a resource in a code base.
+ * 
  * @author David Hovemeyer
  */
 public interface ICodeBaseEntry {
+	/**
+	 * Get the name of the resource.
+	 * 
+	 * @return the name of the resource
+	 */
 	public String getResourceName();
 	
+	/**
+	 * Get the number of bytes in the resource.
+	 * Returns &lt;0 if the number of bytes is not known.
+	 * 
+	 * @return number of bytes in the resource, or &lt;0 if not known. 
+	 */
+	public int getNumBytes();
+
+	/**
+	 * Open an input stream reading from the resource.
+	 * 
+	 * @return InputStream reading from the resource.
+	 * @throws IOException if an error occurs reading from the resource
+	 */
 	public InputStream openResource() throws IOException;
 }

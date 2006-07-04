@@ -46,5 +46,11 @@ public interface ICodeBaseIterator {
 	 */
 	public boolean hasNext() throws InterruptedException;
 	
+	/**
+	 * Get the ICodeBaseEntry representing the next resource in the code base.
+	 * 
+	 * @return the ICodeBaseEntry representing the next resource in the code base
+	 * @throws InterruptedException
+	 */
 	public ICodeBaseEntry next() throws InterruptedException;
 }

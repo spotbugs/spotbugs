@@ -35,15 +35,24 @@ public interface ICodeBase {
 	// capabilities:
 	// open stream for named resource (resources are named by strings)
 	
+//	/**
+//	 * Open an InputStream on named resource.
+//	 * 
+//	 * @param resourceName the name of the resource to open
+//	 * @return an InputStream reading the named resource
+//	 * @throws ResourceNotFoundException if the named resource is not found
+//	 * @throws IOException if the named resource exists but cannot be opened
+//	 */
+//	public InputStream openResource(String resourceName) throws ResourceNotFoundException, IOException;
+
 	/**
-	 * Open an InputStream on named resource.
+	 * Look up a resource in this code base.
 	 * 
-	 * @param resourceName the name of the resource to open
-	 * @return an InputStream reading the named resource
-	 * @throws ResourceNotFoundException if the named resource is not found
-	 * @throws IOException if the named resource exists but cannot be opened
+	 * @param resourceName name of the resource to look up
+	 * @return ICodeBaseEntry representing the resource
+	 * @throws ResourceNotFoundException if the resource cannot be found in this code base
 	 */
-	public InputStream openResource(String resourceName) throws ResourceNotFoundException, IOException;
+	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException;
 	
 	/**
 	 * This method should be called when done using the code base.

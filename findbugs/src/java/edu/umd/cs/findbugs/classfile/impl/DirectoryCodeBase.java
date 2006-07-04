@@ -41,7 +41,41 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * @author David Hovemeyer
  */
 public class DirectoryCodeBase extends AbstractScannableCodeBase implements IScannableCodeBase {
+	private final class DirectoryCodeBaseEntry implements ICodeBaseEntry {
+		private final String fileName;
+
+		private DirectoryCodeBaseEntry(String fileName) {
+			this.fileName = fileName;
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
+		 */
+		public int getNumBytes() {
+			File fullPath = getFullPathOfResource(fileName);
+			if (!fullPath.exists()) {
+				return -1;
+			}
+			return (int) fullPath.length();
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
+		 */
+		public String getResourceName() {
+			return fileName;
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
+		 */
+		public InputStream openResource() throws IOException {
+			return openFile(fileName);
+		}
+	}
+
 	private class DirectoryCodeBaseIterator implements ICodeBaseIterator {
+
 		Iterator<String> fileNameIterator = rfs.fileNameIterator();
 
 		/* (non-Javadoc)
@@ -57,21 +91,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 		public ICodeBaseEntry next() throws InterruptedException {
 			final String fileName = fileNameIterator.next();
 			
-			return new ICodeBaseEntry() {
-				/* (non-Javadoc)
-				 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
-				 */
-				public String getResourceName() {
-					return fileName;
-				}
-				
-				/* (non-Javadoc)
-				 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
-				 */
-				public InputStream openResource() throws IOException {
-					return openFile(fileName);
-				}
-			};
+			return new DirectoryCodeBaseEntry(fileName);
 		}
 	}
 
@@ -113,19 +133,28 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#openResource(java.lang.String)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
-	public InputStream openResource(String resourceName)
-			throws ResourceNotFoundException, IOException {
-		try {
-			return openFile(resourceName);
-		} catch (FileNotFoundException e) {
-			throw new ResourceNotFoundException(resourceName, e);
+	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
+		File file = getFullPathOfResource(resourceName);
+		if (!file.exists()) {
+			throw new ResourceNotFoundException(resourceName);
 		}
+		return new DirectoryCodeBaseEntry(resourceName);
+	}
+	
+	private InputStream openFile(String resourceName) throws FileNotFoundException, IOException {
+		File path = getFullPathOfResource(resourceName);
+		return new BufferedInputStream(new FileInputStream(path));
 	}
 
-	private InputStream openFile(String resourceName) throws FileNotFoundException, IOException {
-		File path = new File(directory, resourceName);
-		return new BufferedInputStream(new FileInputStream(path));
+	/**
+	 * Get the full path of given resource.
+	 * 
+	 * @param resourceName
+	 * @return
+	 */
+	private File getFullPathOfResource(String resourceName) {
+		return new File(directory, resourceName);
 	}
 }

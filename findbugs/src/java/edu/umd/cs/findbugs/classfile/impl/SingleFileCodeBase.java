@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile.impl;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -37,6 +38,36 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * @author David Hovemeyer
  */
 public class SingleFileCodeBase implements IScannableCodeBase {
+	/**
+	 * @author Dave
+	 */
+	private final class SingleFileCodeBaseEntry implements ICodeBaseEntry {
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
+		 */
+		public int getNumBytes() {
+			File file = new File(fileName);
+			if (!file.exists()) {
+				return -1;
+			}
+			return (int) file.length();
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
+		 */
+		public String getResourceName() {
+			return fileName;
+		}
+
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
+		 */
+		public InputStream openResource() throws IOException {
+			return openFile();
+		}
+	}
+
 	private String fileName;
 	
 	public SingleFileCodeBase(String fileName) {
@@ -71,34 +102,19 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 				if (done) {
 					throw new NoSuchElementException();
 				}
-				return new ICodeBaseEntry() {
-					/* (non-Javadoc)
-					 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
-					 */
-					public String getResourceName() {
-						return fileName;
-					}
-					
-					/* (non-Javadoc)
-					 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
-					 */
-					public InputStream openResource() throws IOException {
-						return openFile();
-					}
-				};
+				return new SingleFileCodeBaseEntry();
 			}
 		};
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#openResource(java.lang.String)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
-	public InputStream openResource(String resourceName) throws ResourceNotFoundException, IOException {
-		try {
-			return openFile();
-		} catch (FileNotFoundException e) {
-			throw new ResourceNotFoundException(resourceName, e);
+	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
+		if (!resourceName.equals(fileName)) {
+			throw new ResourceNotFoundException(resourceName);
 		}
+		return new SingleFileCodeBaseEntry();
 	}
 	
 	private InputStream openFile() throws IOException {
