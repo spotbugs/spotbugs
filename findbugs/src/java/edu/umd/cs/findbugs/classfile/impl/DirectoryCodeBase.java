@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
+import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
@@ -42,13 +43,13 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#resourceNameIterator()
+	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
 	 */
-	public Iterator<String> resourceNameIterator() {
+	public ICodeBaseIterator iterator() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
 	 */

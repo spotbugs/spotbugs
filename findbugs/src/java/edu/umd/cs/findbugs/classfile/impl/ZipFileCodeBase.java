@@ -30,6 +30,8 @@ import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
+import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
@@ -70,42 +72,51 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 		}
 		return zipFile.getInputStream(entry);
 	}
+	
+	class ZipCodeBaseEntry implements ICodeBaseEntry {
+		ZipEntry zipEntry;
+		
+		public ZipCodeBaseEntry(ZipEntry zipEntry) {
+			this.zipEntry = zipEntry;
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
+		 */
+		public String getResourceName() {
+			return zipEntry.getName();
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
+		 */
+		public InputStream openResource() throws IOException {
+			return zipFile.getInputStream(zipEntry);
+		}
+	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#resourceNameIterator()
-	 */
-	public Iterator<String> resourceNameIterator() {
+	public ICodeBaseIterator iterator() {
 		final Enumeration<? extends ZipEntry> zipEntryEnumerator = zipFile.entries();
 		
-		return new Iterator<String>() {
-			ZipEntry nextEntry;
+		return new ICodeBaseIterator() {
+			ZipCodeBaseEntry nextEntry;
 			
-			/* (non-Javadoc)
-			 * @see java.util.Iterator#hasNext()
-			 */
 			public boolean hasNext() {
 				scanForNextEntry();
 				return nextEntry != null;
 			}
-			
+
 			/* (non-Javadoc)
-			 * @see java.util.Iterator#next()
+			 * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
 			 */
-			public String next() {
+			public ICodeBaseEntry next() throws InterruptedException {
 				scanForNextEntry();
 				if (nextEntry == null) {
 					throw new NoSuchElementException();
 				}
-				String result = nextEntry.getName();
+				ICodeBaseEntry result = nextEntry;
 				nextEntry = null;
 				return result;
-			}
-			
-			/* (non-Javadoc)
-			 * @see java.util.Iterator#remove()
-			 */
-			public void remove() {
-				throw new UnsupportedOperationException();
 			}
 
 			private void scanForNextEntry() {
@@ -114,9 +125,10 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 						return;
 					}
 
-					nextEntry = zipEntryEnumerator.nextElement();
+					ZipEntry zipEntry = zipEntryEnumerator.nextElement();
 				
-					if (!nextEntry.isDirectory()) {
+					if (!zipEntry.isDirectory()) {
+						nextEntry = new ZipCodeBaseEntry(zipEntry);
 						break;
 					}
 				}

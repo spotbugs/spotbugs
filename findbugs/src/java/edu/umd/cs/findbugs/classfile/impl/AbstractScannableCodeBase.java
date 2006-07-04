@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
+import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
@@ -39,12 +41,12 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()
 	 */
-	public boolean containsSourceFiles() {
+	public boolean containsSourceFiles() throws InterruptedException {
 		if (!checkedForSourceFiles) {
-			Iterator<String> i = resourceNameIterator();
+			ICodeBaseIterator i = iterator();
 			while (i.hasNext()) {
-				String resourceName = i.next();
-				if (resourceName.endsWith(".java")) {
+				ICodeBaseEntry entry = i.next();
+				if (entry.getResourceName().endsWith(".java")) {
 					containsSourceFiles = true;
 					break;
 				}

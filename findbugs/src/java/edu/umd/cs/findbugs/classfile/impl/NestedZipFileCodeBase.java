@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.util.Iterator;
 
 import edu.umd.cs.findbugs.classfile.ICodeBase;
+import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.io.IO;
@@ -83,12 +84,11 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 		}
 	}
 	
-
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#resourceNameIterator()
+	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
 	 */
-	public Iterator<String> resourceNameIterator() {
-		return delegate.resourceNameIterator();
+	public ICodeBaseIterator iterator() {
+		return delegate.iterator();
 	}
 
 	/* (non-Javadoc)

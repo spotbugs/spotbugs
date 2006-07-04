@@ -33,12 +33,19 @@ public interface IScannableCodeBase extends ICodeBase {
 	// query whether or not the code base contains source files
 	// [get URL?]
 
+//	/**
+//	 * Get an Iterator over the filenames of the resources in this code base.
+//	 * 
+//	 * @return Iterator over the filenames of the resources in this code base
+//	 */
+//	public Iterator<String> resourceNameIterator();
+
 	/**
-	 * Get an Iterator over the filenames of the resources in this code base.
+	 * Get an iterator over the resources in the this code base.
 	 * 
-	 * @return Iterator over the filenames of the resources in this code base
+	 * @return ICodeBaseIterator over the resources in the code base
 	 */
-	public Iterator<String> resourceNameIterator();
+	public ICodeBaseIterator iterator();
 	
 	/**
 	 * Return whether or not this code base contains any source files.
@@ -46,5 +53,5 @@ public interface IScannableCodeBase extends ICodeBase {
 	 * @return true if the code base contains source file(s),
 	 *          false if it does not contain source files
 	 */
-	public boolean containsSourceFiles();
+	public boolean containsSourceFiles() throws InterruptedException;
 }
