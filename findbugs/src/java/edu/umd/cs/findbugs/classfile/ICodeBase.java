@@ -32,9 +32,13 @@ import java.util.Iterator;
  * @author David Hovemeyer
  */
 public interface ICodeBase {
-	// capabilities:
-	// open stream for named resource (resources are named by strings)
-
+	/**
+	 * Get the codebase locator describing the location of this codebase.
+	 * 
+	 * @return the ICodeBaseLocator
+	 */
+	public ICodeBaseLocator getCodeBaseLocator();
+	
 	/**
 	 * Look up a resource in this code base.
 	 * 

@@ -30,6 +30,7 @@ import java.util.Iterator;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
+import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.io.IO;
@@ -51,13 +52,13 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 	/**
 	 * Constructor.
 	 * 
-	 * @param parentCodeBase the parent code base (in which the zip or jar file is located)
-	 * @param resourceName   name of resource containing the nested zip or jar file
+	 * @param codeBaseLocator the codebase locator for this codebase
 	 */
-	public NestedZipFileCodeBase(ICodeBase parentCodeBase, String resourceName)
+	public NestedZipFileCodeBase(NestedZipFileCodeBaseLocator codeBaseLocator)
 			throws ResourceNotFoundException, IOException {
-		this.parentCodeBase = parentCodeBase;
-		this.resourceName = resourceName;
+		super(codeBaseLocator);
+		this.parentCodeBase = codeBaseLocator.getParentCodeBase();
+		this.resourceName = codeBaseLocator.getResourceName();
 		
 		InputStream inputStream = null;
 		OutputStream outputStream = null;
@@ -73,7 +74,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 			outputStream.flush();
 			
 			// Create the delegate to read from the temporary file
-			delegate = new ZipFileCodeBase(tempFile);
+			delegate = new ZipFileCodeBase(codeBaseLocator, tempFile);
 		} finally {
 			if (inputStream != null) {
 				IO.close(inputStream);

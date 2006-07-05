@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
+import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
@@ -38,7 +39,6 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * @author David Hovemeyer
  */
 public class SingleFileCodeBase implements IScannableCodeBase {
-	private boolean isAppCodeBase;
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
@@ -84,10 +84,20 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 		}
 	}
 
+	private ICodeBaseLocator codeBaseLocator;
 	private String fileName;
+	private boolean isAppCodeBase;
 	
-	public SingleFileCodeBase(String fileName) {
+	public SingleFileCodeBase(ICodeBaseLocator codeBaseLocator, String fileName) {
+		this.codeBaseLocator = codeBaseLocator;
 		this.fileName = fileName;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getCodeBaseLocator()
+	 */
+	public ICodeBaseLocator getCodeBaseLocator() {
+		return codeBaseLocator;
 	}
 	
 	/* (non-Javadoc)
@@ -127,6 +137,9 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
 	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
+		// FIXME: this is wrong...respond affirmatively only if the resource name
+		// matches the filename version of the CLASS contained in the file
+		
 		if (!resourceName.equals(fileName)) {
 			throw new ResourceNotFoundException(resourceName);
 		}

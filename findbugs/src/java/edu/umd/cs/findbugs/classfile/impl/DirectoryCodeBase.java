@@ -31,6 +31,7 @@ import java.util.Iterator;
 import edu.umd.cs.findbugs.RecursiveFileSearch;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
+import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
@@ -98,8 +99,15 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 	private File directory;
 	private RecursiveFileSearch rfs;
 	private boolean searchPerformed;
-	
-	public DirectoryCodeBase(File directory) {
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param codeBaseLocator the codebase locator for this codebase
+	 * @param directory       the filesystem directory
+	 */
+	public DirectoryCodeBase(ICodeBaseLocator codeBaseLocator, File directory) {
+		super(codeBaseLocator);
 		if (!directory.isDirectory()) throw new IllegalArgumentException();
 		this.directory = directory;
 		this.rfs = new RecursiveFileSearch(directory.getPath(), new FileFilter(){

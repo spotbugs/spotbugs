@@ -25,20 +25,34 @@ import java.util.Iterator;
 
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
+import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
  * Abstract base class for implementations of IScannableCodeBase.
- * Provides an implementation of the containsSourceFiles(),
+ * Provides an implementation of the
+ * getCodeBaseLocator(), containsSourceFiles(),
  * setApplicationCodeBase(), and isApplicationCodeBase() methods.
  * 
  * @author David Hovemeyer
  */
 public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
+	private ICodeBaseLocator codeBaseLocator;
 	private boolean checkedForSourceFiles;
 	private boolean containsSourceFiles;
 	private boolean isAppCodeBase;
+	
+	public AbstractScannableCodeBase(ICodeBaseLocator codeBaseLocator) {
+		this.codeBaseLocator = codeBaseLocator;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getCodeBaseLocator()
+	 */
+	public ICodeBaseLocator getCodeBaseLocator() {
+		return codeBaseLocator;
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()

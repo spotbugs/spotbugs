@@ -22,7 +22,10 @@ package edu.umd.cs.findbugs.classfile.impl;
 import java.io.File;
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassPath;
+import edu.umd.cs.findbugs.classfile.ICodeBase;
+import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
@@ -31,38 +34,53 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * 
  * @author David Hovemeyer
  */
-public class ClassFactory {
-	private static ClassFactory theInstance = new ClassFactory();
+public class ClassFactory implements IClassFactory {
+	private static IClassFactory theInstance = new ClassFactory();
 	
 	private ClassFactory() {
 	}
 	
-	public static ClassFactory instance() {
+	public static IClassFactory instance() {
 		return theInstance;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.impl.IClassFactory#createClassPath()
+	 */
 	public IClassPath createClassPath() {
 		return new ClassPathImpl();
 	}
 	
-	public IScannableCodeBase createLocalCodeBase(String fileName) throws IOException {
-		// FIXME: check for URL protocol, reject non-file URLs
-		// TODO: support remote archives?
-		
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.impl.IClassFactory#createFilesystemCodeBaseLocator(java.lang.String)
+	 */
+	public ICodeBaseLocator createFilesystemCodeBaseLocator(String pathName) {
+		return new FilesystemCodeBaseLocator(pathName);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IClassFactory#createNestedArchiveCodeBaseLocator(edu.umd.cs.findbugs.classfile.ICodeBase, java.lang.String)
+	 */
+	public ICodeBaseLocator createNestedArchiveCodeBaseLocator(ICodeBase parentCodeBase, String path) {
+		return new NestedZipFileCodeBaseLocator(parentCodeBase, path);
+	}
+	
+	static IScannableCodeBase createFilesystemCodeBase(FilesystemCodeBaseLocator codeBaseLocator) throws IOException {
+		String fileName = codeBaseLocator.getPathName();
 		File file = new File(fileName);
 		
 		if (file.isDirectory()) {
-			return new DirectoryCodeBase(file);
+			return new DirectoryCodeBase(codeBaseLocator, file);
 		} else if (fileName.endsWith(".class")) {
-			return new SingleFileCodeBase(fileName);
+			return new SingleFileCodeBase(codeBaseLocator, fileName);
 		} else {
-			return new ZipFileCodeBase(file);
+			return new ZipFileCodeBase(codeBaseLocator, file);
 		}
 	}
 	
-	public IScannableCodeBase createNestedArchiveCodeBase(
-			IScannableCodeBase parentCodeBase, String resourceName)
+	static IScannableCodeBase createNestedZipFileCodeBase(
+			NestedZipFileCodeBaseLocator codeBaseLocator)
 			throws ResourceNotFoundException, IOException {
-		return new NestedZipFileCodeBase(parentCodeBase, resourceName);
+		return new NestedZipFileCodeBase(codeBaseLocator);
 	}
 }

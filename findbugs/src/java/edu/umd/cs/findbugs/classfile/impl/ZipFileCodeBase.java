@@ -32,6 +32,7 @@ import java.util.zip.ZipFile;
 
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
+import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
@@ -42,23 +43,17 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  */
 public class ZipFileCodeBase extends AbstractScannableCodeBase {
 	private ZipFile zipFile;
-
-	/**
-	 * Constructor.
-	 * 
-	 * @param fileName filename of the zip file
-	 * @throws IOException
-	 */
-	public ZipFileCodeBase(String fileName) throws IOException {
-		this.zipFile = new ZipFile(fileName);
-	}
 	
 	/**
 	 * Constructor.
 	 * 
-	 * @param file the File representing the zip file
+	 * @param codeBaseLocator the codebase locator for this codebase
+	 * @param file the File containing the zip file (may be a temp file
+	 *         if the codebase was copied from a nested zipfile in
+	 *         another codebase)
 	 */
-	public ZipFileCodeBase(File file) throws IOException {
+	public ZipFileCodeBase(ICodeBaseLocator codeBaseLocator, File file) throws IOException {
+		super(codeBaseLocator);
 		this.zipFile = new ZipFile(file);
 	}
 	
