@@ -120,9 +120,12 @@ public class ClassPathImpl implements IClassPath {
 	}
 
 	/**
-	 * @param codeBaseList
-	 * @param resourceName
-	 * @return
+	 * Search list of codebases for named resource.
+	 * 
+	 * @param codeBaseList list of codebases to search
+	 * @param resourceName name of resourse
+	 * @return codebase entry for the named resource, or null if
+	 *          the named resource cannot be found
 	 */
 	private ICodeBaseEntry search(List<? extends ICodeBase> codeBaseList, String resourceName) {
 		for (ICodeBase codeBase : codeBaseList) {

@@ -41,8 +41,18 @@ public interface IClassPath {
 	 */
 	public void addCodeBase(ICodeBase codeBase);
 
+	/**
+	 * Return an iterator over the application codebases.
+	 * 
+	 * @return iterator over the application codebases
+	 */
 	public Iterator<? extends ICodeBase> appCodeBaseIterator();
 	
+	/**
+	 * Return an iterator over the auxiliary codebases.
+	 * 
+	 * @return iterator over the auxiliary codebases
+	 */
 	public Iterator<? extends ICodeBase> auxCodeBaseIterator();
 	
 	/**
