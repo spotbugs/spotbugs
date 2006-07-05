@@ -22,9 +22,11 @@ package edu.umd.cs.findbugs.classfile.impl;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
@@ -40,10 +42,12 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 public class ClassPathImpl implements IClassPath {
 	private List<IScannableCodeBase> appCodeBaseList;
 	private List<ICodeBase> auxCodeBaseList;
+	private Map<String, ICodeBaseEntry> codeBaseEntryMap;
 	
 	public ClassPathImpl() {
 		this.appCodeBaseList = new LinkedList<IScannableCodeBase>();
 		this.auxCodeBaseList = new LinkedList<ICodeBase>();
+		this.codeBaseEntryMap = new HashMap<String, ICodeBaseEntry>();
 	}
 
 	/* (non-Javadoc)
@@ -90,20 +94,44 @@ public class ClassPathImpl implements IClassPath {
 	 * @see edu.umd.cs.findbugs.classfile.IClassPath#lookupResource(java.lang.String)
 	 */
 	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
-		for (ICodeBase codeBase : appCodeBaseList) {
+		// See if we have cached the codebase entry for this resource
+		ICodeBaseEntry result = codeBaseEntryMap.get(resourceName);
+
+		if (result == null) {
+			// No previously resolved entry - look up the resources in the codebases
+			
+			// First try application codebases
+			result = search(appCodeBaseList, resourceName);
+			if (result == null) {
+				// Next try aux codebases
+				result = search(auxCodeBaseList, resourceName);
+			}
+			
+			// If not found in any codebase, then throw ResourceNotFoundException
+			if (result == null) {
+				throw new ResourceNotFoundException(resourceName);
+			}
+			
+			// Cache the entry for future lookups
+			codeBaseEntryMap.put(resourceName, result);
+		}
+
+		return result;
+	}
+
+	/**
+	 * @param codeBaseList
+	 * @param resourceName
+	 * @return
+	 */
+	private ICodeBaseEntry search(List<? extends ICodeBase> codeBaseList, String resourceName) {
+		for (ICodeBase codeBase : codeBaseList) {
 			try {
 				return codeBase.lookupResource(resourceName);
 			} catch (ResourceNotFoundException e) {
-				// ignore, continue trying other codebases
+				// Ignore, continue trying other codebases
 			}
 		}
-		for (ICodeBase codeBase : auxCodeBaseList) {
-			try {
-				return codeBase.lookupResource(resourceName);
-			} catch (ResourceNotFoundException e) {
-				// ignore, continue trying other codebases
-			}
-		}
-		throw new ResourceNotFoundException(resourceName);
+		return null;
 	}
 }
