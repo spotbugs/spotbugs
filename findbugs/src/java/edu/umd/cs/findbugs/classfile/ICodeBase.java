@@ -63,6 +63,14 @@ public interface ICodeBase {
 	public boolean isApplicationCodeBase();
 	
 	/**
+	 * Return whether or not this code base contains any source files.
+	 * 
+	 * @return true if the code base contains source file(s),
+	 *          false if it does not contain source files
+	 */
+	public boolean containsSourceFiles() throws InterruptedException;
+	
+	/**
 	 * This method should be called when done using the code base.
 	 */
 	public void close();

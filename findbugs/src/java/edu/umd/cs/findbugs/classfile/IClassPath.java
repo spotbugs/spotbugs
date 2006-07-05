@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.classfile;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 
 /**
  * A classpath from which resources (classes and other files)
@@ -30,25 +31,6 @@ import java.io.InputStream;
  * @author David Hovemeyer
  */
 public interface IClassPath {
-//	
-//	/**
-//	 * Add an application code base to the class path.
-//	 * Application code bases take precedence over aux codebases
-//	 * when looking up a resource.
-//	 * 
-//	 * @param appCodeBase an application code base
-//	 */
-//	public void addApplicationCodeBase(IScannableCodeBase appCodeBase);
-//
-//	/**
-//	 * Add an auxiliary code base to the classpath. 
-//	 * Application code bases take precedence over aux codebases
-//	 * when looking up a resource.
-//	 * 
-//	 * @param auxCodeBase an auxiliary code base
-//	 */
-//	public void addAuxCodeBase(ICodeBase auxCodeBase);
-	
 	/**
 	 * Add a codebase.
 	 * The object will be interrogated to determine whether it is an
@@ -59,6 +41,10 @@ public interface IClassPath {
 	 */
 	public void addCodeBase(ICodeBase codeBase);
 
+	public Iterator<? extends ICodeBase> appCodeBaseIterator();
+	
+	public Iterator<? extends ICodeBase> auxCodeBaseIterator();
+	
 	/**
 	 * Lookup a resource by name.
 	 * 

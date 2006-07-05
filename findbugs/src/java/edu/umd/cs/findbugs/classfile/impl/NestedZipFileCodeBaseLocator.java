@@ -69,4 +69,11 @@ public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
 		return ClassFactory.createNestedZipFileCodeBase(this);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "nested:[" + parentCodeBase.getCodeBaseLocator() + "]" + resourceName;
+	}
 }

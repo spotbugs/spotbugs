@@ -63,4 +63,11 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 		return ClassFactory.createFilesystemCodeBase(this);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "filesystem:" + pathName;
+	}
 }

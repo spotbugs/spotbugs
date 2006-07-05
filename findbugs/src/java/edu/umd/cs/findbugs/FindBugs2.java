@@ -21,10 +21,14 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.apache.bcel.classfile.JavaClass;
+
+import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
@@ -46,6 +50,8 @@ import edu.umd.cs.findbugs.util.Archive;
  * @author David Hovemeyer
  */
 public class FindBugs2 {
+	private static final boolean DEBUG = Boolean.getBoolean("findbugs2.debug");
+	
 	private BugReporter bugReporter;
 	private Project project;
 	private IClassFactory classFactory;
@@ -137,6 +143,24 @@ public class FindBugs2 {
 			// Check for a Jar manifest for additional aux classpath entries.
 			scanJarManifestForClassPathEntries(workList, codeBase);
 		}
+		
+		if (DEBUG) {
+			System.out.println("Classpath:");
+			dumpCodeBaseList(classPath.appCodeBaseIterator(), "Application codebases");
+			dumpCodeBaseList(classPath.auxCodeBaseIterator(), "Auxiliary codebases");
+		}
+	}
+	
+	private void dumpCodeBaseList(Iterator<? extends ICodeBase> i, String desc)
+			throws InterruptedException {
+		System.out.println("  " + desc + ":");
+		while (i.hasNext()) {
+			ICodeBase codeBase = i.next();
+			System.out.println("    " + codeBase.getCodeBaseLocator().toString());
+			if (codeBase.containsSourceFiles()) {
+				System.out.println("      * contains source files");
+			}
+		}
 	}
 
 	/**
@@ -149,10 +173,19 @@ public class FindBugs2 {
 	 */
 	private void checkForNestedArchives(LinkedList<WorkListItem> workList, IScannableCodeBase codeBase)
 			throws InterruptedException {
+		if (DEBUG) {
+			System.out.println("Checking " + codeBase.getCodeBaseLocator() + " for nested codebases");
+		}
 		ICodeBaseIterator i = codeBase.iterator();
 		while (i.hasNext()) {
 			ICodeBaseEntry entry = i.next();
+			if (DEBUG) {
+				System.out.println("Entry: " + entry.getResourceName());
+			}
 			if (Archive.isArchiveFileName(entry.getResourceName())) {
+				if (DEBUG) {
+					System.out.println("Entry is an archive!");
+				}
 				ICodeBaseLocator nestedArchiveLocator =
 					classFactory.createNestedArchiveCodeBaseLocator(codeBase, entry.getResourceName());
 				workList.add(new WorkListItem(nestedArchiveLocator, codeBase.isApplicationCodeBase()));
@@ -205,5 +238,20 @@ public class FindBugs2 {
 			// Do nothing - no Jar manifest found
 		}
 		
+	}
+	
+	public static void main(String[] args) throws Exception {
+		if (args.length != 1) {
+			System.err.println("Usage: " + FindBugs2.class.getName() + " <project>");
+			System.exit(1);
+		}
+		
+		BugReporter bugReporter = new PrintingBugReporter();
+		
+		Project project = new Project();
+		project.read(args[0]);
+		
+		FindBugs2 findBugs = new FindBugs2(bugReporter, project);
+		findBugs.execute();
 	}
 }

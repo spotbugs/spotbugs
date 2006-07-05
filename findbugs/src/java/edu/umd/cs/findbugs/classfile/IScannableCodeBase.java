@@ -39,12 +39,4 @@ public interface IScannableCodeBase extends ICodeBase {
 	 * @return ICodeBaseIterator over the resources in the code base
 	 */
 	public ICodeBaseIterator iterator() throws InterruptedException;
-	
-	/**
-	 * Return whether or not this code base contains any source files.
-	 * 
-	 * @return true if the code base contains source file(s),
-	 *          false if it does not contain source files
-	 */
-	public boolean containsSourceFiles() throws InterruptedException;
 }

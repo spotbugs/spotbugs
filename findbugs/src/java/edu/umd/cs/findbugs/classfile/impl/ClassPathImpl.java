@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.classfile.impl;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,6 +58,20 @@ public class ClassPathImpl implements IClassPath {
 		} else {
 			auxCodeBaseList.add(codeBase);
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IClassPath#appCodeBaseIterator()
+	 */
+	public Iterator<? extends ICodeBase> appCodeBaseIterator() {
+		return appCodeBaseList.iterator();
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IClassPath#auxCodeBaseIterator()
+	 */
+	public Iterator<? extends ICodeBase> auxCodeBaseIterator() {
+		return auxCodeBaseList.iterator();
 	}
 	
 	/* (non-Javadoc)

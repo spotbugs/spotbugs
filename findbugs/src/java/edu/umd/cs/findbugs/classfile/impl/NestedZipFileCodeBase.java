@@ -107,5 +107,4 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 		delegate.close();
 		tempFile.delete();
 	}
-
 }
