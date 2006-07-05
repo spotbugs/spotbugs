@@ -54,7 +54,7 @@ public class Archive {
 		if (lastDot < 0) {
 			return false;
 		}
-		String extension = fileName.substring(lastDot + 1);
+		String extension = fileName.substring(lastDot);
 		return ARCHIVE_EXTENSION_SET.contains(extension);
 	}
 }
