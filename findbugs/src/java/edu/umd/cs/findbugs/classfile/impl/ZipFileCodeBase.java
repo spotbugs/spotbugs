@@ -22,7 +22,6 @@ package edu.umd.cs.findbugs.classfile.impl;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.MissingResourceException;
@@ -42,7 +41,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * @author David Hovemeyer
  */
 public class ZipFileCodeBase extends AbstractScannableCodeBase {
-	private ZipFile zipFile;
+	ZipFile zipFile;
 	
 	/**
 	 * Constructor.
@@ -65,43 +64,14 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 		if (entry == null) {
 			throw new ResourceNotFoundException(resourceName);
 		}
-		return new ZipCodeBaseEntry(entry);
+		return new ZipFileCodeBaseEntry(this, entry);
 	}
 	
-	class ZipCodeBaseEntry implements ICodeBaseEntry {
-		ZipEntry zipEntry;
-		
-		public ZipCodeBaseEntry(ZipEntry zipEntry) {
-			this.zipEntry = zipEntry;
-		}
-		
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
-		 */
-		public int getNumBytes() {
-			return (int) zipEntry.getSize();
-		}
-		
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
-		 */
-		public String getResourceName() {
-			return zipEntry.getName();
-		}
-		
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
-		 */
-		public InputStream openResource() throws IOException {
-			return zipFile.getInputStream(zipEntry);
-		}
-	}
-
 	public ICodeBaseIterator iterator() {
 		final Enumeration<? extends ZipEntry> zipEntryEnumerator = zipFile.entries();
 		
 		return new ICodeBaseIterator() {
-			ZipCodeBaseEntry nextEntry;
+			ZipFileCodeBaseEntry nextEntry;
 			
 			public boolean hasNext() {
 				scanForNextEntry();
@@ -130,7 +100,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 					ZipEntry zipEntry = zipEntryEnumerator.nextElement();
 				
 					if (!zipEntry.isDirectory()) {
-						nextEntry = new ZipCodeBaseEntry(zipEntry);
+						nextEntry = new ZipFileCodeBaseEntry(ZipFileCodeBase.this, zipEntry);
 						break;
 					}
 				}

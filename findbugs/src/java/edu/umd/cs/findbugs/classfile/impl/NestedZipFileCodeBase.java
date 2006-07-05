@@ -47,7 +47,7 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 	private ICodeBase parentCodeBase;
 	private String resourceName;
 	private File tempFile;
-	private ZipFileCodeBase delegate;
+	private ZipFileCodeBase delegateCodeBase;
 
 	/**
 	 * Constructor.
@@ -68,13 +68,14 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 			tempFile.deleteOnExit(); // just in case we crash before the codebase is closed
 			
 			// Copy nested zipfile to the temporary file
+			// FIXME: potentially long blocking operation - should be interruptible
 			inputStream = parentCodeBase.lookupResource(resourceName).openResource();
 			outputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
 			IO.copy(inputStream, outputStream);
 			outputStream.flush();
 			
 			// Create the delegate to read from the temporary file
-			delegate = new ZipFileCodeBase(codeBaseLocator, tempFile);
+			delegateCodeBase = new ZipFileCodeBase(codeBaseLocator, tempFile);
 		} finally {
 			if (inputStream != null) {
 				IO.close(inputStream);
@@ -89,22 +90,23 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
 	 */
-	public ICodeBaseIterator iterator() {
-		return delegate.iterator();
+	public ICodeBaseIterator iterator() throws InterruptedException {
+		return new DelegatingCodeBaseIterator(this, delegateCodeBase);
 	}
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
 	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
-		return delegate.lookupResource(resourceName);
+		ICodeBaseEntry delegateCodeBaseEntry = delegateCodeBase.lookupResource(resourceName);
+		return new DelegatingCodeBaseEntry(this, delegateCodeBaseEntry);
 	}
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
 	 */
 	public void close() {
-		delegate.close();
+		delegateCodeBase.close();
 		tempFile.delete();
 	}
 }

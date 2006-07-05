@@ -19,56 +19,48 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import edu.umd.cs.findbugs.classfile.ICodeBase;
-import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
 /**
- * Codebase locator for files and directories in the filesystem.
+ * Implementation of ICodeBaseEntry that delegates to another
+ * codebase entry.  This is needed for codebase entries in
+ * nested zipfiles, which are implemented using a private
+ * zipfile codebase.
  * 
  * @author David Hovemeyer
  */
-public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
-	private final String pathName;
+public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
+	private ICodeBase frontEndCodeBase;
+	private ICodeBaseEntry delegateCodeBaseEntry;
 	
-	public FilesystemCodeBaseLocator(String pathName) {
-		this.pathName = pathName;
-	}
-	
-	/**
-	 * @return Returns the pathName.
-	 */
-	public String getPathName() {
-		return pathName;
+	public DelegatingCodeBaseEntry(ICodeBase frontEndCodeBase, ICodeBaseEntry delegateCodeBaseEntry) {
+		this.frontEndCodeBase = frontEndCodeBase;
+		this.delegateCodeBaseEntry = delegateCodeBaseEntry;
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseLocator#createRelativeCodeBaseLocator(java.lang.String)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
 	 */
-	public ICodeBaseLocator createRelativeCodeBaseLocator(String relativePath) {
-		File path = new File(pathName);
-		if (!path.isDirectory()) {
-			path = path.getParentFile();
-		}
-		File relativeFile = new File(path, relativePath);
-		return new FilesystemCodeBaseLocator(relativeFile.getPath());
+	public int getNumBytes() {
+		return delegateCodeBaseEntry.getNumBytes();
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseLocator#openCodeBase()
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
 	 */
-	public ICodeBase openCodeBase() throws IOException {
-		return ClassFactory.createFilesystemCodeBase(this);
+	public String getResourceName() {
+		return delegateCodeBaseEntry.getResourceName();
 	}
 
 	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
 	 */
-	@Override
-	public String toString() {
-		return "filesystem:" + pathName;
+	public InputStream openResource() throws IOException {
+		return delegateCodeBaseEntry.openResource();
 	}
 	
 	/* (non-Javadoc)
@@ -79,8 +71,9 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 		if (obj == null || obj.getClass() != this.getClass()) {
 			return false;
 		}
-		FilesystemCodeBaseLocator other = (FilesystemCodeBaseLocator) obj;
-		return this.pathName.equals(other.pathName);
+		DelegatingCodeBaseEntry other = (DelegatingCodeBaseEntry) obj;
+		return this.frontEndCodeBase.equals(other.frontEndCodeBase)
+			&& this.delegateCodeBaseEntry.equals(other.delegateCodeBaseEntry);
 	}
 	
 	/* (non-Javadoc)
@@ -88,6 +81,7 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 	 */
 	@Override
 	public int hashCode() {
-		return pathName.hashCode();
+		return 7919 * frontEndCodeBase.hashCode() + delegateCodeBaseEntry.hashCode();
 	}
+
 }

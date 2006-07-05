@@ -42,39 +42,6 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * @author David Hovemeyer
  */
 public class DirectoryCodeBase extends AbstractScannableCodeBase implements IScannableCodeBase {
-	private final class DirectoryCodeBaseEntry implements ICodeBaseEntry {
-		private final String fileName;
-
-		private DirectoryCodeBaseEntry(String fileName) {
-			this.fileName = fileName;
-		}
-
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
-		 */
-		public int getNumBytes() {
-			File fullPath = getFullPathOfResource(fileName);
-			if (!fullPath.exists()) {
-				return -1;
-			}
-			return (int) fullPath.length();
-		}
-
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
-		 */
-		public String getResourceName() {
-			return fileName;
-		}
-
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
-		 */
-		public InputStream openResource() throws IOException {
-			return openFile(fileName);
-		}
-	}
-
 	private class DirectoryCodeBaseIterator implements ICodeBaseIterator {
 
 		Iterator<String> fileNameIterator = rfs.fileNameIterator();
@@ -92,7 +59,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 		public ICodeBaseEntry next() throws InterruptedException {
 			final String fileName = fileNameIterator.next();
 			
-			return new DirectoryCodeBaseEntry(fileName);
+			return new DirectoryCodeBaseEntry(DirectoryCodeBase.this, fileName);
 		}
 	}
 
@@ -148,10 +115,10 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 		if (!file.exists()) {
 			throw new ResourceNotFoundException(resourceName);
 		}
-		return new DirectoryCodeBaseEntry(resourceName);
+		return new DirectoryCodeBaseEntry(this, resourceName);
 	}
 	
-	private InputStream openFile(String resourceName) throws FileNotFoundException, IOException {
+	InputStream openFile(String resourceName) throws FileNotFoundException, IOException {
 		File path = getFullPathOfResource(resourceName);
 		return new BufferedInputStream(new FileInputStream(path));
 	}
@@ -162,7 +129,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 	 * @param resourceName
 	 * @return
 	 */
-	private File getFullPathOfResource(String resourceName) {
+	File getFullPathOfResource(String resourceName) {
 		return new File(directory, resourceName);
 	}
 }
