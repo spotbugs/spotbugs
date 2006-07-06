@@ -19,7 +19,9 @@
 
 package edu.umd.cs.findbugs.ba;
 
-public class CFGBuilderException extends Exception {
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+
+public class CFGBuilderException extends CheckedAnalysisException {
 	/**
 	 * 
 	 */

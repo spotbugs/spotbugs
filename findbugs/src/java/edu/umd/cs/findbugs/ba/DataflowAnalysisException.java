@@ -22,13 +22,15 @@ package edu.umd.cs.findbugs.ba;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+
 /**
  * Exception type to indicate a dataflow analysis failure.
  *
  * @see Dataflow
  * @see DataflowAnalysis
  */
-public class DataflowAnalysisException extends Exception {
+public class DataflowAnalysisException extends CheckedAnalysisException {
 	private static final long serialVersionUID = 3690480212240446258L;
 
 	/**
