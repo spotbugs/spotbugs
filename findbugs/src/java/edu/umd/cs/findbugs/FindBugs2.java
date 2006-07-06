@@ -23,12 +23,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
@@ -56,6 +58,7 @@ public class FindBugs2 {
 	private Project project;
 	private IClassFactory classFactory;
 	private IClassPath classPath;
+	private List<ClassDescriptor> appClassList;
 	
 	public FindBugs2(BugReporter bugReporter, Project project) {
 		this.bugReporter = bugReporter;
@@ -70,6 +73,9 @@ public class FindBugs2 {
 		// FIXME: this should be in the analysis context eventually
 		classPath = classFactory.createClassPath();
 
+		// List of application classes found while scanning application codebases
+		appClassList = new LinkedList<ClassDescriptor>();
+		
 		try {
 			buildClassPath();
 			
@@ -142,8 +148,10 @@ public class FindBugs2 {
 				classPath.addCodeBase(codeBase);
 
 				// If it is a scannable codebase, check it for nested archives.
+				// In addition, if it is an application codebase then
+				// make a list of application classes.
 				if (codeBase instanceof IScannableCodeBase) {
-					checkForNestedArchives(workList, (IScannableCodeBase) codeBase);
+					scanCodebase(workList, (IScannableCodeBase) codeBase);
 				}
 
 				// Check for a Jar manifest for additional aux classpath entries.
@@ -184,16 +192,17 @@ public class FindBugs2 {
 
 	/**
 	 * Check a codebase for nested archives.
-	 * Add any found to the worklist.
+	 * (adding any found to the worklist).
+	 * Also, build a list of classes in application codebases.
 	 * 
 	 * @param workList the worklist
 	 * @param codeBase the codebase to scan
 	 * @throws InterruptedException 
 	 */
-	private void checkForNestedArchives(LinkedList<WorkListItem> workList, IScannableCodeBase codeBase)
+	private void scanCodebase(LinkedList<WorkListItem> workList, IScannableCodeBase codeBase)
 			throws InterruptedException {
 		if (DEBUG) {
-			System.out.println("Checking " + codeBase.getCodeBaseLocator() + " for nested codebases");
+			System.out.println("Scanning " + codeBase.getCodeBaseLocator());
 		}
 		ICodeBaseIterator i = codeBase.iterator();
 		while (i.hasNext()) {
@@ -201,6 +210,8 @@ public class FindBugs2 {
 			if (DEBUG) {
 				System.out.println("Entry: " + entry.getResourceName());
 			}
+
+			// Add nested archives to the worklist
 			if (Archive.isArchiveFileName(entry.getResourceName())) {
 				if (DEBUG) {
 					System.out.println("Entry is an archive!");
@@ -208,6 +219,12 @@ public class FindBugs2 {
 				ICodeBaseLocator nestedArchiveLocator =
 					classFactory.createNestedArchiveCodeBaseLocator(codeBase, entry.getResourceName());
 				workList.add(new WorkListItem(nestedArchiveLocator, codeBase.isApplicationCodeBase()));
+			}
+			
+			// Make a note of classes in application codebases
+			if (codeBase.isApplicationCodeBase()
+					&& ClassDescriptor.isClassResource(entry.getResourceName())) {
+				appClassList.add(ClassDescriptor.fromResourceName(entry.getResourceName()));
 			}
 		}
 	}

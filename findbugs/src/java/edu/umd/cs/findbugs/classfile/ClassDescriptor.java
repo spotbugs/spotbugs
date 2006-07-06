@@ -62,4 +62,36 @@ public class ClassDescriptor implements Comparable<ClassDescriptor> {
 	public String toResourceName() {
 		return className + ".class";
 	}
+
+	/**
+	 * Create a class descriptor from a resource name.
+	 * 
+	 * @param resourceName the resource name
+	 * @return the class descriptor
+	 */
+	public static ClassDescriptor fromResourceName(String resourceName) {
+		if (!isClassResource(resourceName)) {
+			throw new IllegalArgumentException("Resource " + resourceName + " is not a class");
+		}
+		return new ClassDescriptor(resourceName.substring(0, resourceName.length() - 6));
+	}
+
+	/**
+	 * Determine whether or not the given resource name refers to a class.
+	 * 
+	 * @param resourceName the resource name
+	 * @return true if the resource is a class, false otherwise
+	 */
+	public static boolean isClassResource(String resourceName) {
+		// This could be more sophisticated.
+		return resourceName.endsWith(".class");
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return className;
+	}
 }
