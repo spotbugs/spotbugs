@@ -59,7 +59,10 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 		public ICodeBaseEntry next() throws InterruptedException {
 			final String fileName = fileNameIterator.next();
 			
-			return new DirectoryCodeBaseEntry(DirectoryCodeBase.this, fileName);
+			// Make the filename relative to the directory
+			String resourceName = getResourceName(fileName); 
+			
+			return new DirectoryCodeBaseEntry(DirectoryCodeBase.this, resourceName);
 		}
 	}
 
@@ -131,5 +134,20 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 	 */
 	File getFullPathOfResource(String resourceName) {
 		return new File(directory, resourceName);
+	}
+	
+	/**
+	 * Get the resource name given a full filename.
+	 * 
+	 * @param fileName the full filename (which must be inside the directory)
+	 * @return the resource name (i.e., the filename with the directory stripped off)
+	 */
+	String getResourceName(String fileName) {
+		// FIXME: there is probably a more robust way to do this
+		String dirPath = directory.getPath();
+		if (!fileName.startsWith(dirPath)) {
+			throw new IllegalStateException("Filename " + fileName + " not inside directory "+ dirPath);
+		}
+		return fileName.substring(dirPath.length() + 1);
 	}
 }

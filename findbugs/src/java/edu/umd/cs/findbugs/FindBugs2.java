@@ -30,7 +30,9 @@ import java.util.jar.Manifest;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
@@ -39,6 +41,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.Archive;
@@ -58,6 +61,7 @@ public class FindBugs2 {
 	private Project project;
 	private IClassFactory classFactory;
 	private IClassPath classPath;
+	private IAnalysisCache analysisCache;
 	private List<ClassDescriptor> appClassList;
 	
 	public FindBugs2(BugReporter bugReporter, Project project) {
@@ -65,19 +69,24 @@ public class FindBugs2 {
 		this.project = project;
 	}
 	
-	public void execute() throws IOException, InterruptedException, ResourceNotFoundException {
+	public void execute() throws IOException, InterruptedException, CheckedAnalysisException {
 		// Get the class factory for creating classpath/codebase/etc. 
 		classFactory = ClassFactory.instance();
 		
 		// The class path object
 		// FIXME: this should be in the analysis context eventually
 		classPath = classFactory.createClassPath();
+		
+		// The analysis cache object
+		// FIXME: should also be in the analysis context
+		analysisCache = ClassFactory.instance().createAnalysisCache(classPath);
 
 		// List of application classes found while scanning application codebases
 		appClassList = new LinkedList<ClassDescriptor>();
 		
 		try {
 			buildClassPath();
+			analyzeApplication();
 			
 			// TODO: the execution plan, analysis, etc.
 		} finally {
@@ -85,7 +94,7 @@ public class FindBugs2 {
 			classPath.close();
 		}
 	}
-	
+
 	/**
 	 * Worklist item.
 	 * Represents one codebase to be processed during the
@@ -274,6 +283,21 @@ public class FindBugs2 {
 			// Do nothing - no Jar manifest found
 		}
 		
+	}
+	
+	/**
+	 * Analyze the classes in the application codebase.
+	 * @throws CheckedAnalysisException 
+	 */
+	private void analyzeApplication() throws CheckedAnalysisException {
+		// FIXME: for the moment, we're not building an execution plan or supporting multiple passes
+		
+		for (ClassDescriptor descriptor : appClassList) {
+			System.out.println("App class: " + descriptor);
+			
+			ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
+			System.out.println(" ** contains " + classData.getData().length + " bytes of data");
+		}
 	}
 	
 	public static void main(String[] args) throws Exception {

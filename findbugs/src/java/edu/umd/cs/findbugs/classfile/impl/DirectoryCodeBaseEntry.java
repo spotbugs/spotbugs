@@ -27,18 +27,18 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
 final class DirectoryCodeBaseEntry implements ICodeBaseEntry {
 	private final DirectoryCodeBase codeBase;
-	private final String fileName;
+	private final String resourceName;
 
-	DirectoryCodeBaseEntry(DirectoryCodeBase codeBase, String fileName) {
+	DirectoryCodeBaseEntry(DirectoryCodeBase codeBase, String resourceName) {
 		this.codeBase = codeBase;
-		this.fileName = fileName;
+		this.resourceName = resourceName;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
 	 */
 	public int getNumBytes() {
-		File fullPath = codeBase.getFullPathOfResource(fileName);
+		File fullPath = codeBase.getFullPathOfResource(resourceName);
 		if (!fullPath.exists()) {
 			return -1;
 		}
@@ -49,14 +49,14 @@ final class DirectoryCodeBaseEntry implements ICodeBaseEntry {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
 	 */
 	public String getResourceName() {
-		return fileName;
+		return resourceName;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
 	 */
 	public InputStream openResource() throws IOException {
-		return codeBase.openFile(fileName);
+		return codeBase.openFile(resourceName);
 	}
 	
 	/* (non-Javadoc)
@@ -69,7 +69,7 @@ final class DirectoryCodeBaseEntry implements ICodeBaseEntry {
 		}
 		DirectoryCodeBaseEntry other = (DirectoryCodeBaseEntry) obj;
 		return this.codeBase.equals(other.codeBase)
-			&& this.fileName.equals(other.fileName);
+			&& this.resourceName.equals(other.resourceName);
 	}
 	
 	/* (non-Javadoc)
@@ -77,6 +77,6 @@ final class DirectoryCodeBaseEntry implements ICodeBaseEntry {
 	 */
 	@Override
 	public int hashCode() {
-		return 7919 * codeBase.hashCode() + fileName.hashCode();
+		return 7919 * codeBase.hashCode() + resourceName.hashCode();
 	}
 }
