@@ -26,10 +26,10 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
-import edu.umd.cs.findbugs.classfile.IClassDescriptor;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
-import edu.umd.cs.findbugs.classfile.IMethodDescriptor;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * Implementation of IAnalysisCache.
@@ -45,8 +45,8 @@ public class AnalysisCache implements IAnalysisCache {
 	
 	private Map<Class<?>, IClassAnalysisEngine> classAnalysisEngineMap;
 	private Map<Class<?>, IMethodAnalysisEngine> methodAnalysisEngineMap;
-	private Map<IClassDescriptor, Map<Class<?>, Object>> classAnalysisMap;
-	private Map<IMethodDescriptor, Map<Class<?>, Object>> methodAnalysisMap;
+	private Map<ClassDescriptor, Map<Class<?>, Object>> classAnalysisMap;
+	private Map<MethodDescriptor, Map<Class<?>, Object>> methodAnalysisMap;
 	
 	static class AnalysisError {
 		CheckedAnalysisException exception;
@@ -60,8 +60,8 @@ public class AnalysisCache implements IAnalysisCache {
 		this.classPath = classPath;
 		this.classAnalysisEngineMap = new HashMap<Class<?>, IClassAnalysisEngine>();
 		this.methodAnalysisEngineMap = new HashMap<Class<?>, IMethodAnalysisEngine>();
-		this.classAnalysisMap = new HashMap<IClassDescriptor, Map<Class<?>,Object>>();
-		this.methodAnalysisMap = new HashMap<IMethodDescriptor, Map<Class<?>,Object>>();
+		this.classAnalysisMap = new HashMap<ClassDescriptor, Map<Class<?>,Object>>();
+		this.methodAnalysisMap = new HashMap<MethodDescriptor, Map<Class<?>,Object>>();
 	}
 	
 	/* (non-Javadoc)
@@ -72,10 +72,10 @@ public class AnalysisCache implements IAnalysisCache {
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getClassAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.IClassDescriptor)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getClassAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.ClassDescriptor)
 	 */
 	public <E> E getClassAnalysis(Class<E> analysisClass,
-			IClassDescriptor classDescriptor) throws CheckedAnalysisException {
+			ClassDescriptor classDescriptor) throws CheckedAnalysisException {
 		return analyzeClassOrMethod(
 				this,
 				classAnalysisMap,
@@ -85,10 +85,10 @@ public class AnalysisCache implements IAnalysisCache {
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getMethodAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.IMethodDescriptor)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getMethodAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.MethodDescriptor)
 	 */
 	public <E> E getMethodAnalysis(Class<E> analysisClass,
-			IMethodDescriptor methodDescriptor) throws CheckedAnalysisException {
+			MethodDescriptor methodDescriptor) throws CheckedAnalysisException {
 		return analyzeClassOrMethod(
 				this,
 				methodAnalysisMap,

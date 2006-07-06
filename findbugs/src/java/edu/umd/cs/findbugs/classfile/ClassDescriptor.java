@@ -20,24 +20,36 @@
 package edu.umd.cs.findbugs.classfile;
 
 /**
- * Descriptor for a Java class.
- * Each reachable class in the application and its aux classpath is
- * represented uniquely by an instance of IClass.
+ * Descriptor identifying a class.
  * 
  * @author David Hovemeyer
  */
-public interface IClassDescriptor {
-	/**
-	 * Get the name of the class.
-	 * 
-	 * @return the name of the class
-	 */
-	public String getClassName();
+public class ClassDescriptor implements Comparable<ClassDescriptor> {
+	private String className;
 	
 	/**
-	 * Get the codebase entry from which the class data was loaded.
+	 * Constructor.
 	 * 
-	 * @return the codebase entry from which the class data was loaded
+	 * @param className class name in VM format, e.g. "java/lang/String"
 	 */
-	public ICodeBaseEntry getCodeBaseEntry();
+	public ClassDescriptor(String className) {
+		if (className.indexOf('.') >= 0) {
+			throw new IllegalArgumentException("Class name " + className + " not in VM format");
+		}
+		this.className = className;
+	}
+	
+	/**
+	 * @return Returns the class name in VM format, e.g. "java/lang/String"
+	 */
+	public String getClassName() {
+		return className;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(ClassDescriptor o) {
+		return className.compareTo(o.className);
+	}
 }

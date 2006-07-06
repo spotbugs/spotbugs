@@ -57,7 +57,7 @@ public interface IAnalysisCache {
 	 * @return                 the analysis object (e.g., instance of FoobarAnalysis for the class)
 	 * @throws CheckedAnalysisException if an error occurs performing the analysis
 	 */
-	public<E> E getClassAnalysis(Class<E> analysisClass, IClassDescriptor classDescriptor)
+	public<E> E getClassAnalysis(Class<E> analysisClass, ClassDescriptor classDescriptor)
 		throws CheckedAnalysisException;
 
 	/**
@@ -69,7 +69,7 @@ public interface IAnalysisCache {
 	 * @return                 the analysis object (e.g., instance of FoobarAnalysis for the method)
 	 * @throws CheckedAnalysisException if an error occurs performing the analysis
 	 */
-	public<E> E getMethodAnalysis(Class<E> analysisClass, IMethodDescriptor methodDescriptor)
+	public<E> E getMethodAnalysis(Class<E> analysisClass, MethodDescriptor methodDescriptor)
 		throws CheckedAnalysisException;
 	
 	/**
