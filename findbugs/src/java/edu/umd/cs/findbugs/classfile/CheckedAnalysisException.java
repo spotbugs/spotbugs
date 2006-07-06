@@ -26,6 +26,11 @@ package edu.umd.cs.findbugs.classfile;
  * @author David Hovemeyer
  */
 public class CheckedAnalysisException extends Exception {
+	/**
+	 * Constructor.
+	 */
+	public CheckedAnalysisException() {
+	}
 	
 	/**
 	 * Constructor.
