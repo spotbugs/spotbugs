@@ -128,20 +128,39 @@ public class FindBugs2 {
 		// and referenced codebases.
 		while (!workList.isEmpty()) {
 			WorkListItem item = workList.removeFirst();
+			
+			// If we are working on an application codebase,
+			// then failing to open/scan it is a fatal error.
+			// We issue warnings about problems with aux codebases,
+			// but continue anyway.
+			boolean isAppCodeBase = item.isAppCodeBase();
 
-			// Open the codebase and add it to the classpath
-			// FIXME: failing to open a non-application codebase should not be fatal
-			ICodeBase codeBase = item.getCodeBaseLocator().openCodeBase();
-			codeBase.setApplicationCodeBase(item.isAppCodeBase());
-			classPath.addCodeBase(codeBase);
-			
-			// If it is a scannable codebase, check it for nested archives.
-			if (codeBase instanceof IScannableCodeBase) {
-				checkForNestedArchives(workList, (IScannableCodeBase) codeBase);
+			try {
+				// Open the codebase and add it to the classpath
+				ICodeBase codeBase = item.getCodeBaseLocator().openCodeBase();
+				codeBase.setApplicationCodeBase(isAppCodeBase);
+				classPath.addCodeBase(codeBase);
+
+				// If it is a scannable codebase, check it for nested archives.
+				if (codeBase instanceof IScannableCodeBase) {
+					checkForNestedArchives(workList, (IScannableCodeBase) codeBase);
+				}
+
+				// Check for a Jar manifest for additional aux classpath entries.
+				scanJarManifestForClassPathEntries(workList, codeBase);
+			} catch (IOException e) {
+				if (isAppCodeBase) {
+					throw e;
+				} else {
+					// TODO: log warning
+				}
+			} catch (ResourceNotFoundException e) {
+				if (isAppCodeBase) {
+					throw e;
+				} else {
+					// TODO: log warning
+				}
 			}
-			
-			// Check for a Jar manifest for additional aux classpath entries.
-			scanJarManifestForClassPathEntries(workList, codeBase);
 		}
 		
 		if (DEBUG) {
