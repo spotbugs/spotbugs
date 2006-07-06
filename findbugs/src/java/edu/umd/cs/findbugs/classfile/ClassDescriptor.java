@@ -52,4 +52,14 @@ public class ClassDescriptor implements Comparable<ClassDescriptor> {
 	public int compareTo(ClassDescriptor o) {
 		return className.compareTo(o.className);
 	}
+
+	/**
+	 * Get the resource name of this class as it would appear in the classpath.
+	 * E.g., "java/lang/String.class"
+	 * 
+	 * @return the resource name
+	 */
+	public String toResourceName() {
+		return className + ".class";
+	}
 }
