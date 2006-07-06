@@ -24,7 +24,7 @@ package edu.umd.cs.findbugs.classfile;
  * 
  * @author David Hovemeyer
  */
-public class ResourceNotFoundException extends Exception {
+public class ResourceNotFoundException extends CheckedAnalysisException {
 	private String resourceName;
 	
 	public static final String MESSAGE_PREFIX = "Resource not found: ";
