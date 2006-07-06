@@ -24,13 +24,5 @@ package edu.umd.cs.findbugs.classfile;
  * 
  * @author David Hovemeyer
  */
-public interface IClassAnalysisEngine {
-	/**
-	 * Perform an analysis on class named by given class descriptor.
-	 * 
-	 * @param analysisCache   the analysis cache
-	 * @param classDescriptor the descriptor of the class to be analyzed
-	 * @return the result of the analysis of the class
-	 */
-	public Object analyze(IAnalysisCache analysisCache, IClassDescriptor classDescriptor);
+public interface IClassAnalysisEngine extends IAnalysisEngine<IClassDescriptor> {
 }

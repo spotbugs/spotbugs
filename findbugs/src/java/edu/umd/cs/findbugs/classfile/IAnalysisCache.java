@@ -55,8 +55,10 @@ public interface IAnalysisCache {
 	 * @param analysisClass    the analysis class object (e.g., FoobarAnalysis.class)
 	 * @param classDescriptor  the descriptor of the class to analyze
 	 * @return                 the analysis object (e.g., instance of FoobarAnalysis for the class)
+	 * @throws CheckedAnalysisException if an error occurs performing the analysis
 	 */
-	public<E> E getClassAnalysis(Class<E> analysisClass, IClassDescriptor classDescriptor);
+	public<E> E getClassAnalysis(Class<E> analysisClass, IClassDescriptor classDescriptor)
+		throws CheckedAnalysisException;
 
 	/**
 	 * Get an analysis of the given method.
@@ -65,6 +67,8 @@ public interface IAnalysisCache {
 	 * @param analysisClass    the analysis class object (e.g., FoobarAnalysis.class)
 	 * @param methodDescriptor the descriptor of the method to analyze
 	 * @return                 the analysis object (e.g., instance of FoobarAnalysis for the method)
+	 * @throws CheckedAnalysisException if an error occurs performing the analysis
 	 */
-	public<E> E getMethodAnalysis(Class<E> analysisClass, IMethodDescriptor methodDescriptor);
+	public<E> E getMethodAnalysis(Class<E> analysisClass, IMethodDescriptor methodDescriptor)
+		throws CheckedAnalysisException;
 }

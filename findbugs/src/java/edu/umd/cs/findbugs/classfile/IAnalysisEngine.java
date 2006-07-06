@@ -20,9 +20,18 @@
 package edu.umd.cs.findbugs.classfile;
 
 /**
- * Engine for performing an analysis on methods.
+ * An engine for analyzing classes or methods.
  * 
  * @author David Hovemeyer
  */
-public interface IMethodAnalysisEngine extends IAnalysisEngine<IMethodDescriptor> {
+public interface IAnalysisEngine<DescriptorType> {
+	/**
+	 * Perform an analysis on class or method named by given descriptor.
+	 * 
+	 * @param analysisCache the analysis cache
+	 * @param descriptor    the descriptor of the class or method to be analyzed
+	 * @return the result of the analysis of the class or method
+	 */
+	public Object analyze(IAnalysisCache analysisCache, DescriptorType descriptor)
+		throws CheckedAnalysisException;
 }
