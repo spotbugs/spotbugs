@@ -17,28 +17,42 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.classfile;
+package edu.umd.cs.findbugs.classfile.analysis;
+
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
- * An engine for analyzing classes or methods.
+ * The data (bytes) of a class.
  * 
  * @author David Hovemeyer
  */
-public interface IAnalysisEngine<DescriptorType> {
-	/**
-	 * Perform an analysis on class or method named by given descriptor.
-	 * 
-	 * @param analysisCache the analysis cache
-	 * @param descriptor    the descriptor of the class or method to be analyzed
-	 * @return the result of the analysis of the class or method
-	 */
-	public Object analyze(IAnalysisCache analysisCache, DescriptorType descriptor)
-		throws CheckedAnalysisException;
+public class ClassData {
+	private ClassDescriptor classDescriptor;
+	private byte[] data;
 	
 	/**
-	 * Register the analysis engine with given analysis cache.
+	 * Constructor.
 	 * 
-	 * @param analysisCache the analysis cache
+	 * @param classDescriptor descriptor for the class
+	 * @param data            the data (bytes) for a class
 	 */
-	public void registerWith(IAnalysisCache analysisCache);
+	public ClassData(ClassDescriptor classDescriptor, byte[] data) {
+		this.classDescriptor = classDescriptor;
+		this.data = data;
+	}
+	
+	/**
+	 * @return Returns the ClassDescriptor.
+	 */
+	public ClassDescriptor getClassDescriptor() {
+		return classDescriptor;
+	}
+	
+	/**
+	 * @return Returns the data.
+	 */
+	public byte[] getData() {
+		return data;
+	}
+
 }

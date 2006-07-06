@@ -17,28 +17,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.classfile;
+package edu.umd.cs.findbugs.classfile.engine;
+
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
+import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 
 /**
- * An engine for analyzing classes or methods.
+ * Register analysis engines with an analysis cache.
  * 
  * @author David Hovemeyer
  */
-public interface IAnalysisEngine<DescriptorType> {
-	/**
-	 * Perform an analysis on class or method named by given descriptor.
-	 * 
-	 * @param analysisCache the analysis cache
-	 * @param descriptor    the descriptor of the class or method to be analyzed
-	 * @return the result of the analysis of the class or method
-	 */
-	public Object analyze(IAnalysisCache analysisCache, DescriptorType descriptor)
-		throws CheckedAnalysisException;
+public class EngineRegistrar {
+	private static IClassAnalysisEngine[] classAnalysisEngineList = {
+			new ClassDataAnalysisEngine(),
+	};
 	
+	private static IMethodAnalysisEngine[] methodAnalysisEngineList = {
+	};
+
 	/**
-	 * Register the analysis engine with given analysis cache.
+	 * Register analysis engines with given analysis cache.
 	 * 
 	 * @param analysisCache the analysis cache
 	 */
-	public void registerWith(IAnalysisCache analysisCache);
+	public static void registerAnalysisEngines(IAnalysisCache analysisCache) {
+		for (IClassAnalysisEngine engine : classAnalysisEngineList) {
+			engine.registerWith(analysisCache);
+		}
+		for (IMethodAnalysisEngine engine : methodAnalysisEngineList) {
+			engine.registerWith(analysisCache);
+		}
+	}
 }
