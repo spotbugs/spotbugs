@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IClassDescriptor;
+import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IMethodDescriptor;
 
@@ -39,6 +40,8 @@ import edu.umd.cs.findbugs.classfile.IMethodDescriptor;
  */
 public class AnalysisCache implements IAnalysisCache {
 	// TODO: think about caching policy.  Right now, cache everything forever.
+	
+	private IClassPath classPath;
 	
 	private Map<Class<?>, IClassAnalysisEngine> classAnalysisEngineMap;
 	private Map<Class<?>, IMethodAnalysisEngine> methodAnalysisEngineMap;
@@ -53,11 +56,19 @@ public class AnalysisCache implements IAnalysisCache {
 		}
 	}
 	
-	AnalysisCache() {
+	AnalysisCache(IClassPath classPath) {
+		this.classPath = classPath;
 		this.classAnalysisEngineMap = new HashMap<Class<?>, IClassAnalysisEngine>();
 		this.methodAnalysisEngineMap = new HashMap<Class<?>, IMethodAnalysisEngine>();
 		this.classAnalysisMap = new HashMap<IClassDescriptor, Map<Class<?>,Object>>();
 		this.methodAnalysisMap = new HashMap<IMethodDescriptor, Map<Class<?>,Object>>();
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getClassPath()
+	 */
+	public IClassPath getClassPath() {
+		return classPath;
 	}
 
 	/* (non-Javadoc)

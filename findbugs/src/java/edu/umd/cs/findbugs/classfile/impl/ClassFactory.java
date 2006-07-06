@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.classfile.impl;
 import java.io.File;
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
@@ -82,5 +83,12 @@ public class ClassFactory implements IClassFactory {
 			NestedZipFileCodeBaseLocator codeBaseLocator)
 			throws ResourceNotFoundException, IOException {
 		return new NestedZipFileCodeBase(codeBaseLocator);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IClassFactory#createAnalysisCache(edu.umd.cs.findbugs.classfile.IClassPath)
+	 */
+	public IAnalysisCache createAnalysisCache(IClassPath classPath) {
+		return new AnalysisCache(classPath); 
 	}
 }

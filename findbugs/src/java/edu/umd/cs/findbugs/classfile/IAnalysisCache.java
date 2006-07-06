@@ -71,4 +71,11 @@ public interface IAnalysisCache {
 	 */
 	public<E> E getMethodAnalysis(Class<E> analysisClass, IMethodDescriptor methodDescriptor)
 		throws CheckedAnalysisException;
+	
+	/**
+	 * Get the classpath from which classes are loaded. 
+	 * 
+	 * @return the classpath
+	 */
+	public IClassPath getClassPath();
 }

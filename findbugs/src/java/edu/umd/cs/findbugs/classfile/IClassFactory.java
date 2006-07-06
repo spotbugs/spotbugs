@@ -32,6 +32,8 @@ public interface IClassFactory {
 			String pathName);
 	
 	public ICodeBaseLocator createNestedArchiveCodeBaseLocator(ICodeBase parentCodeBase, String path);
+	
+	public IAnalysisCache createAnalysisCache(IClassPath classPath);
 
 //	public IScannableCodeBase createLocalCodeBase(String fileName)
 //			throws IOException;
