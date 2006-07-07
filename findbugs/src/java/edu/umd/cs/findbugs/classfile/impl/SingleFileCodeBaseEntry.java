@@ -1,0 +1,76 @@
+package edu.umd.cs.findbugs.classfile.impl;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import edu.umd.cs.findbugs.classfile.ICodeBase;
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
+
+/**
+ * @author Dave
+ */
+public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
+	private final SingleFileCodeBase codeBase;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param codeBase parent codebase
+	 */
+	public SingleFileCodeBaseEntry(SingleFileCodeBase codeBase) {
+		this.codeBase = codeBase;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
+	 */
+	public int getNumBytes() {
+		File file = new File(codeBase.fileName);
+		if (!file.exists()) {
+			return -1;
+		}
+		return (int) file.length();
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
+	 */
+	public String getResourceName() {
+		return codeBase.fileName;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
+	 */
+	public InputStream openResource() throws IOException {
+		return codeBase.openFile();
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
+	 */
+	public ICodeBase getCodeBase() {
+		return codeBase;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != this.getClass()) {
+			return false;
+		}
+		SingleFileCodeBaseEntry other = (SingleFileCodeBaseEntry) obj;
+		return other.codeBase.equals(this.codeBase);
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return codeBase.hashCode();
+	}
+}

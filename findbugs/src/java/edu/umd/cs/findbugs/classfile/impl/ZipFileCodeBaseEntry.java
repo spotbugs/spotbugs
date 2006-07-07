@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 
+import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
 /**
@@ -58,6 +59,13 @@ public class ZipFileCodeBaseEntry implements ICodeBaseEntry {
 	 */
 	public InputStream openResource() throws IOException {
 		return codeBase.zipFile.getInputStream(zipEntry);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
+	 */
+	public ICodeBase getCodeBase() {
+		return codeBase;
 	}
 	
 	/* (non-Javadoc)

@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
 final class DirectoryCodeBaseEntry implements ICodeBaseEntry {
@@ -57,6 +58,13 @@ final class DirectoryCodeBaseEntry implements ICodeBaseEntry {
 	 */
 	public InputStream openResource() throws IOException {
 		return codeBase.openFile(resourceName);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
+	 */
+	public ICodeBase getCodeBase() {
+		return codeBase;
 	}
 	
 	/* (non-Javadoc)

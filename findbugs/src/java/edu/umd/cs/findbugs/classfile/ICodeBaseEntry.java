@@ -50,4 +50,11 @@ public interface ICodeBaseEntry {
 	 * @throws IOException if an error occurs reading from the resource
 	 */
 	public InputStream openResource() throws IOException;
+	
+	/**
+	 * Get the codebase this codebase entry belongs to.
+	 * 
+	 * @return the codebase this codebase entry belongs to
+	 */
+	public ICodeBase getCodeBase();
 }

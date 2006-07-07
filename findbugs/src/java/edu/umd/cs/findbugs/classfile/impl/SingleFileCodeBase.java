@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.classfile.impl;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -54,38 +53,8 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 		return isAppCodeBase;
 	}
 	
-	/**
-	 * @author Dave
-	 */
-	private final class SingleFileCodeBaseEntry implements ICodeBaseEntry {
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
-		 */
-		public int getNumBytes() {
-			File file = new File(fileName);
-			if (!file.exists()) {
-				return -1;
-			}
-			return (int) file.length();
-		}
-
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
-		 */
-		public String getResourceName() {
-			return fileName;
-		}
-
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
-		 */
-		public InputStream openResource() throws IOException {
-			return openFile();
-		}
-	}
-
 	private ICodeBaseLocator codeBaseLocator;
-	private String fileName;
+	String fileName;
 	private boolean isAppCodeBase;
 	
 	public SingleFileCodeBase(ICodeBaseLocator codeBaseLocator, String fileName) {
@@ -128,7 +97,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 				if (done) {
 					throw new NoSuchElementException();
 				}
-				return new SingleFileCodeBaseEntry();
+				return new SingleFileCodeBaseEntry(SingleFileCodeBase.this);
 			}
 		};
 	}
@@ -143,10 +112,10 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 		if (!resourceName.equals(fileName)) {
 			throw new ResourceNotFoundException(resourceName);
 		}
-		return new SingleFileCodeBaseEntry();
+		return new SingleFileCodeBaseEntry(this);
 	}
 	
-	private InputStream openFile() throws IOException {
+	InputStream openFile() throws IOException {
 		return new BufferedInputStream(new FileInputStream(fileName));
 	}
 	

@@ -64,6 +64,13 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 	}
 	
 	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
+	 */
+	public ICodeBase getCodeBase() {
+		return frontEndCodeBase;
+	}
+	
+	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
