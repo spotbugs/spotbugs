@@ -137,4 +137,11 @@ public class ClassPathImpl implements IClassPath {
 		}
 		return null;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IClassPath#mapResourceNameToCodeBaseEntry(java.lang.String, edu.umd.cs.findbugs.classfile.ICodeBaseEntry)
+	 */
+	public void mapResourceNameToCodeBaseEntry(String resourceName, ICodeBaseEntry codeBaseEntry) {
+		codeBaseEntryMap.put(resourceName, codeBaseEntry);
+	}
 }

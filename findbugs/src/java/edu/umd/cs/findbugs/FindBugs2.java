@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -133,10 +134,10 @@ public class FindBugs2 {
 		// Seed worklist with app codebases and aux codebases.
 		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
 		for (String path : project.getFileArray()) {
-			workList.add(new WorkListItem(classFactory.createFilesystemCodeBaseLocator(path), true));
+			addToWorkList(workList, new WorkListItem(classFactory.createFilesystemCodeBaseLocator(path), true));
 		}
 		for (String path : project.getAuxClasspathEntryList()) {
-			workList.add(new WorkListItem(classFactory.createFilesystemCodeBaseLocator(path), false));
+			addToWorkList(workList, new WorkListItem(classFactory.createFilesystemCodeBaseLocator(path), false));
 		}
 
 		// Build the classpath, scanning codebases for nested archives
@@ -200,9 +201,14 @@ public class FindBugs2 {
 	}
 
 	/**
-	 * Check a codebase for nested archives.
-	 * (adding any found to the worklist).
-	 * Also, build a list of classes in application codebases.
+	 * Scan given codebase:
+	 * <ul>
+	 * <li> check a codebase for nested archives
+	 *      (adding any found to the worklist)
+	 * <li> build a list of classes in application codebases
+	 * <li> add resource name to codebase entry mappings
+	 *      to the classpath for application codebases
+	 * </ul>
 	 * 
 	 * @param workList the worklist
 	 * @param codeBase the codebase to scan
@@ -227,13 +233,17 @@ public class FindBugs2 {
 				}
 				ICodeBaseLocator nestedArchiveLocator =
 					classFactory.createNestedArchiveCodeBaseLocator(codeBase, entry.getResourceName());
-				workList.add(new WorkListItem(nestedArchiveLocator, codeBase.isApplicationCodeBase()));
+				addToWorkList(workList, new WorkListItem(nestedArchiveLocator, codeBase.isApplicationCodeBase()));
 			}
 			
-			// Make a note of classes in application codebases
-			if (codeBase.isApplicationCodeBase()
-					&& ClassDescriptor.isClassResource(entry.getResourceName())) {
-				appClassList.add(ClassDescriptor.fromResourceName(entry.getResourceName()));
+			// In application codebases,
+			//   - record all classesd
+			//   - add authoritative resource name -> codebase entry mappings to classpath
+			if (codeBase.isApplicationCodeBase()) {
+				if (ClassDescriptor.isClassResource(entry.getResourceName())) {
+					appClassList.add(ClassDescriptor.fromResourceName(entry.getResourceName()));
+				}
+				classPath.mapResourceNameToCodeBaseEntry(entry.getResourceName(), entry);
 			}
 		}
 	}
@@ -271,7 +281,7 @@ public class FindBugs2 {
 						
 						// Codebases found in Class-Path entries are always
 						// added to the aux classpath, not the application.
-						workList.add(new WorkListItem(relativeCodeBaseLocator, false));
+						addToWorkList(workList, new WorkListItem(relativeCodeBaseLocator, false));
 					}
 				}
 			} finally {
@@ -285,6 +295,38 @@ public class FindBugs2 {
 		
 	}
 	
+	/**
+	 * Add a worklist item to the worklist.
+	 * This method maintains the invariant that all of the worklist
+	 * items representing application codebases appear <em>before</em>
+	 * all of the worklist items representing auxiliary codebases.
+	 * 
+	 * @param workList the worklist
+	 * @param itemToAdd     the worklist item to add
+	 */
+	private void addToWorkList(LinkedList<WorkListItem> workList, WorkListItem itemToAdd) {
+		if (!itemToAdd.isAppCodeBase()) {
+			// Auxiliary codebases are always added at the end
+			workList.addLast(itemToAdd);
+			return;
+		}
+		
+		// Adding an application codebase: position a ListIterator
+		// just before first auxiliary codebase (or at the end of the list
+		// if there are no auxiliary codebases)
+		ListIterator<WorkListItem> i = workList.listIterator();
+		while (i.hasNext()) {
+			WorkListItem listItem = i.next();
+			if (!listItem.isAppCodeBase()) {
+				i.previous();
+				break;
+			}
+		}
+		
+		// Add the codebase to the worklist
+		i.add(itemToAdd);
+	}
+
 	/**
 	 * Analyze the classes in the application codebase.
 	 * @throws CheckedAnalysisException 

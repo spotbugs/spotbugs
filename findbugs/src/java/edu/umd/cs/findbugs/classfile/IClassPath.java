@@ -65,6 +65,16 @@ public interface IClassPath {
 	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException;
 	
 	/**
+	 * Add a resource name to codebase entry mapping.
+	 * Once this is done, future lookups of this resource will
+	 * automatically resolve to the given codebase entry.
+	 * 
+	 * @param resourceName  the resource name to map
+	 * @param codeBaseEntry the codebase entry to use for this resource
+	 */
+	public void mapResourceNameToCodeBaseEntry(String resourceName, ICodeBaseEntry codeBaseEntry);
+	
+	/**
 	 * Close all of the code bases that are part of this class path.
 	 * This should be done once the client is finished with the classpath.
 	 */
