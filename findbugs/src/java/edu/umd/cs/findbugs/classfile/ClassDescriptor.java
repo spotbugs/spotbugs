@@ -94,4 +94,24 @@ public class ClassDescriptor implements Comparable<ClassDescriptor> {
 	public String toString() {
 		return className;
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != this.getClass()) {
+			return false;
+		}
+		ClassDescriptor other = (ClassDescriptor) obj;
+		return this.className.equals(other.className);
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return className.hashCode();
+	}
 }
