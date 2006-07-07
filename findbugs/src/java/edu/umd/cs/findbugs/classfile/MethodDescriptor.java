@@ -25,10 +25,10 @@ package edu.umd.cs.findbugs.classfile;
  * @author David Hovemeyer
  */
 public class MethodDescriptor implements Comparable<MethodDescriptor> {
-	private String className;
-	private String methodName;
-	private String methodSignature;
-	private boolean isStatic;
+	private final String className;
+	private final String methodName;
+	private final String methodSignature;
+	private final boolean isStatic;
 
 	/**
 	 * Constructor.
@@ -91,5 +91,31 @@ public class MethodDescriptor implements Comparable<MethodDescriptor> {
 			return cmp;
 		}
 		return (this.isStatic ? 1 : 0) - (o.isStatic ? 1 : 0);
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != this.getClass()) {
+			return false;
+		}
+		MethodDescriptor other = (MethodDescriptor) obj;
+		return this.className.equals(other.className)
+			&& this.methodName.equals(other.methodName)
+			&& this.methodSignature.equals(other.methodSignature)
+			&& this.isStatic == other.isStatic;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return className.hashCode() * 7919
+			+ methodName.hashCode() * 3119  
+			+ methodSignature.hashCode() * 131
+			+ (isStatic ? 1 : 0);
 	}
 }
