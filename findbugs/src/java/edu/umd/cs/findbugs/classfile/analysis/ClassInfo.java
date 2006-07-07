@@ -23,32 +23,51 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
 /**
- * The data (bytes) of a class.
+ * ClassInfo represents important metadata about a
+ * loaded class, such as its superclass, access flags, codebase entry,
+ * etc.
  * 
  * @author David Hovemeyer
  */
-public class ClassData {
+public class ClassInfo {
 	private final ClassDescriptor classDescriptor;
+	private final ClassDescriptor superclassDescriptor;
+	private final ClassDescriptor[] interfaceDescriptorList;
 	private final ICodeBaseEntry codeBaseEntry;
-	private final byte[] data;
+	private final int accessFlags;
 	
-	/**
-	 * Constructor.
-	 * 
-	 * @param classDescriptor descriptor for the class
-	 * @param data            the data (bytes) for a class
-	 */
-	public ClassData(ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry, byte[] data) {
+	public ClassInfo(
+			ClassDescriptor classDescriptor,
+			ClassDescriptor superclassDescriptor,
+			ClassDescriptor[] interfaceDescriptorList,
+			ICodeBaseEntry codeBaseEntry,
+			int accessFlags) {
 		this.classDescriptor = classDescriptor;
+		this.superclassDescriptor = superclassDescriptor;
+		this.interfaceDescriptorList = interfaceDescriptorList;
 		this.codeBaseEntry = codeBaseEntry;
-		this.data = data;
+		this.accessFlags = accessFlags;
 	}
 	
 	/**
-	 * @return Returns the ClassDescriptor.
+	 * @return Returns the classDescriptor.
 	 */
 	public ClassDescriptor getClassDescriptor() {
 		return classDescriptor;
+	}
+	
+	/**
+	 * @return Returns the superclassDescriptor.
+	 */
+	public ClassDescriptor getSuperclassDescriptor() {
+		return superclassDescriptor;
+	}
+	
+	/**
+	 * @return Returns the interfaceDescriptorList.
+	 */
+	public ClassDescriptor[] getInterfaceDescriptorList() {
+		return interfaceDescriptorList;
 	}
 	
 	/**
@@ -59,10 +78,9 @@ public class ClassData {
 	}
 	
 	/**
-	 * @return Returns the data.
+	 * @return Returns the accessFlags.
 	 */
-	public byte[] getData() {
-		return data;
+	public int getAccessFlags() {
+		return accessFlags;
 	}
-
 }

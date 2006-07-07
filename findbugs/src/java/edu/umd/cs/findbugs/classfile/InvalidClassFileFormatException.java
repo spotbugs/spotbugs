@@ -19,13 +19,37 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import java.io.IOException;
-
 /**
- * Cache for classpath resource data (such as classfiles). 
- * 
  * @author David Hovemeyer
  */
-public interface IResourceCache {
-	public byte[] getResourceData(String resourceName) throws ResourceNotFoundException, IOException;
+public class InvalidClassFileFormatException extends CheckedAnalysisException {
+	private ClassDescriptor classDescriptor;
+	private ICodeBaseEntry codeBaseEntry;
+	
+	public InvalidClassFileFormatException(ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry) {
+		super("Invalid classfile format");
+		this.classDescriptor = classDescriptor;
+		this.codeBaseEntry = codeBaseEntry;
+	}
+
+	public InvalidClassFileFormatException(ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry,
+			Throwable cause) {
+		super("Invalid classfile format", cause);
+		this.classDescriptor = classDescriptor;
+		this.codeBaseEntry = codeBaseEntry;
+	}
+	
+	/**
+	 * @return Returns the classDescriptor.
+	 */
+	public ClassDescriptor getClassDescriptor() {
+		return classDescriptor;
+	}
+	
+	/**
+	 * @return Returns the codeBaseEntry.
+	 */
+	public ICodeBaseEntry getCodeBaseEntry() {
+		return codeBaseEntry;
+	}
 }

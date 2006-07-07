@@ -76,7 +76,7 @@ public class ClassDataAnalysisEngine implements IClassAnalysisEngine {
 
 		// Construct the resulting ClassData object and return it
 		byte[] data = byteSink.toByteArray();
-		return new ClassData(descriptor, data);
+		return new ClassData(descriptor, codeBaseEntry, data);
 	}
 	
 	/* (non-Javadoc)

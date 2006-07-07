@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.Archive;
@@ -339,6 +340,11 @@ public class FindBugs2 {
 			
 			ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
 			System.out.println(" ** contains " + classData.getData().length + " bytes of data");
+			
+			ClassInfo classInfo = analysisCache.getClassAnalysis(ClassInfo.class, descriptor);
+			System.out.println(" ** class:" + classInfo.getClassDescriptor());
+			System.out.println(" ** superclass:" + classInfo.getSuperclassDescriptor());
+			System.out.println(" ** access flags:" + classInfo.getAccessFlags());
 		}
 	}
 	

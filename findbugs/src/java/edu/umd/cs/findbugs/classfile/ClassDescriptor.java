@@ -25,7 +25,7 @@ package edu.umd.cs.findbugs.classfile;
  * @author David Hovemeyer
  */
 public class ClassDescriptor implements Comparable<ClassDescriptor> {
-	private String className;
+	private final String className;
 	
 	/**
 	 * Constructor.
