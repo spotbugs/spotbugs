@@ -155,7 +155,7 @@ public class AnalysisCache implements IAnalysisCache {
 			throw ((AnalysisError) analysisResult).exception;
 		}
 		
-		// If we could assume a 1.5 or later JVM, the Class.cast() static
+		// If we could assume a 1.5 or later JVM, the Class.cast()
 		// method could do this cast without a warning.
 		return (E) analysisResult;
 		
