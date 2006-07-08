@@ -76,12 +76,11 @@ public class FindBugs2 {
 		classFactory = ClassFactory.instance();
 		
 		// The class path object
-		// FIXME: this should be in the analysis context eventually
-		classPath = classFactory.createClassPath();
+		createClassPath();
 		
 		// The analysis cache object
 		// FIXME: should also be in the analysis context
-		analysisCache = ClassFactory.instance().createAnalysisCache(classPath);
+		createAnalysisCache();
 
 		// List of application classes found while scanning application codebases
 		appClassList = new LinkedList<ClassDescriptor>();
@@ -95,6 +94,27 @@ public class FindBugs2 {
 			// Make sure the codebases on the classpath are closed
 			classPath.close();
 		}
+	}
+
+	/**
+	 * Create the classpath object.
+	 */
+	private void createClassPath() {
+		// FIXME: this should be in the analysis context eventually
+		classPath = classFactory.createClassPath();
+	}
+
+	/**
+	 * Create the analysis cache object.
+	 */
+	private void createAnalysisCache() {
+		analysisCache = ClassFactory.instance().createAnalysisCache(classPath);
+		
+		// TODO: this would be a good place to load "analysis plugins" which could
+		// add additional analysis engines.  Or, perhaps when we load
+		// detector plugins we should check for analysis engines.
+		// Either way, allowing plugins to add new analyses would be nice.
+		edu.umd.cs.findbugs.classfile.engine.EngineRegistrar.registerAnalysisEngines(analysisCache);
 	}
 
 	/**
