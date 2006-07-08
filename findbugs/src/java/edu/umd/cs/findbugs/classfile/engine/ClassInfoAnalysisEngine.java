@@ -22,12 +22,15 @@ package edu.umd.cs.findbugs.classfile.engine;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.ClassNameMismatchException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IClassConstants;
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
@@ -56,11 +59,37 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 	 */
 	public Object analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
-		// Get class data
+		// Get InputStream reading from class data
 		ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
+		InputStream classDataIn = new ByteArrayInputStream(classData.getData());
 
+		// Read the class info
+		ClassInfo classInfo = parseClassInfo(descriptor, classData.getCodeBaseEntry(), classDataIn);
+		if (!classInfo.getClassDescriptor().equals(descriptor)) {
+			throw new ClassNameMismatchException(
+					descriptor,
+					classInfo.getClassDescriptor(),
+					classData.getCodeBaseEntry());
+		}
+		return classInfo;
+	}
+	
+	/**
+	 * Utility method to directly parse ClassInfo from an input stream.
+	 * 
+	 * @param expectedClassDescriptor expected class descriptor (which class the caller
+	 *                                 thinks this should be) 
+	 * @param codeBaseEntry           the codebase entry from which the class was loaded
+	 * @param classDataIn             input stream reading the class data
+	 * @return the parsed ClassInfo
+	 * @throws InvalidClassFileFormatException if the input stream is not reading a valid class file
+	 */
+	public static ClassInfo parseClassInfo(
+			ClassDescriptor expectedClassDescriptor,
+			ICodeBaseEntry codeBaseEntry,
+			InputStream classDataIn) throws InvalidClassFileFormatException {
 		// Read information from a DataInputStream
-		DataInputStream in = new DataInputStream(new ByteArrayInputStream(classData.getData()));
+		DataInputStream in = new DataInputStream(classDataIn);
 		
 		try {
 			int magic = in.readInt();
@@ -70,7 +99,7 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 
 			Constant[] constantPool = new Constant[constant_pool_count];
 			for (int i = 1; i < constantPool.length; i++) {
-				constantPool[i] = readConstant(descriptor, classData, in);
+				constantPool[i] = readConstant(expectedClassDescriptor, codeBaseEntry, in);
 				if (constantPool[i].tag == IClassConstants.CONSTANT_Double ||
 						constantPool[i].tag == IClassConstants.CONSTANT_Long) {
 					// Double and Long constants take up two constant pool entries
@@ -82,31 +111,31 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 
 			int this_class = in.readUnsignedShort();
 			ClassDescriptor thisClassDescriptor =
-				getClassDescriptor(descriptor, classData, constantPool, this_class);
+				getClassDescriptor(expectedClassDescriptor, codeBaseEntry, constantPool, this_class);
 
 			int super_class = in.readUnsignedShort();
 			ClassDescriptor superClassDescriptor =
-				getClassDescriptor(descriptor, classData, constantPool, super_class);
+				getClassDescriptor(expectedClassDescriptor, codeBaseEntry, constantPool, super_class);
 
 			int interfaces_count = in.readUnsignedShort();
 			if (interfaces_count < 0) {
-				throw new InvalidClassFileFormatException(descriptor, classData.getCodeBaseEntry());
+				throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
 			}
 			ClassDescriptor[] interfaceDescriptorList = new ClassDescriptor[interfaces_count];
 			for (int i = 0; i < interfaceDescriptorList.length; i++) {
 				interfaceDescriptorList[i] = 
-					getClassDescriptor(descriptor, classData, constantPool, in.readUnsignedShort());
+					getClassDescriptor(expectedClassDescriptor, codeBaseEntry, constantPool, in.readUnsignedShort());
 			}
 			
 			return new ClassInfo(
 					thisClassDescriptor,
 					superClassDescriptor,
 					interfaceDescriptorList,
-					classData.getCodeBaseEntry(),
+					codeBaseEntry,
 					access_flags);
 			
 		} catch (IOException e) {
-			throw new InvalidClassFileFormatException(descriptor, classData.getCodeBaseEntry(), e);
+			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
 		}
 	}
 
@@ -141,13 +170,13 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 	 * @throws IOException 
 	 */
 	private static Constant readConstant(
-			ClassDescriptor descriptor,
-			ClassData classData,
+			ClassDescriptor expectedDescriptor,
+			ICodeBaseEntry codeBaseEntry,
 			DataInputStream in)
 			throws InvalidClassFileFormatException, IOException {
 		int tag = in.readUnsignedByte();
 		if (tag < 0 || tag >= CONSTANT_FORMAT_MAP.length || CONSTANT_FORMAT_MAP[tag] == null) {
-			throw new InvalidClassFileFormatException(descriptor, classData.getCodeBaseEntry());
+			throw new InvalidClassFileFormatException(expectedDescriptor, codeBaseEntry);
 		}
 		String format = CONSTANT_FORMAT_MAP[tag];
 		Object[] data = new Object[format.length()];
@@ -191,7 +220,8 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 	 */
 	private static ClassDescriptor getClassDescriptor(
 			ClassDescriptor descriptor,
-			ClassData classData,
+			//ClassData classData,
+			ICodeBaseEntry codeBaseEntry,
 			Constant[] constantPool,
 			int index) throws InvalidClassFileFormatException {
 
@@ -199,14 +229,14 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 			return null;
 		}
 		
-		checkConstantPoolIndex(descriptor, classData, constantPool, index);
+		checkConstantPoolIndex(descriptor, codeBaseEntry, constantPool, index);
 		Constant constant = constantPool[index];
-		checkConstantTag(descriptor, classData, constant, IClassConstants.CONSTANT_Class);
+		checkConstantTag(descriptor, codeBaseEntry, constant, IClassConstants.CONSTANT_Class);
 		
 		int refIndex = ((Integer)constant.data[0]).intValue();
-		checkConstantPoolIndex(descriptor, classData, constantPool, refIndex);
+		checkConstantPoolIndex(descriptor, codeBaseEntry, constantPool, refIndex);
 		Constant refConstant = constantPool[refIndex];
-		checkConstantTag(descriptor, classData, refConstant, IClassConstants.CONSTANT_Utf8);
+		checkConstantTag(descriptor, codeBaseEntry, refConstant, IClassConstants.CONSTANT_Utf8);
 		
 		return new ClassDescriptor((String) refConstant.data[0]);
 	}
@@ -222,11 +252,12 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 	 */
 	private static void checkConstantPoolIndex(
 			ClassDescriptor descriptor,
-			ClassData classData,
+			//ClassData classData,
+			ICodeBaseEntry codeBaseEntry,
 			Constant[] constantPool,
 			int index) throws InvalidClassFileFormatException {
 		if (index < 0 || index >= constantPool.length || constantPool[index] == null) {
-			throw new InvalidClassFileFormatException(descriptor, classData.getCodeBaseEntry());
+			throw new InvalidClassFileFormatException(descriptor, codeBaseEntry);
 		}
 	}
 
@@ -241,11 +272,12 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 	 */
 	private static void checkConstantTag(
 			ClassDescriptor descriptor,
-			ClassData classData,
+			//ClassData classData,
+			ICodeBaseEntry codeBaseEntry,
 			Constant constant,
 			int expectedTag) throws InvalidClassFileFormatException {
 		if (constant.tag != expectedTag) {
-			throw new InvalidClassFileFormatException(descriptor, classData.getCodeBaseEntry());
+			throw new InvalidClassFileFormatException(descriptor, codeBaseEntry);
 		}
 	}
 

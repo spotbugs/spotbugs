@@ -1,6 +1,5 @@
 package edu.umd.cs.findbugs.classfile.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -26,18 +25,15 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
 	 */
 	public int getNumBytes() {
-		File file = new File(codeBase.fileName);
-		if (!file.exists()) {
-			return -1;
-		}
-		return (int) file.length();
+		return codeBase.getNumBytes();
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
 	 */
 	public String getResourceName() {
-		return codeBase.fileName;
+		//return codeBase.fileName;
+		return codeBase.getResourceName();
 	}
 
 	/* (non-Javadoc)

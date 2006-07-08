@@ -20,17 +20,21 @@
 package edu.umd.cs.findbugs.classfile.impl;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.NoSuchElementException;
 
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine;
+import edu.umd.cs.findbugs.io.IO;
 
 /**
  * Implementation of ICodeBase for a single classfile.
@@ -54,8 +58,10 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 	}
 	
 	private ICodeBaseLocator codeBaseLocator;
-	String fileName;
+	private String fileName;
 	private boolean isAppCodeBase;
+	private boolean resourceNameKnown;
+	private String resourceName;
 	
 	public SingleFileCodeBase(ICodeBaseLocator codeBaseLocator, String fileName) {
 		this.codeBaseLocator = codeBaseLocator;
@@ -97,6 +103,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 				if (done) {
 					throw new NoSuchElementException();
 				}
+				done = true;
 				return new SingleFileCodeBaseEntry(SingleFileCodeBase.this);
 			}
 		};
@@ -106,12 +113,10 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
 	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
-		// FIXME: this is wrong...respond affirmatively only if the resource name
-		// matches the filename version of the CLASS contained in the file
-		
-		if (!resourceName.equals(fileName)) {
+		if (!resourceName.equals(getResourceName())) {
 			throw new ResourceNotFoundException(resourceName);
 		}
+		
 		return new SingleFileCodeBaseEntry(this);
 	}
 	
@@ -124,5 +129,54 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 	 */
 	public void close() {
 		// Nothing to do
+	}
+
+	/**
+	 * Get the resource name of the single file.
+	 * We have to open the file and parse the constant pool
+	 * in order to find this out.
+	 * 
+	 * @return the resource name (e.g., "java/lang/String.class"
+	 *          if the class is java.lang.String)
+	 */
+	String getResourceName() {
+		if (!resourceNameKnown) {
+			// The resource name of a classfile can only be determined by reading
+			// the file and parsing the constant pool.
+			// If we can't do this for some reason, then we just
+			// make the resource name equal to the filename.
+			
+			InputStream in = null;
+			try {
+				in = new BufferedInputStream(new FileInputStream(fileName));
+				ClassInfo classInfo = ClassInfoAnalysisEngine.parseClassInfo(
+						null, new SingleFileCodeBaseEntry(this), in);
+				resourceName = classInfo.getClassDescriptor().toResourceName();
+			} catch (IOException e) {
+				resourceName = fileName;
+			} catch (CheckedAnalysisException e) {
+				resourceName = fileName;
+			} finally {
+				if (in != null) {
+					IO.close(in);
+				}
+			}
+			resourceNameKnown = true;
+		}
+		return resourceName;
+	}
+
+	/**
+	 * Return the number of bytes in the file.
+	 * 
+	 * @return the number of bytes in the file, or -1 if the file's length
+	 *          can't be determined
+	 */
+	int getNumBytes() {
+		File file = new File(fileName);
+		if (!file.exists()) {
+			return -1;
+		}
+		return (int) file.length();
 	}
 }
