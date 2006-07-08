@@ -21,7 +21,6 @@ package edu.umd.cs.findbugs;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 
 /**
  * Detector interface for new bytecode-framework-neutral architecture.
