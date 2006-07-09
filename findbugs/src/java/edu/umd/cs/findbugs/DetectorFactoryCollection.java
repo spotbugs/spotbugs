@@ -55,7 +55,7 @@ public class DetectorFactoryCollection {
 	/**
 	 * Constructor.
 	 */
-	private DetectorFactoryCollection() {
+	DetectorFactoryCollection() {
 		loadPlugins();
 	}
 
