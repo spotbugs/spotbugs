@@ -54,9 +54,10 @@ public class DetectorFactoryCollection {
 
 	/**
 	 * Constructor.
+	 * loadPlugins() method must be called before
+	 * any detector factories can be accessed.
 	 */
 	DetectorFactoryCollection() {
-		loadPlugins();
 	}
 
 	/**
@@ -78,6 +79,7 @@ public class DetectorFactoryCollection {
 		synchronized (lock) {
 			if (theInstance == null)
 				theInstance = new DetectorFactoryCollection();
+			theInstance.loadPlugins();
 			return theInstance;
 		}
 	}
@@ -173,7 +175,7 @@ public class DetectorFactoryCollection {
 	 * determine where FindBugs is installed, and the plugin files are
 	 * dynamically loaded from the plugin directory.
 	 */
-	private  void loadPlugins() {
+	void loadPlugins() {
 		// Load all detector plugins.
 	
 		//If we are running under jaws, just use the loaded plugin

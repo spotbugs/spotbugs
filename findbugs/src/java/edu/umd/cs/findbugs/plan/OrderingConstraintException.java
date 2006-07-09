@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.plan;
 
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+
 /**
  * An exception indicating that the detector ordering constraints
  * specified by a plugin are invalid.
@@ -27,7 +29,7 @@ package edu.umd.cs.findbugs.plan;
  * @see ExecutionPlan
  * @author David Hovemeyer
  */
-public class OrderingConstraintException extends Exception {
+public class OrderingConstraintException extends CheckedAnalysisException {
 	/**
 	 * 
 	 */

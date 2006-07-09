@@ -43,6 +43,8 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.io.IO;
+import edu.umd.cs.findbugs.plan.ExecutionPlan;
+import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 import edu.umd.cs.findbugs.util.Archive;
 
 /**
@@ -62,12 +64,33 @@ public class FindBugs2 {
 	private IClassPath classPath;
 	private IAnalysisCache analysisCache;
 	private List<ClassDescriptor> appClassList;
+	private DetectorFactoryCollection detectorFactoryCollection;
+	private ExecutionPlan executionPlan;
 	
 	public FindBugs2(BugReporter bugReporter, Project project) {
 		this.bugReporter = bugReporter;
 		this.project = project;
 	}
 	
+	/**
+	 * Set the detector factory collection to be used by this
+	 * FindBugs2 engine.  This method should be called before
+	 * the execute() method is called.
+	 * 
+	 * @param detectorFactoryCollection The detectorFactoryCollection to set.
+	 */
+	public void setDetectorFactoryCollection(
+			DetectorFactoryCollection detectorFactoryCollection) {
+		this.detectorFactoryCollection = detectorFactoryCollection;
+	}
+
+	/**
+	 * Execute the analysis.
+	 * 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws CheckedAnalysisException
+	 */
 	public void execute() throws IOException, InterruptedException, CheckedAnalysisException {
 		// Get the class factory for creating classpath/codebase/etc. 
 		classFactory = ClassFactory.instance();
@@ -84,6 +107,7 @@ public class FindBugs2 {
 		
 		try {
 			buildClassPath();
+			createExecutionPlan();
 			analyzeApplication();
 			
 			// TODO: the execution plan, analysis, etc.
@@ -347,6 +371,43 @@ public class FindBugs2 {
 	}
 
 	/**
+	 * Create an execution plan.
+	 * 
+	 * @throws OrderingConstraintException if the detector ordering constraints are inconsistent
+	 */
+	private void createExecutionPlan() throws OrderingConstraintException {
+		executionPlan = new ExecutionPlan();
+		
+		// For now, all detectors are enabled.
+		// Eventually base this on the user preferences.
+		DetectorFactoryChooser detectorFactoryChooser = new DetectorFactoryChooser() {
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.DetectorFactoryChooser#choose(edu.umd.cs.findbugs.DetectorFactory)
+			 */
+			public boolean choose(DetectorFactory factory) {
+				return true;
+			}
+		};
+		executionPlan.setDetectorFactoryChooser(detectorFactoryChooser);
+		
+		// Add plugins
+		for (Iterator<Plugin> i = detectorFactoryCollection.pluginIterator(); i.hasNext(); ) {
+			Plugin plugin = i.next();
+			if (DEBUG) {
+				System.out.println("Adding plugin " + plugin.getPluginId() + " to execution plan");
+			}
+			executionPlan.addPlugin(plugin);
+		}
+		
+		// Build the execution plan
+		executionPlan.build();
+		
+		if (DEBUG) {
+			System.out.println(executionPlan.getNumPasses() + " passes in execution plan");
+		}
+	}
+
+	/**
 	 * Analyze the classes in the application codebase.
 	 * @throws CheckedAnalysisException 
 	 */
@@ -371,6 +432,10 @@ public class FindBugs2 {
 			System.err.println("Usage: " + FindBugs2.class.getName() + " <project>");
 			System.exit(1);
 		}
+
+		if (System.getProperty("findbugs.home") == null) {
+			throw new IllegalArgumentException("findbugs.home property must be set!");
+		}
 		
 		BugReporter bugReporter = new PrintingBugReporter();
 		
@@ -378,6 +443,12 @@ public class FindBugs2 {
 		project.read(args[0]);
 		
 		FindBugs2 findBugs = new FindBugs2(bugReporter, project);
+		
+		// Load plugins
+		DetectorFactoryCollection detectorFactoryCollection = new DetectorFactoryCollection();
+		detectorFactoryCollection.loadPlugins();
+		findBugs.setDetectorFactoryCollection(detectorFactoryCollection);
+		
 		findBugs.execute();
 	}
 }

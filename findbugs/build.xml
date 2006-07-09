@@ -54,6 +54,8 @@
 	    <pathelement location="${jar.dir}/dom4j-full.jar"/>
 	    <pathelement location="${jar.dir}/AppleJavaExtensions.jar"/>
 	    <pathelement location="${jar.dir}/junit.jar"/>
+		<pathelement location="${jar.dir}/asm-3.0_RC1.jar"/>
+		<pathelement location="${jar.dir}/asm-tree-3.0_RC1.jar"/>
 	</path>
 	
 	<path id="tools.classpath">

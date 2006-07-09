@@ -158,6 +158,15 @@ public class ExecutionPlan {
 	public Iterator<AnalysisPass> passIterator() {
 		return passList.iterator();
 	}
+	
+	/**
+	 * Get the number of passes in the execution plan.
+	 * 
+	 * @return the number of passes in the execution plan
+	 */
+	public int getNumPasses() {
+		return passList.size();
+	}
 
 	private static<T> void copyTo(Iterator<T> iter, Collection<T> dest) {
 		while (iter.hasNext()) {
@@ -445,7 +454,7 @@ public class ExecutionPlan {
 
 		execPlan.build();
 
-		System.out.println(execPlan.passList.size() + " passes in plan");
+		System.out.println(execPlan.getNumPasses() + " passes in plan");
 		execPlan.print();
 	}
 }
