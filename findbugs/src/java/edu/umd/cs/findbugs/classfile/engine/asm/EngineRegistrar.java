@@ -17,27 +17,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.classfile.engine;
+package edu.umd.cs.findbugs.classfile.engine.asm;
 
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.IAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 
 /**
- * Register analysis engines with an analysis cache.
- * 
  * @author David Hovemeyer
  */
 public class EngineRegistrar implements IAnalysisEngineRegistrar {
-	private static IClassAnalysisEngine[] classAnalysisEngineList = {
-			new ClassDataAnalysisEngine(),
-			new ClassInfoAnalysisEngine(),
+	private static final IClassAnalysisEngine[] classAnalysisEngineList = {
+		new ClassReaderAnalysisEngine(),
 	};
 	
 	private static IMethodAnalysisEngine[] methodAnalysisEngineList = {
 	};
-
+	
 	/**
 	 * Constructor.
 	 */
@@ -45,7 +43,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar#registerAnalysisEngines(edu.umd.cs.findbugs.classfile.IAnalysisCache)
 	 */
 	public void registerAnalysisEngines(IAnalysisCache analysisCache) {
 		for (IClassAnalysisEngine engine : classAnalysisEngineList) {

@@ -28,9 +28,6 @@ import java.util.ListIterator;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.apache.bcel.classfile.JavaClass;
-
-import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -114,7 +111,8 @@ public class FindBugs2 {
 		// add additional analysis engines.  Or, perhaps when we load
 		// detector plugins we should check for analysis engines.
 		// Either way, allowing plugins to add new analyses would be nice.
-		edu.umd.cs.findbugs.classfile.engine.EngineRegistrar.registerAnalysisEngines(analysisCache);
+		new edu.umd.cs.findbugs.classfile.engine.EngineRegistrar().registerAnalysisEngines(analysisCache);
+		new edu.umd.cs.findbugs.classfile.engine.asm.EngineRegistrar().registerAnalysisEngines(analysisCache);
 	}
 
 	/**
