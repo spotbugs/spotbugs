@@ -18,4 +18,8 @@ public class ICAST {
 		y=Math.ceil(y);
 		double z=Math.ceil((double)x);	
 	}
+	
+	public int roundUp(int a, int b) {
+		return (int) Math.ceil(a/b);
+	}
 }
