@@ -77,9 +77,10 @@ public class DetectorFactoryCollection {
 	 */
 	public static DetectorFactoryCollection instance() {
 		synchronized (lock) {
-			if (theInstance == null)
+			if (theInstance == null) {
 				theInstance = new DetectorFactoryCollection();
-			theInstance.loadPlugins();
+				theInstance.loadPlugins();
+			}
 			return theInstance;
 		}
 	}
