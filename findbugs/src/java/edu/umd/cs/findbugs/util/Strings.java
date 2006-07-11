@@ -29,7 +29,7 @@ public class Strings {
 	 * @param source The String on which to operate
 	 * @param find   The literal substring to be replaced
 	 * @param repl   The literal replacement substring
-	 * @return       The rusultant String after substitution
+	 * @return       The resultant String after substitution
 	 * @throws NullPointerException if any of the arguments are null
 	 * @throws IllegalArgumentException if <code>find</code> has zero length
 	 * @see java.lang.String#replace(CharSequence target, CharSequence replacement)
@@ -52,5 +52,25 @@ public class Strings {
 		sb.append(source.substring(anchor));
 		return sb.toString();
 	}
-	
+
+	/** This is intended to be equivalent to <code>Arrays.toString(a)</code>
+	 *  but also compatible with JDK 1.4.
+	 *  This concatenates the results of calling String.valueOf() on each element
+	 *  of the array, so this won't work well for multi-dimensional arrays.
+	 * @see java.lang.String#valueOf(Object)
+	 * @see java.util.Arrays#toString(Object[])
+	 * @see java.util.Arrays#deepToString(Object[])
+	 */
+	public static String toString(final Object[] a) {
+		if (a == null) return "null";
+		int max = a.length - 1;
+		StringBuffer sb = new StringBuffer("[");
+		for (int j=0; j <= max; j+=1) {
+			sb.append(String.valueOf(a[j]));
+			if (j < max) sb.append(','); // Arrays.toString() appends ", "
+		}
+		sb.append(']');
+		return sb.toString();
+	}
+
 }

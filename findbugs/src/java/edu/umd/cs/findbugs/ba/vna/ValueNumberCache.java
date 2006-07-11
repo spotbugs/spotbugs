@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
-import java.util.Arrays;
+import edu.umd.cs.findbugs.util.Strings;;
 import java.util.HashMap;
 
 import org.apache.bcel.generic.InstructionHandle;
@@ -111,7 +111,7 @@ public class ValueNumberCache {
 	public ValueNumber[] lookupOutputValues(Entry entry) {
 		if (DEBUG) System.out.println("VN cache lookup: " + entry);
 		ValueNumber[] result = entryToOutputMap.get(entry);
-		if (DEBUG) System.out.println("   result ==> " + Arrays.toString(result));
+		if (DEBUG) System.out.println("   result ==> " + Strings.toString(result));
 		return result;
 	}
 
