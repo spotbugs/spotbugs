@@ -21,6 +21,13 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.IndexedInstruction;
+import org.apache.bcel.generic.InstructionHandle;
+
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -52,9 +59,34 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		this.register = register;
 		this.pc = pc;
 		this.description = DEFAULT_ROLE;
+		this.setDescription(name.equals("?") ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
 	}
 	
-	//@Override
+	public static LocalVariableAnnotation getLocalVariableAnnotation(
+			Method method, Location location, IndexedInstruction ins) {
+		int local = ins.getIndex();
+		InstructionHandle handle = location.getHandle();
+		int position1 = handle.getNext().getPosition();
+		int position2 = handle.getPosition();
+		return getLocalVariableAnnotation(method, local, position1, position2);
+	}
+
+	public static LocalVariableAnnotation getLocalVariableAnnotation(
+			Method method, int local, int position1, int position2) {
+
+		LocalVariableTable localVariableTable = method.getLocalVariableTable();
+		String localName = "?";
+		if (localVariableTable != null) {
+			LocalVariable lv1 = localVariableTable.getLocalVariable(local, position1);
+			if (lv1 == null) {
+				lv1 = localVariableTable.getLocalVariable(local, position2);
+				position1 = position2;
+			}
+		}
+		return new LocalVariableAnnotation(localName, local, position1);
+	}
+	
+	@Override
 	public Object clone() {
 		try {
 			return super.clone();
@@ -128,6 +160,14 @@ public class LocalVariableAnnotation implements BugAnnotation {
 			attributeList.addAttribute("role", role);
 		
 		BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
+	}
+
+	/**
+	 * @return name of local variable
+	 */
+	public String getName() {
+		
+		return value;
 	}
 }
 

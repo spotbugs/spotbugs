@@ -96,7 +96,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException e) {
-			throw new IllegalStateException("impossible", e);
+			throw new RuntimeException("impossible", e);
 		}
 	}
 
@@ -495,6 +495,10 @@ public class SourceLineAnnotation implements BugAnnotation {
 			buf.append(sourceFile);
 			appendLines(buf);
 			return buf.toString();
+		} else if (key.equals("lineNumber")) {
+			StringBuffer buf = new StringBuffer();
+			appendLinesRaw(buf);
+			return buf.toString();
 		} else if (key.equals("full")) {
 			StringBuffer buf = new StringBuffer();
 			String pkgName = getPackageName();
@@ -512,6 +516,12 @@ public class SourceLineAnnotation implements BugAnnotation {
 	private void appendLines(StringBuffer buf) {
 		if (isUnknown()) return;
 		buf.append(":[");
+		appendLinesRaw(buf);
+		buf.append(']');
+	}
+
+	private void appendLinesRaw(StringBuffer buf) {
+		if (isUnknown()) return;
 		if (startLine == endLine) {
 			buf.append("line ");
 			buf.append(startLine);
@@ -521,7 +531,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 			buf.append('-');
 			buf.append(endLine);
 		}
-		buf.append(']');
+
 	}
 
 	public String getDescription() {
