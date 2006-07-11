@@ -32,25 +32,25 @@ public class FindSeqNumTest extends TestCase {
 	}
 	
 	public void test0() {
-		assertEquals(0,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "0", true, 2));
+		assertEquals(0,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "0", true, 3));
 	}
 	public void testminusOne() {
-		assertEquals(2,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "-1", true, 2));
+		assertEquals(2,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "-1", true, 3));
 	}
 	public void testminusTwo() {
-		assertEquals(2,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "-1", true, 2));
+		assertEquals(2,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "-1", true, 3));
 	}
 	public void test1() {
-		assertEquals(1,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "1", true, 2));
+		assertEquals(1,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "1", true, 3));
 	}
 	public void testV1_0() {
-		assertEquals(0,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "v1.0", true, 2));
+		assertEquals(0,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "v1.0", true, 3));
 	}
 	public void testV1_1() {
-		assertEquals(1,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "v1.1", true, 2));
+		assertEquals(1,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "v1.1", true, 3));
 	}
 	public void testV2_0() {
-		assertEquals(2,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "v2.0", true, 2));
+		assertEquals(2,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "v2.0", true, 3));
 	}
 	public void testV2_1() {
 		try {
@@ -61,28 +61,28 @@ public class FindSeqNumTest extends TestCase {
 		}
 	}
 	public void testAfterMay5() {
-		assertEquals(0,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "5/5/2005", true, 2));
+		assertEquals(0,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "5/5/2005", true, 3));
 	}
 	public void testAfterJune5() {
-		assertEquals(1,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "6/5/2005", true, 2));
+		assertEquals(1,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "6/5/2005", true, 3));
 	}
 	public void testAfterJune15() {
-		assertEquals(2,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "June 15, 2005", true, 2));
+		assertEquals(2,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "June 15, 2005", true, 3));
 	}
 	public void testAfterJune25() {
-		assertEquals(Long.MAX_VALUE,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "June 25, 2005", true, 2));
+		assertEquals(Long.MAX_VALUE,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "June 25, 2005", true, 3));
 	}
 	public void testBeforeMay5() {
-		assertEquals(Long.MIN_VALUE,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "5/5/2005", false, 2));
+		assertEquals(Long.MIN_VALUE,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "5/5/2005", false, 3));
 	}
 	public void testBeforeJune5() {
-		assertEquals(0,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "6/5/2005", false, 2));
+		assertEquals(0,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "6/5/2005", false, 3));
 	}
 	public void testBeforeJune15() {
-		assertEquals(1,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "June 15, 2005", false, 2));
+		assertEquals(1,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "June 15, 2005", false, 3));
 	}
 	public void testBeforeJune25() {
-		assertEquals(2,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "June 25, 2005", false, 2));
+		assertEquals(2,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "June 25, 2005", false, 3));
 	}
 
 }
