@@ -437,6 +437,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 							"NP_UNWRITTEN_FIELD",
 							NORMAL_PRIORITY)
 							.addClassAndMethod(p.method)
+							.addField(f)
 							.addSourceLine(p.sourceLine)
 					);
 			}
