@@ -71,6 +71,25 @@ public interface IAnalysisCache {
 	 */
 	public<E> E getMethodAnalysis(Class<E> analysisClass, MethodDescriptor methodDescriptor)
 		throws CheckedAnalysisException;
+
+	/**
+	 * Register a database factory.
+	 * 
+	 * @param <E>             type of database
+	 * @param databaseClass   Class of database
+	 * @param databaseFactory the database factory
+	 */
+	public<E> void registerDatabaseFactory(Class<E> databaseClass, IDatabaseFactory<E> databaseFactory);
+	
+	/**
+	 * Get a database.
+	 * 
+	 * @param <E>           type of database
+	 * @param databaseClass Class of database
+	 * @return the database (which is created by a database factory if required)
+	 * @throws CheckedAnalysisException 
+	 */
+	public<E> E getDatabase(Class<E> databaseClass) throws CheckedAnalysisException;
 	
 	/**
 	 * Get the classpath from which classes are loaded. 

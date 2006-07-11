@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.classfile.IAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassPath;
+import edu.umd.cs.findbugs.classfile.IDatabaseFactory;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
@@ -41,12 +42,18 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 public class AnalysisCache implements IAnalysisCache {
 	// TODO: think about caching policy.  Right now, cache everything forever.
 	
+	// We could emulate the existing behavior by purging
+	// the least-recently-used class analysis results
+	// after the max cache size is reached.
+	
 	private IClassPath classPath;
 	
 	private Map<Class<?>, IClassAnalysisEngine> classAnalysisEngineMap;
 	private Map<Class<?>, IMethodAnalysisEngine> methodAnalysisEngineMap;
+	private Map<Class<?>, IDatabaseFactory<?>> databaseFactoryMap;
 	private Map<ClassDescriptor, Map<Class<?>, Object>> classAnalysisMap;
 	private Map<MethodDescriptor, Map<Class<?>, Object>> methodAnalysisMap;
+	private Map<Class<?>, Object> databaseMap;
 	
 	static class AnalysisError {
 		CheckedAnalysisException exception;
@@ -60,8 +67,10 @@ public class AnalysisCache implements IAnalysisCache {
 		this.classPath = classPath;
 		this.classAnalysisEngineMap = new HashMap<Class<?>, IClassAnalysisEngine>();
 		this.methodAnalysisEngineMap = new HashMap<Class<?>, IMethodAnalysisEngine>();
+		this.databaseFactoryMap = new HashMap<Class<?>, IDatabaseFactory<?>>();
 		this.classAnalysisMap = new HashMap<ClassDescriptor, Map<Class<?>,Object>>();
 		this.methodAnalysisMap = new HashMap<MethodDescriptor, Map<Class<?>,Object>>();
+		this.databaseMap = new HashMap<Class<?>, Object>();
 	}
 	
 	/* (non-Javadoc)
@@ -175,6 +184,44 @@ public class AnalysisCache implements IAnalysisCache {
 	public <E> void registerMethodAnalysisEngine(Class<E> analysisResultType,
 			IMethodAnalysisEngine methodAnalysisEngine) {
 		methodAnalysisEngineMap.put(analysisResultType, methodAnalysisEngine);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#registerDatabaseFactory(java.lang.Class, edu.umd.cs.findbugs.classfile.IDatabaseFactory)
+	 */
+	public <E> void registerDatabaseFactory(Class<E> databaseClass, IDatabaseFactory<E> databaseFactory) {
+		databaseFactoryMap.put(databaseClass, databaseFactory);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getDatabase(java.lang.Class)
+	 */
+	public <E> E getDatabase(Class<E> databaseClass) throws CheckedAnalysisException {
+		Object database = databaseMap.get(databaseClass);
+		
+		if (database == null) {
+			try {
+				// Find the database factory
+				IDatabaseFactory<?> databaseFactory = databaseFactoryMap.get(databaseClass);
+				if (databaseFactory == null) {
+					throw new IllegalArgumentException(
+							"No database factory registered for " + databaseClass.getName());
+				}
+				
+				// Create the database
+				database = databaseFactory.createDatabase();
+			} catch (CheckedAnalysisException e) {
+				// Error - record the analysis error
+				database = new AnalysisError(e);
+			}
+		}
+		
+		if (database instanceof AnalysisError) {
+			throw ((AnalysisError)database).exception;
+		}
+		
+		// Again, we really should be using Class.cast()
+		return (E) database;
 	}
 
 }
