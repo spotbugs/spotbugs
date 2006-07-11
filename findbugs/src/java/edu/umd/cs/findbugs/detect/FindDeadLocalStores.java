@@ -196,42 +196,18 @@ public class FindDeadLocalStores implements Detector {
 			IndexedInstruction ins = (IndexedInstruction) location.getHandle().getInstruction();
 			int local = ins.getIndex();
 			int position = location.getHandle().getNext().getPosition();
-			// Heuristic: name of local variable.
-			LocalVariableTable localVariableTable = method.getLocalVariableTable();
-			String localName = "?";
-			if (localVariableTable != null) {
-
-				LocalVariable lv1 = localVariableTable.getLocalVariable(local, position);
-				// System.out.println("Local variable " + local + " at " +  position + " = " + lv1);
-				if (lv1 == null) {
-					 // System.out.println("Local variable " + local + " at " +  position + " = " + lv1);
-					
-					position = location.getHandle().getPosition();
-					lv1 = localVariableTable.getLocalVariable(local, position);
-					 // System.out.println("Local variable " + local + " at " +  position + " = " + lv1);
-						
-				}
-				if (lv1 != null) {
-					localName = lv1.getName();
-					if (EXCLUDED_LOCALS.contains(localName)) continue;
-					propertySet.setProperty(DeadLocalStoreProperty.LOCAL_NAME, localName);
-				} else if (false) {
-					System.out.println("Analyzing method " + classContext.getJavaClass().getClassName() + "." + method.getName());
-
-					System.out.println("   Can't find name for " + local + "@" + position);
-					System.out.println(localVariableTable); 
-				}
-			}
+			
+			LocalVariableAnnotation lvAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, location, ins);			
+			
+			if (EXCLUDED_LOCALS.contains(lvAnnotation.getName())) continue;
+			propertySet.setProperty(DeadLocalStoreProperty.LOCAL_NAME, lvAnnotation.getName());
 			
 			// Is this a store to a parameter which was dead on entry to the method?
 			boolean parameterThatIsDeadAtEntry = local < localsThatAreParameters
 				&& !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
 			if (parameterThatIsDeadAtEntry && !complainedAbout.get(local)) {
 				
-				LocalVariableAnnotation lvAnnotation =
-					new LocalVariableAnnotation(localName, local, position);
-				lvAnnotation.setDescription(
-						localName.equals("?") ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
+			
 				
 				// TODO: add warning properties?
 				BugInstance bugInstance = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN", NORMAL_PRIORITY)
@@ -337,10 +313,6 @@ public class FindDeadLocalStores implements Detector {
 			int priority = propertySet.computePriority(NORMAL_PRIORITY);
 			if (priority <= Detector.EXP_PRIORITY) {	
 				
-				LocalVariableAnnotation lvAnnotation =
-					new LocalVariableAnnotation(localName, local, position);
-				lvAnnotation.setDescription(
-						localName.equals("?") ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
 				
 				// Report the warning				
 				BugInstance bugInstance = new BugInstance(this, storeOfNull ? "DLS_DEAD_LOCAL_STORE_OF_NULL" : "DLS_DEAD_LOCAL_STORE", priority)
@@ -379,6 +351,9 @@ public class FindDeadLocalStores implements Detector {
 		}
 		accumulator.reportAccumulatedBugs();
 	}
+	
+	
+
 	
 	/**
 	 * Count stores, loads, and increments of local variables
