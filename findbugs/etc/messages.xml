@@ -2822,7 +2822,7 @@ to read, readLine() will return null and dereferencing that will generate a null
 
   <BugPattern type="NP_UNWRITTEN_FIELD">
     <ShortDescription>Read of unwritten field</ShortDescription>
-    <LongDescription>Read of unwritten field in {1}</LongDescription>
+    <LongDescription>Read of unwritten field {2.name} in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> The program is deferencing a field that does not seem to ever have a non-null value written to it.
@@ -3256,7 +3256,7 @@ body of an <code>if</code> statement, e.g.:</p>
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE">
     <ShortDescription>Nullcheck of value previously dereferenced</ShortDescription>
-    <LongDescription>Nullcheck at {2} of value previously dereferenced at {1}</LongDescription>
+    <LongDescription>Dereference at {3.lineNumber} of value previously dereferenced</LongDescription>
     <Details>
 <![CDATA[
 <p> A value is checked here to see whether it is null, but this value can't
@@ -4613,10 +4613,11 @@ of a negative average).  Assuming that the result is intended to be nonnegative,
 can use an unsigned right shift instead. In other words, rather that using <code>(low+high)/2</code>,
 use <code>(low+high) &gt;&gt;&gt; 1</code>
 </p>
-<p>This bug existed in almost all implementations of binary search and merge sort
-until it 
-was <a href="http://googleresearch.blogspot.com/2006/06/extra-extra-read-all-about-it-nearly.html">identified by 
-Joshua Bloch</a>.
+<p>This bug exists in many earlier implementations of binary search and merge sort.
+Martin Buchholz <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6412541">found and fixed it</a>
+in the JDK libraries, and Joshua Bloch
+<a href="http://googleresearch.blogspot.com/2006/06/extra-extra-read-all-about-it-nearly.html">widely
+publicized the bug pattern</a>.
 </p>
 ]]>
     </Details>
