@@ -82,6 +82,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 				lv1 = localVariableTable.getLocalVariable(local, position2);
 				position1 = position2;
 			}
+			if (lv1 != null) localName = lv1.getName();
 		}
 		return new LocalVariableAnnotation(localName, local, position1);
 	}

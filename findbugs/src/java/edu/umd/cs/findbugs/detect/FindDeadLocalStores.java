@@ -194,14 +194,15 @@ public class FindDeadLocalStores implements Detector {
 				propertySet.addProperty(DeadLocalStoreProperty.EXCEPTION_HANDLER);
 			
 			IndexedInstruction ins = (IndexedInstruction) location.getHandle().getInstruction();
-			int local = ins.getIndex();
-			int position = location.getHandle().getNext().getPosition();
 			
-			LocalVariableAnnotation lvAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, location, ins);			
+			
+			LocalVariableAnnotation lvAnnotation 
+			= LocalVariableAnnotation.getLocalVariableAnnotation(method, location, ins);			
 			
 			if (EXCLUDED_LOCALS.contains(lvAnnotation.getName())) continue;
 			propertySet.setProperty(DeadLocalStoreProperty.LOCAL_NAME, lvAnnotation.getName());
 			
+			int local = ins.getIndex();
 			// Is this a store to a parameter which was dead on entry to the method?
 			boolean parameterThatIsDeadAtEntry = local < localsThatAreParameters
 				&& !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
