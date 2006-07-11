@@ -595,8 +595,8 @@
   <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS" />
   <BugPattern abbrev="CN" type="CN_IDIOM" category="CORRECTNESS" />
   <BugPattern abbrev="CN" type="CN_IDIOM_NO_SUPER_CALL" category="CORRECTNESS" />
-  <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="CORRECTNESS" />
-  <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="CORRECTNESS" />
+  <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="STYLE" />
+  <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="STYLE" />
   <BugPattern abbrev="Dm" type="DM_EXIT" category="CORRECTNESS" />
   <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION" category="CORRECTNESS" />
