@@ -87,7 +87,7 @@ public class FindBugsMessageFormat {
 			try {
 				fieldNum = Integer.parseInt(substPat);
 			} catch (NumberFormatException e) {
-				throw new IllegalStateException("bad pattern " + pattern);
+				throw new IllegalArgumentException("bad pattern " + pattern);
 			}
 
 			// System.out.println("fn: " + fieldNum);
