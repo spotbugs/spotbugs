@@ -140,16 +140,26 @@ public class Filter {
 		}
 
 		static long getVersionNum(Map<String, AppVersion> versions, 
-				SortedMap<Long, AppVersion> timeStamps , String val, boolean roundToLaterVersion) {
+				SortedMap<Long, AppVersion> timeStamps , String val, 
+				boolean roundToLaterVersion, long numVersions) {
 			if (val == null) return -1;
-				AppVersion v = versions.get(val);
-				if (v != null) return v.getSequenceNumber();
-				try {
-				long time = Date.parse(val);
+			if (val.equals("last") || val.equals("lastVersion")) return numVersions -1;
+			
+			AppVersion v = versions.get(val);
+			if (v != null) return v.getSequenceNumber();
+			try {
+				long time = 0;
+				if (val.endsWith("daysAgo")) 
+					time = System.currentTimeMillis() - 24*60*60*1000 * Integer.parseInt(val.substring(0, val.length() - 7));
+				else time = Date.parse(val);
 				return getAppropriateSeq(timeStamps, time, roundToLaterVersion);
-			} catch (IllegalArgumentException e) {
+			} catch (Exception e) {
 				try {
-					return Long.parseLong(val);
+					long version =  Long.parseLong(val);
+					if (version < 0) {
+						version = numVersions + version;
+					}
+					return version;
 				}
 				catch (NumberFormatException e1) {
 					throw new IllegalArgumentException("Could not interpret version specification of '" + val + "'");
@@ -186,14 +196,14 @@ public class Filter {
 			versions.put(v.getReleaseName(), v);
 			timeStamps.put(v.getTimestamp(), v);
 			
-			first = getVersionNum(versions, timeStamps, firstAsString, true);
-			last = getVersionNum(versions, timeStamps, lastAsString, true);
-			before = getVersionNum(versions, timeStamps, beforeAsString, true);
-			after = getVersionNum(versions, timeStamps, afterAsString, false);
-			present = getVersionNum(versions, timeStamps, presentAsString, true);
-			absent = getVersionNum(versions, timeStamps, absentAsString, true);
+			first = getVersionNum(versions, timeStamps, firstAsString, true, v.getSequenceNumber());
+			last = getVersionNum(versions, timeStamps, lastAsString, true,  v.getSequenceNumber());
+			before = getVersionNum(versions, timeStamps, beforeAsString, true,  v.getSequenceNumber());
+			after = getVersionNum(versions, timeStamps, afterAsString, false,  v.getSequenceNumber());
+			present = getVersionNum(versions, timeStamps, presentAsString, true,  v.getSequenceNumber());
+			absent = getVersionNum(versions, timeStamps, absentAsString, true,  v.getSequenceNumber());
 
-			long fixed = getVersionNum(versions, timeStamps, fixedAsString, true);
+			long fixed = getVersionNum(versions, timeStamps, fixedAsString, true,  v.getSequenceNumber());
 			if (fixed >= 0) last = fixed - 1; // fixed means last on previous sequence (ok if -1)
 		}
 
