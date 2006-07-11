@@ -19,10 +19,11 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
-import edu.umd.cs.findbugs.util.Strings;;
 import java.util.HashMap;
 
 import org.apache.bcel.generic.InstructionHandle;
+
+import edu.umd.cs.findbugs.util.Strings;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
