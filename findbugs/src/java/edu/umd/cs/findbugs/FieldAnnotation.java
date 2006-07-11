@@ -208,6 +208,22 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		return fieldSig.compareTo(other.fieldSig);
 	}
 	
+	/**
+	 * Format the annotation.
+	 * Note that this version (defined by PackageMemberAnnotation)
+	 * only handles the "class" and "package" keys, and calls
+	 * formatPackageMember() for all other keys.
+	 *
+	 * @param key the key
+	 * @return the formatted annotation
+	 */
+	@Override
+	public final String format(String key) {
+		if (key.equals("name"))
+			return fieldName;
+		return super.format(key);
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.PackageMemberAnnotation#getSourceLines()
 	 */
