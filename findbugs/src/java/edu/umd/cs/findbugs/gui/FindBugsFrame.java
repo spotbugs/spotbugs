@@ -115,6 +115,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ShowHelp;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
@@ -3280,15 +3281,17 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		
 		// Look up the source file for this class.
 		sourceFinder.setSourceBaseList(project.getSourceDirList());
-		String sourceFile = srcLine.getSourceFile();
-		if (sourceFile == null || sourceFile.equals("<Unknown>")) {
+		String sourceFile;
+		InputStream in;
+		try {
+			SourceFile source = sourceFinder.findSourceFile(srcLine);
+			sourceFile = source.getFullFileName();
+			in = source.getInputStream();
+		} catch (IOException e) {
 			logger.logMessage(Logger.WARNING, "No source file for class " + srcLine.getClassName());
 			return false;
 		}
 		
-		// Try to open the source file and display its contents
-		// in the source text area.
-		InputStream in = sourceFinder.openSource(srcLine.getPackageName(), sourceFile);
 		BufferedReader reader = null;
 		
 		try {
