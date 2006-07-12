@@ -104,15 +104,18 @@ public class AssertionMethods implements Constants {
 					ConstantNameAndType cnat = (ConstantNameAndType) cp.getConstant(cmr.getNameAndTypeIndex(), CONSTANT_NameAndType);
 					String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), CONSTANT_Utf8)).getBytes();
 					String className = cp.getConstantString(cmr.getClassIndex(), CONSTANT_Class).replace('/', '.');
-
+					String methodSig = ((ConstantUtf8) cp.getConstant(cnat.getSignatureIndex(), CONSTANT_Utf8)).getBytes();
+					
 					String classNameLC = className.toLowerCase();
 					String methodNameLC = methodName.toLowerCase();
+					boolean voidReturnType = methodSig.endsWith(")V");
 
 					if (isUserAssertionMethod(className, methodName) ||
-					        classNameLC.indexOf("assert") >= 0 ||
+					        voidReturnType && (classNameLC.indexOf("assert") >= 0 ||
+					        methodNameLC.startsWith("throw") ||
 					        methodNameLC.indexOf("assert") >= 0 || methodNameLC.indexOf("error") >= 0 ||
 					        methodNameLC.indexOf("abort") >= 0 || methodNameLC.indexOf("check") >= 0 ||
-					        methodNameLC.indexOf("failed") >= 0)
+					        methodNameLC.indexOf("failed") >= 0))
 						assertionMethodRefSet.set(i);
 				}
 			} catch (ClassFormatException e) {
