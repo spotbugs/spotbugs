@@ -1,6 +1,6 @@
 /*
- * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003-2005, University of Maryland
+ * FindBugs - Find Bugs in Java programs
+ * Copyright (C) 2006, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,25 +19,30 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import java.util.regex.Pattern;
+
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.FieldAnnotation;
 
-public class ClassMatcher implements Matcher {
-	private static final boolean DEBUG = Boolean.getBoolean("filter.debug");
+/**
+ * @author rafal@caltha.pl
+ */
+public class FieldMatcher implements Matcher {
 
-	private NameMatch className;
-
-	public ClassMatcher(String className) {
-		this.className = new NameMatch(className);
+	private NameMatch name;
+	
+	public FieldMatcher(String name) {
+		this.name = new NameMatch(name);
 	}
-
+	
 	public boolean match(BugInstance bugInstance) {
-		ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
-		String bugClassName = primaryClassAnnotation.getClassName();
-		if (DEBUG) System.out.println("Matching " + bugClassName + " with " + className);
-
-		return className.match(bugClassName);
+		FieldAnnotation fieldAnnotation = bugInstance.getPrimaryField();
+		if(fieldAnnotation == null) {
+			return false;
+		}
+		if(!name.match(fieldAnnotation.getFieldName())) {
+			return false;
+		}
+		return true;
 	}
 }
-
-// vim:ts=4

@@ -25,15 +25,15 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.MethodAnnotation;
 
 public class MethodMatcher implements Matcher {
-	private String name;
+	private NameMatch name;
 	private String signature;
 
 	public MethodMatcher(String name) {
-		this.name = name;
+		this.name = new NameMatch(name);
 	}
 
 	public MethodMatcher(String name, String params, String returns) {
-		this.name = name;
+		this.name = new NameMatch(name);
 		this.signature = createSignature(params, returns);
 	}
 
@@ -41,7 +41,7 @@ public class MethodMatcher implements Matcher {
 		MethodAnnotation methodAnnotation = bugInstance.getPrimaryMethod();
 		if (methodAnnotation == null)
 			return false;
-		if (!name.equals(methodAnnotation.getMethodName()))
+		if (!name.match(methodAnnotation.getMethodName()))
 			return false;
 		if (signature != null && !signature.equals(methodAnnotation.getMethodSignature()))
 			return false;

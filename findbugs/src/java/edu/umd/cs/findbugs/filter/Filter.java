@@ -82,13 +82,10 @@ public class Filter extends OrMatcher {
 			} else {
 				String classRegex = matchNode.valueOf("@classregex");
 				if (!classRegex.equals(""))
-					classMatcher = new ClassRegexMatcher(classRegex);
+					classMatcher = new ClassMatcher("~" + classRegex);
 			}
-
-			if (classMatcher == null)
-				throw new FilterException("Match node must specify either class or classregex attribute");
-
-			matchMatcher.addChild(classMatcher);
+			if (classMatcher != null)
+				matchMatcher.addChild(classMatcher);
 
 			if (DEBUG) System.out.println("Match node");
 
@@ -114,7 +111,7 @@ public class Filter extends OrMatcher {
 	 * @throws FilterException
 	 */
 	private Matcher getMatcher(Element element) throws FilterException {
-		// These will be either BugCode, Method, or Or elements.
+		// These will be either BugCode, Priority, Class, Method, Field, or Or elements.
 		String name = element.getName();
 		if (name.equals("BugCode")) {
 			return new BugCodeMatcher(element.valueOf("@name"));
@@ -122,6 +119,13 @@ public class Filter extends OrMatcher {
 			return new BugPatternMatcher(element.valueOf("@name"));
 		} else if (name.equals("Priority")) {
 			return new PriorityMatcher(element.valueOf("@value"));
+		} else if (name.equals("Class")) {
+			Attribute nameAttr = element.attribute("name");
+			
+			if (nameAttr == null)
+				throw new FilterException("Missing name attribute in Class element");
+			
+			return new ClassMatcher(nameAttr.getValue());
 		} else if (name.equals("Method")) {
 			Attribute nameAttr = element.attribute("name");
 			Attribute paramsAttr = element.attribute("params");
@@ -137,6 +141,13 @@ public class Filter extends OrMatcher {
 				return new MethodMatcher(nameAttr.getValue());
 			else
 				return new MethodMatcher(nameAttr.getValue(), paramsAttr.getValue(), returnsAttr.getValue());
+		} else if (name.equals("Field")) {
+			Attribute nameAttr = element.attribute("name");
+			
+			if (nameAttr == null)
+				throw new FilterException("Missing name attribute in Field element");
+			
+			return new FieldMatcher(nameAttr.getValue());
 		} else if (name.equals("Or")) {
 			OrMatcher orMatcher = new OrMatcher();
 			Iterator<Element> i = element.elementIterator();
