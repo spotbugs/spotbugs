@@ -2681,7 +2681,7 @@ is generally easy and good defensive programming.
 
   <BugPattern type="SE_BAD_FIELD">
     <ShortDescription>Non-transient non-serializable instance field in serializable class</ShortDescription>
-    <LongDescription>Class {0} defines non-transient non-serializable instance field {1}</LongDescription>
+    <LongDescription>Class {0} defines non-transient non-serializable instance field {1.name}</LongDescription>
     <Details>
 <![CDATA[
 <p> This Serializable class defines a non-primitive instance field which is neither transient,
