@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipFile;
 
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+
 /**
  * Class to open input streams on source files.
  * It maintains a "source path", which is like a classpath,
@@ -80,9 +82,14 @@ public class SourceFinder {
 			this.baseDir = baseDir;
 		}
 
+		public String toString() {
+			return "DirectorySourceRepository:" + baseDir;
+		}
 		public boolean contains(String fileName) {
 			File file = new File(getFullFileName(fileName));
-			return file.exists();
+			boolean exists = file.exists();
+			if (DEBUG) System.out.println("Exists " + exists + " for " + file);
+			return exists;
 		}
 
 		public boolean isPlatformDependent() {
@@ -136,6 +143,7 @@ public class SourceFinder {
 	 * Constructor.
 	 */
 	public SourceFinder() {
+		if (DEBUG) System.out.println("Debugging SourceFinder");
 		repositoryList = new LinkedList<SourceRepository>();
 		cache = new Cache();
 	}
@@ -172,7 +180,23 @@ public class SourceFinder {
 		SourceFile sourceFile = findSourceFile(packageName, fileName);
 		return sourceFile.getInputStream();
 	}
-
+	public InputStream openSource(SourceLineAnnotation source) throws IOException {
+		SourceFile sourceFile = findSourceFile(source);
+		return sourceFile.getInputStream();
+	}
+	public SourceFile findSourceFile(SourceLineAnnotation source) throws IOException {
+		if (source.isSourceFileKnown())
+			return findSourceFile(source.getPackageName(), source.getSourceFile());
+		String packageName = source.getPackageName();
+		String baseClassName = source.getClassName();
+		int i = baseClassName.lastIndexOf('.');
+		baseClassName = baseClassName.substring(i+1);
+		int j = baseClassName.indexOf("$");
+		if (j >= 0)
+			baseClassName = baseClassName.substring(0,j);
+		return findSourceFile(packageName, baseClassName + ".java");
+		
+	}
 	/**
 	 * Open a source file in given package.
 	 *
@@ -202,11 +226,11 @@ public class SourceFinder {
 			return sourceFile;
 		
 		// Find this source file, add its data to the cache
-		if (DEBUG) System.out.println("Trying " + fileName + "...");
-
+		if (DEBUG) System.out.println("Trying " + fileName +  " in package " + packageName + "...");
 		// Query each element of the source path to find the requested source file
 		for (SourceRepository repos : repositoryList) {
 			fileName = repos.isPlatformDependent() ? platformName : canonicalName;
+			if (DEBUG) System.out.println("Looking in " + repos  + " for " + fileName);
 			if (repos.contains(fileName)) {
 				// Found it
 				sourceFile = new SourceFile(repos.getDataSource(fileName));
