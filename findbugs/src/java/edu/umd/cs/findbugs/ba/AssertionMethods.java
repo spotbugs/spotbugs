@@ -111,7 +111,8 @@ public class AssertionMethods implements Constants {
 					boolean voidReturnType = methodSig.endsWith(")V");
 
 					if (isUserAssertionMethod(className, methodName) ||
-					        voidReturnType && (classNameLC.indexOf("assert") >= 0 ||
+					        // voidReturnType &&  // comment this out for now
+					        (classNameLC.indexOf("assert") >= 0 ||
 					        methodNameLC.startsWith("throw") ||
 					        methodNameLC.indexOf("assert") >= 0 || methodNameLC.indexOf("error") >= 0 ||
 					        methodNameLC.indexOf("abort") >= 0 || methodNameLC.indexOf("check") >= 0 ||
