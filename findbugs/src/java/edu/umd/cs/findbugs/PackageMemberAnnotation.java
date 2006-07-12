@@ -93,7 +93,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	 * @param key the key
 	 * @return the formatted annotation
 	 */
-	public  String format(String key) {
+	public final String format(String key) {
 		if (key.equals("class"))
 			return className;
 		else if (key.equals("package"))

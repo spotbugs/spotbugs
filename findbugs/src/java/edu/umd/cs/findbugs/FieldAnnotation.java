@@ -165,6 +165,8 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	protected String formatPackageMember(String key) {
 		if (key.equals(""))
 			return className + "." + fieldName;
+		else if (key.equals("name"))
+			return fieldName;
 		else if (key.equals("fullField")) {
 			SignatureConverter converter = new SignatureConverter(fieldSig);
 			StringBuffer result = new StringBuffer();
@@ -206,22 +208,6 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		if (cmp != 0)
 			return cmp;
 		return fieldSig.compareTo(other.fieldSig);
-	}
-	
-	/**
-	 * Format the annotation.
-	 * Note that this version (defined by PackageMemberAnnotation)
-	 * only handles the "class" and "package" keys, and calls
-	 * formatPackageMember() for all other keys.
-	 *
-	 * @param key the key
-	 * @return the formatted annotation
-	 */
-	@Override
-	public final String format(String key) {
-		if (key.equals("name"))
-			return fieldName;
-		return super.format(key);
 	}
 	
 	/* (non-Javadoc)
