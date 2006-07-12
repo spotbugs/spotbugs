@@ -73,4 +73,14 @@ public class DuplicateBranches {
 		return -1;
 	}
 
+	/** false positive??  bug1508906 */
+	public String peeterswim(int index) {
+		switch (index) {
+		case 0 : return "0";
+		case 1 : return "1";
+		case 2 : return "2";
+		default : return null;
+		}
+	}
+
 }
