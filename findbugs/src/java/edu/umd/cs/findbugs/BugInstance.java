@@ -1357,7 +1357,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 		// All elements in prefix were the same,
 		// so use number of elements to decide
-		return annotationList.size() - other.annotationList.size();
+		int diff = annotationList.size() - other.annotationList.size();
+		if (diff != 0) return diff;
+		diff = (int)(this.firstVersion - other.firstVersion);
+		if (diff != 0) return diff;
+		diff = (int)(this.lastVersion - other.lastVersion);
+		return diff;
+		
 	}
 
 	/**
