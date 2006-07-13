@@ -98,11 +98,17 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		
 		if (argCount < args.length)
 			reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));
-		
+		RuntimeException storedException = null;
 		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
 			BugInstance warning = i.next();
+			try {
 			reporter.printBug(warning);
+			} catch (RuntimeException e) {
+				if (storedException == null) 
+				storedException = e;
+			}
 		}
+		if (storedException != null) throw storedException;
 		
 	}
 }
