@@ -21,7 +21,7 @@ public class ErrorInFinallyClause {
 			}
 			
 		} finally {
-			in.close();
+			in.close(); // TODO: we should report a medium priority NP warning here
 			out.close(); // TODO: we should report a medium priority NP warning here
 			
 		}
