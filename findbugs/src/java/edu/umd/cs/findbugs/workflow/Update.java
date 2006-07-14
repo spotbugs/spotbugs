@@ -152,6 +152,18 @@ public class Update {
 		long currentSequence = origCollection.getSequenceNumber() + 1;
 		resultCollection.setSequenceNumber(currentSequence);
 
+		int oldBugs = 0;
+		// move all inactive bugs
+		for (BugInstance bug : origCollection.getCollection())
+				if (bug.getLastVersion() != -1)
+				{
+					oldBugs++;
+					BugInstance newBug = (BugInstance) bug.clone();
+					resultCollection.add(newBug, false);
+				}
+
+		
+		
 		matchBugs(SortedBugCollection.BugInstanceComparator.instance,
 				origCollection, newCollection);
 		matchBugs(versionInsensitiveBugComparator, origCollection,
@@ -174,7 +186,7 @@ public class Update {
 
 		// matchBugs(new SloppyBugComparator(), origCollection, newCollection);
 
-		int oldBugs = 0;
+
 		int newlyDeadBugs = 0;
 		int persistantBugs = 0;
 		int addedBugs = 0;
@@ -259,6 +271,7 @@ public class Update {
 					+ persistantBugs + " persist, " + addedInNewCode
 					+ " in new code, " + (addedBugs - addedInNewCode)
 					+ " added");
+			System.out.println(resultCollection.getCollection().size()  + " resulting bugs");
 		}
 		return resultCollection;
 
@@ -291,8 +304,7 @@ public class Update {
 		String origFilename = args[argCount++];
 		Project project = new Project();
 		BugCollection origCollection;
-		origCollection = new SortedBugCollection(
-				SortedBugCollection.MultiversionBugInstanceComparator.instance);
+		origCollection = new SortedBugCollection();
 		if (verbose)
 			System.out.println("Starting with " + origFilename);
 
@@ -309,8 +321,7 @@ public class Update {
 
 		while (argCount <= (args.length - 1)) {
 
-			BugCollection newCollection = new SortedBugCollection(
-					SortedBugCollection.MultiversionBugInstanceComparator.instance);
+			BugCollection newCollection = new SortedBugCollection();
 
 			String newFilename = args[argCount++];
 			if (verbose)

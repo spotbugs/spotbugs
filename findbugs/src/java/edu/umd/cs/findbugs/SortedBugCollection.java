@@ -633,7 +633,7 @@ public class SortedBugCollection implements BugCollection {
 	 * @param projectStats the ProjectStats
 	 */
 	public SortedBugCollection(ProjectStats projectStats) {
-		this(projectStats, BugInstanceComparator.instance);
+		this(projectStats, MultiversionBugInstanceComparator.instance);
 	}
 	/**
 	 * Constructor.

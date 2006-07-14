@@ -89,8 +89,7 @@ public class ListBugDatabaseInfo {
 	private static void listVersion(PrintWriter out, @CheckForNull String fileName, boolean formatDates) throws IOException, DocumentException {
 		Project project = new Project();
 		BugCollection origCollection;
-		origCollection = new SortedBugCollection(
-				SortedBugCollection.MultiversionBugInstanceComparator.instance);
+		origCollection = new SortedBugCollection();
 
 		if (fileName == null)
 			origCollection.readXML(System.in, project);
