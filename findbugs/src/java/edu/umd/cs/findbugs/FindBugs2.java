@@ -19,12 +19,16 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -56,7 +60,8 @@ import edu.umd.cs.findbugs.util.Archive;
  * @author David Hovemeyer
  */
 public class FindBugs2 {
-	private static final boolean DEBUG = Boolean.getBoolean("findbugs2.debug");
+	private static final boolean VERBOSE = Boolean.getBoolean("findbugs2.verbose");
+	private static final boolean DEBUG = VERBOSE || Boolean.getBoolean("findbugs2.debug");
 	
 	private BugReporter bugReporter;
 	private Project project;
@@ -163,30 +168,143 @@ public class FindBugs2 {
 	}
 
 	/**
-	 * Build the classpath by scanning the application and aux classpath entries
-	 * specified in the project.  We will attempt to find all nested archives and
-	 * Class-Path entries specified in Jar manifests.  This should give us
-	 * as good an idea as possible of all of the classes available (and
-	 * which are part of the application).
+	 * Build the classpath from project codebases and system codebases.
 	 * 
 	 * @throws InterruptedException if the analysis thread is interrupted
 	 * @throws IOException if an I/O error occurs
 	 * @throws ResourceNotFoundException 
 	 */
 	private void buildClassPath() throws InterruptedException, IOException, ResourceNotFoundException {
-		// Seed worklist with app codebases and aux codebases.
+		// Build classpath using project and system codebases.
+		processWorkList(buildProjectCodebaseList());
+		processWorkList(buildSystemCodebaseList());
+		
+		if (DEBUG) {
+			System.out.println("Classpath:");
+			dumpCodeBaseList(classPath.appCodeBaseIterator(), "Application codebases");
+			dumpCodeBaseList(classPath.auxCodeBaseIterator(), "Auxiliary codebases");
+		}
+	}
+
+	private void dumpCodeBaseList(Iterator<? extends ICodeBase> i, String desc)
+			throws InterruptedException {
+		System.out.println("  " + desc + ":");
+		while (i.hasNext()) {
+			ICodeBase codeBase = i.next();
+			System.out.println("    " + codeBase.getCodeBaseLocator().toString());
+			if (codeBase.containsSourceFiles()) {
+				System.out.println("      * contains source files");
+			}
+		}
+	}
+	
+	private LinkedList<WorkListItem> buildProjectCodebaseList() {
 		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
+
+		// Seed worklist with app codebases and aux codebases.
 		for (String path : project.getFileArray()) {
-			addToWorkList(workList, new WorkListItem(classFactory.createFilesystemCodeBaseLocator(path), true));
+			addToWorkList(workList, new WorkListItem(
+					classFactory.createFilesystemCodeBaseLocator(path), true));
 		}
 		for (String path : project.getAuxClasspathEntryList()) {
-			addToWorkList(workList, new WorkListItem(classFactory.createFilesystemCodeBaseLocator(path), false));
+			addToWorkList(workList, new WorkListItem(
+					classFactory.createFilesystemCodeBaseLocator(path), false));
 		}
+		
+		return workList;
+	}
+	
+	private LinkedList<WorkListItem> buildSystemCodebaseList() {
+		// This method is based on the
+		// org.apache.bcel.util.ClassPath.getClassPath()
+		// method.
+		
+		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
 
+		// Seed worklist with system codebases.
+		addWorkListItemsForClasspath(workList, System.getProperty("java.class.path"));
+		addWorkListItemsForClasspath(workList, System.getProperty("sun.boot.class.path"));
+		String extPath = System.getProperty("java.ext.dirs");
+		if (extPath != null) {
+			StringTokenizer st = new StringTokenizer(extPath, File.pathSeparator);
+			while (st.hasMoreTokens()) {
+				String extDir = st.nextToken();
+				addWorkListItemsForExtDir(workList, extDir);
+			}
+		}
+		
+		return workList;
+	}
+
+	/**
+	 * Add worklist items from given system classpath.
+	 * 
+	 * @param workList the worklist
+	 * @param path     a system classpath
+	 */
+	private void addWorkListItemsForClasspath(LinkedList<WorkListItem> workList, String path) {
+		if (path == null) {
+			return;
+		}
+		
+		StringTokenizer st = new StringTokenizer(path, File.pathSeparator);
+		while (st.hasMoreTokens()) {
+			String entry = st.nextToken();
+			if (DEBUG) {
+				System.out.println("System classpath entry: " + entry);
+			}
+			addToWorkList(workList, new WorkListItem(
+					classFactory.createFilesystemCodeBaseLocator(entry), false));
+		}
+	}
+	
+	/**
+	 * Add worklist items from given extensions directory.
+	 * 
+	 * @param workList the worklist
+	 * @param extDir   an extensions directory
+	 */
+	private void addWorkListItemsForExtDir(LinkedList<WorkListItem> workList, String extDir) {
+		File dir = new File(extDir);
+		File[] fileList = dir.listFiles(new FileFilter() {
+			/* (non-Javadoc)
+			 * @see java.io.FileFilter#accept(java.io.File)
+			 */
+			public boolean accept(File pathname) {
+				String path = pathname.getParent();
+				return Archive.isArchiveFileName(path);
+			}
+		});
+		if (fileList == null) {
+			return;
+		}
+		
+		for (File archive : fileList) {
+			addToWorkList(workList, new WorkListItem(
+					classFactory.createFilesystemCodeBaseLocator(archive.getPath()), false));
+		}
+	}
+
+	/**
+	 * Process classpath worklist items.
+	 * We will attempt to find all nested archives and
+	 * Class-Path entries specified in Jar manifests.  This should give us
+	 * as good an idea as possible of all of the classes available (and
+	 * which are part of the application).
+	 * 
+	 * @param workList the worklist to process
+	 * @throws InterruptedException
+	 * @throws IOException
+	 * @throws ResourceNotFoundException
+	 */
+	private void processWorkList(LinkedList<WorkListItem> workList) throws InterruptedException, IOException, ResourceNotFoundException {
 		// Build the classpath, scanning codebases for nested archives
 		// and referenced codebases.
 		while (!workList.isEmpty()) {
 			WorkListItem item = workList.removeFirst();
+			if (DEBUG) {
+				System.out.println("Working: " + item.getCodeBaseLocator());
+			}
 			
 			// If we are working on an application codebase,
 			// then failing to open/scan it is a fatal error.
@@ -213,32 +331,14 @@ public class FindBugs2 {
 				if (isAppCodeBase) {
 					throw e;
 				} else {
-					// TODO: log warning
+					bugReporter.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
 				}
 			} catch (ResourceNotFoundException e) {
 				if (isAppCodeBase) {
 					throw e;
 				} else {
-					// TODO: log warning
+					bugReporter.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
 				}
-			}
-		}
-		
-		if (DEBUG) {
-			System.out.println("Classpath:");
-			dumpCodeBaseList(classPath.appCodeBaseIterator(), "Application codebases");
-			dumpCodeBaseList(classPath.auxCodeBaseIterator(), "Auxiliary codebases");
-		}
-	}
-	
-	private void dumpCodeBaseList(Iterator<? extends ICodeBase> i, String desc)
-			throws InterruptedException {
-		System.out.println("  " + desc + ":");
-		while (i.hasNext()) {
-			ICodeBase codeBase = i.next();
-			System.out.println("    " + codeBase.getCodeBaseLocator().toString());
-			if (codeBase.containsSourceFiles()) {
-				System.out.println("      * contains source files");
 			}
 		}
 	}
@@ -265,13 +365,13 @@ public class FindBugs2 {
 		ICodeBaseIterator i = codeBase.iterator();
 		while (i.hasNext()) {
 			ICodeBaseEntry entry = i.next();
-			if (DEBUG) {
+			if (VERBOSE) {
 				System.out.println("Entry: " + entry.getResourceName());
 			}
 
 			// Add nested archives to the worklist
 			if (Archive.isArchiveFileName(entry.getResourceName())) {
-				if (DEBUG) {
+				if (VERBOSE) {
 					System.out.println("Entry is an archive!");
 				}
 				ICodeBaseLocator nestedArchiveLocator =
