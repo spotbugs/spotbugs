@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003-2005 University of Maryland
+ * Copyright (C) 2003-2006 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -103,7 +103,7 @@ public class AnalysisContext {
 	 *  obtain JavaClass objects which we can reuse.
 	 *  (A URLClassPathRepository gets closed after analysis.) */
 	private static final org.apache.bcel.util.Repository originalRepository =
-		Repository.getRepository();// BCEL SyntheticRepository
+		Repository.getRepository(); // BCEL SyntheticRepository
 
 	/**
 	 * Default maximum number of ClassContext objects to cache.
@@ -149,12 +149,12 @@ public class AnalysisContext {
 	}
 
 	/** Instantiate the CheckReturnAnnotationDatabase.
-	 * Do this after the repository has been set up.
+	 *  Do this after the repository has been set up.
 	 */
 	public void initDatabases() {
 		checkReturnAnnotationDatabase = new CheckReturnAnnotationDatabase();
 		annotationRetentionDatabase = new AnnotationRetentionDatabase();
-		 jcipAnnotationDatabase = new JCIPAnnotationDatabase();
+		jcipAnnotationDatabase = new JCIPAnnotationDatabase();
 	}
 
 	/**
@@ -165,7 +165,8 @@ public class AnalysisContext {
 	}
 
 	/**
-	 * 
+	 * file a ClassNotFoundException with the lookupFailureCallback
+	 * @see #getLookupFailureCallback()
 	 */
 	static public void reportMissingClass(ClassNotFoundException e) {
 		currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
@@ -291,7 +292,7 @@ public class AnalysisContext {
 	 * 
 	 * @param className the name of the class
 	 * @return the JavaClass representing the class
-	 * @throws ClassNotFoundException
+	 * @throws ClassNotFoundException (but not really)
 	 */
 	public JavaClass lookupClass(@NonNull String className) throws ClassNotFoundException {
 		// TODO: eventually we should move to our own thread-safe repository implementation
@@ -322,7 +323,7 @@ public class AnalysisContext {
 	}
 
 	/**
-	 * Lookup a class's sourfe file
+	 * Lookup a class's source file
 	 * 
 	 * @param className the name of the class
 	 * @return the source file for the class, or SourceLineAnnotation.UNKNOWN_SOURCE_FILE if unable to determine
@@ -381,7 +382,7 @@ public class AnalysisContext {
 				new FieldStoreTypeDatabase(),
 				FieldStoreTypeDatabase.DEFAULT_FILENAME,
 				"field store type database");
-			unconditionalDerefParamDatabase = loadPropertyDatabase(
+		unconditionalDerefParamDatabase = loadPropertyDatabase(
 				new ParameterNullnessPropertyDatabase(),
 				UNCONDITIONAL_DEREF_DB_FILENAME,
 				"unconditional param deref database");
