@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
@@ -47,7 +48,7 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 
 	static {
 		try {
-			collectionClass = Repository.lookupClass("java.util.Collection");
+			collectionClass = AnalysisContext.lookupSystemClass("java.util.Collection");
 		} catch (ClassNotFoundException cnfe) {
 			collectionClass = null;
 		}

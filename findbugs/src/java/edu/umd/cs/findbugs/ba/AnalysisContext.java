@@ -99,6 +99,12 @@ public class AnalysisContext {
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
 		= new InheritableThreadLocal<AnalysisContext>();
 
+	/** save the original SyntheticRepository so we may
+	 *  obtain JavaClass objects which we can reuse.
+	 *  (A URLClassPathRepository gets closed after analysis.) */
+	private static final org.apache.bcel.util.Repository originalRepository =
+		Repository.getRepository();// BCEL SyntheticRepository
+
 	/**
 	 * Default maximum number of ClassContext objects to cache.
 	 * FIXME: need to evaluate this parameter. Need to keep stats about accesses.
@@ -117,6 +123,11 @@ public class AnalysisContext {
 		
 		currentAnalysisContext.set(this);
 		
+		if (originalRepository instanceof URLClassPathRepository) {
+			getLookupFailureCallback().logError(
+				"originalRepository is a URLClassPathRepository, which may cause problems");
+		}
+
 		//CheckReturnAnnotationDatabase may reportMissingClass, so do it after the currentAnalysisContext is set.
 		//Otherwise null ptr exceptions will happen.
 		
@@ -286,8 +297,30 @@ public class AnalysisContext {
 		// TODO: eventually we should move to our own thread-safe repository implementation
 		if (className == null) throw new IllegalArgumentException("className is null");
 		return Repository.lookupClass(className);
+		// note: previous line does not throw ClassNotFoundException, instead returns null
 	}
 	
+	/**
+	 * This is equivalent to Repository.lookupClass() or this.lookupClass(),
+	 * except it uses the original Repository instead of the current one.
+	 * 
+	 * This can be important because URLClassPathRepository objects are
+	 * closed after an analysis, so JavaClass objects obtained from them
+	 * are no good on subsequent runs.
+	 * 
+	 * @param className the name of the class
+	 * @return the JavaClass representing the class
+	 * @throws ClassNotFoundException
+	 */
+	public static JavaClass lookupSystemClass(@NonNull String className) throws ClassNotFoundException {
+		// TODO: eventually we should move to our own thread-safe repository implementation
+		if (className == null) throw new IllegalArgumentException("className is null");
+		if (originalRepository == null) throw new IllegalStateException("originalRepository is null");
+
+		JavaClass clazz = originalRepository.findClass(className);
+		return (clazz==null ? originalRepository.loadClass(className) : clazz);
+	}
+
 	/**
 	 * Lookup a class's sourfe file
 	 * 

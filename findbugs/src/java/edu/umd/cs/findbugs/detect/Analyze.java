@@ -21,16 +21,16 @@ public class Analyze {
 
 	static {
 		try {
-			serializable = Repository.lookupClass("java.io.Serializable");
-			collection = Repository.lookupClass("java.util.Collection");
-			map = Repository.lookupClass("java.util.Map");
-			comparator = Repository.lookupClass("java.util.Comparator");
+			serializable = AnalysisContext.lookupSystemClass("java.io.Serializable");
+			collection = AnalysisContext.lookupSystemClass("java.util.Collection");
+			map = AnalysisContext.lookupSystemClass("java.util.Map");
+			comparator = AnalysisContext.lookupSystemClass("java.util.Comparator");
 			
 		} catch (ClassNotFoundException e) {
 			storedException = e;
 		}
 		try {
-			remote = Repository.lookupClass("java.rmi.Remote");
+			remote = AnalysisContext.lookupSystemClass("java.rmi.Remote");
 		} catch (ClassNotFoundException e) {
 			// ignore it
 		}
