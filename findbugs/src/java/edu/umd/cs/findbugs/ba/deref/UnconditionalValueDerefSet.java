@@ -108,10 +108,10 @@ public class UnconditionalValueDerefSet {
 
 		// Copy dereference locations for each value number
 		derefLocationSetMap.clear();
-		for (Map.Entry<ValueNumber, BitSet> entry : derefLocationSetMap.entrySet()) {
+		for (Map.Entry<ValueNumber, BitSet> sourceEntry : source.derefLocationSetMap.entrySet()) {
 			BitSet derefLocationSet = new BitSet();
-			derefLocationSet.or(entry.getValue());
-			derefLocationSetMap.put(entry.getKey(), derefLocationSet);
+			derefLocationSet.or(sourceEntry.getValue());
+			derefLocationSetMap.put(sourceEntry.getKey(), derefLocationSet);
 		}
 	}
 
@@ -171,5 +171,46 @@ public class UnconditionalValueDerefSet {
 			derefLocationSetMap.put(vn, derefLocationSet);
 		}
 		derefLocationSet.set(offset);
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append('[');
+		for (int i = 0; i < numValueNumbersInMethod; i++)  {
+			if (!valueNumberSet.get(i)) {
+				continue;
+			}
+			buf.append('{');
+			buf.append(i);
+			buf.append(':');
+			BitSet derefLocationSet = getDerefLocationSet(i);
+			boolean first = true;
+			for (int j = 0; j < 65536; j++) {
+				if (derefLocationSet.get(j)) {
+					if (first) {
+						first = false;
+					} else {
+						buf.append(',');
+					}
+					buf.append(j);
+				}
+			}
+			buf.append('}');
+		}
+		buf.append(']');
+		return buf.toString();
+	}
+
+	private BitSet getDerefLocationSet(int vn) {
+		for (Map.Entry<ValueNumber, BitSet> entry : derefLocationSetMap.entrySet()) {
+			if (entry.getKey().getNumber() == vn) {
+				return entry.getValue();
+			}
+		}
+		return new BitSet();
 	}
 }
