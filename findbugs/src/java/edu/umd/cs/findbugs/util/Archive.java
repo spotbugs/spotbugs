@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.util;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -54,7 +55,7 @@ public class Archive {
 		if (lastDot < 0) {
 			return false;
 		}
-		String extension = fileName.substring(lastDot);
+		String extension = fileName.substring(lastDot).toLowerCase(Locale.ENGLISH);
 		return ARCHIVE_EXTENSION_SET.contains(extension);
 	}
 }
