@@ -180,19 +180,25 @@ public class UnconditionalValueDerefSet {
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append('[');
+		boolean firstVN = true;
 		for (int i = 0; i < numValueNumbersInMethod; i++)  {
 			if (!valueNumberSet.get(i)) {
 				continue;
+			}
+			if (firstVN) {
+				firstVN = false;
+			} else {
+				buf.append(',');
 			}
 			buf.append('{');
 			buf.append(i);
 			buf.append(':');
 			BitSet derefLocationSet = getDerefLocationSet(i);
-			boolean first = true;
+			boolean firstLoc = true;
 			for (int j = 0; j < 65536; j++) {
 				if (derefLocationSet.get(j)) {
-					if (first) {
-						first = false;
+					if (firstLoc) {
+						firstLoc = false;
 					} else {
 						buf.append(',');
 					}
