@@ -51,6 +51,8 @@ import edu.umd.cs.findbugs.ba.ca.CallListAnalysis;
 import edu.umd.cs.findbugs.ba.ca.CallListDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantAnalysis;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefAnalysis;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.heap.LoadAnalysis;
 import edu.umd.cs.findbugs.ba.heap.LoadDataflow;
 import edu.umd.cs.findbugs.ba.heap.StoreAnalysis;
@@ -870,6 +872,28 @@ public class ClassContext {
 				return dataflow;
 			}
 		};
+		
+	private AnalysisFactory<UnconditionalValueDerefDataflow> unconditionalValueDerefDataflowFactory =
+		new AnalysisFactory<UnconditionalValueDerefDataflow>("unconditional value dereference analysis") {
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#analyze(org.apache.bcel.classfile.Method)
+			 */
+			@Override
+			protected UnconditionalValueDerefDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+				UnconditionalValueDerefAnalysis analysis = new UnconditionalValueDerefAnalysis(
+						getReverseDepthFirstSearch(method),
+						getCFG(method),
+						getMethodGen(method),
+						getValueNumberDataflow(method)
+						);
+				
+				UnconditionalValueDerefDataflow dataflow =
+					new UnconditionalValueDerefDataflow(getCFG(method), analysis);
+				dataflow.execute();
+				
+				return dataflow;
+			}
+		};
 			
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
@@ -1334,6 +1358,19 @@ public class ClassContext {
 					foundOnce.set(lineNum);	
 			}
 		return lineMentionedMultipleTimes;
+	}
+	
+	/**
+	 * Get the UnconditionalValueDerefDataflow for a method.
+	 * 
+	 * @param method the method
+	 * @return the UnconditionalValueDerefDataflow 
+	 * @throws CFGBuilderException
+	 * @throws DataflowAnalysisException
+	 */
+	public UnconditionalValueDerefDataflow getUnconditionalValueDerefDataflow(Method method)
+			throws CFGBuilderException, DataflowAnalysisException {
+		return 	unconditionalValueDerefDataflowFactory.getAnalysis(method);
 	}
 }
 

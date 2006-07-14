@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.deref;
 
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
@@ -27,11 +28,18 @@ import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.BackwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
+import edu.umd.cs.findbugs.ba.CFGBuilderException;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFactory;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
  * Dataflow analysis to find values unconditionally derefenced in the future.
@@ -43,7 +51,7 @@ public class UnconditionalValueDerefAnalysis extends
 	
 	private CFG cfg;
 	private MethodGen methodGen;
-	private ValueNumberFactory valueNumberFactory;
+	private ValueNumberDataflow vnaDataflow;
 	
 	/**
 	 * Constructor.
@@ -57,11 +65,11 @@ public class UnconditionalValueDerefAnalysis extends
 			ReverseDepthFirstSearch rdfs,
 			CFG cfg,
 			MethodGen methodGen,
-			ValueNumberFactory valueNumberFactory) {
+			ValueNumberDataflow vnaDataflow) {
 		super(rdfs);
 		this.cfg = cfg;
 		this.methodGen = methodGen;
-		this.valueNumberFactory = valueNumberFactory;
+		this.vnaDataflow = vnaDataflow;
 	}
 
 	/* (non-Javadoc)
@@ -80,8 +88,30 @@ public class UnconditionalValueDerefAnalysis extends
 			BasicBlock basicBlock, UnconditionalValueDerefSet fact)
 			throws DataflowAnalysisException {
 
-		// TODO: implement this
+		// See if this instruction has a null check.
+		// If it does, the fall through predecessor will be
+		// identify itself as the null check.
+		if (handle != basicBlock.getFirstInstruction()) {
+			return;
+		}
+		BasicBlock fallThroughPredecessor =
+			cfg.getPredecessorWithEdgeType(basicBlock, EdgeTypes.FALL_THROUGH_EDGE);
+		if (fallThroughPredecessor == null || !fallThroughPredecessor.isNullCheck()) {
+			return;
+		}
+		
+		// Get the null-checked value
+		ValueNumberFrame vnaFrame = vnaDataflow.getStartFact(fallThroughPredecessor);
+		if (!vnaFrame.isValid()) {
+			// Probably dead code.
+			// Assume this location can't be reached.
+			makeFactTop(fact);
+			return;
+		}
+		ValueNumber vn = vnaFrame.getInstance(handle.getInstruction(), methodGen.getConstantPool()); 
 
+		// Mark the value number as being dereferenced at this location
+		fact.addDeref(vn, handle.getPosition());
 	}
 
 	/* (non-Javadoc)
@@ -95,7 +125,7 @@ public class UnconditionalValueDerefAnalysis extends
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#createFact()
 	 */
 	public UnconditionalValueDerefSet createFact() {
-		return new UnconditionalValueDerefSet(valueNumberFactory.getNumValuesAllocated());
+		return new UnconditionalValueDerefSet(vnaDataflow.getAnalysis().getNumValuesAllocated());
 	}
 
 	/* (non-Javadoc)
@@ -134,11 +164,14 @@ public class UnconditionalValueDerefAnalysis extends
 		}
 
 		if (result.isTop() || fact.isBottom()) {
+			// Make result identical to other fact
 			copy(fact, result);
 		} else if (result.isBottom() || fact.isTop()) {
 			// No change in result fact
 		} else {
-			result.mergeWith(fact, valueNumberFactory);
+			// Dataflow merge
+			// (intersection of unconditional deref values)
+			result.mergeWith(fact, vnaDataflow.getAnalysis().getFactory());
 		}
 	}
 
@@ -149,4 +182,22 @@ public class UnconditionalValueDerefAnalysis extends
 		return fact1.isSameAs(fact2);
 	}
 
+	public static void main(String[] args) throws Exception {
+		if (args.length != 1) {
+			System.err.println("Usage: " + UnconditionalValueDerefAnalysis.class.getName() + " <classfile>");
+			System.exit(1);
+		}
+		
+		DataflowTestDriver<UnconditionalValueDerefSet, UnconditionalValueDerefAnalysis> driver =
+			new DataflowTestDriver<UnconditionalValueDerefSet, UnconditionalValueDerefAnalysis>() {
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
+			 */
+			@Override
+			public Dataflow<UnconditionalValueDerefSet, UnconditionalValueDerefAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+				return classContext.getUnconditionalValueDerefDataflow(method);
+			}
+		};
+		driver.execute(args[0]);
+	}
 }

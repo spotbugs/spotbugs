@@ -39,7 +39,7 @@ public class UnconditionalValueDerefSet {
 	private BitSet valueNumberSet;
 	
 	/** Map of value numbers to locations */
-	private Map<ValueNumber, BitSet> derefOffsetMap;
+	private Map<ValueNumber, BitSet> derefLocationSetMap;
 	
 	/**
 	 * Constructor.
@@ -49,22 +49,38 @@ public class UnconditionalValueDerefSet {
 	public UnconditionalValueDerefSet(int numValueNumbersInMethod) {
 		this.numValueNumbersInMethod = numValueNumbersInMethod;
 		this.valueNumberSet = new BitSet();
-		this.derefOffsetMap = new HashMap<ValueNumber, BitSet>();
+		this.derefLocationSetMap = new HashMap<ValueNumber, BitSet>();
 	}
 
+	/**
+	 * Is this the bottom value?
+	 * 
+	 * @return true if this is the bottom value, false otherwise
+	 */
 	public boolean isBottom() {
 		return valueNumberSet.get(numValueNumbersInMethod);
 	}
 	
+	/**
+	 * Make this dataflow fact the bottom value.
+	 */
 	public void setIsBottom() {
 		clear();
 		valueNumberSet.set(numValueNumbersInMethod);
 	}
 
+	/**
+	 * Is this the top value?
+	 * 
+	 * @return true if this is the top value, false otherwise
+	 */
 	public boolean isTop() {
 		return valueNumberSet.get(numValueNumbersInMethod + 1);
 	}
 	
+	/**
+	 * Make this dataflow fact the top value.
+	 */
 	public void setIsTop() {
 		clear();
 		valueNumberSet.set(numValueNumbersInMethod + 1);
@@ -77,7 +93,7 @@ public class UnconditionalValueDerefSet {
 	 */
 	void clear() {
 		valueNumberSet.clear();
-		derefOffsetMap.clear();
+		derefLocationSetMap.clear();
 	}
 
 	/**
@@ -91,11 +107,11 @@ public class UnconditionalValueDerefSet {
 		valueNumberSet.or(source.valueNumberSet);
 
 		// Copy dereference locations for each value number
-		derefOffsetMap.clear();
-		for (Map.Entry<ValueNumber, BitSet> entry : derefOffsetMap.entrySet()) {
+		derefLocationSetMap.clear();
+		for (Map.Entry<ValueNumber, BitSet> entry : derefLocationSetMap.entrySet()) {
 			BitSet derefLocationSet = new BitSet();
 			derefLocationSet.or(entry.getValue());
-			derefOffsetMap.put(entry.getKey(), derefLocationSet);
+			derefLocationSetMap.put(entry.getKey(), derefLocationSet);
 		}
 	}
 
@@ -109,7 +125,7 @@ public class UnconditionalValueDerefSet {
 	 */
 	public boolean isSameAs(UnconditionalValueDerefSet otherFact) {
 		return valueNumberSet.equals(otherFact.valueNumberSet)
-			&& derefOffsetMap.equals(otherFact.derefOffsetMap);
+			&& derefLocationSetMap.equals(otherFact.derefLocationSetMap);
 	}
 
 	/**
@@ -120,19 +136,40 @@ public class UnconditionalValueDerefSet {
 	 * @param fact another dataflow fact
 	 */
 	public void mergeWith(UnconditionalValueDerefSet fact, ValueNumberFactory valueNumberFactory) {
+		// Compute the intersection of the unconditionally dereferenced value sets
 		valueNumberSet.and(fact.valueNumberSet);
-		
+
+		// For each unconditionally dereferenced value...
 		for (int i = 0; i < numValueNumbersInMethod; i++) {
 			ValueNumber vn = valueNumberFactory.forNumber(i);
 
 			if (valueNumberSet.get(i)) {
-				BitSet derefLocationSet = derefOffsetMap.get(vn);
-				derefLocationSet.or(fact.derefOffsetMap.get(vn));
+				// Compute the union of the dereference locations for
+				// this value number.
+				BitSet derefLocationSet = derefLocationSetMap.get(vn);
+				derefLocationSet.or(fact.derefLocationSetMap.get(vn));
 			} else {
 				// The value number is not in the fact:
 				// remove its location set
-				derefOffsetMap.remove(vn);
+				derefLocationSetMap.remove(vn);
 			}
 		}
+	}
+
+	/**
+	 * Mark a value as being dereferenced at given bytecode offset.
+	 * 
+	 * @param vn       the value
+	 * @param offset the bytecode offset
+	 */
+	public void addDeref(ValueNumber vn, int offset) {
+		valueNumberSet.set(vn.getNumber());
+		
+		BitSet derefLocationSet = derefLocationSetMap.get(vn);
+		if (derefLocationSet == null) {
+			derefLocationSet  = new BitSet();
+			derefLocationSetMap.put(vn, derefLocationSet);
+		}
+		derefLocationSet.set(offset);
 	}
 }
