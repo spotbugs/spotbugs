@@ -23,6 +23,8 @@ package de.tobject.findbugs.builder;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.dom4j.DocumentException;
@@ -231,14 +233,20 @@ public class FindBugsWorker {
 		// Algorithm:
 		// Remove all old warnings for classes which were just analyzed.
 		// Then add all new warnings.
+		List<BugInstance> toRemove = new ArrayList<BugInstance>();
+
 		if (oldBugCollection != null) {
 			Set analyzedClassNameSet = bugReporter.getAnalyzedClassNames();
-			for (Iterator i = oldBugCollection.iterator(); i.hasNext(); ) {
-				BugInstance oldWarning = (BugInstance) i.next();
+			for (Iterator<BugInstance> i = oldBugCollection.iterator(); i.hasNext(); ) {
+				BugInstance oldWarning = i.next();
 				ClassAnnotation warningClass = oldWarning.getPrimaryClass();
 				if (warningClass != null && analyzedClassNameSet.contains(warningClass.getClassName())) {
-					i.remove();
+					toRemove.add(oldWarning); // i.remove() would remove only from the bugSet
 				}
+			}
+
+			for (BugInstance removeMe : toRemove) {
+				oldBugCollection.remove(removeMe); // removes from both bugSet and uniqueIdToBugInstanceMap
 			}
 		} else {
 			oldBugCollection = new SortedBugCollection();
