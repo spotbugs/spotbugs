@@ -751,7 +751,7 @@
   <BugPattern abbrev="MWN" type="MWN_MISMATCHED_NOTIFY" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_LOCAL_SELF_ASSIGNMENT" category="STYLE" />
   <BugPattern abbrev="INT" type="INT_BAD_REM_BY_1"    category="CORRECTNESS" />
-  <BugPattern abbrev="INT" type="INT_VACUOUS_COMPARISON"    category="CORRECTNESS" />
+  <BugPattern abbrev="INT" type="INT_VACUOUS_COMPARISON"    category="STYLE" />
   <BugPattern abbrev="BIT" type="BIT_IOR_OF_SIGNED_BYTE"    category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_AND"    category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_AND_ZZ" category="CORRECTNESS" />
