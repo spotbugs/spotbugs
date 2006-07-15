@@ -1323,6 +1323,9 @@ public class FindBugs implements Constants2, ExitCodes {
 			// XXX: hack
 			System.setProperty("findbugs.checkreturn.loadtraining", new File(trainingInputDir, "checkReturn.db").getPath());
 		}
+		else {
+			AnalysisContext.currentAnalysisContext().loadDefaultInterproceduralDatabases();
+		}
 	}
 
 	/**

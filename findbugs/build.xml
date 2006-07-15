@@ -67,6 +67,7 @@
 		<include name="**/*.properties"/>
 		<include name="**/*.png"/>
 		<include name="**/*.html"/>
+		<include name="**/*.db"/>
 	</patternset>
 	
 	<patternset id="doc.src.pats">
@@ -123,7 +124,9 @@
 					<classpath refid="findbugs.classpath"/>
 				</javac>
 		<!-- Copy codebase data files. -->
-		<copy todir="${classes.dir}">
+		<echo level="info" message="copying data files"/>
+				
+		<copy verbose="true" todir="${classes.dir}">
 			<fileset dir="${src.dir}">
 				<patternset refid="codebase.data.pats"/>
 			</fileset>
@@ -186,6 +189,7 @@
 				<exclude name="**/*Test.class"/> <!-- Exclude JUnit tests. -->
 				<include name="**/*.class"/>
 				<include name="**/*.properties"/>
+				<include name="**/*.db"/>
 				<include name="**/*.xsl"/>
 			</fileset>
 		</jar>

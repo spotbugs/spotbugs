@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,6 +59,7 @@ public class AnalysisContext {
 	public static final String DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME = "checkForNullParam.db";
 	public static final String DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE = "nonnullReturn.db";
 	public static final String UNCONDITIONAL_DEREF_DB_FILENAME = "unconditionalDeref.db";
+	public static final String UNCONDITIONAL_DEREF_DB_RESOURCE = "jdkBaseUnconditionalDeref.db";
 	public static final String DEFAULT_NULL_RETURN_VALUE_DB_FILENAME = "mayReturnNull.db";
 	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
@@ -387,7 +389,14 @@ public class AnalysisContext {
 				UNCONDITIONAL_DEREF_DB_FILENAME,
 				"unconditional param deref database");
 	}
-	
+	public void loadDefaultInterproceduralDatabases() {
+
+		unconditionalDerefParamDatabase = loadPropertyDatabaseFromResource(
+				new ParameterNullnessPropertyDatabase(),
+				UNCONDITIONAL_DEREF_DB_RESOURCE,
+				"unconditional param deref database");
+	}
+
 	/**
 	 * Set a boolean property.
 	 * 
@@ -513,6 +522,41 @@ public class AnalysisContext {
 		
 		return null;
 	}
+	/**
+	 * Load an interprocedural property database.
+	 * 
+	 * @param <DatabaseType> actual type of the database
+	 * @param <KeyType>      type of key (e.g., method or field)
+	 * @param <Property>     type of properties stored in the database
+	 * @param database       the empty database object
+	 * @param fileName       file to load database from
+	 * @param description    description of the database (for diagnostics)
+	 * @return the database object, or null if the database couldn't be loaded
+	 */
+	public<
+		DatabaseType extends PropertyDatabase<KeyType,Property>,
+		KeyType,
+		Property
+		> DatabaseType loadPropertyDatabaseFromResource(
+			DatabaseType database,
+			String resourceName,
+			String description) {
+		try {
+			if (DEBUG) System.out.println("Loading default " + description + " from " 
+					+ resourceName + " @ "
+			 + PropertyDatabase.class.getResource(resourceName) + " ... ");
+			InputStream in = PropertyDatabase.class.getResourceAsStream(resourceName);
+			database.read(in);
+			return database;
+		} catch (IOException e) {
+			getLookupFailureCallback().logError("Error loading " + description, e);
+		} catch (PropertyDatabaseFormatException e) {
+			getLookupFailureCallback().logError("Invalid " + description, e);
+		}
+		
+		return null;
+	}
+
 	
 	/**
 	 * Write an interprocedural property database.
