@@ -57,6 +57,13 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 				found.clear();
 		}
 	}
+	
+	public boolean okValueToCompareAgainst(Number n) {
+		if (n == null) return true;
+		double v = n.doubleValue();
+		v = v - Math.floor(v);
+		return v == 0.0;
+	}
 	@Override
          public void sawOpcode(int seen) {
 		opStack.mergeJumps(this);
@@ -73,10 +80,8 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 						state = SAW_NOTHING;
 						Number n1 = (Number)first.getConstant();
 						Number n2 = (Number)second.getConstant();
-						if ((n1 != null) && (n1.doubleValue() == 0.0f))
-							return;
-						if ((n2 != null) && (n2.doubleValue() == 0.0f))
-							return;
+						if (okValueToCompareAgainst(n1)) return;
+						if (okValueToCompareAgainst(n2)) return;
 					}
 					state = SAW_COMP;
 				break;
