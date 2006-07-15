@@ -591,9 +591,10 @@ public class FindNullDeref
 			int priority = onExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
 			reportNullDeref(propertySet, classContext, method, location, type, priority);
 		} else if (refValue.isNullOnSomePath()) {
-			String type = onExceptionPath ? "NP_NULL_ON_SOME_PATH_EXCEPTION" : "NP_NULL_ON_SOME_PATH";
-			int priority = onExceptionPath ? LOW_PRIORITY : NORMAL_PRIORITY;
-			if (refValue.isReturnValue())
+			String type =  "NP_NULL_ON_SOME_PATH";
+			int priority =  NORMAL_PRIORITY;
+			if (onExceptionPath)  type = "NP_NULL_ON_SOME_PATH_EXCEPTION";
+			else if (refValue.isReturnValue())
 				type = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE";
 			if (DEBUG) System.out.println("Reporting null on some path: value=" + refValue);
 			reportNullDeref(propertySet, classContext, method, location, type, priority);
@@ -613,9 +614,6 @@ public class FindNullDeref
 		BugInstance bugInstance = new BugInstance(this, type, priority)
 		        .addClassAndMethod(methodGen, sourceFile)
 		        .addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
-
-		if (DEBUG)
-			bugInstance.addInt(location.getHandle().getPosition()).describe("INT_BYTECODE_OFFSET");
 
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
