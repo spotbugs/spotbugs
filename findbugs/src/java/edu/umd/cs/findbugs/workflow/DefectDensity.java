@@ -52,11 +52,11 @@ public class DefectDensity {
 		ProjectStats stats = origCollection.getProjectStats();
 		printRow("kind", "name", "density/KNCSS", "bugs", "NCSS");
 		printRow("project", origCollection.getCurrentAppVersion().getReleaseName(), 
-				(100 * stats.getTotalBugs() / stats.getCodeSize())/10.0d, stats.getTotalBugs(),
+				(10000 * stats.getTotalBugs() / stats.getCodeSize())/10.0d, stats.getTotalBugs(),
 				stats.getCodeSize());
 		for (PackageStats p : stats.getPackageStats()) if (p.getTotalBugs() > 4) {
 			
-				printRow("package", p.getPackageName(), (100 * p.getTotalBugs()
+				printRow("package", p.getPackageName(), (10000 * p.getTotalBugs()
 					/ p.size())/10.0d, p.getTotalBugs(), p.size());
 			for (ClassStats c : p.getClassStats()) if (c.getTotalBugs() > 4) {
 				printRow("class", c.getName(), 1000 * c.getTotalBugs()
