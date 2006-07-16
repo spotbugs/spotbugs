@@ -49,7 +49,7 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 	
 		super.visit(obj);
 		if (!found.isEmpty()) {
-				BugInstance bug = new BugInstance(this, "FE_FLOATING_POINT_EQUALITY", LOW_PRIORITY)
+				BugInstance bug = new BugInstance(this, "FE_FLOATING_POINT_EQUALITY", NORMAL_PRIORITY)
 				        .addClassAndMethod(this);
 				for(SourceLineAnnotation s : found)
 					bug.add(s);
@@ -59,13 +59,14 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 	}
 	
 	public boolean okValueToCompareAgainst(Number n) {
-		if (n == null) return true;
+		if (n == null) return false;
 		double v = n.doubleValue();
 		v = v - Math.floor(v);
 		return v == 0.0;
 	}
 	@Override
          public void sawOpcode(int seen) {
+		if (false) System.out.println(OPCODE_NAMES[seen] + " " +  state);
 		opStack.mergeJumps(this);
 		try {
 			switch ( seen ) {
