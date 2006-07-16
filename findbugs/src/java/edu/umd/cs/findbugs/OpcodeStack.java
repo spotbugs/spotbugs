@@ -92,6 +92,7 @@ public class OpcodeStack implements Constants2
 		public static final int HASHCODE_INT = 4;
 		public static final int INTEGER_SUM = 5;
 		public static final int AVERAGE_COMPUTED_USING_DIVISION = 6;
+		public static final int FLOAT_MATH = 7;
 		public static final Object UNKNOWN = null;
 		private int specialKind;
  		private String signature;
@@ -163,6 +164,9 @@ public class OpcodeStack implements Constants2
 				buf.append(", int_sum");
 			else if (specialKind == AVERAGE_COMPUTED_USING_DIVISION)
 				buf.append(", averageComputingUsingDivision");
+			else if (specialKind == FLOAT_MATH)
+				buf.append(", floatMath");
+			
 			if (constValue != UNKNOWN) {
 				buf.append(", ");
 				buf.append(constValue);
@@ -1558,35 +1562,42 @@ public class OpcodeStack implements Constants2
 	}
 	
 	private void pushByFloatMath(int seen, Item it, Item it2) {
+		Item result;
 		if ((it.getConstant() != null) && it2.getConstant() != null) {
 			if (seen == FADD)
-				push(new Item("F", ((Float) it2.getConstant()) + ((Float) it.getConstant())));
+				result =new Item("F", ((Float) it2.getConstant()) + ((Float) it.getConstant()));
 			else if (seen == FSUB)
-				push(new Item("F", ((Float) it2.getConstant()) - ((Float) it.getConstant())));
+				result =new Item("F", ((Float) it2.getConstant()) - ((Float) it.getConstant()));
 			else if (seen == FMUL)
-				push(new Item("F", ((Float) it2.getConstant()) * ((Float) it.getConstant())));
+				result =new Item("F", ((Float) it2.getConstant()) * ((Float) it.getConstant()));
 			else if (seen == FDIV)
-				push(new Item("F", ((Float) it2.getConstant()) / ((Float) it.getConstant())));
+				result =new Item("F", ((Float) it2.getConstant()) / ((Float) it.getConstant()));
+				else result =new Item("F");
 		} else {
-			push(new Item("F"));
+			result =new Item("F");
 		}
+		result.setSpecialKind(Item.FLOAT_MATH);
+		push(result);
 	}
 	
 	private void pushByDoubleMath(int seen, Item it, Item it2) {
+		Item result;
 		if ((it.getConstant() != null) && it2.getConstant() != null) {
 			if (seen == DADD)
-				push(new Item("D", ((Double) it2.getConstant()) + ((Double) it.getConstant())));
+				result = new Item("D", ((Double) it2.getConstant()) + ((Double) it.getConstant()));
 			else if (seen == DSUB)
-				push(new Item("D", ((Double) it2.getConstant()) - ((Double) it.getConstant())));
+				result = new Item("D", ((Double) it2.getConstant()) - ((Double) it.getConstant()));
 			else if (seen == DMUL)
-				push(new Item("D", ((Double) it2.getConstant()) * ((Double) it.getConstant())));
+				result = new Item("D", ((Double) it2.getConstant()) * ((Double) it.getConstant()));
 			else if (seen == DDIV)
-				push(new Item("D", ((Double) it2.getConstant()) / ((Double) it.getConstant())));
-			else if (seen == DREM)
-				push(new Item("D"));	//?	
+				result = new Item("D", ((Double) it2.getConstant()) / ((Double) it.getConstant()));
+			else 
+				result = new Item("D");	//?	
 			} else {
-			push(new Item("D"));
+			result = new Item("D");
 		}
+		result.setSpecialKind(Item.FLOAT_MATH);
+		push(result);
 	}
 	
 	private void pushByInvoke(DismantleBytecode dbc, boolean popThis) {
