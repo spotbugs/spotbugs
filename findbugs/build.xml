@@ -126,7 +126,7 @@
 		<!-- Copy codebase data files. -->
 		<echo level="info" message="copying data files"/>
 				
-		<copy verbose="true" todir="${classes.dir}">
+		<copy todir="${classes.dir}">
 			<fileset dir="${src.dir}">
 				<patternset refid="codebase.data.pats"/>
 			</fileset>
