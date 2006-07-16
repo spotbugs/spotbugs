@@ -28,7 +28,7 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 {
 	private static final int SAW_NOTHING = 0;
 	private static final int SAW_COMP = 1;
-	
+	private int priority;
 	private BugReporter bugReporter;
 	private OpcodeStack opStack = new OpcodeStack();
 	private int state;
@@ -43,7 +43,7 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 	@Override
          public void visit(Code obj) {
 		found.clear();
-
+		priority = LOW_PRIORITY;
 
 		
         opStack.resetForMethodEntry(this);
@@ -51,7 +51,7 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 	
 		super.visit(obj);
 		if (!found.isEmpty()) {
-				BugInstance bug = new BugInstance(this, "FE_FLOATING_POINT_EQUALITY", NORMAL_PRIORITY)
+				BugInstance bug = new BugInstance(this, "FE_FLOATING_POINT_EQUALITY", priority)
 				        .addClassAndMethod(this);
 
 				for(SourceLineAnnotation s : found)
@@ -87,9 +87,11 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 						Number n2 = (Number)second.getConstant();
 						if (first.isInitialParameter() && n2 != null) break;
 						if (second.isInitialParameter() && n1 != null) break;
+						if (first.getRegisterNumber() == second.getRegisterNumber()) break;
 						if (first.isInitialParameter() && second.isInitialParameter()) break;
 						if (n1 != null && n2 != null) break;
 						if (okValueToCompareAgainst(n1) || okValueToCompareAgainst(n2)) break;
+						if (n1 != null || n2 != null) priority = NORMAL_PRIORITY;
 						state = SAW_COMP;
 					}
 				break;
