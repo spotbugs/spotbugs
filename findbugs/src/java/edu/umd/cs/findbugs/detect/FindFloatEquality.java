@@ -91,7 +91,11 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 						if (first.isInitialParameter() && second.isInitialParameter()) break;
 						if (n1 != null && n2 != null) break;
 						if (okValueToCompareAgainst(n1) || okValueToCompareAgainst(n2)) break;
-						if (n1 != null || n2 != null) priority = NORMAL_PRIORITY;
+						if (n1 != null || n2 != null) {
+							priority = NORMAL_PRIORITY;
+							found.clear();
+						}
+						else if (priority == NORMAL_PRIORITY) break;
 						state = SAW_COMP;
 					}
 				break;

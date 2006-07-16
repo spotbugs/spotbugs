@@ -792,7 +792,7 @@
   <BugPattern abbrev="WMI" type="WMI_WRONG_MAP_ITERATOR" category="PERFORMANCE"/>
   <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="CORRECTNESS"/>
   <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE"/>
-  <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="CORRECTNESS"/>
+  <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="STYLE"/>
   <BugPattern abbrev="UM" type="UM_UNNECESSARY_MATH" category="STYLE"/>
   <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="STYLE"
         experimental="true"/>
