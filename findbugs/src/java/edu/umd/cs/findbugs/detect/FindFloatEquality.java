@@ -39,10 +39,12 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 	
 
 	Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
-	
+		
 	@Override
          public void visit(Code obj) {
 		found.clear();
+
+
 		
         opStack.resetForMethodEntry(this);
 		state = SAW_NOTHING;
@@ -51,9 +53,11 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 		if (!found.isEmpty()) {
 				BugInstance bug = new BugInstance(this, "FE_FLOATING_POINT_EQUALITY", NORMAL_PRIORITY)
 				        .addClassAndMethod(this);
+
 				for(SourceLineAnnotation s : found)
 					bug.add(s);
 				bugReporter.reportBug(bug);
+				
 				found.clear();
 		}
 	}
@@ -61,6 +65,7 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 	public boolean okValueToCompareAgainst(Number n) {
 		if (n == null) return false;
 		double v = n.doubleValue();
+		if (Double.isInfinite(v) || Double.isNaN(v)) return true;
 		v = v - Math.floor(v);
 		return v == 0.0;
 	}
@@ -77,14 +82,16 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 					if (opStack.getStackDepth() >= 2) {
 						OpcodeStack.Item first = opStack.getStackItem(0);
 						OpcodeStack.Item second = opStack.getStackItem(1);
-						
-						state = SAW_NOTHING;
+
 						Number n1 = (Number)first.getConstant();
 						Number n2 = (Number)second.getConstant();
-						if (okValueToCompareAgainst(n1)) return;
-						if (okValueToCompareAgainst(n2)) return;
+						if (first.isInitialParameter() && n2 != null) break;
+						if (second.isInitialParameter() && n1 != null) break;
+						if (first.isInitialParameter() && second.isInitialParameter()) break;
+						if (n1 != null && n2 != null) break;
+						if (okValueToCompareAgainst(n1) || okValueToCompareAgainst(n2)) break;
+						state = SAW_COMP;
 					}
-					state = SAW_COMP;
 				break;
 				
 				case IFEQ:
@@ -92,8 +99,9 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 					if (state == SAW_COMP) {
 						SourceLineAnnotation sourceLineAnnotation =
 							SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, getPC());
-						if (sourceLineAnnotation != null)
+						if (sourceLineAnnotation != null) {
 							found.add(sourceLineAnnotation);
+						}
 					}
 					state = SAW_NOTHING;
 				break;
