@@ -211,6 +211,8 @@ public class OpcodeStack implements Constants2
 				m.registerNumber = i1.registerNumber;
 			if (i1.specialKind == i2.specialKind)
 				m.specialKind = i1.specialKind;
+			else if (i1.specialKind == FLOAT_MATH || i2.specialKind == FLOAT_MATH)
+				m.specialKind = FLOAT_MATH;
 			if (DEBUG) System.out.println("Merge " + i1 + " and " + i2 + " gives " + m);
 			return m;
 		}
