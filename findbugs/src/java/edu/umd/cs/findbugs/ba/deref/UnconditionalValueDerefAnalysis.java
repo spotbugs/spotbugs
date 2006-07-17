@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -111,7 +112,7 @@ public class UnconditionalValueDerefAnalysis extends
 		ValueNumber vn = vnaFrame.getInstance(handle.getInstruction(), methodGen.getConstantPool()); 
 
 		// Mark the value number as being dereferenced at this location
-		fact.addDeref(vn, handle.getPosition());
+		fact.addDeref(vn, new Location(handle, basicBlock));
 	}
 
 	/* (non-Javadoc)

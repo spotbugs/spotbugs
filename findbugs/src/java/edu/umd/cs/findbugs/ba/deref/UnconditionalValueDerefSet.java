@@ -21,8 +21,13 @@ package edu.umd.cs.findbugs.ba.deref;
 
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFactory;
 
@@ -39,7 +44,7 @@ public class UnconditionalValueDerefSet {
 	private BitSet valueNumberSet;
 	
 	/** Map of value numbers to locations */
-	private Map<ValueNumber, BitSet> derefLocationSetMap;
+	private Map<ValueNumber, Set<Location>> derefLocationSetMap;
 	
 	/**
 	 * Constructor.
@@ -49,7 +54,7 @@ public class UnconditionalValueDerefSet {
 	public UnconditionalValueDerefSet(int numValueNumbersInMethod) {
 		this.numValueNumbersInMethod = numValueNumbersInMethod;
 		this.valueNumberSet = new BitSet();
-		this.derefLocationSetMap = new HashMap<ValueNumber, BitSet>();
+		this.derefLocationSetMap = new HashMap<ValueNumber, Set<Location>>();
 	}
 
 	/**
@@ -108,9 +113,9 @@ public class UnconditionalValueDerefSet {
 
 		// Copy dereference locations for each value number
 		derefLocationSetMap.clear();
-		for (Map.Entry<ValueNumber, BitSet> sourceEntry : source.derefLocationSetMap.entrySet()) {
-			BitSet derefLocationSet = new BitSet();
-			derefLocationSet.or(sourceEntry.getValue());
+		for (Map.Entry<ValueNumber, Set<Location>> sourceEntry : source.derefLocationSetMap.entrySet()) {
+			Set<Location> derefLocationSet = new HashSet<Location>();
+			derefLocationSet.addAll(sourceEntry.getValue());
 			derefLocationSetMap.put(sourceEntry.getKey(), derefLocationSet);
 		}
 	}
@@ -146,8 +151,8 @@ public class UnconditionalValueDerefSet {
 			if (valueNumberSet.get(i)) {
 				// Compute the union of the dereference locations for
 				// this value number.
-				BitSet derefLocationSet = derefLocationSetMap.get(vn);
-				derefLocationSet.or(fact.derefLocationSetMap.get(vn));
+				Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
+				derefLocationSet.addAll(fact.derefLocationSetMap.get(vn));
 			} else {
 				// The value number is not in the fact:
 				// remove its location set
@@ -157,20 +162,20 @@ public class UnconditionalValueDerefSet {
 	}
 
 	/**
-	 * Mark a value as being dereferenced at given bytecode offset.
+	 * Mark a value as being dereferenced at given Location.
 	 * 
 	 * @param vn       the value
-	 * @param offset the bytecode offset
+	 * @param location the Location
 	 */
-	public void addDeref(ValueNumber vn, int offset) {
+	public void addDeref(ValueNumber vn, Location location) {
 		valueNumberSet.set(vn.getNumber());
 		
-		BitSet derefLocationSet = derefLocationSetMap.get(vn);
+		Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
 		if (derefLocationSet == null) {
-			derefLocationSet  = new BitSet();
+			derefLocationSet  = new HashSet<Location>();
 			derefLocationSetMap.put(vn, derefLocationSet);
 		}
-		derefLocationSet.set(offset);
+		derefLocationSet.add(location);
 	}
 	
 	/* (non-Javadoc)
@@ -193,17 +198,22 @@ public class UnconditionalValueDerefSet {
 			buf.append('{');
 			buf.append(i);
 			buf.append(':');
-			BitSet derefLocationSet = getDerefLocationSet(i);
+			TreeSet<Location> derefLocationSet = new TreeSet<Location>();
+			derefLocationSet.addAll(getDerefLocationSet(i));
 			boolean firstLoc = true;
-			for (int j = 0; j < 65536; j++) {
-				if (derefLocationSet.get(j)) {
-					if (firstLoc) {
-						firstLoc = false;
-					} else {
-						buf.append(',');
-					}
-					buf.append(j);
+			for (Iterator<Location> j = derefLocationSet.iterator(); j.hasNext(); ) {
+				Location location = j.next();
+				if (firstLoc) {
+					firstLoc = false;
+				} else {
+					buf.append(',');
 				}
+				buf.append(
+						"(" +
+						location.getBasicBlock().getId() +
+						":" +
+						location.getHandle().getPosition() +
+						")");
 			}
 			buf.append('}');
 		}
@@ -211,12 +221,12 @@ public class UnconditionalValueDerefSet {
 		return buf.toString();
 	}
 
-	private BitSet getDerefLocationSet(int vn) {
-		for (Map.Entry<ValueNumber, BitSet> entry : derefLocationSetMap.entrySet()) {
+	private Set<Location> getDerefLocationSet(int vn) {
+		for (Map.Entry<ValueNumber, Set<Location>> entry : derefLocationSetMap.entrySet()) {
 			if (entry.getKey().getNumber() == vn) {
 				return entry.getValue();
 			}
 		}
-		return new BitSet();
+		return new HashSet<Location>();
 	}
 }
