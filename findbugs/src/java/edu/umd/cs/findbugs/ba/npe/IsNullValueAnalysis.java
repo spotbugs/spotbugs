@@ -20,7 +20,9 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
@@ -75,6 +77,7 @@ public class IsNullValueAnalysis
 	private IsNullValueFrameModelingVisitor visitor;
 	private ValueNumberDataflow vnaDataflow;
 	private int[] numNonExceptionSuccessorMap;
+	private Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet;
 	private IsNullValueFrame lastFrame;
 	private IsNullValueFrame instanceOfFrame;
 	private IsNullValueFrame cachedEntryFact;
@@ -85,9 +88,13 @@ public class IsNullValueAnalysis
 	                           AssertionMethods assertionMethods) {
 		super(dfs);
 		this.methodGen = methodGen;
-		this.visitor = new IsNullValueFrameModelingVisitor(methodGen.getConstantPool(), assertionMethods);
+		this.visitor = new IsNullValueFrameModelingVisitor(
+				this,
+				methodGen.getConstantPool(),
+				assertionMethods);
 		this.vnaDataflow = vnaDataflow;
 		this.numNonExceptionSuccessorMap = new int[cfg.getNumBasicBlocks()];
+		this.locationWhereValueBecomesNullSet = new HashSet<LocationWhereValueBecomesNull>();
 
 		// For each basic block, calculate the number of non-exception successors.
 		Iterator<Edge> i = cfg.edgeIterator();

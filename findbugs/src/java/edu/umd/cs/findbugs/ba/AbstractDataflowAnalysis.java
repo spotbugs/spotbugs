@@ -182,6 +182,20 @@ public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysi
 
 		endTransfer(basicBlock, end, result);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#startIteration()
+	 */
+	public void startIteration() {
+		// Do nothing - subclass may override
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#finishIteration()
+	 */
+	public void finishIteration() {
+		// Do nothing - subclass may override
+	}
 
 }
 

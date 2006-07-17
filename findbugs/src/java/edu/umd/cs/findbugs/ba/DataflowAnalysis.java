@@ -115,6 +115,17 @@ public interface DataflowAnalysis <Fact> {
 	 * @param result the result fact
 	 */
 	public void meetInto(Fact fact, Edge edge, Fact result) throws DataflowAnalysisException;
+	
+	/**
+	 * Called before beginning an iteration of analysis.
+	 * Each iteration visits every basic block in the CFG.
+	 */
+	public void startIteration();
+
+	/**
+	 * Called after finishing an iteration of analysis. 
+	 */
+	public void finishIteration();
 }
 
 // vim:ts=4

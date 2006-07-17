@@ -48,10 +48,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
 	private static final boolean NO_ASSERT_HACK = Boolean.getBoolean("inva.noAssertHack");
 
+	private IsNullValueAnalysis analysis;
 	private AssertionMethods assertionMethods;
 
-	public IsNullValueFrameModelingVisitor(ConstantPoolGen cpg, AssertionMethods assertionMethods) {
+	public IsNullValueFrameModelingVisitor(IsNullValueAnalysis analysis, ConstantPoolGen cpg, AssertionMethods assertionMethods) {
 		super(cpg);
+		this.analysis = analysis;
 		this.assertionMethods = assertionMethods;
 	}
 	

@@ -116,6 +116,20 @@ public class BlockTypeAnalysis implements DataflowAnalysis<BlockType> {
 	public void meetInto(BlockType fact, Edge edge, BlockType result) throws DataflowAnalysisException {
 		result.mergeWith(fact);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#startIteration()
+	 */
+	public void startIteration() {
+		// nothing to do
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#finishIteration()
+	 */
+	public void finishIteration() {
+		// nothing to do
+	}
 
 	private BlockType lookupOrCreateFact(Map<BasicBlock, BlockType> map, BasicBlock block) {
 		BlockType fact = map.get(block);

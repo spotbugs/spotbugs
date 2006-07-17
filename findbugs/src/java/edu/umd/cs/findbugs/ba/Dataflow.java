@@ -115,6 +115,8 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			if (numIterations >= MAX_ITERS)
 				throw new DataflowAnalysisException("Too many iterations (" + numIterations + ") in dataflow!");
 	
+			analysis.startIteration();
+			
 			// For each block in CFG...
 			Iterator<BasicBlock> i = blockOrder.blockIterator();
 			while (i.hasNext()) {
@@ -175,6 +177,8 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 				if (DEBUG) debug(block, "result is " + result + "\n");
 			}
+			
+			analysis.finishIteration();
 		} while (change);
 	}
 

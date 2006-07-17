@@ -152,6 +152,20 @@ public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<Bit
 		// Meet is intersection
 			result.and(fact);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#startIteration()
+	 */
+	public void startIteration() {
+		// nothing to do
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#finishIteration()
+	 */
+	public void finishIteration() {
+		// nothing to do
+	}
 
 	/**
 	 * Get a bitset containing the unique IDs of
