@@ -444,7 +444,7 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.FindFloatEquality" 
             speed="fast"
-            reports="FE_FLOATING_POINT_EQUALITY"/>
+            reports="FE_FLOATING_POINT_EQUALITY,FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation"
             speed="slow"
@@ -794,6 +794,7 @@
   <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="CORRECTNESS"/>
   <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE"/>
   <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="STYLE"/>
+  <BugPattern abbrev="FE" type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER" category="CORRECTNESS"/>
   <BugPattern abbrev="UM" type="UM_UNNECESSARY_MATH" category="STYLE"/>
   <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="STYLE"
         experimental="true"/>

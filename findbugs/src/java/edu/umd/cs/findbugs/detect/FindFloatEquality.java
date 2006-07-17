@@ -86,8 +86,13 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 						Number n1 = (Number)first.getConstant();
 						Number n2 = (Number)second.getConstant();
 						if (n1 != null && Double.isNaN(n1.doubleValue())
-								|| n2 != null && Double.isNaN(n2.doubleValue()) 
-								|| first.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH && !okValueToCompareAgainst(n2)
+								|| n2 != null && Double.isNaN(n2.doubleValue()) ) {
+							BugInstance bug = new BugInstance(this, "FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER", priority)
+					        .addClassAndMethod(this).addSourceLine(this);
+							state = SAW_NOTHING;
+							break;
+						}
+						if (first.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH && !okValueToCompareAgainst(n2)
 								|| second.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH && !okValueToCompareAgainst(n1)) {
 							if (priority != HIGH_PRIORITY) found.clear();
 							priority = HIGH_PRIORITY;
