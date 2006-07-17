@@ -32,12 +32,14 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
@@ -145,9 +147,20 @@ public class NullDerefAndRedundantComparisonFinder {
 	 * Examine null values.
 	 * Report any that are guaranteed to be dereferenced on
 	 * non-implicit-exception paths.
+	 * 
+	 * @throws CFGBuilderException 
+	 * @throws DataflowAnalysisException 
 	 */
-	private void examineNullValues() {
-		
+	private void examineNullValues() throws CFGBuilderException, DataflowAnalysisException {
+//		CFG cfg = classContext.getCFG(method);
+//		Iterator<Location> i = cfg.locationIterator();
+//		
+//		UnconditionalValueDerefDataflow uvdDataflow =
+//			classContext.getUnconditionalValueDerefDataflow(method);
+//		
+//		while (i.hasNext()) {
+//			Location loc = i.next();
+//		}
 	}
 
 	/**
