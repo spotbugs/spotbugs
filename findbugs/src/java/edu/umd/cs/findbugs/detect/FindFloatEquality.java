@@ -87,14 +87,14 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 						Number n2 = (Number)second.getConstant();
 						if (n1 != null && Double.isNaN(n1.doubleValue())
 								|| n2 != null && Double.isNaN(n2.doubleValue()) 
-								|| first.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH
-								|| second.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH) {
+								|| first.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH && !okValueToCompareAgainst(n2)
+								|| second.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH && !okValueToCompareAgainst(n1)) {
 							if (priority != HIGH_PRIORITY) found.clear();
 							priority = HIGH_PRIORITY;
 							state = SAW_COMP;
 							break;
 						}
-						if (priority != HIGH_PRIORITY) break;
+						if (priority == HIGH_PRIORITY) break;
 						if (first.isInitialParameter() && n2 != null) break;
 						if (second.isInitialParameter() && n1 != null) break;
 						if (first.getRegisterNumber() == second.getRegisterNumber()) break;

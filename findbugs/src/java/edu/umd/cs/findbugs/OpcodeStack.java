@@ -1377,13 +1377,15 @@ public class OpcodeStack implements Constants2
 			Item it = new Item("L" + className+";");
 			it.isInitialParameter = true;
 			it.registerNumber = reg;
-			setLVValue( reg++, it);
+			setLVValue( reg, it);
+			reg += it.getSize();
 			}
 		 for (Type argType : argTypes) {
 			 Item it = new Item(argType.getSignature());
 			 it.registerNumber = reg;
 			 it.isInitialParameter = true;
-			 setLVValue(reg++, it);
+			 setLVValue(reg, it);
+			 reg += it.getSize();
 		 }
 		return reg;
 	}
