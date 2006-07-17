@@ -94,6 +94,22 @@ public class NullDerefAndRedundantComparisonFinder {
 		// Do the null-value analysis
 		this.invDataflow = classContext.getIsNullValueDataflow(method);
 
+		// Check method and report potential null derefs and
+		// redundant null comparisons.
+		examineBasicBlocks();
+		examineNullValues();
+		examineRedundantBranches();
+
+	}
+
+	/**
+	 * Examine basic blocks for null checks and potentially-redundant
+	 * null comparisons.
+	 * 
+	 * @throws DataflowAnalysisException
+	 * @throws CFGBuilderException
+	 */
+	private void examineBasicBlocks() throws DataflowAnalysisException, CFGBuilderException {
 		// Look for null check blocks where the reference being checked
 		// is definitely null, or null on some path
 		Iterator<BasicBlock> bbIter = invDataflow.getCFG().blockIterator();
@@ -123,7 +139,21 @@ public class NullDerefAndRedundantComparisonFinder {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Examine null values.
+	 * Report any that are guaranteed to be dereferenced on
+	 * non-implicit-exception paths.
+	 */
+	private void examineNullValues() {
+		
+	}
 
+	/**
+	 * Examine redundant branches.
+	 */
+	private void examineRedundantBranches() {
 		for (RedundantBranch redundantBranch : redundantBranchList) {
 			if (DEBUG) System.out.println("Redundant branch: " + redundantBranch);
 			int lineNumber = redundantBranch.lineNumber;
@@ -148,7 +178,6 @@ public class NullDerefAndRedundantComparisonFinder {
 				collector.foundRedundantNullCheck(redundantBranch.location, redundantBranch);
 			}
 		}
-
 	}
 
 	private void analyzeRefComparisonBranch(
