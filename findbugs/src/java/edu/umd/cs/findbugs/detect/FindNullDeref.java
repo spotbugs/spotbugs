@@ -169,7 +169,6 @@ public class FindNullDeref
 		NullDerefAndRedundantComparisonFinder worker = new NullDerefAndRedundantComparisonFinder(
 				classContext,
 				method,
-				invDataflow,
 				this);
 		worker.execute();
 

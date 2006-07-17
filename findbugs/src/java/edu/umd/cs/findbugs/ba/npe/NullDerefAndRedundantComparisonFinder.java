@@ -53,7 +53,6 @@ public class NullDerefAndRedundantComparisonFinder {
 	
 	private ClassContext classContext;
 	private Method method;
-	private IsNullValueDataflow invDataflow;
 	private NullDerefAndRedundantComparisonCollector collector;
 	
 	private List<RedundantBranch> redundantBranchList;
@@ -61,6 +60,8 @@ public class NullDerefAndRedundantComparisonFinder {
 	private BitSet definitelyDifferentBranchSet;
 	private BitSet undeterminedBranchSet;
 	private BitSet lineMentionedMultipleTimes;
+
+	private IsNullValueDataflow invDataflow;
 
 	static {
 		if (DEBUG) System.out.println("fnd.debug enabled");
@@ -70,19 +71,16 @@ public class NullDerefAndRedundantComparisonFinder {
 	 * 
 	 * @param classContext the ClassContext
 	 * @param method       the method to analyze
-	 * @param invDataflow  the IsNullValueDataflow to use
 	 * @param collector    the NullDerefAndRedundantComparisonCollector used to report
 	 *                     null derefs and redundant null comparisons
 	 */
 	public NullDerefAndRedundantComparisonFinder(
 			ClassContext classContext,
 			Method method,
-			IsNullValueDataflow invDataflow,
 			NullDerefAndRedundantComparisonCollector collector) {
 		
 		this.classContext = classContext;
 		this.method = method;
-		this.invDataflow = invDataflow;
 		this.collector = collector;
 		this.lineMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
 		
@@ -93,6 +91,9 @@ public class NullDerefAndRedundantComparisonFinder {
 	}
 	
 	public void execute() throws DataflowAnalysisException, CFGBuilderException {
+		// Do the null-value analysis
+		this.invDataflow = classContext.getIsNullValueDataflow(method);
+
 		// Look for null check blocks where the reference being checked
 		// is definitely null, or null on some path
 		Iterator<BasicBlock> bbIter = invDataflow.getCFG().blockIterator();
