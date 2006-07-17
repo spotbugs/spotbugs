@@ -3177,6 +3177,20 @@ was return from a method which is known to return possibly-null values.</p>
       ]]>
    </Details>
   </BugPattern>
+	
+	
+  <BugPattern type="NP_GUARANTEED_DEREF">
+	  <ShortDescription>Null value is guaranteed to be dereferenced</ShortDescription>
+	  <LongDescription>Null value is guaranteed to be dereferenced in {1}</LongDescription>
+	  <Details>
+		  <![CDATA[
+			  <p>
+			  This method contains a null value that is guaranteed to be dereferenced
+			  (except on paths involving runtime exceptions).
+			  </p>
+		  ]]>
+	  </Details>
+  </BugPattern>
 
   <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
     <ShortDescription>Static initializer for class creates instance before all static final fields assigned</ShortDescription>
