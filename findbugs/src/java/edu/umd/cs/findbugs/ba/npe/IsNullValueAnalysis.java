@@ -273,8 +273,8 @@ public class IsNullValueAnalysis
 			ValueNumber newNullValue = vnaFrameAfter.getValue(visitor.getSlotContainingNewNullValue());
 			addLocationWhereValueBecomesNull(new LocationWhereValueBecomesNull(
 					location,
-					newNullValue,
-					handle
+					newNullValue//,
+					//handle
 			));
 		}
 
@@ -378,9 +378,19 @@ public class IsNullValueAnalysis
 							// TODO: prevIsNullValueFrame is not used
 							final IsNullValueFrame prevIsNullValueFrame = getFactAtLocation(atIf);
 							final ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
+							
+							IsNullValue decisionValue = decision.getDecision(edgeType);
+							if (decisionValue.isDefinitelyNull()) {
+								// Make a note of the value that has become null
+								// due to the if comparison.
+								addLocationWhereValueBecomesNull(new LocationWhereValueBecomesNull(
+										atIf,
+										decision.getValue()
+								));
+							}
 
 							tmpFact = replaceValues(fact, tmpFact, decision.getValue(), prevVnaFrame,
-							        targetVnaFrame, decision.getDecision(edgeType));
+							        targetVnaFrame, decisionValue);
 						}
 					}
 				}
@@ -436,6 +446,10 @@ public class IsNullValueAnalysis
 	
 	public void addLocationWhereValueBecomesNull(LocationWhereValueBecomesNull locationWhereValueBecomesNull) {
 		locationWhereValueBecomesNullSet.add(locationWhereValueBecomesNull);
+	}
+	
+	public Set<LocationWhereValueBecomesNull> getLocationWhereValueBecomesNullSet() {
+		return locationWhereValueBecomesNullSet;
 	}
 
 	/**

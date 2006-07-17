@@ -19,8 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import org.apache.bcel.generic.InstructionHandle;
-
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
@@ -32,19 +30,16 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 public class LocationWhereValueBecomesNull implements Comparable<LocationWhereValueBecomesNull> {
 	private Location location;
 	private ValueNumber valueNumber;
-	private InstructionHandle handle;
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param location    the Location where a value becomes null
 	 * @param valueNumber the value number
-	 * @param handle      the instruction responsible for the value being null
 	 */
-	public LocationWhereValueBecomesNull(Location location, ValueNumber valueNumber, InstructionHandle handle) {
+	public LocationWhereValueBecomesNull(Location location, ValueNumber valueNumber) {
 		this.location = location;
 		this.valueNumber = valueNumber;
-		this.handle = handle;
 	}
 	
 	/**
@@ -61,16 +56,6 @@ public class LocationWhereValueBecomesNull implements Comparable<LocationWhereVa
 		return valueNumber;
 	}
 	
-	/**
-	 * Get the handle of the instruction that is responsible for
-	 * the value being null.
-	 * 
-	 * @return Returns the handle.
-	 */
-	public InstructionHandle getHandle() {
-		return handle;
-	}
-	
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
@@ -80,10 +65,7 @@ public class LocationWhereValueBecomesNull implements Comparable<LocationWhereVa
 			return cmp;
 		}
 		cmp = this.valueNumber.compareTo(o.valueNumber);
-		if (cmp != 0) {
-			return cmp;
-		}
-		return this.handle.getPosition() - o.handle.getPosition();
+		return cmp;
 	}
 	
 	/* (non-Javadoc)
@@ -96,8 +78,7 @@ public class LocationWhereValueBecomesNull implements Comparable<LocationWhereVa
 		}
 		LocationWhereValueBecomesNull other = (LocationWhereValueBecomesNull) obj;
 		return this.location.equals(other.location)
-			&& this.valueNumber.equals(other.valueNumber)
-			&& this.handle == other.handle;
+			&& this.valueNumber.equals(other.valueNumber);
 	}
 	
 	/* (non-Javadoc)
@@ -105,6 +86,6 @@ public class LocationWhereValueBecomesNull implements Comparable<LocationWhereVa
 	 */
 	@Override
 	public int hashCode() {
-		return location.hashCode() * 6563 + valueNumber.hashCode() * 101 + handle.getPosition();
+		return location.hashCode() * 6563 + valueNumber.hashCode();
 	}
 }
