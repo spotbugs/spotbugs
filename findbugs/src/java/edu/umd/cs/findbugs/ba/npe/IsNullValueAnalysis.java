@@ -89,7 +89,7 @@ public class IsNullValueAnalysis
 		super(dfs);
 		this.methodGen = methodGen;
 		this.visitor = new IsNullValueFrameModelingVisitor(
-				this,
+				//this,
 				methodGen.getConstantPool(),
 				assertionMethods);
 		this.vnaDataflow = vnaDataflow;
@@ -233,6 +233,7 @@ public class IsNullValueAnalysis
 			instanceOfFrame = createFact();
 			instanceOfFrame.copyFrom(fact);
 		}
+		
 		// Model the instruction
 		visitor.setFrameAndLocation(fact, new Location(handle, basicBlock));
 		Instruction ins = handle.getInstruction();
@@ -243,12 +244,15 @@ public class IsNullValueAnalysis
 		// about which new is-null information is known.
 		// If any other instances of the produced values exist,
 		// update their is-null information.
+		// Also, make a note of any newly-produced null values.
+		
 		int numProduced = ins.produceStack(methodGen.getConstantPool());
 		if (numProduced == Constants.UNPREDICTABLE)
 			throw new DataflowAnalysisException("Unpredictable stack production", methodGen, handle);
 
 		int start = fact.getNumSlots() - numProduced;
-		ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(new Location(handle, basicBlock));
+		Location location = new Location(handle, basicBlock);
+		ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(location);
 
 		for (int i = start; i < fact.getNumSlots(); ++i) {
 			ValueNumber value = vnaFrameAfter.getValue(i);
@@ -263,6 +267,15 @@ public class IsNullValueAnalysis
 					fact.setValue(j, isNullValue);
 				}
 			}
+		}
+		
+		if (visitor.getSlotContainingNewNullValue() >= 0) {
+			ValueNumber newNullValue = vnaFrameAfter.getValue(visitor.getSlotContainingNewNullValue());
+			addLocationWhereValueBecomesNull(new LocationWhereValueBecomesNull(
+					location,
+					newNullValue,
+					handle
+			));
 		}
 
 	}
@@ -408,6 +421,21 @@ public class IsNullValueAnalysis
 
 		// Normal dataflow merge
 		mergeInto(fact, result);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#startIteration()
+	 */
+	@Override
+	public void startIteration() {
+		// At the beginning of each iteration, clear the set of locations
+		// where values become null.  That way, after the final iteration
+		// of dataflow analysis the set should be as accurate as possible.
+		locationWhereValueBecomesNullSet.clear();
+	}
+	
+	public void addLocationWhereValueBecomesNull(LocationWhereValueBecomesNull locationWhereValueBecomesNull) {
+		locationWhereValueBecomesNullSet.add(locationWhereValueBecomesNull);
 	}
 
 	/**

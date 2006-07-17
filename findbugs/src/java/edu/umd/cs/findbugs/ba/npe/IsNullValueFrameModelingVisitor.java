@@ -27,6 +27,7 @@ import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.LDC2_W;
@@ -39,6 +40,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -48,13 +50,31 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
 	private static final boolean NO_ASSERT_HACK = Boolean.getBoolean("inva.noAssertHack");
 
-	private IsNullValueAnalysis analysis;
+//	private IsNullValueAnalysis analysis;
 	private AssertionMethods assertionMethods;
+	private int slotContainingNewNullValue;
 
-	public IsNullValueFrameModelingVisitor(IsNullValueAnalysis analysis, ConstantPoolGen cpg, AssertionMethods assertionMethods) {
+	public IsNullValueFrameModelingVisitor(/*IsNullValueAnalysis analysis, */ConstantPoolGen cpg, AssertionMethods assertionMethods) {
 		super(cpg);
-		this.analysis = analysis;
+//		this.analysis = analysis;
 		this.assertionMethods = assertionMethods;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor#analyzeInstruction(org.apache.bcel.generic.Instruction)
+	 */
+	@Override
+	public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
+		slotContainingNewNullValue = -1;
+		super.analyzeInstruction(ins);
+	}
+	
+	/**
+	 * @return Returns the slotContainingNewNullValue; or -1 if no new null value
+	 *          was produced
+	 */
+	public int getSlotContainingNewNullValue() {
+		return slotContainingNewNullValue;
 	}
 	
 	@Override
@@ -80,6 +100,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	private void produce(IsNullValue value) {
 		IsNullValueFrame frame = getFrame();
 		frame.pushValue(value);
+		newValueOnTOS();
 	}
 
 	private void produce2(IsNullValue value) {
@@ -140,6 +161,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			}
 			
 			modelInstruction(obj, getNumWordsConsumed(obj), getNumWordsProduced(obj), pushValue);
+			newValueOnTOS();
 		}
 
 		if (!NO_ASSERT_HACK) {
@@ -155,6 +177,22 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		}
 	}
 	
+	/**
+	 * Hook indicating that a new (possibly-null) value is on the
+	 * top of the stack.
+	 */
+	private void newValueOnTOS() {
+		IsNullValueFrame frame= getFrame();
+		if (frame.getStackDepth() < 1) {
+			return;
+		}
+		int tosSlot = frame.getNumSlots() - 1;
+		IsNullValue tos = frame.getValue(tosSlot);
+		if (tos.isDefinitelyNull()) {
+			slotContainingNewNullValue = tosSlot;
+		}
+	}
+
 	@Override
 	public void visitGETFIELD(GETFIELD obj) {
 		if (getNumWordsProduced(obj) != 1) {
