@@ -788,6 +788,12 @@ public class FindNullDeref
 			|| instruction.getOpcode() == Constants.GOTO_W;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector#foundGuaranteedNullDeref(edu.umd.cs.findbugs.ba.Location, java.util.BitSet, edu.umd.cs.findbugs.ba.npe.IsNullValue)
+	 */
+	public void foundGuaranteedNullDeref(
+			Location assignedNullLocation, BitSet derefLocationSet, IsNullValue refValue) {
+	}
 }
 
 // vim:ts=4

@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import java.util.BitSet;
+
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
@@ -48,4 +50,17 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 * @param redundantBranch the RedundantBranch
 	 */
 	public void foundRedundantNullCheck(Location location, RedundantBranch redundantBranch);
+	
+	/**
+	 * Subclasses should override this method to capture values
+	 * assigned null (or that become null through a comparison and branch)
+	 * that are guaranteed to reach a dereference (ignoring
+	 * implicit exception paths).
+	 * 
+	 * @param assignedNullLocation the location where the value becomes null
+	 * @param derefLocationSet     bitset of bytecode offsets where dereferences occur
+	 * @param refValue             the null value
+	 */
+	public void foundGuaranteedNullDeref(
+			Location assignedNullLocation, BitSet derefLocationSet, IsNullValue refValue);
 }
