@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.deref;
 
+import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -30,7 +31,7 @@ import edu.umd.cs.findbugs.ba.Location;
  * @author David Hovemeyer
  */
 public class UnconditionalValueDerefDataflow extends
-		Dataflow<UnconditionalValueDerefSet, UnconditionalValueDerefAnalysis> {
+		AbstractDataflow<UnconditionalValueDerefSet, UnconditionalValueDerefAnalysis> {
 
 	/**
 	 * Constructor.
@@ -41,13 +42,4 @@ public class UnconditionalValueDerefDataflow extends
 	public UnconditionalValueDerefDataflow(CFG cfg, UnconditionalValueDerefAnalysis analysis) {
 		super(cfg, analysis);
 	}
-	
-	public UnconditionalValueDerefSet getFactAtLocation(Location location) throws DataflowAnalysisException {
-		return getAnalysis().getFactAtLocation(location);
-	}
-	
-	public UnconditionalValueDerefSet getFactAfterLocation(Location location) throws DataflowAnalysisException {
-		return getAnalysis().getFactAfterLocation(location);
-	}
-
 }
