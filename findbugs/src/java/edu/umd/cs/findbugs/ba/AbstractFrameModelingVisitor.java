@@ -316,7 +316,8 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 	}
 
 	/**
-	 * Primitive to model the stack effect of a single instruction.
+	 * Primitive to model the stack effect of a single instruction,
+	 * explicitly specifying the value to be pushed on the stack.
 	 * 
 	 * @param ins              the Instruction to model
 	 * @param numWordsConsumed number of stack words consumed
