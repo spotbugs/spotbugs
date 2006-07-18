@@ -57,6 +57,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class NullDerefAndRedundantComparisonFinder {
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
+	private static final boolean FIND_GUARANTEED_DEREFS = Boolean.getBoolean("fnd.derefs");
 	
 	private ClassContext classContext;
 	private Method method;
@@ -104,7 +105,9 @@ public class NullDerefAndRedundantComparisonFinder {
 		// Check method and report potential null derefs and
 		// redundant null comparisons.
 		examineBasicBlocks();
-		examineNullValues();
+		if (FIND_GUARANTEED_DEREFS) {
+			examineNullValues();
+		}
 		examineRedundantBranches();
 
 	}
