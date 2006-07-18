@@ -787,12 +787,15 @@ public class FindNullDeref
 		return instruction.getOpcode() == Constants.GOTO
 			|| instruction.getOpcode() == Constants.GOTO_W;
 	}
-
+	
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector#foundGuaranteedNullDeref(edu.umd.cs.findbugs.ba.Location, java.util.BitSet, edu.umd.cs.findbugs.ba.npe.IsNullValue)
+	 * @see edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector#foundGuaranteedNullDeref(java.util.Set, java.util.Set, edu.umd.cs.findbugs.ba.vna.ValueNumber)
 	 */
-	public void foundGuaranteedNullDeref(
-			Location assignedNullLocation, BitSet derefLocationSet, IsNullValue refValue) {
+	public void foundGuaranteedNullDeref(Set<Location> assignedNullLocationSet, Set<Location> derefLocationSet, ValueNumber refValue) {
+		// TODO: report for real
+		if (DEBUG) {
+			System.out.println("Found guaranteed null deref in " + method.getName());
+		}
 	}
 }
 

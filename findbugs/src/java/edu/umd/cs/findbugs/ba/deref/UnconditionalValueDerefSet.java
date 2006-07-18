@@ -178,6 +178,33 @@ public class UnconditionalValueDerefSet {
 		derefLocationSet.add(location);
 	}
 	
+	/**
+	 * Return whether or not the given value number is unconditionally dereferenced.
+	 * 
+	 * @param vn the value number
+	 * @return true if the value is unconditionally dereferenced, false otherwise
+	 */
+	public boolean isUnconditionallyDereferenced(ValueNumber vn) {
+		return valueNumberSet.get(vn.getNumber());
+	}
+	
+	/**
+	 * Get the set of Locations where given value is guaranteed to be dereferenced.
+	 * (I.e., if non-implicit-exception control paths are followed, one of these
+	 * locations will be reached).
+	 * 
+	 * @param vn the value
+	 * @return set of Locations, one of which will definitely be reached
+	 *          if non-implicit-exception control paths are followed
+	 */
+	public Set<Location> getUnconditionalDerefLocationSet(ValueNumber vn) {
+		Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
+		if (derefLocationSet == null ) {
+			derefLocationSet = new HashSet<Location>();
+		}
+		return derefLocationSet;
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

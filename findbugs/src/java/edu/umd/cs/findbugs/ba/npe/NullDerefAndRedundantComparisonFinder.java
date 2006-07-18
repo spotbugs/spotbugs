@@ -20,9 +20,13 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.LineNumber;
@@ -40,6 +44,7 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
@@ -143,6 +148,11 @@ public class NullDerefAndRedundantComparisonFinder {
 		}
 	}
 	
+	static class NullValueInfo {
+		Set<Location> valueBecomesNullLocationSet;
+		Set<Location> valueDereferencedSet;
+	}
+	
 	/**
 	 * Examine null values.
 	 * Report any that are guaranteed to be dereferenced on
@@ -152,15 +162,68 @@ public class NullDerefAndRedundantComparisonFinder {
 	 * @throws DataflowAnalysisException 
 	 */
 	private void examineNullValues() throws CFGBuilderException, DataflowAnalysisException {
-//		CFG cfg = classContext.getCFG(method);
-//		Iterator<Location> i = cfg.locationIterator();
-//		
-//		UnconditionalValueDerefDataflow uvdDataflow =
-//			classContext.getUnconditionalValueDerefDataflow(method);
-//		
-//		while (i.hasNext()) {
-//			Location loc = i.next();
-//		}
+		Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet =
+			invDataflow.getAnalysis().getLocationWhereValueBecomesNullSet();
+
+		// For each value number that is null somewhere in the
+		// method, collect the set of locations where it becomes null.
+		// FIXME: we may see some locations that are not guaranteed to be dereferenced (how to fix this?)
+		Map<ValueNumber, Set<Location>> nullValueAssignmentMap =
+			new HashMap<ValueNumber, Set<Location>>();
+		for (LocationWhereValueBecomesNull lwvbn : locationWhereValueBecomesNullSet) {
+			Set<Location> locationSet = nullValueAssignmentMap.get(lwvbn.getValueNumber());
+			if (locationSet == null) {
+				locationSet = new HashSet<Location>();
+				nullValueAssignmentMap.put(lwvbn.getValueNumber(), locationSet);
+			}
+			locationSet.add(lwvbn.getLocation());
+		}
+		
+		// Inspect the method for locations where a null value is guaranteed to
+		// be dereferenced.  Add the dereference locations
+		Map<ValueNumber, Set<Location>> nullValueGuaranteedDerefMap =
+			new HashMap<ValueNumber, Set<Location>>();
+		for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
+			Location location = i.next();
+			
+			ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
+			IsNullValueFrame invFrame = classContext.getIsNullValueDataflow(method).getFactAtLocation(location);
+			
+			// Make sure the frames contain meaningful information
+			if (!vnaFrame.isValid() || !invFrame.isValid() || vnaFrame.getNumSlots() != invFrame.getNumSlots())  {
+				continue;
+			}
+			
+			// See if there are any definitely-null values in the frame
+			for (int j = 0; j < invFrame.getNumSlots(); j++) {
+				if (invFrame.getValue(j).isDefinitelyNull()) {
+					// Is this value unconditionally dereferenced?
+					ValueNumber valueNumber = vnaFrame.getValue(j);
+					
+					UnconditionalValueDerefSet derefSet =
+						classContext.getUnconditionalValueDerefDataflow(method).getFactAtLocation(location);
+					if (derefSet.isUnconditionallyDereferenced(valueNumber)) {
+						// OK, we have a null value that is unconditionally
+						// derferenced.  Make a note of the locations where it
+						// will be dereferenced.
+						Set<Location> thisValueNumberDerefLocationSet = nullValueGuaranteedDerefMap.get(valueNumber);
+						if (thisValueNumberDerefLocationSet == null) {
+							thisValueNumberDerefLocationSet = new HashSet<Location>();
+							nullValueGuaranteedDerefMap.put(valueNumber, thisValueNumberDerefLocationSet);
+						}
+						thisValueNumberDerefLocationSet.addAll(derefSet.getUnconditionalDerefLocationSet(valueNumber));
+					}
+				}
+			}
+		}
+		
+		// Report 
+		for (ValueNumber valueNumber : nullValueGuaranteedDerefMap.keySet()) {
+			Set<Location> assignedNullLocationSet = nullValueAssignmentMap.get(valueNumber);
+			Set<Location> derefLocationSet = nullValueGuaranteedDerefMap.get(valueNumber);
+			
+			collector.foundGuaranteedNullDeref(assignedNullLocationSet, derefLocationSet, valueNumber);
+		}
 	}
 
 	/**

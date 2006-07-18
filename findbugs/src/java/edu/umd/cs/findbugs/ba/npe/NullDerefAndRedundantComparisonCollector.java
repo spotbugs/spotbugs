@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.BitSet;
+import java.util.Set;
 
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -57,10 +58,12 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 * that are guaranteed to reach a dereference (ignoring
 	 * implicit exception paths).
 	 * 
-	 * @param assignedNullLocation the location where the value becomes null
-	 * @param derefLocationSet     bitset of bytecode offsets where dereferences occur
+	 * @param assignedNullLocation set of locations where the value becomes null
+	 * @param derefLocationSet     set of locations where dereferences occur
 	 * @param refValue             the null value
 	 */
 	public void foundGuaranteedNullDeref(
-			Location assignedNullLocation, BitSet derefLocationSet, IsNullValue refValue);
+			Set<Location> assignedNullLocationSet,
+			Set<Location> derefLocationSet,
+			ValueNumber refValue);
 }
