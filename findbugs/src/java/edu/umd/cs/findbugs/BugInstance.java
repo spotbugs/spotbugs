@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
@@ -1056,6 +1057,23 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);
 		return this;
+	}
+
+	/**
+	 * Add source line annotation for given Location in a method. 
+	 * 
+	 * @param classContext the ClassContext
+	 * @param method       the Method
+	 * @param location     the Location in the method
+	 * @return this BugInstance
+	 */
+	public BugInstance addSourceLine(ClassContext classContext, Method method, Location location) {
+		MethodGen methodGen = classContext.getMethodGen(method);
+		return addSourceLine(
+				classContext,
+				methodGen,
+				classContext.getJavaClass().getSourceFileName(),
+				location.getHandle());
 	}
 
 	/**
