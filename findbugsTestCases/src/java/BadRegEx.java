@@ -34,4 +34,8 @@ class BadRegEx {
 		return Pattern.compile("][", Pattern.CASE_INSENSITIVE | Pattern.LITERAL); // not a bug
 	}
 
+	// this is OK; we shouldn't report a warning here
+	String passwordMasking(String s) {
+		return s.replaceAll(".", "x");
+	}
 }
