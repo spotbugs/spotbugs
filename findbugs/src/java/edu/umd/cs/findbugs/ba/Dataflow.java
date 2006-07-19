@@ -141,7 +141,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 						BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
 						Fact predFact = analysis.getResultFact(logicalPred);
 
-						if (DEBUG) debug(block, logicalPred, "Meet " + start + " with " + predFact);
+						if (DEBUG) debug(block, logicalPred, edge, "Meet " + start + " with " + predFact);
 						analysis.meetInto(predFact, edge, start);
 						if (DEBUG) System.out.println(" ==> " + start);
 					}
@@ -193,8 +193,9 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 		System.out.print("Dataflow (block " + blockId(bb) + "): " + msg);
 	}
 
-	private static void debug(BasicBlock bb, BasicBlock pred, String msg) {
-		System.out.print("Dataflow (block " + blockId(bb) + ", predecessor " + blockId(pred) + "): " + msg);
+	private static void debug(BasicBlock bb, BasicBlock pred, Edge edge, String msg) {
+		System.out.print("Dataflow (block " + blockId(bb) + ", predecessor " + blockId(pred) +
+				" [" + Edge.edgeTypeToString(edge.getType()) + "]): " + msg);
 	}
 
 	/**
