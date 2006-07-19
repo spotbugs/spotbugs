@@ -20,7 +20,24 @@ public class JXPathMetaModuleExample {
 		while (i.hasNext()) {
 			values.add(i.next());
 		}
-		Object[] obj = values.toArray();
+		Object[] obj = values.toArray();  // guaranteed dereference here
 		return obj;
 	}
+	
+	// A variation, which might not be detected by the analysis
+	// TODO: generate a NPE warning
+	public Object[] addCollectionToList(Collection c, List values) {
+		if (values == null)
+			System.out.println("Values shouldn't be null");
+		Iterator i = c.iterator();
+		if (i.hasNext()) {
+			values = new LinkedList();
+		}
+		while (i.hasNext()) {
+			values.add(i.next());
+		}
+		Object[] obj = values.toArray(); // guaranteed dereference here
+		return obj;
+	}
+
 }
