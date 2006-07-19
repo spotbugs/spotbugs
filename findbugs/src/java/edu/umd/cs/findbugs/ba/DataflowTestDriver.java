@@ -25,6 +25,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+
 /**
  * A test driver for dataflow analysis classes.
  * It runs the dataflow analysis on the methods of a single class,
@@ -49,6 +51,7 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends AbstractDat
 		final RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
 
 		AnalysisContext analysisContext = new AnalysisContext(lookupFailureCallback);
+		analysisContext.setBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS, true);
 
 		ClassContext classContext = analysisContext.getClassContext(jclass);
 		String methodName = System.getProperty("dataflow.method");
