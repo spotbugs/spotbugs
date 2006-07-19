@@ -24,8 +24,8 @@ public class JXPathMetaModuleExample {
 		return obj;
 	}
 	
-	// A variation, which might not be detected by the analysis
-	// TODO: generate a NPE warning
+	// A variation, in which the NPE only occurs if value == null
+	// and !i.hasNext(). So don't report it.
 	public Object[] addCollectionToList(Collection c, List values) {
 		if (values == null)
 			System.out.println("Values shouldn't be null");
