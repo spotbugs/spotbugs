@@ -58,13 +58,25 @@ extends BytecodeScanningDetector {
         super.visit(obj);
     }
 
-    private void singleDotPatternWouldBeSilly(int stackDepth) {
+    private void singleDotPatternWouldBeSilly(int stackDepth, boolean ignorePasswordMasking) {
+    	if (ignorePasswordMasking && stackDepth != 1) 
+    		throw new IllegalArgumentException("Password masking requires stack depth 1, but is " + stackDepth);
         if (stack.getStackDepth() < stackDepth) return;
         OpcodeStack.Item it = stack.getStackItem(stackDepth);
         Object value = it.getConstant();
         if (value == null || !(value instanceof String)) return;
         String regex = (String) value;
         if (!regex.equals(".")) return;
+        if (ignorePasswordMasking) {
+        	  OpcodeStack.Item top = stack.getStackItem(0);
+        	  Object topValue = top.getConstant();
+              if (topValue instanceof String) {
+            	  String replacementString = (String) topValue;
+            	  if (replacementString.length() == 1 &&  "Xx*".indexOf(replacementString) >= 0) return;
+              }
+              
+        }
+        
         
        bugReporter.reportBug(new BugInstance(this, "RE_POSSIBLE_UNINTENDED_PATTERN", 
 				NORMAL_PRIORITY)
@@ -127,7 +139,7 @@ extends BytecodeScanningDetector {
             && getNameConstantOperand().equals("replaceAll")
             ) {
             sawRegExPattern(1);
-            singleDotPatternWouldBeSilly(1);
+            singleDotPatternWouldBeSilly(1, true);
         	}
         else if (seen == INVOKEVIRTUAL 
             && getClassConstantOperand().equals("java/lang/String")
@@ -135,7 +147,7 @@ extends BytecodeScanningDetector {
             ) 
         {
             sawRegExPattern(1);
-            singleDotPatternWouldBeSilly(1);
+            singleDotPatternWouldBeSilly(1, false);
         	}
         else if (seen == INVOKEVIRTUAL 
             && getClassConstantOperand().equals("java/lang/String")
@@ -143,7 +155,7 @@ extends BytecodeScanningDetector {
             ) 
         {
             sawRegExPattern(0);
-            singleDotPatternWouldBeSilly(0);
+            singleDotPatternWouldBeSilly(0, false);
         	}
         else if (seen == INVOKEVIRTUAL 
             && getClassConstantOperand().equals("java/lang/String")
@@ -151,7 +163,7 @@ extends BytecodeScanningDetector {
             ) 
         {
             sawRegExPattern(0);
-            singleDotPatternWouldBeSilly(0);
+            singleDotPatternWouldBeSilly(0, false);
         	}
 
         stack.sawOpcode(this,seen);
