@@ -58,8 +58,9 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 				if (isRegisterStore() && previousLoadOf == getRegisterOperand() && gotoCount < 2 && getPC() != previousGotoTarget)
 				       bugReporter.reportBug(
 					new BugInstance(this, 
-							"SA_LOCAL_SELF_ASSIGNMENT", NORMAL_PRIORITY)
+							"SA_LOCAL_SELF_ASSIGNMENT", getMethodName().equals("<init>") ? HIGH_PRIORITY : NORMAL_PRIORITY)
 	                                        .addClassAndMethod(this)
+	                                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), getRegisterOperand(), getPC(), getPC()))
 	                                        .addSourceLine(this));
 	
 				previousLoadOf = -1;
