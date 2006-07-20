@@ -330,6 +330,9 @@ public class ClassContext {
 				throw new MethodUnprofitableException(javaClassAndMethod);
 			}
 			CFG cfg = getRawCFG(method);
+			
+			// Record method name and signature for informational purposes
+			cfg.setMethodName(SignatureConverter.convertMethodSignature(methodGen));
 
 			// HACK:
 			// Due to recursive method invocations, we may get a recursive

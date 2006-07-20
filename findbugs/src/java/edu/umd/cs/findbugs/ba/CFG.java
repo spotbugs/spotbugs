@@ -101,6 +101,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 
 	private BasicBlock entry, exit;
 	private int flags;
+	private String methodName; // for informational purposes
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -111,6 +112,20 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	 * Creates empty control flow graph (with just entry and exit nodes).
 	 */
 	public CFG() {
+	}
+	
+	/**
+	 * @param methodName The methodName to set.
+	 */
+	public void setMethodName(String methodName) {
+		this.methodName = methodName;
+	}
+	
+	/**
+	 * @return Returns the methodName.
+	 */
+	public String getMethodName() {
+		return methodName;
 	}
 
 	void setFlags(int flags) {

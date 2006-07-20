@@ -23,8 +23,6 @@ import java.util.Iterator;
 
 import org.apache.bcel.generic.InstructionHandle;
 
-import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
-
 /**
  * Perform dataflow analysis on a method using a control flow graph.
  * Both forward and backward analyses can be performed.
@@ -92,14 +90,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			if (pkgEnd >= 0) {
 				shortAnalysisName = shortAnalysisName.substring(pkgEnd + 1);
 			}
-			
-			if (analysis instanceof IsNullValueAnalysis) {
-				IsNullValueAnalysis a = (IsNullValueAnalysis) analysis;
-				String method = a.getClassAndMethod().toString();
-
-				System.out.println("Executing " + shortAnalysisName  + " on " + a.getClassAndMethod());
-			}
-			else System.out.println("Executing " + shortAnalysisName );
+			System.out.println("Executing " + shortAnalysisName + " on " + cfg.getMethodName());
 		}
 
 		do {
