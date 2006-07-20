@@ -787,6 +787,16 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			return;
 		}
 
+		if (methodGen.getName().startsWith("test") && methodGen.getSignature().equals("()V")) {
+			try {
+				if (Hierarchy.isSubtype(methodGen.getClassName(), "junit.framework.TestCase"))
+					priority+=2;
+			} catch (ClassNotFoundException e) { priority+=2; }
+			}
+
+
+		
+
 		if (priority <= LOW_PRIORITY) {
 			bugReporter.reportBug(new BugInstance(this, bugType, priority)
 			        .addClassAndMethod(methodGen, sourceFile)
