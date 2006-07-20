@@ -41,6 +41,11 @@ public class DefectDensity {
 
 	}
 
+	public static double density(int bugs, int ncss) {
+		if (ncss == 0) return Double.NaN;
+		int bugsPer10KNCSS = 10000*bugs/ncss;
+		return bugs/10.0;
+	}
 	public static void main(String args[]) throws Exception {
 		Project project = new Project();
 		BugCollection origCollection = new SortedBugCollection();
@@ -51,16 +56,22 @@ public class DefectDensity {
 			origCollection.readXML(args[argCount], project);
 		ProjectStats stats = origCollection.getProjectStats();
 		printRow("kind", "name", "density/KNCSS", "bugs", "NCSS");
+		double projectDensity = density(stats.getTotalBugs(),  stats.getCodeSize());
 		printRow("project", origCollection.getCurrentAppVersion().getReleaseName(), 
-				(10000 * stats.getTotalBugs() / stats.getCodeSize())/10.0d, stats.getTotalBugs(),
+				projectDensity, stats.getTotalBugs(),
 				stats.getCodeSize());
 		for (PackageStats p : stats.getPackageStats()) if (p.getTotalBugs() > 4) {
 			
-				printRow("package", p.getPackageName(), (10000 * p.getTotalBugs()
-					/ p.size())/10.0d, p.getTotalBugs(), p.size());
+			
+				double packageDensity = density( p.getTotalBugs(),p.size());
+				if (Double.isNaN(packageDensity) || packageDensity < projectDensity) continue;
+				printRow("package", p.getPackageName(), 
+						packageDensity, p.getTotalBugs(), p.size());
 			for (ClassStats c : p.getClassStats()) if (c.getTotalBugs() > 4) {
-				printRow("class", c.getName(), 1000 * c.getTotalBugs()
-						/ c.size(), c.getTotalBugs(), c.size());
+				double density = density( c.getTotalBugs(), c.size());
+				if (Double.isNaN(density) || density < packageDensity) continue;
+				printRow("class", c.getName(), 
+						density, c.getTotalBugs(), c.size());
 			}
 		}
 
