@@ -65,6 +65,12 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		addMethodAnnotation("java.util.concurrent.ConcurrentHashMap", "putIfAbsent", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		
 		
+		addMethodAnnotation("java.util.concurrent.locks.ReadWriteLock", "readLock", "()Ljava/util/concurrent/locks/Lock;", false, NullnessAnnotation.NONNULL);
+		addMethodAnnotation("java.util.concurrent.locks.ReadWriteLock", "writeLock", "()Ljava/util/concurrent/locks/Lock;", false, NullnessAnnotation.NONNULL);
+		addMethodAnnotation("java.util.concurrent.locks.ReentrantReadWriteLock", "readLock", "()Ljava/util/concurrent/locks/Lock;", false, NullnessAnnotation.NONNULL);
+		addMethodAnnotation("java.util.concurrent.locks.ReentrantReadWriteLock", "writeLock", "()Ljava/util/concurrent/locks/Lock;", false, NullnessAnnotation.NONNULL);
+		
+		
 		addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "addIfUnderCorePoolSize", "(Ljava/lang/Runnable;)Z", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
 		addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "addThread", "(Ljava/lang/Runnable;)Ljava/lang/Thread;", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
 		addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "afterExecute", "(Ljava/lang/Runnable;Ljava/lang/Throwable;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
