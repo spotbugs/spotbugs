@@ -16,7 +16,31 @@ class JSR166 {
 		if (x >= 0)
 			l.unlock();
 	}
+	
+	ReadWriteLock rwLock =  new ReentrantReadWriteLock();
+	
+	int counter;
+	int readWriteLockTestReadLock() {
+		rwLock.readLock().lock();
+		try {
+		return counter;
+		} finally {
+			rwLock.readLock().unlock();
+		}
+		
+		
+	}
 
+	int readWriteLockTestWriteLock() {
+		rwLock.writeLock().lock();
+		try {
+		return counter++;
+		} finally {
+			rwLock.writeLock().unlock();
+		}
+		
+		
+	}
 	void increment() {
 		l.lock();
 		x++;
