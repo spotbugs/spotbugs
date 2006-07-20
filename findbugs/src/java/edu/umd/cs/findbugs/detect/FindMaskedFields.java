@@ -95,10 +95,12 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 							bugReporter.reportBug(new BugInstance(this, "MF_CLASS_MASKS_FIELD",
 									priority)
 									.addClass(this)
+									.addField(fa)
+									.describe("FIELD_MASKING")
 									.addField(maskedFieldAnnotation)
 									.describe("FIELD_MASKED")
-									.addField(fa)
-									.describe("FIELD_MASKING"));
+
+									);
 						}
 					}
 				}
