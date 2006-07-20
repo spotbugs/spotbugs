@@ -26,7 +26,7 @@ public class JXPathMetaModuleExample {
 	
 	// A variation, in which the NPE only occurs if value == null
 	// and !i.hasNext(). So don't report it.
-	public Object[] addCollectionToList(Collection c, List values) {
+	public Object[] addCollectionToListDoNotReport(Collection c, List values) {
 		if (values == null)
 			System.out.println("Values shouldn't be null");
 		Iterator i = c.iterator();
@@ -39,5 +39,22 @@ public class JXPathMetaModuleExample {
 		Object[] obj = values.toArray(); // guaranteed dereference here
 		return obj;
 	}
+	
+	//	 A variation,which we should  report.
+	// if the test x == null succeeds, we are guaranteed to dereference the
+	// value in x
+	// But at the merge point after the if y >= 0, x is NCP.
+	// So if we don't track GuaranteedDereference backwards across
+	// value number mergers, we won't detect this one
+	public int variation(Object x, int y) {
+		int result = 2;
+		if (y >= 0) {
+			if (x == null) result = 1;
+			if (y > 0) result *= y;
+		} else x = new Object();
+		result += x.hashCode();
+		return result;
+	}
+
 
 }
