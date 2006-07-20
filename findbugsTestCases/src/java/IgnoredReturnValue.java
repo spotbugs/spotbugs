@@ -1,3 +1,4 @@
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.*;
@@ -27,6 +28,19 @@ public class IgnoredReturnValue {
 		}
 
 		q.poll();
+	}
+	
+	// This method shows one way to check to see if a string encoding name is legal.
+	// Under earlier versions of the JVM, this may have been the best way to do this.
+	// So we shouldn't signal a RV warning here
+	public static boolean falsePositive(String enc) {
+		try {
+			new String(new byte[0], enc);
+			return true;
+		} catch (UnsupportedEncodingException e) {
+			return false;
+		}
+		
 	}
 
 }
