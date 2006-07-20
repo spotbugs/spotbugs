@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.ba.vna.*;
+
 import java.util.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
@@ -106,7 +107,7 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 				if (frame.getStackDepth() - numConsumed < 0)
 					throw new DataflowAnalysisException("Stack underflow", methodGen, handle);
 				ValueNumber ref = frame.getValue(frame.getNumSlots() - numConsumed);
-
+				if (!ref.hasFlag(ValueNumber.RETURN_VALUE)) {
 				LockSet lockSet = dataflow.getFactAtLocation(location);
 				int lockCount = lockSet.getLockCount(ref.getNumber());
 
@@ -123,6 +124,7 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 					bugReporter.reportBug(new BugInstance(this, type, priority)
 					        .addClassAndMethod(methodGen, sourceFile)
 					        .addSourceLine(classContext, methodGen, sourceFile, handle));
+				}
 				}
 			}
 		}
