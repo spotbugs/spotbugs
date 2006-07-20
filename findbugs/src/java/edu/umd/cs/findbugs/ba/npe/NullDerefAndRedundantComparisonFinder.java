@@ -46,6 +46,7 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
@@ -70,6 +71,8 @@ public class NullDerefAndRedundantComparisonFinder {
 	private BitSet lineMentionedMultipleTimes;
 
 	private IsNullValueDataflow invDataflow;
+	private ValueNumberDataflow vnaDataflow;
+	private UnconditionalValueDerefDataflow uvdDataflow;
 
 	static {
 		if (DEBUG) System.out.println("fnd.debug enabled");
@@ -101,6 +104,10 @@ public class NullDerefAndRedundantComparisonFinder {
 	public void execute() throws DataflowAnalysisException, CFGBuilderException {
 		// Do the null-value analysis
 		this.invDataflow = classContext.getIsNullValueDataflow(method);
+		this.vnaDataflow = classContext.getValueNumberDataflow(method);
+		if (FIND_GUARANTEED_DEREFS) {
+			this.uvdDataflow = classContext.getUnconditionalValueDerefDataflow(method);
+		}
 
 		// Check method and report potential null derefs and
 		// redundant null comparisons.
@@ -186,37 +193,27 @@ public class NullDerefAndRedundantComparisonFinder {
 		// be dereferenced.  Add the dereference locations
 		Map<ValueNumber, Set<Location>> nullValueGuaranteedDerefMap =
 			new HashMap<ValueNumber, Set<Location>>();
+		
+		// Check every location
 		for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
 			Location location = i.next();
 			
-			ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
-			IsNullValueFrame invFrame = classContext.getIsNullValueDataflow(method).getFactAtLocation(location);
-			
-			// Make sure the frames contain meaningful information
-			if (!vnaFrame.isValid() || !invFrame.isValid() || vnaFrame.getNumSlots() != invFrame.getNumSlots())  {
-				continue;
-			}
-			
-			// See if there are any definitely-null values in the frame
-			for (int j = 0; j < invFrame.getNumSlots(); j++) {
-				if (invFrame.getValue(j).isDefinitelyNull()) {
-					// Is this value unconditionally dereferenced?
-					ValueNumber valueNumber = vnaFrame.getValue(j);
-					
-					UnconditionalValueDerefSet derefSet =
-						classContext.getUnconditionalValueDerefDataflow(method).getFactAtLocation(location);
-					if (derefSet.isUnconditionallyDereferenced(valueNumber)) {
-						// OK, we have a null value that is unconditionally
-						// derferenced.  Make a note of the locations where it
-						// will be dereferenced.
-						Set<Location> thisValueNumberDerefLocationSet = nullValueGuaranteedDerefMap.get(valueNumber);
-						if (thisValueNumberDerefLocationSet == null) {
-							thisValueNumberDerefLocationSet = new HashSet<Location>();
-							nullValueGuaranteedDerefMap.put(valueNumber, thisValueNumberDerefLocationSet);
-						}
-						thisValueNumberDerefLocationSet.addAll(derefSet.getUnconditionalDerefLocationSet(valueNumber));
-					}
-				}
+			checkForUnconditionallyDereferencedNullValues(
+					nullValueGuaranteedDerefMap,
+					vnaDataflow.getFactAtLocation(location),
+					invDataflow.getFactAtLocation(location),
+					uvdDataflow.getFactAtLocation(location));
+		}
+		
+		// Check every non-exception control edge
+		for (Iterator<Edge> i = classContext.getCFG(method).edgeIterator(); i.hasNext();) {
+			Edge edge = i.next();
+			if (!edge.isExceptionEdge()) {
+				checkForUnconditionallyDereferencedNullValues(
+						nullValueGuaranteedDerefMap,
+						vnaDataflow.getFactOnEdge(edge),
+						invDataflow.getFactOnEdge(edge),
+						uvdDataflow.getFactOnEdge(edge));
 			}
 		}
 		
@@ -226,6 +223,47 @@ public class NullDerefAndRedundantComparisonFinder {
 			Set<Location> derefLocationSet = nullValueGuaranteedDerefMap.get(valueNumber);
 			
 			collector.foundGuaranteedNullDeref(assignedNullLocationSet, derefLocationSet, valueNumber);
+		}
+	}
+
+	/**
+	 * Check for unconditionally dereferenced null values
+	 * at a particular location in the CFG.
+	 * 
+	 * @param nullValueGuaranteedDerefMap map to be populated with null values and where they are derefed 
+	 * @param vnaFrame                    value number frame to check
+	 * @param invFrame                    null-value frame to check
+	 * @param derefSet                    set of unconditionally derefed values at this location 
+	 */
+	private void checkForUnconditionallyDereferencedNullValues(
+			Map<ValueNumber, Set<Location>> nullValueGuaranteedDerefMap,
+			ValueNumberFrame vnaFrame,
+			IsNullValueFrame invFrame,
+			UnconditionalValueDerefSet derefSet) {
+		
+		// Make sure the frames contain meaningful information
+		if (!vnaFrame.isValid() || !invFrame.isValid() || vnaFrame.getNumSlots() != invFrame.getNumSlots())  {
+			return;
+		}
+
+		// See if there are any definitely-null values in the frame
+		for (int j = 0; j < invFrame.getNumSlots(); j++) {
+			if (invFrame.getValue(j).isDefinitelyNull()) {
+				// Is this value unconditionally dereferenced?
+				ValueNumber valueNumber = vnaFrame.getValue(j);
+				
+				if (derefSet.isUnconditionallyDereferenced(valueNumber)) {
+					// OK, we have a null value that is unconditionally
+					// derferenced.  Make a note of the locations where it
+					// will be dereferenced.
+					Set<Location> thisValueNumberDerefLocationSet = nullValueGuaranteedDerefMap.get(valueNumber);
+					if (thisValueNumberDerefLocationSet == null) {
+						thisValueNumberDerefLocationSet = new HashSet<Location>();
+						nullValueGuaranteedDerefMap.put(valueNumber, thisValueNumberDerefLocationSet);
+					}
+					thisValueNumberDerefLocationSet.addAll(derefSet.getUnconditionalDerefLocationSet(valueNumber));
+				}
+			}
 		}
 	}
 

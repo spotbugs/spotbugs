@@ -36,6 +36,20 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends AbstractDataflowAnal
 
 		setIsForwards(analysis.isForwards());
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.CFGPrinter#edgeAnnotate(edu.umd.cs.findbugs.ba.Edge)
+	 */
+	@Override
+	public String edgeAnnotate(Edge edge) {
+		String edgeAnnotation= "";
+		try {
+			edgeAnnotation = " " + analysis.factToString(analysis.getFactOnEdge(edge)); 
+		} catch (Throwable e) {
+			// ignore
+		}
+		return edgeAnnotation;
+	}
 
 	@Override
          public String blockStartAnnotate(BasicBlock bb) {

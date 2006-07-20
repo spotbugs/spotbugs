@@ -49,7 +49,14 @@ public class CFGPrinter {
 	public void setIsForwards(boolean isForwards) {
 		this.isForwards = isForwards;
 	}
-
+	
+	/**
+	 * @return Returns the isForwards.
+	 */
+	public boolean isForwards() {
+		return isForwards;
+	}
+	
 	public void print(PrintStream out) {
 		Iterator<BasicBlock> i = cfg.blockIterator();
 		while (i.hasNext()) {

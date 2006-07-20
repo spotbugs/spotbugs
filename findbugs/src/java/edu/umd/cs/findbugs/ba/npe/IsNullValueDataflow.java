@@ -19,12 +19,12 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 
-public class IsNullValueDataflow extends Dataflow<IsNullValueFrame, IsNullValueAnalysis> {
+public class IsNullValueDataflow extends AbstractDataflow<IsNullValueFrame, IsNullValueAnalysis> {
 	public IsNullValueDataflow(CFG cfg, IsNullValueAnalysis analysis) {
 		super(cfg, analysis);
 	}

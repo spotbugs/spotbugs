@@ -24,22 +24,14 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 
-public class ValueNumberDataflow extends Dataflow<ValueNumberFrame, ValueNumberAnalysis> {
+public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, ValueNumberAnalysis> {
 	public ValueNumberDataflow(CFG cfg, ValueNumberAnalysis analysis) {
 		super(cfg, analysis);
-	}
-
-	public ValueNumberFrame getFactAtLocation(Location loc) {
-		return getAnalysis().getFactAtLocation(loc);
-	}
-
-	public ValueNumberFrame getFactAfterLocation(Location loc) {
-		return getAnalysis().getFactAfterLocation(loc);
 	}
 	
 	/**

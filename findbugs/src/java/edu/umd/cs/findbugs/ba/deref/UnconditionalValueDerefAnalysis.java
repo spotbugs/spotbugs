@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.deref;
 
+import java.util.Iterator;
+
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
@@ -50,6 +52,8 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 public class UnconditionalValueDerefAnalysis extends
 		BackwardDataflowAnalysis<UnconditionalValueDerefSet> {
 	
+	private static final boolean DEBUG = Boolean.getBoolean("fnd.derefs.debug");
+	
 	private CFG cfg;
 	private MethodGen methodGen;
 	private ValueNumberDataflow vnaDataflow;
@@ -79,6 +83,14 @@ public class UnconditionalValueDerefAnalysis extends
 	@Override
 	public boolean isFactValid(UnconditionalValueDerefSet fact) {
 		return !fact.isTop() && !fact.isBottom();
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transfer(edu.umd.cs.findbugs.ba.BasicBlock, org.apache.bcel.generic.InstructionHandle, java.lang.Object, java.lang.Object)
+	 */
+	@Override
+	public void transfer(BasicBlock basicBlock, InstructionHandle end, UnconditionalValueDerefSet start, UnconditionalValueDerefSet result) throws DataflowAnalysisException {
+		super.transfer(basicBlock, end, start, result);
 	}
 
 	/* (non-Javadoc)
@@ -157,11 +169,53 @@ public class UnconditionalValueDerefAnalysis extends
 	public void meetInto(UnconditionalValueDerefSet fact, Edge edge,
 			UnconditionalValueDerefSet result) throws DataflowAnalysisException {
 		
-		// Ignore implicit exceptions
-		if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS)
-				&& edge.isExceptionEdge()
-				&& !edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG)) {
+		if (ignoreThisEdge(edge)) {
 			return;
+		}
+		
+		if (isFactValid(fact)/* && isOnlyNonIgnoredEdgeIntoBlock(edge)*/) {
+			// Find out if any VNs in the source block
+			// contribute to unconditionally dereferenced VNs in the
+			// target block.  If so, the VN in the source block is
+			// also unconditionally dereferenced, and we must propagate
+			// the target VN's dereferences. 
+
+			ValueNumberFrame blockValueNumberFrame =
+				vnaDataflow.getResultFact(edge.getSource());
+			ValueNumberFrame targetValueNumberFrame =
+				vnaDataflow.getStartFact(edge.getTarget());
+
+			UnconditionalValueDerefSet copyOfFact = createFact();
+			copy(fact, copyOfFact);
+			fact = copyOfFact;
+
+			if (blockValueNumberFrame.isValid() && targetValueNumberFrame.isValid() &&
+					blockValueNumberFrame.getNumSlots() == targetValueNumberFrame.getNumSlots()) {
+				if (false && DEBUG) {
+					System.out.println("** Valid VNA frames");
+					System.out.println("** Block : " + blockValueNumberFrame);
+					System.out.println("** Target: " + targetValueNumberFrame);
+				}
+
+				for (int i = 0; i < blockValueNumberFrame.getNumSlots(); i++) {
+					ValueNumber blockVN = blockValueNumberFrame.getValue(i);
+					ValueNumber targetVN = targetValueNumberFrame.getValue(i);
+					if (!blockVN.equals(targetVN)) {
+						if (DEBUG) {
+							System.out.println("Merge: " + targetVN + " -> " + blockVN);
+						}
+						if (fact.isUnconditionallyDereferenced(targetVN)
+								&& !fact.isUnconditionallyDereferenced(blockVN)) {
+							// Block VN is also dereferenced unconditionally.
+							if (DEBUG) {
+								System.out.println("** Copy vn derefs " + targetVN.getNumber() + 
+										" --> " + blockVN.getNumber());
+							}
+							fact.setDerefSet(blockVN, fact.getUnconditionalDerefLocationSet(targetVN));
+						}
+					}
+				}
+			}
 		}
 
 		if (result.isTop() || fact.isBottom()) {
@@ -174,6 +228,29 @@ public class UnconditionalValueDerefAnalysis extends
 			// (intersection of unconditional deref values)
 			result.mergeWith(fact, vnaDataflow.getAnalysis().getFactory());
 		}
+	}
+
+	private boolean isOnlyNonIgnoredEdgeIntoBlock(Edge edge) {
+		int count = 0;
+		for (Iterator<Edge> i = cfg.outgoingEdgeIterator(edge.getSource()); i.hasNext();) {
+			Edge other = i.next();
+			if (!ignoreThisEdge(other) && edge != other) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Determine whether dataflow should be propagated on given edge.
+	 * 
+	 * @param edge the edge
+	 * @return true if dataflow should be propagated on the edge, false otherwise
+	 */
+	private boolean ignoreThisEdge(Edge edge) {
+		return AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS)
+				&& edge.isExceptionEdge()
+				&& !edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG);
 	}
 
 	/* (non-Javadoc)
@@ -199,6 +276,9 @@ public class UnconditionalValueDerefAnalysis extends
 				return classContext.getUnconditionalValueDerefDataflow(method);
 			}
 		};
+		if (Boolean.getBoolean("forwardcfg")) {
+			driver.overrideIsForwards();
+		}
 		driver.execute(args[0]);
 	}
 }

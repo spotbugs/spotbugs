@@ -120,6 +120,21 @@ public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysi
 		else
 			return getFactAtLocation(new Location(isForwards() ? handle.getNext() : handle.getPrev(), basicBlock));
 	}
+	
+	/**
+	 * Get the fact that is true on the given control edge.
+	 * 
+	 * @param edge the edge
+	 * @return the fact that is true on the edge
+	 * @throws DataflowAnalysisException 
+	 */
+	public Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
+		BasicBlock block = isForwards() ? edge.getSource() : edge.getTarget();
+		Fact fact = createFact();
+		makeFactTop(fact);
+		meetInto(getResultFact(block), edge, fact);
+		return fact;
+	}
 
 	/**
 	 * Get an iterator over the result facts.

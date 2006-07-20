@@ -63,4 +63,15 @@ public class AbstractDataflow<Fact, AnalysisType extends AbstractDataflowAnalysi
 	public Fact getFactAfterLocation(Location location) throws DataflowAnalysisException {
 		return getAnalysis().getFactAfterLocation(location);
 	}
+	
+	/**
+	 * Get the fact that is true on the given control edge.
+	 * 
+	 * @param edge the edge
+	 * @return the fact that is true on the edge
+	 * @throws DataflowAnalysisException 
+	 */
+	public Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
+		return getAnalysis().getFactOnEdge(edge);
+	}
 }

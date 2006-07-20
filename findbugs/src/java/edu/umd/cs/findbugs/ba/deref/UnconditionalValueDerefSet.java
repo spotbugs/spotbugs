@@ -169,13 +169,35 @@ public class UnconditionalValueDerefSet {
 	 */
 	public void addDeref(ValueNumber vn, Location location) {
 		valueNumberSet.set(vn.getNumber());
-		
+		Set<Location> derefLocationSet = getDerefLocationSet(vn);
+		derefLocationSet.add(location);
+	}
+	
+	/**
+	 * Set a value as being unconditionally dereferenced at the
+	 * given set of locations. 
+	 * 
+	 * @param vn       the value
+	 * @param derefSet the Set of dereference Locations
+	 */
+	public void setDerefSet(ValueNumber vn, Set<Location> derefSet) {
+		valueNumberSet.set(vn.getNumber());
+		Set<Location> derefLocationSet = getDerefLocationSet(vn);
+		derefLocationSet.clear();
+		derefLocationSet.addAll(derefSet);
+	}
+
+	/**
+	 * @param vn
+	 * @return
+	 */
+	private Set<Location> getDerefLocationSet(ValueNumber vn) {
 		Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
 		if (derefLocationSet == null) {
 			derefLocationSet  = new HashSet<Location>();
 			derefLocationSetMap.put(vn, derefLocationSet);
 		}
-		derefLocationSet.add(location);
+		return derefLocationSet;
 	}
 	
 	/**
@@ -210,6 +232,13 @@ public class UnconditionalValueDerefSet {
 	 */
 	@Override
 	public String toString() {
+		if (isTop()) {
+			return "[TOP]";
+		}
+		if (isBottom()) {
+			return "[BOTTOM]";
+		}
+		
 		StringBuffer buf = new StringBuffer();
 		buf.append('[');
 		boolean firstVN = true;

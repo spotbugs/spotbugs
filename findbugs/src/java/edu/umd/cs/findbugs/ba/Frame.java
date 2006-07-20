@@ -501,7 +501,7 @@ public abstract class Frame <ValueType>   {
 			if (i == numSlots - 1 && value.endsWith(","))
 				value = value.substring(0, value.length() - 1);
 			buf.append(value);
-			buf.append(' ');
+			//buf.append(' ');
 		}
 		buf.append(']');
 		return buf.toString();

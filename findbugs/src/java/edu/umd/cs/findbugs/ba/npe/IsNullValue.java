@@ -387,21 +387,21 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		if (locationOfKaBoom == null) pfx += "[?]";
 		switch (getBaseKind()) {
 		case NULL:
-			return pfx + "n";
+			return pfx + "n" + ",";
 		case CHECKED_NULL:
-			return pfx + "w";
+			return pfx + "w" + ",";
 		case NN:
-			return pfx + "N";
+			return pfx + "N" + ",";
 		case CHECKED_NN:
-			return pfx + "W";
+			return pfx + "W" + ",";
 		case NO_KABOOM_NN:
-			return pfx + "K";
+			return pfx + "K" + ",";
 		case NSP:
-			return pfx + "s";
+			return pfx + "s" + ",";
 		case NN_UNKNOWN:
-			return pfx + "-";
+			return pfx + "-" + ",";
 		case NCP2:
-			return pfx + "/";
+			return pfx + "/" + ",";
 		default:
 			throw new IllegalStateException("unknown kind of IsNullValue: " + kind);
 		}

@@ -38,7 +38,11 @@ import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
  * @see DataflowAnalysis
  */
 public abstract class DataflowTestDriver <Fact, AnalysisType extends AbstractDataflowAnalysis<Fact>> {
-
+	private boolean overrideIsForwards;
+	
+	public void overrideIsForwards() {
+		this.overrideIsForwards = true;
+	}
 
 	/**
 	 * Execute the analysis on a single class.
@@ -86,6 +90,9 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends AbstractDat
 
 		if (Boolean.getBoolean("dataflow.printcfg")) {
 			CFGPrinter p = new DataflowCFGPrinter<Fact, AnalysisType>(cfg, dataflow, dataflow.getAnalysis());
+			if (overrideIsForwards) {
+				p.setIsForwards(!p.isForwards());
+			}
 			p.print(System.out);
 		}
 	}
