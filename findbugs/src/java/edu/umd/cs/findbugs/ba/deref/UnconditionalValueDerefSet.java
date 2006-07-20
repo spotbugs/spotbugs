@@ -188,8 +188,10 @@ public class UnconditionalValueDerefSet {
 	}
 
 	/**
-	 * @param vn
-	 * @return
+	 * Get the set of dereference Locations for given value number.
+	 * 
+	 * @param vn the value number
+	 * @return the set of dereference Locations
 	 */
 	private Set<Location> getDerefLocationSet(ValueNumber vn) {
 		Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
