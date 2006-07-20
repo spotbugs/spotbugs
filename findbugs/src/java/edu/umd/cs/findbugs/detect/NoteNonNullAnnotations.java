@@ -20,20 +20,19 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * Scan classes for @NonNull, @PossiblyNull and @CheckForNull annotations,
  * and convey them to FindNullDeref.
- * 
- * @author daveho
  */
-public class NoteNonNullAnnotations extends BuildNonNullAnnotationDatabase implements NonReportingDetector {
-	//private BugReporter bugReporter;
+public class NoteNonNullAnnotations
+		extends BuildNonNullAnnotationDatabase
+		implements Detector, NonReportingDetector {
 	
 	public NoteNonNullAnnotations(BugReporter bugReporter) {
-		//this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

@@ -30,6 +30,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.TrainingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -51,7 +52,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
  * 
  * @author David Hovemeyer
  */
-public class TrainFieldStoreTypes implements TrainingDetector {
+public class TrainFieldStoreTypes implements Detector, TrainingDetector {
 	private BugReporter bugReporter;
 	private FieldStoreTypeDatabase database;
 	

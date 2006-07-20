@@ -24,5 +24,5 @@ package edu.umd.cs.findbugs;
  * 
  * @author David Hovemeyer
  */
-public interface NonReportingDetector extends Detector {
+public interface NonReportingDetector {
 }

@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.TrainingDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
@@ -30,7 +31,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * @author David Hovemeyer
  */
 public class TrainNonNullAnnotations extends BuildNonNullAnnotationDatabase
-		implements TrainingDetector {
+		implements Detector, TrainingDetector {
 	
 	BugReporter bugReporter;
 	

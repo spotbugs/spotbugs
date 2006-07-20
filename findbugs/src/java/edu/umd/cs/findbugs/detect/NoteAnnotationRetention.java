@@ -25,13 +25,14 @@ import java.util.Map;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 
 public class NoteAnnotationRetention extends AnnotationVisitor implements
-		NonReportingDetector {
+		Detector, NonReportingDetector {
 
 		private boolean classfileRetention;
 

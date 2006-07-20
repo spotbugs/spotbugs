@@ -26,13 +26,13 @@ import java.util.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
-public class NoteSuppressedWarnings extends AnnotationVisitor implements NonReportingDetector {
+public class NoteSuppressedWarnings
+		extends AnnotationVisitor
+		implements Detector, NonReportingDetector {
 
 	private static Set<String> packages = new HashSet<String>();
 
 	private SuppressionMatcher suppressionMatcher;
-
-	//private BugReporter bugReporter;
 
 	private NoteSuppressedWarnings recursiveDetector;
 
@@ -51,8 +51,6 @@ public class NoteSuppressedWarnings extends AnnotationVisitor implements NonRepo
 			recursiveDetector = new NoteSuppressedWarnings(bugReporter, true);
 			recursiveDetector.suppressionMatcher = suppressionMatcher;
 		}
-
-		//this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

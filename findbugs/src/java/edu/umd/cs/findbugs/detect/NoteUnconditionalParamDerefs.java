@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.InterproceduralFirstPassDetector;
 
 /**
@@ -29,12 +30,9 @@ import edu.umd.cs.findbugs.InterproceduralFirstPassDetector;
  * @author David Hovemeyer
  */
 public class NoteUnconditionalParamDerefs extends
-		BuildUnconditionalParamDerefDatabase implements InterproceduralFirstPassDetector {
-	
-	BugReporter bugReporter;
+		BuildUnconditionalParamDerefDatabase implements Detector, InterproceduralFirstPassDetector {
 	
 	public NoteUnconditionalParamDerefs(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
 	}
 
 	/* (non-Javadoc)

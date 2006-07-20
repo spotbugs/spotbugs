@@ -23,6 +23,7 @@ import java.util.HashSet;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -30,7 +31,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 /**
  * Detector to find private methods that are never called.
  */
-public class CalledMethods extends BytecodeScanningDetector implements NonReportingDetector {
+public class CalledMethods extends BytecodeScanningDetector implements Detector, NonReportingDetector {
 
 	// XXX MUSTFIX don't depend on static field
 	static private HashSet<XMethod> calledMethods = new HashSet<XMethod>();

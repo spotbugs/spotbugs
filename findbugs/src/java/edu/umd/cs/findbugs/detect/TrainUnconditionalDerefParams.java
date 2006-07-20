@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.TrainingDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
@@ -33,13 +34,10 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  */
 public class TrainUnconditionalDerefParams
 		extends BuildUnconditionalParamDerefDatabase
-		implements TrainingDetector {
+		implements Detector, TrainingDetector {
 	private static final boolean VERBOSE_DEBUG = Boolean.getBoolean("upd.debug"); 
 	
-	//private BugReporter bugReporter;
-	
 	public TrainUnconditionalDerefParams(BugReporter bugReporter) {
-		//this.bugReporter = bugReporter;
 	}
 
 	/* (non-Javadoc)

@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import java.util.*;
 import org.apache.bcel.classfile.Method;
 
-public class Methods extends PreorderVisitor implements NonReportingDetector {
+public class Methods extends PreorderVisitor implements Detector, NonReportingDetector {
 
 	private static Set<XMethod> methods = new HashSet<XMethod>();
 

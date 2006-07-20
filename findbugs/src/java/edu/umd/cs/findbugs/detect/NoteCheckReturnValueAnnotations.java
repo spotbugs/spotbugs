@@ -20,19 +20,18 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * Scan classes for @CheckReturnValue annotations
- * 
- * @author daveho
  */
-public class NoteCheckReturnValueAnnotations extends BuildCheckReturnAnnotationDatabase implements NonReportingDetector {
-	//private BugReporter bugReporter;
+public class NoteCheckReturnValueAnnotations
+	extends BuildCheckReturnAnnotationDatabase
+	implements Detector, NonReportingDetector {
 	
 	public NoteCheckReturnValueAnnotations(BugReporter bugReporter) {
-		//this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {

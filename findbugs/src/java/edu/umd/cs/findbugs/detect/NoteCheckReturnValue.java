@@ -32,7 +32,7 @@ import java.util.*;
  */
  
 public class NoteCheckReturnValue extends AnnotationVisitor 
-  implements NonReportingDetector {
+  implements Detector, NonReportingDetector {
 	
 	// XXX: Hack, for now
 	private static final String LOAD_TRAINING = System.getProperty("findbugs.checkreturn.loadtraining");
