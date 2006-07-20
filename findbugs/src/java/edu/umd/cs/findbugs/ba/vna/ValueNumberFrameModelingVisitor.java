@@ -69,7 +69,7 @@ public class ValueNumberFrameModelingVisitor
 	private ValueNumberCache cache;
 	private LoadedFieldSet loadedFieldSet;
 	private HashMap<String, ValueNumber> classObjectValueMap;
-	private IdentityHashMap<InstructionHandle, ValueNumber> constantValueMap;
+	private HashMap<Object, ValueNumber> constantValueMap;
 	private HashMap<ValueNumber, String> stringConstantMap;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private InstructionHandle handle;
@@ -98,7 +98,7 @@ public class ValueNumberFrameModelingVisitor
 		this.cache = cache;
 		this.loadedFieldSet = loadedFieldSet;
 		this.classObjectValueMap = new HashMap<String, ValueNumber>();
-		this.constantValueMap = new IdentityHashMap<InstructionHandle, ValueNumber>();
+		this.constantValueMap = new HashMap<Object, ValueNumber>();
 		this.stringConstantMap = new HashMap<ValueNumber, String>();
 		this.lookupFailureCallback = lookupFailureCallback;
 	}
@@ -373,16 +373,18 @@ public class ValueNumberFrameModelingVisitor
 	}
 */
 
+	// TODO: handle LDC of Class
 	@Override
          public void visitLDC(LDC obj) {
-		ValueNumber value = constantValueMap.get(handle);
+		Object constantValue = obj.getValue(cpg);
+		ValueNumber value = constantValueMap.get(constantValue);
 		if (value == null) {
 			ConstantPoolGen cpg = getCPG();
 			value = factory.createFreshValue();
-			constantValueMap.put(handle, value);
+			constantValueMap.put(constantValue, value);
 
 			// Keep track of String constants
-			Object constantValue = obj.getValue(cpg);
+
 			if (constantValue instanceof String) {
 				stringConstantMap.put(value, (String) constantValue);
 			}
