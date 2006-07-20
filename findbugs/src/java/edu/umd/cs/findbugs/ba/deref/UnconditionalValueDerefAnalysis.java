@@ -84,14 +84,6 @@ public class UnconditionalValueDerefAnalysis extends
 	public boolean isFactValid(UnconditionalValueDerefSet fact) {
 		return !fact.isTop() && !fact.isBottom();
 	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transfer(edu.umd.cs.findbugs.ba.BasicBlock, org.apache.bcel.generic.InstructionHandle, java.lang.Object, java.lang.Object)
-	 */
-	@Override
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, UnconditionalValueDerefSet start, UnconditionalValueDerefSet result) throws DataflowAnalysisException {
-		super.transfer(basicBlock, end, start, result);
-	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transferInstruction(org.apache.bcel.generic.InstructionHandle, edu.umd.cs.findbugs.ba.BasicBlock, java.lang.Object)
@@ -173,7 +165,7 @@ public class UnconditionalValueDerefAnalysis extends
 			return;
 		}
 		
-		if (isFactValid(fact)/* && isOnlyNonIgnoredEdgeIntoBlock(edge)*/) {
+		if (isFactValid(fact)) {
 			// Find out if any VNs in the source block
 			// contribute to unconditionally dereferenced VNs in the
 			// target block.  If so, the VN in the source block is
@@ -228,17 +220,6 @@ public class UnconditionalValueDerefAnalysis extends
 			// (intersection of unconditional deref values)
 			result.mergeWith(fact, vnaDataflow.getAnalysis().getFactory());
 		}
-	}
-
-	private boolean isOnlyNonIgnoredEdgeIntoBlock(Edge edge) {
-		int count = 0;
-		for (Iterator<Edge> i = cfg.outgoingEdgeIterator(edge.getSource()); i.hasNext();) {
-			Edge other = i.next();
-			if (!ignoreThisEdge(other) && edge != other) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	/**
