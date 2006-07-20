@@ -5,7 +5,7 @@ import java.security.*;
 public class UMAC {
 	
 	Iterator<Integer> emptyIterator() {
-		return new Iterator() {
+		return new Iterator<Integer>() {
 
 			public boolean hasNext() {
 				return false;
@@ -14,7 +14,7 @@ public class UMAC {
 			public boolean hasMoreElements() {
 				return false;
 			}
-			public Object next() {
+			public Integer next() {
 				throw new NoSuchElementException();
 			}
 
@@ -25,6 +25,20 @@ public class UMAC {
 	}
 
 	
+	public static Map<String,String> getLoggingMap() {
+		return new HashMap<String, String>() {
+			public String get(String key) {
+				String result = super.get(key);
+				System.out.println("Map("+key+") = " + result);
+				return result;
+			}
+			public String put(String key, String value) {
+				String result = super.put(key, value);
+				System.out.println("Map.put("+key+", " + value + ") = " + result);
+				return result;
+			}
+		};
+	}
 	
 	private static ClassLoader s_classLoader;
 

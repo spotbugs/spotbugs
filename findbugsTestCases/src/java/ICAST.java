@@ -22,4 +22,12 @@ public class ICAST {
 	public int roundUp(int a, int b) {
 		return (int) Math.ceil(a/b);
 	}
+	
+	public double doubleDivision(int a, int b) {
+		return (double) (a/b);
+	}
+	public int round(int a, int b) {
+		return Math.round(a/b);
+	}
+
 }
