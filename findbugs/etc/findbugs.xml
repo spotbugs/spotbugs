@@ -484,7 +484,7 @@
   
   <Detector class="edu.umd.cs.findbugs.detect.IDivResultCastToDouble"
             speed="fast"
-            reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL" />
+            reports="ICAST_IDIV_CAST_TO_DOUBLE,ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL,ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND" />
   			
   <Detector class="edu.umd.cs.findbugs.detect.FindBadCast"
             speed="fast"
@@ -804,6 +804,7 @@
   <BugPattern abbrev="PS" type="PS_PUBLIC_SEMAPHORES" category="STYLE"/>
   <BugPattern abbrev="ICAST" type="ICAST_IDIV_CAST_TO_DOUBLE" category="CORRECTNESS"/>
   <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL" category="CORRECTNESS"/>
+  <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND" category="CORRECTNESS"/>
   <BugPattern abbrev="NP" type="NP_NULL_INSTANCEOF" category="CORRECTNESS"/>
   <BugPattern abbrev="NP" type="BC_NULL_INSTANCEOF" category="CORRECTNESS"
          experimental="true" />  <!-- deprecated in favor of NP_NULL_INSTANCEOF -->

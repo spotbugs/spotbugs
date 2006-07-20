@@ -4077,8 +4077,8 @@ or both.</p>
   </BugPattern>
 
   <BugPattern type="MF_CLASS_MASKS_FIELD">
-    <ShortDescription>Class defines field that obscures a superclass field</ShortDescription>
-    <LongDescription>Class {0} defines field that obscures superclass field {1}</LongDescription>
+    <ShortDescription>Class defines field that masks a superclass field</ShortDescription>
+    <LongDescription>Field {1} masks field in superclass {2.class}</LongDescription>
     <Details>
 <![CDATA[
 <p> This class defines a field with the same name as a visible
@@ -4330,6 +4330,26 @@ just use the constant. Methods detected are:
     ]]>
       </Details>
     </BugPattern>
+
+  <BugPattern type="ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND">
+    <ShortDescription>int value cast to float and then passed to Math.round</ShortDescription>
+    <LongDescription>int value cast to float and then passed to Math.round in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code converts an int value to a float precision
+floating point number and then
+passing the result to the Math.round() function, which returns the int/long closest
+to the argument. This operation should always be a no-op,
+since the converting an integer to a float should give a number with no fractional part.
+It is likely that the operation that generated the value to be passed
+to Math.round was intended to be performed using 
+floating point arithmetic.
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL">
     <ShortDescription>int value cast to double and then passed to Math.ceil</ShortDescription>
