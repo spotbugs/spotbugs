@@ -107,7 +107,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		else if (key.equals("pc")) return String.valueOf(pc);
 		else if (key.equals("name")) return value;
 		else if (!value.equals("?")) return value;
-		return "$l"+register;
+		return "$L"+register;
 	}
 
 	public void setDescription(String description) {
