@@ -127,7 +127,11 @@ public class GuaranteedDereference {
 		return x.hashCode();
 	}
 	
-
-	
-
+	int test12DoNotReport(Object x) {
+		if (x == null) 
+			System.out.println("x is null");
+		if (x == null) 
+			throw new NullPointerException();
+		else return x.hashCode();
+	}
 }
