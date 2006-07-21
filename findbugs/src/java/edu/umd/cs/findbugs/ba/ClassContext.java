@@ -887,7 +887,8 @@ public class ClassContext {
 						getReverseDepthFirstSearch(method),
 						getCFG(method),
 						getMethodGen(method),
-						getValueNumberDataflow(method)
+						getValueNumberDataflow(method),
+						getAssertionMethods()
 						);
 				
 				UnconditionalValueDerefDataflow dataflow =

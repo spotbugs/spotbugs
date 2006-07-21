@@ -23,10 +23,12 @@ import java.util.Iterator;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
+import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BackwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -57,6 +59,7 @@ public class UnconditionalValueDerefAnalysis extends
 	private CFG cfg;
 	private MethodGen methodGen;
 	private ValueNumberDataflow vnaDataflow;
+	private AssertionMethods assertionMethods;
 	
 	/**
 	 * Constructor.
@@ -65,16 +68,20 @@ public class UnconditionalValueDerefAnalysis extends
 	 * @param cfg                the CFG for the method
 	 * @param methodGen          the MethodGen for the method
 	 * @param valueNumberFactory the value number factory
+	 * @param assertionMethods   AssertionMethods for the analyzed class
 	 */
 	public UnconditionalValueDerefAnalysis(
 			ReverseDepthFirstSearch rdfs,
 			CFG cfg,
 			MethodGen methodGen,
-			ValueNumberDataflow vnaDataflow) {
+			ValueNumberDataflow vnaDataflow,
+			AssertionMethods assertionMethods
+			) {
 		super(rdfs);
 		this.cfg = cfg;
 		this.methodGen = methodGen;
 		this.vnaDataflow = vnaDataflow;
+		this.assertionMethods = assertionMethods;
 	}
 
 	/* (non-Javadoc)
@@ -92,6 +99,20 @@ public class UnconditionalValueDerefAnalysis extends
 	public void transferInstruction(InstructionHandle handle,
 			BasicBlock basicBlock, UnconditionalValueDerefSet fact)
 			throws DataflowAnalysisException {
+		
+		// If this is a call to an assertion method,
+		// change the dataflow value to be empty.
+		// We don't want to report future derefs that would
+		// be guaranteed only if the assertion methods
+		// returns normally.
+		if (handle.getInstruction() instanceof InvokeInstruction
+				&& assertionMethods.isAssertionCall((InvokeInstruction) handle.getInstruction())) {
+			if (DEBUG) {
+				System.out.println("Killing derefs for " + handle);
+			}
+			fact.clear();
+			return;
+		}
 
 		// See if this instruction has a null check.
 		// If it does, the fall through predecessor will be
