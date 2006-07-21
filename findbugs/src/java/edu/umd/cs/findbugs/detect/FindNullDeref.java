@@ -801,18 +801,19 @@ public class FindNullDeref
 		BugInstance bugInstance = new BugInstance(this, "NP_GUARANTEED_DEREF", HIGH_PRIORITY)
 			.addClassAndMethod(classContext.getJavaClass(), method);
 		
-		// Add Locations where the value was observed to become null
-		TreeSet<Location> sortedAssignedNullLocationSet = new TreeSet<Location>(assignedNullLocationSet);
-		for (Location loc : sortedAssignedNullLocationSet) {
-			bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_NULL_VALUE");
-		}
-		
 		// Add Locations in the set of locations at least one of which
 		// is guaranteed to be dereferenced
 		TreeSet<Location> sortedDerefLocationSet = new TreeSet<Location>(derefLocationSet);
 		for (Location loc : sortedDerefLocationSet) {
 			bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_DEREF");
 		}
+		// Add Locations where the value was observed to become null
+		TreeSet<Location> sortedAssignedNullLocationSet = new TreeSet<Location>(assignedNullLocationSet);
+		for (Location loc : sortedAssignedNullLocationSet) {
+			bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_NULL_VALUE");
+		}
+		
+	
 		
 		// Report it
 		bugReporter.reportBug(bugInstance);
