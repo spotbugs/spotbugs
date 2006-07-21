@@ -115,7 +115,7 @@ public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysi
 		BasicBlock basicBlock = location.getBasicBlock();
 		InstructionHandle handle = location.getHandle();
 
-		if (handle == basicBlock.getLastInstruction())
+		if (handle == (isForwards() ? basicBlock.getLastInstruction() : basicBlock.getFirstInstruction()))
 			return getResultFact(basicBlock);
 		else
 			return getFactAtLocation(new Location(isForwards() ? handle.getNext() : handle.getPrev(), basicBlock));
