@@ -58,6 +58,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class NullDerefAndRedundantComparisonFinder {
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
+	private static final boolean DEBUG_DEREFS = Boolean.getBoolean("fnd.derefs.debug");
 	private static final boolean FIND_GUARANTEED_DEREFS = Boolean.getBoolean("fnd.derefs");
 	
 	private ClassContext classContext;
@@ -106,6 +107,11 @@ public class NullDerefAndRedundantComparisonFinder {
 		this.invDataflow = classContext.getIsNullValueDataflow(method);
 		this.vnaDataflow = classContext.getValueNumberDataflow(method);
 		if (FIND_GUARANTEED_DEREFS) {
+			if (DEBUG_DEREFS) {
+				System.out.println(
+						"Checking for guaranteed derefs in " +
+						classContext.getCFG(method).getMethodName());
+			}
 			this.uvdDataflow = classContext.getUnconditionalValueDerefDataflow(method);
 		}
 
@@ -198,16 +204,26 @@ public class NullDerefAndRedundantComparisonFinder {
 		for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
 			Location location = i.next();
 			
+			if (DEBUG_DEREFS) {
+				System.out.println("At location " + location.getBasicBlock().getId() + ":" +
+						location.getHandle().getPosition());
+			}
+			
 			checkForUnconditionallyDereferencedNullValues(
 					nullValueGuaranteedDerefMap,
 					vnaDataflow.getFactAtLocation(location),
 					invDataflow.getFactAtLocation(location),
-					uvdDataflow.getFactAtLocation(location));
+					uvdDataflow.getFactAfterLocation(location));
 		}
 		
 		// Check every non-exception control edge
 		for (Iterator<Edge> i = classContext.getCFG(method).edgeIterator(); i.hasNext();) {
 			Edge edge = i.next();
+			
+			if (DEBUG_DEREFS) {
+				System.out.println("On edge " + edge.formatAsString(false));
+			}
+			
 			if (!edge.isExceptionEdge()) {
 				checkForUnconditionallyDereferencedNullValues(
 						nullValueGuaranteedDerefMap,
@@ -242,6 +258,12 @@ public class NullDerefAndRedundantComparisonFinder {
 			IsNullValueFrame invFrame,
 			UnconditionalValueDerefSet derefSet) {
 		
+		if (DEBUG_DEREFS) {
+			System.out.println("*** " + vnaFrame);
+			System.out.println("*** " + invFrame);
+			System.out.println("*** " + derefSet);
+		}
+		
 		// Make sure the frames contain meaningful information
 		if (!vnaFrame.isValid() || !invFrame.isValid() || vnaFrame.getNumSlots() != invFrame.getNumSlots())  {
 			return;
@@ -254,6 +276,10 @@ public class NullDerefAndRedundantComparisonFinder {
 				ValueNumber valueNumber = vnaFrame.getValue(j);
 				
 				if (derefSet.isUnconditionallyDereferenced(valueNumber)) {
+					if (DEBUG_DEREFS) {
+						System.out.println("%%% HIT for value number " + valueNumber);
+					}
+					
 					// OK, we have a null value that is unconditionally
 					// derferenced.  Make a note of the locations where it
 					// will be dereferenced.
