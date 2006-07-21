@@ -42,6 +42,9 @@ import org.apache.bcel.generic.InvokeInstruction;
  * @author David Hovemeyer
  */
 public class AssertionMethods implements Constants {
+	
+	private static final boolean DEBUG = Boolean.getBoolean("assertionmethods.debug");
+	
 	/**
 	 * Bitset of methodref constant pool indexes referring to likely assertion methods.
 	 */
@@ -109,6 +112,10 @@ public class AssertionMethods implements Constants {
 					String classNameLC = className.toLowerCase();
 					String methodNameLC = methodName.toLowerCase();
 					boolean voidReturnType = methodSig.endsWith(")V");
+					
+					if (DEBUG) {
+						System.out.print("Is " + className + "." + methodName + " assertion method: ");
+					}
 
 					if (isUserAssertionMethod(className, methodName) ||
 					        // voidReturnType &&  // comment this out for now
@@ -116,8 +123,16 @@ public class AssertionMethods implements Constants {
 					        methodNameLC.startsWith("throw") ||
 					        methodNameLC.indexOf("assert") >= 0 || methodNameLC.indexOf("error") >= 0 ||
 					        methodNameLC.indexOf("abort") >= 0 || methodNameLC.indexOf("check") >= 0 ||
-					        methodNameLC.indexOf("failed") >= 0))
+					        methodNameLC.indexOf("failed") >= 0)) {
 						assertionMethodRefSet.set(i);
+						if (DEBUG) {
+							System.out.println("==> YES");
+						}
+					} else {
+						if (DEBUG) {
+							System.out.println("==> NO");
+						}
+					}
 				}
 			} catch (ClassFormatException e) {
 				// FIXME: should report
@@ -140,7 +155,14 @@ public class AssertionMethods implements Constants {
 	 * @return true if the instruction likely refers to an assertion, false if not
 	 */
 	public boolean isAssertionCall(InvokeInstruction inv) {
-		return assertionMethodRefSet.get(inv.getIndex());
+//		if (DEBUG) {
+//			System.out.print("Checking if " + inv + " is an assertion method: ");
+//		}
+		boolean isAssertionMethod = assertionMethodRefSet.get(inv.getIndex());
+//		if (DEBUG) {
+//			System.out.println("==> " + isAssertionMethod);
+//		}
+		return isAssertionMethod;
 	}
 }
 
