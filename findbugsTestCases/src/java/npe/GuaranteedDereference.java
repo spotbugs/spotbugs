@@ -40,5 +40,33 @@ public class GuaranteedDereference {
 		result.append(xAsString.trim());
 		return result.toString();
 	}
+	
+	void assertTrue(boolean b) {
+		if (!b) throw new RuntimeException("Failed");
+	}
+	
+	int test1DoNotReport(Object x) {
+		if (x == null) assertTrue(false);
+		return x.hashCode();
+	}
+	
+	int test2DoNotReport(Object x) {
+		assertTrue(x!=null);
+		return x.hashCode();
+	}
+	
+	int test3Report(Object x) {
+		Object y = null;
+		if (x == null) throw new NullPointerException();
+		return y.hashCode();
+	}
+	
+	int test4Report(Object x) {
+		Object y = null;
+		if (x == null) assertTrue(false);
+		return y.hashCode();
+	}
+	
+	
 
 }
