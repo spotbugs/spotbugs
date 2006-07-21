@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.deref;
 import java.util.Iterator;
 
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
@@ -101,16 +102,12 @@ public class UnconditionalValueDerefAnalysis extends
 			throws DataflowAnalysisException {
 		
 		// If this is a call to an assertion method,
-		// change the dataflow value to be empty.
+		// change the dataflow value to be TOP.
 		// We don't want to report future derefs that would
 		// be guaranteed only if the assertion methods
 		// returns normally.
-		if (handle.getInstruction() instanceof InvokeInstruction
-				&& assertionMethods.isAssertionCall((InvokeInstruction) handle.getInstruction())) {
-			if (DEBUG) {
-				System.out.println("Killing derefs for " + handle);
-			}
-			fact.clear();
+		if (isAssertion(handle) || handle.getInstruction() instanceof ATHROW) {
+			makeFactTop(fact);
 			return;
 		}
 
@@ -138,6 +135,15 @@ public class UnconditionalValueDerefAnalysis extends
 
 		// Mark the value number as being dereferenced at this location
 		fact.addDeref(vn, new Location(handle, basicBlock));
+	}
+
+	/**
+	 * @param handle
+	 * @return
+	 */
+	private boolean isAssertion(InstructionHandle handle) {
+		return handle.getInstruction() instanceof InvokeInstruction
+				&& assertionMethods.isAssertionCall((InvokeInstruction) handle.getInstruction());
 	}
 
 	/* (non-Javadoc)
