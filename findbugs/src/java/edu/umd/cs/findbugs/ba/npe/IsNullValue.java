@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.ba.npe;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.XMethodParameter;
 
 /**
  * A class to abstractly represent values in stack slots,
@@ -160,10 +162,16 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		return (kind & EXCEPTION) != 0;
 	}
 	/**
-	 * Was this value propagated on an exception path?
+	 * Was this value marked as a possibly null return value?
 	 */
 	public boolean isReturnValue() {
 		return (kind & RETURN_VAL) != 0;
+	}
+	/**
+	 * Was this value marked as a possibly null parameter?
+	 */
+	public boolean isParamValue() {
+		return (kind & PARAM) != 0;
 	}
 
 	/**
@@ -194,12 +202,14 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	/**
 	 * Convert to a value known because it was returned from a method
 	 * in a method property database.
+	 * @param methodInvoked TODO
 	 */
-	public IsNullValue toMayReturnNullValue() {
+	public IsNullValue markInformationAsComingFromReturnValueOfMethod(XMethod methodInvoked) {
 		if (getBaseKind() == NO_KABOOM_NN) return new IsNullValue(kind | RETURN_VAL, locationOfKaBoom);
 		return instanceByFlagsList[(getFlags() | RETURN_VAL) >> FLAG_SHIFT][getBaseKind()];
 	}
 
+	
 	/**
 	 * Get the instance representing values that are definitely null.
 	 */
@@ -248,6 +258,12 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		return instanceByFlagsList[0][NSP];
 	}
 
+	/**
+	 * Get instance representing a parameter marked as MightBeNull
+	 */
+	public static IsNullValue parameterMarkedAsMightBeNull(XMethodParameter mp) {
+		return instanceByFlagsList[PARAM >> FLAG_SHIFT][NSP];
+	}
 	/**
 	 * Get non-reporting non-null value.
 	 * This is what we use for unknown values.

@@ -132,10 +132,9 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		} else {
 			// Special case: some special value is pushed on the stack for the return value
 			IsNullValue pushValue = null;
-			if (isReadLine) {
-				// String methods always return a non-null value
-				pushValue = IsNullValue.nullOnSimplePathValue().toMayReturnNullValue();
-			} else if (stringMethodCall) {
+			if (false && isReadLine) {
+				pushValue = IsNullValue.nullOnSimplePathValue().markInformationAsComingFromReturnValueOfMethod(null);
+			} else if (false && stringMethodCall) {
 				// String methods always return a non-null value
 				pushValue = IsNullValue.nonNullValue();
 			} else  {
@@ -147,13 +146,13 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 					if (IsNullValueAnalysis.DEBUG) {
 						System.out.println("Null value returned from " + calledMethod);
 					}
-					pushValue = IsNullValue.nullOnSimplePathValue().toMayReturnNullValue();
+					pushValue = IsNullValue.nullOnSimplePathValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
 				} else  if (annotation == NullnessAnnotation.NONNULL) {
 					// Method is declared NOT to return null
 					if (IsNullValueAnalysis.DEBUG) {
 						System.out.println("NonNull value return from " + calledMethod);
 					}
-					pushValue = IsNullValue.nonNullValue().toMayReturnNullValue();
+					pushValue = IsNullValue.nonNullValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
 					
 				} else {
 					pushValue = IsNullValue.nonReportingNotNullValue();

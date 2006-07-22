@@ -110,7 +110,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 			XMethod m = mp.getMethod();
 			if (m.getName().startsWith("access$")) return null;
 			// TODO: Handle argument to equals specially: generate special bug code for it
-			if (false && mp.getParameterNumber() == 0 && m.getName().equals("equals") 
+			if (mp.getParameterNumber() == 0 && m.getName().equals("equals") 
 					&& m.getSignature().equals("(Ljava/lang/Object;)Z") && !m.isStatic())
 					return NullnessAnnotation.CHECK_FOR_NULL;
 			else if (mp.getParameterNumber() == 0 && m.getName().equals("compareTo") 

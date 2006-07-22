@@ -596,6 +596,13 @@ public class FindNullDeref
 			if (onExceptionPath)  type = "NP_NULL_ON_SOME_PATH_EXCEPTION";
 			else if (refValue.isReturnValue())
 				type = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE";
+			else if (refValue.isParamValue()) {
+				if (method.getName().equals("equals") 
+						&& method.getSignature().equals("(Ljava/lang/Object;)Z"))
+					type = "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT";
+				else
+				type = "NP_ARGUMENT_MIGHT_BE_NULL";
+			}
 			if (DEBUG) System.out.println("Reporting null on some path: value=" + refValue);
 			reportNullDeref(propertySet, classContext, method, location, type, priority);
 		}

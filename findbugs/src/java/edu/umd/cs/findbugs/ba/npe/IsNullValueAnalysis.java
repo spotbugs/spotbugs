@@ -143,10 +143,11 @@ public class IsNullValueAnalysis
 				} else if (paramIndex > methodGen.getArgumentTypes().length) {
 					value = IsNullValue.nonReportingNotNullValue();
 				} else {
-					NullnessAnnotation n = db.getResolvedAnnotation(new XMethodParameter(xm, paramIndex), false);
+					XMethodParameter methodParameter = new XMethodParameter(xm, paramIndex);
+					NullnessAnnotation n = db.getResolvedAnnotation(methodParameter, false);
 					if (n == NullnessAnnotation.CHECK_FOR_NULL)
 						// Parameter declared @CheckForNull
-						value = IsNullValue.nullOnSimplePathValue();
+						value = IsNullValue.parameterMarkedAsMightBeNull(methodParameter);
 					else if (n == NullnessAnnotation.NONNULL) 
 						// Parameter declared @NonNull
 						// TODO: label this so we don't report defensive programming

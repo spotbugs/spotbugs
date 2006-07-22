@@ -81,6 +81,10 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			int status = -1;
 
 			if (DEBUG) System.out.println("PC : " + handle.getPosition() + " " + ins);
+			if (DEBUG && ins instanceof InvokeInstruction) {
+				InvokeInstruction iins = (InvokeInstruction) ins;
+				System.out.println("  " + ins.toString(cpg.getConstantPool()));
+			}
 			// Is a lock acquired or released by this instruction?
 			Location creationPoint = lock.getLocation();
 			if (handle == creationPoint.getHandle() && basicBlock == creationPoint.getBasicBlock()) {
@@ -103,7 +107,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 				if (lock.getLockValue().hasFlag(ValueNumber.RETURN_VALUE) 
 						&& vnaFrame.getValue(i).hasFlag(ValueNumber.RETURN_VALUE) 
 						|| vnaFrame.getValue(i).equals(lock.getLockValue())) {
-					if (false && DEBUG) System.out.println("Saw lock value!");
+					if (DEBUG) System.out.println("Saw lock value!");
 					frame.setValue(i, ResourceValue.instance());
 				}
 			}
@@ -188,6 +192,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 				if (methodName.equals("unlock") &&
 						methodSig.equals("()V") &&
 						Hierarchy.isSubtype(className, "java.util.concurrent.locks.Lock")) {
+					
 					return true;
 				}
 			} catch (ClassNotFoundException e) {
