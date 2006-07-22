@@ -315,7 +315,7 @@ public class UnconditionalValueDerefAnalysis extends
 		}
 		
 		IsNullValue inv = decision.getDecision(edge.getType());
-		if (!inv.isDefinitelyNotNull()) {
+		if (inv == null || !inv.isDefinitelyNotNull()) {
 			return fact;
 		}
 		ValueNumber value = decision.getValue();
