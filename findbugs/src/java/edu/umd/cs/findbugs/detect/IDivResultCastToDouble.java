@@ -26,6 +26,13 @@ public class IDivResultCastToDouble extends BytecodeScanningDetector {
 		
 		if (DEBUG) System.out.println("Saw opcode " + OPCODE_NAMES[seen] + " " + pendingBug);
 	
+		if (prevOpCode == IMUL && seen == I2L)
+			bugReporter.reportBug(new BugInstance(this, 
+					"ICAST_INTEGER_MULTIPLY_CAST_TO_LONG", 
+					NORMAL_PRIORITY)
+						.addClassAndMethod(this)
+						.addSourceLine(this));
+			
 		if ((prevOpCode  == I2D || prevOpCode == L2D)
                         && seen == INVOKESTATIC
                                 && getClassConstantOperand().equals("java/lang/Math")
