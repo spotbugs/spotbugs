@@ -19,8 +19,10 @@
 
 package edu.umd.cs.findbugs.ba.deref;
 
+import java.util.BitSet;
 import java.util.Iterator;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.InstructionHandle;
@@ -42,6 +44,10 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
+import edu.umd.cs.findbugs.ba.npe.IsNullConditionDecision;
+import edu.umd.cs.findbugs.ba.npe.IsNullValue;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFactory;
@@ -61,6 +67,8 @@ public class UnconditionalValueDerefAnalysis extends
 	private MethodGen methodGen;
 	private ValueNumberDataflow vnaDataflow;
 	private AssertionMethods assertionMethods;
+	
+	private IsNullValueDataflow invDataflow;
 	
 	/**
 	 * Constructor.
@@ -83,6 +91,16 @@ public class UnconditionalValueDerefAnalysis extends
 		this.methodGen = methodGen;
 		this.vnaDataflow = vnaDataflow;
 		this.assertionMethods = assertionMethods;
+	}
+	
+	/**
+	 * HACK: use the given is-null dataflow to clear deref sets for
+	 * values that are known to be definitely non-null on a branch.
+	 * 
+	 * @param invDataflow the IsNullValueDataflow to use
+	 */
+	public void clearDerefsOnNonNullBranches(IsNullValueDataflow invDataflow) {
+		this.invDataflow = invDataflow;
 	}
 
 	/* (non-Javadoc)
@@ -192,48 +210,11 @@ public class UnconditionalValueDerefAnalysis extends
 			return;
 		}
 		
+		// Edge transfer function
 		if (isFactValid(fact)) {
-			// Find out if any VNs in the source block
-			// contribute to unconditionally dereferenced VNs in the
-			// target block.  If so, the VN in the source block is
-			// also unconditionally dereferenced, and we must propagate
-			// the target VN's dereferences. 
-
-			ValueNumberFrame blockValueNumberFrame =
-				vnaDataflow.getResultFact(edge.getSource());
-			ValueNumberFrame targetValueNumberFrame =
-				vnaDataflow.getStartFact(edge.getTarget());
-
-			UnconditionalValueDerefSet copyOfFact = createFact();
-			copy(fact, copyOfFact);
-			fact = copyOfFact;
-
-			if (blockValueNumberFrame.isValid() && targetValueNumberFrame.isValid() &&
-					blockValueNumberFrame.getNumSlots() == targetValueNumberFrame.getNumSlots()) {
-				if (false && DEBUG) {
-					System.out.println("** Valid VNA frames");
-					System.out.println("** Block : " + blockValueNumberFrame);
-					System.out.println("** Target: " + targetValueNumberFrame);
-				}
-
-				for (int i = 0; i < blockValueNumberFrame.getNumSlots(); i++) {
-					ValueNumber blockVN = blockValueNumberFrame.getValue(i);
-					ValueNumber targetVN = targetValueNumberFrame.getValue(i);
-					if (!blockVN.equals(targetVN)) {
-						if (DEBUG) {
-							System.out.println("Merge: " + targetVN + " -> " + blockVN);
-						}
-						if (fact.isUnconditionallyDereferenced(targetVN)
-								&& !fact.isUnconditionallyDereferenced(blockVN)) {
-							// Block VN is also dereferenced unconditionally.
-							if (DEBUG) {
-								System.out.println("** Copy vn derefs " + targetVN.getNumber() + 
-										" --> " + blockVN.getNumber());
-							}
-							fact.setDerefSet(blockVN, fact.getUnconditionalDerefLocationSet(targetVN));
-						}
-					}
-				}
+			fact = propagateDerefSetsToMergeInputValues(fact, edge);
+			if (invDataflow != null) {
+				fact = clearDerefsOnNonNullBranch(fact, edge);
 			}
 		}
 
@@ -247,6 +228,102 @@ public class UnconditionalValueDerefAnalysis extends
 			// (intersection of unconditional deref values)
 			result.mergeWith(fact, vnaDataflow.getAnalysis().getFactory());
 		}
+	}
+
+	/**
+	 * Find out if any VNs in the source block
+	 * contribute to unconditionally dereferenced VNs in the
+	 * target block.  If so, the VN in the source block is
+	 * also unconditionally dereferenced, and we must propagate
+	 * the target VN's dereferences.
+	 *  
+	 * @param fact a dataflow value
+	 * @param edge edge to check for merge input values
+	 * @return possibly-modified dataflow value
+	 */
+	private UnconditionalValueDerefSet propagateDerefSetsToMergeInputValues(
+			UnconditionalValueDerefSet fact, Edge edge) {
+		
+		ValueNumberFrame blockValueNumberFrame =
+			vnaDataflow.getResultFact(edge.getSource());
+		ValueNumberFrame targetValueNumberFrame =
+			vnaDataflow.getStartFact(edge.getTarget());
+
+		fact = duplicateFact(fact);
+
+		if (blockValueNumberFrame.isValid() && targetValueNumberFrame.isValid() &&
+				blockValueNumberFrame.getNumSlots() == targetValueNumberFrame.getNumSlots()) {
+			if (false && DEBUG) {
+				System.out.println("** Valid VNA frames");
+				System.out.println("** Block : " + blockValueNumberFrame);
+				System.out.println("** Target: " + targetValueNumberFrame);
+			}
+
+			for (int i = 0; i < blockValueNumberFrame.getNumSlots(); i++) {
+				ValueNumber blockVN = blockValueNumberFrame.getValue(i);
+				ValueNumber targetVN = targetValueNumberFrame.getValue(i);
+				if (!blockVN.equals(targetVN)) {
+					if (DEBUG) {
+						System.out.println("Merge: " + targetVN + " -> " + blockVN);
+					}
+					if (fact.isUnconditionallyDereferenced(targetVN)
+							&& !fact.isUnconditionallyDereferenced(blockVN)) {
+						// Block VN is also dereferenced unconditionally.
+						if (DEBUG) {
+							System.out.println("** Copy vn derefs " + targetVN.getNumber() + 
+									" --> " + blockVN.getNumber());
+						}
+						fact.setDerefSet(blockVN, fact.getUnconditionalDerefLocationSet(targetVN));
+					}
+				}
+			}
+		}
+		return fact;
+	}
+
+	/**
+	 * Return a duplicate of given dataflow fact.
+	 * 
+	 * @param fact a dataflow fact
+	 * @return a duplicate of the input dataflow fact
+	 */
+	private UnconditionalValueDerefSet duplicateFact(UnconditionalValueDerefSet fact) {
+		UnconditionalValueDerefSet copyOfFact = createFact();
+		copy(fact, copyOfFact);
+		fact = copyOfFact;
+		return fact;
+	}
+
+	/**
+	 * Clear deref sets of values if this edge is the non-null branch
+	 * of an if comparison.
+	 * 
+	 * @param fact a datflow fact
+	 * @param edge edge to check
+	 * @return possibly-modified dataflow fact
+	 */
+	private UnconditionalValueDerefSet clearDerefsOnNonNullBranch(
+			UnconditionalValueDerefSet fact, Edge edge) {
+		
+		IsNullValueFrame invFrame = invDataflow.getResultFact(edge.getSource());
+		if (!invFrame.isValid()) {
+			return fact;
+		}
+		IsNullConditionDecision decision = invFrame.getDecision();
+		if (decision == null) {
+			return fact;
+		}
+		
+		IsNullValue inv = decision.getDecision(edge.getType());
+		if (!inv.isDefinitelyNotNull()) {
+			return fact;
+		}
+		ValueNumber value = decision.getValue();
+		
+		fact = duplicateFact(fact);
+		fact.clearDerefSet(value);
+		
+		return fact;
 	}
 
 	/**

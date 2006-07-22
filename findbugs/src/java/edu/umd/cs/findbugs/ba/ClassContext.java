@@ -891,6 +891,9 @@ public class ClassContext {
 						getAssertionMethods()
 						);
 				
+				// XXX: hack to clear derefs on not-null branches
+				analysis.clearDerefsOnNonNullBranches(getIsNullValueDataflow(method));
+				
 				UnconditionalValueDerefDataflow dataflow =
 					new UnconditionalValueDerefDataflow(getCFG(method), analysis);
 				dataflow.execute();

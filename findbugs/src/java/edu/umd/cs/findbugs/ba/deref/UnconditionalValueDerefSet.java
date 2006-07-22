@@ -188,6 +188,16 @@ public class UnconditionalValueDerefSet {
 	}
 
 	/**
+	 * Clear the set of dereferences for given ValueNumber
+	 * 
+	 * @param value the ValueNumber
+	 */
+	public void clearDerefSet(ValueNumber value) {
+		valueNumberSet.clear(value.getNumber());
+		derefLocationSetMap.remove(value);
+	}
+
+	/**
 	 * Get the set of dereference Locations for given value number.
 	 * 
 	 * @param vn the value number
