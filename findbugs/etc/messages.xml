@@ -2604,11 +2604,11 @@ is generally easy and good defensive programming.
   </BugPattern>
 
   <BugPattern type="SF_SWITCH_FALLTHROUGH">
-   <ShortDescription>Switch statement found where one case falls thru to the next case</ShortDescription>
-   <LongDescription>Switch statement found in {1} where one case falls thru to the next case</LongDescription>
+   <ShortDescription>Switch statement found where one case falls through to the next case</ShortDescription>
+   <LongDescription>Switch statement found in {1} where one case falls through to the next case</LongDescription>
     <Details>
 <![CDATA[
-  <p> This method contains a switch statement where one case branch will fall thru to the next case.
+  <p> This method contains a switch statement where one case branch will fall through to the next case.
   Usually you need to end this case with a break or return.</p>
 ]]>
     </Details>
@@ -4647,8 +4647,8 @@ i % 60 * 1000 is (i % 60) * 1000, not i % (60 * 1000).
 <![CDATA[
 <p>
 The code invokes toString on an array, which will generate a fairly useless result
-such as [C@16f0472. Consider using String.valueOf to convert the array into a readable
-String that gives the contents of the array. See Programming Puzzlers, Chapter 3, problem 12.
+such as [C@16f0472. Consider using Arrays.toString to convert the array into a readable
+String that gives the contents of the array. See Programming Puzzlers, chapter 3, puzzle 12.
 </p>
 ]]>
     </Details>
@@ -4963,7 +4963,7 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="SW">Swing coding rules</BugCode>
   <BugCode abbrev="IJU">Improperly implemented JUnit TestCase</BugCode>
   <BugCode abbrev="BOA">Badly Overridden Adapter</BugCode>
-  <BugCode abbrev="SF">Switch case falls thru</BugCode>
+  <BugCode abbrev="SF">Switch case falls through</BugCode>
   <BugCode abbrev="SIO">Superfluous instanceof</BugCode>
   <BugCode abbrev="BAC">Bad Applet Constructor</BugCode>
   <BugCode abbrev="UOE">Use Object Equals</BugCode>
