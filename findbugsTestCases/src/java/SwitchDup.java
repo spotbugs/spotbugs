@@ -10,6 +10,18 @@ public class SwitchDup {
 		return n;
 	}
 	
+	public int nestedIf(boolean b) {
+		int n = 5;
+		if (b) {
+			if (System.getProperty("foo")!=null) n += 2;
+			else n += 3;
+		} else {
+			if (System.getProperty("foo")!=null) n += 2;
+			else n += 3;
+		}
+		return n;
+	}
+	
 	public int simpleCase(int which) {
 		int n = 5;
 		switch (which) {
@@ -83,7 +95,7 @@ public class SwitchDup {
 		return n;
 	}
 
-	
+	/** bug 1508906 */
 	public String peeterswim(int index) {
 		switch (index) {
 		case 0 : return "0";
@@ -93,7 +105,7 @@ public class SwitchDup {
 		}
 	}
 
-	
+	/** bug 1481642 */
 	public int g_korland() {
 		int a = 1;
 		switch(a)
@@ -111,6 +123,7 @@ public class SwitchDup {
 		A, B
 	}
 
+	/** patch 1524949 (submitted as a patch, not a bug) */
 	public void ruimo(Code code) {
 		switch (code) {
 		case A:
