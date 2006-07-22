@@ -30,6 +30,8 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements  St
 	int distance = 0;
 	//int distance2 = 0;
 	int operator;
+	boolean sawDereference = false;
+	boolean sawInvocation = false;
 	private BugReporter bugReporter;
 
 	public FindNonShortCircuit(BugReporter bugReporter) {
@@ -51,8 +53,14 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements  St
 		/* prototype for short-circuit bug */
 		distance++;
 		switch (seen) {
+		case IFNONNULL:
+		case IFNULL:
+			stage1 = 3;
+			break;
 		case ICONST_1:
-			stage1 = 1;
+			if (stage1 != 3)
+				stage1 = 1;
+			else stage1 = 0;
 			break;
 		case GOTO:
 			if (stage1 == 1)
@@ -66,6 +74,16 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements  St
 				// System.out.println("saw 1; goto X; 0");
 			}
 			stage1 = 0;
+			break;
+		case INVOKEINTERFACE:
+		case INVOKEVIRTUAL:
+		case INVOKESPECIAL:
+		case INVOKESTATIC:
+			String sig = getSigConstantOperand();
+			if (sig.endsWith(")Z"))
+					distance = 0;
+			stage1 = 0;
+			break;
 		default:
 			stage1 = 0;
 		}
@@ -98,7 +116,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements  St
 			if (operator == IAND && stage2 == 1) {
 				// System.out.println("Found nsc");
 				bugReporter.reportBug(new BugInstance(this, "NS_NON_SHORT_CIRCUIT",
-				        LOW_PRIORITY)
+				        NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this, getPC()));
 			}
