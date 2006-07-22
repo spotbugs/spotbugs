@@ -1751,6 +1751,35 @@ be used to make the prepared statement do something unexpected and undesirable.
     </Details>
   </BugPattern>
 
+  <BugPattern type="NP_ARGUMENT_MIGHT_BE_NULL">
+   <ShortDescription>Method does not check for null argument</ShortDescription>
+   <LongDescription>{1} does not check for null argument</LongDescription>
+   <Details>
+      <![CDATA[
+      <p>
+	A parameter to this method has been identified as a value that should
+	always be checked to see whether or not it is null, but it is being dereferenced
+	without a preceeding null check.
+      </p>
+      ]]>
+   </Details>
+  </BugPattern>
+
+  <BugPattern type="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT">
+   <ShortDescription>equals() method does not check for null argument</ShortDescription>
+   <LongDescription>{1} does not check for null argument</LongDescription>
+   <Details>
+      <![CDATA[
+      <p>
+      This implementation of equals(Object) violates the contract defined
+      by java.lang.Object.equals() because it does not check for null
+      being passed as the argument.  All equals() methods should return
+      false if passed a null value.
+      </p>
+      ]]>
+   </Details>
+  </BugPattern>
+
   <BugPattern type="NP_DOES_NOT_HANDLE_NULL">
    <ShortDescription>equals() method does not check for null parameter</ShortDescription>
    <LongDescription>{1} does not check for null parameter</LongDescription>
@@ -2064,7 +2093,12 @@ Non-short-circuit logic causes both sides of the expression
 to be evaluated even when the result can be inferred from
 knowing the left-hand side. This can be less efficient and
 can result in errors if the left-hand side guards cases
-when evaluating the right-hand side can generate an error.</p>
+when evaluating the right-hand side can generate an error.
+
+<p>See <a href="http://java.sun.com/docs/books/jls/third_edition/html/expressions.html#15.22.2">the Java
+Language Specification</a> for details
+
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4331,6 +4365,37 @@ just use the constant. Methods detected are:
       </Details>
     </BugPattern>
 
+  <BugPattern type="ICAST_INTEGER_MULTIPLY_CAST_TO_LONG">
+    <ShortDescription>Result of integer multiplication cast to long</ShortDescription>
+    <LongDescription>Result of integer multiplication cast to long in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This code performs integer multiply and then converts the result to a long,
+as in:
+<code>
+<pre> 
+	long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; } 
+</pre></code>
+If the multiplication is done using long arithmetic, you can avoid
+the possibility that the result will overflow. For example, you
+could fix the above code to:
+<code>
+<pre> 
+	long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; } 
+</pre></code>
+or 
+<code>
+<pre> 
+	static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
+	long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; } 
+</pre></code>
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND">
     <ShortDescription>int value cast to float and then passed to Math.round</ShortDescription>
     <LongDescription>int value cast to float and then passed to Math.round in {1}</LongDescription>
@@ -4939,6 +5004,7 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="SIC" >Inner class could be made static</BugCode>
   <BugCode abbrev="TLW" >Wait with two locks held</BugCode>
   <BugCode abbrev="RV" >Bad use of return value from method</BugCode>
+  <BugCode abbrev="IA" >Ambiguous invocation</BugCode>
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
   <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
