@@ -37,9 +37,57 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  */
 public class DetectorFactory {
 	private static final boolean DEBUG_JAVA_VERSION = Boolean.getBoolean("findbugs.debug.javaversion");
+
+	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
+
+	static class ReflectionDetectorCreator implements IDetectorCreator {
+		private Class<? extends Detector> detectorClass;
+		private Method setAnalysisContext;
+		
+		ReflectionDetectorCreator(Class<? extends Detector> detectorClass) {
+			this.detectorClass = detectorClass;
+
+			try {
+				setAnalysisContext = detectorClass.getDeclaredMethod(
+						"setAnalysisContext", new Class[]{AnalysisContext.class});
+			} catch (NoSuchMethodException e) {
+				// Ignore
+			}
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.IDetectorCreator#createDetector(edu.umd.cs.findbugs.BugReporter)
+		 */
+		public Detector createDetector(BugReporter bugReporter) {
+			try {
+				Constructor<? extends Detector> constructor = detectorClass.getConstructor(constructorArgTypes);
+				Detector detector = constructor.newInstance(new Object[]{bugReporter});
+				
+				// Backwards-compatibility: if the Detector has a setAnalysisContext()
+				// method, call it, passing the current AnalysisContext.  We do this
+				// because some released versions of FindBugs had a Detector
+				// interface which specified this method (and ensured it was called
+				// before the Detector was used to analyze any code).
+				if (setAnalysisContext != null) {
+					setAnalysisContext.invoke(detector, new Object[]{AnalysisContext.currentAnalysisContext()});
+				}
+				
+				return detector;
+			} catch (Exception e) {
+				throw new RuntimeException("Could not instantiate Detector", e);
+			}
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.IDetectorCreator#getDetectorClass()
+		 */
+		public Class<? extends Detector> getDetectorClass() {
+			return detectorClass;
+		}
+	}
 	
 	private Plugin plugin;
-	private final Class<? extends Detector> detectorClass;
+	private final IDetectorCreator detectorCreator;
 	private int positionSpecifiedInPluginDescriptor;
 	private boolean defEnabled;
 	private final String speed;
@@ -48,8 +96,6 @@ public class DetectorFactory {
 	private String detailHTML;
 	private int priorityAdjustment;
 	private boolean hidden;
-	
-	private Method setAnalysisContext;
 
 	/**
 	 * Constructor.
@@ -68,23 +114,14 @@ public class DetectorFactory {
                            Class<? extends Detector> detectorClass, boolean enabled, String speed, String reports,
 	                       String requireJRE) {
 		this.plugin = plugin;
-		this.detectorClass = detectorClass;
+		this.detectorCreator = new ReflectionDetectorCreator(detectorClass);
 		this.defEnabled = enabled;
 		this.speed = speed;
 		this.reports = reports;
 		this.requireJRE = requireJRE;
 		this.priorityAdjustment = 0;
 		this.hidden = false;
-
-		try {
-			setAnalysisContext = detectorClass.getDeclaredMethod(
-					"setAnalysisContext", new Class[]{AnalysisContext.class});
-		} catch (NoSuchMethodException e) {
-			// Ignore
-		}
 	}
-
-	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
 
 	/**
 	 * Set the overall position in which this detector was specified
@@ -123,7 +160,7 @@ public class DetectorFactory {
 	 * @return true if the detector class is a subtype of the given class or interface
 	 */
 	public boolean isDetectorClassSubtypeOf(Class<?> otherClass) {
-		return otherClass.isAssignableFrom(detectorClass);
+		return otherClass.isAssignableFrom(detectorCreator.getDetectorClass());
 	}
 	
 	/**
@@ -269,23 +306,7 @@ public class DetectorFactory {
 	 * @return the Detector
 	 */
 	public Detector create(BugReporter bugReporter) {
-		try {
-			Constructor<? extends Detector> constructor = detectorClass.getConstructor(constructorArgTypes);
-			Detector detector = constructor.newInstance(new Object[]{bugReporter});
-			
-			// Backwards-compatibility: if the Detector has a setAnalysisContext()
-			// method, call it, passing the current AnalysisContext.  We do this
-			// because some released versions of FindBugs had a Detector
-			// interface which specified this method (and ensured it was called
-			// before the Detector was used to analyze any code).
-			if (setAnalysisContext != null) {
-				setAnalysisContext.invoke(detector, new Object[]{AnalysisContext.currentAnalysisContext()});
-			}
-			
-			return detector;
-		} catch (Exception e) {
-			throw new RuntimeException("Could not instantiate Detector", e);
-		}
+		return detectorCreator.createDetector(bugReporter);
 	}
 
 	/**
@@ -293,7 +314,7 @@ public class DetectorFactory {
 	 * This is the name of the detector class without the package qualification.
 	 */
 	public String getShortName() {
-		String className = detectorClass.getName();
+		String className = detectorCreator.getDetectorClass().getName();
 		int endOfPkg = className.lastIndexOf('.');
 		if (endOfPkg >= 0)
 			className = className.substring(endOfPkg + 1);
@@ -305,7 +326,7 @@ public class DetectorFactory {
 	 * This is the name of the detector class, with package qualification.
 	 */
 	public String getFullName() {
-		return detectorClass.getName();
+		return detectorCreator.getDetectorClass().getName();
 	}
 }
 
