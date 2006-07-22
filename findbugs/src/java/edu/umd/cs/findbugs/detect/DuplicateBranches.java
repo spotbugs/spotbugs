@@ -1,7 +1,7 @@
 /*
  * FindBugs - Find bugs in Java programs
  * Copyright (C) 2005 Dave Brosius <dbrosius@users.sourceforge.net>
- * Copyright (C) 2005 University of Maryland
+ * Copyright (C) 2005-2006 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,7 @@ import org.apache.bcel.generic.*;
 import org.apache.bcel.util.ByteSequence;
 
 /** @author Dave Brousius  4/2005  original author
- *  @author Brian Cole     8/2006  serious reworking
+ *  @author Brian Cole     7/2006  serious reworking
  */
 public class DuplicateBranches extends PreorderVisitor implements Detector
 {
@@ -85,12 +85,15 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 			}
 		}
 		
-		if ((thenBB == null) || (elseBB == null) 
-		||  (thenBB.getFirstInstruction() == null) || (elseBB.getFirstInstruction() == null))
+		if ((thenBB == null) || (elseBB == null))
+			return;
+		InstructionHandle thenStartHandle = getDeepFirstInstruction(cfg, thenBB);
+		InstructionHandle elseStartHandle = getDeepFirstInstruction(cfg, elseBB);
+		if ((thenStartHandle == null) || (elseStartHandle == null))
 			return;
 		
-		int thenStartPos = thenBB.getFirstInstruction().getPosition();
-		int elseStartPos = elseBB.getFirstInstruction().getPosition();
+		int thenStartPos = thenStartHandle.getPosition();
+		int elseStartPos = elseStartHandle.getPosition();
 		
 		InstructionHandle thenFinishIns = findThenFinish(cfg, thenBB, elseStartPos);
 		int thenFinishPos = thenFinishIns.getPosition();
@@ -98,7 +101,9 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 		if (!(thenFinishIns.getInstruction() instanceof GotoInstruction))
 			return;
 		
-		int elseFinishPos = ((GotoInstruction) thenFinishIns.getInstruction()).getTarget().getPosition();
+		InstructionHandle elseFinishHandle =
+				((GotoInstruction) thenFinishIns.getInstruction()).getTarget();
+		int elseFinishPos = elseFinishHandle.getPosition();
 		
 		if (thenFinishPos >= elseStartPos)
 			return;
@@ -112,15 +117,15 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 		if (!Arrays.equals(thenBytes, elseBytes))
 			return;
 		
+		// adjust elseFinishPos to be inclusive (for source line attribution)
+		InstructionHandle elseLastIns = elseFinishHandle.getPrev();
+		if (elseLastIns != null) elseFinishPos = elseLastIns.getPosition();
+		
 		bugReporter.reportBug(new BugInstance(this, "DB_DUPLICATE_BRANCHES", NORMAL_PRIORITY)
 				.addClass(classContext.getJavaClass())
 				.addMethod(classContext.getJavaClass(), method)
-				.addSourceLineRange(this.classContext, this, 
-						thenBB.getFirstInstruction().getPosition(),
-						thenBB.getLastInstruction().getPosition())
-				.addSourceLineRange(this.classContext, this, 
-						elseBB.getFirstInstruction().getPosition(),
-						elseBB.getLastInstruction().getPosition()));		
+				.addSourceLineRange(classContext, this, thenStartPos, thenFinishPos)
+				.addSourceLineRange(classContext, this, elseStartPos, elseFinishPos));
 	}
 	
 	/** Like bb.getFirstInstruction() except that if null is
@@ -174,7 +179,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 		
 		HashMap<BigInteger, Collection<Integer>> map = new HashMap<BigInteger,Collection<Integer>>();
 		for (int i = 0; i < idx; i++) {
-			if (switchPos[i] +1 >=  switchPos[i+1]) continue;
+			if (switchPos[i]+1 >= switchPos[i+1]) continue; // why the +1 on lhs?
 			
 			int endPos = switchPos[i+1];
 			InstructionHandle last = prevHandle.get((Integer)switchPos[i+1]);
@@ -192,7 +197,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 				if (i+1 < idx && switchPos[idx]!=switchPos[idx-1]) continue; // also falls through unless switch has no default case
 			}
 			
-			byte[] clause = getCodeBytes(method, switchPos[i], endPos); //switchPos[i+1]);
+			byte[] clause = getCodeBytes(method, switchPos[i], endPos);
 			
 			BigInteger clauseAsInt = new BigInteger(clause);
 			
@@ -202,7 +207,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 				values = new LinkedList<Integer>();
 				map.put(clauseAsInt,values);
 			}
-			values.add((Integer)i);
+			values.add((Integer)i); // index into the sorted array
 		}
 		for(Collection<Integer> clauses : map.values()) {
 			if (clauses.size() > 1) {
@@ -212,7 +217,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 				for(int i : clauses) 
 					bug.addSourceLineRange(this.classContext, this, 
 							switchPos[i],
-							switchPos[i+1]-1);
+							switchPos[i+1]-1); // not endPos, but that's ok
 				bugReporter.reportBug(bug);
 			}
 		}
@@ -288,7 +293,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 					BranchInstruction bi = (BranchInstruction)ins;
 					int offset = bi.getIndex();
 					int target = offset + pos;
-					if (target >= end) {
+					if (target >= end) { // or target < start ??
 						byte hiByte = (byte)((target >> 8) & 0x000000FF);
 						byte loByte = (byte)(target & 0x000000FF);
 						bytes[pos+bi.getLength()-2 - start] = hiByte;
