@@ -88,7 +88,7 @@ public class IsNullConditionDecision implements EdgeTypes {
 	 * @return the IsNullValue representing the decision, or null
 	 *         if the edge is infeasible
 	 */
-	public IsNullValue getDecision(int edgeType) {
+	public @CheckForNull IsNullValue getDecision(int edgeType) {
 		assert edgeType == IFCMP_EDGE || edgeType == FALL_THROUGH_EDGE;
 		if (edgeType == IFCMP_EDGE)
 			return ifcmpDecision;
