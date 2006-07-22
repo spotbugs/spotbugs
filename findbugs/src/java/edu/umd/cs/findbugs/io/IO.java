@@ -122,9 +122,14 @@ public class IO {
 	/**
 	 * Close given InputStream, ignoring any resulting exception.
 	 * 
-	 * @param inputStream the InputStream to close
+	 * @param inputStream the InputStream to close;
+	 *                     may be null (in which case nothing happens)
 	 */
 	public static void close(InputStream inputStream) {
+		if (inputStream == null) {
+			return;
+		}
+		
 		try {
 			inputStream.close();
 		} catch (IOException e) {
@@ -135,9 +140,14 @@ public class IO {
 	/**
 	 * Close given OutputStream, ignoring any resulting exception.
 	 * 
-	 * @param outputStream the OutputStream to close
+	 * @param outputStream the OutputStream to close;
+	 *                      may be null (in which case nothing happens)
 	 */
 	public static void close(OutputStream outputStream) {
+		if (outputStream == null) {
+			return;
+		}
+		
 		try {
 			outputStream.close();
 		} catch (IOException e) {
