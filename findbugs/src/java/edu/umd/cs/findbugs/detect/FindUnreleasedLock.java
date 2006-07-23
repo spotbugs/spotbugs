@@ -85,6 +85,8 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 				InvokeInstruction iins = (InvokeInstruction) ins;
 				System.out.println("  " + ins.toString(cpg.getConstantPool()));
 			}
+			if (DEBUG) System.out.println("resource frame before instruction: " + frame.toString());
+
 			// Is a lock acquired or released by this instruction?
 			Location creationPoint = lock.getLocation();
 			if (handle == creationPoint.getHandle() && basicBlock == creationPoint.getBasicBlock()) {
@@ -102,8 +104,20 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
 			// Mark any appearances of the lock value in the ResourceValueFrame.
 			ValueNumberFrame vnaFrame = vnaDataflow.getFactAfterLocation(new Location(handle, basicBlock));
-			if (DEBUG) System.out.println("vna frame after instruction: " + vnaFrame.toString());
+			if (DEBUG) {
+				System.out.println("vna frame after instruction: " + vnaFrame.toString());
+				System.out.println("Lock value number: " + lock.getLockValue());
+				if (lock.getLockValue().hasFlag(ValueNumber.RETURN_VALUE) )
+					System.out.println("is return value");
+			}
+			
 			for (int i = 0; i < updatedNumSlots; ++i) {
+				if (DEBUG) {
+				System.out.println("Slot " + i);
+				System.out.println("  Lock value number: " + vnaFrame.getValue(i));
+				if (vnaFrame.getValue(i).hasFlag(ValueNumber.RETURN_VALUE) )
+					System.out.println("  is return value");
+				}
 				if (lock.getLockValue().hasFlag(ValueNumber.RETURN_VALUE) 
 						&& vnaFrame.getValue(i).hasFlag(ValueNumber.RETURN_VALUE) 
 						|| vnaFrame.getValue(i).equals(lock.getLockValue())) {
@@ -236,6 +250,21 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 						System.out.println("Ignoring exception from non-null GETFIELD");
 					}
 					return notNull;
+				} else if (ins instanceof InvokeInstruction) {
+					InvokeInstruction iins = (InvokeInstruction) ins;
+					String methodName = iins.getMethodName(cpg);
+					//System.out.println("Method " + methodName);
+					if (!methodName.equals("readLock") && !methodName.equals("writeLock")) return false;
+//					 Ignore exceptions from getfield instructions where the
+					// object referece is known not to be null
+					IsNullValueFrame frame = isNullDataflow.getFactAtLocation(location);
+					if (!frame.isValid())
+						return false;
+					IsNullValue receiver = frame.getInstance(ins, cpg);
+					boolean notNull = receiver.isDefinitelyNotNull();
+					if (DEBUG && notNull) 
+						System.out.println("Ignoring exception from non-null invoke of readLock/writeLock");
+					return notNull;
 				}
 			} catch (DataflowAnalysisException e) {
 				// Report...
@@ -321,6 +350,9 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		JavaClass javaClass = classContext.getJavaClass();
 		
 		ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
+		if (DEBUG) {
+			System.out.println("Resource value at exit: " + exitFrame);
+		}
 		int exitStatus = exitFrame.getStatus();
 
 		if (exitStatus == ResourceValueFrame.OPEN || exitStatus == ResourceValueFrame.OPEN_ON_EXCEPTION_PATH) {
