@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.ba.*;
 import org.apache.bcel.Constants;
+import org.apache.bcel.Repository;
 import org.apache.bcel.generic.*;
 
 /**
@@ -88,15 +89,27 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 
 	@Override
          protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
-		//ConstantPoolGen cpg = getCPG();
-		// String className = inv.getClassName(cpg);
+		ConstantPoolGen cpg = getCPG();
+		String className = inv.getClassName(cpg);
 
 		//System.out.print("[Passed as arg="+instanceArgNum+" at " + inv + "]");
 
 		boolean escapes = (inv.getOpcode() == Constants.INVOKESTATIC || instanceArgNum != 0);
+		String methodName = inv.getMethodName(cpg);
+		String methodSig = inv.getSignature(cpg);
 		//if (escapes) System.out.print("[Escape at " + inv + " argNum=" + instanceArgNum + "]");
-
-		if (FindOpenStream.DEBUG && escapes) System.out.println("ESCAPE at " + location);
+		try {
+			if (inv.getOpcode() == Constants.INVOKEVIRTUAL 
+					&& (methodName.equals("load") || methodName.equals("loadFromXml"))
+					&& methodSig.equals("(Ljava/io/InputStream;)V")
+					&& Repository.instanceOf(className, "java/util/Properties"))
+				escapes = false;
+		} catch (ClassNotFoundException e) {
+			// ignore
+		} 
+		if (FindOpenStream.DEBUG && escapes) {
+			System.out.println("ESCAPE at " + location + " at call to " + className +"." + methodName +":" + methodSig);
+		}
 
 		// Record the fact that this might be a stream escape
 		if (stream.getOpenLocation() != null)
