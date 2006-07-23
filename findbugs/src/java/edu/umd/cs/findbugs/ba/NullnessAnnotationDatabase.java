@@ -29,6 +29,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 	public NullnessAnnotationDatabase() {
 		addDefaultAnnotation(AnnotationDatabase.METHOD, "java.lang.String", NullnessAnnotation.NONNULL);
 		addMethodAnnotation("java.lang.reflect.Method", "getParameterTypes", "()[Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
+		addMethodAnnotation("java.lang.Object", "clone", "()[Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
 		
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.package-info", NullnessAnnotation.NONNULL);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.CopyOnWriteArrayList", NullnessAnnotation.UNKNOWN_NULLNESS);
