@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -799,7 +800,7 @@ public class FindNullDeref
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector#foundGuaranteedNullDeref(java.util.Set, java.util.Set, edu.umd.cs.findbugs.ba.vna.ValueNumber)
 	 */
-	public void foundGuaranteedNullDeref(Set<Location> assignedNullLocationSet, Set<Location> derefLocationSet, ValueNumber refValue) {
+	public void foundGuaranteedNullDeref(@NonNull Set<Location> assignedNullLocationSet, @NonNull Set<Location> derefLocationSet, ValueNumber refValue) {
 		if (DEBUG) {
 			System.out.println("Found guaranteed null deref in " + method.getName());
 		}
