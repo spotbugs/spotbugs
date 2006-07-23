@@ -140,7 +140,7 @@ public class IsNullValueAnalysis
 				
 				if (instanceMethod && i == 0) {
 					value = IsNullValue.nonNullValue();
-				} else if (paramIndex > methodGen.getArgumentTypes().length) {
+				} else if (paramIndex >= methodGen.getArgumentTypes().length) {
 					value = IsNullValue.nonReportingNotNullValue();
 				} else {
 					XMethodParameter methodParameter = new XMethodParameter(xm, paramIndex);
