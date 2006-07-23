@@ -97,16 +97,17 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 		boolean escapes = (inv.getOpcode() == Constants.INVOKESTATIC || instanceArgNum != 0);
 		String methodName = inv.getMethodName(cpg);
 		String methodSig = inv.getSignature(cpg);
-		//if (escapes) System.out.print("[Escape at " + inv + " argNum=" + instanceArgNum + "]");
-		try {
 			if (inv.getOpcode() == Constants.INVOKEVIRTUAL 
-					&& (methodName.equals("load") || methodName.equals("loadFromXml"))
-					&& methodSig.equals("(Ljava/io/InputStream;)V")
-					&& Repository.instanceOf(className, "java/util/Properties"))
+					&& (methodName.equals("load") || methodName.equals("loadFromXml") || methodName.equals("store")
+							|| methodName.equals("save"))
+					&& className.equals("java.util.Properties"))
 				escapes = false;
-		} catch (ClassNotFoundException e) {
-			// ignore
-		} 
+			if (inv.getOpcode() == Constants.INVOKEVIRTUAL 
+					&& (methodName.equals("load") || methodName.equals("store"))
+
+					&& className.equals("java.security.KeyStore"))
+				escapes = false;
+	
 		if (FindOpenStream.DEBUG && escapes) {
 			System.out.println("ESCAPE at " + location + " at call to " + className +"." + methodName +":" + methodSig);
 		}
