@@ -236,8 +236,10 @@ public class NullDerefAndRedundantComparisonFinder {
 		// Report 
 		for (Map.Entry<ValueNumber, Set<Location>> e  : nullValueGuaranteedDerefMap.entrySet()) {
 			ValueNumber valueNumber = e.getKey();
-			Set<Location> assignedNullLocationSet = nullValueAssignmentMap.get(valueNumber);
 			Set<Location> derefLocationSet = e.getValue();
+			Set<Location> assignedNullLocationSet = nullValueAssignmentMap.get(valueNumber);
+			if (assignedNullLocationSet == null)
+				throw new RuntimeException("No assigned NullLocationSet for " + valueNumber + " in " + nullValueAssignmentMap.keySet());
 			
 			collector.foundGuaranteedNullDeref(assignedNullLocationSet, derefLocationSet, valueNumber);
 		}
