@@ -199,7 +199,9 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 			
 			byte[] clause = getCodeBytes(method, switchPos[i], endPos);
 			
-			BigInteger clauseAsInt = new BigInteger(clause);
+			BigInteger clauseAsInt;
+			if (clause.length == 0) clauseAsInt = BigInteger.ZERO;
+			else clauseAsInt = new BigInteger(clause);
 			
 			Collection<Integer> values = map.get(clauseAsInt);
 			
