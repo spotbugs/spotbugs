@@ -26,7 +26,7 @@ package edu.umd.cs.findbugs.classfile;
  * 
  * @author David Hovemeyer
  */
-public class Global {
+public abstract class Global {
 	private static final InheritableThreadLocal<IAnalysisCache> analysisCacheThreadLocal =
 		new InheritableThreadLocal<IAnalysisCache>();
 	
