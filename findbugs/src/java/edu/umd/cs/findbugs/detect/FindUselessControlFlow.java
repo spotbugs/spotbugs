@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import java.util.BitSet;
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.LineNumberTable;
 
 /**
  * A Detector to look for useless control flow.  For example,
@@ -72,7 +73,16 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
          public void sawOpcode(int seen) {
 		if (ifInstructionSet.get(seen)) {
 			if (getBranchTarget() == getBranchFallThrough()) {
-				bugReporter.reportBug(new BugInstance(this, "UCF_USELESS_CONTROL_FLOW", NORMAL_PRIORITY)
+				int priority = NORMAL_PRIORITY;
+				
+				LineNumberTable lineNumbers = getCode().getLineNumberTable();
+				if (lineNumbers != null) {
+					int branchLineNumber = lineNumbers.getSourceLine(getPC());
+					int targetLineNumber = lineNumbers.getSourceLine(getBranchFallThrough());
+					if (branchLineNumber +1 >= targetLineNumber) priority = HIGH_PRIORITY;
+					else if (branchLineNumber +2 < targetLineNumber) priority = LOW_PRIORITY;
+				} else priority = LOW_PRIORITY;
+				bugReporter.reportBug(new BugInstance(this, "UCF_USELESS_CONTROL_FLOW", priority)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
 			}
