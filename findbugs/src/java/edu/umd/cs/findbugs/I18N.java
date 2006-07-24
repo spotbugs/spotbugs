@@ -24,6 +24,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -202,18 +203,67 @@ public class I18N {
 	}
 
 	/**
-	 * Get a Collection containing all known user designation keys keys.
+	 * Get a List containing all known user designation keys keys.
 	 * E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
 	 *
-	 * @return Collection of user designation keys
+	 * @return List of user designation keys
 	 */
-	public Collection<String> getUserDesignations() {
-		List<String> result = new LinkedList<String>();
+	public List<String> getUserDesignations() {
+		List<String> result = new ArrayList<String>();
 		for (Enumeration<String> e = userDesignationBundle.getKeys(); e.hasMoreElements(); ) {
 			String key = e.nextElement();
 			result.add(key);
 		}
 		return result;
+	}
+
+	/**
+	 * Get a List containing all known user designation keys keys.
+	 * E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
+	 * 
+	 * If the <code>sort == true</code> then it will attempt to sort
+	 * the List as appropriate to show the user.
+	 * But it does this in a slow and really ugly way, so use caution.
+	 *
+	 * @return List of user designation keys
+	 */
+	public List<String> getUserDesignations(boolean sort) {
+		List<String> result = getUserDesignations();
+		if (sort) {
+			// yes, this is ugly ugly ugly
+			int current = 0;
+			int index = result.indexOf("UNCLASSIFIED");
+			if (index >= 0) swap(result, index, current++);
+			
+			index = result.indexOf("BAD_ANALYSIS");
+			if (index >= 0) swap(result, index, current++);
+			
+			index = result.indexOf("NOT_A_BUG");
+			if (index >= 0) swap(result, index, current++);
+			
+			index = result.indexOf("HARMLESS");
+			if (index >= 0) swap(result, index, current++);
+			
+			index = result.indexOf("MOSTLY_HARMLESS");
+			if (index >= 0) swap(result, index, current++);
+			
+			index = result.indexOf("MODERATE");
+			if (index >= 0) swap(result, index, current++);
+			
+			index = result.indexOf("SERIOUS");
+			if (index >= 0) swap(result, index, current++);
+			
+			index = result.indexOf("CRITICAL");
+			if (index >= 0) swap(result, index, current++);
+		}
+		return result;
+	}
+
+	private static void swap(List list, int index1, int index2) {
+		if (index1 == index2) return;
+		Object s = list.get(index1);
+		list.set(index1, list.get(index2));
+		list.set(index2, s);
 	}
 
 }
