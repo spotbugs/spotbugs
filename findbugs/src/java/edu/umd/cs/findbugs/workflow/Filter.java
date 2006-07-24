@@ -53,6 +53,10 @@ import edu.umd.cs.findbugs.filter.Matcher;
 public class Filter {
 	static SourceFinder sourceFinder = new SourceFinder();
 	static class FilterCommandLine extends CommandLine {
+		/**
+		 * 
+		 */
+		public static final long MILLISECONDS_PER_DAY = 24*60*60*1000L;
 		Pattern className,bugPattern;
 		public boolean notSpecified = false;
 		public boolean not = false;
@@ -150,7 +154,7 @@ public class Filter {
 			try {
 				long time = 0;
 				if (val.endsWith("daysAgo")) 
-					time = System.currentTimeMillis() - 24*60*60*1000 * Integer.parseInt(val.substring(0, val.length() - 7));
+					time = System.currentTimeMillis() - MILLISECONDS_PER_DAY * Integer.parseInt(val.substring(0, val.length() - 7));
 				else time = Date.parse(val);
 				return getAppropriateSeq(timeStamps, time, roundToLaterVersion);
 			} catch (Exception e) {
