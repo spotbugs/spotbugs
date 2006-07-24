@@ -40,12 +40,14 @@ public class I18N {
 
 	private final ResourceBundle annotationDescriptionBundle;
 	private final ResourceBundle bugCategoryDescriptionBundle;
+	private final ResourceBundle userDesignationBundle;
 	private final HashMap<String, BugPattern> bugPatternMap;
 	private final HashMap<String, BugCode> bugCodeMap;
 
 	private I18N() {
 		annotationDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsAnnotationDescriptions");
 		bugCategoryDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.BugCategoryDescriptions");
+		userDesignationBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.UserDesignations");
 		bugPatternMap = new HashMap<String, BugPattern>();
 		bugCodeMap = new HashMap<String, BugCode>();
 	}
@@ -182,6 +184,32 @@ public class I18N {
 	public Collection<String> getBugCategories() {
 		List<String> result = new LinkedList<String>();
 		for (Enumeration<String> e = bugCategoryDescriptionBundle.getKeys(); e.hasMoreElements(); ) {
+			String key = e.nextElement();
+			result.add(key);
+		}
+		return result;
+	}
+
+	/**
+	 * Get the localized user designation string.
+	 * Returns the key if no user designation can be found.
+	 *
+	 * @param key the user designation key
+	 * @return the localized designation string
+	 */
+	public String getUserDesignation(String key) {
+		return userDesignationBundle.getString(key);
+	}
+
+	/**
+	 * Get a Collection containing all known user designation keys keys.
+	 * E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
+	 *
+	 * @return Collection of user designation keys
+	 */
+	public Collection<String> getUserDesignations() {
+		List<String> result = new LinkedList<String>();
+		for (Enumeration<String> e = userDesignationBundle.getKeys(); e.hasMoreElements(); ) {
 			String key = e.nextElement();
 			result.add(key);
 		}

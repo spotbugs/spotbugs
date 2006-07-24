@@ -38,6 +38,8 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
@@ -82,7 +84,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	private int priority;
 	private ArrayList<BugAnnotation> annotationList;
 	private int cachedHashCode;
-	@NonNull private String annotationText;
+	@CheckForNull private BugDesignation userDesignation;
 	private BugProperty propertyListHead, propertyListTail;
 	private String uniqueId;
 	private String instanceHash;
@@ -123,7 +125,6 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			? Detector.HIGH_PRIORITY : priority;
 		annotationList = new ArrayList<BugAnnotation>(4);
 		cachedHashCode = INVALID_HASH_CODE;
-		annotationText = "";
 		
 		if (adjustExperimental && isExperimental())
 			this.priority = Detector.EXP_PRIORITY;
@@ -327,13 +328,56 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return pattern != null ? pattern.getAbbrev() : "<unknown bug pattern>";
 	}
 
+	/** set the user designation object. This will clobber any
+	 *  existing annotationText (or any other BugDesignation field). */
+	public void setUserDesignation(BugDesignation bd) {
+		userDesignation = bd;
+	}
+	/** return the user designation object, which may be null.
+	 * 
+	 *  A previous calls to getSafeUserDesignation(), setAnnotationText(),
+	 *  or setUserDesignation() will ensure it will be non-null
+	 *  [barring an intervening setUserDesignation(null)].
+	 *  @see #getSafeUserDesignation() */
+	@Nullable public BugDesignation getUserDesignation() {
+		return userDesignation;
+	}
+	/** return the user designation object, creating one if
+	 *  necessary. So calling
+	 *  <code>getSafeUserDesignation().setDesignation("HARMLESS")</code>
+	 *  will always work without the possibility of a NullPointerException.
+	 *  @see #getUserDesignation() */
+	@NonNull public BugDesignation getSafeUserDesignation() {
+		if (userDesignation == null)
+			userDesignation = new BugDesignation();
+		return userDesignation;
+	}
+	
+
+	/** Get the user designation key.
+	 *  E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
+	 *
+	 *  If the user designation object is null,returns UNCLASSIFIED.
+	 *
+	 *  To set the user designation key, call
+	 *  <code>getSafeUserDesignation().setDesignation("HARMLESS")</code>.
+	 * 
+	 *  @see I18N#getUserDesignation(String key)
+	 *  @return the user designation key
+	 */
+	@NonNull public String getUserDesignationKey() {
+		String key = BugDesignation.UNCLASSIFIED;
+		if (userDesignation != null) key = userDesignation.getDesignation();
+		return key;
+	}
+
 	/**
 	 * Set the user annotation text.
 	 *
 	 * @param annotationText the user annotation text
 	 */
-	public void setAnnotationText(@NonNull String annotationText) {
-		this.annotationText = annotationText;
+	public void setAnnotationText(String annotationText) {
+		getSafeUserDesignation().setAnnotationText(annotationText);
 	}
 
 	/**
@@ -342,7 +386,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return the user annotation text
 	 */
 	@NonNull public String getAnnotationText() {
-		return annotationText;
+		String s = null;
+		if (userDesignation != null) s = userDesignation.getAnnotationText();
+		return (s!=null ? s : "");
 	}
 
 	/**
@@ -362,7 +408,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public Set<String> getTextAnnotationWords() {
 		HashSet<String> result = new HashSet<String>();
 
-		StringTokenizer tok = new StringTokenizer(annotationText, " \t\r\n\f.,:;-");
+		StringTokenizer tok = new StringTokenizer(getAnnotationText(), " \t\r\n\f.,:;-");
 		while (tok.hasMoreTokens()) {
 			result.add(tok.nextToken());
 		}
@@ -1246,10 +1292,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 		xmlOutput.openTag(ELEMENT_NAME, attributeList);
 
-		if (!annotationText.equals("")) {
-			xmlOutput.openTag("UserAnnotation");
-			xmlOutput.writeCDATA(annotationText);
-			xmlOutput.closeTag("UserAnnotation");
+		if (userDesignation != null) {
+			userDesignation.writeXML(xmlOutput);
 		}
 
 		if (addMessages) {
