@@ -118,7 +118,7 @@ public class Update {
 
 	
 	public static BugCollection mergeCollections(BugCollection origCollection,
-			BugCollection newCollection) {
+			BugCollection newCollection, boolean copyDeadBugs) {
 		
 		mapFromNewToOldBug.clear();
 
@@ -154,7 +154,7 @@ public class Update {
 
 		int oldBugs = 0;
 		// move all inactive bugs
-		for (BugInstance bug : origCollection.getCollection())
+		if (copyDeadBugs) for (BugInstance bug : origCollection.getCollection())
 				if (bug.getLastVersion() != -1)
 				{
 					oldBugs++;
@@ -194,7 +194,7 @@ public class Update {
 		int deadBugInDeadCode = 0;
 
 		// Copy unmatched bugs
-		for (BugInstance bug : origCollection.getCollection())
+		if (copyDeadBugs) for (BugInstance bug : origCollection.getCollection())
 			if (!matchedOldBugs.contains(bug)) {
 				if (bug.getLastVersion() == -1)
 					newlyDeadBugs++;
@@ -334,7 +334,7 @@ public class Update {
 			if (commandLine.overrideRevisionNames || newCollection.getReleaseName() == null || newCollection.getReleaseName().length() == 0) 
 					newCollection.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
 
-			origCollection = mergeCollections(origCollection, newCollection);
+			origCollection = mergeCollections(origCollection, newCollection, true);
 			} catch (IOException e) {
 				if (verbose) 
 					System.out.println(e);
