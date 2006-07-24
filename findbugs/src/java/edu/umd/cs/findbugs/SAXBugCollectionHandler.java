@@ -211,7 +211,20 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					String propValue = getRequiredAttribute(attributes, "value", qName);
 					bugInstance.setProperty(propName, propValue);
 				} else if (qName.equals("UserAnnotation")) {
-					// ignore it; will handle in endElement
+					// ignore AnnotationText for now; will handle in endElement
+					String s = attributes.getValue("designation"); // optional
+					if (s != null) bugInstance.getSafeUserDesignation().setDesignation(s);
+					s = attributes.getValue("user"); // optional
+					if (s != null) bugInstance.getSafeUserDesignation().setUser(s);
+					s = attributes.getValue("timestamp"); // optional
+					if (s != null) try {
+						long timestamp = Long.valueOf(s);
+						bugInstance.getSafeUserDesignation().setTimestamp(timestamp);
+					}
+					catch (NumberFormatException nfe) {
+						// ok to contine -- just won't set a timestamp for the user designation.
+						// but is there anyplace to report this?
+					}
 				} else throw new SAXException("Unknown bug annotation named " + qName);
 
 				if (bugAnnotation != null) {
