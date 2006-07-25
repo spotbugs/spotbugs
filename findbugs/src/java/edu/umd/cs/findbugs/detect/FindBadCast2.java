@@ -53,7 +53,7 @@ public class FindBadCast2 implements Detector {
 	private Set<String> abstractCollectionClasses = new HashSet<String>();
 	private Set<String> veryAbstractCollectionClasses = new HashSet<String>();
 
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = Boolean.getBoolean("bc.debug");
 
 	public FindBadCast2(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -255,15 +255,19 @@ public class FindBadCast2 implements Detector {
 				// System.out.println("cast of object value to " + castType.getSignature());
 				continue;
 			}
+			SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
+			.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
 
 			if (refSig2.charAt(0) != 'L' || castSig2.charAt(0) != 'L') {
-				// cast involving primative arrays
+				bugReporter.reportBug(
+						new BugInstance(this,
+						"BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY", HIGH_PRIORITY )
+						.addClassAndMethod(methodGen, sourceFile)
+						.addSourceLine(sourceLineAnnotation));
 				continue;
 			}
 
-			SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
-					.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
-
+			
 			if (isCast && haveMultipleCast.contains(sourceLineAnnotation)
 					|| !isCast
 					&& haveMultipleInstanceOf.contains(sourceLineAnnotation)) {
