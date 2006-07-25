@@ -65,6 +65,31 @@ class JSR166 {
 		}
 	}
 
+	Object bug1479629w() {
+		try {
+			rwlock.writeLock().lock();
+			return null;
+		} finally {
+			rwlock.writeLock().unlock();
+		}
+	}
+
+	Object bug1479629a(ReadWriteLock lock) {
+		try {
+			lock.readLock().lock();
+			return null;
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+	Object bug1479629aw(ReadWriteLock lock) {
+		try {
+			lock.writeLock().lock();
+			return null;
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
 	void waitOnCondition(Condition cond) throws InterruptedException {
 		while (x == 0) {
 			cond.wait();

@@ -1,6 +1,16 @@
 import java.util.*;
 
 class BadCast {
+	
+	public static <C extends Collection<?>> C smallest(Iterable<C> collections) {
+		return null;
+	}
+	
+	public static int sizeOfSmallest(Iterable<? extends Set<?>> sets) {
+		// TODO: False positive BC here
+		Set<?> s = smallest(sets);
+		return s.size();
+	}
 	List a;
 
 	public Vector swap(List b) {
