@@ -9,6 +9,12 @@ class TrackFields {
             if (x == null) return x.hashCode();
             return 42;
             }
+    int f2() {
+    	Object tmp = x;
+        if (tmp == null) return x.hashCode();
+        return 42;
+        }
+
     int g() {
             if (x != null) return 42;
             return x.hashCode();
