@@ -379,7 +379,6 @@ public class ValueNumberFrameModelingVisitor
 		Object constantValue = obj.getValue(cpg);
 		ValueNumber value = constantValueMap.get(constantValue);
 		if (value == null) {
-			ConstantPoolGen cpg = getCPG();
 			value = factory.createFreshValue();
 			constantValueMap.put(constantValue, value);
 
