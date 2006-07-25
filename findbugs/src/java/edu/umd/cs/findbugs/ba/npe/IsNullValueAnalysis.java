@@ -167,44 +167,18 @@ public class IsNullValueAnalysis
 	@Override
 	public void transfer(BasicBlock basicBlock, InstructionHandle end, IsNullValueFrame start, IsNullValueFrame result)
 	throws DataflowAnalysisException {
+		startTransfer();
 		super.transfer(basicBlock, end, start, result);
+		endTransfer(basicBlock, end, result);
 	}
-	
-/*
-	// FIXME: because of a bug in the 2.2 generics-enabled javac,
-	// we can't override this method.  Javac doesn't emit the needed
-	// bridge method.
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, IsNullValueFrame start, IsNullValueFrame result)
-		throws DataflowAnalysisException {
 
-		lastFrame = null;
-		instanceOfFrame = null;
-		super.transfer(basicBlock, end, start, result);
-
-		// Determine if this basic block ends in a redundant branch.
-		if (end == null) {
-			if (lastFrame == null)
-				result.setDecision(null);
-			else {
-				IsNullConditionDecision decision = getDecision(basicBlock, lastFrame);
-				result.setDecision(decision);
-			}
-		}
-	}
-*/
-
-	// FIXME: This is a workaround for the generics-java bug.
-	@Override
-	public void startTransfer(BasicBlock basicBlock, Object start_) throws DataflowAnalysisException {
+	public void startTransfer() throws DataflowAnalysisException {
 		lastFrame = null;
 		instanceOfFrame = null;
 	}
 
-	// FIXME: This is a workaround for the generics-java bug.
-	@Override
-	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result_) throws DataflowAnalysisException {
-		IsNullValueFrame result = (IsNullValueFrame) result_;
-
+	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, IsNullValueFrame result)
+			throws DataflowAnalysisException {
 		// Determine if this basic block ends in a redundant branch.
 		if (end == null) {
 			if (lastFrame == null)

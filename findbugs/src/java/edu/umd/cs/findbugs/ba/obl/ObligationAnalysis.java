@@ -96,12 +96,12 @@ public class ObligationAnalysis
 	}
 
 	@Override
-         public boolean isFactValid(StateSet fact) {
+	public boolean isFactValid(StateSet fact) {
 		return fact.isValid();
 	}
 
 	@Override
-         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
 			throws DataflowAnalysisException {
 		
 		Obligation obligation;
@@ -118,10 +118,17 @@ public class ObligationAnalysis
 
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transfer(edu.umd.cs.findbugs.ba.BasicBlock, org.apache.bcel.generic.InstructionHandle, java.lang.Object, java.lang.Object)
+	 */
 	@Override
-         public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result_) throws DataflowAnalysisException {
-		StateSet result = (StateSet) result_;
-		
+	public void transfer(BasicBlock basicBlock, InstructionHandle end, StateSet start, StateSet result) throws DataflowAnalysisException {
+		super.transfer(basicBlock, end, start, result);
+		endTransfer(basicBlock, end, result);
+	}
+	
+	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, StateSet result)
+			throws DataflowAnalysisException {
 		// Append this block id to the Paths of all States
 		for (Iterator<State> i = result.stateIterator(); i.hasNext(); ) {
 			State state = i.next();

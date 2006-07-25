@@ -66,31 +66,6 @@ public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysi
 	public abstract boolean isFactValid(Fact fact);
 
 	/**
-	 * Subclasses may override this.
-	 * Due to a bug in the 2.2 version of the generics-enabled javac,
-	 * it is not possible to directly override the transfer() method.
-	 * This method will be called immediately upon entry to transfer().
-	 *
-	 * @param basicBlock the basic block
-	 * @param fact       the start fact for the block
-	 */
-	public void startTransfer(BasicBlock basicBlock, Object fact) throws DataflowAnalysisException {
-	}
-
-	/**
-	 * Subclasses may override this.
-	 * Due to a bug in the 2.2 version of the generics-enabled javac,
-	 * it is not possible to directly override the transfer() method.
-	 * This method will be called just before exiting transfer().
-	 *
-	 * @param basicBlock the basic block
-	 * @param end        last instruction analyzed (null if entire block was analyzed)
-	 * @param result     the result fact for the block
-	 */
-	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result) throws DataflowAnalysisException {
-	}
-
-	/**
 	 * Get the dataflow fact representing the point just before given Location.
 	 * Note "before" is meant in the logical sense, so for backward analyses,
 	 * before means after the location in the control flow sense.
@@ -174,8 +149,6 @@ public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysi
 	}
 
 	public void transfer(BasicBlock basicBlock, InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException {
-		startTransfer(basicBlock, start);
-
 		copy(start, result);
 
 		if (isFactValid(result)) {
@@ -194,8 +167,6 @@ public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysi
 				if (DEBUG && end == null) System.out.println(" ==> " + result.toString());
 			}
 		}
-
-		endTransfer(basicBlock, end, result);
 	}
 	
 	/* (non-Javadoc)
