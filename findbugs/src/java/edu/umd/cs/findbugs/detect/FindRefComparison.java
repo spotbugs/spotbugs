@@ -726,8 +726,14 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 		if (!(lhsType_ instanceof ReferenceType) || !(rhsType_ instanceof ReferenceType)) {
 			if (rhsType_.getType() == T_NULL) {
+				boolean isTestCase = false;
+				Method method = methodGen.getMethod();
+				if (method.getName().startsWith("test") && method.isPublic() && method.getSignature().equals("()V")
+						|| methodGen.getClassName().endsWith("Test"))
+					isTestCase = true;
 				// A literal null value was passed directly to equals().
-				bugReporter.reportBug(new BugInstance(this, "EC_NULL_ARG", NORMAL_PRIORITY)
+				if (!isTestCase)
+					bugReporter.reportBug(new BugInstance(this, "EC_NULL_ARG", NORMAL_PRIORITY)
 				        .addClassAndMethod(methodGen, sourceFile)
 				        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle()));
 			} else if (lhsType_.getType() == T_NULL) {
