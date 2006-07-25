@@ -83,7 +83,9 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	@Override
 	public void copyFrom(Frame<IsNullValue> other) {
 		super.copyFrom(other);
-		knownValueMap = new HashMap<ValueNumber, IsNullValue>(((IsNullValueFrame)other).knownValueMap);
+		if (IsNullValueAnalysisFeatures.TRACK_KNOWN_VALUES) {
+			knownValueMap = new HashMap<ValueNumber, IsNullValue>(((IsNullValueFrame)other).knownValueMap);
+		}
 	}
 
 	@Override
