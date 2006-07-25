@@ -266,4 +266,15 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		}
 		return stat;
 	}
+
+	/**
+	 * @param stats2
+	 */
+	public void addStats(ProjectStats stats2) {
+		totalSize += stats2.totalSize;
+		totalClasses += stats2.totalClasses;
+		for(int i = 0; i < totalErrors.length; i++)
+			totalErrors[i] += stats2.totalErrors[i];
+		packageStatsMap.putAll(stats2.packageStatsMap);
+	}
 }

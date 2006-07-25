@@ -22,9 +22,11 @@ package edu.umd.cs.findbugs.workflow;
 import java.util.Iterator;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 
 /**
@@ -38,37 +40,15 @@ public class UnionResults {
 	}
 	static public SortedBugCollection union (SortedBugCollection origCollection, SortedBugCollection newCollection) {
 
-		SortedBugCollection result = new SortedBugCollection();
-
-		for (Iterator<BugInstance> i = origCollection.iterator(); i.hasNext();) {
-			result.add(i.next());
-		}
-
+		SortedBugCollection result = origCollection.duplicate();
+		
 		for (Iterator<BugInstance> i = newCollection.iterator(); i.hasNext();) {
 			BugInstance bugInstance = i.next();
-			BugInstance matching = origCollection.getMatching(bugInstance);
-			if (matching == null)
-				result.add(bugInstance);
-			else {
-				// If all of the words in the new annotation are already
-				// in the old annotation, don't combine the annotations.
-				Set<String> oldWords = matching.getTextAnnotationWords();
-				Set<String> newWords = bugInstance.getTextAnnotationWords();
-				newWords.removeAll(oldWords);
-				if (newWords.isEmpty())
-					continue;
-
-				// Combine the annotations
-				StringBuffer buf = new StringBuffer();
-				buf.append(matching.getAnnotationText());
-				buf.append('\n');
-				buf.append(bugInstance.getAnnotationText());
-				bugInstance.setAnnotationText(buf.toString());
-
-				result.remove(matching);
-				result.add(bugInstance);
+			result.add(bugInstance);
 			}
-		}
+		ProjectStats stats = result.getProjectStats();
+		ProjectStats stats2 = newCollection.getProjectStats();
+		stats.addStats(stats2);
 
 		return result;
 	}

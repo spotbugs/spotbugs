@@ -882,10 +882,20 @@ public class SortedBugCollection implements BugCollection {
 	 */
 
 	public SortedBugCollection createEmptyCollectionWithMetadata() {
-		SortedBugCollection result = duplicate();
-		result.clearBugInstances();
+		SortedBugCollection dup = new SortedBugCollection((ProjectStats) projectStats.clone(), comparator);	
+		dup.errorList.addAll(this.errorList);
+		dup.missingClassSet.addAll(this.missingClassSet);
+		dup.summaryHTML = this.summaryHTML;
+		dup.classFeatureSetMap.putAll(this.classFeatureSetMap);
+		dup.sequence = this.sequence;
+		dup.timestamp = this.timestamp;
+		dup.releaseName = this.releaseName;
+		for (AppVersion appVersion : appVersionList) {
+			dup.appVersionList.add((AppVersion) appVersion.clone());
+		}
+		dup.uniqueIdToBugInstanceMap.clear();
 
-		return result;
+		return dup;
 	}
 
 	/* (non-Javadoc)
