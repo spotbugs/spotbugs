@@ -117,7 +117,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 
 	private void reportBug() {
 		bugReporter.reportBug(new BugInstance(this, "NS_NON_SHORT_CIRCUIT",
-				sawDangerOld ? HIGH_PRIORITY : NORMAL_PRIORITY)
+				sawDangerOld ? NORMAL_PRIORITY : LOW_PRIORITY)
 				.addClassAndMethod(this).addSourceLine(this, getPC()));
 	}
 
