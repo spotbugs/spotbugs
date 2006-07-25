@@ -89,9 +89,9 @@ public class IsNullValueAnalysis
 		super(dfs);
 		this.methodGen = methodGen;
 		this.visitor = new IsNullValueFrameModelingVisitor(
-				//this,
 				methodGen.getConstantPool(),
-				assertionMethods);
+				assertionMethods,
+				vnaDataflow);
 		this.vnaDataflow = vnaDataflow;
 		this.numNonExceptionSuccessorMap = new int[cfg.getNumBasicBlocks()];
 		this.locationWhereValueBecomesNullSet = new HashSet<LocationWhereValueBecomesNull>();
@@ -195,14 +195,14 @@ public class IsNullValueAnalysis
 
 	// FIXME: This is a workaround for the generics-java bug.
 	@Override
-         public void startTransfer(BasicBlock basicBlock, Object start_) throws DataflowAnalysisException {
+	public void startTransfer(BasicBlock basicBlock, Object start_) throws DataflowAnalysisException {
 		lastFrame = null;
 		instanceOfFrame = null;
 	}
 
 	// FIXME: This is a workaround for the generics-java bug.
 	@Override
-         public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result_) throws DataflowAnalysisException {
+	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, Object result_) throws DataflowAnalysisException {
 		IsNullValueFrame result = (IsNullValueFrame) result_;
 
 		// Determine if this basic block ends in a redundant branch.
@@ -220,7 +220,7 @@ public class IsNullValueAnalysis
 	}
 
 	@Override
-         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, IsNullValueFrame fact)
 	        throws DataflowAnalysisException {
 
 		// If this is the last instruction in the block,
@@ -392,6 +392,10 @@ public class IsNullValueAnalysis
 
 							tmpFact = replaceValues(fact, tmpFact, decision.getValue(), prevVnaFrame,
 							        targetVnaFrame, decisionValue);
+							
+							if (IsNullValueAnalysisFeatures.TRACK_KNOWN_VALUES) {
+								tmpFact.setKnownValue(decision.getValue(), decisionValue);
+							}
 						}
 					}
 				}
@@ -432,6 +436,18 @@ public class IsNullValueAnalysis
 
 		// Normal dataflow merge
 		mergeInto(fact, result);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.FrameDataflowAnalysis#mergeInto(edu.umd.cs.findbugs.ba.Frame, edu.umd.cs.findbugs.ba.Frame)
+	 */
+	@Override
+	protected void mergeInto(IsNullValueFrame other, IsNullValueFrame result) throws DataflowAnalysisException {
+		super.mergeInto(other, result);
+		if (IsNullValueAnalysisFeatures.TRACK_KNOWN_VALUES) {
+			result.mergeKnownValuesWith(other);
+		}
+		
 	}
 	
 	/* (non-Javadoc)
@@ -478,7 +494,7 @@ public class IsNullValueAnalysis
 	}
 	
 	@Override
-         protected void mergeValues(IsNullValueFrame otherFrame, IsNullValueFrame resultFrame, int slot)
+	protected void mergeValues(IsNullValueFrame otherFrame, IsNullValueFrame resultFrame, int slot)
 			throws DataflowAnalysisException {
 		IsNullValue value = IsNullValue.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
 		resultFrame.setValue(slot, value);
@@ -684,7 +700,7 @@ public class IsNullValueAnalysis
 
 		DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis> driver = new DataflowTestDriver<IsNullValueFrame, IsNullValueAnalysis>() {
 			@Override
-                         public Dataflow<IsNullValueFrame, IsNullValueAnalysis> createDataflow(ClassContext classContext, Method method)
+			public Dataflow<IsNullValueFrame, IsNullValueAnalysis> createDataflow(ClassContext classContext, Method method)
 			        throws CFGBuilderException, DataflowAnalysisException {
 
 				return classContext.getIsNullValueDataflow(method);

@@ -45,19 +45,25 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisitor<IsNullValue, IsNullValueFrame> {
 
 	private static final boolean NO_ASSERT_HACK = Boolean.getBoolean("inva.noAssertHack");
 
-//	private IsNullValueAnalysis analysis;
 	private AssertionMethods assertionMethods;
+	private ValueNumberDataflow vnaDataflow;;
 	private int slotContainingNewNullValue;
 
-	public IsNullValueFrameModelingVisitor(/*IsNullValueAnalysis analysis, */ConstantPoolGen cpg, AssertionMethods assertionMethods) {
+	public IsNullValueFrameModelingVisitor(
+			ConstantPoolGen cpg,
+			AssertionMethods assertionMethods,
+			ValueNumberDataflow vnaDataflow) {
 		super(cpg);
-//		this.analysis = analysis;
 		this.assertionMethods = assertionMethods;
+		this.vnaDataflow = vnaDataflow;
 	}
 	
 	/* (non-Javadoc)
@@ -199,6 +205,10 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			return;
 		}
 
+		if (checkForKnownValue(obj)) {
+			return;
+		}
+
 		XField field = XFactory.createXField(obj.getClassName(cpg), obj.getFieldName(cpg), obj.getSignature(cpg), false, 0);
 		NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase().getResolvedAnnotation(field, false);
 		if (annotation == NullnessAnnotation.NONNULL) {
@@ -208,12 +218,48 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		else if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
 				modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
 				produce(IsNullValue.nullOnSimplePathValue());
-			}
-		else 
+		} else {
+			
 			super.visitGETFIELD(obj);
-
+		}
 
 	}
+	
+	/**
+	 * Check given Instruction to see if it produces a known value.
+	 * If so, model the instruction and return true.
+	 * Otherwise, do nothing and return false.
+	 * Should only be used for instructions that produce a single
+	 * value on the top of the stack.
+	 * 
+	 * @param obj the Instruction the instruction
+	 * @return true if the instruction produced a known value and was modeled,
+	 *          false otherwise
+	 */
+	private boolean checkForKnownValue(Instruction obj) {
+		if (IsNullValueAnalysisFeatures.TRACK_KNOWN_VALUES) {
+			try {
+				// See if the value number loaded here is a known value
+				ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(getLocation());
+				if (vnaFrameAfter.isValid()) {
+					ValueNumber tosVN = vnaFrameAfter.getTopValue();
+					IsNullValue knownValue = getFrame().getKnownValue(tosVN);
+					if (knownValue != null) {
+						System.out.println("Produce known value!");
+						// The value produced by this instruction is known.
+						// Push the known value.
+						modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
+						produce(knownValue);
+						return true;
+					}
+				}
+			} catch (DataflowAnalysisException e) {
+				// Ignore...
+			}
+		}	
+		return false;
+	}
+
 @Override
 	public void visitACONST_NULL(ACONST_NULL obj) {
 		produce(IsNullValue.nullValue());
