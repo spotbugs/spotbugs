@@ -23,6 +23,7 @@ import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETFIELD;
+import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKESTATIC;
@@ -84,7 +85,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	}
 	
 	@Override
-         public IsNullValue getDefaultValue() {
+	public IsNullValue getDefaultValue() {
 		return IsNullValue.nonReportingNotNullValue();
 	}
 
@@ -225,6 +226,23 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor#visitGETSTATIC(org.apache.bcel.generic.GETSTATIC)
+	 */
+	@Override
+	public void visitGETSTATIC(GETSTATIC obj) {
+		if (getNumWordsProduced(obj) != 1) {
+			super.visitGETSTATIC(obj);
+			return;
+		}
+		
+		if (checkForKnownValue(obj)) {
+			return;
+		}
+		
+		super.visitGETSTATIC(obj);
+	}
+	
 	/**
 	 * Check given Instruction to see if it produces a known value.
 	 * If so, model the instruction and return true.
@@ -260,7 +278,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		return false;
 	}
 
-@Override
+	@Override
 	public void visitACONST_NULL(ACONST_NULL obj) {
 		produce(IsNullValue.nullValue());
 	}
@@ -269,7 +287,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		produce(IsNullValue.nonNullValue());
 	}
 
-    @Override
+	@Override
 	public void visitNEWARRAY(NEWARRAY obj) {
 		modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
 		produce(IsNullValue.nonNullValue());
@@ -288,7 +306,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	public void visitLDC2_W(LDC2_W obj) {
 		produce2(IsNullValue.nonNullValue());
 	}
-	
+
 	@Override
 	public void visitCHECKCAST(CHECKCAST obj) {
 		// Do nothing
@@ -297,15 +315,15 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	public void visitINVOKESTATIC(INVOKESTATIC obj) {
 		handleInvoke(obj);
 	}
-@Override
+	@Override
 	public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
 		handleInvoke(obj);
 	}
-@Override
+	@Override
 	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
 		handleInvoke(obj);
 	}
-@Override
+	@Override
 	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
 		handleInvoke(obj);
 	}
