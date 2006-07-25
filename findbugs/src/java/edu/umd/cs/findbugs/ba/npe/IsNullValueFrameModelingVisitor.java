@@ -245,7 +245,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 					ValueNumber tosVN = vnaFrameAfter.getTopValue();
 					IsNullValue knownValue = getFrame().getKnownValue(tosVN);
 					if (knownValue != null) {
-						System.out.println("Produce known value!");
+						//System.out.println("Produce known value!");
 						// The value produced by this instruction is known.
 						// Push the known value.
 						modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
