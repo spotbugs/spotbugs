@@ -43,6 +43,8 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	@Override
          public void visit(Code obj) {
 		prevOpcodeIncrementedRegister = -1;
+		best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = LOW_PRIORITY+1;
+		prevOpCode = NOP;
 		stack.resetForMethodEntry(this);
 		badlyComputingOddState = 0;
 		super.visit(obj);
@@ -50,15 +52,44 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 
 	int prevOpcodeIncrementedRegister;
 	int valueOfConstantArgumentToShift;
+	int best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG ;
 	boolean constantArgumentToShift;
 	
 	int badlyComputingOddState;
+	int prevOpCode;
 	OpcodeStack stack = new OpcodeStack();
+	
+	private int adjustPriority(Object constant, int priority) {
+		if (!(constant instanceof Integer)) return priority;
+		int value = Math.abs(((Integer) constant).intValue());
+		if (value <= 4) return LOW_PRIORITY+2;
+		if (value <= 10000) return priority+1;
+		if (value <= 60*60*1000) return priority;
+		return priority-1;
+	}
 	@Override
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		
-		
+		if (prevOpCode == IMUL && seen == I2L) {
+			int priority = NORMAL_PRIORITY;
+			if (stack.getStackDepth() > 1) {
+				OpcodeStack.Item item0 = stack.getStackItem(0);
+				OpcodeStack.Item item1 = stack.getStackItem(1);
+				priority = adjustPriority(item0.getConstant(), priority);
+				priority = adjustPriority(item1.getConstant(), priority);
+				if (item0.isInitialParameter() || item1.isInitialParameter())
+					priority--;
+			}
+			if (priority <= best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG) {
+				best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = priority;
+			bugReporter.reportBug(new BugInstance(this, 
+					"ICAST_INTEGER_MULTIPLY_CAST_TO_LONG", 
+					priority)
+						.addClassAndMethod(this)
+						.addSourceLine(this));
+			}
+		}
 		if (getMethodName().equals("<clinit>") && (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC)) {
 			 String clazz = getClassConstantOperand();
 			 if (!clazz.equals(getClassName())) {
@@ -269,6 +300,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	
 	
 		stack.sawOpcode(this,seen);
+		prevOpCode = seen;
 	}
 
 }
