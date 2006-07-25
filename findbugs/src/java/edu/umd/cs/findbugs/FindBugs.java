@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -27,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
@@ -531,6 +533,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		private String trainingInputDir;
 		private String releaseName = "";
 		private String sourceInfoFile = null;
+		private boolean xargs = false;
 
 		public TextUICommandLine() {
 			super();
@@ -572,12 +575,15 @@ public class FindBugs implements Constants2, ExitCodes {
 			addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
 			addOption("-sourcepath", "source path", "set source path for analyzed classes");
 			addSwitch("-exitcode", "set exit code of process");
+			addSwitch("-xargs", "get list of classfiles/jarfiles from standard input rather than command line");
 		}
 
 		public Project getProject() {
 			return project;
 		}
-
+		public boolean getXargs() {
+			return xargs;
+		}
 		public boolean setExitCode() {
 			return setExitCode;
 		}
@@ -650,6 +656,8 @@ public class FindBugs implements Constants2, ExitCodes {
 				quiet = true;
 			else if (option.equals("-exitcode"))
 				setExitCode = true;
+			else if (option.equals("-xargs"))
+				xargs = true;
 			else {
 				super.handleOption(option, optionExtraPart);
 			}
@@ -1881,6 +1889,15 @@ public class FindBugs implements Constants2, ExitCodes {
 		Project project = commandLine.getProject();
 		for (int i = argCount; i < argv.length; ++i)
 			project.addFile(argv[i]);
+		
+		if (commandLine.getXargs()) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+				while (true) {
+					String s = in.readLine();
+					if (s == null) break;
+					project.addFile(s);
+				}
+			}
 
 		if (project.getFileCount() == 0) {
 			showHelp(commandLine);
