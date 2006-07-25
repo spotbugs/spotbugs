@@ -43,6 +43,11 @@ public class RefComparisonWarningProperty extends AbstractWarningProperty {
 	/** Comparing a dynamic string using equals operator. */
 	public static final RefComparisonWarningProperty DYNAMIC_AND_UNKNOWN =
 		new RefComparisonWarningProperty("DYNAMIC_AND_UNKNOWN", PriorityAdjustment.RAISE_PRIORITY);
+	public static final RefComparisonWarningProperty STRING_PARAMETER_IN_PUBLIC_METHOD =
+		new RefComparisonWarningProperty("STATIC_AND_PARAMETER_IN_PUBLIC_METHOD", PriorityAdjustment.RAISE_PRIORITY);
+	public static final RefComparisonWarningProperty STRING_PARAMETER =
+		new RefComparisonWarningProperty("STATIC_AND_PARAMETER", PriorityAdjustment.NO_ADJUSTMENT);
+
 	/** Comparing static string and an unknown string. */
 	public static final RefComparisonWarningProperty STATIC_AND_UNKNOWN =
 		new RefComparisonWarningProperty("STATIC_AND_UNKNOWN", PriorityAdjustment.LOWER_PRIORITY);

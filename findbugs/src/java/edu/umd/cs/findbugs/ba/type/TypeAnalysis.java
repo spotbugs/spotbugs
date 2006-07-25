@@ -127,8 +127,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		}
 	}
 
-	private MethodGen methodGen;
-	private CFG cfg;
+	protected MethodGen methodGen;
+	protected CFG cfg;
 	private TypeMerger typeMerger;
 	private TypeFrameModelingVisitor visitor;
 	private Map<BasicBlock, CachedExceptionSet> thrownExceptionSetMap;

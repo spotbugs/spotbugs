@@ -44,7 +44,8 @@ import org.apache.bcel.generic.*;
 public class FindRefComparison implements Detector, ExtendedTypes {
 	private static final boolean DEBUG = Boolean.getBoolean("frc.debug");
 	private static final boolean REPORT_ALL_REF_COMPARISONS = Boolean.getBoolean("findbugs.refcomp.reportAll");
-
+	private static final int BASE_ES_PRIORITY = Integer.getInteger("es.basePriority", NORMAL_PRIORITY);
+	
 	/**
 	 * Classes that are suspicious if compared by reference.
 	 */
@@ -89,6 +90,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 
 	private static final byte T_DYNAMIC_STRING = T_AVAIL_TYPE + 0;
 	private static final byte T_STATIC_STRING = T_AVAIL_TYPE + 1;
+	private static final byte T_PARAMETER_STRING = T_AVAIL_TYPE + 2;
 
 	private static final String STRING_SIGNATURE = "Ljava/lang/String;";
 
@@ -105,22 +107,22 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 
 		@Override
-                 public byte getType() {
+        public byte getType() {
 			return T_DYNAMIC_STRING;
 		}
 
 		@Override
-                 public int hashCode() {
+        public int hashCode() {
 			return System.identityHashCode(this);
 		}
 
 		@Override
-                 public boolean equals(Object o) {
+        public boolean equals(Object o) {
 			return o == this;
 		}
 
 		@Override
-                 public String toString() {
+        public String toString() {
 			return "<dynamic string>";
 		}
 	}
@@ -141,27 +143,60 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 
 		@Override
-                 public byte getType() {
+        public byte getType() {
 			return T_STATIC_STRING;
 		}
 
 		@Override
-                 public int hashCode() {
+        public int hashCode() {
 			return System.identityHashCode(this);
 		}
 
 		@Override
-                 public boolean equals(Object o) {
+        public boolean equals(Object o) {
 			return o == this;
 		}
 
 		@Override
-                 public String toString() {
+        public String toString() {
 			return "<static string>";
 		}
 	}
 
 	private static final Type staticStringTypeInstance = new StaticStringType();
+
+	/**
+	 * Type representing a String passed as a parameter.
+	 */
+	private static class ParameterStringType extends ObjectType {
+		private static final long serialVersionUID = 1L;
+
+		public ParameterStringType() {
+			super("java.lang.String");
+		}
+
+		@Override
+        public byte getType() {
+			return T_PARAMETER_STRING;
+		}
+
+		@Override
+        public int hashCode() {
+			return System.identityHashCode(this);
+		}
+
+		@Override
+        public boolean equals(Object o) {
+			return o == this;
+		}
+
+		@Override
+        public String toString() {
+			return "<parameter string>";
+		}
+	}
+
+	private static final Type parameterStringTypeInstance = new ParameterStringType();
 
 	private static class RefComparisonTypeFrameModelingVisitor extends TypeFrameModelingVisitor {
 		private RepositoryLookupFailureCallback lookupFailureCallback;
@@ -183,7 +218,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		// known to be dynamic or static.
 
 		@Override
-                 public void visitINVOKESTATIC(INVOKESTATIC obj) {
+        public void visitINVOKESTATIC(INVOKESTATIC obj) {
 			consumeStack(obj);
 			if (returnsString(obj)) {
 				String className = obj.getClassName(getCPG());
@@ -198,17 +233,17 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 
 		@Override
-                 public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
+        public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
 			handleInstanceMethod(obj);
 		}
 
 		@Override
-                 public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
+        public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
 			handleInstanceMethod(obj);
 		}
 
 		@Override
-                 public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+        public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
 			handleInstanceMethod(obj);
 		}
 
@@ -238,13 +273,13 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 
 		@Override
-                 public void visitLDC(LDC obj) {
+        public void visitLDC(LDC obj) {
 			Type type = obj.getType(getCPG());
 			pushValue(isString(type) ? staticStringTypeInstance : type);
 		}
 
 		@Override
-                 public void visitLDC2_W(LDC2_W obj) {
+        public void visitLDC2_W(LDC2_W obj) {
 			Type type = obj.getType(getCPG());
 			pushValue(isString(type) ? staticStringTypeInstance : type);
 		}
@@ -254,12 +289,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 
 		@Override
-                 public void visitGETSTATIC(GETSTATIC obj) {
+        public void visitGETSTATIC(GETSTATIC obj) {
 			handleLoad(obj);
 		}
 
 		@Override
-                 public void visitGETFIELD(GETFIELD obj) {
+        public void visitGETFIELD(GETFIELD obj) {
 			handleLoad(obj);
 		}
 
@@ -329,7 +364,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		}
 
 		private boolean isExtendedStringType(byte type) {
-			return type == T_DYNAMIC_STRING || type == T_STATIC_STRING;
+			return type == T_DYNAMIC_STRING || type == T_STATIC_STRING || type == T_PARAMETER_STRING;
 		}
 	}
 
@@ -430,7 +465,16 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		RefComparisonTypeFrameModelingVisitor visitor =
 		        new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), bugReporter);
 		TypeAnalysis typeAnalysis =
-		        new TypeAnalysis(methodGen, cfg, dfs, typeMerger, visitor, bugReporter, exceptionSetFactory);
+		        new TypeAnalysis(methodGen, cfg, dfs, typeMerger, visitor, bugReporter, exceptionSetFactory) {
+			@Override public void initEntryFact(TypeFrame result) {
+				super.initEntryFact(result);
+				for(int i = 0; i < methodGen.getMaxLocals(); i++) {
+					Type t = result.getValue(i);
+					if (t.equals(ObjectType.STRING))
+						result.setValue(i, parameterStringTypeInstance);
+				}
+			}
+		};
 		TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
 		typeDataflow.execute();
 
@@ -458,7 +502,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 					warn.propertySet.addProperty(RefComparisonWarningProperty.SAW_CALL_TO_EQUALS);
 				}
 				
-				if (!(method.isPublic() || method.isProtected())) {
+				if (false && !(method.isPublic() || method.isProtected())) {
 					warn.propertySet.addProperty(RefComparisonWarningProperty.PRIVATE_METHOD);
 				}
 			}
@@ -610,6 +654,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		byte type1 = lhsType.getType();
 		byte type2 = rhsType.getType();
 		
+		String bugPattern = "ES_COMPARING_STRINGS_WITH_EQ";
 		// T1 T2 result
 		// S  S  no-op
 		// D  ?  high
@@ -618,22 +663,22 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		// ?  S  normal
 		WarningPropertySet propertySet = new WarningPropertySet();
 		if (type1 == T_STATIC_STRING && type2 == T_STATIC_STRING) {
-			//priority = LOW_PRIORITY + 1;
 			propertySet.addProperty(RefComparisonWarningProperty.COMPARE_STATIC_STRINGS);
 		} else if (type1 == T_DYNAMIC_STRING || type2 == T_DYNAMIC_STRING) {
-			//priority = HIGH_PRIORITY;
 			propertySet.addProperty(RefComparisonWarningProperty.DYNAMIC_AND_UNKNOWN);
+		} else if (type2 == T_PARAMETER_STRING || type1 == T_PARAMETER_STRING) {
+			bugPattern = "ES_COMPARING_PARAMETER_STRING_WITH_EQ";
+			if (methodGen.isPublic() || methodGen.isProtected()) propertySet.addProperty(RefComparisonWarningProperty.STRING_PARAMETER_IN_PUBLIC_METHOD);
+			else propertySet.addProperty(RefComparisonWarningProperty.STRING_PARAMETER);
 		} else if (type1 == T_STATIC_STRING || type2 == T_STATIC_STRING) {
-			//priority = LOW_PRIORITY;
 			propertySet.addProperty(RefComparisonWarningProperty.STATIC_AND_UNKNOWN);
 		} else if (visitor.sawStringIntern()) {
-			//priority = LOW_PRIORITY;
 			propertySet.addProperty(RefComparisonWarningProperty.SAW_INTERN);
 		}
 		
 		String sourceFile = jclass.getSourceFileName();
 		BugInstance instance =
-			new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
+			new BugInstance(this, bugPattern, BASE_ES_PRIORITY)
 			.addClassAndMethod(methodGen, sourceFile)
 			.addClass("java.lang.String").describe("CLASS_REFTYPE")
 			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle());

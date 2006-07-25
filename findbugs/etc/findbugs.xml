@@ -345,7 +345,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindRefComparison" 
             speed="slow"
-            reports="ES_COMPARING_STRINGS_WITH_EQ,RC_REF_COMPARISON,EC_UNRELATED_TYPES,EC_NULL_ARG,EC_UNRELATED_CLASS_AND_INTERFACE,EC_UNRELATED_INTERFACES,EC_ARRAY_AND_NONARRAY,EC_BAD_ARRAY_COMPARE" />
+            reports="ES_COMPARING_STRINGS_WITH_EQ,ES_COMPARING_PARAMETER_STRING_WITH_EQ,RC_REF_COMPARISON,EC_UNRELATED_TYPES,EC_NULL_ARG,EC_UNRELATED_CLASS_AND_INTERFACE,EC_UNRELATED_INTERFACES,EC_ARRAY_AND_NONARRAY,EC_BAD_ARRAY_COMPARE" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify" 
             speed="moderate"
@@ -633,6 +633,7 @@
   <BugPattern abbrev="NP" type="NP_DOES_NOT_HANDLE_NULL" category="CORRECTNESS"/>
   <BugPattern abbrev="Co" type="CO_SELF_NO_OBJECT" category="CORRECTNESS" />
   <BugPattern abbrev="ES" type="ES_COMPARING_STRINGS_WITH_EQ" category="CORRECTNESS" />
+  <BugPattern abbrev="ES" type="ES_COMPARING_PARAMETER_STRING_WITH_EQ" category="STYLE" />
   <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_HASHCODE_NO_EQUALS" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_EQUALS_USE_HASHCODE" category="CORRECTNESS" />
@@ -722,7 +723,7 @@
   <BugPattern abbrev="NP" type="NP_ALWAYS_NULL" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_STORE_INTO_NONNULL_FIELD" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_ALWAYS_NULL_EXCEPTION" category="CORRECTNESS" />
-  <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" category="CORRECTNESS" />
+  <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" category="STYLE" />
   <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_NULL_ON_SOME_PATH_EXCEPTION" category="CORRECTNESS" />
   <BugPattern abbrev="NP" type="NP_NULL_PARAM_DEREF" category="CORRECTNESS"/>
@@ -735,7 +736,7 @@
   <BugPattern abbrev="OS" type="OS_OPEN_STREAM" category="CORRECTNESS" />
   <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="CORRECTNESS" />
   <BugPattern abbrev="PZLA" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS" category="STYLE" />
-  <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW" category="CORRECTNESS" />
+  <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW" category="STYLE" />
   <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE" category="CORRECTNESS" />
   <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" category="CORRECTNESS" />
   <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" category="CORRECTNESS" />
