@@ -805,7 +805,7 @@
   <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD" category="STYLE"/>
   <BugPattern abbrev="MTIA" type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD" category="STYLE"/>
   <BugPattern abbrev="PS" type="PS_PUBLIC_SEMAPHORES" category="STYLE"/>
-  <BugPattern abbrev="ICAST" type="ICAST_INTEGER_MULTIPLY_CAST_TO_LONG" category="CORRECTNESS"/>
+  <BugPattern abbrev="ICAST" type="ICAST_INTEGER_MULTIPLY_CAST_TO_LONG" category="STYLE"/>
   <BugPattern abbrev="ICAST" type="ICAST_IDIV_CAST_TO_DOUBLE" category="CORRECTNESS"/>
   <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL" category="CORRECTNESS"/>
   <BugPattern abbrev="ICAST" type="ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND" category="CORRECTNESS"/>
