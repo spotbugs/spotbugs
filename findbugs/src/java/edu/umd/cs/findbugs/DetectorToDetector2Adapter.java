@@ -64,4 +64,10 @@ public class DetectorToDetector2Adapter implements Detector2 {
 		detector.visitClassContext(classContext);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
+	 */
+	public String getDetectorClassName() {
+		return detector.getClass().getName();
+	}
 }

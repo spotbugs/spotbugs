@@ -56,4 +56,11 @@ public interface Detector2 {
 	 * This method is called at the end of the analysis pass.
 	 */
 	public void finishPass();
+
+	/**
+	 * Get the name of the detector class.
+	 * 
+	 * @return the name of the detector class.
+	 */
+	public String getDetectorClassName();
 }

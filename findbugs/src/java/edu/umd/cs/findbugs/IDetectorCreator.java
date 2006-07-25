@@ -32,7 +32,7 @@ public interface IDetectorCreator {
 	 * @param bugReporter the BugReporter for the new detector
 	 * @return a new Detector instance
 	 */
-	public Detector createDetector(BugReporter bugReporter);
+	public Detector2 createDetector(BugReporter bugReporter);
 	
 	/**
 	 * Get the detector class.

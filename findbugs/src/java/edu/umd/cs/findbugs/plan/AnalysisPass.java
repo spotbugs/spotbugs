@@ -28,6 +28,7 @@ import java.util.Set;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.DetectorFactory;
 
 /**
@@ -40,7 +41,7 @@ import edu.umd.cs.findbugs.DetectorFactory;
 public class AnalysisPass {
 	private LinkedList<DetectorFactory> orderedFactoryList;
 	private HashSet<DetectorFactory> memberSet;
-	private Detector[] detectorList;
+	private Detector2[] detectorList;
 
 	/**
 	 * Constructor.
@@ -116,18 +117,18 @@ public class AnalysisPass {
 	 * @param bugReporter BugReporter to pass to the constructor of each created Detector
 	 */
 	public void createDetectors(BugReporter bugReporter) {
-		ArrayList<Detector> detectorList = new ArrayList<Detector>();
+		ArrayList<Detector2> detectorList = new ArrayList<Detector2>();
 		for (DetectorFactory factory : orderedFactoryList) {
 			detectorList.add(factory.create(bugReporter));
 		}
-		this.detectorList = detectorList.toArray(new Detector[detectorList.size()]);
+		this.detectorList = detectorList.toArray(new Detector2[detectorList.size()]);
 	}
 	
 	/**
 	 * Get list of all Detectors.
 	 * This should only be called after createDetectors() has been called.
 	 */
-	public Detector[] getDetectorList() {
+	public Detector2[] getDetectorList() {
 		if (detectorList == null)
 			throw new IllegalStateException("Detectors haven't been created yet");
 		return detectorList;

@@ -58,7 +58,7 @@ public class DetectorFactory {
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.IDetectorCreator#createDetector(edu.umd.cs.findbugs.BugReporter)
 		 */
-		public Detector createDetector(BugReporter bugReporter) {
+		public Detector2 createDetector(BugReporter bugReporter) {
 			try {
 				Constructor<? extends Detector> constructor = detectorClass.getConstructor(constructorArgTypes);
 				Detector detector = constructor.newInstance(new Object[]{bugReporter});
@@ -72,7 +72,7 @@ public class DetectorFactory {
 					setAnalysisContext.invoke(detector, new Object[]{AnalysisContext.currentAnalysisContext()});
 				}
 				
-				return detector;
+				return new DetectorToDetector2Adapter(detector);
 			} catch (Exception e) {
 				throw new RuntimeException("Could not instantiate Detector", e);
 			}
@@ -305,7 +305,7 @@ public class DetectorFactory {
 	 * @param bugReporter the BugReported to be used to report bugs
 	 * @return the Detector
 	 */
-	public Detector create(BugReporter bugReporter) {
+	public Detector2 create(BugReporter bugReporter) {
 		return detectorCreator.createDetector(bugReporter);
 	}
 

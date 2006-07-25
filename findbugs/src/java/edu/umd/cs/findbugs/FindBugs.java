@@ -61,6 +61,12 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ClassObserver;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.ba.URLClassPathRepository;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.impl.AnalysisCache;
+import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -1118,6 +1124,12 @@ public class FindBugs implements Constants2, ExitCodes {
 			analysisContext.getSourceInfoMap().read(new FileInputStream(sourceInfoFile));
 		}
 		
+		// Create analysis cache.
+		// FIXME: null IClassPath for now, only BCEL analysis factories registered
+		IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(null);
+		new edu.umd.cs.findbugs.classfile.engine.bcel.EngineRegistrar().registerAnalysisEngines(analysisCache);
+		Global.setAnalysisCacheForCurrentThread(analysisCache);
+		
 		// Enable/disable relaxed reporting mode
 		FindBugsAnalysisFeatures.setRelaxedMode(relaxedReportingMode);
 		
@@ -1611,7 +1623,7 @@ public class FindBugs implements Constants2, ExitCodes {
 		}
 		this.currentClass = className;
 		
-		Detector[] detectors = analysisPass.getDetectorList();
+		Detector2[] detectors = analysisPass.getDetectorList();
 
 		try {
 			JavaClass javaClass = Repository.lookupClass(className);
@@ -1625,14 +1637,14 @@ public class FindBugs implements Constants2, ExitCodes {
 			ClassContext classContext = analysisContext.getClassContext(javaClass);
 
 			// Run the Detectors
-			for (Detector detector1 : detectors) {
+			for (Detector2 detector1 : detectors) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
-				Detector detector = detector1;
+				Detector2 detector = detector1;
 				// MUSTFIX: Evaluate whether this makes a difference
 				if (false && detector instanceof StatelessDetector) {
 						try {
-							detector = (Detector) ((StatelessDetector) detector).clone();
+							detector = (Detector2) ((StatelessDetector) detector).clone();
 						} catch (CloneNotSupportedException e) {
 							throw new RuntimeException(e);
 						}
@@ -1650,7 +1662,9 @@ public class FindBugs implements Constants2, ExitCodes {
 
 						}
 					}
-					detector.visitClassContext(classContext);
+					//detector.visitClassContext(classContext);
+					ClassDescriptor classDescriptor = new ClassDescriptor(className.replace('.', '/'));
+					detector.visitClass(classDescriptor);
 
 					if (TIMEDEBUG || DEBUG) {
 						end = System.currentTimeMillis();
@@ -1668,6 +1682,8 @@ public class FindBugs implements Constants2, ExitCodes {
 							detectorTimings.put(detectorName, total);
 						}
 					}
+				} catch (CheckedAnalysisException e) {
+					reportRecoverableDetectorException(className, detector, e);
 				} catch (AnalysisException e) {
 					reportRecoverableDetectorException(className, detector, e);
 				} catch (ArrayIndexOutOfBoundsException e) {
@@ -1714,23 +1730,23 @@ public class FindBugs implements Constants2, ExitCodes {
 		bugReporter.logError("Exception analyzing " + className, e);
 	}
 
-	private void reportRecoverableDetectorException(String className, Detector detector, Exception e) {
+	private void reportRecoverableDetectorException(String className, Detector2 detector, Exception e) {
 		if (DEBUG) {
 			e.printStackTrace();
 		}
 		bugReporter.logError("Exception analyzing " + className +
-			" using detector " + detector.getClass().getName(), e);
+			" using detector " + detector.getDetectorClassName(), e);
 	}
 
 	/**
 	 * Call report() on all detectors, to give them a chance to
 	 * report any accumulated bug reports.
 	 */
-	private void reportFinal(Detector[] detectors) throws InterruptedException {
-		for (Detector detector : detectors) {
+	private void reportFinal(Detector2[] detectors) throws InterruptedException {
+		for (Detector2 detector : detectors) {
 			if (Thread.interrupted())
 				throw new InterruptedException();
-			detector.report();
+			detector.finishPass();
 		}
 	}
 
