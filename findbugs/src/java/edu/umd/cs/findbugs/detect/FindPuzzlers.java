@@ -43,14 +43,18 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	@Override
          public void visit(Code obj) {
 		prevOpcodeIncrementedRegister = -1;
-		best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = LOW_PRIORITY+1;
+		best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = LOW_PRIORITY+1;
 		prevOpCode = NOP;
 		stack.resetForMethodEntry(this);
 		badlyComputingOddState = 0;
+		resetIMulCastLong();
+		imul_distance = 10000;
 		super.visit(obj);
 	}
 
-	int priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG;
+	int imul_constant;
+	int imul_distance;
+	boolean imul_operand_is_parameter;
 	int prevOpcodeIncrementedRegister;
 	int valueOfConstantArgumentToShift;
 	int best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG ;
@@ -60,37 +64,52 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	int prevOpCode;
 	OpcodeStack stack = new OpcodeStack();
 	
-	private int adjustPriority(Object constant, int priority) {
-		if (!(constant instanceof Integer)) return priority;
-		int value = Math.abs(((Integer) constant).intValue());
-		if (value <= 4) return LOW_PRIORITY+2;
-		if (value <= 10000) return priority+1;
-		if (value <= 60*60*1000) return priority;
+	private void resetIMulCastLong() {
+		imul_constant = 1;
+		imul_operand_is_parameter = false;
+	}
+	private int adjustPriority(int factor, int priority) {
+		if (factor <= 4) return LOW_PRIORITY+2;
+		if (factor <= 10000) return priority+1;
+		if (factor <= 60*60*1000) return priority;
 		return priority-1;
+	}
+	private int adjustMultiplier(Object constant, int mul) {
+		if (!(constant instanceof Integer)) return mul;
+		return Math.abs(((Integer) constant).intValue()) * mul;
+		
 	}
 	@Override
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		
 		if (seen == IMUL) {
-			priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = NORMAL_PRIORITY;
+			if (imul_distance != 1) resetIMulCastLong();
+			imul_distance = 0;
 			if (stack.getStackDepth() > 1) {
 				OpcodeStack.Item item0 = stack.getStackItem(0);
 				OpcodeStack.Item item1 = stack.getStackItem(1);
-				priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = adjustPriority(item0.getConstant(), priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG);
-				priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = adjustPriority(item1.getConstant(), priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG);
-				if (priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG >= LOW_PRIORITY && (item0.isInitialParameter() || item1.isInitialParameter()))
-					priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = NORMAL_PRIORITY;
-			}}
-		if (prevOpCode == IMUL && seen == I2L)
-			if (priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG <= best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG) {
-				best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG;
+				imul_constant = adjustMultiplier(item0.getConstant(), imul_constant);
+				imul_constant = adjustMultiplier(item1.getConstant(), imul_constant);
+
+				if (item0.isInitialParameter() || item1.isInitialParameter())
+					imul_operand_is_parameter = true;
+			}} else {
+				imul_distance++;
+			}
+		
+		if (prevOpCode == IMUL && seen == I2L) {
+			int priority = adjustPriority(imul_constant, NORMAL_PRIORITY);
+			if (priority >= LOW_PRIORITY && imul_operand_is_parameter) priority = NORMAL_PRIORITY;
+			if (priority <= best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG) {
+				best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = priority;
 			bugReporter.reportBug(new BugInstance(this, 
 					"ICAST_INTEGER_MULTIPLY_CAST_TO_LONG", 
-					priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG)
+					priority)
 						.addClassAndMethod(this)
 						.addSourceLine(this));
 			}
+		}
 		
 		if (getMethodName().equals("<clinit>") && (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC)) {
 			 String clazz = getClassConstantOperand();
