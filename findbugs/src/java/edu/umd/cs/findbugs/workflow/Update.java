@@ -328,6 +328,11 @@ public class Update {
 				System.out.println("Merging " + newFilename);
 			project = new Project();
 			try {
+				File f = new File(newFilename);
+				if (f.length() == 0) {
+					if (verbose) System.out.println("Empty input file: " + f);
+					continue;
+				}
 			newCollection.readXML(newFilename, project);
 
 
