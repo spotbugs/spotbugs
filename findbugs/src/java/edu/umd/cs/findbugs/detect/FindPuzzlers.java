@@ -43,13 +43,14 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	@Override
          public void visit(Code obj) {
 		prevOpcodeIncrementedRegister = -1;
-		best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = LOW_PRIORITY+1;
+		best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = LOW_PRIORITY+1;
 		prevOpCode = NOP;
 		stack.resetForMethodEntry(this);
 		badlyComputingOddState = 0;
 		super.visit(obj);
 	}
 
+	int priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG;
 	int prevOpcodeIncrementedRegister;
 	int valueOfConstantArgumentToShift;
 	int best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG ;
@@ -71,25 +72,26 @@ public class FindPuzzlers extends BytecodeScanningDetector {
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		
-		if (prevOpCode == IMUL && seen == I2L) {
-			int priority = NORMAL_PRIORITY;
+		if (seen == IMUL) {
+			priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = NORMAL_PRIORITY;
 			if (stack.getStackDepth() > 1) {
 				OpcodeStack.Item item0 = stack.getStackItem(0);
 				OpcodeStack.Item item1 = stack.getStackItem(1);
-				priority = adjustPriority(item0.getConstant(), priority);
-				priority = adjustPriority(item1.getConstant(), priority);
-				if (item0.isInitialParameter() || item1.isInitialParameter())
-					priority--;
-			}
-			if (priority <= best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG) {
-				best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = priority;
+				priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = adjustPriority(item0.getConstant(), priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG);
+				priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = adjustPriority(item1.getConstant(), priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG);
+				if (priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG >= LOW_PRIORITY && (item0.isInitialParameter() || item1.isInitialParameter()))
+					priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = NORMAL_PRIORITY;
+			}}
+		if (prevOpCode == IMUL && seen == I2L)
+			if (priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG <= best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG) {
+				best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG;
 			bugReporter.reportBug(new BugInstance(this, 
 					"ICAST_INTEGER_MULTIPLY_CAST_TO_LONG", 
-					priority)
+					priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG)
 						.addClassAndMethod(this)
 						.addSourceLine(this));
 			}
-		}
+		
 		if (getMethodName().equals("<clinit>") && (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC)) {
 			 String clazz = getClassConstantOperand();
 			 if (!clazz.equals(getClassName())) {
