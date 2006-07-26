@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.IDatabaseFactory;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.util.MapCache;
 
 /**
  * Implementation of IAnalysisCache.
@@ -51,7 +52,7 @@ public class AnalysisCache implements IAnalysisCache {
 	/**
 	 * 
 	 */
-	private static final int CACHE_SIZE = 10;
+	private static final int CACHE_SIZE = 30;
 
 	private IClassPath classPath;
 	
@@ -72,32 +73,14 @@ public class AnalysisCache implements IAnalysisCache {
 	
 	AnalysisCache(IClassPath classPath) {
 		this.classPath = classPath;
-		this.classAnalysisEngineMap = new HashMap<Class<?>, IClassAnalysisEngine>();
-		this.methodAnalysisEngineMap = new HashMap<Class<?>, IMethodAnalysisEngine>();
-		this.databaseFactoryMap = new HashMap<Class<?>, IDatabaseFactory<?>>();
+		this.classAnalysisEngineMap = new MapCache<Class<?>, IClassAnalysisEngine>(CACHE_SIZE);
+		this.methodAnalysisEngineMap = new MapCache<Class<?>, IMethodAnalysisEngine>(CACHE_SIZE);
+		this.databaseFactoryMap = new MapCache<Class<?>, IDatabaseFactory<?>>(CACHE_SIZE);
 		
-		this.classAnalysisMap = new LinkedHashMap<ClassDescriptor, Map<Class<?>,Object>>() {
-			/* (non-Javadoc)
-			 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)
-			 */
-			@Override
-			protected boolean removeEldestEntry(Entry<ClassDescriptor, Map<Class<?>, Object>> eldest) {
-				return size() > CACHE_SIZE;
-			}
-		};
+		this.classAnalysisMap = new MapCache<ClassDescriptor, Map<Class<?>,Object>>(CACHE_SIZE);
+		this.methodAnalysisMap = new MapCache<MethodDescriptor, Map<Class<?>,Object>>(CACHE_SIZE);
 		
-		this.methodAnalysisMap = new LinkedHashMap<MethodDescriptor, Map<Class<?>,Object>>() {
-			/* (non-Javadoc)
-			 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)
-			 */
-			@Override
-			protected boolean removeEldestEntry(Entry<MethodDescriptor, Map<Class<?>, Object>> eldest) {
-				// XXX: temporary workaround
-				return true;
-			}
-		};
-		
-		this.databaseMap = new HashMap<Class<?>, Object>();
+		this.databaseMap = new MapCache<Class<?>, Object>(CACHE_SIZE);
 	}
 	
 	/* (non-Javadoc)
