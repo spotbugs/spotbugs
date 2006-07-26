@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * A BugReporter which delegates all method calls to another BugReporter.
@@ -109,7 +110,7 @@ public class DelegatingBugReporter implements BugReporter {
 	 * Report that we skipped some analysis of a method
 	 * @param method
 	 */
-	public void reportSkippedAnalysis(JavaClassAndMethod method) {
+	public void reportSkippedAnalysis(MethodDescriptor method) {
 		delegate.reportSkippedAnalysis(method);
 	}
 }

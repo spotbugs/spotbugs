@@ -19,9 +19,12 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * A JavaClass and a Method belonging to the class.
@@ -85,15 +88,31 @@ public class JavaClassAndMethod {
 		return XFactory.createXMethod(javaClass, method);
 	}
 	
-	//@Override
+	/**
+	 * Get the MethodDescriptor that (hopefully) uniqely names
+	 * this method.
+	 * 
+	 * @return the MethodDescriptor uniquely naming this method
+	 */
+	public MethodDescriptor toMethodDescriptor() {
+		return new MethodDescriptor(
+				getSlashedClassName(),
+				method.getName(),
+				method.getSignature(),
+				method.isStatic());
+	}
+
+	private String getSlashedClassName() {
+		return javaClass.getConstantPool().getConstantString(javaClass.getClassNameIndex(), Constants.CONSTANT_Class);
+	}
+	
 	@Override
-         public int hashCode() {
+	public int hashCode() {
 		return javaClass.hashCode() + method.hashCode();
 	}
 	
-	//@Override
 	@Override
-         public boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
 		JavaClassAndMethod other = (JavaClassAndMethod) obj;
@@ -101,7 +120,7 @@ public class JavaClassAndMethod {
 	}
 	
 	@Override
-         public String toString() {
+	public String toString() {
 		return SignatureConverter.convertMethodSignature(javaClass, method);
 	}
 }

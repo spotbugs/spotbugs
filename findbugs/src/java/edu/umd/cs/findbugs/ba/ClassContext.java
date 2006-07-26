@@ -326,7 +326,7 @@ public class ClassContext {
 			MethodGen methodGen = getMethodGen(method);
 			if (methodGen == null) {
 				JavaClassAndMethod javaClassAndMethod = new JavaClassAndMethod(jclass, method);
-				getLookupFailureCallback().reportSkippedAnalysis(javaClassAndMethod);
+				getLookupFailureCallback().reportSkippedAnalysis(javaClassAndMethod.toMethodDescriptor());
 				throw new MethodUnprofitableException(javaClassAndMethod);
 			}
 			CFG cfg = getRawCFG(method);
@@ -386,7 +386,7 @@ public class ClassContext {
 			MethodGen methodGen = getMethodGen(method);
 			if (methodGen == null) {
 				JavaClassAndMethod javaClassAndMethod = new JavaClassAndMethod(jclass, method);
-				getLookupFailureCallback().reportSkippedAnalysis(javaClassAndMethod);
+				getLookupFailureCallback().reportSkippedAnalysis(javaClassAndMethod.toMethodDescriptor());
 				throw new MethodUnprofitableException(javaClassAndMethod);
 			}
 			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
@@ -412,7 +412,7 @@ public class ClassContext {
 				int codeLength = method.getCode().getLength();
 				if (codeLength > 3000 
 						|| (methodName.equals("<clinit>") || methodName.equals("getContents")) && codeLength > 1000) {
-					getLookupFailureCallback().reportSkippedAnalysis(new JavaClassAndMethod(jclass, method));
+					getLookupFailureCallback().reportSkippedAnalysis(new JavaClassAndMethod(jclass, method).toMethodDescriptor());
 					return null;
 				}
 			}

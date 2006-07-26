@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import edu.umd.cs.findbugs.ba.SignatureConverter;
+
 /**
  * Descriptor uniquely identifying a method in a class.
  * 
@@ -117,5 +119,14 @@ public class MethodDescriptor implements Comparable<MethodDescriptor> {
 			+ methodName.hashCode() * 3119  
 			+ methodSignature.hashCode() * 131
 			+ (isStatic ? 1 : 0);
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		// FIXME: format more nicely
+		return (isStatic ? "static " : "") + className + "." + methodName + ":" + methodSignature;
 	}
 }

@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * DebugRepositoryLookupFailureCallback implementation for debugging.
@@ -63,7 +64,7 @@ public class DebugRepositoryLookupFailureCallback implements
 	 * Report that we skipped some analysis of a method
 	 * @param method
 	 */
-	public void reportSkippedAnalysis(JavaClassAndMethod method) {
+	public void reportSkippedAnalysis(MethodDescriptor method) {
 		System.err.println("Skipping " + method);
 	}
 }

@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * An abstract class which provides much of the functionality
@@ -177,7 +178,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 	 * Report that we skipped some analysis of a method
 	 * @param method
 	 */
-	public void reportSkippedAnalysis(JavaClassAndMethod method) {
+	public void reportSkippedAnalysis(MethodDescriptor method) {
 		// TODO: log this
 	}
 	public void logError(String message) {

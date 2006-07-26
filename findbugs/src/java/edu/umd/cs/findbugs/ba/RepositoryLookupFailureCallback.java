@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.classfile.IErrorLogger;
+
 /**
  * An interface which Repository class lookup failures are reported to.
  * Some of the analysis classes make use of class hierarchy information.
@@ -34,33 +36,7 @@ package edu.umd.cs.findbugs.ba;
  */
 
 // TODO: Rename this interface?
-public interface RepositoryLookupFailureCallback {
-	/**
-	 * Called to report a lookup failure.
-	 *
-	 * @param ex a ClassNotFoundException resulting from the failure
-	 */
-	public void reportMissingClass(ClassNotFoundException ex);
-
-	/**
-	 * Report that we skipped some analysis of a method
-	 * @param method
-	 */
-	public void reportSkippedAnalysis(JavaClassAndMethod method);
-	/**
-	 * Log an error that occurs while performing analysis.
-	 *
-	 * @param message the error message
-	 */
-	public void logError(String message);
-	
-	/**
-	 * Log an error that occurs while performing analysis.
-	 *
-	 * @param message the error message
-	 * @param e       the exception which is the underlying cause of the error
-	 */
-	public void logError(String message, Throwable e);
+public interface RepositoryLookupFailureCallback extends IErrorLogger {
 }
 
 // vim:ts=4
