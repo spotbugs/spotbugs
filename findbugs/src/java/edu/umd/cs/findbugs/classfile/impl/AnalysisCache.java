@@ -52,7 +52,7 @@ public class AnalysisCache implements IAnalysisCache {
 	/**
 	 * 
 	 */
-	private static final int CACHE_SIZE = 30;
+	private static final int CACHE_SIZE = 5;
 
 	private IClassPath classPath;
 	
