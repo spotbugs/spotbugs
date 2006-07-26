@@ -33,4 +33,7 @@ public class ICAST {
 	public long convertDaysToMilliseconds(int days) {
 		return days*24*60*60*1000;
 	}
+	public long convertDaysToMilliseconds2(int days) {
+		return 24*60*60*1000*days;
+	}
 }

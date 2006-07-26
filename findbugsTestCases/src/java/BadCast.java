@@ -86,4 +86,12 @@ class BadCast {
 	static Object f(boolean b, Integer i, String s) {
 		return b ? (Integer) i : (String) s;
 	}
+	
+	public static int first(Object o) {
+		if (o instanceof Byte[]) {
+			byte b[] = (byte[])o;
+			return b[0];
+		}
+		return 0;
+	}
 }
