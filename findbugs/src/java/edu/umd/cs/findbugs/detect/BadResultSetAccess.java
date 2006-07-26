@@ -101,7 +101,7 @@ public class BadResultSetAccess extends BytecodeScanningDetector {
 						if ("I".equals(item.getSignature()) && item.couldBeZero()) {
 							bugReporter.reportBug(new BugInstance(this, 
 									clsConstant.equals("java/sql/PreparedStatement") ? "SQL_BAD_PREPARED_STATEMENT_ACCESS" : "SQL_BAD_RESULTSET_ACCESS", 
-											NORMAL_PRIORITY)
+											item.mustBeZero() ? HIGH_PRIORITY : NORMAL_PRIORITY)
 							        .addClassAndMethod(this)
 							        .addSourceLine(this));
 						}
