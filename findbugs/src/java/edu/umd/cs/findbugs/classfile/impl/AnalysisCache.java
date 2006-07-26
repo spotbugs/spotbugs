@@ -20,7 +20,9 @@
 package edu.umd.cs.findbugs.classfile.impl;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -68,8 +70,29 @@ public class AnalysisCache implements IAnalysisCache {
 		this.classAnalysisEngineMap = new HashMap<Class<?>, IClassAnalysisEngine>();
 		this.methodAnalysisEngineMap = new HashMap<Class<?>, IMethodAnalysisEngine>();
 		this.databaseFactoryMap = new HashMap<Class<?>, IDatabaseFactory<?>>();
-		this.classAnalysisMap = new HashMap<ClassDescriptor, Map<Class<?>,Object>>();
-		this.methodAnalysisMap = new HashMap<MethodDescriptor, Map<Class<?>,Object>>();
+		
+		this.classAnalysisMap = new LinkedHashMap<ClassDescriptor, Map<Class<?>,Object>>() {
+			/* (non-Javadoc)
+			 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)
+			 */
+			@Override
+			protected boolean removeEldestEntry(Entry<ClassDescriptor, Map<Class<?>, Object>> eldest) {
+				// XXX: temporary workaround
+				return true;
+			}
+		};
+		
+		this.methodAnalysisMap = new LinkedHashMap<MethodDescriptor, Map<Class<?>,Object>>() {
+			/* (non-Javadoc)
+			 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)
+			 */
+			@Override
+			protected boolean removeEldestEntry(Entry<MethodDescriptor, Map<Class<?>, Object>> eldest) {
+				// XXX: temporary workaround
+				return true;
+			}
+		};
+		
 		this.databaseMap = new HashMap<Class<?>, Object>();
 	}
 	
