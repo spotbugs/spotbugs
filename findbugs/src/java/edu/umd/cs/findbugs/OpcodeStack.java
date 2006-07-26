@@ -369,6 +369,10 @@ public class OpcodeStack implements Constants2
 		public boolean couldBeZero() {
 			return couldBeZero;
 		}
+		public boolean mustBeZero() {
+			Object value = getConstant();
+			return value instanceof Number && ((Number)value).intValue() == 0;
+		}
 		/**
 		 * gets the detector specified value for this item
 		 * 
