@@ -41,7 +41,7 @@ public abstract class ResourceValueAnalysisTestDriver <Resource, ResourceTracker
 		final RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
 
 		// Set the lookup failure callback in the Analysis Context
-		AnalysisContext analysisContext = new AnalysisContext(lookupFailureCallback);
+		AnalysisContext analysisContext = AnalysisContext.create(lookupFailureCallback);
 
 		JavaClass jclass = new ClassParser(classFile).parse();
 		ClassContext classContext = analysisContext.getClassContext(jclass);

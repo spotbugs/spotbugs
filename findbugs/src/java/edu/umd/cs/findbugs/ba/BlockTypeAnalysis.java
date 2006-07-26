@@ -148,7 +148,7 @@ public class BlockTypeAnalysis implements DataflowAnalysis<BlockType> {
 
 		RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
 
-		AnalysisContext analysisContext = new AnalysisContext(lookupFailureCallback);
+		AnalysisContext analysisContext = AnalysisContext.create(lookupFailureCallback);
 
 		JavaClass jclass = new ClassParser(argv[0]).parse();
 		ClassContext classContext = analysisContext.getClassContext(jclass);

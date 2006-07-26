@@ -1117,7 +1117,7 @@ public class FindBugs implements Constants2, ExitCodes {
 	 */
 	public void execute() throws java.io.IOException, InterruptedException {
 		// Configure the analysis context
-		analysisContext = new AnalysisContext(bugReporter);
+		analysisContext = AnalysisContext.create(bugReporter);
 		// We still need to call analysisContext.initDatabases(), but not until after we have set up the repository.
 		analysisContext.setSourcePath(project.getSourceDirList());
 		if (sourceInfoFile != null) {

@@ -114,9 +114,20 @@ public class AnalysisContext {
 	private static final int DEFAULT_CACHE_SIZE = 3;
 
 	/**
+	 * Create a new AnalysisContext.
+	 * 
+	 * @param lookupFailureCallback the RepositoryLookupFailureCallback that
+	 *                               the AnalysisContext should use to report errors
+	 * @return a new AnalysisContext
+	 */
+	public static AnalysisContext create(RepositoryLookupFailureCallback lookupFailureCallback) {
+		return new AnalysisContext(lookupFailureCallback);
+	}
+
+	/**
 	 * Constructor.
 	 */
-	public AnalysisContext(RepositoryLookupFailureCallback lookupFailureCallback) {
+	protected AnalysisContext(RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.sourceFinder = new SourceFinder();
 		this.subtypes = new Subtypes();

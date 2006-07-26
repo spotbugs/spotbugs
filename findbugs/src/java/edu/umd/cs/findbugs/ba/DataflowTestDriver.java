@@ -54,7 +54,7 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends AbstractDat
 
 		final RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
 
-		AnalysisContext analysisContext = new AnalysisContext(lookupFailureCallback);
+		AnalysisContext analysisContext = AnalysisContext.create(lookupFailureCallback);
 		analysisContext.setBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS, true);
 
 		ClassContext classContext = analysisContext.getClassContext(jclass);
