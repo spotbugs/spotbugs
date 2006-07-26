@@ -48,6 +48,11 @@ public class AnalysisCache implements IAnalysisCache {
 	// the least-recently-used class analysis results
 	// after the max cache size is reached.
 	
+	/**
+	 * 
+	 */
+	private static final int CACHE_SIZE = 10;
+
 	private IClassPath classPath;
 	
 	private Map<Class<?>, IClassAnalysisEngine> classAnalysisEngineMap;
@@ -77,8 +82,7 @@ public class AnalysisCache implements IAnalysisCache {
 			 */
 			@Override
 			protected boolean removeEldestEntry(Entry<ClassDescriptor, Map<Class<?>, Object>> eldest) {
-				// XXX: temporary workaround
-				return true;
+				return size() > CACHE_SIZE;
 			}
 		};
 		
