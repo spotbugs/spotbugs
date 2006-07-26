@@ -57,8 +57,9 @@ class JSR166 {
 	}
 
 	Object bug1479629() {
+		rwlock.readLock().lock();
 		try {
-			rwlock.readLock().lock();
+
 			return null;
 		} finally {
 			rwlock.readLock().unlock();
@@ -66,8 +67,9 @@ class JSR166 {
 	}
 
 	Object bug1479629w() {
+		rwlock.writeLock().lock();
 		try {
-			rwlock.writeLock().lock();
+
 			return null;
 		} finally {
 			rwlock.writeLock().unlock();
@@ -75,16 +77,18 @@ class JSR166 {
 	}
 
 	Object bug1479629a(ReadWriteLock lock) {
+		lock.readLock().lock();
 		try {
-			lock.readLock().lock();
+
 			return null;
 		} finally {
 			lock.readLock().unlock();
 		}
 	}
 	Object bug1479629aw(ReadWriteLock lock) {
+		lock.writeLock().lock();
 		try {
-			lock.writeLock().lock();
+
 			return null;
 		} finally {
 			lock.writeLock().unlock();
@@ -101,4 +105,25 @@ class JSR166 {
 	void awaitNotInLoop(Condition cond) throws InterruptedException {
 		cond.await();
 	}
+	
+	final Lock fieldLock = new ReentrantLock();
+	
+	int y;
+	int lockOnFieldDoNotReport(Object f) {
+		fieldLock.lock();
+		try {
+			y += f.hashCode();
+			return y;
+		} finally {
+			fieldLock.unlock();
+		}
+	}
+	int lockOnFieldReport(Object f) {
+		fieldLock.lock();
+		y += f.hashCode();
+		int result = y;
+		fieldLock.unlock();
+		return result;
+	}
+	
 }
