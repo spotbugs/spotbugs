@@ -22,10 +22,12 @@ package edu.umd.cs.findbugs;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Comparator;
+import java.io.Serializable;
 import java.util.ResourceBundle;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -38,6 +40,9 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  * @author David Hovemeyer
  */
 public class I18N {
+
+	/** a Comparator to compare user designation keys */
+	public static final Comparator<String> designationKeyComparator = new DesignationKeyComparator();
 
 	private final ResourceBundle annotationDescriptionBundle;
 	private final ResourceBundle bugCategoryDescriptionBundle;
@@ -209,7 +214,7 @@ public class I18N {
 	 * @return List of user designation keys
 	 */
 	public List<String> getUserDesignations() {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new LinkedList<String>();
 		for (Enumeration<String> e = userDesignationBundle.getKeys(); e.hasMoreElements(); ) {
 			String key = e.nextElement();
 			result.add(key);
@@ -221,49 +226,51 @@ public class I18N {
 	 * Get a List containing all known user designation keys keys.
 	 * E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
 	 * 
-	 * If the <code>sort == true</code> then it will attempt to sort
+	 * If <code>sort == true</code> then it will attempt to sort
 	 * the List as appropriate to show the user.
-	 * But it does this in a slow and really ugly way, so use caution.
 	 *
 	 * @return List of user designation keys
 	 */
 	public List<String> getUserDesignations(boolean sort) {
 		List<String> result = getUserDesignations();
-		if (sort) {
-			// yes, this is ugly ugly ugly
-			int current = 0;
-			int index = result.indexOf("UNCLASSIFIED");
-			if (index >= 0) swap(result, index, current++);
-			
-			index = result.indexOf("BAD_ANALYSIS");
-			if (index >= 0) swap(result, index, current++);
-			
-			index = result.indexOf("NOT_A_BUG");
-			if (index >= 0) swap(result, index, current++);
-			
-			index = result.indexOf("HARMLESS");
-			if (index >= 0) swap(result, index, current++);
-			
-			index = result.indexOf("MOSTLY_HARMLESS");
-			if (index >= 0) swap(result, index, current++);
-			
-			index = result.indexOf("MODERATE");
-			if (index >= 0) swap(result, index, current++);
-			
-			index = result.indexOf("SERIOUS");
-			if (index >= 0) swap(result, index, current++);
-			
-			index = result.indexOf("CRITICAL");
-			if (index >= 0) swap(result, index, current++);
-		}
+		if (sort) Collections.sort(result, designationKeyComparator);
 		return result;
 	}
 
-	private static void swap(List list, int index1, int index2) {
-		if (index1 == index2) return;
-		Object s = list.get(index1);
-		list.set(index1, list.get(index2));
-		list.set(index2, s);
+
+	private static class DesignationKeyComparator implements Comparator<String>, Serializable {
+		private static final long serialVersionUID = 1L;
+		/** Returns a negative integer, zero, or a positive integer as the
+		 * left key is less than, equal to, or greater than the right key. */
+		public int compare(String lKey, String rKey) {
+			int lCat = categoryOf(lKey);
+			int catDiff = lCat - categoryOf(rKey);
+			if (catDiff != 0 || lCat != 0) return catDiff;
+			// if we get this far we have two unrecognized strings
+			return lKey.compareTo(rKey);
+		}
+		private static int categoryOf(String key) {
+			if (key == null) return -30;
+			if (key.length() <= 0) return -29;
+			switch (key.charAt(0)) {
+				case 'U': if ("UNCLASSIFIED".equals(key)) return -25;
+				          break;
+				case 'B': if ("BAD_ANALYSIS".equals(key)) return -20;
+				          break;
+				case 'N': if ("NOT_A_BUG".equals(key)) return -15;
+				          break;
+				case 'H': if ("HARMLESS".equals(key)) return -11;
+				          break;
+				case 'M': if ("MOSTLY_HARMLESS".equals(key)) return -10;
+				          if ("MODERATE".equals(key)) return -5;
+				          break;
+				case 'S': if ("SERIOUS".equals(key)) return 5;
+				          break;
+				case 'C': if ("CRITICAL".equals(key)) return 10;
+				          break;
+			}
+			return 0; // between MODERATE and SERIOUS
+		}
 	}
 
 }
