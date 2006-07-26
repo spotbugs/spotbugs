@@ -37,6 +37,8 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 	boolean hasCompareToSelf = false;
 	boolean extendsObject = false;
 	MethodAnnotation equalsMethod = null;
+	MethodAnnotation compareToMethod = null;
+	MethodAnnotation hashCodeMethod = null;
 	private BugReporter bugReporter;
 
 	public FindHEmismatch(BugReporter bugReporter) {
@@ -129,16 +131,16 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 
 		if (!hasCompareToObject && hasCompareToSelf) {
 			if (!extendsObject)
-				bugReporter.reportBug(new BugInstance(this, "CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(getDottedClassName()));
+				bugReporter.reportBug(new BugInstance(this, "CO_SELF_NO_OBJECT", NORMAL_PRIORITY).addClass(getDottedClassName()).addMethod(compareToMethod));
 		}
 
 		// if (!hasFields) return;
 		if (hasHashCode && !hashCodeIsAbstract && !(hasEqualsObject || hasEqualsSelf)) {
 			int priority = LOW_PRIORITY;
 			if (usesDefaultEquals)
-				bugReporter.reportBug(new BugInstance(this, "HE_HASHCODE_USE_OBJECT_EQUALS", priority).addClass(getDottedClassName()));
+				bugReporter.reportBug(new BugInstance(this, "HE_HASHCODE_USE_OBJECT_EQUALS", priority).addClass(getDottedClassName()).addMethod(hashCodeMethod));
 			else if (!inheritedEqualsIsFinal)
-				bugReporter.reportBug(new BugInstance(this, "HE_HASHCODE_NO_EQUALS", priority).addClass(getDottedClassName()));
+				bugReporter.reportBug(new BugInstance(this, "HE_HASHCODE_NO_EQUALS", priority).addClass(getDottedClassName()).addMethod(hashCodeMethod));
 		}
 		if (!hasHashCode
 		        && (hasEqualsObject && !equalsObjectIsAbstract || hasEqualsSelf)) {
@@ -193,6 +195,8 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 		equalsObjectIsAbstract = false;
 		equalsMethodIsInstanceOfEquals = false;
 		equalsMethod = null;
+		compareToMethod = null;
+		hashCodeMethod = null;
 	}
 
 	@Override
@@ -225,6 +229,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 		        && sig.equals("()I")) {
 			hasHashCode = true;
 			if (obj.isAbstract()) hashCodeIsAbstract = true;
+			hashCodeMethod =MethodAnnotation.fromVisitedMethod(this);
 			// System.out.println("Found hashCode for " + betterClassName);
 		} else if (name.equals("equals")) {
 			if (sigIsObject) {
@@ -250,6 +255,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 					equalsMethod = MethodAnnotation.fromVisitedMethod(this);
 			}
 		} else if (name.equals("compareTo")) {
+			compareToMethod =  MethodAnnotation.fromVisitedMethod(this);
 			if (sig.equals("(Ljava/lang/Object;)I"))
 				hasCompareToObject = true;
 			else if (sig.equals("(L" + getClassName() + ";)I"))
