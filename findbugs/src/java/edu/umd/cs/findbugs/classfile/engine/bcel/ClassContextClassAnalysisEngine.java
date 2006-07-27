@@ -44,12 +44,10 @@ public class ClassContextClassAnalysisEngine implements IClassAnalysisEngine {
 	 */
 	public Object analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
-		try {
-			JavaClass javaClass = Repository.lookupClass(descriptor.getClassName());
-			return AnalysisContext.currentAnalysisContext().getClassContext(javaClass);
-		} catch (ClassNotFoundException e) {
-			throw new ResourceNotFoundException(descriptor.toResourceName(), e);
-		}
+		
+		JavaClass javaClass = analysisCache.getClassAnalysis(JavaClass.class, descriptor);
+		ClassContext classContext = new ClassContext(javaClass, AnalysisContext.currentAnalysisContext());
+		return classContext;
 	}
 
 	/* (non-Javadoc)
