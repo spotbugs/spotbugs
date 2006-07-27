@@ -48,15 +48,10 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	private SourceFinder sourceFinder;
 	private MapCache<JavaClass, ClassContext> classContextCache;
 	private Subtypes subtypes;
-	private Map<Object,Object> analysisLocals = 
-		Collections.synchronizedMap(new HashMap<Object,Object>());
-	private BitSet boolPropertySet;
 	private final SourceInfoMap sourceInfoMap;
 	private InnerClassAccessMap innerClassAccessMap;
 	
 	// Interprocedural fact databases
-	private String databaseInputDir;
-	private String databaseOutputDir;
 	// private MayReturnNullPropertyDatabase mayReturnNullDatabase;
 	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
 	private ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase;
@@ -106,7 +101,6 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.sourceFinder = new SourceFinder();
 		this.subtypes = new Subtypes();
-		this.boolPropertySet = new BitSet();
 		this.sourceInfoMap = new SourceInfoMap();
 		
 		if (originalRepository instanceof URLClassPathRepository) {
@@ -144,11 +138,6 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	@Override
 	public RepositoryLookupFailureCallback getLookupFailureCallback() {
 		return lookupFailureCallback;
-	}
-
-	@Override
-	public void setSourcePath(List<String> sourcePath) {
-		sourceFinder.setSourceBaseList(sourcePath);
 	}
 
 	@Override
@@ -226,23 +215,6 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		return Repository.lookupClass(className);
 		// note: previous line does not throw ClassNotFoundException, instead returns null
 	}
-
-	@Override
-	public String lookupSourceFile(@NonNull String className) {
-		if (className == null) 
-			throw new IllegalArgumentException("className is null");
-		try {
-			JavaClass jc = AnalysisContext.currentAnalysisContext().lookupClass(className);
-			String name = jc.getSourceFileName();
-			if (name == null) {
-				System.out.println("No sourcefile for " + className);
-				return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
-			}
-			return name;
-		} catch (ClassNotFoundException cnfe) {
-		  return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
-		}
-	}
 	
 	/**
 	 * Get the ClassContext for a class.
@@ -275,69 +247,15 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	}
 
 	@Override
-	public void loadInterproceduralDatabases() {
-//		mayReturnNullDatabase = loadPropertyDatabase(
-//				new MayReturnNullPropertyDatabase(),
-//				DEFAULT_NULL_RETURN_VALUE_DB_FILENAME,
-//				"may return null database");
-		fieldStoreTypeDatabase = loadPropertyDatabase(
-				new FieldStoreTypeDatabase(),
-				FieldStoreTypeDatabase.DEFAULT_FILENAME,
-				"field store type database");
-		unconditionalDerefParamDatabase = loadPropertyDatabase(
-				getUnconditionalDerefParamDatabase(),
-				UNCONDITIONAL_DEREF_DB_FILENAME,
-				"unconditional param deref database");
-	}
-
-	@Override
-	public void loadDefaultInterproceduralDatabases() {
-
-		unconditionalDerefParamDatabase = loadPropertyDatabaseFromResource(
-				getUnconditionalDerefParamDatabase(),
-				UNCONDITIONAL_DEREF_DB_RESOURCE,
-				"unconditional param deref database");
-	}
-	
-	@Override
-	public void setBoolProperty(int prop, boolean value) {
-		boolPropertySet.set(prop, value);
-	}
-	
-	@Override
-	public boolean getBoolProperty(int prop) {
-		return boolPropertySet.get(prop);
-	}
-
-	@Override
 	public SourceInfoMap getSourceInfoMap() {
 		return sourceInfoMap;
 	}
 
 	@Override
-	public void setDatabaseInputDir(String databaseInputDir) {
-		if (DEBUG) System.out.println("Setting database input directory: " + databaseInputDir);
-		this.databaseInputDir = databaseInputDir;
-	}
-	
-	@Override
-	public String getDatabaseInputDir() {
-		return databaseInputDir;
-	}
-
-	@Override
-	public void setDatabaseOutputDir(String databaseOutputDir) {
-		if (DEBUG) System.out.println("Setting database output directory: " + databaseOutputDir);
-		this.databaseOutputDir = databaseOutputDir;
-	}
-	
-	@Override
-	public String getDatabaseOutputDir() {
-		return databaseOutputDir;
-	}
-
-	@Override
 	public FieldStoreTypeDatabase getFieldStoreTypeDatabase() {
+		if (fieldStoreTypeDatabase == null) {
+			fieldStoreTypeDatabase = new FieldStoreTypeDatabase();
+		}
 		return fieldStoreTypeDatabase;
 	}
 
@@ -347,14 +265,6 @@ public class LegacyAnalysisContext extends AnalysisContext {
 			unconditionalDerefParamDatabase = new ParameterNullnessPropertyDatabase();
 		}
 		return unconditionalDerefParamDatabase;
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getAnalyisLocals()
-	 */
-	@Override
-	public Map<Object, Object> getAnalysisLocals() {
-		return analysisLocals;
 	}
 	
 	/* (non-Javadoc)

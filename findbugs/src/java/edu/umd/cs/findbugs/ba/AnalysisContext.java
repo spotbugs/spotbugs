@@ -89,6 +89,18 @@ public abstract class AnalysisContext {
 	 */
 	private static final int DEFAULT_CACHE_SIZE = 3;
 
+	
+	// Instance fields
+	private BitSet boolPropertySet;
+	private Map<Object,Object> analysisLocals;
+	private String databaseInputDir;
+	private String databaseOutputDir;
+	
+	protected AnalysisContext() {
+		this.boolPropertySet = new BitSet();
+		this.analysisLocals = Collections.synchronizedMap(new HashMap<Object,Object>());
+	}
+
 	/**
 	 * Create a new AnalysisContext.
 	 * 
@@ -130,7 +142,9 @@ public abstract class AnalysisContext {
 	/**
 	 * Set the source path.
 	 */
-	public abstract void setSourcePath(List<String> sourcePath);
+	public final void setSourcePath(List<String> sourcePath) {
+		getSourceFinder().setSourceBaseList(sourcePath);
+	}
 
 	/**
 	 * Get the SourceFinder, for finding source files.
@@ -225,7 +239,21 @@ public abstract class AnalysisContext {
 	 * @param className the name of the class
 	 * @return the source file for the class, or SourceLineAnnotation.UNKNOWN_SOURCE_FILE if unable to determine
 	 */
-	public abstract String lookupSourceFile(@NonNull String className);
+	public final String lookupSourceFile(@NonNull String className) {
+		if (className == null) 
+			throw new IllegalArgumentException("className is null");
+		try {
+			JavaClass jc = this.lookupClass(className);
+			String name = jc.getSourceFileName();
+			if (name == null) {
+				System.out.println("No sourcefile for " + className);
+				return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
+			}
+			return name;
+		} catch (ClassNotFoundException cnfe) {
+		  return SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
+		}
+	}
 
 	/**
 	 * Get the ClassContext for a class.
@@ -245,14 +273,28 @@ public abstract class AnalysisContext {
 	/**
 	 * If possible, load interprocedural property databases.
 	 */
-	public abstract void loadInterproceduralDatabases();
+	public final void loadInterproceduralDatabases() {
+		loadPropertyDatabase(
+				getFieldStoreTypeDatabase(),
+				FieldStoreTypeDatabase.DEFAULT_FILENAME,
+				"field store type database");
+		loadPropertyDatabase(
+				getUnconditionalDerefParamDatabase(),
+				UNCONDITIONAL_DEREF_DB_FILENAME,
+				"unconditional param deref database");
+	}
 	
 	/**
 	 * If possible, load default (built-in) interprocedural property databases.
 	 * These are the databases for things like Java core APIs that
 	 * unconditional dereference parameters.
 	 */
-	public abstract void loadDefaultInterproceduralDatabases();
+	public final void loadDefaultInterproceduralDatabases() {
+		loadPropertyDatabaseFromResource(
+				getUnconditionalDerefParamDatabase(),
+				UNCONDITIONAL_DEREF_DB_RESOURCE,
+				"unconditional param deref database");
+	}
 
 	/**
 	 * Set a boolean property.
@@ -260,7 +302,9 @@ public abstract class AnalysisContext {
 	 * @param prop  the property to set
 	 * @param value the value of the property
 	 */
-	public abstract void setBoolProperty(int prop, boolean value);
+	public final void setBoolProperty(int prop, boolean value) {
+		boolPropertySet.set(prop, value);
+	}
 
 	/**
 	 * Get a boolean property.
@@ -269,7 +313,9 @@ public abstract class AnalysisContext {
 	 * @return value of the property; defaults to false if the property
 	 *         has not had a value assigned explicitly
 	 */
-	public abstract boolean getBoolProperty(int prop);
+	public final boolean getBoolProperty(int prop) {
+		return boolPropertySet.get(prop);
+	}
 	
 	/**
 	 * Get the SourceInfoMap.
@@ -281,28 +327,38 @@ public abstract class AnalysisContext {
 	 * 
 	 * @param databaseInputDir the interprocedural database input directory
 	 */
-	public abstract void setDatabaseInputDir(String databaseInputDir);
-
+	public final void setDatabaseInputDir(String databaseInputDir) {
+		if (DEBUG) System.out.println("Setting database input directory: " + databaseInputDir);
+		this.databaseInputDir = databaseInputDir;
+	}
+	
 	/**
 	 * Get the interprocedural database input directory.
 	 * 
 	 * @return the interprocedural database input directory
 	 */
-	public abstract String getDatabaseInputDir();
-	
+	public final String getDatabaseInputDir() {
+		return databaseInputDir;
+	}
+
 	/**
 	 * Set the interprocedural database output directory.
 	 * 
 	 * @param databaseOutputDir the interprocedural database output directory
 	 */
-	public abstract void setDatabaseOutputDir(String databaseOutputDir);
-
+	public final void setDatabaseOutputDir(String databaseOutputDir) {
+		if (DEBUG) System.out.println("Setting database output directory: " + databaseOutputDir);
+		this.databaseOutputDir = databaseOutputDir;
+	}
+	
 	/**
 	 * Get the interprocedural database output directory.
 	 * 
 	 * @return the interprocedural database output directory
 	 */
-	public abstract String getDatabaseOutputDir();
+	public final String getDatabaseOutputDir() {
+		return databaseOutputDir;
+	}
 	
 	/**
 	 * Get the property database recording the types of values stored
@@ -415,7 +471,13 @@ public abstract class AnalysisContext {
 		}
 	}
 	
-	public abstract Map getAnalysisLocals();
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getAnalyisLocals()
+	 */
+	public final Map<Object, Object> getAnalysisLocals() {
+		return analysisLocals;
+	}
 	
 	public abstract InnerClassAccessMap getInnerClassAccessMap();
 }

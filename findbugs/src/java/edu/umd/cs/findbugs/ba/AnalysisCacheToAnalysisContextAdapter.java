@@ -26,10 +26,12 @@ import java.util.Map;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -119,30 +121,11 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getAnalysisLocals()
-	 */
-	@Override
-	public Map getAnalysisLocals() {
-		// TODO 
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getAnnotationRetentionDatabase()
 	 */
 	@Override
 	public AnnotationRetentionDatabase getAnnotationRetentionDatabase() {
-		// TODO 
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getBoolProperty(int)
-	 */
-	@Override
-	public boolean getBoolProperty(int prop) {
-		// TODO 
-		return false;
+		return getDatabase(AnnotationRetentionDatabase.class);
 	}
 
 	/* (non-Javadoc)
@@ -150,8 +133,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public CheckReturnAnnotationDatabase getCheckReturnAnnotationDatabase() {
-		// TODO 
-		return null;
+		return getDatabase(CheckReturnAnnotationDatabase.class);
 	}
 
 	/* (non-Javadoc)
@@ -159,8 +141,16 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public ClassContext getClassContext(JavaClass javaClass) {
-		// TODO 
-		return null;
+		// This is a bit silly since we're doing an unnecessary ClassDescriptor->JavaClass lookup.
+		// However, we can be assured that it will succeed.
+		
+		ClassDescriptor classDescriptor = new ClassDescriptor(javaClass.getClassName()); 
+		
+		try {
+			return Global.getAnalysisCache().getClassAnalysis(ClassContext.class, classDescriptor);
+		} catch (CheckedAnalysisException e) {
+			throw new IllegalStateException("Could not get ClassContext for JavaClass", e);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -173,30 +163,11 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getDatabaseInputDir()
-	 */
-	@Override
-	public String getDatabaseInputDir() {
-		// TODO 
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getDatabaseOutputDir()
-	 */
-	@Override
-	public String getDatabaseOutputDir() {
-		// TODO 
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getFieldStoreTypeDatabase()
 	 */
 	@Override
 	public FieldStoreTypeDatabase getFieldStoreTypeDatabase() {
-		// TODO 
-		return null;
+		return getDatabase(FieldStoreTypeDatabase.class);
 	}
 
 	/* (non-Javadoc)
@@ -204,8 +175,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public JCIPAnnotationDatabase getJCIPAnnotationDatabase() {
-		// TODO 
-		return null;
+		return getDatabase(JCIPAnnotationDatabase.class);
 	}
 
 	/* (non-Javadoc)
@@ -213,8 +183,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public RepositoryLookupFailureCallback getLookupFailureCallback() {
-		// TODO 
-		return null;
+		return lookupFailureCallback;
 	}
 
 	/* (non-Javadoc)
@@ -222,8 +191,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public NullnessAnnotationDatabase getNullnessAnnotationDatabase() {
-		// TODO 
-		return null;
+		return getDatabase(NullnessAnnotationDatabase.class);
 	}
 
 	/* (non-Javadoc)
@@ -231,8 +199,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public SourceFinder getSourceFinder() {
-		// TODO 
-		return null;
+		return getDatabase(SourceFinder.class);
 	}
 
 	/* (non-Javadoc)
@@ -240,8 +207,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public SourceInfoMap getSourceInfoMap() {
-		// TODO 
-		return null;
+		return getDatabase(SourceInfoMap.class);
 	}
 
 	/* (non-Javadoc)
@@ -288,76 +254,17 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#loadDefaultInterproceduralDatabases()
-	 */
-	@Override
-	public void loadDefaultInterproceduralDatabases() {
-		// TODO 
-
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#loadInterproceduralDatabases()
-	 */
-	@Override
-	public void loadInterproceduralDatabases() {
-		// TODO 
-
-	}
-
-	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#lookupClass(java.lang.String)
 	 */
 	@Override
 	public JavaClass lookupClass(String className)
 			throws ClassNotFoundException {
-		// TODO 
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#lookupSourceFile(java.lang.String)
-	 */
-	@Override
-	public String lookupSourceFile(String className) {
-		// TODO 
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#setBoolProperty(int, boolean)
-	 */
-	@Override
-	public void setBoolProperty(int prop, boolean value) {
-		// TODO 
-
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#setDatabaseInputDir(java.lang.String)
-	 */
-	@Override
-	public void setDatabaseInputDir(String databaseInputDir) {
-		// TODO 
-
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#setDatabaseOutputDir(java.lang.String)
-	 */
-	@Override
-	public void setDatabaseOutputDir(String databaseOutputDir) {
-		// TODO 
-
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#setSourcePath(java.util.List)
-	 */
-	@Override
-	public void setSourcePath(List<String> sourcePath) {
-		// TODO 
-
+		try {
+			return Global.getAnalysisCache().getClassAnalysis(
+					JavaClass.class, new ClassDescriptor(transformClassName(className)));
+		} catch (CheckedAnalysisException e) {
+			throw new ClassNotFoundException("Class not found: " + className, e);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -382,6 +289,19 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		} catch (CheckedAnalysisException e) {
 			throw new IllegalStateException("Could not get database " + cls.getName(), e);
 		}
+	}
+
+	/**
+	 * Transform given class name so it is in JVM (slashed) format.
+	 * 
+	 * @param className a class name
+	 * @return the same class name in JVM format
+	 */
+	private static String transformClassName(String className) {
+		if (className.indexOf('.') >= 0) {
+			className = className.replace('.', '/');
+		}
+		return className;
 	}
 
 }
