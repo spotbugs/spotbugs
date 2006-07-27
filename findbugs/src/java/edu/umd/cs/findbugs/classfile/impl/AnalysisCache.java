@@ -83,7 +83,7 @@ public class AnalysisCache implements IAnalysisCache {
 		this.classAnalysisMap = new MapCache<ClassDescriptor, Map<Class<?>,Object>>(CACHE_SIZE);
 		this.methodAnalysisMap = new MapCache<MethodDescriptor, Map<Class<?>,Object>>(CACHE_SIZE);
 		
-		this.databaseMap = new MapCache<Class<?>, Object>(CACHE_SIZE);
+		this.databaseMap = new HashMap<Class<?>, Object>();
 	}
 	
 	/* (non-Javadoc)
