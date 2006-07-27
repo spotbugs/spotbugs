@@ -52,6 +52,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		Collections.synchronizedMap(new HashMap<Object,Object>());
 	private BitSet boolPropertySet;
 	private final SourceInfoMap sourceInfoMap;
+	private InnerClassAccessMap innerClassAccessMap;
 	
 	// Interprocedural fact databases
 	private String databaseInputDir;
@@ -177,7 +178,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		clearClassContextCache();
 
 		// Clear InnerClassAccessMap cache.
-		InnerClassAccessMap.instance().clearCache();
+		getInnerClassAccessMap().clearCache();
 
 		// Create a URLClassPathRepository and make it current.
 		URLClassPathRepository repository = new URLClassPathRepository(); 
@@ -357,5 +358,16 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	@Override
 	public Map<Object, Object> getAnalysisLocals() {
 		return analysisLocals;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getInnerClassAccessMap()
+	 */
+	@Override
+	public InnerClassAccessMap getInnerClassAccessMap() {
+		if (innerClassAccessMap == null) {
+			innerClassAccessMap = InnerClassAccessMap.create();
+		}
+		return innerClassAccessMap;
 	}
 }

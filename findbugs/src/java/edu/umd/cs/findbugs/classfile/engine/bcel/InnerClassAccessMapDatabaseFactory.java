@@ -19,38 +19,31 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
+import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
-import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IDatabaseFactory;
 
 /**
- * Register BCEL-framework analysis engines.
+ * Database factory to create the InnerClassAccessMap.
  * 
  * @author David Hovemeyer
  */
-public class EngineRegistrar implements IAnalysisEngineRegistrar {
-	private static final IClassAnalysisEngine[] classAnalysisEngineList = {
-		new ClassContextClassAnalysisEngine(),
-		new JavaClassAnalysisEngine(),
-	};
-	
-	private static final IDatabaseFactory<?>[] databaseFactoryList = {
-		new SubtypesDatabaseFactory(),
-		new InnerClassAccessMapDatabaseFactory(),
-	};
+public class InnerClassAccessMapDatabaseFactory implements
+		IDatabaseFactory<InnerClassAccessMap> {
 
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar#registerAnalysisEngines(edu.umd.cs.findbugs.classfile.IAnalysisCache)
+	 * @see edu.umd.cs.findbugs.classfile.IDatabaseFactory#createDatabase()
 	 */
-	public void registerAnalysisEngines(IAnalysisCache analysisCache) {
-		for (IClassAnalysisEngine engine : classAnalysisEngineList) {
-			engine.registerWith(analysisCache);
-		}
-		
-		for (IDatabaseFactory<?> databaseFactory : databaseFactoryList) {
-			databaseFactory.registerWith(analysisCache);
-		}
+	public InnerClassAccessMap createDatabase() throws CheckedAnalysisException {
+		return InnerClassAccessMap.create();
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IDatabaseFactory#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
+	 */
+	public void registerWith(IAnalysisCache analysisCache) {
+		analysisCache.registerDatabaseFactory(InnerClassAccessMap.class, this);
 	}
 
 }

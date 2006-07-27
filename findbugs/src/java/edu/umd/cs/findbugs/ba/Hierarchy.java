@@ -868,7 +868,8 @@ public class Hierarchy {
 		String methodName = inv.getName(cpg);
 		String methodSig = inv.getSignature(cpg);
 
-		InnerClassAccess access = InnerClassAccessMap.instance().getInnerClassAccess(className, methodName);
+		InnerClassAccess access = AnalysisContext.currentAnalysisContext()
+			.getInnerClassAccessMap().getInnerClassAccess(className, methodName);
 		return (access != null && access.getMethodSignature().equals(methodSig))
 			? access
 			: null;

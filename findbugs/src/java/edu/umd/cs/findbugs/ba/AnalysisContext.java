@@ -424,6 +424,8 @@ public abstract class AnalysisContext {
 	}
 	
 	public abstract Map getAnalysisLocals();
+	
+	public abstract InnerClassAccessMap getInnerClassAccessMap();
 }
 
 // vim:ts=4

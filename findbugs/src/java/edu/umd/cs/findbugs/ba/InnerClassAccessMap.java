@@ -35,10 +35,15 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
 
 /**
- * Singleton class to determine which methods are accessors used
+ * Determine which methods are accessors used
  * by inner classes to access fields in their enclosing classes.
  * This has been tested with javac from the Sun JDK 1.4.x,
  * but will probably not work with other source to bytecode compilers.
+ * 
+ * <p>
+ * The instance of InnerClassAccessMap should be retrieved
+ * from the AnalysisContext.
+ * </p>
  *
  * @author David Hovemeyer
  * @see InnerClassAccess
@@ -56,20 +61,17 @@ public class InnerClassAccessMap {
 	 */
 	private Map<String, Map<String, InnerClassAccess>> classToAccessMap;
 
-	/**
-	 * The single instance.
-	 */
-	private static InnerClassAccessMap instance = new InnerClassAccessMap();
-
 	/* ----------------------------------------------------------------------
 	 * Public interface
 	 * ---------------------------------------------------------------------- */
-
+	
 	/**
-	 * Get the single instance.
+	 * Create an instance.
+	 * 
+	 * @returns a new instance of InnerClassAccessMap
 	 */
-	public static InnerClassAccessMap instance() {
-		return instance;
+	public static InnerClassAccessMap create() {
+		return new InnerClassAccessMap();
 	}
 
 	/**

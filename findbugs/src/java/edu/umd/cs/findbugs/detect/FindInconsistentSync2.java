@@ -381,7 +381,7 @@ public class FindInconsistentSync2 implements Detector {
 	private void analyzeMethod(ClassContext classContext, Method method, Set<Method> lockedMethodSet)
 	        throws CFGBuilderException, DataflowAnalysisException {
 
-		InnerClassAccessMap icam = InnerClassAccessMap.instance();
+		InnerClassAccessMap icam = AnalysisContext.currentAnalysisContext().getInnerClassAccessMap();
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		MethodGen methodGen = classContext.getMethodGen(method);
 		if (methodGen == null) return;

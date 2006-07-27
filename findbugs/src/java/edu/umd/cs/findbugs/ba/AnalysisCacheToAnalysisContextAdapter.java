@@ -370,6 +370,14 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		// TODO 
 
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getInnerClassAccessMap()
+	 */
+	@Override
+	public InnerClassAccessMap getInnerClassAccessMap() {
+		return getDatabase(InnerClassAccessMap.class);
+	}
 
 	/**
 	 * Helper method to get a database
