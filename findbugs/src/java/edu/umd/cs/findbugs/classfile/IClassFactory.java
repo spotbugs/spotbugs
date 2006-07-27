@@ -27,6 +27,8 @@ import java.io.IOException;
 public interface IClassFactory {
 
 	public IClassPath createClassPath();
+	
+	public IClassPathBuilder createClassPathBuilder(IErrorLogger errorLogger);
 
 	public ICodeBaseLocator createFilesystemCodeBaseLocator(
 			String pathName);

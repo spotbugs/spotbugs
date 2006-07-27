@@ -25,6 +25,7 @@ import java.io.IOException;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassPath;
+import edu.umd.cs.findbugs.classfile.IClassPathBuilder;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
@@ -51,6 +52,13 @@ public class ClassFactory implements IClassFactory {
 	 */
 	public IClassPath createClassPath() {
 		return new ClassPathImpl();
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IClassFactory#createClassPathBuilder(edu.umd.cs.findbugs.classfile.IErrorLogger)
+	 */
+	public IClassPathBuilder createClassPathBuilder(IErrorLogger errorLogger) {
+		return new ClassPathBuilder(this, errorLogger);
 	}
 	
 	/* (non-Javadoc)
