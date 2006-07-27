@@ -510,7 +510,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 			appendLines(buf);
 			return buf.toString();
 		} else
-			throw new IllegalStateException("Unknown format key " + key);
+			throw new IllegalArgumentException("Unknown format key " + key);
 	}
 
 	private void appendLines(StringBuffer buf) {
