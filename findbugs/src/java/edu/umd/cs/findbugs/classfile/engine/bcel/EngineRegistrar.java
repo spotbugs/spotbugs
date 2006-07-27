@@ -19,13 +19,28 @@
 
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
+import edu.umd.cs.findbugs.ba.AnnotationRetentionDatabase;
+import edu.umd.cs.findbugs.ba.CheckReturnAnnotationDatabase;
+import edu.umd.cs.findbugs.ba.InnerClassAccessMap;
+import edu.umd.cs.findbugs.ba.JCIPAnnotationDatabase;
+import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IDatabaseFactory;
+import edu.umd.cs.findbugs.classfile.ReflectionDatabaseFactory;
 
 /**
  * Register BCEL-framework analysis engines.
+ * 
+ * <p>
+ * <b>NOTE</b>: the database factories will only work with
+ * AnalysisCacheToAnalysisContextAdapter,
+ * not with LegacyAnalysisContext.
+ * However, that's ok since the databases for BCEL-based
+ * analyses are only ever accessed through the
+ * AnalysisContext.
+ * </p>
  * 
  * @author David Hovemeyer
  */
@@ -36,8 +51,11 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 	};
 	
 	private static final IDatabaseFactory<?>[] databaseFactoryList = {
-		new SubtypesDatabaseFactory(),
-		new InnerClassAccessMapDatabaseFactory(),
+		new ReflectionDatabaseFactory<Subtypes>(Subtypes.class),
+		new ReflectionDatabaseFactory<InnerClassAccessMap>(InnerClassAccessMap.class),
+		new ReflectionDatabaseFactory<CheckReturnAnnotationDatabase>(CheckReturnAnnotationDatabase.class),
+		new ReflectionDatabaseFactory<AnnotationRetentionDatabase>(AnnotationRetentionDatabase.class),
+		new ReflectionDatabaseFactory<JCIPAnnotationDatabase>(JCIPAnnotationDatabase.class),
 	};
 
 	/* (non-Javadoc)
