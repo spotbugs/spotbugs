@@ -44,20 +44,9 @@ public class BuildUnconditionalParamDerefDatabase {
 	private static final boolean VERBOSE_DEBUG = Boolean.getBoolean("fnd.debug.nullarg.verbose");
 	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.nullarg") || VERBOSE_DEBUG;
 	
-	private ParameterNullnessPropertyDatabase database;
-	
-	protected ParameterNullnessPropertyDatabase getDatabase() {
-		return database;
-	}
-	
 	public void visitClassContext(ClassContext classContext) {
-		if (database == null) {
-			database = AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase();
-			if (database == null) {
-				database = new ParameterNullnessPropertyDatabase();
-				AnalysisContext.currentAnalysisContext().setUnconditionalDerefParamDatabase(database);
-			}
-		}
+		ParameterNullnessPropertyDatabase database =
+			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase();
 		
 		if (VERBOSE_DEBUG) System.out.println("Visiting class " + classContext.getJavaClass().getClassName());
 		Method[] methodList = classContext.getJavaClass().getMethods();
@@ -105,7 +94,7 @@ public class BuildUnconditionalParamDerefDatabase {
 			property.setNonNullParamSet(unconditionalDerefSet);
 			
 			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-			database.setProperty(xmethod, property);
+			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase().setProperty(xmethod, property);
 			if (DEBUG) {
 				System.out.println("Unconditional deref: " + xmethod + "=" + property);
 			}

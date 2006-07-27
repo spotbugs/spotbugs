@@ -285,7 +285,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 				FieldStoreTypeDatabase.DEFAULT_FILENAME,
 				"field store type database");
 		unconditionalDerefParamDatabase = loadPropertyDatabase(
-				new ParameterNullnessPropertyDatabase(),
+				getUnconditionalDerefParamDatabase(),
 				UNCONDITIONAL_DEREF_DB_FILENAME,
 				"unconditional param deref database");
 	}
@@ -294,7 +294,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	public void loadDefaultInterproceduralDatabases() {
 
 		unconditionalDerefParamDatabase = loadPropertyDatabaseFromResource(
-				new ParameterNullnessPropertyDatabase(),
+				getUnconditionalDerefParamDatabase(),
 				UNCONDITIONAL_DEREF_DB_RESOURCE,
 				"unconditional param deref database");
 	}
@@ -342,13 +342,10 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	}
 
 	@Override
-	public void setUnconditionalDerefParamDatabase(
-			ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase) {
-		this.unconditionalDerefParamDatabase = unconditionalDerefParamDatabase;
-	}
-
-	@Override
 	public ParameterNullnessPropertyDatabase getUnconditionalDerefParamDatabase() {
+		if (unconditionalDerefParamDatabase == null) {
+			unconditionalDerefParamDatabase = new ParameterNullnessPropertyDatabase();
+		}
 		return unconditionalDerefParamDatabase;
 	}
 	

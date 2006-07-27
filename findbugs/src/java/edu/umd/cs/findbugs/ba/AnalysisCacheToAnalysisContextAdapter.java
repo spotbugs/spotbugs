@@ -266,8 +266,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public void initDatabases() {
-		// TODO 
-
+		// Databases are created on-demand - don't need to explicitly create them
 	}
 
 	/* (non-Javadoc)
@@ -361,16 +360,6 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#setUnconditionalDerefParamDatabase(edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase)
-	 */
-	@Override
-	public void setUnconditionalDerefParamDatabase(
-			ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase) {
-		// TODO 
-
-	}
-	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getInnerClassAccessMap()
 	 */

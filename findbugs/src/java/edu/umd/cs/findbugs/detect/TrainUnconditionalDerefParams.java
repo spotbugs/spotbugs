@@ -45,7 +45,7 @@ public class TrainUnconditionalDerefParams
 	 */
 	public void report() {
 		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
-				getDatabase(),
+				AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase(),
 				AnalysisContext.UNCONDITIONAL_DEREF_DB_FILENAME,
 				"unconditional deref database");
 	}

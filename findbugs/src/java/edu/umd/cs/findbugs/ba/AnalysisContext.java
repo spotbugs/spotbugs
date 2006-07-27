@@ -313,14 +313,6 @@ public abstract class AnalysisContext {
 	public abstract FieldStoreTypeDatabase getFieldStoreTypeDatabase();
 
 	/**
-	 * Set the property database recording which methods unconditionally
-	 * dereference parameters.
-	 * 
-	 * @param unconditionalDerefParamDatabase the database
-	 */
-	public abstract void setUnconditionalDerefParamDatabase(ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase);
-
-	/**
 	 * Get the property database recording which methods unconditionally
 	 * dereference parameters.
 	 * 
