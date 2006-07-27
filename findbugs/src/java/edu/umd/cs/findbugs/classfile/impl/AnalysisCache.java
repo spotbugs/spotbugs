@@ -76,9 +76,9 @@ public class AnalysisCache implements IAnalysisCache {
 	AnalysisCache(IClassPath classPath, IErrorLogger errorLogger) {
 		this.classPath = classPath;
 		this.errorLogger = errorLogger;
-		this.classAnalysisEngineMap = new MapCache<Class<?>, IClassAnalysisEngine>(CACHE_SIZE);
-		this.methodAnalysisEngineMap = new MapCache<Class<?>, IMethodAnalysisEngine>(CACHE_SIZE);
-		this.databaseFactoryMap = new MapCache<Class<?>, IDatabaseFactory<?>>(CACHE_SIZE);
+		this.classAnalysisEngineMap = new HashMap<Class<?>, IClassAnalysisEngine>();
+		this.methodAnalysisEngineMap = new HashMap<Class<?>, IMethodAnalysisEngine>();
+		this.databaseFactoryMap = new HashMap<Class<?>, IDatabaseFactory<?>>();
 		
 		this.classAnalysisMap = new MapCache<ClassDescriptor, Map<Class<?>,Object>>(CACHE_SIZE);
 		this.methodAnalysisMap = new MapCache<MethodDescriptor, Map<Class<?>,Object>>(CACHE_SIZE);
