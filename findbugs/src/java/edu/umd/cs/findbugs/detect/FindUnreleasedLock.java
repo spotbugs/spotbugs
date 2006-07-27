@@ -236,11 +236,14 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 				Instruction ins = location.getHandle().getInstruction();
 				
 				if (ins instanceof GETFIELD) {
+					GETFIELD insGetfield = (GETFIELD)ins;
+					String fieldName = insGetfield.getFieldName(cpg);
 					if (DEBUG) {
-						System.out.println("Inspecting GETFIELD at " + location);
+						System.out.println("Inspecting GETFIELD of " + fieldName + " at " + location);
 					}
 					// Ignore exceptions from getfield instructions where the
 					// object referece is known not to be null
+					if (fieldName.equals("lock")) return true;
 					IsNullValueFrame frame = isNullDataflow.getFactAtLocation(location);
 					if (!frame.isValid())
 						return false;
@@ -254,17 +257,8 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 					InvokeInstruction iins = (InvokeInstruction) ins;
 					String methodName = iins.getMethodName(cpg);
 					//System.out.println("Method " + methodName);
-					if (!methodName.equals("readLock") && !methodName.equals("writeLock")) return false;
-//					 Ignore exceptions from getfield instructions where the
-					// object referece is known not to be null
-					IsNullValueFrame frame = isNullDataflow.getFactAtLocation(location);
-					if (!frame.isValid())
-						return false;
-					IsNullValue receiver = frame.getInstance(ins, cpg);
-					boolean notNull = receiver.isDefinitelyNotNull();
-					if (DEBUG && notNull) 
-						System.out.println("Ignoring exception from non-null invoke of readLock/writeLock");
-					return notNull;
+					if (methodName.equals("readLock") || methodName.equals("writeLock")) return true;
+					if (methodName.equals("lock") || methodName.equals("unlock")) return true;
 				}
 			} catch (DataflowAnalysisException e) {
 				// Report...
