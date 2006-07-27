@@ -33,7 +33,7 @@ public interface IClassFactory {
 	
 	public ICodeBaseLocator createNestedArchiveCodeBaseLocator(ICodeBase parentCodeBase, String path);
 	
-	public IAnalysisCache createAnalysisCache(IClassPath classPath);
+	public IAnalysisCache createAnalysisCache(IClassPath classPath, IErrorLogger errorLogger);
 
 //	public IScannableCodeBase createLocalCodeBase(String fileName)
 //			throws IOException;

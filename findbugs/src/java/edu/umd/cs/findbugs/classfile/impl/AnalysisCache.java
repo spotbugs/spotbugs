@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.IDatabaseFactory;
+import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import edu.umd.cs.findbugs.classfile.IMethodAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.MapCache;
@@ -55,6 +56,7 @@ public class AnalysisCache implements IAnalysisCache {
 	private static final int CACHE_SIZE = 5;
 
 	private IClassPath classPath;
+	private IErrorLogger errorLogger;
 	
 	private Map<Class<?>, IClassAnalysisEngine> classAnalysisEngineMap;
 	private Map<Class<?>, IMethodAnalysisEngine> methodAnalysisEngineMap;
@@ -71,8 +73,9 @@ public class AnalysisCache implements IAnalysisCache {
 		}
 	}
 	
-	AnalysisCache(IClassPath classPath) {
+	AnalysisCache(IClassPath classPath, IErrorLogger errorLogger) {
 		this.classPath = classPath;
+		this.errorLogger = errorLogger;
 		this.classAnalysisEngineMap = new MapCache<Class<?>, IClassAnalysisEngine>(CACHE_SIZE);
 		this.methodAnalysisEngineMap = new MapCache<Class<?>, IMethodAnalysisEngine>(CACHE_SIZE);
 		this.databaseFactoryMap = new MapCache<Class<?>, IDatabaseFactory<?>>(CACHE_SIZE);
@@ -234,4 +237,10 @@ public class AnalysisCache implements IAnalysisCache {
 		return (E) database;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getErrorLogger()
+	 */
+	public IErrorLogger getErrorLogger() {
+		return errorLogger;
+	}
 }

@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.classfile.engine.bcel;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
+import edu.umd.cs.findbugs.classfile.IDatabaseFactory;
 
 /**
  * Register BCEL-framework analysis engines.
@@ -31,6 +32,11 @@ import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 public class EngineRegistrar implements IAnalysisEngineRegistrar {
 	private static final IClassAnalysisEngine[] classAnalysisEngineList = {
 		new ClassContextClassAnalysisEngine(),
+		new JavaClassAnalysisEngine(),
+	};
+	
+	private static final IDatabaseFactory<?>[] databaseFactoryList = {
+		new SubtypesDatabaseFactory(),
 	};
 
 	/* (non-Javadoc)
@@ -39,6 +45,10 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 	public void registerAnalysisEngines(IAnalysisCache analysisCache) {
 		for (IClassAnalysisEngine engine : classAnalysisEngineList) {
 			engine.registerWith(analysisCache);
+		}
+		
+		for (IDatabaseFactory<?> databaseFactory : databaseFactoryList) {
+			databaseFactory.registerWith(analysisCache);
 		}
 	}
 

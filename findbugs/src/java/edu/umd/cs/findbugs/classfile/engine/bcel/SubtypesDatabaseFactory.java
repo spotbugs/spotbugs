@@ -17,15 +17,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.umd.cs.findbugs.classfile;
+package edu.umd.cs.findbugs.classfile.engine.bcel;
+
+import edu.umd.cs.findbugs.ba.ch.Subtypes;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
+import edu.umd.cs.findbugs.classfile.IDatabaseFactory;
 
 /**
- * Interface for a database factory.
- * 
  * @author David Hovemeyer
  */
-public interface IDatabaseFactory<T> {
-	public T createDatabase() throws CheckedAnalysisException;
+public class SubtypesDatabaseFactory implements IDatabaseFactory<Subtypes> {
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IDatabaseFactory#createDatabase()
+	 */
+	public Subtypes createDatabase() throws CheckedAnalysisException {
+		return new Subtypes();
+	}
 	
-	public void registerWith(IAnalysisCache analysisCache);
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IDatabaseFactory#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
+	 */
+	public void registerWith(IAnalysisCache analysisCache) {
+		analysisCache.registerDatabaseFactory(Subtypes.class, this);
+	}
+
 }

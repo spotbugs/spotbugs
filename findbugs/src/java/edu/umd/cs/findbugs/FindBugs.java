@@ -1116,6 +1116,12 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * @throws InterruptedException if the thread is interrupted while conducting the analysis
 	 */
 	public void execute() throws java.io.IOException, InterruptedException {
+		// Create analysis cache.
+		// FIXME: null IClassPath for now, only BCEL analysis factories registered
+		IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(null, bugReporter);
+		new edu.umd.cs.findbugs.classfile.engine.bcel.EngineRegistrar().registerAnalysisEngines(analysisCache);
+		Global.setAnalysisCacheForCurrentThread(analysisCache);
+		
 		// Configure the analysis context
 		analysisContext = AnalysisContext.create(bugReporter);
 		// We still need to call analysisContext.initDatabases(), but not until after we have set up the repository.
@@ -1123,12 +1129,6 @@ public class FindBugs implements Constants2, ExitCodes {
 		if (sourceInfoFile != null) {
 			analysisContext.getSourceInfoMap().read(new FileInputStream(sourceInfoFile));
 		}
-		
-		// Create analysis cache.
-		// FIXME: null IClassPath for now, only BCEL analysis factories registered
-		IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(null);
-		new edu.umd.cs.findbugs.classfile.engine.bcel.EngineRegistrar().registerAnalysisEngines(analysisCache);
-		Global.setAnalysisCacheForCurrentThread(analysisCache);
 		
 		// Enable/disable relaxed reporting mode
 		FindBugsAnalysisFeatures.setRelaxedMode(relaxedReportingMode);

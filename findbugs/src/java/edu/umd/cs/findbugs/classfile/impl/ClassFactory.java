@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
+import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
@@ -88,8 +89,8 @@ public class ClassFactory implements IClassFactory {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IClassFactory#createAnalysisCache(edu.umd.cs.findbugs.classfile.IClassPath)
 	 */
-	public IAnalysisCache createAnalysisCache(IClassPath classPath) {
-		IAnalysisCache analysisCache = new AnalysisCache(classPath);
+	public IAnalysisCache createAnalysisCache(IClassPath classPath, IErrorLogger errorLogger) {
+		IAnalysisCache analysisCache = new AnalysisCache(classPath, errorLogger);
 		return analysisCache;
 	}
 }

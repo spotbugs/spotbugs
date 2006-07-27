@@ -97,4 +97,11 @@ public interface IAnalysisCache {
 	 * @return the classpath
 	 */
 	public IClassPath getClassPath();
+	
+	/**
+	 * Get the error logger.
+	 * 
+	 * @return the error logger
+	 */
+	public IErrorLogger getErrorLogger();
 }

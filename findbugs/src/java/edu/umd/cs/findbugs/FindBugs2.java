@@ -134,7 +134,7 @@ public class FindBugs2 {
 	 * Create the analysis cache object.
 	 */
 	private void createAnalysisCache() {
-		analysisCache = ClassFactory.instance().createAnalysisCache(classPath);
+		analysisCache = ClassFactory.instance().createAnalysisCache(classPath, bugReporter);
 		
 		// TODO: this would be a good place to load "analysis plugins" which could
 		// add additional analysis engines.  Or, perhaps when we load
