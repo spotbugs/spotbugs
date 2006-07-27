@@ -275,10 +275,10 @@ public class DumbMethods extends BytecodeScanningDetector  {
 			Object value = item.getConstant();
 			if (value instanceof String) {
 				String annotationClassName = (String) value;
-				boolean hasClassfileRetention 
-				= AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase().hasClassfileRetention(
+				boolean lacksClassfileRetention 
+				= AnalysisContext.currentAnalysisContext().getAnnotationRetentionDatabase().lacksClassfileRetention(
 						annotationClassName.replace('/','.'));
-				if (!hasClassfileRetention) 
+				if (lacksClassfileRetention) 
 					bugReporter.reportBug(new BugInstance(this, "DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION",
 						HIGH_PRIORITY)
 				        .addClassAndMethod(this)

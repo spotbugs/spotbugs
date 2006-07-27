@@ -30,6 +30,13 @@ public class AnnotationRetentionDatabase {
 		return result;
 	}
 
+	/** return false if it has class retention *or* if the retention is unknown */
+	public boolean lacksClassfileRetention(String dottedClassName) {
+		Boolean result = annotationRetention.get(dottedClassName);
+		if (result == null) return false;
+		return !result;
+	}
+
 	public void setClassfileRetention(String dottedClassName, boolean value) {
 		annotationRetention.put(dottedClassName, value);
 	}
