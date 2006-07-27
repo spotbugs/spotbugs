@@ -123,6 +123,9 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 			XMethod m = (XMethod) o;
 			if (m.getName().startsWith("access$")) return null;
 
+		} else if (o instanceof XField) {
+			XField f = (XField) o;
+			if (f.getName().startsWith("this$")) return NullnessAnnotation.NONNULL;
 		}
 		NullnessAnnotation result =  super.getResolvedAnnotation(o, getMinimal);
 		return result;
