@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2004,2005 University of Maryland
+ * Copyright (C) 2004-2006 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,14 +26,9 @@ public class AnalysisLocal<T> {
 		return null;
 	}
 	
-//	protected Map<AnalysisLocal<T>, T> getMap() {
-//		AnalysisContext t = AnalysisContext.currentAnalysisContext();
-//		return  t.analysisLocals;
-//	}
-	
 	protected Map <AnalysisLocal<T>, T> getMap() {
-		Map m = AnalysisContext.currentAnalysisContext().analysisLocals;
-		return m;
+		Map m = AnalysisContext.currentAnalysisContext().getAnalysisLocals();
+		return (Map<AnalysisLocal<T>, T>) m;
 	}
 	
 	public T get() {
