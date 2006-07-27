@@ -100,7 +100,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public void addClasspathEntry(String url) throws IOException {
-		// FIXME: can't support this - AnalysisContext is responsible for the classpath 
+		// FIXME: can't support this - analysis cache is responsible for the classpath 
 	}
 
 	/* (non-Javadoc)
