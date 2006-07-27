@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.classfile.analysis;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 
@@ -63,6 +66,15 @@ public class ClassData {
 	 */
 	public byte[] getData() {
 		return data;
+	}
+
+	/**
+	 * Open an InputStream on the class data.
+	 * 
+	 * @return InputStream reading from the class data
+	 */
+	public InputStream getInputStream() {
+		return new ByteArrayInputStream(data);
 	}
 
 }
