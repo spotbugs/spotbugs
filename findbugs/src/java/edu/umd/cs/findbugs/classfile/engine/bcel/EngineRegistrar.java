@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
+import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar;
@@ -64,6 +65,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 		new ReflectionDatabaseFactory<SourceFinder>(SourceFinder.class),
 		new ReflectionDatabaseFactory<SourceInfoMap>(SourceInfoMap.class),
 		new ReflectionDatabaseFactory<FieldStoreTypeDatabase>(FieldStoreTypeDatabase.class),
+		new ReflectionDatabaseFactory<ParameterNullnessPropertyDatabase>(ParameterNullnessPropertyDatabase.class),
 	};
 
 	/* (non-Javadoc)

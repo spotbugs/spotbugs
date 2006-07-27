@@ -191,22 +191,6 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		Repository.addClass(appClass);
 		subtypes.addApplicationClass(appClass);
 	}
-
-	@Override
-	public boolean isApplicationClass(JavaClass cls) {
-		return subtypes.isApplicationClass(cls);
-	}
-	
-	@Override
-	public boolean isApplicationClass(String className) {
-		try {
-			JavaClass javaClass = lookupClass(className);
-			return isApplicationClass(javaClass);
-		} catch (ClassNotFoundException e) {
-			AnalysisContext.reportMissingClass(e);
-			return false;
-		}
-	}
 	
 	@Override
 	public JavaClass lookupClass(@NonNull String className) throws ClassNotFoundException {

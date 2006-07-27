@@ -158,8 +158,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public String getClassContextStats() {
-		// TODO 
-		return null;
+		return "<unknown ClassContext stats>";
 	}
 
 	/* (non-Javadoc)
@@ -223,8 +222,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public ParameterNullnessPropertyDatabase getUnconditionalDerefParamDatabase() {
-		// TODO 
-		return null;
+		return getDatabase(ParameterNullnessPropertyDatabase.class);
 	}
 
 	/* (non-Javadoc)
@@ -233,24 +231,6 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	@Override
 	public void initDatabases() {
 		// Databases are created on-demand - don't need to explicitly create them
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#isApplicationClass(org.apache.bcel.classfile.JavaClass)
-	 */
-	@Override
-	public boolean isApplicationClass(JavaClass cls) {
-		// TODO 
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#isApplicationClass(java.lang.String)
-	 */
-	@Override
-	public boolean isApplicationClass(String className) {
-		// TODO 
-		return false;
 	}
 
 	/* (non-Javadoc)
