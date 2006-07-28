@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * An AnalysisContext implementation that uses the
@@ -148,7 +149,8 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		// This is a bit silly since we're doing an unnecessary ClassDescriptor->JavaClass lookup.
 		// However, we can be assured that it will succeed.
 		
-		ClassDescriptor classDescriptor = new ClassDescriptor(javaClass.getClassName()); 
+		ClassDescriptor classDescriptor =
+			new ClassDescriptor(ClassName.toSlashedClassName(javaClass.getClassName())); 
 		
 		try {
 			return Global.getAnalysisCache().getClassAnalysis(ClassContext.class, classDescriptor);
@@ -282,10 +284,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 * @return the same class name in JVM format
 	 */
 	private static String transformClassName(String className) {
-		if (className.indexOf('.') >= 0) {
-			className = className.replace('.', '/');
-		}
-		return className;
+		return ClassName.toSlashedClassName(className);
 	}
 
 }

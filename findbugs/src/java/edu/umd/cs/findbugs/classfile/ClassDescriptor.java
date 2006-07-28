@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import edu.umd.cs.findbugs.util.ClassName;
+
 /**
  * Descriptor identifying a class.
  * 
@@ -69,7 +71,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor> {
 	 * @return the name of the class in dotted format
 	 */
 	public String toDottedClassName() {
-		return className.replace('/', '.');
+		return ClassName.toDottedClassName(className);
 	}
 
 	/**

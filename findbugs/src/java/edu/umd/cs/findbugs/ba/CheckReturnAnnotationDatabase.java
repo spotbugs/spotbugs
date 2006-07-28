@@ -28,7 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckReturnValueAnnotation> {
 	
 	private JavaClass throwableClass, threadClass;
-	CheckReturnAnnotationDatabase() {
+	public CheckReturnAnnotationDatabase() {
 		addMethodAnnotation("java.util.Iterator","hasNext", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addMethodAnnotation("java.io.File","createNewFile", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 		addMethodAnnotation("java.io.DataInputStream","skipBytes", "(I)I", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);

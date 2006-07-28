@@ -176,14 +176,14 @@ public class FindBugs2 {
 	private void createExecutionPlan() throws OrderingConstraintException {
 		executionPlan = new ExecutionPlan();
 		
-		// For now, all detectors are enabled.
+		// For now, enabled all default-enabled detectors.
 		// Eventually base this on the user preferences.
 		DetectorFactoryChooser detectorFactoryChooser = new DetectorFactoryChooser() {
 			/* (non-Javadoc)
 			 * @see edu.umd.cs.findbugs.DetectorFactoryChooser#choose(edu.umd.cs.findbugs.DetectorFactory)
 			 */
 			public boolean choose(DetectorFactory factory) {
-				return true;
+				return factory.isDefaultEnabled();
 			}
 		};
 		executionPlan.setDetectorFactoryChooser(detectorFactoryChooser);
@@ -212,7 +212,7 @@ public class FindBugs2 {
 	private void analyzeApplication() throws CheckedAnalysisException {
 		int count = 1;
 		for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext(); ) {
-			if (DEBUG) {
+			if (VERBOSE) {
 				System.out.println("Pass " + count++);
 			}
 			AnalysisPass pass = i.next();
@@ -223,11 +223,11 @@ public class FindBugs2 {
 			Detector2[] detectorList = pass.getDetectorList();
 			
 			for (ClassDescriptor classDescriptor : appClassList) {
-				if (DEBUG) {
+				if (VERBOSE) {
 					System.out.println("Class " + classDescriptor);
 				}
 				for (Detector2 detector : detectorList) {
-					if (DEBUG) {
+					if (VERBOSE) {
 						System.out.println("Applying " + detector.getDetectorClassName() + " to " + classDescriptor);
 					}
 					try {
