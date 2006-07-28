@@ -94,6 +94,23 @@
 		.tablerow0:hover, .tablerow1:hover {
 			background: #aaffaa;
 		}
+
+		.priority-1 {
+		    color: red;
+		    font-weight: bold;
+		}
+		.priority-2 {
+		    color: orange;
+		    font-weight: bold;
+		}
+		.priority-3 {
+		    color: green;
+		    font-weight: bold;
+		}
+		.priority-4 {
+		    color: blue;
+		    font-weight: bold;
+		}
 		</style>
 		<script type="text/javascript">
 			function toggleRow(elid) {
@@ -235,7 +252,9 @@
 	<tr class="tablerow{position() mod 2}" onclick="toggleRow('{$warningId}');">
 
 	<td>
-	<xsl:value-of select="@abbrev"/>
+	    <span><xsl:attribute name="class">priority-<xsl:value-of select="@priority"/></xsl:attribute>
+	        <xsl:value-of select="@abbrev"/>
+        </span>
 	</td>
 
 	<td>
