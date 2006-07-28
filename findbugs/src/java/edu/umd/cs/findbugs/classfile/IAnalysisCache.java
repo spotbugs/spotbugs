@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+
 /**
  * The analysis cache performs analyses on classes and methods
  * and caches the results.
@@ -59,6 +60,16 @@ public interface IAnalysisCache {
 	 */
 	public<E> E getClassAnalysis(Class<E> analysisClass, ClassDescriptor classDescriptor)
 		throws CheckedAnalysisException;
+
+	/**
+	 * See if the cache contains a cached class analysis result
+	 * for given class descriptor.
+	 * 
+	 * @param analysisClass   analysis result class
+	 * @param classDescriptor the class descriptor
+	 * @return a cached analysis result, or null if there is no cached analysis result
+	 */
+	public<E> E probeClassAnalysis(Class<E> analysisClass, ClassDescriptor classDescriptor);
 
 	/**
 	 * Get an analysis of the given method.

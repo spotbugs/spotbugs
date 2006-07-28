@@ -105,6 +105,17 @@ public class AnalysisCache implements IAnalysisCache {
 				classDescriptor,
 				analysisClass);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#probeClassAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.ClassDescriptor)
+	 */
+	public <E> E probeClassAnalysis(Class<E> analysisClass, ClassDescriptor classDescriptor) {
+		Map<Class<?>, Object> m = classAnalysisMap.get(classDescriptor);
+		if (m == null) {
+			return null;
+		}
+		return (E) m.get(analysisClass);
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getMethodAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.MethodDescriptor)
