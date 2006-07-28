@@ -36,7 +36,7 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
 	/**
 	 * 
 	 */
-	private static final int SIZE_OF_HUGE_CONSTANT = 1000;
+	private static final int SIZE_OF_HUGE_CONSTANT = 500;
 
 	String getStringKey(String s) {
 		return s.length() + ":" + s.hashCode();
@@ -65,7 +65,7 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
 			set = new HashSet<String>();
 			map.put(key, set);
 		}
-		set.add(getClassName());
+		set.add(getDottedClassName());
 	}
 
 	@Override
@@ -93,10 +93,15 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
 				continue;
 			XField field = definition.get(e.getKey());
 			if (field == null) continue;
-			String className = field.getClassName();
 			Integer length = stringSize.get(e.getKey());
+			int overhead = length * (occursIn.size()-1);
+			if (overhead < 3*SIZE_OF_HUGE_CONSTANT) continue;
+			String className = field.getClassName();
+		
 			BugInstance bug = new BugInstance(this, "HSC_HUGE_SHARED_STRING_CONSTANT",
-					length * (occursIn.size()-1) > 10000 ? HIGH_PRIORITY : NORMAL_PRIORITY).addClass(className).addField(field).addInt(length);
+					overhead > 20*SIZE_OF_HUGE_CONSTANT ? HIGH_PRIORITY : 
+						( overhead > 8*SIPUSH ? NORMAL_PRIORITY : LOW_PRIORITY))
+						.addClass(className).addField(field).addInt(length);
 			for (String c : occursIn)
 				if (!c.equals(className))
 					bug.addClass(c);
