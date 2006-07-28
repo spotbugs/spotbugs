@@ -20,6 +20,7 @@
 package de.tobject.findbugs.actions;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -81,20 +82,22 @@ public class ClearMarkersAction implements IObjectActionDelegate {
 		if (!selection.isEmpty()) {
 			if (selection instanceof IStructuredSelection) {
 				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+				/*
 				Object element = structuredSelection.getFirstElement();
 				IResource resource = (IResource) ((IAdaptable) element)
 						.getAdapter(IResource.class);
 				IProject project = resource.getProject();
 				work(project);
+				*/
+				work(structuredSelection);
 			}
 		}
 	}
 
 	/**
-	 * Run a FindBugs analysis on the given resource, displaying a progress
-	 * monitor.
+	 * Clear the FindBugs markers on the given project, displaying a progress monitor.
 	 * 
-	 * @param resource
+	 * @param project
 	 */
 	private void work(final IProject project) {
 		try {
@@ -112,6 +115,41 @@ public class ClearMarkersAction implements IObjectActionDelegate {
 
 			ProgressMonitorDialog progress = new ProgressMonitorDialog(
 					FindbugsPlugin.getShell());
+			progress.run(true, true, r);
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Clear the FindBugs markers on each project in the given selection, displaying a progress monitor.
+	 * 
+	 * @param selection
+	 */
+	private void work(final IStructuredSelection selection) {
+		try {
+
+			IRunnableWithProgress r = new IRunnableWithProgress() {
+				public void run(IProgressMonitor pm) throws InvocationTargetException {
+					try {
+						for (Iterator it = selection.iterator(); it.hasNext(); ) {
+							Object resource = ((IAdaptable)it.next()).getAdapter(IResource.class);
+							IProject proj = (resource instanceof IResource ?
+											((IResource)resource).getProject() : null);
+							if (proj != null) {
+								pm.subTask("Clearing FindBugs markers from "+proj.getName());
+								MarkerUtil.removeMarkers(proj);
+							}
+						}
+					} catch (CoreException ex) {
+						throw new InvocationTargetException(ex);
+					}
+				}
+			};
+
+			ProgressMonitorDialog progress = new ProgressMonitorDialog(FindbugsPlugin.getShell());
 			progress.run(true, true, r);
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
