@@ -1762,7 +1762,7 @@ be used to make the prepared statement do something unexpected and undesirable.
   </BugPattern>
   <BugPattern type="HSC_HUGE_SHARED_STRING_CONSTANT">
    <ShortDescription>Huge string constants is duplicated across multiple class files</ShortDescription>
-   <LongDescription>{1} is initialized to a string constant {2} characters long that is duplicated across multiple class files</LongDescription>
+   <LongDescription>{1} is initialized to a string constant {2} characters long that is duplicated in {3} other class files</LongDescription>
    <Details>
       <![CDATA[
       <p>
