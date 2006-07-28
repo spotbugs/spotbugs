@@ -257,8 +257,12 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 					InvokeInstruction iins = (InvokeInstruction) ins;
 					String methodName = iins.getMethodName(cpg);
 					//System.out.println("Method " + methodName);
+					if (methodName.startsWith("access$")) return true;
 					if (methodName.equals("readLock") || methodName.equals("writeLock")) return true;
 					if (methodName.equals("lock") || methodName.equals("unlock")) return true;
+				}
+				if (DEBUG) {
+					System.out.println("FOUND Exception thrower at: " + location);
 				}
 			} catch (DataflowAnalysisException e) {
 				// Report...
