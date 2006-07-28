@@ -148,6 +148,9 @@
  <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPriviledged" 
             speed="fast"
             reports="DP_DO_INSIDE_DO_PRIVILEDGED,DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED"/>  
+  <Detector class="edu.umd.cs.findbugs.detect.HugeSharedStringConstants" 
+            speed="fast"
+            reports="HSC_HUGE_SHARED_STRING_CONSTANT" />
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
@@ -583,6 +586,7 @@
   <BugPattern abbrev="IL" type="IL_CONTAINER_ADDED_TO_ITSELF" category="CORRECTNESS"/>
   <BugPattern abbrev="VO" type="VO_VOLATILE_REFERENCE_TO_ARRAY" category="MT_CORRECTNESS"/>
   <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="CORRECTNESS"/>
+  <BugPattern abbrev="HSC" type="HSC_HUGE_SHARED_STRING_CONSTANT" category="PERFORMANCE" />
   <BugPattern abbrev="TEST" type="TESTING" category="STYLE" />
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="CORRECTNESS" />
 

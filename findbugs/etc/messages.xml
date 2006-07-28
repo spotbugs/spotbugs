@@ -210,6 +210,16 @@ Normally, this detector does nothing.</p>
   </Detector>
 
 
+  <Detector class="edu.umd.cs.findbugs.detect.HugeSharedStringConstants">
+    <Details>
+<![CDATA[
+<p> THis detector looks for string constants that are duplicated across multiple classfiles.
+</p>
+]]>
+    </Details>
+  </Detector>
+
+
 
  <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPriviledged">
     <Details>
@@ -1750,7 +1760,22 @@ be used to make the prepared statement do something unexpected and undesirable.
 ]]>
     </Details>
   </BugPattern>
-
+  <BugPattern type="HSC_HUGE_SHARED_STRING_CONSTANT">
+   <ShortDescription>Huge string constants is duplicated across multiple class files</ShortDescription>
+   <LongDescription>{1} is initialized to a string constant {2} characters long that is duplicated across multiple class files</LongDescription>
+   <Details>
+      <![CDATA[
+      <p>
+	A large String constant is duplicated across multiple class files. 
+	This is likely because the a a final field is initialize to a String constant, and the Java language
+	mandates that all references to a final field from other classes be inlined into
+that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6447475">JDK bug 6447475</a>
+	for a description of an occurrence of this bug in the JDK and how resolving it reduced
+	the size of the JDK by 1 megabyte.
+</p>
+      ]]>
+   </Details>
+  </BugPattern>
   <BugPattern type="NP_ARGUMENT_MIGHT_BE_NULL">
    <ShortDescription>Method does not check for null argument</ShortDescription>
    <LongDescription>{1} does not check for null argument</LongDescription>
@@ -5030,6 +5055,7 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="TLW" >Wait with two locks held</BugCode>
   <BugCode abbrev="RV" >Bad use of return value from method</BugCode>
   <BugCode abbrev="IA" >Ambiguous invocation</BugCode>
+  <BugCode abbrev="HSC" >Huge String constants</BugCode>
   <BugCode abbrev="NP" >Null pointer dereference</BugCode>
   <BugCode abbrev="OS">Stream not closed on all paths</BugCode>
   <BugCode abbrev="PZLA" >Prefer zero length arrays to null to indicate no results</BugCode>
