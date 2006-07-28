@@ -194,7 +194,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 				valueOfConstantArgumentToShift = ((Integer) rightHandSide);
 				if (valueOfConstantArgumentToShift < 0 || valueOfConstantArgumentToShift >= 32)
 				 bugReporter.reportBug(new BugInstance(this, "ICAST_BAD_SHIFT_AMOUNT", 
-						 	valueOfConstantArgumentToShift < 0 ? LOW_PRIORITY : NORMAL_PRIORITY)
+						 	valueOfConstantArgumentToShift < 0 ? LOW_PRIORITY : HIGH_PRIORITY)
 						.addClassAndMethod(this)
 						.addInt(valueOfConstantArgumentToShift)
 						.addSourceLine(this)
