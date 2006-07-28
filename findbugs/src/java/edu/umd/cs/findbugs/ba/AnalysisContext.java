@@ -110,7 +110,7 @@ public abstract class AnalysisContext {
 	 */
 	public static AnalysisContext create(RepositoryLookupFailureCallback lookupFailureCallback) {
 		AnalysisContext analysisContext = new LegacyAnalysisContext(lookupFailureCallback);
-		currentAnalysisContext.set(analysisContext);
+		setCurrentAnalysisContext(analysisContext);
 		return analysisContext;
 	}
 	
@@ -490,6 +490,15 @@ public abstract class AnalysisContext {
 	}
 	
 	public abstract InnerClassAccessMap getInnerClassAccessMap();
+	
+	/**
+	 * Set the current analysis context for this thread.
+	 * 
+	 * @param analysisContext the current analysis context for this thread
+	 */
+	public static void setCurrentAnalysisContext(AnalysisContext analysisContext) {
+		currentAnalysisContext.set(analysisContext);
+	}
 }
 
 // vim:ts=4

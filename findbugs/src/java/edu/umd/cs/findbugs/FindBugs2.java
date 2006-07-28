@@ -24,6 +24,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -35,6 +38,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
+import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 
@@ -91,14 +95,11 @@ public class FindBugs2 {
 		createClassPath();
 		
 		// The analysis cache object
-		// FIXME: should also be in the analysis context
 		createAnalysisCache();
-
-		// List of application classes found while scanning application codebases
-		appClassList = new LinkedList<ClassDescriptor>();
 		
 		try {
 			buildClassPath();
+			createAnalysisContext();
 			createExecutionPlan();
 			analyzeApplication();
 			
@@ -150,6 +151,18 @@ public class FindBugs2 {
 		}
 		
 		builder.build(classPath);
+		
+		appClassList = builder.getAppClassList();
+	}
+	
+	/**
+	 * Create the AnalysisContext that will serve as the BCEL-compatibility
+	 * layer over the AnalysisCache.
+	 */
+	private void createAnalysisContext() {
+		AnalysisCacheToAnalysisContextAdapter analysisContext =
+			new AnalysisCacheToAnalysisContextAdapter();
+		AnalysisContext.setCurrentAnalysisContext(analysisContext);
 	}
 
 	/**
@@ -194,21 +207,53 @@ public class FindBugs2 {
 	 * @throws CheckedAnalysisException 
 	 */
 	private void analyzeApplication() throws CheckedAnalysisException {
-		// FIXME: for the moment, we're not building an execution plan or supporting multiple passes
-		
-		for (ClassDescriptor descriptor : appClassList) {
-			System.out.println("App class: " + descriptor);
+		int count = 1;
+		for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext(); ) {
+			if (DEBUG) {
+				System.out.println("Pass " + count++);
+			}
+			AnalysisPass pass = i.next();
 			
-			ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
-			System.out.println(" ** contains " + classData.getData().length + " bytes of data");
+			// TODO: on first pass, apply detectors to referenced classes too
 			
-			ClassInfo classInfo = analysisCache.getClassAnalysis(ClassInfo.class, descriptor);
-			System.out.println(" ** class:" + classInfo.getClassDescriptor());
-			System.out.println(" ** superclass:" + classInfo.getSuperclassDescriptor());
-			System.out.println(" ** access flags:" + classInfo.getAccessFlags());
+			pass.createDetectors(bugReporter);
+			Detector2[] detectorList = pass.getDetectorList();
+			
+			for (ClassDescriptor classDescriptor : appClassList) {
+				if (DEBUG) {
+					System.out.println("Class " + classDescriptor);
+				}
+				for (Detector2 detector : detectorList) {
+					if (DEBUG) {
+						System.out.println("Applying " + detector.getDetectorClassName() + " to " + classDescriptor);
+					}
+					try {
+						detector.visitClass(classDescriptor);
+					} catch (CheckedAnalysisException e) {
+						logRecoverableException(classDescriptor, detector, e);
+					} catch (AnalysisException e) {
+						logRecoverableException(classDescriptor, detector, e);
+					}
+				}
+			}
 		}
 	}
 	
+	/**
+	 * 
+	 * Report an exception that occurred while analyzing a class
+	 * with a detector.
+	 * 
+	 * @param classDescriptor class being analyzed
+	 * @param detector        detector doing the analysis
+	 * @param e               the exception
+	 */
+	private void logRecoverableException(
+			ClassDescriptor classDescriptor, Detector2 detector, Throwable e) {
+		bugReporter.logError("Exception analyzing " + classDescriptor.toDottedClassName() +
+				" using detector " + detector.getDetectorClassName(), e);
+	}
+
 	public static void main(String[] args) throws Exception {
 		if (args.length != 1) {
 			System.err.println("Usage: " + FindBugs2.class.getName() + " <project>");
@@ -219,7 +264,7 @@ public class FindBugs2 {
 			throw new IllegalArgumentException("findbugs.home property must be set!");
 		}
 		
-		BugReporter bugReporter = new PrintingBugReporter();
+		BugReporter bugReporter = new DelegatingBugReporter(new PrintingBugReporter());
 		
 		Project project = new Project();
 		project.read(args[0]);

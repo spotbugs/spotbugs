@@ -64,6 +64,15 @@ public class ClassDescriptor implements Comparable<ClassDescriptor> {
 	}
 
 	/**
+	 * Get the name of the class in dotted format.
+	 * 
+	 * @return the name of the class in dotted format
+	 */
+	public String toDottedClassName() {
+		return className.replace('/', '.');
+	}
+
+	/**
 	 * Create a class descriptor from a resource name.
 	 * 
 	 * @param resourceName the resource name

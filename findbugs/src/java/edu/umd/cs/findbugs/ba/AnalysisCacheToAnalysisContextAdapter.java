@@ -82,7 +82,11 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	
-	AnalysisCacheToAnalysisContextAdapter() {
+	/**
+	 * Constructor.
+	 *
+	 */
+	public AnalysisCacheToAnalysisContextAdapter() {
 		this.lookupFailureCallback = new DelegatingRepositoryLookupFailureCallback();
 	}
 

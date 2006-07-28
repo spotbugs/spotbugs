@@ -74,7 +74,7 @@ public class DetectorFactory {
 				
 				return new DetectorToDetector2Adapter(detector);
 			} catch (Exception e) {
-				throw new RuntimeException("Could not instantiate Detector", e);
+				throw new RuntimeException("Could not instantiate " + detectorClass.getName() + "Detector", e);
 			}
 		}
 		
