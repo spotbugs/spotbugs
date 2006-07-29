@@ -259,7 +259,8 @@ public class FindBadCast2 implements Detector {
 			.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
 
 			if (refSig2.charAt(0) != 'L' || castSig2.charAt(0) != 'L') {
-				if (refSig2.equals("Ljava/io/Serializable;")) continue;
+				if (refSig2.equals("Ljava/io/Serializable;") 
+						|| refSig2.equals("Ljava/lang/Cloneable;")) continue;
 				bugReporter.reportBug(
 						new BugInstance(this,
 						"BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY", HIGH_PRIORITY )
