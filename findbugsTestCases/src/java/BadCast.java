@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.*;
 
 class BadCast {
@@ -93,5 +94,12 @@ class BadCast {
 			return b[0];
 		}
 		return 0;
+	}
+	
+	public static Serializable getSerializable() {
+		return new String[0];
+	}
+	public static String[] doNotReport() {
+		return (String[]) getSerializable();
 	}
 }
