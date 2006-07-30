@@ -44,14 +44,6 @@ public interface BugReporter extends RepositoryLookupFailureCallback, ClassObser
 	public static final int NORMAL = 1;
 
 	/**
-	 * Called to give the BugReporter a reference to
-	 * the FindBugs engine object.
-	 *
-	 * @param engine the FindBugs engine object
-	 */
-	public void setEngine(FindBugs engine);
-
-	/**
 	 * Set the error-reporting verbosity level.
 	 *
 	 * @param level the verbosity level

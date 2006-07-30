@@ -90,7 +90,6 @@ public abstract class AbstractBugReporter implements BugReporter {
 		}
 	}
 
-	private FindBugs engine;
 	private int verbosityLevel = NORMAL;
 	private int priorityThreshold;
 	private boolean analysisUnderway, relaxed;
@@ -100,14 +99,6 @@ public abstract class AbstractBugReporter implements BugReporter {
 	private List<BugReporterObserver> observerList = new LinkedList<BugReporterObserver>();
 	private ProjectStats projectStats = new ProjectStats();
 	private int errorCount;
-
-	public void setEngine(FindBugs engine) {
-		this.engine = engine;
-	}
-
-	public FindBugs getEngine() {
-		return engine;
-	}
 
 	public void setErrorVerbosity(int level) {
 		this.verbosityLevel = level;

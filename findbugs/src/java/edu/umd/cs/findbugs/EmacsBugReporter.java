@@ -26,6 +26,7 @@ import java.util.HashSet;
 
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 
 /**
@@ -46,7 +47,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
 	
 	private String fileNameFor(final String packageName, final String sourceName) {
 		String result;
-		SourceFinder sourceFinder = getEngine().getAnalysisContext().getSourceFinder();
+		SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
 		try {
 			result = sourceFinder.findSourceFile(packageName, sourceName).getFullFileName();
 		} catch (IOException e) {
@@ -69,7 +70,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
 		} else {
 			lineStart = line.getStartLine();
 			lineEnd = line.getEndLine();
-			SourceFinder sourceFinder = getEngine().getAnalysisContext().getSourceFinder();
+			SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
 			String pkgName = line.getPackageName();
 			try {
 				fullPath = sourceFinder.findSourceFile(pkgName, line.getSourceFile()).getFullFileName();

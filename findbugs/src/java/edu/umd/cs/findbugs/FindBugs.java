@@ -1138,11 +1138,6 @@ public class FindBugs implements Constants2, ExitCodes {
 		// Configure analysis features
 		configureAnalysisFeatures();
 		
-		// Give the BugReporter a reference to this object,
-		// in case it wants to access information such
-		// as the AnalysisContext
-		bugReporter.setEngine(this);
-		
 		// If we have a BugCollectionBugReporter, get a handle to it.
 		// We use this reference to add extra information to the BugCollection,
 		// such as hashes of methods and classes.

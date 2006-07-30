@@ -59,9 +59,9 @@ public class DelegatingBugReporter implements BugReporter {
 		return this.delegate;
 	}
 
-	public void setEngine(FindBugs engine) {
-		delegate.setEngine(engine);
-	}
+//	public void setEngine(FindBugs engine) {
+//		delegate.setEngine(engine);
+//	}
 
 	public void setErrorVerbosity(int level) {
 		delegate.setErrorVerbosity(level);
