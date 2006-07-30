@@ -29,15 +29,24 @@ public interface IDetectorCreator {
 	/**
 	 * Create a Detector instance.
 	 * 
-	 * @param bugReporter the BugReporter for the new detector
+	 * @param bugReporter the BugReportre for the new detector
 	 * @return a new Detector instance
+	 * @deprecated use createDetector2() in new code
 	 */
-	public Detector2 createDetector(BugReporter bugReporter);
+	public Detector createDetector(BugReporter bugReporter);
+	
+	/**
+	 * Create a Detector2 instance.
+	 * 
+	 * @param bugReporter the BugReporter for the new detector
+	 * @return a new Detector2 instance
+	 */
+	public Detector2 createDetector2(BugReporter bugReporter);
 	
 	/**
 	 * Get the detector class.
 	 * 
 	 * @return the detector class
 	 */
-	public Class<? extends Detector> getDetectorClass();
+	public Class<?> getDetectorClass();
 }

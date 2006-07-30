@@ -97,6 +97,12 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	 */
 	private static final int DEFAULT_CACHE_SIZE = 3;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param lookupFailureCallback the RepositoryLookupFailureCallback to use when
+	 *                               reporting errors and class lookup failures
+	 */
 	LegacyAnalysisContext(RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.sourceFinder = new SourceFinder();

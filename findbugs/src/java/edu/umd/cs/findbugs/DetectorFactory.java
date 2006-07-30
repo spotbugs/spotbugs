@@ -40,11 +40,11 @@ public class DetectorFactory {
 
 	private static final Class[] constructorArgTypes = new Class[]{BugReporter.class};
 
-	static class ReflectionDetectorCreator implements IDetectorCreator {
-		private Class<? extends Detector> detectorClass;
+	static class ReflectionDetectorCreator {
+		private Class<?> detectorClass;
 		private Method setAnalysisContext;
 		
-		ReflectionDetectorCreator(Class<? extends Detector> detectorClass) {
+		ReflectionDetectorCreator(Class<?> detectorClass) {
 			this.detectorClass = detectorClass;
 
 			try {
@@ -55,39 +55,51 @@ public class DetectorFactory {
 			}
 		}
 		
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.IDetectorCreator#createDetector(edu.umd.cs.findbugs.BugReporter)
-		 */
-		public Detector2 createDetector(BugReporter bugReporter) {
+		public Detector createDetector(BugReporter bugReporter) {
 			try {
-				Constructor<? extends Detector> constructor = detectorClass.getConstructor(constructorArgTypes);
-				Detector detector = constructor.newInstance(new Object[]{bugReporter});
-				
-				// Backwards-compatibility: if the Detector has a setAnalysisContext()
-				// method, call it, passing the current AnalysisContext.  We do this
-				// because some released versions of FindBugs had a Detector
-				// interface which specified this method (and ensured it was called
-				// before the Detector was used to analyze any code).
+				Constructor<?> constructor =
+					detectorClass.getConstructor(constructorArgTypes);
+				Detector detector = (Detector) constructor.newInstance(new Object[]{bugReporter});
 				if (setAnalysisContext != null) {
-					setAnalysisContext.invoke(detector, new Object[]{AnalysisContext.currentAnalysisContext()});
+					setAnalysisContext.invoke(
+							detector,
+							new Object[]{AnalysisContext.currentAnalysisContext()});
 				}
-				
-				return new DetectorToDetector2Adapter(detector);
+				return detector;
 			} catch (Exception e) {
-				throw new RuntimeException("Could not instantiate " + detectorClass.getName() + "Detector", e);
+				throw new RuntimeException("Could not instantiate " + detectorClass.getName() +
+						" as Detector", e);
 			}
 		}
 		
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.IDetectorCreator#getDetectorClass()
-		 */
-		public Class<? extends Detector> getDetectorClass() {
+		public Detector2 createDetector2(BugReporter bugReporter) {
+			if (Detector2.class.isAssignableFrom(detectorClass)) {
+				try {
+					Constructor<?> constructor =
+						detectorClass.getConstructor(constructorArgTypes);
+					return (Detector2) constructor.newInstance(new Object[]{bugReporter});
+				} catch (Exception e) {
+					throw new RuntimeException("Could not instantiate " + detectorClass.getName() +
+							" as Detector2", e);
+				}
+			}
+			
+			if (Detector.class.isAssignableFrom(detectorClass)) {
+				DetectorToDetector2Adapter adapter = new DetectorToDetector2Adapter(
+						createDetector(bugReporter));
+				return adapter;
+			}
+			
+			throw new RuntimeException("Class " + detectorClass.getName() + " is not a detector class");
+		}
+		
+		public Class<?> getDetectorClass() {
 			return detectorClass;
 		}
 	}
 	
 	private Plugin plugin;
-	private final IDetectorCreator detectorCreator;
+	private final ReflectionDetectorCreator detectorCreator;
 	private int positionSpecifiedInPluginDescriptor;
 	private boolean defEnabled;
 	private final String speed;
@@ -111,7 +123,7 @@ public class DetectorFactory {
 	 *                      the detector: e.g., "1.5"
 	 */
 	public DetectorFactory(Plugin plugin,
-                           Class<? extends Detector> detectorClass, boolean enabled, String speed, String reports,
+                           Class<?> detectorClass, boolean enabled, String speed, String reports,
 	                       String requireJRE) {
 		this.plugin = plugin;
 		this.detectorCreator = new ReflectionDetectorCreator(detectorClass);
@@ -122,34 +134,34 @@ public class DetectorFactory {
 		this.priorityAdjustment = 0;
 		this.hidden = false;
 	}
-
-	/**
-	 * Constructor.
-	 * 
-	 * @param plugin          the Plugin the detector is part of
-	 * @param detectorCreator the IDetectorCreator that will create instances of this detector
-	 * @param enabled         true if the detector is enabled by default, false otherwise
-	 * @param speed           speed: "fast", "moderate", or "slow"
-	 * @param reports         comma separated list of bug pattern codes reported
-	 *                         by the detector; empty if unknown
-	 * @param requireJRE      string describing JRE version required to run the
-	 *                         the detector: e.g., "1.5"
-	 */
-	public DetectorFactory(Plugin plugin,
-			IDetectorCreator detectorCreator,
-			boolean enabled ,
-			String speed,
-			String reports,
-			String requireJRE) {
-		this.plugin = plugin;
-		this.detectorCreator = detectorCreator;
-		this.defEnabled = enabled;
-		this.speed = speed;
-		this.reports = reports;
-		this.requireJRE = requireJRE;
-		this.priorityAdjustment = 0;
-		this.hidden = false;
-	}
+//
+//	/**
+//	 * Constructor.
+//	 * 
+//	 * @param plugin          the Plugin the detector is part of
+//	 * @param detectorCreator the IDetectorCreator that will create instances of this detector
+//	 * @param enabled         true if the detector is enabled by default, false otherwise
+//	 * @param speed           speed: "fast", "moderate", or "slow"
+//	 * @param reports         comma separated list of bug pattern codes reported
+//	 *                         by the detector; empty if unknown
+//	 * @param requireJRE      string describing JRE version required to run the
+//	 *                         the detector: e.g., "1.5"
+//	 */
+//	public DetectorFactory(Plugin plugin,
+//			IDetectorCreator detectorCreator,
+//			boolean enabled ,
+//			String speed,
+//			String reports,
+//			String requireJRE) {
+//		this.plugin = plugin;
+//		this.detectorCreator = detectorCreator;
+//		this.defEnabled = enabled;
+//		this.speed = speed;
+//		this.reports = reports;
+//		this.requireJRE = requireJRE;
+//		this.priorityAdjustment = 0;
+//		this.hidden = false;
+//	}
 
 	/**
 	 * Set the overall position in which this detector was specified
@@ -326,15 +338,28 @@ public class DetectorFactory {
 	public void setDetailHTML(String detailHTML) {
 		this.detailHTML = detailHTML;
 	}
-
+	
 	/**
 	 * Create a Detector instance.
-	 *
-	 * @param bugReporter the BugReported to be used to report bugs
+	 * This method is only guaranteed to work for
+	 * old-style detectors using the BCEL bytecode framework.
+	 * 
+	 * @param bugReporter the BugReporter to be used to report bugs
 	 * @return the Detector
+	 * @deprecated Use createDetector2 in new code
 	 */
-	public Detector2 create(BugReporter bugReporter) {
+	public Detector create(BugReporter bugReporter) {
 		return detectorCreator.createDetector(bugReporter);
+	}
+
+	/**
+	 * Create a Detector2 instance.
+	 *
+	 * @param bugReporter the BugReporter to be used to report bugs
+	 * @return the Detector2
+	 */
+	public Detector2 createDetector2(BugReporter bugReporter) {
+		return detectorCreator.createDetector2(bugReporter);
 	}
 
 	/**

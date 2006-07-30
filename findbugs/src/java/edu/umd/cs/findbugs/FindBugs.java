@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003-2005 University of Maryland
+ * Copyright (C) 2003-2006 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -59,14 +59,11 @@ import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.ClassObserver;
+import edu.umd.cs.findbugs.ba.LegacyAnalysisContext;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.ba.URLClassPathRepository;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.IAnalysisCache;
-import edu.umd.cs.findbugs.classfile.impl.AnalysisCache;
-import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -1124,12 +1121,6 @@ public class FindBugs implements Constants2, ExitCodes {
 	 * @throws InterruptedException if the thread is interrupted while conducting the analysis
 	 */
 	public void execute() throws java.io.IOException, InterruptedException {
-		// Create analysis cache.
-		// FIXME: null IClassPath for now, only BCEL analysis factories registered
-		IAnalysisCache analysisCache = ClassFactory.instance().createAnalysisCache(null, bugReporter);
-		new edu.umd.cs.findbugs.classfile.engine.bcel.EngineRegistrar().registerAnalysisEngines(analysisCache);
-		Global.setAnalysisCacheForCurrentThread(analysisCache);
-		
 		// Configure the analysis context
 		analysisContext = AnalysisContext.create(bugReporter);
 		// We still need to call analysisContext.initDatabases(), but not until after we have set up the repository.
@@ -1221,8 +1212,7 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		Iterator<AnalysisPass> i = executionPlan.passIterator();
 		AnalysisPass firstPass = i.next();
-		firstPass.createDetectors(bugReporter);
-		 // Do this to force referenced classes to be loaded
+		// Do this to force referenced classes to be loaded
 		Set<JavaClass> allReferencedClasses = analysisContext.getSubtypes().getAllClasses();
 		ArrayList<String> listOfReferencedClasses = new ArrayList<String>(allReferencedClasses.size());
 		for(JavaClass c : allReferencedClasses)
@@ -1235,7 +1225,6 @@ public class FindBugs implements Constants2, ExitCodes {
 		// Execute each analysis pass in the execution plan
 		while (i.hasNext()) {
 			AnalysisPass analysisPass = i.next();
-			analysisPass.createDetectors(bugReporter);
 			executeAnalysisPass(analysisPass, repositoryClassList);
 
 			if (false) 
@@ -1583,12 +1572,19 @@ public class FindBugs implements Constants2, ExitCodes {
 				System.out.println("\t" + factory.getFullName());
 			}
 		}
+		
+		// Create detectors
+		Detector[] detectors = new Detector[analysisPass.getNumDetectors()];
+		int count = 0;
+		for (Iterator<DetectorFactory> i = analysisPass.iterator(); i.hasNext();) {
+			detectors[count++] = i.next().create(bugReporter);
+		}
 
 		// Examine each class in the application
 		Set<String> examinedClassSet = new HashSet<String>();
 		for (String className : repositoryClassList) {
 			if (examinedClassSet.add(className))
-				examineClass(analysisPass, className);
+				examineClass(detectors, className);
 		}
 		
 		if (DEBUG) {
@@ -1612,16 +1608,16 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		// Force any detectors which defer work until all classes have
 		// been seen to do that work.
-		this.reportFinal(analysisPass.getDetectorList());
+		this.reportFinal(detectors);
 	}
 
 	/**
 	 * Examine a single class by invoking all of the Detectors on it.
 	 *
-	 * @param analysisPass the AnalysisPass currently being executed
+	 * @param detectors    the Detectors to execute on the class
 	 * @param className    the fully qualified name of the class to examine
 	 */
-	private void examineClass(AnalysisPass analysisPass, String className) throws InterruptedException {
+	private void examineClass(Detector[] detectors, String className) throws InterruptedException {
 		if (DEBUG) System.out.println("Examining class " + className);
 		long entireClassAnalysisStart = 0;
 		
@@ -1630,8 +1626,6 @@ public class FindBugs implements Constants2, ExitCodes {
 			entireClassAnalysisStart = System.currentTimeMillis();
 		}
 		this.currentClass = className;
-		
-		Detector2[] detectors = analysisPass.getDetectorList();
 
 		try {
 			JavaClass javaClass = Repository.lookupClass(className);
@@ -1645,14 +1639,14 @@ public class FindBugs implements Constants2, ExitCodes {
 			ClassContext classContext = analysisContext.getClassContext(javaClass);
 
 			// Run the Detectors
-			for (Detector2 detector1 : detectors) {
+			for (Detector detector1 : detectors) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
-				Detector2 detector = detector1;
+				Detector detector = detector1;
 				// MUSTFIX: Evaluate whether this makes a difference
 				if (false && detector instanceof StatelessDetector) {
 						try {
-							detector = (Detector2) ((StatelessDetector) detector).clone();
+							detector = (Detector) ((StatelessDetector) detector).clone();
 						} catch (CloneNotSupportedException e) {
 							throw new RuntimeException(e);
 						}
@@ -1670,9 +1664,7 @@ public class FindBugs implements Constants2, ExitCodes {
 
 						}
 					}
-					//detector.visitClassContext(classContext);
-					ClassDescriptor classDescriptor = new ClassDescriptor(className.replace('.', '/'));
-					detector.visitClass(classDescriptor);
+					detector.visitClassContext(classContext);
 
 					if (TIMEDEBUG || DEBUG) {
 						end = System.currentTimeMillis();
@@ -1690,8 +1682,6 @@ public class FindBugs implements Constants2, ExitCodes {
 							detectorTimings.put(detectorName, total);
 						}
 					}
-				} catch (CheckedAnalysisException e) {
-					reportRecoverableDetectorException(className, detector, e);
 				} catch (AnalysisException e) {
 					reportRecoverableDetectorException(className, detector, e);
 				} catch (ArrayIndexOutOfBoundsException e) {
@@ -1738,23 +1728,23 @@ public class FindBugs implements Constants2, ExitCodes {
 		bugReporter.logError("Exception analyzing " + className, e);
 	}
 
-	private void reportRecoverableDetectorException(String className, Detector2 detector, Exception e) {
+	private void reportRecoverableDetectorException(String className, Detector detector, Exception e) {
 		if (DEBUG) {
 			e.printStackTrace();
 		}
 		bugReporter.logError("Exception analyzing " + className +
-			" using detector " + detector.getDetectorClassName(), e);
+			" using detector " + detector.getClass().getName(), e);
 	}
 
 	/**
 	 * Call report() on all detectors, to give them a chance to
 	 * report any accumulated bug reports.
 	 */
-	private void reportFinal(Detector2[] detectors) throws InterruptedException {
-		for (Detector2 detector : detectors) {
+	private void reportFinal(Detector[] detectors) throws InterruptedException {
+		for (Detector detector : detectors) {
 			if (Thread.interrupted())
 				throw new InterruptedException();
-			detector.finishPass();
+			detector.report();
 		}
 	}
 

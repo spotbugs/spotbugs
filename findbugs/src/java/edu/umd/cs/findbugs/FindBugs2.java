@@ -210,18 +210,22 @@ public class FindBugs2 {
 	 * @throws CheckedAnalysisException 
 	 */
 	private void analyzeApplication() throws CheckedAnalysisException {
-		int count = 1;
+		int passCount = 1;
 		for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext(); ) {
 			if (VERBOSE) {
-				System.out.println("Pass " + count++);
+				System.out.println("Pass " + passCount++);
 			}
 			AnalysisPass pass = i.next();
 			
 			// TODO: on first pass, apply detectors to referenced classes too
 			
-			pass.createDetectors(bugReporter);
-			Detector2[] detectorList = pass.getDetectorList();
-			
+			Detector2[] detectorList = new Detector2[pass.getNumDetectors()];
+			int count = 0;
+			for (Iterator<DetectorFactory> j = pass.iterator(); j.hasNext();) {
+				detectorList[count++] = j.next().createDetector2(bugReporter);
+			}
+
+			// On each class, apply each detector
 			for (ClassDescriptor classDescriptor : appClassList) {
 				if (VERBOSE) {
 					System.out.println("Class " + classDescriptor);
@@ -238,6 +242,11 @@ public class FindBugs2 {
 						logRecoverableException(classDescriptor, detector, e);
 					}
 				}
+			}
+			
+			// Call finishPass on each detector
+			for (Detector2 detector : detectorList) {
+				detector.finishPass();
 			}
 		}
 	}
