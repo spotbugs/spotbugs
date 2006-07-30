@@ -296,7 +296,7 @@ public class FindNullDeref
 				// Only choose non-exception values.
 				// Values null on an exception path might be due to
 				// infeasible control flow.
-				return value.mightBeNull() && !value.isException();
+				return value.mightBeNull() && !value.isException() && !value.isReturnValue();
 			}
 		});
 		BitSet definitelyNullArgSet = frame.getArgumentSet(invokeInstruction, cpg, new DataflowValueChooser<IsNullValue>() {
