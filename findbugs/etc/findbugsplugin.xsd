@@ -57,6 +57,8 @@
 	<xsd:simpleType name="DetectorCategoryType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="reporting"/>
+			<xsd:enumeration value="training"/>
+			<xsd:enumeration value="interprocedural"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 	
