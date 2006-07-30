@@ -54,7 +54,8 @@ public class NoteSuppressedWarnings
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-		classContext.getJavaClass().accept(this);
+		JavaClass javaClass = classContext.getJavaClass();
+		if  (!FindUnreleasedLock.preTiger(javaClass)) javaClass.accept(this);
 	}
 
 	@Override

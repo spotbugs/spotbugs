@@ -27,6 +27,8 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 import java.io.*;
 import java.util.*;
 
+import org.apache.bcel.classfile.JavaClass;
+
 /**
  * @author William Pugh
  */
@@ -55,7 +57,8 @@ public class NoteCheckReturnValue extends AnnotationVisitor
 			loadTraining();
 			checkLoad = true;
 		}
-		classContext.getJavaClass().accept(this);
+		JavaClass javaClass = classContext.getJavaClass();
+		if  (!FindUnreleasedLock.preTiger(javaClass)) javaClass.accept(this);
 	}
 
 		@Override

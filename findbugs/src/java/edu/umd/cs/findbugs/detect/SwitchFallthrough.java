@@ -36,6 +36,9 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 	private boolean reachable;
 	private BugReporter bugReporter;
 	private int lastPC;
+	private BitSet potentiallyDeadStores = new BitSet();
+	private int priority;
+	private int fallthroughDistance;
 
 	public SwitchFallthrough(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -56,9 +59,12 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		lastPC = 0;
 		found.clear();
 		switchHdlr = new SwitchHandler();
+		potentiallyDeadStores.clear();
+		priority = NORMAL_PRIORITY;
+		fallthroughDistance = 1000;
 		super.visit(obj);
 		if (!found.isEmpty() && found.size() < 4) {
-			BugInstance bug = new BugInstance(this, "SF_SWITCH_FALLTHROUGH", NORMAL_PRIORITY)
+			BugInstance bug = new BugInstance(this, "SF_SWITCH_FALLTHROUGH", priority)
         			.addClassAndMethod(this).addAnnotations(found);
 			bugReporter.reportBug(bug);
 			
@@ -71,12 +77,24 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 			if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
 				SourceLineAnnotation sourceLineAnnotation =
 					SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(), this, lastPC, getPC());
-				if (sourceLineAnnotation != null)
+				if (sourceLineAnnotation != null) {
 					found.add(sourceLineAnnotation);
+					fallthroughDistance = 0;
+				}
 			}
 			
 		}
-		
+		if (isRegisterLoad())
+			potentiallyDeadStores.clear(getRegisterOperand());
+
+		else if (isRegisterStore()) {
+			if (potentiallyDeadStores.get(getRegisterOperand())){
+				// killed store
+				if (fallthroughDistance < 8) priority = HIGH_PRIORITY;
+			}
+			else potentiallyDeadStores.set(getRegisterOperand());
+		}
+			
 		switch (seen) {
 			case TABLESWITCH:
 			case LOOKUPSWITCH:
@@ -105,6 +123,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		}
 		
 		lastPC = getPC();
+		fallthroughDistance++;
 	}
 	
 	private boolean hasFallThruComment( int startPC, int endPC ) {

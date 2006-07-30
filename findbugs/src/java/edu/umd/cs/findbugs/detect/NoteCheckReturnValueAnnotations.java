@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import org.apache.bcel.classfile.JavaClass;
+
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -36,7 +38,8 @@ public class NoteCheckReturnValueAnnotations
 
 	public void visitClassContext(ClassContext classContext) {
 		
-		classContext.getJavaClass().accept(this);
+		JavaClass javaClass = classContext.getJavaClass();
+		if  (!FindUnreleasedLock.preTiger(javaClass)) javaClass.accept(this);
 	}
 
 	public void report() {

@@ -20,8 +20,15 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
+import java.util.BitSet;
+
 import org.apache.bcel.classfile.Code;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
 
 public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implements StatelessDetector {
 
@@ -33,13 +40,15 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 		this.bugReporter = bugReporter;
 	}
 
+	private BitSet previousStores = new BitSet();
 
 
 	@Override
-         public void visit(Code obj) {
+       public void visit(Code obj) {
 		previousLoadOf = -1;
 		previousGotoTarget = -1;
 		gotoCount = 0;
+		previousStores.clear();
 		super.visit(obj);
 	}
 
@@ -55,13 +64,23 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 			if (isRegisterLoad()) 
 				previousLoadOf = getRegisterOperand();
 			else {
-				if (isRegisterStore() && previousLoadOf == getRegisterOperand() && gotoCount < 2 && getPC() != previousGotoTarget)
+				if (isRegisterStore()) {
+					if (previousLoadOf == getRegisterOperand() && gotoCount < 2 && getPC() != previousGotoTarget) {
+					int priority = NORMAL_PRIORITY;
+					String methodName = getMethodName();
+					if (methodName.equals("<init>") || methodName.startsWith("set") && getCode().getCode().length <= 5 ||
+							!previousStores.get(getRegisterOperand())) priority = HIGH_PRIORITY;
 				       bugReporter.reportBug(
 					new BugInstance(this, 
-							"SA_LOCAL_SELF_ASSIGNMENT", getMethodName().equals("<init>") ? HIGH_PRIORITY : NORMAL_PRIORITY)
+							"SA_LOCAL_SELF_ASSIGNMENT", priority)
 	                                        .addClassAndMethod(this)
 	                                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), getRegisterOperand(), getPC(), getPC()))
+	                                        
 	                                        .addSourceLine(this));
+					}
+					previousStores.set(getRegisterOperand());
+				}
+				
 	
 				previousLoadOf = -1;
 				gotoCount = 0;
