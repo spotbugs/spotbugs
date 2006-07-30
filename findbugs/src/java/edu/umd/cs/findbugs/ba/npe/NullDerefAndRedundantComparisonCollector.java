@@ -24,6 +24,7 @@ import java.util.Set;
 
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
  * Callback interface for collecting null pointer derefs and
@@ -40,8 +41,9 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 * @param location    the Location of the null dereference
 	 * @param valueNumber the ValueNumber of the possibly-null value
 	 * @param refValue    the kind of possibly-null value dereferenced
+	 * @param vnaFrame 	  The ValueNumber Frame at the point where the dereference occurred
 	 */
-	public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue);
+	public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame);
 
 	/**
 	 * Subclasses should override this method to capture locations where

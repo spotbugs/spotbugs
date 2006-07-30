@@ -580,7 +580,7 @@ public class FindNullDeref
 	public void report() {
 	}
 
-	public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue) {
+	public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame) {
 		WarningPropertySet propertySet = new WarningPropertySet();
 		
 		boolean onExceptionPath = refValue.isException();
@@ -589,17 +589,15 @@ public class FindNullDeref
 		}
 
 		LocalVariableAnnotation variable = null;
-		try {
-			ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
-			ValueNumberFrame vnaFrameAtLocation= vnaDataflow.getFactAtLocation(location);
 			if (DEBUG) {
-				System.out.println("Dereference at " + location);
-				System.out.println("Value number frame: " + vnaFrameAtLocation);
+				System.out.println("Dereference at " + location + " of " + valueNumber);
+				System.out.println("Value number frame: " + vnaFrame);
 			}
 
-			if (vnaFrameAtLocation != null && !vnaFrameAtLocation.isBottom() && !vnaFrameAtLocation.isTop())
-			for(int i = 0; i < vnaFrameAtLocation.getNumLocals(); i++) {
-				if (valueNumber.equals(vnaFrameAtLocation.getValue(i))) {
+			if (vnaFrame != null && !vnaFrame.isBottom() && !vnaFrame.isTop())
+			for(int i = 0; i < vnaFrame.getNumLocals(); i++) {
+				if (valueNumber.equals(vnaFrame.getValue(i))) {
+					if (DEBUG) System.out.println("Found it in local " + i);
 					InstructionHandle handle = location.getHandle();
 					int position1 = handle.getPrev().getPosition();
 					int position2 = handle.getPosition();
@@ -607,18 +605,11 @@ public class FindNullDeref
 					if (variable != null) break;
 				}
 			}
-		} catch (DataflowAnalysisException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (CFGBuilderException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		if (refValue.isDefinitelyNull()) {
 			String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION" : "NP_ALWAYS_NULL";
 			int priority = onExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
-			reportNullDeref(propertySet, classContext, method, location, type, priority, null);
+			reportNullDeref(propertySet, classContext, method, location, type, priority, variable);
 		} else if (refValue.isNullOnSomePath()) {
 			String type =  "NP_NULL_ON_SOME_PATH";
 			int priority =  NORMAL_PRIORITY;

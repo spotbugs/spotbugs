@@ -3108,7 +3108,7 @@ dateString = dateString.trim();
 
   <BugPattern type="NP_ALWAYS_NULL">
     <ShortDescription>Null pointer dereference</ShortDescription>
-    <LongDescription>Null pointer dereference in {1}</LongDescription>
+    <LongDescription>Null pointer dereference of {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> A null pointer is dereferenced here.&nbsp; This will lead to a
@@ -3127,7 +3127,7 @@ dateString = dateString.trim();
   </BugPattern>
   <BugPattern type="NP_ALWAYS_NULL_EXCEPTION">
     <ShortDescription>Null pointer dereference in method on exception path</ShortDescription>
-    <LongDescription>Null pointer dereference in {1} on exception path</LongDescription>
+    <LongDescription>Null pointer dereference of {2} in {1} on exception path</LongDescription>
     <Details>
 <![CDATA[
 <p> A pointer which is null on an exception path is dereferenced here.&nbsp;
@@ -3143,7 +3143,7 @@ be an exception path, since the default case is often infeasible.</p>
 
   <BugPattern type="NP_NULL_ON_SOME_PATH">
     <ShortDescription>Possible null pointer dereference</ShortDescription>
-    <LongDescription>Possible null pointer dereference in {1}</LongDescription>
+    <LongDescription>Possible null pointer dereference of {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> A reference value dereferenced here might be null at runtime.&nbsp;
@@ -3154,7 +3154,7 @@ This may lead to a <code>NullPointerException</code> when the code is executed.<
 
   <BugPattern type="NP_NULL_ON_SOME_PATH_EXCEPTION">
     <ShortDescription>Possible null pointer dereference in method on exception path</ShortDescription>
-    <LongDescription>Possible null pointer dereference in {1} on exception path</LongDescription>
+    <LongDescription>Possible null pointer dereference of {2} in {1} on exception path</LongDescription>
     <Details>
 <![CDATA[
 <p> A reference value which is null on some exception control path is
