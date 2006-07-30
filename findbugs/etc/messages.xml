@@ -2021,7 +2021,7 @@ but can be accessed in a way that seems to violate the annotation.</p>
     </Details>
   </BugPattern>
   <BugPattern type="NN_NAKED_NOTIFY">
-    <ShortDescription>Naked notify in method</ShortDescription>
+    <ShortDescription>Naked notify</ShortDescription>
     <LongDescription>Naked notify in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -2174,7 +2174,7 @@ This not necessarily a bug, but is worth examining
   </BugPattern>
 
   <BugPattern type="UW_UNCOND_WAIT">
-    <ShortDescription>Unconditional wait in method</ShortDescription>
+    <ShortDescription>Unconditional wait</ShortDescription>
     <LongDescription>Unconditional wait in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -2984,7 +2984,7 @@ inner object.&nbsp; This reference makes the instances
   </BugPattern>
 
   <BugPattern type="WA_NOT_IN_LOOP">
-    <ShortDescription>Wait not in loop in method</ShortDescription>
+    <ShortDescription>Wait not in loop </ShortDescription>
     <LongDescription>Wait not in loop in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -2997,7 +2997,7 @@ inner object.&nbsp; This reference makes the instances
   </BugPattern>
 
   <BugPattern type="WA_AWAIT_NOT_IN_LOOP">
-    <ShortDescription>Condition.await() not in loop in method</ShortDescription>
+    <ShortDescription>Condition.await() not in loop </ShortDescription>
     <LongDescription>Condition.await() not in loop in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -3011,7 +3011,7 @@ inner object.&nbsp; This reference makes the instances
   </BugPattern>
 
   <BugPattern type="NO_NOTIFY_NOT_NOTIFYALL">
-    <ShortDescription>Using notify() rather than notifyAll() in method</ShortDescription>
+    <ShortDescription>Using notify() rather than notifyAll()</ShortDescription>
     <LongDescription>Using notify rather than notifyAll in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -3107,7 +3107,7 @@ dateString = dateString.trim();
   </BugPattern>
 
   <BugPattern type="NP_ALWAYS_NULL">
-    <ShortDescription>Null pointer dereference in method</ShortDescription>
+    <ShortDescription>Null pointer dereference</ShortDescription>
     <LongDescription>Null pointer dereference in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -3142,7 +3142,7 @@ be an exception path, since the default case is often infeasible.</p>
   </BugPattern>
 
   <BugPattern type="NP_NULL_ON_SOME_PATH">
-    <ShortDescription>Possible null pointer dereference in method</ShortDescription>
+    <ShortDescription>Possible null pointer dereference</ShortDescription>
     <LongDescription>Possible null pointer dereference in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -3325,7 +3325,7 @@ is not a directory.</p>
   </BugPattern>
 
   <BugPattern type="UCF_USELESS_CONTROL_FLOW">
-    <ShortDescription>Useless control flow in method</ShortDescription>
+    <ShortDescription>Useless control flow</ShortDescription>
     <LongDescription>Useless control flow in {1}</LongDescription>
     <Details>
 <![CDATA[
@@ -3774,7 +3774,7 @@ For more information, see the
   </BugPattern>
 
   <BugPattern type="JLM_JSR166_LOCK_MONITORENTER">
-    <ShortDescription>Synchronization performed on java.util.concurrent Lock in method</ShortDescription>
+    <ShortDescription>Synchronization performed on java.util.concurrent Lock</ShortDescription>
     <LongDescription>Synchronization performed on java.util.concurrent Lock in method {1}</LongDescription>
 <Details>
 <![CDATA[
@@ -5030,12 +5030,12 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="Dm" >Dubious method used</BugCode>
   <BugCode abbrev="UR" >Uninitialized read of field in constructor</BugCode>
   <BugCode abbrev="RR" >Method ignores results of InputStream.read()</BugCode>
-  <BugCode abbrev="NN" >Naked notify in method</BugCode>
-  <BugCode abbrev="UW" >Unconditional wait in method</BugCode>
+  <BugCode abbrev="NN" >Naked notify</BugCode>
+  <BugCode abbrev="UW" >Unconditional wait</BugCode>
   <BugCode abbrev="SP" >Method spins on field</BugCode>
   <BugCode abbrev="DC" >Possible double check of field</BugCode>
-  <BugCode abbrev="Wa" >Wait not in loop in method</BugCode>
-  <BugCode abbrev="No" >Using notify() rather than notifyAll() in method</BugCode>
+  <BugCode abbrev="Wa" >Wait not in loop</BugCode>
+  <BugCode abbrev="No" >Using notify() rather than notifyAll()</BugCode>
   <BugCode abbrev="DE" >Dropped or ignored exception</BugCode>
   <BugCode abbrev="Ru" >Method invokes run()</BugCode>
   <BugCode abbrev="It" >Incorrect definition of Iterator</BugCode>
