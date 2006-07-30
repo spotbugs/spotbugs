@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.plan.OrderingConstraintException;
  * FindBugs driver class.
  * Experimental version to use the new bytecode-framework-neutral
  * codebase/classpath/classfile infrastructure.
- * Don't expect this class to do anything useful for a while.
+ * It can run detectors, but lacks many features.
  * 
  * @author David Hovemeyer
  */
@@ -64,6 +64,12 @@ public class FindBugs2 {
 	private DetectorFactoryCollection detectorFactoryCollection;
 	private ExecutionPlan executionPlan;
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param bugReporter the BugReporter to use to report bugs
+	 * @param project     the Project to analyze
+	 */
 	public FindBugs2(BugReporter bugReporter, Project project) {
 		this.bugReporter = bugReporter;
 		this.project = project;
@@ -165,6 +171,7 @@ public class FindBugs2 {
 	private void createAnalysisContext() {
 		AnalysisCacheToAnalysisContextAdapter analysisContext =
 			new AnalysisCacheToAnalysisContextAdapter();
+		analysisContext.setAppClassList(appClassList);
 		AnalysisContext.setCurrentAnalysisContext(analysisContext);
 	}
 
@@ -227,11 +234,11 @@ public class FindBugs2 {
 
 			// On each class, apply each detector
 			for (ClassDescriptor classDescriptor : appClassList) {
-				if (VERBOSE) {
+				if (DEBUG) {
 					System.out.println("Class " + classDescriptor);
 				}
 				for (Detector2 detector : detectorList) {
-					if (VERBOSE) {
+					if (DEBUG) {
 						System.out.println("Applying " + detector.getDetectorClassName() + " to " + classDescriptor);
 					}
 					try {
@@ -252,7 +259,6 @@ public class FindBugs2 {
 	}
 	
 	/**
-	 * 
 	 * Report an exception that occurred while analyzing a class
 	 * with a detector.
 	 * 
@@ -276,7 +282,10 @@ public class FindBugs2 {
 			throw new IllegalArgumentException("findbugs.home property must be set!");
 		}
 		
-		BugReporter bugReporter = new DelegatingBugReporter(new PrintingBugReporter());
+		TextUIBugReporter realBugReporter = new PrintingBugReporter();
+		realBugReporter.setOutputStream(System.out);
+		BugReporter bugReporter = new DelegatingBugReporter(realBugReporter);
+		bugReporter.setPriorityThreshold(Detector2.NORMAL_PRIORITY);
 		
 		Project project = new Project();
 		project.read(args[0]);
