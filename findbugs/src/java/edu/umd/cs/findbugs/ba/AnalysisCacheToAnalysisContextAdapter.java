@@ -20,20 +20,19 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
-import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 
@@ -82,13 +81,34 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	}
 	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
+	private Set<ClassDescriptor> appClassSet;
 	
 	/**
 	 * Constructor.
-	 *
 	 */
 	public AnalysisCacheToAnalysisContextAdapter() {
 		this.lookupFailureCallback = new DelegatingRepositoryLookupFailureCallback();
+		this.appClassSet = new HashSet<ClassDescriptor>();
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#isApplicationClass(org.apache.bcel.classfile.JavaClass)
+	 */
+	@Override
+	public boolean isApplicationClass(JavaClass cls) {
+		// FIXME: should use Subtypes database
+		return isApplicationClass(cls.getClassName());
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#isApplicationClass(java.lang.String)
+	 */
+	@Override
+	public boolean isApplicationClass(String className) {
+		// FIXME: should use Subtypes database
+		ClassDescriptor classDescriptor =
+			new ClassDescriptor(ClassName.toSlashedClassName(className));
+		return appClassSet.contains(classDescriptor);
 	}
 
 	/* (non-Javadoc)
@@ -285,6 +305,16 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	private static String transformClassName(String className) {
 		return ClassName.toSlashedClassName(className);
+	}
+
+	/**
+	 * Set the collection of class descriptors identifying application classes.
+	 * 
+	 * @param appClassCollection Set of ClassDescriptors identifying application classes
+	 */
+	public void setAppClassList(Collection<ClassDescriptor> appClassCollection) {
+		// FIXME: use Subtypes database
+		appClassSet.addAll(appClassCollection);
 	}
 
 }

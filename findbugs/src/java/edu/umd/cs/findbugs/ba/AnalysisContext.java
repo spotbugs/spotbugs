@@ -191,7 +191,7 @@ public abstract class AnalysisContext {
 	 * @return true if the class is an application class, false if not
 	 *         an application class or if the class cannot be located
 	 */
-	public final boolean isApplicationClass(JavaClass cls) {
+	public boolean isApplicationClass(JavaClass cls) {
 		return getSubtypes().isApplicationClass(cls);
 	}
 	
@@ -202,7 +202,7 @@ public abstract class AnalysisContext {
 	 * @return true if the class is an application class, false if not
 	 *         an application class or if the class cannot be located
 	 */
-	public final boolean isApplicationClass(String className) {
+	public boolean isApplicationClass(String className) {
 		try {
 			JavaClass javaClass = lookupClass(className);
 			return isApplicationClass(javaClass);
