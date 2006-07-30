@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -586,11 +587,38 @@ public class FindNullDeref
 		if (onExceptionPath) {
 			propertySet.addProperty(GeneralWarningProperty.ON_EXCEPTION_PATH);
 		}
+
+		LocalVariableAnnotation variable = null;
+		try {
+			ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+			ValueNumberFrame vnaFrameAtLocation= vnaDataflow.getFactAtLocation(location);
+			if (DEBUG) {
+				System.out.println("Dereference at " + location);
+				System.out.println("Value number frame: " + vnaFrameAtLocation);
+			}
+
+			if (vnaFrameAtLocation != null && !vnaFrameAtLocation.isBottom() && !vnaFrameAtLocation.isTop())
+			for(int i = 0; i < vnaFrameAtLocation.getNumLocals(); i++) {
+				if (valueNumber.equals(vnaFrameAtLocation.getValue(i))) {
+					InstructionHandle handle = location.getHandle();
+					int position1 = handle.getPrev().getPosition();
+					int position2 = handle.getPosition();
+					variable = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, position1, position2);
+					if (variable != null) break;
+				}
+			}
+		} catch (DataflowAnalysisException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CFGBuilderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if (refValue.isDefinitelyNull()) {
 			String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION" : "NP_ALWAYS_NULL";
 			int priority = onExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
-			reportNullDeref(propertySet, classContext, method, location, type, priority);
+			reportNullDeref(propertySet, classContext, method, location, type, priority, null);
 		} else if (refValue.isNullOnSomePath()) {
 			String type =  "NP_NULL_ON_SOME_PATH";
 			int priority =  NORMAL_PRIORITY;
@@ -605,7 +633,7 @@ public class FindNullDeref
 				type = "NP_ARGUMENT_MIGHT_BE_NULL";
 			}
 			if (DEBUG) System.out.println("Reporting null on some path: value=" + refValue);
-			reportNullDeref(propertySet, classContext, method, location, type, priority);
+			reportNullDeref(propertySet, classContext, method, location, type, priority, variable);
 		}
 	}
 
@@ -615,13 +643,15 @@ public class FindNullDeref
 			Method method,
 			Location location,
 			String type,
-			int priority) {
+			int priority, LocalVariableAnnotation variable) {
 		MethodGen methodGen = classContext.getMethodGen(method);
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 
 		BugInstance bugInstance = new BugInstance(this, type, priority)
-		        .addClassAndMethod(methodGen, sourceFile)
-		        .addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
+		        .addClassAndMethod(methodGen, sourceFile);
+		if (variable != null)
+			bugInstance.add(variable);
+		bugInstance.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
 
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
