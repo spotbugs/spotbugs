@@ -51,7 +51,6 @@ import edu.umd.cs.findbugs.filter.Matcher;
  * @author William Pugh
  */
 public class Filter {
-	static SourceFinder sourceFinder = new SourceFinder();
 	static class FilterCommandLine extends CommandLine {
 		/**
 		 * 
@@ -216,30 +215,7 @@ public class Filter {
 			if (not) return !result;
 			return result;
 		}
-		HashSet<String> sourceFound = new HashSet<String>();
-		HashSet<String> sourceNotFound = new HashSet<String>();
-		
-		boolean findSource(SourceLineAnnotation srcLine) {
-			if (srcLine == null) return false;
-			String sourceFile = srcLine.getSourceFile();
-			if (sourceFile != null && !sourceFile.equals("<Unknown>")) {
-				
-				String cName = srcLine.getClassName();
-				if (sourceFound.contains(cName)) return true;
-				if (sourceNotFound.contains(cName)) return false;
-				try {
-					InputStream in = sourceFinder.openSource(srcLine.getPackageName(), sourceFile);
-					in.close();
-					sourceFound.add(cName);
-					return true;
-				} catch (IOException e) {
-					assert true; // ignore it -- couldn't find source file
-					sourceNotFound.add(cName);
-				}
-			}
-			return false;
-		}
-		boolean evaluate(BugInstance bug) {
+				boolean evaluate(BugInstance bug) {
 
 			if (includeFilter != null && !includeFilter.match(bug)) return false;
 			if (excludeFilter != null && excludeFilter.match(bug)) return false;
@@ -282,7 +258,7 @@ public class Filter {
 				return false;
 			
 			if (withSourceSpecified) {
-				if (findSource(bug.getPrimarySourceLineAnnotation()) != withSource) 
+				if (sourceSearcher.findSource(bug.getPrimarySourceLineAnnotation()) != withSource) 
 					return false;
 			}
 
@@ -391,9 +367,9 @@ public class Filter {
 			throw new IllegalArgumentException("Bad priority: " + argument);
 		return i;
 	}
-	/**
-	 * @param args
-	 */
+
+	static SourceSearcher sourceSearcher;
+	
 	public static void main(String[] args) throws Exception {
 		DetectorFactoryCollection.instance();
 		final FilterCommandLine commandLine = new FilterCommandLine();
@@ -412,10 +388,9 @@ public class Filter {
 		int passed = 0;
 		int dropped = 0;
 		resultCollection.setWithMessages(commandLine.withMessages);
-		sourceFinder.setSourceBaseList(project.getSourceDirList());
 		commandLine.adjustFilter(resultCollection);
 		resultCollection.getProjectStats().clearBugCounts();
-
+		sourceSearcher = new SourceSearcher(project);
 		for (BugInstance bug : origCollection.getCollection())
 			if (commandLine.accept(bug)) {
 				resultCollection.add(bug, false);

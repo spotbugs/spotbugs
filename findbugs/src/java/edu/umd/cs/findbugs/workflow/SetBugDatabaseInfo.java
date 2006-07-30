@@ -17,17 +17,26 @@
  */
 package edu.umd.cs.findbugs.workflow;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 /**
@@ -48,14 +57,16 @@ public class SetBugDatabaseInfo {
 	
 	static class SetInfoCommandLine extends CommandLine {
 		String revisionName;
-
+		
 		long revisionTimestamp = 0L;
 		public  List<String> sourcePaths = new LinkedList<String>();
+		public  List<String> searchSourcePaths = new LinkedList<String>();
 
 		SetInfoCommandLine() {
 			addOption("-name", "name", "set name for (last) revision");
 			addOption("-timestamp", "when", "set timestamp for (last) revision");
 			addOption("-source", "directory", "Add this directory to the source search path");
+			addOption("-findSource", "directory", "Find and add all relevant source directions contained within this directory");
 		}
 
 		@Override
@@ -74,6 +85,8 @@ public class SetBugDatabaseInfo {
 				revisionTimestamp = Date.parse(argument);
 			else if (option.equals("-source"))
 					sourcePaths.add(argument);
+			else if (option.equals("-findSource"))
+				searchSourcePaths.add(argument);
 			else
 				throw new IllegalArgumentException("Can't handle option "
 						+ option);
@@ -105,6 +118,55 @@ public class SetBugDatabaseInfo {
 			origCollection.setTimestamp(commandLine.revisionTimestamp);
 		for(String source : commandLine.sourcePaths)
 			project.addSourceDir(source);
+
+		Map<String,Set<String>> missingFiles = new HashMap<String,Set<String>>();
+		if (!commandLine.searchSourcePaths.isEmpty()) {
+			sourceSearcher = new SourceSearcher(project);
+			Set<String> filenames = new HashSet<String>();
+			for(BugInstance bug : origCollection.getCollection()) {
+				SourceLineAnnotation src = bug.getPrimarySourceLineAnnotation();
+				if (!sourceSearcher.sourceNotFound.contains(src.getClassName())
+						&& !sourceSearcher.findSource(src)) {
+					Set<String> paths = missingFiles.get(src.getSourceFile());
+					if (paths == null) {
+						paths = new HashSet<String>();
+						missingFiles.put(src.getSourceFile(), paths);
+					}
+					String fullPath = fullPath(src);
+					// System.out.println("Missing " + fullPath);
+					paths.add(fullPath);
+				}
+			}
+			Set<String> foundPaths = new HashSet<String>();
+			for(String f : commandLine.searchSourcePaths) 
+				for(File javaFile :  RecursiveSearchForJavaFiles.search(new File(f))) {
+					Set<String> matchingMissingClasses = missingFiles.get(javaFile.getName());
+					if (matchingMissingClasses == null) {
+						// System.out.println("Nothing for " + javaFile);
+					} else for(String sourcePath : matchingMissingClasses) {
+						String path = javaFile.getAbsolutePath();
+						if (path.endsWith(sourcePath)) {
+							String dir = path.substring(0,path.length() - sourcePath.length());
+							if (foundPaths.add(dir)) {
+								project.addSourceDir(dir);
+								if (argCount < args.length) 
+									System.out.println("Found " + dir);
+							}
+						}
+					}
+				
+					
+				}
+					
+			
+				}
+		
+			// OK, now we know all the missing source files
+			// we also know all the .java files in the directories we were pointed to
+		
+			
+		
+			
 		
 		if (argCount < args.length) 
 			origCollection.writeXML(args[argCount++], project);
@@ -112,7 +174,11 @@ public class SetBugDatabaseInfo {
 			origCollection.writeXML(System.out, project);
 
 	}
-
-
+	static String fullPath(SourceLineAnnotation src) {
+		return src.getPackageName().replace('.', File.separatorChar)
+		+ File.separatorChar + src.getSourceFile();
+	}
+	static SourceSearcher sourceSearcher;
+	
 
 }
