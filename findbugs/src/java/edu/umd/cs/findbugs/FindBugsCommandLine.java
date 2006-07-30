@@ -73,15 +73,17 @@ public abstract class FindBugsCommandLine extends CommandLine {
 				settingList = FindBugs.MIN_EFFORT;
 			} else if (optionExtraPart.equals("default")) {
 				settingList = FindBugs.DEFAULT_EFFORT;
+			} else if (optionExtraPart.equals("more")) {
+				settingList = FindBugs.MORE_EFFORT;
 			} else if (optionExtraPart.equals("max")) {
 				settingList = FindBugs.MAX_EFFORT;
 			} else {
-				throw new IllegalArgumentException("-effort:<value> must be one of min,default,max");
+				throw new IllegalArgumentException("-effort:<value> must be one of min,default,more,max");
 			}
 		} else if (option.equals("-workHard")) {
-			if (settingList == FindBugs.MIN_EFFORT) {
-				settingList = FindBugs.DEFAULT_EFFORT;
-			}
+			if (settingList != FindBugs.MAX_EFFORT)
+				settingList = FindBugs.MORE_EFFORT;
+			
 		} else if (option.equals("-conserveSpace")) {
 			settingList = FindBugs.MIN_EFFORT;
 		} else if (option.equals("-adjustExperimental")) {

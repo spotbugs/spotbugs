@@ -507,6 +507,14 @@ public class FindBugs implements Constants2, ExitCodes {
 			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
 	};
 	
+	public static final AnalysisFeatureSetting[] MORE_EFFORT = new AnalysisFeatureSetting[]{
+		new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
+		new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
+		new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
+};
 	public static final AnalysisFeatureSetting[] MAX_EFFORT = new AnalysisFeatureSetting[]{
 			new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
 			new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
