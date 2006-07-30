@@ -820,6 +820,8 @@ public class FindBugs implements Constants2, ExitCodes {
 		}
 
 		public FindBugs createEngine() throws IOException, FilterException {
+			FindBugs findBugs = new FindBugs();
+			
 			TextUIBugReporter textuiBugReporter;
 			switch (bugReporterType) {
 			case PRINTING_REPORTER:
@@ -863,7 +865,9 @@ public class FindBugs implements Constants2, ExitCodes {
 				bugReporter = new CategoryFilteringBugReporter(bugReporter, bugCategorySet);
 			}
 
-			FindBugs findBugs = new FindBugs(bugReporter, project);
+//			FindBugs findBugs = new FindBugs(bugReporter, project);
+			findBugs.setBugReporter(bugReporter);
+			findBugs.setProject(project);
 			
 			findBugs.setUserPreferences(userPreferences);
 
@@ -946,25 +950,15 @@ public class FindBugs implements Constants2, ExitCodes {
 	/* ----------------------------------------------------------------------
 	 * Public methods
 	 * ---------------------------------------------------------------------- */
-
+	
 	/**
 	 * Constructor.
-	 *
-	 * @param bugReporter the BugReporter object that will be used to report
-	 *                    BugInstance objects, analysis errors, class to source mapping, etc.
-	 * @param project     the Project indicating which files to analyze and
-	 *                    the auxiliary classpath to use; note that the FindBugs
-	 *                    object will create a private copy of the Project object
+	 * The setBugReporter() and setProject() methods must be called
+	 * before this object is used.
 	 */
-	public FindBugs(BugReporter bugReporter, Project project) {
-		if (bugReporter == null)
-			throw new IllegalArgumentException("null bugReporter");
-		if (project == null)
-			throw new IllegalArgumentException("null project");
-
-		this.bugReporter = new ErrorCountingBugReporter(bugReporter);
+	public FindBugs() {
+		
 		this.relaxedReportingMode = false;
-		this.project = project.duplicate();
 		this.userPreferences = UserPreferences.createDefaultUserPreferences();
 		this.classObserverList = new LinkedList<ClassObserver>();
 
@@ -988,8 +982,46 @@ public class FindBugs implements Constants2, ExitCodes {
 
 		// Class screener
 		this.classScreener = new ClassScreener();
+	}
 
+	/**
+	 * Constructor.
+	 *
+	 * @param bugReporter the BugReporter object that will be used to report
+	 *                    BugInstance objects, analysis errors, class to source mapping, etc.
+	 * @param project     the Project indicating which files to analyze and
+	 *                    the auxiliary classpath to use; note that the FindBugs
+	 *                    object will create a private copy of the Project object
+	 */
+	public FindBugs(BugReporter bugReporter, Project project) {
+		this();
+		
+		if (bugReporter == null)
+			throw new IllegalArgumentException("null bugReporter");
+		if (project == null)
+			throw new IllegalArgumentException("null project");
+
+		setBugReporter(bugReporter);
+		setProject(project);
+	}
+	
+	/**
+	 * Set the BugReporter.
+	 * 
+	 * @param bugReporter The BugReporter to set
+	 */
+	public void setBugReporter(BugReporter bugReporter) {
+		this.bugReporter = new ErrorCountingBugReporter(bugReporter);
 		addClassObserver(bugReporter);
+	}
+	
+	/**
+	 * Set the Project.
+	 * 
+	 * @param project The Project to set
+	 */
+	public void setProject(Project project) {
+		this.project = project.duplicate();
 	}
 
 	/**
