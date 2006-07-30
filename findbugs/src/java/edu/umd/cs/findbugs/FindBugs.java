@@ -84,7 +84,7 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  * @author Bill Pugh
  * @author David Hovemeyer
  */
-public class FindBugs implements Constants2, ExitCodes {
+public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
@@ -1005,41 +1005,30 @@ public class FindBugs implements Constants2, ExitCodes {
 		setProject(project);
 	}
 	
-	/**
-	 * Set the BugReporter.
-	 * 
-	 * @param bugReporter The BugReporter to set
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setBugReporter(edu.umd.cs.findbugs.BugReporter)
 	 */
 	public void setBugReporter(BugReporter bugReporter) {
 		this.bugReporter = new ErrorCountingBugReporter(bugReporter);
 		addClassObserver(bugReporter);
 	}
 	
-	/**
-	 * Set the Project.
-	 * 
-	 * @param project The Project to set
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setProject(edu.umd.cs.findbugs.Project)
 	 */
 	public void setProject(Project project) {
 		this.project = project.duplicate();
 	}
 
-	/**
-	 * Set the progress callback that will be used to keep track
-	 * of the progress of the analysis.
-	 *
-	 * @param progressCallback the progress callback
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setProgressCallback(edu.umd.cs.findbugs.FindBugsProgress)
 	 */
 	public void setProgressCallback(FindBugsProgress progressCallback) {
 		this.progressCallback = progressCallback;
 	}
 
-	/**
-	 * Set filter of bug instances to include or exclude.
-	 *
-	 * @param filterFileName the name of the filter file
-	 * @param include        true if the filter specifies bug instances to include,
-	 *                       false if it specifies bug instances to exclude
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addFilter(java.lang.String, boolean)
 	 */
 	public void addFilter(String filterFileName, boolean include) throws IOException, FilterException {
 		Filter filter = new Filter(filterFileName);
@@ -1048,109 +1037,81 @@ public class FindBugs implements Constants2, ExitCodes {
 		bugReporter.setDelegate(filterBugReporter);
 	}
 
-	/**
-	 * Set the UserPreferences representing which Detectors
-	 * should be used.  If UserPreferences are not set explicitly,
-	 * the default set of Detectors will be used.
-	 * 
-	 * @param userPreferences the UserPreferences
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setUserPreferences(edu.umd.cs.findbugs.config.UserPreferences)
 	 */
 	public void setUserPreferences(UserPreferences userPreferences) {
 		this.userPreferences = userPreferences;
 	}
 	
-	/**
-	 * Add a ClassObserver.
-	 *
-	 * @param classObserver the ClassObserver
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addClassObserver(edu.umd.cs.findbugs.ba.ClassObserver)
 	 */
 	public void addClassObserver(ClassObserver classObserver) {
 		classObserverList.add(classObserver);
 	}
 
-	/**
-	 * Set the ClassScreener.
-	 * This object chooses which individual classes to analyze.
-	 * By default, all classes are analyzed.
-	 *
-	 * @param classScreener the ClassScreener to use
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setClassScreener(edu.umd.cs.findbugs.ClassScreener)
 	 */
 	public void setClassScreener(ClassScreener classScreener) {
 		this.classScreener = classScreener;
 	}
 	
-	/**
-	 * Set relaxed reporting mode.
-	 * 
-	 * @param relaxedReportingMode true if relaxed reporting mode should be enabled,
-	 *                             false if not
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setRelaxedReportingMode(boolean)
 	 */
 	public void setRelaxedReportingMode(boolean relaxedReportingMode) {
 		this.relaxedReportingMode = relaxedReportingMode;
 	}
 	
-	/**
-	 * Set whether or not training output should be emitted.
-	 * 
-	 * @param trainingOutputDir  directory to save training output in
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingOutput(java.lang.String)
 	 */
 	public void enableTrainingOutput(String trainingOutputDir) {
 		this.emitTrainingOutput = true;
 		this.trainingOutputDir = trainingOutputDir;
 	}
 	
-	/**
-	 * Set whether or not training input should be used to
-	 * make the analysis more precise.
-	 * 
-	 * @param trainingInputDir directory to load training input from
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingInput(java.lang.String)
 	 */
 	public void enableTrainingInput(String trainingInputDir) {
 		this.useTrainingInput = true;
 		this.trainingInputDir = trainingInputDir;
 	}
 
-	/**
-	 * Set analysis feature settings.
-	 * 
-	 * @param settingList list of analysis feature settings
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setAnalysisFeatureSettings(edu.umd.cs.findbugs.config.AnalysisFeatureSetting[])
 	 */
 	public void setAnalysisFeatureSettings(AnalysisFeatureSetting[] settingList) {
 		if (settingList != null)
 			this.settingList  = settingList;
 	}
 	
-	/**
-	 * @return Returns the releaseName.
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getReleaseName()
 	 */
 	public String getReleaseName() {
 		return releaseName;
 	}
 	
-	/**
-	 * @param releaseName The releaseName to set.
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setReleaseName(java.lang.String)
 	 */
 	public void setReleaseName(String releaseName) {
 		this.releaseName = releaseName;
 	}
 	
-	/**
-	 * Set the filename of the source info file containing line numbers for fields
-	 * and classes.
-	 * 
-	 * @param sourceInfoFile the source info filename
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setSourceInfoFile(java.lang.String)
 	 */
 	public void setSourceInfoFile(String sourceInfoFile) {
 		this.sourceInfoFile = sourceInfoFile;
 	}
 	
-	/**
-	 * Execute FindBugs on the Project.
-	 * All bugs found are reported to the BugReporter object which was set
-	 * when this object was constructed.
-	 *
-	 * @throws java.io.IOException  if an I/O exception occurs analyzing one of the files
-	 * @throws InterruptedException if the thread is interrupted while conducting the analysis
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#execute()
 	 */
 	public void execute() throws java.io.IOException, InterruptedException {
 		// Configure the analysis context
@@ -1274,31 +1235,29 @@ public class FindBugs implements Constants2, ExitCodes {
 		System.out.println(analysisContext.getClassContextStats());
 	}
 
-	/**
-	 * Get the name of the most recent class to be analyzed.
-	 * This is useful for diagnosing an unexpected exception.
-	 * Returns null if no class has been analyzed.
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getCurrentClass()
 	 */
 	public String getCurrentClass() {
 		return currentClass;
 	}
 
-	/**
-	 * Get the number of bug instances that were reported during analysis.
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugCount()
 	 */
 	public int getBugCount() {
 		return bugReporter.getBugCount();
 	}
 
-	/**
-	 * Get the number of errors that occurred during analysis.
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getErrorCount()
 	 */
 	public int getErrorCount() {
 		return bugReporter.getErrorCount();
 	}
 
-	/**
-	 * Get the number of time missing classes were reported during analysis.
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getMissingClassCount()
 	 */
 	public int getMissingClassCount() {
 		return bugReporter.getMissingClassCount();
