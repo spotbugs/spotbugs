@@ -1275,15 +1275,6 @@ public class FindBugs implements Constants2, ExitCodes {
 	}
 
 	/**
-	 * Get the analysis context.
-	 * It is only valid to call this method after the execute()
-	 * method has been called.
-	 */
-	public AnalysisContext getAnalysisContext() {
-		return analysisContext;
-	}
-
-	/**
 	 * Get the name of the most recent class to be analyzed.
 	 * This is useful for diagnosing an unexpected exception.
 	 * Returns null if no class has been analyzed.
