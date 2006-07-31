@@ -23,10 +23,14 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -63,7 +67,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		private ICodeBaseLocator codeBaseLocator;
 		private boolean isAppCodeBase;
 		
-		WorkListItem(ICodeBaseLocator codeBaseLocator, boolean isApplication) {
+		public WorkListItem(ICodeBaseLocator codeBaseLocator, boolean isApplication) {
 			this.codeBaseLocator = codeBaseLocator;
 			this.isAppCodeBase = isApplication;
 		}
@@ -77,15 +81,68 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		}
 	}
 	
+	/**
+	 * A codebase discovered during classpath building.
+	 */
+	static class DiscoveredCodeBase {
+		ICodeBase codeBase;
+		LinkedList<ICodeBaseEntry> resourceList;
+		
+		public DiscoveredCodeBase(ICodeBase codeBase) {
+			this.codeBase= codeBase;
+			this.resourceList = new LinkedList<ICodeBaseEntry>();
+		}
+		
+		public ICodeBase getCodeBase() {
+			return codeBase;
+		}
+		
+		public LinkedList<ICodeBaseEntry> getResourceList() {
+			return resourceList;
+		}
+
+		public void addCodeBaseEntry(ICodeBaseEntry entry) {
+			resourceList.add(entry);
+		}
+		
+		public ICodeBaseIterator iterator() throws InterruptedException {
+			if (codeBase instanceof IScannableCodeBase) {
+				return ((IScannableCodeBase) codeBase).iterator();
+			} else {
+				return new ICodeBaseIterator() {
+					public boolean hasNext() throws InterruptedException { return false; }
+					
+					public ICodeBaseEntry next() throws InterruptedException {
+						throw new UnsupportedOperationException();
+					}
+				};
+			}
+		}
+	}
+	
+	
+	// Fields
 	private IClassFactory classFactory; 
 	private IErrorLogger errorLogger;
 	private LinkedList<WorkListItem> projectWorkList;
+	private LinkedList<DiscoveredCodeBase> discoveredCodeBaseList;
+	private Map<String, DiscoveredCodeBase> discoveredCodeBaseMap;
+	private Set<ClassDescriptor> allClassSet;
 	private LinkedList<ClassDescriptor> appClassList;
-	
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param classFactory the class factory
+	 * @param errorLogger  the error logger
+	 */
 	ClassPathBuilder(IClassFactory classFactory, IErrorLogger errorLogger) {
 		this.classFactory = classFactory;
 		this.errorLogger = errorLogger;
 		this.projectWorkList = new LinkedList<WorkListItem>();
+		this.discoveredCodeBaseList = new LinkedList<DiscoveredCodeBase>();
+		this.discoveredCodeBaseMap = new HashMap<String, DiscoveredCodeBase>();
+		this.allClassSet = new HashSet<ClassDescriptor>();
 		this.appClassList = new LinkedList<ClassDescriptor>();
 	}
 
@@ -100,8 +157,42 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	 * @see edu.umd.cs.findbugs.classfile.IClassPathBuilder#build(edu.umd.cs.findbugs.classfile.IClassPath)
 	 */
 	public void build(IClassPath classPath) throws ResourceNotFoundException, IOException, InterruptedException {
+		// Discover all directly and indirectly referenced codebases
 		processWorkList(classPath, projectWorkList);
 		processWorkList(classPath, buildSystemCodebaseList());
+		
+		// Add all discovered codebases to the classpath
+		for (DiscoveredCodeBase discoveredCodeBase : discoveredCodeBaseList) {
+			classPath.addCodeBase(discoveredCodeBase.getCodeBase());
+		}
+		
+		// Build collections of
+		// - all application classes
+		// - all classes period
+		// Also, add resource name -> codebase entry mappings for all classes.
+		for (DiscoveredCodeBase discoveredCodeBase : discoveredCodeBaseList) {
+			for (ICodeBaseIterator i = discoveredCodeBase.iterator(); i.hasNext(); ) {
+				ICodeBaseEntry entry = i.next();
+				if (!ClassDescriptor.isClassResource(entry.getResourceName())) {
+					continue;
+				}
+				
+				ClassDescriptor classDescriptor =
+					ClassDescriptor.fromResourceName(entry.getResourceName());
+				
+				if (allClassSet.contains(classDescriptor)) {
+					// An earlier entry takes precedence over this class
+					continue;
+				}
+				
+				allClassSet.add(classDescriptor);
+				if (discoveredCodeBase.getCodeBase().isApplicationCodeBase()) {
+					appClassList.add(classDescriptor);
+				}
+				
+				classPath.mapResourceNameToCodeBaseEntry(entry.getResourceName(), entry);
+			}
+		}
 		
 		if (DEBUG) {
 			System.out.println("Classpath:");
@@ -205,13 +296,29 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	 * @throws IOException
 	 * @throws ResourceNotFoundException
 	 */
-	private void processWorkList(IClassPath classPath, LinkedList<WorkListItem> workList) throws InterruptedException, IOException, ResourceNotFoundException {
+	private void processWorkList(IClassPath classPath, LinkedList<WorkListItem> workList)
+			throws InterruptedException, IOException, ResourceNotFoundException {
 		// Build the classpath, scanning codebases for nested archives
 		// and referenced codebases.
 		while (!workList.isEmpty()) {
 			WorkListItem item = workList.removeFirst();
 			if (DEBUG) {
 				System.out.println("Working: " + item.getCodeBaseLocator());
+			}
+			
+			DiscoveredCodeBase discoveredCodeBase;
+			
+			// See if we have encountered this codebase before
+			discoveredCodeBase = discoveredCodeBaseMap.get(item.getCodeBaseLocator().toString());
+			if (discoveredCodeBase != null) {
+				// If the codebase is not an app codebase and
+				// the worklist item says that it is an app codebase,
+				// change it.  Otherwise, we have nothing to do.
+				if (!discoveredCodeBase.getCodeBase().isApplicationCodeBase() && item.isAppCodeBase()) {
+					discoveredCodeBase.getCodeBase().setApplicationCodeBase(true);
+				}
+				
+				continue;
 			}
 			
 			// If we are working on an application codebase,
@@ -222,19 +329,22 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
 			try {
 				// Open the codebase and add it to the classpath
-				ICodeBase codeBase = item.getCodeBaseLocator().openCodeBase();
-				codeBase.setApplicationCodeBase(isAppCodeBase);
-				classPath.addCodeBase(codeBase);
+				discoveredCodeBase = new DiscoveredCodeBase(item.getCodeBaseLocator().openCodeBase());
+				discoveredCodeBase.getCodeBase().setApplicationCodeBase(isAppCodeBase);
+				
+				// Note that this codebase has been visited
+				discoveredCodeBaseMap.put(item.getCodeBaseLocator().toString(), discoveredCodeBase);
+				discoveredCodeBaseList.addLast(discoveredCodeBase);
 
 				// If it is a scannable codebase, check it for nested archives.
 				// In addition, if it is an application codebase then
 				// make a list of application classes.
-				if (codeBase instanceof IScannableCodeBase) {
-					scanCodebase(classPath, workList, (IScannableCodeBase) codeBase);
+				if (discoveredCodeBase.getCodeBase() instanceof IScannableCodeBase) {
+					scanCodebase(classPath, workList, discoveredCodeBase);
 				}
 
 				// Check for a Jar manifest for additional aux classpath entries.
-				scanJarManifestForClassPathEntries(workList, codeBase);
+				scanJarManifestForClassPathEntries(workList, discoveredCodeBase.getCodeBase());
 			} catch (IOException e) {
 				if (isAppCodeBase) {
 					throw e;
@@ -252,49 +362,45 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	}
 
 	/**
-	 * Scan given codebase:
+	 * Scan given codebase in order to
 	 * <ul>
-	 * <li> check a codebase for nested archives
+	 * <li> check the codebase for nested archives
 	 *      (adding any found to the worklist)
-	 * <li> build a list of classes in application codebases
-	 * <li> add resource name to codebase entry mappings
-	 *      to the classpath for application codebases
+	 * <li> build a list of class resources found in the codebase
 	 * </ul>
 	 * 
 	 * @param workList the worklist
-	 * @param codeBase the codebase to scan
+	 * @param discoveredCodeBase the codebase to scan
 	 * @throws InterruptedException 
 	 */
-	private void scanCodebase(IClassPath classPath, LinkedList<WorkListItem> workList, IScannableCodeBase codeBase)
+	private void scanCodebase(IClassPath classPath, LinkedList<WorkListItem> workList, DiscoveredCodeBase discoveredCodeBase)
 			throws InterruptedException {
 		if (DEBUG) {
-			System.out.println("Scanning " + codeBase.getCodeBaseLocator());
+			System.out.println("Scanning " + discoveredCodeBase.getCodeBase().getCodeBaseLocator());
 		}
+		
+		IScannableCodeBase codeBase = (IScannableCodeBase) discoveredCodeBase.getCodeBase();
+		
 		ICodeBaseIterator i = codeBase.iterator();
 		while (i.hasNext()) {
 			ICodeBaseEntry entry = i.next();
 			if (VERBOSE) {
 				System.out.println("Entry: " + entry.getResourceName());
 			}
+			
+			// Note the resource exists in this codebase
+			discoveredCodeBase.addCodeBaseEntry(entry);
 
-			// Add nested archives to the worklist
+			// If resource is a nested archive, add it to the worklist
 			if (Archive.isArchiveFileName(entry.getResourceName())) {
 				if (VERBOSE) {
 					System.out.println("Entry is an archive!");
 				}
 				ICodeBaseLocator nestedArchiveLocator =
 					classFactory.createNestedArchiveCodeBaseLocator(codeBase, entry.getResourceName());
-				addToWorkList(workList, new WorkListItem(nestedArchiveLocator, codeBase.isApplicationCodeBase()));
-			}
-			
-			// In application codebases,
-			//   - record all classesd
-			//   - add authoritative resource name -> codebase entry mappings to classpath
-			if (codeBase.isApplicationCodeBase()) {
-				if (ClassDescriptor.isClassResource(entry.getResourceName())) {
-					appClassList.add(ClassDescriptor.fromResourceName(entry.getResourceName()));
-				}
-				classPath.mapResourceNameToCodeBaseEntry(entry.getResourceName(), entry);
+				addToWorkList(
+						workList,
+						new WorkListItem(nestedArchiveLocator, codeBase.isApplicationCodeBase()));
 			}
 		}
 	}
@@ -383,5 +489,12 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	 */
 	public List<ClassDescriptor> getAppClassList() {
 		return appClassList;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IClassPathBuilder#getAllClassSet()
+	 */
+	public Set<ClassDescriptor> getAllClassSet() {
+		return allClassSet;
 	}
 }

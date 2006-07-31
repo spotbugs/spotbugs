@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.classfile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Build a classpath.
@@ -58,4 +59,11 @@ public interface IClassPathBuilder {
 	 * @return list of application classes
 	 */
 	public List<ClassDescriptor> getAppClassList();
+	
+	/**
+	 * Get the set of all classes discovered while scanning the classpath.
+	 * 
+	 * @return the set of all classes discovered while scanning the classpath
+	 */
+	public Set<ClassDescriptor> getAllClassSet();
 }

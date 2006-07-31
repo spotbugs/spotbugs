@@ -44,4 +44,15 @@ public interface ICodeBaseLocator {
 	 * @return codebase locator of the relative codebase whose path is given
 	 */
 	public ICodeBaseLocator createRelativeCodeBaseLocator(String relativePath);
+	
+	/**
+	 * Convert the codebase locator to a string representation.
+	 * If possible two codebase locators that refer to the same codebase
+	 * should produce the same string representation.
+	 * So, this string can serve as a key identifying the codebase
+	 * in a map.
+	 * 
+	 * @return a string representation of the codebase
+	 */
+	public String toString();
 }
