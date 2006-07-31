@@ -61,6 +61,12 @@ public class Subtypes {
 
 	private Map<JavaClass, Set<JavaClass>> transitiveSubtypes = new HashMap<JavaClass, Set<JavaClass>>();
 
+	private static boolean created;
+	public Subtypes() {
+		if (created) throw new IllegalStateException();
+		created = true;
+	}
+	
 	/**
 	 * Get immediate subtypes of given class or interface.
 	 * 
@@ -332,6 +338,10 @@ public class Subtypes {
 	 * @return true if it's an application class, false if not
 	 */
 	public boolean isApplicationClass(JavaClass javaClass) {
-		return applicationClasses.contains(javaClass);
+		boolean isAppClass = applicationClasses.contains(javaClass);
+		if (DEBUG_HIERARCHY) {
+			System.out.println(javaClass.getClassName() + " ==> " + (isAppClass ? "IS" : "IS NOT") + " an application class (" + applicationClasses.size() + " entries in app class map)");
+		}
+		return isAppClass;
 	}
 }

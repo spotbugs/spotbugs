@@ -55,8 +55,8 @@ import edu.umd.cs.findbugs.util.Archive;
  * @author David Hovemeyer
  */
 public class ClassPathBuilder implements IClassPathBuilder {
-	private static final boolean VERBOSE = Boolean.getBoolean("findbugs2.verbose");
-	private static final boolean DEBUG = VERBOSE || Boolean.getBoolean("findbugs2.debug");
+	private static final boolean VERBOSE = Boolean.getBoolean("findbugs2.verbose.builder");
+	private static final boolean DEBUG = VERBOSE || Boolean.getBoolean("findbugs2.debug.builder");
 
 	/**
 	 * Worklist item.
@@ -171,6 +171,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		// - all classes period
 		// Also, add resource name -> codebase entry mappings for all classes.
 		for (DiscoveredCodeBase discoveredCodeBase : discoveredCodeBaseList) {
+		codeBaseEntryLoop:
 			for (ICodeBaseIterator i = discoveredCodeBase.iterator(); i.hasNext(); ) {
 				ICodeBaseEntry entry = i.next();
 				if (!ClassDescriptor.isClassResource(entry.getResourceName())) {
@@ -182,7 +183,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 				
 				if (allClassSet.contains(classDescriptor)) {
 					// An earlier entry takes precedence over this class
-					continue;
+					continue codeBaseEntryLoop;
 				}
 				
 				allClassSet.add(classDescriptor);

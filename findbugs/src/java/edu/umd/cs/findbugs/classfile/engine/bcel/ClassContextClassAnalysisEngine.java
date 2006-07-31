@@ -56,5 +56,13 @@ public class ClassContextClassAnalysisEngine implements IClassAnalysisEngine {
 	public void registerWith(IAnalysisCache analysisCache) {
 		analysisCache.registerClassAnalysisEngine(ClassContext.class, this);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
+	 */
+	public boolean retainAnalysisResults() {
+		// ClassContexts can be recomputed
+		return false;
+	}
 
 }

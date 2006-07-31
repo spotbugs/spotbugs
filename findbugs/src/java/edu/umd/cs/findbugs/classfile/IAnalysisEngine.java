@@ -41,4 +41,17 @@ public interface IAnalysisEngine<DescriptorType> {
 	 * @param analysisCache the analysis cache
 	 */
 	public void registerWith(IAnalysisCache analysisCache);
+
+	/**
+	 * Return true if analysis results produced by this
+	 * analysis engine should be retained indefinitely.
+	 * Unless some correctness criterion prevents analysis results
+	 * from being recomputing, analysis engines should
+	 * return false (allowing the cache to be kept to a manageable size).
+	 * 
+	 * @return true if analysis results produced by this engine should
+	 *          be retained indefinitely,
+	 *          false if they may be recomputed as needed 
+	 */
+	public boolean retainAnalysisResults();
 }

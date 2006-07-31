@@ -54,4 +54,11 @@ public class ClassReaderAnalysisEngine implements IClassAnalysisEngine {
 		analysisCache.registerClassAnalysisEngine(ClassReader.class, this);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
+	 */
+	public boolean retainAnalysisResults() {
+		// Can be recomputed easily
+		return false;
+	}
 }

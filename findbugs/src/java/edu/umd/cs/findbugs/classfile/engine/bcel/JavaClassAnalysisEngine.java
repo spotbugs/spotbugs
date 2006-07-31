@@ -20,6 +20,10 @@
 package edu.umd.cs.findbugs.classfile.engine.bcel;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.rmi.CORBA.ClassDesc;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassParser;
@@ -39,6 +43,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
  * @author David Hovemeyer
  */
 public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
+	Map<String, JavaClass> produced = new HashMap<String, JavaClass>();  
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
@@ -46,20 +51,17 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
 	public Object analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
 		try {
-			// First check the BCEL repository
-			return Repository.lookupClass(descriptor.getClassName());
-		} catch (ClassNotFoundException cnfe) {
-
-			// Not found in Repository.
-			// Try to construct from scratch.
-			try {
-				ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
-				JavaClass javaClass = new ClassParser(classData.getInputStream(), descriptor.toResourceName()).parse();
-				Repository.addClass(javaClass);
-				return javaClass;
-			} catch (IOException e) {
-				throw new ResourceNotFoundException(descriptor.toResourceName(), e);
+			if (produced.get(descriptor.getClassName()) != null) {
+				throw new IllegalStateException("Recomputing JavaClass for " + descriptor);
 			}
+			
+			ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
+			JavaClass javaClass = new ClassParser(classData.getInputStream(), descriptor.toResourceName()).parse();
+			Repository.addClass(javaClass);
+			produced.put(descriptor.getClassName(), javaClass);
+			return javaClass;
+		} catch (IOException e) {
+			throw new ResourceNotFoundException(descriptor.toResourceName(), e);
 		}
 	}
 
@@ -68,6 +70,15 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
 	 */
 	public void registerWith(IAnalysisCache analysisCache) {
 		analysisCache.registerClassAnalysisEngine(JavaClass.class, this);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
+	 */
+	public boolean retainAnalysisResults() {
+		// JavaClass objects must NOT be discarded - Subtypes compares
+		// them by object identity.
+		return true;
 	}
 
 }

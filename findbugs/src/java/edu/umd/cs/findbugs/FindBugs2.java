@@ -168,7 +168,7 @@ public class FindBugs2 {
 	 * Create the AnalysisContext that will serve as the BCEL-compatibility
 	 * layer over the AnalysisCache.
 	 */
-	private void createAnalysisContext() {
+	private void createAnalysisContext() throws CheckedAnalysisException {
 		AnalysisCacheToAnalysisContextAdapter analysisContext =
 			new AnalysisCacheToAnalysisContextAdapter();
 		analysisContext.setAppClassList(appClassList);

@@ -20,8 +20,8 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
@@ -81,34 +81,12 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	}
 	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
-	private Set<ClassDescriptor> appClassSet;
 	
 	/**
 	 * Constructor.
 	 */
 	public AnalysisCacheToAnalysisContextAdapter() {
 		this.lookupFailureCallback = new DelegatingRepositoryLookupFailureCallback();
-		this.appClassSet = new HashSet<ClassDescriptor>();
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#isApplicationClass(org.apache.bcel.classfile.JavaClass)
-	 */
-	@Override
-	public boolean isApplicationClass(JavaClass cls) {
-		// FIXME: should use Subtypes database
-		return isApplicationClass(cls.getClassName());
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#isApplicationClass(java.lang.String)
-	 */
-	@Override
-	public boolean isApplicationClass(String className) {
-		// FIXME: should use Subtypes database
-		ClassDescriptor classDescriptor =
-			new ClassDescriptor(ClassName.toSlashedClassName(className));
-		return appClassSet.contains(classDescriptor);
 	}
 
 	/* (non-Javadoc)
@@ -116,8 +94,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public void addApplicationClassToRepository(JavaClass appClass) {
-		Repository.addClass(appClass);
-		getSubtypes().addApplicationClass(appClass);
+		throw new UnsupportedOperationException();
 	}
 
 	/* (non-Javadoc)
@@ -125,7 +102,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public void addClasspathEntry(String url) throws IOException {
-		// FIXME: can't support this - analysis cache is responsible for the classpath 
+		throw new UnsupportedOperationException();
 	}
 
 	/* (non-Javadoc)
@@ -133,7 +110,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public void clearClassContextCache() {
-		// TODO
+		throw new UnsupportedOperationException();
 	}
 
 	/* (non-Javadoc)
@@ -141,8 +118,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public void clearRepository() {
-		// TODO 
-
+		throw new UnsupportedOperationException();
 	}
 
 	/* (non-Javadoc)
@@ -298,13 +274,23 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	}
 
 	/**
-	 * Set the collection of class descriptors identifying application classes.
+	 * Set the collection of class descriptors identifying all
+	 * application classes.
 	 * 
-	 * @param appClassCollection Set of ClassDescriptors identifying application classes
+	 * @param appClassCollection List of ClassDescriptors identifying application classes
 	 */
-	public void setAppClassList(Collection<ClassDescriptor> appClassCollection) {
-		// FIXME: use Subtypes database
-		appClassSet.addAll(appClassCollection);
+	public void setAppClassList(List<ClassDescriptor> appClassCollection) throws CheckedAnalysisException {
+		
+		// FIXME: we really should drive the progress callback here
+		
+		Subtypes subtypes = getSubtypes();
+		
+		for (ClassDescriptor appClass : appClassCollection) {
+			JavaClass jclass =
+				Global.getAnalysisCache().getClassAnalysis(JavaClass.class, appClass);
+			subtypes.addApplicationClass(jclass);
+		}
+		
 	}
 
 }

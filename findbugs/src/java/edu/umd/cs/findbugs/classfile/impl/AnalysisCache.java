@@ -20,15 +20,14 @@
 package edu.umd.cs.findbugs.classfile.impl;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.IDatabaseFactory;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
@@ -44,27 +43,26 @@ import edu.umd.cs.findbugs.util.MapCache;
  * @author David Hovemeyer
  */
 public class AnalysisCache implements IAnalysisCache {
-	// TODO: think about caching policy.  Right now, cache everything forever.
-	
-	// We could emulate the existing behavior by purging
-	// the least-recently-used class analysis results
-	// after the max cache size is reached.
-	
 	/**
-	 * 
+	 * Maximum number of class or method analysis results
+	 * to cache for a particular ClassDescriptor/MethodDescriptor.
 	 */
 	private static final int CACHE_SIZE = 5;
 
+	// Fields
 	private IClassPath classPath;
 	private IErrorLogger errorLogger;
-	
 	private Map<Class<?>, IClassAnalysisEngine> classAnalysisEngineMap;
 	private Map<Class<?>, IMethodAnalysisEngine> methodAnalysisEngineMap;
 	private Map<Class<?>, IDatabaseFactory<?>> databaseFactoryMap;
-	private Map<ClassDescriptor, Map<Class<?>, Object>> classAnalysisMap;
-	private Map<MethodDescriptor, Map<Class<?>, Object>> methodAnalysisMap;
+	private Map<Class<?>, Map<ClassDescriptor, Object>> classAnalysisMap;
+	private Map<Class<?>, Map<MethodDescriptor, Object>> methodAnalysisMap;
 	private Map<Class<?>, Object> databaseMap;
-	
+
+	/**
+	 * Object indicating that an analysis could not be computed
+	 * because an exception occurred.
+	 */
 	static class AnalysisError {
 		CheckedAnalysisException exception;
 		
@@ -72,7 +70,13 @@ public class AnalysisCache implements IAnalysisCache {
 			this.exception = exception;
 		}
 	}
-	
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param classPath    the IClassPath to load resources from
+	 * @param errorLogger  the IErrorLogger
+	 */
 	AnalysisCache(IClassPath classPath, IErrorLogger errorLogger) {
 		this.classPath = classPath;
 		this.errorLogger = errorLogger;
@@ -80,8 +84,8 @@ public class AnalysisCache implements IAnalysisCache {
 		this.methodAnalysisEngineMap = new HashMap<Class<?>, IMethodAnalysisEngine>();
 		this.databaseFactoryMap = new HashMap<Class<?>, IDatabaseFactory<?>>();
 		
-		this.classAnalysisMap = new MapCache<ClassDescriptor, Map<Class<?>,Object>>(CACHE_SIZE);
-		this.methodAnalysisMap = new MapCache<MethodDescriptor, Map<Class<?>,Object>>(CACHE_SIZE);
+		this.classAnalysisMap = new HashMap<Class<?>, Map<ClassDescriptor,Object>>();
+		this.methodAnalysisMap = new HashMap<Class<?>, Map<MethodDescriptor,Object>>();
 		
 		this.databaseMap = new HashMap<Class<?>, Object>();
 	}
@@ -110,11 +114,11 @@ public class AnalysisCache implements IAnalysisCache {
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#probeClassAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.ClassDescriptor)
 	 */
 	public <E> E probeClassAnalysis(Class<E> analysisClass, ClassDescriptor classDescriptor) {
-		Map<Class<?>, Object> m = classAnalysisMap.get(classDescriptor);
-		if (m == null) {
+		Map<ClassDescriptor, Object> descriptorMap = classAnalysisMap.get(analysisClass);
+		if (descriptorMap == null) {
 			return null;
 		}
-		return (E) m.get(analysisClass);
+		return (E) descriptorMap.get(classDescriptor);
 	}
 
 	/* (non-Javadoc)
@@ -136,34 +140,50 @@ public class AnalysisCache implements IAnalysisCache {
 	 * 
 	 * @param <DescriptorType> type of descriptor (class or method)
 	 * @param <E> type of analysis result
-	 * @param analysisCache                the IAnalysisCache object
-	 * @param descriptorToAnalysisCacheMap cache of analysis results for this kind of descriptor
-	 * @param engineMap                    engine map for this kind of descriptor
-	 * @param descriptor                   the class or method descriptor
-	 * @param analysisClass                the analysis result type Class object
+	 * @param analysisCache                   the IAnalysisCache object
+	 * @param analysisClassToDescriptorMapMap the map of analysis classes to descriptor->result maps
+	 * @param engineMap                       engine map for this kind of descriptor
+	 * @param descriptor                      the class or method descriptor
+	 * @param analysisClass                   the analysis result type Class object
 	 * @return the analysis result object
 	 * @throws CheckedAnalysisException if an analysis error occurs
 	 */
 	static<DescriptorType, E> E analyzeClassOrMethod(
-			IAnalysisCache analysisCache,
-			Map<DescriptorType, Map<Class<?>, Object>> descriptorToAnalysisCacheMap,
-			Map<Class<?>, ? extends IAnalysisEngine<DescriptorType>> engineMap,
-			DescriptorType descriptor,
-			Class<E> analysisClass
+			final AnalysisCache analysisCache,
+			final Map<Class<?>, Map<DescriptorType, Object>> analysisClassToDescriptorMapMap,
+			final Map<Class<?>, ? extends IAnalysisEngine<DescriptorType>> engineMap,
+			final DescriptorType descriptor,
+			final Class<E> analysisClass
 	) throws CheckedAnalysisException {
-		// Get the analysis map for the class/method descriptor
-		Map<Class<?>, Object> analysisMap = descriptorToAnalysisCacheMap.get(descriptor);
-		if (analysisMap == null) {
-			// Create empty analysis map and save it
-			analysisMap = new HashMap<Class<?>, Object>();
-			descriptorToAnalysisCacheMap.put(descriptor, analysisMap);
+		
+		// Get the descriptor->result map for this analysis class,
+		// creating if necessary
+		Map<DescriptorType, Object> descriptorMap = analysisClassToDescriptorMapMap.get(analysisClass);
+		if (descriptorMap == null) {
+			// Create a MapCache that allows the analysis engine to
+			// decide that analysis results should be retained indefinitely.
+			descriptorMap = new MapCache<DescriptorType, Object>(CACHE_SIZE) {
+				IAnalysisEngine<DescriptorType> engine = engineMap.get(analysisClass);
+				
+				/* (non-Javadoc)
+				 * @see edu.umd.cs.findbugs.util.MapCache#removeEldestEntry(java.util.Map.Entry)
+				 */
+				@Override
+				protected boolean removeEldestEntry(Entry<DescriptorType, Object> eldest) {
+					if (engine.retainAnalysisResults()) {
+						return false;
+					} else {
+						return super.removeEldestEntry(eldest);
+					}
+				}
+			};
+			analysisClassToDescriptorMapMap.put(analysisClass, descriptorMap);
 		}
 		
-		// See if the analysis has already been performed
-		Object analysisResult = analysisMap.get(analysisClass);
+		// See if there is a cached result in the descriptor map
+		Object analysisResult = descriptorMap.get(descriptor);
 		if (analysisResult == null) {
-			// Analysis hasn't been performed yet.
-			// Find an appropriate analysis engine.
+			// No cached result - compute (or recompute)
 			IAnalysisEngine<DescriptorType> engine = engineMap.get(analysisClass);
 			if (engine == null) {
 				throw new IllegalArgumentException(
@@ -180,9 +200,9 @@ public class AnalysisCache implements IAnalysisCache {
 			}
 
 			// Save the result
-			analysisMap.put(analysisClass, analysisResult);
+			descriptorMap.put(descriptor, analysisResult);
 		}
-		
+
 		// Error occurred?
 		if (analysisResult instanceof AnalysisError) {
 			throw ((AnalysisError) analysisResult).exception;
@@ -191,7 +211,6 @@ public class AnalysisCache implements IAnalysisCache {
 		// If we could assume a 1.5 or later JVM, the Class.cast()
 		// method could do this cast without a warning.
 		return (E) analysisResult;
-		
 	}
 
 	/* (non-Javadoc)
@@ -238,6 +257,8 @@ public class AnalysisCache implements IAnalysisCache {
 				// Error - record the analysis error
 				database = new AnalysisError(e);
 			}
+			
+			databaseMap.put(databaseClass, database);
 		}
 		
 		if (database instanceof AnalysisError) {

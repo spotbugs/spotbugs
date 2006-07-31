@@ -288,4 +288,12 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 		analysisCache.registerClassAnalysisEngine(ClassInfo.class, this);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
+	 */
+	public boolean retainAnalysisResults() {
+		// ClassInfo can be recomputed easily.
+		// TODO: perhaps we should retain it - it's relatively small
+		return false;
+	}
 }

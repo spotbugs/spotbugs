@@ -86,4 +86,11 @@ public class ClassDataAnalysisEngine implements IClassAnalysisEngine {
 		analysisCache.registerClassAnalysisEngine(ClassData.class, this);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
+	 */
+	public boolean retainAnalysisResults() {
+		// ClassData can be recomputed (reloaded) easily
+		return false;
+	}
 }
