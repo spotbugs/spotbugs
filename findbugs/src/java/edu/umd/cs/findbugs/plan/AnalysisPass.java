@@ -25,7 +25,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.DetectorFactory;
+import edu.umd.cs.findbugs.FindBugs2;
 
 /**
  * An analysis pass in the overall ExecutionPlan.
@@ -114,6 +117,22 @@ public class AnalysisPass {
 	 */
 	public int getNumDetectors() {
 		return orderedFactoryList.size();
+	}
+
+	/**
+	 * Instantiate all of the Detector2s in this pass and return
+	 * them in a (correctly-ordered) array.
+	 * 
+	 * @param bugReporter the BugReporter
+	 * @return array of Detector2s
+	 */
+	public Detector2[] instantiateDetector2sInPass(BugReporter bugReporter) {
+		Detector2[] detectorList = new Detector2[getNumDetectors()];
+		int count = 0;
+		for (Iterator<DetectorFactory> j = iterator(); j.hasNext();) {
+			detectorList[count++] = j.next().createDetector2(bugReporter);
+		}
+		return detectorList;
 	}
 }
 

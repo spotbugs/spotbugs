@@ -60,7 +60,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private static final boolean VERBOSE = Boolean.getBoolean("findbugs2.verbose");
 	private static final boolean DEBUG = VERBOSE || Boolean.getBoolean("findbugs2.debug");
 	
-	private BugReporter bugReporter;
+	public BugReporter bugReporter;
 	private Project project;
 	private IClassFactory classFactory;
 	private IClassPath classPath;
@@ -367,12 +367,9 @@ public class FindBugs2 implements IFindBugsEngine {
 				System.out.println("Pass " + (passCount + 1));
 			}
 			AnalysisPass pass = i.next();
-			
-			Detector2[] detectorList = new Detector2[pass.getNumDetectors()];
-			int count = 0;
-			for (Iterator<DetectorFactory> j = pass.iterator(); j.hasNext();) {
-				detectorList[count++] = j.next().createDetector2(bugReporter);
-			}
+
+			// Instantiate the detectors
+			Detector2[] detectorList = pass.instantiateDetector2sInPass(bugReporter);
 
 			// On first pass, we apply detectors to ALL classes.
 			// On subsequent passes, we apply detector only to application classes.
@@ -402,7 +399,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			passCount++;
 		}
 	}
-	
+
 	/**
 	 * Report an exception that occurred while analyzing a class
 	 * with a detector.
