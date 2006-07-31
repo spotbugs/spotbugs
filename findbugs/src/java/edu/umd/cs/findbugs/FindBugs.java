@@ -819,8 +819,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			}
 		}
 
-		public FindBugs createEngine() throws IOException, FilterException {
-			FindBugs findBugs = new FindBugs();
+		public void configureEngine(IFindBugsEngine findBugs) throws IOException, FilterException {
+			//FindBugs findBugs = new FindBugs();
 			
 			TextUIBugReporter textuiBugReporter;
 			switch (bugReporterType) {
@@ -894,8 +894,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			findBugs.setAnalysisFeatureSettings(settingList);
 			
 			findBugs.setReleaseName(releaseName);
-
-			return findBugs;
+//
+//			return findBugs;
 		}
 	}
 
@@ -1859,6 +1859,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	private static FindBugs createEngine(TextUICommandLine commandLine, String[] argv)
 	        throws java.io.IOException, FilterException {
 		
+		FindBugs findBugs = new FindBugs();
+		
 		// Expand option files in command line.
 		// An argument beginning with "@" is treated as specifying
 		// the name of an option file.
@@ -1894,7 +1896,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			showHelp(commandLine);
 		}
 
-		return commandLine.createEngine();
+		commandLine.configureEngine(findBugs);
+		return findBugs;
 	}
 
 	@SuppressWarnings("DM_EXIT")
