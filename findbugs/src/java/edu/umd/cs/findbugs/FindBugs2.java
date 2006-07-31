@@ -61,7 +61,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private static final boolean VERBOSE = Boolean.getBoolean("findbugs2.verbose");
 	private static final boolean DEBUG = VERBOSE || Boolean.getBoolean("findbugs2.debug");
 	
-	private BugReporter bugReporter;
+	private ErrorCountingBugReporter bugReporter;
 	private Project project;
 	private IClassFactory classFactory;
 	private IClassPath classPath;
@@ -92,12 +92,14 @@ public class FindBugs2 implements IFindBugsEngine {
 
 	/**
 	 * Execute the analysis.
+	 * For obscure reasons, CheckedAnalysisExceptions are re-thrown
+	 * as IOExceptions.  However, these can only happen during the
+	 * setup phase where we scan codebases for classes.
 	 * 
 	 * @throws IOException
 	 * @throws InterruptedException
-	 * @throws CheckedAnalysisException
 	 */
-	public void execute() throws IOException, InterruptedException, CheckedAnalysisException {
+	public void execute() throws IOException, InterruptedException {
 		// Get the class factory for creating classpath/codebase/etc. 
 		classFactory = ClassFactory.instance();
 		
@@ -120,6 +122,10 @@ public class FindBugs2 implements IFindBugsEngine {
 			
 			// Analyze the application
 			analyzeApplication();
+		} catch (CheckedAnalysisException e) {
+			IOException ioe = new IOException("IOException while scanning codebases");
+			ioe.initCause(e);
+			throw ioe;
 		} finally {
 			// Make sure the codebases on the classpath are closed
 			classPath.close();
@@ -162,8 +168,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugCount()
 	 */
 	public int getBugCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return bugReporter.getBugCount();
 	}
 	
 	/* (non-Javadoc)
@@ -178,16 +183,14 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getErrorCount()
 	 */
 	public int getErrorCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return bugReporter.getErrorCount();
 	}
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getMissingClassCount()
 	 */
 	public int getMissingClassCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return bugReporter.getMissingClassCount();
 	}
 	
 	/* (non-Javadoc)
@@ -210,7 +213,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setBugReporter(edu.umd.cs.findbugs.BugReporter)
 	 */
 	public void setBugReporter(BugReporter bugReporter) {
-		this.bugReporter = new DelegatingBugReporter(bugReporter); 
+		this.bugReporter = new ErrorCountingBugReporter(bugReporter); 
 	}
 	
 	/* (non-Javadoc)
@@ -366,7 +369,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * Analyze the classes in the application codebase.
 	 * @throws CheckedAnalysisException 
 	 */
-	private void analyzeApplication() throws CheckedAnalysisException {
+	private void analyzeApplication()  {
 		int passCount = 0;
 		for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext(); ) {
 			if (VERBOSE) {
@@ -438,6 +441,6 @@ public class FindBugs2 implements IFindBugsEngine {
 		FindBugs.processCommandLine(commandLine, args, findBugs);
 		
 		// Away we go!
-		findBugs.execute();
+		FindBugs.runMain(findBugs, commandLine);
 	}
 }

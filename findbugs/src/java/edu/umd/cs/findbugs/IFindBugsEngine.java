@@ -152,7 +152,7 @@ public interface IFindBugsEngine {
 	 * @throws InterruptedException if the thread is interrupted while conducting the analysis
 	 * @throws CheckedAnalysisException if a fatal exception occurs
 	 */
-	public void execute() throws java.io.IOException, InterruptedException, CheckedAnalysisException;
+	public void execute() throws java.io.IOException, InterruptedException/*, CheckedAnalysisException*/;
 
 	/**
 	 * Get the name of the most recent class to be analyzed.

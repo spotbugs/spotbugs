@@ -393,57 +393,6 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		}
 	}
 
-	/**
-	 * A delegating bug reporter which counts reported bug instances,
-	 * missing classes, and serious analysis errors.
-	 */
-	private static class ErrorCountingBugReporter extends DelegatingBugReporter {
-		private int bugCount;
-		private int missingClassCount;
-		private int errorCount;
-		private Set<String> missingClassSet = new HashSet<String>();
-
-		public ErrorCountingBugReporter(BugReporter realBugReporter) {
-			super(realBugReporter);
-			this.bugCount = 0;
-			this.missingClassCount = 0;
-			this.errorCount = 0;
-
-			// Add an observer to record when bugs make it through
-			// all priority and filter criteria, so our bug count is
-			// accurate.
-			realBugReporter.addObserver(new BugReporterObserver() {
-				public void reportBug(BugInstance bugInstance) {
-					++bugCount;
-				}
-			});
-		}
-
-		public int getBugCount() {
-			return bugCount;
-		}
-
-		public int getMissingClassCount() {
-			return missingClassCount;
-		}
-
-		public int getErrorCount() {
-			return errorCount;
-		}
-
-		public void logError(String message) {
-			++errorCount;
-			super.logError(message);
-		}
-
-		public void reportMissingClass(ClassNotFoundException ex) {
-			String missing = AbstractBugReporter.getMissingClassName(ex);
-			if (missingClassSet.add(missing))
-				++missingClassCount;
-			super.reportMissingClass(ex);
-		}
-	}
-
 	public static final AnalysisFeatureSetting[] MIN_EFFORT = new AnalysisFeatureSetting[]{
 			new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
 			new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),
@@ -1489,7 +1438,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	}
 
 	@SuppressWarnings("DM_EXIT")
-	private static void runMain(FindBugs findBugs, TextUICommandLine commandLine)
+	public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine)
 	        throws java.io.IOException, RuntimeException {
 		try {
 			findBugs.execute();
