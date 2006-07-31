@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * FindBugs driver class.
@@ -71,6 +72,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private DetectorFactoryCollection detectorFactoryCollection;
 	private ExecutionPlan executionPlan;
 	private UserPreferences userPreferences;
+	private String currentClassName;
 	
 	/**
 	 * Constructor.
@@ -174,8 +176,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getCurrentClass()
 	 */
 	public String getCurrentClass() {
-		// TODO Auto-generated method stub
-		return null;
+		return currentClassName;
 	}
 	
 	/* (non-Javadoc)
@@ -385,6 +386,9 @@ public class FindBugs2 implements IFindBugsEngine {
 				if (DEBUG) {
 					System.out.println("Class " + classDescriptor);
 				}
+				
+				currentClassName = ClassName.toDottedClassName(classDescriptor.getClassName());
+				
 				for (Detector2 detector : detectorList) {
 					if (DEBUG) {
 						System.out.println("Applying " + detector.getDetectorClassName() + " to " + classDescriptor);
