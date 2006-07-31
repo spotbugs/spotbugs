@@ -70,6 +70,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private Set<ClassDescriptor> allClassSet;
 	private DetectorFactoryCollection detectorFactoryCollection;
 	private ExecutionPlan executionPlan;
+	private UserPreferences userPreferences;
 	
 	/**
 	 * Constructor.
@@ -263,8 +264,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setUserPreferences(edu.umd.cs.findbugs.config.UserPreferences)
 	 */
 	public void setUserPreferences(UserPreferences userPreferences) {
-		// TODO Auto-generated method stub
-		
+		this.userPreferences = userPreferences;
 	}
 
 	/**
@@ -334,14 +334,13 @@ public class FindBugs2 implements IFindBugsEngine {
 	private void createExecutionPlan() throws OrderingConstraintException {
 		executionPlan = new ExecutionPlan();
 		
-		// For now, enabled all default-enabled detectors.
-		// Eventually base this on the user preferences.
+		// Use user preferences to decide which detectors are enabled.
 		DetectorFactoryChooser detectorFactoryChooser = new DetectorFactoryChooser() {
 			/* (non-Javadoc)
 			 * @see edu.umd.cs.findbugs.DetectorFactoryChooser#choose(edu.umd.cs.findbugs.DetectorFactory)
 			 */
 			public boolean choose(DetectorFactory factory) {
-				return factory.isDefaultEnabled();
+				return userPreferences.isDetectorEnabled(factory);
 			}
 		};
 		executionPlan.setDetectorFactoryChooser(detectorFactoryChooser);
