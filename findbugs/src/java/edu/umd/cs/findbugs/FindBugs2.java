@@ -383,7 +383,6 @@ public class FindBugs2 implements IFindBugsEngine {
 
 	/**
 	 * Analyze the classes in the application codebase.
-	 * @throws CheckedAnalysisException 
 	 */
 	private void analyzeApplication()  {
 		int passCount = 0;
