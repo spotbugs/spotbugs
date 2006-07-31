@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 
 import edu.umd.cs.findbugs.ba.ClassObserver;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
@@ -149,8 +150,9 @@ public interface IFindBugsEngine {
 	 *
 	 * @throws java.io.IOException  if an I/O exception occurs analyzing one of the files
 	 * @throws InterruptedException if the thread is interrupted while conducting the analysis
+	 * @throws CheckedAnalysisException if a fatal exception occurs
 	 */
-	public void execute() throws java.io.IOException, InterruptedException;
+	public void execute() throws java.io.IOException, InterruptedException, CheckedAnalysisException;
 
 	/**
 	 * Get the name of the most recent class to be analyzed.

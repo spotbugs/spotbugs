@@ -27,6 +27,7 @@ import java.util.List;
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
+import edu.umd.cs.findbugs.ba.ClassObserver;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -39,6 +40,9 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
+import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
+import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
@@ -51,7 +55,7 @@ import edu.umd.cs.findbugs.plan.OrderingConstraintException;
  * 
  * @author David Hovemeyer
  */
-public class FindBugs2 {
+public class FindBugs2 implements IFindBugsEngine {
 	private static final boolean VERBOSE = Boolean.getBoolean("findbugs2.verbose");
 	private static final boolean DEBUG = VERBOSE || Boolean.getBoolean("findbugs2.debug");
 	
@@ -115,6 +119,150 @@ public class FindBugs2 {
 			// Make sure the codebases on the classpath are closed
 			classPath.close();
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addClassObserver(edu.umd.cs.findbugs.ba.ClassObserver)
+	 */
+	public void addClassObserver(ClassObserver classObserver) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addFilter(java.lang.String, boolean)
+	 */
+	public void addFilter(String filterFileName, boolean include) throws IOException, FilterException {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingInput(java.lang.String)
+	 */
+	public void enableTrainingInput(String trainingInputDir) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingOutput(java.lang.String)
+	 */
+	public void enableTrainingOutput(String trainingOutputDir) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugCount()
+	 */
+	public int getBugCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getCurrentClass()
+	 */
+	public String getCurrentClass() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getErrorCount()
+	 */
+	public int getErrorCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getMissingClassCount()
+	 */
+	public int getMissingClassCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getReleaseName()
+	 */
+	public String getReleaseName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setAnalysisFeatureSettings(edu.umd.cs.findbugs.config.AnalysisFeatureSetting[])
+	 */
+	public void setAnalysisFeatureSettings(AnalysisFeatureSetting[] settingList) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setBugReporter(edu.umd.cs.findbugs.BugReporter)
+	 */
+	public void setBugReporter(BugReporter bugReporter) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setClassScreener(edu.umd.cs.findbugs.ClassScreener)
+	 */
+	public void setClassScreener(ClassScreener classScreener) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setProgressCallback(edu.umd.cs.findbugs.FindBugsProgress)
+	 */
+	public void setProgressCallback(FindBugsProgress progressCallback) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setProject(edu.umd.cs.findbugs.Project)
+	 */
+	public void setProject(Project project) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setRelaxedReportingMode(boolean)
+	 */
+	public void setRelaxedReportingMode(boolean relaxedReportingMode) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setReleaseName(java.lang.String)
+	 */
+	public void setReleaseName(String releaseName) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setSourceInfoFile(java.lang.String)
+	 */
+	public void setSourceInfoFile(String sourceInfoFile) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setUserPreferences(edu.umd.cs.findbugs.config.UserPreferences)
+	 */
+	public void setUserPreferences(UserPreferences userPreferences) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**
