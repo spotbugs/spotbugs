@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- French translation provided by David Cotton -->
-<!-- based on revision 1.279 of messages.xml (with several updates) -->
-
-<MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:noNamespaceSchemaLocation="messagecollection.xsd">
+<!-- French translation provided by David Cotton :) -->
+<!-- Based on revision 1.307 of message.xml. -->
+<MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="messagecollection.xsd">
  <Plugin>
   <ShortDescription>Default FindBugs plugin</ShortDescription>
   <Details>
@@ -12,6 +10,13 @@
 ]]>
   </Details>
  </Plugin>
+ <Detector class="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation">
+  <Details>
+<![CDATA[
+<p>Recherche les violations des règles pour les classes annotées comme <code>net.jcip.annotations.Immutable</code>.
+]]>
+  </Details>
+ </Detector>
  <Detector class="edu.umd.cs.findbugs.detect.VarArgsProblems">
   <Details>
 <![CDATA[
@@ -1066,6 +1071,15 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS">
+  <ShortDescription>Les champs d'une classe immuable devraient être finaux.</ShortDescription>
+  <LongDescription>{1} devrait être final puisque {0} est marquée comme Immutable.</LongDescription>
+  <Details>
+<![CDATA[
+La classe est annotée avec <code>net.jcip.annotations.Immutable</code>, et la règle liée à cette annotation réclame que tous les champs soient marqués <code>final</code>.
+]]>
+  </Details>
+ </BugPattern>
  <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
   <ShortDescription>La réflexion ne peut pas être utilisée pour vérifier la présence d'une annotation avec la rétention par défaut</ShortDescription>
   <LongDescription>{1} utilise la réflexion pour vérifier la présence d'une annotation qui a la rétention par défaut</LongDescription>
@@ -1318,6 +1332,24 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
   <Details>
 <![CDATA[
 <p>Cette classe définit une version covariante de <code>equals()</code>. Pour surcharger correctement la méthode <code>equals()</code> de <code>java.lang.Object</code>, le paramètre de <code>equals()</code> doit être du type <code>java.lang.Object</code>.</p>
+]]>
+  </Details>
+ </BugPattern>
+ <BugPattern type="NP_ARGUMENT_MIGHT_BE_NULL">
+  <ShortDescription>Méthode ne testant pas les paramètres à null</ShortDescription>
+  <LongDescription>{1} ne vérifie pas les paramètres à null</LongDescription>
+  <Details>
+<![CDATA[
+<p>Un paramètre de cette méthode a été identifié comme une valeur pouvant être à <code>null</code>, mais qui est déréférencée sans test de nullité.</p>
+]]>
+  </Details>
+ </BugPattern>
+ <BugPattern type="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT">
+  <ShortDescription>Méthode equals() ne vérifiant pas la nullité</ShortDescription>
+  <LongDescription>{1} ne vérifie pas la nullité d'un paramètre</LongDescription>
+  <Details>
+<![CDATA[
+<p>Cette implémentation de <code>equals(Object)</code> ne respecte pas le contrat défini par <code>java.lang.Object.equals()</code> car elle ne vérifie la nullité du paramètre reçu en argument. Toutes les méthodes <code>equals()</code> doivent renvoyer <code>false</code> quand elles reçoivent une valeur à <code>null</code>.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -1580,6 +1612,23 @@ public int hashCode() {
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION">
+  <ShortDescription>Classe mère utilisant une sous-classe durant son initialisation</ShortDescription>
+  <LongDescription>L'initialisation de {0} accède à la classe {2}, qui n'est pas encore initialisée</LongDescription>
+  <Details>
+<![CDATA[
+<p>Durant l'intialisation, une classe utilise activement l'une de ses sous-classes. Cette sous-classe ne sera pas encore initialisée lors de la première utilisation. Par exemple, dans le code suivant, <code>foo</code> sera à <code>null</code>.</p>
+<p><code><pre>
+public class CircularClassInitialization {
+    static class InnerClassSingleton extends CircularClassInitialization {
+        static InnerClassSingleton singleton = new InnerClassSingleton();
+    }
+    static CircularClassInitialization foo = InnerClassSingleton.singleton;
+}
+</pre></code></p>
+]]>
+  </Details>
+ </BugPattern>
  <BugPattern type="IT_NO_SUCH_ELEMENT">
   <ShortDescription>La méthode next() de Iterator ne peut pas déclencher une exception NoSuchElement</ShortDescription>
   <LongDescription>{1} ne peut pas déclencher l'exception NoSuchElement</LongDescription>
@@ -1805,6 +1854,24 @@ Si c'est bien le cas, retirez la déclaration d'une valeur de retour.</p>
   <Details>
 <![CDATA[
 <p>Cette méthode ignore la valeur renvoyée par <code>java.io.InputStream.skip()</code>, qui peut sauter de multiples octets. Si la valeur renvoyée n'est pas vérifiée, l'appelant n'est pas capable de gérer correctement les cas ou moins d'octets que prévu auront été sautés. C'est un type de bogue particulièrement insidieux car la plupart du temps le bon nombre d'octet sera effectivement sauté, et les plantages seront sporadiques. Néanmoins, sur les flux bufferisés, <code>skip()</code> ne s'applique qu'aux données du buffer et échoue fréquemment à sauter le nombre d'octets demandé.</p>
+]]>
+  </Details>
+ </BugPattern>
+ <BugPattern type="SE_READ_RESOLVE_MUST_RETURN_OBJECT">
+  <ShortDescription>La méthode readResolve doit retourner un Object</ShortDescription>
+  <LongDescription>La méthode {1} doit être déclarée avec un type de retour Object plutôt que {1.returnType}</LongDescription>
+  <Details>
+<![CDATA[
+<p>Pour que la méthode <code>readResolve</code> soit prise en compte pas le mécanisme de sérialisation, elle doit avoir Object comme type de retour.</p>
+]]>
+  </Details>
+ </BugPattern>
+ <BugPattern type="SE_TRANSIENT_FIELD_NOT_RESTORED">
+  <ShortDescription>Champ "transient" non positionné lors de la désérialisation</ShortDescription>
+  <LongDescription>Le champ {1} est transient mais n'est pas alimenté lors de la désérialisation</LongDescription>
+  <Details>
+<![CDATA[
+<p>Cette classe contient un champ qui est mis-à-jour à de nombreux endrois dans la classe, et qui semble faire parti du démarrage de la classe. Mais, ce champ étant marqué comme <code>transient</code> et n'étant pas alimenté par les méthodes <code>readObject</code> et <code>readResolve</code>, il contiendra la valeur par défaut dans toutes les instances désérialisées de la classe.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -2260,6 +2327,15 @@ dateString = dateString.trim();
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="NP_GUARANTEED_DEREF">
+  <ShortDescription>Null déréférencé</ShortDescription>
+  <LongDescription>Une valeur à null est déréférencée dans {1}</LongDescription>
+  <Details>
+<![CDATA[
+<p>Cette méthode contient une valeur à <code>null</code> qui est déréférencée (sauf dans les chemins impliquant une RuntimeException).</p>
+]]>
+  </Details>
+ </BugPattern>
  <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
   <ShortDescription>Initialiseur statique de classe créant une instance avant que tous les champs static final soient alimentés</ShortDescription>
   <LongDescription>L'initialiseur statique de {0} crée une instance avant que tous les champs static final soient alimentés</LongDescription>
@@ -2509,6 +2585,16 @@ public void foo() {
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="RV_REM_OF_HASHCODE">
+  <ShortDescription>Reste d'un hashCode pouvant être négatif</ShortDescription>
+  <LongDescription>Le reste d'un hashCode peut être négatif dans {1}</LongDescription>
+  <Details>
+<![CDATA[
+<p>Ce code calcule le code de hachage, puis son reste modulo une certaine valeur. Puisque le code de hachage peut être négatif, le reste peut également l'être.</p>
+<p>En supposant que vous vouliez garantir que le résultat de votre opération ne soit pas négatif, vous devriez modifier votre code. Si le diviseur est une puissance de 2, vous pourriez utiliser un décalage binaire à la place (c'est-à-dire <code>x.hashCode()&amp;(n-1)</code> au lieu de <code>x.hashCode()%n</code>). Cela est probablement plus rapide que de calculer le reste. Si le diviseur n'est pas une puissance de 2, vous devriez prendre la valeur absolue du reste (<code>Math.abs(x.hashCode()%n)</code>).</p>
+]]>
+  </Details>
+ </BugPattern>
  <BugPattern type="INT_VACUOUS_COMPARISON">
   <ShortDescription>Comparaison inutile de valeurs entières</ShortDescription>
   <LongDescription>Comparaison inutile de la valeur entière {1}</LongDescription>
@@ -2715,6 +2801,24 @@ String s = buf.toString();
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="SQL_BAD_RESULTSET_ACCESS">
+  <ShortDescription>Méthode essayant d'accèder à un champ de ResultSet d'indice 0</ShortDescription>
+  <LongDescription>La méthode {1} essaye d'accèder au champ d'un ResultSet avec l'indice 0</LongDescription>
+  <Details>
+<![CDATA[
+<p>Un appel à une méthode <code>getXXX</code> ou <code>updateXXX</code> d'un <code>ResultSet</code> est réalisé pour l'indice 0. Puisque les indices de <code>ResultSet</code> commencent à 1, c'est toujours une erreur.</p>
+]]>
+  </Details>
+ </BugPattern>
+ <BugPattern type="SQL_BAD_PREPARED_STATEMENT_ACCESS">
+  <ShortDescription>Méthode essayant au paramêtre d'indice 0 d'un PreparedStatement</ShortDescription>
+  <LongDescription>La méthode {1} essaye d'accèder au paramêtre d'indice 0 d'un PreparedStatement</LongDescription>
+  <Details>
+<![CDATA[
+<p>Un appel  à une méthode <code>setXXX</code> d'un <code>PreparedStatement</code> est réalisé sur l'indice 0. Puisque les indices des paramêtres d'un <code>PreparedStatement</code> commencent à 1, c'est toujours une erreur.</p>
+]]>
+  </Details>
+ </BugPattern>
  <BugPattern type="SIO_SUPERFLUOUS_INSTANCEOF">
   <ShortDescription>Vérification de type inutile avec l'opérateur instanceof</ShortDescription>
   <LongDescription>La méthode {1} effectue une vérification de type inutile avec l'opérateur instanceof alors que celà pourrait-être déterminé statiquement</LongDescription>
@@ -2798,6 +2902,15 @@ String s = buf.toString();
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="DLS_DEAD_LOCAL_STORE_OF_NULL">
+  <ShortDescription>Alimentation à null d'une variable</ShortDescription>
+  <LongDescription>Alimentation à null de {2} dans la méthode {1}</LongDescription>
+  <Details>
+<![CDATA[
+<p>Le code alimente une variable locale avec null, la valeur n'étant jamais lue par la suite. Cette alimentation a pu être introduite pour faciliter le travail du rammase miettes, mais cela n'a plus aucun intérêt avec Java SE 6.</p>
+]]>
+  </Details>
+ </BugPattern>
  <BugPattern type="MF_METHOD_MASKS_FIELD">
   <ShortDescription>La méthode définit une variable qui masque un champ</ShortDescription>
   <LongDescription>La méthode {1} définit une variable qui masque le champ {2}</LongDescription>
@@ -2840,6 +2953,16 @@ String s = buf.toString();
   <Details>
 <![CDATA[
 <p>Cette méthode utilise un block <code>try-catch</code> qui intercepte les objets <code>Exception</code>, mais <code>Exception</code> n'est jamais déclenché dans ce bloc, et <code>RuntimeException</code> n'est pas explicitement intercepté.  C'est une erreur commune de dire que <code>try / catch (Exception e)</code> est identique à plusieurs <code>try / catch</code>, mais cette tournure intercepte également les <code>RuntimeException</code>, masquant des bugs potentiels.</p>
+]]>
+  </Details>
+ </BugPattern>
+ <BugPattern type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER">
+  <ShortDescription>Test d'égalité avec NaN erroné</ShortDescription>
+  <LongDescription>Test d'égalité avec NaN erroné dans {1}</LongDescription>
+  <Details>
+<![CDATA[
+<p>Ce code vérifie si une valeur flottante est égale à la valeur spéciale "Not A Number" (Ex. : <code>if (x == Double.NaN)</code>). La sémantique de <code>NaN</code> fait que, par définition, aucune valeur n'est égale à <code>Nan</code>, y compris <code>NaN</code>. Donc <code>x == Double.NaN</code> renvoi systématiquement <code>false</code>.</p>
+<p>Pour savoir si la valeur contenu dans <code>x</code> est la valeur particulière "Not A Number", utilisez <code>Double.isNaN(x)</code> (ou <code>Float.isNaN(x)</code> si <code>x</code> est en simple précision).</p>
 ]]>
   </Details>
  </BugPattern>
@@ -2932,6 +3055,28 @@ String s = buf.toString();
 ]]>
   </Details>
  </BugPattern>
+ <BugPattern type="ICAST_INTEGER_MULTIPLY_CAST_TO_LONG">
+  <ShortDescription>Résultat d'une multiplication entière transtypée en long</ShortDescription>
+  <LongDescription>Le résultat d'une multiplication entière est transtypée en long dans {1}</LongDescription>
+  <Details>
+<![CDATA[
+<p>Ce code effectue des multiplications entières et transtype le résultat en <code>long</code>, comme dans :
+<code>long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; }</code>. Si la multiplication était réalisée en utilisant l'arithmétique <code>long</code>, vous pourriez éviter le risque de débordement de capacité du calcul. Vous pouvez par exemple corriger le code précédent par : <code>long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; }</code> ou <code><pre>
+static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
+long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; } 
+</pre></code></p>
+]]>
+  </Details>
+ </BugPattern>
+ <BugPattern type="ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND">
+  <ShortDescription>Valeur entière transtypée en flottant puis transmise à Math.round</ShortDescription>
+  <LongDescription>Une valeur entière est transtypée en flottant puis transmise à Math.round dans {1}</LongDescription>
+  <Details>
+<![CDATA[
+<p>Ce code converti une valeur entière en flottant simple précision puis la passe à la méthode <code>Math.round()</code> qui renvoi l'<code>int</code> ou le <code>long</code> le plus proche de son paramètre. Cette opération doit toujours revenir à ne rien faire, puisque le transtypage d'un entier en un flottant devrait systématiquement donner un flottant sans partie décimale. Il est probable que l'opération gérant la valeur passée à <code>Math.round()</code> devrait être effectuée en arithmétique flottante.</p>
+]]>
+  </Details>
+ </BugPattern>
  <BugPattern type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL">
   <ShortDescription>Valeur entière transtypée en nombre flottant passée à Math.ceil</ShortDescription>
   <LongDescription>Une valeur entière est transtypée en nombre flottant puis passée à Math.ceil dans {1}</LongDescription>
@@ -3011,7 +3156,7 @@ double value2 =  x / (double) y;
   <LongDescription>Une valeur connue pour être à null est vérifiée pour savoir si elle est une instance d'un type dans {1}</LongDescription>
   <Details>
 <![CDATA[
-<p>Ce test <code>instanceof</code> renverra systématiquement <code>false</code> puisque la valeur testée est garantie d'être à <code>null</code>. Bien que cela soit sûr, assurez-vous que cela n'indique pas une mauvaise compréhension ou une erreur de logique.</p>
+<p>Ce test <code>instanceof</code> renverra systématiquement <code>false</code>, puisqu'il est garanti que la valeur testée sera à <code>null</code>. Bien que ce test soit sûr, il est probable qu'il indique une incompréhension ou une erreur de logique.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -3111,6 +3256,16 @@ double value2 =  x / (double) y;
   <Details>
 <![CDATA[
 <p>Le code invoque <code>toString</code> sur un tableau, ce qui va générer un résultat assez inutile du genre <code>[C@16f0472</code>. Envisagez d'utiliser <code>String.valueOf</code> pour convertir un tableau en une chaine lisible contenant les valeurs du tableau. Cf Programming Puzzlers, chapitre 3, problème 12.</p>
+]]>
+  </Details>
+ </BugPattern>
+ <BugPattern type="IM_AVERAGE_COMPUTATION_COULD_OVERFLOW">
+  <ShortDescription>Possibilité de débordement du calcul d'une moyenne</ShortDescription>
+  <LongDescription>Le calcul d'une moyenne peut déborder dans {1}</LongDescription>
+  <Details>
+<![CDATA[
+<p>Le code calcule la moyenne de deux entiers au moyen d'une division ou d'un décalage signé vers la droite, puis utilise le résultat comme indice d'un tableau. Si les valeurs moyennées sont très grandes, le calcul peut déborder (résultant en un très grand négatif). En supposant que le résultat doive toujours être positif, vous devriez plutôt utiliser un décalage à droite non signé. En d'autres termes, utilisez plutôt  <code>(low+high) &gt;&gt;&gt; 1</code> au lieu de <code>(low+high)/2</code>.</p>
+<p>Le bug existe dans de nombreuses implémentations des recherches binaires et des tris fusion. Martin Buchholz <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6412541"> l'a recherché et corrigé </a> dans les librairies du JDK et Joshua Bloch <a href="http://googleresearch.blogspot.com/2006/06/extra-extra-read-all-about-it-nearly.html"> a largement publié ce modèle de bug</a>.</p>
 ]]>
   </Details>
  </BugPattern>
@@ -3302,6 +3457,7 @@ double value2 =  x / (double) y;
  <BugCode abbrev="SIC">Classe interne pouvant être rendue statique</BugCode>
  <BugCode abbrev="TLW">wait() avec deux verrous en attente</BugCode>
  <BugCode abbrev="RV">Valeur de retour d'une méthode mal utilisée</BugCode>
+ <BugCode abbrev="IA">Appel ambiguë</BugCode>
  <BugCode abbrev="NP">Déréférencement d'un pointeur à null</BugCode>
  <BugCode abbrev="OS">Flux pas toujours fermé dans les différents chemins d'éxécution</BugCode>
  <BugCode abbrev="PZLA">Renvoyer un tableau de longueur nulle plutôt que la valeur "null"</BugCode>
@@ -3327,7 +3483,6 @@ double value2 =  x / (double) y;
  <BugCode abbrev="IJU">Jeu d'essai JUnit incorrectement implémenté</BugCode>
  <BugCode abbrev="BOA">Erreur dans la surcharge d'un Adapter</BugCode>
  <BugCode abbrev="SF">"switch" dont un cas déborde</BugCode>
- <BugCode abbrev="BRSA">Mauvais accès à un ResultSet</BugCode>
  <BugCode abbrev="SIO">Opérateur instanceof superflu</BugCode>
  <BugCode abbrev="BAC">Constructeur d'Applet erroné</BugCode>
  <BugCode abbrev="UOE">Utiliser Object.equals()</BugCode>
@@ -3347,12 +3502,14 @@ double value2 =  x / (double) y;
  <BugCode abbrev="ICAST">Transtypage de valeurs entières</BugCode>
  <BugCode abbrev="RE">Expressions régulières</BugCode>
  <BugCode abbrev="SQL">Injection SQL</BugCode>
+ <BugCode abbrev="BRSA">Mauvais accès à un ResultSet</BugCode>
  <BugCode abbrev="ESync">Blocs synchronisés vides</BugCode>
  <BugCode abbrev="QF">Boucles for douteuses</BugCode>
  <BugCode abbrev="VA">Problèmes sur les arguments variables (Java 5)</BugCode>
  <BugCode abbrev="BC">Mauvais transtypages de références</BugCode>
  <BugCode abbrev="IM">Opération douteuse sur des entiers</BugCode>
  <BugCode abbrev="ST">Mauvaise utilisation de champs statiques</BugCode>
+ <BugCode abbrev="JCIP">Violation d'une annotation net.jcip.annotations</BugCode>
  <BugCode abbrev="DMI">Invocation inutile d'une méthode</BugCode>
  <BugCode abbrev="PZ">Détection de bogue inspirée par "Programming Puzzlers" de Josh Bloch et Neal Gafter</BugCode>
  <BugCode abbrev="SWL">Sleep avec un verrou maintenu</BugCode>
