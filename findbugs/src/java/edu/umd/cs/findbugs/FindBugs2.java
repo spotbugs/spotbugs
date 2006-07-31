@@ -61,7 +61,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private static final boolean VERBOSE = Boolean.getBoolean("findbugs2.verbose");
 	private static final boolean DEBUG = VERBOSE || Boolean.getBoolean("findbugs2.debug");
 	
-	public BugReporter bugReporter;
+	private BugReporter bugReporter;
 	private Project project;
 	private IClassFactory classFactory;
 	private IClassPath classPath;
