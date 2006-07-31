@@ -134,7 +134,8 @@ public class DumbMethods extends BytecodeScanningDetector  {
 			
 			}
 		if (foundVacuousComparison) 
-			bugReporter.reportBug(new BugInstance(this, "INT_VACUOUS_COMPARISON", HIGH_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "INT_VACUOUS_COMPARISON", 
+					getBranchOffset() < 0 ? HIGH_PRIORITY : NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
 		}
