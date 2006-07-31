@@ -20,8 +20,15 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.StatelessDetector;
 
 public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements 
 		StatelessDetector {
@@ -50,7 +57,6 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
          public void visit(JavaClass obj) {
 	}
 
-	int parameters;
 
 	@Override
          public void visit(Method obj) {
@@ -60,7 +66,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 		seenThrow = false;
 		largestBranchTarget = -1;
 		try {
-		parameters = stack.resetForMethodEntry(this);
+		stack.resetForMethodEntry(this);
 		} catch (Throwable e) {
 			throw new RuntimeException("error in " + getFullyQualifiedMethodName() + " " + e.getMessage(), e);
 		}
@@ -113,13 +119,18 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 				&& getNameConstantOperand().equals(getMethodName())
 				&& getSigConstantOperand().equals(getMethodSig())
 				&& ((seen == INVOKESTATIC) == getMethod().isStatic())
-				&& stack.getStackDepth() >= parameters) {
+				) {
+			Type arguments[] = getMethod().getArgumentTypes();
+				// stack.getStackDepth() >= parameters
+			int parameters = arguments.length;
+			if (!getMethod().isStatic()) parameters++;
 			if (DEBUG) {
 				System.out.println("IL: Checking...");
 				System.out.println(getClassConstantOperand() + "." + getNameConstantOperand()
 						+ " : " + getSigConstantOperand());
 				System.out.println("vs. " + getClassName() + "." + getMethodName() + " : "
 						+ getMethodSig());
+			
 			}
 			if (getClassConstantOperand().equals(getClassName()) || seen == INVOKEVIRTUAL
 					|| seen == INVOKEINTERFACE) {
@@ -147,7 +158,11 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 				if (!sameMethod) {
 					// Have to check if first parmeter is the same
 					// know there must be a this argument
+					if (DEBUG) 
+						System.out.println("Stack is " + stack);
 					OpcodeStack.Item p = stack.getStackItem(parameters - 1);
+					if (DEBUG) 
+						System.out.println("parameters = " + parameters + ", Item is " + p);
 					String sig = p.getSignature(); 
 					sameMethod =  p.isInitialParameter() && p.getRegisterNumber() == 0 && sig.equals("L" + getClassName() +";");
 
@@ -164,7 +179,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 				boolean match3 = sameMethod && !seenReturn && largestBranchTarget < getPC();
 				if (match1 || match2 || match3) {
 					if (DEBUG)
-						System.out.println("IL: " + match1 + " " + match2 + " " + match3);
+						System.out.println("IL: " + sameMethod + " " + match1 + " " + match2 + " " + match3);
 					int priority = HIGH_PRIORITY;
 					if (!match1 && !match2 && seenThrow) priority = NORMAL_PRIORITY;
 					bugReporter.reportBug(new BugInstance(this, "IL_INFINITE_RECURSIVE_LOOP",
