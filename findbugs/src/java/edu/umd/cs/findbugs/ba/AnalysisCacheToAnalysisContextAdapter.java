@@ -267,7 +267,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 			throws ClassNotFoundException {
 		try {
 			return Global.getAnalysisCache().getClassAnalysis(
-					JavaClass.class, new ClassDescriptor(transformClassName(className)));
+					JavaClass.class, new ClassDescriptor(ClassName.toSlashedClassName(className)));
 		} catch (CheckedAnalysisException e) {
 			throw new ClassNotFoundException("Class not found: " + className, e);
 		}
@@ -295,16 +295,6 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		} catch (CheckedAnalysisException e) {
 			throw new IllegalStateException("Could not get database " + cls.getName(), e);
 		}
-	}
-
-	/**
-	 * Transform given class name so it is in JVM (slashed) format.
-	 * 
-	 * @param className a class name
-	 * @return the same class name in JVM format
-	 */
-	private static String transformClassName(String className) {
-		return ClassName.toSlashedClassName(className);
 	}
 
 	/**
