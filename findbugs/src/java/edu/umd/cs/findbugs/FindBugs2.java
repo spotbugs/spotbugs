@@ -144,8 +144,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addFilter(java.lang.String, boolean)
 	 */
 	public void addFilter(String filterFileName, boolean include) throws IOException, FilterException {
-		// TODO Auto-generated method stub
-		
+		FindBugs.configureFilter(bugReporter, filterFileName, include);
 	}
 	
 	/* (non-Javadoc)

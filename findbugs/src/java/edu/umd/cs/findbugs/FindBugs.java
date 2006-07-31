@@ -556,10 +556,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addFilter(java.lang.String, boolean)
 	 */
 	public void addFilter(String filterFileName, boolean include) throws IOException, FilterException {
-		Filter filter = new Filter(filterFileName);
-		BugReporter origBugReporter = bugReporter.getDelegate();
-		BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, filter, include);
-		bugReporter.setDelegate(filterBugReporter);
+		configureFilter(bugReporter, filterFileName, include);
 	}
 
 	/* (non-Javadoc)
@@ -1491,6 +1488,14 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 
 	public static void showSynopsis() {
 		System.out.println("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
+	}
+	
+	public static void configureFilter(DelegatingBugReporter bugReporter, String filterFileName, boolean include)
+			throws IOException, FilterException {
+		Filter filter = new Filter(filterFileName);
+		BugReporter origBugReporter = bugReporter.getDelegate();
+		BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, filter, include);
+		bugReporter.setDelegate(filterBugReporter);
 	}
 }
 
