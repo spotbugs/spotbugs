@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2006, University of Maryland
+ * Copyright (C) 2003-2006, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,9 @@ package edu.umd.cs.findbugs;
 
 import java.util.Set;
 
+/**
+ * Filter reported warnings by category.
+ */
 public class CategoryFilteringBugReporter extends DelegatingBugReporter {
 	private Set<String> categorySet;
 
