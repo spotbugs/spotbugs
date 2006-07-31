@@ -73,6 +73,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private ExecutionPlan executionPlan;
 	private UserPreferences userPreferences;
 	private String currentClassName;
+	private String releaseName;
 	
 	/**
 	 * Constructor.
@@ -119,6 +120,9 @@ public class FindBugs2 implements IFindBugsEngine {
 			// Create BCEL compatibility layer
 			createAnalysisContext();
 			
+			// Configure the BugCollection (if we are generating one)
+			FindBugs.configureBugCollection(this);
+			
 			// Create the execution plan (which passes/detectors to execute)
 			createExecutionPlan();
 			
@@ -132,6 +136,20 @@ public class FindBugs2 implements IFindBugsEngine {
 			// Make sure the codebases on the classpath are closed
 			classPath.close();
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugReporter()
+	 */
+	public BugReporter getBugReporter() {
+		return bugReporter;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getProject()
+	 */
+	public Project getProject() {
+		return project;
 	}
 	
 	/* (non-Javadoc)
@@ -197,8 +215,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getReleaseName()
 	 */
 	public String getReleaseName() {
-		// TODO Auto-generated method stub
-		return null;
+		return releaseName;
 	}
 	
 	/* (non-Javadoc)
@@ -251,8 +268,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setReleaseName(java.lang.String)
 	 */
 	public void setReleaseName(String releaseName) {
-		// TODO Auto-generated method stub
-		
+		this.releaseName = releaseName;
 	}
 	
 	/* (non-Javadoc)
@@ -410,6 +426,12 @@ public class FindBugs2 implements IFindBugsEngine {
 			
 			passCount++;
 		}
+
+		// Flush any queued bug reports
+		bugReporter.finish();
+
+		// Flush any queued error reports
+		bugReporter.reportQueuedErrors();
 	}
 
 	/**

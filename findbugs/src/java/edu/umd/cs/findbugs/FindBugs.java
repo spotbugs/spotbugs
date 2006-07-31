@@ -451,7 +451,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	}
 
 	private ErrorCountingBugReporter bugReporter;
-	private BugCollectionBugReporter bugCollectionBugReporter;
+//	private BugCollectionBugReporter bugCollectionBugReporter;
 	private boolean relaxedReportingMode;
 	private Project project;
 	private UserPreferences userPreferences;
@@ -531,6 +531,13 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	}
 	
 	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugReporter()
+	 */
+	public BugReporter getBugReporter() {
+		return bugReporter;
+	}
+	
+	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setBugReporter(edu.umd.cs.findbugs.BugReporter)
 	 */
 	public void setBugReporter(BugReporter bugReporter) {
@@ -543,6 +550,13 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	 */
 	public void setProject(Project project) {
 		this.project = project.duplicate();
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getProject()
+	 */
+	public Project getProject() {
+		return project;
 	}
 
 	/* (non-Javadoc)
@@ -652,14 +666,9 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		
 		// Configure analysis features
 		configureAnalysisFeatures();
-		
-		// If we have a BugCollectionBugReporter, get a handle to it.
-		// We use this reference to add extra information to the BugCollection,
-		// such as hashes of methods and classes.
-		if (bugReporter.getRealBugReporter() instanceof BugCollectionBugReporter) {
-			bugCollectionBugReporter = (BugCollectionBugReporter) bugReporter.getRealBugReporter();
-			bugCollectionBugReporter.getBugCollection().setReleaseName(releaseName);
-		}
+
+		// Set the release name and timestamp(s) in the BugCollection (if we are generating one).
+		configureBugCollection(this);
 
 		// Create execution plan
 		try {
@@ -701,10 +710,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			scanArchiveOrDirectory(item, archiveWorkList, repositoryClassList,
 				additionalAuxClasspathEntryList);
 		}
-		if (project.getTimestamp() != 0 && bugCollectionBugReporter != null) {
-			bugCollectionBugReporter.getBugCollection().setTimestamp(project.getTimestamp());
-			bugCollectionBugReporter.getBugCollection().getProjectStats().setTimestamp(project.getTimestamp());
-		}
+		
 		// Add "extra" aux classpath entries needed to ensure that
 		// skipped classes can be referenced.
 		addCollectionToClasspath(additionalAuxClasspathEntryList);
@@ -1017,14 +1023,6 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 					if (DEBUG) System.out.println("Scanned " + jclass.getClassName());
 					analysisContext.addApplicationClassToRepository(jclass);
 					repositoryClassList.add(jclass.getClassName());
-
-					if (false && bugCollectionBugReporter != null) {
-//						// Add class hash.
-//						bugCollectionBugReporter.getBugCollection().setClassHash(
-//								jclass.getClassName(), new ClassHash().computeHash(jclass));
-						
-						// TODO: add class features
-					}
 				} catch (ClassFormatException e) {
 					if (DEBUG) e.printStackTrace();
 					bugReporter.logError("Invalid classfile format", e);
@@ -1496,6 +1494,33 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		BugReporter origBugReporter = bugReporter.getDelegate();
 		BugReporter filterBugReporter = new FilterBugReporter(origBugReporter, filter, include);
 		bugReporter.setDelegate(filterBugReporter);
+	}
+
+	/**
+	 * Configure the BugCollection (if the BugReporter being used
+	 * is constructing one).
+	 * 
+	 * @param findBugs the IFindBugsEngine
+	 */
+	public static void configureBugCollection(IFindBugsEngine findBugs) {
+		BugReporter realBugReporter = findBugs.getBugReporter().getRealBugReporter();
+		
+		if (realBugReporter instanceof BugCollectionBugReporter) {
+			BugCollectionBugReporter bugCollectionBugReporter =
+				(BugCollectionBugReporter) realBugReporter;
+
+			bugCollectionBugReporter = (BugCollectionBugReporter) realBugReporter;
+
+			bugCollectionBugReporter.getBugCollection().setReleaseName(findBugs.getReleaseName());
+			
+			Project project = findBugs.getProject();
+			
+			if (project.getTimestamp() != 0) {
+				bugCollectionBugReporter.getBugCollection().setTimestamp(project.getTimestamp());
+				bugCollectionBugReporter.getBugCollection().getProjectStats().setTimestamp(project.getTimestamp());
+			}
+
+		}
 	}
 }
 

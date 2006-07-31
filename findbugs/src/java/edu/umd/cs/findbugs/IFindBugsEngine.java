@@ -39,6 +39,13 @@ import edu.umd.cs.findbugs.filter.FilterException;
 public interface IFindBugsEngine {
 
 	/**
+	 * Get the BugReporter.
+	 * 
+	 * @return the BugReporter
+	 */
+	public BugReporter getBugReporter();
+
+	/**
 	 * Set the BugReporter.
 	 * 
 	 * @param bugReporter The BugReporter to set
@@ -51,6 +58,13 @@ public interface IFindBugsEngine {
 	 * @param project The Project to set
 	 */
 	public void setProject(Project project);
+	
+	/**
+	 * Get the Project.
+	 * 
+	 * @return the Project
+	 */
+	public Project getProject();
 
 	/**
 	 * Set the progress callback that will be used to keep track
