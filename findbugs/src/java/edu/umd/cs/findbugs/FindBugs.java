@@ -19,14 +19,12 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLConnection;
@@ -1438,7 +1436,20 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	        throws java.io.IOException, FilterException {
 		
 		FindBugs findBugs = new FindBugs();
-		
+		processCommandLine(commandLine, argv, findBugs);
+		return findBugs;
+	}
+
+	/**
+	 * Process the command line.
+	 * 
+	 * @param commandLine  the TextUICommandLine object which will parse the command line
+	 * @param argv         the command line arguments
+	 * @param findBugs     the IFindBugsEngine to configure
+	 * @throws IOException
+	 * @throws FilterException
+	 */
+	public static void processCommandLine(TextUICommandLine commandLine, String[] argv, IFindBugsEngine findBugs) throws IOException, FilterException {
 		// Expand option files in command line.
 		// An argument beginning with "@" is treated as specifying
 		// the name of an option file.
@@ -1460,26 +1471,17 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		Project project = commandLine.getProject();
 		for (int i = argCount; i < argv.length; ++i)
 			project.addFile(argv[i]);
-		
-		if (commandLine.getXargs()) {
-				BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-				while (true) {
-					String s = in.readLine();
-					if (s == null) break;
-					project.addFile(s);
-				}
-			}
+		commandLine.handleXArgs();
 
 		if (project.getFileCount() == 0) {
 			showHelp(commandLine);
 		}
 
 		commandLine.configureEngine(findBugs);
-		return findBugs;
 	}
 
 	@SuppressWarnings("DM_EXIT")
-	private static void showHelp(TextUICommandLine commandLine) {
+	public static void showHelp(TextUICommandLine commandLine) {
 		showSynopsis();
 		ShowHelp.showGeneralOptions();
 		FindBugs.showCommandLineOptions(commandLine);

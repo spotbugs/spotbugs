@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
@@ -435,8 +436,7 @@ public class FindBugs2 implements IFindBugsEngine {
 		
 		// Parse command line and configure the engine
 		TextUICommandLine commandLine = new TextUICommandLine(detectorFactoryCollection);
-		commandLine.parse(args);
-		commandLine.configureEngine(findBugs);
+		FindBugs.processCommandLine(commandLine, args, findBugs);
 		
 		// Away we go!
 		findBugs.execute();
