@@ -70,13 +70,8 @@ public class FindBugs2 implements IFindBugsEngine {
 	
 	/**
 	 * Constructor.
-	 * 
-	 * @param bugReporter the BugReporter to use to report bugs
-	 * @param project     the Project to analyze
 	 */
-	public FindBugs2(BugReporter bugReporter, Project project) {
-		this.bugReporter = bugReporter;
-		this.project = project;
+	public FindBugs2() {
 	}
 	
 	/**
@@ -205,8 +200,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setBugReporter(edu.umd.cs.findbugs.BugReporter)
 	 */
 	public void setBugReporter(BugReporter bugReporter) {
-		// TODO Auto-generated method stub
-		
+		this.bugReporter = new DelegatingBugReporter(bugReporter); 
 	}
 	
 	/* (non-Javadoc)
@@ -229,8 +223,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setProject(edu.umd.cs.findbugs.Project)
 	 */
 	public void setProject(Project project) {
-		// TODO Auto-generated method stub
-		
+		this.project = project;
 	}
 	
 	/* (non-Javadoc)
@@ -421,30 +414,24 @@ public class FindBugs2 implements IFindBugsEngine {
 	}
 
 	public static void main(String[] args) throws Exception {
-		if (args.length != 1) {
-			System.err.println("Usage: " + FindBugs2.class.getName() + " <project>");
-			System.exit(1);
-		}
-
 		if (System.getProperty("findbugs.home") == null) {
 			throw new IllegalArgumentException("findbugs.home property must be set!");
 		}
-		
-		TextUIBugReporter realBugReporter = new PrintingBugReporter();
-		realBugReporter.setOutputStream(System.out);
-		BugReporter bugReporter = new DelegatingBugReporter(realBugReporter);
-		bugReporter.setPriorityThreshold(Detector2.NORMAL_PRIORITY);
-		
-		Project project = new Project();
-		project.read(args[0]);
-		
-		FindBugs2 findBugs = new FindBugs2(bugReporter, project);
-		
-		// Load plugins
+
+		// Create DetectorFactoryCollection and load plugins
 		DetectorFactoryCollection detectorFactoryCollection = new DetectorFactoryCollection();
 		detectorFactoryCollection.loadPlugins();
+		
+		// Create FindBugs2 engine
+		FindBugs2 findBugs = new FindBugs2();
 		findBugs.setDetectorFactoryCollection(detectorFactoryCollection);
 		
+		// Parse command line and configure the engine
+		TextUICommandLine commandLine = new TextUICommandLine(detectorFactoryCollection);
+		commandLine.parse(args);
+		commandLine.configureEngine(findBugs);
+		
+		// Away we go!
 		findBugs.execute();
 	}
 }
