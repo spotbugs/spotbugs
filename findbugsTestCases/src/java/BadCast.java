@@ -102,4 +102,9 @@ class BadCast {
 	public static String[] doNotReport() {
 		return (String[]) getSerializable();
 	}
+	public static int[] doNotReport2(Object x) {
+		if (x instanceof int[]) 
+			return (int[]) x;
+		return null;
+	}
 }
