@@ -446,22 +446,6 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		}
 	}
 
-	static class CategoryFilteringBugReporter extends DelegatingBugReporter {
-		private Set<String> categorySet;
-
-		public CategoryFilteringBugReporter(BugReporter realBugReporter, Set<String> categorySet) {
-			super(realBugReporter);
-			this.categorySet = categorySet;
-		}
-
-		public void reportBug(BugInstance bugInstance) {
-			BugPattern bugPattern = bugInstance.getBugPattern();
-			String category = bugPattern.getCategory();
-			if (categorySet.contains(category))
-				getDelegate().reportBug(bugInstance);
-		}
-	}
-
 	public static final AnalysisFeatureSetting[] MIN_EFFORT = new AnalysisFeatureSetting[]{
 			new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, true),
 			new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, false),

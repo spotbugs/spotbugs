@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import edu.umd.cs.findbugs.FindBugs.CategoryFilteringBugReporter;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
@@ -17,8 +16,10 @@ import edu.umd.cs.findbugs.filter.FilterException;
 /**
  * Helper class to parse the command line and configure
  * the IFindBugsEngine object.
+ * As a side-effect it also configures a DetectorFactoryCollection
+ * (to enable and disable detectors as requested).
  */
-class TextUICommandLine extends FindBugsCommandLine {
+public class TextUICommandLine extends FindBugsCommandLine {
 	/**
 	 * Handling callback for choose() method,
 	 * used to implement the -chooseVisitors and -choosePlugins options.
@@ -236,7 +237,7 @@ class TextUICommandLine extends FindBugsCommandLine {
 			// you can selectively enable and disable detectors,
 			// starting from the default set (or whatever set
 			// happens to be in effect).
-			choose(argument, "Detector choices", new TextUICommandLine.Chooser() {
+			choose(argument, "Detector choices", new Chooser() {
 				public void choose(boolean enabled, String what) {
 					DetectorFactory factory = detectorFactoryCollection
 					.getFactory(what);
@@ -252,7 +253,7 @@ class TextUICommandLine extends FindBugsCommandLine {
 			});
 		} else if (option.equals("-choosePlugins")) {
 			// Selectively enable/disable plugins
-			choose(argument, "Plugin choices", new TextUICommandLine.Chooser() {
+			choose(argument, "Plugin choices", new Chooser() {
 				public void choose(boolean enabled, String what) {
 					Plugin plugin = detectorFactoryCollection.getPluginById(what);
 					if (plugin == null)
@@ -329,7 +330,7 @@ class TextUICommandLine extends FindBugsCommandLine {
 	 * @param desc     String describing what is being chosen
 	 * @param chooser  callback object to selectively choose list members
 	 */
-	private void choose(String argument, String desc, TextUICommandLine.Chooser chooser) {
+	private void choose(String argument, String desc, Chooser chooser) {
 		StringTokenizer tok = new StringTokenizer(argument, ",");
 		while (tok.hasMoreTokens()) {
 			String what = tok.nextToken();
@@ -342,8 +343,6 @@ class TextUICommandLine extends FindBugsCommandLine {
 	}
 
 	public void configureEngine(IFindBugsEngine findBugs) throws IOException, FilterException {
-		//FindBugs findBugs = new FindBugs();
-
 		TextUIBugReporter textuiBugReporter;
 		switch (bugReporterType) {
 		case PRINTING_REPORTER:
@@ -353,12 +352,12 @@ class TextUICommandLine extends FindBugsCommandLine {
 			textuiBugReporter = new SortingBugReporter();
 			break;
 		case XML_REPORTER:
-		{
-			XMLBugReporter xmlBugReporter = new XMLBugReporter(project);
-			xmlBugReporter.setAddMessages(xmlWithMessages);
-			textuiBugReporter = xmlBugReporter;
-		}
-		break;
+			{
+				XMLBugReporter xmlBugReporter = new XMLBugReporter(project);
+				xmlBugReporter.setAddMessages(xmlWithMessages);
+				textuiBugReporter = xmlBugReporter;
+			}
+			break;
 		case EMACS_REPORTER:
 			textuiBugReporter = new EmacsBugReporter();
 			break;
@@ -387,7 +386,6 @@ class TextUICommandLine extends FindBugsCommandLine {
 			bugReporter = new CategoryFilteringBugReporter(bugReporter, bugCategorySet);
 		}
 
-//		FindBugs findBugs = new FindBugs(bugReporter, project);
 		findBugs.setBugReporter(bugReporter);
 		findBugs.setProject(project);
 
@@ -416,7 +414,5 @@ class TextUICommandLine extends FindBugsCommandLine {
 		findBugs.setAnalysisFeatureSettings(settingList);
 
 		findBugs.setReleaseName(releaseName);
-
-//		return findBugs;
 	}
 }
