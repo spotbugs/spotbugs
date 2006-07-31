@@ -106,12 +106,18 @@ public class FindBugs2 implements IFindBugsEngine {
 		createAnalysisCache();
 		
 		try {
+			// Discover all codebases in classpath and
+			// enumerate all classes (application and non-application)
 			buildClassPath();
-			createAnalysisContext();
-			createExecutionPlan();
-			analyzeApplication();
 			
-			// TODO: the execution plan, analysis, etc.
+			// Create BCEL compatibility layer
+			createAnalysisContext();
+			
+			// Create the execution plan (which passes/detectors to execute)
+			createExecutionPlan();
+			
+			// Analyze the application
+			analyzeApplication();
 		} finally {
 			// Make sure the codebases on the classpath are closed
 			classPath.close();
