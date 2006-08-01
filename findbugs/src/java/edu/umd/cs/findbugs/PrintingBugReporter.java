@@ -25,8 +25,7 @@ import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.apache.bcel.classfile.JavaClass;
-
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.config.CommandLine;
 
 
@@ -37,7 +36,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
 public class PrintingBugReporter extends TextUIBugReporter {
 	private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
-	public void observeClass(JavaClass javaClass) {
+	public void observeClass(ClassDescriptor classDescriptor) {
 		// Don't need to do anything special, since we won't be
 		// reporting statistics.
 	}

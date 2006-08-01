@@ -21,29 +21,24 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
-import edu.umd.cs.findbugs.ba.ClassObserver;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassFactory;
+import edu.umd.cs.findbugs.classfile.IClassObserver;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.IClassPathBuilder;
-import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
-import edu.umd.cs.findbugs.classfile.analysis.ClassData;
-import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
-import edu.umd.cs.findbugs.config.CommandLine.HelpRequestedException;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
@@ -151,11 +146,11 @@ public class FindBugs2 implements IFindBugsEngine {
 	public Project getProject() {
 		return project;
 	}
-	
+
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addClassObserver(edu.umd.cs.findbugs.ba.ClassObserver)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addClassObserver(edu.umd.cs.findbugs.classfile.IClassObserver)
 	 */
-	public void addClassObserver(ClassObserver classObserver) {
+	public void addClassObserver(IClassObserver classObserver) {
 		// TODO Auto-generated method stub
 		
 	}

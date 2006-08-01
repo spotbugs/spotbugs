@@ -21,8 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
-import edu.umd.cs.findbugs.ba.ClassObserver;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.IClassObserver;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
@@ -94,11 +94,11 @@ public interface IFindBugsEngine {
 	public void setUserPreferences(UserPreferences userPreferences);
 
 	/**
-	 * Add a ClassObserver.
+	 * Add an IClassObserver.
 	 *
-	 * @param classObserver the ClassObserver
+	 * @param classObserver the IClassObserver
 	 */
-	public void addClassObserver(ClassObserver classObserver);
+	public void addClassObserver(IClassObserver classObserver);
 
 	/**
 	 * Set the ClassScreener.

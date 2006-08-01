@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2006 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.util.Iterator;
 
-import org.apache.bcel.classfile.JavaClass;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * A BugReporter which stores all of the reported bug instances,
@@ -30,7 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 public class SortingBugReporter extends TextUIBugReporter {
 	private SortedBugCollection bugCollection = new SortedBugCollection();
 
-	public void observeClass(JavaClass javaClass) {
+	public void observeClass(ClassDescriptor classDescriptor) {
 		// Don't need to do anything special, since we won't be
 		// reporting statistics.
 	}

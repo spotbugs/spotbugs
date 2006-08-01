@@ -24,12 +24,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
 
-import org.apache.bcel.classfile.JavaClass;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * BugReporter to output warnings in xdocs format for Maven.
@@ -62,7 +63,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
 	}
 
-	public void observeClass(JavaClass javaClass) {
+	public void observeClass(ClassDescriptor classDescriptor) {
 	}
 
 	public void logError(String message) {

@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2006 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,14 +23,16 @@ import java.util.HashSet;
 
 import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.ba.ClassObserver;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.IClassObserver;
 
 /**
  * Driver for performing Rapid Type Analysis (RTA) on a collection of
  * classes.  RTA is an algorithm devised by David Bacon to compute
  * an accurate call graph for an object-oriented program.
  */
-public class RapidTypeAnalysis implements ClassObserver {
+public class RapidTypeAnalysis implements IClassObserver {
 	// Set of classes observed.
 	private HashSet<JavaClass> observedClassSet;
 
@@ -45,8 +47,13 @@ public class RapidTypeAnalysis implements ClassObserver {
 		// TODO: implement
 	}
 
-	public void observeClass(JavaClass javaClass) {
-		observedClassSet.add(javaClass);
+	public void observeClass(ClassDescriptor classDescriptor) {
+		try {
+			JavaClass javaClass = AnalysisContext.currentAnalysisContext().lookupClass(classDescriptor);
+			observedClassSet.add(javaClass);
+		} catch (ClassNotFoundException e) {
+			// Shouldn't happen
+		}
 	}
 
 }

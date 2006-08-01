@@ -53,12 +53,10 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.ClassObserver;
-import edu.umd.cs.findbugs.ba.LegacyAnalysisContext;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.ba.URLClassPathRepository;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.IClassObserver;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -69,6 +67,7 @@ import edu.umd.cs.findbugs.plan.AnalysisPass;
 import edu.umd.cs.findbugs.plan.ExecutionPlan;
 import edu.umd.cs.findbugs.plan.OrderingConstraintException;
 import edu.umd.cs.findbugs.util.Archive;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 /**
@@ -455,7 +454,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	private boolean relaxedReportingMode;
 	private Project project;
 	private UserPreferences userPreferences;
-	private List<ClassObserver> classObserverList;
+	private List<IClassObserver> classObserverList;
 	private ExecutionPlan executionPlan;
 	private FindBugsProgress progressCallback;
 	private ClassScreener classScreener;
@@ -485,7 +484,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		
 		this.relaxedReportingMode = false;
 		this.userPreferences = UserPreferences.createDefaultUserPreferences();
-		this.classObserverList = new LinkedList<ClassObserver>();
+		this.classObserverList = new LinkedList<IClassObserver>();
 
 		// Create a no-op progress callback.
 		this.progressCallback = new FindBugsProgress() {
@@ -581,9 +580,9 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addClassObserver(edu.umd.cs.findbugs.ba.ClassObserver)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addClassObserver(edu.umd.cs.findbugs.classfile.IClassObserver)
 	 */
-	public void addClassObserver(ClassObserver classObserver) {
+	public void addClassObserver(IClassObserver classObserver) {
 		classObserverList.add(classObserver);
 	}
 
@@ -1128,8 +1127,10 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			JavaClass javaClass = Repository.lookupClass(className);
 
 			// Notify ClassObservers
-			for (ClassObserver aClassObserverList : classObserverList) {
-				aClassObserverList.observeClass(javaClass);
+			for (IClassObserver aClassObserver : classObserverList) {
+				ClassDescriptor classDescriptor =
+					new ClassDescriptor(ClassName.toSlashedClassName(javaClass.getClassName()));
+				aClassObserver.observeClass(classDescriptor);
 			}
 
 			// Create a ClassContext for the class

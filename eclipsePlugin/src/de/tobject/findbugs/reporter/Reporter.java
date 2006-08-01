@@ -1,7 +1,7 @@
 /*
  * FindBugs Eclipse Plug-in.
  * Copyright (C) 2003 - 2004, Peter Friese
- * Copyright (C) 2004-2005, University of Maryland
+ * Copyright (C) 2004-2006, University of Maryland
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,6 +38,8 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**
@@ -155,18 +157,23 @@ public class Reporter extends AbstractBugReporter {
 	public static IJavaProject getJavaProject(IProject project) {
 		return JavaCore.create(project);
 	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.ClassObserver#observeClass(org.apache.bcel.classfile.JavaClass)
-	 */
-	public void observeClass(JavaClass clazz) {
+
+	public void observeClass(ClassDescriptor classDescriptor) {
+		JavaClass clazz;
+		try {
+			clazz = AnalysisContext.currentAnalysisContext().lookupClass(classDescriptor);
+		} catch (ClassNotFoundException e) {
+			// This should not happen
+			return;
+		}
+		
 		if (DEBUG) {
 			System.out.println("Observing class: " + clazz.getClassName()); //$NON-NLS-1$
 		}
 
 		// Keep track of classes analyzed
 		analyzedClassNameSet.add(clazz.getClassName());
-		
+
 		// Update progress monitor
 		if (monitor == null) {
 			return;
@@ -186,17 +193,17 @@ public class Reporter extends AbstractBugReporter {
 		if (observed++ < filesNumber)
 			monitor.setTaskName(
 					"Prescanning... (found "
-						+ bugsNbr
-						+ ", check in "
-						+ getAbbreviatedClassName(clazz)
-						+ ")");
+					+ bugsNbr
+					+ ", check in "
+					+ getAbbreviatedClassName(clazz)
+					+ ")");
 		else 
-		monitor.setTaskName(
-			"Bug checking... (found "
-				+ bugsNbr
-				+ ", check in "
-				+ getAbbreviatedClassName(clazz)
-				+ ")");
+			monitor.setTaskName(
+					"Bug checking... (found "
+					+ bugsNbr
+					+ ", check in "
+					+ getAbbreviatedClassName(clazz)
+					+ ")");
 		monitor.worked(MONITOR_INTERVAL);
 	}
 	

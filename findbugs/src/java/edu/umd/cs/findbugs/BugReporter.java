@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.ba.ClassObserver;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
+import edu.umd.cs.findbugs.classfile.IClassObserver;
 
 /**
  * Generic interface for bug reporter objects.
@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
  *
  * @author David Hovemeyer
  */
-public interface BugReporter extends RepositoryLookupFailureCallback, ClassObserver {
+public interface BugReporter extends RepositoryLookupFailureCallback, IClassObserver {
 
 	/**
 	 * Silent error-reporting verbosity level.

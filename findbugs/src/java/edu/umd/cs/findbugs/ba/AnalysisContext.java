@@ -41,7 +41,9 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.detect.NoteAnnotationRetention;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MapCache;
 
 
@@ -222,6 +224,18 @@ public abstract class AnalysisContext {
 	 * @throws ClassNotFoundException (but not really)
 	 */
 	public abstract JavaClass lookupClass(@NonNull String className) throws ClassNotFoundException;
+
+	/**
+	 * Lookup a class.
+	 * <em>Use this method instead of Repository.lookupClass().</em>
+	 * 
+	 * @param classDescriptor descriptor specifying the class to look up
+	 * @return the class
+	 * @throws ClassNotFoundException if the class can't be found
+	 */
+	public JavaClass lookupClass(@NonNull ClassDescriptor classDescriptor) throws ClassNotFoundException {
+		return lookupClass(classDescriptor.toDottedClassName());
+	}
 	
 	/**
 	 * This is equivalent to Repository.lookupClass() or this.lookupClass(),

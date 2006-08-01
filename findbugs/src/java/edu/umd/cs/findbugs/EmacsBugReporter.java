@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2006 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * BugReporter to output warnings in Emacs format.
@@ -40,9 +41,15 @@ public class EmacsBugReporter extends TextUIBugReporter {
 
 	private HashMap<String,String> sourceFileNameCache = new HashMap<String,String>();
 
-	public void observeClass(JavaClass javaClass) {
-		String sourceFileName = fileNameFor(javaClass.getPackageName(), javaClass.getSourceFileName());
-		sourceFileNameCache.put(javaClass.getClassName(), sourceFileName);
+	public void observeClass(ClassDescriptor classDescriptor) {
+		try {
+			JavaClass javaClass = AnalysisContext.currentAnalysisContext().lookupClass(
+					classDescriptor.toDottedClassName());
+			String sourceFileName = fileNameFor(javaClass.getPackageName(), javaClass.getSourceFileName());
+			sourceFileNameCache.put(javaClass.getClassName(), sourceFileName);
+		} catch (ClassNotFoundException e) {
+			// Ignore - should not happen
+		}
 	}
 	
 	private String fileNameFor(final String packageName, final String sourceName) {

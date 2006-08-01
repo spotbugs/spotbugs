@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
@@ -71,8 +72,8 @@ public class DelegatingBugReporter implements BugReporter {
 		delegate.setPriorityThreshold(threshold);
 	}
 
-	public void observeClass(JavaClass javaClass) {
-		delegate.observeClass(javaClass);
+	public void observeClass(ClassDescriptor classDescriptor) {
+		delegate.observeClass(classDescriptor);
 	}
 
 	public void reportBug(BugInstance bugInstance) {

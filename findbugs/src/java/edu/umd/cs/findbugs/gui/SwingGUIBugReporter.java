@@ -18,10 +18,9 @@
  */
 package edu.umd.cs.findbugs.gui;
 
-import org.apache.bcel.classfile.JavaClass;
-
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.TextUIBugReporter;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
  * BugReporter used by AnalysisRun.
@@ -54,7 +53,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 		return errorDialog;
 	}
 	
-	public void observeClass(JavaClass javaClass) {
+	public void observeClass(ClassDescriptor classDescriptor) {
 	}
 	
 	public void reportMissingClass(ClassNotFoundException ex) {
