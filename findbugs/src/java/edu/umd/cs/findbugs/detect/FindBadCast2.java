@@ -251,16 +251,14 @@ public class FindBadCast2 implements Detector {
 				refSig2 = refSig2.substring(1);
 			}
 
-			if (refSig2.equals("Ljava/lang/Object;") && !(nextIns instanceof InvokeInstruction)) {
-				// System.out.println("cast of object value to " + castType.getSignature());
-				continue;
-			}
+			
 			SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
 			.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
 
 			if (refSig2.charAt(0) != 'L' || castSig2.charAt(0) != 'L') {
-				if (refSig2.equals("Ljava/io/Serializable;") 
-						|| refSig2.equals("Ljava/lang/Cloneable;")) continue;
+				if ( castSig2.charAt(0) == '[' && (refSig2.equals("Ljava/io/Serializable;") 
+						|| refSig2.equals("Ljava/lang/Object;")
+						|| refSig2.equals("Ljava/lang/Cloneable;"))) continue;
 				bugReporter.reportBug(
 						new BugInstance(this,
 						"BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY", HIGH_PRIORITY )
@@ -269,7 +267,10 @@ public class FindBadCast2 implements Detector {
 				continue;
 			}
 
-			
+			if (refSig2.equals("Ljava/lang/Object;")
+					) {
+				continue;
+			}
 			if (isCast && haveMultipleCast.contains(sourceLineAnnotation)
 					|| !isCast
 					&& haveMultipleInstanceOf.contains(sourceLineAnnotation)) {
