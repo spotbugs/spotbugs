@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -28,6 +29,7 @@ import java.util.Set;
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
+import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -71,6 +73,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private UserPreferences userPreferences;
 	private String currentClassName;
 	private String releaseName;
+	private String sourceInfoFileName;
 	
 	/**
 	 * Constructor.
@@ -273,8 +276,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setSourceInfoFile(java.lang.String)
 	 */
 	public void setSourceInfoFile(String sourceInfoFile) {
-		// TODO Auto-generated method stub
-		
+		this.sourceInfoFileName = sourceInfoFile;
 	}
 	
 	/* (non-Javadoc)
@@ -288,7 +290,6 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * Create the classpath object.
 	 */
 	private void createClassPath() {
-		// FIXME: this should be in the analysis context eventually
 		classPath = classFactory.createClassPath();
 	}
 
@@ -336,10 +337,20 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * Create the AnalysisContext that will serve as the BCEL-compatibility
 	 * layer over the AnalysisCache.
 	 */
-	private void createAnalysisContext() throws CheckedAnalysisException {
+	private void createAnalysisContext() throws CheckedAnalysisException, IOException {
 		AnalysisCacheToAnalysisContextAdapter analysisContext =
 			new AnalysisCacheToAnalysisContextAdapter();
+
+		// Specify which classes are application classes
 		analysisContext.setAppClassList(appClassList);
+		
+		// If needed, load SourceInfoMap
+		if (sourceInfoFileName != null) {
+			SourceInfoMap sourceInfoMap = analysisContext.getSourceInfoMap();
+			sourceInfoMap.read(new FileInputStream(sourceInfoFileName));
+		}
+
+		// Make this the current analysis context
 		AnalysisContext.setCurrentAnalysisContext(analysisContext);
 	}
 
