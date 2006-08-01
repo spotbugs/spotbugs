@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.FindBugs2;
@@ -111,15 +112,6 @@ public class AnalysisPass {
 	}
 
 	/**
-	 * Get the number of detectors in this pass.
-	 * 
-	 * @return the number of detectors in this pass
-	 */
-	public int getNumDetectors() {
-		return orderedFactoryList.size();
-	}
-
-	/**
 	 * Instantiate all of the Detector2s in this pass and return
 	 * them in a (correctly-ordered) array.
 	 * 
@@ -127,11 +119,41 @@ public class AnalysisPass {
 	 * @return array of Detector2s
 	 */
 	public Detector2[] instantiateDetector2sInPass(BugReporter bugReporter) {
-		Detector2[] detectorList = new Detector2[getNumDetectors()];
+		Detector2[] detectorList = new Detector2[orderedFactoryList.size()];
 		int count = 0;
 		for (Iterator<DetectorFactory> j = iterator(); j.hasNext();) {
 			detectorList[count++] = j.next().createDetector2(bugReporter);
 		}
+		return detectorList;
+	}
+	
+	/**
+	 * Instantiate all of the detectors in this pass as objects implementing
+	 * the BCEL-only Detector interface.  Detectors that do not support this
+	 * interface will not be created.  Therefore, new code should use
+	 * the instantiateDetector2sInPass() method, which can support all detectors.
+	 * 
+	 * @param bugReporter the BugReporter
+	 * @return array of Detectors
+	 * @deprecated call instantiateDetector2sInPass() instead
+	 */
+	public Detector[] instantiateDetectorsInPass(BugReporter bugReporter) {
+		int count;
+		
+		count = 0;
+		for (DetectorFactory factory : orderedFactoryList) {
+			if (factory.isDetectorClassSubtypeOf(Detector.class)) {
+				count++;
+			}
+		}
+
+		Detector[] detectorList = new Detector[count];
+		
+		count = 0;
+		for (DetectorFactory factory : orderedFactoryList) {
+			detectorList[count++] = factory.create(bugReporter);
+		}
+		
 		return detectorList;
 	}
 }

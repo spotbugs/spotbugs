@@ -1070,11 +1070,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		}
 		
 		// Create detectors
-		Detector[] detectors = new Detector[analysisPass.getNumDetectors()];
-		int count = 0;
-		for (Iterator<DetectorFactory> i = analysisPass.iterator(); i.hasNext();) {
-			detectors[count++] = i.next().create(bugReporter);
-		}
+		// XXX: we can only support BCEL-based detectors.
+		Detector[] detectors = analysisPass.instantiateDetectorsInPass(bugReporter);
 
 		// Examine each class in the application
 		Set<String> examinedClassSet = new HashSet<String>();
