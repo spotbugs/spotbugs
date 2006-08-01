@@ -74,6 +74,7 @@ public class PluginLoader extends URLClassLoader {
 	 */
 	public PluginLoader(URL url) throws PluginException {
 		super(new URL[]{url});
+		init();
 	}
 
 	/**
