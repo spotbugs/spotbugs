@@ -258,32 +258,51 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 */
 	public String getNameInClass() {
 		if (nameInClass == null) {
-			// Convert to "nice" representation
-			StringBuffer args = new StringBuffer();
-			SignatureConverter converter = new SignatureConverter(methodSig);
-			String pkgName = getPackageName();
-
-			if (converter.getFirst() != '(')
-				throw new IllegalStateException("bad method signature " + methodSig);
-			converter.skip();
-
-			while (converter.getFirst() != ')') {
-				if (args.length() > 0)
-					args.append(',');
-				args.append(shorten(pkgName, converter.parseNext()));
-			}
-			converter.skip();
-
-			StringBuffer result = new StringBuffer();
-			result.append(methodName);
-			result.append('(');
-			result.append(args);
-			result.append(')');
-
-			nameInClass = result.toString();
+			nameInClass = getNameInClass(true);
 		}
-
 		return nameInClass;
+	}
+
+	/**
+	 * Get the "full" method name.
+	 * This is a format which looks sort of like a method signature
+	 * that would appear in Java source code.
+	 * 
+	 * note: If shortenPackeges==true, this will return the same
+	 * value as getNameInClass(), except that method caches the
+	 * result and this one does not. Calling this one may be slow.
+	 * 
+	 * @param shortenPackages whether to shorten package names
+	 * if they are in java or in the same package as this method.
+	 */
+	public String getNameInClass(boolean shortenPackages) {
+		// Convert to "nice" representation
+		StringBuffer result = new StringBuffer();
+		result.append(methodName);
+		result.append('(');
+
+		// append args
+		SignatureConverter converter = new SignatureConverter(methodSig);
+		
+		if (converter.getFirst() != '(')
+			throw new IllegalStateException("bad method signature " + methodSig);
+		converter.skip();
+
+		String pkgName = getPackageName();
+		boolean needsComma = false;
+		while (converter.getFirst() != ')') {
+			if (needsComma)
+				result.append(',');
+			if (shortenPackages)
+				result.append(shorten(pkgName, converter.parseNext()));
+			else
+				result.append(converter.parseNext());
+			needsComma = true;
+		}
+		converter.skip();
+
+		result.append(')');
+		return result.toString();
 	}
 
 	
