@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -57,6 +58,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs2.verbose");
 	private static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs2.debug");
 	
+	private List<IClassObserver> classObserverList;
 	private ErrorCountingBugReporter bugReporter;
 	private Project project;
 	private IClassFactory classFactory;
@@ -74,6 +76,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * Constructor.
 	 */
 	public FindBugs2() {
+		this.classObserverList = new LinkedList<IClassObserver>();
 	}
 	
 	/**
@@ -151,8 +154,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addClassObserver(edu.umd.cs.findbugs.classfile.IClassObserver)
 	 */
 	public void addClassObserver(IClassObserver classObserver) {
-		// TODO Auto-generated method stub
-		
+		classObserverList.add(classObserver);
 	}
 	
 	/* (non-Javadoc)
@@ -225,7 +227,8 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setBugReporter(edu.umd.cs.findbugs.BugReporter)
 	 */
 	public void setBugReporter(BugReporter bugReporter) {
-		this.bugReporter = new ErrorCountingBugReporter(bugReporter); 
+		this.bugReporter = new ErrorCountingBugReporter(bugReporter);
+		addClassObserver(bugReporter);
 	}
 	
 	/* (non-Javadoc)
@@ -398,6 +401,7 @@ public class FindBugs2 implements IFindBugsEngine {
 				}
 				
 				currentClassName = ClassName.toDottedClassName(classDescriptor.getClassName());
+				notifyClassObservers(classDescriptor);
 				
 				for (Detector2 detector : detectorList) {
 					if (DEBUG) {
@@ -426,6 +430,17 @@ public class FindBugs2 implements IFindBugsEngine {
 
 		// Flush any queued error reports
 		bugReporter.reportQueuedErrors();
+	}
+
+	/**
+	 * Notify all IClassObservers that we are visiting given class.
+	 * 
+	 * @param classDescriptor the class being visited
+	 */
+	private void notifyClassObservers(ClassDescriptor classDescriptor) {
+		for (IClassObserver observer : classObserverList) {
+			observer.observeClass(classDescriptor);
+		}
 	}
 
 	/**
