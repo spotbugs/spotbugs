@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -396,9 +397,6 @@ public class FindBugs2 implements IFindBugsEngine {
 	private void analyzeApplication()  {
 		int passCount = 0;
 		for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext(); ) {
-			if (VERBOSE) {
-				System.out.println("Pass " + (passCount + 1));
-			}
 			AnalysisPass pass = i.next();
 
 			// Instantiate the detectors
@@ -406,7 +404,11 @@ public class FindBugs2 implements IFindBugsEngine {
 
 			// On first pass, we apply detectors to ALL classes.
 			// On subsequent passes, we apply detector only to application classes.
-			for (ClassDescriptor classDescriptor : /*(passCount == 0) ? allClassSet :*/ appClassList) {
+			Collection<ClassDescriptor> classCollection = /*(passCount == 0) ? allClassSet :*/ appClassList; 
+			if (DEBUG) {
+				System.out.println("Pass " + (passCount + 1) + ": " + classCollection.size() + " classes");
+			}
+			for (ClassDescriptor classDescriptor : classCollection) {
 				if (DEBUG) {
 					System.out.println("Class " + classDescriptor);
 				}

@@ -49,6 +49,13 @@ public class ClassParser {
 	private ICodeBaseEntry codeBaseEntry;
 	private Constant[] constantPool;
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param in                       the DataInputStream to read class data from
+	 * @param expectedClassDescriptor  ClassDescriptor expected: null if unknown
+	 * @param codeBaseEntry            codebase entry class is loaded from
+	 */
 	public ClassParser(
 			DataInputStream in,
 			ClassDescriptor expectedClassDescriptor,
@@ -95,14 +102,14 @@ public class ClassParser {
 				interfaceDescriptorList[i] = getClassDescriptor(in.readUnsignedShort());
 			}
 			
-//			int fields_count = in.readUnsignedShort();
-//			if (fields_count < 0 ) {
-//				throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
-//			}
-//			FieldDescriptor[] fieldDescriptorList = new FieldDescriptor[fields_count];
-//			for (int i = 0; i < fields_count; i++) {
-//				fieldDescriptorList[i] = readField();
-//			}
+			int fields_count = in.readUnsignedShort();
+			if (fields_count < 0 ) {
+				throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
+			}
+			FieldDescriptor[] fieldDescriptorList = new FieldDescriptor[fields_count];
+			for (int i = 0; i < fields_count; i++) {
+				fieldDescriptorList[i] = readField(thisClassDescriptor);
+			}
 			
 			return new ClassInfo(
 					thisClassDescriptor,
@@ -142,12 +149,11 @@ public class ClassParser {
 	/**
 	 * Read a constant from the constant pool.
 	 * 
-	 * @param in DataInputStream positioned within the constant pool
 	 * @return a Constant
 	 * @throws InvalidClassFileFormatException
 	 * @throws IOException 
 	 */
-	private  Constant readConstant()
+	private Constant readConstant()
 			throws InvalidClassFileFormatException, IOException {
 		int tag = in.readUnsignedByte();
 		if (tag < 0 || tag >= CONSTANT_FORMAT_MAP.length || CONSTANT_FORMAT_MAP[tag] == null) {
@@ -186,8 +192,6 @@ public class ClassParser {
 	/**
 	 * Get the ClassDescriptor of a class referenced in the constant pool.
 	 * 
-	 * @param expectedClassDescriptor   class descriptor
-	 * @param constantPool constant pool of the class
 	 * @param index        index of the referenced class in the constant pool
 	 * @return the ClassDescriptor of the referenced calss
 	 * @throws InvalidClassFileFormatException 
@@ -202,11 +206,23 @@ public class ClassParser {
 		checkConstantTag(constant, IClassConstants.CONSTANT_Class);
 		
 		int refIndex = ((Integer)constant.data[0]).intValue();
+		String stringValue = getUtf8String(refIndex);
+		
+		return new ClassDescriptor(stringValue);
+	}
+
+	/**
+	 * Get the UTF-8 string constant at given constant pool index.
+	 * 
+	 * @param refIndex the constant pool index
+	 * @return the String at that index
+	 * @throws InvalidClassFileFormatException
+	 */
+	private String getUtf8String(int refIndex) throws InvalidClassFileFormatException {
 		checkConstantPoolIndex(refIndex);
 		Constant refConstant = constantPool[refIndex];
 		checkConstantTag(refConstant, IClassConstants.CONSTANT_Utf8);
-		
-		return new ClassDescriptor((String) refConstant.data[0]);
+		return (String) refConstant.data[0];
 	}
 
 	/**
@@ -226,7 +242,6 @@ public class ClassParser {
 	/**
 	 * Check that a constant has the expected tag.
 	 * 
-	 * @param descriptor   class descriptor
 	 * @param constant     the constant to check
 	 * @param expectedTag the expected constant tag
 	 * @throws InvalidClassFileFormatException if the constant's tag does not match the expected tag
@@ -237,21 +252,44 @@ public class ClassParser {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
 		}
 	}
-//
-//	/**
-//	 * Read field_info, return FieldDescriptor.
-//	 * 
-//	 * @param expectedClassDescriptor expected class descriptor for this ClassInfo
-//	 * @param codeBaseEntry           codebase entry class is loaded from
-//	 * @param in                      DataInputStream reading from class data
-//	 * @return the FieldDescriptor
-//	 * @throws IOException 
-//	 */
-//	private FieldDescriptor readField() throws IOException {
-//		int access_flags = in.readUnsignedShort();
-//		int name_index = in.readUnsignedShort();
-//		int descriptor_index = in.readUnsignedShort();
-//		int attributes_count = in.readUnsignedShort();
-//	
-//	}
+
+	/**
+	 * Read field_info, return FieldDescriptor.
+	 * 
+	 * @param thisClassDescriptor the ClassDescriptor of this class (being parsed) 
+	 * @return the FieldDescriptor
+	 * @throws IOException 
+	 * @throws InvalidClassFileFormatException 
+	 */
+	private FieldDescriptor readField(ClassDescriptor thisClassDescriptor) throws IOException, InvalidClassFileFormatException {
+		int access_flags = in.readUnsignedShort();
+		int name_index = in.readUnsignedShort();
+		int descriptor_index = in.readUnsignedShort();
+		int attributes_count = in.readUnsignedShort();
+	
+		String fieldName = getUtf8String(name_index);
+		String fieldSignature = getUtf8String(descriptor_index);
+		
+		for (int i = 0; i < attributes_count; i++) {
+			readAttribute();
+		}
+		
+		return new FieldDescriptor(
+				expectedClassDescriptor.getClassName(),
+				fieldName,
+				fieldSignature,
+				(access_flags & IClassConstants.ACC_STATIC) != 0);
+	}
+
+	/**
+	 * Read an attribute.
+	 * 
+	 * @throws IOException 
+	 */
+	private void readAttribute() throws IOException {
+		int attribute_name_index = in.readUnsignedShort();
+		int attribute_length = in.readInt();
+		byte[] buf = new byte[attribute_length];
+		in.readFully(buf);
+	}
 }

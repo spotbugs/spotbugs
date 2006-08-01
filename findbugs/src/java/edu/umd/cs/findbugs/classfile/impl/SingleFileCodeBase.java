@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.classfile.impl;
 
 import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,6 +35,7 @@ import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine;
+import edu.umd.cs.findbugs.classfile.engine.ClassParser;
 import edu.umd.cs.findbugs.io.IO;
 
 /**
@@ -146,11 +148,11 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 			// If we can't do this for some reason, then we just
 			// make the resource name equal to the filename.
 			
-			InputStream in = null;
+			DataInputStream in = null;
 			try {
-				in = new BufferedInputStream(new FileInputStream(fileName));
-				ClassInfo classInfo = ClassInfoAnalysisEngine.parseClassInfo(
-						null, new SingleFileCodeBaseEntry(this), in);
+				in = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)));
+				ClassParser classParser = new ClassParser(in, null, new SingleFileCodeBaseEntry(this));
+				ClassInfo classInfo = classParser.parse();
 				resourceName = classInfo.getClassDescriptor().toResourceName();
 			} catch (IOException e) {
 				resourceName = fileName;
