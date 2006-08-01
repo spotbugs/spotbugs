@@ -73,7 +73,7 @@ public class ClassParser {
 			int minor_version = in.readUnsignedShort();
 			int constant_pool_count = in.readUnsignedShort();
 
-			Constant[] constantPool = new Constant[constant_pool_count];
+			constantPool = new Constant[constant_pool_count];
 			for (int i = 1; i < constantPool.length; i++) {
 				constantPool[i] = readConstant();
 				if (constantPool[i].tag == IClassConstants.CONSTANT_Double ||
