@@ -40,7 +40,7 @@ import static edu.umd.cs.findbugs.util.Strings.replace;
  * @author David Hovemeyer
  */
 public class ClassScreener {
-	private static final boolean DEBUG = Boolean.getBoolean("findbugs.classscreener.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.classscreener.debug");
 	
 	/** regular expression fragment to match a directory separator. note: could use
 	 *  File.separatorChar instead, but that could be argued to be not general enough */

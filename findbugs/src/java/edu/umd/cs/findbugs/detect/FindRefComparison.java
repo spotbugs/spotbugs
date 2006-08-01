@@ -42,9 +42,9 @@ import org.apache.bcel.generic.*;
  * @author Bill Pugh
  */
 public class FindRefComparison implements Detector, ExtendedTypes {
-	private static final boolean DEBUG = Boolean.getBoolean("frc.debug");
-	private static final boolean REPORT_ALL_REF_COMPARISONS = Boolean.getBoolean("findbugs.refcomp.reportAll");
-	private static final int BASE_ES_PRIORITY = Integer.getInteger("es.basePriority", NORMAL_PRIORITY);
+	private static final boolean DEBUG = SystemProperties.getBoolean("frc.debug");
+	private static final boolean REPORT_ALL_REF_COMPARISONS = SystemProperties.getBoolean("findbugs.refcomp.reportAll");
+	private static final int BASE_ES_PRIORITY = SystemProperties.getInteger("es.basePriority", NORMAL_PRIORITY);
 	
 	/**
 	 * Classes that are suspicious if compared by reference.

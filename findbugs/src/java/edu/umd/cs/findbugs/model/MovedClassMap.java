@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * Build a map of added class names to removed class names.
@@ -40,7 +41,7 @@ import edu.umd.cs.findbugs.ClassAnnotation;
  */
 public class MovedClassMap implements ClassNameRewriter {
 	
-	private static final boolean DEBUG = Boolean.getBoolean("movedClasses.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("movedClasses.debug");
 	
 	private BugCollection before;
 	private BugCollection after;

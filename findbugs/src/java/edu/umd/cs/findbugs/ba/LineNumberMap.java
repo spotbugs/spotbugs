@@ -26,6 +26,8 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Summarize line numbers (and other source information)
  * for a method.
@@ -34,13 +36,13 @@ public class LineNumberMap {
 	/**
 	 * Set this property to true to get debug print statements.
 	 */
-	private static final boolean DEBUG = Boolean.getBoolean("lnm.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("lnm.debug");
 
 	/**
 	 * When this is true, the workaround for the bug in BCEL 5.0's
 	 * LineNumberTable class is disabled.
 	 */
-	private static final boolean LINE_NUMBER_BUG = Boolean.getBoolean("lineNumberBug");
+	private static final boolean LINE_NUMBER_BUG = SystemProperties.getBoolean("lineNumberBug");
 
 	private MethodGen methodGen;
 	private IdentityHashMap<InstructionHandle, LineNumber> lineNumberMap;

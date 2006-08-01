@@ -30,6 +30,8 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Filter to match a subset of BugInstances.
  * The filter criteria are read from an XML file.
@@ -38,7 +40,7 @@ import org.dom4j.io.SAXReader;
  */
 
 public class Filter extends OrMatcher {
-	private static final boolean DEBUG = Boolean.getBoolean("filter.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
 
 	/**
 	 * Constructor.

@@ -29,6 +29,7 @@ import org.apache.bcel.generic.MethodGen;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -58,10 +59,10 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
  */
 public class FindUnsatisfiedObligation implements Detector {
 	
-	private static final boolean ENABLE = Boolean.getBoolean("oa.enable");
-	private static final boolean DEBUG = Boolean.getBoolean("oa.debug");
-	private static final boolean DEBUG_PRINTCFG = Boolean.getBoolean("oa.printcfg");
-	private static final String DEBUG_METHOD = System.getProperty("oa.method");
+	private static final boolean ENABLE = SystemProperties.getBoolean("oa.enable");
+	private static final boolean DEBUG = SystemProperties.getBoolean("oa.debug");
+	private static final boolean DEBUG_PRINTCFG = SystemProperties.getBoolean("oa.printcfg");
+	private static final String DEBUG_METHOD = SystemProperties.getProperty("oa.method");
 	
 	private BugReporter bugReporter;
 	private ObligationFactory factory;

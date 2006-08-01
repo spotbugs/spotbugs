@@ -22,7 +22,7 @@ package edu.umd.cs.findbugs;
 import edu.umd.cs.findbugs.filter.Matcher;
 
 public class FilterBugReporter extends DelegatingBugReporter {
-	private static final boolean DEBUG = Boolean.getBoolean("filter.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
 
 	private Matcher filter;
 	private boolean include;

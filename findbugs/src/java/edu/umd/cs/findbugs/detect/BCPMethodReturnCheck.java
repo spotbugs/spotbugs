@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ByteCodePatternDetector;
 import edu.umd.cs.findbugs.JavaVersion;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.bcp.ByteCodePattern;
 import edu.umd.cs.findbugs.ba.bcp.ByteCodePatternMatch;
@@ -55,7 +56,7 @@ import edu.umd.cs.findbugs.ba.bcp.PatternElement;
 public class BCPMethodReturnCheck extends ByteCodePatternDetector  {
 	private final BugReporter bugReporter;
 
-	private static final boolean CHECK_ALL = Boolean.getBoolean("mrc.checkall");
+	private static final boolean CHECK_ALL = SystemProperties.getBoolean("mrc.checkall");
 
 	private static AnalysisLocal<ByteCodePattern> localByteCodePattern
 			= new AnalysisLocal<ByteCodePattern>();
@@ -212,7 +213,7 @@ public class BCPMethodReturnCheck extends ByteCodePatternDetector  {
 		}
 
 
-		String externalCheckReturnValues = System.getProperty("checkReturnValues");
+		String externalCheckReturnValues = SystemProperties.getProperty("checkReturnValues");
 		if (externalCheckReturnValues != null) {
 			String [] checks = externalCheckReturnValues.split("[|]");
 			for (String check : checks) {

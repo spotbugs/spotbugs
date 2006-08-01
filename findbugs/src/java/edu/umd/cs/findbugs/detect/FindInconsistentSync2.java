@@ -39,11 +39,11 @@ import org.apache.bcel.generic.*;
  * @author Bill Pugh
  */
 public class FindInconsistentSync2 implements Detector {
-	private static final boolean DEBUG = Boolean.getBoolean("fis.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("fis.debug");
 	private static final boolean SYNC_ACCESS = true;
 	// Boolean.getBoolean("fis.syncAccess");
-	private static final boolean ADJUST_SUBCLASS_ACCESSES = !Boolean.getBoolean("fis.noAdjustSubclass");
-	private static final boolean EVAL = Boolean.getBoolean("fis.eval");
+	private static final boolean ADJUST_SUBCLASS_ACCESSES = !SystemProperties.getBoolean("fis.noAdjustSubclass");
+	private static final boolean EVAL = SystemProperties.getBoolean("fis.eval");
 
 	/* ----------------------------------------------------------------------
 	 * Tuning parameters
@@ -56,7 +56,7 @@ public class FindInconsistentSync2 implements Detector {
 	 * intentional synchronization.
 	 */
 	private static final int MIN_SYNC_PERCENT =
-	        Integer.getInteger("findbugs.fis.minSyncPercent", 50).intValue();
+	        SystemProperties.getInteger("findbugs.fis.minSyncPercent", 50).intValue();
 
 	/**
 	 * Bias that writes are given with respect to reads.
@@ -64,7 +64,7 @@ public class FindInconsistentSync2 implements Detector {
 	 * writes are more dangerous than unsynchronized reads.
 	 */
 	private static final double WRITE_BIAS =
-	        Double.parseDouble(System.getProperty("findbugs.fis.writeBias", "2.0"));
+	        Double.parseDouble(SystemProperties.getProperty("findbugs.fis.writeBias", "2.0"));
 
 	/**
 	 * Factor which the biased number of unsynchronized accesses is multiplied by.
@@ -82,7 +82,7 @@ public class FindInconsistentSync2 implements Detector {
 	 * of synchronized accesses.
 	 */
 	private static final double UNSYNC_FACTOR =
-	        Double.parseDouble(System.getProperty("findbugs.fis.unsyncFactor", "2.0"));
+	        Double.parseDouble(SystemProperties.getProperty("findbugs.fis.unsyncFactor", "2.0"));
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes

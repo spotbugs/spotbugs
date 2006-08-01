@@ -50,9 +50,9 @@ import edu.umd.cs.findbugs.ba.SignatureConverter;
 public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType extends ResourceTracker<Resource>>
         implements Detector {
 
-	private static final boolean DEBUG = Boolean.getBoolean("rtd.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("rtd.debug");
 
-	private static final String DEBUG_METHOD_NAME = System.getProperty("rtd.method");
+	private static final String DEBUG_METHOD_NAME = SystemProperties.getProperty("rtd.method");
 
 	protected BugReporter bugReporter;
 

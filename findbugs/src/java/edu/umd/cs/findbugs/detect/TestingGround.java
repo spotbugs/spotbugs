@@ -21,12 +21,13 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+
 import org.apache.bcel.classfile.*;
 
 public class TestingGround extends BytecodeScanningDetector  {
 
 	private static final boolean active 
-		 = Boolean.getBoolean("findbugs.tg.active");
+		 = SystemProperties.getBoolean("findbugs.tg.active");
 	
 
 	BugReporter bugReporter;

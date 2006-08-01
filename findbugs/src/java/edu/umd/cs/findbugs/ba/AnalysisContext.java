@@ -34,6 +34,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
@@ -60,7 +61,7 @@ import edu.umd.cs.findbugs.util.MapCache;
  */
 @NotThreadSafe
 public abstract class AnalysisContext {
-	public static final boolean DEBUG = Boolean.getBoolean("findbugs.analysiscontext.debug");
+	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.analysiscontext.debug");
 	
 	public static final String DEFAULT_NONNULL_PARAM_DATABASE_FILENAME = "nonnullParam.db";
 	public static final String DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME = "checkForNullParam.db";

@@ -29,13 +29,14 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class DontCatchIllegalMonitorStateException
         extends PreorderVisitor implements Detector {
 
-	private static final boolean DEBUG = Boolean.getBoolean("dcimse.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("dcimse.debug");
 
 	BugReporter bugReporter;
 	Set<String> msgs = null;

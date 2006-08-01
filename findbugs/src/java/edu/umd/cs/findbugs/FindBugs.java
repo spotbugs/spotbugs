@@ -428,9 +428,9 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
 	};
 
-	public static final boolean DEBUG = Boolean.getBoolean("findbugs.debug");
-	public static final boolean TIMEDEBUG = Boolean.getBoolean("findbugs.time");
-	public static final int TIMEQUANTUM = Integer.getInteger("findbugs.time.quantum",1000);
+	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug");
+	public static final boolean TIMEDEBUG = SystemProperties.getBoolean("findbugs.time");
+	public static final int TIMEQUANTUM = SystemProperties.getInteger("findbugs.time.quantum", 1000);
 
 	/**
 	 * FindBugs home directory.
@@ -803,7 +803,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	 */
 	public static String getHome() {
 		if (home == null) {
-			home = System.getProperty("findbugs.home");
+			home = SystemProperties.getProperty("findbugs.home");
 			if (home == null) {
 				System.err.println("Error: The findbugs.home property is not set!");
 			}
@@ -1197,7 +1197,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		catch (RuntimeException re) {
 			RuntimeException annotatedEx;
 			try {
-				String sep = System.getProperty("line.separator");
+				String sep = SystemProperties.getProperty("line.separator");
 				Constructor<? extends RuntimeException> c = re.getClass().getConstructor(new Class[] { String.class });
 				String msg = re.getMessage();
 				msg = sep + "While finding bugs in class: " + className + ((msg == null) ? "" : (sep + msg));

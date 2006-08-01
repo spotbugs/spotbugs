@@ -25,6 +25,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
@@ -32,7 +33,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame>
         implements EdgeTypes {
 
-	private static final boolean DEBUG = Boolean.getBoolean("dataflow.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("dataflow.debug");
 
 	private MethodGen methodGen;
 	private CFG cfg;

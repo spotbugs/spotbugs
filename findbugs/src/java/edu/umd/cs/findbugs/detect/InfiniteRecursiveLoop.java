@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.SystemProperties;
 
 public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements 
 		StatelessDetector {
@@ -45,7 +46,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 
 	private int largestBranchTarget;
 
-	private final static boolean DEBUG = Boolean.getBoolean("irl.debug");
+	private final static boolean DEBUG = SystemProperties.getBoolean("irl.debug");
 
 	public InfiniteRecursiveLoop(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;

@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * required of all BugReporter objects.
  */
 public abstract class AbstractBugReporter implements BugReporter {
-	private static final boolean DEBUG_MISSING_CLASSES = Boolean.getBoolean("findbugs.debug.missingclasses");
+	private static final boolean DEBUG_MISSING_CLASSES = SystemProperties.getBoolean("findbugs.debug.missingclasses");
 	
 	private static class Error {
 		private int sequence;

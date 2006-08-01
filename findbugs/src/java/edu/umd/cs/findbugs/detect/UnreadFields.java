@@ -30,7 +30,7 @@ import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.Type;
 
 public class UnreadFields extends BytecodeScanningDetector  {
-	private static final boolean DEBUG = Boolean.getBoolean("unreadfields.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("unreadfields.debug");
 
 	static class ProgramPoint {
 		ProgramPoint(BytecodeScanningDetector v) {

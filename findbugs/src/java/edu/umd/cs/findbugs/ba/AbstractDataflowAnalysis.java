@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 
 /**
@@ -39,7 +40,7 @@ import edu.umd.cs.findbugs.annotations.CheckReturnValue;
  * @see DataflowAnalysis
  */
 public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysis<Fact> {
-	private static final boolean DEBUG = Boolean.getBoolean("dataflow.transfer");
+	private static final boolean DEBUG = SystemProperties.getBoolean("dataflow.transfer");
 
 	private IdentityHashMap<BasicBlock, Fact> startFactMap = new IdentityHashMap<BasicBlock, Fact>();
 	private IdentityHashMap<BasicBlock, Fact> resultFactMap = new IdentityHashMap<BasicBlock, Fact>();

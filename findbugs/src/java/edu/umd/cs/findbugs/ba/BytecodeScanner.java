@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Scan the raw bytecodes of a method.
  * This is useful in order to find out quickly whether or not
@@ -27,7 +29,7 @@ package edu.umd.cs.findbugs.ba;
  * @author David Hovemeyer
  */
 public class BytecodeScanner implements org.apache.bcel.Constants {
-	private static final boolean DEBUG = Boolean.getBoolean("bs.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("bs.debug");
 
 	/**
 	 * Callback interface to report scanned instructions.

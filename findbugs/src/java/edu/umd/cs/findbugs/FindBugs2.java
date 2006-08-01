@@ -59,8 +59,8 @@ import edu.umd.cs.findbugs.util.ClassName;
  * @author David Hovemeyer
  */
 public class FindBugs2 implements IFindBugsEngine {
-	private static final boolean VERBOSE = Boolean.getBoolean("findbugs2.verbose");
-	private static final boolean DEBUG = VERBOSE || Boolean.getBoolean("findbugs2.debug");
+	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs2.verbose");
+	private static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs2.debug");
 	
 	private ErrorCountingBugReporter bugReporter;
 	private Project project;
@@ -448,7 +448,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	}
 
 	public static void main(String[] args) throws Exception {
-		if (System.getProperty("findbugs.home") == null) {
+		if (SystemProperties.getProperty("findbugs.home") == null) {
 			throw new IllegalArgumentException("findbugs.home property must be set!");
 		}
 

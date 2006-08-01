@@ -32,6 +32,8 @@ import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Class to handle Strings annotated with embedded mnemonics
  *
@@ -42,7 +44,7 @@ import javax.swing.JFrame;
 public class AnnotatedString {
 
 	private static final boolean MAC_OS_X =
-		System.getProperty("os.name").toLowerCase().startsWith("mac os x");
+		SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
 
 	private final String myAnnotatedString;
 

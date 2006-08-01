@@ -39,7 +39,7 @@ public class JavaVersion {
 
 	static {
 		try {
-			runtimeVersion = new JavaVersion(System.getProperty("java.version"));
+			runtimeVersion = new JavaVersion(SystemProperties.getProperty("java.version"));
 		} catch (JavaVersionException e) {
 			System.err.println("Warning: Unknown version of Java");
 			// Assume Java 1.0.

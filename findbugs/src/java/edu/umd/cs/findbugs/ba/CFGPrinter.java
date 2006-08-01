@@ -30,6 +30,8 @@ import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Print out a representation of a control-flow graph.
  * For debugging.
@@ -125,7 +127,7 @@ public class CFGPrinter {
 			ClassContext classContext = analysisContext.getClassContext(cls);
 
 			Method[] methods = cls.getMethods();
-			String methodName = System.getProperty("cfg.method");
+			String methodName = SystemProperties.getProperty("cfg.method");
 			PrintStream out = System.err;
 			if (argv.length == 2) 
 				out = new PrintStream(new FileOutputStream(argv[1]));

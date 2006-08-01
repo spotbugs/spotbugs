@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.npe;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.BackwardDataflowAnalysis;
@@ -47,7 +48,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 public class WillBeDereferencedAnalysis extends BackwardDataflowAnalysis<WillBeDereferencedInfo> {
 	 
 
-	private static final boolean DEBUG = Boolean.getBoolean("npe.deref.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("npe.deref.debug");
 	
 	private final CFG cfg;
 	private final MethodGen methodGen;

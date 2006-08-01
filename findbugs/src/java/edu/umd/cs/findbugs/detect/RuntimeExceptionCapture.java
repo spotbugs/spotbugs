@@ -37,7 +37,7 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class RuntimeExceptionCapture extends BytecodeScanningDetector implements Detector, StatelessDetector {
-	private static final boolean DEBUG = Boolean.getBoolean("rec.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("rec.debug");
 
 	private BugReporter bugReporter;
 	private Method method;

@@ -29,6 +29,8 @@ import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.ObjectType;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Dataflow analysis to determine the nesting of catch and finally
  * blocks within a method.
@@ -153,7 +155,7 @@ public class BlockTypeAnalysis implements DataflowAnalysis<BlockType> {
 		JavaClass jclass = new ClassParser(argv[0]).parse();
 		ClassContext classContext = analysisContext.getClassContext(jclass);
 
-		String methodName = System.getProperty("blocktype.method");
+		String methodName = SystemProperties.getProperty("blocktype.method");
 
 		Method[] methodList = jclass.getMethods();
 		for (Method method : methodList) {
@@ -173,7 +175,7 @@ public class BlockTypeAnalysis implements DataflowAnalysis<BlockType> {
 					new Dataflow<BlockType, BlockTypeAnalysis>(cfg, analysis);
 			dataflow.execute();
 
-			if (Boolean.getBoolean("blocktype.printcfg")) {
+			if (SystemProperties.getBoolean("blocktype.printcfg")) {
 				CFGPrinter cfgPrinter = new CFGPrinter(cfg) {
 					@Override
                                          public String blockAnnotate(BasicBlock block) {

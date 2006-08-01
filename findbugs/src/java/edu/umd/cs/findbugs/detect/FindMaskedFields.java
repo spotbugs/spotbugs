@@ -127,7 +127,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 	 * locals which obscure fields.
 	 */
 	private static final boolean ENABLE_LOCALS =
-		Boolean.getBoolean("findbugs.maskedfields.locals");
+		SystemProperties.getBoolean("findbugs.maskedfields.locals");
 
 	@Override
          public void visit(LocalVariableTable obj) {

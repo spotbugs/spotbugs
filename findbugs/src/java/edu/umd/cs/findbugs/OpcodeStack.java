@@ -71,7 +71,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class OpcodeStack implements Constants2
 {
 	private static final boolean DEBUG 
-		= Boolean.getBoolean("ocstack.debug");
+		= SystemProperties.getBoolean("ocstack.debug");
 	private List<Item> stack;
 	private List<Item> lvValues;
 	private int jumpTarget;

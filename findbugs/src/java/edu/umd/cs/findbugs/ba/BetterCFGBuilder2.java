@@ -49,6 +49,7 @@ import org.apache.bcel.generic.NOP;
 import org.apache.bcel.generic.PUTSTATIC;
 import org.apache.bcel.generic.ReturnInstruction;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
@@ -62,7 +63,7 @@ import edu.umd.cs.findbugs.annotations.Nullable;
  */
 public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
-	private static final boolean DEBUG = Boolean.getBoolean("cfgbuilder.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("cfgbuilder.debug");
 
 	// TODO: don't forget to change BasicBlock so ATHROW is considered to have a null check
 
@@ -948,7 +949,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			System.exit(1);
 		}
 
-		String methodName = System.getProperty("cfgbuilder.method");
+		String methodName = SystemProperties.getProperty("cfgbuilder.method");
 
 		JavaClass jclass = new ClassParser(argv[0]).parse();
 		ClassGen classGen = new ClassGen(jclass);

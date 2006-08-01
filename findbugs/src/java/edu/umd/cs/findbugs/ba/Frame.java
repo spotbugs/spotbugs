@@ -28,6 +28,8 @@ import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.StackConsumer;
+
+import edu.umd.cs.findbugs.SystemProperties;
 import static edu.umd.cs.findbugs.ba.Debug.*;
 
 /**
@@ -473,7 +475,7 @@ public abstract class Frame <ValueType>   {
 		isBottom = other.isBottom;
 	}
 
-	private static final boolean STACK_ONLY = Boolean.getBoolean("dataflow.stackonly");
+	private static final boolean STACK_ONLY = SystemProperties.getBoolean("dataflow.stackonly");
 
 	/**
 	 * Convert to string.

@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+
 import java.util.*;
 import org.apache.bcel.classfile.Code;
 
@@ -32,9 +33,9 @@ public class InitializationChain extends BytecodeScanningDetector {
 	private int instanceCreatedPC;
 	private boolean instanceCreatedWarningGiven;
 
-	private static final boolean DEBUG = Boolean.getBoolean("ic.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("ic.debug");
 	private static final boolean REPORT_CREATE_INSTANCE_BEFORE_FIELDS_ASSIGNED =
-	        Boolean.getBoolean("ic.createInstance");
+	        SystemProperties.getBoolean("ic.createInstance");
 
 	public InitializationChain(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;

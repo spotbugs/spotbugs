@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 import javax.swing.JFrame;
 import javax.swing.event.HyperlinkEvent;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
 
 /**
@@ -222,7 +223,7 @@ public class AboutDialog extends javax.swing.JDialog {
      * @return true if the show operation was successful, false otherwise.
      */
     private static boolean showInBrowser(String url){
-    	String os = System.getProperty("os.name").toLowerCase();
+    	String os = SystemProperties.getProperty("os.name").toLowerCase();
         Runtime rt = Runtime.getRuntime();
         try{
 	        if (os.indexOf( "win" ) >= 0) {

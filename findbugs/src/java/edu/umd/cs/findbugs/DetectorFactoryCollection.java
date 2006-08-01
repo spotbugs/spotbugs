@@ -180,7 +180,7 @@ public class DetectorFactoryCollection {
 		// Load all detector plugins.
 	
 		//If we are running under jaws, just use the loaded plugin
-	    if (Boolean.getBoolean("findbugs.jaws")) {
+	    if (SystemProperties.getBoolean("findbugs.jaws")) {
 			URL u = DetectorFactoryCollection.class.getResource("/findbugs.xml");
 		    File[] plugins = new File[1];
 		    if (u != null) {

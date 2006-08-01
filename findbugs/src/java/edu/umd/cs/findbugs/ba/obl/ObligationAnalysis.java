@@ -31,6 +31,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -57,7 +58,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 public class ObligationAnalysis
 	extends ForwardDataflowAnalysis<StateSet> {
 	
-	private static final boolean DEBUG = Boolean.getBoolean("oa.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("oa.debug");
 
 	private TypeDataflow typeDataflow;
 	private MethodGen methodGen;

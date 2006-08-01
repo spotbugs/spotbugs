@@ -38,6 +38,7 @@ import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
@@ -52,7 +53,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisitor<IsNullValue, IsNullValueFrame> {
 
-	private static final boolean NO_ASSERT_HACK = Boolean.getBoolean("inva.noAssertHack");
+	private static final boolean NO_ASSERT_HACK = SystemProperties.getBoolean("inva.noAssertHack");
 
 	private AssertionMethods assertionMethods;
 	private ValueNumberDataflow vnaDataflow;;

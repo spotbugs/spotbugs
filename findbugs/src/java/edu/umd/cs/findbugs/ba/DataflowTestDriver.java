@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
+import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * A test driver for dataflow analysis classes.
@@ -58,7 +59,7 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends AbstractDat
 		analysisContext.setBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS, true);
 
 		ClassContext classContext = analysisContext.getClassContext(jclass);
-		String methodName = System.getProperty("dataflow.method");
+		String methodName = SystemProperties.getProperty("dataflow.method");
 
 		Method[] methods = jclass.getMethods();
 		for (Method method : methods) {
@@ -88,7 +89,7 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends AbstractDat
 		CFG cfg = classContext.getCFG(method);
 		examineResults(cfg, dataflow);
 
-		if (Boolean.getBoolean("dataflow.printcfg")) {
+		if (SystemProperties.getBoolean("dataflow.printcfg")) {
 			CFGPrinter p = new DataflowCFGPrinter<Fact, AnalysisType>(cfg, dataflow, dataflow.getAnalysis());
 			if (overrideIsForwards) {
 				p.setIsForwards(!p.isForwards());

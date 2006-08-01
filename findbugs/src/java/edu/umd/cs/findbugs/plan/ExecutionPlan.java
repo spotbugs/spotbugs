@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryChooser;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.Plugin;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.graph.DepthFirstSearch;
 
 /**
@@ -46,7 +47,7 @@ import edu.umd.cs.findbugs.graph.DepthFirstSearch;
  */
 public class ExecutionPlan {
 
-	public static final boolean DEBUG = Boolean.getBoolean("findbugs.execplan.debug");
+	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.execplan.debug");
 
 	private List<Plugin> pluginList;
 	private DetectorFactoryChooser factoryChooser;

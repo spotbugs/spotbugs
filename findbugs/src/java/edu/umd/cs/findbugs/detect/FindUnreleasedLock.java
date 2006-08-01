@@ -43,7 +43,7 @@ class Lock extends ResourceCreationPoint {
 }
 
 public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnreleasedLock.LockResourceTracker> {
-	private static final boolean DEBUG = Boolean.getBoolean("ful.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("ful.debug");
 	private static int numAcquires = 0;
 	
 	private static final int JDK15_MAJOR = 48;

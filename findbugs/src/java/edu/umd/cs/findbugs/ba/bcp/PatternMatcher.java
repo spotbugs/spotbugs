@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -53,8 +54,8 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @see ByteCodePattern
  */
 public class PatternMatcher implements DFSEdgeTypes {
-	private static final boolean DEBUG = Boolean.getBoolean("bcp.debug");
-	private static final boolean SHOW_WILD = Boolean.getBoolean("bcp.showWild");
+	private static final boolean DEBUG = SystemProperties.getBoolean("bcp.debug");
+	private static final boolean SHOW_WILD = SystemProperties.getBoolean("bcp.showWild");
 
 	private ByteCodePattern pattern;
 	private CFG cfg;

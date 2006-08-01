@@ -23,6 +23,7 @@ import java.util.HashMap;
 
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.util.Strings;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
@@ -36,7 +37,7 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
  * @see ValueNumberAnalysis
  */
 public class ValueNumberCache {
-	private static final boolean DEBUG = Boolean.getBoolean("vn.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("vn.debug");
 
 	/**
 	 * An entry in the cache.

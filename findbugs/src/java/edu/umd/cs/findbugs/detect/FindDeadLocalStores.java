@@ -56,6 +56,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -75,7 +76,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  */
 public class FindDeadLocalStores implements Detector {
 	
-	private static final boolean DEBUG = Boolean.getBoolean("fdls.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("fdls.debug");
 	
 	// Define the name of the property that is used to exclude named local variables
 	// from Dead Local Storage detection...
@@ -85,10 +86,10 @@ public class FindDeadLocalStores implements Detector {
 	private static final Set<String> EXCLUDED_LOCALS = new HashSet<String>();
 	
 	private static final boolean DO_EXCLUDE_LOCALS =
-		System.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME) != null;
+		SystemProperties.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME) != null;
 	static {
 		// Get the value of the property...
-		String exclLocalsProperty = System.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME);
+		String exclLocalsProperty = SystemProperties.getProperty(FINDBUGS_EXCLUDED_LOCALS_PROP_NAME);
 		
 		// If we have one, then split its contents into a table...
 		if (exclLocalsProperty != null) {        	

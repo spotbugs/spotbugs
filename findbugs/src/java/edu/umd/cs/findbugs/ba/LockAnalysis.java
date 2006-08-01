@@ -26,6 +26,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReturnInstruction;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -40,7 +41,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @see ValueNumberAnalysis
  */
 public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
-	private static final boolean DEBUG = Boolean.getBoolean("la.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("la.debug");
 
 	private MethodGen methodGen;
 	private ValueNumberDataflow vnaDataflow;

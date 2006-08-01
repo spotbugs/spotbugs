@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.visitclass;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -102,6 +104,26 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		return code;
 	}
 	 
+	 public Set<String> getSurroundingCaughtExceptions(int pc) {
+		 HashSet<String> result = new HashSet<String>();
+			if (code == null) throw new IllegalStateException("Not visiting Code");
+			int size = Integer.MAX_VALUE;
+			if (code.getExceptionTable() == null) return result;
+			for (CodeException catchBlock : code.getExceptionTable()) {
+				int startPC = catchBlock.getStartPC();
+				int endPC = catchBlock.getEndPC();
+				if (pc >= startPC && pc <= endPC) {
+					int thisSize = endPC - startPC;
+					if (size > thisSize) {
+						result.clear();
+						size = thisSize;
+						result.add("C" + catchBlock.getCatchType());
+					} else if (size == thisSize)
+						result.add("C" + catchBlock.getCatchType());
+				}
+			}
+			return result;
+	 }
 	 /**
 	  * Get lines of code in try block that surround pc
 	  * @param pc

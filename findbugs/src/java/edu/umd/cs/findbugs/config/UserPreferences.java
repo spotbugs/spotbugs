@@ -44,6 +44,7 @@ import java.util.Properties;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * User Preferences outside of any one Project.
@@ -91,7 +92,7 @@ public class UserPreferences implements Cloneable {
 	 * the user's home directory.
 	 */
 	public void read() {
-		File prefFile = new File(System.getProperty("user.home"), PREF_FILE_NAME);
+		File prefFile = new File(SystemProperties.getProperty("user.home"), PREF_FILE_NAME);
 		if (!prefFile.exists() || !prefFile.isFile())
 			return;
 		try {
@@ -176,7 +177,7 @@ public class UserPreferences implements Cloneable {
 	 */
 	public void write() {
 		try {
-			File prefFile = new File(System.getProperty("user.home"), PREF_FILE_NAME); 
+			File prefFile = new File(SystemProperties.getProperty("user.home"), PREF_FILE_NAME); 
 			write(new FileOutputStream(prefFile));
 		} catch (IOException e) {
 			if (FindBugs.DEBUG) e.printStackTrace(); // Ignore
@@ -214,7 +215,7 @@ public class UserPreferences implements Cloneable {
 		// of FindBugs.
 		props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(filterSettings.getMinPriorityAsInt()));
 		
-		props.put(DEFAULT_DIRECTORY, System.getProperty("user.dir"));
+		props.put(DEFAULT_DIRECTORY, SystemProperties.getProperty("user.dir"));
 
 		OutputStream prefStream = null;
 		try {

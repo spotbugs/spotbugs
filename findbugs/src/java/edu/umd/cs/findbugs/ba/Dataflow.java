@@ -23,6 +23,8 @@ import java.util.Iterator;
 
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Perform dataflow analysis on a method using a control flow graph.
  * Both forward and backward analyses can be performed.
@@ -47,7 +49,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	private boolean isForwards;
 	private int numIterations;
 
-	private static final boolean DEBUG = Boolean.getBoolean("dataflow.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("dataflow.debug");
 
 	/**
 	 * Constructor.
@@ -74,7 +76,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	}
 
 	// Maximum number of iterations before we assume there is a bug and give up.
-	private static final int MAX_ITERS = Integer.getInteger("dataflow.maxiters", 10000).intValue();
+	private static final int MAX_ITERS = SystemProperties.getInteger("dataflow.maxiters", 10000).intValue();
 
 	/**
 	 * Run the algorithm.
@@ -148,7 +150,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				// Apply the transfer function.
 				analysis.transfer(block, null, start, result);
 
-				if (DEBUG && Boolean.getBoolean("dataflow.blockdebug")) {
+				if (DEBUG && SystemProperties.getBoolean("dataflow.blockdebug")) {
 					debug(block, "Dumping flow values for block:\n");
 					Iterator<org.apache.bcel.generic.InstructionHandle> ii = block.instructionIterator();
 					while (ii.hasNext()) {

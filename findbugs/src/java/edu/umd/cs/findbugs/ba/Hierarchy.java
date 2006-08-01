@@ -40,6 +40,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
@@ -54,7 +55,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
  */
 public class Hierarchy {
 	private static final boolean DEBUG_METHOD_LOOKUP =
-		Boolean.getBoolean("hier.lookup.debug");
+		SystemProperties.getBoolean("hier.lookup.debug");
 
 	/**
 	 * Type of java.lang.Exception.

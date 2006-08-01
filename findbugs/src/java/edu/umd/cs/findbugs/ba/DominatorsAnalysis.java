@@ -26,6 +26,8 @@ import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Dataflow analysis to compute dominator sets for a CFG.
  *
@@ -69,8 +71,8 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 		JavaClass jclass = new ClassParser(argv[0]).parse();
 		ClassContext classContext = analysisContext.getClassContext(jclass);
 
-		String methodName = System.getProperty("dominators.method");
-		boolean ignoreExceptionEdges = Boolean.getBoolean("dominators.ignoreExceptionEdges");
+		String methodName = SystemProperties.getProperty("dominators.method");
+		boolean ignoreExceptionEdges = SystemProperties.getBoolean("dominators.ignoreExceptionEdges");
 
 		Method[] methodList = jclass.getMethods();
 		for (Method method : methodList) {

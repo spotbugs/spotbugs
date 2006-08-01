@@ -37,6 +37,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -80,12 +81,12 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
         implements EdgeTypes {
 
-	private static final boolean DEBUG = Boolean.getBoolean("ta.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("ta.debug");
 
 	/**
 	 * Force computation of accurate exceptions.
 	 */
-	public static final boolean FORCE_ACCURATE_EXCEPTIONS =Boolean.getBoolean("ta.accurateExceptions");
+	public static final boolean FORCE_ACCURATE_EXCEPTIONS =SystemProperties.getBoolean("ta.accurateExceptions");
 
 	/**
 	 * Repository of information about thrown exceptions computed for

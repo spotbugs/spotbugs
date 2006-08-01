@@ -34,6 +34,8 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.INVOKESTATIC;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Determine which methods are accessors used
  * by inner classes to access fields in their enclosing classes.
@@ -49,7 +51,7 @@ import org.apache.bcel.generic.INVOKESTATIC;
  * @see InnerClassAccess
  */
 public class InnerClassAccessMap {
-	private static final boolean DEBUG = Boolean.getBoolean("icam.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("icam.debug");
 
 	/* ----------------------------------------------------------------------
 	 * Fields

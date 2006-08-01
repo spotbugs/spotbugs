@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.bcp;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -31,7 +32,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * It potentially matches some number of bytecode instructions.
  */
 public abstract class PatternElement {
-	private static final boolean DEBUG = Boolean.getBoolean("bcp.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("bcp.debug");
 
 	private PatternElement next;
 	private String label;

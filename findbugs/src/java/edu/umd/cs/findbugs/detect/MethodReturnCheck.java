@@ -32,7 +32,7 @@ import org.apache.bcel.classfile.*;
  * @author David Hovemeyer
  */
 public class MethodReturnCheck extends BytecodeScanningDetector {
-	private static final boolean DEBUG = Boolean.getBoolean("mrc.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("mrc.debug");
 
 	private static final int SCAN = 0;
 

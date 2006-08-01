@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -53,7 +54,7 @@ public class FindBadCast2 implements Detector {
 	private Set<String> abstractCollectionClasses = new HashSet<String>();
 	private Set<String> veryAbstractCollectionClasses = new HashSet<String>();
 
-	private static final boolean DEBUG = Boolean.getBoolean("bc.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("bc.debug");
 
 	public FindBadCast2(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;

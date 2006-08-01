@@ -36,7 +36,7 @@ public class InstructionScannerDriver {
 	private Iterator<Edge> edgeIter;
 	private LinkedList<InstructionScanner> scannerList;
 
-	private static final boolean DEBUG = Boolean.getBoolean("isd.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("isd.debug");
 
 	/**
 	 * Constructor.

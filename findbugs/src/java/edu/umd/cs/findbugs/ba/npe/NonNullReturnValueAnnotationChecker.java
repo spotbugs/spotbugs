@@ -1,5 +1,6 @@
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethodChooser;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -13,7 +14,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
  * @deprecated
  */
 public class NonNullReturnValueAnnotationChecker implements JavaClassAndMethodChooser {
-	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.nullreturn");
+	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.nullreturn");
 	
 	private MayReturnNullPropertyDatabase database;
 	private JavaClassAndMethod annotatedMethod;

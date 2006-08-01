@@ -35,10 +35,11 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 
 public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
-	private static final boolean DEBUG = Boolean.getBoolean("cfg.prune.throwers.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("cfg.prune.throwers.debug");
 
 	private MethodGen methodGen;
 	private CFG cfg;

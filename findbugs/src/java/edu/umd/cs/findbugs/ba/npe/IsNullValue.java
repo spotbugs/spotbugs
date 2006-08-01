@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.Location;
@@ -35,7 +36,7 @@ import edu.umd.cs.findbugs.ba.XMethodParameter;
  * @see IsNullValueAnalysis
  */
 public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
-	private static final boolean DEBUG_EXCEPTION = Boolean.getBoolean("inv.debugException");
+	private static final boolean DEBUG_EXCEPTION = SystemProperties.getBoolean("inv.debugException");
 
 	/** Definitely null. */
 	private static final int NULL = 0;

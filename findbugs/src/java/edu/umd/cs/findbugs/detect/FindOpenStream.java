@@ -37,8 +37,8 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 public class FindOpenStream extends ResourceTrackingDetector<Stream, StreamResourceTracker> implements StatelessDetector {
-	static final boolean DEBUG = Boolean.getBoolean("fos.debug");
-	static final boolean IGNORE_WRAPPED_UNINTERESTING_STREAMS = !Boolean.getBoolean("fos.allowWUS");
+	static final boolean DEBUG = SystemProperties.getBoolean("fos.debug");
+	static final boolean IGNORE_WRAPPED_UNINTERESTING_STREAMS = !SystemProperties.getBoolean("fos.allowWUS");
 
 	/* ----------------------------------------------------------------------
 	 * Tracked resource types

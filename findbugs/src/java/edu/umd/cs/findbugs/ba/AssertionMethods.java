@@ -34,6 +34,8 @@ import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Mark methodref constant pool entries of methods
  * that are likely to implement assertions.
@@ -43,7 +45,7 @@ import org.apache.bcel.generic.InvokeInstruction;
  */
 public class AssertionMethods implements Constants {
 	
-	private static final boolean DEBUG = Boolean.getBoolean("assertionmethods.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("assertionmethods.debug");
 	
 	/**
 	 * Bitset of methodref constant pool indexes referring to likely assertion methods.
@@ -71,7 +73,7 @@ public class AssertionMethods implements Constants {
 	private static final List<UserAssertionMethod> userAssertionMethodList = new ArrayList<UserAssertionMethod>();
 
 	static {
-		String userProperty = System.getProperty("findbugs.assertionmethods");
+		String userProperty = SystemProperties.getProperty("findbugs.assertionmethods");
 		if (userProperty != null) {
 			StringTokenizer tok = new StringTokenizer(userProperty, ",");
 			while (tok.hasMoreTokens()) {

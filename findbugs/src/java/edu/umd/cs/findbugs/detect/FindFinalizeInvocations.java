@@ -21,10 +21,11 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+
 import org.apache.bcel.classfile.*;
 
 public class FindFinalizeInvocations extends BytecodeScanningDetector implements StatelessDetector {
-	private static final boolean DEBUG = Boolean.getBoolean("ffi.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("ffi.debug");
 
 	private BugReporter bugReporter;
 
@@ -77,7 +78,8 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 	@Override
          public void sawOpcode(int seen) {
 		if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("finalize"))
-			bugReporter.reportBug(new BugInstance(this, "FI_EXPLICIT_INVOCATION", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, "FI_EXPLICIT_INVOCATION", 
+						getMethodName().equals("finalize") && getMethodSig().equals("()V") ? HIGH_PRIORITY : NORMAL_PRIORITY)
 			        .addClassAndMethod(this)
 			        .addCalledMethod(this).describe("METHOD_CALLED")
 			        .addSourceLine(this, getPC()));

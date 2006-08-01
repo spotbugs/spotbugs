@@ -22,6 +22,8 @@
  */
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Knobs for null value analysis.
  * 
@@ -34,13 +36,13 @@ public interface IsNullValueAnalysisFeatures {
 	 * on control splits.
 	 */
 	public static final boolean NO_SPLIT_DOWNGRADE_NSP =
-		Boolean.getBoolean("inva.noSplitDowngradeNSP");
+		SystemProperties.getBoolean("inva.noSplitDowngradeNSP");
 	
 	/**
 	 * Don't consider switch default cases as exception paths.
 	 */
 	public static final boolean NO_SWITCH_DEFAULT_AS_EXCEPTION =
-		Boolean.getBoolean("inva.noSwitchDefaultAsException");
+		SystemProperties.getBoolean("inva.noSwitchDefaultAsException");
 
 	/**
 	 * Keep track of an extra branch, so we can distinguish
@@ -48,20 +50,20 @@ public interface IsNullValueAnalysisFeatures {
 	 * conditionally-null values with three or more branches.  
 	 */
 	public static final boolean NCP_EXTRA_BRANCH =
-		Boolean.getBoolean("inva.ncpExtraBranch");
+		SystemProperties.getBoolean("inva.ncpExtraBranch");
 	
 	/**
 	 * If this property is true, then we assume parameters
 	 * and return values can be null (but aren't definitely null).
 	 */
 	public static final boolean UNKNOWN_VALUES_ARE_NSP =
-		Boolean.getBoolean("findbugs.nullderef.assumensp");
+		SystemProperties.getBoolean("findbugs.nullderef.assumensp");
 	
 	/**
 	 * Track known values explicitly.
 	 * Allows values loaded from fields to be tracked more accurately.
 	 */
 	public static final boolean TRACK_KNOWN_VALUES =
-		Boolean.getBoolean("inva.trackvalues");
+		SystemProperties.getBoolean("inva.trackvalues");
 
 }

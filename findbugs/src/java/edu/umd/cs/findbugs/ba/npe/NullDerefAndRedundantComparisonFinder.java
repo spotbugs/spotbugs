@@ -35,6 +35,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -57,9 +58,9 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @author David Hovemeyer
  */
 public class NullDerefAndRedundantComparisonFinder {
-	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
-	private static final boolean DEBUG_DEREFS = Boolean.getBoolean("fnd.derefs.debug");
-	private static final boolean FIND_GUARANTEED_DEREFS = Boolean.getBoolean("fnd.derefs");
+	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug");
+	private static final boolean DEBUG_DEREFS = SystemProperties.getBoolean("fnd.derefs.debug");
+	private static final boolean FIND_GUARANTEED_DEREFS = SystemProperties.getBoolean("fnd.derefs");
 	
 	private ClassContext classContext;
 	private Method method;

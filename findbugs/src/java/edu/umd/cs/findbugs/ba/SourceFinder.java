@@ -23,6 +23,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.JarURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +33,7 @@ import java.util.Map;
 import java.util.zip.ZipFile;
 
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * Class to open input streams on source files.
@@ -37,7 +41,7 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
  * but for finding source files instead of class files.
  */
 public class SourceFinder {
-	private static final boolean DEBUG = Boolean.getBoolean("srcfinder.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("srcfinder.debug");
 	private static final int CACHE_SIZE = 50;
 
 	/* ----------------------------------------------------------------------
@@ -105,11 +109,18 @@ public class SourceFinder {
 		}
 	}
 
+	private static class JarURLConnectionSourceRepository extends ZipSourceRepository {
+
+		public JarURLConnectionSourceRepository(String url) throws MalformedURLException, IOException {
+			super(((JarURLConnection) new URL("jar:" + url +"!/").openConnection()).getJarFile());
+		}
+		
+	}
 	/**
 	 * A zip or jar archive containing source files.
 	 */
-	private static class ZipSourceRepository implements SourceRepository {
-		private ZipFile zipFile;
+	 static class ZipSourceRepository implements SourceRepository {
+		 ZipFile zipFile;
 
 		public ZipSourceRepository(ZipFile zipFile) {
 			this.zipFile = zipFile;
@@ -156,8 +167,10 @@ public class SourceFinder {
 			if (repos.endsWith(".zip") || repos.endsWith(".jar")) {
 				// Zip or jar archive
 				try {
-					ZipFile zipFile = new ZipFile(repos);
-					repositoryList.add(new ZipSourceRepository(zipFile));
+					if (repos.startsWith("http:") || repos.startsWith("file:")) 
+						repositoryList.add(new JarURLConnectionSourceRepository(repos));
+					else 
+						repositoryList.add(new ZipSourceRepository(new ZipFile(repos)));
 				} catch (IOException e) {
 					// Ignored - we won't use this archive
 				}

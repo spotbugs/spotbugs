@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class MethodAnnotation extends PackageMemberAnnotation {
 	private static final long serialVersionUID = 1L;
 
-	private static final boolean UGLY_METHODS = Boolean.getBoolean("ma.ugly");
+	private static final boolean UGLY_METHODS = SystemProperties.getBoolean("ma.ugly");
 
 	private static final String DEFAULT_ROLE = "METHOD_DEFAULT";
 

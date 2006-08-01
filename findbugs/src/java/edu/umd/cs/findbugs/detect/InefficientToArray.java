@@ -35,7 +35,7 @@ import org.apache.bcel.classfile.*;
  * @author Dave Brosius
  */
 public class InefficientToArray extends BytecodeScanningDetector implements StatelessDetector {
-	private static final boolean DEBUG = Boolean.getBoolean("ita.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("ita.debug");
 
 	static final int SEEN_NOTHING = 0;
 	static final int SEEN_ICONST_0 = 1;

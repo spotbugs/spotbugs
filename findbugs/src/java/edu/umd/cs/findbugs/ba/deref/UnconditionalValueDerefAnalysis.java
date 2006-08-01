@@ -29,6 +29,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
@@ -61,7 +62,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 public class UnconditionalValueDerefAnalysis extends
 		BackwardDataflowAnalysis<UnconditionalValueDerefSet> {
 	
-	private static final boolean DEBUG = Boolean.getBoolean("fnd.derefs.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.derefs.debug");
 	
 	private CFG cfg;
 	private MethodGen methodGen;
@@ -334,7 +335,7 @@ public class UnconditionalValueDerefAnalysis extends
 	 */
 	private boolean ignoreThisEdge(Edge edge) {
 		
-		if (Boolean.getBoolean("fnd.derefs.ignoreexceptions")) {
+		if (SystemProperties.getBoolean("fnd.derefs.ignoreexceptions")) {
 			// Ignore all exception edges
 			return edge.isExceptionEdge();
 		}
@@ -367,7 +368,7 @@ public class UnconditionalValueDerefAnalysis extends
 				return classContext.getUnconditionalValueDerefDataflow(method);
 			}
 		};
-		if (Boolean.getBoolean("forwardcfg")) {
+		if (SystemProperties.getBoolean("forwardcfg")) {
 			driver.overrideIsForwards();
 		}
 		driver.execute(args[0]);

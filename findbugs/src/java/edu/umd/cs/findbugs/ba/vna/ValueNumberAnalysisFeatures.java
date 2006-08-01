@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.vna;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Global flags controlling ValueNumberAnalysis.
  */
@@ -36,12 +38,12 @@ public interface ValueNumberAnalysisFeatures {
 	 * accurate modeling of which fields a called method could modify,
 	 * which would allow a more correct implementation.
 	 */
-	public static final boolean REDUNDANT_LOAD_ELIMINATION = !Boolean.getBoolean("vna.noRLE");
+	public static final boolean REDUNDANT_LOAD_ELIMINATION = !SystemProperties.getBoolean("vna.noRLE");
 
 	/**
 	 * Debug redundant load elimination.
 	 */
-	public static final boolean RLE_DEBUG = Boolean.getBoolean("vna.rle.debug");
+	public static final boolean RLE_DEBUG = SystemProperties.getBoolean("vna.rle.debug");
 }
 
 // vim:ts=4

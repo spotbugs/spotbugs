@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * Build a call graph of the self calls in a class.
  */
 public class SelfCalls {
-	private static final boolean DEBUG = Boolean.getBoolean("selfcalls.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("selfcalls.debug");
 
 	private ClassContext classContext;
 	private CallGraph callGraph;

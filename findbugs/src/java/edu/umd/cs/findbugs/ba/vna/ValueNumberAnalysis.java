@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -53,7 +54,7 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
  */
 public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, ValueNumberFrame> {
 
-	private static final boolean DEBUG = Boolean.getBoolean("vna.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("vna.debug");
 
 	private MethodGen methodGen;
 	private ValueNumberFactory factory;

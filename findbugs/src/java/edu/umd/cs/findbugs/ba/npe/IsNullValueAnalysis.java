@@ -32,6 +32,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -67,7 +68,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 public class IsNullValueAnalysis
 		extends FrameDataflowAnalysis<IsNullValue, IsNullValueFrame>
 		implements EdgeTypes, IsNullValueAnalysisFeatures {
-	static final boolean DEBUG = Boolean.getBoolean("inva.debug");
+	static final boolean DEBUG = SystemProperties.getBoolean("inva.debug");
 
 	static {
 		if (DEBUG) System.out.println("inva.debug enabled");

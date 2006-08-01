@@ -35,6 +35,7 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 /**
@@ -44,8 +45,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  * @author David Hovemeyer
  */
 public class Subtypes {
-	private static final boolean DEBUG_HIERARCHY = false || Boolean
-			.getBoolean("findbugs.debug.hierarchy");
+	private static final boolean DEBUG_HIERARCHY = false || SystemProperties.getBoolean("findbugs.debug.hierarchy");
 
 	private boolean computed = false;
 

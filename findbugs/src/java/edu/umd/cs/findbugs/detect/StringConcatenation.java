@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+
 import org.apache.bcel.classfile.Method;
 
 /**
@@ -35,7 +36,7 @@ import org.apache.bcel.classfile.Method;
  */
 public class StringConcatenation extends BytecodeScanningDetector implements StatelessDetector {
 	private static final boolean DEBUG
-	        = Boolean.getBoolean("sbsc.debug");
+	        = SystemProperties.getBoolean("sbsc.debug");
 
 	static final int SEEN_NOTHING = 0;
 	static final int SEEN_NEW = 1;

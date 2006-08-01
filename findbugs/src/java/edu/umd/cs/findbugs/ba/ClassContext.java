@@ -44,6 +44,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -78,14 +79,14 @@ import edu.umd.cs.findbugs.util.MapCache;
  * @author David Hovemeyer
  */
 public class ClassContext {
-	public static final boolean DEBUG = Boolean.getBoolean("classContext.debug");
+	public static final boolean DEBUG = SystemProperties.getBoolean("classContext.debug");
 
 	private static final int PRUNED_INFEASIBLE_EXCEPTIONS = 1;
 	private static final int PRUNED_UNCONDITIONAL_THROWERS = 2;
 
-	private static final boolean TIME_ANALYSES = Boolean.getBoolean("classContext.timeAnalyses");
+	private static final boolean TIME_ANALYSES = SystemProperties.getBoolean("classContext.timeAnalyses");
 
-	private static final boolean DEBUG_CFG = Boolean.getBoolean("classContext.debugCFG");
+	private static final boolean DEBUG_CFG = SystemProperties.getBoolean("classContext.debugCFG");
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes

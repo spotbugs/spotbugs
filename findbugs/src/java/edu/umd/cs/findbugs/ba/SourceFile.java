@@ -34,11 +34,7 @@ import java.io.InputStream;
  */
 public class SourceFile {
 	private static int intValueOf(byte b) {
-		// Why isn't there an API method to do this?
-		if ((b & 0x80) == 0)
-			return b;
-		else
-			return 0x80 | ((int) b & 0x7F);
+		return b & 0xff;
 	}
 
 	/**

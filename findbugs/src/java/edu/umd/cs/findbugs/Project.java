@@ -64,7 +64,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
  * @author David Hovemeyer
  */
 public class Project implements XMLWriteable {
-	private static final boolean DEBUG = Boolean.getBoolean("findbugs.project.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.project.debug");
 
 	/**
 	 * Project filename.
@@ -697,7 +697,7 @@ public class Project implements XMLWriteable {
 	 * feel free to submit a patch :-)
 	 */
 	private static final boolean FILE_IGNORE_CASE =
-	        System.getProperty("os.name", "unknown").startsWith("Windows");
+	        SystemProperties.getProperty("os.name", "unknown").startsWith("Windows");
 
 	/**
 	 * Converts a full path to a relative path if possible
@@ -706,7 +706,7 @@ public class Project implements XMLWriteable {
 	 * @return the converted filename
 	 */
 	private String convertToRelative(String srcFile, String base) {
-		String slash = System.getProperty("file.separator");
+		String slash = SystemProperties.getProperty("file.separator");
 
 		if (FILE_IGNORE_CASE) {
 			srcFile = srcFile.toLowerCase();
@@ -723,7 +723,7 @@ public class Project implements XMLWriteable {
 			String root = srcFile.substring(0, base.length());
 			if (root.equals(base)) {
 				// Strip off the base directory, make relative
-				return "." + System.getProperty("file.separator") + srcFile.substring(base.length());
+				return "." + SystemProperties.getProperty("file.separator") + srcFile.substring(base.length());
 			}
 		}
 		

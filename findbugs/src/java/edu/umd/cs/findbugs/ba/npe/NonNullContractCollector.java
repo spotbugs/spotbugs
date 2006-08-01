@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethodChooser;
@@ -42,7 +43,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
  * @author David Hovemeyer
  */
 public class NonNullContractCollector implements JavaClassAndMethodChooser {
-	private static final boolean DEBUG_NULLARG = Boolean.getBoolean("fnd.debug.nullarg");
+	private static final boolean DEBUG_NULLARG = SystemProperties.getBoolean("fnd.debug.nullarg");
 
 	private final ParameterNullnessPropertyDatabase nonNullParamDatabase;
 	private final ParameterNullnessPropertyDatabase possiblyNullParamDatabase;

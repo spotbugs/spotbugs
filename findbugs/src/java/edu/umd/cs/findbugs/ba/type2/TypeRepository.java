@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.apache.bcel.Constants;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.ba.Debug;
@@ -69,7 +70,7 @@ public class TypeRepository {
 	 * Static data
 	 * ---------------------------------------------------------------------- */
 
-	private static final boolean DEBUG = Boolean.getBoolean("tr.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("tr.debug");
 
 	/**
 	 * Basic type codes to signatures.

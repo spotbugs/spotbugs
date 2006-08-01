@@ -35,6 +35,7 @@ import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassPath;
@@ -55,8 +56,8 @@ import edu.umd.cs.findbugs.util.Archive;
  * @author David Hovemeyer
  */
 public class ClassPathBuilder implements IClassPathBuilder {
-	private static final boolean VERBOSE = Boolean.getBoolean("findbugs2.verbose.builder");
-	private static final boolean DEBUG = VERBOSE || Boolean.getBoolean("findbugs2.debug.builder");
+	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs2.verbose.builder");
+	private static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs2.debug.builder");
 
 	/**
 	 * Worklist item.
@@ -222,9 +223,9 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
 
 		// Seed worklist with system codebases.
-		addWorkListItemsForClasspath(workList, System.getProperty("java.class.path"));
-		addWorkListItemsForClasspath(workList, System.getProperty("sun.boot.class.path"));
-		String extPath = System.getProperty("java.ext.dirs");
+		addWorkListItemsForClasspath(workList, SystemProperties.getProperty("java.class.path"));
+		addWorkListItemsForClasspath(workList, SystemProperties.getProperty("sun.boot.class.path"));
+		String extPath = SystemProperties.getProperty("java.ext.dirs");
 		if (extPath != null) {
 			StringTokenizer st = new StringTokenizer(extPath, File.pathSeparator);
 			while (st.hasMoreTokens()) {

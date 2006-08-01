@@ -46,6 +46,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -94,12 +95,12 @@ import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 public class FindNullDeref
 		implements Detector, NullDerefAndRedundantComparisonCollector {
 
-	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug");
-	private static final boolean DEBUG_NULLARG = Boolean.getBoolean("fnd.debug.nullarg");
-	private static final boolean DEBUG_NULLRETURN = Boolean.getBoolean("fnd.debug.nullreturn");
+	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug");
+	private static final boolean DEBUG_NULLARG = SystemProperties.getBoolean("fnd.debug.nullarg");
+	private static final boolean DEBUG_NULLRETURN = SystemProperties.getBoolean("fnd.debug.nullreturn");
 	private static final boolean REPORT_SAFE_METHOD_TARGETS = true;
 
-	private static final String METHOD = System.getProperty("fnd.method");
+	private static final String METHOD = SystemProperties.getProperty("fnd.method");
 	
 	// Fields
 	private BugReporter bugReporter;

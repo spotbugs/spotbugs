@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -41,8 +42,8 @@ import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefSet;
  * @author David Hovemeyer
  */
 public class BuildUnconditionalParamDerefDatabase {
-	private static final boolean VERBOSE_DEBUG = Boolean.getBoolean("fnd.debug.nullarg.verbose");
-	private static final boolean DEBUG = Boolean.getBoolean("fnd.debug.nullarg") || VERBOSE_DEBUG;
+	private static final boolean VERBOSE_DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg.verbose");
+	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg") || VERBOSE_DEBUG;
 	
 	public void visitClassContext(ClassContext classContext) {
 		ParameterNullnessPropertyDatabase database =

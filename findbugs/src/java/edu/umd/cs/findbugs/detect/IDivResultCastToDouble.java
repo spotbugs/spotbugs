@@ -2,10 +2,11 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+
 import org.apache.bcel.classfile.Method;
 
 public class IDivResultCastToDouble extends BytecodeScanningDetector {
-	private static final boolean DEBUG = Boolean.getBoolean("idcd.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("idcd.debug");
 	
 	private BugReporter bugReporter;
 	private int prevOpCode;

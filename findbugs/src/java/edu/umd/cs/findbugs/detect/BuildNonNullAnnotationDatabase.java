@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnnotationDatabase;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
@@ -43,8 +44,7 @@ import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
  * @author William Pugh
  */
 public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
-	private static final boolean DEBUG = Boolean
-			.getBoolean("fnd.debug.annotation");
+	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.annotation");
 
 	private static final String DEFAULT_ANNOTATION_ANNOTATION_CLASS = "DefaultAnnotation";
 

@@ -42,8 +42,8 @@ import edu.umd.cs.findbugs.ba.bcp.PatternMatcher;
  * @see ByteCodePattern
  */
 public abstract class ByteCodePatternDetector implements Detector {
-	private static final boolean DEBUG = Boolean.getBoolean("bcpd.debug");
-	private static final String METHOD = System.getProperty("bcpd.method");
+	private static final boolean DEBUG = SystemProperties.getBoolean("bcpd.debug");
+	private static final String METHOD = SystemProperties.getProperty("bcpd.method");
 	
 	protected abstract BugReporter getBugReporter();
 

@@ -21,9 +21,10 @@ package edu.umd.cs.findbugs.filter;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 
 public class ClassMatcher implements Matcher {
-	private static final boolean DEBUG = Boolean.getBoolean("filter.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
 
 	private NameMatch className;
 

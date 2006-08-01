@@ -39,7 +39,7 @@ import org.apache.bcel.generic.*;
 public class LazyInit extends ByteCodePatternDetector implements StatelessDetector {
 	private BugReporter bugReporter;
 
-	private static final boolean DEBUG = Boolean.getBoolean("lazyinit.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("lazyinit.debug");
 
 	/**
 	 * The pattern to look for.

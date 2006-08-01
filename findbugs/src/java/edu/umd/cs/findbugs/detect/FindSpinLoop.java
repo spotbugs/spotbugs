@@ -21,10 +21,11 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+
 import org.apache.bcel.classfile.Method;
 
 public class FindSpinLoop extends BytecodeScanningDetector implements StatelessDetector {
-	private static final boolean DEBUG = Boolean.getBoolean("findspinloop.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("findspinloop.debug");
 
 	int stage = 0;
 	int start;

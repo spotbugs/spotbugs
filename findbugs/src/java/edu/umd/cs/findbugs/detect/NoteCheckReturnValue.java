@@ -37,8 +37,8 @@ public class NoteCheckReturnValue extends AnnotationVisitor
   implements Detector, NonReportingDetector {
 	
 	// XXX: Hack, for now
-	private static final String LOAD_TRAINING = System.getProperty("findbugs.checkreturn.loadtraining");
-	private static final String SAVE_TRAINING = System.getProperty("findbugs.checkreturn.savetraining");
+	private static final String LOAD_TRAINING = SystemProperties.getProperty("findbugs.checkreturn.loadtraining");
+	private static final String SAVE_TRAINING = SystemProperties.getProperty("findbugs.checkreturn.savetraining");
 
 	private BugReporter bugReporter;
 	private boolean checkLoad;

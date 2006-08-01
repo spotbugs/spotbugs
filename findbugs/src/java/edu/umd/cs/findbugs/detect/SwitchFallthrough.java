@@ -28,9 +28,9 @@ import org.apache.bcel.classfile.Code;
 
 
 public class SwitchFallthrough extends BytecodeScanningDetector implements StatelessDetector {
-	private static final boolean DEBUG = Boolean.getBoolean("switchFallthrough.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("switchFallthrough.debug");
 	private static final boolean LOOK_IN_SOURCE_FOR_FALLTHRU_COMMENT =
-		Boolean.getBoolean("findbugs.sf.comment");
+		SystemProperties.getBoolean("findbugs.sf.comment");
 
 	private SwitchHandler switchHdlr;
 	private boolean reachable;

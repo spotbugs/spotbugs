@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 
@@ -108,7 +109,7 @@ public class AnalysisRun {
 		// Run the analysis!
 		findBugs.execute();
 
-		if (!Boolean.getBoolean("findbugs.noSummary")) {
+		if (!SystemProperties.getBoolean("findbugs.noSummary")) {
 			// Get the summary!
 			createSummary(reporter.getProjectStats());
 		}
@@ -132,7 +133,7 @@ public class AnalysisRun {
 		}
 	}
 
-	private static final boolean CREATE_SUMMARY = !Boolean.getBoolean("findbugs.noSummary");
+	private static final boolean CREATE_SUMMARY = !SystemProperties.getBoolean("findbugs.noSummary");
 
 	/**
 	 * Load bugs from a file.

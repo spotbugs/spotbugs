@@ -114,6 +114,7 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ShowHelp;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
@@ -131,18 +132,22 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	/**
 	 * 
 	 */
-	private static final Font SOURCE_FONT = new java.awt.Font("Monospaced", 0, 12);
-	private static final Font JTREE_FONT = new java.awt.Font("SansSerif", 0, 12);
+	private static final int fontSize = 12;
+	/**
+	 * 
+	 */
+	private static final Font SOURCE_FONT = new java.awt.Font("Monospaced", 0, fontSize);
+	private static final Font JTREE_FONT = new java.awt.Font("SansSerif", 0, fontSize);
 
 	/**
 	 * 
 	 */
-	private static final Font LABEL_FONT = new java.awt.Font("Dialog", 1, 24);
+	private static final Font LABEL_FONT = new java.awt.Font("Dialog", 1, 2*fontSize);
 
 	/**
 	 * 
 	 */
-	private static final Font BUTTON_FONT = new java.awt.Font("Dialog", 0, 12);
+	private static final Font BUTTON_FONT = new java.awt.Font("Dialog", 0, fontSize);
 
 	private static final long serialVersionUID = 1L;
 
@@ -467,7 +472,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 */
 	private static final int DIVIDER_FUDGE = 3;
 
-	private static final boolean BUG_COUNT = Boolean.getBoolean("findbugs.gui.bugCount");
+	private static final boolean BUG_COUNT = SystemProperties.getBoolean("findbugs.gui.bugCount");
 
 	/* ----------------------------------------------------------------------
 	 * Member fields
@@ -486,7 +491,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		UserPreferences prefs = UserPreferences.getUserPreferences();
 		prefs.read();
 		
-		String dirProp = System.getProperty("user.dir");
+		String dirProp = SystemProperties.getProperty("user.dir");
 		
 		if (dirProp != null) {
 			currentDirectory = new File(dirProp);
@@ -1706,7 +1711,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
     }//GEN-LAST:event_settingsMenuActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        if (Boolean.getBoolean("findbugs.noSummary")) {
+        if (SystemProperties.getBoolean("findbugs.noSummary")) {
             groupByTabbedPane.remove(bySummary);
         }
     }//GEN-LAST:event_formWindowOpened
@@ -1732,7 +1737,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	private String buildSelectPath(JList list) {
 		StringBuffer path = new StringBuffer();
 		int[] indices = list.getSelectedIndices();
-		String separatorStr = System.getProperty("path.separator");
+		String separatorStr = SystemProperties.getProperty("path.separator");
 		String sep = "";
 		ListModel m = list.getModel();
 		for (int indice : indices) {
@@ -3137,7 +3142,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * @return an array of paths
 	 */
 	private String[] parsePaths(String paths) {
-		return paths.split(System.getProperty("path.separator"));
+		return paths.split(SystemProperties.getProperty("path.separator"));
 	}
 	
 	/**
@@ -3735,10 +3740,10 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			} catch (Exception e) {
 				System.err.println("Error: " + e.getMessage());
 			}
-		} else if (System.getProperty("findbugs.loadBugsFromURL") != null) {
+		} else if (SystemProperties.getProperty("findbugs.loadBugsFromURL") != null) {
 			// Allow JNLP launch to specify the URL of a report to load
 			try {
-				String urlspec = System.getProperty("findbugs.loadBugsFromURL");
+				String urlspec = SystemProperties.getProperty("findbugs.loadBugsFromURL");
 				frame.loadBugsFromURL(urlspec);
 			} catch (Exception e) {
 				System.err.println("Error: " + e.getMessage());
@@ -3898,7 +3903,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	private AnalysisFeatureSetting[] settingList = FindBugs.DEFAULT_EFFORT;
 
 	// My constant declarations
-	private final static boolean MAC_OS_X = System.getProperty("os.name").toLowerCase().startsWith("mac os x");
+	private final static boolean MAC_OS_X = SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
 
 	private static int getMenuMask() {
 		return Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();

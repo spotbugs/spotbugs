@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Object to enumerate (some subset of) the simple paths in a CFG.
  * A simple path is a path from entry to exit, ignoring backedges
@@ -43,7 +45,7 @@ public class SimplePathEnumerator implements EdgeTypes, DFSEdgeTypes {
 	private int work;
 	private List<List<Edge>> pathList;
 
-	private static final boolean DEBUG = Boolean.getBoolean("spe.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("spe.debug");
 
 	/**
 	 * Default number of steps to be performed in path enumeration.

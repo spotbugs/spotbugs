@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
@@ -176,7 +177,7 @@ public class SourceInfoMap {
 		}
 	}
 	
-	private static final boolean DEBUG = Boolean.getBoolean("sourceinfo.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("sourceinfo.debug");
 	
 	private Map<FieldDescriptor, SourceLineRange> fieldLineMap;
 	private Map<MethodDescriptor, SourceLineRange> methodLineMap;

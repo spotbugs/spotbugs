@@ -61,7 +61,7 @@ public class SortedBugCollection implements BugCollection {
 	long analysisTimestamp = System.currentTimeMillis();
 	private boolean withMessages = false;
 	private static final boolean REPORT_SUMMARY_HTML =
-		Boolean.getBoolean("findbugs.report.SummaryHTML");
+		SystemProperties.getBoolean("findbugs.report.SummaryHTML");
 
 	public long getAnalysisTimestamp() {
 		return analysisTimestamp;

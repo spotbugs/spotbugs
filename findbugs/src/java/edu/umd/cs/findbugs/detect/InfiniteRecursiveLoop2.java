@@ -35,6 +35,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -64,8 +65,8 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @author David Hovemeyer	
  */
 public class InfiniteRecursiveLoop2 implements Detector {
-	private static final boolean DEBUG = Boolean.getBoolean("irl.debug");
-	private static final String IRL_METHOD = System.getProperty("irl.method");
+	private static final boolean DEBUG = SystemProperties.getBoolean("irl.debug");
+	private static final String IRL_METHOD = SystemProperties.getProperty("irl.method");
 	
 	private BugReporter bugReporter;
 	

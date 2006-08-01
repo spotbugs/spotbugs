@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.util.ClassPath;
 import org.apache.bcel.util.Repository;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 
@@ -48,7 +49,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  * @author David Hovemeyer
  */
 public class URLClassPathRepository implements Repository {
-	public static final boolean DEBUG = Boolean.getBoolean("findbugs.classpath.debug");
+	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.classpath.debug");
 	
 	private static final long serialVersionUID = 1L;
 

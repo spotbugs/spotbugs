@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.SystemProperties;
+
 /**
  * Data structure to keep track of which input ValueNumbers were
  * combined to produce which other output ValueNumbers. 
@@ -31,7 +33,7 @@ import java.util.Map;
  * @author David Hovemeyer
  */
 public class MergeTree {
-	public static final boolean DEBUG = Boolean.getBoolean("vna.merge.debug");
+	public static final boolean DEBUG = SystemProperties.getBoolean("vna.merge.debug");
 	
 	private ValueNumberFactory factory;
 	private Map<ValueNumber, BitSet> outputToInputMap;

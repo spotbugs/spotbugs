@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Token;
 import edu.umd.cs.findbugs.Tokenizer;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -46,9 +47,9 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class DroppedException extends PreorderVisitor implements Detector {
-	private static final boolean DEBUG = Boolean.getBoolean("de.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("de.debug");
 	private static final boolean LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS
-	        = Boolean.getBoolean("findbugs.de.comment");
+	        = SystemProperties.getBoolean("findbugs.de.comment");
 
 	Set<String> reported = new HashSet<String>();
 	Set<String> causes = new HashSet<String>();

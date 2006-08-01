@@ -36,6 +36,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
@@ -55,7 +56,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
  * @author David Hovemeyer
  */
 public class PruneInfeasibleExceptionEdges2 implements EdgeTypes {
-	private static boolean STATS = Boolean.getBoolean("cfg.prune.stats");
+	private static boolean STATS = SystemProperties.getBoolean("cfg.prune.stats");
 	private static int numEdgesPruned;
 	static {
 		if (STATS) {
@@ -68,7 +69,7 @@ public class PruneInfeasibleExceptionEdges2 implements EdgeTypes {
 		}
 	}
 	
-	private static boolean DEBUG = Boolean.getBoolean("cfg.prune.debug");
+	private static boolean DEBUG = SystemProperties.getBoolean("cfg.prune.debug");
 
 	/**
 	 * A momento to remind us of how we classified a particular

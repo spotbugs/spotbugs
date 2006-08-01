@@ -21,11 +21,12 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+
 import java.util.*;
 import org.apache.bcel.classfile.*;
 
 public class LockedFields extends BytecodeScanningDetector {
-	private static final boolean DEBUG = Boolean.getBoolean("lockedfields.debug");
+	private static final boolean DEBUG = SystemProperties.getBoolean("lockedfields.debug");
 
 	Set<FieldAnnotation> volatileOrFinalFields = new HashSet<FieldAnnotation>();
 	Set<FieldAnnotation> fieldsWritten = new HashSet<FieldAnnotation>();
