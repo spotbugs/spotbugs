@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassConstants;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 
 /**
@@ -111,13 +112,23 @@ public class ClassParser {
 				fieldDescriptorList[i] = readField(thisClassDescriptor);
 			}
 			
+			int methods_count = in.readUnsignedShort();
+			if (methods_count < 0) {
+				throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
+			}
+			MethodDescriptor[] methodDescriptorList = new MethodDescriptor[methods_count];
+			for (int i = 0; i < methods_count; i++) {
+				methodDescriptorList[i] = readMethod(thisClassDescriptor);
+			}
+			
 			return new ClassInfo(
 					thisClassDescriptor,
 					superClassDescriptor,
 					interfaceDescriptorList,
 					codeBaseEntry,
 					access_flags,
-					fieldDescriptorList);
+					fieldDescriptorList,
+					methodDescriptorList);
 			
 		} catch (IOException e) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
@@ -253,6 +264,10 @@ public class ClassParser {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
 		}
 	}
+	
+	interface FieldOrMethodDescriptorCreator<E> {
+		public E create(String className, String name, String signature, int accessFlags);
+	}
 
 	/**
 	 * Read field_info, return FieldDescriptor.
@@ -262,7 +277,41 @@ public class ClassParser {
 	 * @throws IOException 
 	 * @throws InvalidClassFileFormatException 
 	 */
-	private FieldDescriptor readField(ClassDescriptor thisClassDescriptor) throws IOException, InvalidClassFileFormatException {
+	private FieldDescriptor readField(ClassDescriptor thisClassDescriptor)
+			throws IOException, InvalidClassFileFormatException {
+		return readFieldOrMethod(thisClassDescriptor, new FieldOrMethodDescriptorCreator<FieldDescriptor>() {
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.classfile.engine.ClassParser.FieldOrMethodDescriptorCreator#create(java.lang.String, java.lang.String, java.lang.String, int)
+			 */
+			public FieldDescriptor create(String className, String name, String signature, int accessFlags) {
+				return new FieldDescriptor(className, name, signature, (accessFlags & IClassConstants.ACC_STATIC) != 0);
+			}
+		});
+	}
+
+	/**
+	 * Read method_info, read method descriptor.
+	 * 
+	 * @param thisClassDescriptor
+	 * @return
+	 * @throws IOException 
+	 * @throws InvalidClassFileFormatException 
+	 */
+	private MethodDescriptor readMethod(ClassDescriptor thisClassDescriptor)
+			throws InvalidClassFileFormatException, IOException {
+		return readFieldOrMethod(thisClassDescriptor, new FieldOrMethodDescriptorCreator<MethodDescriptor>(){
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.classfile.engine.ClassParser.FieldOrMethodDescriptorCreator#create(java.lang.String, java.lang.String, java.lang.String, int)
+			 */
+			public MethodDescriptor create(String className, String name, String signature, int accessFlags) {
+				return new MethodDescriptor(className, name, signature, (accessFlags & IClassConstants.ACC_STATIC) != 0);
+			}
+		});
+	}
+	
+	private<E> E readFieldOrMethod(
+			ClassDescriptor thisClassDescriptor, FieldOrMethodDescriptorCreator<E> creator)
+			throws IOException, InvalidClassFileFormatException {
 		int access_flags = in.readUnsignedShort();
 		int name_index = in.readUnsignedShort();
 		int descriptor_index = in.readUnsignedShort();
@@ -270,16 +319,9 @@ public class ClassParser {
 	
 		String fieldName = getUtf8String(name_index);
 		String fieldSignature = getUtf8String(descriptor_index);
-		
-		for (int i = 0; i < attributes_count; i++) {
-			readAttribute();
-		}
-		
-		return new FieldDescriptor(
-				expectedClassDescriptor.getClassName(),
-				fieldName,
-				fieldSignature,
-				(access_flags & IClassConstants.ACC_STATIC) != 0);
+
+		return creator.create(
+				thisClassDescriptor.getClassName(), fieldName, fieldSignature, access_flags);
 	}
 
 	/**
