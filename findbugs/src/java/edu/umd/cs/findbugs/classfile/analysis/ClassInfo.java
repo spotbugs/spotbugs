@@ -20,7 +20,9 @@
 package edu.umd.cs.findbugs.classfile.analysis;
 
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * ClassInfo represents important metadata about a
@@ -35,18 +37,24 @@ public class ClassInfo {
 	private final ClassDescriptor[] interfaceDescriptorList;
 	private final ICodeBaseEntry codeBaseEntry;
 	private final int accessFlags;
+//	private final FieldDescriptor[] fieldDescriptorList;
+//	private final MethodDescriptor[] methodDescriptorList;
 	
 	public ClassInfo(
 			ClassDescriptor classDescriptor,
 			ClassDescriptor superclassDescriptor,
 			ClassDescriptor[] interfaceDescriptorList,
 			ICodeBaseEntry codeBaseEntry,
-			int accessFlags) {
+			int accessFlags/*,
+			FieldDescriptor[] fieldDescriptorList,
+			MethodDescriptor[] methodDescriptorList*/) {
 		this.classDescriptor = classDescriptor;
 		this.superclassDescriptor = superclassDescriptor;
 		this.interfaceDescriptorList = interfaceDescriptorList;
 		this.codeBaseEntry = codeBaseEntry;
 		this.accessFlags = accessFlags;
+//		this.fieldDescriptorList = fieldDescriptorList;
+//		this.methodDescriptorList = methodDescriptorList;
 	}
 	
 	/**
@@ -83,4 +91,18 @@ public class ClassInfo {
 	public int getAccessFlags() {
 		return accessFlags;
 	}
+	
+//	/**
+//	 * @return Returns the fieldDescriptorList.
+//	 */
+//	public FieldDescriptor[] getFieldDescriptorList() {
+//		return fieldDescriptorList;
+//	}
+//	
+//	/**
+//	 * @return Returns the methodDescriptorList.
+//	 */
+//	public MethodDescriptor[] getMethodDescriptorList() {
+//		return methodDescriptorList;
+//	}
 }
