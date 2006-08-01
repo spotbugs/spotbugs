@@ -107,4 +107,18 @@ class BadCast {
 			return (int[]) x;
 		return null;
 	}
+	public static int[] doNotReport3(Object x, boolean b) {
+		if (b) 
+			return (int[]) x;
+		return null;
+	}
+	public static Serializable[] doNotReport4(List<Serializable[]> x) {
+		return x.get(0);
+	}
+	public static int[] report(Object x) {
+		if (x instanceof Object[])
+			return (int[]) x;
+		return null;
+
+	}
 }

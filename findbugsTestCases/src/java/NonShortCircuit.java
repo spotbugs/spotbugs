@@ -27,4 +27,11 @@ class NonShortCircuit {
 	public NonShortCircuit(boolean available) {
 		m_iType |= available ? BIT0 : 0;
 	}
+	
+	public String f(String tag, String value) {
+	  if (tag != null & tag.length() > 0 &&
+              value != null && value.length() > 0) 
+		  return tag + ":" + value;
+	  return "?";
+	}
 }
