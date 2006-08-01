@@ -31,6 +31,8 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 
 /**
+ * Parse a class to extract symbolic information.
+ * 
  * @author David Hovemeyer
  */
 public class ClassParser {
