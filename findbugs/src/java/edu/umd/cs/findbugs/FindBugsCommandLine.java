@@ -20,6 +20,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -99,13 +100,13 @@ public abstract class FindBugsCommandLine extends CommandLine {
 			FindBugs.setHome(argument);
 		} else if (option.equals("-pluginList")) {
 			String pluginListStr = argument;
-			ArrayList<File> pluginList = new ArrayList<File>();
+			ArrayList<URL> pluginList = new ArrayList<URL>();
 			StringTokenizer tok = new StringTokenizer(pluginListStr, File.pathSeparator);
 			while (tok.hasMoreTokens()) {
-				pluginList.add(new File(tok.nextToken()));
+				pluginList.add(new File(tok.nextToken()).toURL());
 			}
 
-			DetectorFactoryCollection.setPluginList(pluginList.toArray(new File[pluginList.size()]));
+			DetectorFactoryCollection.setPluginList(pluginList.toArray(new URL[pluginList.size()]));
 		} else if (option.equals("-project")) {
 			String projectFile = argument;
 

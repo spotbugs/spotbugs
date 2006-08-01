@@ -50,7 +50,7 @@ public class DetectorFactoryCollection {
 	private static DetectorFactoryCollection theInstance;
 	private static final Object lock = new Object();
 
-	private static File[] pluginList;
+	private static URL[] pluginList;
 
 	/**
 	 * Constructor.
@@ -67,8 +67,8 @@ public class DetectorFactoryCollection {
 	 *
 	 * @param pluginList list of plugin Jar files to load
 	 */
-	public static void setPluginList(File[] pluginList) {
-		DetectorFactoryCollection.pluginList = new File[pluginList.length];
+	public static void setPluginList(URL[] pluginList) {
+		DetectorFactoryCollection.pluginList = new URL[pluginList.length];
 		System.arraycopy(pluginList, 0, DetectorFactoryCollection.pluginList, 0, pluginList.length);
 	}
 
@@ -155,19 +155,25 @@ public class DetectorFactoryCollection {
 			System.err.println("Error: The path " + pluginDir.getPath()
 					+ " does not seem to be a directory!");
 			System.err.println("No FindBugs plugins could be loaded");
-			pluginList = new File[0];
+			pluginList = new URL[0];
 			return;
 		}
 
-		ArrayList<File> arr = new ArrayList<File>();
+		ArrayList<URL> arr = new ArrayList<URL>();
 		for (File aContentList : contentList) {
 			if (aContentList.getName().endsWith(".jar")) {
-				if (FindBugs.DEBUG)
-					System.out.println("Found plugin: " + aContentList.toString());
-				arr.add(aContentList);
+			
+				try {
+					arr.add(aContentList.toURL());
+					if (FindBugs.DEBUG)
+						System.out.println("Found plugin: " + aContentList.toString());
+				} catch (MalformedURLException e) {
+
+				}
+				
 			}
 		}
-		pluginList = arr.toArray(new File[arr.size()]);
+		pluginList = arr.toArray(new URL[arr.size()]);
 
 	}
 	/**
@@ -182,28 +188,29 @@ public class DetectorFactoryCollection {
 		//If we are running under jaws, just use the loaded plugin
 	    if (SystemProperties.getBoolean("findbugs.jaws")) {
 			URL u = DetectorFactoryCollection.class.getResource("/findbugs.xml");
-		    File[] plugins = new File[1];
+			// JOptionPane.showMessageDialog(null, "Loading plugin from " + u);
+		    URL[] plugins = new URL[1];
 		    if (u != null) {
-		        String path = new File(u.toString()).getParent();
-		        path = path.substring("jar:file:".length());
-		        path = path.substring(0, path.length() - 1);
-		        try {
-		        	path = URLDecoder.decode(path, "UTF-8");
-		        } catch (UnsupportedEncodingException uee) {
-		        }
+		    	String path = u.toString();
+		    	path = path.substring(0, path.length() - "findbugs.xml".length());
 		        if (FindBugs.DEBUG) System.out.println("Jaws uses plugin: " + path);
-		        plugins[0] = new File(path);
+		        try {
+					plugins[0] = new URL(path);
+					
+				} catch (MalformedURLException e) {
+					throw new RuntimeException(e);
+				}
 		        setPluginList(plugins);
+		    
 		    }
 		}
 		
 	    determinePlugins();
 
 		int numLoaded = 0;
-		for (File file : pluginList) {
+		for (final URL url : pluginList) {
 			try {
-				if (FindBugs.DEBUG) System.out.println("Loading plugin: " + file.toString());
-				final URL url = file.toURI().toURL();
+				if (FindBugs.DEBUG) System.out.println("Loading plugin: " + url.toString());
 				PluginLoader pluginLoader =
 					AccessController.doPrivileged(new PrivilegedExceptionAction<PluginLoader>() {
 
@@ -240,16 +247,11 @@ public class DetectorFactoryCollection {
 
 				++numLoaded;
 			} catch (PluginException e) {
-				System.err.println("Warning: could not load plugin " + file.getPath() + ": " + e.toString());
-				if (FindBugs.DEBUG)
-					e.printStackTrace();
-			}
-			catch (MalformedURLException e) {
-				System.err.println("Warning: could not load plugin " + file.getPath() + ": " + e.toString());
+				System.err.println("Warning: could not load plugin " + url + ": " + e.toString());
 				if (FindBugs.DEBUG)
 					e.printStackTrace();
 			} catch (PrivilegedActionException e) {
-				System.err.println("Warning: could not load plugin " + file.getPath() + ": " + e.toString());
+				System.err.println("Warning: could not load plugin " + url + ": " + e.toString());
 				if (FindBugs.DEBUG)
 					e.printStackTrace();
 			}
