@@ -13,11 +13,13 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.constant.Constant;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantFrame;
@@ -39,6 +41,9 @@ public class DumbMethodInvocations implements Detector {
 
 			try {
 				analyzeMethod(classContext, method);
+			} catch (MethodUnprofitableException mue) {
+				if (SystemProperties.getBoolean("unprofitable.debug")) // otherwise don't report
+					bugReporter.logError("skipping unprofitable method in " + getClass().getName());
 			} catch (CFGBuilderException e) {
 				bugReporter.logError("Detector " + this.getClass().getName()
 						+ " caught exception", e);

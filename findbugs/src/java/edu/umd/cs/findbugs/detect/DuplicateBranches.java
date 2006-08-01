@@ -66,6 +66,9 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 				else if (numOutgoing > 2)
 					findSwitchDuplicates(cfg, method, bb);
 			}
+		} catch (MethodUnprofitableException mue) {
+			if (SystemProperties.getBoolean("unprofitable.debug")) // otherwise don't report
+				bugReporter.logError("skipping unprofitable method in " + getClass().getName());
 		} catch (Exception e) {
 			bugReporter.logError("Failure examining basic blocks in Duplicate Branches detector", e);
 		}
