@@ -116,7 +116,8 @@ public class ClassParser {
 					superClassDescriptor,
 					interfaceDescriptorList,
 					codeBaseEntry,
-					access_flags);
+					access_flags,
+					fieldDescriptorList);
 			
 		} catch (IOException e) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
