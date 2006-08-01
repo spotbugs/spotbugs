@@ -25,7 +25,7 @@ import java.util.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 
-public class FindBadCast extends BytecodeScanningDetector implements  StatelessDetector {
+public @java.lang.Deprecated class FindBadCast extends BytecodeScanningDetector implements  StatelessDetector {
 
 
 	private HashSet<String> castTo = new HashSet<String>();
