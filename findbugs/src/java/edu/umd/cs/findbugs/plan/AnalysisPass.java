@@ -151,7 +151,9 @@ public class AnalysisPass {
 		
 		count = 0;
 		for (DetectorFactory factory : orderedFactoryList) {
-			detectorList[count++] = factory.create(bugReporter);
+			if (factory.isDetectorClassSubtypeOf(Detector.class)) {
+				detectorList[count++] = factory.create(bugReporter);
+			}
 		}
 		
 		return detectorList;
