@@ -19,32 +19,33 @@
 
 package edu.umd.cs.findbugs.classfile;
 
-import edu.umd.cs.findbugs.ba.SignatureConverter;
-
 /**
- * Descriptor uniquely identifying a method in a class.
+ * Descriptor uniquely identifying a field in a class.
  * 
  * @author David Hovemeyer
  */
-public class MethodDescriptor
+public class FieldDescriptor
 		extends FieldOrMethodDescriptor
-		implements Comparable<MethodDescriptor> {
+		implements Comparable<FieldDescriptor> {
+
 	/**
 	 * Constructor.
 	 * 
-	 * @param className       name of the class containing the method, in VM format (e.g., "java/lang/String")
-	 * @param methodName      name of the method
-	 * @param methodSignature signature of the method
-	 * @param isStatic        true if method is static, false otherwise
+	 * @param className      the name of the class the field belongs to
+	 * @param fieldName      the name of the field
+	 * @param fieldSignature the field signature (type)
+	 * @param isStatic       true if field is static, false if not
 	 */
-	public MethodDescriptor(String className, String methodName, String methodSignature, boolean isStatic) {
-		super(className, methodName, methodSignature, isStatic);
+	public FieldDescriptor(String className, String fieldName, String fieldSignature, boolean isStatic) {
+		super(className, fieldName, fieldSignature, isStatic);
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	public int compareTo(MethodDescriptor o) {
-		return super.compareTo(o);
+	public int compareTo(FieldDescriptor o) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
+
 }
