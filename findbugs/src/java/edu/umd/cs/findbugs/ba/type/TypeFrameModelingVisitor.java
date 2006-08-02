@@ -816,8 +816,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
          public void visitMULTIANEWARRAY(MULTIANEWARRAY obj) {
 		consumeStack(obj);
 		Type elementType = obj.getType(getCPG());
-		pushValue(new ArrayType(elementType, obj.getDimensions()));
-		
+		pushValue(elementType);
 		// We now have an exact type for this value.
 		setTopOfStackIsExact();
 	}

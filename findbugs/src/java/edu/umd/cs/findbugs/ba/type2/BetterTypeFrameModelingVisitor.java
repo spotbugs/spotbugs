@@ -766,7 +766,7 @@ public class BetterTypeFrameModelingVisitor extends AbstractFrameModelingVisitor
 		consumeStack(obj);
 		try {
 			Type elementType = typeRepository.typeFromSignature(obj.getType(getCPG()).getSignature());
-			pushValue(typeRepository.arrayTypeFromElementType(elementType));
+			pushValue(elementType);
 		} catch (InvalidSignatureException e) {
 			throw new AnalysisException("Invalid signature for pushed value", methodGen, obj, e);
 		}
