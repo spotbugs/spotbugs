@@ -61,10 +61,7 @@ public class Subtypes {
 
 	private Map<JavaClass, Set<JavaClass>> transitiveSubtypes = new HashMap<JavaClass, Set<JavaClass>>();
 
-	private static boolean created;
 	public Subtypes() {
-		if (created) throw new IllegalStateException();
-		created = true;
 	}
 	
 	/**
