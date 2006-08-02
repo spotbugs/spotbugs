@@ -23,11 +23,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.xml.transform.ErrorListener;
 
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -341,16 +344,48 @@ public class FindBugs2 implements IFindBugsEngine {
 	}
 	
 	private void buildReferencedClassSet() throws CheckedAnalysisException {
-		// TODO: should drive progress dialog (scanning phase)
-		// TODO: should load superclasses to extract transitively referenced classes
+		// TODO: should drive progress dialog (scanning phase)?
 		
 		referencedClassSet = new TreeSet<ClassDescriptor>();
 		
-		referencedClassSet.addAll(appClassList);
+		LinkedList<ClassDescriptor> workList = new LinkedList<ClassDescriptor>();
+		workList.addAll(appClassList);
+
+		Set<ClassDescriptor> seen = new HashSet<ClassDescriptor>();
+		Set<ClassDescriptor> appClassSet = new HashSet<ClassDescriptor>(appClassList);
 		
-		for (ClassDescriptor appClass : appClassList) {
-			ClassInfo classInfo = Global.getAnalysisCache().getClassAnalysis(ClassInfo.class, appClass);
-			referencedClassSet.addAll(Arrays.asList(classInfo.getReferencedClassDescriptorList()));
+		while (!workList.isEmpty()) {
+			ClassDescriptor classDesc = workList.removeFirst();
+			
+			if (seen.contains(classDesc)) {
+				continue;
+			}
+			seen.add(classDesc);
+			
+			referencedClassSet.add(classDesc);
+			
+			// Get list of referenced classes and add them to set.
+			// Add superclasses and superinterfaces to worklist.
+			try {
+				ClassInfo classInfo = Global.getAnalysisCache().getClassAnalysis(ClassInfo.class, classDesc);
+				referencedClassSet.addAll(Arrays.asList(classInfo.getReferencedClassDescriptorList()));
+				
+				if (classInfo.getSuperclassDescriptor() != null) {
+					workList.addLast(classInfo.getSuperclassDescriptor());
+				}
+				
+				for (ClassDescriptor ifaceDesc : classInfo.getInterfaceDescriptorList()) {
+					workList.addLast(ifaceDesc);
+				}
+			} catch (CheckedAnalysisException e) {
+				if (appClassSet.contains(classDesc)) {
+					// Failing to scan an application class is fatal
+					throw e;
+				} else {
+					// Failed to scan a referenced class --- just log the error and continue
+					bugReporter.logError("Error scanning " + classDesc + " for referenced classes", e);
+				}
+			}
 		}
 	}
 	
