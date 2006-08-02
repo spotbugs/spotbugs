@@ -29,3 +29,4 @@ deprecated
 listBugDatabaseInfo
 setBugDatabaseInfo
 unionBugs
+copyBuggySource
