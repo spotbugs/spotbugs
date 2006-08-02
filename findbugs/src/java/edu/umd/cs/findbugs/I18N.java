@@ -209,7 +209,7 @@ public class I18N {
 
 	/**
 	 * Get a List containing all known user designation keys keys.
-	 * E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
+	 * E.g., "MOSTLY_HARMLESS", "MUST_FIX", "NOT_A_BUG", etc.
 	 *
 	 * @return List of user designation keys
 	 */
@@ -224,7 +224,7 @@ public class I18N {
 
 	/**
 	 * Get a List containing all known user designation keys keys.
-	 * E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
+	 * E.g., "MOSTLY_HARMLESS", "MUST_FIX", "NOT_A_BUG", etc.
 	 * 
 	 * If <code>sort == true</code> then it will attempt to sort
 	 * the List as appropriate to show the user.
@@ -259,17 +259,12 @@ public class I18N {
 				          break;
 				case 'N': if ("NOT_A_BUG".equals(key)) return -15;
 				          break;
-				case 'H': if ("HARMLESS".equals(key)) return -11;
-				          break;
 				case 'M': if ("MOSTLY_HARMLESS".equals(key)) return -10;
-				          if ("MODERATE".equals(key)) return -5;
+				          if ("MUST_FIX".equals(key)) return 10;
 				          break;
-				case 'S': if ("SERIOUS".equals(key)) return 5;
-				          break;
-				case 'C': if ("CRITICAL".equals(key)) return 10;
-				          break;
+				case 'S': if ("SHOULD_FIX".equals(key)) return 5;
 			}
-			return 0; // between MODERATE and SERIOUS
+			return 0; // between MOSTLY_HARMLESS and SHOULD_FIX
 		}
 	}
 

@@ -282,11 +282,9 @@
 			<xs:enumeration value = "UNCLASSIFIED"/>
 			<xs:enumeration value = "BAD_ANALYSIS"/>
 			<xs:enumeration value = "NOT_A_BUG"/>
-			<xs:enumeration value = "HARMLESS"/>
 			<xs:enumeration value = "MOSTLY_HARMLESS"/>
-			<xs:enumeration value = "MODERATE"/>
-			<xs:enumeration value = "SERIOUS"/>
-			<xs:enumeration value = "CRITICAL"/>
+			<xs:enumeration value = "SHOULD_FIX"/>
+			<xs:enumeration value = "MUST_FIX"/>
 		</xs:restriction>
 	</xs:simpleType>
 	
