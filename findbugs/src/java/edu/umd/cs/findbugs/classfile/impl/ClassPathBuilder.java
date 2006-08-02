@@ -58,6 +58,11 @@ import edu.umd.cs.findbugs.util.Archive;
 public class ClassPathBuilder implements IClassPathBuilder {
 	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs2.verbose.builder");
 	private static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs2.debug.builder");
+	
+	private static final int SPECIFIED = 0;
+	private static final int NESTED = 1;
+	private static final int IN_JAR_MANIFEST = 2;
+	private static final int IN_SYSTEM_CLASSPATH = 3;
 
 	/**
 	 * Worklist item.
@@ -67,10 +72,12 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	static class WorkListItem {
 		private ICodeBaseLocator codeBaseLocator;
 		private boolean isAppCodeBase;
+		private int howDiscovered;
 		
-		public WorkListItem(ICodeBaseLocator codeBaseLocator, boolean isApplication) {
+		public WorkListItem(ICodeBaseLocator codeBaseLocator, boolean isApplication, int howDiscovered) {
 			this.codeBaseLocator = codeBaseLocator;
 			this.isAppCodeBase = isApplication;
+			this.howDiscovered = howDiscovered;
 		}
 		
 		public ICodeBaseLocator getCodeBaseLocator() {
@@ -79,6 +86,13 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		
 		public boolean isAppCodeBase() {
 			return isAppCodeBase;
+		}
+		
+		/**
+		 * @return Returns the howDiscovered.
+		 */
+		public int getHowDiscovered() {
+			return howDiscovered;
 		}
 	}
 	
@@ -149,7 +163,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	 * @see edu.umd.cs.findbugs.classfile.IClassPathBuilder#addCodeBase(edu.umd.cs.findbugs.classfile.ICodeBaseLocator, boolean)
 	 */
 	public void addCodeBase(ICodeBaseLocator locator, boolean isApplication) {
-		addToWorkList(projectWorkList, new WorkListItem(locator, isApplication));
+		addToWorkList(projectWorkList, new WorkListItem(locator, isApplication, SPECIFIED));
 	}
 	
 	/* (non-Javadoc)
@@ -254,7 +268,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 				System.out.println("System classpath entry: " + entry);
 			}
 			addToWorkList(workList, new WorkListItem(
-					classFactory.createFilesystemCodeBaseLocator(entry), false));
+					classFactory.createFilesystemCodeBaseLocator(entry), false, IN_SYSTEM_CLASSPATH));
 		}
 	}
 	
@@ -281,7 +295,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		
 		for (File archive : fileList) {
 			addToWorkList(workList, new WorkListItem(
-					classFactory.createFilesystemCodeBaseLocator(archive.getPath()), false));
+					classFactory.createFilesystemCodeBaseLocator(archive.getPath()), false, IN_SYSTEM_CLASSPATH));
 		}
 	}
 
@@ -326,12 +340,11 @@ public class ClassPathBuilder implements IClassPathBuilder {
 			// then failing to open/scan it is a fatal error.
 			// We issue warnings about problems with aux codebases,
 			// but continue anyway.
-			boolean isAppCodeBase = item.isAppCodeBase();
 
 			try {
 				// Open the codebase and add it to the classpath
 				discoveredCodeBase = new DiscoveredCodeBase(item.getCodeBaseLocator().openCodeBase());
-				discoveredCodeBase.getCodeBase().setApplicationCodeBase(isAppCodeBase);
+				discoveredCodeBase.getCodeBase().setApplicationCodeBase(item.isAppCodeBase());
 				
 				// Note that this codebase has been visited
 				discoveredCodeBaseMap.put(item.getCodeBaseLocator().toString(), discoveredCodeBase);
@@ -347,15 +360,15 @@ public class ClassPathBuilder implements IClassPathBuilder {
 				// Check for a Jar manifest for additional aux classpath entries.
 				scanJarManifestForClassPathEntries(workList, discoveredCodeBase.getCodeBase());
 			} catch (IOException e) {
-				if (isAppCodeBase) {
+				if (item.isAppCodeBase()) {
 					throw e;
-				} else {
+				} else if (item.getHowDiscovered() == SPECIFIED) {
 					errorLogger.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
 				}
 			} catch (ResourceNotFoundException e) {
-				if (isAppCodeBase) {
+				if (item.isAppCodeBase()) {
 					throw e;
-				} else {
+				} else if (item.getHowDiscovered() == SPECIFIED) {
 					errorLogger.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
 				}
 			}
@@ -401,7 +414,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 					classFactory.createNestedArchiveCodeBaseLocator(codeBase, entry.getResourceName());
 				addToWorkList(
 						workList,
-						new WorkListItem(nestedArchiveLocator, codeBase.isApplicationCodeBase()));
+						new WorkListItem(nestedArchiveLocator, codeBase.isApplicationCodeBase(), NESTED));
 			}
 		}
 	}
@@ -439,7 +452,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 						
 						// Codebases found in Class-Path entries are always
 						// added to the aux classpath, not the application.
-						addToWorkList(workList, new WorkListItem(relativeCodeBaseLocator, false));
+						addToWorkList(workList, new WorkListItem(relativeCodeBaseLocator, false, IN_JAR_MANIFEST));
 					}
 				}
 			} finally {
