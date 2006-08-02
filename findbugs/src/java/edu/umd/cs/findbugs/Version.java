@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Version number and release date information.
  */
@@ -36,12 +39,12 @@ public class Version {
 	/**
 	 * Patch level.
 	 */
-	public static final int PATCHLEVEL = 0;
+	public static final int PATCHLEVEL = 1;
 
 	/**
 	 * Development version or release candidate?
 	 */
-	public static final boolean IS_DEVELOPMENT = false;
+	public static final boolean IS_DEVELOPMENT = true;
 
 	/**
 	 * Release candidate number.
@@ -58,10 +61,11 @@ public class Version {
 	public static final String RELEASE =
 		MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "-" + RELEASE_SUFFIX_WORD : "");
 
+	static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy");
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = "June 10, 2006";
+	public static final String DATE = IS_DEVELOPMENT ? dateFormat.format(new Date()) : "August 1, 2006";
 
 	/**
 	 * Version of Eclipse plugin.
