@@ -92,8 +92,8 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
         	 if (definedMethods.contains(alternativeMethod)) 	
         		 bugReporter.reportBug(new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
-				          .addMethod(invokedMethod)
-				        .addMethod(alternativeMethod)
+				          .addMethod(invokedMethod).describe("METHOD_INHERITED")
+				        .addMethod(alternativeMethod).describe("METHOD_ALTERNATIVE_TARGET")
 				        .addSourceLine(this, getPC()));
          }
          
