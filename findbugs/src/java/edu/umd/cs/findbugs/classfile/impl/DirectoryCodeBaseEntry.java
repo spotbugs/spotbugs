@@ -87,4 +87,12 @@ final class DirectoryCodeBaseEntry implements ICodeBaseEntry {
 	public int hashCode() {
 		return 7919 * codeBase.hashCode() + resourceName.hashCode();
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return getCodeBase() + ":" + getResourceName();
+	}
 }

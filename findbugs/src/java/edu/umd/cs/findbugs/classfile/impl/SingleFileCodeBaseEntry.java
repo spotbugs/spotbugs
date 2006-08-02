@@ -69,4 +69,12 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 	public int hashCode() {
 		return codeBase.hashCode();
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return codeBase.getFileName();
+	}
 }

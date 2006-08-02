@@ -21,11 +21,13 @@ package edu.umd.cs.findbugs;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -40,6 +42,7 @@ import edu.umd.cs.findbugs.classfile.IClassObserver;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.IClassPathBuilder;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -53,7 +56,8 @@ import edu.umd.cs.findbugs.util.ClassName;
  * FindBugs driver class.
  * Experimental version to use the new bytecode-framework-neutral
  * codebase/classpath/classfile infrastructure.
- * It can run detectors, but lacks many features.
+ * It is getting fairly close to supporting the features
+ * of the original driver class.
  * 
  * @author David Hovemeyer
  */
@@ -68,7 +72,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private IClassPath classPath;
 	private IAnalysisCache analysisCache;
 	private List<ClassDescriptor> appClassList;
-	private Set<ClassDescriptor> allClassSet;
+	private Set<ClassDescriptor> referencedClassSet;
 	private DetectorFactoryCollection detectorFactoryCollection;
 	private ExecutionPlan executionPlan;
 	private UserPreferences userPreferences;
@@ -118,6 +122,9 @@ public class FindBugs2 implements IFindBugsEngine {
 			// Discover all codebases in classpath and
 			// enumerate all classes (application and non-application)
 			buildClassPath();
+			
+			// Build set of classes referenced by application classes
+			buildReferencedClassSet();
 			
 			// Create BCEL compatibility layer
 			createAnalysisContext();
@@ -318,7 +325,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @throws IOException if an I/O error occurs
 	 * @throws ResourceNotFoundException 
 	 */
-	private void buildClassPath() throws InterruptedException, IOException, ResourceNotFoundException {
+	private void buildClassPath() throws InterruptedException, IOException, CheckedAnalysisException {
 		IClassPathBuilder builder = classFactory.createClassPathBuilder(bugReporter);
 		
 		for (String path : project.getFileArray()) {
@@ -331,7 +338,20 @@ public class FindBugs2 implements IFindBugsEngine {
 		builder.build(classPath);
 		
 		appClassList = builder.getAppClassList();
-		allClassSet = builder.getAllClassSet();
+	}
+	
+	private void buildReferencedClassSet() throws CheckedAnalysisException {
+		// TODO: should drive progress dialog (scanning phase)
+		// TODO: should load superclasses to extract transitively referenced classes
+		
+		referencedClassSet = new TreeSet<ClassDescriptor>();
+		
+		referencedClassSet.addAll(appClassList);
+		
+		for (ClassDescriptor appClass : appClassList) {
+			ClassInfo classInfo = Global.getAnalysisCache().getClassAnalysis(ClassInfo.class, appClass);
+			referencedClassSet.addAll(Arrays.asList(classInfo.getReferencedClassDescriptorList()));
+		}
 	}
 	
 	/**
@@ -402,9 +422,9 @@ public class FindBugs2 implements IFindBugsEngine {
 			// Instantiate the detectors
 			Detector2[] detectorList = pass.instantiateDetector2sInPass(bugReporter);
 
-			// On first pass, we apply detectors to ALL classes.
+			// On first pass, we apply detectors to all classes referenced by the application classes.
 			// On subsequent passes, we apply detector only to application classes.
-			Collection<ClassDescriptor> classCollection = /*(passCount == 0) ? allClassSet :*/ appClassList; 
+			Collection<ClassDescriptor> classCollection = (passCount == 0) ? referencedClassSet : appClassList;
 			if (DEBUG) {
 				System.out.println("Pass " + (passCount + 1) + ": " + classCollection.size() + " classes");
 			}

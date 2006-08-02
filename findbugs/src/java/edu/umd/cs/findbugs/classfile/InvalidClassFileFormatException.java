@@ -27,14 +27,14 @@ public class InvalidClassFileFormatException extends CheckedAnalysisException {
 	private ICodeBaseEntry codeBaseEntry;
 	
 	public InvalidClassFileFormatException(ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry) {
-		super("Invalid classfile format");
+		super("Invalid classfile format parsing " + codeBaseEntry.toString());
 		this.classDescriptor = classDescriptor;
 		this.codeBaseEntry = codeBaseEntry;
 	}
 
 	public InvalidClassFileFormatException(ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry,
 			Throwable cause) {
-		super("Invalid classfile format", cause);
+		super("Invalid classfile format parsing " + codeBaseEntry.toString(), cause);
 		this.classDescriptor = classDescriptor;
 		this.codeBaseEntry = codeBaseEntry;
 	}

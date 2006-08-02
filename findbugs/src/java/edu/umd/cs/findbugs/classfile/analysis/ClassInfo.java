@@ -39,6 +39,7 @@ public class ClassInfo {
 	private final int accessFlags;
 	private final FieldDescriptor[] fieldDescriptorList;
 	private final MethodDescriptor[] methodDescriptorList;
+	private final ClassDescriptor[] referencedClassDescriptorList;
 	
 	public ClassInfo(
 			ClassDescriptor classDescriptor,
@@ -46,7 +47,9 @@ public class ClassInfo {
 			ClassDescriptor[] interfaceDescriptorList,
 			ICodeBaseEntry codeBaseEntry,
 			int accessFlags,
-			FieldDescriptor[] fieldDescriptorList, MethodDescriptor[] methodDescriptorList) {
+			FieldDescriptor[] fieldDescriptorList,
+			MethodDescriptor[] methodDescriptorList,
+			ClassDescriptor[] referencedClassDescriptorList) {
 		this.classDescriptor = classDescriptor;
 		this.superclassDescriptor = superclassDescriptor;
 		this.interfaceDescriptorList = interfaceDescriptorList;
@@ -54,6 +57,7 @@ public class ClassInfo {
 		this.accessFlags = accessFlags;
 		this.fieldDescriptorList = fieldDescriptorList;
 		this.methodDescriptorList = methodDescriptorList;
+		this.referencedClassDescriptorList = referencedClassDescriptorList;
 	}
 	
 	/**
@@ -103,5 +107,12 @@ public class ClassInfo {
 	 */
 	public MethodDescriptor[] getMethodDescriptorList() {
 		return methodDescriptorList;
+	}
+	
+	/**
+	 * @return Returns the referencedClassDescriptorList.
+	 */
+	public ClassDescriptor[] getReferencedClassDescriptorList() {
+		return referencedClassDescriptorList;
 	}
 }

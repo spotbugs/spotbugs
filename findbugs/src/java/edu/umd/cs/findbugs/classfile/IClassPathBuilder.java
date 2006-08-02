@@ -60,10 +60,10 @@ public interface IClassPathBuilder {
 	 */
 	public List<ClassDescriptor> getAppClassList();
 	
-	/**
-	 * Get the set of all classes discovered while scanning the classpath.
-	 * 
-	 * @return the set of all classes discovered while scanning the classpath
-	 */
-	public Set<ClassDescriptor> getAllClassSet();
+//	/**
+//	 * Get the set of all classes discovered while scanning the classpath.
+//	 * 
+//	 * @return the set of all classes discovered while scanning the classpath
+//	 */
+//	public Set<ClassDescriptor> getAllClassSet();
 }

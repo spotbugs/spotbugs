@@ -88,4 +88,12 @@ public class ZipFileCodeBaseEntry implements ICodeBaseEntry {
 	public int hashCode() {
 		return 7919 * codeBase.hashCode() + zipEntry.hashCode();
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return getCodeBase() + ":" + getResourceName();
+	}
 }

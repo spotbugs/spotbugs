@@ -122,6 +122,10 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 		return new SingleFileCodeBaseEntry(this);
 	}
 	
+	String getFileName() {
+		return fileName;
+	}
+	
 	InputStream openFile() throws IOException {
 		return new BufferedInputStream(new FileInputStream(fileName));
 	}

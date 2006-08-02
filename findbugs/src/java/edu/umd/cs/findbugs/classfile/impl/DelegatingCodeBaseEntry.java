@@ -91,4 +91,11 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 		return 7919 * frontEndCodeBase.hashCode() + delegateCodeBaseEntry.hashCode();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return delegateCodeBaseEntry.toString();
+	}
 }

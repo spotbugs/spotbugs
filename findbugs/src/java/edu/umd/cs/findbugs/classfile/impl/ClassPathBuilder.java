@@ -128,7 +128,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	private LinkedList<WorkListItem> projectWorkList;
 	private LinkedList<DiscoveredCodeBase> discoveredCodeBaseList;
 	private Map<String, DiscoveredCodeBase> discoveredCodeBaseMap;
-	private Set<ClassDescriptor> allClassSet;
+//	private Set<ClassDescriptor> allClassSet;
 	private LinkedList<ClassDescriptor> appClassList;
 
 	/**
@@ -143,7 +143,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		this.projectWorkList = new LinkedList<WorkListItem>();
 		this.discoveredCodeBaseList = new LinkedList<DiscoveredCodeBase>();
 		this.discoveredCodeBaseMap = new HashMap<String, DiscoveredCodeBase>();
-		this.allClassSet = new HashSet<ClassDescriptor>();
+//		this.allClassSet = new HashSet<ClassDescriptor>();
 		this.appClassList = new LinkedList<ClassDescriptor>();
 	}
 
@@ -167,11 +167,15 @@ public class ClassPathBuilder implements IClassPathBuilder {
 			classPath.addCodeBase(discoveredCodeBase.getCodeBase());
 		}
 		
-		// Build collections of
-		// - all application classes
-		// - all classes period
-		// Also, add resource name -> codebase entry mappings for all classes.
+		Set<ClassDescriptor> appClassSet = new HashSet<ClassDescriptor>();
+		
+		// Build collection of all application classes.
+		// Also, add resource name -> codebase entry mappings for application classes.
 		for (DiscoveredCodeBase discoveredCodeBase : discoveredCodeBaseList) {
+			if (!discoveredCodeBase.getCodeBase().isApplicationCodeBase()) {
+				continue;
+			}
+			
 		codeBaseEntryLoop:
 			for (ICodeBaseIterator i = discoveredCodeBase.iterator(); i.hasNext(); ) {
 				ICodeBaseEntry entry = i.next();
@@ -182,15 +186,22 @@ public class ClassPathBuilder implements IClassPathBuilder {
 				ClassDescriptor classDescriptor =
 					ClassDescriptor.fromResourceName(entry.getResourceName());
 				
-				if (allClassSet.contains(classDescriptor)) {
+//				if (allClassSet.contains(classDescriptor)) {
+//					// An earlier entry takes precedence over this class
+//					continue codeBaseEntryLoop;
+//				}
+//				
+//				allClassSet.add(classDescriptor);
+//				if (discoveredCodeBase.getCodeBase().isApplicationCodeBase()) {
+//					appClassList.add(classDescriptor);
+//				}
+
+				if (appClassSet.contains(classDescriptor)) {
 					// An earlier entry takes precedence over this class
 					continue codeBaseEntryLoop;
 				}
-				
-				allClassSet.add(classDescriptor);
-				if (discoveredCodeBase.getCodeBase().isApplicationCodeBase()) {
-					appClassList.add(classDescriptor);
-				}
+				appClassSet.add(classDescriptor);
+				appClassList.add(classDescriptor);
 				
 				classPath.mapResourceNameToCodeBaseEntry(entry.getResourceName(), entry);
 			}
@@ -493,10 +504,10 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		return appClassList;
 	}
 	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IClassPathBuilder#getAllClassSet()
-	 */
-	public Set<ClassDescriptor> getAllClassSet() {
-		return allClassSet;
-	}
+//	/* (non-Javadoc)
+//	 * @see edu.umd.cs.findbugs.classfile.IClassPathBuilder#getAllClassSet()
+//	 */
+//	public Set<ClassDescriptor> getAllClassSet() {
+//		return allClassSet;
+//	}
 }
