@@ -84,6 +84,11 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 			}
 			
 		}
+		
+		if (isBranch(seen) || isSwitch(seen)
+				|| seen == GOTO || seen == ARETURN || seen == IRETURN || seen == RETURN || seen == LRETURN
+				|| seen == DRETURN || seen == FRETURN) potentiallyDeadStores.clear();
+				
 		if (isRegisterLoad())
 			potentiallyDeadStores.clear(getRegisterOperand());
 
