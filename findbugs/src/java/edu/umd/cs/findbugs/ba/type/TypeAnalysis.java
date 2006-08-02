@@ -161,6 +161,9 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		this.thrownExceptionSetMap = new HashMap<BasicBlock, CachedExceptionSet>();
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.exceptionSetFactory = exceptionSetFactory;
+		if (DEBUG) {
+			System.out.println("\n\nAnalyzing " + methodGen);
+		}
 	}
 
 	/**
@@ -316,6 +319,10 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	public void transfer(BasicBlock basicBlock, InstructionHandle end, TypeFrame start, TypeFrame result) throws DataflowAnalysisException {
 		super.transfer(basicBlock, end, start, result);
 		endTransfer(basicBlock, end, result);
+		if (DEBUG) {
+			System.out.println("After " + basicBlock.getFirstInstruction() + " -> " + basicBlock.getLastInstruction());
+			System.out.println("    frame: " + result);
+		}
 	}
 
 	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, TypeFrame result)
