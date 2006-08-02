@@ -170,7 +170,11 @@ public class ClassParser {
 			}
 			if (constant.tag == IClassConstants.CONSTANT_Class) {
 				String className = getUtf8String((Integer)constant.data[0]);
-				extractReferencedClassesFromSignature(referencedClassSet, className);
+				if (className.indexOf('[') >= 0) {
+					extractReferencedClassesFromSignature(referencedClassSet, className);
+				} else if (ClassName.isValidClassName(className)) {
+					referencedClassSet.add(new ClassDescriptor(className));
+				}
 			} else if (constant.tag == IClassConstants.CONSTANT_Methodref
 					|| constant.tag == IClassConstants.CONSTANT_Fieldref
 					|| constant.tag == IClassConstants.CONSTANT_InterfaceMethodref) {
@@ -193,12 +197,6 @@ public class ClassParser {
 	 * @param signature
 	 */
 	private void extractReferencedClassesFromSignature(TreeSet<ClassDescriptor> referencedClassSet, String signature) {
-		
-		if (ClassName.isValidClassName(signature)) {
-			referencedClassSet.add(new ClassDescriptor(signature));
-			return;
-		}
-		
 		while (signature.length() > 0) {
 			int start = signature.indexOf('L');
 			if (start < 0) {
