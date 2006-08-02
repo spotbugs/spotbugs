@@ -190,4 +190,41 @@ public interface IFindBugsEngine {
 	 */
 	public int getMissingClassCount();
 
+	/**
+	 * Get the UserPreferences.
+	 * 
+	 * @return the UserPreferences
+	 */
+	public UserPreferences getUserPreferences();
+
+	/**
+	 * Return whether or not training output should be emitted
+	 * after analysis completes.
+	 * 
+	 * @return true if training output should be emitted, false if not
+	 */
+	public boolean emitTrainingOutput();
+
+	/**
+	 * Get the training output directory.
+	 * 
+	 * @return the training output directory
+	 */
+	public String getTrainingOutputDir();
+
+	/**
+	 * Return whether or not we should make use of
+	 * training data.
+	 * 
+	 * @return true if training data should be used, false if not
+	 */
+	public boolean useTrainingInput();
+
+	/**
+	 * Get the training input database directory.
+	 * 
+	 * @return the training input database directory
+	 */
+	public String getTrainingInputDir();
+
 }

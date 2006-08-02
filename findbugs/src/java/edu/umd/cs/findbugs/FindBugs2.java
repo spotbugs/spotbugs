@@ -82,12 +82,17 @@ public class FindBugs2 implements IFindBugsEngine {
 	private String currentClassName;
 	private String releaseName;
 	private String sourceInfoFileName;
+	private AnalysisFeatureSetting[] analysisFeatureSettingList;
+	private boolean relaxedReportingMode;
+	private String trainingInputDir;
+	private String trainingOutputDir;
 	
 	/**
 	 * Constructor.
 	 */
 	public FindBugs2() {
 		this.classObserverList = new LinkedList<IClassObserver>();
+		this.analysisFeatureSettingList = FindBugs.DEFAULT_EFFORT;
 	}
 	
 	/**
@@ -134,6 +139,15 @@ public class FindBugs2 implements IFindBugsEngine {
 			
 			// Configure the BugCollection (if we are generating one)
 			FindBugs.configureBugCollection(this);
+
+			// Enable/disabled relaxed reporting mode
+			FindBugsAnalysisFeatures.setRelaxedMode(relaxedReportingMode);
+			
+			// Configure training databases
+			FindBugs.configureTrainingDatabases(this);
+			
+			// Configure analysis features
+			configureAnalysisFeatures();
 			
 			// Create the execution plan (which passes/detectors to execute)
 			createExecutionPlan();
@@ -182,16 +196,14 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingInput(java.lang.String)
 	 */
 	public void enableTrainingInput(String trainingInputDir) {
-		// TODO Auto-generated method stub
-		
+		this.trainingInputDir = trainingInputDir;
 	}
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingOutput(java.lang.String)
 	 */
 	public void enableTrainingOutput(String trainingOutputDir) {
-		// TODO Auto-generated method stub
-		
+		this.trainingOutputDir = trainingOutputDir;
 	}
 	
 	/* (non-Javadoc)
@@ -233,8 +245,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setAnalysisFeatureSettings(edu.umd.cs.findbugs.config.AnalysisFeatureSetting[])
 	 */
 	public void setAnalysisFeatureSettings(AnalysisFeatureSetting[] settingList) {
-		// TODO Auto-generated method stub
-		
+		this.analysisFeatureSettingList = settingList;
 	}
 	
 	/* (non-Javadoc)
@@ -272,8 +283,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setRelaxedReportingMode(boolean)
 	 */
 	public void setRelaxedReportingMode(boolean relaxedReportingMode) {
-		// TODO Auto-generated method stub
-		
+		this.relaxedReportingMode = relaxedReportingMode;
 	}
 	
 	/* (non-Javadoc)
@@ -296,12 +306,47 @@ public class FindBugs2 implements IFindBugsEngine {
 	public void setUserPreferences(UserPreferences userPreferences) {
 		this.userPreferences = userPreferences;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#emitTrainingOutput()
+	 */
+	public boolean emitTrainingOutput() {
+		return trainingOutputDir != null;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getUserPreferences()
+	 */
+	public UserPreferences getUserPreferences() {
+		return userPreferences;
+	}
 
 	/**
 	 * Create the classpath object.
 	 */
 	private void createClassPath() {
 		classPath = classFactory.createClassPath();
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingInputDir()
+	 */
+	public String getTrainingInputDir() {
+		return trainingInputDir;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingOutputDir()
+	 */
+	public String getTrainingOutputDir() {
+		return trainingOutputDir;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#useTrainingInput()
+	 */
+	public boolean useTrainingInput() {
+		return trainingInputDir != null;
 	}
 
 	/**
@@ -409,6 +454,15 @@ public class FindBugs2 implements IFindBugsEngine {
 		// Make this the current analysis context
 		AnalysisContext.setCurrentAnalysisContext(analysisContext);
 	}
+	
+	/**
+	 * Configure analysis feature settings.
+	 */
+	private void configureAnalysisFeatures() {
+		for (AnalysisFeatureSetting setting : analysisFeatureSettingList) {
+			setting.configure(AnalysisContext.currentAnalysisContext());
+		}
+	}
 
 	/**
 	 * Create an execution plan.
@@ -424,7 +478,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			 * @see edu.umd.cs.findbugs.DetectorFactoryChooser#choose(edu.umd.cs.findbugs.DetectorFactory)
 			 */
 			public boolean choose(DetectorFactory factory) {
-				return userPreferences.isDetectorEnabled(factory);
+				return FindBugs.isDetectorEnabled(FindBugs2.this, factory);
 			}
 		};
 		executionPlan.setDetectorFactoryChooser(detectorFactoryChooser);

@@ -661,7 +661,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		FindBugsAnalysisFeatures.setRelaxedMode(relaxedReportingMode);
 		
 		// Enable input/output of interprocedural property databases
-		configureTrainingDatabases();
+		configureTrainingDatabases(this);
 		
 		// Configure analysis features
 		configureAnalysisFeatures();
@@ -789,6 +789,41 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	public int getMissingClassCount() {
 		return bugReporter.getMissingClassCount();
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#emitTrainingOutput()
+	 */
+	public boolean emitTrainingOutput() {
+		return emitTrainingOutput;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getUserPreferences()
+	 */
+	public UserPreferences getUserPreferences() {
+		return userPreferences;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingInputDir()
+	 */
+	public String getTrainingInputDir() {
+		return trainingInputDir;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingOutputDir()
+	 */
+	public String getTrainingOutputDir() {
+		return trainingOutputDir;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#useTrainingInput()
+	 */
+	public boolean useTrainingInput() {
+		return useTrainingInput;
+	}
 
 	/**
 	 * Set the FindBugs home directory.
@@ -828,15 +863,19 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	 * 
 	 * @throws IOException
 	 */
-	private void configureTrainingDatabases() throws IOException {
-		if (emitTrainingOutput) {
+	public static void configureTrainingDatabases(IFindBugsEngine findBugs) throws IOException {
+		if (findBugs.emitTrainingOutput()) {
+			String trainingOutputDir = findBugs.getTrainingOutputDir();
+			
 			if (!new File(trainingOutputDir).isDirectory())
 				throw new IOException("Training output directory " + trainingOutputDir + " does not exist");
 			AnalysisContext.currentAnalysisContext().setDatabaseOutputDir(trainingOutputDir);
 			// XXX: hack
 			System.setProperty("findbugs.checkreturn.savetraining", new File(trainingOutputDir, "checkReturn.db").getPath());
 		}
-		if (useTrainingInput) {
+		if (findBugs.useTrainingInput()) {
+			String trainingInputDir = findBugs.getTrainingInputDir();
+			
 			if (!new File(trainingInputDir).isDirectory())
 				throw new IOException("Training input directory " + trainingInputDir + " does not exist");
 			AnalysisContext.currentAnalysisContext().setDatabaseInputDir(trainingInputDir);
@@ -860,7 +899,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		// Only enabled detectors should be part of the execution plan
 		executionPlan.setDetectorFactoryChooser(new DetectorFactoryChooser() {
 			public boolean choose(DetectorFactory factory) {
-				boolean enabled = isDetectorEnabled(factory);
+				boolean enabled = isDetectorEnabled(FindBugs.this, factory);
 //				if (ExecutionPlan.DEBUG) {
 //					System.out.println(factory.getShortName() + ": enabled=" + enabled);
 //				}
@@ -881,29 +920,30 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	/**
 	 * Determing whether or not given DetectorFactory should be enabled.
 	 * 
+	 * @param findBugs the IFindBugsEngine
 	 * @param factory the DetectorFactory
 	 * @return true if the DetectorFactory should be enabled, false otherwise
 	 */
-	private boolean isDetectorEnabled(DetectorFactory factory) {
+	public static boolean isDetectorEnabled(IFindBugsEngine findBugs, DetectorFactory factory) {
 		if (!factory.getPlugin().isEnabled())
 			return false;
 		
-		if (!userPreferences.isDetectorEnabled(factory))
+		if (!findBugs.getUserPreferences().isDetectorEnabled(factory))
 			return false;
 		
 		if (!factory.isEnabledForCurrentJRE())
 			return false;
 		
 		// Slow first pass detectors are usually disabled, but may be explicitly enabled
-		if (!analysisContext.getBoolProperty(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS)
+		if (!AnalysisContext.currentAnalysisContext().getBoolProperty(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS)
 				&& factory.isDetectorClassSubtypeOf(InterproceduralFirstPassDetector.class))
 			return false;
 
 		// Training detectors are enabled if, and only if, we are emitting training output
 		// XXX: grotesque hack for NoteCheckReturnValue. Need to fix for real.
 		boolean isTrainingDetector = factory.isDetectorClassSubtypeOf(TrainingDetector.class)
-			|| (emitTrainingOutput && factory.getFullName().equals("edu.umd.cs.findbugs.detect.NoteCheckReturnValue"));
-		if (isTrainingDetector != emitTrainingOutput)
+			|| (findBugs.emitTrainingOutput() && factory.getFullName().equals("edu.umd.cs.findbugs.detect.NoteCheckReturnValue"));
+		if (isTrainingDetector != findBugs.emitTrainingOutput())
 			return false;
 		
 		return true;
