@@ -41,9 +41,6 @@ public class ClassDescriptor implements Comparable<ClassDescriptor> {
 		if (!ClassName.isValidClassName(className)) {
 			throw new IllegalArgumentException("Invalid class name " + className);
 		}
-		if (className.equals("Z")) {
-			throw new IllegalStateException();
-		}
 		this.className = className;
 	}
 	
