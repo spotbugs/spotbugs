@@ -19,6 +19,27 @@ class SwitchFallthrough {
 		return result;
 		
 	}
+	int notSoBad(int i) {
+		int result = 0;
+		int x=0;
+		switch(i) {
+		case 0:
+		case 1:
+			result = 1;
+			break;
+		case 2:
+			x = 1;
+		case 3:
+			result = 2;
+			break;
+		case 4:
+		case 5:
+			result = 3;
+			break;
+		default: break;
+		}
+		return result+x;
+	}
 	void test1(int i) {
 		switch (i) {
 		case -1:
