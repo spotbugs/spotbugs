@@ -171,7 +171,8 @@ public class ClassParser {
 				String className = getUtf8String((Integer)constant.data[0]);
 				referencedClassSet.add(new ClassDescriptor(className)); 
 			} else if (constant.tag == IClassConstants.CONSTANT_Methodref
-					|| constant.tag == IClassConstants.CONSTANT_Fieldref) {
+					|| constant.tag == IClassConstants.CONSTANT_Fieldref
+					|| constant.tag == IClassConstants.CONSTANT_InterfaceMethodref) {
 				// Get the target class name
 				ClassDescriptor refClass = getClassDescriptor((Integer) constant.data[0]);
 				referencedClassSet.add(refClass);
