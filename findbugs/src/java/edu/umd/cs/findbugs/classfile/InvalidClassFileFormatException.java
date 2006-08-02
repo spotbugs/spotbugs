@@ -27,14 +27,14 @@ public class InvalidClassFileFormatException extends CheckedAnalysisException {
 	private ICodeBaseEntry codeBaseEntry;
 	
 	public InvalidClassFileFormatException(ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry) {
-		super("Invalid classfile format parsing " + codeBaseEntry.toString());
+		super("Invalid classfile format");
 		this.classDescriptor = classDescriptor;
 		this.codeBaseEntry = codeBaseEntry;
 	}
 
 	public InvalidClassFileFormatException(ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry,
 			Throwable cause) {
-		super("Invalid classfile format parsing " + codeBaseEntry.toString(), cause);
+		super("Invalid classfile format", cause);
 		this.classDescriptor = classDescriptor;
 		this.codeBaseEntry = codeBaseEntry;
 	}
@@ -57,5 +57,13 @@ public class InvalidClassFileFormatException extends CheckedAnalysisException {
 	 */
 	public ICodeBaseEntry getCodeBaseEntry() {
 		return codeBaseEntry;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Throwable#getMessage()
+	 */
+	@Override
+	public String getMessage() {
+		return super.getMessage() + " in " + codeBaseEntry;
 	}
 }

@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Parse a class to extract symbolic information.
@@ -169,34 +170,51 @@ public class ClassParser {
 			}
 			if (constant.tag == IClassConstants.CONSTANT_Class) {
 				String className = getUtf8String((Integer)constant.data[0]);
-				referencedClassSet.add(new ClassDescriptor(className)); 
+				extractReferencedClassesFromSignature(referencedClassSet, className);
 			} else if (constant.tag == IClassConstants.CONSTANT_Methodref
 					|| constant.tag == IClassConstants.CONSTANT_Fieldref
 					|| constant.tag == IClassConstants.CONSTANT_InterfaceMethodref) {
 				// Get the target class name
-				ClassDescriptor refClass = getClassDescriptor((Integer) constant.data[0]);
-				referencedClassSet.add(refClass);
+				String className = getClassName((Integer) constant.data[0]);
+				extractReferencedClassesFromSignature(referencedClassSet, className);
 				
 				// Parse signature to extract class names
 				String signature = getSignatureFromNameAndType((Integer)constant.data[1]);
-				while (signature.length() > 0) {
-					int start = signature.indexOf('L');
-					if (start < 0) {
-						break;
-					}
-					signature = signature.substring(start);
-					int end = signature.indexOf(';');
-					if (end < 0) {
-						break;
-					}
-					referencedClassSet.add(new ClassDescriptor(signature.substring(1, end)));
-					signature = signature.substring(end + 1);
-				}
+				extractReferencedClassesFromSignature(referencedClassSet, signature);
 			}
 		}
 		ClassDescriptor[] referencedClassDescriptorList = 
 			referencedClassSet.toArray(new ClassDescriptor[referencedClassSet.size()]);
 		return referencedClassDescriptorList;
+	}
+
+	/**
+	 * @param referencedClassSet
+	 * @param signature
+	 */
+	private void extractReferencedClassesFromSignature(TreeSet<ClassDescriptor> referencedClassSet, String signature) {
+		
+		if (ClassName.isValidClassName(signature)) {
+			referencedClassSet.add(new ClassDescriptor(signature));
+			return;
+		}
+		
+		while (signature.length() > 0) {
+			int start = signature.indexOf('L');
+			if (start < 0) {
+				break;
+			}
+			signature = signature.substring(start);
+			int end = signature.indexOf(';');
+			if (end < 0) {
+				break;
+			}
+			String className = signature.substring(1, end);
+			if (ClassName.isValidClassName(className)) {
+				referencedClassSet.add(new ClassDescriptor(className));
+			}
+			signature = signature.substring(end + 1);
+		}
 	}
 
 	// 8: UTF-8 string
@@ -263,15 +281,16 @@ public class ClassParser {
 		
 		return new Constant(tag, data);
 	}
-	
+
 	/**
-	 * Get the ClassDescriptor of a class referenced in the constant pool.
+	 * Get a class name from a CONSTANT_Class.
+	 * Note that this may be an array (e.g., "[Ljava/lang/String;").
 	 * 
-	 * @param index        index of the referenced class in the constant pool
-	 * @return the ClassDescriptor of the referenced calss
-	 * @throws InvalidClassFileFormatException 
+	 * @param index index of the constant
+	 * @return the class name
+	 * @throws InvalidClassFileFormatException
 	 */
-	private ClassDescriptor getClassDescriptor(int index) throws InvalidClassFileFormatException {
+	private String getClassName(int index) throws InvalidClassFileFormatException {
 		if (index == 0) {
 			return null;
 		}
@@ -282,8 +301,20 @@ public class ClassParser {
 		
 		int refIndex = ((Integer)constant.data[0]).intValue();
 		String stringValue = getUtf8String(refIndex);
-		
-		return new ClassDescriptor(stringValue);
+
+		return stringValue;
+	}
+	
+	/**
+	 * Get the ClassDescriptor of a class referenced in the constant pool.
+	 * 
+	 * @param index        index of the referenced class in the constant pool
+	 * @return the ClassDescriptor of the referenced calss
+	 * @throws InvalidClassFileFormatException 
+	 */
+	private ClassDescriptor getClassDescriptor(int index) throws InvalidClassFileFormatException {
+		String className = getClassName(index);
+		return className != null ? new ClassDescriptor(className) : null;
 	}
 
 	/**

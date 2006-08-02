@@ -38,6 +38,9 @@ public class ClassDescriptor implements Comparable<ClassDescriptor> {
 		if (className.indexOf('.') >= 0) {
 			throw new IllegalArgumentException("Class name " + className + " not in VM format");
 		}
+		if (!ClassName.isValidClassName(className)) {
+			throw new IllegalArgumentException("Invalid class name " + className);
+		}
 		this.className = className;
 	}
 	

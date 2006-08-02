@@ -29,7 +29,12 @@ public class ClassNameMismatchException extends InvalidClassFileFormatException 
 			ClassDescriptor expectedClassDescriptor,
 			ClassDescriptor loadedClassDescriptor,
 			ICodeBaseEntry codeBaseEntry) {
-		super("Expected class name does not match loaded class name", expectedClassDescriptor, codeBaseEntry);
+		super("Expected class name " +
+				expectedClassDescriptor +
+				"does not match loaded class name " +
+				loadedClassDescriptor,
+				expectedClassDescriptor,
+				codeBaseEntry);
 		this.loadedClassDescriptor = loadedClassDescriptor;
 	}
 	

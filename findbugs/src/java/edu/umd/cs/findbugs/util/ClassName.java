@@ -54,4 +54,22 @@ public abstract class ClassName {
 		}
 		return className;
 	}
+
+	/**
+	 * Return whether or not the given class name is valid.
+	 * 
+	 * @param className a possible class name
+	 * @return true if it's a valid class name, false otherwise
+	 */
+	public static boolean isValidClassName(String className) {
+		// FIXME: should use a regex
+		
+		if (className.indexOf('[') >= 0
+				|| className.indexOf(';') >= 0 
+				|| className.indexOf('\\') >= 0
+				|| className.indexOf('(') >= 0) {
+			return false;
+		}
+		return true;
+	}
 }

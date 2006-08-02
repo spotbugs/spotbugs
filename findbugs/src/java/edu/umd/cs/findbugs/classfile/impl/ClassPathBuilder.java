@@ -128,7 +128,6 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	private LinkedList<WorkListItem> projectWorkList;
 	private LinkedList<DiscoveredCodeBase> discoveredCodeBaseList;
 	private Map<String, DiscoveredCodeBase> discoveredCodeBaseMap;
-//	private Set<ClassDescriptor> allClassSet;
 	private LinkedList<ClassDescriptor> appClassList;
 
 	/**
@@ -143,7 +142,6 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		this.projectWorkList = new LinkedList<WorkListItem>();
 		this.discoveredCodeBaseList = new LinkedList<DiscoveredCodeBase>();
 		this.discoveredCodeBaseMap = new HashMap<String, DiscoveredCodeBase>();
-//		this.allClassSet = new HashSet<ClassDescriptor>();
 		this.appClassList = new LinkedList<ClassDescriptor>();
 	}
 
@@ -185,16 +183,6 @@ public class ClassPathBuilder implements IClassPathBuilder {
 				
 				ClassDescriptor classDescriptor =
 					ClassDescriptor.fromResourceName(entry.getResourceName());
-				
-//				if (allClassSet.contains(classDescriptor)) {
-//					// An earlier entry takes precedence over this class
-//					continue codeBaseEntryLoop;
-//				}
-//				
-//				allClassSet.add(classDescriptor);
-//				if (discoveredCodeBase.getCodeBase().isApplicationCodeBase()) {
-//					appClassList.add(classDescriptor);
-//				}
 
 				if (appClassSet.contains(classDescriptor)) {
 					// An earlier entry takes precedence over this class
@@ -503,11 +491,4 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	public List<ClassDescriptor> getAppClassList() {
 		return appClassList;
 	}
-	
-//	/* (non-Javadoc)
-//	 * @see edu.umd.cs.findbugs.classfile.IClassPathBuilder#getAllClassSet()
-//	 */
-//	public Set<ClassDescriptor> getAllClassSet() {
-//		return allClassSet;
-//	}
 }

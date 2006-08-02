@@ -242,6 +242,9 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	public JavaClass lookupClass(String className)
 			throws ClassNotFoundException {
 		try {
+			if (!ClassName.isValidClassName(className)) {
+				throw new ClassNotFoundException("Invalid class name: " + className);
+			}
 			return Global.getAnalysisCache().getClassAnalysis(
 					JavaClass.class, new ClassDescriptor(ClassName.toSlashedClassName(className)));
 		} catch (CheckedAnalysisException e) {

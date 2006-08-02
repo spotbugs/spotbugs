@@ -27,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import edu.umd.cs.findbugs.RecursiveFileSearch;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
@@ -144,10 +145,41 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 	 */
 	String getResourceName(String fileName) {
 		// FIXME: there is probably a more robust way to do this
+		
+		// Strip off the directory part.
 		String dirPath = directory.getPath();
 		if (!fileName.startsWith(dirPath)) {
 			throw new IllegalStateException("Filename " + fileName + " not inside directory "+ dirPath);
 		}
-		return fileName.substring(dirPath.length() + 1);
+		
+		// The problem here is that we need to take the relative part of the filename
+		// and break it into components that we can then reconstruct into
+		// a resource name (using '/' characters to separate the components).
+		// Unfortunately, the File class does not make this task particularly easy.
+		
+		String relativeFileName = fileName.substring(dirPath.length());
+		File file = new File(relativeFileName);
+		LinkedList<String> partList = new LinkedList<String>();
+		do {
+			partList.addFirst(file.getName());
+		} while ((file = file.getParentFile()) != null);
+		
+		StringBuffer buf = new StringBuffer();
+		for (String part : partList) {
+			if (buf.length() > 0) {
+				buf.append('/');
+			}
+			buf.append(part);
+		}
+		
+		return buf.toString();
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return directory.getPath();
 	}
 }
