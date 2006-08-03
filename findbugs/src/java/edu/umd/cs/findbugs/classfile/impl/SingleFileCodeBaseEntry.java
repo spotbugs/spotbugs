@@ -75,6 +75,6 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 	 */
 	@Override
 	public String toString() {
-		return codeBase.getFileName();
+		return codeBase.getPathName();
 	}
 }

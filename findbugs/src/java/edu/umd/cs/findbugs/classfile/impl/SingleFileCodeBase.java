@@ -45,29 +45,18 @@ import edu.umd.cs.findbugs.io.IO;
  */
 public class SingleFileCodeBase implements IScannableCodeBase {
 	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
-	 */
-	public void setApplicationCodeBase(boolean isAppCodeBase) {
-		this.isAppCodeBase = isAppCodeBase;
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#isApplicationCodeBase()
-	 */
-	public boolean isApplicationCodeBase() {
-		return isAppCodeBase;
-	}
-	
 	private ICodeBaseLocator codeBaseLocator;
 	private String fileName;
 	private boolean isAppCodeBase;
+	private int howDiscovered;
+	private long lastModifiedTime;
 	private boolean resourceNameKnown;
 	private String resourceName;
 	
 	public SingleFileCodeBase(ICodeBaseLocator codeBaseLocator, String fileName) {
 		this.codeBaseLocator = codeBaseLocator;
 		this.fileName = fileName;
+		this.lastModifiedTime = new File(fileName).lastModified();
 	}
 	
 	/* (non-Javadoc)
@@ -122,7 +111,52 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 		return new SingleFileCodeBaseEntry(this);
 	}
 	
-	String getFileName() {
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
+	 */
+	public void setApplicationCodeBase(boolean isAppCodeBase) {
+		this.isAppCodeBase = isAppCodeBase;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#isApplicationCodeBase()
+	 */
+	public boolean isApplicationCodeBase() {
+		return isAppCodeBase;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setHowDiscovered(int)
+	 */
+	public void setHowDiscovered(int howDiscovered) {
+		this.howDiscovered = howDiscovered;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getHowDiscovered()
+	 */
+	public int getHowDiscovered() {
+		return howDiscovered;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
+	 */
+	public void setLastModifiedTime(long lastModifiedTime) {
+		this.lastModifiedTime = lastModifiedTime;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getLastModifiedTime()
+	 */
+	public long getLastModifiedTime() {
+		return lastModifiedTime;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
+	 */
+	public String getPathName() {
 		return fileName;
 	}
 	

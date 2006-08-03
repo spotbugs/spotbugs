@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassObserver;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.IClassPathBuilder;
+import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
@@ -389,6 +390,24 @@ public class FindBugs2 implements IFindBugsEngine {
 		builder.build(classPath, progress);
 		
 		appClassList = builder.getAppClassList();
+		
+		// If any of the application codebases contain source code,
+		// add them to the source path.
+		// Also, use the last modified time of application codebases
+		// to set the project timestamp.
+		for (Iterator<? extends ICodeBase> i = classPath.appCodeBaseIterator(); i.hasNext(); ){
+			ICodeBase appCodeBase = i.next();
+			
+			if (appCodeBase.containsSourceFiles()) {
+				String pathName = appCodeBase.getPathName();
+				if (pathName != null) {
+					project.addSourceDir(pathName);
+				}
+			}
+			
+			project.addTimestamp(appCodeBase.getLastModifiedTime());
+		}
+		
 	}
 	
 	private void buildReferencedClassSet() throws CheckedAnalysisException {

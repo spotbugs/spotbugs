@@ -42,9 +42,12 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 	private boolean checkedForSourceFiles;
 	private boolean containsSourceFiles;
 	private boolean isAppCodeBase;
+	private int howDiscovered;
+	private long lastModifiedTime;
 	
 	public AbstractScannableCodeBase(ICodeBaseLocator codeBaseLocator) {
 		this.codeBaseLocator = codeBaseLocator;
+		this.lastModifiedTime = -1L;
 	}
 	
 	/* (non-Javadoc)
@@ -84,5 +87,35 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 	 */
 	public boolean isApplicationCodeBase() {
 		return isAppCodeBase;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setHowDiscovered(int)
+	 */
+	public void setHowDiscovered(int howDiscovered) {
+		this.howDiscovered = howDiscovered;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getHowDiscovered()
+	 */
+	public int getHowDiscovered() {
+		return howDiscovered;
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
+	 */
+	public void setLastModifiedTime(long lastModifiedTime) {
+		if (lastModifiedTime > 0) {
+			this.lastModifiedTime = lastModifiedTime;
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getLastModifiedTime()
+	 */
+	public long getLastModifiedTime() {
+		return lastModifiedTime;
 	}
 }

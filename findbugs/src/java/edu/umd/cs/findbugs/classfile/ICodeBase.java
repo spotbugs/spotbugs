@@ -32,6 +32,18 @@ import java.util.Iterator;
  * @author David Hovemeyer
  */
 public interface ICodeBase {
+	/** Codebase was explicitly specified. */
+	public static final int SPECIFIED = 0;
+	
+	/** Codebase was discovered as a nested archive in another codebase. */
+	public static final int NESTED = 1;
+	
+	/** Codebase was referenced in the Class-Path attribute of a Jar manifest of another codebase. */
+	public static final int IN_JAR_MANIFEST = 2;
+	
+	/** Codebase was discovered in the system classpath. */
+	public static final int IN_SYSTEM_CLASSPATH = 3;
+
 	/**
 	 * Get the codebase locator describing the location of this codebase.
 	 * 
@@ -63,12 +75,55 @@ public interface ICodeBase {
 	public boolean isApplicationCodeBase();
 	
 	/**
+	 * Set how this codebase was discovered.
+	 * 
+	 * @param howDiscovered one of the constants SPECIFIED, NESTED,
+	 *                       IN_JAR_MANIFEST, or IN_SYSTEM_CLASSPATH
+	 */
+	public void setHowDiscovered(int howDiscovered);
+	
+	/**
+	 * Return how this codebase was discovered.
+	 * 
+	 * @return one of the constants SPECIFIED, NESTED, IN_JAR_MANIFEST, or IN_SYSTEM_CLASSPATH
+	 */
+	public int getHowDiscovered();
+	
+	/**
 	 * Return whether or not this code base contains any source files.
 	 * 
 	 * @return true if the code base contains source file(s),
 	 *          false if it does not contain source files
 	 */
 	public boolean containsSourceFiles() throws InterruptedException;
+
+	/**
+	 * Get the filesystem pathname of this codebase.
+	 * 
+	 * @return the filesystem pathname of this codebase,
+	 *          or null if this codebase is not accessible via the filesystem
+	 */
+	public String getPathName();
+	
+	/**
+	 * Set timestamp indicating the most recent time when any of the files
+	 * in the codebase were modified.
+	 * 
+	 * @param lastModifiedTime timestamp when any codebase files were most-recently modified
+	 */
+	public void setLastModifiedTime(long lastModifiedTime);
+	
+	/**
+	 * Get timestamp indicating the most recent time when any of the files
+	 * in the codebase were modified.
+	 * This information is only likely to be accurate if an
+	 * ICodeBaseIterator has been used to scan the resources
+	 * in the codebase (scannable codebases only, obviously).
+	 * 
+	 * @return timestamp when any codebase files were most-recently modified,
+	 *          -1 if unknown
+	 */
+	public long getLastModifiedTime();
 	
 	/**
 	 * This method should be called when done using the code base.

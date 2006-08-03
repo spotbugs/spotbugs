@@ -54,6 +54,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 	public ZipFileCodeBase(ICodeBaseLocator codeBaseLocator, File file) throws IOException {
 		super(codeBaseLocator);
 		this.zipFile = new ZipFile(file);
+		setLastModifiedTime(file.lastModified());
 	}
 	
 	/* (non-Javadoc)
@@ -100,6 +101,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 					ZipEntry zipEntry = zipEntryEnumerator.nextElement();
 				
 					if (!zipEntry.isDirectory()) {
+						setLastModifiedTime(zipEntry.getTime());
 						nextEntry = new ZipFileCodeBaseEntry(ZipFileCodeBase.this, zipEntry);
 						break;
 					}
@@ -107,6 +109,13 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 			}
 			
 		};
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
+	 */
+	public String getPathName() {
+		return zipFile.getName();
 	}
 	
 	/* (non-Javadoc)

@@ -103,6 +103,13 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 	}
 	
 	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
+	 */
+	public String getPathName() {
+		return null;
+	}
+	
+	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
 	 */
 	public void close() {

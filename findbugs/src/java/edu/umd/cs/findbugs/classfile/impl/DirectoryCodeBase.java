@@ -61,7 +61,14 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 			final String fileName = fileNameIterator.next();
 			
 			// Make the filename relative to the directory
-			String resourceName = getResourceName(fileName); 
+			String resourceName = getResourceName(fileName);
+			
+			// Update last modified time
+			File file = new File(fileName);
+			long modTime = file.lastModified();
+			if (modTime > 0 && modTime > getLastModifiedTime()) {
+				setLastModifiedTime(modTime);
+			}
 			
 			return new DirectoryCodeBaseEntry(DirectoryCodeBase.this, resourceName);
 		}
@@ -102,6 +109,13 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 		}
 		
 		return new DirectoryCodeBaseIterator();
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
+	 */
+	public String getPathName() {
+		return directory.getPath();
 	}
 	
 	/* (non-Javadoc)
