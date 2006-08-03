@@ -57,7 +57,7 @@ public class DetectorNode
 	 * Get the Plugin Name for this DetectorFactory for debugging support
 	 */
 	public String toString() {
-		return "DetectorNode for " + factory.getPlugin().getPluginId() + " DetectorFactory";
+		return "DetectorNode[" + factory.getReportedBugPatternCodes() + "]";
 	}
 }
 
