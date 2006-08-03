@@ -42,7 +42,7 @@ public class ConstraintGraph
 	
 	@Override
 	public String toString() {
-		return "ConstraintGraph[Vertices: " + getNumVertexLabels() + " Edges: " + getNumEdgeLabels() + "]";
+		return "ConstraintGraph[Vertices: " + getNumVertices() + " Edges: " + getNumEdges() + "]";
 	}
 }
 
