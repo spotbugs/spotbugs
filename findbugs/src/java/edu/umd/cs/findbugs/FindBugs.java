@@ -457,7 +457,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	private List<IClassObserver> classObserverList;
 	private ExecutionPlan executionPlan;
 	private FindBugsProgress progressCallback;
-	private ClassScreener classScreener;
+	private IClassScreener classScreener;
 	private AnalysisContext analysisContext;
 	private String currentClass;
 	private Map<String,Long> detectorTimings;
@@ -574,7 +574,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setClassScreener(edu.umd.cs.findbugs.ClassScreener)
 	 */
-	public void setClassScreener(ClassScreener classScreener) {
+	public void setClassScreener(IClassScreener classScreener) {
 		this.classScreener = classScreener;
 	}
 	

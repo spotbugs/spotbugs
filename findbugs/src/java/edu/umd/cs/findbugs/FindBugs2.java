@@ -88,6 +88,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private String trainingInputDir;
 	private String trainingOutputDir;
 	private FindBugsProgress progress;
+	private IClassScreener classScreener;
 	
 	/**
 	 * Constructor.
@@ -96,6 +97,16 @@ public class FindBugs2 implements IFindBugsEngine {
 		this.classObserverList = new LinkedList<IClassObserver>();
 		this.analysisFeatureSettingList = FindBugs.DEFAULT_EFFORT;
 		this.progress = new NoOpFindBugsProgress();
+		
+		// By default, do not exclude any classes via the class screener
+		this.classScreener = new IClassScreener() {
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.IClassScreener#matches(java.lang.String)
+			 */
+			public boolean matches(String fileName) {
+				return true;
+			}
+		};
 	}
 	
 	/**
@@ -264,9 +275,8 @@ public class FindBugs2 implements IFindBugsEngine {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setClassScreener(edu.umd.cs.findbugs.ClassScreener)
 	 */
-	public void setClassScreener(ClassScreener classScreener) {
-		// TODO Auto-generated method stub
-		
+	public void setClassScreener(IClassScreener classScreener) {
+		this.classScreener = classScreener;
 	}
 	
 	/* (non-Javadoc)
@@ -411,7 +421,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	}
 	
 	private void buildReferencedClassSet() throws CheckedAnalysisException {
-		// TODO: should drive progress dialog (scanning phase)?
+		// XXX: should drive progress dialog (scanning phase)?
 		
 		referencedClassSet = new TreeSet<ClassDescriptor>();
 		
@@ -545,6 +555,13 @@ public class FindBugs2 implements IFindBugsEngine {
 			for (ClassDescriptor classDescriptor : classCollection) {
 				if (DEBUG) {
 					System.out.println("Class " + classDescriptor);
+				}
+				
+				if (!classScreener.matches(classDescriptor.toResourceName())) {
+					if (DEBUG) {
+						System.out.println("*** Excluded by class screener");
+					}
+					continue;
 				}
 				
 				currentClassName = ClassName.toDottedClassName(classDescriptor.getClassName());

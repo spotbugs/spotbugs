@@ -23,7 +23,7 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 public class ClassScreenerTest extends TestCase {
-	private ClassScreener emptyScreener;
+	private IClassScreener emptyScreener;
 	private ClassScreener particularClassScreener;
 	private ClassScreener particularPackageScreener;
 	private ClassScreener particularPackageScreener2;
@@ -90,7 +90,7 @@ public class ClassScreenerTest extends TestCase {
 		testPackageScreener(particularPackageScreener2);
 	}
 
-	private void testPackageScreener(ClassScreener screener) {
+	private void testPackageScreener(IClassScreener screener) {
 		Assert.assertTrue(screener.matches(SOME_CLASS_FILENAME));
 		Assert.assertTrue(screener.matches(SOME_OTHER_CLASS_FILENAME));
 		Assert.assertFalse(screener.matches(UNRELATED_THING_CLASS_FILENAME));

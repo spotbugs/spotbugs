@@ -39,7 +39,7 @@ import static edu.umd.cs.findbugs.util.Strings.replace;
  * @see FindBugs
  * @author David Hovemeyer
  */
-public class ClassScreener {
+public class ClassScreener implements IClassScreener {
 	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.classscreener.debug");
 	
 	/** regular expression fragment to match a directory separator. note: could use
@@ -123,8 +123,8 @@ public class ClassScreener {
 		patternList.add(Pattern.compile(packageRegex).matcher(""));
 	}
 
-	/**
-	 * Return whether or not the name of the given file matches.
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IClassScreener#matches(java.lang.String)
 	 */
 	public boolean matches(String fileName) {
 		// Special case: if no classes or packages have been defined,

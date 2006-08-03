@@ -107,7 +107,7 @@ public interface IFindBugsEngine {
 	 *
 	 * @param classScreener the ClassScreener to use
 	 */
-	public void setClassScreener(ClassScreener classScreener);
+	public void setClassScreener(IClassScreener classScreener);
 
 	/**
 	 * Set relaxed reporting mode.
