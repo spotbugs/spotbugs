@@ -52,6 +52,13 @@ public class DetectorNode
 	public DetectorFactory getFactory() {
 		return factory;
 	}
+	
+	/**
+	 * Get the Plugin Name for this DetectorFactory for debugging support
+	 */
+	public String toString() {
+		return "DetectorNode for " + factory.getPlugin().getPluginId() + " DetectorFactory";
+	}
 }
 
 // vim:ts=4
