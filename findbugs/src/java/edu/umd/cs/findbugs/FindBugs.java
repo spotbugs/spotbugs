@@ -487,22 +487,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		this.classObserverList = new LinkedList<IClassObserver>();
 
 		// Create a no-op progress callback.
-		this.progressCallback = new FindBugsProgress() {
-			public void reportNumberOfArchives(int numArchives) {
-			}
-
-			public void finishArchive() {
-			}
-
-			public void startAnalysis(int numClasses) {
-			}
-
-			public void finishClass() {
-			}
-
-			public void finishPerClassAnalysis() {
-			}
-		};
+		this.progressCallback = new NoOpFindBugsProgress();
 
 		// Class screener
 		this.classScreener = new ClassScreener();

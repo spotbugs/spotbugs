@@ -86,6 +86,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private boolean relaxedReportingMode;
 	private String trainingInputDir;
 	private String trainingOutputDir;
+	private FindBugsProgress progress;
 	
 	/**
 	 * Constructor.
@@ -93,6 +94,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	public FindBugs2() {
 		this.classObserverList = new LinkedList<IClassObserver>();
 		this.analysisFeatureSettingList = FindBugs.DEFAULT_EFFORT;
+		this.progress = new NoOpFindBugsProgress();
 	}
 	
 	/**
@@ -125,6 +127,8 @@ public class FindBugs2 implements IFindBugsEngine {
 		
 		// The analysis cache object
 		createAnalysisCache();
+		
+		progress.reportNumberOfArchives(project.getFileCount());
 		
 		try {
 			// Discover all codebases in classpath and
@@ -268,8 +272,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setProgressCallback(edu.umd.cs.findbugs.FindBugsProgress)
 	 */
 	public void setProgressCallback(FindBugsProgress progressCallback) {
-		// TODO Auto-generated method stub
-		
+		this.progress = progressCallback;
 	}
 	
 	/* (non-Javadoc)
@@ -383,7 +386,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			builder.addCodeBase(classFactory.createFilesystemCodeBaseLocator(path), false);
 		}
 		
-		builder.build(classPath);
+		builder.build(classPath, progress);
 		
 		appClassList = builder.getAppClassList();
 	}
@@ -517,6 +520,9 @@ public class FindBugs2 implements IFindBugsEngine {
 			if (DEBUG) {
 				System.out.println("Pass " + (passCount + 1) + ": " + classCollection.size() + " classes");
 			}
+			
+			progress.startAnalysis(classCollection.size());
+			
 			for (ClassDescriptor classDescriptor : classCollection) {
 				if (DEBUG) {
 					System.out.println("Class " + classDescriptor);
@@ -537,12 +543,16 @@ public class FindBugs2 implements IFindBugsEngine {
 						logRecoverableException(classDescriptor, detector, e);
 					}
 				}
+				
+				progress.finishClass();
 			}
 			
 			// Call finishPass on each detector
 			for (Detector2 detector : detectorList) {
 				detector.finishPass();
 			}
+			
+			progress.finishPerClassAnalysis();
 			
 			passCount++;
 		}

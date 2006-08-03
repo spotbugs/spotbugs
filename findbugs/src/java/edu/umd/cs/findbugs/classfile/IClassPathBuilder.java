@@ -47,11 +47,12 @@ public interface IClassPathBuilder {
 	 * Build the classpath.
 	 * 
 	 * @param classPath IClassPath object to build
+	 * @param progress  IClassPathBuilderProgress callback
 	 * @throws ResourceNotFoundException
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public void build(IClassPath classPath) throws ResourceNotFoundException, IOException, InterruptedException;
+	public void build(IClassPath classPath, IClassPathBuilderProgress progress) throws ResourceNotFoundException, IOException, InterruptedException;
 	
 	/**
 	 * Get the list of application classes discovered while scanning the classpath.

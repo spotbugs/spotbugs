@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.IClassPathBuilder;
+import edu.umd.cs.findbugs.classfile.IClassPathBuilderProgress;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
@@ -165,14 +166,15 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	public void addCodeBase(ICodeBaseLocator locator, boolean isApplication) {
 		addToWorkList(projectWorkList, new WorkListItem(locator, isApplication, SPECIFIED));
 	}
-	
+
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.IClassPathBuilder#build(edu.umd.cs.findbugs.classfile.IClassPath)
+	 * @see edu.umd.cs.findbugs.classfile.IClassPathBuilder#build(edu.umd.cs.findbugs.classfile.IClassPath, edu.umd.cs.findbugs.classfile.IClassPathBuilderProgress)
 	 */
-	public void build(IClassPath classPath) throws ResourceNotFoundException, IOException, InterruptedException {
+	public void build(IClassPath classPath, IClassPathBuilderProgress progress)
+			throws ResourceNotFoundException, IOException, InterruptedException {
 		// Discover all directly and indirectly referenced codebases
-		processWorkList(classPath, projectWorkList);
-		processWorkList(classPath, buildSystemCodebaseList());
+		processWorkList(classPath, projectWorkList, progress);
+		processWorkList(classPath, buildSystemCodebaseList(), progress);
 		
 		// Add all discovered codebases to the classpath
 		for (DiscoveredCodeBase discoveredCodeBase : discoveredCodeBaseList) {
@@ -307,11 +309,14 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	 * which are part of the application).
 	 * 
 	 * @param workList the worklist to process
+	 * @param progress IClassPathBuilderProgress callback
 	 * @throws InterruptedException
 	 * @throws IOException
 	 * @throws ResourceNotFoundException
 	 */
-	private void processWorkList(IClassPath classPath, LinkedList<WorkListItem> workList)
+	private void processWorkList(
+			IClassPath classPath,
+			LinkedList<WorkListItem> workList, IClassPathBuilderProgress progress)
 			throws InterruptedException, IOException, ResourceNotFoundException {
 		// Build the classpath, scanning codebases for nested archives
 		// and referenced codebases.
@@ -371,6 +376,10 @@ public class ClassPathBuilder implements IClassPathBuilder {
 				} else if (item.getHowDiscovered() == SPECIFIED) {
 					errorLogger.logError("Cannot open codebase " + item.getCodeBaseLocator(), e);
 				}
+			}
+			
+			if (item.isAppCodeBase()) {
+				progress.finishArchive();
 			}
 		}
 	}

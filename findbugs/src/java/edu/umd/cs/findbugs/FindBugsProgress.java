@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs;
 
+import edu.umd.cs.findbugs.classfile.IClassPathBuilderProgress;
+
 /**
  * A callback that may be installed in a FindBugs instance
  * to asynchronously keep track of its progress.
@@ -26,7 +28,7 @@ package edu.umd.cs.findbugs;
  * @author David Hovemeyer
  * @see FindBugs
  */
-public interface FindBugsProgress {
+public interface FindBugsProgress extends IClassPathBuilderProgress {
 	/**
 	 * Report the total number of archives (Jar or zip files) that will be analyzed.
 	 *
