@@ -57,6 +57,13 @@ public class BugCode {
 	public String getDescription() {
 		return description;
 	}
+	
+	/**
+	 * Get the abbreviation fo this bug code.
+	 */
+	public String toString() {
+		return "BugCode[" + abbrev + "]";
+	}
 }
 
 // vim:ts=4
