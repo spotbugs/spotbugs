@@ -107,14 +107,20 @@ public class DroppedException extends PreorderVisitor implements Detector {
 			if (DEBUG) {
 				System.out.println("start = " + start
 						+ ", end = " + end
+						+ ", codeLength = " + code.length
 						+ ", handled = " + handled);
 			}
 
-			for (int j = start; j <= end;) {
+			for (int j = start; j < end && j < code.length;) {
 				int opcode = asUnsignedByte(code[j]);
+				if (NO_OF_OPERANDS[opcode] < 0) {
+					exitInTryBlock = true;
+					break;
+				}
+				j += 1 + NO_OF_OPERANDS[opcode];
 				if (opcode >= IRETURN && opcode <= RETURN
 						|| opcode >= IFEQ && opcode <= GOTO
-						&& (opcode != GOTO || j < end)
+						    && (opcode != GOTO || j < end)
 						) {
 					exitInTryBlock = true;
 					if (DEBUG)
@@ -122,11 +128,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
 								+ " in " + getFullyQualifiedMethodName());
 					break;
 				}
-				if (NO_OF_OPERANDS[opcode] < 0) {
-					exitInTryBlock = true;
-					break;
-				}
-				j += 1 + NO_OF_OPERANDS[opcode];
+			
 			}
 
 			if (exitInTryBlock) {
