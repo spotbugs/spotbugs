@@ -36,6 +36,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IClassFactory;
 import edu.umd.cs.findbugs.classfile.IClassPath;
@@ -167,7 +168,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	 * @see edu.umd.cs.findbugs.classfile.IClassPathBuilder#build(edu.umd.cs.findbugs.classfile.IClassPath, edu.umd.cs.findbugs.classfile.IClassPathBuilderProgress)
 	 */
 	public void build(IClassPath classPath, IClassPathBuilderProgress progress)
-			throws ResourceNotFoundException, IOException, InterruptedException {
+			throws CheckedAnalysisException, IOException, InterruptedException {
 		// Discover all directly and indirectly referenced codebases
 		processWorkList(classPath, projectWorkList, progress);
 		processWorkList(classPath, buildSystemCodebaseList(), progress);
@@ -194,7 +195,9 @@ public class ClassPathBuilder implements IClassPathBuilder {
 				}
 				
 				ClassDescriptor classDescriptor =
-					ClassDescriptor.fromResourceName(entry.getResourceName());
+//					ClassDescriptor.fromResourceName(entry.getResourceName());
+					entry.getClassDescriptor();
+				if (classDescriptor == null) throw new IllegalStateException();
 
 				if (appClassSet.contains(classDescriptor)) {
 					// An earlier entry takes precedence over this class

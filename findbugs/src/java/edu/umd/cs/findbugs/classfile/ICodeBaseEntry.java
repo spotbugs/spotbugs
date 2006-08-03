@@ -57,4 +57,17 @@ public interface ICodeBaseEntry {
 	 * @return the codebase this codebase entry belongs to
 	 */
 	public ICodeBase getCodeBase();
+
+	/**
+	 * Return the ClassDescriptor of the class resource accessed
+	 * by this codebase entry.  Do not call this method unless
+	 * ClassDescriptor.isClassResource() returns true.
+	 * This method may require the class data to be loaded
+	 * in order to determine the class.
+	 * 
+	 * @return ClassDescriptor of this entry
+	 * @throws CheckedAnalysisException if the codebase entry does not reference a valid classfile
+	 * @throws IllegalArgumentException if the codebase entry's filename is definitely not a classfile
+	 */
+	public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException;
 }

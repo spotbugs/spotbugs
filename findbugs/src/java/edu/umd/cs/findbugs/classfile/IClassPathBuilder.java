@@ -52,7 +52,7 @@ public interface IClassPathBuilder {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public void build(IClassPath classPath, IClassPathBuilderProgress progress) throws ResourceNotFoundException, IOException, InterruptedException;
+	public void build(IClassPath classPath, IClassPathBuilderProgress progress) throws CheckedAnalysisException, IOException, InterruptedException;
 	
 	/**
 	 * Get the list of application classes discovered while scanning the classpath.

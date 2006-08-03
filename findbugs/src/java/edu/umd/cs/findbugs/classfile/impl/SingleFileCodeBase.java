@@ -23,15 +23,18 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.NoSuchElementException;
 
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
+import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine;
@@ -187,25 +190,35 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 			// the file and parsing the constant pool.
 			// If we can't do this for some reason, then we just
 			// make the resource name equal to the filename.
+
+			try {
+				resourceName = getClassDescriptor().toResourceName();
+			} catch (Exception e) {
+				resourceName = fileName;
+			}
 			
-			DataInputStream in = null;
+			resourceNameKnown = true;
+		}
+		return resourceName;
+	}
+	
+	ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
+		DataInputStream in = null;
+		try {
 			try {
 				in = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)));
 				ClassParser classParser = new ClassParser(in, null, new SingleFileCodeBaseEntry(this));
 				ClassInfo classInfo = classParser.parse();
-				resourceName = classInfo.getClassDescriptor().toResourceName();
-			} catch (IOException e) {
-				resourceName = fileName;
-			} catch (CheckedAnalysisException e) {
-				resourceName = fileName;
+				return classInfo.getClassDescriptor();
 			} finally {
 				if (in != null) {
 					IO.close(in);
 				}
 			}
-			resourceNameKnown = true;
+		} catch (IOException e) {
+			// XXX: file name isn't really the resource name, but whatever
+			throw new ResourceNotFoundException(fileName);
 		}
-		return resourceName;
 	}
 
 	/**
