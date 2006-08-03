@@ -143,7 +143,9 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
 	 */
 	public void setLastModifiedTime(long lastModifiedTime) {
-		this.lastModifiedTime = lastModifiedTime;
+		if (lastModifiedTime > 0) {
+			this.lastModifiedTime = lastModifiedTime;
+		}
 	}
 	
 	/* (non-Javadoc)
