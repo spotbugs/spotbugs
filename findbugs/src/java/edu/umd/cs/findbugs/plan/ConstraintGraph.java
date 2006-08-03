@@ -39,6 +39,11 @@ public class ConstraintGraph
          protected ConstraintEdge allocateEdge(DetectorNode source, DetectorNode target) {
 		return new ConstraintEdge(source, target);
 	}
+	
+	@Override
+	public String toString() {
+		return "ConstraintGraph[Vertices: " + getNumVertexLabels() + " Edges: " + getNumEdgeLabels() + "]";
+	}
 }
 
 // vim:ts=4
