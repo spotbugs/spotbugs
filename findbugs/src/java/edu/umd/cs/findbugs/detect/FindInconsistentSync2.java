@@ -471,8 +471,9 @@ public class FindInconsistentSync2 implements Detector {
 					// Find the type of the object instance
 					TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 					TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+					if (!typeFrame.isValid()) continue;
 					Type instanceType = typeFrame.getInstance(handle.getInstruction(), cpg);
-
+					
 					// Note: instance type can be Null,
 					// in which case we won't adjust the field type.
 					if (instanceType != TypeFrame.getNullType()) {
