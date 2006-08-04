@@ -79,7 +79,7 @@ public class Naming extends PreorderVisitor implements Detector {
 		}
 
 		@Override
-                 public String toString() {
+        public String toString() {
 			return className
 			        + "." + methodName
 			        + ":" + methodSig;
