@@ -43,22 +43,15 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
  * @author David Hovemeyer
  */
 public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
-	Map<String, JavaClass> produced = new HashMap<String, JavaClass>();  
-
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
 	public Object analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
 		try {
-			if (produced.get(descriptor.getClassName()) != null) {
-				throw new IllegalStateException("Recomputing JavaClass for " + descriptor);
-			}
-			
 			ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
 			JavaClass javaClass = new ClassParser(classData.getInputStream(), descriptor.toResourceName()).parse();
 			Repository.addClass(javaClass);
-			produced.put(descriptor.getClassName(), javaClass);
 			return javaClass;
 		} catch (IOException e) {
 			throw new ResourceNotFoundException(descriptor.toResourceName(), e);
