@@ -13,6 +13,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -116,7 +117,7 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 
 			try {
 
-				double isSerializable = Analyze.isDeepSerializable(refSig);
+				double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(refSig);
 
 				if (isSerializable < 0.9) {
 					SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
@@ -131,7 +132,7 @@ public class FindNonSerializableStoreIntoSession implements Detector {
 											: isSerializable > 0.5 ? LOW_PRIORITY
 													: NORMAL_PRIORITY)
 									.addClassAndMethod(methodGen, sourceFile)
-									.addClass(Analyze.getComponentClass(refSig))
+									.addClass(DeepSubtypeAnalysis.getComponentClass(refSig))
 									.addSourceLine(sourceLineAnnotation)
 									);
 				}

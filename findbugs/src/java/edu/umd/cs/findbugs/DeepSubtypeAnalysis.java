@@ -9,7 +9,7 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 
-public class Analyze {
+public class DeepSubtypeAnalysis {
 	static private JavaClass serializable;
 
 	static private JavaClass collection;

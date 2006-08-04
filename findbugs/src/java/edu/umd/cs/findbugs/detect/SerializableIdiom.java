@@ -36,6 +36,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
 
+import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -243,7 +244,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 							priority++;
 					}
 					try {
-						double isSerializable = Analyze.isDeepSerializable(fieldX.getSignature());
+						double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(fieldX.getSignature());
 						if (isSerializable < 0.6) priority++;
 					} catch (ClassNotFoundException e1) {
 						// ignore it
@@ -397,7 +398,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 						try {
 
 							JavaClass classStored = first.getJavaClass();
-							double isSerializable = Analyze
+							double isSerializable = DeepSubtypeAnalysis
 							.isDeepSerializable(classStored);
 							if (isSerializable <= 0.2) {
 								XField f = fieldsThatMightBeAProblem.get(nameOfField);
@@ -447,7 +448,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		        && getFieldSig().indexOf("L") >= 0 && !obj.isTransient() && !obj.isStatic()) {
 			try {
 				
-				double isSerializable = Analyze.isDeepSerializable(getFieldSig());
+				double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(getFieldSig());
 				if (isSerializable < 1.0)
 					fieldsThatMightBeAProblem.put(obj.getName(), XFactory.createXField(this));
 				if (isSerializable < 0.9) {

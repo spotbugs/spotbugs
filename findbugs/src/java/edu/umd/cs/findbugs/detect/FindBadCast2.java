@@ -23,6 +23,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
 
+import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -324,7 +325,7 @@ public class FindBadCast2 implements Detector {
 						}
 					}
 					if (refName.equals("java.lang.Object")) continue;
-					double rank = Analyze.deepInstanceOf(refJavaClass,
+					double rank = DeepSubtypeAnalysis.deepInstanceOf(refJavaClass,
 							castJavaClass);
 					boolean castToConcreteCollection = concreteCollectionClasses.contains(castName)
 								&& abstractCollectionClasses.contains(refName);

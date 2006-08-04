@@ -23,6 +23,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -57,7 +58,7 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
 					String signature = f.getSignature();
 					char firstChar = signature.charAt(0);
 					if (firstChar == 'L' || firstChar == '[')
-						easilySerializable *= Analyze.isDeepSerializable(signature);
+						easilySerializable *= DeepSubtypeAnalysis.isDeepSerializable(signature);
 					} catch (ClassNotFoundException e) {
 						easilySerializable = 0.0;
 						break;

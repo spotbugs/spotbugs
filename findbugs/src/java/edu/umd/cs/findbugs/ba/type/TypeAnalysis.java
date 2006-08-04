@@ -37,7 +37,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
-import edu.umd.cs.findbugs.Analyze;
+import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -488,7 +488,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 							(ReferenceType) checkedType);
 					if (!feasibleCheck && instanceOfType instanceof ObjectType 
 							&& checkedType instanceof ObjectType) {
-						double v = Analyze.deepInstanceOf(((ObjectType)instanceOfType).getClassName(), 
+						double v = DeepSubtypeAnalysis.deepInstanceOf(((ObjectType)instanceOfType).getClassName(), 
 								((ObjectType)checkedType).getClassName());
 						if (v > 0.0) feasibleCheck = true;
 					}
