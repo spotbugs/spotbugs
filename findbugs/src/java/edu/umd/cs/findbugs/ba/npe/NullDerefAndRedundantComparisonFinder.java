@@ -36,6 +36,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -60,11 +61,11 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 public class NullDerefAndRedundantComparisonFinder {
 	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug");
 	private static final boolean DEBUG_DEREFS = SystemProperties.getBoolean("fnd.derefs.debug");
-	private static final boolean FIND_GUARANTEED_DEREFS = SystemProperties.getBoolean("fnd.derefs");
 	
 	private ClassContext classContext;
 	private Method method;
 	private NullDerefAndRedundantComparisonCollector collector;
+	private final boolean findGuaranteedDerefs;
 	
 	private List<RedundantBranch> redundantBranchList;
 	private BitSet definitelySameBranchSet;
@@ -95,6 +96,8 @@ public class NullDerefAndRedundantComparisonFinder {
 		this.classContext = classContext;
 		this.method = method;
 		this.collector = collector;
+		this.findGuaranteedDerefs = classContext.getAnalysisContext().getBoolProperty(
+				AnalysisFeatures.TRACK_UNCONDITIONAL_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS);
 		this.lineMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
 		
 		this.redundantBranchList = new LinkedList<RedundantBranch>();
@@ -107,7 +110,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		// Do the null-value analysis
 		this.invDataflow = classContext.getIsNullValueDataflow(method);
 		this.vnaDataflow = classContext.getValueNumberDataflow(method);
-		if (FIND_GUARANTEED_DEREFS) {
+		if (findGuaranteedDerefs) {
 			if (DEBUG_DEREFS) {
 				System.out.println(
 						"Checking for guaranteed derefs in " +
@@ -119,7 +122,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		// Check method and report potential null derefs and
 		// redundant null comparisons.
 		examineBasicBlocks();
-		if (FIND_GUARANTEED_DEREFS) {
+		if (findGuaranteedDerefs) {
 			examineNullValues();
 		}
 		examineRedundantBranches();

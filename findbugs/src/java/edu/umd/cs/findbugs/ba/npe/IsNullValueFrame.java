@@ -28,11 +28,13 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 public class IsNullValueFrame extends Frame<IsNullValue> {
 	private IsNullConditionDecision decision;
+	private boolean trackValueNumbers;
 	private Map<ValueNumber, IsNullValue> knownValueMap;
 
-	public IsNullValueFrame(int numLocals) {
+	public IsNullValueFrame(int numLocals, boolean trackValueNumbers) {
 		super(numLocals);
-		if (IsNullValueAnalysisFeatures.TRACK_KNOWN_VALUES) {
+		this.trackValueNumbers = trackValueNumbers;
+		if (trackValueNumbers) {
 			this.knownValueMap = new HashMap<ValueNumber, IsNullValue>();
 		}
 	}
@@ -41,7 +43,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		for (int i = 0; i < getNumSlots(); ++i)
 			setValue(i, getValue(i).toExceptionValue());
 
-		if (IsNullValueAnalysisFeatures.TRACK_KNOWN_VALUES) {
+		if (trackValueNumbers) {
 			Map<ValueNumber, IsNullValue> replaceMap = new HashMap<ValueNumber, IsNullValue>();
 			for (Map.Entry<ValueNumber, IsNullValue> entry : knownValueMap.entrySet()) {
 				replaceMap.put(entry.getKey(), entry.getValue().toExceptionValue());
@@ -83,7 +85,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	@Override
 	public void copyFrom(Frame<IsNullValue> other) {
 		super.copyFrom(other);
-		if (IsNullValueAnalysisFeatures.TRACK_KNOWN_VALUES) {
+		if (trackValueNumbers) {
 			knownValueMap = new HashMap<ValueNumber, IsNullValue>(((IsNullValueFrame)other).knownValueMap);
 		}
 	}

@@ -56,16 +56,19 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	private static final boolean NO_ASSERT_HACK = SystemProperties.getBoolean("inva.noAssertHack");
 
 	private AssertionMethods assertionMethods;
-	private ValueNumberDataflow vnaDataflow;;
+	private ValueNumberDataflow vnaDataflow;
+	private final boolean trackValueNumbers;
 	private int slotContainingNewNullValue;
 
 	public IsNullValueFrameModelingVisitor(
 			ConstantPoolGen cpg,
 			AssertionMethods assertionMethods,
-			ValueNumberDataflow vnaDataflow) {
+			ValueNumberDataflow vnaDataflow,
+			boolean trackValueNumbers) {
 		super(cpg);
 		this.assertionMethods = assertionMethods;
 		this.vnaDataflow = vnaDataflow;
+		this.trackValueNumbers = trackValueNumbers;
 	}
 	
 	/* (non-Javadoc)
@@ -256,7 +259,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	 *          false otherwise
 	 */
 	private boolean checkForKnownValue(Instruction obj) {
-		if (IsNullValueAnalysisFeatures.TRACK_KNOWN_VALUES) {
+		if (trackValueNumbers) {
 			try {
 				// See if the value number loaded here is a known value
 				ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(getLocation());

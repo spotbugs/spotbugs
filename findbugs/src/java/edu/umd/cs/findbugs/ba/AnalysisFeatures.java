@@ -54,6 +54,21 @@ public interface AnalysisFeatures {
 	 * Perform interative opcode stack analysis
 	 */
 	public static final int INTERATIVE_OPCODE_STACK_ANALYSIS = 4;
+
+	/**
+	 * In the null pointer analysis, track null values that are
+	 * unconditionally dereferenced on some (non-implicit-exception) path.
+	 */
+	public static final int TRACK_UNCONDITIONAL_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS = 5;
+	
+	/**
+	 * In the null pointer analysis, track value numbers that are known to be
+	 * null.  This allows us to not lose track of null values that are not
+	 * currently in the stack frame but might be in a heap location
+	 * where the value is recoverable by redundant load elimination or
+	 * forward substitution.
+	 */
+	public static final int TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS = 6;
 	
 	/**
 	 * Number of boolean analysis properties reserved for the bytecode analysis framework.

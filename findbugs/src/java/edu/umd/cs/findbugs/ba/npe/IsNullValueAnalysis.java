@@ -34,6 +34,7 @@ import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -79,6 +80,8 @@ public class IsNullValueAnalysis
 	private ValueNumberDataflow vnaDataflow;
 	private int[] numNonExceptionSuccessorMap;
 	private Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet;
+	private final boolean trackValueNumbers;
+
 	private IsNullValueFrame lastFrame;
 	private IsNullValueFrame instanceOfFrame;
 	private IsNullValueFrame cachedEntryFact;
@@ -88,11 +91,16 @@ public class IsNullValueAnalysis
 	public IsNullValueAnalysis(MethodGen methodGen, CFG cfg, ValueNumberDataflow vnaDataflow, DepthFirstSearch dfs,
 	                           AssertionMethods assertionMethods) {
 		super(dfs);
+		
+		this.trackValueNumbers = AnalysisContext.currentAnalysisContext().getBoolProperty(
+				AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS);
+		
 		this.methodGen = methodGen;
 		this.visitor = new IsNullValueFrameModelingVisitor(
 				methodGen.getConstantPool(),
 				assertionMethods,
-				vnaDataflow);
+				vnaDataflow,
+				trackValueNumbers);
 		this.vnaDataflow = vnaDataflow;
 		this.numNonExceptionSuccessorMap = new int[cfg.getNumBasicBlocks()];
 		this.locationWhereValueBecomesNullSet = new HashSet<LocationWhereValueBecomesNull>();
@@ -117,7 +125,7 @@ public class IsNullValueAnalysis
 		return  classAndMethod;
 	}
 	public IsNullValueFrame createFact() {
-		return new IsNullValueFrame(methodGen.getMaxLocals());
+		return new IsNullValueFrame(methodGen.getMaxLocals(), trackValueNumbers);
 	}
 	
 
@@ -368,7 +376,7 @@ public class IsNullValueAnalysis
 							tmpFact = replaceValues(fact, tmpFact, decision.getValue(), prevVnaFrame,
 							        targetVnaFrame, decisionValue);
 							
-							if (IsNullValueAnalysisFeatures.TRACK_KNOWN_VALUES) {
+							if (trackValueNumbers) {
 								tmpFact.setKnownValue(decision.getValue(), decisionValue);
 							}
 						}
@@ -419,7 +427,7 @@ public class IsNullValueAnalysis
 	@Override
 	protected void mergeInto(IsNullValueFrame other, IsNullValueFrame result) throws DataflowAnalysisException {
 		super.mergeInto(other, result);
-		if (IsNullValueAnalysisFeatures.TRACK_KNOWN_VALUES) {
+		if (trackValueNumbers) {
 			result.mergeKnownValuesWith(other);
 		}
 		

@@ -58,12 +58,5 @@ public interface IsNullValueAnalysisFeatures {
 	 */
 	public static final boolean UNKNOWN_VALUES_ARE_NSP =
 		SystemProperties.getBoolean("findbugs.nullderef.assumensp");
-	
-	/**
-	 * Track known values explicitly.
-	 * Allows values loaded from fields to be tracked more accurately.
-	 */
-	public static final boolean TRACK_KNOWN_VALUES =
-		SystemProperties.getBoolean("inva.trackvalues");
 
 }
