@@ -111,7 +111,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
 						+ ", handled = " + handled);
 			}
 
-			for (int j = start; j < end && j < code.length;) {
+			for (int j = start; j <= end && j < code.length;) {
 				int opcode = asUnsignedByte(code[j]);
 				if (NO_OF_OPERANDS[opcode] < 0) {
 					exitInTryBlock = true;
