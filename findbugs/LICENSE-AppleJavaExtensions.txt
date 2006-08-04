@@ -1,6 +1,18 @@
+This file details our unsuccessful attempts to find out from Apple
+what the exact licensing terms of AppleJavaExtensions.jar are.
+It seems clear that the intent is to allow free redistribution.
+
+AppleJavaExtensions.jar is the only code in FindBugs covered by an
+Apple license, and is neither required by nor included in the binary
+distributions of FindBugs. It is only needed when building from source.
+So, as long as you're just using binary releases, there should be no
+licensing issues. If you are building FindBugs from source and licensing
+is a concern, read on.
+
+
 AppleJavaExtensions is distributed with the following README file:
 
-----------------------------
+--------------begin README--------------
 AppleJavaExtensions
 v 1.2
 
@@ -15,13 +27,13 @@ Please see the OSXAdapter sample for how to write cross-platform code
 that uses eAWT.
 
 [07/16/2004]
-----------------------------
+---------------end README---------------
 
 The license for AppleJavaExtensions.jar is murky, because Apple does
 not disclose how it is licensed.  We believe that we have permission
-to distribute it, based on the following email.  Despite the
-email's statement that license boilerplate would be included in
-the readme, as of September 2005 this has not happened.
+to distribute it, based on the following email.  Despite the email's
+statement that license boilerplate would be included in the readme,
+as of July 2006 this has not happened.
 
 Begin forwarded message:
 
