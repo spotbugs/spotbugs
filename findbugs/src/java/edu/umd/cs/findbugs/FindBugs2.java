@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.classfile.IClassObserver;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.IClassPathBuilder;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
+import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
 import edu.umd.cs.findbugs.classfile.impl.ClassFactory;
@@ -453,6 +454,9 @@ public class FindBugs2 implements IFindBugsEngine {
 				for (ClassDescriptor ifaceDesc : classInfo.getInterfaceDescriptorList()) {
 					workList.addLast(ifaceDesc);
 				}
+			} catch (MissingClassException e) {
+				// Just log it as a missing class
+				bugReporter.reportMissingClass(e.getClassDescriptor());
 			} catch (CheckedAnalysisException e) {
 				if (appClassSet.contains(classDesc)) {
 					// Failing to scan an application class is fatal
@@ -572,6 +576,8 @@ public class FindBugs2 implements IFindBugsEngine {
 					}
 					try {
 						detector.visitClass(classDescriptor);
+					} catch (MissingClassException e) {
+						Global.getAnalysisCache().getErrorLogger().reportMissingClass(e.getClassDescriptor());
 					} catch (CheckedAnalysisException e) {
 						logRecoverableException(classDescriptor, detector, e);
 					} catch (AnalysisException e) {

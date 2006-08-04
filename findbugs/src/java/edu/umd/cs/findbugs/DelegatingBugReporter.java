@@ -87,6 +87,13 @@ public class DelegatingBugReporter implements BugReporter {
 	public void reportMissingClass(ClassNotFoundException ex) {
 		delegate.reportMissingClass(ex);
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+	 */
+	public void reportMissingClass(ClassDescriptor classDescriptor) {
+		delegate.reportMissingClass(classDescriptor);
+	}
 
 	public void finish() {
 		delegate.finish();

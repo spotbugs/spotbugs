@@ -38,8 +38,11 @@ import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.FindBugsProgress;
+import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -59,7 +62,7 @@ public class AnalysisRun {
 	private FindBugsFrame frame;
 	private String summary;
 	private Logger logger;
-	private FindBugs findBugs;
+	private IFindBugsEngine findBugs;
 	private SwingGUIBugReporter reporter;
 	private HashMap<String, DefaultTreeModel> treeModelMap;
 
@@ -72,7 +75,17 @@ public class AnalysisRun {
 		this.logger = frame.getLogger();
 		this.reporter = new SwingGUIBugReporter(this);
 		this.reporter.setPriorityThreshold(Detector.EXP_PRIORITY);
-		this.findBugs = new FindBugs(reporter, project);
+		if (true) {
+			// Eat our own dogfood
+			FindBugs2 engine = new FindBugs2();
+			engine.setBugReporter(reporter);
+			engine.setProject(project);
+			engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
+			
+			this.findBugs = engine;
+		} else {
+			this.findBugs = new FindBugs(reporter, project);
+		}
 		this.treeModelMap = new HashMap<String, DefaultTreeModel>();
 	}
 	

@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.ba.ClassNotFoundExceptionParser;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
@@ -160,11 +161,33 @@ public abstract class AbstractBugReporter implements BugReporter {
 			return;
 		}
 
+		logMissingClass(message);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+	 */
+	public void reportMissingClass(ClassDescriptor classDescriptor) {
+		if (DEBUG_MISSING_CLASSES) {
+			System.out.println("Missing class: " + classDescriptor);
+		}
+
+		if (verbosityLevel == SILENT)
+			return;
+		
+		logMissingClass(classDescriptor.toDottedClassName());
+	}
+
+	/**
+	 * @param message
+	 */
+	private void logMissingClass(String message) {
 		if (!missingClassMessageSet.contains(message)) {
 			missingClassMessageSet.add(message);
 			missingClassMessageList.add(message);
 		}
 	}
+	
 	/**
 	 * Report that we skipped some analysis of a method
 	 * @param method

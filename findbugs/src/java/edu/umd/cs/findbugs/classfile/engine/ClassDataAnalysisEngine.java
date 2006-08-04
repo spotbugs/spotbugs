@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
+import edu.umd.cs.findbugs.classfile.MissingClassException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 import edu.umd.cs.findbugs.classfile.analysis.ClassData;
 import edu.umd.cs.findbugs.io.IO;
@@ -50,7 +51,12 @@ public class ClassDataAnalysisEngine implements IClassAnalysisEngine {
 		String resourceName = descriptor.toResourceName();
 		
 		// Look up the codebase entry for the resource
-		ICodeBaseEntry codeBaseEntry = analysisCache.getClassPath().lookupResource(resourceName);
+		ICodeBaseEntry codeBaseEntry;
+		try {
+			codeBaseEntry = analysisCache.getClassPath().lookupResource(resourceName);
+		} catch (ResourceNotFoundException e) {
+			throw new MissingClassException(descriptor, e);
+		}
 
 		// Create a ByteArrayOutputStream to capture the class data
 		int length = codeBaseEntry.getNumBytes();
@@ -67,7 +73,7 @@ public class ClassDataAnalysisEngine implements IClassAnalysisEngine {
 			in = codeBaseEntry.openResource();
 			IO.copy(in, byteSink);
 		} catch (IOException e) {
-			throw new ResourceNotFoundException(resourceName, e);
+			throw new MissingClassException(descriptor, e);
 		} finally {
 			if (in != null) {
 				IO.close(in);

@@ -67,6 +67,13 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		public void reportMissingClass(ClassNotFoundException ex) {
 			Global.getAnalysisCache().getErrorLogger().reportMissingClass(ex);
 		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+		 */
+		public void reportMissingClass(ClassDescriptor classDescriptor) {
+			Global.getAnalysisCache().getErrorLogger().reportMissingClass(classDescriptor);
+		}
 
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportSkippedAnalysis(edu.umd.cs.findbugs.classfile.MethodDescriptor)
