@@ -51,9 +51,17 @@ public class Version {
 	 * "0" indicates that the version is not a release candidate.
 	 */
 	public static final int RELEASE_CANDIDATE = 0;
+	
+	/**
+	 * Preview release number.
+	 * "0" indicates that the version is not a preview release.
+	 */
+	public static final int PREVIEW = 1;
 
 	private static final String RELEASE_SUFFIX_WORD =
-		(RELEASE_CANDIDATE > 0 ? "rc" + RELEASE_CANDIDATE : "dev");
+		(RELEASE_CANDIDATE > 0
+				? "rc" + RELEASE_CANDIDATE
+				: (PREVIEW > 0 ? "preview" + PREVIEW : "dev"));
 
 	/**
 	 * Release version string.
