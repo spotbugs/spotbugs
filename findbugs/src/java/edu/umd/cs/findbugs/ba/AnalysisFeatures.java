@@ -57,9 +57,9 @@ public interface AnalysisFeatures {
 
 	/**
 	 * In the null pointer analysis, track null values that are
-	 * unconditionally dereferenced on some (non-implicit-exception) path.
+	 * guaranteed to be dereferenced on some (non-implicit-exception) path.
 	 */
-	public static final int TRACK_UNCONDITIONAL_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS = 5;
+	public static final int TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS = 5;
 	
 	/**
 	 * In the null pointer analysis, track value numbers that are known to be

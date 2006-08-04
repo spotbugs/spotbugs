@@ -398,7 +398,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, false),
 			new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
 			new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, false),
-			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_UNCONDITIONAL_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
+			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
 			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
 			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
 	};
@@ -409,7 +409,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
 			new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
 			new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_UNCONDITIONAL_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
+			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, false),
 			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, false),
 			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
 	};
@@ -420,7 +420,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-		new AnalysisFeatureSetting(AnalysisFeatures.TRACK_UNCONDITIONAL_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
+		new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
 		new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
 		new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
 };
@@ -430,7 +430,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			new AnalysisFeatureSetting(AnalysisFeatures.MODEL_INSTANCEOF, true),
 			new AnalysisFeatureSetting(AnalysisFeatures.SKIP_HUGE_METHODS, false),
 			new AnalysisFeatureSetting(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS, true),
-			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_UNCONDITIONAL_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
+			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS, true),
 			new AnalysisFeatureSetting(AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS, true),
 			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
 	};
