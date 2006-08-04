@@ -440,6 +440,9 @@ public class UnreadFields extends BytecodeScanningDetector  {
 							.addField(f)
 							.addSourceLine(p.sourceLine)
 					);
+			} else {
+				if (f.isStatic()) priority++;
+				if (finalFields.contains(f)) priority++;
 			}
 			if (!readOnlyFields.contains(f))
 				bugReporter.reportBug(new BugInstance(this,
