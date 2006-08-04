@@ -44,7 +44,10 @@ import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.FindBugs2;
+import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -146,7 +149,16 @@ public class FindBugsWorker {
 			findBugsProject.addAuxClasspathEntry(classPathEntries[i]);
 		}
         
-		FindBugs findBugs = new FindBugs(bugReporter, findBugsProject);
+		IFindBugsEngine findBugs;
+		if (true) {
+			FindBugs2 engine = new FindBugs2();
+			engine.setBugReporter(bugReporter);
+			engine.setProject(findBugsProject);
+			engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
+			findBugs = engine;
+		} else {
+			findBugs = new FindBugs(bugReporter, findBugsProject);
+		}
 
 		// configure detectors.
 		findBugs.setUserPreferences(this.userPrefs);
@@ -257,7 +269,7 @@ public class FindBugsWorker {
 		}
 	}
 
-	private void configureExtended(FindBugs findBugs) {
+	private void configureExtended(IFindBugsEngine findBugs) {
 		// configure extended preferences
 		findBugs.setAnalysisFeatureSettings(extendedPrefs.getAnalysisFeatureSettings());
 		String[] includeFilterFiles = extendedPrefs.getIncludeFilterFiles();
