@@ -5,9 +5,7 @@
 -->
 
 <project name="findbugs" default="build">
-	
-	<property file="build.properties"/>
-	
+
 	<!-- 
 	        The local.properties properties file contains the location of eclipsePlugin.dir 
 
@@ -16,6 +14,8 @@
 	        
 	-->
 	<property file="local.properties" />
+
+	<property file="build.properties" />
 	
 	<property name="jar.dir" value="lib"/>
 	<property name="plugin.dir" value="plugin"/>
@@ -472,6 +472,7 @@
 						(must be a child of the project root directory)
 	-->
 	<target name="generatemanual">
+		<echo>Running saxon: ${saxon.home}/saxon.jar</echo>
 		<java fork="true" dir="${docoutput.dir}" failonerror="true" classname="com.icl.saxon.StyleSheet" >
 			<classpath>
 				<pathelement location="${saxon.home}/saxon.jar"/>
