@@ -21,6 +21,9 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ch.Subtypes;
+
 import org.apache.bcel.classfile.*;
 
 public class InheritanceUnsafeGetResource extends BytecodeScanningDetector implements StatelessDetector {
@@ -50,9 +53,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 
 	@Override
          public void visit(Method obj) {
-//		methodIsFinal = obj.isFinal();
 		methodIsStatic = obj.isStatic();
-//		methodIsVisibleToOtherPackages = obj.isPublic() || obj.isProtected();
 		state = 0;
 		sawGetClass = -100;
 	}
@@ -62,6 +63,11 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 		if (reportedForThisClass) return;
 
 		switch (seen) {
+		case LDC:
+			if (getConstantRefOperand() instanceof ConstantClass) 
+				sawGetClass = -100;
+			break;
+			
 		case ALOAD_0:
 			state = 1;
 			break;
@@ -70,17 +76,18 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 			        && (getNameConstantOperand().equals("getResource")
 			        || getNameConstantOperand().equals("getResourceAsStream"))
 			        && sawGetClass + 10 >= getPC()) {
-				bugReporter.reportBug(new BugInstance(this, "UI_INHERITANCE_UNSAFE_GETRESOURCE", NORMAL_PRIORITY)
+				 Subtypes subtypes = AnalysisContext.currentAnalysisContext()
+					.getSubtypes();
+				bugReporter.reportBug(new BugInstance(this, "UI_INHERITANCE_UNSAFE_GETRESOURCE", 
+						subtypes.hasSubtypes(getThisClass()) ? NORMAL_PRIORITY : LOW_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
 				reportedForThisClass = true;
 
 			} else if (state == 1
 			        && !methodIsStatic
-			        // && !methodIsFinal
 			        && !classIsFinal
 			        && classIsVisibleToOtherPackages
-			        // && methodIsVisibleToOtherPackages
 			        && getNameConstantOperand().equals("getClass")
 			        && getSigConstantOperand().equals("()Ljava/lang/Class;")) {
 				sawGetClass = getPC();

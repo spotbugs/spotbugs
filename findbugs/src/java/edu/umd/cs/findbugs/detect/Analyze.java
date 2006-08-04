@@ -131,6 +131,24 @@ public class Analyze {
 	 *            Type queried about
 	 * @return 0 - 1 value indicating probablility
 	 */
+
+	public static double deepInstanceOf(String x, String y)
+	throws ClassNotFoundException {
+		return deepInstanceOf(AnalysisContext.currentAnalysisContext().lookupClass(x),
+				AnalysisContext.currentAnalysisContext().lookupClass(y));
+	}
+
+	/**
+	 * Given two JavaClasses, try to estimate the probability that an reference
+	 * of type x is also an instance of type y. Will return 0 only if it is
+	 * impossible and 1 only if it is guaranteed.
+	 * 
+	 * @param x
+	 *            Known type of object
+	 * @param y
+	 *            Type queried about
+	 * @return 0 - 1 value indicating probablility
+	 */
 	public static double deepInstanceOf(JavaClass x, JavaClass y)
 			throws ClassNotFoundException {
 
