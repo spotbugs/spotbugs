@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs.detect;
 
 
+import java.util.Set;
+
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
@@ -37,6 +39,8 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 	int state = 0;
 	int sawGetClass;
 	boolean reportedForThisClass;
+	String stringConstant;
+	int prevOpcode;
 
 	public InheritanceUnsafeGetResource(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -62,10 +66,15 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
          public void sawOpcode(int seen) {
 		if (reportedForThisClass) return;
 
+		
 		switch (seen) {
 		case LDC:
-			if (getConstantRefOperand() instanceof ConstantClass) 
+			Constant constantValue = getConstantRefOperand();
+			if (constantValue instanceof ConstantClass) 
 				sawGetClass = -100;
+			else if (constantValue instanceof ConstantString) {
+				stringConstant = ((ConstantString)constantValue).getBytes(getConstantPool());
+			}
 			break;
 			
 		case ALOAD_0:
@@ -78,8 +87,22 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 			        && sawGetClass + 10 >= getPC()) {
 				 Subtypes subtypes = AnalysisContext.currentAnalysisContext()
 					.getSubtypes();
+				 int priority = NORMAL_PRIORITY;
+				 if (prevOpcode == LDC && stringConstant != null && stringConstant.charAt(0)=='/')
+					 priority = LOW_PRIORITY;
+				 else {
+				 String myPackagename = getThisClass().getPackageName();
+				Set<JavaClass> mySubtypes = subtypes.getTransitiveSubtypes(getThisClass());
+				if (mySubtypes.isEmpty()) priority++;
+				else for(JavaClass c : mySubtypes) {
+						if (!c.getPackageName().equals(myPackagename)) {
+							priority--;
+							break;
+						}	
+					}
+				 }
 				bugReporter.reportBug(new BugInstance(this, "UI_INHERITANCE_UNSAFE_GETRESOURCE", 
-						subtypes.hasSubtypes(getThisClass()) ? NORMAL_PRIORITY : LOW_PRIORITY)
+						priority)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
 				reportedForThisClass = true;
@@ -98,6 +121,8 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 			state = 0;
 			break;
 		}
+		if (seen != LDC) stringConstant = null;
+		prevOpcode = seen;
 
 	}
 
