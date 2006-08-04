@@ -29,6 +29,7 @@ import java.util.TreeMap;
 import org.dom4j.DocumentException;
 
 import edu.umd.cs.findbugs.AppVersion;
+import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
@@ -228,9 +229,11 @@ public class Update {
 
 				newBug.setUniqueId(origWarning.getUniqueId());
 				copyBugHistory(origWarning, newBug);
-				String annotation = newBug.getAnnotationText();
-				if (annotation.length() == 0)
-					newBug.setAnnotationText(origWarning.getAnnotationText());
+				//handle getAnnotationText()/setAnnotationText() and designation key
+				BugDesignation designation = newBug.getUserDesignation();
+				if (designation != null) designation.merge(origWarning.getUserDesignation());
+					else newBug.setUserDesignation(origWarning.getUserDesignation()); //clone??
+					
 
 				persistantBugs++;
 			} else {

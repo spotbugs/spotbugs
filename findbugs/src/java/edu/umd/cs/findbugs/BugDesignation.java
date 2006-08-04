@@ -114,4 +114,28 @@ public class BugDesignation implements XMLWriteable, Serializable {
 		}
 	}
 
+	/** replace unset fields of this user designation with values set in the other */
+	public void merge(@CheckForNull BugDesignation other) {
+		if (other == null) return;
+		boolean changed = false;
+		if ( (annotationText==null || annotationText.length()==0)
+				&& other.annotationText!=null && other.annotationText.length()>0) {
+			annotationText = other.annotationText;
+			changed = true;
+		}
+		if ( (designation==null || UNCLASSIFIED.equals(designation) || designation.length()==0)
+				&& other.designation!=null && other.designation.length()>0) {
+			designation = other.designation;
+			changed = true;
+		}
+		if (!changed) return; // if no changes don't even try to copy user or timestamp
+
+		if ( (user==null || user.length()==0) && other.user!=null && other.user.length()>0) {
+			user = other.user;
+		}
+		if (timestamp==0 && other.timestamp!=0) {
+			timestamp = other.timestamp;
+		}
+	}
+
 }
