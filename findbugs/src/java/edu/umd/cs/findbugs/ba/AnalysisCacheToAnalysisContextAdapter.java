@@ -38,11 +38,8 @@ import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * An AnalysisContext implementation that uses the
- * IAnalysisCache.
- * 
- * <p>
- * <b>NOTE</b>: not fully implemented yet.
- * </p>
+ * IAnalysisCache.  This class must only be used by
+ * FindBugs2, not the original FindBugs driver.
  * 
  * @author David Hovemeyer
  */

@@ -60,8 +60,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  * FindBugs driver class.
  * Experimental version to use the new bytecode-framework-neutral
  * codebase/classpath/classfile infrastructure.
- * It is getting fairly close to supporting the features
- * of the original driver class.
+ * Supports all features of the original FindBugs driver.
  * 
  * @author David Hovemeyer
  */
