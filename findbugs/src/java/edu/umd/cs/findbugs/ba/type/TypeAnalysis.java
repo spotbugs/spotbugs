@@ -37,6 +37,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.Analyze;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -61,7 +62,6 @@ import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-import edu.umd.cs.findbugs.detect.Analyze;
 
 /**
  * A forward dataflow analysis to determine the types of all values
