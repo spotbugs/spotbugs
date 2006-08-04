@@ -23,6 +23,10 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.util.ClassName;
+
 /**
  * Parse the detail message in a ClassNotFoundException
  * to extract the name of the missing class.
@@ -60,6 +64,19 @@ public class ClassNotFoundExceptionParser {
 	 *         couldn't figure out the class name
 	 */
 	public static String getMissingClassName(ClassNotFoundException ex) {
+		// If the exception has a ResourceNotFoundException as the cause,
+		// then we have an easy answer.
+		Throwable cause = ex.getCause();
+		if (cause instanceof ResourceNotFoundException) {
+			String resourceName = ((ResourceNotFoundException) cause).getResourceName();
+			if (resourceName != null) {
+				ClassDescriptor classDesc = ClassDescriptor.fromResourceName(resourceName);
+				return classDesc.toDottedClassName();
+			}
+		}
+		
+		// Try the regular expression patterns to parse the class name
+		// from the exception message.
 		for (Pattern pattern : patternList) {
 			Matcher matcher = pattern.matcher(ex.getMessage());
 			if (matcher.matches())
