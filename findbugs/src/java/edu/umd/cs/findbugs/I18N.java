@@ -128,6 +128,12 @@ public class I18N {
 			return "Error: missing bug pattern for key " + key;
 		return bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription();
 	}
+	public @NonNull String getShortMessageWithoutCode(String key) {
+		BugPattern bugPattern = bugPatternMap.get(key);
+		if (bugPattern == null)
+			return "Error: missing bug pattern for key " + key;
+		return  bugPattern.getShortDescription();
+	}
 
 	/**
 	 * Get an HTML document describing the bug pattern for given key in detail.
