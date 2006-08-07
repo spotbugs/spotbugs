@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs.detect;
 
 
+import java.util.HashSet;
+
 import edu.umd.cs.findbugs.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
@@ -39,6 +41,10 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 	MethodAnnotation equalsMethod = null;
 	MethodAnnotation compareToMethod = null;
 	MethodAnnotation hashCodeMethod = null;
+	static HashSet<String> nonHashableClasses = new HashSet<String>();
+	public static boolean isHashableClassName(String dottedClassName) {
+		return !nonHashableClasses.contains(dottedClassName);
+	}
 	private BugReporter bugReporter;
 
 	public FindHEmismatch(BugReporter bugReporter) {
@@ -149,6 +155,8 @@ public class FindHEmismatch extends BytecodeScanningDetector implements Stateles
 				if (equalsMethodIsInstanceOfEquals)
 					priority += 2;
 				else if (obj.isAbstract() || !hasEqualsObject) priority++;
+				if (priority == HIGH_PRIORITY)
+					nonHashableClasses.add(getDottedClassName());
 				if (!visibleOutsidePackage) {
 					priority++;
 				}

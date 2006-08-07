@@ -350,6 +350,14 @@ issues.  It is a fast detector.</p>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.UseOfNonHashableClassInHashDataStructure" >
+    <Details>
+<![CDATA[
+<p> Looks for use of unhashable classes in hashed data structures.  </p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" >
     <Details>
 <![CDATA[
@@ -1836,6 +1844,20 @@ that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="HE_USE_OF_UNHASHABLE_CLASS">
+    <ShortDescription>Use of class without a hashCode() method in a hashed data structure</ShortDescription>
+    <LongDescription>{2} doesn't define a hashCode() method but is used in a hashed data structure</LongDescription>
+    <Details>
+<![CDATA[
+  <p> A class defines an equals(Object)  method but not a hashCode() method,
+and thus doesn't fulfill the requirement that equal Objects have equal hashCodes.
+An instance of this class is used in a hash data structure, making the need to
+fix this problem of highest importance.
+]]>
+    </Details>
+  </BugPattern>
+
+
   <BugPattern type="HE_HASHCODE_USE_OBJECT_EQUALS">
     <ShortDescription>Class defines hashCode() and uses Object.equals()</ShortDescription>
     <LongDescription>{0} defines hashCode and uses Object.equals()</LongDescription>
@@ -1855,11 +1877,13 @@ the recommended <code>hashCode</code> implementation to use is:</p>
   assert false : "hashCode not designed";
   return 42; // any arbitrary constant will do 
   }</pre></p>
-
-
 ]]>
     </Details>
   </BugPattern>
+
+
+
+
   <BugPattern type="HE_HASHCODE_NO_EQUALS">
     <ShortDescription>Class defines hashCode() but not equals()</ShortDescription>
     <LongDescription>{0} defines hashCode but not equals</LongDescription>
@@ -3346,7 +3370,7 @@ body of an <code>if</code> statement, e.g.:</p>
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE">
     <ShortDescription>Nullcheck of value previously dereferenced</ShortDescription>
-    <LongDescription>Nullcheck in {1} of {2} at line {4.lineNumber} of value previously dereferenced</LongDescription>
+    <LongDescription>Nullcheck in {1} of {2} at {4.lineNumber} of value previously dereferenced</LongDescription>
     <Details>
 <![CDATA[
 <p> A value is checked here to see whether it is null, but this value can't

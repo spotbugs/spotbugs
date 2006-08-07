@@ -65,6 +65,10 @@
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindBadEqualsImplementation"/>
 	</SplitPass>
+	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.FindHEmismatch"/>
+		<Later class="edu.umd.cs.findbugs.detect.UseOfNonHashableClassInHashDataStructure"/>
+	</SplitPass>
   </OrderingConstraints>
 				
   <Detector class="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" 
@@ -223,6 +227,9 @@
             speed="fast"
             reports="EQ_SELF_USE_OBJECT,EQ_SELF_NO_OBJECT,CO_SELF_NO_OBJECT,HE_HASHCODE_USE_OBJECT_EQUALS,HE_HASHCODE_NO_EQUALS,HE_EQUALS_USE_HASHCODE,HE_EQUALS_NO_HASHCODE,HE_INHERITS_EQUALS_USE_HASHCODE,CO_ABSTRACT_SELF,EQ_ABSTRACT_SELF" />
 
+  <Detector class="edu.umd.cs.findbugs.detect.UseOfNonHashableClassInHashDataStructure" 
+            speed="fast"
+            reports="HE_USE_OF_UNHASHABLE_CLASS" />
   <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" 
             speed="fast"
             reports="NN_NAKED_NOTIFY" />
@@ -639,6 +646,7 @@
   <BugPattern abbrev="Co" type="CO_SELF_NO_OBJECT" category="CORRECTNESS" />
   <BugPattern abbrev="ES" type="ES_COMPARING_STRINGS_WITH_EQ" category="CORRECTNESS" />
   <BugPattern abbrev="ES" type="ES_COMPARING_PARAMETER_STRING_WITH_EQ" category="STYLE" />
+  <BugPattern abbrev="HE" type="HE_USE_OF_UNHASHABLE_CLASS" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_HASHCODE_NO_EQUALS" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_EQUALS_USE_HASHCODE" category="CORRECTNESS" />
