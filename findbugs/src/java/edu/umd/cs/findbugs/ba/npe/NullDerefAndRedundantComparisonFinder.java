@@ -20,6 +20,8 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -243,12 +245,14 @@ public class NullDerefAndRedundantComparisonFinder {
 			Set<Location> derefLocationSet = e.getValue();
 			Set<Location> assignedNullLocationSet = nullValueAssignmentMap.get(valueNumber);
 			if (assignedNullLocationSet == null) {
+				if (DEBUG_DEREFS) {
 				String where = classContext.getJavaClass().getClassName() + "." + method.getName() + ":" + method.getSignature();
 				System.out.println("Problem at " + where);
 				for(Location loc : derefLocationSet)
 					System.out.println("Dereference at " + loc);
-				
-				throw new RuntimeException("In " + where +", No assigned NullLocationSet for " + valueNumber + " in " + nullValueAssignmentMap.keySet());
+				}
+				assert false: "No assigned NullLocationSet for " + valueNumber + " in " + nullValueAssignmentMap.keySet();
+				assignedNullLocationSet = Collections.EMPTY_SET;
 			}
 			collector.foundGuaranteedNullDeref(assignedNullLocationSet, derefLocationSet, valueNumber);
 		}
