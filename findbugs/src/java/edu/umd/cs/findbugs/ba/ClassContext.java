@@ -438,6 +438,17 @@ public class ClassContext {
 			        CFG cfg = getCFG(method);
 			        ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, analysis);
 			        vnaDataflow.execute();
+			        if (ValueNumberAnalysis.DEBUG) {
+			        	System.out.println("\n\nValue number analysis for " + method.getName());
+			        	for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
+			        		Location loc = locs.next();
+			        		System.out.println("\nLocation: " + loc);
+			        		System.out.println("Before: " + vnaDataflow.getFactAtLocation(loc));
+			        		System.out.println("After: " + vnaDataflow.getFactAfterLocation(loc));
+			        		
+			        		
+			        	}
+			        }
 			        return vnaDataflow;
 		        }
 	        };

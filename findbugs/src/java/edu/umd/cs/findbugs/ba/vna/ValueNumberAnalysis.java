@@ -54,7 +54,7 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
  */
 public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, ValueNumberFrame> {
 
-	private static final boolean DEBUG = SystemProperties.getBoolean("vna.debug");
+	public static final boolean DEBUG = SystemProperties.getBoolean("vna.debug");
 
 	private MethodGen methodGen;
 	private ValueNumberFactory factory;

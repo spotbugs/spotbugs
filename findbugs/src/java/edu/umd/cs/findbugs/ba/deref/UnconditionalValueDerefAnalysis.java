@@ -151,9 +151,16 @@ public class UnconditionalValueDerefAnalysis extends
 			return;
 		}
 		ValueNumber vn = vnaFrame.getInstance(handle.getInstruction(), methodGen.getConstantPool()); 
-
+		Location location = new Location(handle, basicBlock);
+		
+		if (DEBUG) {
+			System.out.println("FOUND GUARANTEED DEREFERENCE");
+			System.out.println("Location: " + location);
+			System.out.println("Value number frame: " + vnaFrame);
+			System.out.println("Dereferenced valueNumber: " + vn);
+		}
 		// Mark the value number as being dereferenced at this location
-		fact.addDeref(vn, new Location(handle, basicBlock));
+		fact.addDeref(vn, location);
 	}
 
 	/**

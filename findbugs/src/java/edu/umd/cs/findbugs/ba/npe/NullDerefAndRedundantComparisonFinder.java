@@ -210,7 +210,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			
 			if (DEBUG_DEREFS) {
 				System.out.println("At location " + location.getBasicBlock().getId() + ":" +
-						location.getHandle().getPosition());
+						location);
 			}
 			
 			checkForUnconditionallyDereferencedNullValues(
@@ -242,9 +242,14 @@ public class NullDerefAndRedundantComparisonFinder {
 			ValueNumber valueNumber = e.getKey();
 			Set<Location> derefLocationSet = e.getValue();
 			Set<Location> assignedNullLocationSet = nullValueAssignmentMap.get(valueNumber);
-			if (assignedNullLocationSet == null)
-				throw new RuntimeException("In " + classContext.getJavaClass().getClassName() + "." + method.getName() + ":" + method.getSignature() +", No assigned NullLocationSet for " + valueNumber + " in " + nullValueAssignmentMap.keySet());
-			
+			if (assignedNullLocationSet == null) {
+				String where = classContext.getJavaClass().getClassName() + "." + method.getName() + ":" + method.getSignature();
+				System.out.println("Problem at " + where);
+				for(Location loc : derefLocationSet)
+					System.out.println("Dereference at " + loc);
+				
+				throw new RuntimeException("In " + where +", No assigned NullLocationSet for " + valueNumber + " in " + nullValueAssignmentMap.keySet());
+			}
 			collector.foundGuaranteedNullDeref(assignedNullLocationSet, derefLocationSet, valueNumber);
 		}
 	}
@@ -264,10 +269,10 @@ public class NullDerefAndRedundantComparisonFinder {
 			IsNullValueFrame invFrame,
 			UnconditionalValueDerefSet derefSet) {
 		
-		if (DEBUG_DEREFS) {
-			System.out.println("*** " + vnaFrame);
-			System.out.println("*** " + invFrame);
-			System.out.println("*** " + derefSet);
+		if (false && DEBUG_DEREFS) {
+			System.out.println("vna *** " + vnaFrame);
+			System.out.println("inv *** " + invFrame);
+			System.out.println("deref * " + derefSet);
 		}
 		
 		// Make sure the frames contain meaningful information
@@ -283,6 +288,10 @@ public class NullDerefAndRedundantComparisonFinder {
 				
 				if (derefSet.isUnconditionallyDereferenced(valueNumber)) {
 					if (DEBUG_DEREFS) {
+						System.out.println("vna *** " + vnaFrame);
+						System.out.println("inv *** " + invFrame);
+						System.out.println("deref * " + derefSet);
+				
 						System.out.println("%%% HIT for value number " + valueNumber);
 					}
 					
