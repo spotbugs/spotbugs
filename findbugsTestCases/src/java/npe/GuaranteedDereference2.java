@@ -6,7 +6,7 @@ public class GuaranteedDereference2 {
 	static void f() throws IOException {
 	}
 
-	static int foobar() {
+	static int g() {
 
 		Object x = null;
 		try {
