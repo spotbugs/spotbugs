@@ -589,23 +589,7 @@ public class FindNullDeref
 			propertySet.addProperty(GeneralWarningProperty.ON_EXCEPTION_PATH);
 		}
 
-		LocalVariableAnnotation variable = null;
-			if (DEBUG) {
-				System.out.println("Dereference at " + location + " of " + valueNumber);
-				System.out.println("Value number frame: " + vnaFrame);
-			}
-
-			if (vnaFrame != null && !vnaFrame.isBottom() && !vnaFrame.isTop())
-			for(int i = 0; i < vnaFrame.getNumLocals(); i++) {
-				if (valueNumber.equals(vnaFrame.getValue(i))) {
-					if (DEBUG) System.out.println("Found it in local " + i);
-					InstructionHandle handle = location.getHandle();
-					int position1 = handle.getPrev().getPosition();
-					int position2 = handle.getPosition();
-					variable = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, position1, position2);
-					if (variable != null) break;
-				}
-			}
+		LocalVariableAnnotation variable = findLocalVariable(location, valueNumber, vnaFrame);
 		
 		if (refValue.isDefinitelyNull()) {
 			String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION" : "NP_ALWAYS_NULL";
@@ -627,6 +611,33 @@ public class FindNullDeref
 			if (DEBUG) System.out.println("Reporting null on some path: value=" + refValue);
 			reportNullDeref(propertySet, classContext, method, location, type, priority, variable);
 		}
+	}
+
+	/**
+	 * @param location
+	 * @param valueNumber
+	 * @param vnaFrame
+	 * @return
+	 */
+	LocalVariableAnnotation findLocalVariable(Location location, ValueNumber valueNumber, ValueNumberFrame vnaFrame) {
+		LocalVariableAnnotation variable = null;
+			if (DEBUG) {
+				System.out.println("Dereference at " + location + " of " + valueNumber);
+				System.out.println("Value number frame: " + vnaFrame);
+			}
+
+			if (vnaFrame != null && !vnaFrame.isBottom() && !vnaFrame.isTop())
+			for(int i = 0; i < vnaFrame.getNumLocals(); i++) {
+				if (valueNumber.equals(vnaFrame.getValue(i))) {
+					if (DEBUG) System.out.println("Found it in local " + i);
+					InstructionHandle handle = location.getHandle();
+					int position1 = handle.getPrev().getPosition();
+					int position2 = handle.getPosition();
+					variable = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, position1, position2);
+					if (variable != null) break;
+				}
+			}
+		return variable;
 	}
 
 	private void reportNullDeref(
@@ -782,9 +793,28 @@ public class FindNullDeref
 			if (createdDeadCode) System.out.println("createdDeadCode");
 		}
 		
+
+		LocalVariableAnnotation variableAnnotation = null;
+		try {
+//			 Get the value number
+			ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
+			if (vnaFrame.isValid()) {
+		Instruction ins = location.getHandle().getInstruction();
+
+		ValueNumber valueNumber = vnaFrame.getInstance(ins, classContext.getConstantPoolGen());
+		variableAnnotation = findLocalVariable(location, valueNumber, vnaFrame);
+			}
+		} catch (DataflowAnalysisException e) {
+			// ignore
+		} catch (CFGBuilderException e) {
+			// ignore
+		}
+	
 		BugInstance bugInstance =
 			new BugInstance(this, warning, priority)
 				.addClassAndMethod(methodGen, sourceFile);
+		if (variableAnnotation != null) bugInstance.add(variableAnnotation);
+		else bugInstance.add(new LocalVariableAnnotation("?", -1, -1));
 		if (wouldHaveBeenAKaboom) 
 			bugInstance.addSourceLine(classContext, methodGen, sourceFile, locationOfKaBoom.getHandle());
 		bugInstance.addSourceLine(classContext, methodGen, sourceFile, location.getHandle()).describe("SOURCE_REDUNDANT_NULL_CHECK");

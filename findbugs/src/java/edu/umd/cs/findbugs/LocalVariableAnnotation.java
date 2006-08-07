@@ -103,6 +103,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 
 	public String format(String key) {
 		// System.out.println("format: " + key + " reg: " + register + " name: " + value);
+		if (register < 0) return "??";
 		if (key.equals("register")) return String.valueOf(register);
 		else if (key.equals("pc")) return String.valueOf(pc);
 		else if (key.equals("name")) return value;

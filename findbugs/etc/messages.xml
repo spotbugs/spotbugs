@@ -3346,7 +3346,7 @@ body of an <code>if</code> statement, e.g.:</p>
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE">
     <ShortDescription>Nullcheck of value previously dereferenced</ShortDescription>
-    <LongDescription>Nullcheck in {1} at line {3.lineNumber} of value previously dereferenced</LongDescription>
+    <LongDescription>Nullcheck in {1} of {2} at line {4.lineNumber} of value previously dereferenced</LongDescription>
     <Details>
 <![CDATA[
 <p> A value is checked here to see whether it is null, but this value can't
@@ -3360,7 +3360,7 @@ or the previous dereference is erroneous.</p>
   </BugPattern>
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE">
     <ShortDescription>Redundant nullcheck of value known to be null</ShortDescription>
-    <LongDescription>Redundant nullcheck of value known to be null {1}</LongDescription>
+    <LongDescription>Redundant nullcheck of {2} which is known to be null in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains a redundant check of a known null value against
@@ -3373,7 +3373,7 @@ the constant null.</p>
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE">
     <ShortDescription>Redundant nullcheck of value known to be non-null</ShortDescription>
-    <LongDescription>Redundant nullcheck of value known to be non-null {1}</LongDescription>
+    <LongDescription>Redundant nullcheck of {2}, which is known to be non-null in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains a redundant check of a known non-null value against
@@ -3408,7 +3408,7 @@ known to be null.</p>
 
   <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true">   <!-- deprecated in favor of two separate RCN_ patterns -->
     <ShortDescription>Redundant comparison to null of previously checked value</ShortDescription>
-    <LongDescription>Redundant comparison to null of previously checked value in {1}</LongDescription>
+    <LongDescription>Redundant comparison to null of previously checked {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains a redundant comparison of a reference value
