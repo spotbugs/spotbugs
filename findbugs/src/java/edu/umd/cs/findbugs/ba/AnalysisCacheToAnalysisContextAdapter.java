@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
@@ -293,9 +295,14 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		Subtypes subtypes = getSubtypes();
 		
 		for (ClassDescriptor appClass : appClassCollection) {
-			JavaClass jclass =
-				Global.getAnalysisCache().getClassAnalysis(JavaClass.class, appClass);
-			subtypes.addApplicationClass(jclass);
+			try {
+				JavaClass jclass =
+					Global.getAnalysisCache().getClassAnalysis(JavaClass.class, appClass);
+				subtypes.addApplicationClass(jclass);
+			} catch (ClassFormatException e) {
+				Global.getAnalysisCache().getErrorLogger().logError(
+						"Error parsing application class " + appClass, e);
+			}
 		}
 		
 	}
