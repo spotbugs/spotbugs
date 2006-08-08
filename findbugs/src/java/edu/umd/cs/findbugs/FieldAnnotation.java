@@ -33,6 +33,7 @@ import org.apache.bcel.generic.PUTSTATIC;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -100,9 +101,24 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 *
 	 * @param className the name of the class which defines the field
 	 * @param field     the BCEL Field object
+	 * @return the FieldAnnotation
 	 */
 	public static FieldAnnotation fromBCELField(String className, Field field) {
 		return new FieldAnnotation(className, field.getName(), field.getSignature(), field.isStatic());
+	}
+
+	/**
+	 * Factory method.  Construct from a FieldDescriptor.
+	 * 
+	 * @param fieldDescriptor the FieldDescriptor
+	 * @return the FieldAnnotation
+	 */
+	public static FieldAnnotation fromFieldDescriptor(FieldDescriptor fieldDescriptor) {
+		return new FieldAnnotation(
+				fieldDescriptor.getClassName(),
+				fieldDescriptor.getName(),
+				fieldDescriptor.getSignature(),
+				fieldDescriptor.isStatic());
 	}
 
 	/**

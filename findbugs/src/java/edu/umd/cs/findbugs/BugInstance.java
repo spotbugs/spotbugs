@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -819,6 +820,18 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance addField(XField xfield) {
 		return addField(xfield.getClassName(), xfield.getName(), xfield.getSignature(), xfield.isStatic());
+	}
+	
+	/**
+	 * Add a field annotation for a FieldDescriptor.
+	 * 
+	 * @param fieldDescriptor the FieldDescriptor
+	 * @return this object
+	 */
+	public BugInstance addField(FieldDescriptor fieldDescriptor) {
+		FieldAnnotation fieldAnnotation = FieldAnnotation.fromFieldDescriptor(fieldDescriptor);
+		add(fieldAnnotation);
+		return this;
 	}
 
 	/**
