@@ -341,15 +341,7 @@ public class UnconditionalValueDerefAnalysis extends
 	 * @return true if dataflow should be propagated on the edge, false otherwise
 	 */
 	private boolean ignoreThisEdge(Edge edge) {
-		
-		if (SystemProperties.getBoolean("fnd.derefs.ignoreexceptions")) {
-			// Ignore all exception edges
-			return edge.isExceptionEdge();
-		}
-		
-		return AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS)
-				&& edge.isExceptionEdge()
-				&& !edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG);
+		return edge.isExceptionEdge();
 	}
 
 	/* (non-Javadoc)
