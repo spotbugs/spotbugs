@@ -45,6 +45,8 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 	private CFG cfg;
 	private ConstantPoolGen cpg;
 	private AnalysisContext analysisContext;
+	private boolean cfgModified;
+	
 	private  static final BitSet RETURN_OPCODE_SET = new BitSet();
 	static {
 		RETURN_OPCODE_SET.set(Constants.ARETURN);
@@ -173,7 +175,17 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 		// Remove all edges marked for deletion
 		for (Edge edge : deletedEdgeSet) {
 			cfg.removeEdge(edge);
+			cfgModified = true;
 		}
+	}
+	
+	/**
+	 * Return whether or not the CFG was modified.
+	 * 
+	 * @return true if CFG was modified, false otherwise
+	 */
+	public boolean wasCFGModified() {
+		return cfgModified;
 	}
 }
 

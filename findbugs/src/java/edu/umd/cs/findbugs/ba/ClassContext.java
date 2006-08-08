@@ -23,11 +23,10 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -211,6 +210,8 @@ public class ClassContext {
 		 */
 		public AnalysisFactory(String analysisName) {
 			this.analysisName = analysisName;
+			
+			analysisFactoryList.add(this);
 		}
 
 		/**
@@ -268,6 +269,15 @@ public class ClassContext {
 
 		@CheckForNull protected abstract Analysis analyze(Method method)
 		        throws CFGBuilderException, DataflowAnalysisException;
+
+		/**
+		 * Purge result for given method.
+		 * 
+		 * @param method the method whose analysis result should purged 
+		 */
+		public void purge(Method method) {
+			map.remove(method);
+		}
 	}
 
 	private abstract class NoExceptionAnalysisFactory <Analysis> extends AnalysisFactory<Analysis> {
@@ -351,12 +361,17 @@ public class ClassContext {
 			final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES =
 				analysisContext.getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS);
 			
+			boolean changed = false;
+			
 			if (PRUNE_INFEASIBLE_EXCEPTION_EDGES && !cfg.isFlagSet(PRUNED_INFEASIBLE_EXCEPTIONS)) {
 				try {
 					TypeDataflow typeDataflow = getTypeDataflow(method);
 					// Exception edge pruning based on ExceptionSets.
 					// Note: this is quite slow.
-					new PruneInfeasibleExceptionEdges(cfg, methodGen, typeDataflow).execute();
+					PruneInfeasibleExceptionEdges pruner =
+						new PruneInfeasibleExceptionEdges(cfg, methodGen, typeDataflow);
+					pruner.execute();
+					changed  = changed || pruner.wasCFGModified();
 				} catch (DataflowAnalysisException e) {
 					// FIXME: should report the error
 				} catch (ClassNotFoundException e) {
@@ -370,12 +385,19 @@ public class ClassContext {
 
 			if (PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES && !cfg.isFlagSet(PRUNED_UNCONDITIONAL_THROWERS)) {
 				try {
-					new PruneUnconditionalExceptionThrowerEdges(methodGen, cfg, getConstantPoolGen(), analysisContext).execute();
+					PruneUnconditionalExceptionThrowerEdges pruner =
+						new PruneUnconditionalExceptionThrowerEdges(methodGen, cfg, getConstantPoolGen(), analysisContext);
+					pruner.execute();
+					changed = changed || pruner.wasCFGModified();
 				} catch (DataflowAnalysisException e) {
 					// FIXME: should report the error
 				}
 			}
 			cfg.setFlags(cfg.getFlags() | PRUNED_UNCONDITIONAL_THROWERS);
+			
+			if (changed) {
+				ClassContext.this.purgeAnalysisResultsAfterCFGPruning(method);
+			}
 
 			busyCFGSet.remove(methodId);
 
@@ -402,9 +424,16 @@ public class ClassContext {
 
 	private JavaClass jclass;
 	private AnalysisContext analysisContext;
+	
+	// List of all analysis factories.
+	private List<AnalysisFactory<?>> analysisFactoryList =
+		new LinkedList<AnalysisFactory<?>>();
+
+	
 	private NoExceptionAnalysisFactory<MethodGen> methodGenFactory =
 		new NoExceptionAnalysisFactory<MethodGen>("MethodGen construction") {
-		@CheckForNull@Override
+		@CheckForNull
+		@Override
 		protected MethodGen analyze(Method method) {
 			if (method.getCode() == null)
 				return null;
@@ -426,8 +455,8 @@ public class ClassContext {
 
 	private AnalysisFactory<ValueNumberDataflow> vnaDataflowFactory =
 	        new AnalysisFactory<ValueNumberDataflow>("value number analysis") {
-		        @Override
-                         protected ValueNumberDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+				@Override
+		        protected ValueNumberDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
 			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
 			        DepthFirstSearch dfs = getDepthFirstSearch(method);
@@ -436,6 +465,7 @@ public class ClassContext {
 							getLookupFailureCallback());
 					analysis.setMergeTree(new MergeTree(analysis.getFactory()));
 			        CFG cfg = getCFG(method);
+			        
 			        ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, analysis);
 			        vnaDataflow.execute();
 			        if (ValueNumberAnalysis.DEBUG) {
@@ -478,8 +508,8 @@ public class ClassContext {
 
 	private AnalysisFactory<TypeDataflow> typeDataflowFactory =
 	        new AnalysisFactory<TypeDataflow>("type analysis") {
-		        @Override
-                         protected TypeDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+				@Override
+				protected TypeDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
 			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
 			        CFG cfg = getRawCFG(method);
@@ -507,8 +537,8 @@ public class ClassContext {
 
 	private NoDataflowAnalysisFactory<DepthFirstSearch> dfsFactory =
 	        new NoDataflowAnalysisFactory<DepthFirstSearch>("depth first search") {
-		        @Override
-                         protected DepthFirstSearch analyze(Method method) throws CFGBuilderException {
+				@Override
+				protected DepthFirstSearch analyze(Method method) throws CFGBuilderException {
 			        CFG cfg = getRawCFG(method);
 			        DepthFirstSearch dfs = new DepthFirstSearch(cfg);
 			        dfs.search();
@@ -517,9 +547,9 @@ public class ClassContext {
 	        };
 
 	private NoDataflowAnalysisFactory<ReverseDepthFirstSearch> rdfsFactory =
-	        new NoDataflowAnalysisFactory<ReverseDepthFirstSearch>("reverse depth first search") {
-		        @Override
-                         protected ReverseDepthFirstSearch analyze(Method method) throws CFGBuilderException {
+			new NoDataflowAnalysisFactory<ReverseDepthFirstSearch>("reverse depth first search") {
+				@Override
+				protected ReverseDepthFirstSearch analyze(Method method) throws CFGBuilderException {
 			        CFG cfg = getRawCFG(method);
 			        ReverseDepthFirstSearch rdfs = new ReverseDepthFirstSearch(cfg);
 			        rdfs.search();
@@ -895,11 +925,16 @@ public class ClassContext {
 			 */
 			@Override
 			protected UnconditionalValueDerefDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+				
+				CFG cfg = getCFG(method);
+				
+				ValueNumberDataflow vnd = getValueNumberDataflow(method);
+				
 				UnconditionalValueDerefAnalysis analysis = new UnconditionalValueDerefAnalysis(
 						getReverseDepthFirstSearch(method),
-						getCFG(method),
+						cfg,
 						getMethodGen(method),
-						getValueNumberDataflow(method),
+						vnd,
 						getAssertionMethods()
 						);
 				
@@ -933,6 +968,19 @@ public class ClassContext {
 		this.classGen = null;
 		this.assignedFieldMap = null;
 		this.assertionMethods = null;
+	}
+
+	/**
+	 * Purge analysis results after CFG-pruning of given method.
+	 * 
+	 * @param method the method whose CFG has just been pruned
+	 */
+	void purgeAnalysisResultsAfterCFGPruning(Method method) {
+		for (AnalysisFactory<?> factory : analysisFactoryList) {
+			if (factory != cfgFactory) {
+				factory.purge(method);
+			}
+		}
 	}
 
 	/**
@@ -1011,7 +1059,8 @@ public class ClassContext {
 	 * @throws CFGBuilderException if a CFG cannot be constructed for the method
 	 */
 	public CFG getCFG(Method method) throws CFGBuilderException {
-		return cfgFactory.getRefinedCFG(method);
+		CFG cfg = cfgFactory.getRefinedCFG(method);
+		return cfg;
 	}
 
 	/**

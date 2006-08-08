@@ -211,7 +211,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			Location location = i.next();
 			
 			if (DEBUG_DEREFS) {
-				System.out.println("At location " + location.getBasicBlock().getId() + ":" +
+				System.out.println("At location " + //location.getBasicBlock().getId() + ":" +
 						location);
 			}
 			
@@ -226,17 +226,20 @@ public class NullDerefAndRedundantComparisonFinder {
 		for (Iterator<Edge> i = classContext.getCFG(method).edgeIterator(); i.hasNext();) {
 			Edge edge = i.next();
 			
+			if (edge.isExceptionEdge()) {
+				continue;
+			}
+			
 			if (DEBUG_DEREFS) {
 				System.out.println("On edge " + edge.formatAsString(false));
 			}
 			
-			if (!edge.isExceptionEdge()) {
-				checkForUnconditionallyDereferencedNullValues(
-						nullValueGuaranteedDerefMap,
-						vnaDataflow.getFactOnEdge(edge),
-						invDataflow.getFactOnEdge(edge),
-						uvdDataflow.getFactOnEdge(edge));
-			}
+			checkForUnconditionallyDereferencedNullValues(
+					nullValueGuaranteedDerefMap,
+					/*vnaDataflow.getFactOnEdge(edge)*/
+					vnaDataflow.getResultFact(edge.getSource()),
+					invDataflow.getFactOnEdge(edge),
+					uvdDataflow.getFactOnEdge(edge));
 		}
 		
 		// Report 
@@ -246,10 +249,11 @@ public class NullDerefAndRedundantComparisonFinder {
 			Set<Location> assignedNullLocationSet = nullValueAssignmentMap.get(valueNumber);
 			if (assignedNullLocationSet == null) {
 				if (DEBUG_DEREFS) {
-				String where = classContext.getJavaClass().getClassName() + "." + method.getName() + ":" + method.getSignature();
-				System.out.println("Problem at " + where);
-				for(Location loc : derefLocationSet)
-					System.out.println("Dereference at " + loc);
+					String where = classContext.getJavaClass().getClassName() + "." + method.getName() + ":" + method.getSignature();
+					System.out.println("Problem at " + where);
+					for (Location loc : derefLocationSet) {
+						System.out.println("Dereference at " + loc);
+					}
 				}
 				assert false: "No assigned NullLocationSet for " + valueNumber + " in " + nullValueAssignmentMap.keySet();
 				assignedNullLocationSet = Collections.EMPTY_SET;

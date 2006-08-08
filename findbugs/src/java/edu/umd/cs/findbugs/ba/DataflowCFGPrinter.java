@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.io.PrintStream;
+
 import org.apache.bcel.generic.InstructionHandle;
 
 /**
@@ -69,6 +71,23 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends AbstractDataflowAnal
 		} catch (DataflowAnalysisException e) {
 			throw new IllegalStateException("Caught exception: " + e.toString());
 		}
+	}
+
+	/**
+	 * Print CFG annotated with results from given dataflow analysis.
+	 * 
+	 * @param <Fact>         Dataflow fact type
+	 * @param <AnalysisType> Dataflow analysis type
+	 * @param cfg            control flow graph
+	 * @param dataflow       dataflow driver
+	 * @param analysis       dataflow analysis
+	 * @param out            PrintStream to use
+	 */
+	private static<Fact, AnalysisType extends AbstractDataflowAnalysis<Fact>>
+	void printCFG(CFG cfg, Dataflow<Fact, AnalysisType> dataflow, AnalysisType analysis, PrintStream out) {
+		DataflowCFGPrinter<Fact, AnalysisType> printer =
+			new DataflowCFGPrinter<Fact, AnalysisType>(cfg, dataflow, analysis);
+		printer.print(out);
 	}
 	
 }

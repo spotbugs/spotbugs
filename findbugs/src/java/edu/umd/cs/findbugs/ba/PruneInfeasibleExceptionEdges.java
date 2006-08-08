@@ -51,7 +51,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		if (STATS) {
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override
-                                 public void run() {
+				public void run() {
 					System.err.println("Exception edges pruned: " + numEdgesPruned);
 				}
 			});
@@ -85,6 +85,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 
 	private CFG cfg;
 	private TypeDataflow typeDataflow;
+	private boolean cfgModified;
 
 	/**
 	 * Constructor.
@@ -145,12 +146,20 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 		for (Edge edge : deletedEdgeSet) {
 			cfg.removeEdge(edge);
 			if (STATS) ++numEdgesPruned;
+			cfgModified = true;
 		}
 
 		// Mark edges
-		for (MarkedEdge aMarkedEdgeList : markedEdgeList) {
-			aMarkedEdgeList.apply();
+		for (MarkedEdge markedEdge : markedEdgeList) {
+			markedEdge.apply();
 		}
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean wasCFGModified() {
+		return cfgModified;
 	}
 }
 
