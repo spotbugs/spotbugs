@@ -57,6 +57,8 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends AbstractDat
 
 		AnalysisContext analysisContext = AnalysisContext.create(lookupFailureCallback);
 		analysisContext.setBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS, true);
+		
+		configureAnalysisContext(analysisContext);
 
 		ClassContext classContext = analysisContext.getClassContext(jclass);
 		String methodName = SystemProperties.getProperty("dataflow.method");
@@ -75,6 +77,37 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends AbstractDat
 			System.out.println("-----------------------------------------------------------------");
 
 			execute(classContext, method);
+		}
+	}
+	
+	static class Knob {
+		String systemPropertyName;
+		int analysisProperty;
+		
+		Knob(String systemPropertyName, int analysisProperty) {
+			this.systemPropertyName = systemPropertyName;
+			this.analysisProperty = analysisProperty;
+		}
+	}
+	
+	private static final Knob[] KNOB_LIST = {
+		new Knob("ta.instanceof", AnalysisFeatures.MODEL_INSTANCEOF),
+		new Knob("inva.trackvalues", AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS),
+		new Knob("fnd.derefs", AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS),
+	};
+
+	/**
+	 * Configure the analysis context.
+	 * 
+	 * @param analysisContext
+	 */
+	private void configureAnalysisContext(AnalysisContext analysisContext) {
+		boolean max = SystemProperties.getBoolean("dataflow.max");
+
+		for (Knob knob : KNOB_LIST) {
+			boolean enable = max ? true : SystemProperties.getBoolean(knob.systemPropertyName); 
+			System.out.println("Setting " + knob.systemPropertyName + "=" + enable);
+			analysisContext.setBoolProperty(knob.analysisProperty, enable);
 		}
 	}
 
