@@ -65,9 +65,6 @@ public abstract class FieldOrMethodDescriptor {
 		return isStatic;
 	}
 	
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
 	protected int compareTo(FieldOrMethodDescriptor o) {
 		int cmp;
 		cmp = this.className.compareTo(o.className);

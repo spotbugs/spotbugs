@@ -44,8 +44,7 @@ public class FieldDescriptor
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(FieldDescriptor o) {
-		// TODO Auto-generated method stub
-		return 0;
+		return super.compareTo(o);
 	}
 
 }
