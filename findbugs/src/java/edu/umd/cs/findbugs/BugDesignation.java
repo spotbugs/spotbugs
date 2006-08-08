@@ -42,12 +42,14 @@ public class BugDesignation implements XMLWriteable, Serializable {
 	 *  returned by I18N.getInstance().getUserDesignations() */
 	@NonNull private String designation = UNCLASSIFIED;
 
-	@CheckForNull private String user;
+	// TODO: make this @CheckForNull 
+	private String user;
 
 	private long timestamp;
 
 	/** free text from the user */
-	@CheckForNull private String annotationText;
+	//TODO: make this @CheckForNull 
+	private String annotationText;
 	
 	/** return the user designation
 	 *  E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.

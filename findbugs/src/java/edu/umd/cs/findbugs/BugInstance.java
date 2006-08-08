@@ -84,7 +84,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	private int priority;
 	private ArrayList<BugAnnotation> annotationList;
 	private int cachedHashCode;
-	@CheckForNull private BugDesignation userDesignation;
+	//TODO: make this @CheckForNull 
+	private BugDesignation userDesignation;
 	private BugProperty propertyListHead, propertyListTail;
 	private String uniqueId;
 	private String instanceHash;
@@ -366,9 +367,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 *  @return the user designation key
 	 */
 	@NonNull public String getUserDesignationKey() {
-		String key = BugDesignation.UNCLASSIFIED;
-		if (userDesignation != null) key = userDesignation.getDesignation();
-		return key;
+		BugDesignation userDesignation = this.userDesignation;
+		if (userDesignation == null) return BugDesignation.UNCLASSIFIED;
+		return userDesignation.getDesignation();
 	}
 
 	/**
@@ -386,9 +387,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return the user annotation text
 	 */
 	@NonNull public String getAnnotationText() {
-		String s = null;
-		if (userDesignation != null) s = userDesignation.getAnnotationText();
-		return (s!=null ? s : "");
+		BugDesignation userDesignation = this.userDesignation;
+		if (userDesignation == null) return "";		
+		String s = userDesignation.getAnnotationText();
+		if (s == null) return "";
+		return s;
 	}
 
 	/**

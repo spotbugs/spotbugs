@@ -364,7 +364,7 @@ public class IsNullValueAnalysis
 							final ValueNumberFrame prevVnaFrame = vnaDataflow.getFactAtLocation(atIf);
 							
 							IsNullValue decisionValue = decision.getDecision(edgeType);
-							if (decisionValue.isDefinitelyNull()) {
+							if (decisionValue != null && decisionValue.isDefinitelyNull()) {
 								// Make a note of the value that has become null
 								// due to the if comparison.
 								addLocationWhereValueBecomesNull(new LocationWhereValueBecomesNull(
