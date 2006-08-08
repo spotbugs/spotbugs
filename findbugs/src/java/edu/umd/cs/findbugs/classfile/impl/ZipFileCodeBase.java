@@ -128,4 +128,12 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 			// Ignore
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return zipFile.getName();
+	}
 }
