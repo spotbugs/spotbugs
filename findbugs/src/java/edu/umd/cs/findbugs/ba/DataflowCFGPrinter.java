@@ -52,17 +52,17 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends AbstractDataflowAnal
 	}
 
 	@Override
-         public String blockStartAnnotate(BasicBlock bb) {
+	public String blockStartAnnotate(BasicBlock bb) {
 		return " " + analysis.factToString(dataflow.getStartFact(bb));
 	}
 
 	@Override
-         public String blockAnnotate(BasicBlock bb) {
+	public String blockAnnotate(BasicBlock bb) {
 		return " " + analysis.factToString(dataflow.getResultFact(bb));
 	}
 
 	@Override
-         public String instructionAnnotate(InstructionHandle handle, BasicBlock bb) {
+	public String instructionAnnotate(InstructionHandle handle, BasicBlock bb) {
 		try {
 			Fact result = analysis.getFactAtLocation(new Location(handle, bb));
 			return " " + analysis.factToString(result);
@@ -70,6 +70,7 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends AbstractDataflowAnal
 			throw new IllegalStateException("Caught exception: " + e.toString());
 		}
 	}
+	
 }
 
 // vim:ts=4
