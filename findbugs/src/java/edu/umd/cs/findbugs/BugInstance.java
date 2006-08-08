@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -630,6 +631,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	/* ----------------------------------------------------------------------
 	 * Combined annotation adders
 	 * ---------------------------------------------------------------------- */
+	
+	public BugInstance addClassAndMethod(MethodDescriptor methodDescriptor) {
+		addClass(methodDescriptor.getClassName());
+		add(MethodAnnotation.fromMethodDescriptor(methodDescriptor));
+		return this;
+	}
 
 	/**
 	 * Add a class annotation and a method annotation for the class and method
@@ -724,7 +731,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addClass(ClassDescriptor classDescriptor) {
-		addClass(classDescriptor.getClassName());
+		add(ClassAnnotation.fromClassDescriptor(classDescriptor));
 		return this;
 	}
 

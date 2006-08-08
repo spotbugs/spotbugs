@@ -31,6 +31,8 @@ import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -111,9 +113,26 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		return fromCalledMethod(className, methodName, methodSig,
 				visitor.getOpcode() == Constants.INVOKESTATIC);
 	}
-	
+
+	/**
+	 * Factory method to create the MethodAnnotation from
+	 * the classname, method name, signature, etc.
+	 * The method tries to look up source line information for
+	 * the method.
+	 * 
+	 * @param className  name of the class containing the method
+	 * @param methodName name of the method
+	 * @param methodSig  signature of the method
+	 * @param isStatic   true if the method is static, false otherwise
+	 * @return the MethodAnnotation
+	 */
 	public static MethodAnnotation fromForeignMethod(
 			String className, String methodName, String methodSig, boolean isStatic) {
+		
+		// FIXME: would be nice to do this without using BCEL
+		
+ 		className = ClassName.toDottedClassName(className);
+		
 		// Create MethodAnnotation.
 		// It won't have source lines yet.
 		MethodAnnotation methodAnnotation =
@@ -195,6 +214,20 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 				xmethod.getName(),
 				xmethod.getSignature(),
 				xmethod.isStatic());
+	}
+
+	/**
+	 * Create a MethodAnnotation from a MethodDescriptor.
+	 * 
+	 * @param methodDescriptor the MethodDescriptor
+	 * @return the MethodAnnotation
+	 */
+	public static BugAnnotation fromMethodDescriptor(MethodDescriptor methodDescriptor) {
+		return fromForeignMethod(
+				methodDescriptor.getClassName(),
+				methodDescriptor.getName(),
+				methodDescriptor.getSignature(),
+				methodDescriptor.isStatic());
 	}
 
 	/**

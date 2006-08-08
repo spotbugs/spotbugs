@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -45,6 +46,16 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	 */
 	public ClassAnnotation(String className) {
 		super(className, DEFAULT_ROLE);
+	}
+
+	/**
+	 * Factory method to create a ClassAnnotation from a ClassDescriptor.
+	 * 
+	 * @param classDescriptor the ClassDescriptor
+	 * @return the ClassAnnotation
+	 */
+	public static ClassAnnotation fromClassDescriptor(ClassDescriptor classDescriptor) {
+		return new ClassAnnotation(classDescriptor.toDottedClassName());
 	}
 
 	public void accept(BugAnnotationVisitor visitor) {
