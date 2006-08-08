@@ -15,7 +15,15 @@
 	<classpathentry exported="true" kind="lib" path="lib/dom4j-full.jar"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.apache.ant_1.6.5/lib/ant.jar"/>
-	<classpathentry kind="lib" path="lib/asm-3.0_RC1.jar"/>
-	<classpathentry kind="lib" path="lib/asm-tree-3.0_RC1.jar"/>
+	<classpathentry kind="lib" path="lib/asm-3.0_RC1.jar">
+		<attributes>
+			<attribute value="http://www.cs.umd.edu/~daveho/asm/asm-3.0_RC1/output/dist/doc/javadoc/user/" name="javadoc_location"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/asm-tree-3.0_RC1.jar">
+		<attributes>
+			<attribute value="http://www.cs.umd.edu/~daveho/asm/asm-3.0_RC1/output/dist/doc/javadoc/user/" name="javadoc_location"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
