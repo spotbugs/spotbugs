@@ -16,5 +16,11 @@ public class TestFieldAnnotations {
 	void h() {
 		if (x == null) System.out.println("Huh?");
 	}
+	
+	void i() {
+		if (y != null) {
+			System.out.println(y.hashCode());
+		}
+	}
 
 }
