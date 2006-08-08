@@ -36,7 +36,7 @@ while [ $# -gt 0 ]; do
 
 	-textui)
 		fb_appjar="$findbugs_home/lib/findbugs.jar"
-		fb_mainclass="edu.umd.cs.findbugs.FindBugs"
+		fb_mainclass="edu.umd.cs.findbugs.FindBugs2"
 		;;
 
 	-jvmArgs)
