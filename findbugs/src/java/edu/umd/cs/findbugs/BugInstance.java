@@ -47,6 +47,8 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -649,7 +651,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addClassAndMethod(MethodAnnotation methodAnnotation) {
-		addClass(methodAnnotation.getClassName(), methodAnnotation.getSourceFileName());
+		addClass(methodAnnotation.getClassName());
 		addMethod(methodAnnotation);
 		return this;
 	}
@@ -662,7 +664,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addClassAndMethod(MethodGen methodGen, String sourceFile) {
-		addClass(methodGen.getClassName(), sourceFile);
+		addClass(methodGen.getClassName());
 		addMethod(methodGen, sourceFile);
 		return this;
 	}
@@ -676,7 +678,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addClassAndMethod(JavaClass javaClass, Method method) {
-		addClass(javaClass.getClassName(), javaClass.getSourceFileName());
+		addClass(javaClass.getClassName());
 		addMethod(javaClass, method);
 		return this;
 	}
@@ -692,6 +694,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param className the name of the class
 	 * @param sourceFileName the source file of the class
 	 * @return this object
+	 * @deprecated use addClass(String) instead
 	 */
 	public BugInstance addClass(String className, String sourceFileName) {
 		ClassAnnotation classAnnotation = new ClassAnnotation(className);
@@ -700,15 +703,29 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	}
 
 	/**
-	 * Add a class annotation, but
-	 * look up the source file name from the class name (using currentAnalysisContext)
+	 * Add a class annotation.  If this is the first class annotation added,
+	 * it becomes the primary class annotation.
 	 *
 	 * @param className the name of the class
 	 * @return this object
 	 */
 	public BugInstance addClass(String className) {
-		String sourceFileName = AnalysisContext.currentAnalysisContext().lookupSourceFile(className);
-		return addClass(className, sourceFileName);
+		className = ClassName.toDottedClassName(className);
+		ClassAnnotation classAnnotation = new ClassAnnotation(className);
+		add(classAnnotation);
+		return this;
+	}
+
+	/**
+	 * Add a class annotation.  If this is the first class annotation added,
+	 * it becomes the primary class annotation.
+	 * 
+	 * @param classDescriptor the class to add
+	 * @return this object
+	 */
+	public BugInstance addClass(ClassDescriptor classDescriptor) {
+		addClass(classDescriptor.getClassName());
+		return this;
 	}
 
 	/**
@@ -719,7 +736,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addClass(JavaClass jclass) {
-		addClass(jclass.getClassName(), jclass.getSourceFileName());
+		addClass(jclass.getClassName());
 		return this;
 	}
 
@@ -731,7 +748,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance addClass(PreorderVisitor visitor) {
 		String className = visitor.getDottedClassName();
-		addClass(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className));
+		addClass(className);
 		return this;
 	}
 
@@ -744,7 +761,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance addSuperclass(PreorderVisitor visitor) {
 		String className = visitor.getSuperclassName();
-		addClass(className, AnalysisContext.currentAnalysisContext().lookupSourceFile(className));
+		addClass(className);
 		return this;
 	}
 
