@@ -3370,7 +3370,7 @@ body of an <code>if</code> statement, e.g.:</p>
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE">
     <ShortDescription>Nullcheck of value previously dereferenced</ShortDescription>
-    <LongDescription>Nullcheck in {1} of {2} at {4.lineNumber} of value previously dereferenced</LongDescription>
+    <LongDescription>Nullcheck of {2} at {4.lineNumber} of value previously dereferenced</LongDescription>
     <Details>
 <![CDATA[
 <p> A value is checked here to see whether it is null, but this value can't
