@@ -977,7 +977,7 @@ public class ClassContext {
 	 */
 	void purgeAnalysisResultsAfterCFGPruning(Method method) {
 		for (AnalysisFactory<?> factory : analysisFactoryList) {
-			if (factory != cfgFactory) {
+			if (((Object)factory) != cfgFactory) {
 				factory.purge(method);
 			}
 		}
