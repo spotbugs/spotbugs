@@ -24,6 +24,7 @@ import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
 import java.io.*;
 import java.util.*;
+
 import org.apache.bcel.classfile.Code;
 
 
@@ -37,6 +38,8 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 	private BugReporter bugReporter;
 	private int lastPC;
 	private BitSet potentiallyDeadStores = new BitSet();
+	private BitSet potentiallyDeadStoresFromBeforeFallthrough = new BitSet();
+	private LocalVariableAnnotation deadStore = null;
 	private int priority;
 	private int fallthroughDistance;
 
@@ -60,6 +63,8 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		found.clear();
 		switchHdlr = new SwitchHandler();
 		potentiallyDeadStores.clear();
+		deadStore = null;
+		potentiallyDeadStoresFromBeforeFallthrough.clear();
 		priority = NORMAL_PRIORITY;
 		fallthroughDistance = 1000;
 		super.visit(obj);
@@ -74,12 +79,13 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 	@Override
          public void sawOpcode(int seen) {
 		if (reachable && switchHdlr.isOnSwitchOffset(this)) {
+			fallthroughDistance = 0;
+			potentiallyDeadStoresFromBeforeFallthrough = (BitSet) potentiallyDeadStores.clone();
 			if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
 				SourceLineAnnotation sourceLineAnnotation =
 					SourceLineAnnotation.fromVisitedInstructionRange(getClassContext(), this, lastPC, getPC());
 				if (sourceLineAnnotation != null) {
 					found.add(sourceLineAnnotation);
-					fallthroughDistance = 0;
 				}
 			}
 			
@@ -89,15 +95,18 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 				|| seen == GOTO || seen == ARETURN || seen == IRETURN || seen == RETURN || seen == LRETURN
 				|| seen == DRETURN || seen == FRETURN) potentiallyDeadStores.clear();
 				
+		
 		if (isRegisterLoad())
 			potentiallyDeadStores.clear(getRegisterOperand());
 
 		else if (isRegisterStore()) {
-			if (potentiallyDeadStores.get(getRegisterOperand())){
+			int register = getRegisterOperand();
+			if (potentiallyDeadStores.get(register) && potentiallyDeadStoresFromBeforeFallthrough.get(register)){
 				// killed store
-				if (fallthroughDistance < 8) priority = HIGH_PRIORITY;
+				priority = HIGH_PRIORITY;
+				deadStore =  LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC()-1, getPC());
 			}
-			else potentiallyDeadStores.set(getRegisterOperand());
+			potentiallyDeadStores.set(register);
 		}
 			
 		switch (seen) {
