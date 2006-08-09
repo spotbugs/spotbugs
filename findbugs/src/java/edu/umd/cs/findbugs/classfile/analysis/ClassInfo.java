@@ -31,16 +31,30 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  * 
  * @author David Hovemeyer
  */
-public class ClassInfo {
-	private final ClassDescriptor classDescriptor;
-	private final ClassDescriptor superclassDescriptor;
-	private final ClassDescriptor[] interfaceDescriptorList;
-	private final ICodeBaseEntry codeBaseEntry;
-	private final int accessFlags;
-	private final FieldDescriptor[] fieldDescriptorList;
-	private final MethodDescriptor[] methodDescriptorList;
-	private final ClassDescriptor[] referencedClassDescriptorList;
+public class ClassInfo extends ClassNameAndSuperclassInfo {
+	private FieldDescriptor[] fieldDescriptorList;
+	private MethodDescriptor[] methodDescriptorList;
+	private ClassDescriptor[] referencedClassDescriptorList;
 	
+	/**
+	 * Constructor.
+	 * Does not initialize any fields; setters should be called
+	 * before the object is used.
+	 */
+	public ClassInfo() {
+	}
+	
+	/**
+	 * 
+	 * @param classDescriptor         ClassDescriptor representing the class name
+	 * @param superclassDescriptor    ClassDescriptor representing the superclass name
+	 * @param interfaceDescriptorList ClassDescriptors representing implemented interface names
+	 * @param codeBaseEntry           codebase entry class was loaded from
+	 * @param accessFlags             class's access flags
+	 * @param fieldDescriptorList     FieldDescriptors of fields defined in the class
+	 * @param methodDescriptorList    MethodDescriptors of methods defined in the class
+	 * @param referencedClassDescriptorList ClassDescriptors of all classes/interfaces referenced by the class
+	 */
 	public ClassInfo(
 			ClassDescriptor classDescriptor,
 			ClassDescriptor superclassDescriptor,
@@ -50,49 +64,10 @@ public class ClassInfo {
 			FieldDescriptor[] fieldDescriptorList,
 			MethodDescriptor[] methodDescriptorList,
 			ClassDescriptor[] referencedClassDescriptorList) {
-		this.classDescriptor = classDescriptor;
-		this.superclassDescriptor = superclassDescriptor;
-		this.interfaceDescriptorList = interfaceDescriptorList;
-		this.codeBaseEntry = codeBaseEntry;
-		this.accessFlags = accessFlags;
+		super(classDescriptor, superclassDescriptor, interfaceDescriptorList, codeBaseEntry, accessFlags);
 		this.fieldDescriptorList = fieldDescriptorList;
 		this.methodDescriptorList = methodDescriptorList;
 		this.referencedClassDescriptorList = referencedClassDescriptorList;
-	}
-	
-	/**
-	 * @return Returns the classDescriptor.
-	 */
-	public ClassDescriptor getClassDescriptor() {
-		return classDescriptor;
-	}
-	
-	/**
-	 * @return Returns the superclassDescriptor.
-	 */
-	public ClassDescriptor getSuperclassDescriptor() {
-		return superclassDescriptor;
-	}
-	
-	/**
-	 * @return Returns the interfaceDescriptorList.
-	 */
-	public ClassDescriptor[] getInterfaceDescriptorList() {
-		return interfaceDescriptorList;
-	}
-	
-	/**
-	 * @return Returns the codeBaseEntry.
-	 */
-	public ICodeBaseEntry getCodeBaseEntry() {
-		return codeBaseEntry;
-	}
-	
-	/**
-	 * @return Returns the accessFlags.
-	 */
-	public int getAccessFlags() {
-		return accessFlags;
 	}
 	
 	/**
@@ -114,5 +89,27 @@ public class ClassInfo {
 	 */
 	public ClassDescriptor[] getReferencedClassDescriptorList() {
 		return referencedClassDescriptorList;
+	}
+
+	/**
+	 * @param fieldDescriptorList The fieldDescriptorList to set.
+	 */
+	public void setFieldDescriptorList(FieldDescriptor[] fieldDescriptorList) {
+		this.fieldDescriptorList = fieldDescriptorList;
+	}
+
+	/**
+	 * @param methodDescriptorList The methodDescriptorList to set.
+	 */
+	public void setMethodDescriptorList(MethodDescriptor[] methodDescriptorList) {
+		this.methodDescriptorList = methodDescriptorList;
+	}
+
+	/**
+	 * @param referencedClassDescriptorList The referencedClassDescriptorList to set.
+	 */
+	public void setReferencedClassDescriptorList(
+			ClassDescriptor[] referencedClassDescriptorList) {
+		this.referencedClassDescriptorList = referencedClassDescriptorList;
 	}
 }
