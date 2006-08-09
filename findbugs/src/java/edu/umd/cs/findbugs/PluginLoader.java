@@ -192,13 +192,13 @@ public class PluginLoader extends URLClassLoader {
 				//System.out.println("Found detector: class="+className+", disabled="+disabled);
 
 				// Create DetectorFactory for the detector
-				//Class <? extends Detector>detectorClass = loadClass(className).asSubclass(Detector.class);
-				Class detectorClass = loadClass(className);
-				if (!Detector.class.isAssignableFrom(detectorClass))
-					throw new PluginException("Class " + className + " does not implement Detector");
+				Class<?> detectorClass = loadClass(className);
+				if (!Detector.class.isAssignableFrom(detectorClass)
+						&& !Detector2.class.isAssignableFrom(detectorClass))
+					throw new PluginException("Class " + className + " does not implement Detector or Detector2");
 				DetectorFactory factory = new DetectorFactory(
 						plugin,
-						(Class<? extends Detector>) detectorClass, !disabled.equals("true"),
+						detectorClass, !disabled.equals("true"),
 						speed, reports, requireJRE);
 				if (Boolean.valueOf(hidden).booleanValue())
 					factory.setHidden(true);
