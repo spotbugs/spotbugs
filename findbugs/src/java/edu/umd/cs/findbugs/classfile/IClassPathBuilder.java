@@ -44,6 +44,15 @@ public interface IClassPathBuilder {
 	public void addCodeBase(ICodeBaseLocator locator, boolean isApplication);
 
 	/**
+	 * Set whether or not nested archives should be scanned.
+	 * This should be called before the build() method is called.
+	 * 
+	 * @param scanNestedArchives true if nested archives should be scanned,
+	 *                            false otherwise
+	 */
+	public void scanNestedArchives(boolean scanNestedArchives);
+
+	/**
 	 * Build the classpath.
 	 * 
 	 * @param classPath IClassPath object to build
@@ -60,11 +69,4 @@ public interface IClassPathBuilder {
 	 * @return list of application classes
 	 */
 	public List<ClassDescriptor> getAppClassList();
-	
-//	/**
-//	 * Get the set of all classes discovered while scanning the classpath.
-//	 * 
-//	 * @return the set of all classes discovered while scanning the classpath
-//	 */
-//	public Set<ClassDescriptor> getAllClassSet();
 }

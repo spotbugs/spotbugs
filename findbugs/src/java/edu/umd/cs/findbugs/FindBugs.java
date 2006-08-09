@@ -817,6 +817,13 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	public boolean useTrainingInput() {
 		return useTrainingInput;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setScanNestedArchives(boolean)
+	 */
+	public void setScanNestedArchives(boolean scanNestedArchives) {
+		// Ignore this - we're not really going to try to do this
+	}
 
 	/**
 	 * Set the FindBugs home directory.

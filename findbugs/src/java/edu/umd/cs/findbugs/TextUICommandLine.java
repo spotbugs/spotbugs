@@ -82,6 +82,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private String releaseName = "";
 	private String sourceInfoFile = null;
 	private boolean xargs = false;
+	private boolean scanNestedArchives = false;
 
 	/**
 	 * Constructor.
@@ -128,6 +129,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addOption("-onlyAnalyze", "classes/packages", "only analyze given classes and packages");
 		addOption("-exclude", "filter file", "exclude bugs matching given filter");
 		addOption("-include", "filter file", "include only bugs matching given filter");
+		addSwitchWithOptionalExtraPart("-nested", "true|false",
+				"analyze nested jar/zip archives (default=true)");
 		addOption("-auxclasspath", "classpath", "set aux classpath for analysis");
 		addOption("-sourcepath", "source path", "set source path for analyzed classes");
 		addSwitch("-exitcode", "set exit code of process");
@@ -206,13 +209,16 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			} else {
 				stylesheet = "default.xsl";
 			}
-		} else if (option.equals("-xdocs"))
+		} else if (option.equals("-xdocs")) {
 			bugReporterType = XDOCS_REPORTER;
-		else if (option.equals("-quiet"))
+		} else if (option.equals("-quiet")) {
 			quiet = true;
-		else if (option.equals("-exitcode"))
+		} else if (option.equals("-nested")) {
+			scanNestedArchives =
+				optionExtraPart.equals("") || Boolean.valueOf(optionExtraPart).booleanValue();
+		} else if (option.equals("-exitcode")) {
 			setExitCode = true;
-		else if (option.equals("-xargs"))
+		} else if (option.equals("-xargs"))
 			xargs = true;
 		else {
 			super.handleOption(option, optionExtraPart);
@@ -435,6 +441,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		findBugs.setAnalysisFeatureSettings(settingList);
 
 		findBugs.setReleaseName(releaseName);
+		
+		findBugs.setScanNestedArchives(scanNestedArchives);
 	}
 
 	/**

@@ -147,6 +147,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	private LinkedList<DiscoveredCodeBase> discoveredCodeBaseList;
 	private Map<String, DiscoveredCodeBase> discoveredCodeBaseMap;
 	private LinkedList<ClassDescriptor> appClassList;
+	private boolean scanNestedArchives;
 
 	/**
 	 * Constructor.
@@ -168,6 +169,13 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	 */
 	public void addCodeBase(ICodeBaseLocator locator, boolean isApplication) {
 		addToWorkList(projectWorkList, new WorkListItem(locator, isApplication, ICodeBase.SPECIFIED));
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.IClassPathBuilder#scanNestedArchives(boolean)
+	 */
+	public void scanNestedArchives(boolean scanNestedArchives) {
+		this.scanNestedArchives = scanNestedArchives;
 	}
 
 	/* (non-Javadoc)
@@ -425,7 +433,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 			discoveredCodeBase.addCodeBaseEntry(entry);
 
 			// If resource is a nested archive, add it to the worklist
-			if (Archive.isArchiveFileName(entry.getResourceName())) {
+			if (scanNestedArchives && Archive.isArchiveFileName(entry.getResourceName())) {
 				if (VERBOSE) {
 					System.out.println("Entry is an archive!");
 				}

@@ -227,4 +227,11 @@ public interface IFindBugsEngine {
 	 */
 	public String getTrainingInputDir();
 
+	/**
+	 * Set whether or not nested archives should be scanned.
+	 * 
+	 * @param scanNestedArchives true if nested archives should be scanned, false if not
+	 */
+	public void setScanNestedArchives(boolean scanNestedArchives);
+
 }

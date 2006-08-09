@@ -89,6 +89,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private String trainingOutputDir;
 	private FindBugsProgress progress;
 	private IClassScreener classScreener;
+	private boolean scanNestedArchives;
 	
 	/**
 	 * Constructor.
@@ -107,6 +108,9 @@ public class FindBugs2 implements IFindBugsEngine {
 				return true;
 			}
 		};
+		
+		// By default, we do want to scan nested archives
+		this.scanNestedArchives = true;
 	}
 	
 	/**
@@ -362,6 +366,13 @@ public class FindBugs2 implements IFindBugsEngine {
 	public boolean useTrainingInput() {
 		return trainingInputDir != null;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setScanNestedArchives(boolean)
+	 */
+	public void setScanNestedArchives(boolean scanNestedArchives) {
+		this.scanNestedArchives = scanNestedArchives;
+	}
 
 	/**
 	 * Create the analysis cache object.
@@ -396,6 +407,8 @@ public class FindBugs2 implements IFindBugsEngine {
 		for (String path : project.getAuxClasspathEntryList()) {
 			builder.addCodeBase(classFactory.createFilesystemCodeBaseLocator(path), false);
 		}
+		
+		builder.scanNestedArchives(scanNestedArchives);
 		
 		builder.build(classPath, progress);
 		
