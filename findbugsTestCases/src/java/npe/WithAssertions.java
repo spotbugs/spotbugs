@@ -8,7 +8,7 @@ public class WithAssertions {
 	int f(String s) {
 		String result  = map.get(s);
 		assert result != null : "Result shouldn't be null";
-		// I think this should be reported
+		// don't report this
 		return  result.hashCode();
 	}
 
