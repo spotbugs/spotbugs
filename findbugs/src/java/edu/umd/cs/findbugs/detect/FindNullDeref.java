@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -581,21 +582,27 @@ public class FindNullDeref
 	public void report() {
 	}
 
-	public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame) {
+	public void foundNullDeref(ClassContext classContext, Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame) {
 		WarningPropertySet propertySet = new WarningPropertySet();
 		
 		boolean onExceptionPath = refValue.isException();
 		if (onExceptionPath) {
 			propertySet.addProperty(GeneralWarningProperty.ON_EXCEPTION_PATH);
 		}
-
+		int pc = location.getHandle().getPosition();
 		LocalVariableAnnotation variable = findLocalVariable(location, valueNumber, vnaFrame);
-		
-		if (refValue.isDefinitelyNull()) {
+		boolean duplicated = false;
+		try {
+			CFG cfg = classContext.getCFG(method);
+			duplicated = cfg.getLocationsContainingInstructionWithOffset(pc).size() > 1;
+		} catch (CFGBuilderException e) {
+		}
+
+		if (!duplicated && refValue.isDefinitelyNull()) {
 			String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION" : "NP_ALWAYS_NULL";
 			int priority = onExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
 			reportNullDeref(propertySet, classContext, method, location, type, priority, variable);
-		} else if (refValue.isNullOnSomePath()) {
+		} else if (refValue.isNullOnSomePath() || duplicated &&  refValue.isDefinitelyNull()) {
 			String type =  "NP_NULL_ON_SOME_PATH";
 			int priority =  NORMAL_PRIORITY;
 			if (onExceptionPath)  type = "NP_NULL_ON_SOME_PATH_EXCEPTION";

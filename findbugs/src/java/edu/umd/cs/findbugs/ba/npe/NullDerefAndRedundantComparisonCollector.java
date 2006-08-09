@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.npe;
 import java.util.BitSet;
 import java.util.Set;
 
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -37,13 +38,13 @@ public interface NullDerefAndRedundantComparisonCollector {
 	/**
 	 * Subclasses should override this method to capture locations where
 	 * a null pointer is dereferenced.
-	 * 
+	 * @param classContext TODO
 	 * @param location    the Location of the null dereference
 	 * @param valueNumber the ValueNumber of the possibly-null value
 	 * @param refValue    the kind of possibly-null value dereferenced
 	 * @param vnaFrame 	  The ValueNumber Frame at the point where the dereference occurred
 	 */
-	public void foundNullDeref(Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame);
+	public void foundNullDeref(ClassContext classContext, Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame);
 
 	/**
 	 * Subclasses should override this method to capture locations where
