@@ -582,6 +582,8 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" 
             speed="fast"
             hidden="true" />
+  
+  <Detector class="edu.umd.cs.findbugs.detect.TestASM" speed="fast" disabled="true" reports="" />
 
   <BugPattern abbrev="VR" type="VR_UNRESOLVABLE_REFERENCE" category="CORRECTNESS"
     experimental="true"/>

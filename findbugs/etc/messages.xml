@@ -1170,6 +1170,17 @@ factory pattern to create these objects.</p>
 ]]>
     </Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.TestASM">
+    <Details>
+    <![CDATA[
+    <p>
+    This detector is a code example showing how to write a FindBugs
+    detector using the ASM bytecode analysis framework.
+    </p>
+    ]]>
+    </Details>
+  </Detector>
 
   <!--
   **********************************************************************
