@@ -271,6 +271,12 @@ public class ClassContext {
 		        throws CFGBuilderException, DataflowAnalysisException;
 
 		/**
+		 * @return true if this analysis factory is a dataflow analysis,
+		 *          false if not
+		 */
+		public abstract boolean isDataflow();
+
+		/**
 		 * Purge result for given method.
 		 * 
 		 * @param method the method whose analysis result should purged 
@@ -286,7 +292,7 @@ public class ClassContext {
 		}
 
 		@Override
-         public Analysis getAnalysis(Method method) {
+		public Analysis getAnalysis(Method method) {
 			try {
 				return super.getAnalysis(method);
 			} catch (DataflowAnalysisException e) {
@@ -294,6 +300,14 @@ public class ClassContext {
 			} catch (CFGBuilderException e) {
 				throw new IllegalStateException("Should not happen");
 			}
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#isDataflow()
+		 */
+		@Override
+		public boolean isDataflow() {
+			return false;
 		}
 	}
 
@@ -303,16 +317,24 @@ public class ClassContext {
 		}
 
 		@Override
-                 public Analysis getAnalysis(Method method) throws CFGBuilderException {
+		public Analysis getAnalysis(Method method) throws CFGBuilderException {
 			try {
 				return super.getAnalysis(method);
 			} catch (DataflowAnalysisException e) {
 				throw new IllegalStateException("Should not happen");
 			}
 		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#isDataflow()
+		 */
+		@Override
+		public boolean isDataflow() {
+			return false;
+		}
 	}
 
-	private static final Set<String> busyCFGSet = new HashSet<String>();
+	private final Set<String> busyCFGSet = new HashSet<String>();
 
 	private class CFGFactory extends AnalysisFactory<CFG> {
 
@@ -405,7 +427,7 @@ public class ClassContext {
 		}
 
 		@Override
-                 protected CFG analyze(Method method) throws CFGBuilderException {
+		protected CFG analyze(Method method) throws CFGBuilderException {
 			MethodGen methodGen = getMethodGen(method);
 			if (methodGen == null) {
 				JavaClassAndMethod javaClassAndMethod = new JavaClassAndMethod(jclass, method);
@@ -415,6 +437,31 @@ public class ClassContext {
 			CFGBuilder cfgBuilder = CFGBuilderFactory.create(methodGen);
 			cfgBuilder.build();
 			return cfgBuilder.getCFG();
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#isDataflow()
+		 */
+		@Override
+		public boolean isDataflow() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+	}
+	
+	private abstract class DataflowAnalysisFactory<Analysis>
+		extends AnalysisFactory<Analysis> {
+		
+		DataflowAnalysisFactory(String desc) {
+			super(desc);
+		}
+		
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#isDataflow()
+		 */
+		@Override
+		public boolean isDataflow() {
+			return true;
 		}
 	}
 
@@ -454,7 +501,7 @@ public class ClassContext {
 	private CFGFactory cfgFactory = new CFGFactory();
 
 	private AnalysisFactory<ValueNumberDataflow> vnaDataflowFactory =
-	        new AnalysisFactory<ValueNumberDataflow>("value number analysis") {
+	        new DataflowAnalysisFactory<ValueNumberDataflow>("value number analysis") {
 				@Override
 		        protected ValueNumberDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
@@ -484,7 +531,7 @@ public class ClassContext {
 	        };
 
 	private AnalysisFactory<IsNullValueDataflow> invDataflowFactory =
-	        new AnalysisFactory<IsNullValueDataflow>("null value analysis") {
+	        new DataflowAnalysisFactory<IsNullValueDataflow>("null value analysis") {
 		        @Override
                          protected IsNullValueDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
@@ -507,7 +554,7 @@ public class ClassContext {
 	        };
 
 	private AnalysisFactory<TypeDataflow> typeDataflowFactory =
-	        new AnalysisFactory<TypeDataflow>("type analysis") {
+	        new DataflowAnalysisFactory<TypeDataflow>("type analysis") {
 				@Override
 				protected TypeDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
@@ -601,7 +648,7 @@ public class ClassContext {
 	        };
 
 	private AnalysisFactory<LockDataflow> lockDataflowFactory =
-	        new AnalysisFactory<LockDataflow>("lock set analysis") {
+	        new DataflowAnalysisFactory<LockDataflow>("lock set analysis") {
 		        @Override
                          protected LockDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
@@ -618,7 +665,7 @@ public class ClassContext {
 	        };
 
 	private AnalysisFactory<LockChecker> lockCheckerFactory =
-			new AnalysisFactory<LockChecker>("lock checker meta-analysis") {
+			new DataflowAnalysisFactory<LockChecker>("lock checker meta-analysis") {
 				/* (non-Javadoc)
 				 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#analyze(org.apache.bcel.classfile.Method)
 				 */
@@ -632,7 +679,7 @@ public class ClassContext {
 			};
 	        
 	private AnalysisFactory<ReturnPathDataflow> returnPathDataflowFactory =
-	        new AnalysisFactory<ReturnPathDataflow>("return path analysis") {
+	        new DataflowAnalysisFactory<ReturnPathDataflow>("return path analysis") {
 		        @Override
                          protected ReturnPathDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        CFG cfg = getCFG(method);
@@ -645,7 +692,7 @@ public class ClassContext {
 	        };
 
 	private AnalysisFactory<DominatorsAnalysis> nonExceptionDominatorsAnalysisFactory =
-	        new AnalysisFactory<DominatorsAnalysis>("non-exception dominators analysis") {
+	        new DataflowAnalysisFactory<DominatorsAnalysis>("non-exception dominators analysis") {
 		        @Override
                          protected DominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        CFG cfg = getCFG(method);
@@ -659,7 +706,7 @@ public class ClassContext {
 	        };
 
 	private AnalysisFactory<PostDominatorsAnalysis> nonExceptionPostDominatorsAnalysisFactory =
-	        new AnalysisFactory<PostDominatorsAnalysis>("non-exception postdominators analysis") {
+	        new DataflowAnalysisFactory<PostDominatorsAnalysis>("non-exception postdominators analysis") {
 		        @Override
                          protected PostDominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        CFG cfg = getCFG(method);
@@ -673,7 +720,7 @@ public class ClassContext {
 	        };
 
 	private AnalysisFactory<PostDominatorsAnalysis> nonImplicitExceptionPostDominatorsAnalysisFactory =
-		new AnalysisFactory<PostDominatorsAnalysis>("non-implicit-exception postdominators analysis") {
+		new DataflowAnalysisFactory<PostDominatorsAnalysis>("non-implicit-exception postdominators analysis") {
 			@Override
                          protected PostDominatorsAnalysis analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
 				CFG cfg = getCFG(method);
@@ -717,7 +764,7 @@ public class ClassContext {
 	        };
 
 	private AnalysisFactory<ConstantDataflow> constantDataflowFactory =
-		new AnalysisFactory<ConstantDataflow>("constant propagation analysis") {
+		new DataflowAnalysisFactory<ConstantDataflow>("constant propagation analysis") {
 			@Override @CheckForNull
 			protected ConstantDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
 				MethodGen methodGen = getMethodGen(method);
@@ -734,7 +781,7 @@ public class ClassContext {
 		};
 
 	private AnalysisFactory<UnconditionalDerefDataflow> unconditionalDerefDataflowFactory =
-		new AnalysisFactory<UnconditionalDerefDataflow>("unconditional deref analysis") {
+		new DataflowAnalysisFactory<UnconditionalDerefDataflow>("unconditional deref analysis") {
 			@Override @CheckForNull
 			protected UnconditionalDerefDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
 				MethodGen methodGen = getMethodGen(method);
@@ -758,7 +805,7 @@ public class ClassContext {
 		};
 	
 	private AnalysisFactory<LoadDataflow> loadDataflowFactory =
-		new AnalysisFactory<LoadDataflow>("field load analysis") {
+		new DataflowAnalysisFactory<LoadDataflow>("field load analysis") {
 			@Override @CheckForNull
 			protected LoadDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
 				MethodGen methodGen = getMethodGen(method);
@@ -775,7 +822,7 @@ public class ClassContext {
 		};
 
 	private AnalysisFactory<StoreDataflow> storeDataflowFactory =
-		new AnalysisFactory<StoreDataflow>("field store analysis") {
+		new DataflowAnalysisFactory<StoreDataflow>("field store analysis") {
 			@Override @CheckForNull
 			protected StoreDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
 				MethodGen methodGen = getMethodGen(method);
@@ -864,7 +911,7 @@ public class ClassContext {
 			};
 
 	private AnalysisFactory<LiveLocalStoreDataflow> liveLocalStoreDataflowFactory =
-			new AnalysisFactory<LiveLocalStoreDataflow>("live local stores analysis") {
+			new DataflowAnalysisFactory<LiveLocalStoreDataflow>("live local stores analysis") {
 				@Override
                                  protected LiveLocalStoreDataflow analyze(Method method)
 					throws DataflowAnalysisException, CFGBuilderException {
@@ -884,7 +931,7 @@ public class ClassContext {
 			};
 
 	private AnalysisFactory<Dataflow<BlockType, BlockTypeAnalysis>> blockTypeDataflowFactory =
-			new AnalysisFactory<Dataflow<BlockType, BlockTypeAnalysis>>("block type analysis") {
+			new DataflowAnalysisFactory<Dataflow<BlockType, BlockTypeAnalysis>>("block type analysis") {
 				@Override
                                  protected Dataflow<BlockType, BlockTypeAnalysis> analyze(Method method)
 						throws DataflowAnalysisException, CFGBuilderException {
@@ -901,7 +948,7 @@ public class ClassContext {
 			};
 
 	private AnalysisFactory<CallListDataflow> callListDataflowFactory =
-		new AnalysisFactory<CallListDataflow>("call list analysis") {
+		new DataflowAnalysisFactory<CallListDataflow>("call list analysis") {
 			//@Override
 			@Override
                          protected CallListDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
@@ -919,7 +966,7 @@ public class ClassContext {
 		};
 		
 	private AnalysisFactory<UnconditionalValueDerefDataflow> unconditionalValueDerefDataflowFactory =
-		new AnalysisFactory<UnconditionalValueDerefDataflow>("unconditional value dereference analysis") {
+		new DataflowAnalysisFactory<UnconditionalValueDerefDataflow>("unconditional value dereference analysis") {
 			/* (non-Javadoc)
 			 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#analyze(org.apache.bcel.classfile.Method)
 			 */
@@ -971,13 +1018,13 @@ public class ClassContext {
 	}
 
 	/**
-	 * Purge analysis results after CFG-pruning of given method.
+	 * Purge dataflow analysis results after CFG-pruning of given method.
 	 * 
 	 * @param method the method whose CFG has just been pruned
 	 */
 	void purgeAnalysisResultsAfterCFGPruning(Method method) {
 		for (AnalysisFactory<?> factory : analysisFactoryList) {
-			if (((Object)factory) != cfgFactory) {
+			if (factory.isDataflow()) {
 				factory.purge(method);
 			}
 		}
