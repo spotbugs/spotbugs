@@ -10,7 +10,9 @@ import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 
 /**
- * @author Dave
+ * Codebase entry for a single-file codebase.
+ * 
+ * @author David Hovemeyer
  */
 public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 	private final SingleFileCodeBase codeBase;
@@ -57,6 +59,13 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 	 */
 	public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
 		return codeBase.getClassDescriptor();
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java.lang.String)
+	 */
+	public void overrideResourceName(String resourceName) {
+		// FIXME: implement this
 	}
 	
 	/* (non-Javadoc)

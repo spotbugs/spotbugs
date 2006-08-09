@@ -70,4 +70,11 @@ public interface ICodeBaseEntry {
 	 * @throws IllegalArgumentException if the codebase entry's filename is definitely not a classfile
 	 */
 	public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException;
+
+	/**
+	 * Override the resource name of this codebase entry.
+	 * 
+	 * @param resourceName the new resource name
+	 */
+	public void overrideResourceName(String resourceName);
 }

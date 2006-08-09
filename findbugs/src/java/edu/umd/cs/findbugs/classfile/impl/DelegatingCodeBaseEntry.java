@@ -82,6 +82,13 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 	}
 	
 	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java.lang.String)
+	 */
+	public void overrideResourceName(String resourceName) {
+		delegateCodeBaseEntry.overrideResourceName(resourceName);
+	}
+	
+	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override

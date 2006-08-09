@@ -21,7 +21,9 @@ package edu.umd.cs.findbugs.classfile.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
@@ -44,10 +46,12 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 	private boolean isAppCodeBase;
 	private int howDiscovered;
 	private long lastModifiedTime;
+	private Map<String, String> resourceNameTranslationMap;
 	
 	public AbstractScannableCodeBase(ICodeBaseLocator codeBaseLocator) {
 		this.codeBaseLocator = codeBaseLocator;
 		this.lastModifiedTime = -1L;
+		this.resourceNameTranslationMap = new HashMap<String, String>();
 	}
 	
 	/* (non-Javadoc)
@@ -117,5 +121,14 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 	 */
 	public long getLastModifiedTime() {
 		return lastModifiedTime;
+	}
+	
+	public void addResourceNameTranslation(String origResourceName, String newResourceName) {
+		resourceNameTranslationMap.put(origResourceName, newResourceName);
+	}
+	
+	public String translateResourceName(String resourceName) {
+		String translatedName = resourceNameTranslationMap.get(resourceName);
+		return translatedName != null ? translatedName : resourceName;
 	}
 }

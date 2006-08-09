@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  * 
  * @author David Hovemeyer
  */
-public class ZipFileCodeBaseEntry implements ICodeBaseEntry {
+public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry implements ICodeBaseEntry {
 	private final ZipFileCodeBase codeBase;
 	private final ZipEntry zipEntry;
 	
@@ -51,24 +51,26 @@ public class ZipFileCodeBaseEntry implements ICodeBaseEntry {
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
-	 */
-	public String getResourceName() {
-		return zipEntry.getName();
-	}
-	
-	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
 	 */
 	public InputStream openResource() throws IOException {
 		return codeBase.zipFile.getInputStream(zipEntry);
 	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getCodeBase()
+	 */
+	@Override
+	public AbstractScannableCodeBase getCodeBase() {
+		return codeBase;
+	}
 	
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
+	 * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getRealResourceName()
 	 */
-	public ICodeBase getCodeBase() {
-		return codeBase;
+	@Override
+	public String getRealResourceName() {
+		return zipEntry.getName();
 	}
 	
 	/* (non-Javadoc)

@@ -61,6 +61,11 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
 	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException {
+		// Translate resource name, in case a resource name
+		// has been overridden and the resource is being accessed
+		// using the overridden name.
+		resourceName = translateResourceName(resourceName);
+
 		ZipEntry entry = zipFile.getEntry(resourceName);
 		if (entry == null) {
 			throw new ResourceNotFoundException(resourceName);

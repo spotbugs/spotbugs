@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.classfile.impl;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -48,7 +49,10 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseIterator;
 import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
 import edu.umd.cs.findbugs.classfile.IErrorLogger;
 import edu.umd.cs.findbugs.classfile.IScannableCodeBase;
+import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
+import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.classfile.engine.ClassParser;
 import edu.umd.cs.findbugs.io.IO;
 import edu.umd.cs.findbugs.util.Archive;
 
@@ -58,9 +62,10 @@ import edu.umd.cs.findbugs.util.Archive;
  * @author David Hovemeyer
  */
 public class ClassPathBuilder implements IClassPathBuilder {
-	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs2.verbose.builder");
-	private static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs2.debug.builder");
-	
+	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs2.builder.verbose");
+	private static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs2.builder.debug");
+	private static final boolean PARSE_CLASS_NAMES =
+		SystemProperties.getBoolean("findbugs2.builder.parseclassnames");
 
 	/**
 	 * Worklist item.
@@ -411,6 +416,12 @@ public class ClassPathBuilder implements IClassPathBuilder {
 				System.out.println("Entry: " + entry.getResourceName());
 			}
 			
+			if (PARSE_CLASS_NAMES
+					&& codeBase.isApplicationCodeBase()
+					&& ClassDescriptor.isClassResource(entry.getResourceName())) {
+				parseClassName(entry);
+			}
+			
 			// Note the resource exists in this codebase
 			discoveredCodeBase.addCodeBaseEntry(entry);
 
@@ -425,6 +436,32 @@ public class ClassPathBuilder implements IClassPathBuilder {
 						workList,
 						new WorkListItem(nestedArchiveLocator, codeBase.isApplicationCodeBase(), ICodeBase.NESTED));
 			}
+		}
+	}
+
+	/**
+	 * Attempt to parse data of given resource in order
+	 * to divine the real name of the class contained in the
+	 * resource. 
+	 * 
+	 * @param entry the resource
+	 */
+	private void parseClassName(ICodeBaseEntry entry) {
+		DataInputStream in = null;
+		try {
+			in = new DataInputStream(entry.openResource());
+			ClassParser parser = new ClassParser(in, null, entry);
+			
+			ClassInfo classInfo = parser.parse();
+			entry.overrideResourceName(classInfo.getClassDescriptor().toResourceName());
+		} catch (IOException e) {
+			errorLogger.logError("Invalid class resource " + entry.getResourceName() +
+					" in " + entry, e);
+		} catch (InvalidClassFileFormatException e) {
+			errorLogger.logError("Invalid class resource " + entry.getResourceName() +
+					" in " + entry, e);
+		} finally {
+			IO.close(in);
 		}
 	}
 

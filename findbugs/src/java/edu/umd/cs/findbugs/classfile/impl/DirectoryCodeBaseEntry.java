@@ -28,20 +28,25 @@ import edu.umd.cs.findbugs.classfile.ICodeBase;
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 
-final class DirectoryCodeBaseEntry implements ICodeBaseEntry {
+/**
+ * Codebase entry class for directory codebases.
+ * 
+ * @author David Hovemeyer
+ */
+public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry implements ICodeBaseEntry {
 	private final DirectoryCodeBase codeBase;
-	private final String resourceName;
+	private final String realResourceName;
 
-	DirectoryCodeBaseEntry(DirectoryCodeBase codeBase, String resourceName) {
+	public DirectoryCodeBaseEntry(DirectoryCodeBase codeBase, String realResourceName) {
 		this.codeBase = codeBase;
-		this.resourceName = resourceName;
+		this.realResourceName = realResourceName;
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
 	 */
 	public int getNumBytes() {
-		File fullPath = codeBase.getFullPathOfResource(resourceName);
+		File fullPath = codeBase.getFullPathOfResource(realResourceName);
 		if (!fullPath.exists()) {
 			return -1;
 		}
@@ -49,24 +54,26 @@ final class DirectoryCodeBaseEntry implements ICodeBaseEntry {
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getResourceName()
-	 */
-	public String getResourceName() {
-		return resourceName;
-	}
-
-	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
 	 */
 	public InputStream openResource() throws IOException {
-		return codeBase.openFile(resourceName);
+		return codeBase.openFile(realResourceName);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getCodeBase()
+	 */
+	@Override
+	public AbstractScannableCodeBase getCodeBase() {
+		return codeBase;
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
+	 * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getRealResourceName()
 	 */
-	public ICodeBase getCodeBase() {
-		return codeBase;
+	@Override
+	public String getRealResourceName() {
+		return realResourceName;
 	}
 	
 	/* (non-Javadoc)
@@ -86,7 +93,7 @@ final class DirectoryCodeBaseEntry implements ICodeBaseEntry {
 		}
 		DirectoryCodeBaseEntry other = (DirectoryCodeBaseEntry) obj;
 		return this.codeBase.equals(other.codeBase)
-			&& this.resourceName.equals(other.resourceName);
+			&& this.realResourceName.equals(other.realResourceName);
 	}
 	
 	/* (non-Javadoc)
@@ -94,7 +101,7 @@ final class DirectoryCodeBaseEntry implements ICodeBaseEntry {
 	 */
 	@Override
 	public int hashCode() {
-		return 7919 * codeBase.hashCode() + resourceName.hashCode();
+		return 7919 * codeBase.hashCode() + realResourceName.hashCode();
 	}
 	
 	/* (non-Javadoc)
