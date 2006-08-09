@@ -66,8 +66,8 @@ import edu.umd.cs.findbugs.util.ClassName;
  * @author David Hovemeyer
  */
 public class FindBugs2 implements IFindBugsEngine {
-	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs2.verbose");
-	private static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs2.debug");
+	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs.verbose");
+	private static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs.debug");
 	
 	private List<IClassObserver> classObserverList;
 	private ErrorCountingBugReporter bugReporter;
@@ -431,6 +431,8 @@ public class FindBugs2 implements IFindBugsEngine {
 		Set<ClassDescriptor> seen = new HashSet<ClassDescriptor>();
 		Set<ClassDescriptor> appClassSet = new HashSet<ClassDescriptor>(appClassList);
 		
+		Set<ClassDescriptor> badAppClassSet = new HashSet<ClassDescriptor>();
+		
 		while (!workList.isEmpty()) {
 			ClassDescriptor classDesc = workList.removeFirst();
 			
@@ -457,16 +459,20 @@ public class FindBugs2 implements IFindBugsEngine {
 			} catch (MissingClassException e) {
 				// Just log it as a missing class
 				bugReporter.reportMissingClass(e.getClassDescriptor());
-			} catch (CheckedAnalysisException e) {
 				if (appClassSet.contains(classDesc)) {
-					// Failing to scan an application class is fatal
-					throw e;
-				} else {
-					// Failed to scan a referenced class --- just log the error and continue
-					bugReporter.logError("Error scanning " + classDesc + " for referenced classes", e);
+					badAppClassSet.add(classDesc);
+				}
+			} catch (CheckedAnalysisException e) {
+				// Failed to scan a referenced class --- just log the error and continue
+				bugReporter.logError("Error scanning " + classDesc + " for referenced classes", e);
+				if (appClassSet.contains(classDesc)) {
+					badAppClassSet.add(classDesc);
 				}
 			}
 		}
+		
+		// Delete any application classes that could not be read
+		appClassList.removeAll(badAppClassSet);
 	}
 	
 	/**
@@ -540,15 +546,20 @@ public class FindBugs2 implements IFindBugsEngine {
 	 */
 	private void analyzeApplication()  {
 		int passCount = 0;
+		boolean multiplePasses = executionPlan.getNumPasses() > 1;
+		
 		for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext(); ) {
 			AnalysisPass pass = i.next();
 
 			// Instantiate the detectors
 			Detector2[] detectorList = pass.instantiateDetector2sInPass(bugReporter);
 
-			// On first pass, we apply detectors to all classes referenced by the application classes.
+			// If there are multiple passes, then on the first pass,
+			// we apply detectors to all classes referenced by the application classes.
 			// On subsequent passes, we apply detector only to application classes.
-			Collection<ClassDescriptor> classCollection = (passCount == 0) ? referencedClassSet : appClassList;
+			Collection<ClassDescriptor> classCollection = (multiplePasses && passCount == 0)
+					? referencedClassSet 
+					: appClassList;
 			if (DEBUG) {
 				System.out.println("Pass " + (passCount + 1) + ": " + classCollection.size() + " classes");
 			}
