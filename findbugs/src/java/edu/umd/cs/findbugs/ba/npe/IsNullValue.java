@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.ba.XMethodParameter;
  */
 public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	private static final boolean DEBUG_EXCEPTION = SystemProperties.getBoolean("inv.debugException");
+	private static final boolean DEBUG_KABOOM = SystemProperties.getBoolean("inv.debugKaboom");
 
 	/** Definitely null. */
 	private static final int NULL = 0;
@@ -389,7 +390,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	}
 
 	@Override
-         public String toString() {
+	public String toString() {
 		String pfx = "";
 		if (DEBUG_EXCEPTION) {
 			int flags = getFlags();
@@ -401,7 +402,9 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 				if ((flags & RETURN_VAL) != 0) pfx += "r";
 			}
 		}
-		if (locationOfKaBoom == null) pfx += "[?]";
+		if (DEBUG_KABOOM && locationOfKaBoom == null) {
+			pfx += "[?]";
+		}
 		switch (getBaseKind()) {
 		case NULL:
 			return pfx + "n" + ",";
