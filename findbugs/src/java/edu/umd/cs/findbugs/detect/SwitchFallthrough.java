@@ -93,7 +93,10 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		
 		if (isBranch(seen) || isSwitch(seen)
 				|| seen == GOTO || seen == ARETURN || seen == IRETURN || seen == RETURN || seen == LRETURN
-				|| seen == DRETURN || seen == FRETURN) potentiallyDeadStores.clear();
+				|| seen == DRETURN || seen == FRETURN) {
+			potentiallyDeadStores.clear();
+			potentiallyDeadStoresFromBeforeFallthrough.clear();
+		}
 				
 		
 		if (isRegisterLoad())
@@ -101,10 +104,14 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 
 		else if (isRegisterStore()) {
 			int register = getRegisterOperand();
-			if (potentiallyDeadStores.get(register) && potentiallyDeadStoresFromBeforeFallthrough.get(register)){
+			if (potentiallyDeadStores.get(register) && (true || potentiallyDeadStoresFromBeforeFallthrough.get(register))){
 				// killed store
 				priority = HIGH_PRIORITY;
 				deadStore =  LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC()-1, getPC());
+				BugInstance bug = new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH", priority)
+    			.addClassAndMethod(this).add(deadStore).addSourceLine(this);
+				bugReporter.reportBug(bug);
+
 			}
 			potentiallyDeadStores.set(register);
 		}

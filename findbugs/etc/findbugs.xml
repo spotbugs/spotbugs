@@ -244,7 +244,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.SwitchFallthrough" 
             speed="fast"
-            reports="SF_SWITCH_FALLTHROUGH" />
+            reports="SF_SWITCH_FALLTHROUGH,SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindSpinLoop" 
             speed="fast"
@@ -715,6 +715,7 @@
   <BugPattern abbrev="Se" type="SE_BAD_FIELD_STORE" category="CORRECTNESS" />
   <BugPattern abbrev="SC" type="SC_START_IN_CTOR" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SF" type="SF_SWITCH_FALLTHROUGH" category="STYLE" />
+  <BugPattern abbrev="SF" type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH" category="CORRECTNESS" />
   <BugPattern abbrev="SS" type="SS_SHOULD_BE_STATIC" category="PERFORMANCE" />
   <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE" />
   <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="PERFORMANCE" />

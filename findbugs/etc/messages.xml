@@ -2226,7 +2226,7 @@ This not necessarily a bug, but is worth examining
   </BugPattern>
   <BugPattern type="UR_UNINIT_READ">
     <ShortDescription>Uninitialized read of field in constructor</ShortDescription>
-    <LongDescription>Uninitialized read of {2} in {1}</LongDescription>
+    <LongDescription>Uninitialized read of {2.name} in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This constructor reads a field which has not yet been assigned a value.&nbsp;
@@ -2721,6 +2721,17 @@ is generally easy and good defensive programming.
 <![CDATA[
   <p> This method contains a switch statement where one case branch will fall through to the next case.
   Usually you need to end this case with a break or return.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH">
+   <ShortDescription>Dead store due to switch statement fall thorugh</ShortDescription>
+   <LongDescription>Value of {2} from previous case is overwritten here due to switch statement fall through</LongDescription>
+    <Details>
+<![CDATA[
+  <p> A value stored in the previous switch case is overwritten here due to a switch fall through. It is likely that
+	you forgot to put a break or return at the end of the previous case.
+</p>
 ]]>
     </Details>
   </BugPattern>
