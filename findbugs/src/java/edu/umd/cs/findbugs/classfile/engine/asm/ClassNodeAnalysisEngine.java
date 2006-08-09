@@ -23,6 +23,8 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.classfile.IClassAnalysisEngine;
+import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
+import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
@@ -40,9 +42,20 @@ public class ClassNodeAnalysisEngine implements IClassAnalysisEngine {
 	 */
 	public Object analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 		ClassReader classReader = analysisCache.getClassAnalysis(ClassReader.class, descriptor);
-		ClassNode cn = new ClassNode();
-		classReader.accept(cn, 0);
-		return cn;
+		
+		ICodeBaseEntry entry = analysisCache.getClassPath().lookupResource(descriptor.toResourceName());
+
+		// One of the less-than-ideal features of ASM is that
+		// invalid classfile format is indicated by a
+		// random runtime exception rather than something
+		// indicative of the real problem.
+		try {
+			ClassNode cn = new ClassNode();
+			classReader.accept(cn, 0);
+			return cn;
+		} catch (RuntimeException e) {
+			throw new InvalidClassFileFormatException(descriptor, entry, e);
+		}
 	}
 
 	/* (non-Javadoc)
