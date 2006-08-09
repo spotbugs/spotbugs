@@ -30,12 +30,14 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
 import edu.umd.cs.findbugs.classfile.InvalidClassFileFormatException;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
+import edu.umd.cs.findbugs.classfile.analysis.ClassNameAndSuperclassInfo;
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Parse a class to extract symbolic information.
  * 
  * @author David Hovemeyer
+ * @see http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html
  */
 public class ClassParser {
 
@@ -69,21 +71,17 @@ public class ClassParser {
 		this.expectedClassDescriptor = expectedClassDescriptor;
 		this.codeBaseEntry = codeBaseEntry;
 	}
-
+	
 	/**
-	 * Parse the class data into a ClassInfo object containing
+	 * Parse the class data into a ClassNameAndSuperclassInfo object containing
 	 * (some of) the class's symbolic information.
 	 * 
-	 * @param classInfo a ClassInfo object to be filled in with (some of)
+	 * @param classInfo a ClassNameAndSuperclassInfo object to be filled in with (some of)
 	 *                   the class's symbolic information
 	 * @throws InvalidClassFileFormatException
 	 */
-	public void parse(ClassInfo classInfo) throws InvalidClassFileFormatException {
-		
+	public void parse(ClassNameAndSuperclassInfo classInfo) throws InvalidClassFileFormatException {
 		try {
-			// Parse the class file
-			// See http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html
-			
 			int magic = in.readInt();
 			int major_version = in.readUnsignedShort();
 			int minor_version = in.readUnsignedShort();
@@ -123,14 +121,30 @@ public class ClassParser {
 			classInfo.setInterfaceDescriptorList(interfaceDescriptorList);
 			classInfo.setCodeBaseEntry(codeBaseEntry);
 			classInfo.setAccessFlags(access_flags);
-			
+		} catch (IOException e) {
+			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
+		}
+	}
+
+	/**
+	 * Parse the class data into a ClassInfo object containing
+	 * (some of) the class's symbolic information.
+	 * 
+	 * @param classInfo a ClassInfo object to be filled in with (some of)
+	 *                   the class's symbolic information
+	 * @throws InvalidClassFileFormatException
+	 */
+	public void parse(ClassInfo classInfo) throws InvalidClassFileFormatException {
+		parse((ClassNameAndSuperclassInfo) classInfo);
+
+		try {
 			int fields_count = in.readUnsignedShort();
 			if (fields_count < 0 ) {
 				throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
 			}
 			FieldDescriptor[] fieldDescriptorList = new FieldDescriptor[fields_count];
 			for (int i = 0; i < fields_count; i++) {
-				fieldDescriptorList[i] = readField(thisClassDescriptor);
+				fieldDescriptorList[i] = readField(classInfo.getClassDescriptor());
 			}
 			
 			int methods_count = in.readUnsignedShort();
@@ -139,7 +153,7 @@ public class ClassParser {
 			}
 			MethodDescriptor[] methodDescriptorList = new MethodDescriptor[methods_count];
 			for (int i = 0; i < methods_count; i++) {
-				methodDescriptorList[i] = readMethod(thisClassDescriptor);
+				methodDescriptorList[i] = readMethod(classInfo.getClassDescriptor());
 			}
 			
 			// Extract all references to other classes,
