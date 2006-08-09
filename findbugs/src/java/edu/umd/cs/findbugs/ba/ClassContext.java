@@ -444,7 +444,6 @@ public class ClassContext {
 		 */
 		@Override
 		public boolean isDataflow() {
-			// TODO Auto-generated method stub
 			return false;
 		}
 	}
