@@ -97,9 +97,31 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 			result = result + ", [decision=" + decision.toString() + "]";
 		}
 		if (knownValueMap != null) {
-			result = result + ", [known=" + knownValueMap.toString() + "]";
+//			result = result + ", [known=" + knownValueMap.toString() + "]";
+			StringBuffer buf = new StringBuffer();
+			buf.append("{");
+			boolean first = true;
+			for (Map.Entry<ValueNumber, IsNullValue> entry : knownValueMap.entrySet()) {
+				if (!first) {
+					buf.append(", ");
+				} else {
+					first = false;
+				}
+				buf.append(trim(entry.getKey().toString()));
+				buf.append("->");
+				buf.append(trim(entry.getValue().toString()));
+			}
+			buf.append("}");
+			result += ", [known=" + buf.toString() + "]";
 		}
 		return result;
+	}
+
+	private static String trim(String value) {
+		if (value.endsWith(",")) {
+			value = value.substring(0, value.length() - 1);
+		}
+		return value;
 	}
 }
 
