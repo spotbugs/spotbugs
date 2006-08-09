@@ -25,6 +25,7 @@ import java.util.Map;
 
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.util.Strings;
 
 public class IsNullValueFrame extends Frame<IsNullValue> {
 	private IsNullConditionDecision decision;
@@ -77,6 +78,8 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 			}
 			replaceMap.put(entry.getKey(), IsNullValue.merge(entry.getValue(), otherKnownValue));
 		}
+		knownValueMap.clear();
+		knownValueMap.putAll(replaceMap);
 	}
 	
 	/* (non-Javadoc)
@@ -107,21 +110,14 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 				} else {
 					first = false;
 				}
-				buf.append(trim(entry.getKey().toString()));
+				buf.append(Strings.trimComma(entry.getKey().toString()));
 				buf.append("->");
-				buf.append(trim(entry.getValue().toString()));
+				buf.append(Strings.trimComma(entry.getValue().toString()));
 			}
 			buf.append("}");
 			result += ", [known=" + buf.toString() + "]";
 		}
 		return result;
-	}
-
-	private static String trim(String value) {
-		if (value.endsWith(",")) {
-			value = value.substring(0, value.length() - 1);
-		}
-		return value;
 	}
 }
 
