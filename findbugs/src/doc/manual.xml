@@ -78,7 +78,7 @@ as information about the &FindBugs; mailing lists.</para>
 &FindBugs; is platform independent, and is known to run on GNU/Linux, Windows, and
 MacOS X platforms.</para>
 
-<para>You should have at least 256 MB of memory to use &FindBugs;.
+<para>You should have at least 512 MB of memory to use &FindBugs;.
 To analyze very large projects, more memory may be needed.</para>
 </sect1>
  
@@ -462,6 +462,19 @@ These options are only accepted by the Text User Interface.
   <listitem>
     <para>
     Produce the bug reports in xdoc XML format for use with Apache Maven.
+    </para>
+  </listitem>
+  </varlistentry>
+
+  <varlistentry>
+  <term><command>-nested</command><replaceable>[:true|false]</replaceable></term>
+  <listitem>
+    <para>
+    This option enables or disables scanning of nested jar and zip files found in
+    the list of files and directories to be analyzed.
+    By default, scanning of nested jar/zip files is enabled.
+    To disable it, add <command>-nested:false</command> to the command line
+    arguments.
     </para>
   </listitem>
   </varlistentry>
