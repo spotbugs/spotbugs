@@ -661,6 +661,7 @@ public class FindNullDeref
 		        .addClassAndMethod(methodGen, sourceFile);
 		if (variable != null)
 			bugInstance.add(variable);
+		else bugInstance.add(new LocalVariableAnnotation("?",-1,-1));
 		bugInstance.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
 
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
