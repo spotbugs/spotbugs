@@ -72,5 +72,18 @@ public class Strings {
 		sb.append(']');
 		return sb.toString();
 	}
+	
+	/**
+	 * Trim trailing comma from given string.
+	 * 
+	 * @param s a string
+	 * @return the same string with trailing comma trimmed (if any)
+	 */
+	public static String trimComma(String s) {
+		if (s.endsWith(",")) {
+			s = s.substring(0, s.length() - 1);
+		}
+		return s;
+	}
 
 }
