@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.npe;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.util.Strings;
 
 /**
  * A control decision which resulted in information being gained
@@ -97,13 +98,13 @@ public class IsNullConditionDecision implements EdgeTypes {
 	}
 
 	@Override
-         public String toString() {
+	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(value != null ? value.toString() : "NoValue,");
 		buf.append("ifcmp=");
-		buf.append(ifcmpDecision != null ? ifcmpDecision.toString() : "INFEASIBLE");
+		buf.append(ifcmpDecision != null ? Strings.trimComma(ifcmpDecision.toString()) : "INFEASIBLE");
 		buf.append(",fallthru=");
-		buf.append(fallThroughDecision != null ? fallThroughDecision.toString() : "INFEASIBLE");
+		buf.append(fallThroughDecision != null ? Strings.trimComma(fallThroughDecision.toString()) : "INFEASIBLE");
 		return buf.toString();
 	}
 }
