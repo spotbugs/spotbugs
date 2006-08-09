@@ -199,9 +199,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 					continue;
 				}
 				
-				ClassDescriptor classDescriptor =
-//					ClassDescriptor.fromResourceName(entry.getResourceName());
-					entry.getClassDescriptor();
+				ClassDescriptor classDescriptor = entry.getClassDescriptor();
 				if (classDescriptor == null) throw new IllegalStateException();
 
 				if (appClassSet.contains(classDescriptor)) {
