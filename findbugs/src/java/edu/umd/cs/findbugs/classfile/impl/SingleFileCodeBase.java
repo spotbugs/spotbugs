@@ -208,7 +208,8 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 			try {
 				in = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)));
 				ClassParser classParser = new ClassParser(in, null, new SingleFileCodeBaseEntry(this));
-				ClassInfo classInfo = classParser.parse();
+				ClassInfo classInfo = new ClassInfo();
+				classParser.parse(classInfo);
 				return classInfo.getClassDescriptor();
 			} finally {
 				if (in != null) {

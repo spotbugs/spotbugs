@@ -57,7 +57,8 @@ public class ClassInfoAnalysisEngine implements IClassAnalysisEngine {
 
 		// Read the class info
 		ClassParser parser = new ClassParser(classDataIn, descriptor, classData.getCodeBaseEntry());
-		ClassInfo classInfo = parser.parse();
+		ClassInfo classInfo = new ClassInfo();
+		parser.parse(classInfo);
 		
 		if (!classInfo.getClassDescriptor().equals(descriptor)) {
 			throw new ClassNameMismatchException(

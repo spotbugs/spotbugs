@@ -74,10 +74,11 @@ public class ClassParser {
 	 * Parse the class data into a ClassInfo object containing
 	 * (some of) the class's symbolic information.
 	 * 
-	 * @return a ClassInfo object with (some of) the class's symbolic information
+	 * @param classInfo a ClassInfo object to be filled in with (some of)
+	 *                   the class's symbolic information
 	 * @throws InvalidClassFileFormatException
 	 */
-	public ClassInfo parse() throws InvalidClassFileFormatException {
+	public void parse(ClassInfo classInfo) throws InvalidClassFileFormatException {
 		
 		try {
 			// Parse the class file
@@ -116,6 +117,12 @@ public class ClassParser {
 			for (int i = 0; i < interfaceDescriptorList.length; i++) {
 				interfaceDescriptorList[i] = getClassDescriptor(in.readUnsignedShort());
 			}
+
+			classInfo.setClassDescriptor(thisClassDescriptor);
+			classInfo.setSuperclassDescriptor(superClassDescriptor);
+			classInfo.setInterfaceDescriptorList(interfaceDescriptorList);
+			classInfo.setCodeBaseEntry(codeBaseEntry);
+			classInfo.setAccessFlags(access_flags);
 			
 			int fields_count = in.readUnsignedShort();
 			if (fields_count < 0 ) {
@@ -140,16 +147,9 @@ public class ClassParser {
 			// signatures.
 			ClassDescriptor[] referencedClassDescriptorList = extractReferencedClasses();
 			
-			return new ClassInfo(
-					thisClassDescriptor,
-					superClassDescriptor,
-					interfaceDescriptorList,
-					codeBaseEntry,
-					access_flags,
-					fieldDescriptorList,
-					methodDescriptorList,
-					referencedClassDescriptorList);
-			
+			classInfo.setFieldDescriptorList(fieldDescriptorList);
+			classInfo.setMethodDescriptorList(methodDescriptorList);
+			classInfo.setReferencedClassDescriptorList(referencedClassDescriptorList);
 		} catch (IOException e) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
 		}
