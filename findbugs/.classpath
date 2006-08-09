@@ -11,7 +11,11 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/AppleJavaExtensions.jar"/>
-	<classpathentry exported="true" sourcepath="/bcel/src" kind="lib" path="lib/bcel.jar"/>
+	<classpathentry exported="true" sourcepath="/bcel/src" kind="lib" path="lib/bcel.jar">
+		<attributes>
+			<attribute value="http://jakarta.apache.org/bcel/apidocs/" name="javadoc_location"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/dom4j-full.jar"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.apache.ant_1.6.5/lib/ant.jar"/>
