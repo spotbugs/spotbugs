@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.SystemProperties;
  * @see Dataflow
  * @see DataflowAnalysis
  */
-public abstract class DataflowTestDriver <Fact, AnalysisType extends AbstractDataflowAnalysis<Fact>> {
+public abstract class DataflowTestDriver <Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>> {
 	private boolean overrideIsForwards;
 	
 	public void overrideIsForwards() {

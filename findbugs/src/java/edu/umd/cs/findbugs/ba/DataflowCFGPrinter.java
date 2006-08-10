@@ -27,7 +27,7 @@ import org.apache.bcel.generic.InstructionHandle;
  * CFGPrinter class which prints dataflow values at
  * each basic block and instruction.
  */
-public class DataflowCFGPrinter <Fact, AnalysisType extends AbstractDataflowAnalysis<Fact>> extends CFGPrinter {
+public class DataflowCFGPrinter <Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>> extends CFGPrinter {
 	private Dataflow<Fact, AnalysisType> dataflow;
 	private AnalysisType analysis;
 
@@ -83,7 +83,7 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends AbstractDataflowAnal
 	 * @param analysis       dataflow analysis
 	 * @param out            PrintStream to use
 	 */
-	private static<Fact, AnalysisType extends AbstractDataflowAnalysis<Fact>>
+	private static<Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>>
 	void printCFG(CFG cfg, Dataflow<Fact, AnalysisType> dataflow, AnalysisType analysis, PrintStream out) {
 		DataflowCFGPrinter<Fact, AnalysisType> printer =
 			new DataflowCFGPrinter<Fact, AnalysisType>(cfg, dataflow, analysis);
