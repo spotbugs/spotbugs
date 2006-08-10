@@ -58,7 +58,7 @@ public class Obligation {
 	}
 	
 	@Override
-         public String toString() {
+	public String toString() {
 		// Make dataflow output more compact by dropping package
 		int lastDot = className.lastIndexOf('.');
 		return lastDot >= 0 ? className.substring(lastDot+1) : className;
