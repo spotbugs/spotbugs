@@ -429,6 +429,32 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	public Location getLocationOfKaBoom() {
 		return locationOfKaBoom;
 	}
+
+	/**
+	 * Control split: move given value down in the lattice
+	 * if it is a conditionally-null value.
+	 * 
+	 * @param value the value
+	 * @return another value (equal or further down in the lattice)
+	 */
+	public IsNullValue downgradeOnControlSplit() {
+		IsNullValue value = this;
+		
+		if (NCP_EXTRA_BRANCH) {
+			// Experimental: track two distinct kinds of "null on complex path" values.
+			if (value.equals(nullOnSimplePathValue()))
+				value = nullOnComplexPathValue();
+			else if (value.equals(nullOnComplexPathValue()))
+				value = nullOnComplexPathValue3();
+				
+		} else {
+			// Downgrade "null on simple path" values to
+			// "null on complex path".
+			if (value.equals(nullOnSimplePathValue()))
+				value = nullOnComplexPathValue();
+		}
+		return value;
+	}
 }
 
 // vim:ts=4

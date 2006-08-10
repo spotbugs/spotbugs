@@ -119,6 +119,25 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		}
 		return result;
 	}
+
+	/**
+	 * Downgrade all NSP values in frame.
+	 * Should be called when a non-exception control split occurs.
+	 */
+	public void downgradeOnControlSplit() {
+		final int numSlots = getNumSlots();
+		for (int i = 0; i < numSlots; ++i) {
+			IsNullValue value = getValue(i);
+			value = value.downgradeOnControlSplit();
+			setValue(i, value);
+		}
+		
+		if (knownValueMap != null) {
+			for (Map.Entry<ValueNumber, IsNullValue> entry : knownValueMap.entrySet()) {
+				entry.setValue(entry.getValue().downgradeOnControlSplit());
+			}
+		}
+	}
 }
 
 // vim:ts=4

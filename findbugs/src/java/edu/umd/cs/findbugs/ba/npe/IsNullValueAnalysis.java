@@ -284,17 +284,10 @@ public class IsNullValueAnalysis
 
 			if (!NO_SPLIT_DOWNGRADE_NSP) {
 				// Downgrade NSP to DNR on non-exception control splits
-				if (!edge.isExceptionEdge() && numNonExceptionSuccessorMap[edge.getSource().getId()] > 1) {
+				if (!edge.isExceptionEdge()
+						&& numNonExceptionSuccessorMap[edge.getSource().getId()] > 1) {
 					tmpFact = modifyFrame(fact, tmpFact);
-
-					for (int i = 0; i < numSlots; ++i) {
-//						IsNullValue value = tmpFact.getValue(i);
-//						if (value.equals(IsNullValue.nullOnSimplePathValue()))
-//							tmpFact.setValue(i, IsNullValue.nullOnComplexPathValue());
-						IsNullValue value = tmpFact.getValue(i);
-						value = downgradeOnControlSplit(value);
-						tmpFact.setValue(i, value);
-					}
+					tmpFact.downgradeOnControlSplit();
 				}
 			}
 
@@ -420,7 +413,9 @@ public class IsNullValueAnalysis
 		// Normal dataflow merge
 		mergeInto(fact, result);
 	}
-	
+
+
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.FrameDataflowAnalysis#mergeInto(edu.umd.cs.findbugs.ba.Frame, edu.umd.cs.findbugs.ba.Frame)
 	 */
@@ -452,30 +447,6 @@ public class IsNullValueAnalysis
 		return locationWhereValueBecomesNullSet;
 	}
 
-	/**
-	 * Control split: move given value down in the lattice
-	 * if it is a conditionally-null value.
-	 * 
-	 * @param value the value
-	 * @return another value (equal or further down in the lattice)
-	 */
-	private IsNullValue downgradeOnControlSplit(IsNullValue value) {
-		if (NCP_EXTRA_BRANCH) {
-			// Experimental: track two distinct kinds of "null on complex path" values.
-			if (value.equals(IsNullValue.nullOnSimplePathValue()))
-				value = IsNullValue.nullOnComplexPathValue();
-			else if (value.equals(IsNullValue.nullOnComplexPathValue()))
-				value = IsNullValue.nullOnComplexPathValue3();
-				
-		} else {
-			// Downgrade "null on simple path" values to
-			// "null on complex path".
-			if (value.equals(IsNullValue.nullOnSimplePathValue()))
-				value = IsNullValue.nullOnComplexPathValue();
-		}
-		return value;
-	}
-	
 	@Override
 	protected void mergeValues(IsNullValueFrame otherFrame, IsNullValueFrame resultFrame, int slot)
 			throws DataflowAnalysisException {
