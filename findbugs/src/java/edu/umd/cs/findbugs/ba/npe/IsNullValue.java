@@ -131,7 +131,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	}
 
 	@Override
-         public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		if (o == null || this.getClass() != o.getClass())
 			return false;
 		IsNullValue other = (IsNullValue) o;
@@ -142,7 +142,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	}
 
 	@Override
-         public int hashCode() {
+	public int hashCode() {
 		int hashCode =  kind;
 		if (locationOfKaBoom != null)
 			hashCode += locationOfKaBoom.hashCode();
@@ -182,7 +182,8 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	public boolean isChecked() {
 		return getBaseKind() == CHECKED_NULL || getBaseKind() == CHECKED_NN;
 	}
-/**
+
+	/**
 	 * Is this value known to be non null because a NPE would have occurred otherwise?
 	 */
 	public boolean wouldHaveBeenAKaboom() {
@@ -227,6 +228,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	public static IsNullValue checkedNullValue() {
 		return instanceByFlagsList[0][CHECKED_NULL];
 	}
+
 	/**
 	 * Get the instance representing values that are definitely not null.
 	 */
@@ -242,7 +244,8 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	public static IsNullValue checkedNonNullValue() {
 		return instanceByFlagsList[0][CHECKED_NN];
 	}
-/**
+
+	/**
 	 * Get the instance representing a value known to be non-null
 	 * because a NPE would have occurred if it were null.
 	 */
@@ -266,6 +269,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	public static IsNullValue parameterMarkedAsMightBeNull(XMethodParameter mp) {
 		return instanceByFlagsList[PARAM >> FLAG_SHIFT][NSP];
 	}
+	
 	/**
 	 * Get non-reporting non-null value.
 	 * This is what we use for unknown values.
