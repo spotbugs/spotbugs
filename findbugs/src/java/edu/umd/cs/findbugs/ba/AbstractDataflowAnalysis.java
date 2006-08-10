@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2003,2004 University of Maryland
+ * Copyright (C) 2003-2006, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,20 +30,15 @@ import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 
 /**
  * Abstract base class providing functionality that will be useful
- * for most dataflow analysis implementations.  In particular, it implements
- * the transfer() function by calling down to the transferInstruction() function.
- * It also maintains a map of the dataflow fact for every location in the CFG,
- * which is useful when using the results of the analysis.
+ * for most dataflow analysis implementations that model instructions
+ * within basic blocks.
  *
  * @author David Hovemeyer
  * @see Dataflow
  * @see DataflowAnalysis
  */
-public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysis<Fact> {
+public abstract class AbstractDataflowAnalysis <Fact> extends BasicAbstractDataflowAnalysis<Fact> {
 	private static final boolean DEBUG = SystemProperties.getBoolean("dataflow.transfer");
-
-	private IdentityHashMap<BasicBlock, Fact> startFactMap = new IdentityHashMap<BasicBlock, Fact>();
-	private IdentityHashMap<BasicBlock, Fact> resultFactMap = new IdentityHashMap<BasicBlock, Fact>();
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
@@ -74,6 +69,7 @@ public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysi
 	 * @param location the location
 	 * @return the fact at the point just before the location
 	 */
+	@Override
 	public Fact getFactAtLocation(Location location) throws DataflowAnalysisException {
 		Fact start = getStartFact(location.getBasicBlock());
 		Fact result = createFact();
@@ -87,6 +83,7 @@ public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysi
 	 * Note "after" is meant in the logical sense, so for backward analyses,
 	 * after means before the location in the control flow sense.
 	 */
+	@Override
 	public Fact getFactAfterLocation(Location location) throws DataflowAnalysisException {
 		BasicBlock basicBlock = location.getBasicBlock();
 		InstructionHandle handle = location.getHandle();
@@ -96,58 +93,10 @@ public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysi
 		else
 			return getFactAtLocation(new Location(isForwards() ? handle.getNext() : handle.getPrev(), basicBlock));
 	}
-	
-	/**
-	 * Get the fact that is true on the given control edge.
-	 * 
-	 * @param edge the edge
-	 * @return the fact that is true on the edge
-	 * @throws DataflowAnalysisException 
-	 */
-	public Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
-		BasicBlock block = isForwards() ? edge.getSource() : edge.getTarget();
-		Fact fact = createFact();
-		makeFactTop(fact);
-		meetInto(getResultFact(block), edge, fact);
-		return fact;
-	}
-
-	/**
-	 * Get an iterator over the result facts.
-	 */
-	public Iterator<Fact> resultFactIterator() {
-		return resultFactMap.values().iterator();
-	}
-
-	/**
-	 * Call this to get a dataflow value as a String.
-	 * By default, we just call toString().
-	 * Subclasses may override to get different behavior.
-	 */
-	public String factToString(Fact fact) {
-		return fact.toString();
-	}
 
 	/* ----------------------------------------------------------------------
 	 * Implementations of interface methods
 	 * ---------------------------------------------------------------------- */
-
-	public Fact getStartFact(BasicBlock block) {
-		return lookupOrCreateFact(startFactMap, block);
-	}
-
-	public Fact getResultFact(BasicBlock block) {
-		return lookupOrCreateFact(resultFactMap, block);
-	}
-
-	private Fact lookupOrCreateFact(Map<BasicBlock, Fact> map, BasicBlock block) {
-		Fact fact = map.get(block);
-		if (fact == null) {
-			fact = createFact();
-			map.put(block, fact);
-		}
-		return fact;
-	}
 
 	public void transfer(BasicBlock basicBlock, InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException {
 		copy(start, result);
@@ -168,20 +117,6 @@ public abstract class AbstractDataflowAnalysis <Fact> implements DataflowAnalysi
 				if (DEBUG && end == null) System.out.println(" ==> " + result.toString());
 			}
 		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#startIteration()
-	 */
-	public void startIteration() {
-		// Do nothing - subclass may override
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#finishIteration()
-	 */
-	public void finishIteration() {
-		// Do nothing - subclass may override
 	}
 
 }
