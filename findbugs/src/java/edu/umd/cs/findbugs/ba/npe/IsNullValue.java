@@ -434,7 +434,6 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	 * Control split: move given value down in the lattice
 	 * if it is a conditionally-null value.
 	 * 
-	 * @param value the value
 	 * @return another value (equal or further down in the lattice)
 	 */
 	public IsNullValue downgradeOnControlSplit() {
