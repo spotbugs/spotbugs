@@ -29,14 +29,12 @@ import org.apache.bcel.generic.InstructionHandle;
  */
 public class DataflowCFGPrinter <Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>> extends CFGPrinter {
 	private Dataflow<Fact, AnalysisType> dataflow;
-	private AnalysisType analysis;
 
-	public DataflowCFGPrinter(CFG cfg, Dataflow<Fact, AnalysisType> dataflow, AnalysisType analysis) {
-		super(cfg);
+	public DataflowCFGPrinter(Dataflow<Fact, AnalysisType> dataflow) {
+		super(dataflow.getCFG());
 		this.dataflow = dataflow;
-		this.analysis = analysis;
 
-		setIsForwards(analysis.isForwards());
+		setIsForwards(dataflow.getAnalysis().isForwards());
 	}
 	
 	/* (non-Javadoc)
@@ -46,7 +44,7 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends BasicAbstractDataflo
 	public String edgeAnnotate(Edge edge) {
 		String edgeAnnotation= "";
 		try {
-			edgeAnnotation = " " + analysis.factToString(analysis.getFactOnEdge(edge)); 
+			edgeAnnotation = " " + dataflow.getAnalysis().factToString(dataflow.getAnalysis().getFactOnEdge(edge)); 
 		} catch (Throwable e) {
 			// ignore
 		}
@@ -55,19 +53,19 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends BasicAbstractDataflo
 
 	@Override
 	public String blockStartAnnotate(BasicBlock bb) {
-		return " " + analysis.factToString(dataflow.getStartFact(bb));
+		return " " + dataflow.getAnalysis().factToString(dataflow.getStartFact(bb));
 	}
 
 	@Override
 	public String blockAnnotate(BasicBlock bb) {
-		return " " + analysis.factToString(dataflow.getResultFact(bb));
+		return " " + dataflow.getAnalysis().factToString(dataflow.getResultFact(bb));
 	}
 
 	@Override
 	public String instructionAnnotate(InstructionHandle handle, BasicBlock bb) {
 		try {
-			Fact result = analysis.getFactAtLocation(new Location(handle, bb));
-			return " " + analysis.factToString(result);
+			Fact result = dataflow.getAnalysis().getFactAtLocation(new Location(handle, bb));
+			return " " + dataflow.getAnalysis().factToString(result);
 		} catch (DataflowAnalysisException e) {
 			throw new IllegalStateException("Caught exception: " + e.toString());
 		}
@@ -83,10 +81,10 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends BasicAbstractDataflo
 	 * @param analysis       dataflow analysis
 	 * @param out            PrintStream to use
 	 */
-	private static<Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>>
-	void printCFG(CFG cfg, Dataflow<Fact, AnalysisType> dataflow, AnalysisType analysis, PrintStream out) {
+	public static<Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>>
+	void printCFG(Dataflow<Fact, AnalysisType> dataflow, PrintStream out) {
 		DataflowCFGPrinter<Fact, AnalysisType> printer =
-			new DataflowCFGPrinter<Fact, AnalysisType>(cfg, dataflow, analysis);
+			new DataflowCFGPrinter<Fact, AnalysisType>(dataflow);
 		printer.print(out);
 	}
 	

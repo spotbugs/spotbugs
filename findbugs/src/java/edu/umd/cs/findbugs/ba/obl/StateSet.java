@@ -180,7 +180,7 @@ public class StateSet {
 	}
 	
 	@Override
-         public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		if (o == null || o.getClass() != this.getClass())
 			return false;
 		StateSet other = (StateSet) o;
@@ -190,12 +190,12 @@ public class StateSet {
 	}
 	
 	@Override
-         public int hashCode() {
+	public int hashCode() {
 		throw new UnsupportedOperationException();
 	}
 	
 	@Override
-         public String toString() {
+	public String toString() {
 		if (isTop)
 			return "TOP";
 		else if (isBottom)

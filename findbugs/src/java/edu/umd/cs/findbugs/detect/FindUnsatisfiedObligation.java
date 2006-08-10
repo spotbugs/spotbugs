@@ -127,9 +127,7 @@ public class FindUnsatisfiedObligation implements Detector {
 			
 			if (DEBUG_PRINTCFG) {
 				System.out.println("Dataflow CFG:");
-				DataflowCFGPrinter<StateSet, ObligationAnalysis> cfgPrinter =
-					new DataflowCFGPrinter<StateSet, ObligationAnalysis>(cfg, dataflow, analysis);
-				cfgPrinter.print(System.out);
+				DataflowCFGPrinter.printCFG(dataflow, System.out);
 			}
 			
 			// See if there are any states with nonempty obligation sets

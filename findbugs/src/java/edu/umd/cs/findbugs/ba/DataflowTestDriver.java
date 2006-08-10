@@ -123,7 +123,7 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends BasicAbstra
 		examineResults(cfg, dataflow);
 
 		if (SystemProperties.getBoolean("dataflow.printcfg")) {
-			CFGPrinter p = new DataflowCFGPrinter<Fact, AnalysisType>(cfg, dataflow, dataflow.getAnalysis());
+			CFGPrinter p = new DataflowCFGPrinter<Fact, AnalysisType>(dataflow);
 			if (overrideIsForwards) {
 				p.setIsForwards(!p.isForwards());
 			}
