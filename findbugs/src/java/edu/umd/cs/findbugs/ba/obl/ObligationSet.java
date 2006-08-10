@@ -53,8 +53,18 @@ public class ObligationSet {
 
 	public void remove(Obligation obligation) throws NonexistentObligationException {
 		short count = countList[obligation.getId()];
-		if (count <= 0)
-			throw new NonexistentObligationException(obligation);
+		
+		// It is possible to remove a nonexistent obligation.
+		// Generally this indicates buggy code, e.g.
+		//     InputStream in = null;
+		//     try {
+		//       in = new FileInputStream(...);
+		//     } catch (IOException e) {
+		//        in.close(); // in might be null!
+		//     }
+//		if (count <= 0)
+//			throw new NonexistentObligationException(obligation);
+		
 		invalidate();
 		countList[obligation.getId()] = (short)(count - 1);
 	}
