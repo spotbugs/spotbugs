@@ -21,7 +21,7 @@ public class MismatchedWaitFalsePositive {
 
 	public void notifyAllOnLock() {
 		synchronized (lock) {
-			lock.notifyAll();
+			lock.notify();
 		}
 	}
 

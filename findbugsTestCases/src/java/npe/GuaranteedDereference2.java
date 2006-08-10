@@ -7,7 +7,6 @@ public class GuaranteedDereference2 {
 	}
 
 	static int g() {
-
 		Object x = null;
 		try {
 			f();
@@ -19,4 +18,16 @@ public class GuaranteedDereference2 {
 		return x.hashCode();
 	}
 
+	static int g2() {
+		Object x = null;
+		try {
+			f();
+			x = new Object();
+			f();
+			int tmp = x.hashCode();
+		} catch (IOException e) {
+			// ignore it
+		}
+		return x.hashCode();
+	}
 }
