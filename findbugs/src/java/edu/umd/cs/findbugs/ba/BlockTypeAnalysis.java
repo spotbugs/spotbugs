@@ -38,10 +38,8 @@ import edu.umd.cs.findbugs.SystemProperties;
  * @see BlockType
  * @author David Hovemeyer
  */
-public class BlockTypeAnalysis implements DataflowAnalysis<BlockType> {
+public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> {
 	private DepthFirstSearch dfs;
-	private Map<BasicBlock, BlockType> startFactMap;
-	private Map<BasicBlock, BlockType> resultFactMap;
 
 	/**
 	 * Constructor.
@@ -50,20 +48,10 @@ public class BlockTypeAnalysis implements DataflowAnalysis<BlockType> {
 	 */
 	public BlockTypeAnalysis(DepthFirstSearch dfs) {
 		this.dfs = dfs;
-		this.startFactMap = new HashMap<BasicBlock, BlockType>();
-		this.resultFactMap = new HashMap<BasicBlock, BlockType>();
 	}
 
 	public BlockType createFact() {
 		return new BlockType();
-	}
-
-	public BlockType getStartFact(BasicBlock block) {
-		return lookupOrCreateFact(startFactMap, block);
-	}
-
-	public BlockType getResultFact(BasicBlock block) {
-		return lookupOrCreateFact(resultFactMap, block);
 	}
 
 	public void copy(BlockType source, BlockType dest) {
@@ -118,74 +106,24 @@ public class BlockTypeAnalysis implements DataflowAnalysis<BlockType> {
 	public void meetInto(BlockType fact, Edge edge, BlockType result) throws DataflowAnalysisException {
 		result.mergeWith(fact);
 	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#startIteration()
-	 */
-	public void startIteration() {
-		// nothing to do
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#finishIteration()
-	 */
-	public void finishIteration() {
-		// nothing to do
-	}
-
-	private BlockType lookupOrCreateFact(Map<BasicBlock, BlockType> map, BasicBlock block) {
-		BlockType fact = map.get(block);
-		if (fact == null) {
-			fact = createFact();
-			map.put(block, fact);
-		}
-		return fact;
-	}
 
 	public static void main(String[] argv) throws Exception {
 		if (argv.length != 1) {
 			System.err.println("Usage: " + BlockTypeAnalysis.class.getName() + " <classfile>");
 			System.exit(1);
 		}
-
-		RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
-
-		AnalysisContext analysisContext = AnalysisContext.create(lookupFailureCallback);
-
-		JavaClass jclass = new ClassParser(argv[0]).parse();
-		ClassContext classContext = analysisContext.getClassContext(jclass);
-
-		String methodName = SystemProperties.getProperty("blocktype.method");
-
-		Method[] methodList = jclass.getMethods();
-		for (Method method : methodList) {
-			if (method.isNative() || method.isAbstract())
-				continue;
-
-			if (methodName != null && !methodName.equals(method.getName()))
-				continue;
-
-			System.out.println("Method: " + method.getName());
-
-			CFG cfg = classContext.getCFG(method);
-			DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
-
-			final BlockTypeAnalysis analysis = new BlockTypeAnalysis(dfs);
-			Dataflow<BlockType, BlockTypeAnalysis> dataflow =
-					new Dataflow<BlockType, BlockTypeAnalysis>(cfg, analysis);
-			dataflow.execute();
-
-			if (SystemProperties.getBoolean("blocktype.printcfg")) {
-				CFGPrinter cfgPrinter = new CFGPrinter(cfg) {
-					@Override
-                                         public String blockAnnotate(BasicBlock block) {
-						BlockType blockType = analysis.getResultFact(block);
-						return " [Block type: " + blockType.toString() + "]";
-					}
-				};
-				cfgPrinter.print(System.out);
+		
+		DataflowTestDriver<BlockType, BlockTypeAnalysis> driver = new DataflowTestDriver<BlockType, BlockTypeAnalysis>() {
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
+			 */
+			@Override
+			public Dataflow<BlockType, BlockTypeAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+				return classContext.getBlockTypeDataflow(method);
 			}
-		}
+		};
+		
+		driver.execute(argv[0]);
 	}
 }
 
