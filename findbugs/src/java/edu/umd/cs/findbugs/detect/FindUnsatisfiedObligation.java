@@ -182,7 +182,7 @@ public class FindUnsatisfiedObligation implements Detector {
 		// obligations.
 		result.addEntry("java.io.FileInputStream", "<init>", "(Ljava/lang/String;)V", false,
 				PolicyDatabase.ADD, inputStreamObligation);
-		result.addEntry("java.io.OutputStream", "<init>", "(Ljava/lang/String;)V", false,
+		result.addEntry("java.io.FileOutputStream", "<init>", "(Ljava/lang/String;)V", false,
 				PolicyDatabase.ADD, outputStreamObligation);
 		result.addEntry("java.io.InputStream", "close", "()V", false,
 				PolicyDatabase.DEL, inputStreamObligation);

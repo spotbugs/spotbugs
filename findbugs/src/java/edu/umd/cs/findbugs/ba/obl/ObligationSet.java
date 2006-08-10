@@ -34,11 +34,13 @@ package edu.umd.cs.findbugs.ba.obl;
 public class ObligationSet {
 	private static final int INVALID_HASH_CODE = -1;
 
-	private short[] countList;
+	private final short[] countList;
+	private final ObligationFactory factory;
 	private int cachedHashCode;
 
-	public ObligationSet(int maxObligationTypes) {
+	public ObligationSet(int maxObligationTypes, ObligationFactory factory) {
 		this.countList = new short[maxObligationTypes];
+		this.factory = factory;
 		invalidate();
 	}
 	
@@ -105,12 +107,7 @@ public class ObligationSet {
 				continue;
 			if (count > 0)
 				buf.append(",");
-			if (ObligationFactory.lastInstance != null) {
-				buf.append(ObligationFactory.lastInstance.getObligationById(i).toString());
-			} else {
-				buf.append("id=");
-				buf.append(i);
-			}
+			buf.append(factory.getObligationById(i).toString());
 			buf.append("*");
 			buf.append(countList[i]);
 			++count;
@@ -120,7 +117,7 @@ public class ObligationSet {
 	}
 	
 	public ObligationSet duplicate() {
-		ObligationSet dup = new ObligationSet(countList.length);
+		ObligationSet dup = new ObligationSet(countList.length, factory);
 		System.arraycopy(this.countList, 0, dup.countList, 0, countList.length);
 		return dup;
 	}

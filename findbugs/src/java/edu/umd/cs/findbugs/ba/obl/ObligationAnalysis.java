@@ -93,7 +93,7 @@ public class ObligationAnalysis
 	}
 
 	public StateSet createFact() {
-		return new StateSet();
+		return new StateSet(factory);
 	}
 
 	@Override

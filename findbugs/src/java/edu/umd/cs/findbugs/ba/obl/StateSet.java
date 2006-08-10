@@ -46,10 +46,12 @@ public class StateSet {
 	private boolean isTop;
 	private boolean isBottom;
 	private Map<ObligationSet, State> stateMap;
+	private ObligationFactory factory;
 
-	public StateSet() {
+	public StateSet(ObligationFactory factory) {
 		this.isTop = this.isBottom = false;
 		this.stateMap = new HashMap<ObligationSet, State>();
+		this.factory = factory;
 	}
 
 	public void setTop() {
@@ -105,7 +107,7 @@ public class StateSet {
 		this.stateMap.clear();
 		
 		// Add initial fact: empty obligations, empty path
-		State initState = new State(factory.getMaxObligationTypes());
+		State initState = new State(factory.getMaxObligationTypes(), factory);
 		this.stateMap.put(initState.getObligationSet(), initState);
 	}
 	
@@ -130,7 +132,7 @@ public class StateSet {
 	 * @return an exact deep copy of this StateSet
 	 */
 	public StateSet duplicate() {
-		StateSet dup = new StateSet();
+		StateSet dup = new StateSet(factory);
 		dup.copyFrom(this);
 		return dup;
 	}

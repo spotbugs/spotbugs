@@ -35,13 +35,13 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 public class ObligationFactory {
 	private Map<String, Obligation> classNameToObligationMap;
 	
-	// XXX: this is just for debugging.
-	static ObligationFactory lastInstance;
+//	// XXX: this is just for debugging.
+//	static ObligationFactory lastInstance;
 
 	@SuppressWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
 	public ObligationFactory() {
 		this.classNameToObligationMap = new HashMap<String, Obligation>();
-		lastInstance = this;
+//		lastInstance = this;
 	}
 
 	public int getMaxObligationTypes() {
@@ -99,7 +99,7 @@ public class ObligationFactory {
 //	}
 
 	public ObligationSet createObligationSet() {
-		return new ObligationSet(getMaxObligationTypes());
+		return new ObligationSet(getMaxObligationTypes(), this);
 	}
 }
 

@@ -38,8 +38,8 @@ public class State {
 	private State() {		
 	}
 
-	public State(int maxObligationTypes) {
-		this.obligationSet = new ObligationSet(maxObligationTypes);
+	public State(int maxObligationTypes, ObligationFactory factory) {
+		this.obligationSet = new ObligationSet(maxObligationTypes, factory);
 		this.path = new Path();
 	}
 	
