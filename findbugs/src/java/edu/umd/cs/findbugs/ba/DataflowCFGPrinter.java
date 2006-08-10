@@ -76,9 +76,7 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends BasicAbstractDataflo
 	 * 
 	 * @param <Fact>         Dataflow fact type
 	 * @param <AnalysisType> Dataflow analysis type
-	 * @param cfg            control flow graph
 	 * @param dataflow       dataflow driver
-	 * @param analysis       dataflow analysis
 	 * @param out            PrintStream to use
 	 */
 	public static<Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>>
