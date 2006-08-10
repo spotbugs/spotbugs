@@ -63,41 +63,32 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 			System.err.println("Usage: " + DominatorsAnalysis.class.getName() + " <classfile>");
 			System.exit(1);
 		}
-
-		RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
-
-		AnalysisContext analysisContext = AnalysisContext.create(lookupFailureCallback);
-
-		JavaClass jclass = new ClassParser(argv[0]).parse();
-		ClassContext classContext = analysisContext.getClassContext(jclass);
-
-		String methodName = SystemProperties.getProperty("dominators.method");
-		boolean ignoreExceptionEdges = SystemProperties.getBoolean("dominators.ignoreExceptionEdges");
-
-		Method[] methodList = jclass.getMethods();
-		for (Method method : methodList) {
-			if (method.isNative() || method.isAbstract())
-				continue;
-
-			if (methodName != null && !methodName.equals(method.getName()))
-				continue;
-
-			System.out.println("Method: " + method.getName());
-
-			CFG cfg = classContext.getCFG(method);
-			DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
-
-			DominatorsAnalysis analysis = new DominatorsAnalysis(cfg, dfs, ignoreExceptionEdges);
-			Dataflow<BitSet, DominatorsAnalysis> dataflow =
+		
+		DataflowTestDriver<BitSet, DominatorsAnalysis> driver =
+			new DataflowTestDriver<BitSet, DominatorsAnalysis>() {
+			
+			/* (non-Javadoc)
+			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
+			 */
+			@Override
+			public Dataflow<BitSet, DominatorsAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
+				CFG cfg = classContext.getCFG(method);
+				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
+				
+				DominatorsAnalysis analysis =
+					new DominatorsAnalysis(cfg, dfs, SystemProperties.getBoolean("dominators.ignoreexceptionedges"));
+			
+				Dataflow<BitSet, DominatorsAnalysis> dataflow =
 					new Dataflow<BitSet, DominatorsAnalysis>(cfg, analysis);
-			dataflow.execute();
-
-			for (Iterator<BasicBlock> j = cfg.blockIterator(); j.hasNext();) {
-				BasicBlock block = j.next();
-				BitSet dominators = analysis.getResultFact(block);
-				System.out.println("Block " + block.getId() + ": " + dominators);
+				
+				dataflow.execute();
+				
+				return dataflow;
 			}
-		}
+			
+		};
+		
+		driver.execute(argv[0]);
 	}
 }
 

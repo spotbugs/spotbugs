@@ -45,11 +45,9 @@ import org.apache.bcel.generic.InstructionHandle;
  * @see CFG
  * @see BasicBlock
  */
-public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<BitSet> {
+public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAnalysis<BitSet> {
 	private final CFG cfg;
 	private EdgeChooser edgeChooser;
-	private final IdentityHashMap<BasicBlock, BitSet> startFactMap;
-	private final IdentityHashMap<BasicBlock, BitSet> resultFactMap;
 	
 	/**
 	 * Constructor.
@@ -77,29 +75,10 @@ public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<Bit
 	public AbstractDominatorsAnalysis(CFG cfg, EdgeChooser edgeChooser) {
 		this.cfg = cfg;
 		this.edgeChooser = edgeChooser;
-		this.startFactMap = new IdentityHashMap<BasicBlock, BitSet>();
-		this.resultFactMap = new IdentityHashMap<BasicBlock, BitSet>();
 	}
 
 	public BitSet createFact() {
 		return new BitSet();
-	}
-
-	public BitSet getStartFact(BasicBlock block) {
-		return lookupOrCreateFact(startFactMap, block);
-	}
-
-	public BitSet getResultFact(BasicBlock block) {
-		return lookupOrCreateFact(resultFactMap, block);
-	}
-
-	private BitSet lookupOrCreateFact(Map<BasicBlock, BitSet> map, BasicBlock block) {
-		BitSet fact = map.get(block);
-		if (fact == null) {
-			fact = createFact();
-			map.put(block, fact);
-		}
-		return fact;
 	}
 
 	public void copy(BitSet source, BitSet dest) {
@@ -151,20 +130,6 @@ public abstract class AbstractDominatorsAnalysis implements DataflowAnalysis<Bit
 		else
 		// Meet is intersection
 			result.and(fact);
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#startIteration()
-	 */
-	public void startIteration() {
-		// nothing to do
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#finishIteration()
-	 */
-	public void finishIteration() {
-		// nothing to do
 	}
 
 	/**
