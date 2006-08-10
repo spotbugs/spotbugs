@@ -104,7 +104,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 
 		else if (isRegisterStore()) {
 			int register = getRegisterOperand();
-			if (potentiallyDeadStores.get(register) && (true || potentiallyDeadStoresFromBeforeFallthrough.get(register))){
+			if (potentiallyDeadStores.get(register) && (potentiallyDeadStoresFromBeforeFallthrough.get(register))){
 				// killed store
 				priority = HIGH_PRIORITY;
 				deadStore =  LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC()-1, getPC());
