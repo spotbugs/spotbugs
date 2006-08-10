@@ -38,8 +38,8 @@ import org.apache.bcel.generic.InstructionHandle;
  * @author David Hovemeyer
  */
 public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAnalysis<Fact> {
-	IdentityHashMap<BasicBlock, Fact> startFactMap;
-	IdentityHashMap<BasicBlock, Fact> resultFactMap;
+	private IdentityHashMap<BasicBlock, Fact> startFactMap;
+	private IdentityHashMap<BasicBlock, Fact> resultFactMap;
 
 	/**
 	 * Constructor.
