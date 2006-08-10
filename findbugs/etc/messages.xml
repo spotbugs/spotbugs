@@ -3308,7 +3308,24 @@ was return from a method which is known to return possibly-null values.</p>
 		  <![CDATA[
 			  <p>
 			  This method contains a null value that is guaranteed to be dereferenced
-			  (except on paths involving runtime exceptions).
+			  (except on forward paths involving runtime exceptions).
+			  </p>
+		  ]]>
+	  </Details>
+  </BugPattern>
+  
+  <BugPattern type="NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH">
+	  <ShortDescription>Null value is guaranteed to be dereferenced on exception path</ShortDescription>
+	  <LongDescription>Null value is guaranteed to be dereferenced in {1} on exception path</LongDescription>
+	  <Details>
+		  <![CDATA[
+			  <p>
+			  This method contains a null value
+			  on an exception path
+			  that is guaranteed to be dereferenced
+			  (except on forward paths involving runtime exceptions).
+			  If any of the exception handlers where the null value
+			  occurs is reached, a null pointer exception is likely.
 			  </p>
 		  ]]>
 	  </Details>

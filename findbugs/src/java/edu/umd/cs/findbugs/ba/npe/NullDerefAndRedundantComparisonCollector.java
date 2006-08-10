@@ -64,9 +64,13 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 * @param assignedNullLocation set of locations where the value becomes null
 	 * @param derefLocationSet     set of locations where dereferences occur
 	 * @param refValue             the null value
+	 * @param alwaysOnExceptionPath true if the location(s) where the value was observed
+	 *                               to be null and unconditionally dereferenced were
+	 *                               all on exception paths
 	 */
 	public void foundGuaranteedNullDeref(
 			Set<Location> assignedNullLocationSet,
 			Set<Location> derefLocationSet,
-			ValueNumber refValue);
+			ValueNumber refValue,
+			boolean alwaysOnExceptionPath);
 }

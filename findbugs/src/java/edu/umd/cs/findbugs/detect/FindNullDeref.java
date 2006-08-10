@@ -856,17 +856,26 @@ public class FindNullDeref
 		return instruction.getOpcode() == Constants.GOTO
 			|| instruction.getOpcode() == Constants.GOTO_W;
 	}
-	
+
 	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector#foundGuaranteedNullDeref(java.util.Set, java.util.Set, edu.umd.cs.findbugs.ba.vna.ValueNumber)
+	 * @see edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector#foundGuaranteedNullDeref(java.util.Set, java.util.Set, edu.umd.cs.findbugs.ba.vna.ValueNumber, boolean)
 	 */
-	public void foundGuaranteedNullDeref(@NonNull Set<Location> assignedNullLocationSet, @NonNull Set<Location> derefLocationSet, ValueNumber refValue) {
+	public void foundGuaranteedNullDeref(
+			@NonNull Set<Location> assignedNullLocationSet,
+			@NonNull Set<Location> derefLocationSet,
+			ValueNumber refValue,
+			boolean alwaysOnExceptionPath) {
 		if (DEBUG) {
 			System.out.println("Found guaranteed null deref in " + method.getName());
 		}
 		
+		String bugType = alwaysOnExceptionPath
+			? "NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH"
+			: "NP_GUARANTEED_DEREF";
+		int priority = alwaysOnExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
+		
 		// Create BugInstance
-		BugInstance bugInstance = new BugInstance(this, "NP_GUARANTEED_DEREF", HIGH_PRIORITY)
+		BugInstance bugInstance = new BugInstance(this, bugType, priority)
 			.addClassAndMethod(classContext.getJavaClass(), method);
 		
 		// Add Locations in the set of locations at least one of which
@@ -875,13 +884,12 @@ public class FindNullDeref
 		for (Location loc : sortedDerefLocationSet) {
 			bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_DEREF");
 		}
+
 		// Add Locations where the value was observed to become null
 		TreeSet<Location> sortedAssignedNullLocationSet = new TreeSet<Location>(assignedNullLocationSet);
 		for (Location loc : sortedAssignedNullLocationSet) {
 			bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_NULL_VALUE");
 		}
-		
-	
 		
 		// Report it
 		bugReporter.reportBug(bugInstance);
