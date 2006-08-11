@@ -9,6 +9,13 @@ public class InterfaceAddress {
 		this.broadcast = broadcast;
 		this.maskLength = maskLength;
 	}
+	public int hashCode() {
+		int result = 0;
+		if (address != null) result ^= address.hashCode();
+		if (broadcast != null) result ^= broadcast.hashCode();
+		result ^= maskLength;
+		return result;
+	}
     public boolean equals(Object obj) {
         if (!(obj instanceof InterfaceAddress)) {
             return false;
