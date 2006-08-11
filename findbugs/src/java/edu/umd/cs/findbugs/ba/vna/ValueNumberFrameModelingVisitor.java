@@ -28,7 +28,10 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.IINC;
+import org.apache.bcel.generic.INVOKEINTERFACE;
+import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKESTATIC;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -353,25 +356,39 @@ public class ValueNumberFrameModelingVisitor
 						}
 					}
 				}
+			} else {
+				// Don't know what this method invocation is doing.
+				// Kill all loads.
+				getFrame().killAllLoads();
 			}
 		}
 
 		handleNormalInstruction(obj);
 	}
 
-/*
+	@Override
 	public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
+		// Don't know what this method invocation is doing.
+		// Kill all loads.
+		getFrame().killAllLoads();
 		handleNormalInstruction(obj);
 	}
 
+	@Override
 	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
+		// Don't know what this method invocation is doing.
+		// Kill all loads.
+		getFrame().killAllLoads();
 		handleNormalInstruction(obj);
 	}
 
+	@Override
 	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+		// Don't know what this method invocation is doing.
+		// Kill all loads.
+		getFrame().killAllLoads();
 		handleNormalInstruction(obj);
 	}
-*/
 
 	// TODO: handle LDC of Class
 	@Override

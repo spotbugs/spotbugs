@@ -37,13 +37,11 @@ import edu.umd.cs.findbugs.ba.XField;
  */
 public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberAnalysisFeatures {
 
-//	private ValueNumberFactory factory;
 	private ArrayList<ValueNumber> mergedValueList;
 	private Map<AvailableLoad, ValueNumber[]> availableLoadMap;
 
-	public ValueNumberFrame(int numLocals, final ValueNumberFactory factory) {
+	public ValueNumberFrame(int numLocals) {
 		super(numLocals);
-//		this.factory = factory;
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			this.availableLoadMap = new HashMap<AvailableLoad, ValueNumber[]>();
 		}
@@ -85,6 +83,17 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 	}
 
+	/**
+	 * Kill all loads.
+	 * This conservatively handles method calls where we
+	 * don't really know what fields might be assigned.
+	 */
+	public void killAllLoads() {
+		if (REDUNDANT_LOAD_ELIMINATION) {
+			availableLoadMap.clear();
+		}
+	}
+
 	void mergeAvailableLoadSets(ValueNumberFrame other) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			// Merge available load sets.
@@ -106,7 +115,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	}
 
 	@Override
-         public void copyFrom(Frame<ValueNumber> other) {
+	public void copyFrom(Frame<ValueNumber> other) {
 		// If merged value list hasn't been created yet, create it.
 		if (mergedValueList == null && other.isValid()) {
 			// This is where this frame gets its size.
@@ -127,7 +136,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	}
 
 	@Override
-         public String toString() {
+	public String toString() {
 		String frameValues = super.toString();
 		if (RLE_DEBUG) {
 			StringBuffer buf = new StringBuffer();

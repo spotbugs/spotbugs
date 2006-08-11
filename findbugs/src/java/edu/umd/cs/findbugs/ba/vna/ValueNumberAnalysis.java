@@ -123,7 +123,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	}
 
 	public ValueNumberFrame createFact() {
-		return new ValueNumberFrame(methodGen.getMaxLocals(), factory);
+		return new ValueNumberFrame(methodGen.getMaxLocals());
 	}
 
 	public void initEntryFact(ValueNumberFrame result) {
@@ -137,7 +137,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	}
 
 	@Override
-         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact)
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact)
 	        throws DataflowAnalysisException {
 
 		Location location = new Location(handle, basicBlock);
@@ -176,13 +176,13 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	}
 
 	@Override
-         protected void mergeInto(ValueNumberFrame frame, ValueNumberFrame result) throws DataflowAnalysisException {
+	protected void mergeInto(ValueNumberFrame frame, ValueNumberFrame result) throws DataflowAnalysisException {
 		result.mergeAvailableLoadSets(frame);
 		super.mergeInto(frame, result);
 	}
 	
 	@Override
-         protected void mergeValues(ValueNumberFrame otherFrame, ValueNumberFrame resultFrame, int slot) throws DataflowAnalysisException {
+	protected void mergeValues(ValueNumberFrame otherFrame, ValueNumberFrame resultFrame, int slot) throws DataflowAnalysisException {
 		ValueNumber value =
 			mergeValues(resultFrame, slot, resultFrame.getValue(slot), otherFrame.getValue(slot));
 		resultFrame.setValue(slot, value);
@@ -227,7 +227,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	}
 
 	@Override
-         public ValueNumberFrame getFactAtLocation(Location location) {
+	public ValueNumberFrame getFactAtLocation(Location location) {
 		ValueNumberFrame fact = factAtLocationMap.get(location);
 		if (fact == null) {
 			fact = createFact();
@@ -238,7 +238,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	}
 
 	@Override
-         public ValueNumberFrame getFactAfterLocation(Location location) {
+	public ValueNumberFrame getFactAfterLocation(Location location) {
 		ValueNumberFrame fact = factAfterLocationMap.get(location);
 		if (fact == null) {
 			fact = createFact();
