@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba.npe2;
 
 import java.util.BitSet;
 
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
 /**
@@ -28,29 +29,49 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
  * 
  * @author David Hovemeyer
  */
-public class DefinitelyNullSet extends BitSet {
+public class DefinitelyNullSet /*extends BitSet*/ {
+	private BitSet definitelyNullSet;
 	private int numValueNumbers;
 	
 	public DefinitelyNullSet(int numValueNumbers) {
+		this.definitelyNullSet = new BitSet();
 		this.numValueNumbers  = numValueNumbers;
+	}
+	
+	public boolean isValueNull(ValueNumber valueNumber) throws DataflowAnalysisException {
+		if (!isValid()) {
+			throw new DataflowAnalysisException();
+		}
+		return definitelyNullSet.get(valueNumber.getNumber());
+	}
+	
+	public void setValue(ValueNumber valueNumber, boolean isNull) throws DataflowAnalysisException  {
+		if (!isValid()) {
+			throw new DataflowAnalysisException();
+		}
+		definitelyNullSet.set(valueNumber.getNumber(), isNull);
+	}
+	
+	public void clear() {
+		definitelyNullSet.clear();
 	}
 
 	public void setTop() {
-		clear();
-		set(numValueNumbers);
+		definitelyNullSet.clear();
+		definitelyNullSet.set(numValueNumbers);
 	}
 	
 	public boolean isTop() {
-		return get(numValueNumbers);
+		return definitelyNullSet.get(numValueNumbers);
 	}
 	
 	public void setBottom() {
-		clear();
-		set(numValueNumbers + 1);
+		definitelyNullSet.clear();
+		definitelyNullSet.set(numValueNumbers + 1);
 	}
 	
 	public boolean isBottom() {
-		return get(numValueNumbers + 1);
+		return definitelyNullSet.get(numValueNumbers + 1);
 	}
 
 	public boolean isValid() {
@@ -58,8 +79,8 @@ public class DefinitelyNullSet extends BitSet {
 	}
 	
 	public void makeSameAs(DefinitelyNullSet other) {
-		clear();
-		or(other);
+		definitelyNullSet.clear();
+		definitelyNullSet.or(other.definitelyNullSet);
 	}
 	
 	public void mergeWith(DefinitelyNullSet other) {
@@ -73,7 +94,7 @@ public class DefinitelyNullSet extends BitSet {
 		}
 		
 		// Result is intersection of sets
-		this.and(other);
+		this.definitelyNullSet.and(other.definitelyNullSet);
 	}
 	
 	public BitSet getAssignedNullLocationSet(ValueNumber vn) {
@@ -86,5 +107,40 @@ public class DefinitelyNullSet extends BitSet {
 
 	public void clearAssignNullLocations(int valueNumber) {
 		// Base class does not maintain this information.
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return definitelyNullSet.hashCode();
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != this.getClass()) {
+			return false;
+		}
+		
+		DefinitelyNullSet other = (DefinitelyNullSet) obj;
+		return this.definitelyNullSet.equals(other.definitelyNullSet);
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		if (isTop()) {
+			return "[TOP]";
+		} else if (isBottom()) {
+			return "[BOTTOM]";
+		} else {
+			return definitelyNullSet.toString();
+		}
 	}
 }

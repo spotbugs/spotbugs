@@ -19,6 +19,10 @@
 
 package edu.umd.cs.findbugs.ba.npe2;
 
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
@@ -48,6 +52,21 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<DefinitelyNullSet> {
 	private ValueNumberDataflow vnaDataflow;
 	private CompactLocationNumbering compactLocationNumbering;
+	private Map<BasicBlock, Condition> conditionMap;
+	
+	private static final BitSet IFNULL_OPCODE_SET = new BitSet();
+	private static final BitSet IFACMP_OPCODE_SET = new BitSet();
+	private static final BitSet REFCMP_OPCODE_SET = new BitSet();
+	static {
+		IFNULL_OPCODE_SET.set(Constants.IFNULL);
+		IFNULL_OPCODE_SET.set(Constants.IFNONNULL);
+		
+		IFACMP_OPCODE_SET.set(Constants.IF_ACMPEQ);
+		IFACMP_OPCODE_SET.set(Constants.IF_ACMPNE);
+		
+		REFCMP_OPCODE_SET.or(IFNULL_OPCODE_SET);
+		REFCMP_OPCODE_SET.or(IFACMP_OPCODE_SET);
+	}
 	
 	/**
 	 * Constructor.
@@ -63,6 +82,7 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 		super(dfs);
 		this.vnaDataflow = vnaDataflow;
 		this.compactLocationNumbering = compactLocationNumbering;
+		this.conditionMap = new HashMap<BasicBlock, Condition>();
 	}
 
 	/* (non-Javadoc)
@@ -100,38 +120,75 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 		
 		// TODO: for method invocations, check return annotation
 
-		// Note that we don't handle IFNULL and IFNONNULL here.
-		// Those are handled in the edge transfer function, because we need
-		// to produce different values in each of the control successors.
+		// Refresh condition/decision information
+		if (handle == basicBlock.getLastInstruction() && REFCMP_OPCODE_SET.get(opcode)) {
+			Condition condition = getCondition(basicBlock);
+			if (condition != null) {
+				//System.out.println("handle: " + handle);
+				condition.refresh(vnaDataflow.getFactAtLocation(location), fact);
+			}
+		}
 	}
 	
+	/**
+	 * Get the ConditionDecision providing information about the
+	 * branch at the end of the given basic block.
+	 * 
+	 * @param basicBlock
+	 * @return the ConditionDecision, or null if the basic block
+	 *          does not end in a reference comparison
+	 */
+	private Condition getCondition(BasicBlock basicBlock)
+			throws DataflowAnalysisException {
+		Condition condition = conditionMap.get(basicBlock);
+		if (condition == null) {
+			Location location = new Location(basicBlock.getLastInstruction(), basicBlock);
+			short opcode = basicBlock.getLastInstruction().getInstruction().getOpcode();
+			if (IFNULL_OPCODE_SET.get(opcode)) {
+				condition = new IfNullCondition(location);
+			} else if (IFACMP_OPCODE_SET.get(opcode)) {
+				//condition = new AcmpCondition(location);
+				return null;
+			} else {
+				return null;
+			}
+			conditionMap.put(basicBlock, condition);
+		}
+		return condition;
+	}
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.BasicAbstractDataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
 	 */
 	@Override
 	public void edgeTransfer(Edge edge, DefinitelyNullSet fact) throws DataflowAnalysisException {
+		if (!fact.isValid()) {
+			return;
+		}
+		
 		if (edge.getSource().isEmpty()) {
 			return;
 		}
-
-		InstructionHandle last = edge.getSource().getLastInstruction();
-		Location cmpLoc = new Location(last, edge.getSource());
-		ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(cmpLoc);
 		
-		short opcode = last.getInstruction().getOpcode();
-		if (opcode == Constants.IFNULL || opcode == Constants.IFNONNULL) {
-			
-			boolean isNull =
-				(opcode == Constants.IFNULL && edge.getType() == EdgeTypes.IFCMP_EDGE)
-				|| (opcode == Constants.IFNONNULL && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE);
-
-			setTOS(vnaFrame, cmpLoc, fact, isNull);
-			
-		} else if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
-
-			// TODO
-			
+		Condition condition = getCondition(edge.getSource());
+		if (condition == null) {
+			return;
 		}
+
+		Decision decision = condition.getDecision(edge);
+		if (!decision.isFeasible()) {
+			fact.setTop();
+			return;
+		}
+		
+		
+
+		// We gain information about a value on this edge.
+		changeNullnessOfValue(
+				condition.getValueNumber(),
+				condition.getLocation(),
+				fact,
+				decision.isValueNull());
 	}
 
 	/**
@@ -156,9 +213,10 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 	 * @param location    Location where information is gained
 	 * @param fact        the DefinitelyNullSet to modify
 	 * @param isNull      true if the value is definitely null, false otherwise
+	 * @throws DataflowAnalysisException 
 	 */
-	private void changeNullnessOfValue(ValueNumber valueNumber, Location location, DefinitelyNullSet fact, boolean isNull) {
-		fact.set(valueNumber.getNumber(), isNull);
+	private void changeNullnessOfValue(ValueNumber valueNumber, Location location, DefinitelyNullSet fact, boolean isNull) throws DataflowAnalysisException {
+		fact.setValue(valueNumber, isNull);
 		if (isNull) {
 			fact.addAssignedNullLocation(valueNumber.getNumber(), compactLocationNumbering.getNumber(location));
 		} else {
