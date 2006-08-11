@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -102,8 +103,35 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 		// Note that we don't handle IFNULL and IFNONNULL here.
 		// Those are handled in the edge transfer function, because we need
 		// to produce different values in each of the control successors.
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.BasicAbstractDataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
+	 */
+	@Override
+	public void edgeTransfer(Edge edge, DefinitelyNullSet fact) throws DataflowAnalysisException {
+		if (edge.getSource().isEmpty()) {
+			return;
+		}
 
+		InstructionHandle last = edge.getSource().getLastInstruction();
+		Location cmpLoc = new Location(last, edge.getSource());
+		ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(cmpLoc);
 		
+		short opcode = last.getInstruction().getOpcode();
+		if (opcode == Constants.IFNULL || opcode == Constants.IFNONNULL) {
+			
+			boolean isNull =
+				(opcode == Constants.IFNULL && edge.getType() == EdgeTypes.IFCMP_EDGE)
+				|| (opcode == Constants.IFNONNULL && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE);
+
+			setTOS(vnaFrame, cmpLoc, fact, isNull);
+			
+		} else if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
+
+			// TODO
+			
+		}
 	}
 
 	/**
@@ -117,11 +145,24 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 	 */
 	private void setTOS(ValueNumberFrame vnaFrame, Location location, DefinitelyNullSet fact, boolean isNull)
 			throws DataflowAnalysisException {
-
 		ValueNumber valueNumber = vnaFrame.getTopValue();
+		changeNullnessOfValue(valueNumber, location, fact, isNull);
+	}
+
+	/**
+	 * Change the nullness of a value number.
+	 * 
+	 * @param valueNumber the ValueNumber
+	 * @param location    Location where information is gained
+	 * @param fact        the DefinitelyNullSet to modify
+	 * @param isNull      true if the value is definitely null, false otherwise
+	 */
+	private void changeNullnessOfValue(ValueNumber valueNumber, Location location, DefinitelyNullSet fact, boolean isNull) {
 		fact.set(valueNumber.getNumber(), isNull);
 		if (isNull) {
-			fact.setAssignedNullLocation(valueNumber.getNumber(), compactLocationNumbering.getNumber(location));
+			fact.addAssignedNullLocation(valueNumber.getNumber(), compactLocationNumbering.getNumber(location));
+		} else {
+			fact.clearAssignNullLocations(valueNumber.getNumber());
 		}
 	}
 

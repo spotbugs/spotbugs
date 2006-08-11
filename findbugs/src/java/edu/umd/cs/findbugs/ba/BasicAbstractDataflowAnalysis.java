@@ -122,18 +122,25 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
 	}
 	
 	/**
-	 * Get the fact that is true on the given control edge.
+	 * Get the fact that is true at the target of the given control edge.
 	 * 
 	 * @param edge the edge
-	 * @return the fact that is true on the edge
+	 * @return the fact that is true at the target of the edge
 	 * @throws DataflowAnalysisException 
 	 */
 	public Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
 		BasicBlock block = isForwards() ? edge.getSource() : edge.getTarget();
-		Fact fact = createFact();
-		makeFactTop(fact);
-		meetInto(getResultFact(block), edge, fact);
-		return fact;
+		
+		Fact predFact = createFact();
+		copy(getResultFact(block), predFact);
+		
+		edgeTransfer(edge, predFact);
+		
+		Fact result = createFact();
+		makeFactTop(result);
+		meetInto(predFact, edge, result);
+
+		return result;
 	}
 	
 	/* (non-Javadoc)
@@ -153,7 +160,7 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
 	 */
-	public void edgeTransfer(Edge edge, Fact fact) {
+	public void edgeTransfer(Edge edge, Fact fact) throws DataflowAnalysisException {
 		// By default, edge transfer function is identity.
 		// Subclasses may override.
 	}

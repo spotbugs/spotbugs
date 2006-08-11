@@ -80,7 +80,11 @@ public class DefinitelyNullSet extends BitSet {
 		throw new UnsupportedOperationException();
 	}
 
-	public void setAssignedNullLocation(int valueNumber, int locationNumber) {
+	public void addAssignedNullLocation(int valueNumber, int locationNumber) {
+		// Base class does not maintain this information.
+	}
+
+	public void clearAssignNullLocations(int valueNumber) {
 		// Base class does not maintain this information.
 	}
 }

@@ -118,8 +118,9 @@ public interface DataflowAnalysis <Fact> {
 	 * 
 	 * @param edge the Edge
 	 * @param fact a dataflow fact
+	 * @throws DataflowAnalysisException
 	 */
-	public void edgeTransfer(Edge edge, Fact fact);
+	public void edgeTransfer(Edge edge, Fact fact) throws DataflowAnalysisException;
 	
 	/**
 	 * Meet a dataflow fact associated with an incoming edge into another fact.
