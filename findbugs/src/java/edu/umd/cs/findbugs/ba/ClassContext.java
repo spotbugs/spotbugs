@@ -61,6 +61,8 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefAnalysis;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
+import edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSetAnalysis;
+import edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSetDataflow;
 import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
 import edu.umd.cs.findbugs.ba.type.TypeAnalysis;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
@@ -994,6 +996,44 @@ public class ClassContext {
 				return dataflow;
 			}
 		};
+		
+	private NoDataflowAnalysisFactory<CompactLocationNumbering> compactLocationNumberingFactory =
+		new NoDataflowAnalysisFactory<CompactLocationNumbering>("compact location numbering") {
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#analyze(org.apache.bcel.classfile.Method)
+		 */
+		@Override
+		protected CompactLocationNumbering analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+			if (method.getCode() == null) {
+				return null;
+			}
+			
+			CFG cfg = getCFG(method);
+			return new CompactLocationNumbering(cfg);
+		}
+	};
+	
+	private DataflowAnalysisFactory<DefinitelyNullSetDataflow> definitelyNullSetDataflowFactory =
+		new DataflowAnalysisFactory<DefinitelyNullSetDataflow>("definitely null set dataflow") {
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#analyze(org.apache.bcel.classfile.Method)
+		 */
+		@Override
+		protected DefinitelyNullSetDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+			
+			CFG cfg = getCFG(method);
+			DepthFirstSearch  dfs = getDepthFirstSearch(method);
+			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
+			CompactLocationNumbering compactLocationNumbering = getCompactLocationNumbering(method);
+			
+			DefinitelyNullSetAnalysis analysis = new DefinitelyNullSetAnalysis(dfs, vnaDataflow, compactLocationNumbering);
+			DefinitelyNullSetDataflow dataflow = new DefinitelyNullSetDataflow(cfg, analysis);
+			
+			dataflow.execute();
+			
+			return dataflow;
+		}
+	};
 			
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
@@ -1485,6 +1525,31 @@ public class ClassContext {
 	public UnconditionalValueDerefDataflow getUnconditionalValueDerefDataflow(Method method)
 			throws CFGBuilderException, DataflowAnalysisException {
 		return 	unconditionalValueDerefDataflowFactory.getAnalysis(method);
+	}
+	
+	/**
+	 * Get a CompactLocationNumbering for a method.
+	 * 
+	 * @param method a method
+	 * @return the CompactLocationNumbering for the method
+	 * @throws CFGBuilderException
+	 */
+	public CompactLocationNumbering getCompactLocationNumbering(Method method)
+			throws CFGBuilderException {
+		return compactLocationNumberingFactory.getAnalysis(method); 
+	}
+
+	/**
+	 * Get DefinitelyNullSetDataflow for a method.
+	 * 
+	 * @param method a method
+	 * @return the DefinitelyNullSetDataflow for the method 
+	 * @throws DataflowAnalysisException 
+	 * @throws CFGBuilderException 
+	 */
+	public DefinitelyNullSetDataflow getDefinitelyNullSetDataflow(Method method)
+			throws CFGBuilderException, DataflowAnalysisException {
+		return definitelyNullSetDataflowFactory.getAnalysis(method);
 	}
 }
 
