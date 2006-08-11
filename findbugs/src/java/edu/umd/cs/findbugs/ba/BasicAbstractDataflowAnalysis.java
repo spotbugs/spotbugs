@@ -149,6 +149,14 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
 	public void finishIteration() {
 		// Do nothing - subclass may override
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
+	 */
+	public void edgeTransfer(Edge edge, Fact fact) {
+		// By default, edge transfer function is identity.
+		// Subclasses may override.
+	}
 
 	private Fact lookupOrCreateFact(Map<BasicBlock, Fact> map, BasicBlock block) {
 		Fact fact = map.get(block);

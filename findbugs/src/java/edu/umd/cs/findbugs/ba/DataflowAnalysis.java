@@ -107,6 +107,21 @@ public interface DataflowAnalysis <Fact> {
 	public void transfer(BasicBlock basicBlock, @Nullable InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException;
 
 	/**
+	 * Edge transfer function.
+	 * Modify the given fact that is true on the (logical) edge source
+	 * to modify it so that it is true at the (logical) edge target.
+	 * 
+	 * <p>
+	 * A do-nothing implementation is legal, and appropriate for
+	 * analyses where branches are not significant.
+	 * </p>
+	 * 
+	 * @param edge the Edge
+	 * @param fact a dataflow fact
+	 */
+	public void edgeTransfer(Edge edge, Fact fact);
+	
+	/**
 	 * Meet a dataflow fact associated with an incoming edge into another fact.
 	 * This is used to determine the start fact for a basic block.
 	 *

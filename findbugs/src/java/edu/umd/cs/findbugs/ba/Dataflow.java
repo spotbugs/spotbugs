@@ -132,10 +132,24 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					while (predEdgeIter.hasNext()) {
 						Edge edge = predEdgeIter.next();
 						BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
+						
+						// Get the predecessor result fact
 						Fact predFact = analysis.getResultFact(logicalPred);
+						
+						// Apply the edge transfer function.
+						Fact edgeFact = analysis.createFact(); 
+						analysis.copy(predFact, edgeFact);
+						analysis.edgeTransfer(edge, edgeFact);
+						
+						if (DEBUG && !analysis.same(edgeFact, predFact)) {
+							debug(block, logicalPred, edge,
+									"Edge transfer " + predFact + " ==> " + edgeFact);
+						}
 
-						if (DEBUG) debug(block, logicalPred, edge, "Meet " + start + " with " + predFact);
-						analysis.meetInto(predFact, edge, start);
+						// Merge the predecessor fact (possibly transformed by the edge transfer function)
+						// into the block's start fact.
+						if (DEBUG) debug(block, logicalPred, edge, "Meet " + start + " with " + edgeFact);
+						analysis.meetInto(edgeFact, edge, start);
 						if (DEBUG) System.out.println(" ==> " + start);
 					}
 				}
