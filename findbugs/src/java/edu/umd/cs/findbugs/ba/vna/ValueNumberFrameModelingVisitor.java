@@ -104,7 +104,7 @@ public class ValueNumberFrameModelingVisitor
 	}
 
 	@Override
-         public ValueNumber getDefaultValue() {
+	public ValueNumber getDefaultValue() {
 		return factory.createFreshValue();
 	}
 
@@ -199,7 +199,7 @@ public class ValueNumberFrameModelingVisitor
 	 * This is the default instruction modeling method.
 	 */
 	@Override
-         public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
+	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
 
 		int flags = (ins instanceof InvokeInstruction) ? ValueNumber.RETURN_VALUE : 0;
 
@@ -220,7 +220,7 @@ public class ValueNumberFrameModelingVisitor
 	}
 
 	@Override
-         public void visitGETFIELD(GETFIELD obj) {
+	public void visitGETFIELD(GETFIELD obj) {
 		if (doRedundantLoadElimination()) {
 
 			try {
@@ -237,7 +237,7 @@ public class ValueNumberFrameModelingVisitor
 	}
 
 	@Override
-         public void visitPUTFIELD(PUTFIELD obj) {
+	public void visitPUTFIELD(PUTFIELD obj) {
 		if (doForwardSubstitution()) {
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
@@ -255,7 +255,7 @@ public class ValueNumberFrameModelingVisitor
 	private static final ValueNumber[] EMPTY_INPUT_VALUE_LIST = new ValueNumber[0];
 
 	@Override
-         public void visitGETSTATIC(GETSTATIC obj) {
+	public void visitGETSTATIC(GETSTATIC obj) {
 		if (doRedundantLoadElimination()) {
 			ValueNumberFrame frame = getFrame();
 			ConstantPoolGen cpg = getCPG();
@@ -287,7 +287,7 @@ public class ValueNumberFrameModelingVisitor
 	}
 
 	@Override
-         public void visitPUTSTATIC(PUTSTATIC obj) {
+	public void visitPUTSTATIC(PUTSTATIC obj) {
 		if (doForwardSubstitution()) {
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
@@ -303,7 +303,7 @@ public class ValueNumberFrameModelingVisitor
 	}
 
 	@Override
-         public void visitINVOKESTATIC(INVOKESTATIC obj) {
+	public void visitINVOKESTATIC(INVOKESTATIC obj) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			ConstantPoolGen cpg = getCPG();
 			String methodName = obj.getName(cpg);
@@ -375,7 +375,7 @@ public class ValueNumberFrameModelingVisitor
 
 	// TODO: handle LDC of Class
 	@Override
-         public void visitLDC(LDC obj) {
+	public void visitLDC(LDC obj) {
 		Object constantValue = obj.getValue(cpg);
 		ValueNumber value = constantValueMap.get(constantValue);
 		if (value == null) {
@@ -392,9 +392,8 @@ public class ValueNumberFrameModelingVisitor
 		getFrame().pushValue(value);
 	}
 	
-	//@Override
 	@Override
-         public void visitIINC(IINC obj) {
+	public void visitIINC(IINC obj) {
 		if (obj.getIncrement() == 0) {
 			// A no-op.
 			return;
