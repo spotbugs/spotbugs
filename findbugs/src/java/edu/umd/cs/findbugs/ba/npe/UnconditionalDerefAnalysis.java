@@ -53,6 +53,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * dereferenced on every path past the current location.
  * 
  * @author David Hovemeyer
+ * @deprecated Use UnconditionalValueDerefAnalysis instead
  */
 public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<UnconditionalDerefSet> {
 	private static final boolean DEBUG = SystemProperties.getBoolean("npe.deref.debug");

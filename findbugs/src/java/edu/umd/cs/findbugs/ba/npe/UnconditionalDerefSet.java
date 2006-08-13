@@ -23,6 +23,7 @@ import java.util.BitSet;
 
 /**
  * @author David Hovemeyer
+ * @deprecated Use UnconditionalValueDerefAnalysis instead
  */
 public class UnconditionalDerefSet extends BitSet {
 	private static final long serialVersionUID = 1L;

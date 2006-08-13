@@ -27,6 +27,7 @@ import edu.umd.cs.findbugs.ba.CFG;
  * 
  * @see edu.umd.cs.findbugs.ba.npe.UnconditionalDerefAnalysis
  * @author David Hovemeyer
+ * @deprecated Use UnconditionalValueDerefAnalysis instead
  */
 public class UnconditionalDerefDataflow extends AbstractDataflow<UnconditionalDerefSet, UnconditionalDerefAnalysis> {
 	/**
