@@ -980,6 +980,7 @@ public class ClassContext {
 				
 				UnconditionalValueDerefAnalysis analysis = new UnconditionalValueDerefAnalysis(
 						getReverseDepthFirstSearch(method),
+						getDepthFirstSearch(method),
 						cfg,
 						getMethodGen(method),
 						vnd,
