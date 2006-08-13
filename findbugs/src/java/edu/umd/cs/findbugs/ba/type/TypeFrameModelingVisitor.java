@@ -151,23 +151,23 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		super.analyzeInstruction(ins);
 		lastOpcode = ins.getOpcode();
 		
-		if (location.isLastInstructionInBasicBlock()) {
-			endBasicBlock();
-		}
+//		if (location.isLastInstructionInBasicBlock()) {
+//			endBasicBlock();
+//		}
 	}
 
 	private void startBasicBlock() {
 		lastOpcode = -1;
 		instanceOfType = null;
 		instanceOfValueNumber = null;
-		getFrame().clearInstanceOfValueNumberAndType();
+//		getFrame().clearInstanceOfValueNumberAndType();
 	}
 
-	private void endBasicBlock() {
-		if (instanceOfFollowedByBranch) {
-			getFrame().setInstanceOfValueNumberAndType(instanceOfValueNumber, instanceOfType);
-		}
-	}
+//	private void endBasicBlock() {
+//		if (instanceOfFollowedByBranch) {
+//			getFrame().setInstanceOfValueNumberAndType(instanceOfValueNumber, instanceOfType);
+//		}
+//	}
 
 	/**
 	 * Consume stack.  This is a convenience method for instructions

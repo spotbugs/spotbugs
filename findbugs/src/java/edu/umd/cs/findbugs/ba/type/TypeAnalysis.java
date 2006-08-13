@@ -128,6 +128,30 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			return edgeExceptionSet;
 		}
 	}
+	
+	static class InstanceOfCheck {
+		final ValueNumber valueNumber;
+		final Type type;
+		
+		InstanceOfCheck(ValueNumber valueNumber, Type type) {
+			this.valueNumber = valueNumber;
+			this.type = type;
+		}
+		
+		/**
+		 * @return Returns the valueNumber.
+		 */
+		public ValueNumber getValueNumber() {
+			return valueNumber;
+		}
+		
+		/**
+		 * @return Returns the type.
+		 */
+		public Type getType() {
+			return type;
+		}
+	}
 
 	protected MethodGen methodGen;
 	protected CFG cfg;
@@ -137,6 +161,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private ExceptionSetFactory exceptionSetFactory;
 	private ValueNumberDataflow valueNumberDataflow;
+	private Map<BasicBlock, InstanceOfCheck> instanceOfCheckMap;
 
 	/**
 	 * Constructor.
@@ -165,6 +190,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		if (DEBUG) {
 			System.out.println("\n\nAnalyzing " + methodGen);
 		}
+		this.instanceOfCheckMap = new HashMap<BasicBlock, InstanceOfCheck>();
 	}
 
 	/**
@@ -324,6 +350,12 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			System.out.println("After " + basicBlock.getFirstInstruction() + " -> " + basicBlock.getLastInstruction());
 			System.out.println("    frame: " + result);
 		}
+		
+		instanceOfCheckMap.remove(basicBlock);
+		if (visitor.isInstanceOfFollowedByBranch()) {
+			InstanceOfCheck check = new InstanceOfCheck(visitor.getInstanceOfValueNumber(), visitor.getInstanceOfType());
+			instanceOfCheckMap.put(basicBlock, check);
+		}
 	}
 
 	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, TypeFrame result)
@@ -449,9 +481,19 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	}
 
 	private TypeFrame handleInstanceOfBranch(TypeFrame fact, TypeFrame tmpFact, Edge edge) throws DataflowAnalysisException {
-		ValueNumber instanceOfValueNumber = fact.getInstanceOfValueNumber();
-		if (instanceOfValueNumber == null)
+
+		InstanceOfCheck check = instanceOfCheckMap.get(edge.getSource());
+		if (check == null) {
+			//System.out.println("no instanceof check for block " + edge.getSource().getId());
 			return tmpFact;
+		}
+
+		if (check.getValueNumber() == null) {
+			//System.out.println("instanceof check for block " + edge.getSource().getId() + " has no value number");
+			return tmpFact;
+		}
+		
+		ValueNumber instanceOfValueNumber = check.getValueNumber(); //fact.getInstanceOfValueNumber();
 
 		short branchOpcode = edge.getSource().getLastInstruction().getInstruction().getOpcode();
 		
@@ -461,12 +503,14 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			|| (edge.getType() == EdgeTypes.FALL_THROUGH_EDGE &&
 						(branchOpcode == Constants.IFEQ || branchOpcode == Constants.IFLE))
 		) {
+			System.out.println("Successful check on edge " + edge);
+			
 			// Successful instanceof check.
 			ValueNumberFrame vnaFrame = valueNumberDataflow.getStartFact(edge.getTarget());
 			if (!vnaFrame.isValid())
 				return tmpFact;
 			
-			Type instanceOfType = fact.getInstanceOfType();
+			Type instanceOfType = check.getType(); //fact.getInstanceOfType();
 			if (!(instanceOfType instanceof ReferenceType))
 				return tmpFact;
 			
