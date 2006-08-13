@@ -128,7 +128,10 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			return edgeExceptionSet;
 		}
 	}
-	
+
+	/**
+	 * Cached information about an instanceof check.
+	 */
 	static class InstanceOfCheck {
 		final ValueNumber valueNumber;
 		final Type type;
@@ -187,10 +190,10 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		this.thrownExceptionSetMap = new HashMap<BasicBlock, CachedExceptionSet>();
 		this.lookupFailureCallback = lookupFailureCallback;
 		this.exceptionSetFactory = exceptionSetFactory;
+		this.instanceOfCheckMap = new HashMap<BasicBlock, InstanceOfCheck>();
 		if (DEBUG) {
 			System.out.println("\n\nAnalyzing " + methodGen);
 		}
-		this.instanceOfCheckMap = new HashMap<BasicBlock, InstanceOfCheck>();
 	}
 
 	/**
@@ -347,12 +350,16 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		visitor.startBasicBlock();
 		
 		super.transfer(basicBlock, end, start, result);
-		endTransfer(basicBlock, end, result);
+		
+		// Compute thrown exception types
+		computeThrownExceptionTypes(basicBlock, end, result);
 		if (DEBUG) {
 			System.out.println("After " + basicBlock.getFirstInstruction() + " -> " + basicBlock.getLastInstruction());
 			System.out.println("    frame: " + result);
 		}
 		
+		// If this block ends with an instanceof check,
+		// update the cached information about it.
 		instanceOfCheckMap.remove(basicBlock);
 		if (visitor.isInstanceOfFollowedByBranch()) {
 			InstanceOfCheck check = new InstanceOfCheck(visitor.getInstanceOfValueNumber(), visitor.getInstanceOfType());
@@ -360,7 +367,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		}
 	}
 
-	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, TypeFrame result)
+	private void computeThrownExceptionTypes(BasicBlock basicBlock, InstructionHandle end, TypeFrame result)
 	        throws DataflowAnalysisException {
 
 		// Do nothing if we're not computing propagated exceptions
@@ -495,7 +502,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			return tmpFact;
 		}
 		
-		ValueNumber instanceOfValueNumber = check.getValueNumber(); //fact.getInstanceOfValueNumber();
+		ValueNumber instanceOfValueNumber = check.getValueNumber();
 
 		short branchOpcode = edge.getSource().getLastInstruction().getInstruction().getOpcode();
 		
@@ -512,7 +519,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			if (!vnaFrame.isValid())
 				return tmpFact;
 			
-			Type instanceOfType = check.getType(); //fact.getInstanceOfType();
+			Type instanceOfType = check.getType();
 			if (!(instanceOfType instanceof ReferenceType))
 				return tmpFact;
 			
