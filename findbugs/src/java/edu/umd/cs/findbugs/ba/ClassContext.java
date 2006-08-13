@@ -796,7 +796,8 @@ public class ClassContext {
 						cfg,
 						methodGen,
 						getValueNumberDataflow(method),
-						getTypeDataflow(method));
+						getTypeDataflow(method), 
+						getDepthFirstSearch(method));
 				UnconditionalDerefDataflow dataflow = new UnconditionalDerefDataflow(cfg, analysis);
 				
 				dataflow.execute();
