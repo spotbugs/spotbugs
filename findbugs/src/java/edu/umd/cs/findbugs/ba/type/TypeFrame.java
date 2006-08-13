@@ -77,18 +77,23 @@ public class TypeFrame extends Frame<Type> {
 		exactTypeSet.clear();
 	}
 	
-	//@Override
 	@Override
-         public void setTop() {
+	public void setTop() {
 		super.setTop();
 		clearExactSet();
 	}
  	
-	//@Override
 	@Override
-         public void copyFrom(Frame<Type> other_) {
+	public void copyFrom(Frame<Type> other_) {
 		clearExactSet();
-		exactTypeSet.or(((TypeFrame) other_).exactTypeSet);
+		
+		TypeFrame other = (TypeFrame) other_;
+		
+		this.exactTypeSet.or(other.exactTypeSet);
+		
+		this.instanceOfType = other.instanceOfType;
+		this.instanceOfValueNumber = other.instanceOfValueNumber;
+		
 		super.copyFrom(other_);
 	}
 	
@@ -130,7 +135,7 @@ public class TypeFrame extends Frame<Type> {
 	}
 
 	@Override
-         protected String valueToString(Type value) {
+	protected String valueToString(Type value) {
 		return value.toString() + ",";
 	}
 
