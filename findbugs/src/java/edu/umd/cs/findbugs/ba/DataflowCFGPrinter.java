@@ -53,19 +53,31 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends BasicAbstractDataflo
 
 	@Override
 	public String blockStartAnnotate(BasicBlock bb) {
-		return " " + dataflow.getAnalysis().factToString(dataflow.getStartFact(bb));
+		boolean flip = isForwards() != dataflow.getAnalysis().isForwards();
+		Fact fact = flip ? dataflow.getResultFact(bb) : dataflow.getStartFact(bb);
+		
+		return " " + dataflow.getAnalysis().factToString(fact);
 	}
 
 	@Override
 	public String blockAnnotate(BasicBlock bb) {
-		return " " + dataflow.getAnalysis().factToString(dataflow.getResultFact(bb));
+		boolean flip = isForwards() != dataflow.getAnalysis().isForwards();
+		Fact fact = flip ? dataflow.getStartFact(bb) : dataflow.getResultFact(bb) ;
+
+		return " " + dataflow.getAnalysis().factToString(fact);
 	}
 
 	@Override
 	public String instructionAnnotate(InstructionHandle handle, BasicBlock bb) {
 		try {
-			Fact result = dataflow.getAnalysis().getFactAtLocation(new Location(handle, bb));
-			return " " + dataflow.getAnalysis().factToString(result);
+			boolean flip = isForwards() != dataflow.getAnalysis().isForwards();
+			
+			Location loc =new Location(handle, bb); 
+
+			Fact fact = flip
+					? dataflow.getAnalysis().getFactAfterLocation(loc)
+					: dataflow.getAnalysis().getFactAtLocation(loc);
+			return " " + dataflow.getAnalysis().factToString(fact);
 		} catch (DataflowAnalysisException e) {
 			throw new IllegalStateException("Caught exception: " + e.toString());
 		}
