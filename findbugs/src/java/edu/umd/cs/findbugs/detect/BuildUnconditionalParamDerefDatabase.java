@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.BitSet;
+
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
@@ -29,12 +31,17 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
 import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefSet;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 
 /**
  * Build database of unconditionally dereferenced parameters.
@@ -70,6 +77,7 @@ public class BuildUnconditionalParamDerefDatabase {
 	private void analyzeMethod(ClassContext classContext, Method method) {
 		try {
 			CFG cfg = classContext.getCFG(method);
+			/*
 			UnconditionalDerefDataflow dataflow = classContext.getUnconditionalDerefDataflow(method);
 			UnconditionalDerefSet unconditionalDerefSet = dataflow.getResultFact(cfg.getEntry());
 			
@@ -89,6 +97,33 @@ public class BuildUnconditionalParamDerefDatabase {
 			
 			if (VERBOSE_DEBUG) {
 				System.out.println("\tAdding result " + unconditionalDerefSet.toString() + " to database");
+			}
+			*/
+
+			ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
+			UnconditionalValueDerefDataflow dataflow =
+				classContext.getUnconditionalValueDerefDataflow(method);
+	
+			int numParams = new SignatureParser(method.getSignature()).getNumParameters();
+			int paramLocalOffset = method.isStatic() ? 0 : 1;
+
+			// Build BitSet of params that are unconditionally dereferenced
+			BitSet unconditionalDerefSet = new BitSet();
+			UnconditionalValueDerefSet entryFact = dataflow.getResultFact(cfg.getEntry());
+			for (int i = 0; i < numParams; i++) {
+				ValueNumber paramVN = vnaDataflow.getAnalysis().getEntryValue(i + paramLocalOffset);
+				
+				if (entryFact.isUnconditionallyDereferenced(paramVN)) {
+					unconditionalDerefSet.set(i);
+				}
+			}
+			
+			// No need to add properties if there are no unconditionally dereferenced params
+			if (unconditionalDerefSet.isEmpty()) {
+				if (VERBOSE_DEBUG) {
+					System.out.println("\tResult is empty");
+				}
+				return;
 			}
 
 			ParameterNullnessProperty property = new ParameterNullnessProperty();

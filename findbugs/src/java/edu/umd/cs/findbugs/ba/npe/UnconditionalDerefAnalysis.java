@@ -191,7 +191,8 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 				@Override
                                  public UnconditionalDerefDataflow createDataflow(ClassContext classContext, Method method)
 						throws CFGBuilderException, DataflowAnalysisException {
-					return classContext.getUnconditionalDerefDataflow(method);
+					//return classContext.getUnconditionalDerefDataflow(method);
+					return null;
 				}
 		};
 		driver.execute(argv[0]);
