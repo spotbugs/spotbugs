@@ -314,7 +314,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			IsNullValueFrame invFrame,
 			UnconditionalValueDerefSet derefSet) {
 		
-		if (false && DEBUG_DEREFS) {
+		if (DEBUG_DEREFS) {
 			System.out.println("vna *** " + vnaFrame);
 			System.out.println("inv *** " + invFrame);
 			System.out.println("deref * " + derefSet);
@@ -334,27 +334,56 @@ public class NullDerefAndRedundantComparisonFinder {
 				ValueNumber valueNumber = vnaFrame.getValue(j);
 				
 				if (derefSet.isUnconditionallyDereferenced(valueNumber)) {
-					if (DEBUG_DEREFS) {
-						System.out.println("vna *** " + vnaFrame);
-						System.out.println("inv *** " + invFrame);
-						System.out.println("deref * " + derefSet);
-				
-						System.out.println("%%% HIT for value number " + valueNumber);
-					}
-					
-					// OK, we have a null value that is unconditionally
-					// derferenced.  Make a note of the locations where it
-					// will be dereferenced.
-					NullValueUnconditionalDeref thisNullValueDeref = nullValueGuaranteedDerefMap.get(valueNumber);
-					if (thisNullValueDeref == null) {
-						thisNullValueDeref = new NullValueUnconditionalDeref();
-						nullValueGuaranteedDerefMap.put(valueNumber, thisNullValueDeref);
-					}
-//					thisValueNumberDerefLocationSet.addAll(derefSet.getUnconditionalDerefLocationSet(valueNumber));
-					thisNullValueDeref.add(isNullValue, derefSet.getUnconditionalDerefLocationSet(valueNumber));
+					noteUnconditionallyDereferencedNullValue(
+							nullValueGuaranteedDerefMap,
+							derefSet,
+							isNullValue,
+							valueNumber);
 				}
 			}
 		}
+
+		// See if there are any known-null values in the heap that
+		// will be dereferenced in the future.
+		for (Map.Entry<ValueNumber, IsNullValue> entry : invFrame.getKnownValueMapEntrySet()) {
+			if (!entry.getValue().isDefinitelyNull()) {
+				continue;
+			}
+			
+			if (derefSet.isUnconditionallyDereferenced(entry.getKey())) {
+				noteUnconditionallyDereferencedNullValue(
+						nullValueGuaranteedDerefMap,
+						derefSet,
+						entry.getValue(),
+						entry.getKey());
+			}
+		}
+		
+	}
+
+	/**
+	 * Note the locations where a known-null value is unconditionally
+	 * dereferenced.
+	 * 
+	 * @param nullValueGuaranteedDerefMap map of null values to sets of Locations where they are derefed
+	 * @param derefSet                    set of values known to be unconditionally dereferenced
+	 * @param isNullValue                 the null value
+	 * @param valueNumber                 the value number of the null value
+	 */
+	private void noteUnconditionallyDereferencedNullValue(Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap, UnconditionalValueDerefSet derefSet, IsNullValue isNullValue, ValueNumber valueNumber) {
+		if (DEBUG) {
+			System.out.println("%%% HIT for value number " + valueNumber);
+		}
+		
+		// OK, we have a null value that is unconditionally
+		// derferenced.  Make a note of the locations where it
+		// will be dereferenced.
+		NullValueUnconditionalDeref thisNullValueDeref = nullValueGuaranteedDerefMap.get(valueNumber);
+		if (thisNullValueDeref == null) {
+			thisNullValueDeref = new NullValueUnconditionalDeref();
+			nullValueGuaranteedDerefMap.put(valueNumber, thisNullValueDeref);
+		}
+		thisNullValueDeref.add(isNullValue, derefSet.getUnconditionalDerefLocationSet(valueNumber));
 	}
 
 	/**

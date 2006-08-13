@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,6 +68,14 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	
 	public IsNullValue getKnownValue(ValueNumber valueNumber) {
 		return knownValueMap.get(valueNumber);
+	}
+	
+	public Collection<Map.Entry<ValueNumber, IsNullValue>> getKnownValueMapEntrySet() {
+		if (trackValueNumbers) {
+			return knownValueMap.entrySet();
+		} else {
+			return null;
+		}
 	}
 	
 	public void mergeKnownValuesWith(IsNullValueFrame otherFrame) {
