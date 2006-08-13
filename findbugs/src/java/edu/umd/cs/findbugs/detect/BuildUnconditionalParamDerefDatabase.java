@@ -38,8 +38,6 @@ import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
-import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
-import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefSet;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 
@@ -77,28 +75,6 @@ public class BuildUnconditionalParamDerefDatabase {
 	private void analyzeMethod(ClassContext classContext, Method method) {
 		try {
 			CFG cfg = classContext.getCFG(method);
-			/*
-			UnconditionalDerefDataflow dataflow = classContext.getUnconditionalDerefDataflow(method);
-			UnconditionalDerefSet unconditionalDerefSet = dataflow.getResultFact(cfg.getEntry());
-			
-			if (!unconditionalDerefSet.isValid()) {
-				if (VERBOSE_DEBUG) {
-					System.out.println("\tResult is not valid: " + unconditionalDerefSet.toString());
-				}
-				return;
-			}
-			
-			if (unconditionalDerefSet.isEmpty()) {
-				if (VERBOSE_DEBUG) {
-					System.out.println("\tResult is empty");
-				}
-				return;
-			}
-			
-			if (VERBOSE_DEBUG) {
-				System.out.println("\tAdding result " + unconditionalDerefSet.toString() + " to database");
-			}
-			*/
 
 			ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
 			UnconditionalValueDerefDataflow dataflow =

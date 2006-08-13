@@ -1446,19 +1446,6 @@ public class ClassContext {
 		return constantDataflowFactory.getAnalysis(method);
 	}
 	
-//	/**
-//	 * Get the UnconditionalDerefDataflow for a method.
-//	 * 
-//	 * @param method the method
-//	 * @return the UnconditionalDerefDataflow for the method
-//	 * @throws CFGBuilderException
-//	 * @throws DataflowAnalysisException
-//	 */
-//	public UnconditionalDerefDataflow getUnconditionalDerefDataflow(Method method)
-//			throws CFGBuilderException, DataflowAnalysisException {
-//		return unconditionalDerefDataflowFactory.getAnalysis(method);
-//	}
-	
 	/**
 	 * Get load dataflow.
 	 * 
