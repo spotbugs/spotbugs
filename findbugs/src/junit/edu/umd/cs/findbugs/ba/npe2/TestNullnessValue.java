@@ -19,25 +19,24 @@
 
 package edu.umd.cs.findbugs.ba.npe2;
 
-import edu.umd.cs.findbugs.ba.Edge;
+import junit.framework.Assert;
+import junit.framework.TestCase;
 
 /**
  * @author David Hovemeyer
  */
-public class Decision {
-	private boolean feasible;
-	private NullnessValue nullnessValue;
+public class TestNullnessValue extends TestCase {
+	NullnessValue definitelyNull;
 	
-	public Decision(boolean feasible, NullnessValue nullnessValue) {
-		this.feasible= feasible;
-		this.nullnessValue = nullnessValue;
+	protected void setUp() {
+		definitelyNull = NullnessValue.definitelyNullValue();
 	}
 	
-	public boolean isFeasible() {
-		return feasible;
+	public void testDefinitelyNullToString() {
+		Assert.assertEquals("n", definitelyNull.toString());
 	}
 	
-	public NullnessValue getNullnessValue() {
-		return nullnessValue;
+	public void testDefinitelyNullToCheckedString() {
+		Assert.assertEquals("cn", definitelyNull.toCheckedValue().toString());
 	}
 }

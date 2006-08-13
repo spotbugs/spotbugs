@@ -113,9 +113,9 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 		short opcode = handle.getInstruction().getOpcode();
 		
 		if (opcode == Constants.ACONST_NULL) {
-			setTOS(vnaFrame, location, fact, true);
+			setTOS(vnaFrame, location, fact, NullnessValue.definitelyNullValue());
 		} else if (opcode == Constants.LDC || opcode == Constants.NEW) {
-			setTOS(vnaFrame, location, fact, false);
+			setTOS(vnaFrame, location, fact, NullnessValue.definitelyNotNullValue());
 		}
 		
 		// TODO: for method invocations, check return annotation
@@ -177,18 +177,20 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 
 		Decision decision = condition.getDecision(edge);
 		if (!decision.isFeasible()) {
+			// This edge is not feasible.
+			// Set fact to TOP to avoid polluting dataflow information
+			// at a future control merge.
 			fact.setTop();
 			return;
 		}
 		
+		System.out.println("Setting " + condition.getValueNumber() + " to " + decision.getNullnessValue() + " on edge " + edge);
 		
-
-		// We gain information about a value on this edge.
 		changeNullnessOfValue(
 				condition.getValueNumber(),
 				condition.getLocation(),
 				fact,
-				decision.isValueNull());
+				decision.getNullnessValue());
 	}
 
 	/**
@@ -197,13 +199,13 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 	 * @param vnaFrame ValueNumberFrame at Location
 	 * @param location the Location
 	 * @param fact     DefinitelyNullSet to modify
-	 * @param isNull   true if the TOS value is definitely null, false if unknown
+	 * @param nullnessValue the nullness of the value number
 	 * @throws DataflowAnalysisException 
 	 */
-	private void setTOS(ValueNumberFrame vnaFrame, Location location, DefinitelyNullSet fact, boolean isNull)
+	private void setTOS(ValueNumberFrame vnaFrame, Location location, DefinitelyNullSet fact, NullnessValue nullnessValue)
 			throws DataflowAnalysisException {
 		ValueNumber valueNumber = vnaFrame.getTopValue();
-		changeNullnessOfValue(valueNumber, location, fact, isNull);
+		changeNullnessOfValue(valueNumber, location, fact, nullnessValue);
 	}
 
 	/**
@@ -212,16 +214,24 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 	 * @param valueNumber the ValueNumber
 	 * @param location    Location where information is gained
 	 * @param fact        the DefinitelyNullSet to modify
-	 * @param isNull      true if the value is definitely null, false otherwise
+	 * @param nullnessValue the nullness of the value number
 	 * @throws DataflowAnalysisException 
 	 */
-	private void changeNullnessOfValue(ValueNumber valueNumber, Location location, DefinitelyNullSet fact, boolean isNull) throws DataflowAnalysisException {
-		fact.setValue(valueNumber, isNull);
-		if (isNull) {
-			fact.addAssignedNullLocation(valueNumber.getNumber(), compactLocationNumbering.getNumber(location));
-		} else {
-			fact.clearAssignNullLocations(valueNumber.getNumber());
+	private void changeNullnessOfValue(ValueNumber valueNumber, Location location, DefinitelyNullSet fact, NullnessValue nullnessValue) throws DataflowAnalysisException {
+//		fact.setValue(valueNumber, isNull);
+//		if (isNull) {
+//			fact.addAssignedNullLocation(valueNumber.getNumber(), compactLocationNumbering.getNumber(location));
+//		} else {
+//			fact.clearAssignNullLocations(valueNumber.getNumber());
+//		}
+		
+		fact.setNullnessValue(valueNumber, nullnessValue);
+		
+		if (fact.getNulllessValue(valueNumber) != nullnessValue) {
+			throw new IllegalStateException();
 		}
+		
+		// TODO: set location where value becomes null or non-null
 	}
 
 	/* (non-Javadoc)

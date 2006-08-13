@@ -63,20 +63,38 @@ public class IfNullCondition extends Condition {
 	public void refresh(ValueNumberFrame vnaFrame, DefinitelyNullSet definitelyNullSet) throws DataflowAnalysisException {
 		valueNumber = vnaFrame.getTopValue();
 		
-		boolean isNullAtBranch = definitelyNullSet.isValueNull(valueNumber);
+		NullnessValue nullnessValue = definitelyNullSet.getNulllessValue(valueNumber);
 		short opcode = getLocation().getHandle().getInstruction().getOpcode();
-		boolean ifNullOpcode = opcode == Constants.IFNULL;
 		
+		if (nullnessValue.isDefinitelyNull() || nullnessValue.isDefinitelyNotNull()) {
+			// Comparison is redundant.
+			
+			boolean ifcmpFeasible = nullnessValue.isDefinitelyNull() == (opcode == Constants.IFNULL);
+			ifcmpDecision = new Decision(
+					ifcmpFeasible,
+					ifcmpFeasible ? nullnessValue.toCheckedValue() : null
+			);
+			
+			boolean fallThroughFeasible = nullnessValue.isDefinitelyNull() != (opcode == Constants.IFNONNULL);
+			fallThroughDecision = new Decision(
+					fallThroughFeasible,
+					fallThroughFeasible ? nullnessValue.toCheckedValue() : null
+			);
+			
+			return;
+		}
+		
+		NullnessValue definitelyNull = NullnessValue.definitelyNullValue().toCheckedValue();
+		NullnessValue definitelyNotNull = NullnessValue.definitelyNotNullValue().toCheckedValue();
+
+		// Nullness is unknown, assume both branches are feasible.
 		ifcmpDecision = new Decision(
-				!isNullAtBranch || (isNullAtBranch == ifNullOpcode),
-				isNullAtBranch,
-				isNullAtBranch == ifNullOpcode
+				true,
+				(opcode == Constants.IFNULL) ? definitelyNull : definitelyNotNull
 		);
-		
 		fallThroughDecision = new Decision(
-				!isNullAtBranch || (isNullAtBranch != ifNullOpcode),
-				isNullAtBranch,
-				isNullAtBranch != ifNullOpcode
+				true,
+				(opcode == Constants.IFNULL) ? definitelyNotNull : definitelyNull
 		);
 	}
 }

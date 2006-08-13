@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.npe2;
 
+import org.apache.bcel.Constants;
+
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
@@ -29,6 +31,9 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @author David Hovemeyer
  */
 public class AcmpCondition extends Condition {
+	private Decision ifcmpDecision;
+	private Decision fallThroughDecision;
+	
 	public AcmpCondition(Location location) {
 		super(location);
 	}
@@ -56,7 +61,36 @@ public class AcmpCondition extends Condition {
 	 */
 	@Override
 	public void refresh(ValueNumberFrame vnaFrame, DefinitelyNullSet definitelyNullSet) throws DataflowAnalysisException {
-		// TODO Auto-generated method stub
+		
+//		// Get top two stack values
+//		ValueNumber a = vnaFrame.getStackValue(0);
+//		ValueNumber b = vnaFrame.getStackValue(1);
+//		
+//		boolean acmpEqOpcode =
+//			getLocation().getHandle().getInstruction().getOpcode() == Constants.IF_ACMPEQ;
+//
+//		if (a.equals(b)
+//				|| (definitelyNullSet.isValueNull(a) && definitelyNullSet.isValueNull(b))) {
+//			// Definitely the same value.
+//			// We don't learn anything about the nullness,
+//			// but one of the edges of the branch is
+//			// infeasible.
+//
+//			ifcmpDecision = new Decision(
+//					acmpEqOpcode,
+//					false,
+//					false
+//			);
+//			
+//			fallThroughDecision = new Decision(
+//					!acmpEqOpcode,
+//					false,
+//					false
+//			);
+//			
+//			return;
+//		}
+		
 		
 	}
 

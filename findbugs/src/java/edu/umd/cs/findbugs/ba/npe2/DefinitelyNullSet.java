@@ -30,48 +30,60 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
  * @author David Hovemeyer
  */
 public class DefinitelyNullSet /*extends BitSet*/ {
-	private BitSet definitelyNullSet;
+	private BitSet contents;
 	private int numValueNumbers;
 	
 	public DefinitelyNullSet(int numValueNumbers) {
-		this.definitelyNullSet = new BitSet();
+		this.contents = new BitSet();
 		this.numValueNumbers  = numValueNumbers;
 	}
 	
-	public boolean isValueNull(ValueNumber valueNumber) throws DataflowAnalysisException {
-		if (!isValid()) {
-			throw new DataflowAnalysisException();
-		}
-		return definitelyNullSet.get(valueNumber.getNumber());
+	public NullnessValue getNulllessValue(ValueNumber valueNumber) {
+		return getNullnessValue(valueNumber.getNumber());
 	}
 	
-	public void setValue(ValueNumber valueNumber, boolean isNull) throws DataflowAnalysisException  {
-		if (!isValid()) {
-			throw new DataflowAnalysisException();
+	private NullnessValue getNullnessValue(int vn) {
+		int flags = 0;
+		
+		int start = getStartIndex(vn);
+		for (int i = 0; i < NullnessValue.FLAGS_MAX; i++) {
+			if (contents.get(start + i)) {
+				flags |= (1 << i);
+			}
 		}
-		definitelyNullSet.set(valueNumber.getNumber(), isNull);
+		
+		return NullnessValue.fromFlags(flags);
+	}
+
+	public void setNullnessValue(ValueNumber valueNumber, NullnessValue nullnessValue) {
+		int flags = nullnessValue.getFlags();
+
+		int start = getStartIndex(valueNumber.getNumber());
+		for (int i = 0; i < NullnessValue.FLAGS_MAX; i++) {
+			contents.set(start + i, (flags & (1 << i)) != 0);
+		}
 	}
 	
 	public void clear() {
-		definitelyNullSet.clear();
+		contents.clear();
 	}
 
 	public void setTop() {
-		definitelyNullSet.clear();
-		definitelyNullSet.set(numValueNumbers);
+		contents.clear();
+		contents.set(lastUsedBit());
 	}
 	
 	public boolean isTop() {
-		return definitelyNullSet.get(numValueNumbers);
+		return contents.get(lastUsedBit());
 	}
 	
 	public void setBottom() {
-		definitelyNullSet.clear();
-		definitelyNullSet.set(numValueNumbers + 1);
+		contents.clear();
+		contents.set(lastUsedBit() + 1);
 	}
 	
 	public boolean isBottom() {
-		return definitelyNullSet.get(numValueNumbers + 1);
+		return contents.get(lastUsedBit() + 1);
 	}
 
 	public boolean isValid() {
@@ -79,8 +91,8 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 	}
 	
 	public void makeSameAs(DefinitelyNullSet other) {
-		definitelyNullSet.clear();
-		definitelyNullSet.or(other.definitelyNullSet);
+		contents.clear();
+		contents.or(other.contents);
 	}
 	
 	public void mergeWith(DefinitelyNullSet other) {
@@ -94,7 +106,7 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 		}
 		
 		// Result is intersection of sets
-		this.definitelyNullSet.and(other.definitelyNullSet);
+		this.contents.and(other.contents);
 	}
 	
 	public BitSet getAssignedNullLocationSet(ValueNumber vn) {
@@ -108,13 +120,29 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 	public void clearAssignNullLocations(int valueNumber) {
 		// Base class does not maintain this information.
 	}
+
+	private int getStartIndex(int vn) {
+		return vn * (1 << NullnessValue.FLAGS_MAX);
+	}
+
+	private int lastUsedBit() {
+		return numValueNumbers * NullnessValue.FLAGS_MAX;
+	}
+	
+	private int topBit() {
+		return lastUsedBit();
+	}
+	
+	private int bottomBit() {
+		return lastUsedBit() + 1;
+	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
 	public int hashCode() {
-		return definitelyNullSet.hashCode();
+		return contents.hashCode();
 	}
 	
 	/* (non-Javadoc)
@@ -127,7 +155,7 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 		}
 		
 		DefinitelyNullSet other = (DefinitelyNullSet) obj;
-		return this.definitelyNullSet.equals(other.definitelyNullSet);
+		return this.contents.equals(other.contents);
 	}
 	
 	/* (non-Javadoc)
@@ -140,7 +168,28 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 		} else if (isBottom()) {
 			return "[BOTTOM]";
 		} else {
-			return definitelyNullSet.toString();
+			StringBuffer buf = new StringBuffer();
+			boolean first = true;
+			
+			buf.append("{");
+			
+			for (int i = 0; i < numValueNumbers; i++)  {
+				NullnessValue val = getNullnessValue(i);
+				if (val.isDefinitelyNull() || val.isDefinitelyNotNull()) {
+					if (first) {
+						first = false;
+					} else {
+						buf.append(", ");
+					}
+					buf.append(i);
+					buf.append("->");
+					buf.append(val.toString());
+				}
+			}
+			
+			buf.append("}");
+			
+			return buf.toString();
 		}
 	}
 }
