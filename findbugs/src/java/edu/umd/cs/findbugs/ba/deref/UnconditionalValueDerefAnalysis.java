@@ -90,6 +90,8 @@ public class UnconditionalValueDerefAnalysis extends
 		this.methodGen = methodGen;
 		this.vnaDataflow = vnaDataflow;
 		this.assertionMethods = assertionMethods;
+		if (DEBUG) System.out.println("UnconditionalValueDerefAnalysis analysis " + methodGen.getClassName() + "." + methodGen.getName() + " : " + methodGen.getSignature());
+
 	}
 	
 	/**
@@ -233,6 +235,13 @@ public class UnconditionalValueDerefAnalysis extends
 			// Dataflow merge
 			// (intersection of unconditional deref values)
 			result.mergeWith(fact, vnaDataflow.getAnalysis().getFactory());
+		}
+		boolean isBackEdge = edge.isBackwardinBytecode();
+		if (DEBUG && isBackEdge && edge.getType() == EdgeTypes.IFCMP_EDGE) {
+			System.out.println("Meet into " + edge);
+		    System.out.println("  Backedge according to bytecode: " + isBackEdge);
+		    System.out.println("  Backedge according to DFS: " + dfs.getDFSEdgeType(edge) );
+		    System.out.println("  Facts: " + fact + " -> " + result);
 		}
 	}
 
