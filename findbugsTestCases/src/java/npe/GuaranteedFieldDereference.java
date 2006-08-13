@@ -5,7 +5,12 @@ public class GuaranteedFieldDereference {
 	public GuaranteedFieldDereference(Object x) {
 		this.x = x;
 	}
-	
+	int test0Report() {
+		int result = 0;
+		if (x == null) result = 42;
+		result += x.hashCode();
+		return result;
+	}
 	int test1Report(boolean b) {
 		int result = 0;
 		if (x == null) result = 42;
