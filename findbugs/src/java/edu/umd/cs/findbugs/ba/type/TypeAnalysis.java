@@ -503,7 +503,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			|| (edge.getType() == EdgeTypes.FALL_THROUGH_EDGE &&
 						(branchOpcode == Constants.IFEQ || branchOpcode == Constants.IFLE))
 		) {
-			System.out.println("Successful check on edge " + edge);
+			//System.out.println("Successful check on edge " + edge);
 			
 			// Successful instanceof check.
 			ValueNumberFrame vnaFrame = valueNumberDataflow.getStartFact(edge.getTarget());
