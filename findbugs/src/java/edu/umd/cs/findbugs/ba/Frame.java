@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.bcel.Constants;
@@ -523,7 +524,7 @@ public abstract class Frame <ValueType>   {
 	/**
 	 * @return
 	 */
-	public Iterable<ValueType> allValueNumbers() {
+	public Collection<ValueType> allValueNumbers() {
 		if (slotList == null) return Collections.EMPTY_LIST;
 		return Collections.unmodifiableCollection(slotList);
 	}
