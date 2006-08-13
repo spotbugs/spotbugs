@@ -114,7 +114,7 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 					Collection<ValueNumber> lockedValueNumbers = lockSet.getLockedValueNumbers(frame);
 					boolean foundMatch = false;
 					for(ValueNumber v : lockedValueNumbers) 
-						if (frame.fromMatchingLoads(ref, v)){
+						if (frame.fuzzyMatch(ref, v)){
 							foundMatch = true;
 							break;
 						}
