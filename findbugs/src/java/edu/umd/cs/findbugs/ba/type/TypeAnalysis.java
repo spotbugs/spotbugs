@@ -344,6 +344,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	 */
 	@Override
 	public void transfer(BasicBlock basicBlock, InstructionHandle end, TypeFrame start, TypeFrame result) throws DataflowAnalysisException {
+		visitor.startBasicBlock();
+		
 		super.transfer(basicBlock, end, start, result);
 		endTransfer(basicBlock, end, result);
 		if (DEBUG) {

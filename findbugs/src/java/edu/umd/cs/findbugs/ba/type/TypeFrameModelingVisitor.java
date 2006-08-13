@@ -143,10 +143,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
          public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
 		Location location = getLocation();
 		
-		if (location.isFirstInstructionInBasicBlock()) {
-			startBasicBlock();
-		}
-		
 		instanceOfFollowedByBranch = false;
 		super.analyzeInstruction(ins);
 		lastOpcode = ins.getOpcode();
@@ -156,7 +152,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 //		}
 	}
 
-	private void startBasicBlock() {
+	public void startBasicBlock() {
 		lastOpcode = -1;
 		instanceOfType = null;
 		instanceOfValueNumber = null;
