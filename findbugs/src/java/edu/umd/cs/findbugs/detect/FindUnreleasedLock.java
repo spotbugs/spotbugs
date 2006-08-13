@@ -24,6 +24,7 @@ import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.ba.npe.*;
 import edu.umd.cs.findbugs.ba.vna.*;
+
 import java.util.BitSet;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
@@ -113,14 +114,12 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			
 			for (int i = 0; i < updatedNumSlots; ++i) {
 				if (DEBUG) {
-				System.out.println("Slot " + i);
-				System.out.println("  Lock value number: " + vnaFrame.getValue(i));
-				if (vnaFrame.getValue(i).hasFlag(ValueNumber.RETURN_VALUE) )
-					System.out.println("  is return value");
+					System.out.println("Slot " + i);
+					System.out.println("  Lock value number: " + vnaFrame.getValue(i));
+					if (vnaFrame.getValue(i).hasFlag(ValueNumber.RETURN_VALUE) )
+						System.out.println("  is return value");
 				}
-				if (lock.getLockValue().hasFlag(ValueNumber.RETURN_VALUE) 
-						&& vnaFrame.getValue(i).hasFlag(ValueNumber.RETURN_VALUE) 
-						|| vnaFrame.getValue(i).equals(lock.getLockValue())) {
+				if (vnaFrame.fuzzyMatch(lock.getLockValue(), vnaFrame.getValue(i)) ) {
 					if (DEBUG) System.out.println("Saw lock value!");
 					frame.setValue(i, ResourceValue.instance());
 				}

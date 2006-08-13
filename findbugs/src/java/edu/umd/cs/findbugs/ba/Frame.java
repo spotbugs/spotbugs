@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -30,6 +31,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.StackConsumer;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import static edu.umd.cs.findbugs.ba.Debug.*;
 
 /**
@@ -516,6 +518,14 @@ public abstract class Frame <ValueType>   {
 	 */
 	protected String valueToString(ValueType value) {
 		return value.toString();
+	}
+
+	/**
+	 * @return
+	 */
+	public Iterable<ValueType> allValueNumbers() {
+		if (slotList == null) return Collections.EMPTY_LIST;
+		return Collections.unmodifiableCollection(slotList);
 	}
 
 }

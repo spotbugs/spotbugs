@@ -66,8 +66,10 @@ public abstract class XFactory {
 
 		if (isStatic)
 			return new StaticField(className, fieldName, fieldSignature, accessFlags);
-		else
+		else {
+			if (fieldName.startsWith("this$")) accessFlags |= Constants.ACC_FINAL;
 			return new InstanceField(className, fieldName, fieldSignature, accessFlags);
+		}
 	}
 	/**
 	 * Create an XField object from a BCEL Field.

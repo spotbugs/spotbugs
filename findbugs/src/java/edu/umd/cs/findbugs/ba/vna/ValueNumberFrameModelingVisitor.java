@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.generic.AALOAD;
+import org.apache.bcel.generic.ArrayInstruction;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETFIELD;
@@ -36,6 +38,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
+import org.apache.bcel.generic.MONITORENTER;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.PUTSTATIC;
@@ -43,6 +46,7 @@ import org.apache.bcel.generic.PUTSTATIC;
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Debug;
+import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.InstanceField;
 import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
@@ -204,7 +208,10 @@ public class ValueNumberFrameModelingVisitor
 	@Override
 	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
 
-		int flags = (ins instanceof InvokeInstruction) ? ValueNumber.RETURN_VALUE : 0;
+		int flags = 0;
+		if (ins instanceof InvokeInstruction) flags = ValueNumber.RETURN_VALUE;
+		else if (ins instanceof ArrayInstruction) flags = ValueNumber.ARRAY_VALUE;
+
 
 		// Get the input operands to this instruction.
 		ValueNumber[] inputValueList = popInputValues(numWordsConsumed);
@@ -359,10 +366,32 @@ public class ValueNumberFrameModelingVisitor
 			} else {
 				// Don't know what this method invocation is doing.
 				// Kill all loads.
-				getFrame().killAllLoads();
+				killLoadsOfObjectsPassed(obj);
+				getFrame().killAllLoadsOf(null);
 			}
 		}
 
+		handleNormalInstruction(obj);
+	}
+
+	private void killLoadsOfObjectsPassed(Instruction ins) {
+		int passed = getNumWordsConsumed(ins);
+		ValueNumber [] arguments = new ValueNumber[passed];
+		try {
+			getFrame().getTopStackWords(arguments);
+			for(ValueNumber v : arguments)
+				getFrame().killAllLoadsOf(v);
+			
+		} catch (DataflowAnalysisException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	@Override
+	public void visitMONITORENTER(MONITORENTER obj) {
+		// Don't know what this sync invocation is doing.
+		// Kill all loads.
+		getFrame().killAllLoads();
 		handleNormalInstruction(obj);
 	}
 
@@ -370,7 +399,7 @@ public class ValueNumberFrameModelingVisitor
 	public void visitINVOKESPECIAL(INVOKESPECIAL obj) {
 		// Don't know what this method invocation is doing.
 		// Kill all loads.
-		getFrame().killAllLoads();
+		killLoadsOfObjectsPassed(obj);
 		handleNormalInstruction(obj);
 	}
 
@@ -378,7 +407,9 @@ public class ValueNumberFrameModelingVisitor
 	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
 		// Don't know what this method invocation is doing.
 		// Kill all loads.
-		getFrame().killAllLoads();
+		if (obj.getMethodName(cpg).equals("lock"))
+			getFrame().killAllLoads();
+		else killLoadsOfObjectsPassed(obj);
 		handleNormalInstruction(obj);
 	}
 
@@ -386,7 +417,9 @@ public class ValueNumberFrameModelingVisitor
 	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
 		// Don't know what this method invocation is doing.
 		// Kill all loads.
-		getFrame().killAllLoads();
+		if (obj.getMethodName(cpg).equals("lock"))
+			getFrame().killAllLoads();
+		else killLoadsOfObjectsPassed(obj);
 		handleNormalInstruction(obj);
 	}
 

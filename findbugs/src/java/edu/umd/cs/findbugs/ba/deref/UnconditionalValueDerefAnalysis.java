@@ -19,10 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.deref;
 
-import java.util.BitSet;
-import java.util.Iterator;
-
-import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.InstructionHandle;
@@ -30,8 +26,6 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BackwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -52,7 +46,6 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
-import edu.umd.cs.findbugs.ba.vna.ValueNumberFactory;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**

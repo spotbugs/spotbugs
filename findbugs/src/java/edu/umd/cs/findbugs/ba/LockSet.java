@@ -19,9 +19,13 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysis;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFactory;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
  * Lock counts for values (as produced by ValueNumberAnalysis).
@@ -342,6 +346,20 @@ public final class LockSet {
 		return buf.toString();
 	}
 
+	/**
+	 * @param frame
+	 * @return
+	 */
+	public Collection<ValueNumber> getLockedValueNumbers(ValueNumberFrame frame) {
+		if (frame == null) throw new IllegalArgumentException("Null Frame");
+		HashSet<ValueNumber> result = new HashSet<ValueNumber>();
+		for(ValueNumber v : frame.allValueNumbers())
+			if (v != null && getLockCount(v.getNumber()) > 0)
+				result.add(v);
+		return result;
+	}
+
+	
 /*
 	public static void main(String[] argv) {
 		LockSet l = new LockSet();

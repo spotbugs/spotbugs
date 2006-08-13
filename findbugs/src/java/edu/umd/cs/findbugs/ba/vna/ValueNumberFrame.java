@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.XField;
 
@@ -39,6 +40,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
 	private ArrayList<ValueNumber> mergedValueList;
 	private Map<AvailableLoad, ValueNumber[]> availableLoadMap;
+	private Map<ValueNumber, AvailableLoad> loadForValueNumber = new HashMap<ValueNumber, AvailableLoad>();
 
 	public ValueNumberFrame(int numLocals) {
 		super(numLocals);
@@ -47,6 +49,9 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 	}
 
+	public @CheckForNull AvailableLoad getLoad(ValueNumber v) {
+		return loadForValueNumber.get(v);
+	}
 	/**
 	 * Look for an available load.
 	 *
@@ -66,6 +71,9 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	public void addAvailableLoad(AvailableLoad availableLoad, ValueNumber[] value) {
 		if (value == null) throw new IllegalStateException();
 		availableLoadMap.put(availableLoad, value);
+		for(ValueNumber v : value) {
+			loadForValueNumber.put(v, availableLoad);
+		}
 	}
 
 	/**
@@ -90,7 +98,25 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 */
 	public void killAllLoads() {
 		if (REDUNDANT_LOAD_ELIMINATION) {
-			availableLoadMap.clear();
+			for(Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator(); i.hasNext(); ) {
+				AvailableLoad availableLoad = i.next();
+				if (!availableLoad.getField().isFinal())
+					i.remove();
+			}
+		}
+	}
+	/**
+	 * Kill all loads.
+	 * This conservatively handles method calls where we
+	 * don't really know what fields might be assigned.
+	 */
+	public void killAllLoadsOf(ValueNumber v) {
+		if (REDUNDANT_LOAD_ELIMINATION) {
+			for(Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator(); i.hasNext(); ) {
+				AvailableLoad availableLoad = i.next();
+				if (!availableLoad.getField().isFinal() && availableLoad.getReference() == v)
+					i.remove();
+			}
 		}
 	}
 
@@ -130,6 +156,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 			// Copy available load set.
 			availableLoadMap.clear();
 			availableLoadMap.putAll(((ValueNumberFrame) other).availableLoadMap);
+			loadForValueNumber.putAll(((ValueNumberFrame) other).loadForValueNumber);
 		}
 
 		super.copyFrom(other);
@@ -173,6 +200,29 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 		buf.append(']');
 		return buf.toString();
+	}
+
+	public boolean fuzzyMatch(ValueNumber v1, ValueNumber v2) {
+		return v1.equals(v2) || fromMatchingLoads(v1, v2) || haveMatchingFlags(v1, v2); 
+	}
+		
+	public boolean fromMatchingLoads(ValueNumber v1, ValueNumber v2) {
+		AvailableLoad load1 = getLoad(v1);
+		if (load1 == null) return false;
+		AvailableLoad load2 = getLoad(v2);
+		if (load2 == null) return false;
+		return load1.equals(load2);
+	}
+
+	/**
+	 * @param v1
+	 * @param v2
+	 * @return
+	 */
+	public boolean haveMatchingFlags(ValueNumber v1, ValueNumber v2) {
+		int flag1 = v1.getFlags();
+		int flag2 = v2.getFlags();
+		return (flag1 & flag2) != 0;
 	}
 }
 

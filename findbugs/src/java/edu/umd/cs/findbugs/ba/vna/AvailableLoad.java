@@ -74,6 +74,11 @@ public class AvailableLoad implements Comparable<AvailableLoad> {
 		return reference;
 	}
 
+	public boolean matchesReference(ValueNumber v) {
+		if (v == reference) return true;
+		if (reference== null) return false;
+		return reference.equals(v);
+	}
 	/**
 	 * Get the field for which a load is available.
 	 *

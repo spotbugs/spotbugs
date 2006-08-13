@@ -134,6 +134,17 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 		return formatAsString(false);
 	}
 
+	public boolean isBackwardinBytecode() {
+		BasicBlock source = getSource();
+		BasicBlock target = getTarget();
+
+		InstructionHandle sourceInstruction = source.getLastInstruction();
+		InstructionHandle targetInstruction = target.getFirstInstruction();
+
+		if (targetInstruction == null  || sourceInstruction == null) return false;
+		return targetInstruction.getPosition() < sourceInstruction.getPosition();
+
+	}
 	/**
 	 * Return a string representation of the edge.
 	 */

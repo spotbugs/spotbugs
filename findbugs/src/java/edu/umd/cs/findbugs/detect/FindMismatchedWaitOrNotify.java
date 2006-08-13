@@ -72,7 +72,7 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 	}
 
 	private void analyzeMethod(ClassContext classContext, Method method)
-	        throws CFGBuilderException, DataflowAnalysisException {
+	throws CFGBuilderException, DataflowAnalysisException {
 
 		MethodGen methodGen = classContext.getMethodGen(method);
 		if (methodGen == null) return;
@@ -95,7 +95,7 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 			String methodSig = inv.getSignature(cpg);
 
 			if (Hierarchy.isMonitorWait(methodName, methodSig)
-			        || Hierarchy.isMonitorNotify(methodName, methodSig)) {
+					|| Hierarchy.isMonitorNotify(methodName, methodSig)) {
 				int numConsumed = inv.consumeStack(cpg);
 				if (numConsumed == Constants.UNPREDICTABLE)
 					throw new DataflowAnalysisException("Unpredictable stack consumption", methodGen, handle);
@@ -107,24 +107,32 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 				if (frame.getStackDepth() - numConsumed < 0)
 					throw new DataflowAnalysisException("Stack underflow", methodGen, handle);
 				ValueNumber ref = frame.getValue(frame.getNumSlots() - numConsumed);
-				if (!ref.hasFlag(ValueNumber.RETURN_VALUE)) {
 				LockSet lockSet = dataflow.getFactAtLocation(location);
 				int lockCount = lockSet.getLockCount(ref.getNumber());
 
 				if (lockCount == 0) {
-					String sourceFile = classContext.getJavaClass().getSourceFileName();
-					String type = methodName.equals("wait")
-					        ? "MWN_MISMATCHED_WAIT"
-					        : "MWN_MISMATCHED_NOTIFY";
-					
-					// Report as medium priority only if the method is public.
-					// Non-public methods may be properly locked in a calling context.
-					int priority = method.isPublic() ? NORMAL_PRIORITY : LOW_PRIORITY;
-					
-					bugReporter.reportBug(new BugInstance(this, type, priority)
-					        .addClassAndMethod(methodGen, sourceFile)
-					        .addSourceLine(classContext, methodGen, sourceFile, handle));
-				}
+					Collection<ValueNumber> lockedValueNumbers = lockSet.getLockedValueNumbers(frame);
+					boolean foundMatch = false;
+					for(ValueNumber v : lockedValueNumbers) 
+						if (frame.fromMatchingLoads(ref, v)){
+							foundMatch = true;
+							break;
+						}
+
+					if (!foundMatch) {
+
+						String type = methodName.equals("wait")
+						? "MWN_MISMATCHED_WAIT"
+								: "MWN_MISMATCHED_NOTIFY";
+						String sourceFile = classContext.getJavaClass().getSourceFileName();
+						// Report as medium priority only if the method is public.
+						// Non-public methods may be properly locked in a calling context.
+						int priority = method.isPublic() ? NORMAL_PRIORITY : LOW_PRIORITY;
+
+						bugReporter.reportBug(new BugInstance(this, type, priority)
+						.addClassAndMethod(methodGen, sourceFile)
+						.addSourceLine(classContext, methodGen, sourceFile, handle));
+					}
 				}
 			}
 		}
@@ -134,4 +142,4 @@ public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 	}
 }
 
-// vim:ts=3
+//vim:ts=3

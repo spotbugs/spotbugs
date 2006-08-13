@@ -26,7 +26,7 @@ import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
-import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 
 public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, ValueNumberAnalysis> {
