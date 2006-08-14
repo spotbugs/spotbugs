@@ -35,7 +35,6 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowTestDriver;
-import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
@@ -56,9 +55,8 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 public class UnconditionalValueDerefAnalysis extends
 		BackwardDataflowAnalysis<UnconditionalValueDerefSet> {
 	
-	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.derefs.debug");
+	public static final boolean DEBUG = SystemProperties.getBoolean("fnd.derefs.debug");
 	
-	private DepthFirstSearch dfs;
 	private CFG cfg;
 	private MethodGen methodGen;
 	private ValueNumberDataflow vnaDataflow;
@@ -70,22 +68,19 @@ public class UnconditionalValueDerefAnalysis extends
 	 * Constructor.
 	 * 
 	 * @param rdfs               the reverse depth-first-search (for the block order)
-	 * @param dfs                the forward depth-first-search
 	 * @param cfg                the CFG for the method
 	 * @param methodGen          the MethodGen for the method
-	 * @param valueNumberFactory the value number factory
 	 * @param assertionMethods   AssertionMethods for the analyzed class
+	 * @param valueNumberFactory the value number factory
 	 */
 	public UnconditionalValueDerefAnalysis(
 			ReverseDepthFirstSearch rdfs,
-			DepthFirstSearch dfs,
 			CFG cfg,
 			MethodGen methodGen,
 			ValueNumberDataflow vnaDataflow,
 			AssertionMethods assertionMethods
 			) {
 		super(rdfs);
-		this.dfs = dfs;
 		this.cfg = cfg;
 		this.methodGen = methodGen;
 		this.vnaDataflow = vnaDataflow;
@@ -225,23 +220,37 @@ public class UnconditionalValueDerefAnalysis extends
 				fact = clearDerefsOnNonNullBranch(fact, edge);
 			}
 		}
-
+		boolean isBackEdge = edge.isBackwardInBytecode();
+		if (DEBUG && edge.getType() == EdgeTypes.IFCMP_EDGE) {
+			System.out.println("Meet into " + edge);
+		    System.out.println("  Backedge according to bytecode: " + isBackEdge);
+		    System.out.println("  Fact hashCode: " + System.identityHashCode(result));
+		    System.out.println("  Initial fact: " + result);
+		    System.out.println("  Edge fact: " + fact);
+		}
 		if (result.isTop() || fact.isBottom()) {
 			// Make result identical to other fact
 			copy(fact, result);
+			if (isBackEdge && !fact.isTop())
+				result.resultsFromBackEdge = true;
 		} else if (result.isBottom() || fact.isTop()) {
 			// No change in result fact
 		} else {
 			// Dataflow merge
 			// (intersection of unconditional deref values)
+			if (false && result.resultsFromBackEdge) {
+				if (DEBUG) System.out.println("Skipping update of " +  System.identityHashCode(result) + " due to backedge info");
+				return;
+			}
 			result.mergeWith(fact, vnaDataflow.getAnalysis().getFactory());
+			if (DEBUG) {
+				System.out.println("  updated: " + System.identityHashCode(result));
+				 System.out.println("  result: " +  result);
+				 return;
+			}
 		}
-		boolean isBackEdge = edge.isBackwardinBytecode();
 		if (DEBUG && isBackEdge && edge.getType() == EdgeTypes.IFCMP_EDGE) {
-			System.out.println("Meet into " + edge);
-		    System.out.println("  Backedge according to bytecode: " + isBackEdge);
-		    System.out.println("  Backedge according to DFS: " + dfs.getDFSEdgeType(edge) );
-		    System.out.println("  Facts: " + fact + " -> " + result);
+		 System.out.println("  result: " +  result);
 		}
 	}
 
