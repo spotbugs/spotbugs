@@ -440,6 +440,7 @@ public class IsNullValueAnalysis
 	}
 	
 	public void addLocationWhereValueBecomesNull(LocationWhereValueBecomesNull locationWhereValueBecomesNull) {
+		// System.out.println("Location becomes null: " + locationWhereValueBecomesNull );
 		locationWhereValueBecomesNullSet.add(locationWhereValueBecomesNull);
 	}
 	

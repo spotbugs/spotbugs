@@ -56,6 +56,7 @@ public class UnconditionalValueDerefAnalysis extends
 		BackwardDataflowAnalysis<UnconditionalValueDerefSet> {
 	
 	public static final boolean DEBUG = SystemProperties.getBoolean("fnd.derefs.debug");
+	public static final boolean ASSUME_NONZERO_TRIP_LOOPS = SystemProperties.getBoolean("fnd.derefs.nonzerotrip");
 	
 	private CFG cfg;
 	private MethodGen methodGen;
@@ -145,14 +146,23 @@ public class UnconditionalValueDerefAnalysis extends
 			makeFactTop(fact);
 			return;
 		}
+		
 		ValueNumber vn = vnaFrame.getInstance(handle.getInstruction(), methodGen.getConstantPool()); 
 		Location location = new Location(handle, basicBlock);
+		
+		if (!methodGen.isStatic()) {
+			ValueNumber v = vnaFrame.getValue(0);
+			if (v.equals(vn)) return;
+		}
+		
 		
 		if (DEBUG) {
 			System.out.println("FOUND GUARANTEED DEREFERENCE");
 			System.out.println("Location: " + location);
 			System.out.println("Value number frame: " + vnaFrame);
 			System.out.println("Dereferenced valueNumber: " + vn);
+			System.out.println("Load: " + vnaFrame.getLoad(vn));
+			
 		}
 		// Mark the value number as being dereferenced at this location
 		fact.addDeref(vn, location);
@@ -221,12 +231,12 @@ public class UnconditionalValueDerefAnalysis extends
 			}
 		}
 		boolean isBackEdge = edge.isBackwardInBytecode();
-		boolean foo2 = edge.foo(ClassContext.getLoopExitBranches(methodGen));
-		if (foo2 && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)
+		boolean sourceIsTopOfLoop = edge.sourceIsTopOfLoop(ClassContext.getLoopExitBranches(methodGen));
+		if (sourceIsTopOfLoop && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)
 			isBackEdge = true;
-		if (DEBUG && (edge.getType() == EdgeTypes.IFCMP_EDGE || foo2)) {
+		if (false && DEBUG && (edge.getType() == EdgeTypes.IFCMP_EDGE || sourceIsTopOfLoop)) {
 			System.out.println("Meet into " + edge);
-			System.out.println("  foo2: " + foo2);
+			System.out.println("  foo2: " + sourceIsTopOfLoop);
 			System.out.println("  getType: " + edge.getType() );
 		    System.out.println("  Backedge according to bytecode: " + isBackEdge);
 		    System.out.println("  Fact hashCode: " + System.identityHashCode(result));
@@ -236,20 +246,28 @@ public class UnconditionalValueDerefAnalysis extends
 		if (result.isTop() || fact.isBottom()) {
 			// Make result identical to other fact
 			copy(fact, result);
-			if (isBackEdge && !fact.isTop())
+			if (ASSUME_NONZERO_TRIP_LOOPS && isBackEdge && !fact.isTop())
 				result.resultsFromBackEdge = true;
-		} else if (false && isBackEdge && !fact.isTop()) {
-			result.makeSameAs(fact);
+		} else if (ASSUME_NONZERO_TRIP_LOOPS && isBackEdge && !fact.isTop()) {
+			result.unionWith(fact, vnaDataflow.getAnalysis().getFactory());
 			result.resultsFromBackEdge = true;
-			System.out.println("Found special edge");
+			if (DEBUG) {
+				System.out.println("\n Forcing union of " +  System.identityHashCode(result) + " due to backedge info");
+				System.out.println("  result: " +  result);
+			}
+			
 		} else if (result.isBottom() || fact.isTop()) {
 			// No change in result fact
 		} else {
 			// Dataflow merge
 			// (intersection of unconditional deref values)
-			if (false && result.resultsFromBackEdge) {
-				if (DEBUG) System.out.println("Skipping update of " +  System.identityHashCode(result) + " due to backedge info");
-				return;
+			if (ASSUME_NONZERO_TRIP_LOOPS && result.resultsFromBackEdge) {
+				result.backEdgeUpdateCount++;
+				if (result.backEdgeUpdateCount < 10) {
+					if (DEBUG) System.out.println("\n Union update of " +  System.identityHashCode(result) + " due to backedge info");
+					result.unionWith(fact, vnaDataflow.getAnalysis().getFactory());
+					return;
+				}
 			}
 			result.mergeWith(fact, vnaDataflow.getAnalysis().getFactory());
 			if (DEBUG) {
@@ -373,7 +391,7 @@ public class UnconditionalValueDerefAnalysis extends
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#same(java.lang.Object, java.lang.Object)
 	 */
 	public boolean same(UnconditionalValueDerefSet fact1, UnconditionalValueDerefSet fact2) {
-		return fact1.isSameAs(fact2);
+		return fact1.resultsFromBackEdge || fact1.isSameAs(fact2);
 	}
 
 	@Override

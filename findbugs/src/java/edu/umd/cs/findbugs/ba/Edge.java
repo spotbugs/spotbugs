@@ -147,7 +147,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 
 	}
 	
-	public boolean foo(Set<Integer> positions) {
+	public boolean sourceIsTopOfLoop(Set<Integer> positions) {
 		BasicBlock source = getSource();
 	
 		InstructionHandle sourceInstruction = source.getLastInstruction();

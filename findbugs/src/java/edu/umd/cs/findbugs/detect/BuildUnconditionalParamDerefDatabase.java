@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
@@ -53,7 +54,9 @@ public class BuildUnconditionalParamDerefDatabase {
 	public void visitClassContext(ClassContext classContext) {
 		ParameterNullnessPropertyDatabase database =
 			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase();
-		
+		boolean fullAnalysis = AnalysisContext.currentAnalysisContext().getBoolProperty(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES);
+		if (!fullAnalysis && !AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(classContext.getJavaClass()))
+				return;
 		if (VERBOSE_DEBUG) System.out.println("Visiting class " + classContext.getJavaClass().getClassName());
 		Method[] methodList = classContext.getJavaClass().getMethods();
 		for (Method method : methodList) {

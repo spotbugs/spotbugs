@@ -47,6 +47,7 @@ public class UnconditionalValueDerefSet {
 	private Map<ValueNumber, Set<Location>> derefLocationSetMap;
 	
 	boolean resultsFromBackEdge = false;
+	int backEdgeUpdateCount = 0;
 	
 	/**
 	 * Constructor.
@@ -160,6 +161,26 @@ public class UnconditionalValueDerefSet {
 				// remove its location set
 				derefLocationSetMap.remove(vn);
 			}
+		}
+	}
+	public void unionWith(UnconditionalValueDerefSet fact, ValueNumberFactory valueNumberFactory) {
+		// Compute the union of the unconditionally dereferenced value sets
+		valueNumberSet.or(fact.valueNumberSet);
+
+		// For each unconditionally dereferenced value...
+		for (int i = 0; i < numValueNumbersInMethod; i++) {
+			ValueNumber vn = valueNumberFactory.forNumber(i);
+
+			if (fact.valueNumberSet.get(i)) {
+				// Compute the union of the dereference locations for
+				// this value number.
+				Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
+				if (derefLocationSet == null) {
+					derefLocationSet = new HashSet<Location>();
+					derefLocationSetMap.put(vn,derefLocationSet);
+				}
+				derefLocationSet.addAll(fact.derefLocationSetMap.get(vn));
+			} 
 		}
 	}
 

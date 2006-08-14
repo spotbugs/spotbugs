@@ -30,7 +30,10 @@ import edu.umd.cs.findbugs.ba.AnalysisFeatures;
  * @author David Hovemeyer
  */
 public abstract class FindBugsAnalysisFeatures {
-	private static final int START = AnalysisFeatures.NUM_BOOLEAN_ANALYSIS_PROPERTIES;
+	private static final int START;
+	 static {
+		 START = AnalysisFeatures.NUM_BOOLEAN_ANALYSIS_PROPERTIES;
+	 }
 	
 	/**
 	 * "Relaxed" warning reporting mode.
@@ -45,6 +48,7 @@ public abstract class FindBugsAnalysisFeatures {
 	 * Enable interprocedural analysis.
 	 */
 	public static final int INTERPROCEDURAL_ANALYSIS = START + 1;
+	public static final int INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES = START + 2;
 
 	private static void setProperty(int property, boolean value) {
 		AnalysisContext.currentAnalysisContext().setBoolProperty(property, value);

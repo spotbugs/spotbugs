@@ -101,7 +101,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 			if (DEBUG) {
 				System.out.println("----------------------------------------------------------------------");
-				System.out.println("Dataflow iteration " + numIterations);
+				System.out.println(this.getClass().getName() + " iteration " + numIterations);
 				System.out.println("----------------------------------------------------------------------");
 			}
 

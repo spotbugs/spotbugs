@@ -268,11 +268,14 @@ public class NullDerefAndRedundantComparisonFinder {
 				System.out.println("On edge " + edge.formatAsString(false));
 			}
 			
+			ValueNumberFrame vnaFact = vnaDataflow.getResultFact(edge.getSource());
+			IsNullValueFrame invFact = invDataflow.getFactOnEdge(edge);
+			UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
 			checkForUnconditionallyDereferencedNullValues(
 					nullValueGuaranteedDerefMap,
-					vnaDataflow.getResultFact(edge.getSource()),
-					invDataflow.getFactOnEdge(edge),
-					uvdDataflow.getFactOnEdge(edge));
+					vnaFact,
+					invFact,
+					uvdFact);
 		}
 		
 		// Report 

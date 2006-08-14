@@ -1003,7 +1003,7 @@ public class ClassContext {
 			        		tree.add(loc);
 			        	}
 			        	for(Location loc : tree) {
-			        		System.out.println("Pre: " + dataflow.getFactAfterLocation(loc));
+			        		System.out.println("\n Pre: " + dataflow.getFactAfterLocation(loc));
 			        		System.out.println("Location: " + loc);
 			        		System.out.println("Post: " + dataflow.getFactAtLocation(loc));
 			        		
@@ -1302,12 +1302,13 @@ public class ClassContext {
         	if (checkForBranchExit(instructionList,i)) result.add(i);
         if (result.size() == 0)
         	result = Collections.EMPTY_SET;
+        
         cachedLoopExits.put(xmethod, result);
         return result;
 }
 	static short getBranchOffset(byte [] codeBytes, int pos) {
-		int branchByte1 = codeBytes[pos];
-		int branchByte2 = codeBytes[pos+1];
+		int branchByte1 = 0xff & codeBytes[pos];
+		int branchByte2 = 0xff & codeBytes[pos+1];
 		int branchOffset = (short) (branchByte1 << 8 | branchByte2);
 		return (short) branchOffset;
 	
