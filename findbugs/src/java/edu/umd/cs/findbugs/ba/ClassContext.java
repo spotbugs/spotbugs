@@ -21,12 +21,14 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -796,8 +798,7 @@ public class ClassContext {
 						cfg,
 						methodGen,
 						getValueNumberDataflow(method),
-						getTypeDataflow(method), 
-						getDepthFirstSearch(method));
+						getTypeDataflow(method));
 				UnconditionalDerefDataflow dataflow = new UnconditionalDerefDataflow(cfg, analysis);
 				
 				dataflow.execute();
@@ -981,7 +982,6 @@ public class ClassContext {
 				
 				UnconditionalValueDerefAnalysis analysis = new UnconditionalValueDerefAnalysis(
 						getReverseDepthFirstSearch(method),
-						getDepthFirstSearch(method),
 						cfg,
 						getMethodGen(method),
 						vnd,
@@ -994,7 +994,24 @@ public class ClassContext {
 				UnconditionalValueDerefDataflow dataflow =
 					new UnconditionalValueDerefDataflow(getCFG(method), analysis);
 				dataflow.execute();
-				
+				 if (UnconditionalValueDerefAnalysis.DEBUG) {
+			        	System.out.println("\n\nUnconditionalValueDerefAnalysis analysis for " + method.getName());
+			        	TreeSet<Location> tree = new TreeSet<Location>();
+			        	
+			        	for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
+			        		Location loc = locs.next();
+			        		tree.add(loc);
+			        	}
+			        	for(Location loc : tree) {
+			        		System.out.println("Pre: " + dataflow.getFactAfterLocation(loc));
+			        		System.out.println("Location: " + loc);
+			        		System.out.println("Post: " + dataflow.getFactAtLocation(loc));
+			        		
+			        		
+			        		
+			        	}
+			        }
+			 
 				return dataflow;
 			}
 		};
@@ -1215,6 +1232,8 @@ public class ClassContext {
 	}
 
 	static MapCache<XMethod,BitSet> cachedBitsets = new MapCache<XMethod, BitSet>(64);
+	static MapCache<XMethod,Set<Integer>> cachedLoopExits = new MapCache<XMethod, Set<Integer>>(13);
+	
 	/**
 	 * Get a BitSet representing the bytecodes that are used in the given method.
 	 * This is useful for prescreening a method for the existence of particular instructions.
@@ -1266,6 +1285,57 @@ public class ClassContext {
 		        return result;
 	}
 	
+	@CheckForNull static public Set<Integer> getLoopExitBranches(MethodGen methodGen) {
+
+		XMethod xmethod = XFactory.createXMethod(methodGen);
+		if (cachedLoopExits.containsKey(xmethod)) {
+			return cachedLoopExits.get(xmethod);
+		}
+        Code code = methodGen.getMethod().getCode();
+        if (code == null)
+	        return null;
+
+        byte[] instructionList = code.getCode();
+
+        Set<Integer> result = new HashSet<Integer>();
+        for(int i = 0; i < instructionList.length; i++)
+        	if (checkForBranchExit(instructionList,i)) result.add(i);
+        if (result.size() == 0)
+        	result = Collections.EMPTY_SET;
+        cachedLoopExits.put(xmethod, result);
+        return result;
+}
+	static short getBranchOffset(byte [] codeBytes, int pos) {
+		int branchByte1 = codeBytes[pos];
+		int branchByte2 = codeBytes[pos+1];
+		int branchOffset = (short) (branchByte1 << 8 | branchByte2);
+		return (short) branchOffset;
+	
+	}
+
+	static boolean checkForBranchExit(byte [] codeBytes, int pos) {
+		if (pos < 0 || pos+2 >= codeBytes.length) return false;
+		switch(0xff & codeBytes[pos]) {
+		case Constants.IF_ACMPEQ:
+		case Constants.IF_ACMPNE:
+		case Constants.IF_ICMPEQ:
+		case Constants.IF_ICMPGE:
+		case Constants.IF_ICMPGT:
+		case Constants.IF_ICMPLE:
+		case Constants.IF_ICMPLT:
+		case Constants.IF_ICMPNE:
+			break;
+			default: 
+				return false;
+		}
+		int branchTarget = pos+getBranchOffset(codeBytes, pos+1);
+		if (branchTarget-3 < pos || branchTarget >= codeBytes.length) return false;
+		if ((codeBytes[branchTarget-3] & 0xff) != Constants.GOTO) return false;
+		int backBranchTarget = branchTarget + getBranchOffset(codeBytes, branchTarget-2);
+		if (backBranchTarget <= pos && backBranchTarget + 12 >= pos) return true;
+		return false;
+	}
+
 	/**
 	 * Get array mapping bytecode offsets to opcodes for given method.
 	 * Array elements containing zero are either not valid instruction offsets,

@@ -46,6 +46,8 @@ public class UnconditionalValueDerefSet {
 	/** Map of value numbers to locations */
 	private Map<ValueNumber, Set<Location>> derefLocationSetMap;
 	
+	boolean resultsFromBackEdge = false;
+	
 	/**
 	 * Constructor.
 	 * 

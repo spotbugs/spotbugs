@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -134,7 +135,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 		return formatAsString(false);
 	}
 
-	public boolean isBackwardinBytecode() {
+	public boolean isBackwardInBytecode() {
 		BasicBlock source = getSource();
 		BasicBlock target = getTarget();
 
@@ -143,6 +144,17 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 
 		if (targetInstruction == null  || sourceInstruction == null) return false;
 		return targetInstruction.getPosition() < sourceInstruction.getPosition();
+
+	}
+	
+	public boolean foo(Set<Integer> positions) {
+		BasicBlock source = getSource();
+	
+		InstructionHandle sourceInstruction = source.getLastInstruction();
+	
+		if ( sourceInstruction == null) return false;
+		return positions.contains(sourceInstruction.getPosition());
+		
 
 	}
 	/**

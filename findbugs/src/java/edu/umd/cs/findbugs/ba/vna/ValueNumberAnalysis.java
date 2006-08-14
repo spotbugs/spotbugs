@@ -93,6 +93,8 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 		this.factAtLocationMap = new HashMap<Location, ValueNumberFrame>();
 		this.factAfterLocationMap = new HashMap<Location, ValueNumberFrame>();
+		if (DEBUG) System.out.println("VNA Analysis " + methodGen.getClassName() + "." + methodGen.getName() + " : " + methodGen.getSignature());
+		
 	}
 	
 	public void setMergeTree(MergeTree mergeTree) {

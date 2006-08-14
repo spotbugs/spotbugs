@@ -36,7 +36,6 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DFSEdgeTypes;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowTestDriver;
-import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
@@ -64,7 +63,6 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 	private final ValueNumberDataflow vnaDataflow;
 	private final Map<ValueNumber, Integer> valueNumberToParamMap;
 	private final int numParams;
-	private DepthFirstSearch dfs;
 	//private final int topBit;
 	//private final int bottomBit;
 	
@@ -73,18 +71,17 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 			CFG cfg,
 			MethodGen methodGen,
 			ValueNumberDataflow vnaDataflow,
-			TypeDataflow typeDataflow, DepthFirstSearch dfs) {
+			TypeDataflow typeDataflow) {
 		super(rdfs);
 		this.cfg = cfg;
 		this.methodGen = methodGen;
-		this.dfs = dfs;
 		//this.typeDataflow = typeDataflow;
 		this.vnaDataflow = vnaDataflow;
 		this.valueNumberToParamMap = vnaDataflow.getValueNumberToParamMap(methodGen.getSignature(), methodGen.isStatic());
 		this.numParams = new SignatureParser(methodGen.getSignature()).getNumParameters();
 		//this.topBit = numParams;
 		//this.bottomBit = numParams + 1;
-		if (DEBUG) System.out.println("Analyzing " + methodGen.getClassName() + "." + methodGen.getName() + " : " + methodGen.getSignature());
+		if (DEBUG) System.out.println("Analyzing guaranteed dereferences in " + methodGen.getClassName() + "." + methodGen.getName() + " : " + methodGen.getSignature());
 	}
 
 	public void copy(UnconditionalDerefSet source, UnconditionalDerefSet dest) {
@@ -126,13 +123,7 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 			// Meet is intersection
 			result.and(fact);
 		}
-		boolean isBackEdge = edge.isBackwardinBytecode();
-		if (DEBUG && isBackEdge && edge.getType() == EdgeTypes.IFCMP_EDGE) {
-			System.out.println("Meet into " + edge);
-		    System.out.println("  Backedge according to bytecode: " + isBackEdge);
-		    System.out.println("  Backedge according to DFS: " + dfs.getDFSEdgeType(edge) );
-		    System.out.println("  Facts: " + fact + " -> " + result);
-		}
+		boolean isBackEdge = edge.isBackwardInBytecode();
 	}
 	
 	public boolean same(UnconditionalDerefSet fact1, UnconditionalDerefSet fact2) {

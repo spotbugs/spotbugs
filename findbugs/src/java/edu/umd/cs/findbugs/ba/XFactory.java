@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
+import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
@@ -133,7 +134,10 @@ public abstract class XFactory {
 		Field field = visitor.getField();
 		return createXField(javaClass, field);
 	}
-	
+	public static XMethod createXMethod(MethodGen methodGen) {
+		return createXMethod(methodGen.getClassName(), methodGen.getName(), methodGen.getSignature(), methodGen.isStatic());
+	}
+
 	/**
 	 * Create an XMethod.
 	 * Note that the method access flags are set to a plausible, but not

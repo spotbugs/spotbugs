@@ -49,7 +49,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	private boolean isForwards;
 	private int numIterations;
 
-	private static final boolean DEBUG = SystemProperties.getBoolean("dataflow.debug");
+	static final boolean DEBUG = SystemProperties.getBoolean("dataflow.debug");
 
 	/**
 	 * Constructor.

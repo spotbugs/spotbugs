@@ -221,8 +221,12 @@ public class UnconditionalValueDerefAnalysis extends
 			}
 		}
 		boolean isBackEdge = edge.isBackwardInBytecode();
-		if (DEBUG && edge.getType() == EdgeTypes.IFCMP_EDGE) {
+		boolean foo2 = edge.foo(ClassContext.getLoopExitBranches(methodGen));
+		
+		if (DEBUG && (edge.getType() == EdgeTypes.IFCMP_EDGE || foo2)) {
 			System.out.println("Meet into " + edge);
+			System.out.println("  foo2: " + foo2);
+			System.out.println("  getType: " + edge.getType() );
 		    System.out.println("  Backedge according to bytecode: " + isBackEdge);
 		    System.out.println("  Fact hashCode: " + System.identityHashCode(result));
 		    System.out.println("  Initial fact: " + result);

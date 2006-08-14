@@ -100,8 +100,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			for(Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator(); i.hasNext(); ) {
 				AvailableLoad availableLoad = i.next();
-				if (!availableLoad.getField().isFinal())
+				if (!availableLoad.getField().isFinal()) {
+					if (false) System.out.println("KILLING load of " + availableLoad);
 					i.remove();
+				}
 			}
 		}
 	}
@@ -114,8 +116,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			for(Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator(); i.hasNext(); ) {
 				AvailableLoad availableLoad = i.next();
-				if (!availableLoad.getField().isFinal() && availableLoad.getReference() == v)
+				if (!availableLoad.getField().isFinal() && availableLoad.getReference() == v) {
+					if (false) System.out.println("Killing load of " + availableLoad);
 					i.remove();
+				}
 			}
 		}
 	}
