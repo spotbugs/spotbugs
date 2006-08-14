@@ -222,7 +222,8 @@ public class UnconditionalValueDerefAnalysis extends
 		}
 		boolean isBackEdge = edge.isBackwardInBytecode();
 		boolean foo2 = edge.foo(ClassContext.getLoopExitBranches(methodGen));
-		
+		if (foo2 && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)
+			isBackEdge = true;
 		if (DEBUG && (edge.getType() == EdgeTypes.IFCMP_EDGE || foo2)) {
 			System.out.println("Meet into " + edge);
 			System.out.println("  foo2: " + foo2);
@@ -237,6 +238,10 @@ public class UnconditionalValueDerefAnalysis extends
 			copy(fact, result);
 			if (isBackEdge && !fact.isTop())
 				result.resultsFromBackEdge = true;
+		} else if (false && isBackEdge && !fact.isTop()) {
+			result.makeSameAs(fact);
+			result.resultsFromBackEdge = true;
+			System.out.println("Found special edge");
 		} else if (result.isBottom() || fact.isTop()) {
 			// No change in result fact
 		} else {
@@ -371,6 +376,10 @@ public class UnconditionalValueDerefAnalysis extends
 		return fact1.isSameAs(fact2);
 	}
 
+	@Override
+	public void startIteration() {
+		// System.out.println("analysis iteration in " + methodGen.getClassName() + " on " + methodGen.toString());
+	}
 	public static void main(String[] args) throws Exception {
 		if (args.length != 1) {
 			System.err.println("Usage: " + UnconditionalValueDerefAnalysis.class.getName() + " <classfile>");
