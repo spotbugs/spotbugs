@@ -128,29 +128,69 @@ public class UnconditionalValueDerefAnalysis extends
 			return;
 		}
 
-		// See if this instruction has a null check.
-		// If it does, the fall through predecessor will be
-		// identify itself as the null check.
-		if (handle != basicBlock.getFirstInstruction()) {
-			return;
-		}
-		BasicBlock fallThroughPredecessor =
-			cfg.getPredecessorWithEdgeType(basicBlock, EdgeTypes.FALL_THROUGH_EDGE);
-		if (fallThroughPredecessor == null || !fallThroughPredecessor.isNullCheck()) {
-			return;
-		}
-		
-		// Get the null-checked value
-		ValueNumberFrame vnaFrame = vnaDataflow.getStartFact(fallThroughPredecessor);
+		// Get value number frame
+		Location location = new Location(handle, basicBlock);
+		ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
 		if (!vnaFrame.isValid()) {
 			// Probably dead code.
 			// Assume this location can't be reached.
 			makeFactTop(fact);
 			return;
 		}
+/*		
+		// If this is a method call instruction,
+		// check to see if any of the parameters are @NonNull,
+		// and treat them as dereferences.
+		if (handle.getInstruction() instanceof InvokeInstruction) {
+			NullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
+			if (database != null) {
+				InvokeInstruction inv = (InvokeInstruction) handle.getInstruction(); 
+				XMethod called = XFactory.createXMethod(
+						inv,
+						methodGen.getConstantPool());
+				SignatureParser sigParser = new SignatureParser(called.getSignature());
+				int numParams = sigParser.getNumParameters();
+				
+				for (int i = 0; i < numParams; i++) {
+					if (database.parameterMustBeNonNull(called, i)) {
+						// Get the corresponding value number
+					}
+				}
+			}
+		}
+*/
+		// Check to see if an instance value is dereferenced here
+		checkInstance(location, vnaFrame, fact);
+	}
+
+	/**
+	 * Check to see if the instruction has a null check associated with it,
+	 * and if so, add a dereference.
+	 * 
+	 * @param location the Location of the instruction
+	 * @param vnaFrame ValueNumberFrame at the Location of the instruction
+	 * @param fact     the dataflow value to modify
+	 * @throws DataflowAnalysisException
+	 */
+	private void checkInstance(
+			Location location,
+			ValueNumberFrame vnaFrame,
+			UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
+		// See if this instruction has a null check.
+		// If it does, the fall through predecessor will be
+		// identify itself as the null check.
+		if (!location.isFirstInstructionInBasicBlock()) {
+			return;
+		}
+		BasicBlock fallThroughPredecessor =
+			cfg.getPredecessorWithEdgeType(location.getBasicBlock(), EdgeTypes.FALL_THROUGH_EDGE);
+		if (fallThroughPredecessor == null || !fallThroughPredecessor.isNullCheck()) {
+			return;
+		}
 		
-		ValueNumber vn = vnaFrame.getInstance(handle.getInstruction(), methodGen.getConstantPool()); 
-		Location location = new Location(handle, basicBlock);
+		// Get the null-checked value
+		
+		ValueNumber vn = vnaFrame.getInstance(location.getHandle().getInstruction(), methodGen.getConstantPool()); 
 		
 		// Ignore dereferences of this
 		if (!methodGen.isStatic()) {
