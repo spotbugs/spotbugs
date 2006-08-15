@@ -13,7 +13,7 @@ public class NonNullParamDeref {
 	
 	int count;
 	
-	void f(boolean a) {
+	void report1(boolean a) {
 		
 		Object x = null;
 		if (a) {
@@ -23,7 +23,7 @@ public class NonNullParamDeref {
 		foo(x);
 	}
 	
-	void g(boolean b) {
+	void report2(boolean b) {
 		Object x = null;
 		
 		if (b) {
