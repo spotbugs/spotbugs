@@ -22,7 +22,7 @@ import java.util.BitSet;
 
 /**
  * Method property recording which parameters are (or should be)
- * non-null, meaning that null values should be passed
+ * non-null, meaning that null values should not be passed
  * as their arguments.
  * 
  * @author David Hovemeyer
