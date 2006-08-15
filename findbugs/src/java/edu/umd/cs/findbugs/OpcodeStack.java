@@ -86,7 +86,7 @@ public class OpcodeStack implements Constants2
 	
 	public static class Item
 	{ 		
-		public static final int BYTE_ARRAY_LOAD = 1;
+		public static final int SIGNED_BYTE = 1;
 		public static final int RANDOM_INT = 2;
 		public static final int LOW_8_BITS_CLEAR = 3;
 		public static final int HASHCODE_INT = 4;
@@ -152,7 +152,7 @@ public class OpcodeStack implements Constants2
 		public String toString() {
 			StringBuffer buf = new StringBuffer("< ");
 			buf.append(signature);
-			if (specialKind == BYTE_ARRAY_LOAD)
+			if (specialKind == SIGNED_BYTE)
 				buf.append(", byte_array_load");
 			else if (specialKind == RANDOM_INT)
 				buf.append(", random_int");
@@ -798,7 +798,7 @@ public class OpcodeStack implements Constants2
 	 			{
 	 				pop(2);
 	 				Item v =  new Item("I");
-	 				v.setSpecialKind(Item.BYTE_ARRAY_LOAD);
+	 				v.setSpecialKind(Item.SIGNED_BYTE);
 	 				push(v);
 	 				break;
 	 			}
@@ -984,10 +984,12 @@ public class OpcodeStack implements Constants2
 	 			case I2B:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("I", new Integer((int)((byte)((Integer)it.getConstant()).intValue()))));
+	 					it =new Item("I", new Integer((int)((byte)((Integer)it.getConstant()).intValue())));
 	 				} else {
-	 					push(new Item("I"));
+	 					it = new Item("I");
 	 				}
+	 				it.setSpecialKind(Item.SIGNED_BYTE);
+	 				push(it);
 	 			break;
 
 	 			case I2C:

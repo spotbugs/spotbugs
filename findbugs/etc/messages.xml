@@ -3727,6 +3727,19 @@ value of the result of the remainer operation (i.e., use
 
 
 
+  <BugPattern type="INT_BAD_COMPARISON_WITH_SIGNED_BYTE">
+    <ShortDescription>Bad comparison of signed byte</ShortDescription>
+    <LongDescription>Bad comparison of signed byte with {2} </LongDescription>
+    <Details>
+<![CDATA[
+<p> Signed bytes can only have a value in the range -128 to 127. Comparing
+a signed byte with a value outside that range is vacuous and likely to be incorrect.
+To convert a signed byte <code>b</code> to an unsigned value in the range 0..255,
+use <code>0xff & b</code>
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="INT_VACUOUS_COMPARISON">
     <ShortDescription>Vacuous comparison of integer value</ShortDescription>
     <LongDescription>Vacuous comparison of integer value {1} </LongDescription>

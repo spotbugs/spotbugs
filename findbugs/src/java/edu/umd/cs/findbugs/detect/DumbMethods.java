@@ -169,6 +169,51 @@ public class DumbMethods extends BytecodeScanningDetector  {
 			
 			
 		}
+		
+		if (stack.getStackDepth() >= 1 && (seen == LOOKUPSWITCH || seen == TABLESWITCH)) {
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			if (item0.getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE) {
+				int[] switchLabels = getSwitchLabels();
+				int [] switchOffsets = getSwitchOffsets();
+				for(int i = 0; i < switchLabels.length; i++) {
+					int v = switchLabels[i];
+					if (v <= -129 || v >= 128)
+						bugReporter.reportBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE", 
+								HIGH_PRIORITY)
+									.addClassAndMethod(this)
+									.addInt(v)
+									.addSourceLine(this, getPC() + switchOffsets[i]));
+
+				}
+			}
+		}
+		// check for use of signed byte where is it assumed it can be out of the -128...127 range
+		if (stack.getStackDepth() >= 2) switch (seen) {
+		case IF_ICMPEQ:
+		case IF_ICMPNE:
+		case IF_ICMPLT:
+		case IF_ICMPLE:
+		case IF_ICMPGE:
+		case IF_ICMPGT:
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			OpcodeStack.Item item1 = stack.getStackItem(1);
+			if (item1.getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE) {
+				OpcodeStack.Item tmp = item0;
+				item0 = item1;
+				item1 = tmp;
+			}
+			Object constant1 = item1.getConstant();
+			if (item0.getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE
+					&& constant1 instanceof Number) {
+				int v1 = ((Number)constant1).intValue();
+				if (v1 <= -129 || v1 >= 128)
+					bugReporter.reportBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE", 
+							HIGH_PRIORITY)
+								.addClassAndMethod(this)
+								.addInt(v1)
+								.addSourceLine(this));
+			}	
+		}
 		if (checkForBitIorofSignedByte && seen != I2B) {
 			  bugReporter.reportBug(new BugInstance(this, "BIT_IOR_OF_SIGNED_BYTE", 
 					prevOpcode == LOR ? HIGH_PRIORITY : NORMAL_PRIORITY)
@@ -181,9 +226,9 @@ public class DumbMethods extends BytecodeScanningDetector  {
 			
 			int special0 = item0.getSpecialKind();
 			int special1 = item1.getSpecialKind();
-			if  (special0 == OpcodeStack.Item.BYTE_ARRAY_LOAD  
+			if  (special0 == OpcodeStack.Item.SIGNED_BYTE  
 					&& special1 == OpcodeStack.Item.LOW_8_BITS_CLEAR
-					|| special0 == OpcodeStack.Item.LOW_8_BITS_CLEAR && special1 == OpcodeStack.Item.BYTE_ARRAY_LOAD )
+					|| special0 == OpcodeStack.Item.LOW_8_BITS_CLEAR && special1 == OpcodeStack.Item.SIGNED_BYTE )
 				checkForBitIorofSignedByte = true;
 			else checkForBitIorofSignedByte = false;
 		} else checkForBitIorofSignedByte = false;
