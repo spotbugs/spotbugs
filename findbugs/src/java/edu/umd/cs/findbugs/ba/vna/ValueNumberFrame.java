@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -42,14 +43,15 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
 	private ArrayList<ValueNumber> mergedValueList;
 	private Map<AvailableLoad, ValueNumber[]> availableLoadMap;
-	private Map<AvailableLoad,ValueNumber> mergedLoads = new HashMap<AvailableLoad,ValueNumber> ();
-	private Map<ValueNumber, AvailableLoad> loadForValueNumber = new HashMap<ValueNumber, AvailableLoad>();
+	private Map<AvailableLoad,ValueNumber> mergedLoads ;
+	// private Map<ValueNumber, AvailableLoad> loadForValueNumber;
 	public boolean phiNodeForLoads;
 
 	public ValueNumberFrame(int numLocals) {
 		super(numLocals);
 		if (REDUNDANT_LOAD_ELIMINATION) {
-			this.availableLoadMap = new HashMap<AvailableLoad, ValueNumber[]>();
+			availableLoadMap = new HashMap<AvailableLoad, ValueNumber[]>();
+			mergedLoads =  new HashMap<AvailableLoad,ValueNumber> ();
 		}
 	}
 
@@ -67,7 +69,12 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		return buf.toString();
 	}
 	public @CheckForNull AvailableLoad getLoad(ValueNumber v) {
-		return loadForValueNumber.get(v);
+		for(Map.Entry<AvailableLoad, ValueNumber[]> e : availableLoadMap.entrySet()) {
+			if (e.getValue() != null)
+				for(ValueNumber v2 : e.getValue())
+					if (v.equals(v2)) return e.getKey();
+		}
+		return null;
 	}
 	/**
 	 * Look for an available load.
@@ -88,8 +95,13 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	public void addAvailableLoad(AvailableLoad availableLoad, ValueNumber[] value) {
 		if (value == null) throw new IllegalStateException();
 		availableLoadMap.put(availableLoad, value);
+
 		for(ValueNumber v : value) {
-			loadForValueNumber.put(v, availableLoad);
+			if (RLE_DEBUG) {
+				System.out.println("Adding available load of " + availableLoad + " for " + v + " to " + System.identityHashCode(this));
+				if (v.getNumber() == 2)
+					System.out.println("Found it");
+			}
 		}
 	}
 
@@ -119,8 +131,6 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 				AvailableLoad availableLoad = i.next();
 				if (!availableLoad.getField().isFinal()) {
 					if (false) System.out.println("KILLING load of " + availableLoad);
-					ValueNumber[] valueNumbers = availableLoadMap.get(availableLoad);
-					if (valueNumbers != null) for(ValueNumber v : valueNumbers) loadForValueNumber.remove(v);
 					i.remove();
 				}
 			}
@@ -131,9 +141,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 * This conservatively handles method calls where we
 	 * don't really know what fields might be assigned.
 	 */
-	public void killAllLoadsOf(ValueNumber v) {
+	public void killAllLoadsOf(@CheckForNull ValueNumber v) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
-			loadForValueNumber.remove(v);
 			for(Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator(); i.hasNext(); ) {
 				AvailableLoad availableLoad = i.next();
 				if (!availableLoad.getField().isFinal() && availableLoad.getReference() == v) {
@@ -157,7 +166,6 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 			if (other.isBottom()) {
 				changed = !this.availableLoadMap.isEmpty();
 				availableLoadMap.clear();
-				loadForValueNumber.clear();
 			}
 			else if (!other.isTop()) {
 				for(Map.Entry<AvailableLoad,ValueNumber[]> e : availableLoadMap.entrySet()) {
@@ -179,8 +187,6 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 						}
 						
 						changed = true;
-						if (myVN != null) for(ValueNumber v : myVN) loadForValueNumber.remove(v);
-						loadForValueNumber.put(phi, load);
 						e.setValue(new ValueNumber[] { phi });
 					}
 					
@@ -223,7 +229,6 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 			// Copy available load set.
 			availableLoadMap.clear();
 			availableLoadMap.putAll(((ValueNumberFrame) other).availableLoadMap);
-			loadForValueNumber.putAll(((ValueNumberFrame) other).loadForValueNumber);
 		}
 
 		super.copyFrom(other);
@@ -248,12 +253,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 				buf.append(key + "=" + valueToString(value));
 			}
 			
-			for(Map.Entry<ValueNumber, AvailableLoad> e : loadForValueNumber.entrySet()) {
-				buf.append(" ");
-				buf.append(e.getKey());
-				buf.append("=");
-				buf.append(e.getValue());
-			}
+			buf.append(" #");
+			buf.append(System.identityHashCode(this));
 			if (phiNodeForLoads) buf.append(" phi");
 			return buf.toString();
 		} else {
@@ -300,7 +301,14 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	}
 	
 	public Collection<ValueNumber> valueNumbersForLoads() {
-		return loadForValueNumber.keySet();
+		HashSet<ValueNumber> result = new HashSet<ValueNumber>();
+		for(Map.Entry<AvailableLoad, ValueNumber[]> e : availableLoadMap.entrySet()) {
+			if (e.getValue() != null)
+				for(ValueNumber v2 : e.getValue())
+					result.add(v2);
+		}
+
+		return result;
 	}
 }
 
