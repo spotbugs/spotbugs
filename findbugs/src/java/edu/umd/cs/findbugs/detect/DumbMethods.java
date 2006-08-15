@@ -208,7 +208,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 				int v1 = ((Number)constant1).intValue();
 				if (v1 <= -129 || v1 >= 128)
 					bugReporter.reportBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE", 
-							HIGH_PRIORITY)
+							(seen == IF_ICMPEQ || seen == IF_ICMPNE || (v1 != -129 && v1 != 128)) ? HIGH_PRIORITY : NORMAL_PRIORITY)
 								.addClassAndMethod(this)
 								.addInt(v1)
 								.addSourceLine(this));
