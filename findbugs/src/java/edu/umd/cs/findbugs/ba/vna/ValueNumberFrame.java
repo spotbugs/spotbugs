@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.XField;
 
@@ -92,7 +93,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 * @param availableLoad the AvailableLoad (reference and field)
 	 * @param value         the value(s) loaded
 	 */
-	public void addAvailableLoad(AvailableLoad availableLoad, ValueNumber[] value) {
+	public void addAvailableLoad(AvailableLoad availableLoad, @NonNull ValueNumber[] value) {
 		if (value == null) throw new IllegalStateException();
 		availableLoadMap.put(availableLoad, value);
 
@@ -129,7 +130,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			for(Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator(); i.hasNext(); ) {
 				AvailableLoad availableLoad = i.next();
-				if (!availableLoad.getField().isFinal()) {
+				if (!availableLoad.getField().isFinal() && !availableLoad.getField().getName().equals("lock")) {
 					if (false) System.out.println("KILLING load of " + availableLoad);
 					i.remove();
 				}
