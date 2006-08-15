@@ -125,30 +125,37 @@ public class FindNullDeref
 
 	public void visitClassContext(ClassContext classContext) {
 		this.classContext = classContext;
-		
-		try {
-			JavaClass jclass = classContext.getJavaClass();
-			Method[] methodList = jclass.getMethods();
-			for (Method method : methodList) {
-				if (method.isAbstract() || method.isNative() || method.getCode() == null)
+
+		JavaClass jclass = classContext.getJavaClass();
+		Method[] methodList = jclass.getMethods();
+		for (Method method : methodList) {
+			try {
+				if (method.isAbstract() || method.isNative()
+						|| method.getCode() == null)
 					continue;
 
 				if (METHOD != null && !method.getName().equals(METHOD))
 					continue;
-				if (DEBUG) System.out.println("Checking for NP in " + method.getName());
+				if (DEBUG)
+					System.out
+							.println("Checking for NP in " + method.getName());
 				analyzeMethod(classContext, method);
+			} catch (MissingClassException e) {
+				bugReporter.reportMissingClass(e.getClassNotFoundException());
+			} catch (DataflowAnalysisException e) {
+				bugReporter.logError("FindNullDeref caught dae exception", e);
+			} catch (CFGBuilderException e) {
+				bugReporter.logError("FindNullDeref caught cfgb exception", e);
 			}
-		} catch (MissingClassException e) {
-			bugReporter.reportMissingClass(e.getClassNotFoundException());
-		} catch (DataflowAnalysisException e) {
-			bugReporter.logError("FindNullDeref caught dae exception", e);
-		} catch (CFGBuilderException e) {
-			bugReporter.logError("FindNullDeref caught cfgb exception", e);
+
 		}
 	}
 
 	private void analyzeMethod(ClassContext classContext, Method method)
 	        throws CFGBuilderException, DataflowAnalysisException {
+		if (DEBUG || DEBUG_NULLARG)
+			System.out.println("Pre FND ");
+
 		MethodGen methodGen = classContext.getMethodGen(method);
 		if (methodGen == null)
 			return;
