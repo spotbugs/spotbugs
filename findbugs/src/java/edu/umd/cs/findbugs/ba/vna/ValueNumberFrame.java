@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.vna;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -227,6 +228,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		int flag1 = v1.getFlags();
 		int flag2 = v2.getFlags();
 		return (flag1 & flag2) != 0;
+	}
+	
+	public Collection<ValueNumber> valueNumbersForLoads() {
+		return loadForValueNumber.keySet();
 	}
 }
 

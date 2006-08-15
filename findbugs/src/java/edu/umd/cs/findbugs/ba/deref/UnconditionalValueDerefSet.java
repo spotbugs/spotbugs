@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.deref;
 
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -257,7 +258,7 @@ public class UnconditionalValueDerefSet {
 	public Set<Location> getUnconditionalDerefLocationSet(ValueNumber vn) {
 		Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
 		if (derefLocationSet == null ) {
-			derefLocationSet = new HashSet<Location>();
+			derefLocationSet = Collections.EMPTY_SET;
 		}
 		return derefLocationSet;
 	}

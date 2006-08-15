@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.ba.npe.IsNullConditionDecision;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
+import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -305,7 +306,7 @@ public class UnconditionalValueDerefAnalysis extends
 
 		if (blockValueNumberFrame.isValid() && targetValueNumberFrame.isValid() &&
 				blockValueNumberFrame.getNumSlots() == targetValueNumberFrame.getNumSlots()) {
-			if (false && DEBUG) {
+			if (DEBUG) {
 				System.out.println("** Valid VNA frames");
 				System.out.println("** Block : " + blockValueNumberFrame);
 				System.out.println("** Target: " + targetValueNumberFrame);
@@ -328,6 +329,24 @@ public class UnconditionalValueDerefAnalysis extends
 						fact.setDerefSet(blockVN, fact.getUnconditionalDerefLocationSet(targetVN));
 					}
 				}
+			} // for all slots
+			for(ValueNumber blockVN : blockValueNumberFrame.valueNumbersForLoads()) {
+				AvailableLoad load = blockValueNumberFrame.getLoad(blockVN);
+				if (load == null) continue;
+				ValueNumber [] targetVNs = targetValueNumberFrame.getAvailableLoad(load);
+				if (targetVNs != null)
+					for(ValueNumber targetVN : targetVNs) 
+						if (fact.isUnconditionallyDereferenced(targetVN)
+								&& !fact.isUnconditionallyDereferenced(blockVN)) {
+							//  Block VN is also dereferenced unconditionally.
+							if (DEBUG) {
+								System.out.println("** Copy vn derefs " + targetVN.getNumber() + 
+										" --> " + blockVN.getNumber());
+							}
+							fact.setDerefSet(blockVN, fact.getUnconditionalDerefLocationSet(targetVN));
+
+						}
+
 			}
 		}
 		return fact;
