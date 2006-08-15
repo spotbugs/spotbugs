@@ -524,12 +524,12 @@ public class ValueNumberFrameModelingVisitor
 				freshValue.setFlags(flags);
 				outputValueList[i] = freshValue;
 			}
-			if (RLE_DEBUG) {
+			if (false && RLE_DEBUG) {
 				System.out.println("<<cache fill for " + handle.getPosition() + ": " +
 					vlts(inputValueList) + " ==> " + vlts(outputValueList) + ">>");
 			}
 			cache.addOutputValues(entry, outputValueList);
-		} else if (RLE_DEBUG) {
+		} else if (false && RLE_DEBUG) {
 			System.out.println("<<cache hit for " + handle.getPosition() + ": " +
 				vlts(inputValueList) + " ==> " + vlts(outputValueList) + ">>");
 		}
