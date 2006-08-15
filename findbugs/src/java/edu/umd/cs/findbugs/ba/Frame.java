@@ -332,6 +332,22 @@ public abstract class Frame <ValueType>   {
 	}
 	
 	/**
+	 * Get the stack slot that will contain given method argument.
+	 * Assumes that this frame is at the location (just before)
+	 * a method invocation instruction.
+	 * 
+	 * @param i            the argument index: 0 for first arg, etc.
+	 * @param numArguments total number of arguments to the called method
+	 * @return slot containing the argument value
+	 */
+	public int getArgumentSlot(int i, int numArguments) {
+		if (i >= numArguments)
+			throw new IllegalArgumentException();
+
+		return (slotList.size() - numArguments) + i;
+	}
+	
+	/**
 	 * Get the <i>i</i>th operand used by given instruction.
 	 * 
 	 * @param ins the instruction, which must be a StackConsumer

@@ -26,6 +26,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BackwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -38,7 +39,11 @@ import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
+import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.npe.IsNullConditionDecision;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
@@ -59,6 +64,8 @@ public class UnconditionalValueDerefAnalysis extends
 	public static final boolean DEBUG = SystemProperties.getBoolean("fnd.derefs.debug");
 	public static final boolean ASSUME_NONZERO_TRIP_LOOPS = SystemProperties.getBoolean("fnd.derefs.nonzerotrip");
 	public static final boolean IGNORE_DEREF_OF_NONNULL = SystemProperties.getBoolean("fnd.derefs.ignorenonnull");
+	public static final boolean CHECK_ANNOTATIONS =
+		SystemProperties.getBoolean("fnd.derefs.checkannotations");
 	
 	private CFG cfg;
 	private MethodGen methodGen;
@@ -137,30 +144,55 @@ public class UnconditionalValueDerefAnalysis extends
 			makeFactTop(fact);
 			return;
 		}
-/*		
+		
 		// If this is a method call instruction,
 		// check to see if any of the parameters are @NonNull,
 		// and treat them as dereferences.
-		if (handle.getInstruction() instanceof InvokeInstruction) {
-			NullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
-			if (database != null) {
-				InvokeInstruction inv = (InvokeInstruction) handle.getInstruction(); 
-				XMethod called = XFactory.createXMethod(
-						inv,
-						methodGen.getConstantPool());
-				SignatureParser sigParser = new SignatureParser(called.getSignature());
-				int numParams = sigParser.getNumParameters();
-				
-				for (int i = 0; i < numParams; i++) {
-					if (database.parameterMustBeNonNull(called, i)) {
-						// Get the corresponding value number
-					}
-				}
-			}
+		if (CHECK_ANNOTATIONS && handle.getInstruction() instanceof InvokeInstruction) {
+			checkNonNullParams(location, vnaFrame, fact);
 		}
-*/
+
 		// Check to see if an instance value is dereferenced here
 		checkInstance(location, vnaFrame, fact);
+	}
+
+	/**
+	 * If this is a method call instruction,
+	 * check to see if any of the parameters are @NonNull,
+	 * and treat them as dereferences.
+	 * 
+	 * @param location  the Location of the instruction
+	 * @param vnaFrame  the ValueNumberFrame at the Location of the instruction
+	 * @param fact      the dataflow value to modify
+	 * @throws DataflowAnalysisException
+	 */
+	private void checkNonNullParams(Location location, ValueNumberFrame vnaFrame, UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
+		NullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
+		if (database == null) {
+			return;
+		}
+
+		InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction(); 
+		XMethod called = XFactory.createXMethod(
+				inv,
+				methodGen.getConstantPool());
+		SignatureParser sigParser = new SignatureParser(called.getSignature());
+		int numParams = sigParser.getNumParameters();
+
+		for (int i = 0; i < numParams; i++) {
+			if (IGNORE_DEREF_OF_NONNULL
+					&& invDataflow != null) {
+				IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
+				if (isNonNullValue(invFrame, invFrame.getArgumentSlot(i, numParams))) {
+					continue;
+				}				
+			}
+			if (database.parameterMustBeNonNull(called, i)) {
+				// Get the corresponding value number
+				ValueNumber vn = vnaFrame.getArgument(inv, methodGen.getConstantPool(), i, numParams);
+				fact.addDeref(vn, location);
+			}
+		}
 	}
 
 	/**
@@ -189,7 +221,6 @@ public class UnconditionalValueDerefAnalysis extends
 		}
 		
 		// Get the null-checked value
-		
 		ValueNumber vn = vnaFrame.getInstance(location.getHandle().getInstruction(), methodGen.getConstantPool()); 
 		
 		// Ignore dereferences of this
@@ -231,20 +262,32 @@ public class UnconditionalValueDerefAnalysis extends
 	 */
 	private boolean isDerefOfNonNullValue(Location locationOfDeref, IsNullValueFrame invFrameAtNullCheck)
 			throws DataflowAnalysisException {
-		if (invFrameAtNullCheck.isValid()) {
-			IsNullValue isNullValue = invFrameAtNullCheck.getInstance(
-					locationOfDeref.getHandle().getInstruction(),
-					methodGen.getConstantPool());
-			if (isNullValue.isDefinitelyNotNull()) {
-				return true;
-			}
-		}
-		return false;
+		int instance = invFrameAtNullCheck.getInstanceSlot(
+				locationOfDeref.getHandle().getInstruction(),
+				methodGen.getConstantPool());
+		return isNonNullValue(invFrameAtNullCheck, instance);
 	}
 
 	/**
-	 * @param handle
-	 * @return
+	 * Return whether or not given slot in given is-null frame
+	 * is definitely non-null.
+	 * 
+	 * @param invFrame an IsNullValueFrame
+	 * @param slot     slot in the frame
+	 * @return true if value in the slot is definitely non-null, false otherwise
+	 */
+	public boolean isNonNullValue(IsNullValueFrame invFrame, int slot) {
+		if (invFrame == null || !invFrame.isValid()) {
+			return false;
+		}
+		return invFrame.getValue(slot).isDefinitelyNotNull();
+	}
+
+	/**
+	 * Return whether or not given instruction is an assertion.
+	 * 
+	 * @param handle the instruction
+	 * @return true if instruction is an assertion, false otherwise
 	 */
 	private boolean isAssertion(InstructionHandle handle) {
 		return handle.getInstruction() instanceof InvokeInstruction
