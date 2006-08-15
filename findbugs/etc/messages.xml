@@ -3729,7 +3729,7 @@ value of the result of the remainer operation (i.e., use
 
   <BugPattern type="INT_BAD_COMPARISON_WITH_SIGNED_BYTE">
     <ShortDescription>Bad comparison of signed byte</ShortDescription>
-    <LongDescription>Bad comparison of signed byte with {2} </LongDescription>
+    <LongDescription>Bad comparison of signed byte with {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> Signed bytes can only have a value in the range -128 to 127. Comparing
