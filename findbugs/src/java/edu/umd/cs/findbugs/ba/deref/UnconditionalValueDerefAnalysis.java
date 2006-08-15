@@ -422,7 +422,7 @@ public class UnconditionalValueDerefAnalysis extends
 		if (blockValueNumberFrame.isValid() && targetValueNumberFrame.isValid() &&
 				blockValueNumberFrame.getNumSlots() == targetValueNumberFrame.getNumSlots()) {
 			if (DEBUG) {
-				System.out.println("** Valid VNA frames");
+				System.out.println("** Valid VNA frames for " + edge);
 				System.out.println("** Block : " + blockValueNumberFrame);
 				System.out.println("** Target: " + targetValueNumberFrame);
 			}
@@ -445,18 +445,23 @@ public class UnconditionalValueDerefAnalysis extends
 					}
 				}
 			} // for all slots
+	
 			for(ValueNumber blockVN : blockValueNumberFrame.valueNumbersForLoads()) {
 				AvailableLoad load = blockValueNumberFrame.getLoad(blockVN);
 				if (load == null) continue;
 				ValueNumber [] targetVNs = targetValueNumberFrame.getAvailableLoad(load);
 				if (targetVNs != null)
 					for(ValueNumber targetVN : targetVNs) 
-						if (fact.isUnconditionallyDereferenced(targetVN)
+						if (targetVN.hasFlag(ValueNumber.PHI_NODE) && fact.isUnconditionallyDereferenced(targetVN)
 								&& !fact.isUnconditionallyDereferenced(blockVN)) {
 							//  Block VN is also dereferenced unconditionally.
 							if (DEBUG) {
-								System.out.println("** Copy vn derefs " + targetVN.getNumber() + 
-										" --> " + blockVN.getNumber());
+								System.out.println("** Copy vn derefs for " + load +" from " + targetVN + 
+										" --> " + blockVN);
+								System.out.println("** block phi for " +  System.identityHashCode(blockValueNumberFrame)
+										+ "is " + blockValueNumberFrame.phiNodeForLoads);
+								System.out.println("** target phi for " +  System.identityHashCode(targetValueNumberFrame)
+										+ "is " + targetValueNumberFrame.phiNodeForLoads);
 							}
 							fact.setDerefSet(blockVN, fact.getUnconditionalDerefLocationSet(targetVN));
 

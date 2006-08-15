@@ -180,7 +180,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 	@Override
 	protected void mergeInto(ValueNumberFrame frame, ValueNumberFrame result) throws DataflowAnalysisException {
-		result.mergeAvailableLoadSets(frame);
+		result.mergeAvailableLoadSets(frame, factory);
 		super.mergeInto(frame, result);
 	}
 	
@@ -216,7 +216,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		ValueNumber mergedValue = frame.getMergedValue(slot);
 		if (mergedValue == null) {
 			mergedValue = factory.createFreshValue();
-			mergedValue.setFlags(mine.getFlags() | other.getFlags());
+			mergedValue.setFlags(mine.getFlags() | other.getFlags() | ValueNumber.PHI_NODE);
 			frame.setMergedValue(slot, mergedValue);
 			
 		}

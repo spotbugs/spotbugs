@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.vna;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,7 +42,9 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
 	private ArrayList<ValueNumber> mergedValueList;
 	private Map<AvailableLoad, ValueNumber[]> availableLoadMap;
+	private Map<AvailableLoad,ValueNumber> mergedLoads = new HashMap<AvailableLoad,ValueNumber> ();
 	private Map<ValueNumber, AvailableLoad> loadForValueNumber = new HashMap<ValueNumber, AvailableLoad>();
+	public boolean phiNodeForLoads;
 
 	public ValueNumberFrame(int numLocals) {
 		super(numLocals);
@@ -50,6 +53,19 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 	}
 
+	public String availableLoadMapAsString() {
+		StringBuffer buf = new StringBuffer("{ ");
+		for(Map.Entry<AvailableLoad, ValueNumber[]> e : availableLoadMap.entrySet()) {
+			buf.append(e.getKey());
+			buf.append("=");
+			for(ValueNumber v : e.getValue()) 
+				buf.append(v).append(",");
+			buf.append(";  ");
+		}
+		
+		buf.append(" }");
+		return buf.toString();
+	}
 	public @CheckForNull AvailableLoad getLoad(ValueNumber v) {
 		return loadForValueNumber.get(v);
 	}
@@ -103,6 +119,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 				AvailableLoad availableLoad = i.next();
 				if (!availableLoad.getField().isFinal()) {
 					if (false) System.out.println("KILLING load of " + availableLoad);
+					ValueNumber[] valueNumbers = availableLoadMap.get(availableLoad);
+					if (valueNumbers != null) for(ValueNumber v : valueNumbers) loadForValueNumber.remove(v);
 					i.remove();
 				}
 			}
@@ -115,6 +133,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 */
 	public void killAllLoadsOf(ValueNumber v) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
+			loadForValueNumber.remove(v);
 			for(Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator(); i.hasNext(); ) {
 				AvailableLoad availableLoad = i.next();
 				if (!availableLoad.getField().isFinal() && availableLoad.getReference() == v) {
@@ -125,17 +144,60 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 	}
 
-	void mergeAvailableLoadSets(ValueNumberFrame other) {
+	void mergeAvailableLoadSets(ValueNumberFrame other, ValueNumberFactory factory) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			// Merge available load sets.
 			// Only loads that are available in both frames
 			// remain available. All others are discarded.
-			if (other.isBottom())
-				this.availableLoadMap.clear();
-			else if (!other.isTop())
-				this.availableLoadMap.entrySet().retainAll(other.availableLoadMap.entrySet());
+			String s = "";
+			if (RLE_DEBUG) {
+				s = "Merging " + this.availableLoadMapAsString() + " and " + other.availableLoadMapAsString();
+			}
+			boolean changed = false;
+			if (other.isBottom()) {
+				changed = !this.availableLoadMap.isEmpty();
+				availableLoadMap.clear();
+				loadForValueNumber.clear();
+			}
+			else if (!other.isTop()) {
+				for(Map.Entry<AvailableLoad,ValueNumber[]> e : availableLoadMap.entrySet()) {
+					AvailableLoad load = e.getKey();
+					ValueNumber[] myVN = e.getValue();
+					ValueNumber[] otherVN = other.availableLoadMap.get(load);
+					if (this.phiNodeForLoads && myVN != null && myVN.length == 1 && myVN[0].hasFlag(ValueNumber.PHI_NODE))
+						continue;
+					if (!Arrays.equals(myVN, otherVN)) {
+						
+						ValueNumber phi = mergedLoads.get(load);
+						if (phi == null) {
+							phi = factory.createFreshValue();
+							phi.setFlag(ValueNumber.PHI_NODE);
+							mergedLoads.put(load, phi);
+							if (RLE_DEBUG)
+								System.out.println("Creating phi node " + phi + " for " + load);
+							
+						}
+						
+						changed = true;
+						if (myVN != null) for(ValueNumber v : myVN) loadForValueNumber.remove(v);
+						loadForValueNumber.put(phi, load);
+						e.setValue(new ValueNumber[] { phi });
+					}
+					
+				}
+					
+				
+			}
+			if (changed)
+				this.phiNodeForLoads = true;
+			if (changed && RLE_DEBUG) {
+				System.out.println(s);
+				System.out.println("  Result is " + this.availableLoadMapAsString());
+				System.out.println(" Set phi for " + System.identityHashCode(this));
+			}
 		}
 	}
+
 
 	ValueNumber getMergedValue(int slot) {
 		return mergedValueList.get(slot);
@@ -186,6 +248,13 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 				buf.append(key + "=" + valueToString(value));
 			}
 			
+			for(Map.Entry<ValueNumber, AvailableLoad> e : loadForValueNumber.entrySet()) {
+				buf.append(" ");
+				buf.append(e.getKey());
+				buf.append("=");
+				buf.append(e.getValue());
+			}
+			if (phiNodeForLoads) buf.append(" phi");
 			return buf.toString();
 		} else {
 			return frameValues;

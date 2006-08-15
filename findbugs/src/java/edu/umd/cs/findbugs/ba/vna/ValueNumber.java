@@ -54,7 +54,9 @@ public class ValueNumber implements Comparable<ValueNumber> {
 	
 	public static final int ARRAY_VALUE = 2;
 	
-	public static final int CONSTANT_CLASS_OBJECT = 3;
+	public static final int CONSTANT_CLASS_OBJECT = 4;
+	
+	public static final int PHI_NODE = 8;
 
 	/**
 	 * Constructor.
@@ -88,6 +90,7 @@ public class ValueNumber implements Comparable<ValueNumber> {
 
 	@Override
          public String toString() {
+		if (flags != 0) return number+"("+flags+"),";
 		return number + ",";
 	}
 
