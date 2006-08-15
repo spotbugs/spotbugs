@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.util.Strings;
@@ -54,11 +55,11 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		}
 	}
 
-	public void setDecision(IsNullConditionDecision decision) {
+	public void setDecision(@CheckForNull IsNullConditionDecision decision) {
 		this.decision = decision;
 	}
 
-	public IsNullConditionDecision getDecision() {
+	public @CheckForNull IsNullConditionDecision getDecision() {
 		return decision;
 	}
 	
