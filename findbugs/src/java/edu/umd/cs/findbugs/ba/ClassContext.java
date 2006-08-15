@@ -522,8 +522,8 @@ public class ClassContext {
 			        	System.out.println("\n\nValue number analysis for " + method.getName());
 			        	for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
 			        		Location loc = locs.next();
-			        		System.out.println("\nLocation: " + loc);
-			        		System.out.println("Before: " + vnaDataflow.getFactAtLocation(loc));
+			        		System.out.println("\nBefore: " + vnaDataflow.getFactAtLocation(loc));
+			        		System.out.println("Location: " + loc);
 			        		System.out.println("After: " + vnaDataflow.getFactAfterLocation(loc));
 			        		
 			        		
