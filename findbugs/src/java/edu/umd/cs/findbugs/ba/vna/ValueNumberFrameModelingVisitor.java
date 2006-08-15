@@ -209,7 +209,8 @@ public class ValueNumberFrameModelingVisitor
 	public void modelNormalInstruction(Instruction ins, int numWordsConsumed, int numWordsProduced) {
 
 		int flags = 0;
-		if (ins instanceof InvokeInstruction) flags = ValueNumber.RETURN_VALUE;
+		if (ins instanceof InvokeInstruction) 
+			flags = ValueNumber.RETURN_VALUE;
 		else if (ins instanceof ArrayInstruction) flags = ValueNumber.ARRAY_VALUE;
 
 
@@ -721,6 +722,7 @@ public class ValueNumberFrameModelingVisitor
 		ValueNumber value = classObjectValueMap.get(className);
 		if (value == null) {
 			value = factory.createFreshValue();
+			value.setFlag(ValueNumber.CONSTANT_CLASS_OBJECT);
 			classObjectValueMap.put(className, value);
 		}
 		return value;

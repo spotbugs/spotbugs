@@ -155,6 +155,7 @@ public class UnconditionalValueDerefAnalysis extends
 			if (v.equals(vn)) return;
 		}
 		
+		if (vn.getFlags() == ValueNumber.CONSTANT_CLASS_OBJECT) return;
 		
 		if (DEBUG) {
 			System.out.println("FOUND GUARANTEED DEREFERENCE");

@@ -53,6 +53,8 @@ public class ValueNumber implements Comparable<ValueNumber> {
 	public static final int RETURN_VALUE = 1;
 	
 	public static final int ARRAY_VALUE = 2;
+	
+	public static final int CONSTANT_CLASS_OBJECT = 3;
 
 	/**
 	 * Constructor.
