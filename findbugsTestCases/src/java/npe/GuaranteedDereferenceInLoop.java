@@ -1,8 +1,8 @@
-package deref;
+package npe;
 
 import java.util.Set;
 
-public class UnconditionalDereferenceInLoop {
+public class GuaranteedDereferenceInLoop {
 	
 	Set<String> accumulate(Set<String> accumulator, String [] args) {
 		if (accumulator == null)
