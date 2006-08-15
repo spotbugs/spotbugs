@@ -58,6 +58,7 @@ public class UnconditionalValueDerefAnalysis extends
 	
 	public static final boolean DEBUG = SystemProperties.getBoolean("fnd.derefs.debug");
 	public static final boolean ASSUME_NONZERO_TRIP_LOOPS = SystemProperties.getBoolean("fnd.derefs.nonzerotrip");
+	public static final boolean IGNORE_DEREF_OF_NONNULL = SystemProperties.getBoolean("fnd.derefs.ignorenonnull");
 	
 	private CFG cfg;
 	private MethodGen methodGen;
@@ -151,9 +152,17 @@ public class UnconditionalValueDerefAnalysis extends
 		ValueNumber vn = vnaFrame.getInstance(handle.getInstruction(), methodGen.getConstantPool()); 
 		Location location = new Location(handle, basicBlock);
 		
+		// Ignore dereferences of this
 		if (!methodGen.isStatic()) {
 			ValueNumber v = vnaFrame.getValue(0);
 			if (v.equals(vn)) return;
+		}
+		
+		// Ignore dereferences of values that are definitely non-null
+		if (IGNORE_DEREF_OF_NONNULL
+				&& invDataflow != null
+				&& isDerefOfNonNullValue(location, invDataflow.getStartFact(fallThroughPredecessor))) {
+			return;
 		}
 		
 		if (vn.getFlags() == ValueNumber.CONSTANT_CLASS_OBJECT) return;
@@ -168,6 +177,29 @@ public class UnconditionalValueDerefAnalysis extends
 		}
 		// Mark the value number as being dereferenced at this location
 		fact.addDeref(vn, location);
+	}
+
+	/**
+	 * Determine whether instruction at given Location is a dereference of
+	 * a definitely non-null value.
+	 * 
+	 * @param locationOfDeref     the dereference instruction Location
+	 * @param invFrameAtNullCheck the IsNullValueFrame at the location of the null check
+	 * @return true if the instruction at the location is a dereference of a definitely
+	 *          non-null value, false otherwise
+	 * @throws DataflowAnalysisException
+	 */
+	private boolean isDerefOfNonNullValue(Location locationOfDeref, IsNullValueFrame invFrameAtNullCheck)
+			throws DataflowAnalysisException {
+		if (invFrameAtNullCheck.isValid()) {
+			IsNullValue isNullValue = invFrameAtNullCheck.getInstance(
+					locationOfDeref.getHandle().getInstruction(),
+					methodGen.getConstantPool());
+			if (isNullValue.isDefinitelyNotNull()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
