@@ -872,7 +872,7 @@ public class FindNullDeref
 			@NonNull Set<Location> assignedNullLocationSet,
 			@NonNull Set<Location> derefLocationSet,
 			ValueNumber refValue,
-			boolean alwaysOnExceptionPath) {
+			boolean alwaysOnExceptionPath, boolean npeIfStatementCovered) {
 		if (DEBUG) {
 			System.out.println("Found guaranteed null deref in " + method.getName());
 		}
@@ -881,6 +881,7 @@ public class FindNullDeref
 			? "NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH"
 			: "NP_GUARANTEED_DEREF";
 		int priority = alwaysOnExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
+		if (!npeIfStatementCovered) priority++;
 		
 		// Create BugInstance
 		BugInstance bugInstance = new BugInstance(this, bugType, priority)

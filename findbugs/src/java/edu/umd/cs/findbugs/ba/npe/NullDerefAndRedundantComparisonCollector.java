@@ -60,17 +60,17 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 * assigned null (or that become null through a comparison and branch)
 	 * that are guaranteed to reach a dereference (ignoring
 	 * implicit exception paths).
-	 * 
-	 * @param assignedNullLocation set of locations where the value becomes null
 	 * @param derefLocationSet     set of locations where dereferences occur
 	 * @param refValue             the null value
 	 * @param alwaysOnExceptionPath true if the location(s) where the value was observed
 	 *                               to be null and unconditionally dereferenced were
 	 *                               all on exception paths
+	 * @param npeIfStatementCovered TODO
+	 * @param assignedNullLocation set of locations where the value becomes null
 	 */
 	public void foundGuaranteedNullDeref(
 			Set<Location> assignedNullLocationSet,
 			Set<Location> derefLocationSet,
 			ValueNumber refValue,
-			boolean alwaysOnExceptionPath);
+			boolean alwaysOnExceptionPath, boolean npeIfStatementCovered);
 }
