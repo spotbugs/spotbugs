@@ -129,7 +129,7 @@ public class ParameterNullnessProperty {
 	}
 	
 	@Override
-         public String toString() {
+	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		
 		buf.append('{');
@@ -153,5 +153,14 @@ public class ParameterNullnessProperty {
 	 */
 	public void intersectWith(ParameterNullnessProperty targetDerefParamSet) {
 		nonNullParamSet &= targetDerefParamSet.nonNullParamSet;
+	}
+
+	/**
+	 * Make this object the same as the given one.
+	 * 
+	 * @param other another ParameterNullnessProperty
+	 */
+	public void copyFrom(ParameterNullnessProperty other) {
+		this.nonNullParamSet = other.nonNullParamSet;
 	}
 }

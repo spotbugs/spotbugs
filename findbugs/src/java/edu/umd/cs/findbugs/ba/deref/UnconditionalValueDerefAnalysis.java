@@ -77,6 +77,8 @@ public class UnconditionalValueDerefAnalysis extends
 		SystemProperties.getBoolean("fnd.derefs.checkannotations");
 	public static final boolean CHECK_CALLS =
 		SystemProperties.getBoolean("fnd.derefs.checkcalls");
+	public static final boolean DEBUG_CHECK_CALLS =
+		SystemProperties.getBoolean("fnd.derefs.checkcalls.debug");
 	
 	private CFG cfg;
 	private MethodGen methodGen;
@@ -199,12 +201,18 @@ public class UnconditionalValueDerefAnalysis extends
 		ParameterNullnessPropertyDatabase database =
 			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase();
 		if (database == null) {
+			if (DEBUG_CHECK_CALLS) {
+				System.out.println("no database!");
+			}
 			return;
 		}
 		
 		InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
 		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
 		if (!typeFrame.isValid()) {
+			if (DEBUG_CHECK_CALLS) {
+				System.out.println("invalid type frame!");
+			}
 			return;
 		}
 		
@@ -217,23 +225,44 @@ public class UnconditionalValueDerefAnalysis extends
 					typeFrame,
 					methodGen.getConstantPool());
 			
+			if (targetSet.isEmpty()) {
+				return;
+			}
+			
 			// Compute the intersection of all properties
-			ParameterNullnessProperty derefParamSet = new ParameterNullnessProperty();
+			ParameterNullnessProperty derefParamSet = null;
 			for (JavaClassAndMethod target : targetSet) {
+				if (DEBUG_CHECK_CALLS) {
+					System.out.print("Checking " + target + ": ");
+				}
+				
 				ParameterNullnessProperty targetDerefParamSet = database.getProperty(target.toXMethod());
 				if (targetDerefParamSet == null) {
 					// Hmm...no information for this target.
 					// Just ignore it.
+					if (DEBUG_CHECK_CALLS) {
+						System.out.println(" ==> unknown");
+					}
 					continue;
 				}
 				
-				derefParamSet.intersectWith(targetDerefParamSet);
+				if (DEBUG_CHECK_CALLS) {
+					System.out.println("==> " + targetDerefParamSet);
+				}
+				if (derefParamSet == null) {
+					derefParamSet = new ParameterNullnessProperty();
+					derefParamSet.copyFrom(targetDerefParamSet);
+				} else {
+					derefParamSet.intersectWith(targetDerefParamSet);
+				}
 			}
 			
-			if (derefParamSet.isEmpty()) {
+			if (derefParamSet == null || derefParamSet.isEmpty()) {
 				return;
 			}
-
+			if (DEBUG_CHECK_CALLS) {
+				System.out.println("** Summary of call: " + derefParamSet);
+			}
 			
 			IsNullValueFrame invFrame = null;
 			if (IGNORE_DEREF_OF_NONNULL && invDataflow != null) {
@@ -243,7 +272,6 @@ public class UnconditionalValueDerefAnalysis extends
 				}
 			}
 			
-//			int numParams = target.
 			for (int i = 0; i < numParams; i++) {
 				if (!derefParamSet.isNonNull(i)) {
 					continue;
@@ -259,6 +287,9 @@ public class UnconditionalValueDerefAnalysis extends
 				}
 				
 				fact.addDeref(vnaFrame.getValue(argSlot), location);
+				if (DEBUG_CHECK_CALLS) {
+					System.out.println("Adding deref of " + vnaFrame.getValue(argSlot) + " at location " + location);
+				}
 			}
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
