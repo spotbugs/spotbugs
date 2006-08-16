@@ -213,6 +213,7 @@ public class FindBadCast2 implements Detector {
 				// unreachable
 				continue;
 			}
+			boolean operandTypeIsExact = frame.isExact(frame.getStackLocation(0));
 			Type castType = ((TypedInstruction) ins).getType(cpg);
 
 			if (!(castType instanceof ReferenceType)) {
@@ -269,8 +270,7 @@ public class FindBadCast2 implements Detector {
 				continue;
 			}
 
-			if (refSig2.equals("Ljava/lang/Object;")
-					) {
+			if (refSig2.equals("Ljava/lang/Object;")  &!operandTypeIsExact) {
 				continue;
 			}
 			if (isCast && haveMultipleCast.contains(sourceLineAnnotation)
@@ -309,40 +309,31 @@ public class FindBadCast2 implements Detector {
 				} else {
 					boolean downcast = Repository.instanceOf(castJavaClass,
 							refJavaClass);
-					if (false && downcast && refName.equals("java.lang.Object") && nextIns instanceof InvokeInstruction) {
-						InvokeInstruction nextInvokeIns =  (InvokeInstruction) nextIns;
-						Type []  argTypes = nextInvokeIns.getArgumentTypes(cpg);
-						String mName =  nextInvokeIns.getMethodName(cpg);
-						if (argTypes.length > 0 && !mName.equals("add")) {
-							Type lastArg = argTypes[argTypes.length - 1];
-							if (lastArg instanceof ObjectType) {
-								String name = ((ObjectType)lastArg).getClassName();
-								if (refName.equals(name))
-								System.out.println("Cast from " + refName + " to " + castName + " for argument of type " + name
-	+ " of " + mName
-										+ " in " + sourceFile + " : " + methodName);
-							}
-						}
-					}
-					if (refName.equals("java.lang.Object")) continue;
-					double rank = DeepSubtypeAnalysis.deepInstanceOf(refJavaClass,
-							castJavaClass);
+					
+					if (refName.equals("java.lang.Object")  &!operandTypeIsExact) continue;
+					double rank = 0.0;
 					boolean castToConcreteCollection = concreteCollectionClasses.contains(castName)
-								&& abstractCollectionClasses.contains(refName);
+							&& abstractCollectionClasses.contains(refName);
 					boolean castToAbstractCollection = 
 							abstractCollectionClasses.contains(castName)
 							&& veryAbstractCollectionClasses.contains(refName);
-					if (castToConcreteCollection
-						&& rank > 0.6)
-					  rank = (rank + 0.6) /2;
-					else if (castToAbstractCollection
-						&& rank > 0.3)
-					  rank = (rank + 0.3) /2;
+	
+					if (!operandTypeIsExact) {
+						rank = DeepSubtypeAnalysis.deepInstanceOf(refJavaClass,
+								castJavaClass);
+							if (castToConcreteCollection
+							&& rank > 0.6)
+						  rank = (rank + 0.6) /2;
+						else if (castToAbstractCollection
+							&& rank > 0.3)
+						  rank = (rank + 0.3) /2;
+					}
+					
 						
 					if (false)
 						System.out.println("Rank:\t" + rank + "\t" + refName
 								+ "\t" + castName);
-					boolean completeInformation = (!castJavaClass.isInterface() && !refJavaClass
+					boolean completeInformation =  (!castJavaClass.isInterface() && !refJavaClass
 							.isInterface())
 							|| refJavaClass.isFinal()
 							|| castJavaClass.isFinal();
@@ -350,13 +341,15 @@ public class FindBadCast2 implements Detector {
 						System.out.println("cast from " + refName + " to "
 								+ castName);
 						System.out.println("  is downcast: " + downcast);
+						System.out.println("  operand type is exact: " + operandTypeIsExact);
+						
 						System.out.println("  complete information: "
 								+ completeInformation);
 						System.out.println("  isParameter: "
 								+ vFrame.getTopValue());
 						System.out.println("  score: " + rank);
 					}
-					if (!downcast && completeInformation)
+					if (!downcast && completeInformation || operandTypeIsExact)
 						bugReporter.reportBug(new BugInstance(this,
 								isCast ? "BC_IMPOSSIBLE_CAST"
 										: "BC_IMPOSSIBLE_INSTANCEOF",

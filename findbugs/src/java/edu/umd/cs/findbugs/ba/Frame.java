@@ -230,6 +230,18 @@ public abstract class Frame <ValueType>   {
 	}
 	
 	/**
+	 * Get a the location in the frame of a value on the operand stack.
+	 *
+	 * @param loc the stack location, counting downwards from the
+	 *            top (location 0)
+	 */
+	public int getStackLocation(int loc) throws DataflowAnalysisException {
+		int stackDepth = getStackDepth();
+		if (loc >= stackDepth)
+			throw new DataflowAnalysisException("not enough values on stack: access=" + loc + ", avail=" + stackDepth);
+		return slotList.size() - (loc + 1);
+	}
+	/**
 	 * Get the value corresponding to the object instance used in
 	 * the given instruction.  This relies on the observation that in
 	 * instructions which use an object instance (such as getfield,
@@ -543,7 +555,7 @@ public abstract class Frame <ValueType>   {
 	/**
 	 * @return
 	 */
-	public Collection<ValueType> allValueNumbers() {
+	public Collection<ValueType> allSlots() {
 		if (slotList == null) return Collections.EMPTY_LIST;
 		return Collections.unmodifiableCollection(slotList);
 	}

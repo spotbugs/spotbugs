@@ -326,25 +326,54 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 
 	@Override
 	public void visitINVOKEINTERFACE(INVOKEINTERFACE obj) {
+		if (handleToArray(obj)) return;
 		consumeStack(obj);
 		pushReturnType(obj);
 	}
 
 	@Override
 	public void visitINVOKEVIRTUAL(INVOKEVIRTUAL obj) {
+		TypeFrame frame = getFrame();
 		if (obj.getMethodName(cpg).equals("initCause") && obj.getSignature(cpg).equals("(Ljava/lang/Throwable;)Ljava/lang/Throwable;") && obj.getClassName(cpg).endsWith("Exception")) {
 			try {
-				TypeFrame frame = getFrame();
+	
 				frame.popValue();
 				return;
 			} catch (DataflowAnalysisException e) {
 				
 			}
 		}
+		if (handleToArray(obj)) return;
 		consumeStack(obj);
 		pushReturnType(obj);
 	}
 
+	private boolean handleToArray(InvokeInstruction obj) {
+		try {
+		TypeFrame frame = getFrame();
+		if (obj.getName(getCPG()).equals("toArray")) {
+			ReferenceType target = obj.getReferenceType(getCPG());
+			String signature = obj.getSignature(getCPG());
+			if (signature.equals("([Ljava/lang/Object;)[Ljava/lang/Object;")) {
+				
+				boolean topIsExact = frame.isExact(frame.getStackLocation(0));
+				Type resultType = frame.popValue();
+				frame.popValue();
+				frame.pushValue(resultType);
+				frame.setExact(frame.getStackLocation(0), topIsExact);
+				return true;
+			} else if (signature.equals("()[Ljava/lang/Object;")) {
+				consumeStack(obj);
+				pushReturnType(obj);
+				frame.setExact(frame.getStackLocation(0), true);
+				return true;
+			}
+		}
+		return false;
+		} catch (DataflowAnalysisException e) {
+					throw new InvalidBytecodeException("analysis error: " + e.getMessage());
+		}
+	}
 	@Override
 	public void visitCHECKCAST(CHECKCAST obj) {
 		consumeStack(obj);
@@ -366,6 +395,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				// Ignore
 			}
 		}
+		
 		
 		consumeStack(obj);
 		pushValue(Type.INT);

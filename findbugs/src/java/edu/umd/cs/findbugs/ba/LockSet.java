@@ -353,7 +353,7 @@ public final class LockSet {
 	public Collection<ValueNumber> getLockedValueNumbers(ValueNumberFrame frame) {
 		if (frame == null) throw new IllegalArgumentException("Null Frame");
 		HashSet<ValueNumber> result = new HashSet<ValueNumber>();
-		for(ValueNumber v : frame.allValueNumbers())
+		for(ValueNumber v : frame.allSlots())
 			if (v != null && getLockCount(v.getNumber()) > 0)
 				result.add(v);
 		return result;

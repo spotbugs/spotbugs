@@ -313,6 +313,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
 		return result;
 	}
+	
+	
 }
 
 // vim:ts=4
