@@ -45,7 +45,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	private ArrayList<ValueNumber> mergedValueList;
 	private Map<AvailableLoad, ValueNumber[]> availableLoadMap;
 	private Map<AvailableLoad,ValueNumber> mergedLoads ;
-	// private Map<ValueNumber, AvailableLoad> loadForValueNumber;
+	private Map<ValueNumber, AvailableLoad> previouslyKnownAs;
 	public boolean phiNodeForLoads;
 
 	public ValueNumberFrame(int numLocals) {
@@ -53,6 +53,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			availableLoadMap = new HashMap<AvailableLoad, ValueNumber[]>();
 			mergedLoads =  new HashMap<AvailableLoad,ValueNumber> ();
+			previouslyKnownAs =  new HashMap<ValueNumber, AvailableLoad> ();
 		}
 	}
 
@@ -98,10 +99,9 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		availableLoadMap.put(availableLoad, value);
 
 		for(ValueNumber v : value) {
+			previouslyKnownAs.put(v, availableLoad);
 			if (RLE_DEBUG) {
 				System.out.println("Adding available load of " + availableLoad + " for " + v + " to " + System.identityHashCode(this));
-				if (v.getNumber() == 2)
-					System.out.println("Found it");
 			}
 		}
 	}
@@ -130,7 +130,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			for(Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator(); i.hasNext(); ) {
 				AvailableLoad availableLoad = i.next();
-				if (!availableLoad.getField().isFinal() && !availableLoad.getField().getName().equals("lock")) {
+				if (!availableLoad.getField().isFinal()) {
 					if (false) System.out.println("KILLING load of " + availableLoad);
 					i.remove();
 				}
@@ -183,18 +183,16 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 							phi.setFlag(ValueNumber.PHI_NODE);
 							mergedLoads.put(load, phi);
 							if (RLE_DEBUG)
-								System.out.println("Creating phi node " + phi + " for " + load);
-							
+								System.out.println("Creating phi node " + phi + " for " + load);	
 						}
 						
 						changed = true;
 						e.setValue(new ValueNumber[] { phi });
 					}
 					
-				}
-					
-				
+				}	
 			}
+			previouslyKnownAs.putAll(other.previouslyKnownAs);
 			if (changed)
 				this.phiNodeForLoads = true;
 			if (changed && RLE_DEBUG) {
@@ -230,6 +228,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 			// Copy available load set.
 			availableLoadMap.clear();
 			availableLoadMap.putAll(((ValueNumberFrame) other).availableLoadMap);
+			previouslyKnownAs.clear();
+			previouslyKnownAs.putAll(((ValueNumberFrame) other).previouslyKnownAs);
 		}
 
 		super.copyFrom(other);
@@ -284,8 +284,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		
 	public boolean fromMatchingLoads(ValueNumber v1, ValueNumber v2) {
 		AvailableLoad load1 = getLoad(v1);
+		if (load1 == null) load1 = previouslyKnownAs.get(v1);
 		if (load1 == null) return false;
 		AvailableLoad load2 = getLoad(v2);
+		if (load2 == null) load2 = previouslyKnownAs.get(v2);
 		if (load2 == null) return false;
 		return load1.equals(load2);
 	}
