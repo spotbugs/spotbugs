@@ -105,7 +105,7 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends BasicAbstra
 		boolean max = SystemProperties.getBoolean("dataflow.max");
 
 		for (Knob knob : KNOB_LIST) {
-			boolean enable = max ? true : SystemProperties.getBoolean(knob.systemPropertyName); 
+			boolean enable = max || SystemProperties.getBoolean(knob.systemPropertyName); 
 			System.out.println("Setting " + knob.systemPropertyName + "=" + enable);
 			analysisContext.setBoolProperty(knob.analysisProperty, enable);
 		}

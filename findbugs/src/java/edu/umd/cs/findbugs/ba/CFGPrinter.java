@@ -123,7 +123,7 @@ public class CFGPrinter {
 			JavaClass cls = new ClassParser(className).parse();
 			RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
 
-			AnalysisContext analysisContext = AnalysisContext.create(lookupFailureCallback);;
+			AnalysisContext analysisContext = AnalysisContext.create(lookupFailureCallback);
 			ClassContext classContext = analysisContext.getClassContext(cls);
 
 			Method[] methods = cls.getMethods();
