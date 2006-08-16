@@ -273,7 +273,7 @@ public class FindBadCast2 implements Detector {
 			if (refSig2.equals("Ljava/lang/Object;")  &!operandTypeIsExact) {
 				continue;
 			}
-			if (isCast && haveMultipleCast.contains(sourceLineAnnotation)
+			if (false && isCast && haveMultipleCast.contains(sourceLineAnnotation)
 					|| !isCast
 					&& haveMultipleInstanceOf.contains(sourceLineAnnotation)) {
 				// skip; might be due to JSR inlining
