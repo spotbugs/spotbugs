@@ -293,8 +293,7 @@ public class UnconditionalValueDerefSet {
 			TreeSet<Location> derefLocationSet = new TreeSet<Location>();
 			derefLocationSet.addAll(getDerefLocationSet(i));
 			boolean firstLoc = true;
-			for (Iterator<Location> j = derefLocationSet.iterator(); j.hasNext(); ) {
-				Location location = j.next();
+			for (Location location : derefLocationSet) {
 				if (firstLoc) {
 					firstLoc = false;
 				} else {
@@ -302,10 +301,10 @@ public class UnconditionalValueDerefSet {
 				}
 				buf.append(
 						"(" +
-						location.getBasicBlock().getId() +
-						":" +
-						location.getHandle().getPosition() +
-						")");
+								location.getBasicBlock().getId() +
+								":" +
+								location.getHandle().getPosition() +
+								")");
 			}
 			buf.append('}');
 		}
