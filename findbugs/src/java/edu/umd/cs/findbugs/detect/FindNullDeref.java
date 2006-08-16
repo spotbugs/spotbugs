@@ -41,9 +41,11 @@ import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.ReturnInstruction;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -78,9 +80,11 @@ import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
@@ -598,7 +602,7 @@ public class FindNullDeref
 			propertySet.addProperty(GeneralWarningProperty.ON_EXCEPTION_PATH);
 		}
 		int pc = location.getHandle().getPosition();
-		LocalVariableAnnotation variable = findLocalVariable(location, valueNumber, vnaFrame);
+		BugAnnotation variable = findLocalVariable(location, valueNumber, vnaFrame);
 		boolean duplicated = false;
 		try {
 			CFG cfg = classContext.getCFG(method);
@@ -634,8 +638,8 @@ public class FindNullDeref
 	 * @param vnaFrame
 	 * @return
 	 */
-	LocalVariableAnnotation findLocalVariable(Location location, ValueNumber valueNumber, ValueNumberFrame vnaFrame) {
-		LocalVariableAnnotation variable = null;
+	BugAnnotation findLocalVariable(Location location, ValueNumber valueNumber, ValueNumberFrame vnaFrame) {
+		BugAnnotation variable = null;
 			if (DEBUG) {
 				System.out.println("Dereference at " + location + " of " + valueNumber);
 				System.out.println("Value number frame: " + vnaFrame);
@@ -652,6 +656,15 @@ public class FindNullDeref
 					if (variable != null) break;
 				}
 			}
+			if (variable == null) {
+				AvailableLoad load = vnaFrame.getLoad(valueNumber);
+				if (load != null) {
+					XField field = load.getField();
+					variable = new FieldAnnotation(field.getClassName(), field.getName(), field.getSignature(), field.isStatic());
+				}
+				
+				
+			}
 		return variable;
 	}
 
@@ -661,7 +674,7 @@ public class FindNullDeref
 			Method method,
 			Location location,
 			String type,
-			int priority, LocalVariableAnnotation variable) {
+			int priority, BugAnnotation variable) {
 		MethodGen methodGen = classContext.getMethodGen(method);
 		String sourceFile = classContext.getJavaClass().getSourceFileName();
 
@@ -810,7 +823,7 @@ public class FindNullDeref
 		}
 		
 
-		LocalVariableAnnotation variableAnnotation = null;
+		BugAnnotation variableAnnotation = null;
 		try {
 //			 Get the value number
 			ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
