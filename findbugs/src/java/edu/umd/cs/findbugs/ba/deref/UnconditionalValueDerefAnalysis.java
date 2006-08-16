@@ -109,8 +109,12 @@ public class UnconditionalValueDerefAnalysis extends
 		this.methodGen = methodGen;
 		this.vnaDataflow = vnaDataflow;
 		this.assertionMethods = assertionMethods;
-		if (DEBUG) System.out.println("UnconditionalValueDerefAnalysis analysis " + methodGen.getClassName() + "." + methodGen.getName() + " : " + methodGen.getSignature());
-
+		if (DEBUG) {
+			System.out.println("UnconditionalValueDerefAnalysis analysis " + methodGen.getClassName() + "." + methodGen.getName() + " : " + methodGen.getSignature());
+		}
+		if (DEBUG && IGNORE_DEREF_OF_NONNULL) {
+			System.out.println("** Ignoring dereferences of definitely non-null values");
+		}
 	}
 	
 	/**
