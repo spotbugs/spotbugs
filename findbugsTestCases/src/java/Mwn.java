@@ -32,10 +32,11 @@ class Mwn {
 	}
 	
 	public static final String DOMAINCFG = "Hi";
-	
+	boolean b;
 	public void falsePositive() throws InterruptedException {
 		synchronized (DOMAINCFG) {
-			DOMAINCFG.wait();
+			while (!b)
+			  DOMAINCFG.wait();
 		}
 	}
 
