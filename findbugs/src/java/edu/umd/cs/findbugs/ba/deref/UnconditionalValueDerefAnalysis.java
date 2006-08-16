@@ -270,7 +270,7 @@ public class UnconditionalValueDerefAnalysis extends
 			
 			IsNullValueFrame invFrame = null;
 			if (IGNORE_DEREF_OF_NONNULL && invDataflow != null) {
-				invFrame = invDataflow.getFactAfterLocation(location);
+				invFrame = invDataflow.getFactAtLocation(location);
 				if (!invFrame.isValid()) {
 					invFrame = null;
 				}
@@ -281,7 +281,7 @@ public class UnconditionalValueDerefAnalysis extends
 					continue;
 				}
 				
-				int argSlot = invFrame.getArgumentSlot(i, numParams);
+				int argSlot = vnaFrame.getArgumentSlot(i, numParams);
 
 				if (invFrame != null) {
 					IsNullValue val = invFrame.getValue(argSlot);
