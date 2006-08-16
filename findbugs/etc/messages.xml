@@ -332,6 +332,15 @@ It is a fast detector.</p>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.NumberConstructor">
+    <Details>
+<![CDATA[
+<p> Looks for calls to Number constructors with primitive arguments.
+It is a fast detector</p>                      
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindDoubleCheck" >
     <Details>
 <![CDATA[
@@ -1532,6 +1541,48 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="DM_NUMBER_CTOR">
+    <ShortDescription>Method invokes dubious Number constructor; use static valueOf instead</ShortDescription>
+    <LongDescription>Method {1} invokes dubious {3} constructor; use {4} instead</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      Using <code>new Integer(int)</code> is guaranteed to always result in a new object whereas
+      <code>Integer.valueOf(int)</code> allows caching of values to be done by the compiler, class library, or JVM.
+      Using of cached values avoids object allocation and the code will be faster.
+      </p>
+      <p>
+      Values between -128 and 127 are guaranteed to have corresponding cached instances
+      and using <code>valueOf</code> is approximately 3.5 times faster than using constructor.
+      For values outside the constant range the performance of both styles is the same.
+      </p>
+      <p>
+      Unless the class must be compatible with JVMs predating Java 1.5,
+      use either autoboxing or the <code>valueOf()</code> method when creating instances of
+      <code>Long</code>, <code>Integer</code>, <code>Short</code>, <code>Character</code>, and <code>Byte</code>.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DM_FP_NUMBER_CTOR">
+    <ShortDescription>Method invokes dubious floating-point Number constructor; use static valueOf instead</ShortDescription>
+    <LongDescription>Method {1} invokes dubious {3} constructor; use {4} instead</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+      Using <code>new Double(double)</code> is guaranteed to always result in a new object whereas
+      <code>Double.valueOf(double)</code> allows caching of values to be done by the compiler, class library, or JVM.
+      Using of cached values avoids object allocation and the code will be faster.
+      </p>
+      <p>
+      Unless the class must be compatible with JVMs predating Java 1.5,
+      use either autoboxing or the <code>valueOf()</code> method when creating instances of <code>Double</code> and <code>Float</code>.
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="DM_STRING_EMPTY_EQUALS">
     <ShortDescription>Method invokes dubious String.equals(""); use String.length() == 0 instead</ShortDescription>
     <LongDescription>Method {1} invokes dubious String.equals(""); use String.length() == 0 instead</LongDescription>
