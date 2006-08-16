@@ -276,6 +276,9 @@ public abstract class Frame <ValueType>   {
 	 * @throws DataflowAnalysisException
 	 */
 	public int getInstanceSlot(Instruction ins, ConstantPoolGen cpg) throws DataflowAnalysisException {
+		if (!isValid()) {
+			throw new DataflowAnalysisException("Accessing invalid frame at " + ins);
+		}
 		int numConsumed = ins.consumeStack(cpg);
 		if (numConsumed == Constants.UNPREDICTABLE)
 			throw new DataflowAnalysisException("Unpredictable stack consumption in " + ins);

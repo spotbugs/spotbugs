@@ -129,6 +129,8 @@ public class FindNullDeref
 
 	public void visitClassContext(ClassContext classContext) {
 		this.classContext = classContext;
+		
+		String currentMethod = null;
 
 		JavaClass jclass = classContext.getJavaClass();
 		Method[] methodList = jclass.getMethods();
@@ -137,19 +139,25 @@ public class FindNullDeref
 				if (method.isAbstract() || method.isNative()
 						|| method.getCode() == null)
 					continue;
+				
+				MethodGen mg = classContext.getMethodGen(method);
+				if (mg == null) {
+					continue;
+				}
+				currentMethod = SignatureConverter.convertMethodSignature(mg);
 
 				if (METHOD != null && !method.getName().equals(METHOD))
 					continue;
 				if (DEBUG)
 					System.out
-							.println("Checking for NP in " + method.getName());
+							.println("Checking for NP in " + currentMethod);
 				analyzeMethod(classContext, method);
 			} catch (MissingClassException e) {
 				bugReporter.reportMissingClass(e.getClassNotFoundException());
 			} catch (DataflowAnalysisException e) {
-				bugReporter.logError("FindNullDeref caught dae exception", e);
+				bugReporter.logError("While analyzing " + currentMethod + ": FindNullDeref caught dae exception", e);
 			} catch (CFGBuilderException e) {
-				bugReporter.logError("FindNullDeref caught cfgb exception", e);
+				bugReporter.logError("While analyzing " + currentMethod + ": FindNullDeref caught cfgb exception", e);
 			}
 
 		}

@@ -22,6 +22,9 @@ package edu.umd.cs.findbugs.ba;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.InvokeInstruction;
+
 /**
  * A simple class to parse method signatures.
  *
@@ -130,6 +133,18 @@ public class SignatureParser {
 			++count;
 		}
 		return count;
+	}
+	
+	/**
+	 * Get the number of parameters passed to method invocation.
+	 * 
+	 * @param inv
+	 * @param cpg
+	 * @return
+	 */
+	public static int getNumParametersForInvocation(InvokeInstruction inv, ConstantPoolGen cpg) {
+		SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
+		return sigParser.getNumParameters();
 	}
 	
 	public static void main(String[] args) {

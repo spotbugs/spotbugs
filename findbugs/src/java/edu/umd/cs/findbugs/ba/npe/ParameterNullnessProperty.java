@@ -28,6 +28,11 @@ import java.util.BitSet;
  * @author David Hovemeyer
  */
 public class ParameterNullnessProperty {
+	/**
+	 * Maximum number of parameters that can be represented by a ParameterNullnessProperty.
+	 */
+	public static final int MAX_PARAMS = 32;
+	
 	private int nonNullParamSet;
 	
 	/**
@@ -138,5 +143,15 @@ public class ParameterNullnessProperty {
 		buf.append('}');
 		
 		return buf.toString();
+	}
+
+	/**
+	 * Intersect this set with the given set.
+	 * Useful for summarizing the properties of multiple methods.
+	 * 
+	 * @param targetDerefParamSet another set
+	 */
+	public void intersectWith(ParameterNullnessProperty targetDerefParamSet) {
+		nonNullParamSet &= targetDerefParamSet.nonNullParamSet;
 	}
 }

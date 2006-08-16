@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.deref;
 
+import java.util.BitSet;
+import java.util.Set;
+
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.InstructionHandle;
@@ -38,6 +41,8 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
+import edu.umd.cs.findbugs.ba.Hierarchy;
+import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
@@ -48,6 +53,10 @@ import edu.umd.cs.findbugs.ba.npe.IsNullConditionDecision;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
+import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
+import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -66,6 +75,8 @@ public class UnconditionalValueDerefAnalysis extends
 	public static final boolean IGNORE_DEREF_OF_NONNULL = SystemProperties.getBoolean("fnd.derefs.ignorenonnull");
 	public static final boolean CHECK_ANNOTATIONS =
 		SystemProperties.getBoolean("fnd.derefs.checkannotations");
+	public static final boolean CHECK_CALLS =
+		SystemProperties.getBoolean("fnd.derefs.checkcalls");
 	
 	private CFG cfg;
 	private MethodGen methodGen;
@@ -73,6 +84,7 @@ public class UnconditionalValueDerefAnalysis extends
 	private AssertionMethods assertionMethods;
 	
 	private IsNullValueDataflow invDataflow;
+	private TypeDataflow typeDataflow;
 	
 	/**
 	 * Constructor.
@@ -107,6 +119,14 @@ public class UnconditionalValueDerefAnalysis extends
 	 */
 	public void clearDerefsOnNonNullBranches(IsNullValueDataflow invDataflow) {
 		this.invDataflow = invDataflow;
+	}
+	
+	/**
+	 * 
+	 * 
+	 */
+	public void setTypeDataflow(TypeDataflow typeDataflow) {
+		this.typeDataflow= typeDataflow;
 	}
 
 	/* (non-Javadoc)
@@ -145,6 +165,12 @@ public class UnconditionalValueDerefAnalysis extends
 			return;
 		}
 		
+		// Check for calls to a method that unconditionally dereferences
+		// a parameter.  Mark any such arguments as derefs.
+		if (CHECK_CALLS && handle.getInstruction() instanceof InvokeInstruction) {
+			checkUnconditionalDerefDatabase(location, vnaFrame, fact);
+		}
+		
 		// If this is a method call instruction,
 		// check to see if any of the parameters are @NonNull,
 		// and treat them as dereferences.
@@ -154,6 +180,89 @@ public class UnconditionalValueDerefAnalysis extends
 
 		// Check to see if an instance value is dereferenced here
 		checkInstance(location, vnaFrame, fact);
+	}
+
+	/**
+	 * Check method call at given location to see if it unconditionally
+	 * dereferences a parameter.  Mark any such arguments as derefs.
+	 * 
+	 * @param location the Location of the method call
+	 * @param vnaFrame ValueNumberFrame at the Location
+	 * @param fact     the dataflow value to modify
+	 * @throws DataflowAnalysisException 
+	 */
+	private void checkUnconditionalDerefDatabase(
+			Location location,
+			ValueNumberFrame vnaFrame,
+			UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
+		
+		ParameterNullnessPropertyDatabase database =
+			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase();
+		if (database == null) {
+			return;
+		}
+		
+		InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
+		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+		if (!typeFrame.isValid()) {
+			return;
+		}
+		
+		SignatureParser sigParser = new SignatureParser(inv.getSignature(methodGen.getConstantPool()));
+		int numParams = sigParser.getNumParameters();
+		
+		try {
+			Set<JavaClassAndMethod> targetSet = Hierarchy.resolveMethodCallTargets(
+					inv,
+					typeFrame,
+					methodGen.getConstantPool());
+			
+			// Compute the intersection of all properties
+			ParameterNullnessProperty derefParamSet = new ParameterNullnessProperty();
+			for (JavaClassAndMethod target : targetSet) {
+				ParameterNullnessProperty targetDerefParamSet = database.getProperty(target.toXMethod());
+				if (targetDerefParamSet == null) {
+					// Hmm...no information for this target.
+					// Just ignore it.
+					continue;
+				}
+				
+				derefParamSet.intersectWith(targetDerefParamSet);
+			}
+			
+			if (derefParamSet.isEmpty()) {
+				return;
+			}
+
+			
+			IsNullValueFrame invFrame = null;
+			if (IGNORE_DEREF_OF_NONNULL && invDataflow != null) {
+				invFrame = invDataflow.getFactAfterLocation(location);
+				if (!invFrame.isValid()) {
+					invFrame = null;
+				}
+			}
+			
+//			int numParams = target.
+			for (int i = 0; i < numParams; i++) {
+				if (!derefParamSet.isNonNull(i)) {
+					continue;
+				}
+				
+				int argSlot = invFrame.getArgumentSlot(i, numParams);
+
+				if (invFrame != null) {
+					IsNullValue val = invFrame.getValue(argSlot);
+					if (val.isDefinitelyNotNull()) {
+						continue;
+					}
+				}
+				
+				fact.addDeref(vnaFrame.getValue(argSlot), location);
+			}
+		} catch (ClassNotFoundException e) {
+			AnalysisContext.reportMissingClass(e);
+		}
 	}
 
 	/**
@@ -262,6 +371,11 @@ public class UnconditionalValueDerefAnalysis extends
 	 */
 	private boolean isDerefOfNonNullValue(Location locationOfDeref, IsNullValueFrame invFrameAtNullCheck)
 			throws DataflowAnalysisException {
+		if (!invFrameAtNullCheck.isValid()) {
+			// Probably dead code
+			return false;
+		}
+		
 		int instance = invFrameAtNullCheck.getInstanceSlot(
 				locationOfDeref.getHandle().getInstruction(),
 				methodGen.getConstantPool());
@@ -276,7 +390,7 @@ public class UnconditionalValueDerefAnalysis extends
 	 * @param slot     slot in the frame
 	 * @return true if value in the slot is definitely non-null, false otherwise
 	 */
-	public boolean isNonNullValue(IsNullValueFrame invFrame, int slot) {
+	private boolean isNonNullValue(IsNullValueFrame invFrame, int slot) {
 		if (invFrame == null || !invFrame.isValid()) {
 			return false;
 		}
