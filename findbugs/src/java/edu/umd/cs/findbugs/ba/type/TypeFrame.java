@@ -19,10 +19,13 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import static edu.umd.cs.findbugs.ba.Debug.VERIFY_INTEGRITY;
+
 import java.util.BitSet;
 
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 
@@ -130,6 +133,36 @@ public class TypeFrame extends Frame<Type> {
 	public static Type getNullType() {
 		return NullType.instance();
 	}
+
+	@Override
+	public void pushValue(Type value) {
+
+		super.pushValue(value);
+
+		try {
+			exactTypeSet.clear(getStackLocation(0));
+		} catch (DataflowAnalysisException e) {
+			assert false;
+		}
+
+	}
+
+	/**
+	 * Pop a value off of the Java operand stack.
+	 * 
+	 * @return the value that was popped
+	 * @throws DataflowAnalysisException
+	 *             if the Java operand stack is empty
+	 */
+	@Override
+	public Type popValue() throws DataflowAnalysisException {
+
+		exactTypeSet.clear(getStackLocation(0));
+		return super.popValue();
+	}
+
+	
+	
 
 }
 
