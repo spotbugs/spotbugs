@@ -133,7 +133,7 @@ public class NumberConstructor extends BytecodeScanningDetector {
       prio = LOW_PRIORITY;
       type = "DM_FP_NUMBER_CTOR";
     } else {
-      prio = (constantArgument ? HIGH_PRIORITY : NORMAL_PRIORITY);
+      prio = NORMAL_PRIORITY;
       type = "DM_NUMBER_CTOR";
     }
         
