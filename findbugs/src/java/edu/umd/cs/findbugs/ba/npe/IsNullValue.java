@@ -373,7 +373,13 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 			return baseKind == NSP;
 		}
 	}
-	
+	/**
+	 * Is this value null on a complicated path?
+	 */
+	public boolean isNullOnComplicatedPath() {
+		int baseKind = getBaseKind();
+		 return baseKind == NN_UNKNOWN || baseKind == NCP2 || baseKind == NCP3;
+	}
 	/**
 	 * Return true if this value is either definitely null,
 	 * or might be null on a simple path. 

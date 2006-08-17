@@ -72,7 +72,9 @@ public class UnconditionalValueDerefAnalysis extends
 	
 	public static final boolean DEBUG = SystemProperties.getBoolean("fnd.derefs.debug");
 	public static final boolean ASSUME_NONZERO_TRIP_LOOPS = SystemProperties.getBoolean("fnd.derefs.nonzerotrip");
-	public static final boolean IGNORE_DEREF_OF_NONNULL = SystemProperties.getBoolean("fnd.derefs.ignorenonnull");
+	public static final boolean IGNORE_DEREF_OF_NONNCP = SystemProperties.getBoolean("fnd.derefs.ignorenonNCP");
+	public static final boolean IGNORE_DEREF_OF_NONNULL = IGNORE_DEREF_OF_NONNCP 
+									|| SystemProperties.getBoolean("fnd.derefs.ignorenonnull");
 	public static final boolean CHECK_ANNOTATIONS =
 		SystemProperties.getBoolean("fnd.derefs.checkannotations");
 	public static final boolean CHECK_CALLS =
@@ -379,7 +381,11 @@ public class UnconditionalValueDerefAnalysis extends
 				&& isDerefOfNonNullValue(location, invDataflow.getStartFact(fallThroughPredecessor))) {
 			return;
 		}
-		
+		if (IGNORE_DEREF_OF_NONNCP
+				&& invDataflow != null
+				&& isDerefOfNullOnComplexPathValue(location, invDataflow.getStartFact(fallThroughPredecessor))) {
+			return;
+		}
 		if (vn.getFlags() == ValueNumber.CONSTANT_CLASS_OBJECT) return;
 		
 		if (DEBUG) {
@@ -418,6 +424,28 @@ public class UnconditionalValueDerefAnalysis extends
 	}
 
 	/**
+	 * Determine whether instruction at given Location is a dereference of
+	 * a value null on a complex path
+	 * 
+	 * @param locationOfDeref     the dereference instruction Location
+	 * @param invFrameAtNullCheck the IsNullValueFrame at the location of the null check
+	 * @return true if the instruction at the location is a dereference of a definitely
+	 *          non-null value, false otherwise
+	 * @throws DataflowAnalysisException
+	 */
+	private boolean isDerefOfNullOnComplexPathValue(Location locationOfDeref, IsNullValueFrame invFrameAtNullCheck)
+			throws DataflowAnalysisException {
+		if (!invFrameAtNullCheck.isValid()) {
+			// Probably dead code
+			return false;
+		}
+		
+		int instance = invFrameAtNullCheck.getInstanceSlot(
+				locationOfDeref.getHandle().getInstruction(),
+				methodGen.getConstantPool());
+		return isNullOnComplexPath(invFrameAtNullCheck, instance);
+	}
+	/**
 	 * Return whether or not given slot in given is-null frame
 	 * is definitely non-null.
 	 * 
@@ -431,7 +459,21 @@ public class UnconditionalValueDerefAnalysis extends
 		}
 		return invFrame.getValue(slot).isDefinitelyNotNull();
 	}
-
+	/**
+	 * Return whether or not given slot in given is-null frame
+	 * is definitely non-null.
+	 * 
+	 * @param invFrame an IsNullValueFrame
+	 * @param slot     slot in the frame
+	 * @return true if value in the slot is definitely non-null, false otherwise
+	 */
+	private boolean isNullOnComplexPath(IsNullValueFrame invFrame, int slot) {
+		if (invFrame == null || !invFrame.isValid()) {
+			return false;
+		}
+		IsNullValue value = invFrame.getValue(slot);
+		return !value.isNullOnComplicatedPath();
+	}
 	/**
 	 * Return whether or not given instruction is an assertion.
 	 * 
