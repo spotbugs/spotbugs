@@ -4,9 +4,6 @@ public class GuaranteedFieldDereference4 {
 	static class Node {
 		Object value;
 		Node next;
-		void setNext(Node n) {
-			next = n;
-		}
 	}
 	Node propertyListTail, propertyListHead;
 	
@@ -17,6 +14,6 @@ public class GuaranteedFieldDereference4 {
 			} else {
 				propertyListHead = propertyListTail = prop;
 			}
-			prop.next = prop;
+			prop.next = null;
 		}
 }
