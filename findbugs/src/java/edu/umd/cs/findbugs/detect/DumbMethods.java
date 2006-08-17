@@ -120,9 +120,16 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		
 		if (isEqualsObject && !reportedBadCastInEquals) {
 			if (seen == INSTANCEOF || seen == INVOKEVIRTUAL && getNameConstantOperand().equals("getClass")
-					&& getSigConstantOperand().equals("()Ljava/lang/Class;")) {
+					&& getSigConstantOperand().equals("()Ljava/lang/Class;")
+					) {
 				OpcodeStack.Item item = stack.getStackItem(0);
 				if (item.getRegisterNumber() == 1) sawInstanceofCheck = true;
+			} else if  (seen ==  INVOKESPECIAL && getNameConstantOperand().equals("equals")
+					&& getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
+				OpcodeStack.Item item0 = stack.getStackItem(0);
+				OpcodeStack.Item item1 = stack.getStackItem(1);
+				if (item1.getRegisterNumber() + item0.getRegisterNumber()  == 1)
+					 sawInstanceofCheck = true;
 			} else if (seen == CHECKCAST && !sawInstanceofCheck) {
 				OpcodeStack.Item item = stack.getStackItem(0);
 				if (item.getRegisterNumber() == 1) {
