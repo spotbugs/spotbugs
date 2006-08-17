@@ -64,6 +64,10 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	private boolean prevOpcodeWasReadLine;
 	private int prevOpcode;
 	private boolean isPublicStaticVoidMain;
+	private boolean isEqualsObject;
+	private boolean sawInstanceofCheck;
+	private boolean reportedBadCastInEquals;
+	
 	private int randomNextIntState;
 	private boolean checkForBitIorofSignedByte;
 	
@@ -102,6 +106,11 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		ctorSeen = false;
 		randomNextIntState = 0;
 		checkForBitIorofSignedByte = false;
+		isEqualsObject = getMethodName().equals("equals") && getMethodSig().equals("(Ljava/lang/Object;)Z")
+		&& !method.isStatic();
+		sawInstanceofCheck = false;
+		reportedBadCastInEquals = false;
+		
 	}
 
 	BugInstance pendingRemOfRandomIntBug;
@@ -109,6 +118,22 @@ public class DumbMethods extends BytecodeScanningDetector  {
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		
+		if (isEqualsObject && !reportedBadCastInEquals) {
+			if (seen == INSTANCEOF) {
+				OpcodeStack.Item item = stack.getStackItem(0);
+				if (item.getRegisterNumber() == 1) sawInstanceofCheck = true;
+			} else if (seen == CHECKCAST && !sawInstanceofCheck) {
+				OpcodeStack.Item item = stack.getStackItem(0);
+				if (item.getRegisterNumber() == 1) {
+					bugReporter.reportBug(new BugInstance(this, "BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS", 
+							 NORMAL_PRIORITY)
+						.addClassAndMethod(this)
+						.addSourceLine(this));
+					
+					reportedBadCastInEquals = true;
+				}
+			}
+		}
 		{
 			boolean foundVacuousComparison = false;
 		if (seen ==  IF_ICMPGT || seen ==  IF_ICMPLE) {

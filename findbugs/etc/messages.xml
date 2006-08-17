@@ -4671,6 +4671,20 @@ This creates an array of length one to hold the primitive array and passes it to
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS">
+    <ShortDescription>Equals method should assume anything about the type of its argument</ShortDescription>
+    <LongDescription>Equals method for {0} assumes the argument is of type {2}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+The <code>equals(Object o)</code> method shouldn't make any assumptions
+about the type of <code>o</code>. It should simply return
+false if <code>o</code> is not the same type as <code>this</code>.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
     <ShortDescription>Questionable cast to abstract collection </ShortDescription>
     <LongDescription>Questionable cast from Collection to abstract class {3} in {1}</LongDescription>
