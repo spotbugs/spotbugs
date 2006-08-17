@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.BitSet;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,9 +28,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Instruction;
@@ -40,7 +40,6 @@ import org.apache.bcel.generic.InstructionHandle;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.BasicBlock;
-import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -235,7 +234,8 @@ public class NullDerefAndRedundantComparisonFinder {
 			}
 			locationSet.add(lwvbn.getLocation());
 		}
-		
+		Map<ValueNumber, SortedSet<Location>> bugLocationMap =
+			new HashMap<ValueNumber, SortedSet<Location>>();
 		// Inspect the method for locations where a null value is guaranteed to
 		// be dereferenced.  Add the dereference locations
 		Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap =
@@ -250,10 +250,10 @@ public class NullDerefAndRedundantComparisonFinder {
 			}
 			
 			checkForUnconditionallyDereferencedNullValues(
+					location,
+					bugLocationMap,
 					nullValueGuaranteedDerefMap,
-					vnaDataflow.getFactAtLocation(location),
-					invDataflow.getFactAtLocation(location),
-					uvdDataflow.getFactAfterLocation(location));
+					vnaDataflow.getFactAtLocation(location), invDataflow.getFactAtLocation(location), uvdDataflow.getFactAfterLocation(location));
 		}
 		HashSet<ValueNumber> npeIfStatementCovered = new HashSet(nullValueGuaranteedDerefMap.keySet());
 		
@@ -272,11 +272,12 @@ public class NullDerefAndRedundantComparisonFinder {
 			ValueNumberFrame vnaFact = vnaDataflow.getResultFact(edge.getSource());
 			IsNullValueFrame invFact = invDataflow.getFactOnEdge(edge);
 			UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
+			Location location = Location.getLastLocation(edge.getTarget());
 			checkForUnconditionallyDereferencedNullValues(
+					location,
+					bugLocationMap,
 					nullValueGuaranteedDerefMap,
-					vnaFact,
-					invFact,
-					uvdFact);
+					vnaFact, invFact, uvdFact);
 		}
 		
 		// Report 
@@ -298,25 +299,27 @@ public class NullDerefAndRedundantComparisonFinder {
 			collector.foundGuaranteedNullDeref(
 					assignedNullLocationSet,
 					derefLocationSet,
-					valueNumber,
-					e.getValue().isAlwaysOnExceptionPath(), npeIfStatementCovered.contains(valueNumber));
+					bugLocationMap.get(valueNumber),
+					valueNumber, e.getValue().isAlwaysOnExceptionPath(), 
+					npeIfStatementCovered.contains(valueNumber));
 		}
 	}
 
 	/**
 	 * Check for unconditionally dereferenced null values
 	 * at a particular location in the CFG.
-	 * 
+	 * @param thisLocation TODO
+	 * @param bugLocations TODO
 	 * @param nullValueGuaranteedDerefMap map to be populated with null values and where they are derefed 
 	 * @param vnaFrame                    value number frame to check
 	 * @param invFrame                    null-value frame to check
 	 * @param derefSet                    set of unconditionally derefed values at this location 
 	 */
 	private void checkForUnconditionallyDereferencedNullValues(
+			Location thisLocation,
+			Map<ValueNumber, SortedSet<Location>> bugLocations,
 			Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap,
-			ValueNumberFrame vnaFrame,
-			IsNullValueFrame invFrame,
-			UnconditionalValueDerefSet derefSet) {
+			ValueNumberFrame vnaFrame, IsNullValueFrame invFrame, UnconditionalValueDerefSet derefSet) {
 		
 		if (DEBUG_DEREFS) {
 			System.out.println("vna *** " + vnaFrame);
@@ -339,10 +342,10 @@ public class NullDerefAndRedundantComparisonFinder {
 				
 				if (derefSet.isUnconditionallyDereferenced(valueNumber)) {
 					noteUnconditionallyDereferencedNullValue(
+							thisLocation,
+							bugLocations,
 							nullValueGuaranteedDerefMap,
-							derefSet,
-							isNullValue,
-							valueNumber);
+							derefSet, isNullValue, valueNumber);
 				}
 			}
 		}
@@ -356,10 +359,10 @@ public class NullDerefAndRedundantComparisonFinder {
 			
 			if (derefSet.isUnconditionallyDereferenced(entry.getKey())) {
 				noteUnconditionallyDereferencedNullValue(
+						thisLocation,
+						bugLocations,
 						nullValueGuaranteedDerefMap,
-						derefSet,
-						entry.getValue(),
-						entry.getKey());
+						derefSet, entry.getValue(), entry.getKey());
 			}
 		}
 		
@@ -368,13 +371,14 @@ public class NullDerefAndRedundantComparisonFinder {
 	/**
 	 * Note the locations where a known-null value is unconditionally
 	 * dereferenced.
-	 * 
+	 * @param thisLocation TODO
+	 * @param bugLocations TODO
 	 * @param nullValueGuaranteedDerefMap map of null values to sets of Locations where they are derefed
 	 * @param derefSet                    set of values known to be unconditionally dereferenced
 	 * @param isNullValue                 the null value
 	 * @param valueNumber                 the value number of the null value
 	 */
-	private void noteUnconditionallyDereferencedNullValue(Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap, UnconditionalValueDerefSet derefSet, IsNullValue isNullValue, ValueNumber valueNumber) {
+	private void noteUnconditionallyDereferencedNullValue(Location thisLocation, Map<ValueNumber, SortedSet<Location>> bugLocations, Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap, UnconditionalValueDerefSet derefSet, IsNullValue isNullValue, ValueNumber valueNumber) {
 		if (DEBUG) {
 			System.out.println("%%% HIT for value number " + valueNumber);
 		}
@@ -388,6 +392,16 @@ public class NullDerefAndRedundantComparisonFinder {
 			nullValueGuaranteedDerefMap.put(valueNumber, thisNullValueDeref);
 		}
 		thisNullValueDeref.add(isNullValue, derefSet.getUnconditionalDerefLocationSet(valueNumber));
+	
+		if (thisLocation != null) {
+			SortedSet<Location> locationsForThisBug = bugLocations.get(valueNumber);
+
+			if (locationsForThisBug == null) {
+				locationsForThisBug = new TreeSet<Location>();
+				bugLocations.put(valueNumber, locationsForThisBug);
+			}
+			locationsForThisBug.add(thisLocation);
+		}
 	}
 
 	/**

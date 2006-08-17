@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.BitSet;
 import java.util.Set;
+import java.util.SortedSet;
 
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Location;
@@ -61,6 +62,7 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 * that are guaranteed to reach a dereference (ignoring
 	 * implicit exception paths).
 	 * @param derefLocationSet     set of locations where dereferences occur
+	 * @param doomedLocations TODO
 	 * @param refValue             the null value
 	 * @param alwaysOnExceptionPath true if the location(s) where the value was observed
 	 *                               to be null and unconditionally dereferenced were
@@ -71,6 +73,6 @@ public interface NullDerefAndRedundantComparisonCollector {
 	public void foundGuaranteedNullDeref(
 			Set<Location> assignedNullLocationSet,
 			Set<Location> derefLocationSet,
-			ValueNumber refValue,
-			boolean alwaysOnExceptionPath, boolean npeIfStatementCovered);
+			SortedSet<Location> doomedLocations,
+			ValueNumber refValue, boolean alwaysOnExceptionPath, boolean npeIfStatementCovered);
 }

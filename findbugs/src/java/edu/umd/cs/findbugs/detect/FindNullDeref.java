@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
@@ -892,10 +893,12 @@ public class FindNullDeref
 	public void foundGuaranteedNullDeref(
 			@NonNull Set<Location> assignedNullLocationSet,
 			@NonNull Set<Location> derefLocationSet,
-			ValueNumber refValue,
-			boolean alwaysOnExceptionPath, boolean npeIfStatementCovered) {
+			SortedSet<Location> doomedLocations,
+			ValueNumber refValue, boolean alwaysOnExceptionPath, boolean npeIfStatementCovered) {
 		if (DEBUG) {
 			System.out.println("Found guaranteed null deref in " + method.getName());
+			for(Location loc : doomedLocations)
+				System.out.println("Doomed at " + loc);
 		}
 		
 		String bugType = alwaysOnExceptionPath
@@ -915,12 +918,16 @@ public class FindNullDeref
 			bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_DEREF");
 		}
 
-		// Add Locations where the value was observed to become null
-		TreeSet<Location> sortedAssignedNullLocationSet = new TreeSet<Location>(assignedNullLocationSet);
-		for (Location loc : sortedAssignedNullLocationSet) {
-			bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_NULL_VALUE");
+		if (!doomedLocations.isEmpty()) {
+			bugInstance.addSourceLine(classContext, method, doomedLocations.first()).describe("SOURCE_LINE_NULL_VALUE");
 		}
-		
+		else {
+			// Add Locations where the value was observed to become null
+			TreeSet<Location> sortedAssignedNullLocationSet = new TreeSet<Location>(assignedNullLocationSet);
+			for (Location loc : sortedAssignedNullLocationSet) {
+				bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_NULL_VALUE");
+			}
+		}
 		// Report it
 		bugReporter.reportBug(bugInstance);
 	}

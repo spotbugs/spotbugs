@@ -55,6 +55,19 @@ public class Location implements Comparable<Location> {
 		this.basicBlock = basicBlock;
 	}
 
+	public static Location getFirstLocation(@NonNull BasicBlock basicBlock) {
+		return new Location(basicBlock.getFirstInstruction(), basicBlock);
+	}
+	public static Location getLastLocation(@NonNull BasicBlock basicBlock) {
+		InstructionHandle lastInstruction = basicBlock.getLastInstruction();
+		if (lastInstruction == null)
+			lastInstruction = basicBlock.getExceptionThrower();
+		if (lastInstruction == null)
+			lastInstruction = basicBlock.getFirstInstruction();
+		if (lastInstruction == null)
+			return null;
+		return new Location(lastInstruction, basicBlock);
+	}
 	/**
 	 * Get the instruction handle.
 	 */
