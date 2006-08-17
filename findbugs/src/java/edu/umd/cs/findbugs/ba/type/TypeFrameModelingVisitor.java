@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -48,7 +49,9 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, TypeFrame>
         implements Constants, Debug {
-			
+		
+	static private final  ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance("java.util.Collection");
+
 	private ValueNumberDataflow valueNumberDataflow;
 
 	// Fields for precise modeling of instanceof instructions.
@@ -56,7 +59,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	private boolean instanceOfFollowedByBranch;
 	private Type instanceOfType;
 	private ValueNumber instanceOfValueNumber;
-	
+		
 	private FieldStoreTypeDatabase database;
 
 	/**
@@ -142,8 +145,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	
 	@Override
 	public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
-		Location location = getLocation();
-		
 		instanceOfFollowedByBranch = false;
 		super.analyzeInstruction(ins);
 		lastOpcode = ins.getOpcode();
@@ -354,7 +355,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		if (obj.getName(getCPG()).equals("toArray")) {
 			ReferenceType target = obj.getReferenceType(getCPG());
 			String signature = obj.getSignature(getCPG());
-			if (signature.equals("([Ljava/lang/Object;)[Ljava/lang/Object;")) {
+			if (signature.equals("([Ljava/lang/Object;)[Ljava/lang/Object;") && target.isAssignmentCompatibleWith(COLLECTION_TYPE)) {
 				
 				boolean topIsExact = frame.isExact(frame.getStackLocation(0));
 				Type resultType = frame.popValue();
@@ -372,6 +373,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		return false;
 		} catch (DataflowAnalysisException e) {
 					throw new InvalidBytecodeException("analysis error: " + e.getMessage());
+		} catch (ClassNotFoundException e) {
+			throw new InvalidBytecodeException("analysis error: " + e.getMessage());
 		}
 	}
 	@Override
