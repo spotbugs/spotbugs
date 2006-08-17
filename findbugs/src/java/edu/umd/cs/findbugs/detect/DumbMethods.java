@@ -126,6 +126,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 			} else if (seen == CHECKCAST && !sawInstanceofCheck) {
 				OpcodeStack.Item item = stack.getStackItem(0);
 				if (item.getRegisterNumber() == 1) {
+					if (getSizeOfSurroundingTryBlock(getPC()) == Integer.MAX_VALUE)
 					bugReporter.reportBug(new BugInstance(this, "BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS", 
 							 NORMAL_PRIORITY)
 						.addClassAndMethod(this)
