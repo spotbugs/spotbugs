@@ -187,7 +187,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 								mergeTree.mapInputToOutput(vn, phi);
 								flags |= vn.getFlags();
 							}
-							for(ValueNumber vn : otherVN) {
+							if (otherVN != null) for(ValueNumber vn : otherVN) {
 								mergeTree.mapInputToOutput(vn, phi);
 								flags |= vn.getFlags();
 							}
