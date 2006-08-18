@@ -96,7 +96,7 @@
 		<mkdir dir="${classes.dir}"/>
 		<!-- Compile Java source files. -->
 		<javac srcdir="${src.dir}"
-				excludes="${pkg.base}/ba/ir/**,${pkg.base}/annotations/**"
+				excludes="${pkg.base}/annotations/**"
 				destdir="${classes.dir}"
 				source="1.5"
 				target="jsr14"
