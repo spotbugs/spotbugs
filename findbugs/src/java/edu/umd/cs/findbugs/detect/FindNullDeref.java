@@ -920,6 +920,7 @@ public class FindNullDeref
 		if (doomedLocations.isEmpty()) sourceLocations= new TreeSet<Location>(assignedNullLocationSet);
 		else sourceLocations = doomedLocations;
 		
+		if (doomedLocations.isEmpty() || sortedDerefLocationSet.isEmpty()) return;
 		BugAnnotation variableAnnotation = null;
 		try {
 			for (Location loc : sourceLocations)  {
