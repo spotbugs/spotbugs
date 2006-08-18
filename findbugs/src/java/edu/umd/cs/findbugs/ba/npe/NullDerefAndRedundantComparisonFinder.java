@@ -272,7 +272,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			ValueNumberFrame vnaFact = vnaDataflow.getResultFact(edge.getSource());
 			IsNullValueFrame invFact = invDataflow.getFactOnEdge(edge);
 			UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
-			Location location = Location.getLastLocation(edge.getTarget());
+			Location location = Location.getLastLocation(edge.getSource());
 			checkForUnconditionallyDereferencedNullValues(
 					location,
 					bugLocationMap,
@@ -380,7 +380,7 @@ public class NullDerefAndRedundantComparisonFinder {
 	 */
 	private void noteUnconditionallyDereferencedNullValue(Location thisLocation, Map<ValueNumber, SortedSet<Location>> bugLocations, Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap, UnconditionalValueDerefSet derefSet, IsNullValue isNullValue, ValueNumber valueNumber) {
 		if (DEBUG) {
-			System.out.println("%%% HIT for value number " + valueNumber);
+			System.out.println("%%% HIT for value number " + valueNumber + " @ " + thisLocation);
 		}
 		
 		// OK, we have a null value that is unconditionally

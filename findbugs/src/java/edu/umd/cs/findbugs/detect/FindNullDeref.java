@@ -919,7 +919,10 @@ public class FindNullDeref
 		}
 
 		if (!doomedLocations.isEmpty()) {
-			bugInstance.addSourceLine(classContext, method, doomedLocations.first()).describe("SOURCE_LINE_NULL_VALUE");
+			for (Location loc : doomedLocations) 
+				bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_NULL_VALUE");
+		
+			// bugInstance.addSourceLine(classContext, method, doomedLocations.first()).describe("SOURCE_LINE_NULL_VALUE");
 		}
 		else {
 			// Add Locations where the value was observed to become null
