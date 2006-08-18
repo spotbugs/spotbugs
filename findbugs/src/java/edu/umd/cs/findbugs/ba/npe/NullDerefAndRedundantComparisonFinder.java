@@ -300,8 +300,8 @@ public class NullDerefAndRedundantComparisonFinder {
 					assignedNullLocationSet,
 					derefLocationSet,
 					bugLocationMap.get(valueNumber),
-					valueNumber, e.getValue().isAlwaysOnExceptionPath(), 
-					npeIfStatementCovered.contains(valueNumber));
+					vnaDataflow, valueNumber, 
+					e.getValue().isAlwaysOnExceptionPath(), npeIfStatementCovered.contains(valueNumber));
 		}
 	}
 

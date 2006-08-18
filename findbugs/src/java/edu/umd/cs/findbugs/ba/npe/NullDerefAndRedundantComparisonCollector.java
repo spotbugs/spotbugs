@@ -26,6 +26,7 @@ import java.util.SortedSet;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
 /**
@@ -63,6 +64,7 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 * implicit exception paths).
 	 * @param derefLocationSet     set of locations where dereferences occur
 	 * @param doomedLocations TODO
+	 * @param vna TODO
 	 * @param refValue             the null value
 	 * @param alwaysOnExceptionPath true if the location(s) where the value was observed
 	 *                               to be null and unconditionally dereferenced were
@@ -74,5 +76,5 @@ public interface NullDerefAndRedundantComparisonCollector {
 			Set<Location> assignedNullLocationSet,
 			Set<Location> derefLocationSet,
 			SortedSet<Location> doomedLocations,
-			ValueNumber refValue, boolean alwaysOnExceptionPath, boolean npeIfStatementCovered);
+			ValueNumberDataflow vna, ValueNumber refValue, boolean alwaysOnExceptionPath, boolean npeIfStatementCovered);
 }

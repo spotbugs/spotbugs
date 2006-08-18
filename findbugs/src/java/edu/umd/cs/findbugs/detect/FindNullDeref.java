@@ -894,7 +894,7 @@ public class FindNullDeref
 			@NonNull Set<Location> assignedNullLocationSet,
 			@NonNull Set<Location> derefLocationSet,
 			SortedSet<Location> doomedLocations,
-			ValueNumber refValue, boolean alwaysOnExceptionPath, boolean npeIfStatementCovered) {
+			ValueNumberDataflow vna, ValueNumber refValue, boolean alwaysOnExceptionPath, boolean npeIfStatementCovered) {
 		if (DEBUG) {
 			System.out.println("Found guaranteed null deref in " + method.getName());
 			for(Location loc : doomedLocations)
@@ -913,25 +913,31 @@ public class FindNullDeref
 		
 		// Add Locations in the set of locations at least one of which
 		// is guaranteed to be dereferenced
+		
 		TreeSet<Location> sortedDerefLocationSet = new TreeSet<Location>(derefLocationSet);
+		SortedSet<Location> sourceLocations;
+		if (doomedLocations.isEmpty()) sourceLocations= new TreeSet<Location>(assignedNullLocationSet);
+		else sourceLocations = doomedLocations;
+		
+		Location firstLoc = doomedLocations.first();
+		BugAnnotation variableAnnotation = null;
+		try {
+			variableAnnotation = findLocalVariable(firstLoc, refValue, vna.getFactAtLocation(firstLoc));
+		} catch (DataflowAnalysisException e) {
+		}
+		if (variableAnnotation == null) variableAnnotation = new LocalVariableAnnotation("?",-1,-1);
+		
+		bugInstance.add(variableAnnotation);
+		
+		for (Location loc : sourceLocations) 
+			bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_NULL_VALUE");
+	
+		
 		for (Location loc : sortedDerefLocationSet) {
 			bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_DEREF");
 		}
-
-		if (!doomedLocations.isEmpty()) {
-			for (Location loc : doomedLocations) 
-				bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_NULL_VALUE");
 		
-			// bugInstance.addSourceLine(classContext, method, doomedLocations.first()).describe("SOURCE_LINE_NULL_VALUE");
-		}
-		else {
-			// Add Locations where the value was observed to become null
-			TreeSet<Location> sortedAssignedNullLocationSet = new TreeSet<Location>(assignedNullLocationSet);
-			for (Location loc : sortedAssignedNullLocationSet) {
-				bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_NULL_VALUE");
-			}
-		}
-		// Report it
+				// Report it
 		bugReporter.reportBug(bugInstance);
 	}
 }
