@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -919,19 +920,39 @@ public class FindNullDeref
 		if (doomedLocations.isEmpty()) sourceLocations= new TreeSet<Location>(assignedNullLocationSet);
 		else sourceLocations = doomedLocations;
 		
-		Location firstLoc = doomedLocations.first();
 		BugAnnotation variableAnnotation = null;
 		try {
-			variableAnnotation = findLocalVariable(firstLoc, refValue, vna.getFactAtLocation(firstLoc));
+			for (Location loc : sourceLocations)  {
+				variableAnnotation = findLocalVariable(loc, refValue, vna.getFactAtLocation(loc));
+				if (variableAnnotation != null) break;
+			}
+			if (variableAnnotation == null) for (Location loc : sortedDerefLocationSet) {
+				variableAnnotation = findLocalVariable(loc, refValue, vna.getFactAtLocation(loc));
+				if (variableAnnotation != null) break;
+			}
+			
 		} catch (DataflowAnalysisException e) {
 		}
 		if (variableAnnotation == null) variableAnnotation = new LocalVariableAnnotation("?",-1,-1);
 		
 		bugInstance.add(variableAnnotation);
+		BitSet knownNull = new BitSet();
 		
-		for (Location loc : sourceLocations) 
-			bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_NULL_VALUE");
+		SortedSet<SourceLineAnnotation> knownNullLocations = new TreeSet<SourceLineAnnotation>();
+		for (Location loc : sourceLocations) {
+			SourceLineAnnotation sourceLineAnnotation =
+				SourceLineAnnotation.fromVisitedInstruction(classContext, classContext.getMethodGen(method), 
+						classContext.getJavaClass().getSourceFileName(),
+						loc.getHandle());
+			if (sourceLineAnnotation == null) continue;
+			if (knownNull.get(sourceLineAnnotation.getStartLine())) {
+				knownNull.set(sourceLineAnnotation.getStartLine());
+				knownNullLocations.add(sourceLineAnnotation);
+			}
+		}
 	
+		for(SourceLineAnnotation sourceLineAnnotation : knownNullLocations)
+			bugInstance.add(sourceLineAnnotation).describe("SOURCE_LINE_NULL_VALUE");
 		
 		for (Location loc : sortedDerefLocationSet) {
 			bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_DEREF");
