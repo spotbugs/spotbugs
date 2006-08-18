@@ -68,6 +68,7 @@ public class RecursiveFileSearch {
 				continue;
 
 			File[] contentList = dir.listFiles();
+			if (contentList == null) continue;
 			for (File aContentList : contentList) {
 				if (Thread.interrupted())
 					throw new InterruptedException();
@@ -76,7 +77,6 @@ public class RecursiveFileSearch {
 
 				if (!fileFilter.accept(file))
 					continue;
-
 				if (file.isDirectory())
 					directoryWorkList.add(file);
 				else
