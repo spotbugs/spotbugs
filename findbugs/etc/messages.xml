@@ -3354,7 +3354,7 @@ was return from a method which is known to return possibly-null values.</p>
 	
   <BugPattern type="NP_GUARANTEED_DEREF">
 	  <ShortDescription>Null value is guaranteed to be dereferenced</ShortDescription>
-	  <LongDescription>{2} is null and guaranteed to be dereferenced in {1}</LongDescription>
+	  <LongDescription>{2.name} could be null and guaranteed to be dereferenced in {1}</LongDescription>
 	  <Details>
 		  <![CDATA[
 			  <p>
@@ -3367,7 +3367,7 @@ was return from a method which is known to return possibly-null values.</p>
   
   <BugPattern type="NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH">
 	  <ShortDescription>Null value is guaranteed to be dereferenced on exception path</ShortDescription>
-	  <LongDescription>{2} is null and guaranteed to be dereferenced in {1} on exception path</LongDescription>
+	  <LongDescription>{2.name} could be null and guaranteed to be dereferenced in {1} on exception path</LongDescription>
 	  <Details>
 		  <![CDATA[
 			  <p>
