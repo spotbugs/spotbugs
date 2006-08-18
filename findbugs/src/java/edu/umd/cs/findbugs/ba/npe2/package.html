@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+</head>
+
+<body bgcolor="white">
+<p>
+	This package is a rewrite of the null-pointer analysis to use
+	sets of value numbers rather than frames.  The main advantage
+	of this approach is that it requires no special code to handle
+	the case where a value is stored in the heap and re-appears
+	in a subsequent field load.
+</p>
+	
+<p>
+	This isn't ready for prime time, but may be in the future.
+	Or maybe we'll rewrite the entire dataflow analysis package
+	to use a different bytecode framework, and it will never
+	be used.  Hard to say for sure.
+</p>
+</body>
+
+</html>
