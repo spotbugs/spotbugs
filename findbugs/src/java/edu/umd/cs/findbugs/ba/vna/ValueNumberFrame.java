@@ -154,7 +154,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 	}
 
-	void mergeAvailableLoadSets(ValueNumberFrame other, ValueNumberFactory factory) {
+	void mergeAvailableLoadSets(ValueNumberFrame other, ValueNumberFactory factory, MergeTree mergeTree) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			// Merge available load sets.
 			// Only loads that are available in both frames
@@ -173,21 +173,39 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 					AvailableLoad load = e.getKey();
 					ValueNumber[] myVN = e.getValue();
 					ValueNumber[] otherVN = other.availableLoadMap.get(load);
-					if (this.phiNodeForLoads && myVN != null && myVN.length == 1 && myVN[0].hasFlag(ValueNumber.PHI_NODE))
+					if (false && this.phiNodeForLoads && myVN != null && myVN.length == 1 && myVN[0].hasFlag(ValueNumber.PHI_NODE))
 						continue;
 					if (!Arrays.equals(myVN, otherVN)) {
 						
 						ValueNumber phi = mergedLoads.get(load);
 						if (phi == null) {
 							phi = factory.createFreshValue();
-							phi.setFlag(ValueNumber.PHI_NODE);
+							int flags = ValueNumber.PHI_NODE;
+							
 							mergedLoads.put(load, phi);
+							for(ValueNumber vn : myVN) {
+								mergeTree.mapInputToOutput(vn, phi);
+								flags |= vn.getFlags();
+							}
+							for(ValueNumber vn : otherVN) {
+								mergeTree.mapInputToOutput(vn, phi);
+								flags |= vn.getFlags();
+							}
+							phi.setFlag(flags);
 							if (RLE_DEBUG)
-								System.out.println("Creating phi node " + phi + " for " + load);	
+								System.out.println("Creating phi node " + phi + " for " + load + " from " + myVN[0] + " x " + otherVN[0] + " in " + System.identityHashCode(this));	
+							changed = true;
+							e.setValue(new ValueNumber[] { phi });
+						} else {
+							if (RLE_DEBUG)
+									System.out.println("Reusing phi node : " + phi + " for " + myVN[0] + " x " + otherVN[0]+ " in " + System.identityHashCode(this));
+							if (myVN.length != 0 || !myVN[0].equals(phi))
+								e.setValue(new ValueNumber[] { phi });
+						
+							
 						}
 						
-						changed = true;
-						e.setValue(new ValueNumber[] { phi });
+						
 					}
 					
 				}	

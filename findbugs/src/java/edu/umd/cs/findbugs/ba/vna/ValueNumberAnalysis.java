@@ -180,7 +180,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 	@Override
 	protected void mergeInto(ValueNumberFrame frame, ValueNumberFrame result) throws DataflowAnalysisException {
-		result.mergeAvailableLoadSets(frame, factory);
+		result.mergeAvailableLoadSets(frame, factory, mergeTree);
 		super.mergeInto(frame, result);
 	}
 	
