@@ -372,9 +372,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		}
 		return false;
 		} catch (DataflowAnalysisException e) {
-					throw new InvalidBytecodeException("analysis error: " + e.getMessage());
+			return false;
 		} catch (ClassNotFoundException e) {
-			throw new InvalidBytecodeException("analysis error: " + e.getMessage());
+			AnalysisContext.reportMissingClass(e);
+			return false;
 		}
 	}
 	@Override
