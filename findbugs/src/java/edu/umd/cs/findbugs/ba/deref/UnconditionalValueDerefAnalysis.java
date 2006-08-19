@@ -164,7 +164,7 @@ public class UnconditionalValueDerefAnalysis extends
 		// returns normally.
 		if (isAssertion(handle) ) {
 			if (DEBUG) System.out.println("MAKING BOTTOM0 AT: " + location);
-			fact.setIsBottom();
+			fact.clear();
 			return;
 		}
 		
