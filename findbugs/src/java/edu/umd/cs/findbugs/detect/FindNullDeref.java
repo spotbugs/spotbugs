@@ -90,6 +90,7 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
+import edu.umd.cs.findbugs.visitclass.Util;
 
 /**
  * A Detector to find instructions where a NullPointerException
@@ -620,23 +621,31 @@ public class FindNullDeref
 		} catch (CFGBuilderException e) {
 		}
 
+		boolean caught = inCatchNullBlock(location);
+	
+
 		if (!duplicated && refValue.isDefinitelyNull()) {
 			String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION" : "NP_ALWAYS_NULL";
 			int priority = onExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
+			if (caught) priority++;
 			reportNullDeref(propertySet, classContext, method, location, type, priority, variable);
 		} else if (refValue.isNullOnSomePath() || duplicated &&  refValue.isDefinitelyNull()) {
 			String type =  "NP_NULL_ON_SOME_PATH";
 			int priority =  NORMAL_PRIORITY;
+			if (caught) priority++;
 			if (onExceptionPath)  type = "NP_NULL_ON_SOME_PATH_EXCEPTION";
 			else if (refValue.isReturnValue())
 				type = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE";
 			else if (refValue.isParamValue()) {
 				if (method.getName().equals("equals") 
-						&& method.getSignature().equals("(Ljava/lang/Object;)Z"))
+						&& method.getSignature().equals("(Ljava/lang/Object;)Z")) {
+					if (caught) return;
 					type = "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT";
-				else
+					
+				} else
 				type = "NP_ARGUMENT_MIGHT_BE_NULL";
 			}
+			
 			if (DEBUG) System.out.println("Reporting null on some path: value=" + refValue);
 			reportNullDeref(propertySet, classContext, method, location, type, priority, variable);
 		}
@@ -908,9 +917,6 @@ public class FindNullDeref
 		int priority = alwaysOnExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
 		if (!npeIfStatementCovered) priority++;
 		
-		// Create BugInstance
-		BugInstance bugInstance = new BugInstance(this, bugType, priority)
-			.addClassAndMethod(classContext.getJavaClass(), method);
 		
 		// Add Locations in the set of locations at least one of which
 		// is guaranteed to be dereferenced
@@ -921,6 +927,13 @@ public class FindNullDeref
 		else sourceLocations = doomedLocations;
 		
 		if (doomedLocations.isEmpty() || sortedDerefLocationSet.isEmpty()) return;
+		boolean derefOutsideCatchBlock = false;
+		for (Location loc : sortedDerefLocationSet) 
+			if (!inCatchNullBlock(loc)) {
+				derefOutsideCatchBlock = true;
+				break;
+			}
+		if (!derefOutsideCatchBlock) priority++;
 		BugAnnotation variableAnnotation = null;
 		try {
 			for (Location loc : sourceLocations)  {
@@ -935,6 +948,9 @@ public class FindNullDeref
 		} catch (DataflowAnalysisException e) {
 		}
 		if (variableAnnotation == null) variableAnnotation = new LocalVariableAnnotation("?",-1,-1);
+//		 Create BugInstance
+		BugInstance bugInstance = new BugInstance(this, bugType, priority)
+			.addClassAndMethod(classContext.getJavaClass(), method);
 		
 		bugInstance.add(variableAnnotation);
 		BitSet knownNull = new BitSet();
@@ -958,12 +974,18 @@ public class FindNullDeref
 		for(SourceLineAnnotation sourceLineAnnotation : knownNullLocations)
 			bugInstance.add(sourceLineAnnotation).describe("SOURCE_LINE_NULL_VALUE");
 		
+
 		for (Location loc : sortedDerefLocationSet) {
 			bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_DEREF");
 		}
 		
 				// Report it
 		bugReporter.reportBug(bugInstance);
+	}
+	boolean inCatchNullBlock(Location loc) {
+		int pc = loc.getHandle().getPosition();
+		int catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getConstantPoolGen().getConstantPool(), method.getCode(), "java/lang/NullPointerException", pc);
+		return catchSize < Integer.MAX_VALUE;
 	}
 }
 

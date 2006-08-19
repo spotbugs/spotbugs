@@ -130,37 +130,16 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	  * @return number of lines of code in try block
 	  */
 	 public int getSizeOfSurroundingTryBlock(int pc) {
+		 return getSizeOfSurroundingTryBlock(null, pc);
+	 }
+	 /**
+	  * Get lines of code in try block that surround pc
+	  * @param pc
+	  * @return number of lines of code in try block
+	  */
+	 public int getSizeOfSurroundingTryBlock(String vmNameOfExceptionClass, int pc) {
 			if (code == null) throw new IllegalStateException("Not visiting Code");
-			int size = Integer.MAX_VALUE;
-			int tightStartPC = 0;
-			int tightEndPC = Integer.MAX_VALUE;
-			if (code.getExceptionTable() == null) return size;
-			for (CodeException catchBlock : code.getExceptionTable()) {
-				int startPC = catchBlock.getStartPC();
-				int endPC = catchBlock.getEndPC();
-				if (pc >= startPC && pc <= endPC) {
-					int thisSize = endPC - startPC;
-					if (size > thisSize) {
-						size = thisSize;
-						tightStartPC = startPC;
-						tightEndPC = endPC;
-					}
-				}
-			}
-			if (size == Integer.MAX_VALUE) return size;
-			
-			// try to guestimate number of lines that correspond
-			size = (size+7) / 8;
-			LineNumberTable lineNumberTable = code.getLineNumberTable();
-			if (lineNumberTable == null) return size;
-		
-			int count = 0;
-			for(LineNumber line : lineNumberTable.getLineNumberTable()) {
-				if (line.getStartPC() > tightEndPC) break;
-				if (line.getStartPC() >= tightStartPC) count++;
-			}
-			return count;
-
+			return Util.getSizeOfSurroundingTryBlock(constantPool, code, vmNameOfExceptionClass, pc);
 	 }
 	// Attributes
 	@Override

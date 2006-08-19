@@ -21,10 +21,16 @@ package edu.umd.cs.findbugs.visitclass;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.InnerClass;
 import org.apache.bcel.classfile.InnerClasses;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LineNumber;
+import org.apache.bcel.classfile.LineNumberTable;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
@@ -53,5 +59,45 @@ public class Util {
 			}
 		return null;
 	}
+	
+	 public static int getSizeOfSurroundingTryBlock(ConstantPool constantPool, Code code, String vmNameOfExceptionClass, int pc) {
+			int size = Integer.MAX_VALUE;
+			int tightStartPC = 0;
+			int tightEndPC = Integer.MAX_VALUE;
+			if (code.getExceptionTable() == null) return size;
+			for (CodeException catchBlock : code.getExceptionTable()) {
+				if (vmNameOfExceptionClass != null) {
+				Constant catchType = constantPool.getConstant(catchBlock.getCatchType());
+				System.out.println(catchType);
+				if (catchType instanceof ConstantClass 
+						&& !((ConstantClass)catchType).getBytes(constantPool).equals(vmNameOfExceptionClass)) continue;
+				}
+				int startPC = catchBlock.getStartPC();
+				int endPC = catchBlock.getEndPC();
+				if (pc >= startPC && pc <= endPC) {
+					int thisSize = endPC - startPC;
+					if (size > thisSize) {
+						size = thisSize;
+						tightStartPC = startPC;
+						tightEndPC = endPC;
+					}
+				}
+			}
+			if (size == Integer.MAX_VALUE) return size;
+			
+			// try to guestimate number of lines that correspond
+			size = (size+7) / 8;
+			LineNumberTable lineNumberTable = code.getLineNumberTable();
+			if (lineNumberTable == null) return size;
+		
+			int count = 0;
+			for(LineNumber line : lineNumberTable.getLineNumberTable()) {
+				if (line.getStartPC() > tightEndPC) break;
+				if (line.getStartPC() >= tightStartPC) count++;
+			}
+			return count;
+
+	 }
+
 
 }
