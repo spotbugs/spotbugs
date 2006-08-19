@@ -55,6 +55,7 @@ import edu.umd.cs.findbugs.ba.constant.ConstantAnalysis;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefAnalysis;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.ba.heap.LoadAnalysis;
 import edu.umd.cs.findbugs.ba.heap.LoadDataflow;
 import edu.umd.cs.findbugs.ba.heap.StoreAnalysis;
@@ -1007,9 +1008,12 @@ public class ClassContext {
 			        		tree.add(loc);
 			        	}
 			        	for(Location loc : tree) {
-			        		System.out.println("\n Pre: " + dataflow.getFactAfterLocation(loc));
+			        		UnconditionalValueDerefSet factAfterLocation = dataflow.getFactAfterLocation(loc);
+							System.out.println("\n Pre: " + factAfterLocation);
+							System.out.println("Vna: " + vnd.getFactAtLocation(loc));
 			        		System.out.println("Location: " + loc);
 			        		System.out.println("Post: " + dataflow.getFactAtLocation(loc));
+			        		System.out.println("Vna: " + vnd.getFactAfterLocation(loc));
 			        		
 			        		
 			        		

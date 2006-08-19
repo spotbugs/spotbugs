@@ -193,12 +193,12 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 							}
 							phi.setFlag(flags);
 							if (RLE_DEBUG)
-								System.out.println("Creating phi node " + phi + " for " + load + " from " + myVN[0] + " x " + otherVN[0] + " in " + System.identityHashCode(this));	
+								System.out.println("Creating phi node " + phi + " for " + load + " from " + Arrays.toString(myVN) + " x " +  Arrays.toString(otherVN) + " in " + System.identityHashCode(this));	
 							changed = true;
 							e.setValue(new ValueNumber[] { phi });
 						} else {
 							if (RLE_DEBUG)
-									System.out.println("Reusing phi node : " + phi + " for " + myVN[0] + " x " + otherVN[0]+ " in " + System.identityHashCode(this));
+									System.out.println("Reusing phi node : " + phi + " for " + load + " from "+ Arrays.toString(myVN) + " x " +  Arrays.toString(otherVN)+ " in " + System.identityHashCode(this));
 							if (myVN.length != 0 || !myVN[0].equals(phi))
 								e.setValue(new ValueNumber[] { phi });
 						
