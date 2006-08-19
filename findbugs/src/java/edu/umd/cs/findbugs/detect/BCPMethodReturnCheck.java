@@ -53,7 +53,7 @@ import edu.umd.cs.findbugs.ba.bcp.PatternElement;
  * @author David Hovemeyer
  * @author Bill Pugh
  */
-public class BCPMethodReturnCheck extends ByteCodePatternDetector  {
+public @Deprecated class BCPMethodReturnCheck extends ByteCodePatternDetector  {
 	private final BugReporter bugReporter;
 
 	private static final boolean CHECK_ALL = SystemProperties.getBoolean("mrc.checkall");
