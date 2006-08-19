@@ -120,12 +120,15 @@ public class AssertionMethods implements Constants {
 					}
 
 					if (isUserAssertionMethod(className, methodName) ||
-					        // voidReturnType &&  // comment this out for now
+					        voidReturnType &&  // comment this out for now
 					        (classNameLC.indexOf("assert") >= 0 ||
 					        methodNameLC.startsWith("throw") ||
 					        methodNameLC.equals("insist")  ||
-					        methodNameLC.equals("usage")  ||methodNameLC.indexOf("assert") >= 0 || methodNameLC.indexOf("error") >= 0 ||
-					        methodNameLC.indexOf("abort") >= 0 || methodNameLC.indexOf("check") >= 0 ||
+					        methodNameLC.equals("usage")  
+					        ||methodNameLC.indexOf("assert") >= 0 
+					        || methodNameLC.indexOf("error") >= 0 ||
+					        methodNameLC.indexOf("abort") >= 0 
+					        || methodNameLC.indexOf("check") >= 0 ||
 					        methodNameLC.indexOf("failed") >= 0)) {
 						assertionMethodRefSet.set(i);
 						if (DEBUG) {

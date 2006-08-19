@@ -154,20 +154,32 @@ public class UnconditionalValueDerefAnalysis extends
 			BasicBlock basicBlock, UnconditionalValueDerefSet fact)
 			throws DataflowAnalysisException {
 		
+		if (fact.isTop()) return;
+		Location location = new Location(handle, basicBlock);
+		
 		// If this is a call to an assertion method,
 		// change the dataflow value to be TOP.
 		// We don't want to report future derefs that would
 		// be guaranteed only if the assertion methods
 		// returns normally.
-		if (isAssertion(handle) || handle.getInstruction() instanceof ATHROW) {
+		if (isAssertion(handle) ) {
+			if (DEBUG) System.out.println("MAKING BOTTOM0 AT: " + location);
+			fact.setIsBottom();
+			return;
+		}
+		
+		if (handle.getInstruction() instanceof ATHROW) {
+			if (DEBUG) System.out.println("MAKING TOP0 AT: " + location);
 			makeFactTop(fact);
 			return;
 		}
 
+	
+		
 		// Get value number frame
-		Location location = new Location(handle, basicBlock);
 		ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
 		if (!vnaFrame.isValid()) {
+			if (DEBUG) System.out.println("MAKING TOP1 AT: " + location);
 			// Probably dead code.
 			// Assume this location can't be reached.
 			makeFactTop(fact);
@@ -189,6 +201,8 @@ public class UnconditionalValueDerefAnalysis extends
 
 		// Check to see if an instance value is dereferenced here
 		checkInstance(location, vnaFrame, fact);
+		if (DEBUG && fact.isTop()) System.out.println("MAKING TOP2 At: " + location);
+		
 	}
 
 	/**
@@ -647,6 +661,8 @@ public class UnconditionalValueDerefAnalysis extends
 						if (targetVN.hasFlag(ValueNumber.PHI_NODE) && fact.isUnconditionallyDereferenced(targetVN)
 								&& !fact.isUnconditionallyDereferenced(blockVN)) {
 							//  Block VN is also dereferenced unconditionally.
+							AvailableLoad targetLoad = targetValueNumberFrame.getLoad(targetVN);
+							if (!load.equals(targetLoad)) continue;
 							if (DEBUG) {
 								System.out.println("** Copy vn derefs for " + load +" from " + targetVN + 
 										" --> " + blockVN);
