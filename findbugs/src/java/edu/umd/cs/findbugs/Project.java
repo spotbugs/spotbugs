@@ -418,6 +418,8 @@ public class Project implements XMLWriteable {
 	 * or by the <code>"Class-Path"</code> attribute of any directly or
 	 * indirectly referenced jar.  The referenced jar files that exist
 	 * are the list of implicit classpath entries.
+	 * 
+	 * @deprecated FindBugs2 and ClassPathBuilder take care of this automatically
 	 */
 	public List<String> getImplicitClasspathEntryList() {
 		final LinkedList<String> implicitClasspath = new LinkedList<String>();
