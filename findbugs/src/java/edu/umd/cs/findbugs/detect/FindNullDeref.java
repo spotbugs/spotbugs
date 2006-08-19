@@ -946,8 +946,11 @@ public class FindNullDeref
 						classContext.getJavaClass().getSourceFileName(),
 						loc.getHandle());
 			if (sourceLineAnnotation == null) continue;
-			if (!knownNull.get(sourceLineAnnotation.getStartLine())) {
-				knownNull.set(sourceLineAnnotation.getStartLine());
+			int startLine = sourceLineAnnotation.getStartLine();
+			if (startLine == -1) 
+				knownNullLocations.add(sourceLineAnnotation);
+			else if (!knownNull.get(startLine)) {
+				knownNull.set(startLine);
 				knownNullLocations.add(sourceLineAnnotation);
 			}
 		}
