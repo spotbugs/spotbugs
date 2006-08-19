@@ -119,20 +119,25 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				
 				
 				if (isUnconditionalThrower == null) {
-					ClassContext classContext = currentAnalysisContext.getClassContext(javaClass);
-					BitSet bytecodeSet = classContext.getBytecodeSet(method);
-					if (bytecodeSet == null) continue;
-				
-					if (DEBUG) System.out.println("\tChecking " + xMethod);
-					isUnconditionalThrower = Boolean.valueOf(!bytecodeSet.intersects(RETURN_OPCODE_SET));
-					if (DEBUG && isUnconditionalThrower) {
-						System.out.println("Return opcode set: " + RETURN_OPCODE_SET);
-						System.out.println("Code opcode set: " + bytecodeSet);
-						
-						
+					isUnconditionalThrower = Boolean.FALSE;
+					try {
+						ClassContext classContext = currentAnalysisContext.getClassContext(javaClass);
+						BitSet bytecodeSet = classContext.getBytecodeSet(method);
+						if (bytecodeSet != null) {
+
+							if (DEBUG) System.out.println("\tChecking " + xMethod);
+							isUnconditionalThrower = Boolean.valueOf(!bytecodeSet.intersects(RETURN_OPCODE_SET));
+							if (DEBUG && isUnconditionalThrower) {
+								System.out.println("Return opcode set: " + RETURN_OPCODE_SET);
+								System.out.println("Code opcode set: " + bytecodeSet);
+							}
+						}
+					} catch (Exception e) {
+						// ignore it
 					}
+
 					cachedResults.put(xMethod, isUnconditionalThrower);
-					
+
 				}
 				if (false && isUnconditionalThrower.booleanValue()) {
 					ClassContext classContext = analysisContext.getClassContext(javaClass);
