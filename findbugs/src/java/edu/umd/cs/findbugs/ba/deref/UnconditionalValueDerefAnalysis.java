@@ -186,6 +186,7 @@ public class UnconditionalValueDerefAnalysis extends
 			return;
 		}
 		
+
 		// Check for calls to a method that unconditionally dereferences
 		// a parameter.  Mark any such arguments as derefs.
 		if (CHECK_CALLS && handle.getInstruction() instanceof InvokeInstruction) {
@@ -201,6 +202,9 @@ public class UnconditionalValueDerefAnalysis extends
 
 		// Check to see if an instance value is dereferenced here
 		checkInstance(location, vnaFrame, fact);
+		
+		fact.cleanDerefSet(location, vnaFrame);
+
 		if (DEBUG && fact.isTop()) System.out.println("MAKING TOP2 At: " + location);
 		
 	}
@@ -632,7 +636,7 @@ public class UnconditionalValueDerefAnalysis extends
 				System.out.println("** Block : " + blockValueNumberFrame);
 				System.out.println("** Target: " + targetValueNumberFrame);
 			}
-
+			fact.cleanDerefSet(null, blockValueNumberFrame);
 			for (int i = 0; i < blockValueNumberFrame.getNumSlots(); i++) {
 				ValueNumber blockVN = blockValueNumberFrame.getValue(i);
 				ValueNumber targetVN = targetValueNumberFrame.getValue(i);
@@ -677,6 +681,7 @@ public class UnconditionalValueDerefAnalysis extends
 
 			}
 		}
+		fact.cleanDerefSet(null, blockValueNumberFrame);
 		return fact;
 	}
 
