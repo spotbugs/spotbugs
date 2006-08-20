@@ -19,6 +19,13 @@ public class GuaranteedDereferenceInteractionWithAssertionMethods {
 		return x.hashCode();
 	}
 
+	int falsePositive2(Object x) {
+		if (x == null) 
+			reportError();
+		return x.hashCode();
+		
+		
+	}
 	public void checkForError() {
 
 	}
