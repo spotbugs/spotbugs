@@ -203,7 +203,7 @@ public class UnconditionalValueDerefAnalysis extends
 		// Check to see if an instance value is dereferenced here
 		checkInstance(location, vnaFrame, fact);
 		
-		fact.cleanDerefSet(location, vnaFrame);
+		if (false) fact.cleanDerefSet(location, vnaFrame);
 
 		if (DEBUG && fact.isTop()) System.out.println("MAKING TOP2 At: " + location);
 		
@@ -561,7 +561,7 @@ public class UnconditionalValueDerefAnalysis extends
 		boolean sourceIsTopOfLoop = edge.sourceIsTopOfLoop(ClassContext.getLoopExitBranches(methodGen));
 		if (sourceIsTopOfLoop && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)
 			isBackEdge = true;
-		if (false && DEBUG && (edge.getType() == EdgeTypes.IFCMP_EDGE || sourceIsTopOfLoop)) {
+		if (false && (edge.getType() == EdgeTypes.IFCMP_EDGE || sourceIsTopOfLoop)) {
 			System.out.println("Meet into " + edge);
 			System.out.println("  foo2: " + sourceIsTopOfLoop);
 			System.out.println("  getType: " + edge.getType() );
@@ -619,7 +619,7 @@ public class UnconditionalValueDerefAnalysis extends
 	 * @param edge edge to check for merge input values
 	 * @return possibly-modified dataflow value
 	 */
-	private UnconditionalValueDerefSet propagateDerefSetsToMergeInputValues(
+	private  UnconditionalValueDerefSet propagateDerefSetsToMergeInputValues(
 			UnconditionalValueDerefSet fact, Edge edge) {
 		
 		ValueNumberFrame blockValueNumberFrame =
@@ -636,7 +636,6 @@ public class UnconditionalValueDerefAnalysis extends
 				System.out.println("** Block : " + blockValueNumberFrame);
 				System.out.println("** Target: " + targetValueNumberFrame);
 			}
-			fact.cleanDerefSet(null, blockValueNumberFrame);
 			for (int i = 0; i < blockValueNumberFrame.getNumSlots(); i++) {
 				ValueNumber blockVN = blockValueNumberFrame.getValue(i);
 				ValueNumber targetVN = targetValueNumberFrame.getValue(i);
@@ -652,6 +651,9 @@ public class UnconditionalValueDerefAnalysis extends
 									" --> " + blockVN.getNumber());
 						}
 						fact.setDerefSet(blockVN, fact.getUnconditionalDerefLocationSet(targetVN));
+						if (DEBUG) {
+							System.out.println("Result is: " + fact);
+						}
 					}
 				}
 			} // for all slots
@@ -680,6 +682,11 @@ public class UnconditionalValueDerefAnalysis extends
 						}
 
 			}
+		}
+		if (DEBUG) {
+			System.out.println("Target VNF: " + targetValueNumberFrame);
+			System.out.println("Block VNF: " + blockValueNumberFrame);
+			System.out.println("fact: " + fact);
 		}
 		fact.cleanDerefSet(null, blockValueNumberFrame);
 		return fact;

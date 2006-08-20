@@ -153,6 +153,8 @@ public class UnconditionalValueDerefSet {
 	public void mergeWith(UnconditionalValueDerefSet fact, ValueNumberFactory valueNumberFactory) {
 		if (UnconditionalValueDerefAnalysis.DEBUG) {
 			System.out.println("merge update of # " + System.identityHashCode(this) + " from " + System.identityHashCode(fact));
+			System.out.println("update " + this);
+			System.out.println("with " + fact);
 		}
 		// Compute the intersection of the unconditionally dereferenced value sets
 		valueNumberSet.and(fact.valueNumberSet);
@@ -279,9 +281,13 @@ public class UnconditionalValueDerefSet {
 	}
 	
 	public void retainOnlyTheseValueNumbers(Set<ValueNumber> valueNumbers) {
-		for(Map.Entry<ValueNumber, Set<Location>> e : derefLocationSetMap.entrySet())
-				if (!valueNumbers.contains(e.getKey())) e.getValue().clear();
-		
+		for(Iterator<ValueNumber> i = derefLocationSetMap.keySet().iterator(); i.hasNext(); ) {
+			ValueNumber v = i.next();
+			if (!valueNumbers.contains(v)) {
+				i.remove();
+				valueNumberSet.clear(v.getNumber());
+			}
+		}
 	}
 	/**
 	 * Get the set of Locations where given value is guaranteed to be dereferenced.
@@ -346,6 +352,8 @@ public class UnconditionalValueDerefSet {
 			buf.append('}');
 		}
 		buf.append(']');
+		buf.append(" # ");
+		buf.append(System.identityHashCode(this));
 		return buf.toString();
 	}
 
@@ -364,7 +372,7 @@ public class UnconditionalValueDerefSet {
 	 * @param vnaFrame
 	 */
 	public  void cleanDerefSet(@CheckForNull Location location, ValueNumberFrame vnaFrame) {
-		if (true) return;
+
 		Set<ValueNumber> valueNumbers = new HashSet<ValueNumber>(vnaFrame.allSlots());
 		
 		valueNumbers.addAll(vnaFrame.valueNumbersForLoads());
@@ -380,6 +388,7 @@ public class UnconditionalValueDerefSet {
 			}
 		
 		}
+		if (false) return;
 		retainOnlyTheseValueNumbers(valueNumbers);
 	}
 }
