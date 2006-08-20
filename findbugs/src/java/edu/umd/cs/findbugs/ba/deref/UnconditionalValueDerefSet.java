@@ -364,6 +364,7 @@ public class UnconditionalValueDerefSet {
 	 * @param vnaFrame
 	 */
 	public  void cleanDerefSet(@CheckForNull Location location, ValueNumberFrame vnaFrame) {
+		if (true) return;
 		Set<ValueNumber> valueNumbers = new HashSet<ValueNumber>(vnaFrame.allSlots());
 		
 		valueNumbers.addAll(vnaFrame.valueNumbersForLoads());
