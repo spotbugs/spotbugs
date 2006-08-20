@@ -36,9 +36,11 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
+import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -77,6 +79,7 @@ public class NullDerefAndRedundantComparisonFinder {
 	private IsNullValueDataflow invDataflow;
 	private ValueNumberDataflow vnaDataflow;
 	private UnconditionalValueDerefDataflow uvdDataflow;
+	private AssertionMethods assertionMethods;
 
 	static {
 		if (DEBUG) System.out.println("fnd.debug enabled");
@@ -105,6 +108,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		this.definitelySameBranchSet = new BitSet();
 		this.definitelyDifferentBranchSet = new BitSet();
 		this.undeterminedBranchSet = new BitSet();
+		this.assertionMethods = classContext.getAssertionMethods();
 	}
 	
 	public void execute() throws DataflowAnalysisException, CFGBuilderException {
@@ -248,7 +252,16 @@ public class NullDerefAndRedundantComparisonFinder {
 			if (DEBUG_DEREFS) {
 				System.out.println("At location " + location);
 			}
-			
+			{
+				Instruction in = location.getHandle().getInstruction();
+				if (in instanceof InvokeInstruction &&assertionMethods.isAssertionCall((InvokeInstruction) in) ) {
+					if (DEBUG_DEREFS) 
+						System.out.println("Skipping because it is an assertion method ");
+					continue;
+				}
+				
+			}
+
 			checkForUnconditionallyDereferencedNullValues(
 					location,
 					bugLocationMap,
@@ -273,6 +286,15 @@ public class NullDerefAndRedundantComparisonFinder {
 			IsNullValueFrame invFact = invDataflow.getFactOnEdge(edge);
 			UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
 			Location location = Location.getLastLocation(edge.getSource());
+			if (location != null) {
+				Instruction in = location.getHandle().getInstruction();
+				if (in instanceof InvokeInstruction &&assertionMethods.isAssertionCall((InvokeInstruction) in) ) {
+					if (DEBUG_DEREFS) 
+						System.out.println("Skipping because it is an assertion method ");
+					continue;
+				}
+				
+			}
 			checkForUnconditionallyDereferencedNullValues(
 					location,
 					bugLocationMap,
