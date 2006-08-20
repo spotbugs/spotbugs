@@ -568,9 +568,11 @@ public class NullDerefAndRedundantComparisonFinder {
 		if (!vnaFrame.isValid())
 			return;
 		ValueNumber valueNumber = vnaFrame.getInstance(exceptionThrower, classContext.getConstantPoolGen());
+		Location location = new Location(exceptionThrowerHandle, basicBlock);
+		if (DEBUG) System.out.println("Warning: VN " + valueNumber + " invf: " + frame + " @ " + location);
 		
 		// Issue a warning
-		collector.foundNullDeref(classContext, new Location(exceptionThrowerHandle, basicBlock), valueNumber, refValue, vnaFrame);
+		collector.foundNullDeref(classContext, location, valueNumber, refValue, vnaFrame);
 	}
 
 	private static int getLineNumber(Method method, InstructionHandle handle) {
