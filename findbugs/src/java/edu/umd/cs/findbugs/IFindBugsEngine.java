@@ -234,4 +234,11 @@ public interface IFindBugsEngine {
 	 */
 	public void setScanNestedArchives(boolean scanNestedArchives);
 
+	/**
+	 * Set the DetectorFactoryCollection from which plugins/detectors 
+	 * may be accessed.
+	 * 
+	 * @param detectorFactoryCollection the DetectorFactoryCollection
+	 */
+	public void setDetectorFactoryCollection(DetectorFactoryCollection detectorFactoryCollection);
 }

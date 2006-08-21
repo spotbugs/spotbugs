@@ -50,7 +50,7 @@ public class DetectorFactoryCollection {
 	private static DetectorFactoryCollection theInstance;
 	private static final Object lock = new Object();
 
-	private static URL[] pluginList;
+	private URL[] pluginList;
 
 	/**
 	 * Constructor.
@@ -67,9 +67,18 @@ public class DetectorFactoryCollection {
 	 *
 	 * @param pluginList list of plugin Jar files to load
 	 */
-	public static void setPluginList(URL[] pluginList) {
-		DetectorFactoryCollection.pluginList = new URL[pluginList.length];
-		System.arraycopy(pluginList, 0, DetectorFactoryCollection.pluginList, 0, pluginList.length);
+	public void setPluginList(URL[] pluginList) {
+		this.pluginList = new URL[pluginList.length];
+		System.arraycopy(pluginList, 0, this.pluginList, 0, pluginList.length);
+	}
+
+	/**
+	 * Set the instance that should be retured as the singleton instance.
+	 * 
+	 * @param instance the singleton instance to be set
+	 */
+	static void setInstance(DetectorFactoryCollection instance) {
+		theInstance = instance;
 	}
 
 	/**
@@ -142,7 +151,7 @@ public class DetectorFactoryCollection {
 		factoriesByDetectorClassName.put(factory.getFullName(), factory);
 	}
 
-	private static void determinePlugins() {
+	private void determinePlugins() {
 		if (pluginList != null)
 			return;
 		String homeDir = FindBugs.getHome();

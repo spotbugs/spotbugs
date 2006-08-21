@@ -657,20 +657,11 @@ public class FindBugs2 implements IFindBugsEngine {
 	}
 
 	public static void main(String[] args) throws Exception {
-		if (SystemProperties.getProperty("findbugs.home") == null) {
-			throw new IllegalArgumentException("findbugs.home property must be set!");
-		}
-
-		// Create DetectorFactoryCollection and load plugins
-		DetectorFactoryCollection detectorFactoryCollection = new DetectorFactoryCollection();
-		detectorFactoryCollection.loadPlugins();
-		
 		// Create FindBugs2 engine
 		FindBugs2 findBugs = new FindBugs2();
-		findBugs.setDetectorFactoryCollection(detectorFactoryCollection);
 		
 		// Parse command line and configure the engine
-		TextUICommandLine commandLine = new TextUICommandLine(detectorFactoryCollection);
+		TextUICommandLine commandLine = new TextUICommandLine();
 		FindBugs.processCommandLine(commandLine, args, findBugs);
 		
 		// Away we go!

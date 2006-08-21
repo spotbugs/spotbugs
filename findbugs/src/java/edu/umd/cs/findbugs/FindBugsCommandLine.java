@@ -34,6 +34,8 @@ import edu.umd.cs.findbugs.config.CommandLine;
  * @author David Hovemeyer
  */
 public abstract class FindBugsCommandLine extends CommandLine {
+	private DetectorFactoryCollection detectorFactoryCollection;
+
 	/**
 	 * Analysis settings to configure the analysis effort.
 	 */
@@ -106,7 +108,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
 				pluginList.add(new File(tok.nextToken()).toURL());
 			}
 
-			DetectorFactoryCollection.setPluginList(pluginList.toArray(new URL[pluginList.size()]));
+			getDetectorFactoryCollection().setPluginList(pluginList.toArray(new URL[pluginList.size()]));
 		} else if (option.equals("-project")) {
 			String projectFile = argument;
 
@@ -124,5 +126,22 @@ public abstract class FindBugsCommandLine extends CommandLine {
 		} else {
 			throw new IllegalStateException();
 		}
+	}
+
+	/**
+	 * Get the DetectorFactoryCollection configured by this command line,
+	 * creating it if required.
+	 * 
+	 * @return the DetectorFactoryCollection
+	 */
+	public DetectorFactoryCollection getDetectorFactoryCollection() {
+		if (detectorFactoryCollection == null) {
+			detectorFactoryCollection = new DetectorFactoryCollection();
+			detectorFactoryCollection.loadPlugins();
+			
+			// FIXME: the DetectorFactoryCollection should not be a singleton.
+			DetectorFactoryCollection.setInstance(detectorFactoryCollection);
+		}
+		return detectorFactoryCollection;
 	}
 }

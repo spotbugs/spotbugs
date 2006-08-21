@@ -462,9 +462,9 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	}
 
 	private ErrorCountingBugReporter bugReporter;
-//	private BugCollectionBugReporter bugCollectionBugReporter;
 	private boolean relaxedReportingMode;
 	private Project project;
+	private DetectorFactoryCollection detectorFactoryCollection;
 	private UserPreferences userPreferences;
 	private List<IClassObserver> classObserverList;
 	private ExecutionPlan executionPlan;
@@ -524,6 +524,13 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 
 		setBugReporter(bugReporter);
 		setProject(project);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setDetectorFactoryCollection(edu.umd.cs.findbugs.DetectorFactoryCollection)
+	 */
+	public void setDetectorFactoryCollection(DetectorFactoryCollection detectorFactoryCollection) {
+		this.detectorFactoryCollection = detectorFactoryCollection;
 	}
 	
 	/* (non-Javadoc)
@@ -912,7 +919,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		});
 
 		// Add plugins
-		for (Iterator<Plugin> i = DetectorFactoryCollection.instance().pluginIterator(); i.hasNext();) {
+		for (Iterator<Plugin> i = detectorFactoryCollection.pluginIterator(); i.hasNext();) {
 			Plugin plugin = i.next();
 			executionPlan.addPlugin(plugin);
 		}
@@ -1386,7 +1393,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 
 	public static void main(String[] argv) {
 		try {
-			TextUICommandLine commandLine = new TextUICommandLine(DetectorFactoryCollection.instance());
+			TextUICommandLine commandLine = new TextUICommandLine();
 			FindBugs findBugs = createEngine(commandLine, argv);
 
 			try {
@@ -1462,7 +1469,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		if (project.getFileCount() == 0) {
 			showHelp(commandLine);
 		}
-
+		
 		commandLine.configureEngine(findBugs);
 	}
 
@@ -1518,7 +1525,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	 * Print command line options synopses to stdout.
 	 */
 	public static void showCommandLineOptions() {
-		showCommandLineOptions(new TextUICommandLine(DetectorFactoryCollection.instance()));
+		showCommandLineOptions(new TextUICommandLine());
 	}
 	
 	public static void showCommandLineOptions(TextUICommandLine commandLine) {
