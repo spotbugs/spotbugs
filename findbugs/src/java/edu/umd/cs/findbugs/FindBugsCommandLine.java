@@ -137,10 +137,11 @@ public abstract class FindBugsCommandLine extends CommandLine {
 	public DetectorFactoryCollection getDetectorFactoryCollection() {
 		if (detectorFactoryCollection == null) {
 			detectorFactoryCollection = new DetectorFactoryCollection();
-			detectorFactoryCollection.loadPlugins();
 			
 			// FIXME: the DetectorFactoryCollection should not be a singleton.
 			DetectorFactoryCollection.setInstance(detectorFactoryCollection);
+			
+			// Note that plugins aren't loaded yet.
 		}
 		return detectorFactoryCollection;
 	}

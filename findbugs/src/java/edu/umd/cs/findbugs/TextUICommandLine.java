@@ -363,6 +363,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	}
 
 	public void configureEngine(IFindBugsEngine findBugs) throws IOException, FilterException {
+		// Load plugins
+		getDetectorFactoryCollection().loadPlugins();
+		
 		// Set the DetectorFactoryCollection (that has been configured
 		// by command line parsing)
 		findBugs.setDetectorFactoryCollection(getDetectorFactoryCollection());

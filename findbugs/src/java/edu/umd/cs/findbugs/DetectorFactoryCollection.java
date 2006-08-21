@@ -78,7 +78,12 @@ public class DetectorFactoryCollection {
 	 * @param instance the singleton instance to be set
 	 */
 	static void setInstance(DetectorFactoryCollection instance) {
-		theInstance = instance;
+		synchronized (lock) {
+			if (theInstance != null) {
+				throw new IllegalStateException();
+			}
+			theInstance = instance;
+		}
 	}
 
 	/**
