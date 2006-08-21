@@ -12,10 +12,8 @@
       <library name="bcel.jar"/>
       <library name="dom4j-full.jar"/>
       <library name="findbugs.jar"/>
-      <library name="asm-3.0_RC1.jar">
-      </library>
-      <library name="asm-tree-3.0_RC1.jar">
-      </library>
+      <library name="asm-3.0_RC1.jar"/>
+      <library name="asm-tree-3.0_RC1.jar"/>
    </runtime>
 
    <requires>
@@ -23,7 +21,7 @@
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.ide"/>
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.eclipse.jdt.ui"/>
@@ -89,6 +87,22 @@
             value="true">
       </persistent>
    </extension>
+
+   <!-- specify custom icon for findbugsMarker -->
+   <extension point="org.eclipse.ui.editors.annotationTypes">
+      <type
+         name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotation"
+         super="org.eclipse.ui.workbench.texteditor.warning"
+         markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
+  </extension> 
+  <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
+      <specification
+         annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotation"
+         label="fbWarning"
+         icon="icons/buggy-tiny.png"
+         quickFixIcon="icons/buggy-tiny.png"/>
+   </extension>
+
    <extension
          point="org.eclipse.ui.popupMenus">
       <!-- IOpenable objects in the JDT core are projects, folders, packages, 
