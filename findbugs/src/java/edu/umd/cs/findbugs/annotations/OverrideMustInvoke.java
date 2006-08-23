@@ -1,6 +1,6 @@
 /*
  * FindBugs - Find Bugs in Java programs
- * Copyright (C) 2005, University of Maryland
+ * Copyright (C) 2005-2006, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,14 +26,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to annotation a method that, if overridded, must (or should) be invoked
+ * Used to annotate a method that, if overridden, must (or should) be invoked
  * by an invocation on super in the overriding method. Examples
  * of such methods include finalize() and clone().
  * 
  * The argument to the method indicates when the super invocation should
  * occur: at any time, at the beginning of the overriding method, or at the end
  * of the overriding method.
- *
+ * @see edu.umd.cs.findbugs.annotations.When
  **/
 @Documented
 @Target({ElementType.METHOD })

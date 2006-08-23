@@ -1,6 +1,6 @@
 /*
  * Bytecode Analysis Framework
- * Copyright (C) 2005 University of Maryland
+ * Copyright (C) 2005-2006 University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to indicate that the nullness of element is unknown, or my vary in
+ * Used to indicate that the nullness of element is unknown, or may vary in
  * unknown ways in subclasses.
  **/
 @Documented
