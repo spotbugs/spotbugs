@@ -181,6 +181,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 
 	@Override
          public void visit(Method obj) {
+		if (DEBUG) System.out.println("Checking " + getClassName() + "." + obj.getName());
 		if (getMethodName().equals("<init>")
 			&& (obj.isPublic() 
 			    || obj.isProtected() ))
@@ -271,10 +272,12 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		if (seen == GETFIELD || seen == INVOKEVIRTUAL 
 				|| seen == INVOKEINTERFACE
 				|| seen == INVOKESPECIAL || seen == PUTFIELD 
-				|| seen == IALOAD
-				|| seen == IASTORE)  {
+				|| seen == IALOAD || seen == AALOAD || seen == BALOAD || seen == CALOAD || seen == SALOAD
+				|| seen == IASTORE || seen == AASTORE  || seen == BASTORE || seen == CASTORE || seen == SASTORE
+				|| seen == ARRAYLENGTH)  {
 			int pos = 0;
 			switch(seen) {
+			case ARRAYLENGTH:
 			case GETFIELD :
 				pos = 0;
 				break;
@@ -286,14 +289,25 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				break;
 			case PUTFIELD :
 			case IALOAD :
-			case IASTORE :
+			case AALOAD:
+			case BALOAD:
+			case CALOAD:
+			case SALOAD:
 				pos = 1;
+				break;
+			case IASTORE :
+			case AASTORE:
+			case BASTORE:
+			case CASTORE:
+			case SASTORE:
+				pos = 2;
 				break;
 			default: throw new RuntimeException("Impossible");
 			}
-			if (opcodeStack.getStackDepth() > pos) {
+			if (opcodeStack.getStackDepth() >= pos) {
 			OpcodeStack.Item item = opcodeStack.getStackItem(pos);
 			XField f = item.getXField();
+			if (DEBUG) System.out.println("RRR: " + f + " " + nullTested.contains(f)  + " " + writtenInConstructorFields.contains(f) + " " +  writtenNonNullFields.contains(f));
 			if (f != null && !nullTested.contains(f) 
 					&& ! (writtenInConstructorFields.contains(f)
 						 && writtenNonNullFields.contains(f))
@@ -420,6 +434,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			if (DEBUG) {
 				System.out.println("Null only: " + f);
 				System.out.println("   : " + assumedNonNull.containsKey(f));
+				System.out.println("   : " + f.isResolved());
 			}
 			if (!f.isResolved()) continue;
 			if (fieldsOfSerializableOrNativeClassed.contains(f)) continue;
