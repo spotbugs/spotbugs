@@ -25,6 +25,7 @@ public abstract class AbstractClassMember implements ClassMember {
 	private final String name;
 	private final String signature;
 	private final int accessFlags;
+	private boolean resolved;
 	private int cachedHashCode = 0;
 	static public int slashCountClass = 0;
 	static public int dottedCountClass = 0;
@@ -105,6 +106,12 @@ public abstract class AbstractClassMember implements ClassMember {
 		return signature.compareTo(other.getSignature());
 	}
 
+	public boolean isResolved() {
+		return resolved;
+	}
+	  void markAsResolved() {
+		 resolved = true;
+	 }
 	@Override
          public int hashCode() {
 		if (cachedHashCode == 0) {

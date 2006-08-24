@@ -19,23 +19,18 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import java.util.*;
+
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.Method;
 
-public class Methods extends PreorderVisitor implements Detector, NonReportingDetector {
-
-	private static Set<XMethod> methods = new HashSet<XMethod>();
-
-	private static Set<XMethod> methodsView = Collections
-			.unmodifiableSet(methods);
-
-	public static Set<XMethod> getMethods() {
-		return methodsView;
-	}
+public class Methods extends PreorderVisitor implements Detector,
+		NonReportingDetector {
+	
+	XFactory xFactory = AnalysisContext.currentXFactory();
 
 	public Methods(BugReporter bugReporter) {
 	}
@@ -45,8 +40,13 @@ public class Methods extends PreorderVisitor implements Detector, NonReportingDe
 	}
 
 	@Override
-         public void visit(Method obj) {
-		methods.add(XFactory.createXMethod(this));
+	public void visit(Method obj) {
+		xFactory.createXMethod(this);
+	}
+
+	@Override
+	public void visit(Field obj) {
+		xFactory.createXField(this);
 	}
 
 	public void report() {

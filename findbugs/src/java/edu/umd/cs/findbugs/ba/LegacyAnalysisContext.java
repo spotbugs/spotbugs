@@ -20,16 +20,10 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.io.IOException;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
@@ -44,6 +38,7 @@ import edu.umd.cs.findbugs.util.MapCache;
  * @author David Hovemeyer
  */
 public class LegacyAnalysisContext extends AnalysisContext {
+	
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
 	private MapCache<JavaClass, ClassContext> classContextCache;
@@ -79,7 +74,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	}
 	
 	private JCIPAnnotationDatabase jcipAnnotationDatabase;
-
+	
 	@Override
 	public JCIPAnnotationDatabase getJCIPAnnotationDatabase() {
 		return jcipAnnotationDatabase;
@@ -267,4 +262,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		}
 		return innerClassAccessMap;
 	}
+
+			
+
 }

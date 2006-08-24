@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
+import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.detect.NoteAnnotationRetention;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MapCache;
@@ -60,6 +61,8 @@ import edu.umd.cs.findbugs.util.MapCache;
  * </p>
  *
  * @author David Hovemeyer
+ * @see IAnalysisCache
+ * @see Global
  */
 @NotThreadSafe
 public abstract class AnalysisContext {
@@ -74,6 +77,14 @@ public abstract class AnalysisContext {
 
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
 		= new InheritableThreadLocal<AnalysisContext>();
+	
+	private static InheritableThreadLocal<XFactory> currentXFactory
+	= new InheritableThreadLocal<XFactory>() {
+		@Override
+		public XFactory initialValue() {
+			return new XFactory();
+		}
+	};
 	
 	public abstract NullnessAnnotationDatabase getNullnessAnnotationDatabase();
 	public abstract CheckReturnAnnotationDatabase getCheckReturnAnnotationDatabase();
@@ -129,6 +140,9 @@ public abstract class AnalysisContext {
 		return currentAnalysisContext.get();
 	}
 
+	static public XFactory currentXFactory() {
+		return currentXFactory.get();
+	}
 	/**
 	 * file a ClassNotFoundException with the lookupFailureCallback
 	 * @see #getLookupFailureCallback()
@@ -514,6 +528,7 @@ public abstract class AnalysisContext {
 	public static void setCurrentAnalysisContext(AnalysisContext analysisContext) {
 		currentAnalysisContext.set(analysisContext);
 	}
+	
 }
 
 // vim:ts=4

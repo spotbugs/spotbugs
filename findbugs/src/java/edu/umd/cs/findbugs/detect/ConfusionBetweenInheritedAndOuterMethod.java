@@ -76,10 +76,11 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
          if (seen != INVOKEVIRTUAL) return;
          if (!getClassName().equals(getClassConstantOperand())) return;
          XMethod invokedMethod = XFactory.createXMethod(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false);
-         if (Methods.getMethods().contains(invokedMethod)) {
-
+         if (invokedMethod.getClassName().equals(getDottedClassConstantOperand())) {
+        	 // method is not inherited
         	 return;
          }
+         // method is inherited
          String possibleTargetClass = getDottedClassName();
          String superClassName = getDottedSuperclassName();
          while(true) {
@@ -88,8 +89,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 			possibleTargetClass = possibleTargetClass.substring(0,i);
 			if (possibleTargetClass.equals(superClassName)) break;
         	 XMethod alternativeMethod = XFactory.createXMethod(possibleTargetClass, getNameConstantOperand(), getSigConstantOperand(), false);
-        	 Set<XMethod> definedMethods = Methods.getMethods();
-        	 if (definedMethods.contains(alternativeMethod)) 	
+        	 if (alternativeMethod.isResolved()) 	
         		 bugReporter.reportBug(new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				          .addMethod(invokedMethod).describe("METHOD_INHERITED")

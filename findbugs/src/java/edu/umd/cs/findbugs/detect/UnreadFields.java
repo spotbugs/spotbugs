@@ -21,6 +21,9 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 import java.util.*;
@@ -42,31 +45,30 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		SourceLineAnnotation sourceLine;
 		}
 
-	Map<FieldAnnotation,HashSet<ProgramPoint> >
-		assumedNonNull = new HashMap<FieldAnnotation,HashSet<ProgramPoint>>();
-	Set<FieldAnnotation> nullTested = new HashSet<FieldAnnotation>();
-	Set<FieldAnnotation> declaredFields = new TreeSet<FieldAnnotation>();
-	Set<FieldAnnotation> fieldsOfSerializableOrNativeClassed
-	        = new HashSet<FieldAnnotation>();
-	Set<FieldAnnotation> staticFieldsReadInThisMethod = new HashSet<FieldAnnotation>();
-	Set<FieldAnnotation> allMyFields = new TreeSet<FieldAnnotation>();
-	Set<FieldAnnotation> myFields = new TreeSet<FieldAnnotation>();
-	Set<FieldAnnotation> writtenFields = new HashSet<FieldAnnotation>();
-	Set<FieldAnnotation> writtenNonNullFields = new HashSet<FieldAnnotation>();
+	Map<XField,HashSet<ProgramPoint> >
+		assumedNonNull = new HashMap<XField,HashSet<ProgramPoint>>();
+	Set<XField> nullTested = new HashSet<XField>();
+	Set<XField> declaredFields = new TreeSet<XField>();
+	Set<XField> fieldsOfSerializableOrNativeClassed
+	        = new HashSet<XField>();
+	Set<XField> staticFieldsReadInThisMethod = new HashSet<XField>();
+	Set<XField> allMyFields = new TreeSet<XField>();
+	Set<XField> myFields = new TreeSet<XField>();
+	Set<XField> writtenFields = new HashSet<XField>();
+	Set<XField> writtenNonNullFields = new HashSet<XField>();
 	
-	Set<FieldAnnotation> writtenInConstructorFields = new HashSet<FieldAnnotation>();
-	Set<FieldAnnotation> readFields = new HashSet<FieldAnnotation>();
-	Set<FieldAnnotation> constantFields = new HashSet<FieldAnnotation>();
-	Set<FieldAnnotation> finalFields = new HashSet<FieldAnnotation>();
+	Set<XField> writtenInConstructorFields = new HashSet<XField>();
+	Set<XField> readFields = new HashSet<XField>();
+	Set<XField> constantFields = new HashSet<XField>();
+	Set<XField> finalFields = new HashSet<XField>();
 	Set<String> needsOuterObjectInConstructor = new HashSet<String>();
-	Set<String> superReadFields = new HashSet<String>();
-	Set<String> superWrittenFields = new HashSet<String>();
 	Set<String> innerClassCannotBeStatic = new HashSet<String>();
 	boolean hasNativeMethods;
 	boolean isSerializable;
 	boolean sawSelfCallInConstructor;
 	private BugReporter bugReporter;
 	boolean publicOrProtectedConstructor;
+	private XFactory xFactory = AnalysisContext.currentXFactory();
 
 	static final int doNotConsider = ACC_PUBLIC | ACC_PROTECTED;
 
@@ -133,7 +135,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	@Override
          public void visit(Field obj) {
 		super.visit(obj);
-		FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
+		XField f = XFactory.createXField(this);
 		allMyFields.add(f);
 		int flags = obj.getAccessFlags();
 		if ((flags & doNotConsider) == 0
@@ -148,7 +150,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
          public void visit(ConstantValue obj) {
 		// ConstantValue is an attribute of a field, so the instance variables
 		// set during visitation of the Field are still valid here
-		FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
+		XField f = XFactory.createXField(this);
 		constantFields.add(f);
 	}
 
@@ -196,7 +198,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		
 		opcodeStack.mergeJumps(this);
 		if (seen == GETSTATIC) {
-			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
+			XField f = XFactory.createReferencedXField(this);
                 	staticFieldsReadInThisMethod.add(f);
 			}
 		else if (seen == INVOKESTATIC) {
@@ -204,7 +206,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			}
 		else if (seen == PUTSTATIC 
 			&& !getMethod().isStatic()) {
-			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
+			XField f = XFactory.createReferencedXField(this);
                 	if (!staticFieldsReadInThisMethod.contains(f)) {
 				int priority = LOW_PRIORITY;
 				if (!publicOrProtectedConstructor)
@@ -257,7 +259,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		if ((seen == IFNULL || seen == IFNONNULL) 
 			&& opcodeStack.getStackDepth() > 0)  {
 			OpcodeStack.Item item = opcodeStack.getStackItem(0);
-			FieldAnnotation f = item.getField();
+			XField f = item.getXField();
 			if (f != null) {
 				nullTested.add(f);
 				if (DEBUG)
@@ -291,7 +293,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			}
 			if (opcodeStack.getStackDepth() > pos) {
 			OpcodeStack.Item item = opcodeStack.getStackItem(pos);
-			FieldAnnotation f = item.getField();
+			XField f = item.getXField();
 			if (f != null && !nullTested.contains(f) 
 					&& ! (writtenInConstructorFields.contains(f)
 						 && writtenNonNullFields.contains(f))
@@ -313,15 +315,11 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		if (seen == ALOAD_1) {
 			count_aload_1++;
 		} else if (seen == GETFIELD || seen == GETSTATIC) {
-			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
+			XField f = XFactory.createReferencedXField(this);
 			if (DEBUG) System.out.println("get: " + f);
 			readFields.add(f);
-			if (getClassConstantOperand().equals(getClassName()) &&
-			        !allMyFields.contains(f)) {
-				superReadFields.add(getNameConstantOperand());
-			}
 		} else if (seen == PUTFIELD || seen == PUTSTATIC) {
-			FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
+			XField f = XFactory.createReferencedXField(this);
 			OpcodeStack.Item item = null;
 			if (opcodeStack.getStackDepth() > 0) {
 				item = opcodeStack.getStackItem(0);
@@ -343,10 +341,6 @@ public class UnreadFields extends BytecodeScanningDetector  {
 					assumedNonNull.remove(f);
 			}
 			
-			if (getClassConstantOperand().equals(getClassName()) &&
-					!allMyFields.contains(f)) {
-				superWrittenFields.add(getNameConstantOperand());
-			}
 			
 		}
 		opcodeStack.sawOpcode(this, seen);
@@ -363,31 +357,31 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	@Override
          public void report() {
 
-		TreeSet<FieldAnnotation> notInitializedInConstructors =
-		        new TreeSet<FieldAnnotation>(declaredFields);
+		TreeSet<XField> notInitializedInConstructors =
+		        new TreeSet<XField>(declaredFields);
 		notInitializedInConstructors.retainAll(readFields);
 		notInitializedInConstructors.retainAll(writtenFields);
 		notInitializedInConstructors.retainAll(assumedNonNull.keySet());
 		notInitializedInConstructors.removeAll(writtenInConstructorFields);
 		
-		TreeSet<FieldAnnotation> readOnlyFields =
-		        new TreeSet<FieldAnnotation>(declaredFields);
+		TreeSet<XField> readOnlyFields =
+		        new TreeSet<XField>(declaredFields);
 		readOnlyFields.removeAll(writtenFields);
 		readOnlyFields.retainAll(readFields);
 		
-		TreeSet<FieldAnnotation> nullOnlyFields =
-	        new TreeSet<FieldAnnotation>(declaredFields);
+		TreeSet<XField> nullOnlyFields =
+	        new TreeSet<XField>(declaredFields);
 		nullOnlyFields.removeAll(writtenNonNullFields);
 		nullOnlyFields.retainAll(readFields);
 		
-		Set<FieldAnnotation> writeOnlyFields = declaredFields;
+		Set<XField> writeOnlyFields = declaredFields;
 		writeOnlyFields.removeAll(readFields);
 
-		for (FieldAnnotation f : notInitializedInConstructors) {
-			String fieldName = f.getFieldName();
+		for (XField f : notInitializedInConstructors) {
+			String fieldName = f.getName();
 			String className = f.getClassName();
-			String fieldSignature = f.getFieldSignature();
-			if (!superWrittenFields.contains(fieldName)
+			String fieldSignature = f.getSignature();
+			if (f.isResolved()
 					&& !fieldsOfSerializableOrNativeClassed.contains(f)
 					&& (fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')
 					) {
@@ -401,11 +395,11 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		}
 
 
-		for (FieldAnnotation f : readOnlyFields) {
-			String fieldName = f.getFieldName();
+		for (XField f : readOnlyFields) {
+			String fieldName = f.getName();
 			String className = f.getClassName();
-			String fieldSignature = f.getFieldSignature();
-			if (!superWrittenFields.contains(fieldName)
+			String fieldSignature = f.getSignature();
+			if (f.isResolved()
 					&& !fieldsOfSerializableOrNativeClassed.contains(f)) {
 				int priority = NORMAL_PRIORITY;
 				if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '['))
@@ -419,15 +413,15 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			}
 
 		}
-		for (FieldAnnotation f : nullOnlyFields) {
-			String fieldName = f.getFieldName();
+		for (XField f : nullOnlyFields) {
+			String fieldName = f.getName();
 			String className = f.getClassName();
-			String fieldSignature = f.getFieldSignature();
+			String fieldSignature = f.getSignature();
 			if (DEBUG) {
 				System.out.println("Null only: " + f);
 				System.out.println("   : " + assumedNonNull.containsKey(f));
 			}
-			if (superWrittenFields.contains(fieldName)) continue;
+			if (!f.isResolved()) continue;
 			if (fieldsOfSerializableOrNativeClassed.contains(f)) continue;
 			int priority = NORMAL_PRIORITY;
 			if (assumedNonNull.containsKey(f)) {
@@ -452,8 +446,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 						.addField(f));
 		}
 
-		for (FieldAnnotation f : writeOnlyFields) {
-			String fieldName = f.getFieldName();
+		for (XField f : writeOnlyFields) {
+			String fieldName = f.getName();
 			String className = f.getClassName();
 			int lastDollar =
 					Math.max(className.lastIndexOf('$'),
@@ -466,12 +460,11 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			if (DEBUG) {
 				System.out.println("Checking write only field " + className
 						+ "." + fieldName
-						+ "\t" + superReadFields.contains(fieldName)
 						+ "\t" + constantFields.contains(f)
 						+ "\t" + f.isStatic()
 				);
 			}
-			if (superReadFields.contains(fieldName)) continue;
+			if (!f.isResolved()) continue;
 			if (dontComplainAbout.matcher(fieldName).find()) continue;
 			if (fieldName.startsWith("this$")
 					|| fieldName.startsWith("this+")) {
@@ -508,7 +501,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 								.addField(f));
 				} else if (fieldsOfSerializableOrNativeClassed.contains(f)) {
 					// ignore it
-				} else if (!writtenFields.contains(f) && !superWrittenFields.contains(fieldName))
+				} else if (!writtenFields.contains(f) && f.isResolved())
 					bugReporter.reportBug(new BugInstance(this, "UUF_UNUSED_FIELD", NORMAL_PRIORITY)
 							.addClass(className)
 							.addField(f));

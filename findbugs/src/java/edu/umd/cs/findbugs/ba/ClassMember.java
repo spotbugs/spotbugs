@@ -73,4 +73,9 @@ public interface ClassMember extends Comparable<ClassMember>, Serializable  {
 	 * Is this a private field/method?
 	 */
 	public boolean isPrivate();
+	
+	/**
+	 * Did we find a declaration of this member?
+	 */
+	public boolean isResolved();
 }

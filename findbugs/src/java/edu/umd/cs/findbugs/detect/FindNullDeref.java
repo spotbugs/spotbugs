@@ -359,7 +359,7 @@ public class FindNullDeref
 			return;
 		IsNullValue tos = frame.getTopValue();
 		if (tos.mightBeNull()) {
-			XField field = XFactory.createXField(ins.getClassName(cpg), ins.getFieldName(cpg), ins.getSignature(cpg), false, 0);
+			XField field = XFactory.createXField(ins, cpg);
 			NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase().getResolvedAnnotation(field, false);
 			if (annotation == NullnessAnnotation.NONNULL) {
 		
@@ -972,7 +972,7 @@ public class FindNullDeref
 		}
 	
 		for(SourceLineAnnotation sourceLineAnnotation : knownNullLocations)
-			bugInstance.add(sourceLineAnnotation).describe("SOURCE_LINE_NULL_VALUE");
+			bugInstance.add(sourceLineAnnotation);
 		
 
 		for (Location loc : sortedDerefLocationSet) {

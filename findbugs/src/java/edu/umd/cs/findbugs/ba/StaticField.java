@@ -19,10 +19,12 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import org.apache.bcel.Constants;
+
 public class StaticField extends AbstractField {
 	private static final long serialVersionUID = 0L;
 	public StaticField(String className, String fieldName, String fieldSig, int accessFlags) {
-		super(className, fieldName, fieldSig, accessFlags);
+		super(className, fieldName, fieldSig, accessFlags | Constants.ACC_STATIC);
 	}
 
 	public boolean isStatic() {

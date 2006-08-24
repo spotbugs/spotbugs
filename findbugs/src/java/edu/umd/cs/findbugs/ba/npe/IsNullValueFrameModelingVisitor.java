@@ -214,7 +214,8 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			return;
 		}
 
-		XField field = XFactory.createXField(obj.getClassName(cpg), obj.getFieldName(cpg), obj.getSignature(cpg), false, 0);
+		XField field = XFactory.createXField(obj, cpg);
+		
 		NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase().getResolvedAnnotation(field, false);
 		if (annotation == NullnessAnnotation.NONNULL) {
 			modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);

@@ -47,6 +47,8 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
@@ -98,6 +100,7 @@ public class OpcodeStack implements Constants2
  		private String signature;
  		private Object constValue = UNKNOWN;
 		private FieldAnnotation field;
+		private XField xfield;
  		private boolean isNull = false;
 		private int registerNumber = -1;
 		private boolean isInitialParameter = false;
@@ -171,9 +174,9 @@ public class OpcodeStack implements Constants2
 				buf.append(", ");
 				buf.append(constValue);
 				}
-			if (field!= UNKNOWN) {
+			if (xfield!= UNKNOWN) {
 				buf.append(", ");
-				buf.append(field);
+				buf.append(xfield);
 				}
 			if (isInitialParameter) {
 				buf.append(", IP");
@@ -203,8 +206,10 @@ public class OpcodeStack implements Constants2
 				m.signature = i1.signature;
 			if (equals(i1.constValue,i2.constValue))
 				m.constValue = i1.constValue;
-			if (equals(i1.field,i2.field))
+			if (equals(i1.xfield,i2.xfield)) {
 				m.field = i1.field;
+				m.xfield = i1.xfield;
+			}
 			if (i1.isNull == i2.isNull)
 				m.isNull = i1.isNull;
 			if (i1.registerNumber == i2.registerNumber)
@@ -226,12 +231,14 @@ public class OpcodeStack implements Constants2
  		public Item(String signature, FieldAnnotation f, int reg) {
 			this.signature = signature;
 			field = f;
+			xfield = XFactory.createXField(f);
 			registerNumber = reg;
  		}
  		public Item(Item it) {
 			this.signature = it.signature;
 			this.constValue = it.constValue;
 			this.field = it.field;
+			this.xfield = it.xfield;
 			this.isNull = it.isNull;
 			this.registerNumber = it.registerNumber;
 			this.couldBeZero = it.couldBeZero;
@@ -343,6 +350,9 @@ public class OpcodeStack implements Constants2
  			return field;
  		}
 
+ 		public XField getXField() {
+ 			return xfield;
+ 		}
 		/**
 		 * @param specialKind The specialKind to set.
 		 */
@@ -1233,6 +1243,7 @@ public class OpcodeStack implements Constants2
  			if (sbItem != null) {
  				 i.registerNumber = sbItem.registerNumber;
  				 i.field = sbItem.field;
+ 				 i.xfield = sbItem.xfield;
  				 i.userValue = sbItem.userValue;
  				 if (sbItem.registerNumber >= 0)
  					 setLVValue(sbItem.registerNumber, i );
@@ -1240,12 +1251,13 @@ public class OpcodeStack implements Constants2
  			return;
  		}
  		
-		if (clsName.equals("java/util/Random") && methodName.equals("nextInt") && signature.equals("()I")) {
+		if ((clsName.equals("java/util/Random") || clsName.equals("java/security/SecureRandom")) && methodName.equals("nextInt") && signature.equals("()I")) {
 			Item i = pop();
 			i.setSpecialKind(Item.RANDOM_INT);
 			push(i);
 		}
-		else if (methodName.equals("hashCode") && signature.equals("()I")) {
+		else if (seen == INVOKEVIRTUAL && methodName.equals("hashCode") && signature.equals("()I")
+				|| seen == INVOKESTATIC && clsName.equals("java/lang/System") && methodName.equals("identityHashCode") && signature.equals("(Ljava/lang/Object;)I")) {
 			Item i = pop();
 			i.setSpecialKind(Item.HASHCODE_INT);
 			push(i);

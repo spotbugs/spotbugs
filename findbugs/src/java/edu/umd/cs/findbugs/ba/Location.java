@@ -105,10 +105,12 @@ public class Location implements Comparable<Location> {
 
 	public int compareTo(Location other) {
 		int cmp = basicBlock.getId() - other.basicBlock.getId();
-		if (cmp != 0)
+		if (false && cmp != 0)
 			return cmp;
 
-		return handle.getPosition() - other.handle.getPosition();
+		int pos = handle.getPosition() - other.handle.getPosition();
+		if (pos != 0) return pos;
+		return cmp;
 	}
 
 	@Override
