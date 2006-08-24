@@ -35,10 +35,16 @@ public interface ClassMember extends Comparable<ClassMember>, Serializable  {
 	public String getName();
 
 	/**
-	 * Get the name of the class the field/method is defined in.
+	 * Get the  full name of the class the field/method is defined in.
 	 */
 	public String getClassName();
 
+	/**
+	 * Get the package name of the class the field/method is defined in.
+	 */
+	public String getPackageName();
+
+	
 	/**
 	 * Get the signature representing the field/method's type.
 	 */
