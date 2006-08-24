@@ -184,7 +184,7 @@ public  class XFactory {
 			JavaClass javaClass = Repository.lookupClass(classname);
 			while (true) {
 				javaClass = javaClass.getSuperClass();
-				if (javaClass == null) return f2;
+				if (javaClass == null) return f;
 				f2 = createXField(javaClass.getClassName(), f.getName(), f.getSignature(), f.isStatic());
 				f2 = intern(f2);
 				if (f2.isResolved()) return f2;	
@@ -192,7 +192,7 @@ public  class XFactory {
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}
-		return f2;
+		return f;
 	}
 
 	private @NonNull XMethod resolve(XMethod m) {
@@ -206,7 +206,7 @@ public  class XFactory {
 			JavaClass javaClass = Repository.lookupClass(classname);
 			while (true) {
 				javaClass = javaClass.getSuperClass();
-				if (javaClass == null) return m2;
+				if (javaClass == null) return m;
 				m2 = createXMethod(javaClass.getClassName(), m.getName(), m.getSignature(), m.isStatic());
 				m2 = intern(m2);
 				if (m2.isResolved()) return m2;	
@@ -214,7 +214,7 @@ public  class XFactory {
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}
-		return m2;
+		return m;
 	}
 
 	public static XField createXField(FieldInstruction fieldInstruction, ConstantPoolGen cpg) {

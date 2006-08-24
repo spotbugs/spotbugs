@@ -148,7 +148,10 @@ public abstract class AnalysisContext {
 	 * @see #getLookupFailureCallback()
 	 */
 	static public void reportMissingClass(ClassNotFoundException e) {
-		currentAnalysisContext().getLookupFailureCallback().reportMissingClass(e);
+		AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
+		if (currentAnalysisContext2 == null) return;
+		RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
+		if (lookupFailureCallback != null) lookupFailureCallback.reportMissingClass(e);
 	}
 	
 	/**

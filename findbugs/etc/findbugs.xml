@@ -59,6 +59,14 @@
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
 	</SplitPass>
+	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"/>
+		<Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
+	</SplitPass>
+	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.Methods"/>
+		<Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
+	</SplitPass>
 	
 	<!-- NoteUnconditionalParamDerefs should come before FindBadEqualsImplementation. -->
 	<SplitPass>
