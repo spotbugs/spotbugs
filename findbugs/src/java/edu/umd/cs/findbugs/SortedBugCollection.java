@@ -740,7 +740,7 @@ public class SortedBugCollection implements BugCollection {
 
 	public void addMissingClass(String className) {
 		if (className.startsWith("[")) {
-			assert false;
+			assert false : "Bad class name " + className;
 			return;
 		}
 		missingClassSet.add(className);
