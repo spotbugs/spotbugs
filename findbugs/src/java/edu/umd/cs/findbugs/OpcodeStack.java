@@ -231,7 +231,8 @@ public class OpcodeStack implements Constants2
  		public Item(String signature, FieldAnnotation f, int reg) {
 			this.signature = signature;
 			field = f;
-			xfield = XFactory.createXField(f);
+			if (f != null)
+				xfield = XFactory.createXField(f);
 			registerNumber = reg;
  		}
  		public Item(Item it) {
