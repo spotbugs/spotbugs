@@ -76,7 +76,7 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
          if (seen != INVOKEVIRTUAL) return;
          if (!getClassName().equals(getClassConstantOperand())) return;
          XMethod invokedMethod = XFactory.createXMethod(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false);
-         if (invokedMethod.getClassName().equals(getDottedClassConstantOperand())) {
+         if (invokedMethod.isResolved() && invokedMethod.getClassName().equals(getDottedClassConstantOperand())) {
         	 // method is not inherited
         	 return;
          }
@@ -89,12 +89,20 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 			possibleTargetClass = possibleTargetClass.substring(0,i);
 			if (possibleTargetClass.equals(superClassName)) break;
         	 XMethod alternativeMethod = XFactory.createXMethod(possibleTargetClass, getNameConstantOperand(), getSigConstantOperand(), false);
-        	 if (alternativeMethod.isResolved()) 	
-        		 bugReporter.reportBug(new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", NORMAL_PRIORITY)
+        	 if (alternativeMethod.isResolved() && alternativeMethod.getClassName().equals(possibleTargetClass)) 	{
+        		 String targetPackage = invokedMethod.getPackageName();
+        		 String alternativePackage = alternativeMethod.getPackageName();
+        		 int priority = HIGH_PRIORITY;;
+        		 if (targetPackage.equals(alternativePackage)) priority++;
+        		 if (targetPackage.startsWith("javax.swing") || targetPackage.startsWith("java.awt"))
+        			 priority++;
+        		 bugReporter.reportBug(new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
 				        .addClassAndMethod(this)
 				          .addMethod(invokedMethod).describe("METHOD_INHERITED")
 				        .addMethod(alternativeMethod).describe("METHOD_ALTERNATIVE_TARGET")
 				        .addSourceLine(this, getPC()));
+        		 break;
+        	 }
          }
          
          
