@@ -200,6 +200,8 @@ public  class XFactory {
 		if (m.isStatic()) return m;
 		XMethod m2 = m;
 		String classname = m.getClassName();
+		if (classname.charAt(0)=='[') return m;
+		
 		try {
 			JavaClass javaClass = Repository.lookupClass(classname);
 			while (true) {
