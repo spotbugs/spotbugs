@@ -103,7 +103,8 @@ public  class XFactory {
 			m = new InstanceMethod(className, methodName, methodSig, accessFlags);
 		
 		XMethod m2 = xFactory.intern(m);
-		assert m2.getAccessFlags() == m.getAccessFlags();
+		// MUSTFIX: Check this
+		// assert m2.getAccessFlags() == m.getAccessFlags();
 		return m2;
 	}
 
