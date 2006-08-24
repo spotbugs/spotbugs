@@ -1,3 +1,4 @@
+import java.security.SecureRandom;
 import java.util.Random;
 
 class BadIntegerOperations {
@@ -104,9 +105,12 @@ class BadIntegerOperations {
 
 	
 	Random r = new Random();
-
+	SecureRandom sr = new SecureRandom();
 	public int getRandomElement(int a[]) {
 		return a[r.nextInt() % a.length];
+	}
+	public int getRandomElement2(int a[]) {
+		return a[sr.nextInt() % a.length];
 	}
 
 	public static Object getHashBucket(Object a[], Object x) {
@@ -120,6 +124,21 @@ class BadIntegerOperations {
 	}
 
 
+	public int getNonNegativeRandomInt() {
+		return Math.abs(r.nextInt());
+	}
+
+	public int getNonNegativeSecureRandomInt() {
+		return Math.abs(sr.nextInt());
+	}
+	public int getNonNegativeHashCode() {
+		return Math.abs(hashCode());
+	}
+	public int getNonNegativeIdentityHashCode() {
+		return Math.abs(System.identityHashCode(this));
+	}
+
+	
 	public BadIntegerOperations() {
 	}
 }

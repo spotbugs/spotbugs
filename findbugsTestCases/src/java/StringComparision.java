@@ -19,6 +19,15 @@ class StringComparision {
 		return a == b;
 	}
 
+	public boolean falsePositiveCompareBooleanToNull(Boolean a) {
+		return a == null;
+	}
+	public boolean falsePositiveCompareStringToNull(String a) {
+		return a == null;
+	}
+	public boolean falsePositiveCompareIntegerToNull(Integer a) {
+		return a == null;
+	}
 	public void compareTwo(String a, String b) {
 		if (a == "This")
 			System.out.println("a");

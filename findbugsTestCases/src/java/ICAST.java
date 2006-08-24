@@ -36,4 +36,15 @@ public class ICAST {
 	public long convertDaysToMilliseconds2(int days) {
 		return 24*60*60*1000*days;
 	}
+	
+	public long falsePositive(byte[] value, int offset, long c) {
+		c += ((long)value[offset+22]) << 56;
+		return c;
+
+	}
+	public long bug(byte[] value, int offset, long c) {
+		c += (value[offset+22] & 0xff) << 48;
+		return c;
+
+	}
 }
