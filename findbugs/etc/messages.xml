@@ -3739,6 +3739,38 @@ Such assignments are useless, and may indicate a logic error or typo.
     </Details>
   </BugPattern>
 
+  <BugPattern type="RV_ABSOLUTE_VALUE_OF_RANDOM_INT">
+    <ShortDescription>Bad attempt to compute absolute value of signed 32-bit random integer</ShortDescription>
+    <LongDescription>Bad attempt to compute absolute value of signed 32-bit random integer in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This code generates a random signed integer and then computes
+the absolute value of that random integer.  If the number returned by the random number
+generator is <code>Integer.MIN_VALUE</code>, then the result will be negative as well (since 
+<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code>).
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
+  <BugPattern type="RV_ABSOLUTE_VALUE_OF_HASHCODE">
+    <ShortDescription>Bad attempt to compute absolute value of signed 32-bit hashcode </ShortDescription>
+    <LongDescription>Bad attempt to compute absolute value of signed 32-bit hashcode in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This code generates a hashcode and then computes
+the absolute value of that hashcode.  If the hashcode 
+is <code>Integer.MIN_VALUE</code>, then the result will be negative as well (since 
+<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code>).
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+
   <BugPattern type="RV_REM_OF_RANDOM_INT">
     <ShortDescription>Remainder of 32-bit signed random integer</ShortDescription>
     <LongDescription>Remainder of 32-bit signed random integer computed in {1}</LongDescription>
@@ -4220,8 +4252,7 @@ object than the one the author intended.
   </BugPattern>
 
   <BugPattern type="IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN">
-    <ShortDescription>A parameter is dead upon entry to a method but
-   overwritten</ShortDescription>
+    <ShortDescription>A parameter is dead upon entry to a method but overwritten</ShortDescription>
     <LongDescription>The parameter {2} to {1} is dead upon entry but overwritten</LongDescription>
     <Details>
 <![CDATA[

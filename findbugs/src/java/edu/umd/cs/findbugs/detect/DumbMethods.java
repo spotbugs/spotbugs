@@ -178,7 +178,24 @@ public class DumbMethods extends BytecodeScanningDetector  {
 				&& getNameConstantOperand().equals("abs"))) 
 			bugReporter.reportBug(pendingRemOfRandomIntBug);
 
-		pendingRemOfRandomIntBug = null;
+		if (seen == INVOKESTATIC && 
+				( getClassConstantOperand().equals("java/lang/Math") || getClassConstantOperand().equals("java/lang/StrictMath"))
+				&& getNameConstantOperand().equals("abs")
+				&& getSigConstantOperand().equals("(I)I")) {
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			int special = item0.getSpecialKind();
+			if (special == OpcodeStack.Item.RANDOM_INT) 
+				bugReporter.reportBug(new BugInstance(this, "RV_ABSOLUTE_VALUE_OF_RANDOM_INT", 
+						 NORMAL_PRIORITY)
+					.addClassAndMethod(this)
+					.addSourceLine(this));
+			else if (special == OpcodeStack.Item.HASHCODE_INT)
+				bugReporter.reportBug(new BugInstance(this, "RV_ABSOLUTE_VALUE_OF_HASHCODE", 
+						 NORMAL_PRIORITY)
+					.addClassAndMethod(this)
+					.addSourceLine(this));
+		}
+
 		try {
 
 		if (seen == IREM) {
