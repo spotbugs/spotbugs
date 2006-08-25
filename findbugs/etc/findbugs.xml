@@ -601,33 +601,33 @@
   <BugPattern abbrev="VR" type="VR_UNRESOLVABLE_REFERENCE" category="CORRECTNESS"
     experimental="true"/>
 
-  <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="CORRECTNESS"/>
+  <BugPattern abbrev="SW" type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD" category="BAD_PRACTICE"/>
   <BugPattern abbrev="IL" type="IL_INFINITE_LOOP" category="CORRECTNESS" />
 
   <BugPattern abbrev="IL" type="IL_INFINITE_RECURSIVE_LOOP" category="CORRECTNESS" />
 
   <BugPattern abbrev="IL" type="IL_CONTAINER_ADDED_TO_ITSELF" category="CORRECTNESS"/>
   <BugPattern abbrev="VO" type="VO_VOLATILE_REFERENCE_TO_ARRAY" category="MT_CORRECTNESS"/>
-  <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="CORRECTNESS"/>
+  <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="BAD_PRACTICE"/>
   <BugPattern abbrev="HSC" type="HSC_HUGE_SHARED_STRING_CONSTANT" category="PERFORMANCE" />
   <BugPattern abbrev="TEST" type="TESTING" category="STYLE" />
-  <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="CORRECTNESS" />
+  <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="BAD_PRACTICE" />
 
-  <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="CORRECTNESS" />
+  <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="BAD_PRACTICE" />
 
-  <BugPattern abbrev="DP" type="DP_DO_INSIDE_DO_PRIVILEDGED" category="STYLE" />
-  <BugPattern abbrev="DP" type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED" category="STYLE" />
+  <BugPattern abbrev="DP" type="DP_DO_INSIDE_DO_PRIVILEDGED" category="BAD_PRACTICE" />
+  <BugPattern abbrev="DP" type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED" category="BAD_PRACTICE" />
   
-  <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="CORRECTNESS" />
+  <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="BAD_PRACTICE" />
   <BugPattern abbrev="FL" type="FL_MATH_USING_FLOAT_PRECISION" category="CORRECTNESS" />
-  <BugPattern abbrev="CN" type="CN_IDIOM" category="STYLE" />
-  <BugPattern abbrev="CN" type="CN_IDIOM_NO_SUPER_CALL" category="STYLE" />
-  <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="STYLE" />
-  <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="STYLE" />
-  <BugPattern abbrev="Dm" type="DM_EXIT" category="STYLE" />
+  <BugPattern abbrev="CN" type="CN_IDIOM" category="BAD_PRACTICE" />
+  <BugPattern abbrev="CN" type="CN_IDIOM_NO_SUPER_CALL" category="BAD_PRACTICE" />
+  <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="BAD_PRACTICE" />
+  <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Dm" type="DM_EXIT" category="BAD_PRACTICE" />
   <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION" category="CORRECTNESS" />
-  <BugPattern abbrev="Dm" type="DM_RUN_FINALIZERS_ON_EXIT" category="CORRECTNESS" />
+  <BugPattern abbrev="Dm" type="DM_RUN_FINALIZERS_ON_EXIT" category="BAD_PRACTICE" />
   <BugPattern abbrev="Dm" type="DM_STRING_CTOR" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_STRING_VOID_CTOR" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_STRING_TOSTRING" category="PERFORMANCE" />
@@ -641,7 +641,7 @@
   <BugPattern abbrev="Dm" type="DM_NEW_FOR_GETCLASS" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DM_MONITOR_WAIT_ON_CONDITION" category="MT_CORRECTNESS"/>
   <BugPattern abbrev="NP" type="NP_ARGUMENT_MIGHT_BE_NULL" category="CORRECTNESS" />
-  <BugPattern abbrev="NP" type="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT" category="CORRECTNESS" />
+  <BugPattern abbrev="NP" type="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT" category="BAD_PRACTICE" />
   <BugPattern abbrev="NP" type="NP_IMMEDIATE_DEREFERENCE_OF_READLINE" category="STYLE" />
   <BugPattern abbrev="RV" type="RV_ABSOLUTE_VALUE_OF_RANDOM_INT" category="CORRECTNESS" />
   <BugPattern abbrev="RV" type="RV_ABSOLUTE_VALUE_OF_HASHCODE" category="CORRECTNESS" />
@@ -654,25 +654,25 @@
   <BugPattern abbrev="SQL" type="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING" category="CORRECTNESS" />
   <BugPattern abbrev="DC" type="DC_DOUBLECHECK" category="MT_CORRECTNESS" />
   <BugPattern abbrev="FI" type="FI_PUBLIC_SHOULD_BE_PROTECTED" category="MALICIOUS_CODE" />
-  <BugPattern abbrev="FI" type="FI_EMPTY" category="PERFORMANCE" />
-  <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="CORRECTNESS" />
-  <BugPattern abbrev="FI" type="FI_USELESS" category="PERFORMANCE" />
-  <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="CORRECTNESS" />
-  <BugPattern abbrev="FI" type="FI_EXPLICIT_INVOCATION" category="CORRECTNESS" />
-  <BugPattern abbrev="Eq" type="EQ_SELF_USE_OBJECT" category="CORRECTNESS" />
-  <BugPattern abbrev="Eq" type="EQ_SELF_NO_OBJECT" category="CORRECTNESS" />
-  <BugPattern abbrev="NP" type="NP_DOES_NOT_HANDLE_NULL" category="CORRECTNESS"/>
-  <BugPattern abbrev="Co" type="CO_SELF_NO_OBJECT" category="CORRECTNESS" />
+  <BugPattern abbrev="FI" type="FI_EMPTY" category="BAD_PRACTICE" />
+  <BugPattern abbrev="FI" type="FI_NULLIFY_SUPER" category="BAD_PRACTICE" />
+  <BugPattern abbrev="FI" type="FI_USELESS" category="BAD_PRACTICE" />
+  <BugPattern abbrev="FI" type="FI_MISSING_SUPER_CALL" category="BAD_PRACTICE" />
+  <BugPattern abbrev="FI" type="FI_EXPLICIT_INVOCATION" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Eq" type="EQ_SELF_USE_OBJECT" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Eq" type="EQ_SELF_NO_OBJECT" category="BAD_PRACTICE" />
+  <BugPattern abbrev="NP" type="NP_DOES_NOT_HANDLE_NULL" category="BAD_PRACTICE"/>
+  <BugPattern abbrev="Co" type="CO_SELF_NO_OBJECT" category="BAD_PRACTICE" />
   <BugPattern abbrev="ES" type="ES_COMPARING_STRINGS_WITH_EQ" category="CORRECTNESS" />
   <BugPattern abbrev="ES" type="ES_COMPARING_PARAMETER_STRING_WITH_EQ" category="STYLE" />
-  <BugPattern abbrev="HE" type="HE_USE_OF_UNHASHABLE_CLASS" category="CORRECTNESS" />
-  <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="CORRECTNESS" />
-  <BugPattern abbrev="HE" type="HE_HASHCODE_NO_EQUALS" category="CORRECTNESS" />
-  <BugPattern abbrev="HE" type="HE_EQUALS_USE_HASHCODE" category="CORRECTNESS" />
-  <BugPattern abbrev="HE" type="HE_INHERITS_EQUALS_USE_HASHCODE" category="CORRECTNESS" />
-  <BugPattern abbrev="HE" type="HE_EQUALS_NO_HASHCODE" category="CORRECTNESS" />
-  <BugPattern abbrev="Eq" type="EQ_ABSTRACT_SELF" category="CORRECTNESS" />
-  <BugPattern abbrev="Co" type="CO_ABSTRACT_SELF" category="CORRECTNESS" />
+  <BugPattern abbrev="HE" type="HE_USE_OF_UNHASHABLE_CLASS" category="BAD_PRACTICE" />
+  <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="BAD_PRACTICE" />
+  <BugPattern abbrev="HE" type="HE_HASHCODE_NO_EQUALS" category="BAD_PRACTICE" />
+  <BugPattern abbrev="HE" type="HE_EQUALS_USE_HASHCODE" category="BAD_PRACTICE" />
+  <BugPattern abbrev="HE" type="HE_INHERITS_EQUALS_USE_HASHCODE" category="BAD_PRACTICE" />
+  <BugPattern abbrev="HE" type="HE_EQUALS_NO_HASHCODE" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Eq" type="EQ_ABSTRACT_SELF" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Co" type="CO_ABSTRACT_SELF" category="BAD_PRACTICE" />
   <BugPattern abbrev="ESync" type="ESync_EMPTY_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="IS" type="IS2_INCONSISTENT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="NN" type="NN_NAKED_NOTIFY" category="MT_CORRECTNESS" />
@@ -689,9 +689,9 @@
   <BugPattern abbrev="UW" type="UW_UNCOND_WAIT" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UR" type="UR_UNINIT_READ" category="CORRECTNESS" />
   <BugPattern abbrev="UG" type="UG_SYNC_SET_UNSYNC_GET" category="MT_CORRECTNESS" />
-  <BugPattern abbrev="IC" type="IC_INIT_CIRCULARITY" category="CORRECTNESS" />
-  <BugPattern abbrev="IC" type="IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION" category="CORRECTNESS" />
-  <BugPattern abbrev="SI" type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED" category="CORRECTNESS" />
+  <BugPattern abbrev="IC" type="IC_INIT_CIRCULARITY" category="BAD_PRACTICE" />
+  <BugPattern abbrev="IC" type="IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION" category="BAD_PRACTICE" />
+  <BugPattern abbrev="SI" type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED" category="BAD_PRACTICE" />
   <BugPattern abbrev="It" type="IT_NO_SUCH_ELEMENT" category="CORRECTNESS" />
   <BugPattern abbrev="IS" type="IS_INCONSISTENT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="IS" type="IS_FIELD_NOT_GUARDED" category="MT_CORRECTNESS" />
@@ -709,27 +709,27 @@
   <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_CONFUSING" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_METHOD_CONSTRUCTOR_CONFUSION" category="CORRECTNESS" />
-  <BugPattern abbrev="Nm" type="NM_LCASE_HASHCODE" category="CORRECTNESS" />
-  <BugPattern abbrev="Nm" type="NM_LCASE_TOSTRING" category="CORRECTNESS" />
-  <BugPattern abbrev="Nm" type="NM_BAD_EQUAL" category="CORRECTNESS"/>
+  <BugPattern abbrev="Nm" type="NM_LCASE_HASHCODE" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Nm" type="NM_LCASE_TOSTRING" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Nm" type="NM_BAD_EQUAL" category="BAD_PRACTICE"/>
   <BugPattern abbrev="IA" type="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD" category="CORRECTNESS"/>
   <BugPattern abbrev="Nm" type="NM_CLASS_NOT_EXCEPTION" category="STYLE"/>
   <BugPattern abbrev="RR" type="RR_NOT_CHECKED" category="CORRECTNESS" />
   <BugPattern abbrev="RR" type="SR_NOT_CHECKED" category="CORRECTNESS" />
-  <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR" category="CORRECTNESS" />
-  <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION" category="CORRECTNESS" />
-  <BugPattern abbrev="Se" type="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE" category="STYLE" />
-  <BugPattern abbrev="SnVI" type="SE_NO_SERIALVERSIONID" category="CORRECTNESS" />
-  <BugPattern abbrev="Se" type="SE_READ_RESOLVE_MUST_RETURN_OBJECT" category="CORRECTNESS" />
-  <BugPattern abbrev="Se" type="SE_TRANSIENT_FIELD_NOT_RESTORED" category="STYLE" />
+  <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Se" type="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE" category="BAD_PRACTICE" />
+  <BugPattern abbrev="SnVI" type="SE_NO_SERIALVERSIONID" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Se" type="SE_READ_RESOLVE_MUST_RETURN_OBJECT" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Se" type="SE_TRANSIENT_FIELD_NOT_RESTORED" category="BAD_PRACTICE" />
   <BugPattern abbrev="WS" type="WS_WRITEOBJECT_SYNC" category="MT_CORRECTNESS" />
   <BugPattern abbrev="RS" type="RS_READOBJECT_SYNC" category="MT_CORRECTNESS" />
-  <BugPattern abbrev="Se" type="SE_NONFINAL_SERIALVERSIONID" category="CORRECTNESS" />
-  <BugPattern abbrev="Se" type="SE_NONSTATIC_SERIALVERSIONID" category="CORRECTNESS" />
-  <BugPattern abbrev="Se" type="SE_NONLONG_SERIALVERSIONID" category="CORRECTNESS" />
-   <BugPattern abbrev="Se" type="SE_METHOD_MUST_BE_PRIVATE" category="CORRECTNESS" />
-  <BugPattern abbrev="Se" type="SE_BAD_FIELD" category="CORRECTNESS" />
-  <BugPattern abbrev="Se" type="SE_BAD_FIELD_STORE" category="CORRECTNESS" />
+  <BugPattern abbrev="Se" type="SE_NONFINAL_SERIALVERSIONID" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Se" type="SE_NONSTATIC_SERIALVERSIONID" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Se" type="SE_NONLONG_SERIALVERSIONID" category="BAD_PRACTICE" />
+   <BugPattern abbrev="Se" type="SE_METHOD_MUST_BE_PRIVATE" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Se" type="SE_BAD_FIELD" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Se" type="SE_BAD_FIELD_STORE" category="BAD_PRACTICE" />
   <BugPattern abbrev="SC" type="SC_START_IN_CTOR" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SF" type="SF_SWITCH_FALLTHROUGH" category="STYLE" />
   <BugPattern abbrev="SF" type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH" category="CORRECTNESS" />
@@ -767,8 +767,8 @@
   <BugPattern abbrev="NP" type="NP_LOAD_OF_KNOWN_NULL_VALUE" category="STYLE"/>
   <BugPattern abbrev="NP" type="NP_GUARANTEED_DEREF" category="CORRECTNESS"/>
   <BugPattern abbrev="NP" type="NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH" category="CORRECTNESS"/>
-  <BugPattern abbrev="OS" type="OS_OPEN_STREAM" category="CORRECTNESS" />
-  <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="CORRECTNESS" />
+  <BugPattern abbrev="OS" type="OS_OPEN_STREAM" category="BAD_PRACTICE" />
+  <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="BAD_PRACTICE" />
   <BugPattern abbrev="PZLA" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS" category="STYLE" />
   <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW" category="STYLE" />
   <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE" category="STYLE" />
@@ -802,8 +802,8 @@
   <BugPattern abbrev="JLM" type="JLM_JSR166_LOCK_MONITORENTER" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UPM" type="UPM_UNCALLED_PRIVATE_METHOD" category="PERFORMANCE"/>
   <BugPattern abbrev="UMAC" type="UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS" category="CORRECTNESS"/>
-  <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE" category="CORRECTNESS" />
-  <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH" category="CORRECTNESS" />
+  <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE" category="BAD_PRACTICE" />
+  <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH" category="BAD_PRACTICE" />
   <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION" category="PERFORMANCE" />
   <BugPattern abbrev="ITA" type="ITA_INEFFICIENT_TO_ARRAY" category="PERFORMANCE" />
   <BugPattern abbrev="IJU" type="IJU_SETUP_NO_SUPER" category="CORRECTNESS" />
@@ -829,7 +829,7 @@
   <BugPattern abbrev="MF" type="MF_METHOD_MASKS_FIELD" category="CORRECTNESS"/>
   <BugPattern abbrev="MF" type="MF_CLASS_MASKS_FIELD" category="CORRECTNESS"/>
   <BugPattern abbrev="WMI" type="WMI_WRONG_MAP_ITERATOR" category="PERFORMANCE"/>
-  <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="CORRECTNESS"/>
+  <BugPattern abbrev="ISC" type="ISC_INSTANTIATE_STATIC_CLASS" category="BAD_PRACTICE"/>
   <BugPattern abbrev="REC" type="REC_CATCH_EXCEPTION" category="STYLE"/>
   <BugPattern abbrev="FE" type="FE_FLOATING_POINT_EQUALITY" category="STYLE"/>
   <BugPattern abbrev="FE" type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER" category="CORRECTNESS"/>
@@ -847,7 +847,7 @@
   <BugPattern abbrev="NP" type="NP_NULL_INSTANCEOF" category="CORRECTNESS"/>
   <BugPattern abbrev="NP" type="BC_NULL_INSTANCEOF" category="CORRECTNESS"
          experimental="true" />  <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
-  <BugPattern abbrev="BC" type="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" category="STYLE"/>
+  <BugPattern abbrev="BC" type="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" category="BAD_PRACTICE"/>
   <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_CONCRETE_COLLECTION" category="STYLE"/>
   <BugPattern abbrev="BC" type="BC_UNCONFIRMED_CAST" category="STYLE"/>
   <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY" category="CORRECTNESS"/>
@@ -870,8 +870,8 @@
   <BugPattern abbrev="DMI" type="DMI_CALLING_NEXT_FROM_HASNEXT" category="CORRECTNESS"/>
   <BugPattern abbrev="ST" type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" category="STYLE"/>
   <BugPattern abbrev="SWL" type="SWL_SLEEP_WITH_LOCK_HELD" category="MT_CORRECTNESS"/>
-  <BugPattern abbrev="J2EE" type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION" category="CORRECTNESS"/>
-  <BugPattern abbrev="DMI" type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN" category="CORRECTNESS"/>
+  <BugPattern abbrev="J2EE" type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION" category="BAD_PRACTICE"/>
+  <BugPattern abbrev="DMI" type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN" category="BAD_PRACTICE"/>
   <BugPattern abbrev="DB" type="DB_DUPLICATE_BRANCHES" category="STYLE"/>
   <BugPattern abbrev="DB" type="DB_DUPLICATE_SWITCH_CLAUSES" category="STYLE"/>
   <BugPattern abbrev="IMA" type="IMA_INEFFICIENT_MEMBER_ACCESS" category="PERFORMANCE"
