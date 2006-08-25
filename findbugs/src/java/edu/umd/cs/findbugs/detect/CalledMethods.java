@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 
@@ -33,16 +34,11 @@ import edu.umd.cs.findbugs.ba.XMethod;
  */
 public class CalledMethods extends BytecodeScanningDetector implements Detector, NonReportingDetector {
 
-	// XXX MUSTFIX don't depend on static field
-	static private HashSet<XMethod> calledMethods = new HashSet<XMethod>();
-
+	XFactory xFactory = AnalysisContext.currentXFactory();
 	public CalledMethods(BugReporter bugReporter) {
 		
 	}
-	public static boolean isCalled(XMethod m) {
-		boolean result = calledMethods.contains(m);
-		return result;
-	}
+
 	@Override
 	public void sawOpcode(int seen) {
 		switch (seen) {
@@ -51,7 +47,7 @@ public class CalledMethods extends BytecodeScanningDetector implements Detector,
 		case INVOKESTATIC:
 			XMethod m = XFactory.createXMethod(getDottedClassConstantOperand(), getNameConstantOperand(),
 					getSigConstantOperand(), (seen == INVOKESTATIC));
-			calledMethods.add(m);
+			xFactory.addCalledMethod(m);
 
 			break;
 		default:

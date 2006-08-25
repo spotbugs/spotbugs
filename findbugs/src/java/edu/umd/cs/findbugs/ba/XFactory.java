@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.ba;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,6 +60,22 @@ public  class XFactory {
 	private  Set<XField> fieldsView = Collections
 			.unmodifiableSet(fields.keySet());
 
+	private  Set<XMethod> calledMethods = new HashSet<XMethod>();
+	private boolean calledMethodsIsInterned = false;
+
+	public void addCalledMethod(XMethod m) {
+		calledMethods.add(m);
+	}
+	
+	public boolean isCalled(XMethod m) {
+		if (!calledMethodsIsInterned) {
+			Set<XMethod> tmp = new HashSet<XMethod>();
+			for(XMethod m2 : calledMethods)
+				tmp.add(intern(m2));
+		}
+		return calledMethods.contains(m);
+	}
+	
 	
 	public @CheckReturnValue @NonNull XMethod intern(XMethod m) {
 		XMethod m2 = methods.get(m);

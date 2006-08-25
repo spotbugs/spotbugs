@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 
@@ -91,7 +92,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
 			JavaClass clazz = getThisClass();
 			XMethod xmethod = XFactory.createXMethod(clazz, obj);
-			if (!CalledMethods.isCalled(xmethod)
+			XFactory factory = AnalysisContext.currentXFactory();
+			if (!factory.isCalled(xmethod)
 					&& !definedInSuperClassOrInterface(clazz, obj.getName()
 							+ ":" + obj.getSignature())) {
 				int priority = NORMAL_PRIORITY;
