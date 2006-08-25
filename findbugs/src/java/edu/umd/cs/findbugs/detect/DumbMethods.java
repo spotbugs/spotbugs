@@ -248,21 +248,34 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		case IF_ICMPGT:
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			OpcodeStack.Item item1 = stack.getStackItem(1);
+			int seen2 = seen;
 			if (item1.getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE) {
 				OpcodeStack.Item tmp = item0;
 				item0 = item1;
 				item1 = tmp;
+				if (seen >= IF_ICMPLT & seen <= IF_ICMPGE) 
+					seen2 += 2;
+				else if  (seen >= IF_ICMPGT & seen <= IF_ICMPLE) 
+					seen2 -= 2;
 			}
 			Object constant1 = item1.getConstant();
 			if (item0.getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE
 					&& constant1 instanceof Number) {
 				int v1 = ((Number)constant1).intValue();
-				if (v1 <= -129 || v1 >= 128)
-					bugReporter.reportBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE", 
-							(seen == IF_ICMPEQ || seen == IF_ICMPNE || (v1 != -129 && v1 != 128)) ? HIGH_PRIORITY : NORMAL_PRIORITY)
+				if (v1 <= -129 || v1 >= 128 || v1 == 127 && !(seen2 == IF_ICMPEQ || seen2 == IF_ICMPNE 
+						
+						)) {
+					int priority = HIGH_PRIORITY;
+					if (v1 == 127 && seen2 == IF_ICMPLE ) priority  = NORMAL_PRIORITY;
+					if (v1 == 128 && seen2 == IF_ICMPLE) priority = NORMAL_PRIORITY;
+					if (v1 <= -129) priority = NORMAL_PRIORITY;
+					
+					
+					bugReporter.reportBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE", priority)
 								.addClassAndMethod(this)
 								.addInt(v1)
 								.addSourceLine(this));
+				}
 			}	
 		}
 		if (checkForBitIorofSignedByte && seen != I2B) {

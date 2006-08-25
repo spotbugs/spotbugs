@@ -62,9 +62,10 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 		boolean superHasNoFinalizer = overridesFinalizeIn.equals("java.lang.Object");
 		// System.out.println("superclass: " + superclassName);
 		if (obj.getCode().length == 1) {
-			if (superHasNoFinalizer)
+			if (superHasNoFinalizer) {
+				if (!getMethod().isFinal())
 				bugReporter.reportBug(new BugInstance(this, "FI_EMPTY", NORMAL_PRIORITY).addClassAndMethod(this));
-			else
+			} else
 				bugReporter.reportBug(new BugInstance(this, "FI_NULLIFY_SUPER", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addClass(overridesFinalizeIn));

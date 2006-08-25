@@ -92,10 +92,12 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
         	 if (alternativeMethod.isResolved() && alternativeMethod.getClassName().equals(possibleTargetClass)) 	{
         		 String targetPackage = invokedMethod.getPackageName();
         		 String alternativePackage = alternativeMethod.getPackageName();
-        		 int priority = HIGH_PRIORITY;;
+        		 int priority = HIGH_PRIORITY;
         		 if (targetPackage.equals(alternativePackage)) priority++;
         		 if (targetPackage.startsWith("javax.swing") || targetPackage.startsWith("java.awt"))
-        			 priority++;
+        			 priority+=2;
+        		 if (invokedMethod.getName().equals(getMethodName())) priority++;
+        		 
         		 bugReporter.reportBug(new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
 				        .addClassAndMethod(this)
 				          .addMethod(invokedMethod).describe("METHOD_INHERITED")

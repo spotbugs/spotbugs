@@ -93,9 +93,13 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 			XMethod xmethod = XFactory.createXMethod(clazz, obj);
 			if (!CalledMethods.isCalled(xmethod)
 					&& !definedInSuperClassOrInterface(clazz, obj.getName()
-							+ ":" + obj.getSignature()))
+							+ ":" + obj.getSignature())) {
+				int priority = NORMAL_PRIORITY;
+				if (!clazz.getSuperclassName().equals("java.lang.Object")) priority = HIGH_PRIORITY;
 				bugReporter.reportBug(new BugInstance("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS",
-						NORMAL_PRIORITY).addClassAndMethod(this));
+						priority).addClassAndMethod(this));
+			
+			}
 
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
