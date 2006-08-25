@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
@@ -365,6 +366,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 				e.printStackTrace();
 			}
 			if (type == null) return;
+			if (!AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(type)) return;
 			potentialBugs.put(type.getClassName(), 
 					new BugInstance("HE_USE_OF_UNHASHABLE_CLASS", getClassConstantOperand().indexOf("Hash") >= 0 ? HIGH_PRIORITY : NORMAL_PRIORITY)
 				.addClassAndMethod(this)
