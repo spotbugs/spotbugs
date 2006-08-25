@@ -64,7 +64,8 @@ public  class XFactory {
 	private boolean calledMethodsIsInterned = false;
 
 	public void addCalledMethod(XMethod m) {
-		calledMethods.add(m);
+		if (calledMethods.add(m) && !m.isResolved())
+			calledMethodsIsInterned = false;
 	}
 	
 	public boolean isCalled(XMethod m) {
@@ -72,6 +73,7 @@ public  class XFactory {
 			Set<XMethod> tmp = new HashSet<XMethod>();
 			for(XMethod m2 : calledMethods)
 				tmp.add(intern(m2));
+			calledMethodsIsInterned = true;
 		}
 		return calledMethods.contains(m);
 	}

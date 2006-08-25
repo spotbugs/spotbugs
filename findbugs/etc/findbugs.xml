@@ -55,10 +55,10 @@
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindInconsistentSync2"/>
 	</SplitPass>
-	<SplitPass>
+	<WithinPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
-	</SplitPass>
+	</WithinPass>
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"/>
 		<Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
@@ -72,10 +72,6 @@
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindBadEqualsImplementation"/>
-	</SplitPass>
-	<SplitPass>
-		<Earlier class="edu.umd.cs.findbugs.detect.FindHEmismatch"/>
-		<Later class="edu.umd.cs.findbugs.detect.UseOfNonHashableClassInHashDataStructure"/>
 	</SplitPass>
   </OrderingConstraints>
 				
@@ -238,11 +234,8 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" 
             speed="fast"
-            reports="EQ_SELF_USE_OBJECT,EQ_SELF_NO_OBJECT,CO_SELF_NO_OBJECT,HE_HASHCODE_USE_OBJECT_EQUALS,HE_HASHCODE_NO_EQUALS,HE_EQUALS_USE_HASHCODE,HE_EQUALS_NO_HASHCODE,HE_INHERITS_EQUALS_USE_HASHCODE,CO_ABSTRACT_SELF,EQ_ABSTRACT_SELF" />
+            reports="EQ_SELF_USE_OBJECT,EQ_SELF_NO_OBJECT,CO_SELF_NO_OBJECT,HE_HASHCODE_USE_OBJECT_EQUALS,HE_HASHCODE_NO_EQUALS,HE_EQUALS_USE_HASHCODE,HE_EQUALS_NO_HASHCODE,HE_INHERITS_EQUALS_USE_HASHCODE,CO_ABSTRACT_SELF,EQ_ABSTRACT_SELF,HE_USE_OF_UNHASHABLE_CLASS" />
 
-  <Detector class="edu.umd.cs.findbugs.detect.UseOfNonHashableClassInHashDataStructure" 
-            speed="fast"
-            reports="HE_USE_OF_UNHASHABLE_CLASS" />
   <Detector class="edu.umd.cs.findbugs.detect.FindNakedNotify" 
             speed="fast"
             reports="NN_NAKED_NOTIFY" />

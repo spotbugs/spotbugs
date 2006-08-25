@@ -414,14 +414,6 @@ issues.  It is a fast detector.</p>
     </Details>
   </Detector>
 
-  <Detector class="edu.umd.cs.findbugs.detect.UseOfNonHashableClassInHashDataStructure" >
-    <Details>
-<![CDATA[
-<p> Looks for use of unhashable classes in hashed data structures.  </p>
-]]>
-    </Details>
-  </Detector>
-
   <Detector class="edu.umd.cs.findbugs.detect.FindHEmismatch" >
     <Details>
 <![CDATA[

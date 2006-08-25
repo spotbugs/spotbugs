@@ -11,7 +11,7 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/AppleJavaExtensions.jar"/>
-	<classpathentry exported="true" sourcepath="/bcel/src" kind="lib" path="lib/bcel.jar">
+	<classpathentry exported="true" sourcepath="/jakarta-bcel/src/main/java" kind="lib" path="lib/bcel.jar">
 		<attributes>
 			<attribute value="http://jakarta.apache.org/bcel/apidocs/" name="javadoc_location"/>
 		</attributes>
