@@ -45,14 +45,16 @@ public class I18N {
 	public static final Comparator<String> designationKeyComparator = new DesignationKeyComparator();
 
 	private final ResourceBundle annotationDescriptionBundle;
-	private final ResourceBundle bugCategoryDescriptionBundle;
+	//private final ResourceBundle bugCategoryDescriptionBundle;
+	private final HashMap<String, String> categoryDescriptionMap;
 	private final ResourceBundle userDesignationBundle;
 	private final HashMap<String, BugPattern> bugPatternMap;
 	private final HashMap<String, BugCode> bugCodeMap;
 
 	private I18N() {
 		annotationDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsAnnotationDescriptions");
-		bugCategoryDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.BugCategoryDescriptions");
+		//bugCategoryDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.BugCategoryDescriptions");
+		categoryDescriptionMap = new HashMap<String, String>();
 		userDesignationBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.UserDesignations");
 		bugPatternMap = new HashMap<String, BugPattern>();
 		bugCodeMap = new HashMap<String, BugCode>();
@@ -177,6 +179,20 @@ public class I18N {
 	}
 
 	/**
+	 * Set the description (a ward or three) of a bug category.
+	 * If the category's description has already been set, this does nothing.
+	 *
+	 * @param category the category key
+	 * @param desc     the i18ned description of the category
+	 * @return false if the category's description has already been set, true otherwise
+	 */
+	public boolean registerBugCategoryDescription(String category, String desc) {
+		if (categoryDescriptionMap.get(category) != null) return false;
+		categoryDescriptionMap.put(category, desc);
+		return true;
+	}
+
+	/**
 	 * Get the description of a bug category.
 	 * Returns the category if no description can be found.
 	 *
@@ -184,7 +200,8 @@ public class I18N {
 	 * @return the description of the category
 	 */
 	public String getBugCategoryDescription(String category) {
-		return bugCategoryDescriptionBundle.getString(category);
+		String desc = categoryDescriptionMap.get(category);
+		return (desc!=null ? desc : category);
 	}
 
 	/**
@@ -194,12 +211,7 @@ public class I18N {
 	 * @return Collection of bug category keys.
 	 */
 	public Collection<String> getBugCategories() {
-		List<String> result = new LinkedList<String>();
-		for (Enumeration<String> e = bugCategoryDescriptionBundle.getKeys(); e.hasMoreElements(); ) {
-			String key = e.nextElement();
-			result.add(key);
-		}
-		return result;
+		return categoryDescriptionMap.keySet(); // backed by the Map
 	}
 
 	/**

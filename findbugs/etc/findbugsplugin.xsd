@@ -27,16 +27,6 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
-	<xsd:simpleType name="CategoryType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="CORRECTNESS"/>
-			<xsd:enumeration value="I18N"/>
-			<xsd:enumeration value="MALICIOUS_CODE"/>
-			<xsd:enumeration value="MT_CORRECTNESS"/>
-			<xsd:enumeration value="PERFORMANCE"/>
-			<xsd:enumeration value="STYLE"/>			
-		</xsd:restriction>
-	</xsd:simpleType>
 	
 	<xsd:complexType name="DetectorType">
 		<xsd:attribute name="class" type="ClassType"/>
@@ -50,7 +40,7 @@
 	<xsd:complexType name="BugPatternType">
 		<xsd:attribute name="abbrev" type="IdentifierType"/>
 		<xsd:attribute name="type" type="xsd:ID"/>
-		<xsd:attribute name="category" type="CategoryType"/>
+		<xsd:attribute name="category" type="IdentifierType"/>
 		<xsd:attribute name="experimental" type="xsd:boolean" use="optional"/>
 	</xsd:complexType>
 

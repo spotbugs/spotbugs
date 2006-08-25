@@ -21,6 +21,61 @@ This plugin contains all of the standard FindBugs detectors.
 
   <!--
   **********************************************************************
+  Categories (replacing the BugCategoryDescriptions.properties file)
+  **********************************************************************
+   -->
+
+  <BugCategory category="CORRECTNESS">
+    <Description>Correctness</Description>
+    <Details>Probable bug - an apparent coding mistake
+            resulting in code that was probably not what the
+            developer intended. Low false positive rate.</Details>
+  </BugCategory>
+
+  <BugCategory category="BAD_PRACTICE">
+    <Description>Bad practice</Description>
+    <Details>violations of recommended and essential
+            coding practice. Examples include hash code and equals
+            problems, cloneable idiom, dropped exceptions,  
+            serializable problems, and misuse of finalize.
+            Low false positive rate, although some groups may
+            not care about some of the bad practices.</Details>
+  </BugCategory>
+
+  <BugCategory category="STYLE">
+    <Description>Style</Description>
+    <Details>code that is confusing, anomalous, or
+            written in a way that that leads itself to errors.
+            Examples include dead local stores, switch fall through,
+            unconfirmed casts, and redundant null check of value
+            known to be null.
+            More false positives accepted.</Details>
+  </BugCategory>
+
+  <BugCategory category="PERFORMANCE">
+    <Description>Performance</Description>
+    <Details>code that is not necessarily incorrect but may be inefficient</Details>
+  </BugCategory>
+
+  <BugCategory category="MALICIOUS_CODE">
+    <Description>Malicious code vulnerability</Description>
+    <Details>code that is vulnerable to attacks from untrusted code</Details>
+  </BugCategory>
+
+  <BugCategory category="MT_CORRECTNESS">
+    <Description>Multithreaded correctness</Description>
+    <Details>code flaws having to do with threads, locks, and volatiles</Details>
+  </BugCategory>
+
+  <BugCategory category="I18N">
+    <Description>Internationalization</Description>
+    <Details>code flaws having to do with internationalization and locale</Details>
+    <!-- DM_CONVERT_CASE is the only bug core bug pattern in this category -->
+  </BugCategory>
+
+
+  <!--
+  **********************************************************************
   Detectors
   **********************************************************************
    -->

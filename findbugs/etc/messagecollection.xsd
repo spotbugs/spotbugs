@@ -27,6 +27,14 @@
 		<xsd:attribute name="class" type="ClassType"/>
 	</xsd:complexType>
 
+	<xsd:complexType name="BugCategoryType">
+		<xsd:sequence>
+			<xsd:element name="Description" type="xsd:string"/>
+			<xsd:element name="Details" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+		<xsd:attribute name="category" type="IdentifierType"/>
+	</xsd:complexType>
+
 	<xsd:complexType name="BugPatternType">
 		<xsd:sequence>
 			<xsd:element name="ShortDescription" type="xsd:string"/>
@@ -44,6 +52,7 @@
 	<xsd:complexType name="MessageCollectionType" mixed="true">
 		<xsd:sequence>
 			<xsd:element name="Plugin" type="PluginType"/>
+			<xsd:element name="BugCategory" type="BugCategoryType" minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="Detector" type="DetectorType" minOccurs="1" maxOccurs="unbounded"/>
 			<xsd:element name="BugPattern" type="BugPatternType" minOccurs="1" maxOccurs="unbounded"/>
 			<xsd:element name="BugCode" type="BugCodeType" minOccurs="1" maxOccurs="unbounded"/>

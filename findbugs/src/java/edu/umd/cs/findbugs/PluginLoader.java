@@ -59,6 +59,8 @@ import edu.umd.cs.findbugs.plan.SingleDetectorFactorySelector;
  */
 public class PluginLoader extends URLClassLoader {
 
+	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.debug.PluginLoader");
+
 	// Keep a count of how many plugins we've seen without a
 	// "pluginid" attribute, so we can assign them all unique ids.
 	private static int nextUnknownId;
@@ -250,6 +252,31 @@ public class PluginLoader extends URLClassLoader {
 			}
 		}
 
+		// register global Category descriptions
+		I18N i18n = I18N.instance();
+		for (Document messageCollection : messageCollectionList) {
+			List<Node> categoryNodeList = messageCollection.selectNodes("/MessageCollection/BugCategory");
+			if (DEBUG) System.out.println("found "+categoryNodeList.size()+" categories in "+messageCollection.getName());
+			for (Node categoryNode : categoryNodeList) {
+				String key = categoryNode.valueOf("@category");
+				if (key.equals(""))
+					throw new PluginException("BugCategory element with missing category attribute");
+				String shortDesc = getChildText(categoryNode, "Description");
+				boolean b = i18n.registerBugCategoryDescription(key, shortDesc);
+				if (DEBUG) System.out.println(b
+					? "category "+key+" -> "+shortDesc
+					: "rejected \""+shortDesc+"\" for category "+key+": "+i18n.getBugCategoryDescription(key));
+				try {
+					String longDesc = getChildText(categoryNode, "Details");
+					//TODO register LongDescription with I18N
+					if (DEBUG) System.out.println("Ignoring it, but "
+						+"found Details for category "+key+" -> "+longDesc);
+				} catch (PluginException pe) {
+					// do nothing -- LongDescription is optional
+				}
+			}
+		}
+
 		// Create BugPatterns
 		List<Node> bugPatternNodeList = pluginDescriptor.selectNodes("/FindbugsPlugin/BugPattern");
 		for (Node bugPatternNode : bugPatternNodeList) {
@@ -271,6 +298,13 @@ public class PluginLoader extends URLClassLoader {
 					Boolean.valueOf(experimental).booleanValue(),
 					shortDesc, longDesc, detailText);
 			plugin.addBugPattern(bugPattern);
+			boolean unknownCategory = i18n.registerBugCategoryDescription(category, category);
+			if (unknownCategory) {
+				// no desc, but at least now it will appear in I18N.getBugCategories().
+				if (DEBUG) System.out.println("Category "+category+" (of BugPattern "
+					+type+") has no description in messages*.xml");
+				//TODO report this even if !DEBUG
+			}
 		}
 
 		// Create BugCodes

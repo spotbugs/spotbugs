@@ -58,6 +58,8 @@
 
 <xsl:variable name="literalNbsp">&amp;nbsp;</xsl:variable>
 
+<xsl:key name="bug-category-key" match="/BugCollection/BugInstance" use="@category"/>	
+
 <xsl:variable name="bugTableHeader">
 	<tr class="tableheader">
 		<th align="left">Code<xsl:value-of select="$literalNbsp" disable-output-escaping="yes"/></th>
@@ -129,6 +131,9 @@
 			}
 		</script>
 	</head>
+
+	<xsl:variable name="unique-catkey" select="/BugCollection/BugInstance[generate-id() = generate-id(key('bug-category-key',@category))]/@category"/>
+
 	<body>
 
 	<h1>FindBugs Report</h1>
@@ -138,12 +143,14 @@
 
 	<h2>Contents</h2>
 	<ul>
-		<li><a href="#Warnings_CORRECTNESS">Correctness Warnings</a></li>
-		<li><a href="#Warnings_I18N">Internationalization Warnings</a></li>
-		<li><a href="#Warnings_MT_CORRECTNESS">Multithreaded Correctness Warnings</a></li>
-		<li><a href="#Warnings_MALICIOUS_CODE">Malicious Code Vulnerability Warnings</a></li>
-		<li><a href="#Warnings_PERFORMANCE">Performance Warnings</a></li>
-		<li><a href="#Warnings_STYLE">Style Warnings</a></li>
+		<xsl:for-each select="$unique-catkey">
+			<xsl:sort select="." order="ascending"/>
+			<xsl:variable name="catkey" select="."/>
+			<xsl:variable name="catdesc" select="/BugCollection/BugCategory[@category=$catkey]/Description"/>
+			
+			<li><a href="#Warnings_{$catkey}"><xsl:value-of select="$catdesc"/> Warnings</a></li>
+		</xsl:for-each>
+
 		<li><a href="#Details">Details</a></li>
 	</ul>
 
@@ -153,31 +160,29 @@
 			<th align="left">Warning Type</th>
 			<th align="right">Number</th>
 		</tr>
-		<tr class="tablerow0">
-		    <td><a href="#Warnings_CORRECTNESS">Correctness Warnings</a></td>
-		    <td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category='CORRECTNESS'])"/></td>
+
+		<xsl:for-each select="$unique-catkey">
+			<xsl:sort select="." order="ascending"/>
+			<xsl:variable name="catkey" select="."/>
+			<xsl:variable name="catdesc" select="/BugCollection/BugCategory[@category=$catkey]/Description"/>
+			<xsl:variable name="styleclass">
+				<xsl:choose><xsl:when test="position() mod 2 = 1">tablerow0</xsl:when>
+					<xsl:otherwise>tablerow1</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+			
+		<tr class="{$styleclass}">
+			<td><a href="#Warnings_{$catkey}"><xsl:value-of select="$catdesc"/> Warnings</a></td>
+			<td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category=$catkey])"/></td>
 		</tr>
-		<tr class="tablerow1">
-		    <td><a href="#Warnings_I18N">Internationalization Warnings</a></td>
-		    <td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category='I18N'])"/></td>
-		</tr>
-		<tr class="tablerow0">
-		    <td><a href="#Warnings_MT_CORRECTNESS">Multithreaded Correctness Warnings</a></td>
-		    <td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category='MT_CORRECTNESS'])"/></td>
-		</tr>
-		<tr class="tablerow1">
-		    <td><a href="#Warnings_MALICIOUS_CODE">Malicious Code Vulnerability Warnings</a></td>
-		    <td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category='MALICIOUS_CODE'])"/></td>
-		</tr>
-		<tr class="tablerow0">
-		    <td><a href="#Warnings_PERFORMANCE">Performance Warnings</a></td>
-		    <td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category='PERFORMANCE'])"/></td>
-		</tr>
-		<tr class="tablerow1">
-		    <td><a href="#Warnings_STYLE">Style Warnings</a></td>
-		    <td align="right"><xsl:value-of select="count(/BugCollection/BugInstance[@category='STYLE'])"/></td>
-		</tr>
-		<tr class="tablerow0">
+		</xsl:for-each>
+
+		<xsl:variable name="styleclass">
+			<xsl:choose><xsl:when test="count($unique-catkey) mod 2 = 0">tablerow0</xsl:when>
+				<xsl:otherwise>tablerow1</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<tr class="{$styleclass}">
 		    <td><b>Total</b></td>
 		    <td align="right"><b><xsl:value-of select="count(/BugCollection/BugInstance)"/></b></td>
 		</tr>
@@ -187,41 +192,17 @@
 
 	<p>Click on a warning row to see full context information.</p>
 
-	<xsl:call-template name="generateWarningTable">
-		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='CORRECTNESS']"/>
-		<xsl:with-param name="sectionTitle">Correctness Warnings</xsl:with-param>
-		<xsl:with-param name="sectionId">Warnings_CORRECTNESS</xsl:with-param>
-	</xsl:call-template>
-
-	<xsl:call-template name="generateWarningTable">
-		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='I18N']"/>
-		<xsl:with-param name="sectionTitle">Internationalization Warnings</xsl:with-param>
-		<xsl:with-param name="sectionId">Warnings_I18N</xsl:with-param>
-	</xsl:call-template>
-
-	<xsl:call-template name="generateWarningTable">
-		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='MT_CORRECTNESS']"/>
-		<xsl:with-param name="sectionTitle">Multithreaded Correctness Warnings</xsl:with-param>
-		<xsl:with-param name="sectionId">Warnings_MT_CORRECTNESS</xsl:with-param>
-	</xsl:call-template>
-
-	<xsl:call-template name="generateWarningTable">
-		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='MALICIOUS_CODE']"/>
-		<xsl:with-param name="sectionTitle">Malicious Code Vulnerability Warnings</xsl:with-param>
-		<xsl:with-param name="sectionId">Warnings_MALICIOUS_CODE</xsl:with-param>
-	</xsl:call-template>
-
-	<xsl:call-template name="generateWarningTable">
-		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='PERFORMANCE']"/>
-		<xsl:with-param name="sectionTitle">Performance Warnings</xsl:with-param>
-		<xsl:with-param name="sectionId">Warnings_PERFORMANCE</xsl:with-param>
-	</xsl:call-template>
-
-	<xsl:call-template name="generateWarningTable">
-		<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category='STYLE']"/>
-		<xsl:with-param name="sectionTitle">Style Warnings</xsl:with-param>
-		<xsl:with-param name="sectionId">Warnings_STYLE</xsl:with-param>
-	</xsl:call-template>
+	<xsl:for-each select="$unique-catkey">
+		<xsl:sort select="." order="ascending"/>
+		<xsl:variable name="catkey" select="."/>
+		<xsl:variable name="catdesc" select="/BugCollection/BugCategory[@category=$catkey]/Description"/>
+			
+		<xsl:call-template name="generateWarningTable">
+			<xsl:with-param name="warningSet" select="/BugCollection/BugInstance[@category=$catkey]"/>
+			<xsl:with-param name="sectionTitle"><xsl:value-of select="$catdesc"/> Warnings</xsl:with-param>
+			<xsl:with-param name="sectionId">Warnings_<xsl:value-of select="$catkey"/></xsl:with-param>
+		</xsl:call-template>
+	</xsl:for-each>
 
 	<h1><a name="Details">Details</a></h1>
 

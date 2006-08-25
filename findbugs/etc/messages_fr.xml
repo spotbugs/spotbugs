@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- French translation provided by David Cotton :) -->
 <!-- Based on revision 1.307 of message.xml. -->
-<MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="messagecollection.xsd">
+<MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:noNamespaceSchemaLocation="messagecollection.xsd">
  <Plugin>
   <ShortDescription>Default FindBugs plugin</ShortDescription>
   <Details>
@@ -10,6 +11,44 @@
 ]]>
   </Details>
  </Plugin>
+
+
+  <BugCategory category="CORRECTNESS">
+    <Description>Droiture</Description>
+    <!-- Details subelement needed -->
+  </BugCategory>
+
+  <!-- BugCategory category="BAD_PRACTICE">
+    <Description> </Description>
+    <Details> </Details>
+    </BugCategory -->
+
+  <BugCategory category="STYLE">
+    <Description>Style</Description>
+    <!-- Details subelement needed -->
+  </BugCategory>
+
+  <BugCategory category="PERFORMANCE">
+    <Description>Performance</Description>
+    <!-- Details subelement needed -->
+  </BugCategory>
+
+  <BugCategory category="MALICIOUS_CODE">
+    <Description>Vulnérabilité au code malveillant</Description>
+    <!-- Details subelement needed -->
+  </BugCategory>
+
+  <BugCategory category="MT_CORRECTNESS">
+    <Description>Droiture en environnement multitâche</Description>
+    <!-- Details subelement needed -->
+  </BugCategory>
+
+  <BugCategory category="I18N">
+    <Description>Internationalisation</Description>
+    <!-- Details subelement needed -->
+  </BugCategory>
+
+
  <Detector class="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation">
   <Details>
 <![CDATA[

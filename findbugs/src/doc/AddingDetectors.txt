@@ -87,13 +87,18 @@ of the findbugs source distribution.
        Note that multiple BugPatterns can use the same abbreviation
        if they are related.  (See the BugCode element in messages.xml).
 
-    3. "category" is one of the following:
+    3. "category" can be one of categories defined in the core plugin's messages.xml:
 
-       CORRECTNESS - general correctness issues
+       CORRECTNESS - code that was probably not what the developer intended
+       BAD_PRACTICE - violations of recommended and essential coding practice
+       STYLE - code that is confusing, anomalous, or written in a way that that leads itself to errors
        MT_CORRECTNESS - multithreaded correctness issues
        MALICIOUS_CODE - a potential vulnerability if exposed to malicious code
        PERFORMANCE - a performance issue
+       I18N - internationalization and locale
 
+       or you may create your own category, in which case you should define
+       it in a <BugCategory> element in _your_ messages.xml file.
 
 ============================
 4. Example messages.xml file
@@ -142,6 +147,14 @@ of the findbugs source distribution.
 
   <MessageCollection> is the top level element
 
+  <BugCategory> elements optionally describe any categories you
+  may have created for your bug patterns. You can skip these if
+  you are using only the categories defined by the core plugin.
+  
+    The <Description> child element has a brief (a word or three)
+    description of the category. The <Details> child element
+    may describe it in more detail (but no markup).
+
   <Detector> holds meta-information about a Detector in the plugin.
   The required "class" attribute specifies the Detector class.
   Detector elements much have the following child elements:
@@ -164,7 +177,8 @@ of the findbugs source distribution.
     is turned on in the GUI, and for output using the command line UI.
     The placeholders in the long description ({0}, {1}, etc.)
     refer to BugAnnotations attached to the BugInstances reported by
-    the detector for this bug pattern.
+    the detector for this bug pattern. You may also use constructs
+    like {1.name} or {1.returnType}.
   
     <Details> this is the descriptive text to be used in the Details
     window.  It consists of HTML markup to appear in the BODY element of an HTML
