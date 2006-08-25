@@ -15,4 +15,18 @@ class BadEquals {
 		if ("test".equals(args))
 			System.out.println("Found test 2");
 	}
+	
+	public boolean b(int [] a, Object [] b) {
+		// TODO: Report this as a H C EC
+		return a.equals(b); 
+	}
+	public boolean b(int [] a, String b) {
+		return a.equals(b); 
+	}
+	public boolean b(int [] a, int[][] b) {
+		return a.equals(b); 
+	}
+	public boolean b(int [] a, double [] b) {
+		return a.equals(b); 
+	}
 }
