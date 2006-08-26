@@ -55,7 +55,7 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 	}
 
 	public BlockOrder getBlockOrder(CFG cfg) {
-		return new ReversePostfixOrder(cfg, dfs);
+		return new ReversePostOrder(cfg, dfs);
 	}
 
 	public static void main(String[] argv) throws Exception {

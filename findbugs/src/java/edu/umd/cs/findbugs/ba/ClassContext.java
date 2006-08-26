@@ -925,7 +925,7 @@ public class ClassContext {
 
 						ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(method);
 
-						LiveLocalStoreAnalysis analysis = new LiveLocalStoreAnalysis(methodGen, rdfs);
+						LiveLocalStoreAnalysis analysis = new LiveLocalStoreAnalysis(methodGen, rdfs, getDepthFirstSearch(method));
 						LiveLocalStoreDataflow dataflow = new LiveLocalStoreDataflow(cfg, analysis);
 
 						dataflow.execute();
@@ -983,14 +983,15 @@ public class ClassContext {
 				
 				UnconditionalValueDerefAnalysis analysis = new UnconditionalValueDerefAnalysis(
 						getReverseDepthFirstSearch(method),
+						getDepthFirstSearch(method),
 						cfg,
 						getMethodGen(method),
-						vnd,
-						getAssertionMethods()
+						vnd, getAssertionMethods()
 						);
 				
+				IsNullValueDataflow inv = getIsNullValueDataflow(method);
 				// XXX: hack to clear derefs on not-null branches
-				analysis.clearDerefsOnNonNullBranches(getIsNullValueDataflow(method));
+				analysis.clearDerefsOnNonNullBranches(inv);
 				
 				// XXX: type analysis is needed to resolve method calls for
 				// checking whether call targets unconditionally dereference parameters
@@ -1000,7 +1001,7 @@ public class ClassContext {
 					new UnconditionalValueDerefDataflow(getCFG(method), analysis);
 				dataflow.execute();
 				 if (UnconditionalValueDerefAnalysis.DEBUG) {
-			        	System.out.println("\n\nUnconditionalValueDerefAnalysis analysis for " + method.getName());
+			        	System.out.println("\n\n{ UnconditionalValueDerefAnalysis analysis for " + method.getName());
 			        	TreeSet<Location> tree = new TreeSet<Location>();
 			        	
 			        	for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
@@ -1011,13 +1012,17 @@ public class ClassContext {
 			        		UnconditionalValueDerefSet factAfterLocation = dataflow.getFactAfterLocation(loc);
 							System.out.println("\n Pre: " + factAfterLocation);
 							System.out.println("Vna: " + vnd.getFactAtLocation(loc));
+							System.out.println("inv: " + inv.getFactAtLocation(loc));
 			        		System.out.println("Location: " + loc);
 			        		System.out.println("Post: " + dataflow.getFactAtLocation(loc));
 			        		System.out.println("Vna: " + vnd.getFactAfterLocation(loc));
+			        		System.out.println("inv: " + inv.getFactAfterLocation(loc));
+							
 			        		
 			        		
 			        		
 			        	}
+			        	System.out.println("}\n\n");
 			        }
 			 
 				return dataflow;

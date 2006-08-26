@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * 
  * @author David Hovemeyer
  */
-public class WillBeDereferencedAnalysis extends BackwardDataflowAnalysis<WillBeDereferencedInfo> {
+public @Deprecated class WillBeDereferencedAnalysis extends BackwardDataflowAnalysis<WillBeDereferencedInfo> {
 	 
 
 	private static final boolean DEBUG = SystemProperties.getBoolean("npe.deref.debug");
@@ -64,7 +64,7 @@ public class WillBeDereferencedAnalysis extends BackwardDataflowAnalysis<WillBeD
 			MethodGen methodGen,
 			ValueNumberDataflow vnaDataflow,
 			TypeDataflow typeDataflow) {
-		super(rdfs);
+		super(rdfs, null);
 		this.cfg = cfg;
 		this.methodGen = methodGen;
 		//this.typeDataflow = typeDataflow;

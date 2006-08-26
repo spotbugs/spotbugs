@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Dataflow;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowTestDriver;
+import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Hierarchy;
@@ -95,6 +96,7 @@ public class UnconditionalValueDerefAnalysis extends
 	 * Constructor.
 	 * 
 	 * @param rdfs               the reverse depth-first-search (for the block order)
+	 * @param dfs TODO
 	 * @param cfg                the CFG for the method
 	 * @param methodGen          the MethodGen for the method
 	 * @param assertionMethods   AssertionMethods for the analyzed class
@@ -102,12 +104,12 @@ public class UnconditionalValueDerefAnalysis extends
 	 */
 	public UnconditionalValueDerefAnalysis(
 			ReverseDepthFirstSearch rdfs,
+			DepthFirstSearch dfs,
 			CFG cfg,
 			MethodGen methodGen,
-			ValueNumberDataflow vnaDataflow,
-			AssertionMethods assertionMethods
+			ValueNumberDataflow vnaDataflow, AssertionMethods assertionMethods
 			) {
-		super(rdfs);
+		super(rdfs, dfs);
 		this.cfg = cfg;
 		this.methodGen = methodGen;
 		this.vnaDataflow = vnaDataflow;

@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.ba.DataflowTestDriver;
 import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
-import edu.umd.cs.findbugs.ba.ReversePostfixOrder;
+import edu.umd.cs.findbugs.ba.ReversePostOrder;
 
 public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
 	private CFG cfg;
@@ -85,7 +85,7 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
 	}
 
 	public BlockOrder getBlockOrder(CFG cfg) {
-		return new ReversePostfixOrder(cfg, dfs);
+		return new ReversePostOrder(cfg, dfs);
 	}
 	
 	public void makeFactTop(CallList fact) {

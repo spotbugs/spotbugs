@@ -72,7 +72,7 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 			MethodGen methodGen,
 			ValueNumberDataflow vnaDataflow,
 			TypeDataflow typeDataflow) {
-		super(rdfs);
+		super(rdfs, null);
 		this.cfg = cfg;
 		this.methodGen = methodGen;
 		//this.typeDataflow = typeDataflow;

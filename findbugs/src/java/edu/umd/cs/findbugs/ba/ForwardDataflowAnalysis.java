@@ -45,7 +45,7 @@ public abstract class ForwardDataflowAnalysis <Fact> extends AbstractDataflowAna
 	}
 
 	public BlockOrder getBlockOrder(CFG cfg) {
-		return new ReversePostfixOrder(cfg, dfs);
+		return new ReversePostOrder(cfg, dfs);
 	}
 }
 

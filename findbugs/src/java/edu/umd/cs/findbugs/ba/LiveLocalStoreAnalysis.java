@@ -49,8 +49,8 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 	private int topBit ;
 	private int killedByStoreOffset;
 
-	public LiveLocalStoreAnalysis(MethodGen methodGen, ReverseDepthFirstSearch rdfs) {
-		super(rdfs);
+	public LiveLocalStoreAnalysis(MethodGen methodGen, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
+		super(rdfs, dfs);
 		this.topBit = methodGen.getMaxLocals() * 2;
 		this.killedByStoreOffset = methodGen.getMaxLocals();
 	}

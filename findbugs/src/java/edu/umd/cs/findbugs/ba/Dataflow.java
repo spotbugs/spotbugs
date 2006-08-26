@@ -56,6 +56,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	 *
 	 * @param cfg      the control flow graph
 	 * @param analysis the DataflowAnalysis to be run
+	 * @throws  
 	 */
 	public Dataflow(CFG cfg, AnalysisType analysis) {
 		this.cfg = cfg;
@@ -68,10 +69,17 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 		Iterator<BasicBlock> i = cfg.blockIterator();
 		while (i.hasNext()) {
 			BasicBlock block = i.next();
-
+			
+			
 			// Initial result facts are whatever the analysis sets them to be.
 			Fact result = analysis.getResultFact(block);
-			analysis.initResultFact(result);
+			if (block == logicalEntryBlock())
+				try {
+					analysis.initEntryFact(result);
+				} catch (DataflowAnalysisException e) {
+					 analysis.initResultFact(result);
+				}
+			else analysis.initResultFact(result);
 		}
 	}
 
@@ -109,6 +117,20 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				throw new DataflowAnalysisException("Too many iterations (" + numIterations + ") in dataflow!");
 	
 			analysis.startIteration();
+			
+			if (DEBUG) {
+				if (blockOrder instanceof ReverseDFSOrder) {
+					ReverseDFSOrder rBlockOrder = (ReverseDFSOrder) blockOrder;
+				System.out.println("Entry point is: " + logicalEntryBlock());
+				System.out.println("Basic block order: ");
+				Iterator<BasicBlock> i = blockOrder.blockIterator();
+				while (i.hasNext()) {
+
+					BasicBlock block = i.next();
+					if (DEBUG) debug(block, "rBlockOrder " + rBlockOrder.rdfs.getDiscoveryTime(block) + "\n");
+				}
+				}
+			}
 			
 			// For each block in CFG...
 			Iterator<BasicBlock> i = blockOrder.blockIterator();

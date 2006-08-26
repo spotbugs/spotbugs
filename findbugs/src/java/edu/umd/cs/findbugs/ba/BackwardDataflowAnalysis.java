@@ -30,10 +30,12 @@ package edu.umd.cs.findbugs.ba;
  */
 public abstract class BackwardDataflowAnalysis<Fact> extends AbstractDataflowAnalysis<Fact> {
 	private ReverseDepthFirstSearch rdfs;
+	private DepthFirstSearch dfs;
 
-	public BackwardDataflowAnalysis(ReverseDepthFirstSearch rdfs) {
-		if (rdfs == null) throw new IllegalArgumentException();
+	public BackwardDataflowAnalysis(ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
+		if (rdfs == null || dfs == null) throw new IllegalArgumentException();
 		this.rdfs = rdfs;
+		this.dfs = dfs;
 	}
 
 	protected ReverseDepthFirstSearch getReverseDepthFirstSearch() {
@@ -45,7 +47,7 @@ public abstract class BackwardDataflowAnalysis<Fact> extends AbstractDataflowAna
 	}
 
 	public BlockOrder getBlockOrder(CFG cfg) {
-		return new ReverseDFSOrder(cfg, rdfs);
+		return new ReverseDFSOrder(cfg, rdfs, dfs);
 	}
 }
 

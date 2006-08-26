@@ -75,7 +75,7 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
 	}
 
 	public BlockOrder getBlockOrder(CFG cfg) {
-		return new ReversePostfixOrder(cfg, dfs);
+		return new ReversePostOrder(cfg, dfs);
 	}
 
 	public boolean same(BlockType fact1, BlockType fact2) {

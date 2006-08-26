@@ -65,7 +65,7 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 	}
 
 	public BlockOrder getBlockOrder(CFG cfg) {
-		return new ReverseDFSOrder(cfg, rdfs);
+		return new ReverseDFSOrder(cfg, rdfs, null);
 	}
 	
 	public static void main(String[] args) throws Exception {

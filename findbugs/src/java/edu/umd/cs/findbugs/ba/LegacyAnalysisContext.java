@@ -90,7 +90,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	 * Default maximum number of ClassContext objects to cache.
 	 * FIXME: need to evaluate this parameter. Need to keep stats about accesses.
 	 */
-	private static final int DEFAULT_CACHE_SIZE = 3;
+	private static final int DEFAULT_CACHE_SIZE = 6;
 
 	/**
 	 * Constructor.
@@ -213,7 +213,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	@Override
 	public ClassContext getClassContext(JavaClass javaClass) {
 		if (classContextCache == null) {
-		int cacheSize = getBoolProperty(AnalysisFeatures.CONSERVE_SPACE) ? 1 : DEFAULT_CACHE_SIZE;
+		int cacheSize = getBoolProperty(AnalysisFeatures.CONSERVE_SPACE) ? 3 : DEFAULT_CACHE_SIZE;
 		classContextCache = new MapCache<JavaClass,ClassContext>(cacheSize);
 		}
 		ClassContext classContext = classContextCache.get(javaClass);

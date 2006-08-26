@@ -114,9 +114,6 @@ public class UnconditionalValueDerefSet {
 	 * @param source another dataflow fact
 	 */
 	public void makeSameAs(UnconditionalValueDerefSet source) {
-		if (UnconditionalValueDerefAnalysis.DEBUG) {
-			System.out.println("assignment update of # " + System.identityHashCode(this) + " from " + System.identityHashCode(source));
-		}
 		// Copy value numbers
 		valueNumberSet.clear();
 		valueNumberSet.or(source.valueNumberSet);

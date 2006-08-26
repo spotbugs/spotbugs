@@ -33,15 +33,17 @@ import java.util.Comparator;
  * @see BasicBlock
  */
 public class ReverseDFSOrder extends AbstractBlockOrder {
+	public ReverseDepthFirstSearch rdfs;
+	public DepthFirstSearch dfs;
 	private static class ReverseDFSComparator implements Comparator<BasicBlock> {
-		private ReverseDepthFirstSearch rdfs;
-
-		public ReverseDFSComparator(ReverseDepthFirstSearch rdfs) {
+		public ReverseDepthFirstSearch rdfs;
+		public DepthFirstSearch dfs;
+		public ReverseDFSComparator(ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
 			this.rdfs = rdfs;
+			this.dfs = dfs;
 		}
-
 		public int compare(BasicBlock a, BasicBlock b) {
-			return rdfs.getDiscoveryTime(a) - rdfs.getDiscoveryTime(b);
+			return dfs.getFinishTime(a) - dfs.getFinishTime(b);
 		}
 	}
 
@@ -50,9 +52,12 @@ public class ReverseDFSOrder extends AbstractBlockOrder {
 	 *
 	 * @param cfg  the CFG
 	 * @param rdfs the ReverseDepthFirstSearch of the CFG
+	 * @param dfs TODO
 	 */
-	public ReverseDFSOrder(CFG cfg, ReverseDepthFirstSearch rdfs) {
-		super(cfg, new ReverseDFSComparator(rdfs));
+	public ReverseDFSOrder(CFG cfg, ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
+		super(cfg, new ReverseDFSComparator(rdfs, dfs));
+		this.rdfs = rdfs;
+		this.dfs = dfs;
 	}
 }
 

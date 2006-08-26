@@ -32,7 +32,7 @@ import java.util.Comparator;
  * @see CFG
  * @see BasicBlock
  */
-public class ReversePostfixOrder extends AbstractBlockOrder {
+public class ReversePostOrder extends AbstractBlockOrder {
 	/**
 	 * A Comparator to order the blocks in the reverse of the
 	 * order in which they would be finished by a depth first search.
@@ -55,7 +55,7 @@ public class ReversePostfixOrder extends AbstractBlockOrder {
 	 * @param cfg the CFG for the method
 	 * @param dfs the DepthFirstSearch on the method
 	 */
-	public ReversePostfixOrder(CFG cfg, DepthFirstSearch dfs) {
+	public ReversePostOrder(CFG cfg, DepthFirstSearch dfs) {
 		super(cfg, new ReversePostfixComparator(dfs));
 	}
 }
