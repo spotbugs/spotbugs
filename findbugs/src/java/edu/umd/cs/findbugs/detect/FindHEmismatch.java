@@ -266,6 +266,9 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 
 	@Override
 	public void visit(Method obj) {
+		stack.resetForMethodEntry(this);
+		System.out.println("HE check for " + getFullyQualifiedMethodName());
+		
 		int accessFlags = obj.getAccessFlags();
 		if ((accessFlags & ACC_STATIC) != 0)
 			return;
@@ -378,7 +381,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 	@Override
 	public void report() {
 		for(Map.Entry<String, BugInstance> e : potentialBugs.entrySet()) {
-			if (isHashableClassName(e.getKey())) 
+			if (!isHashableClassName(e.getKey())) 
 				bugReporter.reportBug(e.getValue());
 		}
 		

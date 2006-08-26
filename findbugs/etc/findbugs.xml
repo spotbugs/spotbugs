@@ -658,7 +658,7 @@
   <BugPattern abbrev="Co" type="CO_SELF_NO_OBJECT" category="BAD_PRACTICE" />
   <BugPattern abbrev="ES" type="ES_COMPARING_STRINGS_WITH_EQ" category="CORRECTNESS" />
   <BugPattern abbrev="ES" type="ES_COMPARING_PARAMETER_STRING_WITH_EQ" category="STYLE" />
-  <BugPattern abbrev="HE" type="HE_USE_OF_UNHASHABLE_CLASS" category="BAD_PRACTICE" />
+  <BugPattern abbrev="HE" type="HE_USE_OF_UNHASHABLE_CLASS" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="BAD_PRACTICE" />
   <BugPattern abbrev="HE" type="HE_HASHCODE_NO_EQUALS" category="BAD_PRACTICE" />
   <BugPattern abbrev="HE" type="HE_EQUALS_USE_HASHCODE" category="BAD_PRACTICE" />
@@ -729,7 +729,7 @@
   <BugPattern abbrev="SS" type="SS_SHOULD_BE_STATIC" category="PERFORMANCE" />
   <BugPattern abbrev="UuF" type="UUF_UNUSED_FIELD" category="PERFORMANCE" />
   <BugPattern abbrev="UrF" type="URF_UNREAD_FIELD" category="PERFORMANCE" />
-  <BugPattern abbrev="QF" type="QF_QUESTIONABLE_FOR_LOOP" category="CORRECTNESS" />
+  <BugPattern abbrev="QF" type="QF_QUESTIONABLE_FOR_LOOP" category="STYLE" />
   <BugPattern abbrev="NP" type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" category="STYLE"
          experimental="true" />  <!-- deprecated in favor of UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR -->
   <BugPattern abbrev="NP" type="NP_UNWRITTEN_FIELD" category="CORRECTNESS" />
