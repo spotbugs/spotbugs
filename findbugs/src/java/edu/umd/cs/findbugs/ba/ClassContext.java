@@ -731,7 +731,7 @@ public class ClassContext {
 				PostDominatorsAnalysis analysis = new PostDominatorsAnalysis(
 						cfg,
 						getReverseDepthFirstSearch(method),
-						new EdgeChooser() {
+						getDepthFirstSearch(method), new EdgeChooser() {
 					public boolean choose(Edge edge) {
 						return !edge.isExceptionEdge()
 							||  edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG);
