@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import org.apache.bcel.generic.ACONST_NULL;
+import org.apache.bcel.generic.ANEWARRAY;
 import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETFIELD;
@@ -294,6 +295,11 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
 	@Override
 	public void visitNEWARRAY(NEWARRAY obj) {
+		modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
+		produce(IsNullValue.nonNullValue());
+	}
+	@Override
+	public void visitANEWARRAY(ANEWARRAY obj) {
 		modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
 		produce(IsNullValue.nonNullValue());
 	}
