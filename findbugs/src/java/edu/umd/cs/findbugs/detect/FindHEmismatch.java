@@ -267,7 +267,6 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 	@Override
 	public void visit(Method obj) {
 		stack.resetForMethodEntry(this);
-		System.out.println("HE check for " + getFullyQualifiedMethodName());
 		
 		int accessFlags = obj.getAccessFlags();
 		if ((accessFlags & ACC_STATIC) != 0)
