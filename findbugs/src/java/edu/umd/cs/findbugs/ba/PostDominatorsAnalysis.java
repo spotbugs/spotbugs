@@ -33,8 +33,8 @@ import edu.umd.cs.findbugs.SystemProperties;
  * @see AbstractDominatorsAnalysis
  */
 public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
-	private ReverseDepthFirstSearch rdfs;
-	private DepthFirstSearch dfs;
+	final private ReverseDepthFirstSearch rdfs;
+	final private DepthFirstSearch dfs;
 	
 	/**
 	 * Constructor.
@@ -55,12 +55,14 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 	 *
 	 * @param cfg                  the CFG to compute dominator relationships for
 	 * @param rdfs                 the ReverseDepthFirstSearch on the CFG
+	 * @param dfs TODO
 	 * @param ignoreExceptionEdges true if exception edges should be ignored
 	 */
 	public PostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs,
-	                              boolean ignoreExceptionEdges) {
+	                              DepthFirstSearch dfs, boolean ignoreExceptionEdges) {
 		super(cfg, ignoreExceptionEdges);
 		this.rdfs = rdfs;
+		this.dfs = dfs;
 	}
 
 	public boolean isForwards() {
@@ -68,7 +70,7 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 	}
 
 	public BlockOrder getBlockOrder(CFG cfg) {
-		return new ReverseDFSOrder(cfg, rdfs, null);
+		return new ReverseDFSOrder(cfg, rdfs, dfs);
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -89,7 +91,7 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 				ReverseDepthFirstSearch rdfs = classContext.getReverseDepthFirstSearch(method);
 				
 				PostDominatorsAnalysis analysis =
-					new PostDominatorsAnalysis(cfg, rdfs, SystemProperties.getBoolean("dominators.ignoreexceptionedges"));
+					new PostDominatorsAnalysis(cfg, rdfs, classContext.getDepthFirstSearch(method), SystemProperties.getBoolean("dominators.ignoreexceptionedges"));
 			
 				Dataflow<BitSet, PostDominatorsAnalysis> dataflow =
 					new Dataflow<BitSet, PostDominatorsAnalysis>(cfg, analysis);

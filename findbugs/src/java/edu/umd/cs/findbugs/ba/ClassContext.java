@@ -715,7 +715,7 @@ public class ClassContext {
                          protected PostDominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        CFG cfg = getCFG(method);
 			        ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(method);
-			        PostDominatorsAnalysis analysis = new PostDominatorsAnalysis(cfg, rdfs, true);
+			        PostDominatorsAnalysis analysis = new PostDominatorsAnalysis(cfg, rdfs, getDepthFirstSearch(method), true);
 			        Dataflow<java.util.BitSet, PostDominatorsAnalysis> dataflow =
 			                new Dataflow<java.util.BitSet, PostDominatorsAnalysis>(cfg, analysis);
 			        dataflow.execute();
