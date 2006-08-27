@@ -39,7 +39,9 @@ public class ReverseDFSOrder extends AbstractBlockOrder {
 		public ReverseDepthFirstSearch rdfs;
 		public DepthFirstSearch dfs;
 		public ReverseDFSComparator(ReverseDepthFirstSearch rdfs, DepthFirstSearch dfs) {
+			if (rdfs == null) throw new IllegalArgumentException();
 			this.rdfs = rdfs;
+			if (dfs == null) throw new IllegalArgumentException();
 			this.dfs = dfs;
 		}
 		public int compare(BasicBlock a, BasicBlock b) {
