@@ -581,21 +581,21 @@ public class IsNullValueAnalysis
 					// learn that nextToTos is definitely non null on one branch
 					value = prevVnaFrame.getStackValue(1);
 					if (cmpeq) {
-						ifcmpDecision = IsNullValue.pathSensitiveNonNullValue();
+						ifcmpDecision = tos;
 						fallThroughDecision = nextToTos;
 					} else {
-						fallThroughDecision = IsNullValue.pathSensitiveNonNullValue();
+						fallThroughDecision = tos;
 						ifcmpDecision = nextToTos;
 					}
 				} else if (!tos.isDefinitelyNotNull() && nextToTos.isDefinitelyNotNull()) {
 					// learn that tos is definitely non null on one branch
 					value = prevVnaFrame.getStackValue(0);
 					if (cmpeq) {
-						ifcmpDecision = IsNullValue.pathSensitiveNonNullValue();
-						fallThroughDecision = nextToTos;
-					} else {
-						fallThroughDecision = IsNullValue.pathSensitiveNonNullValue();
 						ifcmpDecision = nextToTos;
+						fallThroughDecision = tos;
+					} else {
+						fallThroughDecision = nextToTos;
+						ifcmpDecision = tos;
 					}
 				} else {
 					// No information gained
