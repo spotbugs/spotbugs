@@ -552,10 +552,10 @@ public class IsNullValueAnalysis
 		case Constants.IF_ACMPNE:
 			{
 				IsNullValue tos = lastFrame.getStackValue(0);
-				IsNullValue nextToTOS = lastFrame.getStackValue(1);
+				IsNullValue nextToTos = lastFrame.getStackValue(1);
 
 				boolean tosNull = tos.isDefinitelyNull();
-				boolean nextToTOSNull = nextToTOS.isDefinitelyNull();
+				boolean nextToTosNull = nextToTos.isDefinitelyNull();
 
 				boolean cmpeq = (lastInSourceOpcode == Constants.IF_ACMPEQ);
 
@@ -564,19 +564,39 @@ public class IsNullValueAnalysis
 				IsNullValue fallThroughDecision = null;
 				ValueNumber value;
 
-				if (tosNull && nextToTOSNull) {
+				if (tosNull && nextToTosNull) {
 					// Redundant comparision: both values are null, only one branch is feasible
 					value = null; // no value will be replaced - just want to indicate that one of the branches is infeasible
 					if (cmpeq)
 						ifcmpDecision = IsNullValue.pathSensitiveNullValue();
 					else // cmpne
 						fallThroughDecision = IsNullValue.pathSensitiveNullValue();
-				} else if (tosNull || nextToTOSNull) {
+				} else if (tosNull || nextToTosNull) {
 					// We have updated information about whichever value is not null;
 					// both branches are feasible
 					value = prevVnaFrame.getStackValue(tosNull ? 1 : 0);
 					ifcmpDecision = cmpeq ? IsNullValue.pathSensitiveNullValue() : IsNullValue.pathSensitiveNonNullValue();
 					fallThroughDecision = cmpeq ? IsNullValue.pathSensitiveNonNullValue() : IsNullValue.pathSensitiveNullValue();
+				} else if (tos.isDefinitelyNotNull() && !nextToTos.isDefinitelyNotNull()) {
+					// learn that nextToTos is definitely non null on one branch
+					value = prevVnaFrame.getStackValue(1);
+					if (cmpeq) {
+						ifcmpDecision = IsNullValue.pathSensitiveNonNullValue();
+						fallThroughDecision = nextToTos;
+					} else {
+						fallThroughDecision = IsNullValue.pathSensitiveNonNullValue();
+						ifcmpDecision = nextToTos;
+					}
+				} else if (!tos.isDefinitelyNotNull() && nextToTos.isDefinitelyNotNull()) {
+					// learn that tos is definitely non null on one branch
+					value = prevVnaFrame.getStackValue(0);
+					if (cmpeq) {
+						ifcmpDecision = IsNullValue.pathSensitiveNonNullValue();
+						fallThroughDecision = nextToTos;
+					} else {
+						fallThroughDecision = IsNullValue.pathSensitiveNonNullValue();
+						ifcmpDecision = nextToTos;
+					}
 				} else {
 					// No information gained
 					break;

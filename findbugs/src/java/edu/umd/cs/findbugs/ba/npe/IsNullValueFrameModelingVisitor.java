@@ -245,8 +245,20 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		if (checkForKnownValue(obj)) {
 			return;
 		}
+		XField field = XFactory.createXField(obj, cpg);
 		
+		NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase().getResolvedAnnotation(field, false);
+		if (annotation == NullnessAnnotation.NONNULL) {
+			modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
+			produce(IsNullValue.nonNullValue());
+		}
+		else if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
+				modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
+				produce(IsNullValue.nullOnSimplePathValue());
+		} else {
+
 		super.visitGETSTATIC(obj);
+		}
 	}
 	
 	/**
