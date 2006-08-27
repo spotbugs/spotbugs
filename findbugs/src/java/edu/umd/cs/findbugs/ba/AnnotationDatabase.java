@@ -299,6 +299,11 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration> {
 	
 	}
 
+	protected void addFieldAnnotation(String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
+		XField m = XFactory.createXField(cName, mName, mSig, isStatic);
+		addDirectAnnotation(m, annotation);
+	}
+
 	protected void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
 		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
 		addDirectAnnotation(m, annotation);

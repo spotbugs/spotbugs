@@ -27,7 +27,12 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnotation> {
 	
 	public NullnessAnnotationDatabase() {
+		boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 		addDefaultAnnotation(AnnotationDatabase.METHOD, "java.lang.String", NullnessAnnotation.NONNULL);
+		addFieldAnnotation("java.lang.System", "out", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
+		addFieldAnnotation("java.lang.System", "err", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
+		addFieldAnnotation("java.lang.System", "in", "Ljava/io/InputStream;", true, NullnessAnnotation.NONNULL);
+		
 		addMethodAnnotation("java.lang.reflect.Method", "getParameterTypes", "()[Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
 		addMethodAnnotation("java.lang.Object", "clone", "()[Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
 		
@@ -57,6 +62,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$Transferer", NullnessAnnotation.UNKNOWN_NULLNESS);
 		
 		
+		addMethodParameterAnnotation("java.lang.System", "identityHashCode", "(Ljava/lang/Object;)I", true, 0, NullnessAnnotation.NONNULL);
 		
 		addMethodParameterAnnotation("java.util.concurrent.ConcurrentHashMap$Segment", "remove", "(Ljava/lang/Object;ILjava/lang/Object;)Ljava/lang/Object;", false, 2, NullnessAnnotation.CHECK_FOR_NULL);
 		addMethodParameterAnnotation("java.util.concurrent.CyclicBarrier", "<init>", "(ILjava/lang/Runnable;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
@@ -95,6 +101,8 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 	
 		// addMethodAnnotation("java.util.Queue", "poll", "()Ljava/lang/Object;", false, NullnessAnnotation.CHECK_FOR_NULL);
 		addMethodAnnotation("java.io.BufferedReader", "readLine", "()Ljava/lang/String;", false, NullnessAnnotation.CHECK_FOR_NULL);
+	
+		AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
 	}
 	public boolean parameterMustBeNonNull(XMethod m, int param) {
 		if (!anyAnnotations(NullnessAnnotation.NONNULL)) return false;

@@ -29,6 +29,8 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 	
 	private JavaClass throwableClass, threadClass;
 	public CheckReturnAnnotationDatabase() {
+		boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
+		
 		addMethodAnnotation("java.util.Iterator","hasNext", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
 		addMethodAnnotation("java.io.File","createNewFile", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_LOW);
 		addMethodAnnotation("java.io.DataInputStream","skipBytes", "(I)I", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
@@ -71,6 +73,8 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		addMethodAnnotation("java.math.BigInteger", "subN", "([I[II)I", true, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_IGNORE);
 		addDefaultMethodAnnotation("java.sql.Connection", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_HIGH);
 		addDefaultMethodAnnotation("java.net.InetAddress", CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
+		AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
+		
 		try {
 			throwableClass = Repository.lookupClass("java.lang.Throwable");
 		} catch (ClassNotFoundException e) {

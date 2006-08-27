@@ -52,7 +52,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	private ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase;
 	
 	
-	private NullnessAnnotationDatabase nullnessAnnotationDatabase = new NullnessAnnotationDatabase();
+	private NullnessAnnotationDatabase nullnessAnnotationDatabase; //= new NullnessAnnotationDatabase();
 	
 	@Override
 	public NullnessAnnotationDatabase getNullnessAnnotationDatabase() {
@@ -134,6 +134,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		checkReturnAnnotationDatabase = new CheckReturnAnnotationDatabase();
 		annotationRetentionDatabase = new AnnotationRetentionDatabase();
 		jcipAnnotationDatabase = new JCIPAnnotationDatabase();
+		nullnessAnnotationDatabase = new NullnessAnnotationDatabase();
 	}
 
 	@Override

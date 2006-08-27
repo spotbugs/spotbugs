@@ -143,6 +143,8 @@ public abstract class AnalysisContext {
 	static public XFactory currentXFactory() {
 		return currentXFactory.get();
 	}
+	
+	
 	/**
 	 * file a ClassNotFoundException with the lookupFailureCallback
 	 * @see #getLookupFailureCallback()
@@ -150,10 +152,17 @@ public abstract class AnalysisContext {
 	static public void reportMissingClass(ClassNotFoundException e) {
 		AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
 		if (currentAnalysisContext2 == null) return;
+		if (currentAnalysisContext2.missingClassWarningsSuppressed) return;
 		RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
 		if (lookupFailureCallback != null) lookupFailureCallback.reportMissingClass(e);
 	}
+	boolean missingClassWarningsSuppressed = false;
 	
+	public boolean setMissingClassWarningsSuppressed(boolean value) {
+		boolean oldValue = missingClassWarningsSuppressed;
+		missingClassWarningsSuppressed = value;
+		return oldValue;
+	}
 	/**
 	 * Get the lookup failure callback.
 	 */
