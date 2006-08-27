@@ -29,6 +29,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BackwardDataflowAnalysis;
@@ -552,11 +553,16 @@ public class UnconditionalValueDerefAnalysis extends
 			return;
 		}
 		
+		ValueNumber knownNonnullOnBranch = null;
 		// Edge transfer function
 		if (isFactValid(fact)) {
 			fact = propagateDerefSetsToMergeInputValues(fact, edge);
-			if (invDataflow != null && false) {
-				fact = clearDerefsOnNonNullBranch(fact, edge);
+			if (invDataflow != null) {
+				knownNonnullOnBranch = findValueKnownNonnullOnBranch(fact, edge);
+				if (knownNonnullOnBranch != null) {
+					fact = duplicateFact(fact);
+					fact.clearDerefSet(knownNonnullOnBranch);
+				}
 			}
 		}
 		boolean isBackEdge = edge.isBackwardInBytecode();
@@ -598,7 +604,7 @@ public class UnconditionalValueDerefAnalysis extends
 					return;
 				}
 			}
-			result.mergeWith(fact, vnaDataflow.getAnalysis().getFactory());
+			result.mergeWith(fact, knownNonnullOnBranch, vnaDataflow.getAnalysis().getFactory());
 			if (DEBUG) {
 				System.out.println("  updated: " + System.identityHashCode(result));
 				 System.out.println("  result: " +  result);
@@ -715,28 +721,28 @@ public class UnconditionalValueDerefAnalysis extends
 	 * @param edge edge to check
 	 * @return possibly-modified dataflow fact
 	 */
-	private UnconditionalValueDerefSet clearDerefsOnNonNullBranch(
+	private @CheckForNull ValueNumber findValueKnownNonnullOnBranch(
 			UnconditionalValueDerefSet fact, Edge edge) {
 		
 		IsNullValueFrame invFrame = invDataflow.getResultFact(edge.getSource());
 		if (!invFrame.isValid()) {
-			return fact;
+			return null;
 		}
 		IsNullConditionDecision decision = invFrame.getDecision();
 		if (decision == null) {
-			return fact;
+			return null;
 		}
 		
 		IsNullValue inv = decision.getDecision(edge.getType());
 		if (inv == null || !inv.isDefinitelyNotNull()) {
-			return fact;
+			return null;
 		}
 		ValueNumber value = decision.getValue();
+		if (DEBUG) {
+			System.out.println("Value number " + value + " is known nonnull on " + edge);
+		}
 		
-		fact = duplicateFact(fact);
-		fact.clearDerefSet(value);
-		
-		return fact;
+		return value;
 	}
 
 	/**

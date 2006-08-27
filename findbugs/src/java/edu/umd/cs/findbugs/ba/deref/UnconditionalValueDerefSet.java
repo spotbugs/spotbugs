@@ -146,20 +146,28 @@ public class UnconditionalValueDerefSet {
 	 * and union the deref locations.
 	 * 
 	 * @param fact another dataflow fact
+	 * @param skipMe TODO
 	 */
-	public void mergeWith(UnconditionalValueDerefSet fact, ValueNumberFactory valueNumberFactory) {
+	public void mergeWith(UnconditionalValueDerefSet fact, @CheckForNull ValueNumber skipMe, ValueNumberFactory valueNumberFactory) {
 		if (UnconditionalValueDerefAnalysis.DEBUG) {
 			System.out.println("merge update of # " + System.identityHashCode(this) + " from " + System.identityHashCode(fact));
 			System.out.println("update " + this);
 			System.out.println("with " + fact);
 		}
+		boolean resultForSkippedValue = false;
+		if (skipMe != null) {
+			resultForSkippedValue = valueNumberSet.get(skipMe.getNumber());
+		}
 		// Compute the intersection of the unconditionally dereferenced value sets
 		valueNumberSet.and(fact.valueNumberSet);
+		if (skipMe != null) {
+			valueNumberSet.set(skipMe.getNumber(), resultForSkippedValue);
+		}
 
 		// For each unconditionally dereferenced value...
 		for (int i = 0; i < numValueNumbersInMethod; i++) {
 			ValueNumber vn = valueNumberFactory.forNumber(i);
-
+			if (vn.equals(skipMe)) continue;
 			if (valueNumberSet.get(i)) {
 				// Compute the union of the dereference locations for
 				// this value number.
