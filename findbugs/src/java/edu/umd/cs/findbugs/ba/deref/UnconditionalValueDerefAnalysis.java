@@ -555,7 +555,7 @@ public class UnconditionalValueDerefAnalysis extends
 		// Edge transfer function
 		if (isFactValid(fact)) {
 			fact = propagateDerefSetsToMergeInputValues(fact, edge);
-			if (invDataflow != null) {
+			if (invDataflow != null && false) {
 				fact = clearDerefsOnNonNullBranch(fact, edge);
 			}
 		}
