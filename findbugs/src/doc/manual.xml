@@ -467,6 +467,15 @@ These options are only accepted by the Text User Interface.
   </varlistentry>
 
   <varlistentry>
+    <term><command>-outputFile</command> <replaceable>filename</replaceable></term>
+    <listitem>
+       <para>
+       Produce the output in the specified file.
+       </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
   <term><command>-nested</command><replaceable>[:true|false]</replaceable></term>
   <listitem>
     <para>
