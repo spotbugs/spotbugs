@@ -114,6 +114,20 @@ public class AddMessages {
 			element.addAttribute("category", category);
 			Element description = element.addElement("Description");
 			description.setText(I18N.instance().getBugCategoryDescription(category));
+
+			BugCategory bc = I18N.instance().getBugCategory(category);
+			if (bc != null) { // shouldn't be null
+				String s = bc.getAbbrev();
+				if (s != null) {
+					Element abbrev = element.addElement("Abbreviation");
+					abbrev.setText(s);
+				}
+				s = bc.getDetailText();
+				if (s != null) {
+					Element details = element.addElement("Details");
+					details.setText(s);
+				}
+			}
 		}
 	}
 
