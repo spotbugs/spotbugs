@@ -314,6 +314,7 @@ public class UnconditionalValueDerefAnalysis extends
 					if (val.isDefinitelyNotNull()) {
 						continue;
 					}
+					if (IGNORE_DEREF_OF_NONNCP && !val.isNullOnComplicatedPath()) continue;
 				}
 				
 				fact.addDeref(vnaFrame.getValue(argSlot), location);
