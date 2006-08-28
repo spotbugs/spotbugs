@@ -37,6 +37,20 @@ public class SystemProperties {
 		}
 	}
 
+	public static boolean getBoolean(String name, boolean defaultValue) {
+		boolean result = defaultValue;
+		try {
+			result = toBoolean(System.getProperty(name));
+		} catch (IllegalArgumentException e) {
+		} catch (NullPointerException e) {
+		}
+		return result;
+	}
+	private static boolean toBoolean(String name) {
+		return ((name != null) && name.equalsIgnoreCase("true"));
+	}
+
+	  
 	/**
 	 * @param arg0
 	 * @param arg1

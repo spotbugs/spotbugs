@@ -75,14 +75,14 @@ public class UnconditionalValueDerefAnalysis extends
 	
 	public static final boolean DEBUG = SystemProperties.getBoolean("fnd.derefs.debug");
 	public static final boolean ASSUME_NONZERO_TRIP_LOOPS = SystemProperties.getBoolean("fnd.derefs.nonzerotrip");
-	public static final boolean IGNORE_DEREF_OF_NONNCP = true 
-				|| SystemProperties.getBoolean("fnd.derefs.ignorenonNCP");
+	public static final boolean IGNORE_DEREF_OF_NONNCP = 
+		SystemProperties.getBoolean("fnd.derefs.ignorenonNCP", true);
 	public static final boolean IGNORE_DEREF_OF_NONNULL = IGNORE_DEREF_OF_NONNCP 
 									|| SystemProperties.getBoolean("fnd.derefs.ignorenonnull");
-	public static final boolean CHECK_ANNOTATIONS = true || 
-		SystemProperties.getBoolean("fnd.derefs.checkannotations");
-	public static final boolean CHECK_CALLS = true || 
-		SystemProperties.getBoolean("fnd.derefs.checkcalls");
+	public static final boolean CHECK_ANNOTATIONS = 
+		SystemProperties.getBoolean("fnd.derefs.checkannotations", true);
+	public static final boolean CHECK_CALLS = 
+		SystemProperties.getBoolean("fnd.derefs.checkcalls", true);
 	public static final boolean DEBUG_CHECK_CALLS =
 		SystemProperties.getBoolean("fnd.derefs.checkcalls.debug");
 	
