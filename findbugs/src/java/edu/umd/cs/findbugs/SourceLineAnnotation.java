@@ -595,11 +595,15 @@ public class SourceLineAnnotation implements BugAnnotation {
 		if (classname.indexOf('.') > 0) 
 			packageName = classname.substring(0,1+classname.lastIndexOf('.'));
 		XMLAttributeList attributeList = new XMLAttributeList()
-			.addAttribute("classname", classname)
-			.addAttribute("start", String.valueOf(getStartLine()))
-			.addAttribute("end", String.valueOf(getEndLine()))
-			.addAttribute("startBytecode", String.valueOf(getStartBytecode()))
-			.addAttribute("endBytecode", String.valueOf(getEndBytecode()));
+			.addAttribute("classname", classname);
+		int n = getStartLine(); // start/end are now optional (were too many "-1"s in the xml)
+		if (n >= 0) attributeList.addAttribute("start", String.valueOf(n));
+		n = getEndLine();
+		if (n >= 0) attributeList.addAttribute("end", String.valueOf(n));
+		n = getStartBytecode(); // startBytecode/endBytecode haven't been set for a while now
+		if (n >= 0) attributeList.addAttribute("startBytecode", String.valueOf(n));
+		n = getEndBytecode();
+		if (n >= 0) attributeList.addAttribute("endBytecode", String.valueOf(n));
 		
 		if (isSourceFileKnown()) {
 			attributeList.addAttribute("sourcefile", sourceFile);
