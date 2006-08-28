@@ -46,7 +46,7 @@ public class I18N {
 
 	private final ResourceBundle annotationDescriptionBundle;
 	//private final ResourceBundle bugCategoryDescriptionBundle;
-	private final HashMap<String, String> categoryDescriptionMap;
+	private final HashMap<String, BugCategory> categoryDescriptionMap;
 	private final ResourceBundle userDesignationBundle;
 	private final HashMap<String, BugPattern> bugPatternMap;
 	private final HashMap<String, BugCode> bugCodeMap;
@@ -54,7 +54,7 @@ public class I18N {
 	private I18N() {
 		annotationDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsAnnotationDescriptions");
 		//bugCategoryDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.BugCategoryDescriptions");
-		categoryDescriptionMap = new HashMap<String, String>();
+		categoryDescriptionMap = new HashMap<String, BugCategory>();
 		userDesignationBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.UserDesignations");
 		bugPatternMap = new HashMap<String, BugPattern>();
 		bugCodeMap = new HashMap<String, BugCode>();
@@ -179,17 +179,28 @@ public class I18N {
 	}
 
 	/**
-	 * Set the description (a ward or three) of a bug category.
-	 * If the category's description has already been set, this does nothing.
+	 * Set the metadata for a bug category.
+	 * If the category's metadata has already been set, this does nothing.
 	 *
 	 * @param category the category key
-	 * @param desc     the i18ned description of the category
-	 * @return false if the category's description has already been set, true otherwise
+	 * @param bc the BugCategory object holding the metadata for the category
+	 * @return false if the category's metadata has already been set, true otherwise
 	 */
-	public boolean registerBugCategoryDescription(String category, String desc) {
+	public boolean registerBugCategory(String category, BugCategory bc) {
 		if (categoryDescriptionMap.get(category) != null) return false;
-		categoryDescriptionMap.put(category, desc);
+		categoryDescriptionMap.put(category, bc);
 		return true;
+	}
+
+	/**
+	 * Get the BugCategory object for a category key.
+	 * Returns null if no BugCategory object can be found.
+	 *
+	 * @param category the category key
+	 * @return the BugCategory object (may be null)
+	 */
+	public BugCategory getBugCategory(String category) {
+		return categoryDescriptionMap.get(category);
 	}
 
 	/**
@@ -200,8 +211,8 @@ public class I18N {
 	 * @return the description of the category
 	 */
 	public String getBugCategoryDescription(String category) {
-		String desc = categoryDescriptionMap.get(category);
-		return (desc!=null ? desc : category);
+		BugCategory bc = categoryDescriptionMap.get(category);
+		return (bc!=null ? bc.getShortDescription() : category);
 	}
 
 	/**

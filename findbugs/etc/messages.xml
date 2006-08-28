@@ -27,6 +27,7 @@ This plugin contains all of the standard FindBugs detectors.
 
   <BugCategory category="CORRECTNESS">
     <Description>Correctness</Description>
+    <Abbreviation>C</Abbreviation>
     <Details>Probable bug - an apparent coding mistake
             resulting in code that was probably not what the
             developer intended. Low false positive rate.</Details>
@@ -34,6 +35,7 @@ This plugin contains all of the standard FindBugs detectors.
 
   <BugCategory category="BAD_PRACTICE">
     <Description>Bad practice</Description>
+    <Abbreviation>B</Abbreviation>
     <Details>violations of recommended and essential
             coding practice. Examples include hash code and equals
             problems, cloneable idiom, dropped exceptions,  
@@ -44,6 +46,7 @@ This plugin contains all of the standard FindBugs detectors.
 
   <BugCategory category="STYLE">
     <Description>Style</Description>
+    <Abbreviation>S</Abbreviation>
     <Details>code that is confusing, anomalous, or
             written in a way that that leads itself to errors.
             Examples include dead local stores, switch fall through,
@@ -54,21 +57,25 @@ This plugin contains all of the standard FindBugs detectors.
 
   <BugCategory category="PERFORMANCE">
     <Description>Performance</Description>
+    <Abbreviation>P</Abbreviation>
     <Details>code that is not necessarily incorrect but may be inefficient</Details>
   </BugCategory>
 
   <BugCategory category="MALICIOUS_CODE">
     <Description>Malicious code vulnerability</Description>
+    <Abbreviation>V</Abbreviation>
     <Details>code that is vulnerable to attacks from untrusted code</Details>
   </BugCategory>
 
   <BugCategory category="MT_CORRECTNESS">
     <Description>Multithreaded correctness</Description>
+    <Abbreviation>M</Abbreviation>
     <Details>code flaws having to do with threads, locks, and volatiles</Details>
   </BugCategory>
 
   <BugCategory category="I18N">
     <Description>Internationalization</Description>
+    <Abbreviation>I</Abbreviation>
     <Details>code flaws having to do with internationalization and locale</Details>
     <!-- DM_CONVERT_CASE is the only bug core bug pattern in this category -->
   </BugCategory>

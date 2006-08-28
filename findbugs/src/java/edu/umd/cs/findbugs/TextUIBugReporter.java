@@ -37,20 +37,7 @@ import java.util.Iterator;
 public abstract class TextUIBugReporter extends AbstractBugReporter {
 	private boolean reportStackTrace;
 	private boolean useLongBugCodes = false;
-	// Map of category codes to abbreviations used in printBug()
-	private static final HashMap<String, String> categoryMap = new HashMap<String, String>();
-	private static final String OTHER_CATEGORY_ABBREV = "X ";
-
-	static {
-		categoryMap.put("CORRECTNESS", "C "); // "C"orrectness
-		categoryMap.put("BAD_PRACTICE", "B "); // "B"ad practice
-		categoryMap.put("MT_CORRECTNESS", "M "); // "M"ultithreaded correctness
-		categoryMap.put("MALICIOUS_CODE", "V "); // malicious code "V"ulnerability
-		categoryMap.put("PERFORMANCE", "P "); // "P"erformance
-		categoryMap.put("STYLE", "S "); // "S"tyle
-		categoryMap.put("I18N", "I "); // "I"nternationalization
-		// third-party detectors can define their own category -> OTHER_CATEGORY_ABBREV
-	}
+	private static final String OTHER_CATEGORY_ABBREV = "X";
 
 	protected PrintStream outputStream = System.out;
 	
@@ -100,9 +87,12 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 
 		BugPattern pattern = bugInstance.getBugPattern();
 		if (pattern != null) {
-			String categoryAbbrev = categoryMap.get(pattern.getCategory());
+			String categoryAbbrev = null;
+			BugCategory bcat = I18N.instance().getBugCategory(pattern.getCategory());
+			if (bcat != null) categoryAbbrev = bcat.getAbbrev();
 			if (categoryAbbrev == null) categoryAbbrev = OTHER_CATEGORY_ABBREV;
 			outputStream.print(categoryAbbrev);
+			outputStream.print(" ");
 		}
 
 		if (useLongBugCodes) {

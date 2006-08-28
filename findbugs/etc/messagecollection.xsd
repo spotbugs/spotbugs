@@ -30,6 +30,7 @@
 	<xsd:complexType name="BugCategoryType">
 		<xsd:sequence>
 			<xsd:element name="Description" type="xsd:string"/>
+			<xsd:element name="Abbreviation" type="xsd:NMTOKEN"/> <!--typically a single capital letter-->
 			<xsd:element name="Details" type="xsd:string" minOccurs="0"/>
 		</xsd:sequence>
 		<xsd:attribute name="category" type="IdentifierType"/>

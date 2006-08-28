@@ -262,15 +262,33 @@ public class PluginLoader extends URLClassLoader {
 				if (key.equals(""))
 					throw new PluginException("BugCategory element with missing category attribute");
 				String shortDesc = getChildText(categoryNode, "Description");
-				boolean b = i18n.registerBugCategoryDescription(key, shortDesc);
+				BugCategory bc = new BugCategory(key, shortDesc);
+				boolean b = i18n.registerBugCategory(key, bc);
 				if (DEBUG) System.out.println(b
 					? "category "+key+" -> "+shortDesc
 					: "rejected \""+shortDesc+"\" for category "+key+": "+i18n.getBugCategoryDescription(key));
+				/* Now set the abbreviation and details. Be prepared for messages_fr.xml
+				 * to specify only the shortDesc (though it should set the abbreviation
+				 * too) and fall back to messages.xml for the abbreviation and details. */
+				if (!b) bc = i18n.getBugCategory(key); // get existing BugCategory object
 				try {
-					String longDesc = getChildText(categoryNode, "Details");
-					//TODO register LongDescription with I18N
-					if (DEBUG) System.out.println("Ignoring it, but "
-						+"found Details for category "+key+" -> "+longDesc);
+					String abbrev = getChildText(categoryNode, "Abbreviation");
+					if (bc.getAbbrev() == null) {
+						bc.setAbbrev(abbrev);
+						if (DEBUG) System.out.println("category "+key+" abbrev -> "+abbrev);
+					}
+					else System.out.println("rejected abbrev '"+abbrev+"' for category "+key+": "+bc.getAbbrev());
+				} catch (PluginException pe) {
+					if (DEBUG) System.out.println("missing Abbreviation for category "+key+"/"+shortDesc);
+					// do nothing else -- Abbreviation is required, but handle its omission gracefully
+				}
+				try {
+					String details = getChildText(categoryNode, "Details");
+					if (bc.getDetailText() == null) {
+						bc.setDetailText(details);
+						if (DEBUG) System.out.println("category "+key+" details -> "+details);
+					}
+					else System.out.println("rejected details ["+details+"] for category "+key+": ["+bc.getDetailText()+']');
 				} catch (PluginException pe) {
 					// do nothing -- LongDescription is optional
 				}
@@ -298,8 +316,9 @@ public class PluginLoader extends URLClassLoader {
 					Boolean.valueOf(experimental).booleanValue(),
 					shortDesc, longDesc, detailText);
 			plugin.addBugPattern(bugPattern);
-			boolean unknownCategory = i18n.registerBugCategoryDescription(category, category);
+			boolean unknownCategory = (null == i18n.getBugCategory(category));
 			if (unknownCategory) {
+				i18n.registerBugCategory(category, new BugCategory(category, category));
 				// no desc, but at least now it will appear in I18N.getBugCategories().
 				if (DEBUG) System.out.println("Category "+category+" (of BugPattern "
 					+type+") has no description in messages*.xml");

@@ -15,36 +15,43 @@
 
   <BugCategory category="CORRECTNESS">
     <Description>Droiture</Description>
+    <Abbreviation>D</Abbreviation>
     <!-- Details subelement needed -->
   </BugCategory>
 
   <!-- BugCategory category="BAD_PRACTICE">
     <Description> </Description>
+    <Abbreviation> </Abbreviation>
     <Details> </Details>
     </BugCategory -->
 
   <BugCategory category="STYLE">
     <Description>Style</Description>
+    <Abbreviation>S</Abbreviation>
     <!-- Details subelement needed -->
   </BugCategory>
 
   <BugCategory category="PERFORMANCE">
     <Description>Performance</Description>
+    <Abbreviation>P</Abbreviation>
     <!-- Details subelement needed -->
   </BugCategory>
 
   <BugCategory category="MALICIOUS_CODE">
     <Description>Vulnérabilité au code malveillant</Description>
+    <Abbreviation>V</Abbreviation>
     <!-- Details subelement needed -->
   </BugCategory>
 
   <BugCategory category="MT_CORRECTNESS">
     <Description>Droiture en environnement multitâche</Description>
+    <Abbreviation>M</Abbreviation>
     <!-- Details subelement needed -->
   </BugCategory>
 
   <BugCategory category="I18N">
     <Description>Internationalisation</Description>
+    <Abbreviation>I</Abbreviation>
     <!-- Details subelement needed -->
   </BugCategory>
 

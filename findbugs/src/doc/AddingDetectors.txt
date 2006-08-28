@@ -152,8 +152,9 @@ of the findbugs source distribution.
   you are using only the categories defined by the core plugin.
   
     The <Description> child element has a brief (a word or three)
-    description of the category. The <Details> child element
-    may describe it in more detail (but no markup).
+    description of the category. The <Abbreviation> child element
+    is typically a single capital latter. The optional <Details>
+    child element may describe it in more detail (but no markup).
 
   <Detector> holds meta-information about a Detector in the plugin.
   The required "class" attribute specifies the Detector class.
