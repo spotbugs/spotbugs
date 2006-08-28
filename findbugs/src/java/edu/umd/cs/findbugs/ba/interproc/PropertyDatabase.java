@@ -36,6 +36,9 @@ import java.util.TreeSet;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassMember;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * Property database for interprocedural analysis.
@@ -155,6 +158,19 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 		write(new FileOutputStream(fileName));
 	}
 
+	@SuppressWarnings("unchecked")
+	private KeyType intern(XFactory xFactory, KeyType key) {
+		KeyType result = key;
+		try {
+			if (key instanceof XField)
+				return (KeyType)  xFactory.intern((XField)key);
+			else if (key instanceof XMethod) 
+				return (KeyType)  xFactory.intern((XMethod)key);
+		} catch (Exception e) {
+			return key;
+		}
+		return result;
+	}
 	/**
 	 * Write property database to an OutputStream.
 	 * The OutputStream is guaranteed to be closed, even if an
@@ -172,11 +188,13 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 					new OutputStreamWriter(out, Charset.forName("UTF-8")));
 			
 			TreeSet<KeyType> sortedMethodSet = new TreeSet<KeyType>();
+			XFactory xFactory = AnalysisContext.currentXFactory();
 			sortedMethodSet.addAll(propertyMap.keySet());
 			for (KeyType key : sortedMethodSet) {
 				if (AnalysisContext.currentAnalysisContext().isApplicationClass(key.getClassName())) {
+					
 				ValueType property = propertyMap.get(key);
-				writeKey(writer, key);
+				writeKey(writer, intern(xFactory, key));
 				writer.write("|");
 				writer.write(encodeProperty(property));
 				writer.write("\n");
