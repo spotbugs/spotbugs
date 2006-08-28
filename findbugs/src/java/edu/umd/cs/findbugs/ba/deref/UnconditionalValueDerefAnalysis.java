@@ -317,7 +317,7 @@ public class UnconditionalValueDerefAnalysis extends
 				}
 				
 				fact.addDeref(vnaFrame.getValue(argSlot), location);
-				if (DEBUG_CHECK_CALLS || BuildUnconditionalParamDerefDatabase.VERBOSE_DEBUG) {
+				if (DEBUG_CHECK_CALLS ||VERBOSE_NULLARG_DEBUG) {
 					System.out.println("Adding deref of " + vnaFrame.getValue(argSlot) + " at location " + location);
 					for (JavaClassAndMethod target : targetSet) {
 
@@ -339,7 +339,8 @@ public class UnconditionalValueDerefAnalysis extends
 			AnalysisContext.reportMissingClass(e);
 		}
 	}
-
+	public static final boolean VERBOSE_NULLARG_DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg.verbose");
+	
 	/**
 	 * If this is a method call instruction,
 	 * check to see if any of the parameters are @NonNull,
