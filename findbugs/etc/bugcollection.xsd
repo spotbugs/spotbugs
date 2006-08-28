@@ -40,6 +40,15 @@
 										<xs:attribute name="role" type="xs:string" use="optional" />
 									</xs:complexType>
 								</xs:element>
+								<xs:element name="Type">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element ref="Message" minOccurs="0" />
+										</xs:sequence>
+										<xs:attribute name="descriptor" type="xs:string" use="required" />
+										<xs:attribute name="role" type="xs:string" use="optional" />
+									</xs:complexType>
+								</xs:element>
 								<xs:element name="Method">
 									<xs:annotation>
 										<xs:documentation>This annotation describes a method</xs:documentation>
@@ -143,6 +152,8 @@
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="Description" type="xs:string" />
+							<xs:element name="Abbreviation" type="xs:NMTOKEN" minOccurs="0" />
+							<xs:element name="Details" type="xs:string" minOccurs="0" />
 						</xs:sequence>
 						<xs:attribute name="category" type="xs:string" use="required" />
 					</xs:complexType>
@@ -264,10 +275,10 @@
 				<xs:element ref="Message" minOccurs="0" />
 			</xs:sequence>
 			<xs:attribute name="classname" type="xs:string" use="required" />
-			<xs:attribute name="start" type="xs:int" use="required" />
-			<xs:attribute name="end" type="xs:int" use="required" />
-			<xs:attribute name="startBytecode" type="xs:int" use="required" />
-			<xs:attribute name="endBytecode" type="xs:int" use="required" />
+			<xs:attribute name="start" type="xs:int" use="optional" />
+			<xs:attribute name="end" type="xs:int" use="optional" />
+			<xs:attribute name="startBytecode" type="xs:int" use="optional" />
+			<xs:attribute name="endBytecode" type="xs:int" use="optional" />
 			<xs:attribute name="opcodes" type="xs:string" use="optional" /> <!-- no longer generated -->
 			<xs:attribute name="sourcefile" type="xs:string" use="optional" />
 			<xs:attribute name="sourcepath" type="xs:string" use="optional" />

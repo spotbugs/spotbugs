@@ -163,6 +163,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				if (qName.equals("Class")) {
 					String className = getRequiredAttribute(attributes, "classname", qName);
 					bugAnnotation = packageMemberAnnotation = new ClassAnnotation(className);
+				} else if (qName.equals("Type")) {
+					String typeDescriptor = getRequiredAttribute(attributes, "descriptor", qName);
+					bugAnnotation = TypeAnnotationFactory.getInstance(typeDescriptor);
 				} else if (qName.equals("Method") || qName.equals("Field")) {
 					String classname = getRequiredAttribute(attributes, "classname", qName);
 					String fieldOrMethodName = getRequiredAttribute(attributes, "name", qName);
@@ -337,14 +340,14 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		String sourceFile = attributes.getValue("sourcefile");
 		if (sourceFile == null)
 			sourceFile = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
-		String startLine = getRequiredAttribute(attributes, "start", qName);
-		String endLine = getRequiredAttribute(attributes, "end", qName);
+		String startLine = attributes.getValue("start"); // "start"/"end" are now optional
+		String endLine = attributes.getValue("end");     // (were too many "-1"s in the xml)
 		String startBytecode = attributes.getValue("startBytecode");
 		String endBytecode = attributes.getValue("endBytecode");
 
 		try {
-			int sl = Integer.parseInt(startLine);
-			int el = Integer.parseInt(endLine);
+			int sl = startLine != null ? Integer.parseInt(startLine) : -1;
+			int el = endLine != null ? Integer.parseInt(endLine) : -1;
 			int sb = startBytecode != null ? Integer.parseInt(startBytecode) : -1;
 			int eb = endBytecode != null ? Integer.parseInt(endBytecode) : -1;
 
