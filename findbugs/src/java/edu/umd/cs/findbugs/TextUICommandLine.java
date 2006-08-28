@@ -146,11 +146,12 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	}
 
 	@SuppressWarnings("DM_EXIT")
+	@Override
 	protected void handleOption(String option, String optionExtraPart) {
 		if (option.equals("-showPlugins")) {
 			System.out.println("Available plugins:");
 			int count = 0;
-			for (Iterator<Plugin> i = getDetectorFactoryCollection().pluginIterator(); i.hasNext(); ) {
+			for (Iterator<Plugin> i = DetectorFactoryCollection.instance().pluginIterator(); i.hasNext(); ) {
 				Plugin plugin = i.next();
 				System.out.println("  " + plugin.getPluginId() + " (default: " +
 						(plugin.isEnabled() ? "enabled" : "disabled") + ")");
@@ -220,6 +221,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	}
 
 	@SuppressWarnings("DM_EXIT")
+	@Override
 	protected void handleOptionWithArgument(String option, String argument) throws IOException {
 		if (option.equals("-outputFile")) {
 			String outputFile = argument;
@@ -248,7 +250,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			StringTokenizer tok = new StringTokenizer(argument, ",");
 			while (tok.hasMoreTokens()) {
 				String visitorName = tok.nextToken();
-				DetectorFactory factory = getDetectorFactoryCollection().getFactory(visitorName);
+				DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(visitorName);
 				if (factory == null)
 					throw new IllegalArgumentException("Unknown detector: " + visitorName);
 				userPreferences.enableDetector(factory, !omit);
@@ -260,7 +262,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			// happens to be in effect).
 			choose(argument, "Detector choices", new Chooser() {
 				public void choose(boolean enabled, String what) {
-					DetectorFactory factory = getDetectorFactoryCollection().getFactory(what);
+					DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(what);
 					if (factory == null)
 						throw new IllegalArgumentException("Unknown detector: " + what);
 					if (FindBugs.DEBUG) {
@@ -275,7 +277,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			// Selectively enable/disable plugins
 			choose(argument, "Plugin choices", new Chooser() {
 				public void choose(boolean enabled, String what) {
-					Plugin plugin = getDetectorFactoryCollection().getPluginById(what);
+					Plugin plugin = DetectorFactoryCollection.instance().getPluginById(what);
 					if (plugin == null)
 						throw new IllegalArgumentException("Unknown plugin: " + what);
 					plugin.setEnabled(enabled);
@@ -294,7 +296,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
 				String visitorName = token.substring(0, eq);
 
-				DetectorFactory factory = getDetectorFactoryCollection().getFactory(visitorName);
+				DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(visitorName);
 				if (factory == null)
 					throw new IllegalArgumentException("Unknown detector: " + visitorName);
 
@@ -364,11 +366,11 @@ public class TextUICommandLine extends FindBugsCommandLine {
 
 	public void configureEngine(IFindBugsEngine findBugs) throws IOException, FilterException {
 		// Load plugins
-		getDetectorFactoryCollection().loadPlugins();
+		DetectorFactoryCollection.instance().ensureLoaded();
 		
 		// Set the DetectorFactoryCollection (that has been configured
 		// by command line parsing)
-		findBugs.setDetectorFactoryCollection(getDetectorFactoryCollection());
+		findBugs.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
 		
 		TextUIBugReporter textuiBugReporter;
 		switch (bugReporterType) {

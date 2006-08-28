@@ -49,6 +49,7 @@ public class DetectorFactoryCollection {
 
 	private static DetectorFactoryCollection theInstance;
 	private static final Object lock = new Object();
+	private boolean loaded = false;
 
 	private URL[] pluginList;
 
@@ -68,6 +69,7 @@ public class DetectorFactoryCollection {
 	 * @param pluginList list of plugin Jar files to load
 	 */
 	public void setPluginList(URL[] pluginList) {
+		if (loaded) throw new IllegalStateException();
 		this.pluginList = new URL[pluginList.length];
 		System.arraycopy(pluginList, 0, this.pluginList, 0, pluginList.length);
 	}
@@ -93,19 +95,31 @@ public class DetectorFactoryCollection {
 		synchronized (lock) {
 			if (theInstance == null) {
 				theInstance = new DetectorFactoryCollection();
-				theInstance.loadPlugins();
+			}
+			theInstance.ensureLoaded();
+			return theInstance;
+		}
+	}
+	/**
+	 * Get the single instance of DetectorFactoryCollection.
+	 */
+	public static DetectorFactoryCollection rawInstance() {
+		synchronized (lock) {
+			if (theInstance == null) {
+				theInstance = new DetectorFactoryCollection();
 			}
 			return theInstance;
 		}
 	}
-
 	/**
 	 * Return an Iterator over all available Plugin objects.
 	 */
 	public Iterator<Plugin> pluginIterator() {
+		ensureLoaded();
 		return pluginByIdMap.values().iterator();
 	}
 
+	
 	/**
 	 * Get a Plugin by its unique id.
 	 *
@@ -113,6 +127,7 @@ public class DetectorFactoryCollection {
 	 * @return the Plugin with that id, or null if no such Plugin is found
 	 */
 	public Plugin getPluginById(String pluginId) {
+		ensureLoaded();
 		return pluginByIdMap.get(pluginId);
 	}
 
@@ -121,6 +136,7 @@ public class DetectorFactoryCollection {
 	 * registered Detectors.
 	 */
 	public Iterator<DetectorFactory> factoryIterator() {
+		ensureLoaded();
 		return factoryList.iterator();
 	}
 
@@ -131,6 +147,7 @@ public class DetectorFactoryCollection {
 	 * @return the DetectorFactory, or null if there is no factory with that short name
 	 */
 	public DetectorFactory getFactory(String name) {
+		ensureLoaded();
 		return factoriesByName.get(name);
 	}
 	
@@ -142,6 +159,7 @@ public class DetectorFactoryCollection {
 	 *         that class name
 	 */
 	public DetectorFactory getFactoryByClassName(String className) {
+		ensureLoaded();
 		return factoriesByDetectorClassName.get(className);
 	}
 
@@ -190,6 +208,11 @@ public class DetectorFactoryCollection {
 		pluginList = arr.toArray(new URL[arr.size()]);
 
 	}
+	
+	public void ensureLoaded() {
+		if (loaded) return;
+		loadPlugins();
+	}
 	/**
 	 * Load all plugins. If a setPluginList() has been called, then those
 	 * plugins are loaded. Otherwise, the "findbugs.home" property is checked to
@@ -197,6 +220,8 @@ public class DetectorFactoryCollection {
 	 * dynamically loaded from the plugin directory.
 	 */
 	void loadPlugins() {
+		if (loaded) throw new IllegalStateException();
+		loaded = true;
 		// Load all detector plugins.
 	
 		//If we are running under jaws, just use the loaded plugin
