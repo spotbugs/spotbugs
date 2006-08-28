@@ -277,7 +277,7 @@ public class PluginLoader extends URLClassLoader {
 						bc.setAbbrev(abbrev);
 						if (DEBUG) System.out.println("category "+key+" abbrev -> "+abbrev);
 					}
-					else System.out.println("rejected abbrev '"+abbrev+"' for category "+key+": "+bc.getAbbrev());
+					else if (DEBUG) System.out.println("rejected abbrev '"+abbrev+"' for category "+key+": "+bc.getAbbrev());
 				} catch (PluginException pe) {
 					if (DEBUG) System.out.println("missing Abbreviation for category "+key+"/"+shortDesc);
 					// do nothing else -- Abbreviation is required, but handle its omission gracefully
@@ -288,7 +288,7 @@ public class PluginLoader extends URLClassLoader {
 						bc.setDetailText(details);
 						if (DEBUG) System.out.println("category "+key+" details -> "+details);
 					}
-					else System.out.println("rejected details ["+details+"] for category "+key+": ["+bc.getDetailText()+']');
+					else if (DEBUG) System.out.println("rejected details ["+details+"] for category "+key+": ["+bc.getDetailText()+']');
 				} catch (PluginException pe) {
 					// do nothing -- LongDescription is optional
 				}
