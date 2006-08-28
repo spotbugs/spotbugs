@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
  * @author David Hovemeyer
  */
 public class BuildUnconditionalParamDerefDatabase {
-	private static final boolean VERBOSE_DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg.verbose");
+	public static final boolean VERBOSE_DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg.verbose");
 	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg") || VERBOSE_DEBUG;
 	
 	public void visitClassContext(ClassContext classContext) {

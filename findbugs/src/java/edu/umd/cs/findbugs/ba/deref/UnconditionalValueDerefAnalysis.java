@@ -63,6 +63,7 @@ import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.detect.BuildUnconditionalParamDerefDatabase;
 
 /**
  * Dataflow analysis to find values unconditionally derefenced in the future.
@@ -267,11 +268,12 @@ public class UnconditionalValueDerefAnalysis extends
 				ParameterNullnessProperty targetDerefParamSet = database.getProperty(target.toXMethod());
 				if (targetDerefParamSet == null) {
 					// Hmm...no information for this target.
-					// Just ignore it.
+					// assume it doesn't dereference anything
 					if (DEBUG_CHECK_CALLS) {
-						System.out.println(" ==> unknown");
+						System.out.print("==> no information, assume no guaranteed dereferences");
 					}
-					continue;
+			
+					return;
 				}
 				
 				if (DEBUG_CHECK_CALLS) {
@@ -315,8 +317,22 @@ public class UnconditionalValueDerefAnalysis extends
 				}
 				
 				fact.addDeref(vnaFrame.getValue(argSlot), location);
-				if (DEBUG_CHECK_CALLS) {
+				if (DEBUG_CHECK_CALLS || BuildUnconditionalParamDerefDatabase.VERBOSE_DEBUG) {
 					System.out.println("Adding deref of " + vnaFrame.getValue(argSlot) + " at location " + location);
+					for (JavaClassAndMethod target : targetSet) {
+
+						System.out.print("Checking " + target + ": ");
+						ParameterNullnessProperty targetDerefParamSet = database.getProperty(target.toXMethod());
+						if (targetDerefParamSet == null) {
+							System.out.println(" ==> unknown");
+							continue;
+						}
+
+
+						System.out.println("==> " + targetDerefParamSet);
+
+					}
+
 				}
 			}
 		} catch (ClassNotFoundException e) {
