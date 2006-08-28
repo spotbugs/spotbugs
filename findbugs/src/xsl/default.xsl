@@ -58,7 +58,7 @@
 
 <xsl:variable name="literalNbsp">&amp;nbsp;</xsl:variable>
 
-<xsl:key name="bug-category-key" match="/BugCollection/BugInstance" use="@category"/>	
+<!--xsl:key name="bug-category-key" match="/BugCollection/BugInstance" use="@category"/-->
 
 <xsl:variable name="bugTableHeader">
 	<tr class="tableheader">
@@ -132,7 +132,8 @@
 		</script>
 	</head>
 
-	<xsl:variable name="unique-catkey" select="/BugCollection/BugInstance[generate-id() = generate-id(key('bug-category-key',@category))]/@category"/>
+	<xsl:variable name="unique-catkey" select="/BugCollection/BugCategory/@category"/>
+	<!--xsl:variable name="unique-catkey" select="/BugCollection/BugInstance[generate-id() = generate-id(key('bug-category-key',@category))]/@category"/-->
 
 	<body>
 

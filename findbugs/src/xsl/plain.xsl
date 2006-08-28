@@ -30,7 +30,7 @@
 	indent="yes"
 	encoding="UTF-8"/>
 
-<xsl:key name="bug-category-key" match="/BugCollection/BugInstance" use="@category"/>
+<!--xsl:key name="bug-category-key" match="/BugCollection/BugInstance" use="@category"/-->
 
 <xsl:variable name="bugTableHeader">
 	<tr class="tableheader">
@@ -67,8 +67,9 @@
 		</style>
 	</head>
 
-	<xsl:variable name="unique-catkey" select="/BugCollection/BugInstance[generate-id() = generate-id(key('bug-category-key',@category))]/@category"/>
-
+	<xsl:variable name="unique-catkey" select="/BugCollection/BugCategory/@category"/>
+	<!--xsl:variable name="unique-catkey" select="/BugCollection/BugInstance[generate-id() = generate-id(key('bug-category-key',@category))]/@category"/-->
+		
 	<body>
 
 	<h1>FindBugs Report</h1>
