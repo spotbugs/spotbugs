@@ -364,8 +364,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 			try {
 				type = item.getJavaClass();
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				AnalysisContext.reportMissingClass(e);
 			}
 			if (type == null) return;
 			if (!AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(type)) return;
