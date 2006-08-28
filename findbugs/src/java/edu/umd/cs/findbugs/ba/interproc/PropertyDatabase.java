@@ -34,6 +34,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ClassMember;
+
 /**
  * Property database for interprocedural analysis.
  * 
@@ -41,7 +44,7 @@ import java.util.TreeSet;
  * @param <ValueType> value type: a value that summarizes some property of the associated key
  * @author David Hovemeyer
  */
-public abstract class PropertyDatabase<KeyType, ValueType> {
+public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 	private Map<KeyType, ValueType> propertyMap;
 	
 	/**
@@ -170,11 +173,13 @@ public abstract class PropertyDatabase<KeyType, ValueType> {
 			TreeSet<KeyType> sortedMethodSet = new TreeSet<KeyType>();
 			sortedMethodSet.addAll(propertyMap.keySet());
 			for (KeyType key : sortedMethodSet) {
+				if (AnalysisContext.currentAnalysisContext().isApplicationClass(key.getClassName())) {
 				ValueType property = propertyMap.get(key);
 				writeKey(writer, key);
 				writer.write("|");
 				writer.write(encodeProperty(property));
 				writer.write("\n");
+				}
 			}
 		} finally {
 			try {

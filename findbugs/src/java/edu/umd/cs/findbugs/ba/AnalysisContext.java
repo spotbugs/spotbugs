@@ -440,7 +440,7 @@ public abstract class AnalysisContext {
 	 */
 	public<
 		DatabaseType extends PropertyDatabase<KeyType,Property>,
-		KeyType,
+		KeyType extends ClassMember,
 		Property
 		> DatabaseType loadPropertyDatabase(
 			DatabaseType database,
@@ -474,7 +474,7 @@ public abstract class AnalysisContext {
 	 */
 	public<
 		DatabaseType extends PropertyDatabase<KeyType,Property>,
-		KeyType,
+		KeyType extends ClassMember,
 		Property
 		> DatabaseType loadPropertyDatabaseFromResource(
 			DatabaseType database,
@@ -509,7 +509,7 @@ public abstract class AnalysisContext {
 	 */
 	public<
 		DatabaseType extends PropertyDatabase<KeyType,Property>,
-		KeyType,
+		KeyType extends ClassMember,
 		Property
 		> void storePropertyDatabase(DatabaseType database, String fileName, String description) {
 
