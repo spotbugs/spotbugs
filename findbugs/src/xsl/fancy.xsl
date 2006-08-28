@@ -24,7 +24,7 @@
          doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
          encoding="UTF-8"/>
 
-   <xsl:key name="lbc-category-key"    match="/BugCollection/BugInstance" use="@category" />
+   <!--xsl:key name="lbc-category-key"    match="/BugCollection/BugInstance" use="@category" /-->
    <xsl:key name="lbc-code-key"        match="/BugCollection/BugInstance" use="concat(@category,@abbrev)" />
    <xsl:key name="lbc-bug-key"         match="/BugCollection/BugInstance" use="concat(@category,@abbrev,@type)" />
 
@@ -426,7 +426,8 @@
 <xsl:template name="list-by-category" >
    <div id='list-by-category' class='data-box' style='display:none;'>
       <xsl:call-template name="helpPriorities" />
-      <xsl:variable name="unique-category" select="/BugCollection/BugInstance[generate-id() = generate-id(key('lbc-category-key',@category))]/@category" />
+      <xsl:variable name="unique-category" select="/BugCollection/BugCategory/@category"/>
+      <!--xsl:variable name="unique-category" select="/BugCollection/BugInstance[generate-id() = generate-id(key('lbc-category-key',@category))]/@category" /-->
       <xsl:for-each select="$unique-category">
          <xsl:sort select="." order="ascending" />
             <xsl:call-template name="categories">
