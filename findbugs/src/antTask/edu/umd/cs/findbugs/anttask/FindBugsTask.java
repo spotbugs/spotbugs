@@ -106,7 +106,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  *
- * @version $Revision: 1.38 $
+ * @version $Revision: 1.39 $
  *
  * @since Ant 1.5
  *
@@ -638,7 +638,7 @@ public class FindBugsTask extends Task {
 			// FindBugs installed using a non-standard directory layout.
 
 			findbugsEngine.setClasspath(classpath);
-			findbugsEngine.setClassname("edu.umd.cs.findbugs.FindBugs");
+			findbugsEngine.setClassname("edu.umd.cs.findbugs.FindBugs2");
 
 			addArg("-pluginList");
 			addArg(pluginList.toString());
