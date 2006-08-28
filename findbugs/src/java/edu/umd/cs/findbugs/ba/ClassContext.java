@@ -1001,28 +1001,7 @@ public class ClassContext {
 					new UnconditionalValueDerefDataflow(getCFG(method), analysis);
 				dataflow.execute();
 				 if (UnconditionalValueDerefAnalysis.DEBUG) {
-			        	System.out.println("\n\n{ UnconditionalValueDerefAnalysis analysis for " + method.getName());
-			        	TreeSet<Location> tree = new TreeSet<Location>();
-			        	
-			        	for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
-			        		Location loc = locs.next();
-			        		tree.add(loc);
-			        	}
-			        	for(Location loc : tree) {
-			        		UnconditionalValueDerefSet factAfterLocation = dataflow.getFactAfterLocation(loc);
-							System.out.println("\n Pre: " + factAfterLocation);
-							System.out.println("Vna: " + vnd.getFactAtLocation(loc));
-							System.out.println("inv: " + inv.getFactAtLocation(loc));
-			        		System.out.println("Location: " + loc);
-			        		System.out.println("Post: " + dataflow.getFactAtLocation(loc));
-			        		System.out.println("Vna: " + vnd.getFactAfterLocation(loc));
-			        		System.out.println("inv: " + inv.getFactAfterLocation(loc));
-							
-			        		
-			        		
-			        		
-			        	}
-			        	System.out.println("}\n\n");
+			        	dumpUnconditionalValueDerefDataflow(method, cfg, vnd, inv, dataflow);
 			        }
 			 
 				return dataflow;
@@ -1623,6 +1602,39 @@ public class ClassContext {
 	public DefinitelyNullSetDataflow getDefinitelyNullSetDataflow(Method method)
 			throws CFGBuilderException, DataflowAnalysisException {
 		return definitelyNullSetDataflowFactory.getAnalysis(method);
+	}
+
+	/**
+	 * @param method
+	 * @param cfg
+	 * @param vnd
+	 * @param inv
+	 * @param dataflow
+	 * @throws DataflowAnalysisException
+	 */
+	public static void dumpUnconditionalValueDerefDataflow(Method method, CFG cfg, ValueNumberDataflow vnd, IsNullValueDataflow inv, UnconditionalValueDerefDataflow dataflow) throws DataflowAnalysisException {
+		System.out.println("\n\n{ UnconditionalValueDerefAnalysis analysis for " + method.getName());
+		TreeSet<Location> tree = new TreeSet<Location>();
+		
+		for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
+			Location loc = locs.next();
+			tree.add(loc);
+		}
+		for(Location loc : tree) {
+			UnconditionalValueDerefSet factAfterLocation = dataflow.getFactAfterLocation(loc);
+			System.out.println("\n Pre: " + factAfterLocation);
+			System.out.println("Vna: " + vnd.getFactAtLocation(loc));
+			System.out.println("inv: " + inv.getFactAtLocation(loc));
+			System.out.println("Location: " + loc);
+			System.out.println("Post: " + dataflow.getFactAtLocation(loc));
+			System.out.println("Vna: " + vnd.getFactAfterLocation(loc));
+			System.out.println("inv: " + inv.getFactAfterLocation(loc));
+			
+			
+			
+			
+		}
+		System.out.println("}\n\n");
 	}
 }
 

@@ -105,6 +105,9 @@ public class BuildUnconditionalParamDerefDatabase {
 				return;
 			}
 
+			if (VERBOSE_DEBUG) {
+				ClassContext.dumpUnconditionalValueDerefDataflow(method, cfg, vnaDataflow, classContext.getIsNullValueDataflow(method), dataflow);
+			}
 			ParameterNullnessProperty property = new ParameterNullnessProperty();
 			property.setNonNullParamSet(unconditionalDerefSet);
 			
