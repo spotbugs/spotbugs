@@ -165,6 +165,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 	 */
 	public void write(OutputStream out) throws IOException {
 		BufferedWriter writer = null;
+		boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 		
 		try {
 			writer = new BufferedWriter(
@@ -182,6 +183,8 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 				}
 			}
 		} finally {
+			AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
+			
 			try {
 				if (writer != null)
 					writer.close();
