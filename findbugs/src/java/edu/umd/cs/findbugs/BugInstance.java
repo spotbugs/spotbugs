@@ -774,6 +774,26 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	}
 
 	/* ----------------------------------------------------------------------
+	 * Type annotation adders
+	 * ---------------------------------------------------------------------- */
+
+	/**
+	 * Add a type annotation. Handy for referring to array types.
+	 *
+	 * <p>For information on type descriptors,
+	 * <br>see http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html#14152
+	 * <br>or  http://www.murrayc.com/learning/java/java_classfileformat.shtml#TypeDescriptors
+	 * 
+	 * @param typeDescriptor a jvm type descriptor, such as "[I"
+	 * @return this object
+	 */
+	public BugInstance addType(String typeDescriptor) {
+		TypeAnnotation typeAnnotation = TypeAnnotationFactory.getInstance(typeDescriptor);
+		add(typeAnnotation);
+		return this;
+	}
+
+	/* ----------------------------------------------------------------------
 	 * Field annotation adders
 	 * ---------------------------------------------------------------------- */
 

@@ -32,6 +32,8 @@ public interface BugAnnotationVisitor {
 	
 	public void visitLocalVariableAnnotation(LocalVariableAnnotation localVariableAnnotation);
 	
+	public void visitTypeAnnotation(TypeAnnotation typeAnnotation);
+
 	public void visitSourceLineAnnotation(SourceLineAnnotation sourceLineAnnotation);
 }
 
