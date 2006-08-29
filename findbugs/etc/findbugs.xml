@@ -843,6 +843,7 @@
   <BugPattern abbrev="BC" type="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" category="BAD_PRACTICE"/>
   <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_CONCRETE_COLLECTION" category="STYLE"/>
   <BugPattern abbrev="BC" type="BC_UNCONFIRMED_CAST" category="STYLE"/>
+  <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY" category="CORRECTNESS"/>  <!-- deprecated in favor of BC_IMPOSSIBLE_CAST -->
   <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_CAST" category="CORRECTNESS"/>
   <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_INSTANCEOF" category="CORRECTNESS"/>
   <BugPattern abbrev="BC" type="BC_VACUOUS_INSTANCEOF" category="STYLE"/>

@@ -4785,6 +4785,20 @@ to iterate through a collection, you don't need to cast it to a Set or List.
     </Details>
   </BugPattern>
 
+
+
+  <BugPattern type="BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY">
+    <ShortDescription>Impossible cast involving primitive array</ShortDescription>
+    <LongDescription>Impossible cast involving primitive array in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+This cast will always throw a ClassCastException.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="BC_IMPOSSIBLE_CAST">
     <ShortDescription>Impossible cast</ShortDescription>
     <LongDescription>Impossible cast from {2} to {3} in {1}</LongDescription>
