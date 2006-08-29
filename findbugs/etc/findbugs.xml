@@ -682,7 +682,7 @@
   <BugPattern abbrev="UW" type="UW_UNCOND_WAIT" category="MT_CORRECTNESS" />
   <BugPattern abbrev="UR" type="UR_UNINIT_READ" category="CORRECTNESS" />
   <BugPattern abbrev="UG" type="UG_SYNC_SET_UNSYNC_GET" category="MT_CORRECTNESS" />
-  <BugPattern abbrev="IC" type="IC_INIT_CIRCULARITY" category="BAD_PRACTICE" />
+  <BugPattern abbrev="IC" type="IC_INIT_CIRCULARITY" category="STYLE" />
   <BugPattern abbrev="IC" type="IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION" category="BAD_PRACTICE" />
   <BugPattern abbrev="SI" type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED" category="BAD_PRACTICE" />
   <BugPattern abbrev="It" type="IT_NO_SUCH_ELEMENT" category="BAD_PRACTICE" />
@@ -707,8 +707,8 @@
   <BugPattern abbrev="Nm" type="NM_BAD_EQUAL" category="BAD_PRACTICE"/>
   <BugPattern abbrev="IA" type="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD" category="CORRECTNESS"/>
   <BugPattern abbrev="Nm" type="NM_CLASS_NOT_EXCEPTION" category="STYLE"/>
-  <BugPattern abbrev="RR" type="RR_NOT_CHECKED" category="CORRECTNESS" />
-  <BugPattern abbrev="RR" type="SR_NOT_CHECKED" category="CORRECTNESS" />
+  <BugPattern abbrev="RR" type="RR_NOT_CHECKED" category="BAD_PRACTICE" />
+  <BugPattern abbrev="RR" type="SR_NOT_CHECKED" category="BAD_PRACTICE" />
   <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR" category="BAD_PRACTICE" />
   <BugPattern abbrev="Se" type="SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION" category="BAD_PRACTICE" />
   <BugPattern abbrev="Se" type="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE" category="BAD_PRACTICE" />
@@ -864,7 +864,7 @@
   <BugPattern abbrev="ST" type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" category="STYLE"/>
   <BugPattern abbrev="SWL" type="SWL_SLEEP_WITH_LOCK_HELD" category="MT_CORRECTNESS"/>
   <BugPattern abbrev="J2EE" type="J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION" category="BAD_PRACTICE"/>
-  <BugPattern abbrev="DMI" type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN" category="BAD_PRACTICE"/>
+  <BugPattern abbrev="DMI" type="DMI_NONSERIALIZABLE_OBJECT_WRITTEN" category="STYLE"/>
   <BugPattern abbrev="DB" type="DB_DUPLICATE_BRANCHES" category="STYLE"/>
   <BugPattern abbrev="DB" type="DB_DUPLICATE_SWITCH_CLAUSES" category="STYLE"/>
   <BugPattern abbrev="IMA" type="IMA_INEFFICIENT_MEMBER_ACCESS" category="PERFORMANCE"
