@@ -3515,7 +3515,7 @@ body of an <code>if</code> statement, e.g.:</p>
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE">
     <ShortDescription>Nullcheck of value previously dereferenced</ShortDescription>
-    <LongDescription>Nullcheck of {2} at {4.lineNumber} of value previously dereferenced</LongDescription>
+    <LongDescription>Nullcheck of {2} at {4.lineNumber} of value previously dereferenced in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> A value is checked here to see whether it is null, but this value can't
@@ -3552,7 +3552,7 @@ the constant null.</p>
   </BugPattern>
   <BugPattern type="RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES">
     <ShortDescription>Redundant comparison of two null values</ShortDescription>
-    <LongDescription>Redundant comparison of two null values {1}</LongDescription>
+    <LongDescription>Redundant comparison of two null values in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains a redundant comparison of two references known to
@@ -4692,13 +4692,15 @@ floating point arithmetic.
   </BugPattern>
 
   <BugPattern type="ICAST_IDIV_CAST_TO_DOUBLE">
-    <ShortDescription>int division result cast to double</ShortDescription>
-    <LongDescription>int division result cast to double in {1}</LongDescription>
+    <ShortDescription>int division result cast to double or float</ShortDescription>
+    <LongDescription>int division result cast to double or float in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
-This code casts the result of an integer division operation to double.
-Doing division on integers loses precision.  The fact that the result
+This code casts the result of an integer division operation to double or 
+float.
+Doing division on integers truncates the result
+to the integer value closest to zero.  The fact that the result
 was cast to double suggests that this precision should have been retained.
 What was probably meant was to cast one or both of the operands to
 double <em>before</em> performing the division.  Here is an example:
