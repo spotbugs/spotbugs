@@ -392,6 +392,10 @@ public class OpcodeStack implements Constants2
 		public Object getUserValue() {
 			return userValue;
 		}
+
+		public boolean valueCouldBeNegative() {
+			return (getSpecialKind() == Item.RANDOM_INT || getSpecialKind() == Item.SIGNED_BYTE || getSpecialKind() == Item.HASHCODE_INT);
+		}
 	}
 
 	public String toString() {
@@ -538,7 +542,19 @@ public class OpcodeStack implements Constants2
 	 			case IFNONNULL:
 	 			case IFNULL:
 				seenTransferOfControl = true;
- 				pop();
+ 				{
+ 					Item top = pop();
+ 					
+ 					// if we see a test comparing a special negative value with 0,
+ 					// reset all other such values on the opcode stack
+					if (top.valueCouldBeNegative() 
+							&& (seen == IFLT || seen == IFLE || seen == IFGT || seen == IFGE)) {
+						int specialKind = top.getSpecialKind();
+						for(Item item : stack) if (item.getSpecialKind() == specialKind) item.setSpecialKind(0);
+						for(Item item : lvValues) if (item.getSpecialKind() == specialKind) item.setSpecialKind(0);
+									
+					}
+ 				}
  				addJumpValue(dbc.getBranchTarget());
 				
  			break;
@@ -1201,7 +1217,7 @@ public class OpcodeStack implements Constants2
 	 	}
  	}
 
- 	private void processMethodCall(DismantleBytecode dbc, int seen) {
+	private void processMethodCall(DismantleBytecode dbc, int seen) {
  		String clsName = dbc.getClassConstantOperand();
  		String methodName = dbc.getNameConstantOperand();
  		String signature = dbc.getSigConstantOperand();
