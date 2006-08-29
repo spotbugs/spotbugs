@@ -18,6 +18,7 @@
 
 package edu.umd.cs.findbugs.workflow;
 
+import java.beans.DesignMode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -32,9 +33,11 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.AppVersion;
+import edu.umd.cs.findbugs.BugCategory;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -101,7 +104,10 @@ public class Filter {
 		public boolean seriousSpecified = false;
 		
 		private Matcher includeFilter, excludeFilter;
-		String category;
+		String designationString;
+		String designationKey;
+		String categoryString;
+		BugCategory category;
 		int priority = 3;
 
 		FilterCommandLine() {
@@ -138,8 +144,8 @@ public class Filter {
 			addOption("-class", "pattern", "allow only bugs whose primary class name matches this pattern");
 			addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
 			addOption("-category", "category", "allow only warnings with a category that starts with this string");
-			
-			
+			addOption("-designation", "designation", "allow only warnings with this designation (e.g., -designation:SHOULD_FIX)");
+	
 		}
 
 		static long getVersionNum(Map<String, AppVersion> versions, 
@@ -254,7 +260,9 @@ public class Filter {
 			if (className != null && !className.matcher(bug.getPrimaryClass().getClassName()).find())
 					return false;
 
-			if (category != null && !bug.getBugPattern().getCategory().startsWith(category))
+			if (category != null && !bug.getBugPattern().getCategory().equals(category))
+				return false;
+			if (designationKey != null && !designationKey.equals(bug.getUserDesignationKey()))
 				return false;
 			
 			if (withSourceSpecified) {
@@ -334,7 +342,9 @@ public class Filter {
 				absentAsString = argument;
 			
 			else if (option.equals("-category"))
-				category = argument;
+				categoryString = argument;
+			else if (option.equals("-designation"))
+				designationString = argument;
 			else if (option.equals("-class"))
 					className = Pattern.compile(argument);
 			else if (option.equals("-bugPattern"))
@@ -384,6 +394,34 @@ public class Filter {
 		else
 			origCollection.readXML(args[argCount++], project);
 		boolean verbose = argCount < args.length;
+		I18N i18n = I18N.instance();
+		if (commandLine.categoryString != null) {
+			for (BugCategory bugCategory : i18n
+					.getBugCategoryObjects())
+				if (bugCategory.getAbbrev().equals(commandLine.categoryString)) {
+					commandLine.category = bugCategory;
+					break;
+				}
+			if (commandLine.category == null)
+				for (BugCategory bugCategory : i18n
+						.getBugCategoryObjects())
+					if (bugCategory.getAbbrev().startsWith(
+							commandLine.categoryString)) {
+						commandLine.category = bugCategory;
+						break;
+					}
+		}
+		
+		if (commandLine.designationString != null) {
+			for (String designationKey : i18n.getUserDesignationKeys()) {
+				if (commandLine.designationString.equalsIgnoreCase(designationKey) 
+						|| commandLine.designationString.equalsIgnoreCase(i18n.getUserDesignation(designationKey))) {
+					commandLine.designationKey = designationKey;
+					break;
+				}
+					
+			}
+		}
 		SortedBugCollection resultCollection = origCollection.createEmptyCollectionWithMetadata();
 		int passed = 0;
 		int dropped = 0;

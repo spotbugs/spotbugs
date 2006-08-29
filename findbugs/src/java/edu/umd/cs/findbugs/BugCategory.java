@@ -25,10 +25,10 @@ package edu.umd.cs.findbugs;
  * the BugCategory elements in messages*.xml files.
  */
 public class BugCategory implements Comparable {
-	private String category;
-	private String shortDescription;
-	private String abbrev;
-	private String detailText;
+	final private String category;
+	final private String shortDescription;
+	 private String abbrev;
+	 private String detailText;
 
 	/**
 	 * Constructor.

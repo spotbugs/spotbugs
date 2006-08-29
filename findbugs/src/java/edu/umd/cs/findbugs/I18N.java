@@ -224,7 +224,9 @@ public class I18N {
 	public Collection<String> getBugCategories() {
 		return categoryDescriptionMap.keySet(); // backed by the Map
 	}
-
+	public Collection<BugCategory> getBugCategoryObjects() {
+		return categoryDescriptionMap.values(); // backed by the Map
+	}
 	/**
 	 * Get the localized user designation string.
 	 * Returns the key if no user designation can be found.
@@ -242,7 +244,7 @@ public class I18N {
 	 *
 	 * @return List of user designation keys
 	 */
-	public List<String> getUserDesignations() {
+	public List<String> getUserDesignationKeys() {
 		List<String> result = new LinkedList<String>();
 		for (Enumeration<String> e = userDesignationBundle.getKeys(); e.hasMoreElements(); ) {
 			String key = e.nextElement();
@@ -260,8 +262,8 @@ public class I18N {
 	 *
 	 * @return List of user designation keys
 	 */
-	public List<String> getUserDesignations(boolean sort) {
-		List<String> result = getUserDesignations();
+	public List<String> getUserDesignationKeys(boolean sort) {
+		List<String> result = getUserDesignationKeys();
 		if (sort) Collections.sort(result, designationKeyComparator);
 		return result;
 	}

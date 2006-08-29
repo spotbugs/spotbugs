@@ -70,7 +70,7 @@ public class BugDesignation implements XMLWriteable, Serializable {
 	 *  but not what the user sees. Strange things could happen
 	 *  if designationKey is not one of the keys returned by
 	 *  I18N.instance().getUserDesignations().
-	 *  @see I18N#getUserDesignations() */
+	 *  @see I18N#getUserDesignationKeys() */
     public void setDesignation(String designationKey) {
 		designation = (designationKey!=null ? designationKey : UNCLASSIFIED);
     }
