@@ -2321,7 +2321,7 @@ java.util.Collections$UnmodifiableMap$UnmodifiableEntrySet,containsAll,(Ljava/ut
 java.util.Collections$UnmodifiableMap$UnmodifiableEntrySet,toArray,([Ljava/lang/Object;)[Ljava/lang/Object;,1|1
 java.util.concurrent.AbstractExecutorService,invokeAll,(Ljava/util/Collection;JLjava/util/concurrent/TimeUnit;)Ljava/util/List;,0|2
 java.util.concurrent.AbstractExecutorService,invokeAny,(Ljava/util/Collection;JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;,0|2
-java.util.concurrent.AbstractExecutorService,newTaskFor,(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/RunnableFuture;,0|3
+java.util.concurrent.AbstractExecutorService,newTaskFor,(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/RunnableFuture;,0|1
 java.util.concurrent.AbstractExecutorService,submit,(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;,0|2
 java.util.concurrent.ArrayBlockingQueue,<init>,(IZLjava/util/Collection;)V,0|7
 java.util.concurrent.ArrayBlockingQueue$Itr,<init>,(Ljava/util/concurrent/ArrayBlockingQueue;)V,0|1
@@ -2475,7 +2475,7 @@ java.util.concurrent.Exchanger,doExchange,(Ljava/lang/Object;ZJ)Ljava/lang/Objec
 java.util.concurrent.Exchanger,exchange,(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;,0|2
 java.util.concurrent.Exchanger,spinWait,(Ljava/util/concurrent/Exchanger$Node;Ljava/util/concurrent/Exchanger$Slot;)Ljava/lang/Object;,8|1
 java.util.concurrent.Exchanger,tryCancel,(Ljava/util/concurrent/Exchanger$Node;Ljava/util/concurrent/Exchanger$Slot;)Z,8|1
-java.util.concurrent.ExecutorCompletionService,newTaskFor,(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/RunnableFuture;,0|3
+java.util.concurrent.ExecutorCompletionService,newTaskFor,(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/RunnableFuture;,0|1
 java.util.concurrent.ExecutorCompletionService,poll,(JLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/Future;,0|1
 java.util.concurrent.ExecutorCompletionService$QueueingFuture,<init>,(Ljava/util/concurrent/ExecutorCompletionService;Ljava/util/concurrent/RunnableFuture;)V,0|2
 java.util.concurrent.ExecutorCompletionService,submit,(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;,0|2
