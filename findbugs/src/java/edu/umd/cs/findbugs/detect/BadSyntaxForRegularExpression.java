@@ -72,7 +72,7 @@ extends BytecodeScanningDetector {
         	  Object topValue = top.getConstant();
               if (topValue instanceof String) {
             	  String replacementString = (String) topValue;
-            	  if (replacementString.length() == 1 &&  replacementString.toLowerCase().equals("x") || replacementString.equals("\\*")) return;
+            	  if (replacementString.length() == 1 &&  replacementString.toLowerCase().equals("x") || replacementString.equals("*") || replacementString.equals("\\*")) return;
               }
               
         }
