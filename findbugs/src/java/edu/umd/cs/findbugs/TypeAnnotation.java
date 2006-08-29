@@ -20,6 +20,7 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
+import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -79,59 +80,9 @@ public class TypeAnnotation implements BugAnnotation {
 		visitor.visitTypeAnnotation(this);
 	}
 
-	/** change a type descriptor such as "[I"
-	 *  to a source-code-style type such as"int[]".
-	 *  If the descriptor can't be parsed, it will be returned verbatim. */
-	public static String typeDescriptorToSourceType(String descriptor) {
-		/* note 1: I figured a method that does this must already
-		           exist in the findbugs code base but, if so, I
-		           was unable to find it.
-		   note 2: I shoud probably do better error handling than
-		           just returning the descriptor verbatim.     */
-		if (descriptor == null) return descriptor;
-		int adim = 0, len = descriptor.length(), j = 0;
-		while (j < len && descriptor.charAt(j)=='[') {
-			adim += 1;
-			j += 1;
-		}
-		if (j >= len) return descriptor; // descriptor is something like "[[["
-		StringBuffer sb = new StringBuffer(len+adim);
-		switch (descriptor.charAt(j)) {
-			case 'B': sb.append("byte");
-                      break;
-			case 'C': sb.append("char");
-                      break;
-			case 'D': sb.append("double");
-                      break;
-			case 'F': sb.append("float");
-			          break;
-			case 'I': sb.append("int");
-			          break;
-			case 'J': sb.append("long");
-			          break;
-			case 'S': sb.append("short");
-			          break;
-			case 'Z': sb.append("boolean");
-	                  break;
-			case 'L': int semi = descriptor.indexOf(';', j);
-			          if (semi < 0) semi = len; // hmm, someone forgot the final semicolon?
-			          if (semi < j+2) return descriptor;
-			          String slashed = descriptor.substring(j+1, semi);
-			          String dotted = slashed.replace('/', '.');
-			          sb.append(dotted);
-			          j = semi;
-	                  break;
-			 default: return descriptor; // unknown char
-		}
-		if (j+1 < len) {
-			// shoud complain here, but for now we'll just ignore the extra chars
-		}
-		while (adim-- > 0) sb.append("[]");
-		return sb.toString();
-	}
-
+	
 	public String format(String key) {
-		return typeDescriptorToSourceType(descriptor);
+		return new SignatureConverter(descriptor).parseNext();
 	}
 
 	public void setDescription(String roleDescription) {
