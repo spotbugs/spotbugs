@@ -62,9 +62,9 @@ public abstract class AbstractClassMember implements ClassMember {
 	}
 
 	public String getPackageName() {
-		int lastDot = name.lastIndexOf('.');
-		if (lastDot == -1) return name;
-		return name.substring(0,lastDot);
+		int lastDot = className.lastIndexOf('.');
+		if (lastDot == -1) return className;
+		return className.substring(0,lastDot);
 	}
 	public String getSignature() {
 		return signature;
