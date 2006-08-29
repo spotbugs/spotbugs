@@ -184,6 +184,8 @@ public class FindDeadLocalStores implements Detector {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
 			
+			BugInstance pendingBugReportAboutOverwrittenParameter = null;
+			try {
 			WarningPropertySet propertySet = new WarningPropertySet();
 			// Skip any instruction which is not a store
 			if (!isStore(location))
@@ -212,11 +214,10 @@ public class FindDeadLocalStores implements Detector {
 			
 				
 				// TODO: add warning properties?
-				BugInstance bugInstance = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN", NORMAL_PRIORITY)
+				pendingBugReportAboutOverwrittenParameter = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN", NORMAL_PRIORITY)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
 					.add(lvAnnotation)
 					.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle());
-				bugReporter.reportBug(bugInstance);
 				complainedAbout.set(local);
 			}
 			
@@ -308,6 +309,7 @@ public class FindDeadLocalStores implements Detector {
 			
 			if (parameterThatIsDeadAtEntry) {
 				propertySet.addProperty(DeadLocalStoreProperty.PARAM_DEAD_ON_ENTRY);
+				pendingBugReportAboutOverwrittenParameter.setPriority(Detector.HIGH_PRIORITY);
 			}
 
 			if (localStoreCount[local] > 3) 
@@ -349,6 +351,10 @@ public class FindDeadLocalStores implements Detector {
 				System.out.println(propertySet);
 				}
 				accumulator.accumulateBug(bugInstance, sourceLineAnnotation);
+			}
+			} finally {
+				if (pendingBugReportAboutOverwrittenParameter  != null) 
+					bugReporter.reportBug(pendingBugReportAboutOverwrittenParameter);
 			}
 		}
 		accumulator.reportAccumulatedBugs();

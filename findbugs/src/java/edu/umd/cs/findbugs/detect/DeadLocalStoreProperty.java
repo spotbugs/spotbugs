@@ -42,7 +42,7 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
 		new DeadLocalStoreProperty("NO_LOADS",PriorityAdjustment.LOWER_PRIORITY);
 	/** This local is a parameter which is dead on entry to the method. */
 	public static final DeadLocalStoreProperty PARAM_DEAD_ON_ENTRY =
-		new DeadLocalStoreProperty("PARAM_DEAD_ON_ENTRY",PriorityAdjustment.RAISE_PRIORITY);
+		new DeadLocalStoreProperty("PARAM_DEAD_ON_ENTRY",PriorityAdjustment.RAISE_PRIORITY_TO_HIGH);
 	/** Name of the local variable. */
 	public static final DeadLocalStoreProperty LOCAL_NAME =
 		new DeadLocalStoreProperty("LOCAL_NAME",PriorityAdjustment.NO_ADJUSTMENT);
