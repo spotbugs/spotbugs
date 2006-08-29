@@ -26,6 +26,7 @@ import java.text.NumberFormat;
 import java.util.HashMap;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantClass;
@@ -344,6 +345,11 @@ abstract public class DismantleBytecode extends PreorderVisitor {
 		return opcode;
 		}
 
+	public boolean atCatchBlock() {
+		for(CodeException e : getCode().getExceptionTable()) 
+			if (e.getHandlerPC() == getPC()) return true;
+		return false;
+	}
 	@Override
 	public void visit(Code obj) {
 		sizePrevOpcodeBuffer = 0;

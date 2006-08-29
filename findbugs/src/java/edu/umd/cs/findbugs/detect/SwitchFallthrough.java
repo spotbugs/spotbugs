@@ -102,7 +102,7 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		if (isRegisterLoad())
 			potentiallyDeadStores.clear(getRegisterOperand());
 
-		else if (isRegisterStore()) {
+		else if (isRegisterStore() && !atCatchBlock()) {
 			int register = getRegisterOperand();
 			if (potentiallyDeadStores.get(register) && (potentiallyDeadStoresFromBeforeFallthrough.get(register))){
 				// killed store
