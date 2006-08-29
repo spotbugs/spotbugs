@@ -680,7 +680,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		BugInstance instance =
 			new BugInstance(this, bugPattern, BASE_ES_PRIORITY)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addClass("java.lang.String").describe("CLASS_REFTYPE")
+			.addType("Ljava/lang/String;")
 			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle());
 		
 		WarningWithProperties warn = new WarningWithProperties(instance, propertySet, location);
@@ -696,8 +696,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		String sourceFile = jclass.getSourceFileName();
 		BugInstance instance = new BugInstance(this, "RC_REF_COMPARISON", lhs.equals("java.lang.Boolean") ? NORMAL_PRIORITY : HIGH_PRIORITY)
 		        .addClassAndMethod(methodGen, sourceFile)
-		        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
-		        .addClass(lhs).describe("CLASS_REFTYPE");
+		         .addType("L" + lhs.replace('.', '/')+";")
+		        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle());
+		     
 		refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet(), location));
 	}
 
@@ -749,12 +750,14 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			}
 			return;
 		}
+		ReferenceType originalLhsType = (ReferenceType) lhsType_;
+		ReferenceType originalRhsType = (ReferenceType) rhsType_;
 		
 		if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType) {
 			bugReporter.reportBug(new BugInstance(this, "EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
 			        .addClassAndMethod(methodGen, sourceFile)
-			        .addClass(lhsType_.getSignature()).describe("CLASS_REFTYPE")
-			        .addClass(rhsType_.getSignature()).describe("CLASS_REFTYPE")
+			        .addType(originalLhsType.getSignature())
+			        .addType(originalRhsType.getSignature())
 			        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			         );
 		do {
@@ -768,9 +771,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			if (rhsType_.equals(ObjectType.OBJECT)) priority = LOW_PRIORITY;
 			bugReporter.reportBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", priority)
 			        .addClassAndMethod(methodGen, sourceFile)
-			        .addClass(lhsType_.getSignature()).describe("CLASS_REFTYPE")
-			        .addClass(rhsType_.getSignature()).describe("CLASS_REFTYPE")
-			        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+			         .addType(originalLhsType.getSignature())
+			        .addType(originalRhsType.getSignature())
+			       .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			         );
 		}
 		if (rhsType_ instanceof ArrayType) {
@@ -778,9 +781,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			if (lhsType_.equals(ObjectType.OBJECT)) priority = LOW_PRIORITY;
 			bugReporter.reportBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", priority)
 			        .addClassAndMethod(methodGen, sourceFile)
-			        .addClass(rhsType_.getSignature()).describe("CLASS_REFTYPE")
-			        .addClass(lhsType_.getSignature()).describe("CLASS_REFTYPE")
-			        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+			         .addType(originalLhsType.getSignature())
+			        .addType(originalRhsType.getSignature())
+			       .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			         );
 		}
 		if (lhsType_.equals(rhsType_))
@@ -851,8 +854,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		if (priority <= LOW_PRIORITY) {
 			bugReporter.reportBug(new BugInstance(this, bugType, priority)
 			        .addClassAndMethod(methodGen, sourceFile)
-			        .addClass(lhsType.getClassName()).describe("CLASS_REFTYPE")
-			        .addClass(rhsType.getClassName()).describe("CLASS_REFTYPE")
+			        .addType(originalLhsType.getSignature())
+			        .addType(originalRhsType.getSignature())
 			        .addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			        );
 		}

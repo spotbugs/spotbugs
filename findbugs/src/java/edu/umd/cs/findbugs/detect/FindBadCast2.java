@@ -264,8 +264,10 @@ public class FindBadCast2 implements Detector {
 						|| refSig2.equals("Ljava/lang/Cloneable;"))) continue;
 				bugReporter.reportBug(
 						new BugInstance(this,
-						"BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY", HIGH_PRIORITY )
+						"BC_IMPOSSIBLE_CAST", HIGH_PRIORITY )
 						.addClassAndMethod(methodGen, sourceFile)
+						.addType(refSig)
+						.addType(castSig)
 						.addSourceLine(sourceLineAnnotation));
 				continue;
 			}
@@ -303,8 +305,8 @@ public class FindBadCast2 implements Detector {
 								"BC_VACUOUS_INSTANCEOF", NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
 							
-								.addClass(refName.replace('/', '.'))
-								.addClass(castName.replace('/', '.'))
+								.addType(refSig)
+								.addType(castSig)
 								,sourceLineAnnotation);
 				} else {
 					boolean downcast = Repository.instanceOf(castJavaClass,
@@ -356,8 +358,8 @@ public class FindBadCast2 implements Detector {
 								isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
 								
-								.addClass(refName.replace('/', '.'))
-								.addClass(castName.replace('/', '.'))
+								.addType(refSig)
+								.addType(castSig)
 								.addSourceLine(sourceLineAnnotation));
 					else if (isCast && rank < 0.9) {
 
@@ -415,8 +417,8 @@ public class FindBadCast2 implements Detector {
 
 							accumulator.accumulateBug(new BugInstance(this, bug, priority)
 									.addClassAndMethod(methodGen, sourceFile)
-									.addClass(refName.replace('/', '.'))
-									.addClass(castName.replace('/', '.')),
+									.addType(refSig)
+									.addType(castSig),
 									sourceLineAnnotation
 									);
 						}

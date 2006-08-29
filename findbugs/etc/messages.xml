@@ -3642,7 +3642,7 @@ for using a JSR-166 lock is:
 
   <BugPattern type="RC_REF_COMPARISON">
     <ShortDescription>Suspicious reference comparison</ShortDescription>
-    <LongDescription>Suspicious comparison of {3} references in {1}</LongDescription>
+    <LongDescription>Suspicious comparison of {2} references in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method compares two reference values using the == or != operator,
@@ -4744,10 +4744,9 @@ If the object is, indeed, non-serializable, an error will result.
   </BugPattern>
 
 
-
   <BugPattern type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG">
     <ShortDescription>Primitive array passed to function expecting a variable number of object arguments</ShortDescription>
-    <LongDescription>Primitive array passed to {2} in {1}</LongDescription>
+    <LongDescription>{2} passed to varargs method {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4786,23 +4785,9 @@ to iterate through a collection, you don't need to cast it to a Set or List.
     </Details>
   </BugPattern>
 
-
-
-  <BugPattern type="BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY">
-    <ShortDescription>Impossible cast involving primitive array</ShortDescription>
-    <LongDescription>Impossible cast involving primitive array in {1}</LongDescription>
-    <Details>
-<![CDATA[
-<p>
-This cast will always throw a ClassCastException.
-</p>
-]]>
-    </Details>
-  </BugPattern>
-
   <BugPattern type="BC_IMPOSSIBLE_CAST">
     <ShortDescription>Impossible cast</ShortDescription>
-    <LongDescription>Impossible cast from {2} to class {3} in {1}</LongDescription>
+    <LongDescription>Impossible cast from {2} to {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4870,7 +4855,7 @@ an indication of some misunderstanding or some other logic error.
 
   <BugPattern type="BC_UNCONFIRMED_CAST">
     <ShortDescription>Unchecked/unconfirmed cast</ShortDescription>
-    <LongDescription>Unchecked/unconfirmed cast from {2} to class {3} in {1}</LongDescription>
+    <LongDescription>Unchecked/unconfirmed cast from {2} to {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4883,7 +4868,7 @@ cast will not fail.
   </BugPattern>
   <BugPattern type="BC_BAD_CAST_TO_CONCRETE_COLLECTION">
     <ShortDescription>Questionable cast to concrete collection</ShortDescription>
-    <LongDescription>Questionable cast from {2} to concrete class {3} in {1}</LongDescription>
+    <LongDescription>Questionable cast from {2} to {3} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>

@@ -70,6 +70,7 @@ public class VarArgsProblems extends BytecodeScanningDetector implements
 	public static final int SEEN_GOTO = 7;
 
 	Pattern primitiveArray = Pattern.compile("\\[[IJDFSCB]");
+	String primitiveArraySig;
 	@Override
          public void sawOpcode( int seen) {
 		// System.out.println("State:" + state);
@@ -85,6 +86,7 @@ public class VarArgsProblems extends BytecodeScanningDetector implements
 			case SEEN_ICONST_1:
 				if (seen == ANEWARRAY && primitiveArray.matcher(getClassConstantOperand()).matches()) {
 					// System.out.println("Allocation of array of type " + getClassConstantOperand());
+					primitiveArraySig = getClassConstantOperand();
 					state = SEEN_ANEWARRAY; 
 				}
 				else
@@ -130,6 +132,7 @@ public class VarArgsProblems extends BytecodeScanningDetector implements
 							priority = HIGH_PRIORITY;
 					bugReporter.reportBug( new BugInstance( this, "VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG", priority)
 							.addClassAndMethod(this)
+							.addType(primitiveArraySig)
 							.addCalledMethod(this)
 							.addSourceLine(this));
 				}

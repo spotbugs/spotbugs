@@ -511,7 +511,7 @@
 	    />
   <Detector class="edu.umd.cs.findbugs.detect.FindBadCast2"
             speed="fast"
-            reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF,BC_VACUOUS_INSTANCEOF,NP_NULL_INSTANCEOF,BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY"
+            reports="BC_BAD_CAST_TO_CONCRETE_COLLECTION,BC_BAD_CAST_TO_ABSTRACT_COLLECTION,BC_UNCONFIRMED_CAST,BC_IMPOSSIBLE_CAST,BC_IMPOSSIBLE_INSTANCEOF,BC_VACUOUS_INSTANCEOF,NP_NULL_INSTANCEOF"
 	    />
   <Detector class="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession"
             speed="fast"
@@ -843,7 +843,6 @@
   <BugPattern abbrev="BC" type="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS" category="BAD_PRACTICE"/>
   <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_CONCRETE_COLLECTION" category="STYLE"/>
   <BugPattern abbrev="BC" type="BC_UNCONFIRMED_CAST" category="STYLE"/>
-  <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY" category="CORRECTNESS"/>
   <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_CAST" category="CORRECTNESS"/>
   <BugPattern abbrev="BC" type="BC_IMPOSSIBLE_INSTANCEOF" category="CORRECTNESS"/>
   <BugPattern abbrev="BC" type="BC_VACUOUS_INSTANCEOF" category="STYLE"/>
