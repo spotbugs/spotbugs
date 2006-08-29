@@ -32,6 +32,9 @@ public class TypeAnnotationFactory {
 	private static Map<String, TypeAnnotation> map = new MapCache<String, TypeAnnotation>(CACHE_SIZE);
 
 	/**
+	 * Don't use this class, as it will likely be removed.
+	 * Simply say "new TypeAnnotation(typeDescriptor)" instead. <p>
+	 * 
 	 * Return a TypeAnnotation instance for a given typeDescriptor.
 	 * If a cached instance is available, it will be returned.
 	 * 

@@ -40,15 +40,13 @@ public class TypeAnnotation implements BugAnnotation {
 	private String roleDescription;
 	
 	/**
-	 * You probably don't want to use this constructor.
-	 * Use TypeAnnotationFactory.getInstance(typeDescriptor) instead.
+	 * constructor.
 	 * 
 	 * <p>For information on type descriptors,
 	 * <br>see http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html#14152
 	 * <br>or  http://www.murrayc.com/learning/java/java_classfileformat.shtml#TypeDescriptors
 	 * 
 	 * @param typeDescriptor a jvm type descriptor, such as "[I"
-	 * @see TypeAnnotationFactory#getInstance(String typeDescriptor)
 	 */
 	public TypeAnnotation(String typeDescriptor) {
 		this(typeDescriptor, DEFAULT_ROLE);

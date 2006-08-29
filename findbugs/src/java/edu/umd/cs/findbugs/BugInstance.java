@@ -788,7 +788,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addType(String typeDescriptor) {
-		TypeAnnotation typeAnnotation = TypeAnnotationFactory.getInstance(typeDescriptor);
+		TypeAnnotation typeAnnotation = new TypeAnnotation(typeDescriptor);
 		add(typeAnnotation);
 		return this;
 	}
