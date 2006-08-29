@@ -262,6 +262,9 @@ public class FindBadCast2 implements Detector {
 				if ( castSig2.charAt(0) == '[' && (refSig2.equals("Ljava/io/Serializable;") 
 						|| refSig2.equals("Ljava/lang/Object;")
 						|| refSig2.equals("Ljava/lang/Cloneable;"))) continue;
+				if ( refSig2.charAt(0) == '[' && (castSig2.equals("Ljava/io/Serializable;") 
+						|| castSig2.equals("Ljava/lang/Object;")
+						|| castSig2.equals("Ljava/lang/Cloneable;"))) continue;
 				bugReporter.reportBug(
 						new BugInstance(this,
 						"BC_IMPOSSIBLE_CAST", HIGH_PRIORITY )
