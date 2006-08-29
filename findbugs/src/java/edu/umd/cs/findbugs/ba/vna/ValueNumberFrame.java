@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.util.Strings;
 
 /**
  * A dataflow value representing a Java stack frame with value number
@@ -193,19 +194,16 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 							}
 							phi.setFlag(flags);
 							if (RLE_DEBUG)
-								System.out.println("Creating phi node " + phi + " for " + load + " from " + Arrays.toString(myVN) + " x " +  Arrays.toString(otherVN) + " in " + System.identityHashCode(this));	
+								System.out.println("Creating phi node " + phi + " for " + load + " from " + Strings.toString(myVN) + " x " +  Strings.toString(otherVN) + " in " + System.identityHashCode(this));	
 							changed = true;
 							e.setValue(new ValueNumber[] { phi });
 						} else {
 							if (RLE_DEBUG)
-									System.out.println("Reusing phi node : " + phi + " for " + load + " from "+ Arrays.toString(myVN) + " x " +  Arrays.toString(otherVN)+ " in " + System.identityHashCode(this));
+									System.out.println("Reusing phi node : " + phi + " for " + load + " from "+ Strings.toString(myVN) + " x " +  Strings.toString(otherVN)+ " in " + System.identityHashCode(this));
 							if (myVN.length != 0 || !myVN[0].equals(phi))
 								e.setValue(new ValueNumber[] { phi });
-						
-							
 						}
-						
-						
+
 					}
 					
 				}	
