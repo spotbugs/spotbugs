@@ -2500,7 +2500,7 @@ java.util.concurrent.Executors,newScheduledThreadPool,(ILjava/util/concurrent/Th
 java.util.concurrent.Executors,newSingleThreadExecutor,(Ljava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ExecutorService;,8|1
 java.util.concurrent.Executors,newSingleThreadScheduledExecutor,(Ljava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ScheduledExecutorService;,8|1
 java.util.concurrent.FutureTask,get,(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;,0|1
-java.util.concurrent.FutureTask,<init>,(Ljava/lang/Runnable;Ljava/lang/Object;)V,1|3
+java.util.concurrent.FutureTask,<init>,(Ljava/lang/Runnable;Ljava/lang/Object;)V,1|1
 java.util.concurrent.FutureTask,setException,(Ljava/lang/Throwable;)V,4|1
 java.util.concurrent.FutureTask,set,(Ljava/lang/Object;)V,4|1
 java.util.concurrent.LinkedBlockingDeque,addFirst,(Ljava/lang/Object;)V,0|1
@@ -2599,8 +2599,8 @@ java.util.concurrent.ScheduledThreadPoolExecutor,scheduleAtFixedRate,(Ljava/lang
 java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask,compareTo,(Ljava/lang/Object;)I,4161|1
 java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask,compareTo,(Ljava/util/concurrent/Delayed;)I,0|1
 java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask,getDelay,(Ljava/util/concurrent/TimeUnit;)J,1|1
-java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask,<init>,(Ljava/util/concurrent/ScheduledThreadPoolExecutor;Ljava/lang/Runnable;Ljava/lang/Object;JJ)V,0|6
-java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask,<init>,(Ljava/util/concurrent/ScheduledThreadPoolExecutor;Ljava/lang/Runnable;Ljava/lang/Object;J)V,0|6
+java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask,<init>,(Ljava/util/concurrent/ScheduledThreadPoolExecutor;Ljava/lang/Runnable;Ljava/lang/Object;JJ)V,0|2
+java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask,<init>,(Ljava/util/concurrent/ScheduledThreadPoolExecutor;Ljava/lang/Runnable;Ljava/lang/Object;J)V,0|2
 java.util.concurrent.ScheduledThreadPoolExecutor,schedule,(Ljava/lang/Runnable;JLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;,0|2
 java.util.concurrent.ScheduledThreadPoolExecutor,submit,(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Future;,1|3
 java.util.concurrent.Semaphore,tryAcquire,(IJLjava/util/concurrent/TimeUnit;)Z,0|2
