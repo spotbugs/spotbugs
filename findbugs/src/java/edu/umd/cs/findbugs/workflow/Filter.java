@@ -107,7 +107,7 @@ public class Filter {
 		String designationString;
 		String designationKey;
 		String categoryString;
-		BugCategory category;
+		String categoryKey;
 		int priority = 3;
 
 		FilterCommandLine() {
@@ -260,7 +260,7 @@ public class Filter {
 			if (className != null && !className.matcher(bug.getPrimaryClass().getClassName()).find())
 					return false;
 
-			if (category != null && !bug.getBugPattern().getCategory().equals(category))
+			if (categoryKey != null && !bug.getBugPattern().getCategory().equals(categoryKey))
 				return false;
 			if (designationKey != null && !designationKey.equals(bug.getUserDesignationKey()))
 				return false;
@@ -399,23 +399,23 @@ public class Filter {
 			for (BugCategory bugCategory : i18n
 					.getBugCategoryObjects())
 				if (bugCategory.getAbbrev().equals(commandLine.categoryString)) {
-					commandLine.category = bugCategory;
+					commandLine.categoryKey = bugCategory.getCategory();
 					break;
 				}
-			if (commandLine.category == null)
+			if (commandLine.categoryKey == null)
 				for (BugCategory bugCategory : i18n
 						.getBugCategoryObjects())
 					if (bugCategory.getAbbrev().startsWith(
 							commandLine.categoryString)) {
-						commandLine.category = bugCategory;
+						commandLine.categoryKey = bugCategory.getCategory();
 						break;
 					}
 		}
 		
 		if (commandLine.designationString != null) {
 			for (String designationKey : i18n.getUserDesignationKeys()) {
-				if (commandLine.designationString.equalsIgnoreCase(designationKey) 
-						|| commandLine.designationString.equalsIgnoreCase(i18n.getUserDesignation(designationKey))) {
+				if (designationKey.startsWith(commandLine.designationString) 
+						|| i18n.getUserDesignation(designationKey).startsWith(commandLine.designationString)) {
 					commandLine.designationKey = designationKey;
 					break;
 				}
