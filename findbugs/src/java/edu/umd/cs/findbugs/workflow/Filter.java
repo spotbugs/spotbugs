@@ -144,7 +144,7 @@ public class Filter {
 			addOption("-class", "pattern", "allow only bugs whose primary class name matches this pattern");
 			addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
 			addOption("-category", "category", "allow only warnings with a category that starts with this string");
-			addOption("-designation", "designation", "allow only warnings with this designation (e.g., -designation:SHOULD_FIX)");
+			addOption("-designation", "designation", "allow only warnings with this designation (e.g., -designation SHOULD_FIX)");
 	
 		}
 
