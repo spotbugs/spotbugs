@@ -572,7 +572,7 @@ public class FindBugs2 implements IFindBugsEngine {
 					? referencedClassSet 
 					: appClassList;
 			if (DEBUG) {
-				System.out.println("Pass " + (passCount + 1) + ": " + classCollection.size() + " classes");
+				System.out.println("Pass " + (passCount) + ": " + classCollection.size() + " classes");
 			}
 			
 			progress.startAnalysis(classCollection.size());
@@ -619,6 +619,7 @@ public class FindBugs2 implements IFindBugsEngine {
 				detector.finishPass();
 			}
 			
+			AnalysisContext.currentAnalysisContext().updateDatabases(passCount);
 			progress.finishPerClassAnalysis();
 			
 			passCount++;

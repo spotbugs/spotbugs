@@ -27,6 +27,12 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnotation> {
 	
 	public NullnessAnnotationDatabase() {
+		setAddClassOnly(true);
+		loadAuxiliaryAnnotations(); 
+		setAddClassOnly(false);
+	}
+	@Override
+	public void loadAuxiliaryAnnotations() {
 		boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 		addDefaultAnnotation(AnnotationDatabase.METHOD, "java.lang.String", NullnessAnnotation.NONNULL);
 		addFieldAnnotation("java.lang.System", "out", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);

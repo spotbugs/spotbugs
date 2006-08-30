@@ -84,4 +84,5 @@ public interface ClassMember extends Comparable<ClassMember>, Serializable  {
 	 * Did we find a declaration of this member?
 	 */
 	public boolean isResolved();
+
 }

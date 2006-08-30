@@ -29,6 +29,13 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 	
 	private JavaClass throwableClass, threadClass;
 	public CheckReturnAnnotationDatabase() {
+		setAddClassOnly(true);
+		loadAuxiliaryAnnotations(); 
+		setAddClassOnly(false);
+		}
+
+	@Override
+	public void loadAuxiliaryAnnotations() {
 		boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 		
 		addMethodAnnotation("java.util.Iterator","hasNext", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);
@@ -85,8 +92,6 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}
-		// WTF!
-		// new Exception("trace lookup Throwable "+(throwableClass!=null)).printStackTrace();//***
 	}
 	
 	 @Override

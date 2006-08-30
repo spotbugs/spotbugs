@@ -222,8 +222,17 @@ public  class XFactory {
 		if (m.isStatic()) return m;
 		XMethod m2 = m;
 		String classname = m.getClassName();
-		if (classname.charAt(0)=='[') return m;
-		
+		if (false && m.getName().equals("<init>")) {
+			System.out.println("Can't find " + m.hashCode() + " " + m);
+			for(XMethod m0 : methods.keySet()) {
+				if (m.getClassName().equals(m0.getClassName()))
+					System.out.println("  " + m0.hashCode() + " " + m.equals(m0) + " " + m0);
+			}
+		}
+		if (classname.charAt(0)=='[' || m.getName().equals("<init>") || m.getName().startsWith("access$")) {
+			((AbstractMethod)m).markAsResolved();
+			return m;
+		}
 		try {
 			JavaClass javaClass = Repository.lookupClass(classname);
 			while (true) {
@@ -232,13 +241,19 @@ public  class XFactory {
 				m2 = createXMethod(javaClass.getClassName(), m.getName(), m.getSignature(), m.isStatic());
 				m2 = intern(m2);
 				if (m2.isResolved()) {
-					// methods.put(m, m2);
+					methods.put(m, m2);
+					if (false) {
+						System.out.println("Update " + m);
+						System.out.println("   ->  " + m2);
+					}
+					
 					return m2;	
 				}
 			}
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}
+		((AbstractMethod)m).markAsResolved();
 		return m;
 	}
 
@@ -315,6 +330,7 @@ public  class XFactory {
 		Method method = visitor.getMethod();
 		XMethod m =  createXMethod(javaClass, method);
 		((AbstractMethod)m).markAsResolved();
+		// System.out.println("Resolved " + m);
 		return m;
 	}
 	

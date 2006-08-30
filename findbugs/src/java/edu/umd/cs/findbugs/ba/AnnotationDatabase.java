@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.util.MapCache;
 
 /**
@@ -66,6 +67,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration> {
 
 	private final Map<String, Map<String, AnnotationEnum>> defaultAnnotation = new HashMap<String, Map<String, AnnotationEnum>>();
 
+	private Subtypes subtypes;
 	public AnnotationDatabase() {
 		defaultAnnotation.put(ANY,
 				new HashMap<String, AnnotationEnum>());
@@ -75,9 +77,13 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration> {
 				new HashMap<String, AnnotationEnum>());
 		defaultAnnotation.put(FIELD,
 				new HashMap<String, AnnotationEnum>());
+		subtypes = AnalysisContext.currentAnalysisContext().getSubtypes();
 
 	}
 
+	public void loadAuxiliaryAnnotations() {
+		
+	}
 	private final Set<AnnotationEnum> seen = new HashSet<AnnotationEnum>();
 	public void addSyntheticElement(Object o) {
 		syntheticElements.add(o);
@@ -291,24 +297,38 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration> {
 		}
 	}
 
+	boolean addClassOnly = false;
+	public boolean setAddClassOnly(boolean newValue) {
+		boolean oldValue = addClassOnly;
+		addClassOnly = newValue;
+		return oldValue;
+	}
 	protected void addDefaultMethodAnnotation(String cName, AnnotationEnum annotation) {
-	
+		subtypes.addNamedClass(cName);
 
-		addDefaultAnnotation(AnnotationDatabase.METHOD, cName, annotation);
+		if (addClassOnly) return;
+		
+			addDefaultAnnotation(AnnotationDatabase.METHOD, cName, annotation);
 
 	
 	}
 
 	protected void addFieldAnnotation(String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
+		subtypes.addNamedClass(cName);
+		if (addClassOnly) return;
 		XField m = XFactory.createXField(cName, mName, mSig, isStatic);
 		addDirectAnnotation(m, annotation);
 	}
 
 	protected void addMethodAnnotation(String cName, String mName, String mSig, boolean isStatic, AnnotationEnum annotation) {
+		subtypes.addNamedClass(cName);
+		if (addClassOnly) return;
 		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
 		addDirectAnnotation(m, annotation);
 	}
 	protected void addMethodParameterAnnotation(String cName, String mName, String mSig, boolean isStatic, int param, AnnotationEnum annotation) {
+		subtypes.addNamedClass(cName);
+		if (addClassOnly) return;
 		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
 		addDirectAnnotation(new XMethodParameter(m, param), annotation);
 	}

@@ -307,4 +307,18 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#updateDatabases(int)
+	 */
+	@Override
+	public void updateDatabases(int pass) {
+		if (pass == 0) {
+			getCheckReturnAnnotationDatabase().loadAuxiliaryAnnotations();
+			getNullnessAnnotationDatabase().loadAuxiliaryAnnotations();
+		}
+		
+	}
+
+	
+
 }

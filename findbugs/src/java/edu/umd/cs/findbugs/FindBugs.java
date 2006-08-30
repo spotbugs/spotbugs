@@ -1112,8 +1112,9 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		// Callback for progress dialog: analysis is starting
 		progressCallback.startAnalysis(repositoryClassList.size());
 		
+		int thisPass = passCount++;
 		if (ExecutionPlan.DEBUG) {
-			System.out.println("************* Analysis pass " + (passCount++) + " *************");
+			System.out.println("************* Analysis pass " + thisPass + " *************");
 			for (Iterator<DetectorFactory> i = analysisPass.iterator(); i.hasNext();) {
 				DetectorFactory factory = i.next();
 				System.out.println("\t" + factory.getFullName());
@@ -1153,6 +1154,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		// Force any detectors which defer work until all classes have
 		// been seen to do that work.
 		this.reportFinal(detectors);
+		
+		AnalysisContext.currentAnalysisContext().updateDatabases(thisPass);
 	}
 
 	/**

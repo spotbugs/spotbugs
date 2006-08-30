@@ -184,7 +184,7 @@ public class Subtypes {
 		}
 	}
 
-	private void addNamedClass(String name) {
+	public void addNamedClass(String name) {
 		name = name.replace('/', '.');
 
 		if (referenced.add(name))

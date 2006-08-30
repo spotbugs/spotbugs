@@ -34,6 +34,10 @@
 	</SplitPass>
 
 	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.Methods"/>
+		<Later class="edu.umd.cs.findbugs.detect.CalledMethods"/>
+	</SplitPass>
+	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.CalledMethods"/>
 		<Later class="edu.umd.cs.findbugs.detect.UncallableMethodOfAnonymousClass"/>
 	</SplitPass>

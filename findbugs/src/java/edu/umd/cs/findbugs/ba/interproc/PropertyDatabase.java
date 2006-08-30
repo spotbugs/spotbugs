@@ -32,6 +32,7 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -78,6 +79,9 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 		return propertyMap.get(key);
 	}
 	
+	public Set<KeyType> getKeys() {
+		return propertyMap.keySet();
+	}
 	/**
 	 * Return whether or not the database is empty.
 	 * 

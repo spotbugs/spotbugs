@@ -137,6 +137,14 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		nullnessAnnotationDatabase = new NullnessAnnotationDatabase();
 	}
 
+	
+	@Override
+	public void updateDatabases(int pass) {
+		if (pass == 0) {
+			checkReturnAnnotationDatabase.loadAuxiliaryAnnotations();
+			nullnessAnnotationDatabase.loadAuxiliaryAnnotations();
+		}
+	}
 	@Override
 	public RepositoryLookupFailureCallback getLookupFailureCallback() {
 		return lookupFailureCallback;

@@ -133,6 +133,12 @@ public abstract class AnalysisContext {
 	 */
 	public abstract void initDatabases();
 
+	
+	/**
+	 * After a pass has been completed, allow the analysis context to update information.
+	 * @param pass -- the first pass is pass 0
+	 */
+	public abstract void updateDatabases(int pass);
 	/**
 	 * Get the AnalysisContext associated with this thread
 	 */
