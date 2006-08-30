@@ -206,7 +206,10 @@ public  class XFactory {
 				if (javaClass == null) return f;
 				f2 = createXField(javaClass.getClassName(), f.getName(), f.getSignature(), f.isStatic());
 				f2 = intern(f2);
-				if (f2.isResolved()) return f2;	
+				if (f2.isResolved()) {
+					fields.put(f, f2);
+					return f2;	
+				}
 			}
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
@@ -228,7 +231,10 @@ public  class XFactory {
 				if (javaClass == null) return m;
 				m2 = createXMethod(javaClass.getClassName(), m.getName(), m.getSignature(), m.isStatic());
 				m2 = intern(m2);
-				if (m2.isResolved()) return m2;	
+				if (m2.isResolved()) {
+					methods.put(m, m2);
+					return m2;	
+				}
 			}
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
