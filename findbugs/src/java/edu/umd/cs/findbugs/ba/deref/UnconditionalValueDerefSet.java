@@ -51,6 +51,9 @@ public class UnconditionalValueDerefSet {
 	
 	boolean resultsFromBackEdge = false;
 	int backEdgeUpdateCount = 0;
+	private int lastUpdateTimestamp;
+
+	
 	
 	/**
 	 * Constructor.
@@ -395,5 +398,19 @@ public class UnconditionalValueDerefSet {
 		}
 		if (false) return;
 		retainOnlyTheseValueNumbers(valueNumbers);
+	}
+
+	/**
+	 * @param lastUpdateTimestamp The lastUpdateTimestamp to set.
+	 */
+	public void setLastUpdateTimestamp(int lastUpdateTimestamp) {
+		this.lastUpdateTimestamp = lastUpdateTimestamp;
+	}
+
+	/**
+	 * @return Returns the lastUpdateTimestamp.
+	 */
+	public int getLastUpdateTimestamp() {
+		return lastUpdateTimestamp;
 	}
 }

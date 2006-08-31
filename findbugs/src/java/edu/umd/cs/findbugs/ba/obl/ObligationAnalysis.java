@@ -226,6 +226,9 @@ public class ObligationAnalysis
 	public void makeFactTop(StateSet fact) {
 		fact.setTop();
 	}
+	public boolean isTop(StateSet fact) {
+		return fact.isTop();
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#same(edu.umd.cs.findbugs.ba.obl.StateSet, edu.umd.cs.findbugs.ba.obl.StateSet)

@@ -173,4 +173,12 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
 		}
 		return fact;
 	}
+	
+	public int getLastUpdateTimestamp(Fact fact) {
+		return 0;
+	}
+	public void setLastUpdateTimestamp(Fact fact, int lastUpdateTimestamp) {
+		
+	}
+	
 }

@@ -92,6 +92,10 @@ public class CallListAnalysis extends AbstractDataflowAnalysis<CallList> {
 		fact.setTop();
 	}
 	
+	public boolean isTop(CallList fact) {
+		return fact.isTop();
+	}
+	
 	public CallList createFact() {
 		return new CallList();
 	}

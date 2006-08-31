@@ -88,6 +88,9 @@ public final class LockSet {
 			return array[index + 1];
 	}
 
+	public boolean isTop() {
+		return defaultLockCount == TOP;
+	}
 	/**
 	 * Set the lock count for a lock object.
 	 *

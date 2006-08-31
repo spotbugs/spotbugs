@@ -96,7 +96,10 @@ public @Deprecated class WillBeDereferencedAnalysis extends BackwardDataflowAnal
 		fact.isTop = true;
 		fact.value.clear();
 	}
-	
+
+	public boolean isTop(WillBeDereferencedInfo fact) {
+		return fact.isTop;
+	}
 	public void meetInto(WillBeDereferencedInfo fact, Edge edge, WillBeDereferencedInfo result) throws DataflowAnalysisException {
 		// Ignore implicit exceptions
 		if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS)

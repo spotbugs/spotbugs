@@ -35,6 +35,7 @@ public interface DataflowAnalysis <Fact> {
 	 */
 	public Fact createFact();
 
+	
 	/**
 	 * Get the start fact for given basic block.
 	 *
@@ -72,6 +73,10 @@ public interface DataflowAnalysis <Fact> {
 	 */
 	public void makeFactTop(Fact fact);
 
+	/**
+	 * Is the given fact the top value.
+	 */
+	public boolean isTop(Fact fact);
 	/**
 	 * Returns true if the analysis is forwards, false if backwards.
 	 */
@@ -142,6 +147,10 @@ public interface DataflowAnalysis <Fact> {
 	 * Called after finishing an iteration of analysis. 
 	 */
 	public void finishIteration();
+	
+	public int getLastUpdateTimestamp(Fact fact);
+	
+	public void setLastUpdateTimestamp(Fact fact, int timestamp);
 }
 
 // vim:ts=4

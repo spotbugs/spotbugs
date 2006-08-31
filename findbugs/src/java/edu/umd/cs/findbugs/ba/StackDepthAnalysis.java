@@ -57,6 +57,9 @@ public class StackDepthAnalysis extends ForwardDataflowAnalysis<StackDepth> {
 	public void makeFactTop(StackDepth fact) {
 		fact.setDepth(TOP);
 	}
+	public boolean isTop(StackDepth fact) {
+		return fact.getDepth() == TOP;
+	}
 
 	@Override
          public boolean isFactValid(StackDepth fact) {

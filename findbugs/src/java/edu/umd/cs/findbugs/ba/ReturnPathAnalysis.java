@@ -47,6 +47,9 @@ public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> impl
 		fact.setKind(ReturnPath.TOP);
 	}
 
+	public boolean isTop(ReturnPath fact) {
+		return fact.getKind() == ReturnPath.TOP;
+	}
 	public boolean same(ReturnPath fact1, ReturnPath fact2) {
 		return fact1.sameAs(fact2);
 	}

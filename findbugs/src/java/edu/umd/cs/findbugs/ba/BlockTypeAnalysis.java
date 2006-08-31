@@ -69,7 +69,9 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
 	public void makeFactTop(BlockType fact) {
 		fact.setTop();
 	}
-
+	public boolean isTop(BlockType fact) {
+		return fact.isTop();
+	}
 	public boolean isForwards() {
 		return true;
 	}

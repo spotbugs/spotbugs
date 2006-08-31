@@ -90,7 +90,9 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 		fact.clear();
 		fact.setDefaultLockCount(LockSet.TOP);
 	}
-
+	public boolean isTop(LockSet fact) {
+		return fact.isTop();
+	}
 	public boolean same(LockSet fact1, LockSet fact2) {
 		return fact1.sameAs(fact2);
 	}

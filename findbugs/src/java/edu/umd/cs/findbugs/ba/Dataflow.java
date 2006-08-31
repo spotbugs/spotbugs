@@ -103,13 +103,14 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			System.out.println("Executing " + shortAnalysisName + " on " + cfg.getMethodName());
 		}
 
+		int timestamp = 0;
 		do {
 			change = false;
 			++numIterations;
 
 			if (DEBUG) {
 				System.out.println("----------------------------------------------------------------------");
-				System.out.println(this.getClass().getName() + " iteration " + numIterations);
+				System.out.println(this.getClass().getName() + " iteration: " + numIterations + ", timestamp: " + timestamp);
 				System.out.println("----------------------------------------------------------------------");
 			}
 
@@ -121,14 +122,14 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			if (DEBUG) {
 				if (blockOrder instanceof ReverseDFSOrder) {
 					ReverseDFSOrder rBlockOrder = (ReverseDFSOrder) blockOrder;
-				System.out.println("Entry point is: " + logicalEntryBlock());
-				System.out.println("Basic block order: ");
-				Iterator<BasicBlock> i = blockOrder.blockIterator();
-				while (i.hasNext()) {
+					System.out.println("Entry point is: " + logicalEntryBlock());
+					System.out.println("Basic block order: ");
+					Iterator<BasicBlock> i = blockOrder.blockIterator();
+					while (i.hasNext()) {
 
-					BasicBlock block = i.next();
-					if (DEBUG) debug(block, "rBlockOrder " + rBlockOrder.rdfs.getDiscoveryTime(block) + "\n");
-				}
+						BasicBlock block = i.next();
+						if (DEBUG) debug(block, "rBlockOrder " + rBlockOrder.rdfs.getDiscoveryTime(block) + "\n");
+					}
 				}
 			}
 			
@@ -141,16 +142,57 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	
 				// Get start fact for block.
 				Fact start = analysis.getStartFact(block);
-				analysis.makeFactTop(start);
+				boolean needToRecompute = false;
 	
 				// Meet all of the logical predecessor results into this block's start.
 				// Special case: if the block is the logical entry, then it gets
 				// the special "entry fact".
 				if (block == logicalEntryBlock()) {
+					analysis.makeFactTop(start);
 					analysis.initEntryFact(start);
 					if (DEBUG) debug(block, "Init entry fact ==> " + start + "\n");
+					needToRecompute = true;
 				} else {
+					int lastUpdated = analysis.getLastUpdateTimestamp(start);
 					Iterator<Edge> predEdgeIter = logicalPredecessorEdgeIterator(block);
+
+					int predCount = 0;
+					while (predEdgeIter.hasNext()) {
+						Edge edge = predEdgeIter.next();
+						BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
+						predCount++;
+						// Get the predecessor result fact
+						Fact predFact = analysis.getResultFact(logicalPred);
+						int predLastUpdated = analysis.getLastUpdateTimestamp(predFact);
+						if (predLastUpdated >= lastUpdated) {
+							needToRecompute = true;
+							break;
+						}
+					}
+					if (predCount == 0) needToRecompute = true;
+					if (!needToRecompute) {
+						if (DEBUG) {
+							debug(block, "Skipping: predecessors haven't changed");
+							System.out.println(" curr timestamp: " + timestamp);
+							System.out.println(" last timestamp: " + lastUpdated);
+							predEdgeIter = logicalPredecessorEdgeIterator(block);
+
+							while (predEdgeIter.hasNext()) {
+								Edge edge = predEdgeIter.next();
+								BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
+								
+								// Get the predecessor result fact
+								Fact predFact = analysis.getResultFact(logicalPred);
+								int predLastUpdated = analysis.getLastUpdateTimestamp(predFact);
+								System.out.println(" pred timestamp: " + predLastUpdated);
+								}
+							System.out.println("Fact: " + start);
+						}
+						if (true) continue;
+					}
+					if (needToRecompute) {
+					analysis.makeFactTop(start);
+					predEdgeIter = logicalPredecessorEdgeIterator(block);
 					while (predEdgeIter.hasNext()) {
 						Edge edge = predEdgeIter.next();
 						BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
@@ -174,9 +216,11 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 						analysis.meetInto(edgeFact, edge, start);
 						if (DEBUG) System.out.println(" ==> " + start);
 					}
+					}
 				}
 				if (DEBUG) debug(block, "start fact is " + start + "\n");
 	
+			
 				// Get result facts for block,
 				// making a copy of it (so we can detect if it changed).
 				Fact result = analysis.getResultFact(block);
@@ -201,9 +245,14 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				if (DEBUG) debug(block, "orig result is " + origResult + "\n");
 				if (!analysis.same(result, origResult)) {
 					if (DEBUG) debug(block, "result changed!\n");
+					if (DEBUG && !needToRecompute) {
+						System.out.println("I thought I didn't need to recompute");
+					}
 					change = true;
+					timestamp++;
+					
 				}
-
+				analysis.setLastUpdateTimestamp(result, timestamp);
 				if (DEBUG) debug(block, "result is " + result + "\n");
 			}
 			

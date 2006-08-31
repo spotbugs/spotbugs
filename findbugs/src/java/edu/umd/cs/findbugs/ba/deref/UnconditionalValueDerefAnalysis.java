@@ -561,6 +561,9 @@ public class UnconditionalValueDerefAnalysis extends
 		fact.setIsTop();
 	}
 
+	public boolean isTop(UnconditionalValueDerefSet fact) {
+		return fact.isTop();
+	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(java.lang.Object, edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
 	 */
@@ -783,6 +786,15 @@ public class UnconditionalValueDerefAnalysis extends
 	@Override
 	public void startIteration() {
 		// System.out.println("analysis iteration in " + methodGen.getClassName() + " on " + methodGen.toString());
+	}
+	
+	@Override
+	public int getLastUpdateTimestamp(UnconditionalValueDerefSet fact) {
+		return fact.getLastUpdateTimestamp();
+	}
+	@Override
+	public void setLastUpdateTimestamp(UnconditionalValueDerefSet fact, int lastUpdate) {
+		fact.setLastUpdateTimestamp(lastUpdate);
 	}
 	public static void main(String[] args) throws Exception {
 		if (args.length != 1) {

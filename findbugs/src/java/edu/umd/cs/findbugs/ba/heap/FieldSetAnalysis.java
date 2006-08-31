@@ -58,7 +58,9 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 	public void makeFactTop(FieldSet fact) {
 		fact.setTop();
 	}
-	
+	public boolean isTop(FieldSet fact) {
+		return fact.isTop();
+	}
 	public void initEntryFact(FieldSet result) throws DataflowAnalysisException {
 		result.clear();
 	}

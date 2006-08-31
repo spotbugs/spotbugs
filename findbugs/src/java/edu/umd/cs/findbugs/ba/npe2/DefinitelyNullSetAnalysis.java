@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.ForwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.npe.WillBeDereferencedInfo;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -270,7 +271,9 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 	public void makeFactTop(DefinitelyNullSet fact) {
 		fact.setTop();
 	}
-
+	public boolean isTop(DefinitelyNullSet fact) {
+		return fact.isTop();
+	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(java.lang.Object, edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
 	 */

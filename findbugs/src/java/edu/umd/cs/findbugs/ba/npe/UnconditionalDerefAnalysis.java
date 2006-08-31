@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.heap.FieldSet;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
@@ -106,7 +107,9 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 	public void makeFactTop(UnconditionalDerefSet fact) {
 		fact.setTop();
 	}
-	
+	public boolean isTop(UnconditionalDerefSet fact) {
+		return fact.isTop();
+	}
 	public void meetInto(UnconditionalDerefSet fact, Edge edge, UnconditionalDerefSet result) throws DataflowAnalysisException {
 		// Ignore implicit exceptions
 		if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS)

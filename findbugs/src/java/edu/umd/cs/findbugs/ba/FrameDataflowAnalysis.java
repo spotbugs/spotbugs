@@ -45,7 +45,9 @@ public abstract class FrameDataflowAnalysis <ValueType, FrameType extends Frame<
 	public void makeFactTop(FrameType fact) {
 		fact.setTop();
 	}
-
+	public boolean isTop(FrameType fact) {
+		return fact.isTop();
+	}
 	public boolean same(FrameType fact1, FrameType fact2) {
 		return fact1.sameAs(fact2);
 	}
@@ -55,6 +57,15 @@ public abstract class FrameDataflowAnalysis <ValueType, FrameType extends Frame<
 		return fact.isValid();
 	}
 
+	@Override
+    public int getLastUpdateTimestamp(FrameType fact) {
+		return fact.getLastUpdateTimestamp();
+	}
+	@Override
+    public void setLastUpdateTimestamp(FrameType fact, int lastTimestamp) {
+		fact.setLastUpdateTimestamp(lastTimestamp);
+	}
+	
 	/**
 	 * Create a modifiable copy of a frame.
 	 * This is useful for meetInto(), if the frame needs to be
