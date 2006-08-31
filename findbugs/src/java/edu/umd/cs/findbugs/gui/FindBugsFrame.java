@@ -382,6 +382,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * Both Jar files and directories can be chosen.
 	 */
 	private static class AuxClasspathEntryFileFilter extends FileFilter {
+		@Override
 		public boolean accept(File file) {
 			return file.isDirectory() || file.getName().endsWith(".jar");
 		}
@@ -430,6 +431,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * File filter for choosing archives and directories.
 	 */
 	private static class ArchiveAndDirectoryFilter extends FileFilter {
+		@Override
 		public boolean accept(File file) {
 			if (file.isDirectory())
 				return true;

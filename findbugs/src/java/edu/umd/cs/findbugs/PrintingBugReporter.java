@@ -41,6 +41,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		// reporting statistics.
 	}
 
+	@Override
 	protected void doReportBug(BugInstance bugInstance) {
 		if (seenAlready.add(bugInstance)) {
 			printBug(bugInstance);

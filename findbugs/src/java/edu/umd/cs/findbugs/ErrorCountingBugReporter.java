@@ -41,11 +41,13 @@ public class ErrorCountingBugReporter extends DelegatingBugReporter {
 		return errorCount;
 	}
 
+	@Override
 	public void logError(String message) {
 		++errorCount;
 		super.logError(message);
 	}
 
+	@Override
 	public void reportMissingClass(ClassNotFoundException ex) {
 		String missing = AbstractBugReporter.getMissingClassName(ex);
 		if (missingClassSet.add(missing))

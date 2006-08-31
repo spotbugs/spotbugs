@@ -306,6 +306,7 @@ public class MineBugHistory {
 			addSwitch("-summary", "just summarize changes over the last ten entries");
 		}
 
+		@Override
 		public void handleOption(String option, String optionalExtraPart) {
 			if  (option.equals("-formatDates")) 
 				setFormatDates(true);
@@ -315,6 +316,7 @@ public class MineBugHistory {
 				throw new IllegalArgumentException("unknown option: " + option);
 		}
 
+		@Override
 		public void handleOptionWithArgument(String option, String argument) {
 
 				throw new IllegalArgumentException("unknown option: " + option);

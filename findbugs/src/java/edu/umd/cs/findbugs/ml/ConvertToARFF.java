@@ -150,6 +150,7 @@ public class ConvertToARFF {
 			return collectionToRange(possibleValueSet);
 		}
 
+		@Override
 		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
 			return "\"" + super.getInstanceValue(element, appName) + "\"";
 		}
@@ -169,6 +170,7 @@ public class ConvertToARFF {
 		}
 		
 		//@Override
+		@Override
 		public String getInstanceValue(Element element, String appName) throws MissingNodeException {
 			try {
 				String value = super.getInstanceValue(element, appName);
@@ -220,6 +222,7 @@ public class ConvertToARFF {
 			return "{bug,not_bug,harmless_bug}";
 		}
 		
+		@Override
 		protected String bugToString(int state) throws MissingNodeException {
 			if (state == NOT_BUG)
 				return "not_bug";
@@ -244,6 +247,7 @@ public class ConvertToARFF {
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.ml.ConvertToARFF.AbstractClassificationAttribute#bugToString(int)
 		 */
+		@Override
 		protected String bugToString(int state) throws MissingNodeException {
 			if (state == BUG)
 				return "bug";
@@ -728,6 +732,7 @@ public class ConvertToARFF {
 			return converter;
 		}
 
+		@Override
 		protected void handleOption(String option, String optionExtraPart)
 				throws IOException {
 			if (option.equals("-train")) {
@@ -753,6 +758,7 @@ public class ConvertToARFF {
 			public Attribute create(String name, String xpath);
 		}
 
+		@Override
 		protected void handleOptionWithArgument(String option, String argument)
 				throws IOException {
 			

@@ -15,6 +15,7 @@ public class FindSeqNumTest extends TestCase {
 
 	Map<String, AppVersion> versionNames;
 	SortedMap<Long, AppVersion> timeStamps;
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		

@@ -86,6 +86,7 @@ public class SourceFinder {
 			this.baseDir = baseDir;
 		}
 
+		@Override
 		public String toString() {
 			return "DirectorySourceRepository:" + baseDir;
 		}

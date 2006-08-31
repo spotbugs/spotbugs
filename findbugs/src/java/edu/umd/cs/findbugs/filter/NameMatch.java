@@ -60,6 +60,7 @@ public class NameMatch {
 		return true;
 	}
 	
+	@Override
 	public String toString() {
 		if (exact != null) 
 			return "exact(" + exact + ")";	

@@ -52,6 +52,7 @@ public class ClassScreenerTest extends TestCase {
 	private static final String SOME_OTHER_CLASS_JARFILENAME = makeJarURL(SOME_OTHER_CLASS_FILENAME);
 	private static final String UNRELATED_THING_CLASS_JARFILENAME = makeJarURL(UNRELATED_THING_CLASS_FILENAME);
 
+	@Override
 	protected void setUp() {
 		emptyScreener = new ClassScreener();
 

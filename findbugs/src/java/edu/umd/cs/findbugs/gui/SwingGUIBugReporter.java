@@ -56,6 +56,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 	public void observeClass(ClassDescriptor classDescriptor) {
 	}
 	
+	@Override
 	public void reportMissingClass(ClassNotFoundException ex) {
 		++errorCount;
 		super.reportMissingClass(ex);
@@ -63,6 +64,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 		bugCollection.addMissingClass(message);
 	}
 	
+	@Override
 	public void logError(String message) {
 		++errorCount;
 		analysisRun.getFrame().getLogger().logMessage(ConsoleLogger.WARNING, message);
@@ -73,6 +75,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 	public void finish() {
 	}
 	
+	@Override
 	public void doReportBug(edu.umd.cs.findbugs.BugInstance bugInstance) {
 		checkBugInstance(bugInstance);
 		if (bugCollection.add(bugInstance))
@@ -86,6 +89,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 	}
 	
 	//@Override
+	@Override
 	public void reportQueuedErrors() {
 		createDialog();
 		errorDialog.clear();
@@ -94,6 +98,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 	}
 	
 	//@Override
+	@Override
 	protected void emitLine(String line) {
 		line = line.replaceAll("\t", "  ");
 		errorDialog.addLine(line);

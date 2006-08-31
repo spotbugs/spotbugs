@@ -638,6 +638,7 @@ public class Project implements XMLWriteable {
 	/**
 	 * Convert to a string in a nice (displayable) format.
 	 */
+	@Override
 	public String toString() {
 		String name = projectFileName;
 		int lastSep = name.lastIndexOf(File.separatorChar);

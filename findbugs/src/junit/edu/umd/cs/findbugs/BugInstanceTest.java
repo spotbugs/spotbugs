@@ -15,6 +15,7 @@ public class BugInstanceTest extends TestCase {
 	BugInstance b;
 	
 	//@Override
+	@Override
 	protected void setUp() throws Exception {
 		b = new BugInstance("NP_NULL_DEREF", Detector.NORMAL_PRIORITY);
 		b.setProperty("A", "a");

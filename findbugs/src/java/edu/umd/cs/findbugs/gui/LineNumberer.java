@@ -46,6 +46,7 @@ public class LineNumberer extends JComponent
 		setWidths();
 	}
 	
+	@Override
 	public void setFont(Font font)
 	{
 		//ignore
@@ -60,6 +61,7 @@ public class LineNumberer extends JComponent
 	}
 
 
+	@Override
 	public void paintComponent(Graphics g)
 	{
 		int lineHeight = fm.getHeight();

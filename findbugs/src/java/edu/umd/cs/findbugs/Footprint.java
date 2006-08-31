@@ -92,6 +92,7 @@ public class Footprint {
 		return collectionTime;
 	}
 
+	@Override
 	public String toString() {
 		return "cpuTime="+cpuTime+", clockTime="+clockTime+", peakMemory="+peakMem;
 	}

@@ -69,6 +69,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		this.baseFootprint = new Footprint();
 	}
 	
+	@Override
 	public Object clone() {
 		try {
 			return super.clone();

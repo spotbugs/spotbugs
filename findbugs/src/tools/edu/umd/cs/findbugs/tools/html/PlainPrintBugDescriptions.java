@@ -38,6 +38,7 @@ public class PlainPrintBugDescriptions extends PrintBugDescriptions {
 
 	protected PrintStream getPrintStream() { return out; }
 
+	@Override
 	protected void prologue() throws IOException {
 		out.println("<html><head><title>" + docTitle + "</title>");
 		header();
@@ -46,12 +47,14 @@ public class PlainPrintBugDescriptions extends PrintBugDescriptions {
 		out.println("<h1>" + docTitle + "</h1>");
 	}
 
+	@Override
 	protected void emit(BugPattern bugPattern) throws IOException {
 		out.println("<h2>" + bugPattern.getAbbrev() + ": " +
 			bugPattern.getShortDescription() + "</h2>");
 		out.println(bugPattern.getDetailText());
 	}
 
+	@Override
 	protected void epilogue() throws IOException {
 		endBody();
 		out.println("</body></html>");

@@ -73,6 +73,7 @@ public class BugCellRenderer extends DefaultTreeCellRenderer {
 		sourceFileIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/sourcefile.png"));
 	}
 
+	@Override
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
 												  boolean expanded, boolean leaf, int row, boolean hasFocus) {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
@@ -113,6 +114,7 @@ public class BugCellRenderer extends DefaultTreeCellRenderer {
 		return this;
 	}
 
+	@Override
 	public Color getTextNonSelectionColor() {
 		return getCellTextColor();
 	}

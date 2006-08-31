@@ -10,6 +10,7 @@ public class FieldWarningSuppressor extends ClassWarningSuppressor {
 		super(bugPattern, clazz);
 		this.field = field;
 		}
+	@Override
 	public boolean match(BugInstance bugInstance) {
 
 		if (!super.match(bugInstance)) return false;

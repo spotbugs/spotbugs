@@ -29,6 +29,7 @@ public class IsNullValueDataflow extends AbstractDataflow<IsNullValueFrame, IsNu
 		super(cfg, analysis);
 	}
 
+	@Override
 	public IsNullValueFrame getFactAtLocation(Location loc) throws DataflowAnalysisException {
 		return getAnalysis().getFactAtLocation(loc);
 	}

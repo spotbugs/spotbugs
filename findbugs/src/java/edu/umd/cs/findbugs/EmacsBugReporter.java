@@ -63,6 +63,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
 		return result;
 	}
 
+	@Override
 	protected void printBug(BugInstance bugInstance) {
 		int lineStart = 0;
 		int lineEnd = 0;
@@ -111,6 +112,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
 		outputStream.println();
 	}
 
+	@Override
 	protected void doReportBug(BugInstance bugInstance) {
 		if (seenAlready.add(bugInstance)) {
 			printBug(bugInstance);
@@ -125,6 +127,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
 	 */
+	@Override
 	public BugReporter getRealBugReporter() {
 		return this;
 	}

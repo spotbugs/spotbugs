@@ -10,6 +10,7 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
 		super(bugPattern, clazz);
 		this.method = method;
 		}
+	@Override
 	public boolean match(BugInstance bugInstance) {
 
 		if (!super.match(bugInstance)) return false;

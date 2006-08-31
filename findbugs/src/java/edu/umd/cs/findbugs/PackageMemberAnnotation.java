@@ -51,6 +51,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	}
 	
 	//@Override
+	@Override
 	public Object clone() {
 		try {
 			return super.clone();
@@ -137,6 +138,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	 * It uses the annotation description as a pattern for FindBugsMessageFormat,
 	 * passing a reference to this object as the single message parameter.
 	 */
+	@Override
 	public String toString() {
 		String pattern = I18N.instance().getAnnotationDescription(description);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);

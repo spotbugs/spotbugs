@@ -47,6 +47,7 @@ public class PackageStats implements XMLWriteable {
 			this.name = name;
 		}
 		
+		@Override
 		public Object clone() {
 			try {
 				return super.clone();

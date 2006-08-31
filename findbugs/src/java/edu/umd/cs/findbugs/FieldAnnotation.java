@@ -178,6 +178,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		visitor.visitFieldAnnotation(this);
 	}
 
+	@Override
 	protected String formatPackageMember(String key) {
 		if (key.equals(""))
 			return className + "." + fieldName;
@@ -198,10 +199,12 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			throw new IllegalArgumentException("unknown key " + key);
 	}
 
+	@Override
 	public int hashCode() {
 		return className.hashCode() + fieldName.hashCode() + fieldSig.hashCode();
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof FieldAnnotation))
 			return false;
@@ -229,6 +232,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.PackageMemberAnnotation#getSourceLines()
 	 */
+	@Override
 	public SourceLineAnnotation getSourceLines() {
 		if (sourceLines == null) {
 			// Create source line annotation for field on demand

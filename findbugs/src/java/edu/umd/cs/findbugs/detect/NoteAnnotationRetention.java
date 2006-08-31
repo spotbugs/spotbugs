@@ -42,6 +42,7 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements
 		this.bugReporter = bugReporter;
 	}
 
+	@Override
 	public void visitAnnotation(String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
 
@@ -54,6 +55,7 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements
 			classfileRetention = true;
 	}
 
+	@Override
 	public void visit(JavaClass obj) {
 		classfileRetention = false;
 	}

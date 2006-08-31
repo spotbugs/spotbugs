@@ -70,6 +70,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		
 	}
 
+	@Override
 	public void startElement(String uri, String name, String qName, Attributes attributes)
 		throws SAXException {
 		// URI should always be empty.
@@ -361,6 +362,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	}
 
 
+	@Override
 	public void endElement(String uri, String name, String qName) throws SAXException {
 		// URI should always be empty.
 		// So, qName is the name of the element.
@@ -423,6 +425,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		elementStack.remove(elementStack.size() - 1);
 	}
 
+	@Override
 	public void characters(char[] ch, int start, int length) {
 		textBuffer.append(ch, start, length);
 	}

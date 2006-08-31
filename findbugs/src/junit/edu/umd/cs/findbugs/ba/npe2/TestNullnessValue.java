@@ -28,6 +28,7 @@ import junit.framework.TestCase;
 public class TestNullnessValue extends TestCase {
 	NullnessValue definitelyNull;
 	
+	@Override
 	protected void setUp() {
 		definitelyNull = NullnessValue.definitelyNullValue();
 	}

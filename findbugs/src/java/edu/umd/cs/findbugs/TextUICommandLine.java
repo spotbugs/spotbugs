@@ -131,6 +131,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		addSwitch("-xargs", "get list of classfiles/jarfiles from standard input rather than command line");
 	}
 
+	@Override
 	public Project getProject() {
 		return project;
 	}

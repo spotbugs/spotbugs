@@ -71,6 +71,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 		baseHeader.addMouseListener(new HeaderListener());
 		final TableCellRenderer baseRenderer = baseHeader.getDefaultRenderer();
 		baseHeader.setDefaultRenderer( new DefaultTableCellRenderer() {
+			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 				JLabel label = (JLabel)baseRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 				if (baseHeader.getTable().convertColumnIndexToModel(column) == sortColumn) {
@@ -105,42 +106,49 @@ public class DefaultSortedTableModel extends AbstractTableModel
 		
 	// Event handling
 	
+	@Override
 	public void fireTableCellUpdated( int row, int col ) {
 		if (baseModel != null)
 			setupMapping();
 		super.fireTableCellUpdated(row, col);
 	}
 
+	@Override
 	public void fireTableChanged( TableModelEvent e ) {
 		if (baseModel != null)
 			setupMapping();
 		super.fireTableChanged(e);
 	}
 
+	@Override
 	public void fireTableDataChanged() {
 		if (baseModel != null)
 			setupMapping();
 		super.fireTableDataChanged();
 	}
 	
+	@Override
 	public void fireTableRowsDeleted( int first, int last ) {
 		if (baseModel != null)
 			setupMapping();
 		super.fireTableRowsDeleted(first,last);
 	}
 
+	@Override
 	public void fireTableRowsInserted( int first, int last ) {
 		if (baseModel != null)
 			setupMapping();
 		super.fireTableRowsInserted(first, last);
 	}
 
+	@Override
 	public void fireTableRowsUpdated( int first, int last ) {
 		if (baseModel != null)
 			setupMapping();
 		super.fireTableRowsUpdated(first, last);
 	}
 
+	@Override
 	public void fireTableStructureChanged() {
 		if (baseModel != null)
 			setupMapping();
@@ -149,6 +157,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 	
 	// accessors
 	
+	@Override
 	public int findColumn( String columnName ) {
 		if (baseModel == null)
 			return -1;
@@ -170,6 +179,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 		return baseModel.getRowCount();
 	}
 	
+	@Override
 	public Class<?> getColumnClass( int column ) {
 		if (baseModel == null)
 			return null;
@@ -177,6 +187,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 		return baseModel.getColumnClass(column);
 	}
 	
+	@Override
 	public String getColumnName( int column ) {
 		if (baseModel == null)
 			return null;
@@ -184,6 +195,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 		return baseModel.getColumnName(column);
 	}
 	
+	@Override
 	public boolean isCellEditable( int row, int col ) {
 		if (baseModel == null)
 			return false;
@@ -198,6 +210,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 		return baseModel.getValueAt(viewToModelMapping.get(row).intValue(), col);
 	}
 	
+	@Override
 	public void setValueAt( Object value, int row, int col ) {
 		if (baseModel == null)
 			return;
@@ -239,6 +252,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 	
 	private class HeaderListener extends MouseAdapter
 	{
+		@Override
 		public void mouseClicked(MouseEvent e) {
 			JTableHeader header = (JTableHeader)e.getSource();
 			int column = header.columnAtPoint(e.getPoint());

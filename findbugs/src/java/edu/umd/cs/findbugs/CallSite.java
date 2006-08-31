@@ -72,12 +72,14 @@ public class CallSite {
 		return location.getHandle();
 	}
 
+	@Override
 	public int hashCode() {
 		return System.identityHashCode(method)
 		        ^ getBasicBlock().getId()
 		        ^ System.identityHashCode(location.getHandle());
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof CallSite))
 			return false;

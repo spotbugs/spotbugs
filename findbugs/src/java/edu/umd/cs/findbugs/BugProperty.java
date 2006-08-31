@@ -61,6 +61,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 	}
 	
 	//@Override
+	@Override
 	protected Object clone() {
 		try {
 			return super.clone();

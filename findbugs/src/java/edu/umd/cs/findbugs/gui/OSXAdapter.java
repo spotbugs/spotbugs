@@ -28,6 +28,7 @@ public class OSXAdapter extends ApplicationAdapter {
 	// existing functionality from the main app, as if it came
 	// over from another platform.
 
+	@Override
 	public void handleAbout(ApplicationEvent ae) {
 		if (mainApp != null) {
 			ae.setHandled(true);
@@ -47,6 +48,7 @@ public class OSXAdapter extends ApplicationAdapter {
 		}
 	}
 	
+	@Override
 	public void handlePreferences(ApplicationEvent ae) {
 		if (mainApp != null) {
 //			mainApp.preferences();
@@ -57,6 +59,7 @@ public class OSXAdapter extends ApplicationAdapter {
 		}
 	}
 	
+	@Override
 	public void handleQuit(ApplicationEvent ae) {
 		if (mainApp != null) {
 

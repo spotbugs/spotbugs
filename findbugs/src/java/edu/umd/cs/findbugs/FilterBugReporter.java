@@ -33,6 +33,7 @@ public class FilterBugReporter extends DelegatingBugReporter {
 		this.include = include;
 	}
 
+	@Override
 	public void reportBug(BugInstance bugInstance) {
 		if (DEBUG) System.out.print("Match ==> ");
 		boolean match = filter.match(bugInstance);

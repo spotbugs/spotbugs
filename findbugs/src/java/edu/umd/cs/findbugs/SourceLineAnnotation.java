@@ -92,6 +92,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	}
 	
 	//@Override
+	@Override
 	public Object clone() {
 		try {
 			return super.clone();
@@ -542,6 +543,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 		this.description = description;
 	}
 
+	@Override
 	public String toString() {
 		String desc = description;
 		if (desc.equals(DEFAULT_ROLE) && isUnknown())
@@ -566,10 +568,12 @@ public class SourceLineAnnotation implements BugAnnotation {
 		return endLine - other.endLine;
 	}
 
+	@Override
 	public int hashCode() {
 		return className.hashCode() + startLine + 3 * endLine;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof SourceLineAnnotation))
 			return false;

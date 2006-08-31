@@ -70,6 +70,7 @@ public abstract class XPathFind {
 		Document document = reader.read(fileName);
 
 		XPathFind finder = new XPathFind(document) {
+			@Override
 			protected void match(Node node) {
 				//System.out.println(node.toString());
 				if (node instanceof Element) {

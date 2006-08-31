@@ -571,6 +571,7 @@ public class SortedBugCollection implements BugCollection {
 	}
 
 	public static class MultiversionBugInstanceComparator extends BugInstanceComparator {
+		@Override
 		public int compare(BugInstance lhs, BugInstance rhs) {
 			int result = super.compare(lhs,rhs);
 			if (result != 0) return result;

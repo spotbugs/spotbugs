@@ -96,6 +96,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			super(in);
 		}
 
+		@Override
 		public void close() {
 		}
 	}

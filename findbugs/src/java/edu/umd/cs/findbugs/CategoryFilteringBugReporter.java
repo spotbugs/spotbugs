@@ -32,6 +32,7 @@ public class CategoryFilteringBugReporter extends DelegatingBugReporter {
 		this.categorySet = categorySet;
 	}
 
+	@Override
 	public void reportBug(BugInstance bugInstance) {
 		BugPattern bugPattern = bugInstance.getBugPattern();
 		String category = bugPattern.getCategory();

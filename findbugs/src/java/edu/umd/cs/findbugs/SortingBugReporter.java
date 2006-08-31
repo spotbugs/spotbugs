@@ -35,6 +35,7 @@ public class SortingBugReporter extends TextUIBugReporter {
 		// reporting statistics.
 	}
 
+	@Override
 	public void doReportBug(BugInstance bugInstance) {
 		if (bugCollection.add(bugInstance))
 			notifyObservers(bugInstance);

@@ -14,6 +14,7 @@ public class SplitCamelCaseIdentifierTest extends TestCase {
 	SplitCamelCaseIdentifier capitalized;
 	
 	//@Override
+	@Override
 	protected void setUp() throws Exception {
 		splitter = new SplitCamelCaseIdentifier("displayGUIWindow");
 		splitter2 = new SplitCamelCaseIdentifier("DisplayGUIWindow");

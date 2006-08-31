@@ -62,6 +62,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 		visitor.visitClassAnnotation(this);
 	}
 
+	@Override
 	protected String formatPackageMember(String key) {
 		if (key.equals(""))
 			return className;
@@ -69,10 +70,12 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 			throw new IllegalArgumentException("unknown key " + key);
 	}
 
+	@Override
 	public int hashCode() {
 		return className.hashCode();
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof ClassAnnotation))
 			return false;
@@ -90,6 +93,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.PackageMemberAnnotation#getSourceLines()
 	 */
+	@Override
 	public SourceLineAnnotation getSourceLines() {
 		if (sourceLines == null) {
 			// Create source line annotation for class on demand

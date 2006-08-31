@@ -106,7 +106,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  *
- * @version $Revision: 1.39 $
+ * @version $Revision: 1.40 $
  *
  * @since Ant 1.5
  *
@@ -163,7 +163,8 @@ public class FindBugsTask extends Task {
 			return classLocation;
 		}
       
-        public String toString( ) {
+        @Override
+		public String toString( ) {
            return classLocation!=null?classLocation.toString():"";
         }
  
@@ -439,6 +440,7 @@ public class FindBugsTask extends Task {
 		this.timeout = timeout;
 	}
 
+	@Override
 	public void execute() throws BuildException {
 		checkParameters();
 		try {

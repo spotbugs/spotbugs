@@ -119,6 +119,7 @@ public class OpcodeStack implements Constants2
 			return o1.equals(o2);
 			}
 
+		@Override
 		public int hashCode() {
 			int r = 42 + specialKind;
 			if (signature != null)
@@ -136,6 +137,7 @@ public class OpcodeStack implements Constants2
 			return r;
 			
 			}
+		@Override
 		public boolean equals(Object o) {
 			if (!(o instanceof Item)) return false;
 			Item that = (Item) o;
@@ -152,6 +154,7 @@ public class OpcodeStack implements Constants2
 				
 			}
 
+		@Override
 		public String toString() {
 			StringBuffer buf = new StringBuffer("< ");
 			buf.append(signature);
@@ -398,6 +401,7 @@ public class OpcodeStack implements Constants2
 		}
 	}
 
+	@Override
 	public String toString() {
 		return stack.toString() + "::" +  lvValues.toString();
 	}

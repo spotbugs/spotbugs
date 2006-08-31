@@ -45,11 +45,13 @@ import java.io.Writer;
 
 public class IO {
 	static ThreadLocal myByteBuf = new ThreadLocal() {
+		@Override
 		protected Object initialValue() {
 			return new byte[4096];
 		}
 	};
 	static ThreadLocal myCharBuf = new ThreadLocal() {
+		@Override
 		protected Object initialValue() {
 			return new char[4096];
 		}

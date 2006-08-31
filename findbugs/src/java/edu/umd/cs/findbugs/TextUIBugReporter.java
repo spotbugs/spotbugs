@@ -112,11 +112,13 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	private boolean missingClasses;
 	
 	//@Override
+	@Override
 	public void reportQueuedErrors() {
 		analysisErrors = missingClasses = false;
 		super.reportQueuedErrors();
 	}
 	
+	@Override
 	public void reportAnalysisError(AnalysisError error) {
 		if (!analysisErrors) {
 			emitLine("The following errors occurred during analysis:");
@@ -136,6 +138,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 		}
 	}
 
+	@Override
 	public void reportMissingClass(String message) {
 		if (!missingClasses) {
 			emitLine("The following classes needed for analysis were missing:");

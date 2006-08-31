@@ -60,6 +60,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 	private int instanceParam;
 	private boolean isClosed;
 
+	@Override
 	public String toString() {
 		return streamBase +":" + openLocation;
 	}

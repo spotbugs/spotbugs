@@ -49,6 +49,7 @@ public class IntAnnotation implements BugAnnotation {
 	}
 	
 	//@Override
+	@Override
 	public Object clone() {
 		try {
 			return super.clone();
@@ -82,10 +83,12 @@ public class IntAnnotation implements BugAnnotation {
 		return description;
 	}
 
+	@Override
 	public int hashCode() {
 		return value;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof IntAnnotation))
 			return false;
@@ -98,6 +101,7 @@ public class IntAnnotation implements BugAnnotation {
 		return value - ((IntAnnotation) o).value;
 	}
 
+	@Override
 	public String toString() {
 		String pattern = I18N.instance().getAnnotationDescription(description);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);

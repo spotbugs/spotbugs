@@ -84,10 +84,12 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 
         setTitle("Configure Detectors");
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
+            @Override
+			public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
             }
-            public void windowOpened(java.awt.event.WindowEvent evt) {
+            @Override
+			public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
             }
         });
@@ -109,11 +111,13 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
                 false, false, true
             };
 
-            public Class<?> getColumnClass(int columnIndex) {
+            @Override
+			public Class<?> getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
+            @Override
+			public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });

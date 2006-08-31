@@ -107,10 +107,12 @@ public class BugCategory implements Comparable {
 		return category.compareTo(other.category);
 	}
 
+	@Override
 	public int hashCode() {
 		return category.hashCode();
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof BugCategory)) return false;
 		BugCategory other = (BugCategory)o;
@@ -118,6 +120,7 @@ public class BugCategory implements Comparable {
 	}
 
 	/** suitable for debugging. will be ugly if detailText has multiple lines */
+	@Override
 	public String toString() {
 		return "BugCategory["+category+"]{short="+shortDescription+",abbrev="+abbrev+",details="+detailText+'}';
 	}
