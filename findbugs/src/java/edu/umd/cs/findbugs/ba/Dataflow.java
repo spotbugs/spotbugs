@@ -179,6 +179,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 						}
 					}
 					if (predCount == 0) needToRecompute = true;
+
 					if (!needToRecompute) {
 						if (DEBUG) {
 							debug(block, "Skipping: predecessors haven't changed");
@@ -199,32 +200,42 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 						}
 						if (false) continue;
 					}
+					// needToRecompute = true;
 					if (needToRecompute) {
-					analysis.makeFactTop(start);
-					predEdgeIter = logicalPredecessorEdgeIterator(block);
-					while (predEdgeIter.hasNext()) {
-						Edge edge = predEdgeIter.next();
-						BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
-						
-						// Get the predecessor result fact
-						Fact predFact = analysis.getResultFact(logicalPred);
-						
-						// Apply the edge transfer function.
-						Fact edgeFact = analysis.createFact(); 
-						analysis.copy(predFact, edgeFact);
-						analysis.edgeTransfer(edge, edgeFact);
-						
-						if (DEBUG && !analysis.same(edgeFact, predFact)) {
-							debug(block, logicalPred, edge,
-									"Edge transfer " + predFact + " ==> " + edgeFact);
-						}
+						Fact origStart = analysis.createFact();
+						analysis.copy(start, origStart);
+			
+						analysis.makeFactTop(start);
+						predEdgeIter = logicalPredecessorEdgeIterator(block);
+						while (predEdgeIter.hasNext()) {
+							Edge edge = predEdgeIter.next();
+							BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
 
-						// Merge the predecessor fact (possibly transformed by the edge transfer function)
-						// into the block's start fact.
-						if (DEBUG) debug(block, logicalPred, edge, "Meet " + start + " with " + edgeFact);
-						analysis.meetInto(edgeFact, edge, start);
-						if (DEBUG) System.out.println(" ==> " + start);
-					}
+							// Get the predecessor result fact
+							Fact predFact = analysis.getResultFact(logicalPred);
+
+							// Apply the edge transfer function.
+							Fact edgeFact = analysis.createFact(); 
+							analysis.copy(predFact, edgeFact);
+							analysis.edgeTransfer(edge, edgeFact);
+
+							if (DEBUG && !analysis.same(edgeFact, predFact)) {
+								debug(block, logicalPred, edge,
+										"Edge transfer " + predFact + " ==> " + edgeFact);
+							}
+
+							// Merge the predecessor fact (possibly transformed by the edge transfer function)
+							// into the block's start fact.
+							if (DEBUG) debug(block, logicalPred, edge, "Meet " + start + " with " + edgeFact);
+							analysis.meetInto(edgeFact, edge, start);
+							if (DEBUG) System.out.println(" ==> " + start);
+						}
+						if (DEBUG && !needToRecompute && !analysis.same(origStart, start)) {
+							System.out.println("Huh. Thought I didn't need to recompute");
+							System.out.println("result: " + analysis.same(origStart, start));
+							System.out.println("Old value: " + origStart);
+							System.out.println("New Value: " + start);
+						}
 					}
 				}
 				if (DEBUG) debug(block, "start fact is " + start + "\n");

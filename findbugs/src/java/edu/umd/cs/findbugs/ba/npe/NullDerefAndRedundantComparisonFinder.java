@@ -224,21 +224,11 @@ public class NullDerefAndRedundantComparisonFinder {
 	private void examineNullValues() throws CFGBuilderException, DataflowAnalysisException {
 		Set<LocationWhereValueBecomesNull> locationWhereValueBecomesNullSet =
 			invDataflow.getAnalysis().getLocationWhereValueBecomesNullSet();
-
-		// For each value number that is null somewhere in the
-		// method, collect the set of locations where it becomes null.
-		// FIXME: we may see some locations that are not guaranteed to be dereferenced (how to fix this?)
-		Map<ValueNumber, Set<Location>> nullValueAssignmentMap =
-			new HashMap<ValueNumber, Set<Location>>();
-		for (LocationWhereValueBecomesNull lwvbn : locationWhereValueBecomesNullSet) {
-			Set<Location> locationSet = nullValueAssignmentMap.get(lwvbn.getValueNumber());
-			if (locationSet == null) {
-				locationSet = new HashSet<Location>();
-				nullValueAssignmentMap.put(lwvbn.getValueNumber(), locationSet);
-			}
-			locationSet.add(lwvbn.getLocation());
+		if (DEBUG_DEREFS) {
+			System.out.println("----------------------- examineNullValues " + locationWhereValueBecomesNullSet.size());
 		}
-		Map<ValueNumber, SortedSet<Location>> bugLocationMap =
+		
+				Map<ValueNumber, SortedSet<Location>> bugLocationMap =
 			new HashMap<ValueNumber, SortedSet<Location>>();
 		// Inspect the method for locations where a null value is guaranteed to
 		// be dereferenced.  Add the dereference locations
@@ -301,7 +291,23 @@ public class NullDerefAndRedundantComparisonFinder {
 					nullValueGuaranteedDerefMap,
 					vnaFact, invFact, uvdFact);
 		}
-		
+		//	For each value number that is null somewhere in the
+		// method, collect the set of locations where it becomes null.
+		// FIXME: we may see some locations that are not guaranteed to be dereferenced (how to fix this?)
+		Map<ValueNumber, Set<Location>> nullValueAssignmentMap =
+			new HashMap<ValueNumber, Set<Location>>();
+		for (LocationWhereValueBecomesNull lwvbn : locationWhereValueBecomesNullSet) {
+			if (DEBUG_DEREFS) System.out.println("OOO " + lwvbn);
+			Set<Location> locationSet = nullValueAssignmentMap.get(lwvbn.getValueNumber());
+			if (locationSet == null) {
+				locationSet = new HashSet<Location>();
+				nullValueAssignmentMap.put(lwvbn.getValueNumber(), locationSet);
+			}
+			locationSet.add(lwvbn.getLocation());
+			if (DEBUG_DEREFS)
+				System.out.println(lwvbn.getValueNumber() + " becomes null at " + lwvbn.getLocation());
+		}
+
 		// Report 
 		for (Map.Entry<ValueNumber, NullValueUnconditionalDeref> e  : nullValueGuaranteedDerefMap.entrySet()) {
 			ValueNumber valueNumber = e.getKey();
@@ -315,7 +321,8 @@ public class NullDerefAndRedundantComparisonFinder {
 						System.out.println("Dereference at " + loc);
 					}
 				}
-				assert false: "No assigned NullLocationSet for " + valueNumber + " in " + nullValueAssignmentMap.keySet();
+				assert false: "No assigned NullLocationSet for " + valueNumber + " in " + nullValueAssignmentMap.keySet()
+				+ " while analyzing " + classContext.getJavaClass().getClassName() + "." + method.getName();
 				assignedNullLocationSet = Collections.EMPTY_SET;
 			}
 			collector.foundGuaranteedNullDeref(
