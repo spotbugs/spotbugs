@@ -144,7 +144,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				Fact start = analysis.getStartFact(block);
 				boolean needToRecompute = false;
 				//				 Get result facts for block,
-				Fact originalResult = analysis.getResultFact(block);
+				Fact result = analysis.getResultFact(block);
 				
 				// Meet all of the logical predecessor results into this block's start.
 				// Special case: if the block is the logical entry, then it gets
@@ -155,7 +155,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					if (DEBUG) debug(block, "Init entry fact ==> " + start + "\n");
 					needToRecompute = true;
 				} else {
-					int lastUpdated = analysis.getLastUpdateTimestamp(originalResult);
+					int lastUpdated = analysis.getLastUpdateTimestamp(result);
 					Iterator<Edge> predEdgeIter = logicalPredecessorEdgeIterator(block);
 
 					int predCount = 0;
@@ -197,7 +197,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 								}
 							System.out.println("Fact: " + start);
 						}
-						if (true) continue;
+						if (false) continue;
 					}
 					if (needToRecompute) {
 					analysis.makeFactTop(start);
@@ -229,14 +229,16 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				}
 				if (DEBUG) debug(block, "start fact is " + start + "\n");
 	
-				// compute result in temporary location
-				Fact result = analysis.createFact();
+				// making a copy of result facts (so we can detect if it changed).
+				Fact origResult = analysis.createFact();
+				analysis.copy(result, origResult);
 	
 				if (true || analysis.isTop(start)) {
 					// Apply the transfer function.
+
 					analysis.transfer(block, null, start, result);
 				} else {
-					analysis.makeFactTop(result);
+					analysis.copy(start, result);
 				}
 
 				if (DEBUG && SystemProperties.getBoolean("dataflow.blockdebug")) {
@@ -251,17 +253,17 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				}
 	
 				// See if the result changed.
-				if (DEBUG) debug(block, "orig result is " + originalResult + "\n");
-				if (!analysis.same(result, originalResult)) {
+				if (DEBUG) debug(block, "orig result is " + origResult + "\n");
+				if (!analysis.same(result, origResult)) {
 					timestamp++;
 					if (DEBUG) debug(block, "result changed at timestamp " + timestamp + "\n");
 					if (DEBUG && !needToRecompute) {
 						System.out.println("I thought I didn't need to recompute");
 					}
 					change = true;
-					analysis.copy(result, originalResult);
-					analysis.setLastUpdateTimestamp(originalResult, timestamp);
-				} 
+					analysis.setLastUpdateTimestamp(result, timestamp);
+				} else
+					analysis.setLastUpdateTimestamp(result, analysis.getLastUpdateTimestamp(origResult));
 				
 				if (DEBUG) debug(block, "result is " + result + " @ timestamp " 
 						+ analysis.getLastUpdateTimestamp(result) + "\n");
