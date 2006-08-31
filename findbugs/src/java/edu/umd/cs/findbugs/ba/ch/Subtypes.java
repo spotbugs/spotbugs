@@ -33,10 +33,13 @@ import org.apache.bcel.classfile.ConstantLong;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XFactory;
 
 /**
  * Support for class hierarchy queries.
@@ -184,6 +187,12 @@ public class Subtypes {
 		}
 	}
 
+	public static void learnFieldsAndMethods(JavaClass c) {
+		for(Field f : c.getFields())
+			XFactory.createXField(c, f);
+		for(Method m : c.getMethods())
+			XFactory.createXMethod(c, m);
+	}
 	public void addNamedClass(String name) {
 		name = name.replace('/', '.');
 
@@ -191,10 +200,14 @@ public class Subtypes {
 			try {
 				
 				JavaClass clazz = Repository.lookupClass(name);
+				learnFieldsAndMethods(clazz);
 				addClass(clazz);
 			} catch (ClassNotFoundException e) {
-				if (name.length() > 1)
+				
+				if (name.length() > 1) {
 					AnalysisContext.reportMissingClass(e);
+					// e.printStackTrace(System.out);
+				}
 			}
 	}
 
@@ -204,6 +217,7 @@ public class Subtypes {
 		if (DEBUG_HIERARCHY)
 			System.out.println("Adding application class " + c.getClassName());
 		if (applicationClasses.add(c)) {
+			learnFieldsAndMethods(c);
 			if (DEBUG_HIERARCHY && computed)
 				System.out.println("Need to recompute");
 			computed = false;

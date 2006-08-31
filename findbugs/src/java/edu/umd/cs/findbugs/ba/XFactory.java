@@ -124,6 +124,7 @@ public  class XFactory {
 		XMethod m2 = xFactory.intern(m);
 		// MUSTFIX: Check this
 		// assert m2.getAccessFlags() == m.getAccessFlags();
+		((AbstractMethod) m2).markAsResolved();
 		return m2;
 	}
 
@@ -197,6 +198,7 @@ public  class XFactory {
 	private @NonNull XField resolve(XField f) {
 		if (f.isResolved()) return f;
 		if (f.isStatic()) return f;
+		if (f.getName().startsWith("this$")) return f;
 		XField f2 = f;
 		String classname = f.getClassName();
 		try {
@@ -207,7 +209,7 @@ public  class XFactory {
 				f2 = createXField(javaClass.getClassName(), f.getName(), f.getSignature(), f.isStatic());
 				f2 = intern(f2);
 				if (f2.isResolved()) {
-					// fields.put(f, f2);
+					fields.put(f, f2);
 					return f2;	
 				}
 			}
@@ -253,7 +255,7 @@ public  class XFactory {
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}
-		((AbstractMethod)m).markAsResolved();
+		// ((AbstractMethod)m).markAsResolved();
 		return m;
 	}
 
@@ -301,6 +303,7 @@ public  class XFactory {
 		XField f2 = xFactory.intern(f);
 		// MUSTFIX: investigate
 		// assert f.getAccessFlags() == f2.getAccessFlags();
+		((AbstractField) f2).markAsResolved();
 		return f2;
 	}
 	/**
@@ -329,8 +332,6 @@ public  class XFactory {
 		JavaClass javaClass = visitor.getThisClass();
 		Method method = visitor.getMethod();
 		XMethod m =  createXMethod(javaClass, method);
-		((AbstractMethod)m).markAsResolved();
-		// System.out.println("Resolved " + m);
 		return m;
 	}
 	
@@ -345,7 +346,6 @@ public  class XFactory {
 		JavaClass javaClass = visitor.getThisClass();
 		Field field = visitor.getField();
 		XField f =  createXField(javaClass, field);
-		((AbstractField) f).markAsResolved();
 		return f;
 	}
 	

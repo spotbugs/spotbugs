@@ -45,7 +45,7 @@ public class NoteCheckReturnValue extends AnnotationVisitor
 	private Set<XMethod> checkReturnValueDatabase;
 
 	public NoteCheckReturnValue(BugReporter bugReporter) {
-
+		AnalysisContext.currentAnalysisContext().getCheckReturnAnnotationDatabase(); // force creation
 		this.bugReporter = bugReporter;
 		if (SAVE_TRAINING != null) {
 			checkReturnValueDatabase = new HashSet<XMethod>();

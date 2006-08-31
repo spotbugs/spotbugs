@@ -24,6 +24,7 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.NonReportingDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -35,6 +36,7 @@ public class NoteNonNullAnnotations
 		implements Detector, NonReportingDetector {
 	
 	public NoteNonNullAnnotations(BugReporter bugReporter) {
+		AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase(); // force initialization
 	}
 
 	public void visitClassContext(ClassContext classContext) {
