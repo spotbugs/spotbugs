@@ -66,16 +66,19 @@ public class XDocsBugReporter extends TextUIBugReporter {
 	public void observeClass(ClassDescriptor classDescriptor) {
 	}
 
+	@Override
 	public void logError(String message) {
 		bugCollection.addError(message);
 		super.logError(message);
 	}
 
+	@Override
 	public void reportMissingClass(ClassNotFoundException ex) {
 		bugCollection.addMissingClass(getMissingClassName(ex));
 		super.reportMissingClass(ex);
 	}
 
+	@Override
 	public void doReportBug(BugInstance bugInstance) {
 		if (bugCollection.add(bugInstance)) {
 			printBug(bugInstance);
@@ -83,6 +86,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 		}
 	}
 
+	@Override
 	protected void printBug(BugInstance bugInstance) {
 		try {
 			toElement(bugInstance);

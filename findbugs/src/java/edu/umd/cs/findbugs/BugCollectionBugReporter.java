@@ -46,11 +46,13 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter impleme
 	public void observeClass(ClassDescriptor classDescriptor) {
 	}
 
+	@Override
 	public void logError(String message) {
 		bugCollection.addError(message);
 		super.logError(message);
 	}
 
+	@Override
 	public void logError(String message, Throwable e) {
 		if (e instanceof MissingClassException) {
 			MissingClassException e2 = (MissingClassException)e;
@@ -65,11 +67,13 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter impleme
 		super.logError(message, e);
 	}
 
+	@Override
 	public void reportMissingClass(ClassNotFoundException ex) {
 		bugCollection.addMissingClass(getMissingClassName(ex));
 		super.reportMissingClass(ex);
 	}
 
+	@Override
 	public void doReportBug(BugInstance bugInstance) {
 		if (VERIFY_INTEGRITY) checkBugInstance(bugInstance);
 		if (bugCollection.add(bugInstance))
@@ -79,6 +83,7 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter impleme
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
 	 */
+	@Override
 	public BugReporter getRealBugReporter() {
 		return this;
 	}

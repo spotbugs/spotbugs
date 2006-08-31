@@ -73,34 +73,40 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 		this.endBodyText = endBodyText;
 	}
 
+	@Override
 	protected void prologue() throws IOException {
 		super.prologue();
 		PrintStream out = getPrintStream();
 		out.println(prologueText);
 	}
 
+	@Override
 	protected void emit(BugPattern bugPattern) throws IOException {
 		bugPatternSet.add(bugPattern);
 	}
 
+	@Override
 	protected void epilogue() throws IOException {
 		emitSummaryTable();
 		emitBugDescriptions();
 		super.epilogue();
 	}
 
+	@Override
 	protected void header() throws IOException {
 		PrintStream out = getPrintStream();
 		out.println(headerText);
 	}
 
 	/** Extra stuff printed at the beginning of the &lt;body&gt; element. */
+	@Override
 	protected void beginBody() throws IOException {
 		PrintStream out = getPrintStream();
 		out.println(beginBodyText);
 	}
 
 	/** Extra stuff printed at the end of the &lt;body&gt; element. */
+	@Override
 	protected void endBody() throws IOException {
 		PrintStream out = getPrintStream();
 		out.println(endBodyText);
@@ -143,6 +149,7 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 		}
 	}
 
+	@Override
 	protected boolean isEnabled(DetectorFactory factory) {
 		return unabridged || super.isEnabled(factory);
 	}

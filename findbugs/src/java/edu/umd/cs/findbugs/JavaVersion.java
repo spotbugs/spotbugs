@@ -109,6 +109,7 @@ public class JavaVersion {
 		return rest;
 	}
 	
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(major);

@@ -76,6 +76,7 @@ public class BugInstanceGroup {
 	/**
 	 * Convert to string.
 	 */
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(groupName);

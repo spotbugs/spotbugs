@@ -177,6 +177,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			this.count = count;
 		}
 
+		@Override
 		public String toString() {
 			try {
 				BugInstance bugInstance = (BugInstance) getUserObject();
@@ -363,10 +364,12 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * Swing FileFilter class for file selection dialogs for FindBugs project files.
 	 */
 	private static class ProjectFileFilter extends FileFilter {
+		@Override
 		public boolean accept(File file) {
 			return file.isDirectory() || file.getName().endsWith(".fb");
 		}
 
+		@Override
 		public String getDescription() {
 			return L10N.getLocalString("dlg.findbugsprojects_lbl", "FindBugs projects (*.fb)");
 		}
@@ -387,6 +390,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			return file.isDirectory() || file.getName().endsWith(".jar");
 		}
 
+		@Override
 		public String getDescription() {
 			return L10N.getLocalString("dlg.jarsanddirectories_lbl", "Jar files and directories");
 		}
@@ -401,10 +405,12 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	 * Swing FileFilter for choosing XML saved bug files.
 	 */
 	private static class XMLFileFilter extends FileFilter {
+		@Override
 		public boolean accept(File file) {
 			return file.isDirectory() || file.getName().endsWith(".xml");
 		}
 
+		@Override
 		public String getDescription() {
 			return L10N.getLocalString("dlg.xmlsavedbugs_lbl", "XML saved bug files");
 		}
@@ -444,6 +450,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			return archiveExtensionSet.contains(extension);
 		}
 
+		@Override
 		public String getDescription() {
 			return L10N.getLocalString("dlg.javaarchives_lbl", "Java archives (*.jar,*.zip,*.ear,*.war)");
 		}
@@ -631,10 +638,12 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
+            @Override
+			public void windowClosing(java.awt.event.WindowEvent evt) {
                 exitForm(evt);
             }
-            public void windowOpened(java.awt.event.WindowEvent evt) {
+            @Override
+			public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
             }
         });
@@ -663,7 +672,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
             }
         });
         jarNameTextField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -721,7 +731,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
             }
         });
         srcDirTextField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -895,7 +906,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         disableEditKeyBindings(jarFileList);
 
         jarFileList.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -916,7 +928,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         sourceDirList.setFont(BUTTON_FONT);
         disableEditKeyBindings(sourceDirList);
         sourceDirList.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -954,7 +967,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         editProjectPanel.add(classpathEntryListLabel, gridBagConstraints);
 
         classpathEntryTextField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -1026,7 +1040,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         classpathEntryList.setFont(BUTTON_FONT);
         disableEditKeyBindings(classpathEntryList);
         classpathEntryList.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -1134,7 +1149,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         });
 
         byClassBugTree.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -1144,7 +1160,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         groupByTabbedPane.addTab("By Class", byClassScrollPane);
 
         byPackageBugTree.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -1154,7 +1171,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         groupByTabbedPane.addTab("By Package", byPackageScrollPane);
 
         byBugTypeBugTree.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -1164,7 +1182,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         groupByTabbedPane.addTab("By Bug Type", byBugTypeScrollPane);
 
         byBugCategoryBugTree.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -1174,7 +1193,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         groupByTabbedPane.addTab("By Category Type", byBugCategoryScrollPane);
 
         bugSummaryEditorPane.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -1187,7 +1207,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 
         bugDescriptionEditorPane.setEditable(false);
         bugDescriptionEditorPane.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -1202,7 +1223,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         sourceTextArea.setFont(SOURCE_FONT);
         sourceTextArea.setEnabled(false);
         sourceTextArea.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -1216,7 +1238,8 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
         bugDetailsTabbedPane.addTab("Source code", sourceTextAreaScrollPane);
 
         annotationTextArea.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
+            @Override
+			public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedHandler(evt);
             }
         });
@@ -2469,6 +2492,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		// fill the lines completely.
 		final Highlighter.HighlightPainter painter =
 				new DefaultHighlighter.DefaultHighlightPainter(sourceTextArea.getSelectionColor()) {
+			@Override
 			public Shape paintLayer(Graphics g, int offs0, int offs1,
 					Shape bounds, JTextComponent c, View view) {
 				try {
@@ -2485,6 +2509,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			}
 		};
 		Highlighter sourceHighlighter = new DefaultHighlighter() {
+			@Override
 			public Object addHighlight(int p0, int p1, Highlighter.HighlightPainter p)
 			throws BadLocationException {
 				return super.addHighlight(p0, p1, painter);
@@ -3519,6 +3544,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		return new JFileChooser(currentDirectory) {
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			protected JDialog createDialog(Component parent) throws HeadlessException {
 				JDialog dialog = super.createDialog(parent);
 				dialog.getContentPane().add(extraComp, BorderLayout.SOUTH);
@@ -3645,6 +3671,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		}
 		
 		//@Override
+		@Override
 		protected void handleOption(String option, String optionExtraPart) {
 			if (option.equals("-debug")) {
 				System.out.println("Setting findbugs.debug=true");
@@ -3681,6 +3708,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		}
 		
 		//@Override
+		@Override
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			if (option.equals("-loadbugs")) {
 				bugsFilename = argument;

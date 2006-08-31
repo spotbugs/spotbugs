@@ -119,10 +119,12 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		return description;
 	}
 
+	@Override
 	public int hashCode() {
 		return value.hashCode();
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof LocalVariableAnnotation))
 			return false;
@@ -135,6 +137,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		return value.compareTo(((LocalVariableAnnotation) o).value);
 	}
 
+	@Override
 	public String toString() {
 		String pattern = I18N.instance().getAnnotationDescription(description);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);

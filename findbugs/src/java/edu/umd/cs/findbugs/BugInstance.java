@@ -136,6 +136,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	}
 	
 	//@Override
+	@Override
 	public Object clone() {
 		BugInstance dup;
 		
@@ -1303,6 +1304,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * where the annotations are listed separately as part of the overall
 	 * bug instance.
 	 */
+	@Override
 	public String toString() {
 		return I18N.instance().getShortMessage(type);
 	}
@@ -1425,6 +1427,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		}
 	}
 
+	@Override
 	public int hashCode() {
 		if (cachedHashCode == INVALID_HASH_CODE) {
 			int hashcode = type.hashCode() + priority;
@@ -1439,6 +1442,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return cachedHashCode;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof BugInstance))
 			return false;

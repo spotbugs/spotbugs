@@ -58,6 +58,7 @@ public class TypeAnnotation implements BugAnnotation {
 	}
 	
 	//@Override
+	@Override
 	public Object clone() {
 		try {
 			return super.clone();
@@ -91,10 +92,12 @@ public class TypeAnnotation implements BugAnnotation {
 		return roleDescription;
 	}
 
+	@Override
 	public int hashCode() {
 		return descriptor.hashCode();
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof TypeAnnotation))
 			return false;
@@ -108,6 +111,7 @@ public class TypeAnnotation implements BugAnnotation {
 		// could try to determine equivalence with ClassAnnotation, but don't see how this would be useful
 	}
 
+	@Override
 	public String toString() {
 		String pattern = I18N.instance().getAnnotationDescription(roleDescription);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);

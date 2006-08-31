@@ -68,6 +68,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 			return cause;
 		}
 		
+		@Override
 		public int hashCode() {
 			int hashCode = message.hashCode();
 			if (cause != null) {
@@ -77,6 +78,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 		}
 		
 		//@Override
+		@Override
 		public boolean equals(Object obj) {
 			if (obj == null || obj.getClass() != this.getClass())
 				return false;

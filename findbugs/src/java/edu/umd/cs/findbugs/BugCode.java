@@ -61,6 +61,7 @@ public class BugCode {
 	/**
 	 * Get the abbreviation fo this bug code.
 	 */
+	@Override
 	public String toString() {
 		return "BugCode[" + abbrev + "]";
 	}

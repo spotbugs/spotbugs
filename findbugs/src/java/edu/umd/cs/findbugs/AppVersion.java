@@ -67,6 +67,7 @@ public class AppVersion implements XMLWriteable, Cloneable {
 	 * @see java.lang.Object#clone()
 	 */
 	//@Override
+	@Override
 	public Object clone() {
 		try {
 			return super.clone();
@@ -128,6 +129,7 @@ public class AppVersion implements XMLWriteable, Cloneable {
 	 * @see java.lang.Object#toString()
 	 */
 	//@Override
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(String.valueOf(sequence));

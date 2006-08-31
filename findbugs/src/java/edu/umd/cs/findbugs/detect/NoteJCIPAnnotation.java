@@ -46,6 +46,7 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements
 	}
 
 	
+	@Override
 	public void visitAnnotation(String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
 

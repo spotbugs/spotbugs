@@ -53,6 +53,7 @@ public class ListBugDatabaseInfo {
 			addSwitch("-formatDates", "render dates in textual form");
 		}
 
+		@Override
 		public void handleOption(String option, String optionalExtraPart) {
 			if (option.equals("-formatDates"))
 				formatDates = true;
@@ -60,6 +61,7 @@ public class ListBugDatabaseInfo {
 				throw new IllegalArgumentException("unknown option: " + option);
 		}
 
+		@Override
 		public void handleOptionWithArgument(String option, String argument) {
 
 			throw new IllegalArgumentException("unknown option: " + option);

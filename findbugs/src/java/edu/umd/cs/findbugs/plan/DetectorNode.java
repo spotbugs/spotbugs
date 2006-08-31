@@ -56,6 +56,7 @@ public class DetectorNode
 	/**
 	 * Get the Plugin Name for this DetectorFactory for debugging support
 	 */
+	@Override
 	public String toString() {
 		return "DetectorNode[" + factory.getReportedBugPatternCodes() + "]";
 	}

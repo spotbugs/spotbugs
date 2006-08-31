@@ -15,6 +15,7 @@ public class PackageWarningSuppressor extends WarningSuppressor {
 		return packageName;
 	}
 
+	@Override
 	public boolean match(BugInstance bugInstance) {
 
 		if (!super.match(bugInstance)) return false;

@@ -50,6 +50,7 @@ public class CallGraph extends AbstractGraph<CallGraphEdge, CallGraphNode> {
 		return methodToNodeMap.get(method);
 	}
 
+	@Override
 	protected CallGraphEdge allocateEdge(CallGraphNode source, CallGraphNode target) {
 		return new CallGraphEdge(source, target);
 	}

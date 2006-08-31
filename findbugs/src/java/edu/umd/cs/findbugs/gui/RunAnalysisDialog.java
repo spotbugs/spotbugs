@@ -133,6 +133,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 
 		// This is the thread that will actually run the analysis.
 		this.analysisThread = new Thread() {
+			@Override
 			public void run() {
 				try {
 					analysisRun.execute(progress);
@@ -215,9 +216,11 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 		setTitle("Run Analysis");
 		this.setTitle(L10N.getLocalString("dlg.runanalysis_ttl", "Run Analysis"));
 		addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
 			public void windowClosing(java.awt.event.WindowEvent evt) {
 				closeDialog(evt);
 			}
+			@Override
 			public void windowOpened(java.awt.event.WindowEvent evt) {
 				formWindowOpened(evt);
 			}

@@ -55,6 +55,7 @@ public class AnnotatedString {
 	/*
 	 * Return the string minus any annotation
 	 */
+	@Override
 	public String toString() {
 		if (MAC_OS_X) {
 			// Support annotations like "File(&F)"

@@ -92,6 +92,7 @@ public class EclipseClasspath {
 			this.lineList = new LinkedList<String>();
 		}
 
+		@Override
 		public int read(char[] cbuf, int off, int len) throws IOException {
 			if (!fill())
 				return -1;
@@ -107,6 +108,7 @@ public class EclipseClasspath {
 			return len;
 		}
 
+		@Override
 		public void close() throws IOException {
 			reader.close();
 		}

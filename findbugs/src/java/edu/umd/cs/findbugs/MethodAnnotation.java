@@ -267,6 +267,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		visitor.visitMethodAnnotation(this);
 	}
 
+	@Override
 	protected String formatPackageMember(String key) {
 		if (key.equals(""))
 			return UGLY_METHODS ? getUglyMethod() : getFullMethod();
@@ -356,10 +357,12 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		return className + "." + methodName + " : " + methodSig.replace('/', '.');
 	}
 
+	@Override
 	public int hashCode() {
 		return className.hashCode() + methodName.hashCode() + methodSig.hashCode();
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof MethodAnnotation))
 			return false;
