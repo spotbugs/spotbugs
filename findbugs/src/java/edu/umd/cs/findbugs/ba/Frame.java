@@ -129,6 +129,7 @@ public abstract class Frame<ValueType> {
 	public void setTop() {
 		isTop = true;
 		isBottom = false;
+		lastUpdateTimestamp = 0;
 	}
 
 	/**
@@ -555,6 +556,7 @@ public abstract class Frame<ValueType> {
 	 *            the Frame to make this object the same as
 	 */
 	public void copyFrom(Frame<ValueType> other) {
+		lastUpdateTimestamp = other.lastUpdateTimestamp;
 		int size = slotList.size();
 		if (size == other.slotList.size()) {
 			for (int i = 0; i < size; i++)

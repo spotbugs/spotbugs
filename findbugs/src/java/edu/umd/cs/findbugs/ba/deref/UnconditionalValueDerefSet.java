@@ -99,6 +99,7 @@ public class UnconditionalValueDerefSet {
 	public void setIsTop() {
 		clear();
 		valueNumberSet.set(numValueNumbersInMethod + 1);
+		lastUpdateTimestamp = 0;
 	}
 
 	/**
@@ -120,7 +121,7 @@ public class UnconditionalValueDerefSet {
 		// Copy value numbers
 		valueNumberSet.clear();
 		valueNumberSet.or(source.valueNumberSet);
-
+		lastUpdateTimestamp = source.lastUpdateTimestamp;
 		// Copy dereference locations for each value number
 		derefLocationSetMap.clear();
 		for (Map.Entry<ValueNumber, Set<Location>> sourceEntry : source.derefLocationSetMap.entrySet()) {
