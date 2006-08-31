@@ -67,7 +67,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 						break;
 					}
 				}
-				if (!foundTest) {
+				if (!foundTest && !hasSuite(methods)) {
 					bugReporter.reportBug( new BugInstance( this, "IJU_NO_TESTS", LOW_PRIORITY)
 							.addClass(jClass));
 				}
@@ -81,6 +81,20 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 			bugReporter.reportMissingClass(cnfe);
 		}
 
+	}
+
+	/** is there a JUnit3TestSuite */
+	private boolean hasSuite(Method[] methods) {
+		for (Method m : methods) {
+			if (m.getName().equals("suite")
+			    && m.isPublic()
+			    && m.isStatic()
+			  //&& m.getReturnType().equals(junit.framework.Test.class)
+			  //&& m.getArgumentTypes().length == 0
+			    && m.getSignature().equals("()Ljunit/framework/Test;"))
+			  return true;
+		}
+		return false;
 	}
 
 	/**
