@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.util.Strings;
-
+import edu.umd.cs.findbugs.util.Util;
 public class IsNullValueFrame extends Frame<IsNullValue> {
 	private IsNullConditionDecision decision;
 	private boolean trackValueNumbers;
@@ -64,7 +64,12 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	}
 	
 	public void setKnownValue(ValueNumber valueNumber, IsNullValue knownValue) {
+		
 		knownValueMap.put(valueNumber, knownValue);
+		if (IsNullValueAnalysis.DEBUG) {
+			System.out.println("Updated information for " + valueNumber);
+			System.out.println("                    now " + this);
+		}
 	}
 	
 	public IsNullValue getKnownValue(ValueNumber valueNumber) {
@@ -86,7 +91,15 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 			if (otherKnownValue == null) {
 				continue;
 			}
-			replaceMap.put(entry.getKey(), IsNullValue.merge(entry.getValue(), otherKnownValue));
+			IsNullValue mergedValue = IsNullValue.merge(entry.getValue(), otherKnownValue);
+			replaceMap.put(entry.getKey(), mergedValue);
+			if (IsNullValueAnalysis.DEBUG && !mergedValue.equals(entry.getValue())) {
+
+					System.out.println("Updated information for " + entry.getKey());
+					System.out.println("                    was " + entry.getValue());
+					System.out.println("           merged value " + mergedValue);
+
+			}
 		}
 		knownValueMap.clear();
 		knownValueMap.putAll(replaceMap);
@@ -98,11 +111,22 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	@Override
 	public void copyFrom(Frame<IsNullValue> other) {
 		super.copyFrom(other);
+		decision = ((IsNullValueFrame)other).decision;
 		if (trackValueNumbers) {
 			knownValueMap = new HashMap<ValueNumber, IsNullValue>(((IsNullValueFrame)other).knownValueMap);
 		}
 	}
+	
+	@Override
+	public boolean sameAs(Frame<IsNullValue> other) {
+		if (!(other instanceof IsNullValueFrame)) return false;
+		if (!super.sameAs(other)) return false;
+		IsNullValueFrame o2 = (IsNullValueFrame) other;
+		if (!Util.nullSafeEquals(decision, o2.decision)) return false;
+		if (trackValueNumbers && !Util.nullSafeEquals(knownValueMap, o2.knownValueMap)) return false;
 
+		return true;
+	}
 	@Override
 	public String toString() {
 		String result = super.toString();

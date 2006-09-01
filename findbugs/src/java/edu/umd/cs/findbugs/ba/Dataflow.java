@@ -198,9 +198,9 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 								}
 							System.out.println("Fact: " + start);
 						}
-						if (true) continue;
+						continue;
 					}
-					// needToRecompute = true;
+
 					if (needToRecompute) {
 						Fact origStart = analysis.createFact();
 						analysis.copy(start, origStart);

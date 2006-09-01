@@ -55,6 +55,14 @@ public class IsNullConditionDecision implements EdgeTypes {
 		this.fallThroughDecision = fallThroughDecision;
 	}
 
+	public int hashCode() {
+		return value.hashCode() + 5*ifcmpDecision.hashCode() + 17*fallThroughDecision.hashCode();
+	}
+	public boolean equals(Object o) {
+		if (!(o instanceof IsNullConditionDecision)) return false;
+		IsNullConditionDecision other = (IsNullConditionDecision) o;
+		return value.equals(other.value) && ifcmpDecision.equals(other.ifcmpDecision) && fallThroughDecision.equals(other.fallThroughDecision);
+	}
 	/**
 	 * Get the value about which the branch yields information.
 	 */

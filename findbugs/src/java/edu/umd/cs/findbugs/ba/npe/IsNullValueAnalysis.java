@@ -506,7 +506,7 @@ public class IsNullValueAnalysis
 				ifcmpDecision = isNotInstanceOf ? tos : IsNullValue.pathSensitiveNonNullValue();
 				fallThroughDecision = isNotInstanceOf ? IsNullValue.pathSensitiveNonNullValue() : tos;
 			}
-			 if (false) System.out.println("Checking..." + tos + " -> " + ifcmpDecision + " or " + fallThroughDecision);
+			 if (DEBUG) System.out.println("Checking..." + tos + " -> " + ifcmpDecision + " or " + fallThroughDecision);
 				
 			return new IsNullConditionDecision(instanceOfVnaFrame.getTopValue(), ifcmpDecision, fallThroughDecision);
 
