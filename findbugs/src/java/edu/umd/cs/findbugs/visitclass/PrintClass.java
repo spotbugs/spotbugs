@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.visitclass;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -41,7 +42,8 @@ public class PrintClass {
 	/**
 	 * @author pugh
 	 */
-	static final class ZipEntryComparator implements Comparator<ZipEntry> {
+	static final class ZipEntryComparator implements Comparator<ZipEntry>, Serializable {
+		private static final long serialVersionUID = 1L;
 		public int compare(ZipEntry o1, ZipEntry o2) {
 			ZipEntry e1 = (ZipEntry) o1;
 			String s1 = e1.getName();
