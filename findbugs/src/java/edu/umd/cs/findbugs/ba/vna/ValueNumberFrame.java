@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.vna;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -52,15 +53,15 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	public ValueNumberFrame(int numLocals) {
 		super(numLocals);
 		if (REDUNDANT_LOAD_ELIMINATION) {
-			availableLoadMap = new HashMap<AvailableLoad, ValueNumber[]>();
-			mergedLoads =  new HashMap<AvailableLoad,ValueNumber> ();
-			previouslyKnownAs =  new HashMap<ValueNumber, AvailableLoad> ();
+			setAvailableLoadMap(Collections.EMPTY_MAP);
+			setMergedLoads(Collections.EMPTY_MAP);
+			setPreviouslyKnownAs(Collections.EMPTY_MAP);
 		}
 	}
 
 	public String availableLoadMapAsString() {
 		StringBuffer buf = new StringBuffer("{ ");
-		for(Map.Entry<AvailableLoad, ValueNumber[]> e : availableLoadMap.entrySet()) {
+		for(Map.Entry<AvailableLoad, ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
 			buf.append(e.getKey());
 			buf.append("=");
 			for(ValueNumber v : e.getValue()) 
@@ -72,7 +73,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		return buf.toString();
 	}
 	public @CheckForNull AvailableLoad getLoad(ValueNumber v) {
-		for(Map.Entry<AvailableLoad, ValueNumber[]> e : availableLoadMap.entrySet()) {
+		for(Map.Entry<AvailableLoad, ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
 			if (e.getValue() != null)
 				for(ValueNumber v2 : e.getValue())
 					if (v.equals(v2)) return e.getKey();
@@ -86,7 +87,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 * @return the value(s) available, or null if no matching entry is found
 	 */
 	public ValueNumber[] getAvailableLoad(AvailableLoad availableLoad) {
-		return availableLoadMap.get(availableLoad);
+		return getAvailableLoadMap().get(availableLoad);
 	}
 
 	/**
@@ -97,10 +98,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 */
 	public void addAvailableLoad(AvailableLoad availableLoad, @NonNull ValueNumber[] value) {
 		if (value == null) throw new IllegalStateException();
-		availableLoadMap.put(availableLoad, value);
+		getUpdateableAvailableLoadMap().put(availableLoad, value);
 
 		for(ValueNumber v : value) {
-			previouslyKnownAs.put(v, availableLoad);
+			getUpdateablePreviouslyKnownAs().put(v, availableLoad);
 			if (RLE_DEBUG) {
 				System.out.println("Adding available load of " + availableLoad + " for " + v + " to " + System.identityHashCode(this));
 			}
@@ -113,7 +114,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 * @param field the field
 	 */
 	public void killLoadsOfField(XField field) {
-		Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator();
+		Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator();
 		while (i.hasNext()) {
 			AvailableLoad availableLoad = i.next();
 			if (availableLoad.getField().equals(field)) {
@@ -129,7 +130,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 */
 	public void killAllLoads() {
 		if (REDUNDANT_LOAD_ELIMINATION) {
-			for(Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator(); i.hasNext(); ) {
+			for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
 				AvailableLoad availableLoad = i.next();
 				if (!availableLoad.getField().isFinal()) {
 					if (false) System.out.println("KILLING load of " + availableLoad);
@@ -145,7 +146,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	 */
 	public void killAllLoadsOf(@CheckForNull ValueNumber v) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
-			for(Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator(); i.hasNext(); ) {
+			for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
 				AvailableLoad availableLoad = i.next();
 				if (!availableLoad.getField().isFinal() && availableLoad.getReference() == v) {
 					if (false) System.out.println("Killing load of " + availableLoad);
@@ -166,24 +167,24 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 			}
 			boolean changed = false;
 			if (other.isBottom()) {
-				changed = !this.availableLoadMap.isEmpty();
-				availableLoadMap.clear();
+				changed = !this.getAvailableLoadMap().isEmpty();
+				setAvailableLoadMap(Collections.EMPTY_MAP);
 			}
 			else if (!other.isTop()) {
-				for(Map.Entry<AvailableLoad,ValueNumber[]> e : availableLoadMap.entrySet()) {
+				for(Map.Entry<AvailableLoad,ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
 					AvailableLoad load = e.getKey();
 					ValueNumber[] myVN = e.getValue();
-					ValueNumber[] otherVN = other.availableLoadMap.get(load);
+					ValueNumber[] otherVN = other.getAvailableLoadMap().get(load);
 					if (false && this.phiNodeForLoads && myVN != null && myVN.length == 1 && myVN[0].hasFlag(ValueNumber.PHI_NODE))
 						continue;
 					if (!Arrays.equals(myVN, otherVN)) {
 						
-						ValueNumber phi = mergedLoads.get(load);
+						ValueNumber phi = getMergedLoads().get(load);
 						if (phi == null) {
 							phi = factory.createFreshValue();
 							int flags = ValueNumber.PHI_NODE;
 							
-							mergedLoads.put(load, phi);
+							getUpdateableMergedLoads().put(load, phi);
 							for(ValueNumber vn : myVN) {
 								mergeTree.mapInputToOutput(vn, phi);
 								flags |= vn.getFlags();
@@ -208,7 +209,9 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 					
 				}	
 			}
-			previouslyKnownAs.putAll(other.previouslyKnownAs);
+			Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = other.getPreviouslyKnownAs();
+			if (previouslyKnownAsOther.size() != 0)
+				getUpdateablePreviouslyKnownAs().putAll(previouslyKnownAsOther);
 			if (changed)
 				this.phiNodeForLoads = true;
 			if (changed && RLE_DEBUG) {
@@ -242,10 +245,21 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			// Copy available load set.
-			availableLoadMap.clear();
-			availableLoadMap.putAll(((ValueNumberFrame) other).availableLoadMap);
-			previouslyKnownAs.clear();
-			previouslyKnownAs.putAll(((ValueNumberFrame) other).previouslyKnownAs);
+			Map<AvailableLoad, ValueNumber[]> availableLoadMapOther = ((ValueNumberFrame) other).getAvailableLoadMap();
+			if (availableLoadMapOther.size() == 0) 
+				setAvailableLoadMap(Collections.EMPTY_MAP);
+			else {
+				getUpdateableAvailableLoadMap().clear();
+				getUpdateableAvailableLoadMap().putAll(availableLoadMapOther);
+			}
+			Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = ((ValueNumberFrame) other).getPreviouslyKnownAs();
+			if (previouslyKnownAsOther.size() == 0) 
+				setPreviouslyKnownAs(Collections.EMPTY_MAP);
+			else {
+				getUpdateablePreviouslyKnownAs().clear();
+				getUpdateablePreviouslyKnownAs().putAll(previouslyKnownAsOther);
+			}
+		
 		}
 
 		super.copyFrom(other);
@@ -258,11 +272,11 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 			StringBuffer buf = new StringBuffer();
 			buf.append(frameValues);
 
-			Iterator<AvailableLoad> i = availableLoadMap.keySet().iterator();
+			Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator();
 			boolean first = true;
 			while (i.hasNext()) {
 				AvailableLoad key = i.next();
-				ValueNumber[] value = availableLoadMap.get(key);
+				ValueNumber[] value = getAvailableLoadMap().get(key);
 				if (first)
 					first = false;
 				else
@@ -300,10 +314,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		
 	public boolean fromMatchingLoads(ValueNumber v1, ValueNumber v2) {
 		AvailableLoad load1 = getLoad(v1);
-		if (load1 == null) load1 = previouslyKnownAs.get(v1);
+		if (load1 == null) load1 = getPreviouslyKnownAs().get(v1);
 		if (load1 == null) return false;
 		AvailableLoad load2 = getLoad(v2);
-		if (load2 == null) load2 = previouslyKnownAs.get(v2);
+		if (load2 == null) load2 = getPreviouslyKnownAs().get(v2);
 		if (load2 == null) return false;
 		return load1.equals(load2);
 	}
@@ -321,13 +335,72 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	
 	public Collection<ValueNumber> valueNumbersForLoads() {
 		HashSet<ValueNumber> result = new HashSet<ValueNumber>();
-		for(Map.Entry<AvailableLoad, ValueNumber[]> e : availableLoadMap.entrySet()) {
+		for(Map.Entry<AvailableLoad, ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
 			if (e.getValue() != null)
 				for(ValueNumber v2 : e.getValue())
 					result.add(v2);
 		}
 
 		return result;
+	}
+
+	/**
+	 * @param availableLoadMap The availableLoadMap to set.
+	 */
+	private void setAvailableLoadMap(Map<AvailableLoad, ValueNumber[]> availableLoadMap) {
+		this.availableLoadMap = availableLoadMap;
+	}
+
+	/**
+	 * @return Returns the availableLoadMap.
+	 */
+	private Map<AvailableLoad, ValueNumber[]> getAvailableLoadMap() {
+		return availableLoadMap;
+	}
+	private Map<AvailableLoad, ValueNumber[]> getUpdateableAvailableLoadMap() {
+		if (!(availableLoadMap instanceof HashMap))
+			availableLoadMap = new HashMap<AvailableLoad, ValueNumber[]>();
+		return availableLoadMap;
+	}
+	/**
+	 * @param mergedLoads The mergedLoads to set.
+	 */
+	private void setMergedLoads(Map<AvailableLoad,ValueNumber> mergedLoads) {
+		this.mergedLoads = mergedLoads;
+	}
+
+	/**
+	 * @return Returns the mergedLoads.
+	 */
+	private Map<AvailableLoad,ValueNumber> getMergedLoads() {
+		return mergedLoads;
+	}
+	private Map<AvailableLoad,ValueNumber> getUpdateableMergedLoads() {
+		if (!(mergedLoads instanceof HashMap))
+			mergedLoads = new HashMap<AvailableLoad, ValueNumber>();
+		
+		return mergedLoads;
+	}
+
+	/**
+	 * @param previouslyKnownAs The previouslyKnownAs to set.
+	 */
+	private void setPreviouslyKnownAs(Map<ValueNumber, AvailableLoad> previouslyKnownAs) {
+		this.previouslyKnownAs = previouslyKnownAs;
+	}
+
+	/**
+	 * @return Returns the previouslyKnownAs.
+	 */
+	private Map<ValueNumber, AvailableLoad> getPreviouslyKnownAs() {
+		return previouslyKnownAs;
+	}
+	private Map<ValueNumber, AvailableLoad> getUpdateablePreviouslyKnownAs() {
+		if (!(previouslyKnownAs instanceof HashMap))
+			previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>();
+		
+		
+		return previouslyKnownAs;
 	}
 	
 	
