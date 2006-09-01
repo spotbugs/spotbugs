@@ -23,7 +23,8 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.util.Strings;
-
+import edu.umd.cs.findbugs.util
+.Util;
 /**
  * A control decision which resulted in information being gained
  * about whether a particular value is null or non-null
@@ -34,9 +35,9 @@ import edu.umd.cs.findbugs.util.Strings;
  * @see IsNullValueAnalysis
  */
 public class IsNullConditionDecision implements EdgeTypes {
-	private final ValueNumber value;
-	private final IsNullValue ifcmpDecision;
-	private final IsNullValue fallThroughDecision;
+	private final @CheckForNull ValueNumber value;
+	private final @CheckForNull IsNullValue ifcmpDecision;
+	private final @CheckForNull IsNullValue fallThroughDecision;
 
 	/**
 	 * Constructor.
@@ -56,12 +57,19 @@ public class IsNullConditionDecision implements EdgeTypes {
 	}
 
 	public int hashCode() {
-		return value.hashCode() + 5*ifcmpDecision.hashCode() + 17*fallThroughDecision.hashCode();
+		return Util.nullSafeHashcode(value) + 5
+				* Util.nullSafeHashcode(ifcmpDecision) + 17
+				* Util.nullSafeHashcode(fallThroughDecision);
 	}
+
 	public boolean equals(Object o) {
-		if (!(o instanceof IsNullConditionDecision)) return false;
+		if (!(o instanceof IsNullConditionDecision))
+			return false;
 		IsNullConditionDecision other = (IsNullConditionDecision) o;
-		return value.equals(other.value) && ifcmpDecision.equals(other.ifcmpDecision) && fallThroughDecision.equals(other.fallThroughDecision);
+		return Util.nullSafeEquals(value, other.value)
+				&& Util.nullSafeEquals(ifcmpDecision, other.ifcmpDecision)
+				&& Util.nullSafeEquals(fallThroughDecision,
+						other.fallThroughDecision);
 	}
 	/**
 	 * Get the value about which the branch yields information.

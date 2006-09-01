@@ -26,6 +26,10 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  */
 public class Util {
 	
+	public static int  nullSafeHashcode(@CheckForNull Object o) {
+		if (o == null) return 0;
+		return o.hashCode();		
+	}
 	public static <T> boolean  nullSafeEquals(@CheckForNull T o1, @CheckForNull T o2) {
 		if (o1 == o2) return true;
 		if (o1 == null || o2 == null) return false;
