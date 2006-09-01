@@ -253,9 +253,9 @@ public class DumbMethods extends BytecodeScanningDetector  {
 				OpcodeStack.Item tmp = item0;
 				item0 = item1;
 				item1 = tmp;
-				if (seen >= IF_ICMPLT & seen <= IF_ICMPGE) 
+				if (seen >= IF_ICMPLT && seen <= IF_ICMPGE) 
 					seen2 += 2;
-				else if  (seen >= IF_ICMPGT & seen <= IF_ICMPLE) 
+				else if  (seen >= IF_ICMPGT && seen <= IF_ICMPLE) 
 					seen2 -= 2;
 			}
 			Object constant1 = item1.getConstant();
