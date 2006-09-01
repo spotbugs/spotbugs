@@ -40,6 +40,7 @@ import javax.xml.transform.TransformerException;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.xml.*;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 import org.dom4j.DocumentException;
 import org.dom4j.Document;
@@ -588,7 +589,7 @@ public class SortedBugCollection implements BugCollection {
 	private TreeSet<BugInstance> bugSet;
 	private List<AnalysisError> errorList;
 	private TreeSet<String> missingClassSet;
-	private String summaryHTML;
+	@CheckForNull private String summaryHTML;
 	private ProjectStats projectStats;
 //	private Map<String, ClassHash> classHashMap;
 	private Map<String, ClassFeatureSet> classFeatureSetMap;
@@ -649,7 +650,7 @@ public class SortedBugCollection implements BugCollection {
 		bugSet = new TreeSet<BugInstance>(comparator);
 		errorList = new LinkedList<AnalysisError>();
 		missingClassSet = new TreeSet<String>();
-		summaryHTML = "";
+		summaryHTML = null;
 		classFeatureSetMap = new TreeMap<String, ClassFeatureSet>();
 		uniqueIdToBugInstanceMap = new HashMap<String, BugInstance>();
 		generatedUniqueIdCount = 0;
