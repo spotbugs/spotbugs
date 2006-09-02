@@ -1,6 +1,12 @@
 package npe;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 
 /**
@@ -4253,7 +4259,7 @@ public class EclipseNullReferenceTestCases {
 	static class Report166 { 
 		static class X {
 			void foo(Object o) {
-				/** @notNull */ Object l = o;
+				@NonNull Object l = o;
 			}
 		}
 
@@ -4262,8 +4268,8 @@ public class EclipseNullReferenceTestCases {
 //	_test0902_notNull_protection_tag
 	static class Report167 { 
 		static class X {
-			void foo(/** @nullable */ Object o) {
-				/** @notNull */ Object l = o;
+			void foo(@CheckForNull Object o) {
+				@NonNull Object l = o;
 			}
 		}
 
@@ -4276,7 +4282,7 @@ public class EclipseNullReferenceTestCases {
 				return null;
 			}
 			void foo() {
-				/** @notNull */ Object l = bar();
+				@NonNull Object l = bar();
 			}
 		}
 
@@ -4285,7 +4291,7 @@ public class EclipseNullReferenceTestCases {
 //	_test0904_notNull_protection_tag
 	static class Report168 { 
 		static class X {
-			/** @notNull */
+			@NonNull
 			Object bar() {
 				return new Object();
 			}
@@ -4300,7 +4306,7 @@ public class EclipseNullReferenceTestCases {
 //	_test0905_notNull_protection_tag
 	static class Report169 { 
 		static class X {
-			/** @notNull */
+			@NonNull
 			Object bar() {
 				return null;
 			}
@@ -4311,7 +4317,7 @@ public class EclipseNullReferenceTestCases {
 //	_test0950_nullable_tag
 	static class DoNotReport114 { 
 		static class X {
-			void foo(/** @nullable */ Object o) {
+			void foo(@CheckForNull Object o) {
 				o.toString();
 			}
 		}
@@ -4321,7 +4327,7 @@ public class EclipseNullReferenceTestCases {
 //	_test0951_nullable_tag
 	static class DoNotReport115 { 
 		static class X {
-			void foo(/** @nullable */ Object o) {
+			void foo( @CheckForNull  Object o) {
 				Object l = o;
 				l.toString();
 			}
@@ -4333,7 +4339,7 @@ public class EclipseNullReferenceTestCases {
 //	static class DoNotReport116 { 
 //	static class X {
 //	void foo(boolean b) {
-//	/** @nullable */ Object o;
+//	 @CheckForNull  Object o;
 //	if (b) {
 //	o = new Object();
 //	}
