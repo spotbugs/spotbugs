@@ -121,7 +121,7 @@ class BadCast {
 		return null;
 
 	}
-	public static String[] modelMultiANewArrayCorrectly(Object [] x) {
+	public static String[] modelMultiANewArrayCorrectlyDoNotReport(Object [] x) {
 		Object[][] tmp = new Object[1][];
 		tmp[0] = x;
 		if (tmp[0] instanceof String[])
