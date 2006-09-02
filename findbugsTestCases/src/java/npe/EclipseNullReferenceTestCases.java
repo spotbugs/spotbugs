@@ -6,7 +6,7 @@ import java.io.*;
 /**
  * Test cases extracted from org.eclipse.jdt.core.tests.compiler.regression.NullReferenceTest, version 1.39
  */
-@edu.umd.cs.findbugs.annotations.SuppressWarnings({"DLS","UuF","SIC","UrF","UwF","IP","DB","RV","Dm","DE","SP","UCF","IL","SF","Se","RC","NS","ST","OS"})
+@edu.umd.cs.findbugs.annotations.SuppressWarnings({"DLS","UuF","SIC","UrF","UwF","IP","DB","RV","Dm","DE","SP","UCF","IL","SF","Se","RC","NS","ST","OS","NP_UNWRITTEN_FIELD"})
 public class EclipseNullReferenceTestCases {
 
 
@@ -80,7 +80,7 @@ public class EclipseNullReferenceTestCases {
 //	test0007_local_with_member
 	static class Report7 { 
 		static class X {
-			Object m;
+			public Object m;
 			void foo() {
 				X x = null;
 				x.m.toString();
@@ -92,7 +92,7 @@ public class EclipseNullReferenceTestCases {
 //	test0008_local_with_member
 	static class Report8 { 
 		static class X {
-			Object m;
+			public Object m;
 			void foo() {
 				X x = null;
 				System.out.println(x.m);
@@ -104,7 +104,7 @@ public class EclipseNullReferenceTestCases {
 //	test0009_local_with_member
 	static class DoNotReport1 { 
 		static class X {
-			Object m;
+			public Object m;
 			void foo(X x) {
 				x.m.toString();
 			}
@@ -291,7 +291,7 @@ public class EclipseNullReferenceTestCases {
 //	test0023_field_assignment
 	static class DoNotReport8 { 
 		static class X {
-			Object m;
+			public Object m;
 			void foo(X x) {
 				Object o = x.m;
 				if (o == null) { /* */ };
@@ -303,7 +303,7 @@ public class EclipseNullReferenceTestCases {
 //	test0024_field_cast_assignment
 	static class DoNotReport9 { 
 		static class X {
-			Object m;
+			public Object m;
 			void foo(Object x) {
 				Object o = ((X) x).m;
 				if (o == null) { /* */ };
@@ -349,7 +349,7 @@ public class EclipseNullReferenceTestCases {
 //	test0029_field_assignment
 	static class Report17 { 
 		static class X {
-			Object m;
+			public Object m;
 			void foo() {
 				X x = null;
 				x.m = new Object();
@@ -2429,7 +2429,7 @@ public class EclipseNullReferenceTestCases {
 //	test0500_try_finally
 	static class DoNotReport68 { 
 		static class X {
-			Object m;
+			public Object m;
 			void foo() {
 				Object o = null;
 				try { /* */ }
