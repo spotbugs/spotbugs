@@ -89,27 +89,27 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 
 			InvokeInstruction inv = (InvokeInstruction) exceptionThrower;
 			try {
+				
 				String className = inv.getClassName(cpg);
+				if (DEBUG) System.out.println("\tlooking up method for " + basicBlock.getExceptionThrower() + " in " + className);
+				
 				if (className.startsWith("["))
 					continue;
 				String methodSig = inv.getSignature(cpg);
-				if (!methodSig.endsWith("V")) 
+				if (false && !methodSig.endsWith("V")) 
 					continue;
-				JavaClass javaClass = Repository.lookupClass(className);
 				
-				if (DEBUG) System.out.println("\tlooking up method for " + basicBlock.getExceptionThrower());
-				JavaClassAndMethod classAndMethod = Hierarchy.findExactMethod(inv, cpg);
+				XMethod xMethod = XFactory.createXMethod(inv, cpg);
+				JavaClass javaClass = Repository.lookupClass(xMethod.getClassName());
+				
+				JavaClassAndMethod classAndMethod = Hierarchy.findMethod(javaClass, xMethod.getName(), xMethod.getSignature(), Hierarchy.ANY_METHOD);
 				if (classAndMethod == null) {
 					if (DEBUG) System.out.println("\tNOT FOUND");
 					continue;
 				}
 				Method method = classAndMethod.getMethod();
-				XMethod xMethod = XFactory.createXMethod(javaClass, method);
 				if (DEBUG) System.out.println("\tFound " + xMethod);
-
-				// FIXME: for now, only allow static and private methods.
-				// Could also allow final methods (but would require class hierarchy
-				// search).
+		
 				if (!(method.isStatic() || method.isPrivate() || method.isFinal() || javaClass.isFinal() || !subtypes.hasSubtypes(javaClass)))
 					continue;
 				
@@ -128,6 +128,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 							if (DEBUG) System.out.println("\tChecking " + xMethod);
 							isUnconditionalThrower = Boolean.valueOf(!bytecodeSet.intersects(RETURN_OPCODE_SET));
 							if (DEBUG && isUnconditionalThrower) {
+								System.out.println("Is unconditional thrower");
 								System.out.println("Return opcode set: " + RETURN_OPCODE_SET);
 								System.out.println("Code opcode set: " + bytecodeSet);
 							}

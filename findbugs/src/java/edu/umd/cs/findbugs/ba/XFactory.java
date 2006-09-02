@@ -221,7 +221,7 @@ public  class XFactory {
 
 	private @NonNull XMethod resolve(XMethod m) {
 		if (m.isResolved()) return m;
-		if (m.isStatic()) return m;
+		// if (m.isStatic()) return m;
 		XMethod m2 = m;
 		String classname = m.getClassName();
 		if (false && m.getName().equals("<init>")) {
