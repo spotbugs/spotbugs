@@ -166,7 +166,7 @@ public class EclipseNullReferenceTestCases {
 //	test0013_field_with_method_call
 	static class DoNotReport5 { 
 		static class X {
-			static Object o;
+			Object o;
 			void foo() {
 				o = null;
 				bar();
@@ -1685,7 +1685,7 @@ public class EclipseNullReferenceTestCases {
 	}
 
 //	test0411_while_nested
-	static class DoNotReport47 { 
+	static class ReportAnyway47 { 
 		static class X {
 			void foo() {
 				Object o = null,
@@ -1695,7 +1695,7 @@ public class EclipseNullReferenceTestCases {
 					if (v == null) {
 						o = new Object();
 					};
-					while (o == null) {
+					while (o == null) { // we never exit this loop; o is always null
 						if (u == null) {
 							v = null;
 						};
@@ -4044,7 +4044,7 @@ public class EclipseNullReferenceTestCases {
 	}
 
 //	_test0900_non_null_protection_tag
-	static class DoNotReport109 { 
+	static class ReportAnyway109 { 
 		static class X {
 			void foo(Object o) {
 				boolean b = o != null;
@@ -4056,7 +4056,7 @@ public class EclipseNullReferenceTestCases {
 	}
 
 //	_test0901_non_null_protection_tag
-	static class DoNotReport110 { 
+	static class ReportAnyway110 { 
 		static class X {
 			void foo(Object o, boolean b) {
 				if (b) {
@@ -4084,7 +4084,7 @@ public class EclipseNullReferenceTestCases {
 	}
 
 //	_test0902_non_null_protection_tag
-	static class DoNotReport111 { 
+	static class ReportAnyway111 { 
 		static class X {
 			void foo(Object o, boolean b) {
 				if (b) {
@@ -4315,7 +4315,7 @@ public class EclipseNullReferenceTestCases {
 	}
 
 //	_test0950_nullable_tag
-	static class DoNotReport114 { 
+	static class ReportAnyway114 { 
 		static class X {
 			void foo(@CheckForNull Object o) {
 				o.toString();
@@ -4325,7 +4325,7 @@ public class EclipseNullReferenceTestCases {
 	}
 
 //	_test0951_nullable_tag
-	static class DoNotReport115 { 
+	static class ReportAnyway115 { 
 		static class X {
 			void foo( @CheckForNull  Object o) {
 				Object l = o;
