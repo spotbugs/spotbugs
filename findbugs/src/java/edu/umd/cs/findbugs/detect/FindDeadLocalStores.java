@@ -177,15 +177,15 @@ public class FindDeadLocalStores implements Detector {
 		// of local variables.
 		countLocalStoresLoadsAndIncrements(
 				localStoreCount, localLoadCount, localIncrementCount, cfg);
-		
+		BugInstance pendingBugReportAboutOverwrittenParameter = null;
+		try {
+	
 		// Scan method for
 		// - dead stores
 		// - stores to parameters that are dead upon entry to the method
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext(); ) {
 			Location location = i.next();
 			
-			BugInstance pendingBugReportAboutOverwrittenParameter = null;
-			try {
 			WarningPropertySet propertySet = new WarningPropertySet();
 			// Skip any instruction which is not a store
 			if (!isStore(location))
@@ -214,6 +214,8 @@ public class FindDeadLocalStores implements Detector {
 			
 				
 				// TODO: add warning properties?
+				if (pendingBugReportAboutOverwrittenParameter != null)
+					bugReporter.reportBug(pendingBugReportAboutOverwrittenParameter);
 				pendingBugReportAboutOverwrittenParameter = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN", NORMAL_PRIORITY)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
 					.add(lvAnnotation)
@@ -308,8 +310,12 @@ public class FindDeadLocalStores implements Detector {
 			}
 			
 			if (parameterThatIsDeadAtEntry) {
+				
 				propertySet.addProperty(DeadLocalStoreProperty.PARAM_DEAD_ON_ENTRY);
-				pendingBugReportAboutOverwrittenParameter.setPriority(Detector.HIGH_PRIORITY);
+				if (pendingBugReportAboutOverwrittenParameter == null)
+					System.out.println("huh");
+				else 
+					pendingBugReportAboutOverwrittenParameter.setPriority(Detector.HIGH_PRIORITY);
 			}
 
 			if (localStoreCount[local] > 3) 
@@ -352,10 +358,11 @@ public class FindDeadLocalStores implements Detector {
 				}
 				accumulator.accumulateBug(bugInstance, sourceLineAnnotation);
 			}
-			} finally {
-				if (pendingBugReportAboutOverwrittenParameter  != null) 
-					bugReporter.reportBug(pendingBugReportAboutOverwrittenParameter);
-			}
+			
+		}
+		} finally {
+			if (pendingBugReportAboutOverwrittenParameter  != null) 
+				bugReporter.reportBug(pendingBugReportAboutOverwrittenParameter);
 		}
 		accumulator.reportAccumulatedBugs();
 	}
