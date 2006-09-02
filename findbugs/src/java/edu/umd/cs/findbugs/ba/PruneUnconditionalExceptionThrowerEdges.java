@@ -96,7 +96,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				if (className.startsWith("["))
 					continue;
 				String methodSig = inv.getSignature(cpg);
-				if (false && !methodSig.endsWith("V")) 
+				if (!methodSig.endsWith("V")) 
 					continue;
 				
 				XMethod xMethod = XFactory.createXMethod(inv, cpg);
@@ -110,8 +110,9 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				Method method = classAndMethod.getMethod();
 				if (DEBUG) System.out.println("\tFound " + xMethod);
 		
-				if (false && !(method.isStatic() || method.isPrivate() || method.isFinal() || javaClass.isFinal() || !subtypes.hasSubtypes(javaClass)))
-					continue;
+				if (!(method.isStatic() || method.isPrivate() || method.isFinal() || javaClass.isFinal() || !subtypes.hasSubtypes(javaClass))) {
+					if (!Repository.instanceOf(methodGen.getClassName(), javaClass)) continue;
+				}
 				
 				// Ignore abstract and native methods
 				if (method.getCode() == null) continue;
