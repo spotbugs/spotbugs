@@ -24,8 +24,9 @@ public class ClassWarningSuppressor extends WarningSuppressor {
 
 	 ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
 	 if (DEBUG) System.out.println("Compare " + primaryClassAnnotation + " with " + clazz);
-
-	return primaryClassAnnotation.equals(clazz);
+	 
+	return clazz.contains(primaryClassAnnotation);
+	
 	}
 }
 	

@@ -45,7 +45,7 @@ public class SuppressionMatcher implements Matcher {
 		}
 		
 	public void addSuppressor(ClassWarningSuppressor suppressor) {
-		ClassAnnotation clazz = suppressor.getClassAnnotation();
+		ClassAnnotation clazz = suppressor.getClassAnnotation().getTopLevelClass();
 		Collection<WarningSuppressor> c =  suppressedWarnings.get(clazz);
 		if (c == null) {
 			c = new LinkedList<WarningSuppressor>();
@@ -57,7 +57,7 @@ public class SuppressionMatcher implements Matcher {
 		return count;
 		}
 	public boolean match(BugInstance b) {
-		ClassAnnotation clazz = b.getPrimaryClass();
+		ClassAnnotation clazz = b.getPrimaryClass().getTopLevelClass();
 		Collection<WarningSuppressor> c = suppressedWarnings.get(clazz);
 		if (c != null) 
 		for(WarningSuppressor w : c) 

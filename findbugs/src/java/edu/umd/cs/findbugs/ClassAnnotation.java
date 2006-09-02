@@ -83,6 +83,15 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 		return className.equals(other.className);
 	}
 
+	public boolean contains(ClassAnnotation other) {
+			return other.className.startsWith(className);
+	}
+	public ClassAnnotation getTopLevelClass() {
+		int firstDollar = className.indexOf('$');
+		if (firstDollar == -1) return this;
+		return new ClassAnnotation(className.substring(0,firstDollar));
+		
+	}
 	public int compareTo(BugAnnotation o) {
 		if (!(o instanceof ClassAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
 			return this.getClass().getName().compareTo(o.getClass().getName());
