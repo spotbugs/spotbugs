@@ -120,7 +120,7 @@ public class AssertionMethods implements Constants {
 					}
 
 					if (isUserAssertionMethod(className, methodName) ||
-							className.endsWith("Assert") && methodName.equals("isLegal") || 
+							className.endsWith("Assert") && methodName.startsWith("is") || 
 					        voidReturnType &&  // comment this out for now
 					        (classNameLC.indexOf("assert") >= 0 ||
 					        methodNameLC.startsWith("throw") ||

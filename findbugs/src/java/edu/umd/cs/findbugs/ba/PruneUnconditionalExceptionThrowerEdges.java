@@ -102,7 +102,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				XMethod xMethod = XFactory.createXMethod(inv, cpg);
 				JavaClass javaClass = Repository.lookupClass(xMethod.getClassName());
 				
-				JavaClassAndMethod classAndMethod = Hierarchy.findMethod(javaClass, xMethod.getName(), xMethod.getSignature(), Hierarchy.ANY_METHOD);
+				JavaClassAndMethod classAndMethod = Hierarchy.findMethod(javaClass, xMethod.getName(), xMethod.getSignature(), Hierarchy.CONCRETE_METHOD);
 				if (classAndMethod == null) {
 					if (DEBUG) System.out.println("\tNOT FOUND");
 					continue;
@@ -110,7 +110,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				Method method = classAndMethod.getMethod();
 				if (DEBUG) System.out.println("\tFound " + xMethod);
 		
-				if (!(method.isStatic() || method.isPrivate() || method.isFinal() || javaClass.isFinal() || !subtypes.hasSubtypes(javaClass)))
+				if (false && !(method.isStatic() || method.isPrivate() || method.isFinal() || javaClass.isFinal() || !subtypes.hasSubtypes(javaClass)))
 					continue;
 				
 				// Ignore abstract and native methods
