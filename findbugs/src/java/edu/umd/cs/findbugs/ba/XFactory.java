@@ -274,7 +274,12 @@ public  class XFactory {
 				visitor.getSigConstantOperand(),
 				 visitor.getRefFieldIsStatic());			
 	}
-	
+	public static XMethod createReferencedXMethod(DismantleBytecode visitor) {
+		return createXMethod(visitor.getDottedClassConstantOperand(),
+				visitor.getNameConstantOperand(),
+				visitor.getSigConstantOperand(),
+				 visitor.getOpcode() == Constants.INVOKESTATIC);			
+	}
 
 	public static XField createXField(FieldAnnotation f) {
 		return createXField(f.getClassName(), f.getFieldName(), f.getFieldSignature(), f.isStatic());

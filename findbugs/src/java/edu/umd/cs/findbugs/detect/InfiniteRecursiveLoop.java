@@ -30,6 +30,8 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements 
 		StatelessDetector {
@@ -119,22 +121,22 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 		if ((seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKEINTERFACE || seen == INVOKESTATIC)
 				&& getNameConstantOperand().equals(getMethodName())
 				&& getSigConstantOperand().equals(getMethodSig())
-				&& ((seen == INVOKESTATIC) == getMethod().isStatic())
+				&& (seen == INVOKESTATIC) == getMethod().isStatic()
+				&& (seen == INVOKESPECIAL) == getMethod().isPrivate()
 				) {
 			Type arguments[] = getMethod().getArgumentTypes();
 				// stack.getStackDepth() >= parameters
 			int parameters = arguments.length;
 			if (!getMethod().isStatic()) parameters++;
+			XMethod xMethod = XFactory.createReferencedXMethod(this);
 			if (DEBUG) {
 				System.out.println("IL: Checking...");
-				System.out.println(getClassConstantOperand() + "." + getNameConstantOperand()
-						+ " : " + getSigConstantOperand());
+				System.out.println(xMethod);
 				System.out.println("vs. " + getClassName() + "." + getMethodName() + " : "
 						+ getMethodSig());
 			
 			}
-			if (getClassConstantOperand().equals(getClassName()) || seen == INVOKEVIRTUAL
-					|| seen == INVOKEINTERFACE) {
+			if (xMethod.getClassName().equals(getClassName()) || seen == INVOKEINTERFACE) {
 				// Invocation of same method
 				// Now need to see if parameters are the same
 				int firstParameter = 0;
@@ -183,6 +185,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 						System.out.println("IL: " + sameMethod + " " + match1 + " " + match2 + " " + match3);
 					int priority = HIGH_PRIORITY;
 					if (!match1 && !match2 && seenThrow) priority = NORMAL_PRIORITY;
+					if (seen == INVOKEINTERFACE) priority = NORMAL_PRIORITY;
 					bugReporter.reportBug(new BugInstance(this, "IL_INFINITE_RECURSIVE_LOOP",
 							HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(this));
 				}
