@@ -709,7 +709,7 @@
   <BugPattern abbrev="Nm" type="NM_LCASE_HASHCODE" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_LCASE_TOSTRING" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_BAD_EQUAL" category="BAD_PRACTICE"/>
-  <BugPattern abbrev="IA" type="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD" category="CORRECTNESS"/>
+  <BugPattern abbrev="IA" type="IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD" category="STYLE"/>
   <BugPattern abbrev="Nm" type="NM_CLASS_NOT_EXCEPTION" category="STYLE"/>
   <BugPattern abbrev="RR" type="RR_NOT_CHECKED" category="BAD_PRACTICE" />
   <BugPattern abbrev="RR" type="SR_NOT_CHECKED" category="BAD_PRACTICE" />
