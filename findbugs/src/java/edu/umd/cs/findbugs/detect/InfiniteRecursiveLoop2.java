@@ -64,7 +64,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @author Bill Pugh
  * @author David Hovemeyer	
  */
-public class InfiniteRecursiveLoop2 implements Detector {
+public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("irl.debug");
 	private static final String IRL_METHOD = SystemProperties.getProperty("irl.method");
 	
