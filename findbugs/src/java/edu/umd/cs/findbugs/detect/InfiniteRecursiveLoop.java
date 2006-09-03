@@ -122,7 +122,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 				&& getNameConstantOperand().equals(getMethodName())
 				&& getSigConstantOperand().equals(getMethodSig())
 				&& (seen == INVOKESTATIC) == getMethod().isStatic()
-				&& (seen == INVOKESPECIAL) == getMethod().isPrivate()
+				&& (seen == INVOKESPECIAL) == (getMethod().isPrivate() || getMethodName().equals("<init>"))
 				) {
 			Type arguments[] = getMethod().getArgumentTypes();
 				// stack.getStackDepth() >= parameters
@@ -136,7 +136,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 						+ getMethodSig());
 			
 			}
-			if (xMethod.getClassName().equals(getClassName()) || seen == INVOKEINTERFACE) {
+			if (xMethod.getClassName().replace('.','/').equals(getClassName()) || seen == INVOKEINTERFACE) {
 				// Invocation of same method
 				// Now need to see if parameters are the same
 				int firstParameter = 0;
