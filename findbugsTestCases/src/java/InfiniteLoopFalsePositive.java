@@ -3,9 +3,18 @@ import java.util.Set;
 
 
 public class InfiniteLoopFalsePositive {
+	
+	private int f() {
+		if (this instanceof InnerClass) 
+			return ((InnerClass)this).f();
+		return 17;
+	}
 	static class InnerClass extends InfiniteLoopFalsePositive {
 		@Override
 		public int x() {
+			return 42;
+		}
+		public int f() {
 			return 42;
 		}
 	}
