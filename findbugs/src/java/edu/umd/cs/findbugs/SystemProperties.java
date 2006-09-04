@@ -40,7 +40,9 @@ public class SystemProperties {
 	public static boolean getBoolean(String name, boolean defaultValue) {
 		boolean result = defaultValue;
 		try {
-			result = toBoolean(System.getProperty(name));
+			String value = System.getProperty(name);
+			if (value == null) return defaultValue;
+			result = toBoolean(value);
 		} catch (IllegalArgumentException e) {
 		} catch (NullPointerException e) {
 		}
