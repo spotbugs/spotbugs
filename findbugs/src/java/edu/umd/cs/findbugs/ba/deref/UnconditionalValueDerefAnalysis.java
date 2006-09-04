@@ -77,6 +77,7 @@ public class UnconditionalValueDerefAnalysis extends
 	public static final boolean ASSUME_NONZERO_TRIP_LOOPS = SystemProperties.getBoolean("fnd.derefs.nonzerotrip");
 	public static final boolean IGNORE_DEREF_OF_NONNCP = 
 		SystemProperties.getBoolean("fnd.derefs.ignorenonNCP", true);
+
 	public static final boolean IGNORE_DEREF_OF_NONNULL = IGNORE_DEREF_OF_NONNCP 
 									|| SystemProperties.getBoolean("fnd.derefs.ignorenonnull");
 	public static final boolean CHECK_ANNOTATIONS = 
@@ -414,26 +415,41 @@ public class UnconditionalValueDerefAnalysis extends
 			ValueNumber v = vnaFrame.getValue(0);
 			if (v.equals(vn)) return;
 		}
-		
+		if (vn.getFlags() == ValueNumber.CONSTANT_CLASS_OBJECT) return;
+
+		IsNullValueFrame startFact = null;
+
+		if (invDataflow != null) {
+			startFact = invDataflow.getStartFact(fallThroughPredecessor);
+		}
+
 		// Ignore dereferences of values that are definitely non-null
 		if (IGNORE_DEREF_OF_NONNULL
 				&& invDataflow != null
-				&& isDerefOfNonNullValue(location, invDataflow.getStartFact(fallThroughPredecessor))) {
+				&& isDerefOfNonNullValue(location, startFact)) {
 			return;
 		}
+		
 		if (IGNORE_DEREF_OF_NONNCP
 				&& invDataflow != null
-				&& isDerefOfNullOnComplexPathValue(location, invDataflow.getStartFact(fallThroughPredecessor))) {
+				&& !isDerefOfNullOnComplexPathValue(location, startFact)) {
 			return;
 		}
-		if (vn.getFlags() == ValueNumber.CONSTANT_CLASS_OBJECT) return;
 		
 		if (DEBUG) {
 			System.out.println("FOUND GUARANTEED DEREFERENCE");
+			System.out.println("Load: " + vnaFrame.getLoad(vn));
+			System.out.println("Pred: " + fallThroughPredecessor);
+			System.out.println("startFact: " + startFact);
 			System.out.println("Location: " + location);
 			System.out.println("Value number frame: " + vnaFrame);
 			System.out.println("Dereferenced valueNumber: " + vn);
-			System.out.println("Load: " + vnaFrame.getLoad(vn));
+			System.out.println("invDataflow: " + startFact);
+			System.out.println("IGNORE_DEREF_OF_NONNCP: " + IGNORE_DEREF_OF_NONNCP);
+			System.out.println("IGNORE_DEREF_OF_NONNULL: " + IGNORE_DEREF_OF_NONNULL);
+			System.out.println("isNonNull: " + isDerefOfNonNullValue(location, startFact));
+			System.out.println("isDerefOfNullOnComplexPathValue: " + isDerefOfNullOnComplexPathValue(location, startFact));
+
 			
 		}
 		// Mark the value number as being dereferenced at this location
@@ -505,14 +521,14 @@ public class UnconditionalValueDerefAnalysis extends
 	 * 
 	 * @param invFrame an IsNullValueFrame
 	 * @param slot     slot in the frame
-	 * @return true if value in the slot is definitely non-null, false otherwise
+	 * @return true if value in the slot is null on a complicated path
 	 */
 	private boolean isNullOnComplexPath(IsNullValueFrame invFrame, int slot) {
 		if (invFrame == null || !invFrame.isValid()) {
 			return false;
 		}
 		IsNullValue value = invFrame.getValue(slot);
-		return !value.isNullOnComplicatedPath();
+		return value.isNullOnComplicatedPath();
 	}
 	/**
 	 * Return whether or not given instruction is an assertion.
