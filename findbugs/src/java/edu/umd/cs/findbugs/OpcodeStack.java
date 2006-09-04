@@ -1163,7 +1163,7 @@ public class OpcodeStack implements Constants2
 	 				pop();
 					signature = dbc.getClassConstantOperand();
 					if (!signature.startsWith("[")) {
-						signature = "L" + signature + ";";
+						signature = "[L" + signature + ";";
 					}
 	 				pushBySignature(signature);
 	 			break;
@@ -1175,7 +1175,11 @@ public class OpcodeStack implements Constants2
 	 				}
 					signature = dbc.getClassConstantOperand();
 					if (!signature.startsWith("[")) {
-						signature = "L" + signature + ";";
+						dims = dbc.getIntConstant();
+						signature = "";
+						while ((dims--) > 0)
+							signature += "[";
+						signature += "L" + signature + ";";
 					}
 					pushBySignature(signature);
 	 			break;
