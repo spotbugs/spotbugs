@@ -370,9 +370,7 @@ public class IsNullValueAnalysis
 							tmpFact = replaceValues(fact, tmpFact, decision.getValue(), prevVnaFrame,
 							        targetVnaFrame, decisionValue);
 							
-							if (trackValueNumbers) {
-								tmpFact.setKnownValue(decision.getValue(), decisionValue);
-							}
+							
 						}
 					}
 				}
@@ -642,6 +640,9 @@ public class IsNullValueAnalysis
 		final int targetNumSlots = targetVnaFrame.getNumSlots();
 		final int prefixNumSlots = Math.min(frame.getNumSlots(), prevVnaFrame.getNumSlots());
 
+		if (trackValueNumbers) {
+			frame.setKnownValue(replaceMe, replacementValue);
+		}
 		// Here's the deal:
 		// - "replaceMe" is the value number from the previous frame (at the if branch)
 		//   which indicates a value that we have updated is-null information about
