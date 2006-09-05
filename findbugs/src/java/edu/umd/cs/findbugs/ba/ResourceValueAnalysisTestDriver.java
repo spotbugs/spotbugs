@@ -69,7 +69,7 @@ public abstract class ResourceValueAnalysisTestDriver <Resource, ResourceTracker
 				}
 			}
 
-			if (creationInstruction == null) throw new IllegalArgumentException("No bytecode with offset " + offset);
+			if (creationInstruction == null || creationBlock == null) throw new IllegalArgumentException("No bytecode with offset " + offset);
 
 			final ResourceTrackerType resourceTracker = createResourceTracker(classContext, method);
 			final Resource resource =
