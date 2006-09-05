@@ -627,6 +627,10 @@ public class FindNullDeref
 		}
 		int pc = location.getHandle().getPosition();
 		BugAnnotation variable = findLocalVariable(location, valueNumber, vnaFrame);
+		if (variable instanceof FieldAnnotation) {
+			FieldAnnotation field = (FieldAnnotation) variable;
+			if (field.getFieldName().startsWith("class$")) return;
+		}
 		boolean duplicated = false;
 		try {
 			CFG cfg = classContext.getCFG(method);
@@ -864,6 +868,10 @@ public class FindNullDeref
 
 		ValueNumber valueNumber = vnaFrame.getInstance(ins, classContext.getConstantPoolGen());
 		variableAnnotation = findLocalVariable(location, valueNumber, vnaFrame);
+		if (variableAnnotation instanceof FieldAnnotation) {
+			FieldAnnotation field = (FieldAnnotation) variableAnnotation;
+			if (field.getFieldName().startsWith("class$")) return;
+		}
 			}
 		} catch (DataflowAnalysisException e) {
 			// ignore
@@ -956,6 +964,10 @@ public class FindNullDeref
 			if (variableAnnotation == null) for (Location loc : sortedDerefLocationSet) {
 				variableAnnotation = findLocalVariable(loc, refValue, vna.getFactAtLocation(loc));
 				if (variableAnnotation != null) break;
+			}
+			if (variableAnnotation instanceof FieldAnnotation) {
+				FieldAnnotation field = (FieldAnnotation) variableAnnotation;
+				if (field.getFieldName().startsWith("class$")) return;
 			}
 			
 		} catch (DataflowAnalysisException e) {
