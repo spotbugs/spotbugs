@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.generic.AALOAD;
 import org.apache.bcel.generic.ArrayInstruction;
 import org.apache.bcel.generic.CHECKCAST;
@@ -275,7 +276,7 @@ public class ValueNumberFrameModelingVisitor
 			String fieldSig = obj.getSignature(cpg);
 
 			// Is this an access of a Class object?
-			if (false && fieldName.startsWith("class$") && fieldSig.equals("Ljava/lang/Class;")) {
+			if (fieldName.startsWith("class$") && fieldSig.equals("Ljava/lang/Class;")) {
 				String className = fieldName.substring("class$".length()).replace('$', '.');
 				if (RLE_DEBUG) System.out.println("[found load of class object " + className + "]");
 				ValueNumber value = getClassObjectValue(className);
@@ -320,7 +321,7 @@ public class ValueNumberFrameModelingVisitor
 			String methodName = obj.getName(cpg);
 			String methodSig = obj.getSignature(cpg);
 
-			if (false && methodName.equals("class$") && methodSig.equals("(Ljava/lang/String;)Ljava/lang/Class;")) {
+			if (methodName.equals("class$") && methodSig.equals("(Ljava/lang/String;)Ljava/lang/Class;")) {
 				// Access of a Class object
 				ValueNumberFrame frame = getFrame();
 				try {
@@ -424,22 +425,27 @@ public class ValueNumberFrameModelingVisitor
 		handleNormalInstruction(obj);
 	}
 
-	// TODO: handle LDC of Class
 	@Override
 	public void visitLDC(LDC obj) {
 		Object constantValue = obj.getValue(cpg);
-		ValueNumber value = constantValueMap.get(constantValue);
-		if (value == null) {
-			value = factory.createFreshValue();
-			constantValueMap.put(constantValue, value);
+		ValueNumber value;
+		if (constantValue instanceof ConstantClass) {
+			ConstantClass constantClass = (ConstantClass) constantValue;
+			String className = constantClass.getBytes(cpg.getConstantPool());
+			value = getClassObjectValue(className);
+		} else {
+			value = constantValueMap.get(constantValue);
+			if (value == null) {
+				value = factory.createFreshValue();
+				constantValueMap.put(constantValue, value);
 
-			// Keep track of String constants
+				// Keep track of String constants
 
-			if (constantValue instanceof String) {
-				stringConstantMap.put(value, (String) constantValue);
+				if (constantValue instanceof String) {
+					stringConstantMap.put(value, (String) constantValue);
+				}
 			}
 		}
-
 		getFrame().pushValue(value);
 	}
 	
@@ -718,7 +724,9 @@ public class ValueNumberFrameModelingVisitor
 	 *
 	 * @param className the class
 	 */
-	private ValueNumber getClassObjectValue(String className) {
+	public ValueNumber getClassObjectValue(String className) {
+		// TODO: Check to see if we need to do this
+		className = className.replace('/','.');
 		ValueNumber value = classObjectValueMap.get(className);
 		if (value == null) {
 			value = factory.createFreshValue();

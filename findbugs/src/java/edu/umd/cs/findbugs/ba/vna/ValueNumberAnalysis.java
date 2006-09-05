@@ -96,7 +96,9 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		if (DEBUG) System.out.println("VNA Analysis " + methodGen.getClassName() + "." + methodGen.getName() + " : " + methodGen.getSignature());
 		
 	}
-	
+	public ValueNumber getClassObjectValue(String className) {
+		return visitor.getClassObjectValue(className);
+	}
 	public void setMergeTree(MergeTree mergeTree) {
 		this.mergeTree = mergeTree;
 	}

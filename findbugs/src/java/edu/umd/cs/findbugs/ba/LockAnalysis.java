@@ -68,15 +68,14 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 	}
 
 	public void initEntryFact(LockSet result) {
-		// FIXME: we don't try to do anything for static methods at the moment,
-		// because we don't yet have a way of figuring out when a Class object
-		// is loaded as a value.
- 
 		result.clear();
 		result.setDefaultLockCount(0);
 
 		if (isSynchronized && !isStatic) {
 			ValueNumber thisValue = vna.getThisValue();
+			result.setLockCount(thisValue.getNumber(), 1);
+		} else if (isSynchronized && isStatic) {
+			ValueNumber thisValue = vna.getClassObjectValue(methodGen.getClassName());
 			result.setLockCount(thisValue.getNumber(), 1);
 		}
 	}
