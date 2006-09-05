@@ -620,6 +620,7 @@ public class FindNullDeref
 
 	public void foundNullDeref(ClassContext classContext, Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame) {
 		WarningPropertySet propertySet = new WarningPropertySet();
+		if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) return;
 		
 		boolean onExceptionPath = refValue.isException();
 		if (onExceptionPath) {
@@ -627,10 +628,7 @@ public class FindNullDeref
 		}
 		int pc = location.getHandle().getPosition();
 		BugAnnotation variable = findLocalVariable(location, valueNumber, vnaFrame);
-		if (variable instanceof FieldAnnotation) {
-			FieldAnnotation field = (FieldAnnotation) variable;
-			if (field.getFieldName().startsWith("class$")) return;
-		}
+		
 		boolean duplicated = false;
 		try {
 			CFG cfg = classContext.getCFG(method);
@@ -867,11 +865,9 @@ public class FindNullDeref
 		Instruction ins = location.getHandle().getInstruction();
 
 		ValueNumber valueNumber = vnaFrame.getInstance(ins, classContext.getConstantPoolGen());
+		if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) return;
 		variableAnnotation = findLocalVariable(location, valueNumber, vnaFrame);
-		if (variableAnnotation instanceof FieldAnnotation) {
-			FieldAnnotation field = (FieldAnnotation) variableAnnotation;
-			if (field.getFieldName().startsWith("class$")) return;
-		}
+
 			}
 		} catch (DataflowAnalysisException e) {
 			// ignore
@@ -926,6 +922,8 @@ public class FindNullDeref
 			@NonNull Set<Location> derefLocationSet,
 			SortedSet<Location> doomedLocations,
 			ValueNumberDataflow vna, ValueNumber refValue, boolean alwaysOnExceptionPath, boolean npeIfStatementCovered) {
+		if (refValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) return;
+		
 		if (DEBUG) {
 			System.out.println("Found guaranteed null deref in " + method.getName());
 			for(Location loc : doomedLocations)
@@ -965,10 +963,7 @@ public class FindNullDeref
 				variableAnnotation = findLocalVariable(loc, refValue, vna.getFactAtLocation(loc));
 				if (variableAnnotation != null) break;
 			}
-			if (variableAnnotation instanceof FieldAnnotation) {
-				FieldAnnotation field = (FieldAnnotation) variableAnnotation;
-				if (field.getFieldName().startsWith("class$")) return;
-			}
+			
 			
 		} catch (DataflowAnalysisException e) {
 		}
