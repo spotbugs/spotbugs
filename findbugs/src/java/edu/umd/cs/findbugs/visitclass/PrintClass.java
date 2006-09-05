@@ -100,7 +100,7 @@ public class PrintClass {
 				ZipFile z = new ZipFile(zip_file);
 				TreeSet<ZipEntry> zipEntries = new TreeSet<ZipEntry>(
 						new ZipEntryComparator());
-				for (Enumeration<ZipEntry> e = (Enumeration<ZipEntry>) z
+				for (Enumeration<? extends ZipEntry> e =  z
 						.entries(); e.hasMoreElements();)
 					zipEntries.add(e.nextElement());
 
