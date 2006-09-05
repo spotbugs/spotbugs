@@ -56,6 +56,17 @@ public class BadThingsToDoWithSignedBytes {
 		return b == 100 || b == 200;
 	}
 
+	long getPosByteDoNotReport(int pos) {
+
+		long result = 0;
+		for(int i = pos; i < pos+8; i++) {
+
+			int b = buf[pos];
+			if (b >= 0) result = result << 8 | b;
+			else result = result << 8 | (256 + b);
+		}
+		return result;
+	}
 	boolean isHundred2(int pos) {
 		int b = buf[pos];
 		switch (b) {
