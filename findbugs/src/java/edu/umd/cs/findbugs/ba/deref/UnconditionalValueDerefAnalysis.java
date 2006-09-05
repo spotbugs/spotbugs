@@ -415,7 +415,7 @@ public class UnconditionalValueDerefAnalysis extends
 			ValueNumber v = vnaFrame.getValue(0);
 			if (v.equals(vn)) return;
 		}
-		if (vn.getFlags() == ValueNumber.CONSTANT_CLASS_OBJECT) return;
+		if (vn.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) return;
 
 		IsNullValueFrame startFact = null;
 
