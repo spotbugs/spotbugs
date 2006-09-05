@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DFSEdgeTypes;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowTestDriver;
+import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
@@ -69,11 +70,12 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 	
 	public UnconditionalDerefAnalysis(
 			ReverseDepthFirstSearch rdfs,
+			DepthFirstSearch dfs,
 			CFG cfg,
 			MethodGen methodGen,
 			ValueNumberDataflow vnaDataflow,
 			TypeDataflow typeDataflow) {
-		super(rdfs, null);
+		super(rdfs, dfs);
 		this.cfg = cfg;
 		this.methodGen = methodGen;
 		//this.typeDataflow = typeDataflow;

@@ -796,6 +796,7 @@ public class ClassContext {
 	
 				UnconditionalDerefAnalysis analysis = new UnconditionalDerefAnalysis(
 						getReverseDepthFirstSearch(method),
+						getDepthFirstSearch(method),
 						cfg,
 						methodGen,
 						getValueNumberDataflow(method),

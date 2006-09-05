@@ -284,12 +284,13 @@ public class NullDerefAndRedundantComparisonFinder {
 					continue;
 				}
 				
-			}
+
 			checkForUnconditionallyDereferencedNullValues(
 					location,
 					bugLocationMap,
 					nullValueGuaranteedDerefMap,
 					vnaFact, invFact, uvdFact);
+			}
 		}
 		//	For each value number that is null somewhere in the
 		// method, collect the set of locations where it becomes null.

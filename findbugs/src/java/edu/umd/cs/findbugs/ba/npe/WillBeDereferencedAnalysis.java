@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.ba.BackwardDataflowAnalysis;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.DepthFirstSearch;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
@@ -60,11 +61,12 @@ public @Deprecated class WillBeDereferencedAnalysis extends BackwardDataflowAnal
 	
 	public WillBeDereferencedAnalysis(
 			ReverseDepthFirstSearch rdfs,
+			DepthFirstSearch dfs,
 			CFG cfg,
 			MethodGen methodGen,
 			ValueNumberDataflow vnaDataflow,
 			TypeDataflow typeDataflow) {
-		super(rdfs, null);
+		super(rdfs, dfs);
 		this.cfg = cfg;
 		this.methodGen = methodGen;
 		//this.typeDataflow = typeDataflow;
