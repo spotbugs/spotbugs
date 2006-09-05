@@ -186,12 +186,12 @@ public class DumbMethods extends BytecodeScanningDetector  {
 			int special = item0.getSpecialKind();
 			if (special == OpcodeStack.Item.RANDOM_INT) 
 				bugReporter.reportBug(new BugInstance(this, "RV_ABSOLUTE_VALUE_OF_RANDOM_INT", 
-						 NORMAL_PRIORITY)
+						 HIGH_PRIORITY)
 					.addClassAndMethod(this)
 					.addSourceLine(this));
 			else if (special == OpcodeStack.Item.HASHCODE_INT)
 				bugReporter.reportBug(new BugInstance(this, "RV_ABSOLUTE_VALUE_OF_HASHCODE", 
-						 NORMAL_PRIORITY)
+						HIGH_PRIORITY)
 					.addClassAndMethod(this)
 					.addSourceLine(this));
 		}
@@ -209,7 +209,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 						.addSourceLine(this);
 						}
 			else if (special == OpcodeStack.Item.HASHCODE_INT) {
-				pendingRemOfRandomIntBug = new BugInstance(this, "RV_REM_OF_HASHCODE", NORMAL_PRIORITY)
+				pendingRemOfRandomIntBug = new BugInstance(this, "RV_REM_OF_HASHCODE", HIGH_PRIORITY)
 			.addClassAndMethod(this)
 			.addSourceLine(this);
 			}
