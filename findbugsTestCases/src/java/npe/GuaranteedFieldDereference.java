@@ -76,7 +76,7 @@ public class GuaranteedFieldDereference {
 	}
 	
 	
-	int test8Report( boolean b1, boolean b2) {
+	int test8ReportMaybe( boolean b1, boolean b2) {
 		int result = 0;
 		Object y = null;
 		if (b1) y = new Object();

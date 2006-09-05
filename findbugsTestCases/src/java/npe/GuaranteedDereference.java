@@ -67,7 +67,7 @@ public class GuaranteedDereference {
 	}
 	
 	
-	int test8Report(Object x, boolean b1, boolean b2) {
+	int test8ReportMaybe(Object x, boolean b1, boolean b2) {
 		int result = 0;
 		Object y = null;
 		if (b1) y = new Object();

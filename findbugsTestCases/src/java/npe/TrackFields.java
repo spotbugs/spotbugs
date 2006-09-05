@@ -25,11 +25,8 @@ class TrackFields {
         return x.hashCode();
         }
     
-    static Object y;
+    public static Object y;
     
-    static void setY(Object obj) {
-    	y = obj;
-    }
     
     int f3() {
     	// Like f, but with a static field

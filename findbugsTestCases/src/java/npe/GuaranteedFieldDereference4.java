@@ -2,10 +2,10 @@ package npe;
 
 public class GuaranteedFieldDereference4 {
 	static class Node {
-		Object value;
-		Node next;
+		public Object value;
+		public Node next;
 	}
-	Node propertyListTail, propertyListHead;
+	public Node propertyListTail, propertyListHead;
 	
 		 void falsePositive(Node prop) {
 			if (propertyListTail != null) {
