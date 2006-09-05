@@ -275,7 +275,7 @@ public class ValueNumberFrameModelingVisitor
 			String fieldSig = obj.getSignature(cpg);
 
 			// Is this an access of a Class object?
-			if (fieldName.startsWith("class$") && fieldSig.equals("Ljava/lang/Class;")) {
+			if (false && fieldName.startsWith("class$") && fieldSig.equals("Ljava/lang/Class;")) {
 				String className = fieldName.substring("class$".length()).replace('$', '.');
 				if (RLE_DEBUG) System.out.println("[found load of class object " + className + "]");
 				ValueNumber value = getClassObjectValue(className);
@@ -320,7 +320,7 @@ public class ValueNumberFrameModelingVisitor
 			String methodName = obj.getName(cpg);
 			String methodSig = obj.getSignature(cpg);
 
-			if (methodName.equals("class$") && methodSig.equals("(Ljava/lang/String;)Ljava/lang/Class;")) {
+			if (false && methodName.equals("class$") && methodSig.equals("(Ljava/lang/String;)Ljava/lang/Class;")) {
 				// Access of a Class object
 				ValueNumberFrame frame = getFrame();
 				try {
