@@ -86,4 +86,26 @@ public class DeadStore {
 		d = hashCode();
 		return e;
 	}
+
+	
+	public enum StateEnum { OK, TIMEDOUT, KILLED, FAILED, OTHER }
+	public StateEnum mutateStatusDoNotReport(StateEnum st) {
+		return st;
+	}
+	/** possible false+ reported by Kelly O'Hair */
+	void setFailedState(StateEnum orig /*BuildTargetStatus status*/) {
+		StateEnum id = mutateStatusDoNotReport(orig); //status.getState().id();
+		switch ( id ) {
+			case TIMEDOUT:
+			case KILLED:
+			case FAILED:
+					break;
+			default:
+					System.out.println(orig+" -> "+id); //setState(status, new StateID(StateEnum.FAILED));
+					break;
+	        }
+	    }
+
+	
+
 }
