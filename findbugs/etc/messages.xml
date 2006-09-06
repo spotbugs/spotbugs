@@ -1530,8 +1530,8 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   </BugPattern>
 
   <BugPattern type="DM_STRING_CTOR">
-    <ShortDescription>Method invokes dubious new String(String) constructor; just use the argument</ShortDescription>
-    <LongDescription>{1} invokes dubious new String(String) constructor; just use the argument</LongDescription>
+    <ShortDescription>Method invokes inefficient new String(String) constructor; just use the argument</ShortDescription>
+    <LongDescription>{1} invokes inefficient new String(String) constructor; just use the argument</LongDescription>
     <Details>
 <![CDATA[
   <p> Using the <code>java.lang.String(String)</code> constructor wastes memory
@@ -1544,8 +1544,8 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
 
 
   <BugPattern type="DM_STRING_VOID_CTOR">
-    <ShortDescription>Method invokes dubious new String() constructor; just use ""</ShortDescription>
-    <LongDescription>{1} invokes dubious new String() constructor; just use ""</LongDescription>
+    <ShortDescription>Method invokes inefficient new String() constructor; just use ""</ShortDescription>
+    <LongDescription>{1} invokes inefficient new String() constructor; just use ""</LongDescription>
     <Details>
 <![CDATA[
   <p> Creating a new <code>java.lang.String</code> object using the
@@ -1583,8 +1583,8 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
     </Details>
   </BugPattern>
   <BugPattern type="DM_BOOLEAN_CTOR">
-    <ShortDescription>Method invokes dubious Boolean constructor; use Boolean.valueOf(...) instead</ShortDescription>
-    <LongDescription>{1} invokes dubious Boolean constructor; use Boolean.valueOf(...) instead</LongDescription>
+    <ShortDescription>Method invokes inefficient Boolean constructor; use Boolean.valueOf(...) instead</ShortDescription>
+    <LongDescription>{1} invokes inefficient Boolean constructor; use Boolean.valueOf(...) instead</LongDescription>
     <Details>
 <![CDATA[
   <p> Creating new instances of <code>java.lang.Boolean</code> wastes
@@ -1596,8 +1596,8 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   </BugPattern>
 
   <BugPattern type="DM_NUMBER_CTOR">
-    <ShortDescription>Method invokes dubious Number constructor; use static valueOf instead</ShortDescription>
-    <LongDescription>Method {1} invokes dubious {3} constructor; use {4} instead</LongDescription>
+    <ShortDescription>Method invokes inefficient Number constructor; use static valueOf instead</ShortDescription>
+    <LongDescription>Method {1} invokes inefficient {3} constructor; use {4} instead</LongDescription>
     <Details>
       <![CDATA[
       <p>
@@ -1619,7 +1619,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
     </Details>
   </BugPattern>
   <BugPattern type="DM_FP_NUMBER_CTOR">
-    <ShortDescription>Method invokes dubious floating-point Number constructor; use static valueOf instead</ShortDescription>
+    <ShortDescription>Method invokes inefficient floating-point Number constructor; use static valueOf instead</ShortDescription>
     <LongDescription>Method {1} invokes dubious {3} constructor; use {4} instead</LongDescription>
     <Details>
       <![CDATA[
