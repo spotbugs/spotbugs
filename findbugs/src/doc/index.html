@@ -58,7 +58,17 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
 <p>Changes since verson 1.0.0:</p>
 
 <ul>
-
+<li> This is a preliminary release.
+     Subsequent releases will more extensively document changes in this space.
+     For now
+     <ul><li>FindNullDerefs reports null values that are guaranteed to be dereferenced (except on -effort:min)</li>
+         <li>Prelimary support for detectors using the <a href="http://asm.objectweb.org/">ASM</a> bytecode framework.
+             You may experiment with writing ASM-based detectors, but beware the API may still change
+             (which could possibly also affect BCEL-based detectors).
+         </li>
+         <li>Bug categories (CORRECTNESS, MT_CORRECTNESS, etc.) are no longer hard-coded.</li>
+         </ul>
+<!--
 <li> General improvements
 	<ul>
 	<li>Support for detectors using the <a href="http://asm.objectweb.org/">ASM</a> bytecode framework</li>
@@ -82,7 +92,7 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
     <li>TODO: document eclipse plugin changes</li>
     </ul>
 </li>
-<!--
+
 <li>Bug priority changes
     <ul><li></li>
         <li></li>
@@ -91,7 +101,7 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
     <ul><li></li>
         <li></li>
     </ul></li>
--->
+
 <li>Updated test case files
     <ul>
     	<li>TODO: document updated test cases</li>
@@ -99,6 +109,7 @@ Send your comments to <a href="mailto:bassclar@users.sourceforge.net">bassclar@u
 </li>
 
 <li>TODO: update bug fixes</li>
+-->
 </ul>
 
 <p> <a href="Changes.html">Older versions...</a></p>

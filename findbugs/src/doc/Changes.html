@@ -15,6 +15,21 @@
 
 <h1>FindBugs Change Log</h1>
 	
+<p>Changes since verson 1.0.0:</p>
+
+<ul>
+<li> This is a preliminary release.
+     Subsequent releases will more extensively document changes in this space.
+     For now
+     <ul><li>FindNullDerefs reports null values that are guaranteed to be dereferenced (except on -effort:min)</li>
+         <li>Prelimary support for detectors using the <a href="http://asm.objectweb.org/">ASM</a> bytecode framework.
+             You may experiment with writing ASM-based detectors, but beware the API may still change
+             (which could possibly also affect BCEL-based detectors).
+         </li>
+         <li>Bug categories (CORRECTNESS, MT_CORRECTNESS, etc.) are no longer hard-coded.</li>
+         </ul>
+</ul>
+
 <p>Changes since verson 0.9.7:</p>
 
 <ul>
