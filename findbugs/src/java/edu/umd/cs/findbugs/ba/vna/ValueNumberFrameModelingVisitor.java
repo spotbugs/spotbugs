@@ -268,22 +268,24 @@ public class ValueNumberFrameModelingVisitor
 
 	@Override
 	public void visitGETSTATIC(GETSTATIC obj) {
+		ConstantPoolGen cpg = getCPG();
+
+		String fieldName = obj.getName(cpg);
+		String fieldSig = obj.getSignature(cpg);
+		ValueNumberFrame frame = getFrame();
+
+		if (RLE_DEBUG) {
+			System.out.println("GETSTATIC of " + fieldName + " : " + fieldSig);
+		}
+		// Is this an access of a Class object?
+		if (fieldName.startsWith("class$") && fieldSig.equals("Ljava/lang/Class;")) {
+			String className = fieldName.substring("class$".length()).replace('$', '.');
+			if (RLE_DEBUG) System.out.println("[found load of class object " + className + "]");
+			ValueNumber value = getClassObjectValue(className);
+			frame.pushValue(value);
+			return;
+		}
 		if (doRedundantLoadElimination()) {
-			ValueNumberFrame frame = getFrame();
-			ConstantPoolGen cpg = getCPG();
-
-			String fieldName = obj.getName(cpg);
-			String fieldSig = obj.getSignature(cpg);
-
-			// Is this an access of a Class object?
-			if (fieldName.startsWith("class$") && fieldSig.equals("Ljava/lang/Class;")) {
-				String className = fieldName.substring("class$".length()).replace('$', '.');
-				if (RLE_DEBUG) System.out.println("[found load of class object " + className + "]");
-				ValueNumber value = getClassObjectValue(className);
-				frame.pushValue(value);
-				return;
-			}
-
 			try {
 				XField xfield = Hierarchy.findXField(obj, getCPG());
 				if (xfield != null) {
@@ -318,10 +320,11 @@ public class ValueNumberFrameModelingVisitor
 	public void visitINVOKESTATIC(INVOKESTATIC obj) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			ConstantPoolGen cpg = getCPG();
+			String targetClassName = obj.getClassName(cpg);
 			String methodName = obj.getName(cpg);
 			String methodSig = obj.getSignature(cpg);
 
-			if (methodName.equals("class$") && methodSig.equals("(Ljava/lang/String;)Ljava/lang/Class;")) {
+			if ((methodName.equals("forName") && targetClassName.equals("java.lang.Class") || methodName.equals("class$")) && methodSig.equals("(Ljava/lang/String;)Ljava/lang/Class;")) {
 				// Access of a Class object
 				ValueNumberFrame frame = getFrame();
 				try {
