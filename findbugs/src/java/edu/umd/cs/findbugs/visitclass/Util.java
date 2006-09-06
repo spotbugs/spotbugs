@@ -68,7 +68,7 @@ public class Util {
 			for (CodeException catchBlock : code.getExceptionTable()) {
 				if (vmNameOfExceptionClass != null) {
 				Constant catchType = constantPool.getConstant(catchBlock.getCatchType());
-				if (catchType instanceof ConstantClass 
+				if (catchType == null || catchType instanceof ConstantClass 
 						&& !((ConstantClass)catchType).getBytes(constantPool).equals(vmNameOfExceptionClass)) continue;
 				}
 				int startPC = catchBlock.getStartPC();
