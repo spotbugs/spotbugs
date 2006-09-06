@@ -592,6 +592,9 @@ public class NullDerefAndRedundantComparisonFinder {
 		
 		// Could the reference be null?
 		IsNullValue refValue = frame.getInstance(exceptionThrower, classContext.getConstantPoolGen());
+		if (DEBUG) {
+			System.out.println("For basic block " + basicBlock + " value is " + refValue);
+		}
 		if (!refValue.mightBeNull())
 			return;
 		

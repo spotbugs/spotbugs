@@ -399,9 +399,14 @@ public class IsNullValueAnalysis
 						// update the is-null information for the dereferenced value.
 						InstructionHandle kaBoomLocation = targetBlock.getFirstInstruction();
 						ValueNumber replaceMe = vnaFrame.getInstance(firstInDest, methodGen.getConstantPool());
-						tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, IsNullValue.noKaboomNonNullValue(
-								new Location(kaBoomLocation, targetBlock)
-								));
+						IsNullValue noKaboomNonNullValue = IsNullValue.noKaboomNonNullValue(
+														new Location(kaBoomLocation, targetBlock)
+														);
+						if (DEBUG) {
+							System.out.println("\nGenerated NoKaboom value for location " + kaBoomLocation);
+							System.out.println("On fall through from source block " + sourceBlock);
+						}
+						tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, noKaboomNonNullValue);
 					}
 				}
 			}
