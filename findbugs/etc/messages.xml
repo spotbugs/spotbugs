@@ -3502,7 +3502,27 @@ is not a directory.</p>
     <LongDescription>Useless control flow in {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method contains a useless control flow statement.&nbsp;
+<p> This method contains a useless control flow statement, where
+control flow continues onto the same place regardless of whether or not
+the branch is taken. For examplpe,
+this is caused by having an empty statement
+block fot an <code>if</code> statement:</p>
+<pre>
+    if (argv.length == 0) {
+	// TODO: handle this case
+	}
+</pre>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="UCF_USELESS_CONTROL_FLOW_NEXT_LINE">
+    <ShortDescription>Useless control flow to next line</ShortDescription>
+    <LongDescription>Useless control flow to next line in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains a useless control flow statement in which control
+flow follows to the same or following line regardless of whether or not
+the branch is taken.
 Often, this is caused by inadvertently using an empty statement as the
 body of an <code>if</code> statement, e.g.:</p>
 <pre>

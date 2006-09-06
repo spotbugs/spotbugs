@@ -82,7 +82,7 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
 					if (branchLineNumber +1 == targetLineNumber || branchLineNumber  == targetLineNumber ) priority = HIGH_PRIORITY;
 					else if (branchLineNumber +2 < targetLineNumber) priority = LOW_PRIORITY;
 				} else priority = LOW_PRIORITY;
-				bugReporter.reportBug(new BugInstance(this, "UCF_USELESS_CONTROL_FLOW", priority)
+				bugReporter.reportBug(new BugInstance(this, priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
 				        .addClassAndMethod(this)
 				        .addSourceLine(this));
 			}

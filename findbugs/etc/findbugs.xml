@@ -356,7 +356,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindUselessControlFlow" 
             speed="fast"
-            reports="UCF_USELESS_CONTROL_FLOW" />
+            reports="UCF_USELESS_CONTROL_FLOW,UCF_USELESS_CONTROL_FLOW_NEXT_LINE" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindUnreleasedLock" 
             speed="moderate"
@@ -768,6 +768,7 @@
   <BugPattern abbrev="OS" type="OS_OPEN_STREAM_EXCEPTION_PATH" category="BAD_PRACTICE" />
   <BugPattern abbrev="PZLA" type="PZLA_PREFER_ZERO_LENGTH_ARRAYS" category="STYLE" />
   <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW" category="STYLE" />
+  <BugPattern abbrev="UCF" type="UCF_USELESS_CONTROL_FLOW_NEXT_LINE" category="CORRECTNESS" />
   <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE" category="STYLE" />
   <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" category="CORRECTNESS" />
   <BugPattern abbrev="RCN" type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" category="STYLE" />
