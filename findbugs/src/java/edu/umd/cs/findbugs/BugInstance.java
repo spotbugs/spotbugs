@@ -1274,8 +1274,13 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		if (bugPattern == null)
 			 pattern =  "Error: missing bug pattern for key " + type;
 		else pattern = bugPattern.getLongDescription();
-		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-		return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]));
+		try {
+			FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
+			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]));
+		} catch (RuntimeException e) {
+			AnalysisContext.logError("Error generating bug msg ", e);
+			return bugPattern.getShortDescription() + " [Error generating customized description]";
+		}
 	}
 	/**
 	 * Format a string describing this bug instance.
