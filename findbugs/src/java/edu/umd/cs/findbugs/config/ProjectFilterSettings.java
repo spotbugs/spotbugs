@@ -78,7 +78,8 @@ public class ProjectFilterSettings implements Cloneable {
 	private static String LISTITEM_DELIMITER=",";
 
 	// Fields
-	private Set<String> activeBugCategorySet;
+	private Set<String> activeBugCategorySet; // not used for much: hiddenBugCategorySet has priority.
+	private Set<String> hiddenBugCategorySet;
 	private String minPriority;
 	private int minPriorityAsInt;
 	private boolean displayFalseWarnings;
@@ -88,7 +89,9 @@ public class ProjectFilterSettings implements Cloneable {
 	 * This is not meant to be called directly; use one of the factory methods instead.
 	 */
 	private ProjectFilterSettings() {
-		this.activeBugCategorySet = new HashSet<String>();
+		// initially all known bug categories are active
+		this.activeBugCategorySet = new HashSet<String>( I18N.instance().getBugCategories() );
+		this.hiddenBugCategorySet = new HashSet<String>();
 		setMinPriority(DEFAULT_PRIORITY);
 		this.displayFalseWarnings = false;
 	}
@@ -102,11 +105,6 @@ public class ProjectFilterSettings implements Cloneable {
 	 */
 	public static ProjectFilterSettings createDefault() {
 		ProjectFilterSettings result = new ProjectFilterSettings();
-		
-		// Add all bugs categories
-		for (String s : I18N.instance().getBugCategories()) {
-			result.addCategory(s);
-		}
 		
 		// Set default priority threshold
 		result.setMinPriority(DEFAULT_PRIORITY);
@@ -151,6 +149,9 @@ public class ProjectFilterSettings implements Cloneable {
 			StringTokenizer t = new StringTokenizer(categories, LISTITEM_DELIMITER);
 			while (t.hasMoreTokens()) {
 				String category = t.nextToken();
+				// 'result' probably already contains 'category', since
+				// it contains all known bug category keys by default.
+				// But add it to the set anyway in case it is an unknown key.
 				result.addCategory(category);
 			}
 		}
@@ -172,6 +173,36 @@ public class ProjectFilterSettings implements Cloneable {
 		
 		return result;
 			
+	}
+	
+
+	/**
+	 * set the hidden bug categories on the specifed ProjectFilterSettings
+	 * from an encoded string
+	 * 
+	 * @param result the ProjectFilterSettings from which to remove bug categories
+	 * @param s the encoded string
+	 * @see ProjectFilterSettings#hiddenFromEncodedString(ProjectFilterSettings, String)
+	 */
+	public static void hiddenFromEncodedString(ProjectFilterSettings result, String s) {
+		
+		if (s.length() > 0) {
+			int bar = s.indexOf(FIELD_DELIMITER);
+			String categories;
+			if (bar >= 0) {
+				categories = s.substring(0, bar);
+				s = s.substring(bar+1);
+			} else {
+				categories = s;
+				s = "";
+			}
+			StringTokenizer t = new StringTokenizer(categories, LISTITEM_DELIMITER);
+			while (t.hasMoreTokens()) {
+				String category = t.nextToken();
+				result.removeCategory(category);
+			}
+		}
+
 	}
 	
 
@@ -249,6 +280,7 @@ public class ProjectFilterSettings implements Cloneable {
 	 * @param category the bug category: e.g., "CORRECTNESS"
 	 */
 	public void addCategory(String category) {
+		this.hiddenBugCategorySet.remove(category);
 		this.activeBugCategorySet.add(category);
 	}
 
@@ -258,29 +290,37 @@ public class ProjectFilterSettings implements Cloneable {
 	 * @param category the bug category: e.g., "CORRECTNESS"
 	 */
 	public void removeCategory(String category) {
+		this.hiddenBugCategorySet.add(category);
 		this.activeBugCategorySet.remove(category);
 	}
 
 	/**
-	 * Clear all bug categories.
+	 * Clear all bug categories from the hidden list.
+	 * So the effect is to enable all bug categories.
 	 */
 	public void clearAllCategories() {
-		this.activeBugCategorySet.clear();
+		this.activeBugCategorySet.addAll(hiddenBugCategorySet);
+		this.hiddenBugCategorySet.clear();
 	}
 	
 	/**
-	 * Return whether or not the given category is enabled
+	 * Returns false if the given category is hidden
 	 * in the project filter settings.
 	 * 
 	 * @param category the category
-	 * @return true if the category is enabled, false if not
+	 * @return false if the category is hidden, true if not
 	 */
 	public boolean containsCategory(String category) {
-		return activeBugCategorySet.contains(category);
+		// do _not_ consult the activeBugCategorySet: if not hidden return true.
+		return !hiddenBugCategorySet.contains(category);
 	}
 	
 	/**
 	 * Return set of active (enabled) bug categories.
+	 * 
+	 * Note that bug categories that are not explicity
+	 * hidden will appear active even if they are not
+	 * members of this set.
 	 * 
 	 * @return the set of active categories
 	 */
@@ -310,6 +350,24 @@ public class ProjectFilterSettings implements Cloneable {
 	}
 
 	/**
+	 * Create a string containing the encoded form of the hidden bug categories
+	 * 
+	 * @return an encoded string
+	 */
+	public String hiddenToEncodedString() {
+		StringBuffer buf = new StringBuffer();
+		// Encode hidden bug categories
+		for (Iterator<String> i = hiddenBugCategorySet.iterator(); i.hasNext(); ) {
+			buf.append(i.next());
+			if (i.hasNext())
+				buf.append(LISTITEM_DELIMITER);
+		}
+		buf.append(FIELD_DELIMITER);
+		
+		return buf.toString();
+	}
+
+	/**
 	 * Create a string containing the encoded form of the ProjectFilterSettings.
 	 * 
 	 * @return an encoded string
@@ -319,7 +377,8 @@ public class ProjectFilterSettings implements Cloneable {
 		StringBuffer buf = new StringBuffer();
 		buf.append(getMinPriority());
 		
-		// Encode bug categories
+		// Encode enabled bug categories. Note that these aren't really used for much.
+		// They only come in to play when parsed by a version of FindBugs older than 1.1.
 		buf.append(FIELD_DELIMITER);
 		for (Iterator<String> i = activeBugCategorySet.iterator(); i.hasNext(); ) {
 			buf.append(i.next());
@@ -352,7 +411,8 @@ public class ProjectFilterSettings implements Cloneable {
 		if (!this.getMinPriority().equals(other.getMinPriority()))
 			return false;
 
-		if (!this.activeBugCategorySet.equals(other.activeBugCategorySet))
+		// don't compare the activeBugCategorySet. compare the hiddenBugCategorySet only
+		if (!this.hiddenBugCategorySet.equals(other.hiddenBugCategorySet))
 			return false;
 		
 		if (this.displayFalseWarnings != other.displayFalseWarnings)
@@ -372,6 +432,8 @@ public class ProjectFilterSettings implements Cloneable {
 			ProjectFilterSettings clone = (ProjectFilterSettings) super.clone();
 			
 			// Copy field contents
+			clone.hiddenBugCategorySet = new HashSet<String>();
+			clone.hiddenBugCategorySet.addAll(this.hiddenBugCategorySet);
 			clone.activeBugCategorySet = new HashSet<String>();
 			clone.activeBugCategorySet.addAll(this.activeBugCategorySet);
 			clone.setMinPriority(this.getMinPriority());
@@ -391,7 +453,7 @@ public class ProjectFilterSettings implements Cloneable {
 	@Override
          public int hashCode() {
 		return minPriority.hashCode()
-			+ 1009 * activeBugCategorySet.hashCode()
+			+ 1009 * hiddenBugCategorySet.hashCode()
 			+ (displayFalseWarnings ? 7919 : 0);
 	}
 	

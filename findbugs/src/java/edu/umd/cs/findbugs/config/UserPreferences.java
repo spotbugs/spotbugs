@@ -57,6 +57,7 @@ public class UserPreferences implements Cloneable {
 	private static final int MAX_RECENT_FILES = 9;
 	private static final String DETECTOR_THRESHOLD_KEY = "detector_threshold";
 	private static final String FILTER_SETTINGS_KEY = "filter_settings";
+	private static final String FILTER_SETTINGS2_KEY = "filter_settings_neg";
 	private static final String DEFAULT_DIRECTORY = "default_directory";
 	private LinkedList<String> recentProjectsList = new LinkedList<String>();
 	private Map<String, Boolean> detectorEnablementMap = new HashMap<String, Boolean>();
@@ -164,6 +165,10 @@ public class UserPreferences implements Cloneable {
 				}
 			}
 		}
+		if (props.get(FILTER_SETTINGS2_KEY) != null) {
+			// populate the hidden bug categories in the project filter settings
+			ProjectFilterSettings.hiddenFromEncodedString(filterSettings, props.getProperty(FILTER_SETTINGS2_KEY));
+		}
 		
 		String dd = (String)props.get(DEFAULT_DIRECTORY);
 		if (dd != null)
@@ -209,6 +214,7 @@ public class UserPreferences implements Cloneable {
 
 		// Save ProjectFilterSettings
 		props.put(FILTER_SETTINGS_KEY, filterSettings.toEncodedString());
+		props.put(FILTER_SETTINGS2_KEY, filterSettings.hiddenToEncodedString());
 		
 		// Backwards-compatibility: save minimum warning priority as integer.
 		// This will allow the properties file to work with older versions

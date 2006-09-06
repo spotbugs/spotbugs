@@ -68,7 +68,7 @@ public class ProjectFilterSettingsTest extends TestCase {
 	}
 
 	public void testAddCategory() {
-		Assert.assertFalse(plain.containsCategory("FAKE_CATEGORY"));
+		Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY")); // unkown categories should be unhidden by default
 		plain.addCategory("FAKE_CATEGORY");
 		Assert.assertTrue(plain.containsCategory("FAKE_CATEGORY"));
 	}
