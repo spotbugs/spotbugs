@@ -162,6 +162,26 @@ public abstract class AnalysisContext {
 		RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
 		if (lookupFailureCallback != null) lookupFailureCallback.reportMissingClass(e);
 	}
+	
+	/**
+	 * Report an error
+	 */
+	static public void logError(String msg, Exception e) {
+		AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
+		if (currentAnalysisContext2 == null) return;
+		RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
+		if (lookupFailureCallback != null) lookupFailureCallback.logError(msg, e);
+	}
+	/**
+	 * Report an error
+	 */
+	static public void logError(String msg) {
+		AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
+		if (currentAnalysisContext2 == null) return;
+		RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
+		if (lookupFailureCallback != null) lookupFailureCallback.logError(msg);
+	}
+	
 	boolean missingClassWarningsSuppressed = false;
 	
 	public boolean setMissingClassWarningsSuppressed(boolean value) {
