@@ -24,7 +24,7 @@ package edu.umd.cs.findbugs;
  */
 public class SystemProperties {
 
-	public static boolean ASSERTIONS_ENABLED;
+	public final static boolean ASSERTIONS_ENABLED;
 	static {
 		boolean tmp = false;
 		assert(tmp = true);
