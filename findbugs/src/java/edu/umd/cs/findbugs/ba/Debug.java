@@ -22,10 +22,6 @@ package edu.umd.cs.findbugs.ba;
 import edu.umd.cs.findbugs.SystemProperties;
 
 public interface Debug {
-	/**
-	 * Check assertions.
-	 */
-	public static final boolean CHECK_ASSERTIONS = SystemProperties.getBoolean("ba.checkAssertions");
 
 	/**
 	 * Set this to true to enable data structure integrity checks.
