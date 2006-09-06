@@ -236,6 +236,11 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	//   consumeStack(Instruction) and then explicitly push produced operands.
 
 	@Override
+	public void visitATHROW(ATHROW obj) {
+		// do nothing. The same value remains on the stack (but we jump to a new location)
+	}
+	
+	@Override
 	public void visitACONST_NULL(ACONST_NULL obj) {
 		pushValue(TypeFrame.getNullType());
 	}
