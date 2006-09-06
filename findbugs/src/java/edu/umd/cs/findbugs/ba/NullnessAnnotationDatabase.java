@@ -39,6 +39,8 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		addFieldAnnotation("java.lang.System", "err", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
 		addFieldAnnotation("java.lang.System", "in", "Ljava/io/InputStream;", true, NullnessAnnotation.NONNULL);
 		
+		addMethodAnnotation("java.lang.Class", "newInstance", "()Ljava/lang/Object;", false, NullnessAnnotation.NONNULL);
+		addMethodAnnotation("java.lang.Class", "forName", "(Ljava/lang/String;)Ljava/lang/Class;", true, NullnessAnnotation.NONNULL);
 		addMethodAnnotation("java.lang.reflect.Method", "getParameterTypes", "()[Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
 		addMethodAnnotation("java.lang.Object", "clone", "()[Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
 		
