@@ -298,20 +298,23 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		for (BugAnnotation annotation : annotationList) {
 			if (annotation instanceof SourceLineAnnotation) {
 				// do nothing
-			}
-			else {buf.append(":");
-				buf.append(annotation.format(""));
+			} else {
+				buf.append(":");
+				if (annotation instanceof LocalVariableAnnotation)
+					buf.append(annotation.format("name"));
+				else buf.append(annotation.format(""));
 			}
 		}
 		return buf.toString();
 	}
 	/**
-	 * If given PackageMemberAnnotation is non-null,
-	 * return its SourceLineAnnotation.
+	 * If given PackageMemberAnnotation is non-null, return its
+	 * SourceLineAnnotation.
 	 * 
-	 * @param packageMember a PackageMemberAnnotation
-	 * @return the PackageMemberAnnotation's SourceLineAnnotation, or null
-	 *         if there is no SourceLineAnnotation
+	 * @param packageMember
+	 *            a PackageMemberAnnotation
+	 * @return the PackageMemberAnnotation's SourceLineAnnotation, or null if
+	 *         there is no SourceLineAnnotation
 	 */
 	private SourceLineAnnotation inspectPackageMemberSourceLines(PackageMemberAnnotation packageMember) {
 		return (packageMember != null) ? packageMember.getSourceLines() : null;
