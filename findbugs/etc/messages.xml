@@ -77,7 +77,7 @@ This plugin contains all of the standard FindBugs detectors.
     <Description>Internationalization</Description>
     <Abbreviation>I</Abbreviation>
     <Details>code flaws having to do with internationalization and locale</Details>
-    <!-- DM_CONVERT_CASE is the only bug core bug pattern in this category -->
+    <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
   </BugCategory>
 
 
@@ -1422,8 +1422,7 @@ should be written to the JarFile between the calls to
     <LongDescription>clone method {1} does not call super.clone()</LongDescription>
     <Details>
 <![CDATA[
-<p> This class defines a clone() method that does not call super.clone(),
-and is not final.
+<p> This non-final class defines a clone() method that does not call super.clone().
 If this class ("<i>A</i>") is extended by a subclass ("<i>B</i>"),
 and the subclass <i>B</i> calls super.clone(), then it is likely that
 <i>B</i>'s clone() method will return an object of type <i>A</i>,
