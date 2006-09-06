@@ -24,6 +24,12 @@ package edu.umd.cs.findbugs;
  */
 public class SystemProperties {
 
+	public static boolean ASSERTIONS_ENABLED;
+	static {
+		boolean tmp = false;
+		assert(tmp = true);
+		ASSERTIONS_ENABLED = tmp;
+	}
 	/**
 	 * Get boolean property, returning false if a security manager prevents us
 	 * from accessing system properties
