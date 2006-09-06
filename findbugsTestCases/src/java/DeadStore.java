@@ -101,7 +101,7 @@ public class DeadStore {
 			case FAILED:
 					break;
 			default:
-					System.out.println(orig+" -> "+id); //setState(status, new StateID(StateEnum.FAILED));
+					System.out.println(orig); //setState(status, new StateID(StateEnum.FAILED));
 					break;
 	        }
 	    }
