@@ -1,0 +1,14 @@
+<Fixes>
+<BugFix type="MS_SHOULD_BE_FINAL">
+	<Fixer classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.MSFixer"/>
+</BugFix>
+<BugFix type="EI_EXPOSE_REP">
+	<Fixer classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.EIFixer"/>
+</BugFix>
+<BugFix type="SIC_INNER_SHOULD_BE_STATIC">
+	<Fixer classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.SICFixer"/>
+</BugFix>
+<BugFix type="SS_SHOULD_BE_STATIC">
+	<Fixer classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.SSFixer"/>
+</BugFix>
+</Fixes>

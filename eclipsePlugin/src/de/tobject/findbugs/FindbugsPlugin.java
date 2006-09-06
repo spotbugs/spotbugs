@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
@@ -60,11 +61,13 @@ import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.view.DetailsView;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.plugin.eclipse.ExtendedPreferences;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.QuickFixAssociations;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -134,6 +137,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	
 	/** Resource bundle. */
 	private ResourceBundle resourceBundle;
+	
+	private QuickFixAssociations quickFixes;
 
 	/**
 	 * Constructor.
@@ -746,6 +751,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		}
 		
 		return userPrefs;
+	}
+
+	public QuickFixAssociations getQuickFixes() {
+		if (quickFixes == null) {
+			quickFixes = new QuickFixAssociations();
+			quickFixes.load(new File(FindBugs.getHome() + File.separator + "plugin" + File.separator + "Fixes.xml"));
+		}
+		return quickFixes;
 	}
 }
 

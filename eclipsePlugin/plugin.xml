@@ -237,4 +237,11 @@
             variable="FINDBUGS_ANNOTATIONS"/>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.ide.markerResolution">
+      <markerResolutionGenerator
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"
+            class="edu.umd.cs.findbugs.plugin.eclipse.quickfix.FindBugsQuickFix"/>
+   </extension>
+
 </plugin>
