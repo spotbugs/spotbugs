@@ -26,7 +26,9 @@
              You may experiment with writing ASM-based detectors, but beware the API may still change
              (which could possibly also affect BCEL-based detectors).
          </li>
-         <li>Bug categories (CORRECTNESS, MT_CORRECTNESS, etc.) are no longer hard-coded.</li>
+         <li>Bug categories (CORRECTNESS, MT_CORRECTNESS, etc.) are no longer hard-coded.
+             Several bug patterns have been moved from CORRECTNESS and STYLE into a new
+             category, BAD_PRACTICE.</li>
          </ul>
 </ul>
 
@@ -149,7 +151,7 @@
     </ul></li>
 <li>findbugs <tt>-onlyAnalyze</tt> option now works on windows platforms</li>
 <li>mineBugHistory <tt>-noTabs</tt> option for better alignment of output columns</li>
-<li>filterBugs <tt>-fixed</tt> option (also: wull now recognize the most recent version string)</li>
+<li>filterBugs <tt>-fixed</tt> option (also: will now recognize the most recent version string)</li>
 <li>XML output includes running time and memory usage data</li>
 <li>miscellaneous minor corrections to the manual</li>
 <li>better bytecode analysis of the <tt>iinc</tt> instruction</li>
