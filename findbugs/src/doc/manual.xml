@@ -2595,7 +2595,7 @@ You can find the latest version of FindBugs, along with its source code, from th
 <para>&FindBugs; was originally written by Bill Pugh (<email>pugh@cs.umd.edu</email>).
 David Hovemeyer (<email>daveho@cs.umd.edu</email>) implemented some of the
 detectors, added the Swing GUI, and is a co-maintainer.
-Brian Cole (<email>tuc@cs.umd.edu</email>) is a co-maintainer.</para>
+Brian Cole (<email>bassclar@sourceforge.net</email>) is a co-maintainer.</para>
 
 <para>Mike Fagan (<email>mfagan@tde.com</email>) contributed the &Ant; build script,
 the &Ant; task, and several enhancements and bug fixes to the GUI.</para>
@@ -2716,7 +2716,7 @@ some German improvements to findbugs_de.properties.</para>
 
 
 <para>If you have contributed to &FindBugs;, but aren't mentioned above,
-please send email to <email>tuc@cs.umd.edu</email> (and also accept
+please send email to <email>findbugs@cs.umd.edu</email> (and also accept
 our humble apologies).</para>
 
 </sect1>
