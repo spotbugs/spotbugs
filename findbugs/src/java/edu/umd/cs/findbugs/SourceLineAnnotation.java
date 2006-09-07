@@ -78,7 +78,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @param startBytecode the first bytecode offset (inclusive)
 	 * @param endBytecode   the end bytecode offset (inclusive)
 	 */
-	public SourceLineAnnotation(String className, String sourceFile, int startLine, int endLine,
+	public SourceLineAnnotation(@NonNull String className, @NonNull String sourceFile, int startLine, int endLine,
 	                            int startBytecode, int endBytecode) {
 		if (className == null) throw new IllegalArgumentException("class name is null");
 		if (sourceFile == null) throw new IllegalArgumentException("source file is null");
