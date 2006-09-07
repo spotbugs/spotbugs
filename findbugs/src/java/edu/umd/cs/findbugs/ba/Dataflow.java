@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba;
 import java.util.Iterator;
 
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
 
@@ -86,6 +87,14 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	// Maximum number of iterations before we assume there is a bug and give up.
 	private static final int MAX_ITERS = SystemProperties.getInteger("dataflow.maxiters", 10000).intValue();
 
+	private String getFullyQualifiedMethodName() {
+		String methodName;
+		MethodGen methodGen = cfg.getMethodGen();
+		if (methodGen == null)
+			methodName = cfg.getMethodName();
+		else methodName = SignatureConverter.convertMethodSignature(methodGen);
+		return methodName;
+	}
 	/**
 	 * Run the algorithm.
 	 * Afterwards, caller can use the getStartFact() and getResultFact() methods to
@@ -100,7 +109,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			if (pkgEnd >= 0) {
 				shortAnalysisName = shortAnalysisName.substring(pkgEnd + 1);
 			}
-			System.out.println("Executing " + shortAnalysisName + " on " + cfg.getMethodName());
+			System.out.println("Executing " + shortAnalysisName + " on " + getFullyQualifiedMethodName());
 		}
 
 		int timestamp = 0;
@@ -114,8 +123,9 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				System.out.println("----------------------------------------------------------------------");
 			}
 
-			if (numIterations >= MAX_ITERS)
-				throw new DataflowAnalysisException("Too many iterations (" + numIterations + ") in dataflow!");
+			if (numIterations >= MAX_ITERS) {
+				throw new DataflowAnalysisException("Too many iterations (" + numIterations + ") in dataflow when analyzing " + getFullyQualifiedMethodName());
+			}
 	
 			analysis.startIteration();
 			

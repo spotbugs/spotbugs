@@ -371,7 +371,8 @@ public class ClassContext {
 			
 			// Record method name and signature for informational purposes
 			cfg.setMethodName(SignatureConverter.convertMethodSignature(methodGen));
-
+			cfg.setMethodGen(methodGen);
+			
 			// HACK:
 			// Due to recursive method invocations, we may get a recursive
 			// request for the pruned CFG of a method.  In this case,

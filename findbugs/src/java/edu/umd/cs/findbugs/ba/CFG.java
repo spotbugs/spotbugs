@@ -27,6 +27,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.graph.AbstractGraph;
 
@@ -102,7 +103,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	private BasicBlock entry, exit;
 	private int flags;
 	private String methodName; // for informational purposes
-
+	private MethodGen methodGen;
 	/* ----------------------------------------------------------------------
 	 * Public methods
 	 * ---------------------------------------------------------------------- */
@@ -121,6 +122,12 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		this.methodName = methodName;
 	}
 	
+	public void setMethodGen(MethodGen methodGen) {
+		this.methodGen = methodGen;
+	}
+	public MethodGen getMethodGen() {
+		return methodGen;
+	}
 	/**
 	 * @return Returns the methodName.
 	 */
