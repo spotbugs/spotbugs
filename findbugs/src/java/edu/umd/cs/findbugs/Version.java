@@ -50,7 +50,7 @@ public class Version {
 	 * Release candidate number.
 	 * "0" indicates that the version is not a release candidate.
 	 */
-	public static final int RELEASE_CANDIDATE = 1;
+	public static final int RELEASE_CANDIDATE = 2;
 	
 	/**
 	 * Preview release number.
@@ -70,16 +70,19 @@ public class Version {
 		MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "-" + RELEASE_SUFFIX_WORD : "");
 
 	static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy");
+	static final SimpleDateFormat eclipseDateFormat = new SimpleDateFormat("yyyyMMdd");
 	/**
 	 * Release date.
 	 */
 	public static final String DATE = IS_DEVELOPMENT ? dateFormat.format(new Date()) : "August 1, 2006";
 
+	public static final String ECLIPSE_DATE = IS_DEVELOPMENT ? eclipseDateFormat.format(new Date()) : "20060801";
+
 	/**
 	 * Version of Eclipse plugin.
 	 */
-	public static final String ECLIPSE_UI_VERSION = // same as RELEASE except dot before required suffix
-		MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "." + RELEASE_SUFFIX_WORD : ".rel");
+	public static final String ECLIPSE_UI_VERSION = // same as RELEASE except .vYYYYMMDD before optional -suffix
+		MAJOR + "." + MINOR + "." + PATCHLEVEL + ".v" + ECLIPSE_DATE + (IS_DEVELOPMENT ? "-"+RELEASE_SUFFIX_WORD : "");
 
 	/**
 	 * FindBugs website.
