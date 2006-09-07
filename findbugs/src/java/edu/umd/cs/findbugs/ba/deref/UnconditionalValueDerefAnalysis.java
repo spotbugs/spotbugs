@@ -167,6 +167,7 @@ public class UnconditionalValueDerefAnalysis extends
 		// We don't want to report future derefs that would
 		// be guaranteed only if the assertion methods
 		// returns normally.
+		// TODO: at some point, evaluate whether we should revisit this
 		if (isAssertion(handle) || handle.getInstruction() instanceof ATHROW ) {
 			if (DEBUG) System.out.println("MAKING BOTTOM0 AT: " + location);
 			fact.clear();
