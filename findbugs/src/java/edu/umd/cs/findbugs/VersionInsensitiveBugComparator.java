@@ -164,8 +164,8 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 
 
 		if (comparePriorities) {
-		cmp = lhs.getPriority() - rhs.getPriority();
-		if (cmp != 0) return cmp;
+			cmp = lhs.getPriority() - rhs.getPriority();
+			if (cmp != 0) return cmp;
 		}
 
 

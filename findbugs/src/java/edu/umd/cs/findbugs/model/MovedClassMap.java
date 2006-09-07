@@ -84,6 +84,9 @@ public class MovedClassMap implements ClassNameRewriter {
 		return this;
 	}
 	
+	public boolean isEmpty() {
+		return rewriteMap.isEmpty();
+	}
 	public String rewriteClassName(String className) {
 		String rewrittenClassName = rewriteMap.get(className);
 		if (rewrittenClassName != null) {
