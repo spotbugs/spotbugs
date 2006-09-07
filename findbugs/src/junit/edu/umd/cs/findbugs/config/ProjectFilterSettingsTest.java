@@ -100,8 +100,11 @@ public class ProjectFilterSettingsTest extends TestCase {
 		Assert.assertFalse(plain.equals(changed2));
 		Assert.assertFalse(changed2.equals(plain));
 
-		Assert.assertFalse(plain.equals(changed3));
-		Assert.assertFalse(changed3.equals(plain));
+		// The activeBugCategorySet doesn't matter for equals(), only
+		// the hiddenBugCategorySet does (along with minPriority and
+		// displayFalseWarnings) so 'plain' and 'changed3' should test equal.
+		Assert.assertTrue(plain.equals(changed3));
+		Assert.assertTrue(changed3.equals(plain));
 
 		Assert.assertFalse(plain.equals(changed4));
 		Assert.assertFalse(changed4.equals(plain));
@@ -110,10 +113,12 @@ public class ProjectFilterSettingsTest extends TestCase {
 	public void testEncodeDecode() {
 		ProjectFilterSettings copyOfPlain =
 			ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
+		ProjectFilterSettings.hiddenFromEncodedString(copyOfPlain, plain.hiddenToEncodedString());
 		Assert.assertEquals(plain, copyOfPlain);
 
 		ProjectFilterSettings copyOfChanged4 =
 			ProjectFilterSettings.fromEncodedString(changed4.toEncodedString());
+		ProjectFilterSettings.hiddenFromEncodedString(copyOfChanged4, changed4.hiddenToEncodedString());
 		Assert.assertEquals(changed4, copyOfChanged4);
 	}
 	
