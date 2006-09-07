@@ -66,11 +66,17 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 		// using the overridden name.
 		resourceName = translateResourceName(resourceName);
 
+	try {
 		ZipEntry entry = zipFile.getEntry(resourceName);
 		if (entry == null) {
 			throw new ResourceNotFoundException(resourceName);
 		}
 		return new ZipFileCodeBaseEntry(this, entry);
+	}
+	catch (IllegalStateException ise) {
+		// zipFile.getEntry() throws IllegalStateException if the zip file has been closed
+		throw new ResourceNotFoundException(resourceName, ise);
+	}
 	}
 	
 	public ICodeBaseIterator iterator() {
