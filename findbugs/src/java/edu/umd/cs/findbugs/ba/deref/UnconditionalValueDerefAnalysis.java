@@ -167,19 +167,11 @@ public class UnconditionalValueDerefAnalysis extends
 		// We don't want to report future derefs that would
 		// be guaranteed only if the assertion methods
 		// returns normally.
-		if (isAssertion(handle) ) {
+		if (isAssertion(handle) || handle.getInstruction() instanceof ATHROW ) {
 			if (DEBUG) System.out.println("MAKING BOTTOM0 AT: " + location);
 			fact.clear();
 			return;
 		}
-		
-		if (handle.getInstruction() instanceof ATHROW) {
-			if (DEBUG) System.out.println("MAKING TOP0 AT: " + location);
-			makeFactTop(fact);
-			return;
-		}
-
-	
 		
 		// Get value number frame
 		ValueNumberFrame vnaFrame = vnaDataflow.getFactAtLocation(location);
