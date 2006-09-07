@@ -438,9 +438,15 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		int flags = obj.getAccessFlags();
 
 		if (obj.isTransient()) {
-			seenTransientField = true;
-			transientFields.put(obj.getName(), XFactory.createXField(this));
-			transientFieldsUpdates.put(obj.getName(), 0);
+			if (isSerializable) {
+				seenTransientField = true;
+				transientFields.put(obj.getName(), XFactory.createXField(this));
+				transientFieldsUpdates.put(obj.getName(), 0);
+			} else{
+				bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS", NORMAL_PRIORITY)
+				.addClass(this)
+				.addVisitedField(this));
+			}
 		}
 		else if (getClassName().indexOf("ObjectStreamClass") == -1
 		        && isSerializable

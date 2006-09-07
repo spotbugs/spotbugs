@@ -2729,6 +2729,20 @@ mechanism.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS">
+    <ShortDescription>Transient field of class that isn't seriablizable. </ShortDescription>
+    <LongDescription>{1} is transient but {0} isn't serializable</LongDescription>
+    <Details>
+<![CDATA[
+  <p> The field is marked as transient, but the class isn't serializable, so marking it as transient
+has absolutely no effect. 
+This may be leftover marking from a previous version of the code in which the class was transient, or
+it may indicate a misunderstanding of how serialization works.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="SE_TRANSIENT_FIELD_NOT_RESTORED">
     <ShortDescription>Transient field that isn't set by deserialization. </ShortDescription>
     <LongDescription>The field {1} is transient but isn't set by deserialization</LongDescription>
