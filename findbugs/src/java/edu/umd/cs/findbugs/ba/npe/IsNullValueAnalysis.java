@@ -115,6 +115,9 @@ public class IsNullValueAnalysis
 			int srcBlockId = edge.getSource().getId();
 			numNonExceptionSuccessorMap[srcBlockId]++;
 		}
+		if (DEBUG) {
+			System.out.println("IsNullValueAnalysis for " + methodGen.getClassName() + "." + methodGen.getName() + " : " + methodGen.getSignature());
+		}
 	}
 	
 		

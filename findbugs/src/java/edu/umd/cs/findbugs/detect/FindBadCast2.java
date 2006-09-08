@@ -81,7 +81,8 @@ public class FindBadCast2 implements Detector {
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-		Method[] methodList = classContext.getJavaClass().getMethods();
+		JavaClass javaClass = classContext.getJavaClass();
+		Method[] methodList = javaClass.getMethods();
 
 		for (Method method : methodList) {
 			if (method.getCode() == null)
@@ -91,7 +92,7 @@ public class FindBadCast2 implements Detector {
 				analyzeMethod(classContext, method);
 			} catch (CFGBuilderException e) {
 				bugReporter.logError("Detector " + this.getClass().getName()
-						+ " caught exception", e);
+						+ " caught exception while analyzing " + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature() , e);
 			} catch (DataflowAnalysisException e) {
 //				bugReporter.logError("Detector " + this.getClass().getName()
 //						+ " caught exception", e);
