@@ -329,6 +329,19 @@
 							software to your customers.
 
 						</li>
+						<li>More careful resolution of inherited methods and fields. 
+						Some of the shortcuts we were taking in FindBugs 1.0.0 were leading
+						to inaccurate results, and it was fairly easy to address this
+						by making the analysis more accurate.
+						</li>
+						<li>Overall, analysis times are about 1.6 times longer in 
+						FindBugs 1.1.0 than in FindBugs 1.0.0. This is because 
+						we have enabled substantial additional analysis at the default
+						effort level (the actual analysis engine is significantly faster
+						than in FindBugs 1.0). On a recent AMD Athlon processor,
+						analyzing JDK1.6.0 (about 1 million lines of code) requires
+						about 15 minutes of wall clock time. 
+						</li>
 					</ul>
 
 					<p>
