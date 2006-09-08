@@ -43,7 +43,8 @@
 							fact is a dead branch or statement that can never be taken. Such
 							coding is confusing and hard to maintain, so it should arguably
 							be fixed, but it is unlikely to actually result in an error
-							during execution.
+							during execution. Thus, some might classify those warnings
+							as false positives.
 
 						</li>
 						<li>
@@ -342,6 +343,9 @@
 						analyzing JDK1.6.0 (about 1 million lines of code) requires
 						about 15 minutes of wall clock time. 
 						</li>
+						<li>Provided class and script (printClass) to print classfile in the
+						human readable format produced by BCEL</li>
+						<li>Provided -findSource option to setBugDatabaseInfo</li>
 					</ul>
 
 					<p>
