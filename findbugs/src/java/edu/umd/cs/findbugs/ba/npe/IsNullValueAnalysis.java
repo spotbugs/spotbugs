@@ -426,7 +426,13 @@ public class IsNullValueAnalysis
 	 */
 	@Override
 	protected void mergeInto(IsNullValueFrame other, IsNullValueFrame result) throws DataflowAnalysisException {
+		if (other.isTop()) return;
+		if (result.isTop()) {
+			result.copyFrom(other);
+			return;	
+		}
 		super.mergeInto(other, result);
+		//FIXME: update decision?
 		if (trackValueNumbers) {
 			result.mergeKnownValuesWith(other);
 		}
