@@ -1,0 +1,2112 @@
+package edu.umd.cs.findbugs.gui2;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.JTree;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.JTableHeader;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.TextAction;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+
+import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.ClassAnnotation;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.PackageMemberAnnotation;
+import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.gui.ConsoleLogger;
+import edu.umd.cs.findbugs.gui.LogSync;
+import edu.umd.cs.findbugs.gui.Logger;
+
+@SuppressWarnings("serial")
+
+/*
+ * This is where it all happens... seriously... all of it...
+ * All the menus are set up, all the listeners, all the frames, dockable window functionality
+ * There is no one style used, no one naming convention, its all just kinda here.  This is another one of those 
+ * classes where no one knows quite why it works.
+ */
+/**
+ * The MainFrame is just that, the main application window where just about everything happens.
+ */
+public class MainFrame extends FBFrame implements LogSync
+{
+	private JTree tree;
+	
+	private boolean userInputEnabled;
+		
+	static final String DEFAULT_SOURCE_CODE_MSG = "No available source";
+	
+	static final int COMMENTS_TAB_STRUT_SIZE = 5;
+	static final int COMMENTS_MARGIN = 5;
+
+	public static final boolean DEBUG = SystemProperties.getBoolean("gui2.debug");
+	
+	JTextPane sourceCodeTextPane = new JTextPane();
+	private JScrollPane sourceCodeScrollPane;
+	
+	private JTextArea userCommentsText = new JTextArea();
+	private Color userCommentsTextUnenabledColor;
+	private boolean commentChanged = false;
+	private boolean designationChanged=false;
+	private JComboBox designationComboBox;
+	private ArrayList<String> designationList;
+	private LinkedList<String> prevCommentsList = new LinkedList<String>();
+	private int prevCommentsMaxSize = 10;
+	private JComboBox prevCommentsComboBox = new JComboBox();
+	
+	private SorterTableColumnModel sorter;
+	private JTableHeader tableheader;
+	private JLabel statusBarLabel = new JLabel();
+	
+	private JPanel summaryTopPanel;
+	private final HTMLEditorKit htmlEditorKit = new HTMLEditorKit();
+	private final JEditorPane summaryHtmlArea = new JEditorPane();
+	private JScrollPane summaryHtmlScrollPane = new JScrollPane(summaryHtmlArea);
+	
+
+	private FindBugsLayoutManager guiLayout = Driver.isDocking() ? new DockLayout(this) : new TabbedLayout(this);
+	/* To change this method must use setProjectChanged(boolean b).
+	 * This is because saveProjectItemMenu is dependent on it for when
+	 * saveProjectMenuItem should be enabled.
+	 */
+	
+	private boolean projectChanged = false;
+	final private JMenuItem editProjectMenuItem = new JMenuItem("Add/Remove Files", KeyEvent.VK_F);
+	final private JMenuItem saveProjectMenuItem = new JMenuItem("Save Project", KeyEvent.VK_S);
+
+	private BugLeafNode currentSelectedBugLeaf;
+	private BugAspects currentSelectedBugAspects;
+	private JPopupMenu bugPopupMenu;
+	private JPopupMenu branchPopupMenu;
+	private static MainFrame instance;
+	private JMenu recentProjectsMenu;
+	private JMenuItem preferencesMenuItem;
+	
+	private File projectDirectory;
+	private Project curProject;
+	private JScrollPane treeScrollPane;
+	SourceFinder sourceFinder;
+	private SourceLineAnnotation currSrcLineAnnotation;
+	
+	private Object lock = new Object();
+	
+	private boolean newProject = false;
+	
+	private Logger logger = new ConsoleLogger(this);
+
+	
+	SourceCodeDisplay displayer = new SourceCodeDisplay(this);
+	
+	static MainFrame getInstance()
+	{
+		if (instance==null)
+			instance=new MainFrame();
+		return instance;
+	}
+	
+	private MainFrame()
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				setTitle("FindBugs: " + Project.UNNAMED_PROJECT);
+				
+
+					guiLayout.initialize();
+
+				
+				bugPopupMenu = createBugPopupMenu();
+				branchPopupMenu = createBranchPopUpMenu();
+				
+				loadPrevCommentsList(GUISaveState.getInstance().getPreviousComments().toArray(new String[GUISaveState.getInstance().getPreviousComments().size()]));
+				updateStatusBar();
+				
+				setSize(new Dimension(700, 650));
+				Toolkit.getDefaultToolkit().setDynamicLayout(true);
+				setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+				setJMenuBar(createMainMenuBar());
+				setVisible(true);
+				
+				addComponentListener(new ComponentAdapter(){
+					public void componentResized(ComponentEvent e){
+						resetPrevCommentsComboBox();
+						userCommentsText.validate();
+					}
+				});
+				
+				addWindowListener(new WindowAdapter(){
+
+					public void windowClosing(WindowEvent e) {
+						if(userCommentsText.hasFocus())
+							setProjectChanged(true);
+						
+						if(callOnClose())
+							System.exit(0);
+					}				
+				});
+			}
+		});
+	}
+	
+	
+	/**
+	 * Show About
+	 */
+	void about() {
+		AboutDialog dialog = new AboutDialog(this, logger, true);
+		dialog.setSize(600, 554);
+		dialog.setLocationRelativeTo(null); // center the dialog
+		dialog.setVisible(true);
+	}
+	
+	/**
+	 * This method is called when the application is closing. This is either by
+	 * the exit menuItem or by clicking on the window's system menu.
+	 */
+	boolean callOnClose(){
+		saveCommentsToBug(currentSelectedBugLeaf);
+		if(projectChanged){
+			int value = JOptionPane.showConfirmDialog(MainFrame.this, "You are closing " +
+					"without saving. Do you want to save?", 
+					"Do you want to save?", JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.QUESTION_MESSAGE);
+			
+			if(value == JOptionPane.CANCEL_OPTION || value == JOptionPane.CLOSED_OPTION)
+				return false;
+			else if(value == JOptionPane.YES_OPTION){
+				if(projectDirectory == null){
+					if(!projectSaveAs())
+						return false;
+				}
+				else
+					save(projectDirectory);
+			}				
+		}
+
+		
+		GUISaveState.getInstance().setPreviousComments(prevCommentsList);
+
+			guiLayout.saveState();
+
+		GUISaveState.getInstance().save();
+		
+		return true;
+	}
+
+	private void createRecentProjectsMenu(){
+		for (File p: GUISaveState.getInstance().getRecentProjects())
+		{
+			addRecentProjectToMenu(p);
+		}
+	}
+	
+	private void addRecentProjectToMenu(final File f)
+	{
+		if (!f.exists())
+		{
+			if (MainFrame.DEBUG) System.err.println("a recent project was not found, removing it from menu");
+			return;
+		}
+		final JMenuItem item=new JMenuItem(f.getName().substring(0,f.getName().length()-4));
+		item.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e)
+			{
+				try
+				{
+					setCursor(new Cursor(Cursor.WAIT_CURSOR));
+
+					if (!f.exists())
+					{
+						JOptionPane.showMessageDialog(null,"This project can no longer be found");
+						GUISaveState.getInstance().projectNotFound(f);
+						return;
+					}
+					GUISaveState.getInstance().projectReused(f);//Move to front in GUISaveState, so it will be last thing to be removed from the list
+					//Move to front of recent projects menu, so GUISaveState matches with the project menu seen by the user
+					boolean exists=false;
+					for (int x=0; x< recentProjectsMenu.getItemCount(); x++)
+					{
+						if (item.getText().equalsIgnoreCase(recentProjectsMenu.getItem(x).getText()))
+						{
+							exists=true;
+							recentProjectsMenu.remove(x);
+							recentProjectsMenu.insert(item, 0);//Move to front
+						}
+					}
+					if (!exists)
+						throw new IllegalStateException ("User used a recent projects menu item that didn't exist.");
+					
+					projectDirectory=f.getParentFile();
+					File fasFile=new File(projectDirectory.getAbsolutePath() + File.separator + projectDirectory.getName() + ".fas");
+					try 
+					{
+						ProjectSettings.loadInstance(new FileInputStream(fasFile));
+					} catch (FileNotFoundException exception) 
+					{
+						//Silently make a new instance
+						ProjectSettings.newInstance();
+					}
+					
+					final File extraFinalReferenceToXmlFile=f;
+					new Thread(new Runnable(){
+						public void run()
+						{
+							updateDesignation();
+							if (curProject != null && projectChanged)
+							{
+								int response = JOptionPane.showConfirmDialog(MainFrame.this, 
+										"The current project has been changed, Save current changes?"
+										,"Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+
+								if (response == JOptionPane.YES_OPTION)
+								{
+									if (projectDirectory!=null)
+										save(projectDirectory);
+									else
+										projectSaveAs();
+								}
+								else if (response == JOptionPane.CANCEL_OPTION)
+									return;
+								//IF no, do nothing.
+							}							
+							BugTreeModel model=(BugTreeModel)tree.getModel();
+//							Debug.println("please wait called by open menu item");
+							BugTreeModel.pleaseWait();
+							MainFrame.this.setRebuilding(true);
+							BugSet bs=BugLoader.loadBugs(extraFinalReferenceToXmlFile);
+							MainFrame.this.setRebuilding(false);
+							if (bs!=null)
+							{
+								model.getOffListenerList();
+								model.changeSet(bs);
+								curProject=BugLoader.getLoadedProject();
+								MainFrame.getInstance().updateStatusBar();
+							}
+							
+							MainFrame.this.setTitle("FindBugs: " + projectDirectory.getName());
+							
+							setProjectChanged(false);
+							editProjectMenuItem.setEnabled(true);
+							clearBottomTabs();
+						}
+					}).start();
+				}
+				finally
+				{
+					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				}
+			}
+		});
+		item.setFont(item.getFont().deriveFont(Driver.getFontSize()));
+		
+		boolean exists=false;
+		for (int x=0; x< recentProjectsMenu.getItemCount(); x++)
+		{
+			if (item.getText().equalsIgnoreCase(recentProjectsMenu.getItem(x).getText()))
+			{
+				exists=true;
+				recentProjectsMenu.remove(x);
+				recentProjectsMenu.insert(item, 0);//Move to front
+			}
+		}
+		if (!exists)
+			recentProjectsMenu.insert(item,0);		
+	}
+
+	/**
+	 * Creates popup menu for bugs on tree.
+	 * @return
+	 */
+	private JPopupMenu createBugPopupMenu() {
+		JPopupMenu popupMenu = new JPopupMenu();
+		
+		JMenuItem suppressMenuItem = new JMenuItem("Suppress this bug");
+		
+		suppressMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){				
+				saveCommentsToBug(currentSelectedBugLeaf);
+				//This MUST be done in this order:
+				//getIndexOfChild relies on the fact that things have not yet been removed from the tree!
+				TreePath path=tree.getSelectionPath();
+				FilterMatcher.notifyListeners(FilterListener.SUPPRESSING, path);
+				ProjectSettings.getInstance().getSuppressionMatcher().add(currentSelectedBugLeaf.getBug());						
+				PreferencesFrame.getInstance().suppressionsChanged(currentSelectedBugLeaf);
+				((BugTreeModel)(tree.getModel())).resetData();//Necessary to keep suppressions from getting out of sync with tree.  
+				clearBottomTabs();
+				updateStatusBar();
+				
+				setProjectChanged(true);
+			}
+		});
+		
+		popupMenu.add(suppressMenuItem);
+		
+		JMenuItem filterMenuItem = new JMenuItem("Filter bugs like this");
+		
+		filterMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				new NewFilterFromBug(currentSelectedBugLeaf.getBug());
+				
+				setProjectChanged(true);
+			}
+		});
+		
+		popupMenu.add(filterMenuItem);
+		
+		return popupMenu;
+	}
+	
+	/**
+	 * Creates the branch pup up menu that ask if the user wants 
+	 * to hide all the bugs in that branch.
+	 * @return
+	 */
+	private JPopupMenu createBranchPopUpMenu(){
+		JPopupMenu popupMenu = new JPopupMenu();
+		
+		JMenuItem filterMenuItem = new JMenuItem("Filter these bugs");
+		
+		filterMenuItem.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				saveCommentsToBug(currentSelectedBugLeaf);
+				
+				FilterMatcher[] filters = new FilterMatcher[currentSelectedBugAspects.size()];
+				for (int i = 0; i < filters.length; i++)
+					filters[i] = new FilterMatcher(currentSelectedBugAspects.get(i));
+				StackedFilterMatcher sfm = new StackedFilterMatcher(filters);
+				if (!ProjectSettings.getInstance().getAllMatchers().contains(sfm))
+					ProjectSettings.getInstance().addFilter(sfm);
+				
+				setProjectChanged(true);
+			}
+		});
+		
+		popupMenu.add(filterMenuItem);
+		
+		return popupMenu;
+	}
+
+	/**
+	 * Creates the MainFrame's menu bar.
+	 * @return
+	 */
+	protected JMenuBar createMainMenuBar() {
+		JMenuBar menuBar = new JMenuBar();
+		
+		//Create JMenus for menuBar.
+		JMenu fileMenu = new JMenu("File");
+		fileMenu.setMnemonic(KeyEvent.VK_F);
+		JMenu editMenu = new JMenu("Edit");
+		editMenu.setMnemonic(KeyEvent.VK_E);
+		
+		//Edit fileMenu JMenu object.
+		JMenuItem newProjectMenuItem = new JMenuItem("New Project", KeyEvent.VK_N);
+		JMenuItem openProjectMenuItem = new JMenuItem("Open Project...", KeyEvent.VK_O);
+		recentProjectsMenu = new JMenu("Recent Projects");
+		recentProjectsMenu.setMnemonic(KeyEvent.VK_E);
+		createRecentProjectsMenu();
+		JMenuItem saveAsProjectMenuItem = new JMenuItem("Save Project As...", KeyEvent.VK_A);
+		JMenuItem importBugsMenuItem = new JMenuItem("Load Analysis...", KeyEvent.VK_L);
+		JMenuItem exportBugsMenuItem = new JMenuItem("Save Analysis...", KeyEvent.VK_B);
+		JMenuItem redoAnalysis = new JMenuItem("Redo Analysis", KeyEvent.VK_R);
+		JMenuItem mergeMenuItem = new JMenuItem("Merge Analysis...");
+		JMenuItem exitMenuItem;
+		
+		if (System.getProperty("os.name").startsWith("Mac"))
+			exitMenuItem = new JMenuItem("Quit");
+		else
+			exitMenuItem = new JMenuItem("Exit", KeyEvent.VK_X);
+		
+		JMenu windowMenu = guiLayout.createWindowMenu();
+
+		
+		newProjectMenuItem.setEnabled(true);
+		newProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		newProjectMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				saveCommentsToBug(currentSelectedBugLeaf);
+				new NewProjectWizard();
+				
+				newProject = true;
+			}
+		});
+		
+		editProjectMenuItem.setEnabled(false);
+		editProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		editProjectMenuItem.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				saveCommentsToBug(currentSelectedBugLeaf);
+				new NewProjectWizard(curProject);
+			}
+		});
+		
+		openProjectMenuItem.setEnabled(true);
+		openProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		openProjectMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				saveCommentsToBug(currentSelectedBugLeaf);
+				
+				FBFileChooser jfc=new FBFileChooser();
+				jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				jfc.setFileFilter(FindBugsProjectFileFilter.INSTANCE);
+				File xmlFile=null;
+				if (projectChanged)
+				{
+					int response = JOptionPane.showConfirmDialog(MainFrame.this, 
+							"The current project has been changed, Save current changes?"
+							,"Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+
+					if (response == JOptionPane.YES_OPTION)
+					{
+						if (projectDirectory!=null)
+							save(projectDirectory);
+						else
+							projectSaveAs();
+					}
+					else if (response == JOptionPane.CANCEL_OPTION)
+						return;
+					//IF no, do nothing.
+				}
+				
+				boolean loading = true;
+				while (loading)
+				{
+					int value=jfc.showOpenDialog(MainFrame.this);
+					if(value==JFileChooser.APPROVE_OPTION){
+						loading = false;
+						final File dir = jfc.getSelectedFile();						
+						
+						if(!dir.exists() || !dir.isDirectory())
+						{
+							JOptionPane.showMessageDialog(null, "Warning! This project is not a directory.");
+							loading = true;
+							continue;
+						}
+						else
+						{
+							xmlFile= new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");		
+							File fasFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
+
+							if (!xmlFile.exists())
+							{
+								JOptionPane.showMessageDialog(null, "This directory does not contain saved bug XML data, please choose a different directory.");
+								loading=true;
+								continue;
+							}
+							
+							if (!fasFile.exists())
+							{
+								JOptionPane.showMessageDialog(MainFrame.this, "Filter settings not found, using default settings.");
+								try {
+									fasFile.createNewFile();
+									ProjectSettings.newInstance().save(new FileOutputStream(fasFile));
+								} catch (IOException e) {
+									if (MainFrame.DEBUG) System.err.println("Error saving new filter settings file, using default settings without saving these settings to the project.");
+									ProjectSettings.newInstance();
+								}
+							} 
+							else
+							{
+								try 
+								{
+									ProjectSettings.loadInstance(new FileInputStream(fasFile));
+								} catch (FileNotFoundException e) 
+								{
+									//Impossible.
+									if (MainFrame.DEBUG) System.err.println(".fas file not found, using default settings");
+									ProjectSettings.newInstance();
+								}
+							}
+							
+							final File extraFinalReferenceToXmlFile=xmlFile;
+							new Thread(new Runnable(){
+								public void run()
+								{
+									BugTreeModel model=(BugTreeModel)tree.getModel();
+//									Debug.println("please wait called by open menu item");
+									BugTreeModel.pleaseWait();
+									MainFrame.this.setRebuilding(true);
+									BugSet bs=BugLoader.loadBugs(extraFinalReferenceToXmlFile);
+									MainFrame.this.setRebuilding(false);
+									if (bs!=null)
+									{
+										editProjectMenuItem.setEnabled(true);
+										model.getOffListenerList();
+										updateDesignation();
+										model.changeSet(bs);
+										curProject=BugLoader.getLoadedProject();
+										projectDirectory=dir;
+										curProject.setProjectFileName(projectDirectory.getName());
+										MainFrame.getInstance().updateStatusBar();
+									}
+								}
+							}).start();
+							MainFrame.this.setTitle("FindBugs: " + dir.getName());
+						}
+					}
+					else if (value==JFileChooser.CANCEL_OPTION)
+					{
+						return;
+					}
+					else
+						loading = false;
+				}
+//				List<String> projectPaths=new ArrayList<String>();
+				ArrayList<File> xmlFiles=GUISaveState.getInstance().getRecentProjects();
+
+				if (!xmlFiles.contains(xmlFile))
+				{
+					GUISaveState.getInstance().addRecentProject(xmlFile);
+					MainFrame.this.addRecentProjectToMenu(xmlFile);
+				}
+				
+				//Clears the bottom tabs so they are blank. And makes comments
+				//tab not enabled.				
+				clearBottomTabs();
+
+				designationChanged = false;
+				projectChanged = false;
+			}
+		});
+
+		mergeMenuItem.setEnabled(true);
+		mergeMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				saveCommentsToBug(currentSelectedBugLeaf);
+				
+				setCursor(new Cursor(Cursor.WAIT_CURSOR));
+				BugSet bs=BugLoader.combineBugHistories();
+				if (bs!=null)
+				{
+					((BugTreeModel)tree.getModel()).getOffListenerList();
+					updateDesignation();
+					((BugTreeModel)tree.getModel()).changeSet(bs);
+					curProject=BugLoader.getLoadedProject();
+				}
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				
+				setProjectChanged(true);
+			}
+		});
+		
+		redoAnalysis.setEnabled(true);
+		redoAnalysis.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		redoAnalysis.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				saveCommentsToBug(currentSelectedBugLeaf);
+				
+				setCursor(new Cursor(Cursor.WAIT_CURSOR));
+				new Thread()
+				{
+					public void run()
+					{
+						updateDesignation();
+						BugSet bs=BugLoader.redoAnalysisKeepComments(curProject);
+						
+						if (bs!=null)
+						{
+							//Dont clear data, the data's correct, just get the tree off the listener lists.
+							((BugTreeModel) tree.getModel()).getOffListenerList();
+							((BugTreeModel)tree.getModel()).changeSet(bs);
+							curProject=BugLoader.getLoadedProject();
+						}
+						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+						setProjectChanged(true);
+					}
+				}.start();
+			}
+		});
+/*		This seems pointless, all we could do on closing is have an empty window		
+		closeProjectMenuItem.setEnabled(false);
+		closeProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_MASK));
+		closeProjectMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				JOptionPane.showMessageDialog(null, "Close Project!!");
+			}
+		});
+*/
+		
+		saveProjectMenuItem.setEnabled(false);
+		saveProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		saveProjectMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				saveCommentsToBug(currentSelectedBugLeaf);
+				
+				save(projectDirectory);
+			}
+		});
+		
+		saveAsProjectMenuItem.setEnabled(true);
+		saveAsProjectMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				saveCommentsToBug(currentSelectedBugLeaf);
+				
+				if(projectSaveAs())
+					saveProjectMenuItem.setEnabled(true);
+			}
+		});
+		
+		importBugsMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				saveCommentsToBug(currentSelectedBugLeaf);
+				
+				FBFileChooser jfc= new FBFileChooser();
+				jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				jfc.setFileFilter(new FindBugsAnalysisFileFilter());
+				
+				// jfc.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs()); this is done by FBFileChooser now.
+								
+				boolean importing = true;
+				while(importing){
+					int returnValue=jfc.showOpenDialog(new JFrame());
+					
+					if (returnValue==JFileChooser.APPROVE_OPTION)
+					{
+						File file=jfc.getSelectedFile();
+						
+						if(!file.exists()){
+							JOptionPane.showMessageDialog(jfc, "That file does not exist");
+							importing = true;
+							continue;
+						}
+						else
+							importing = false;
+						
+						setCursor(new Cursor(Cursor.WAIT_CURSOR));
+
+						
+						final File extraFinalReferenceToXmlFile=file;
+						new Thread(new Runnable(){
+							public void run()
+							{
+								BugTreeModel model=(BugTreeModel)tree.getModel();
+//								BugTreeModel.pleaseWait();
+								MainFrame.this.setRebuilding(true);
+								BugSet bs=BugLoader.loadBugs(extraFinalReferenceToXmlFile);
+								MainFrame.this.setRebuilding(false);
+								if (bs!=null)
+								{
+									ProjectSettings.newInstance();
+									model.getOffListenerList();
+									updateDesignation();
+									model.changeSet(bs);
+									curProject=BugLoader.getLoadedProject();
+									MainFrame.this.updateStatusBar();
+								}
+							}
+						}).start();
+
+						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+						
+						setProjectChanged(false);
+					}
+					else
+						return;
+//					GUISaveState.getInstance().setStarterDirectoryForLoadBugs(jfc.getCurrentDirectory()); This is done by FBFileChooser
+				}
+			}
+		});
+		
+		exportBugsMenuItem.setEnabled(true);
+		exportBugsMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				saveCommentsToBug(currentSelectedBugLeaf);
+				
+				if (curProject==null)
+				{
+					JOptionPane.showMessageDialog(MainFrame.this,"There is no project to save");
+					return;
+				}
+				
+				FBFileChooser chooser=new FBFileChooser();
+				chooser.setFileFilter(new FindBugsAnalysisFileFilter());
+				boolean saving=true;
+				while (saving)
+				{
+		
+					int value=chooser.showSaveDialog(MainFrame.this);
+					if (value==JFileChooser.APPROVE_OPTION)
+					{
+						saving=false;
+						File xmlFile = chooser.getSelectedFile();
+						
+						if(!xmlFile.getName().endsWith(".xml"))
+							xmlFile = new File(xmlFile.getAbsolutePath()+".xml");
+						
+						if (xmlFile.exists())
+						{
+							int response = JOptionPane.showConfirmDialog(chooser, 
+									"This analysis already exists.\nReplace it?",
+									"Warning!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+							
+							if(response == JOptionPane.OK_OPTION)
+								saving = false;
+							if(response == JOptionPane.CANCEL_OPTION){
+								saving = true;
+								continue;
+							}
+						}
+						BugSaver.saveBugs(xmlFile, BugSet.getMainBugSet(), MainFrame.this.curProject);
+					}
+				else return;
+				}
+
+			}
+		});
+
+		if (System.getProperty("os.name").startsWith("Mac"))
+			exitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		exitMenuItem.addActionListener(new ActionListener(){			
+			public void actionPerformed(ActionEvent evt){
+				if(!callOnClose())
+					return;
+				System.exit(0);
+			}
+		});
+				
+		fileMenu.add(newProjectMenuItem);
+		fileMenu.add(editProjectMenuItem);
+		fileMenu.addSeparator();
+		fileMenu.add(openProjectMenuItem);
+		fileMenu.add(recentProjectsMenu);
+		fileMenu.addSeparator();
+		fileMenu.add(saveProjectMenuItem);
+		fileMenu.add(saveAsProjectMenuItem);
+		fileMenu.addSeparator();
+		fileMenu.add(importBugsMenuItem);
+		fileMenu.add(exportBugsMenuItem);
+		fileMenu.addSeparator();
+		fileMenu.add(redoAnalysis);
+		fileMenu.add(mergeMenuItem);
+		fileMenu.addSeparator();
+		fileMenu.add(exitMenuItem);
+		
+		//TODO Delete later, this is just for testing purposes.
+//		JMenuItem temp = new JMenuItem("temp");
+//		temp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+//		temp.addActionListener(new ActionListener(){
+//			public void actionPerformed(ActionEvent evt){
+//				Debug.println("before v scrollbar max: " +sourceCodeScrollPane.getVerticalScrollBar().getMaximum());
+//				sourceCodeScrollPane.validate();
+//				Debug.println("after v scrollbar max: " +sourceCodeScrollPane.getVerticalScrollBar().getMaximum());
+//				Debug.println("scrollbar value: "+sourceCodeScrollPane.getVerticalScrollBar().getValue());
+//			}
+//		});
+//		fileMenu.add(temp);
+		
+		menuBar.add(fileMenu);
+		
+		//This kind of works, the key stroke works for the jtree, but the menuitems doesn't.
+		//Edit editMenu Menu object.
+		JMenuItem cutMenuItem = new JMenuItem(new CutAction());
+		JMenuItem copyMenuItem = new JMenuItem(new CopyAction());
+		JMenuItem pasteMenuItem = new JMenuItem(new PasteAction());
+		preferencesMenuItem = new JMenuItem("Preferences");
+		JMenuItem sortMenuItem = new JMenuItem("Sort Configuration...");
+		JMenuItem goToLineMenuItem = new JMenuItem("Go to line...");
+		
+		cutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		pasteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		
+		preferencesMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				saveCommentsToBug(currentSelectedBugLeaf);
+				PreferencesFrame.getInstance().setVisible(true);
+			}
+		});
+		
+		sortMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				saveCommentsToBug(currentSelectedBugLeaf);
+				SorterDialog.getInstance().setVisible(true);
+			}
+		});
+		
+		goToLineMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		goToLineMenuItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){				
+				int num = 0;
+				boolean cont = true;
+				
+				try{
+					num = Integer.parseInt(JOptionPane.showInputDialog(MainFrame.this, "", "Go To Line:", JOptionPane.QUESTION_MESSAGE));
+				}
+				catch(NumberFormatException e){
+					cont = false;
+				}
+				
+				if(cont)
+					displayer.showLine(num);
+				
+
+					guiLayout.makeSourceVisible();
+
+			}
+		});
+		
+		editMenu.add(cutMenuItem);
+		editMenu.add(copyMenuItem);
+		editMenu.add(pasteMenuItem);
+		editMenu.addSeparator();
+		editMenu.add(goToLineMenuItem);
+		editMenu.addSeparator();
+		//editMenu.add(selectAllMenuItem);
+//		editMenu.addSeparator();
+		editMenu.add(preferencesMenuItem);
+		editMenu.add(sortMenuItem);
+		
+		menuBar.add(editMenu);
+		
+		if (windowMenu != null)
+			menuBar.add(windowMenu);
+		
+		JMenu helpMenu = new JMenu("Help");
+		JMenuItem aboutItem = new JMenuItem("About FindBugs");
+		helpMenu.add(aboutItem);
+
+         aboutItem.addActionListener(new java.awt.event.ActionListener() {
+             public void actionPerformed(java.awt.event.ActionEvent evt) {
+                 about();
+             }
+         });
+         menuBar.add(helpMenu);
+		return menuBar;
+	}
+	
+	void newProject(){
+		setProjectChanged(true);		
+		clearBottomTabs();
+		
+		if(newProject){
+			setTitle("FindBugs: " + Project.UNNAMED_PROJECT);
+			projectDirectory = null;
+			saveProjectMenuItem.setEnabled(false);
+			editProjectMenuItem.setEnabled(true);
+		}		
+	}
+
+	
+	/**
+	 * Called when use has not previous saved project. Uses save() after finds
+	 * where user want to save file.
+	 * @return True if successful.
+	 */
+	private boolean projectSaveAs(){
+		if (curProject==null)
+		{
+			JOptionPane.showMessageDialog(MainFrame.this,"There is no project to save");
+			return false;
+		}
+		
+		FBFileChooser jfc=new FBFileChooser();
+		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		jfc.setFileFilter(new FindBugsProjectFileFilter());
+		jfc.setDialogTitle("Save as...");
+		boolean saving = true;
+		boolean exists = false;
+		File dir=null;
+		while (saving)
+		{
+			int value=jfc.showSaveDialog(MainFrame.this);
+			if(value==JFileChooser.APPROVE_OPTION)
+			{
+				saving = false;
+				dir = jfc.getSelectedFile();
+				File xmlFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");
+				File fasFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
+				exists=xmlFile.exists() && fasFile.exists();
+
+				if(exists){
+					int response = JOptionPane.showConfirmDialog(jfc, 
+							"This project already exists.\nDo you want to replace it?",
+							"Warning!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+					
+					if(response == JOptionPane.OK_OPTION)
+						saving = false;
+					if(response == JOptionPane.CANCEL_OPTION){
+						saving = true;
+						continue;
+					}
+				}
+						
+				boolean good=save(dir);
+				if (good==false)
+				{
+					JOptionPane.showMessageDialog(MainFrame.this, "An error occured in saving");
+					return false;
+				}
+				projectDirectory=dir;				
+			}
+			else
+				return false;
+		}
+		curProject.setProjectFileName(projectDirectory.getName());
+		File xmlFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");
+
+		//If the file already existed, its already in the preferences, as well as the recent projects menu items, only add it if they change the name, otherwise everything we're storing is still accurate since all we're storing is the location of the file.
+		if (!exists)
+		{
+			GUISaveState.getInstance().addRecentProject(xmlFile);
+		}
+
+		MainFrame.this.addRecentProjectToMenu(xmlFile);
+
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	JPanel topPanel()
+	{
+		JPanel topPanel = new JPanel();
+		
+		tableheader = new JTableHeader();
+		//Listener put here for when user double clicks on sorting
+		//column header SorterDialog appears.
+		tableheader.addMouseListener(new MouseAdapter(){
+
+			public void mouseClicked(MouseEvent e) {
+				if (!tableheader.getReorderingAllowed())
+					return;
+				if (e.getClickCount()==2)
+					SorterDialog.getInstance().setVisible(true);
+			}
+
+			public void mouseReleased(MouseEvent arg0) {
+				if (!tableheader.getReorderingAllowed())
+					return;
+				BugTreeModel bt=(BugTreeModel) (MainFrame.this.getTree().getModel());
+				bt.checkSorter();
+			}
+		});
+		sorter = GUISaveState.getInstance().getStarterTable();
+		tableheader.setColumnModel(sorter);
+		
+		tree = new JTree();
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		tree.setCellRenderer(new BugRenderer());
+		tree.setRowHeight((int)(Driver.getFontSize() + 7));
+		tree.setModel(new BugTreeModel(tree, sorter, new BugSet(new ArrayList<BugLeafNode>())));
+		setupTreeListeners();
+		curProject=BugLoader.getLoadedProject();
+		
+		
+		treeScrollPane = new JScrollPane(tree);
+		topPanel.setLayout(new BorderLayout());
+
+		topPanel.add(tableheader, BorderLayout.NORTH);
+		topPanel.add(treeScrollPane, BorderLayout.CENTER);
+		
+		return topPanel;
+	}
+	
+	public void newTree(final JTree newTree, final BugTreeModel newModel)
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				tree = newTree;
+				tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+				tree.setCellRenderer(new BugRenderer());
+				Container container = treeScrollPane.getParent();
+				
+				container.remove(treeScrollPane);
+				treeScrollPane = new JScrollPane(newTree);
+				container.add(treeScrollPane, BorderLayout.CENTER);
+				setFontSizeHelper(container.getComponents(), Driver.getFontSize());
+				tree.setRowHeight((int)(Driver.getFontSize() + 7));
+				MainFrame.getInstance().getContentPane().validate();
+				MainFrame.getInstance().getContentPane().repaint();
+				
+				setupTreeListeners();
+				newModel.openPreviouslySelected(((BugTreeModel)(tree.getModel())).getOldSelectedBugs());
+				MainFrame.this.getSorter().addColumnModelListener(newModel);
+				FilterMatcher.addFilterListener(newModel);
+				newTree.addTreeExpansionListener(newModel);
+				MainFrame.this.setSorting(true);
+			}
+		});
+		
+	}
+	
+	private void setupTreeListeners()
+	{
+		tree.addTreeSelectionListener(new TreeSelectionListener(){
+			public void valueChanged(TreeSelectionEvent selectionEvent) {
+				
+				TreePath path = selectionEvent.getNewLeadSelectionPath();				
+				if (path != null)
+				{
+					saveCommentsToBug(currentSelectedBugLeaf);
+
+					if ((path.getLastPathComponent() instanceof BugLeafNode))
+					{	
+						boolean beforeProjectChanged = projectChanged;
+						updateDesignation();
+						setUserCommentInputEnable(true);
+						BugLeafNode bugLeaf = (BugLeafNode)path.getLastPathComponent();
+						BugInstance bug = bugLeaf.getBug();
+						currentSelectedBugLeaf = bugLeaf;
+						currentSelectedBugAspects = null;
+						updateSummaryTab(bugLeaf);
+						updateCommentsTab(bugLeaf);
+						displayer.displaySource(bug, bug.getPrimarySourceLineAnnotation());
+						setProjectChanged(beforeProjectChanged);
+					}
+					else
+					{
+						updateDesignation();
+						currentSelectedBugLeaf = null;
+						currentSelectedBugAspects = (BugAspects)path.getLastPathComponent();
+						clearBottomTabs();
+					}
+				}
+//				Debug.println("Tree selection count:" + tree.getSelectionCount());
+				if (tree.getSelectionCount() !=1)
+				{
+					Debug.println("Tree selection count not equal to 1, disabling comments tab" + selectionEvent);
+				
+					MainFrame.this.setUserCommentInputEnable(false);
+				}
+			}						
+		});
+		tree.addKeyListener(new KeyListener() {
+
+			public void keyPressed(KeyEvent arg0) {
+				
+			}
+
+			public void keyReleased(KeyEvent e) {
+				
+			}
+			
+			public void keyTyped(KeyEvent e) {
+				if(currentSelectedBugLeaf != null){
+					switch(e.getKeyChar())
+					{
+						case '1':
+						case '2':
+						case '3':
+						case '4':
+						case '5':
+						case '0':
+							designationComboBox.setSelectedIndex(e.getKeyChar()-'0');
+							designationChanged=true;
+							guiLayout.makeCommentsVisible();
+							break;
+					}
+				}
+			}
+		});
+
+		
+		tree.addMouseListener(new MouseListener(){
+
+			public void mouseClicked(MouseEvent e) {
+				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+				
+				if(path == null)
+					return;
+				
+				if ((e.getButton() == MouseEvent.BUTTON3) || 
+						(e.getButton() == MouseEvent.BUTTON1 && e.isControlDown())){
+					
+					if (tree.getModel().isLeaf(path.getLastPathComponent())){
+						tree.setSelectionPath(path);
+						bugPopupMenu.show(tree, e.getX(), e.getY());
+					}
+					else{
+						tree.setSelectionPath(path);
+						if (!(path.getParentPath()==null))//If the path's parent path is null, the root was selected, dont allow them to filter out the root.
+							branchPopupMenu.show(tree, e.getX(), e.getY());
+					}
+				}		
+			}			
+
+			public void mousePressed(MouseEvent arg0) {}
+			public void mouseReleased(MouseEvent arg0) {}
+			public void mouseEntered(MouseEvent arg0) {}
+			public void mouseExited(MouseEvent arg0) {}			
+		});
+	}
+		
+	
+	protected void updateDesignation() {
+		
+		if (currentSelectedBugLeaf==null)
+			return;
+		
+		if (!getSorter().getOrder().contains(Sortables.DESIGNATION))
+		{
+			if (designationChanged)
+			{
+				int index = designationComboBox.getSelectedIndex();
+				currentSelectedBugLeaf.getBug().getSafeUserDesignation().setDesignation(designationList.get(index));
+				designationChanged=false;
+			}
+		}
+		else if (getSorter().getOrderBeforeDivider().contains(Sortables.DESIGNATION))
+		{
+			if (designationChanged)
+			{
+				Debug.println("What huh!?!?");
+				int index = designationComboBox.getSelectedIndex();
+				BugTreeModel model= (BugTreeModel)tree.getModel();
+				TreePath path=model.getPathToBug(currentSelectedBugLeaf.getBug());
+				if (path==null)
+				{
+					designationChanged=false;
+					return;
+				}
+				Object[] objPath=path.getParentPath().getPath();
+				ArrayList<Object> reconstruct=new ArrayList<Object>();
+				ArrayList<TreePath> listOfNodesToReconstruct=new ArrayList<TreePath>();
+				for (int x=0; x< objPath.length;x++)
+				{
+					Object o=objPath[x];
+					reconstruct.add(o);
+					if (o instanceof BugAspects)
+					{
+						if (((BugAspects)o).getCount()==1)
+						{
+		//					Debug.println((BugAspects)(o));
+							break;
+						}
+					}
+					TreePath pathToNode=new TreePath(reconstruct.toArray());
+					listOfNodesToReconstruct.add(pathToNode);
+				}
+		
+				currentSelectedBugLeaf.getBug().getSafeUserDesignation().setDesignation(designationList.get(index));
+				model.suppressBug(path);
+				TreePath unsuppressPath=model.getPathToBug(currentSelectedBugLeaf.getBug());
+				if (unsuppressPath!=null)//If choosing their designation has not moved the bug under any filters
+				{
+					model.unsuppressBug(unsuppressPath);
+		//			tree.setSelectionPath(unsuppressPath);
+				}
+				for (TreePath pathToNode: listOfNodesToReconstruct)
+				{
+					model.treeNodeChanged(pathToNode);
+				}
+				setProjectChanged(true);
+				designationChanged=false;
+			}
+		}
+		else if (getSorter().getOrderAfterDivider().contains(Sortables.DESIGNATION))
+		{
+			if (designationChanged)
+			{
+				int index = designationComboBox.getSelectedIndex();
+				currentSelectedBugLeaf.getBug().getSafeUserDesignation().setDesignation(designationList.get(index));
+				
+				BugTreeModel model = (BugTreeModel)tree.getModel();
+				TreePath pathToBranch=model.getPathToBug(currentSelectedBugLeaf.getBug()).getParentPath();
+				model.sortBranch(pathToBranch);
+				designationChanged=false;
+			}
+		}
+	}
+
+	/**
+	 * Clears the bottom tabs so not show bug information.
+	 *
+	 */
+	private void clearBottomTabs(){
+			
+		setUserCommentInputEnable(false); //Do not put in Swing thread b/c already in it.
+		
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				setSourceTabTitle("Source");				
+				clearSummaryTab();				
+				sourceCodeTextPane.setText("");
+				currSrcLineAnnotation = null;
+			}
+		});		
+	}
+	
+
+	
+	/**
+	 * Creates the status bar of the GUI.
+	 * @return
+	 */
+	JPanel statusBar()
+	{
+		JPanel statusBar = new JPanel(); 
+		
+		statusBar.setBorder(new BevelBorder(BevelBorder.LOWERED));
+		statusBar.setLayout(new FlowLayout(FlowLayout.LEFT));
+		statusBar.add(statusBarLabel);
+		statusBarLabel.setAlignmentX(LEFT_ALIGNMENT);
+		
+		return statusBar;
+	}
+	
+	void updateStatusBar()
+	{
+		statusBarLabel.setText(BugSet.countFilteredBugs() + ((BugSet.countFilteredBugs() == 1) ? " bug" : " bugs") + " hidden.");
+	}
+	
+	private void updateSummaryTab(BugLeafNode node)
+	{
+		final BugInstance bug = node.getBug();
+
+		final ArrayList<BugAnnotation> primaryAnnotations = new ArrayList<BugAnnotation>();
+		boolean classIncluded = false;
+		
+		//This ensures the order of the primary annotations of the bug
+		if(bug.getPrimarySourceLineAnnotation() != null)
+			primaryAnnotations.add(bug.getPrimarySourceLineAnnotation());
+		if(bug.getPrimaryMethod() != null)
+			primaryAnnotations.add(bug.getPrimaryMethod());
+		if(bug.getPrimaryField() != null)
+			primaryAnnotations.add(bug.getPrimaryField());
+		
+		/*
+		 * This makes the primary class annotation appear only when
+		 * the visible field and method primary annotations don't have
+		 * the same class.
+		 */
+		if(bug.getPrimaryClass() != null){
+			FieldAnnotation primeField = bug.getPrimaryField();
+			MethodAnnotation primeMethod = bug.getPrimaryMethod();
+			ClassAnnotation primeClass = bug.getPrimaryClass();
+			String fieldClass = "";
+			String methodClass = "";
+			if(primeField != null)
+				fieldClass = primeField.getClassName();
+			if(primeMethod != null)
+				methodClass = primeMethod.getClassName();			
+			if((primaryAnnotations.size() < 2) || (!(primeClass.getClassName().equals(fieldClass) || 
+					primeClass.getClassName().equals(methodClass)))){
+				primaryAnnotations.add(primeClass);
+				classIncluded = true;
+			}
+		}
+		
+		final boolean classIncluded2 = classIncluded;
+		
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				summaryTopPanel.removeAll();
+				
+				summaryTopPanel.add(bugSummaryComponent(bug.getMessageWithoutPrefix()));
+				for(BugAnnotation b : primaryAnnotations)
+					summaryTopPanel.add(bugSummaryComponent(b));
+				
+				
+				if(!classIncluded2 && bug.getPrimaryClass() != null)
+					primaryAnnotations.add(bug.getPrimaryClass());
+				
+				for(Iterator<BugAnnotation> i = bug.annotationIterator(); i.hasNext();){
+					BugAnnotation b = i.next();
+					boolean cont = true;
+					for(BugAnnotation p : primaryAnnotations)
+						if(p == b)
+							cont = false;
+					
+					if(cont)
+						summaryTopPanel.add(bugSummaryComponent(b));
+				}
+				
+				summaryHtmlArea.setText(bug.getBugPattern().getDetailHTML());
+								
+				summaryTopPanel.add(Box.createVerticalGlue());
+				summaryTopPanel.revalidate();
+				
+				SwingUtilities.invokeLater(new Runnable(){
+					public void run(){
+						summaryHtmlScrollPane.getVerticalScrollBar().setValue(summaryHtmlScrollPane.getVerticalScrollBar().getMinimum());
+					}
+				});
+			}
+		});
+	}
+	
+	private void clearSummaryTab()
+	{
+		summaryHtmlArea.setText("");
+		summaryTopPanel.removeAll();
+		summaryTopPanel.revalidate();	
+	}
+	
+	/**
+	 * Creates initial summary tab and sets everything up.
+	 * @return
+	 */
+	Component summaryTab()
+	{
+		summaryTopPanel = new JPanel();
+		summaryTopPanel.setLayout(new GridLayout(0,1));
+		summaryTopPanel.setBorder(BorderFactory.createEmptyBorder(2,4,2,4));
+		
+		summaryHtmlArea.setContentType("text/html");
+		summaryHtmlArea.setEditable(false);
+		setStyleSheets();
+		
+		JPanel temp = new JPanel(new BorderLayout());
+		temp.add(summaryTopPanel, BorderLayout.NORTH);
+		JSplitPane splitP = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, 
+				new JScrollPane(temp), summaryHtmlScrollPane);
+		splitP.setDividerLocation(120);
+		return splitP;
+	}
+	
+	/**
+	 * Creates bug summary component. If obj is a string will create a JLabel
+	 * with that string as it's text and return it. If obj is an annotation
+	 * will return a JLabel with the annotation's toString(). If that
+	 * annotation is a SourceLineAnnotation or has a SourceLineAnnotation
+	 * connected to it and the source file is available will attach
+	 * a listener to the label.
+	 * @param obj
+	 * @return
+	 */
+	private Component bugSummaryComponent(Object obj){
+		JLabel label = new JLabel();
+		label.setFont(label.getFont().deriveFont(Driver.getFontSize()));
+		label.setFont(label.getFont().deriveFont(Font.PLAIN));
+		label.setForeground(Color.BLACK);
+		
+		if(obj instanceof String){
+			String str = (String) obj;
+			label.setText(str);
+		}
+		else{
+			
+			BugAnnotation value = (BugAnnotation) obj;
+			
+			if(value == null)
+				return new JLabel("null");
+			
+			if(value instanceof SourceLineAnnotation){
+				final SourceLineAnnotation note = (SourceLineAnnotation) value;
+				if(sourceCodeExist(note)){
+					String srcStr = "";
+					int start = note.getStartLine();
+					int end = note.getEndLine();
+					if(start < 0 && end < 0)
+						srcStr = "source code.";
+					else if(start == end)
+						srcStr = " [Line " + start + "]";
+					else if(start < end)
+						srcStr = " [Lines " + start + " - " + end + "]";
+					
+					label.setToolTipText("Click to go to " + srcStr);
+					
+					label.addMouseListener(new BugSummaryMouseListener(null, label, note));
+				}
+				
+				label.setText(note.toString());
+			}
+			else if(value instanceof PackageMemberAnnotation){
+				PackageMemberAnnotation note = (PackageMemberAnnotation) value;
+				final SourceLineAnnotation noteSrc = note.getSourceLines();
+				String srcStr = "";
+				if(sourceCodeExist(noteSrc) && noteSrc != null){
+					int start = noteSrc.getStartLine();
+					int end = noteSrc.getEndLine();
+					if(start < 0 && end < 0)
+						srcStr = "source code.";
+					else if(start == end)
+						srcStr = " [Line " + start + "]";
+					else if(start < end)
+						srcStr = " [Lines " + start + " - " + end + "]";
+					
+					if(!srcStr.equals("")){
+						label.setToolTipText("Click to go to " + srcStr);
+						label.addMouseListener(new BugSummaryMouseListener(null, label, noteSrc));
+					}
+				}
+				if(!srcStr.equals("source code."))
+					label.setText(note.toString() + srcStr);
+				else
+					label.setText(note.toString());
+			}
+			else{
+				label.setText(((BugAnnotation) value).toString());
+			}
+		}
+		
+		return label;
+	}
+	
+	/**
+	 * Listens for when cursor is over the label and when it is clicked.
+	 * When the cursor is over the label will make the label text blue 
+	 * and the cursor the hand cursor. When clicked will take the
+	 * user to the source code tab and to the lines of code connected
+	 * to the SourceLineAnnotation.
+	 * @author Kristin Stephens
+	 *
+	 */
+	private class BugSummaryMouseListener extends MouseAdapter{
+		private BugInstance bugInstance;
+		private JLabel label;
+		private SourceLineAnnotation note;
+		
+		BugSummaryMouseListener(BugInstance bugInstance, JLabel label, SourceLineAnnotation note){
+			this.bugInstance = bugInstance;
+			this.label = label;
+			this.note = note;
+		}
+		
+		public void mouseClicked(MouseEvent e) {			
+			displayer.displaySource(bugInstance, note);
+		}
+		public void mouseEntered(MouseEvent e){
+			label.setForeground(Color.blue);
+			setCursor(new Cursor(Cursor.HAND_CURSOR));
+		}
+		public void mouseExited(MouseEvent e){
+			label.setForeground(Color.black);
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		}
+	}
+	
+	/**
+	 * Checks if source code file exists/is available
+	 * @param note
+	 * @return
+	 */
+	private boolean sourceCodeExist(SourceLineAnnotation note){
+		try{
+			sourceFinder.findSourceFile(note);
+		}catch(FileNotFoundException e){
+			return false;
+		}catch(IOException e){
+			return false;
+		}
+		return true;
+	}
+	
+	private void setStyleSheets() {
+		StyleSheet styleSheet = new StyleSheet();
+		styleSheet.addRule("body {font-size: " + Driver.getFontSize() +"pt}");
+        styleSheet.addRule("H1 {color: red;  font-size: 120%; font-weight: bold;}");
+        styleSheet.addRule("code {font-family: courier; font-size: " + Driver.getFontSize() +"pt}");
+        htmlEditorKit.setStyleSheet(styleSheet);
+        summaryHtmlArea.setEditorKit(htmlEditorKit);
+	}
+	
+	/**
+	 * Creates the comments tab JPanel.
+	 */
+	JPanel commentsTab()
+	{	
+		JPanel commentsPanel = new JPanel();
+		BorderLayout commentsLayout = new BorderLayout();
+		commentsLayout.setHgap(10);
+		commentsLayout.setVgap(10);
+		commentsPanel.setLayout(commentsLayout);
+		
+		commentsPanel.add(createCommentsInputPanel(), BorderLayout.CENTER);
+		
+		//Create labels for combo boxes and textArea.
+		//Got a little complicated so that spacing was correct.
+		//Possible need of revision
+		JPanel leftPanel = new JPanel();
+		leftPanel.setLayout(new BorderLayout());
+		
+		JPanel statusPanel= new JPanel();
+		JLabel statusLabel = new JLabel("Designation:");
+		statusLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.Y_AXIS));
+		statusPanel.setAlignmentY(Component.RIGHT_ALIGNMENT);
+		statusPanel.add(Box.createVerticalStrut(COMMENTS_TAB_STRUT_SIZE));		
+		statusPanel.add(statusLabel);
+				
+		JLabel commentsLabel = new JLabel("Comments:");
+		commentsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		
+		JPanel prevCommentsPanel = new JPanel();
+		JLabel prevCommentsLabel = new JLabel("Previous:");
+		prevCommentsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		prevCommentsPanel.setLayout(new BoxLayout(prevCommentsPanel, BoxLayout.Y_AXIS));
+		prevCommentsPanel.setAlignmentY(Component.RIGHT_ALIGNMENT);
+		prevCommentsPanel.add(prevCommentsLabel);
+		prevCommentsPanel.add(Box.createVerticalStrut(COMMENTS_TAB_STRUT_SIZE));
+		
+		leftPanel.add(statusPanel, BorderLayout.NORTH);
+		leftPanel.add(commentsLabel, BorderLayout.CENTER);
+		leftPanel.add(prevCommentsPanel, BorderLayout.SOUTH);
+		
+		commentsPanel.add(leftPanel, BorderLayout.WEST);
+		
+		commentsPanel.setBorder(BorderFactory.createEmptyBorder(COMMENTS_MARGIN,COMMENTS_MARGIN,COMMENTS_MARGIN,COMMENTS_MARGIN));
+		return commentsPanel;
+	}
+	
+	/**
+	 * Create center panel that holds the user input combo boxes and TextArea.
+	 */
+	private JPanel createCommentsInputPanel(){
+		JPanel centerPanel = new JPanel();
+		BorderLayout centerLayout = new BorderLayout();
+		centerLayout.setVgap(10);
+		centerPanel.setLayout(centerLayout);
+		
+		userCommentsText.getDocument().addDocumentListener(new DocumentListener(){
+
+			public void insertUpdate(DocumentEvent e) {
+				commentChanged = true;
+				setProjectChanged(true);
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				commentChanged = true;
+				setProjectChanged(true);
+			}
+
+			public void changedUpdate(DocumentEvent e) {}
+			
+		});
+		
+		userCommentsTextUnenabledColor = centerPanel.getBackground();
+		
+		userCommentsText.setLineWrap(true);
+		userCommentsText.setWrapStyleWord(true);
+		userCommentsText.setEnabled(false);
+		userCommentsText.setBackground(userCommentsTextUnenabledColor);
+		JScrollPane commentsScrollP = new JScrollPane(userCommentsText);
+
+		prevCommentsComboBox.setEnabled(false);
+		prevCommentsComboBox.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e) {	
+				if(e.getStateChange() == ItemEvent.SELECTED && prevCommentsComboBox.getSelectedIndex() != 0){
+					setCurrentUserCommentsText(getCurrentPrevCommentsSelection());
+					
+					prevCommentsComboBox.setSelectedIndex(0);					
+				}
+			}			
+		});
+		
+		designationComboBox = new JComboBox();
+		designationList = new ArrayList<String>();
+		
+		designationComboBox.setEnabled(false);
+		
+		designationComboBox.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e) {	
+				if (userInputEnabled)
+				{
+					if(e.getStateChange() == ItemEvent.SELECTED && currentSelectedBugLeaf != null && !alreadySelected())
+					{
+						designationChanged=true;
+						setProjectChanged(true);
+					}
+				}
+			}
+			
+			/*
+			 * Checks to see if the designation is already selected as that.
+			 * This was created because it was found the itemStateChanged method is called
+			 * when the combo box is set when a bug is clicked.
+			 */
+			private boolean alreadySelected(){
+				return designationList.get(designationComboBox.getSelectedIndex()).
+						equals(currentSelectedBugLeaf.getBug().getSafeUserDesignation().getDesignation());
+			}
+		});
+		
+		for(String s : I18N.instance().getUserDesignationKeys(true)){
+			designationList.add(s);
+			designationComboBox.addItem(Sortables.DESIGNATION.formatValue(s));
+		}
+		
+		designationComboBox.setSelectedIndex(0); //WARNING: this is hard coded in here.
+		
+		centerPanel.add(designationComboBox, BorderLayout.NORTH);
+		centerPanel.add(commentsScrollP, BorderLayout.CENTER);
+		centerPanel.add(prevCommentsComboBox, BorderLayout.SOUTH);
+				
+		return centerPanel;
+	}
+	
+	/**
+	 * Sets the user comment panel to whether or not it is enabled.
+	 * If isEnabled is false will clear the user comments text pane.
+	 * @param isEnabled
+	 */
+	private void setUserCommentInputEnable(final boolean isEnabled){
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){				
+				userInputEnabled=isEnabled;
+				if(!isEnabled){
+					userCommentsText.setText("");
+					commentChanged = false;
+					//WARNING: this is hard coded in here, but needed
+					//so when not enabled shows default setting of designation
+					designationComboBox.setSelectedIndex(0);
+				}
+				
+				userCommentsText.setEnabled(isEnabled);
+				prevCommentsComboBox.setEnabled(isEnabled);
+				designationComboBox.setEnabled(isEnabled);
+				
+				if(isEnabled)
+					userCommentsText.setBackground(Color.WHITE);
+				else
+					userCommentsText.setBackground(userCommentsTextUnenabledColor);
+			}
+		});
+	}
+	
+	/**
+	 * Updates comments tab.
+	 * Takes node passed and sets the designation and comments.
+	 * @param node
+	 */
+	private void updateCommentsTab(final BugLeafNode node){
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				boolean b = projectChanged;
+				BugInstance bug = node.getBug();
+				setCurrentUserCommentsText(bug.getAnnotationText());
+				designationComboBox.setSelectedIndex(designationList.indexOf(node.getBug().getSafeUserDesignation().getDesignation()));
+				commentChanged = false;
+				setProjectChanged(b);
+			}
+		});		
+	}
+	
+	/**
+	 * Saves the current comments to the BugLeafNode passed in.
+	 * If the passed in node's annotation is already equal to the current
+	 * user comment then will not do anything so setProjectedChanged is 
+	 * not made true. Will also add the comment if it is new to the previous
+	 * comments list.
+	 * @param node
+	 */
+	private void saveCommentsToBug(BugLeafNode node){
+		if(node == null || !commentChanged)
+			return;
+		
+		if(node.getBug().getAnnotationText().equals(getCurrentUserCommentsText()))
+			return;
+		
+		node.getBug().setAnnotationText(getCurrentUserCommentsText());		
+		setProjectChanged(true);
+		
+		addToPrevComments(getCurrentUserCommentsText());						
+		commentChanged = false;
+	}
+	
+	/**
+	 * Saves comments to the current selected bug.
+	 *
+	 */
+	public void saveComments(){
+		saveCommentsToBug(currentSelectedBugLeaf);
+	}
+	
+	/**
+	 * Deletes the list have already. Then loads from list. Will load from
+	 * the list until run out of room in the prevCommentsList.
+	 * @param list
+	 */
+	private void loadPrevCommentsList(String[] list){
+		int count = 0;
+		for(String str : list){
+			if(str.equals(""))
+				count++;
+		}
+		
+		String[] ary = new String[list.length-count];
+		int j = 0;
+		for(String str : list){
+			if(!str.equals("")){
+				ary[j] = str;
+				j++;
+			}
+		}
+		
+		String[] temp;
+		prevCommentsList = new LinkedList<String>();
+		if((ary.length) > prevCommentsMaxSize){
+			temp = new String[prevCommentsMaxSize];
+			for(int i = 0; i < temp.length && i < ary.length; i++)
+				temp[i] = ary[i];
+		}
+		else{
+			temp = new String[ary.length];
+			for(int i = 0; i < ary.length; i++)
+				temp[i] = ary[i];
+		}
+		
+		for(String str : temp)
+			prevCommentsList.add(str);
+		
+		resetPrevCommentsComboBox();
+	}
+	
+	/**
+	 * Adds the comment into the list. If the comment is already in the list
+	 * then simply moves to the front. If the list is too big when adding
+	 * the comment then deletes the last comment on the list.
+	 * @param comment
+	 */
+	private void addToPrevComments(String comment){
+		if(comment.equals(""))
+			return;
+		
+		if(prevCommentsList.contains(comment)){
+			int index = prevCommentsList.indexOf(comment);
+			prevCommentsList.remove(index);
+		}
+		
+		prevCommentsList.addFirst(comment);			
+		
+		while(prevCommentsList.size() > prevCommentsMaxSize)
+			prevCommentsList.removeLast();
+		
+		resetPrevCommentsComboBox();
+	}
+	
+	/**
+	 * Removes all items in the comboBox for previous comments. Then
+	 * refills it using prevCommentsList.
+	 *
+	 */
+	private void resetPrevCommentsComboBox(){
+		prevCommentsComboBox.removeAllItems();	
+		
+		prevCommentsComboBox.addItem("");
+			
+		for(String str : prevCommentsList){
+			prevCommentsComboBox.addItem(str);
+		}
+	}
+	
+	/**
+	 * Returns the text in the current user comments textArea.
+	 * @return
+	 */
+	private String getCurrentUserCommentsText(){
+		return userCommentsText.getText();
+	}
+
+	/**
+	 * Sets the current user comments text area to comment.
+	 * @param comment
+	 */
+	private void setCurrentUserCommentsText(String comment){
+		userCommentsText.setText(comment);
+	}
+	
+	/**
+	 * Returns the current selected previous comments. Returns as an
+	 * object.
+	 */
+	private String getCurrentPrevCommentsSelection(){
+		return prevCommentsList.get(prevCommentsComboBox.getSelectedIndex() - 1);
+	}
+	
+	/**
+	 * Creates the source code panel, but does not put anything in it.
+	 * @param text
+	 * @return
+	 */
+	JPanel createSourceCodePanel()
+	{
+		Font sourceFont = new Font("Monospaced", Font.PLAIN, (int)Driver.getFontSize());
+		sourceCodeTextPane.setFont(sourceFont);
+		sourceCodeTextPane.setEditable(false);
+		sourceCodeTextPane.getCaret().setSelectionVisible(true);
+		sourceCodeTextPane.setText("Testing");
+		sourceCodeScrollPane = new JScrollPane(sourceCodeTextPane);
+		sourceCodeScrollPane.getVerticalScrollBar().setUnitIncrement(20);
+
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.add(sourceCodeScrollPane, BorderLayout.CENTER);
+		
+		panel.revalidate();
+		if (DEBUG) System.out.println("Created source code panel");
+		return panel;
+	}
+
+	
+
+	/**
+	 * Sets the title of the source tabs for either docking or non-docking
+	 * versions.
+	 * @param title
+	 */
+	private void setSourceTabTitle(final String title){
+		guiLayout.setSourceTitle(title);
+		
+	}
+	
+		
+	
+		
+	/**
+	 * Returns the SorterTableColumnModel of the MainFrame.
+	 * @return
+	 */
+	SorterTableColumnModel getSorter()
+	{
+		return sorter;
+	}
+	
+	/*
+	 * This is overridden for changing the font size
+	 */
+	public void addNotify(){
+		super.addNotify();
+		
+		float size = Driver.getFontSize();
+		
+		getJMenuBar().setFont(getJMenuBar().getFont().deriveFont(size));		
+		for(int i = 0; i < getJMenuBar().getMenuCount(); i++){
+			for(int j = 0; j < getJMenuBar().getMenu(i).getMenuComponentCount(); j++){
+				Component temp = getJMenuBar().getMenu(i).getMenuComponent(j);
+				temp.setFont(temp.getFont().deriveFont(size));
+			}
+		}
+		
+		bugPopupMenu.setFont(bugPopupMenu.getFont().deriveFont(size));
+		setFontSizeHelper(bugPopupMenu.getComponents(), size);
+		
+		branchPopupMenu.setFont(branchPopupMenu.getFont().deriveFont(size));
+		setFontSizeHelper(branchPopupMenu.getComponents(), size);
+		
+	}
+	
+	public JTree getTree()
+	{
+		return tree;
+	}
+	
+	static class CutAction extends TextAction {
+		
+		public CutAction() {
+			super("Cut");
+		}
+
+		public void actionPerformed( ActionEvent evt ) {
+			JTextComponent text = getTextComponent( evt );
+			
+			if(text == null)
+				return;
+			
+			text.cut();
+		}
+	}
+	
+	static class CopyAction extends TextAction {
+		
+		public CopyAction() {
+			super("Copy");
+		}
+		
+		public void actionPerformed( ActionEvent evt ) {
+			JTextComponent text = getTextComponent( evt );
+			
+			if(text == null)
+				return;
+			
+			text.copy();
+		}
+	}
+	
+	static class PasteAction extends TextAction {
+		
+		public PasteAction() {
+			super("Paste");
+		}
+		
+		public void actionPerformed( ActionEvent evt ) {
+			JTextComponent text = getTextComponent( evt );
+			
+			if(text == null)
+				return;
+			
+			text.paste();
+		}
+	}	
+
+	public void setProject(Project p) {
+		curProject=p;
+	}
+
+	public SourceFinder getSourceFinder() 
+	{
+		return sourceFinder;
+	}
+	
+	public void setSourceFinder(SourceFinder sf)
+	{
+		sourceFinder=sf;
+	}
+
+	public void setRebuilding(boolean b)
+	{
+		tableheader.setReorderingAllowed(!b);
+		preferencesMenuItem.setEnabled(!b);
+		if (b)
+			SorterDialog.getInstance().freeze();
+		else
+			SorterDialog.getInstance().thaw();
+		recentProjectsMenu.setEnabled(!b);
+	}
+	
+	public void setSorting(boolean b) {
+		tableheader.setReorderingAllowed(b);
+	}
+	
+	/**
+	 * Called when something in the project is changed and the change
+	 * needs to be saved.
+	 */
+	/*
+	 * This should be called instead of using projectChanged = b.
+	 */
+	public void setProjectChanged(boolean b){
+		if(curProject == null)
+			return;
+		
+		if(projectChanged == b)
+			return;
+		
+		if(projectDirectory != null && projectDirectory.exists())
+			saveProjectMenuItem.setEnabled(b);
+		
+		projectChanged = b;
+	}
+	
+	/*
+	 * DO NOT use the projectDirectory variable to figure out the current project directory in this function
+	 * use the passed in value, as that variable may or may not have been set to the passed in value at this point.
+	 */
+	private boolean save(File dir)
+	{
+		saveCommentsToBug(currentSelectedBugLeaf);
+		
+		dir.mkdir();
+		updateDesignation();
+		
+		File f = new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");	
+		File filtersAndSuppressions=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
+		//Saves current comment to current bug.
+		saveCommentsToBug(currentSelectedBugLeaf);
+
+		BugSaver.saveBugs(f,BugSet.getMainBugSet(),curProject);
+		try {
+			filtersAndSuppressions.createNewFile();
+			ProjectSettings.getInstance().save(new FileOutputStream(filtersAndSuppressions));
+		} catch (IOException e) {
+			Debug.println(e);
+			return false;
+		}
+		setProjectChanged(false);
+		MainFrame.this.setTitle("FindBugs: " + dir.getName());
+		
+		saveProjectMenuItem.setEnabled(false);
+		return true;
+	}
+	
+	/**
+	 * Returns the color of the source code pane's background.
+	 * @return
+	 */
+	public Color getSourceColor(){
+		return sourceCodeTextPane.getBackground();
+	}
+
+	/**
+	 * Show an error dialog.
+	 */
+	public void error(String message) {
+		JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+	}
+	
+	/**
+	 * Write a message to the console window.
+	 * 
+	 * @param message the message to write
+	 */
+	public void writeToLog(String message) {
+		if (DEBUG)
+			System.out.println(message);
+		//		consoleMessageArea.append(message);
+		//		consoleMessageArea.append("\n");
+	}
+}
