@@ -1954,6 +1954,325 @@ The list of configurable analysis properties is shown in
 </chapter>
 
 <!--
+    **************************************************************************
+   Annotations
+   ***************************************************************************
+-->
+
+<chapter id="annotations">
+<title>Annotations</title>
+
+<para>
+&FindBugs; supports several annotations to express the developer's intent
+so that FindBugs can issue warnings more appropriately. You need to use
+Java 5 to use annotations, and must place the annotations.jar on the
+classpath while compiling your program.
+</para>
+
+<variablelist>
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.CheckForNull</command></term>
+    <listitem>
+<command>[Target]</command> Field, Method, Parameter, Local variable
+    </listitem>
+    <listitem>
+      <para>
+The annotated element might be null, and uses of the element should check for null.
+When this annotation is applied to a method it applies to the method return value.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.CheckReturnValue</command></term>
+    <listitem>
+      <command>[Target]</command> Method, Constructor
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>priority:</command>The priority of the warning (HIGH, MEDIUM, LOW, IGNORE). Default value:MEDIUM.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <command>explanation:</command>A textual explaination of why the return value should be checked. Default value:"".
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+This annotation is used to denote a method whose return value should always be checked after invoking the method.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotation</command></term>
+    <listitem>
+      <command>[Target]</command> Type, Package
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>value:</command>Annotation class objects. More than one class can be specified.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <command>priority:</command>Default priority(HIGH, MEDIUM, LOW, IGNORE). Default value:MEDIUM.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+Indicates that all members of the class or package should be annotated with the default
+value of the supplied annotation classes. This would be used for behavior annotations
+such as @NonNull, @CheckForNull, or @CheckReturnValue. In particular, you can use
+@DefaultAnnotation(NonNull.class) on a class or package, and then use @Nullable only
+on those parameters, methods or fields that you want to allow to be null.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotationForFields</command></term>
+    <listitem>
+      <command>[Target]</command> Type, Package
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>value:</command>Annotation class objects. More than one class can be specified.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <command>priority:</command>Default priority(HIGH, MEDIUM, LOW, IGNORE). Default value:MEDIUM.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+This is same as the DefaultAnnotation except it only applys to fields.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotationForMethods</command></term>
+    <listitem>
+      <command>[Target]</command> Type, Package
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>value:</command>Annotation class objects. More than one class can be specified.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <command>priority:</command>Default priority(HIGH, MEDIUM, LOW, IGNORE). Default value:MEDIUM.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+This is same as the DefaultAnnotation except it only applys to methods.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters</command></term>
+    <listitem>
+      <command>[Target]</command> Type, Package
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>value:</command>Annotation class objects. More than one class can be specified.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <command>priority:</command>Default priority(HIGH, MEDIUM, LOW, IGNORE). Default value:MEDIUM.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+This is same as the DefaultAnnotation except it only applys to method parameters.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.NonNull</command></term>
+    <listitem>
+      <command>[Target]</command> Field, Method, Package, Local variable
+    </listitem>
+    <listitem>
+      <para>
+The annotated element must not be null.
+Annotated fields must not be null after construction has completed. Annotated methods must have non-null return values.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.Nullable</command></term>
+    <listitem>
+      <command>[Target]</command> Field, Method, Parameter, Local variable
+    </listitem>
+    <listitem>
+      <para>
+The annotated element could be null under some circumstances. In general, this means
+developers will have to read the documentation to determine when a null value is
+acceptable and whether it is neccessary to check for a null value.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.OverrideMustInvoke</command></term>
+    <listitem>
+      <command>[Target]</command> Method
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>value:</command>Specify when the super invocation should be
+              performed (FIRST, ANYTIME, LAST). Default value:ANYTIME.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+Used to annotate a method that, if overridden, must (or should) be invoke super
+in the overriding method. Examples of such methods include finalize() and clone().
+The argument to the method indicates when the super invocation should occur:
+at any time, at the beginning of the overriding method, or at the end of the overriding method.
+(This anotation is not implmemented in FindBugs as of September 8, 2006).
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.PossiblyNull</command></term>
+    <listitem>
+      <para>
+This annotation is deprecated. Use CheckForNull instead.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.SuppressWarnings</command></term>
+    <listitem>
+      <command>[Target]</command> Type, Field, Method, Parameter, Constructor, Local variable, Package
+    </listitem>
+    <listitem>
+      <variablelist>
+        <varlistentry>
+          <term><command>[Parameter]</command></term>
+          <listitem>
+            <para>
+              <command>value:</command>The name of the warning. More than one name can be specified.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <command>justification:</command>Reason why the warning should be ignored. Default value:"".
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </listitem>
+    <listitem>
+      <para>
+The set of warnings that are to be suppressed by the compiler in the annotated element.
+Duplicate names are permitted.  The second and successive occurrences of a name are ignored.
+The presence of unrecognized warning names is <emphasis>not</emphasis> an error: Compilers
+must ignore any warning names they do not recognize. They are, however, free to emit a
+warning if an annotation contains an unrecognized warning name. Compiler vendors should
+document the warning names they support in conjunction with this annotation type. They
+are encouraged to cooperate to ensure that the same names work across multiple compilers.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.UnknownNullness</command></term>
+    <listitem>
+      <command>[Target]</command> Field, Method, Parameter, Local variable
+    </listitem>
+    <listitem>
+      <para>
+Used to indicate that the nullness of the target is unknown, or my vary in unknown ways in subclasses.
+      </para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><command>edu.umd.cs.findbugs.annotations.UnknownNullness</command></term>
+    <listitem>
+      <command>[Target]</command> Field, Method, Parameter, Local variable
+    </listitem>
+    <listitem>
+      <para>
+Used to indicate that the nullness of the target is unknown, or my vary in unknown ways in subclasses.
+      </para>
+    </listitem>
+  </varlistentry>
+</variablelist>
+
+<para>
+ &FindBugs; also supports the following annotations:
+<itemizedlist>
+  <listitem>net.jcip.annotations.GuardedBy</listitem>
+  <listitem>net.jcip.annotations.Immutable</listitem>
+  <listitem>net.jcip.annotations.NotThreadSafe</listitem>
+  <listitem>net.jcip.annotations.ThreadSafe</listitem>
+</itemizedlist>
+</para>
+<para>
+You can refer the JCIP annotation <ulink url="http://jcip.net/annotations/doc/index.html">
+API documentation</ulink> at <ulink url="http://jcip.net/">Java Concurrency in Practice</ulink>.
+</para>
+</chapter>
+
+<!--
    **************************************************************************
    Data mining
    **************************************************************************
