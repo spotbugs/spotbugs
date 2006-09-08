@@ -1290,7 +1290,15 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public String getMessage() {
 		String pattern = I18N.instance().getMessage(type);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-		return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]));
+		try {
+			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]));
+		} catch (RuntimeException e) {
+			AnalysisContext.logError("Error generating bug msg ", e);
+			BugPattern bugPattern = I18N.instance().lookupBugPattern(type);
+			if (bugPattern == null)
+				return "Error: missing bug pattern for key " + type;
+			return bugPattern.getShortDescription() + " [Error generating customized description]";
+		}
 	}
 
 	/**
