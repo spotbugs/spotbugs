@@ -229,7 +229,7 @@ public class Naming extends PreorderVisitor implements Detector {
 				);
 		}
 		}
-	private static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
+	private final static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
 	@Override
          public void visit(Method obj) {
 		String mName = getMethodName();

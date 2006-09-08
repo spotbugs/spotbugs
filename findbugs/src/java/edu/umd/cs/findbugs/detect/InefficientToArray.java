@@ -41,17 +41,19 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 	static final int SEEN_ICONST_0 = 1;
 	static final int SEEN_ANEWARRAY = 2;
 
-	private static JavaClass collectionClass;
+	private final static JavaClass collectionClass;
 
 	private BugReporter bugReporter;
 	private int state = SEEN_NOTHING;
 
 	static {
+		JavaClass tmp = null;
 		try {
-			collectionClass = AnalysisContext.lookupSystemClass("java.util.Collection");
+			tmp = AnalysisContext.lookupSystemClass("java.util.Collection");
 		} catch (ClassNotFoundException cnfe) {
-			collectionClass = null;
+			AnalysisContext.reportMissingClass(cnfe);
 		}
+		collectionClass = tmp;
 	}
 
 	public InefficientToArray(BugReporter bugReporter) {

@@ -106,7 +106,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		fieldWarningList.clear();
 	}
 
-	static Pattern anonymousInnerClassNamePattern =
+	static final Pattern anonymousInnerClassNamePattern =
 			Pattern.compile(".+\\$\\d+");
 	boolean isAnonymousInnerClass;
 	private boolean isEnum;

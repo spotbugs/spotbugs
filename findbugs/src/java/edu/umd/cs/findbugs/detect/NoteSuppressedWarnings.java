@@ -30,7 +30,7 @@ public class NoteSuppressedWarnings
 		extends AnnotationVisitor
 		implements Detector, NonReportingDetector {
 
-	private static Set<String> packages = new HashSet<String>();
+	private  Set<String> packages = new HashSet<String>();
 
 	private SuppressionMatcher suppressionMatcher;
 

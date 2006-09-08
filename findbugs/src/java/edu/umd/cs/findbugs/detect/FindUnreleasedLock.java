@@ -45,7 +45,7 @@ class Lock extends ResourceCreationPoint {
 
 public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnreleasedLock.LockResourceTracker> {
 	private static final boolean DEBUG = SystemProperties.getBoolean("ful.debug");
-	private static int numAcquires = 0;
+	private  int numAcquires = 0;
 	
 	private static final int JDK15_MAJOR = 48;
 	private static final int JDK15_MINOR = 0;
@@ -140,7 +140,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		}
 	}
 
-	static class LockResourceTracker implements ResourceTracker<Lock> {
+	 class LockResourceTracker implements ResourceTracker<Lock> {
 		private RepositoryLookupFailureCallback lookupFailureCallback;
 		private CFG cfg;
 		private ValueNumberDataflow vnaDataflow;
@@ -276,7 +276,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			return false;
 		}
 
-		private static InvokeInstruction toInvokeInstruction(Instruction ins) {
+		private  InvokeInstruction toInvokeInstruction(Instruction ins) {
 			short opcode = ins.getOpcode();
 			if (opcode != Constants.INVOKEVIRTUAL && opcode != Constants.INVOKEINTERFACE)
 				return null;
@@ -394,7 +394,8 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		String classFile = argv[0];
 		String methodName = argv[1];
 		int offset = Integer.parseInt(argv[2]);
-
+		final FindUnreleasedLock detector = new FindUnreleasedLock(null);
+		
 		ResourceValueAnalysisTestDriver<Lock, LockResourceTracker> driver =
 			new ResourceValueAnalysisTestDriver<Lock, LockResourceTracker>() {
 				@Override
@@ -403,7 +404,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 
 					RepositoryLookupFailureCallback lookupFailureCallback = classContext.getLookupFailureCallback();
 
-					return new LockResourceTracker(
+					return detector.new LockResourceTracker(
 								lookupFailureCallback,
 								classContext.getCFG(method),
 								classContext.getValueNumberDataflow(method),
