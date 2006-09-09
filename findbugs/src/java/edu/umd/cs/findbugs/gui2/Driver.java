@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 import org.dom4j.DocumentException;
 
@@ -20,6 +21,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import edu.umd.cs.findbugs.gui.FindBugsFrame;
 
 /**
  * This is where it all begins
@@ -32,9 +34,10 @@ public class Driver {
 	
 	private static float fontSize = 12;
 	private static boolean docking = true;
+	private static SplashFrame splash;
 	
-	public static void main(String[] args) {
-		SplashFrame splash = new SplashFrame();
+	public static void main(String[] args) throws Exception {
+		splash = new SplashFrame();
 		splash.setVisible(true);
 		
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
@@ -98,13 +101,22 @@ public class Driver {
 //		System.out.println(serializableIdiomDetector.getFullName());
 //		UserPreferences.getUserPreferences().enableDetector(serializableIdiomDetector,false);
 
-		
-		MainFrame.getInstance();
+		FindBugsLayoutManagerFactory factory;
+
+		if (isDocking())
+			factory = new FindBugsLayoutManagerFactory("edu.umd.cs.findbugs.gui2.DockLayout");
+		else
+			factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
+		MainFrame.makeInstance(factory);
 		
 		splash.setVisible(false);
 		splash.dispose();
 	}
 	
+	public static void removeSplashScreen() {
+		splash.setVisible(false);
+		splash.dispose();
+	}
 	public static boolean isDocking()
 	{
 		return docking;

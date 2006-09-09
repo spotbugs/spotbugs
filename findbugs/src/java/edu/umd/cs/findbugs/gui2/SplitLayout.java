@@ -30,15 +30,14 @@ import javax.swing.UIManager;
 /**
  * @author pugh
  */
-public class TabbedLayout implements FindBugsLayoutManager {
+public class SplitLayout implements FindBugsLayoutManager {
 
 	final MainFrame frame;
 	
-	private JTabbedPane mainTabs = null;
 	/**
 	 * @param frame
 	 */
-	public TabbedLayout(MainFrame frame) {
+	public SplitLayout(MainFrame frame) {
 		this.frame = frame;
 	}
 
@@ -53,21 +52,28 @@ public class TabbedLayout implements FindBugsLayoutManager {
 	 * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#initialize()
 	 */
 	public void initialize() {
-		//This will change the look of the tabs and filechoosr if the font size is set to greater than 15.
-		if(Driver.getFontSize() > 15 && System.getProperty("os.name").startsWith("Mac")){
-			UIManager.put("TabbedPaneUI", "javax.swing.plaf.basic.BasicTabbedPaneUI");
-			UIManager.put("FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI");
-		}
+
+		JSplitPane topLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 
+				frame.bugListPanel(), frame.commentsPanel());
+		topLeft.setOneTouchExpandable(true);
+		topLeft.setDividerLocation(0.65);
 		
-		mainTabs = bottomTabs();
+		JSplitPane top = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, 
+				topLeft, frame.createSourceCodePanel()
+				);
+		top.setOneTouchExpandable(true);
+		topLeft.setDividerLocation(0.25);
+
 		
-		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				frame.bugListPanel(), mainTabs);
-		split.setOneTouchExpandable(true);
-		split.setDividerLocation(275);
+		
+		
+		JSplitPane main = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 
+				top,  frame.summaryTab());
+		main.setOneTouchExpandable(true);
+		main.setDividerLocation(0.75);
 
 		frame.setLayout(new BorderLayout());
-		frame.add(split, BorderLayout.CENTER);
+		frame.add(main, BorderLayout.CENTER);
 		frame.add(frame.statusBar(), BorderLayout.SOUTH);
 
 	}
@@ -76,7 +82,6 @@ public class TabbedLayout implements FindBugsLayoutManager {
 	 * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#makeCommentsVisible()
 	 */
 	public void makeCommentsVisible() {
-		mainTabs.setSelectedIndex(1);
 
 	}
 
@@ -84,7 +89,6 @@ public class TabbedLayout implements FindBugsLayoutManager {
 	 * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#makeSourceVisible()
 	 */
 	public void makeSourceVisible() {
-		mainTabs.setSelectedIndex(2);
 
 	}
 
@@ -100,28 +104,7 @@ public class TabbedLayout implements FindBugsLayoutManager {
 	 * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#setSourceTitle(java.lang.String)
 	 */
 	public void setSourceTitle(String title) {
-		mainTabs.setTitleAt(2, title);
 
 	}
-	/**
-	 * Creates the bottom tabs of the GUI.
-	 * @return
-	 */
-	JTabbedPane bottomTabs()
-	{
-		JTabbedPane bottomTabs = new JTabbedPane();
-		
-		bottomTabs.addTab("Bug Summary", frame.summaryTab());
-		bottomTabs.addTab("Comments", null, frame.commentsPanel(), 
-				"User defined comments of current bug.");
-		bottomTabs.addTab("Source", null, frame.createSourceCodePanel(),
-				"Source code of current bug if available.");
-		
-		//Set keyboard mnemonic for tabs.
-		bottomTabs.setMnemonicAt(0, KeyEvent.VK_B);
-		bottomTabs.setMnemonicAt(1, KeyEvent.VK_C);
-		bottomTabs.setMnemonicAt(2, KeyEvent.VK_S);
-		
-		return bottomTabs;
-	}
+	
 }

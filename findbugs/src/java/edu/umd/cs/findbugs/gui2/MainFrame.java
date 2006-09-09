@@ -35,6 +35,7 @@ import java.util.LinkedList;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
@@ -59,6 +60,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.table.JTableHeader;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
@@ -129,7 +131,9 @@ public class MainFrame extends FBFrame implements LogSync
 	private JScrollPane summaryHtmlScrollPane = new JScrollPane(summaryHtmlArea);
 	
 
-	private FindBugsLayoutManager guiLayout = Driver.isDocking() ? new DockLayout(this) : new TabbedLayout(this);
+	private FindBugsLayoutManagerFactory findBugsLayoutManagerFactory;
+	private FindBugsLayoutManager guiLayout;
+	
 	/* To change this method must use setProjectChanged(boolean b).
 	 * This is because saveProjectItemMenu is dependent on it for when
 	 * saveProjectMenuItem should be enabled.
@@ -162,15 +166,22 @@ public class MainFrame extends FBFrame implements LogSync
 	
 	SourceCodeDisplay displayer = new SourceCodeDisplay(this);
 	
+	static void makeInstance(FindBugsLayoutManagerFactory factory) {
+		
+		if (instance != null) throw new IllegalStateException();
+		instance=new MainFrame(factory);
+	}
 	static MainFrame getInstance()
 	{
-		if (instance==null)
-			instance=new MainFrame();
+		if (instance==null) throw new IllegalStateException();
 		return instance;
 	}
 	
-	private MainFrame()
+	
+	private MainFrame(FindBugsLayoutManagerFactory factory)
 	{
+		this.findBugsLayoutManagerFactory = factory;
+		this.guiLayout = factory.getInstance(this);
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
@@ -178,7 +189,7 @@ public class MainFrame extends FBFrame implements LogSync
 				setTitle("FindBugs: " + Project.UNNAMED_PROJECT);
 				
 
-					guiLayout.initialize();
+				guiLayout.initialize();
 
 				
 				bugPopupMenu = createBugPopupMenu();
@@ -192,6 +203,7 @@ public class MainFrame extends FBFrame implements LogSync
 				setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 				setJMenuBar(createMainMenuBar());
 				setVisible(true);
+				Driver.removeSplashScreen();
 				
 				addComponentListener(new ComponentAdapter(){
 					public void componentResized(ComponentEvent e){
@@ -210,6 +222,7 @@ public class MainFrame extends FBFrame implements LogSync
 							System.exit(0);
 					}				
 				});
+				
 			}
 		});
 	}
@@ -1029,10 +1042,10 @@ public class MainFrame extends FBFrame implements LogSync
 	 * 
 	 * @return
 	 */
-	JPanel topPanel()
+	JPanel bugListPanel()
 	{
 		JPanel topPanel = new JPanel();
-		
+		topPanel.setMinimumSize(new Dimension(300,300));
 		tableheader = new JTableHeader();
 		//Listener put here for when user double clicks on sorting
 		//column header SorterDialog appears.
@@ -1059,6 +1072,13 @@ public class MainFrame extends FBFrame implements LogSync
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.setCellRenderer(new BugRenderer());
 		tree.setRowHeight((int)(Driver.getFontSize() + 7));
+		if (false) {
+		BasicTreeUI treeUI = (BasicTreeUI) tree.getUI();
+		System.out.println("Left indent had been " + treeUI.getLeftChildIndent());
+		System.out.println("Right indent had been " + treeUI.getRightChildIndent());
+		treeUI.setLeftChildIndent(30 );
+		treeUI.setRightChildIndent(30 );
+		}
 		tree.setModel(new BugTreeModel(tree, sorter, new BugSet(new ArrayList<BugLeafNode>())));
 		setupTreeListeners();
 		curProject=BugLoader.getLoadedProject();
@@ -1309,18 +1329,31 @@ public class MainFrame extends FBFrame implements LogSync
 	JPanel statusBar()
 	{
 		JPanel statusBar = new JPanel(); 
+		statusBar.setBackground(Color.WHITE);
 		
 		statusBar.setBorder(new BevelBorder(BevelBorder.LOWERED));
-		statusBar.setLayout(new FlowLayout(FlowLayout.LEFT));
-		statusBar.add(statusBarLabel);
-		statusBarLabel.setAlignmentX(LEFT_ALIGNMENT);
+		statusBar.setLayout(new BorderLayout());
+		statusBar.add(statusBarLabel,BorderLayout.WEST);
+		
+		JLabel logoLabel = new JLabel();
+		
+		ImageIcon logoIcon = new ImageIcon(MainFrame.class.getResource("logo_umd.png"));
+		logoLabel.setIcon(logoIcon);
+		statusBar.add(logoLabel, BorderLayout.EAST);
 		
 		return statusBar;
 	}
 	
 	void updateStatusBar()
 	{
-		statusBarLabel.setText(BugSet.countFilteredBugs() + ((BugSet.countFilteredBugs() == 1) ? " bug" : " bugs") + " hidden.");
+		
+		int countFilteredBugs = BugSet.countFilteredBugs();
+		if (countFilteredBugs == 0)
+			statusBarLabel.setText("  http://findbugs.sourceforge.net/");
+		else if (countFilteredBugs == 1)
+			statusBarLabel.setText("  1 bug hidden");
+		else 
+			statusBarLabel.setText("  " + countFilteredBugs + " bugs hidden");
 	}
 	
 	private void updateSummaryTab(BugLeafNode node)
@@ -1412,19 +1445,23 @@ public class MainFrame extends FBFrame implements LogSync
 	 */
 	Component summaryTab()
 	{
+		int fontSize = (int) Driver.getFontSize();
 		summaryTopPanel = new JPanel();
 		summaryTopPanel.setLayout(new GridLayout(0,1));
 		summaryTopPanel.setBorder(BorderFactory.createEmptyBorder(2,4,2,4));
+		summaryTopPanel.setMinimumSize(new Dimension(fontSize * 50, fontSize*5));
+		
 		
 		summaryHtmlArea.setContentType("text/html");
 		summaryHtmlArea.setEditable(false);
+		summaryHtmlArea.setToolTipText("This gives a longer description of the detected bug pattern");
 		setStyleSheets();
-		
 		JPanel temp = new JPanel(new BorderLayout());
-		temp.add(summaryTopPanel, BorderLayout.NORTH);
+		temp.add(summaryTopPanel, BorderLayout.CENTER);
 		JSplitPane splitP = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, 
 				new JScrollPane(temp), summaryHtmlScrollPane);
-		splitP.setDividerLocation(120);
+		splitP.setDividerLocation(0.5);
+		splitP.setOneTouchExpandable(true);
 		return splitP;
 	}
 	
@@ -1568,8 +1605,9 @@ public class MainFrame extends FBFrame implements LogSync
 	/**
 	 * Creates the comments tab JPanel.
 	 */
-	JPanel commentsTab()
+	JPanel commentsPanel()
 	{	
+		if (true) return createCommentsInputPanel();
 		JPanel commentsPanel = new JPanel();
 		BorderLayout commentsLayout = new BorderLayout();
 		commentsLayout.setHgap(10);
@@ -1641,12 +1679,14 @@ public class MainFrame extends FBFrame implements LogSync
 		userCommentsTextUnenabledColor = centerPanel.getBackground();
 		
 		userCommentsText.setLineWrap(true);
+		userCommentsText.setToolTipText("Enter your comments about this bug here");
 		userCommentsText.setWrapStyleWord(true);
 		userCommentsText.setEnabled(false);
 		userCommentsText.setBackground(userCommentsTextUnenabledColor);
 		JScrollPane commentsScrollP = new JScrollPane(userCommentsText);
 
 		prevCommentsComboBox.setEnabled(false);
+		prevCommentsComboBox.setToolTipText("Use this to reuse a previous textual comment for this bug");
 		prevCommentsComboBox.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent e) {	
 				if(e.getStateChange() == ItemEvent.SELECTED && prevCommentsComboBox.getSelectedIndex() != 0){
@@ -1661,7 +1701,7 @@ public class MainFrame extends FBFrame implements LogSync
 		designationList = new ArrayList<String>();
 		
 		designationComboBox.setEnabled(false);
-		
+		designationComboBox.setToolTipText("Select a user designation for this bug");
 		designationComboBox.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent e) {	
 				if (userInputEnabled)
@@ -1850,7 +1890,10 @@ public class MainFrame extends FBFrame implements LogSync
 		prevCommentsComboBox.addItem("");
 			
 		for(String str : prevCommentsList){
-			prevCommentsComboBox.addItem(str);
+			if (str.length() < 20)
+				prevCommentsComboBox.addItem(str);
+			else 
+				prevCommentsComboBox.addItem(str.substring(0,17)+"...");
 		}
 	}
 	
