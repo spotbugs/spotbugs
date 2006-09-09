@@ -4,6 +4,7 @@
 	<classpathentry excluding="**/CVS/*" kind="src" path="src/antTask"/>
 	<classpathentry excluding="**/CVS/*|edu/umd/cs/findbugs/tools/patcomp/**/*" kind="src" path="src/tools"/>
 	<classpathentry excluding="**/CVS/*" kind="src" path="src/junit"/>
+	<classpathentry kind="src" path="src/java5"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<accessrules>
 			<accessrule kind="accessible" pattern="com/sun/management/*"/>

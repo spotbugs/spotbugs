@@ -1,6 +1,6 @@
 /*
- * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003,2004 University of Maryland
+ * FindBugs - Find Bugs in Java programs
+ * Copyright (C) 2006, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,27 +19,33 @@
 
 package edu.umd.cs.findbugs;
 
-import edu.umd.cs.findbugs.ba.ClassContext;
-
 /**
- * The interface which all bug pattern detectors must implement.
+ * @author pugh
  */
-public interface Detector extends Priorities {
+public interface Priorities {
+	/**
+	 *  priority for bug instances that should be ignored
+	 */
+	public static final int IGNORE_PRIORITY = 5;	
+	/**
+	 * Experimental priority for bug instances.
+	 */
+	public static final int EXP_PRIORITY = 4;	
+	
+	/**
+	 * Low priority for bug instances.
+	 */
+	public static final int LOW_PRIORITY = 3;
 
 	/**
-	 * Visit the ClassContext for a class which should be analyzed
-	 * for instances of bug patterns.
-	 *
-	 * @param classContext the ClassContext
+	 * Normal priority for bug instances.
 	 */
-	public void visitClassContext(ClassContext classContext);
+	public static final int NORMAL_PRIORITY = 2;
 
 	/**
-	 * This method is called after all classes to be visited.
-	 * It should be used by any detectors which accumulate information
-	 * over all visited classes to generate results.
+	 * High priority for bug instances.
 	 */
-	public void report();
+	public static final int HIGH_PRIORITY = 1;
+
+
 }
-
-// vim:ts=4

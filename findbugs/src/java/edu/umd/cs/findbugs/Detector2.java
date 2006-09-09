@@ -27,23 +27,8 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  * 
  * @author David Hovemeyer
  */
-public interface Detector2 {
+public interface Detector2 extends Priorities {
 
-	/** High priority: almost certainly a serious error. */
-	public static final int HIGH_PRIORITY = Detector.HIGH_PRIORITY;
-	
-	/** Normal (medium) priority: probably a serious error. */
-	public static final int NORMAL_PRIORITY = Detector.NORMAL_PRIORITY;
-	
-	/** Low priority: either not very serious, or not very likely to be serious. */
-	public static final int LOW_PRIORITY = Detector.LOW_PRIORITY;
-	
-	/** Experimental priority. */
-	public static final int EXP_PRIORITY = Detector.EXP_PRIORITY;
-	
-	/** Ignore priority. */
-	public static final int IGNORE_PRIORITY = Detector.IGNORE_PRIORITY;
-	
 	/**
 	 * Visit a class.
 	 * 

@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -73,6 +74,7 @@ import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
@@ -81,6 +83,7 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.gui.ConsoleLogger;
+import edu.umd.cs.findbugs.gui.FindBugsFrame;
 import edu.umd.cs.findbugs.gui.LogSync;
 import edu.umd.cs.findbugs.gui.Logger;
 
@@ -188,10 +191,8 @@ public class MainFrame extends FBFrame implements LogSync
 			{
 				setTitle("FindBugs: " + Project.UNNAMED_PROJECT);
 				
-
 				guiLayout.initialize();
 
-				
 				bugPopupMenu = createBugPopupMenu();
 				branchPopupMenu = createBranchPopUpMenu();
 				
@@ -203,6 +204,36 @@ public class MainFrame extends FBFrame implements LogSync
 				setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 				setJMenuBar(createMainMenuBar());
 				setVisible(true);
+				
+				
+				if (SystemProperties.getProperty("os.name").startsWith("Mac"))
+				{
+					if (true) 
+						OSXAdapter.registerMacOSXApplication(MainFrame.this);
+					
+					else try {
+						Class osxAdapter = Class.forName("edu.umd.cs.findbugs.gui2.OSXAdapter");
+						Method registerMethod = osxAdapter.getDeclaredMethod("registerMacOSXApplication", MainFrame.class);
+						if (registerMethod != null) {
+							registerMethod.invoke(osxAdapter, MainFrame.this);
+						}
+					} catch (NoClassDefFoundError e) {
+						// This will be thrown first if the OSXAdapter is loaded on a system without the EAWT
+						// because OSXAdapter extends ApplicationAdapter in its def
+						System.err.println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled (" + e + ")");
+					} catch (ClassNotFoundException e) {
+						// This shouldn't be reached; if there's a problem with the OSXAdapter we should get the
+						// above NoClassDefFoundError first.
+						System.err.println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled (" + e + ")");
+					} catch (Exception e) {
+						System.err.println("Exception while loading the OSXAdapter: " + e);
+						e.printStackTrace();
+						if (DEBUG) {
+							e.printStackTrace();
+						}
+					}
+				}
+			
 				Driver.removeSplashScreen();
 				
 				addComponentListener(new ComponentAdapter(){
@@ -218,8 +249,7 @@ public class MainFrame extends FBFrame implements LogSync
 						if(userCommentsText.hasFocus())
 							setProjectChanged(true);
 						
-						if(callOnClose())
-							System.exit(0);
+						callOnClose();
 					}				
 				});
 				
@@ -242,7 +272,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * This method is called when the application is closing. This is either by
 	 * the exit menuItem or by clicking on the window's system menu.
 	 */
-	boolean callOnClose(){
+	void callOnClose(){
 		saveCommentsToBug(currentSelectedBugLeaf);
 		if(projectChanged){
 			int value = JOptionPane.showConfirmDialog(MainFrame.this, "You are closing " +
@@ -251,11 +281,11 @@ public class MainFrame extends FBFrame implements LogSync
 					JOptionPane.QUESTION_MESSAGE);
 			
 			if(value == JOptionPane.CANCEL_OPTION || value == JOptionPane.CLOSED_OPTION)
-				return false;
+				return ;
 			else if(value == JOptionPane.YES_OPTION){
 				if(projectDirectory == null){
 					if(!projectSaveAs())
-						return false;
+						return ;
 				}
 				else
 					save(projectDirectory);
@@ -265,11 +295,11 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		GUISaveState.getInstance().setPreviousComments(prevCommentsList);
 
-			guiLayout.saveState();
+		guiLayout.saveState();
 
 		GUISaveState.getInstance().save();
 		
-		return true;
+		System.exit(0);
 	}
 
 	private void createRecentProjectsMenu(){
@@ -491,13 +521,16 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenuItem exportBugsMenuItem = new JMenuItem("Save Analysis...", KeyEvent.VK_B);
 		JMenuItem redoAnalysis = new JMenuItem("Redo Analysis", KeyEvent.VK_R);
 		JMenuItem mergeMenuItem = new JMenuItem("Merge Analysis...");
-		JMenuItem exitMenuItem;
 		
-		if (System.getProperty("os.name").startsWith("Mac"))
-			exitMenuItem = new JMenuItem("Quit");
-		else
+		JMenuItem exitMenuItem = null;
+		if (!System.getProperty("os.name").startsWith("Mac")) {
 			exitMenuItem = new JMenuItem("Exit", KeyEvent.VK_X);
-		
+			exitMenuItem.addActionListener(new ActionListener(){			
+			public void actionPerformed(ActionEvent evt){
+				callOnClose();
+			}
+			});
+		}
 		JMenu windowMenu = guiLayout.createWindowMenu();
 
 		
@@ -837,15 +870,7 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 		});
 
-		if (System.getProperty("os.name").startsWith("Mac"))
-			exitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-		exitMenuItem.addActionListener(new ActionListener(){			
-			public void actionPerformed(ActionEvent evt){
-				if(!callOnClose())
-					return;
-				System.exit(0);
-			}
-		});
+		
 				
 		fileMenu.add(newProjectMenuItem);
 		fileMenu.add(editProjectMenuItem);
@@ -861,8 +886,10 @@ public class MainFrame extends FBFrame implements LogSync
 		fileMenu.addSeparator();
 		fileMenu.add(redoAnalysis);
 		fileMenu.add(mergeMenuItem);
-		fileMenu.addSeparator();
-		fileMenu.add(exitMenuItem);
+		if (exitMenuItem != null) {
+			fileMenu.addSeparator();
+			fileMenu.add(exitMenuItem);
+		}
 		
 		//TODO Delete later, this is just for testing purposes.
 //		JMenuItem temp = new JMenuItem("temp");
@@ -1329,7 +1356,7 @@ public class MainFrame extends FBFrame implements LogSync
 	JPanel statusBar()
 	{
 		JPanel statusBar = new JPanel(); 
-		statusBar.setBackground(Color.WHITE);
+		// statusBar.setBackground(Color.WHITE);
 		
 		statusBar.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		statusBar.setLayout(new BorderLayout());

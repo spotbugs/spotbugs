@@ -23,6 +23,7 @@
 	<property name="classes.dir" value="build/classes"/>
 	<property name="scripts.dir" value="bin"/>
 	<property name="src.dir" value="src/java"/>
+	<property name="src5.dir" value="src/java5"/>
 	<property name="toolsrc.dir" value="src/tools"/>
 	<property name="scriptsrc.dir" value="src/scripts"/>
 	<property name="xslsrc.dir" value="src/xsl"/>
@@ -95,27 +96,38 @@
 	<target name="classes">
 		<mkdir dir="${classes.dir}"/>
 		<!-- Compile Java source files. -->
+		<echo level="info" message="compiling Priorities"/>
 		<javac srcdir="${src.dir}"
-				excludes="${pkg.base}/annotations/**"
+						includes="${pkg.base}/Priorities.java"
+						destdir="${classes.dir}"
+						source="1.5"
+						target="jsr14"
+						deprecation="on"
+						debug="on">
+					<classpath refid="findbugs.classpath"/>
+				</javac>
+		<echo level="info" message="compiling annotations"/>
+		<javac srcdir="${src5.dir}"
+						includes="${pkg.base}/annotations/** net/jcip/annotations/**"
+						destdir="${classes.dir}"
+						source="1.5"
+						target="1.5"
+						deprecation="on"
+						debug="on">
+					<classpath refid="findbugs.classpath"/>
+				</javac>
+		<echo level="info" message="compiling findbugs"/>
+		<javac srcdir="${src.dir}"
 				destdir="${classes.dir}"
 				source="1.5"
 				target="jsr14"
-				deprecation="on"
+				deprecation="off"
 				debug="on">
 			<classpath refid="findbugs.classpath"/>
 		</javac>
-		<!-- Casual inspection shows that the above javac element does compile the annotation classes,
-		     despite the excludes attribute. This is a problem because they don't work right when
-		     compiled with target="jsr14".
-		     So how do we solve it? We simply delete the directories in which the compiled annotation
-		     classes have been placed. Then the javac element below will recompile the missing classes
-		     with target="1.5". -->
-		<echo level="info" message="About to delete annotations (since they were compiled with target=jsr14)"/>
-		<delete dir="${classes.dir}/${pkg.base}/annotations"/>
-		<delete dir="${classes.dir}/net/jcip/annotations"/>
-		<echo level="info" message="About to compile annotations with target=1.5"/>
-		<javac srcdir="${src.dir}"
-						includes="${pkg.base}/annotations/** net/jcip/annotations/**"
+		<echo level="info" message="compiling gui2"/>
+		<javac srcdir="${src5.dir}"
+						includes="${pkg.base}/gui2/** ${pkg.base}/sourceviewer/**"
 						destdir="${classes.dir}"
 						source="1.5"
 						target="1.5"
@@ -497,7 +509,16 @@
 			</fileset>
 		</signjar>
 	</target>
-	
+	<target name="sign" depends="jars">
+		<input message="Enter keystore password:"  addproperty="password"/>
+		<signjar keystore="findbugs.keystore" alias="findbugs" storepass="${password}" keypass="${password}">
+			<fileset dir="${jnlp.dir}">
+				<include name="**/*.jar"/>
+			</fileset>
+		</signjar>
+	</target>
+
+
 	<!-- Generate binary and source distributions. -->
 	<target name="dist" depends="bindist,srcdist,jnlp"/>
 	

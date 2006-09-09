@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -17,6 +18,7 @@ import com.apple.eawt.Application;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -37,17 +39,17 @@ public class Driver {
 	private static SplashFrame splash;
 	
 	public static void main(String[] args) throws Exception {
+		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
+		{
+			System.setProperty("apple.laf.useScreenMenuBar","true");
+			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FindBugs");	
+			Debug.println("Mac OS detected");
+		}
+		
 		splash = new SplashFrame();
 		splash.setVisible(true);
 		
-		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
-		{
-			Debug.println("Mac Hardware detected");
-			System.setProperty("apple.laf.useScreenMenuBar","true");
-			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FindBugs");		
-			Application.getApplication().addApplicationListener(new MacFileMenuHandler());
-		}
-		
+				
 		try {
 			Class.forName("net.infonode.docking.DockingWindow");
 		} catch (Exception e) {
