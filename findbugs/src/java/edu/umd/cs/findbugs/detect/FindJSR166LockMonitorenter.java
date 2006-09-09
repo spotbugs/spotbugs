@@ -34,7 +34,7 @@ import org.apache.bcel.generic.*;
  *
  * @author David Hovemeyer
  */
-public class FindJSR166LockMonitorenter implements Detector, StatelessDetector {
+public final class FindJSR166LockMonitorenter implements Detector, StatelessDetector {
 	private BugReporter bugReporter;
 
 	private static final ObjectType LOCK_TYPE = ObjectTypeFactory.getInstance("java.util.concurrent.locks.Lock");

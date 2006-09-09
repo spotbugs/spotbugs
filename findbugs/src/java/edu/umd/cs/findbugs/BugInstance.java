@@ -88,8 +88,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	private int priority;
 	private ArrayList<BugAnnotation> annotationList;
 	private int cachedHashCode;
-	//TODO: make this @CheckForNull 
-	private BugDesignation userDesignation;
+	private @CheckForNull  BugDesignation userDesignation;
 	private BugProperty propertyListHead, propertyListTail;
 	private String uniqueId;
 	private String instanceHash;

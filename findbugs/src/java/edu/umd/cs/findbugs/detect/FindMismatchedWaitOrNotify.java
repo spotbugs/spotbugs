@@ -29,7 +29,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
-public class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
+public final class FindMismatchedWaitOrNotify implements Detector, StatelessDetector {
 	private BugReporter bugReporter;
 
 	public FindMismatchedWaitOrNotify(BugReporter bugReporter) {

@@ -258,7 +258,7 @@ public class NullDerefAndRedundantComparisonFinder {
 					nullValueGuaranteedDerefMap,
 					vnaDataflow.getFactAtLocation(location), invDataflow.getFactAtLocation(location), uvdDataflow.getFactAfterLocation(location));
 		}
-		HashSet<ValueNumber> npeIfStatementCovered = new HashSet(nullValueGuaranteedDerefMap.keySet());
+		HashSet<ValueNumber> npeIfStatementCovered = new HashSet<ValueNumber>(nullValueGuaranteedDerefMap.keySet());
 		
 		// Check every non-exception control edge
 		for (Iterator<Edge> i = classContext.getCFG(method).edgeIterator(); i.hasNext();) {

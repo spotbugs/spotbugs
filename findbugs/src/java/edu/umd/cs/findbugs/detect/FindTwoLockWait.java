@@ -26,7 +26,7 @@ import java.util.*;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 
-public class FindTwoLockWait implements Detector, StatelessDetector {
+public final class FindTwoLockWait implements Detector, StatelessDetector {
 
 	private BugReporter bugReporter;
 	private JavaClass javaClass;

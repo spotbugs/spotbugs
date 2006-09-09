@@ -36,7 +36,7 @@ import org.apache.bcel.generic.*;
  * @author David Hovemeyer
  */
 
-public class LazyInit extends ByteCodePatternDetector implements StatelessDetector {
+public final class LazyInit extends ByteCodePatternDetector implements StatelessDetector {
 	private BugReporter bugReporter;
 
 	private static final boolean DEBUG = SystemProperties.getBoolean("lazyinit.debug");
