@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -33,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -71,10 +72,10 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
-import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
@@ -83,7 +84,6 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.gui.ConsoleLogger;
-import edu.umd.cs.findbugs.gui.FindBugsFrame;
 import edu.umd.cs.findbugs.gui.LogSync;
 import edu.umd.cs.findbugs.gui.Logger;
 
@@ -101,7 +101,7 @@ import edu.umd.cs.findbugs.gui.Logger;
 public class MainFrame extends FBFrame implements LogSync
 {
 	private JTree tree;
-	
+	private BasicTreeUI treeUI;
 	private boolean userInputEnabled;
 		
 	static final String DEFAULT_SOURCE_CODE_MSG = "No available source";
@@ -971,6 +971,30 @@ public class MainFrame extends FBFrame implements LogSync
 		if (windowMenu != null)
 			menuBar.add(windowMenu);
 		
+		final ActionMap map = tree.getActionMap();
+		System.out.println("tree action keys");
+		for(Object k : map.allKeys())
+			System.out.println("  " + k + " " + k.getClass().getName());
+		
+		JMenu navMenu = new JMenu("Navigation");
+		
+		addNavItem(map, navMenu, "Expand", "expand", KeyEvent.VK_RIGHT );
+		addNavItem(map, navMenu, "Collapse", "collapse", KeyEvent.VK_LEFT);
+		addNavItem(map, navMenu, "Up", "selectPrevious", KeyEvent.VK_UP );
+		addNavItem(map, navMenu, "Down", "selectNext", KeyEvent.VK_DOWN);
+				
+		menuBar.add(navMenu);
+		
+		JMenu designationMenu = new JMenu("Designation");
+		int i = 0;
+		int keyEvents [] = {KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8};
+		for(String key :  I18N.instance().getUserDesignationKeys(true)) {
+			String name = I18N.instance().getUserDesignation(key);
+			addDesignationItem(designationMenu, name, keyEvents[i++]);
+		}
+		menuBar.add(designationMenu);
+		
+		
 		JMenu helpMenu = new JMenu("Help");
 		JMenuItem aboutItem = new JMenuItem("About FindBugs");
 		helpMenu.add(aboutItem);
@@ -983,7 +1007,28 @@ public class MainFrame extends FBFrame implements LogSync
          menuBar.add(helpMenu);
 		return menuBar;
 	}
-	
+	/**
+	 * @param map
+	 * @param navMenu
+	 */
+	private void addNavItem(final ActionMap map, JMenu navMenu, String menuName, String actionName, int keyEvent) {
+		JMenuItem toggleItem = new JMenuItem(menuName);
+		toggleItem.addActionListener(treeActionAdapter(map, actionName));	
+		attachAccelaratorKey(toggleItem, keyEvent);
+		navMenu.add(toggleItem);
+	}
+	ActionListener treeActionAdapter(ActionMap map, String actionName) {
+		final Action selectPrevious = map.get(actionName);
+		return new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				e.setSource(tree);	
+				selectPrevious.actionPerformed(e);	
+			}};
+	}
+	void attachAccelaratorKey(JMenuItem item, int keystroke) {
+		item.setAccelerator(KeyStroke.getKeyStroke(keystroke,
+            Toolkit.getDefaultToolkit(  ).getMenuShortcutKeyMask(  )));
+	}
 	void newProject(){
 		setProjectChanged(true);		
 		clearBottomTabs();
@@ -1096,11 +1141,13 @@ public class MainFrame extends FBFrame implements LogSync
 		tableheader.setColumnModel(sorter);
 		
 		tree = new JTree();
+		treeUI = (BasicTreeUI) tree.getUI();
+		tree.setLargeModel(true);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.setCellRenderer(new BugRenderer());
 		tree.setRowHeight((int)(Driver.getFontSize() + 7));
 		if (false) {
-		BasicTreeUI treeUI = (BasicTreeUI) tree.getUI();
+		
 		System.out.println("Left indent had been " + treeUI.getLeftChildIndent());
 		System.out.println("Right indent had been " + treeUI.getRightChildIndent());
 		treeUI.setLeftChildIndent(30 );
@@ -1128,6 +1175,7 @@ public class MainFrame extends FBFrame implements LogSync
 			{
 				tree = newTree;
 				tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+				tree.setLargeModel(true);
 				tree.setCellRenderer(new BugRenderer());
 				Container container = treeScrollPane.getParent();
 				
@@ -1191,35 +1239,6 @@ public class MainFrame extends FBFrame implements LogSync
 				}
 			}						
 		});
-		tree.addKeyListener(new KeyListener() {
-
-			public void keyPressed(KeyEvent arg0) {
-				
-			}
-
-			public void keyReleased(KeyEvent e) {
-				
-			}
-			
-			public void keyTyped(KeyEvent e) {
-				if(currentSelectedBugLeaf != null){
-					switch(e.getKeyChar())
-					{
-						case '1':
-						case '2':
-						case '3':
-						case '4':
-						case '5':
-						case '0':
-							designationComboBox.setSelectedIndex(e.getKeyChar()-'0');
-							designationChanged=true;
-							guiLayout.makeCommentsVisible();
-							break;
-					}
-				}
-			}
-		});
-
 		
 		tree.addMouseListener(new MouseListener(){
 
@@ -1252,6 +1271,24 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 		
 	
+	void setDesignation(String value) {
+		if (currentSelectedBugLeaf != null) {
+			designationComboBox.setSelectedItem(value);
+			designationChanged=true;
+			guiLayout.makeCommentsVisible();
+		}
+	}
+	private void addDesignationItem(JMenu menu, final String menuName,  int keyEvent) {
+		JMenuItem toggleItem = new JMenuItem(menuName);
+
+		toggleItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setDesignation(menuName);
+			}});	
+		attachAccelaratorKey(toggleItem, keyEvent);
+		System.out.println(menuName + " " + keyEvent);
+		menu.add(toggleItem);
+	}
 	protected void updateDesignation() {
 		
 		if (currentSelectedBugLeaf==null)

@@ -56,7 +56,7 @@ public class FBFileChooser extends JFileChooser {
 			Object o = javax.swing.UIManager.getBorder( "TableHeader.cellBorder" );
 			Method m = o.getClass().getMethod( "setHorizontalShift",
 					new Class[] { int.class } );
-			m.invoke( o, new Object[] { new Integer(0) } );
+			m.invoke( o, 0 );
 		}
 		catch ( NoSuchMethodException e ) { }
 		catch ( InvocationTargetException e ) { }

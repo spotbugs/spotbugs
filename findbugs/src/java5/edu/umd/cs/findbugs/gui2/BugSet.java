@@ -66,7 +66,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	 */
 	BugSet(ArrayList<BugLeafNode> filteredSet)
 	{
-		this.mainList=new HashList((ArrayList<BugLeafNode>)filteredSet.clone());
+		this.mainList=new HashList<BugLeafNode>((ArrayList<BugLeafNode>)filteredSet.clone());
 		doneMap=new HashMap<StringPair,BugSet>();
 		doneContainsMap=new HashMap<StringPair,Boolean>();
 		cacheSortables();
@@ -283,7 +283,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	
 	BugSet(ArrayList<BugLeafNode> filteredSet, boolean cacheSortables)
 	{
-		this.mainList=new HashList((ArrayList<BugLeafNode>)filteredSet.clone());
+		this.mainList=new HashList<BugLeafNode>((ArrayList<BugLeafNode>)filteredSet.clone());
 		doneMap=new HashMap<StringPair,BugSet>();
 		doneContainsMap=new HashMap<StringPair,Boolean>();
 		if (cacheSortables)

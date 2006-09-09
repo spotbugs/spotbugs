@@ -105,7 +105,7 @@ public class GUISaveState{
 	{
 		recentProjects=new ArrayList<File>();
 //		projectsToLocations=new HashMap<String,String>();
-		previousComments=new LinkedList();
+		previousComments=new LinkedList<String>();
 	}
 	
 	public static GUISaveState getInstance()
