@@ -31,6 +31,9 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.PruneInfeasibleExceptionEdges;
+import edu.umd.cs.findbugs.ba.PruneUnconditionalExceptionThrowerEdges;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 public class CloneIdiom extends DismantleBytecode implements Detector, StatelessDetector {
@@ -40,6 +43,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 	boolean referencesCloneMethod;
 	boolean invokesSuperClone;
 	boolean isFinal;
+	boolean cloneOnlyThrowsException;
 
 	boolean check;
 	//boolean throwsExceptions;
@@ -85,6 +89,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
          public void visit(JavaClass obj) {
 		implementsCloneableDirectly = false;
 		invokesSuperClone = false;
+		cloneOnlyThrowsException = false;
 		//isCloneable = false;
 		check = false;
 		isFinal = obj.isFinal();
@@ -117,6 +122,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 	@Override
          public void visitAfter(JavaClass obj) {
 		if (!check) return;
+		if (cloneOnlyThrowsException) return;
 		if (implementsCloneableDirectly && !hasCloneMethod) {
 			if (!referencesCloneMethod)
 				bugReporter.reportBug(new BugInstance(this, "CN_IDIOM", NORMAL_PRIORITY)
@@ -156,6 +162,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 		if (!getMethodSig().startsWith("()")) return;
 		hasCloneMethod = true;
 		cloneMethodAnnotation = MethodAnnotation.fromVisitedMethod(this);
+		cloneOnlyThrowsException = 
+			PruneUnconditionalExceptionThrowerEdges.doesMethodUnconditionallyThrowException(XFactory.createXMethod(this), getThisClass(), obj);
 		//ExceptionTable tbl = obj.getExceptionTable();
 		//throwsExceptions = tbl != null && tbl.getNumberOfExceptions() > 0;
 	}

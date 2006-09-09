@@ -35,6 +35,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.AnalysisLocal;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 
@@ -65,7 +66,13 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 		this.analysisContext = analysisContext;
 	}
 
-	static Map<XMethod,Boolean> cachedResults = new HashMap<XMethod,Boolean>();
+	static AnalysisLocal<Map<XMethod,Boolean>> cachedResults = new AnalysisLocal<Map<XMethod,Boolean>>() {
+		@Override
+		public Map<XMethod,Boolean> initialValue() { 
+			return new HashMap<XMethod,Boolean>();
+		}
+	};
+	
 	public void execute() throws CFGBuilderException, DataflowAnalysisException {
 		AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
 		if (currentAnalysisContext.getBoolProperty(AnalysisFeatures.CONSERVE_SPACE))
@@ -116,31 +123,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 				
 				// Ignore abstract and native methods
 				if (method.getCode() == null) continue;
-				Boolean isUnconditionalThrower = cachedResults.get(xMethod);
-				
-				
-				if (isUnconditionalThrower == null) {
-					isUnconditionalThrower = Boolean.FALSE;
-					try {
-						ClassContext classContext = currentAnalysisContext.getClassContext(javaClass);
-						BitSet bytecodeSet = classContext.getBytecodeSet(method);
-						if (bytecodeSet != null) {
-
-							if (DEBUG) System.out.println("\tChecking " + xMethod);
-							isUnconditionalThrower = Boolean.valueOf(!bytecodeSet.intersects(RETURN_OPCODE_SET));
-							if (DEBUG && isUnconditionalThrower) {
-								System.out.println("Is unconditional thrower");
-								System.out.println("Return opcode set: " + RETURN_OPCODE_SET);
-								System.out.println("Code opcode set: " + bytecodeSet);
-							}
-						}
-					} catch (Exception e) {
-						// ignore it
-					}
-
-					cachedResults.put(xMethod, isUnconditionalThrower);
-
-				}
+				Boolean isUnconditionalThrower = doesMethodUnconditionallyThrowException(xMethod, javaClass, method);
 				if (false && isUnconditionalThrower.booleanValue()) {
 					ClassContext classContext = analysisContext.getClassContext(javaClass);
 				    MethodGen calledMethodGen = classContext.getMethodGen(method);
@@ -159,7 +142,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 
 					isUnconditionalThrower = pathValue.getKind() != ReturnPath.RETURNS;
 					// System.out.println("isThrower: " + result + " " + method.getCode().getLength() + " " + method);
-					if (true) cachedResults.put(xMethod, isUnconditionalThrower);
+					if (true) cachedResults.get().put(xMethod, isUnconditionalThrower);
 				}
 
 				if (isUnconditionalThrower.booleanValue()) {
@@ -184,6 +167,42 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 			cfg.removeEdge(edge);
 			cfgModified = true;
 		}
+	}
+
+	/**
+	 * @param currentAnalysisContext
+	 * @param xMethod
+	 * @param javaClass
+	 * @param method
+	 * @return
+	 */
+	static public  Boolean doesMethodUnconditionallyThrowException(XMethod xMethod, JavaClass javaClass, Method method) {
+		Boolean isUnconditionalThrower = cachedResults.get().get(xMethod);
+		
+		
+		if (isUnconditionalThrower == null) {
+			isUnconditionalThrower = Boolean.FALSE;
+			try {
+				ClassContext classContext = AnalysisContext.currentAnalysisContext().getClassContext(javaClass);
+				BitSet bytecodeSet = classContext.getBytecodeSet(method);
+				if (bytecodeSet != null) {
+
+					if (DEBUG) System.out.println("\tChecking " + xMethod);
+					isUnconditionalThrower = Boolean.valueOf(!bytecodeSet.intersects(RETURN_OPCODE_SET));
+					if (DEBUG && isUnconditionalThrower) {
+						System.out.println("Is unconditional thrower");
+						System.out.println("Return opcode set: " + RETURN_OPCODE_SET);
+						System.out.println("Code opcode set: " + bytecodeSet);
+					}
+				}
+			} catch (Exception e) {
+				// ignore it
+			}
+
+			cachedResults.get().put(xMethod, isUnconditionalThrower);
+
+		}
+		return isUnconditionalThrower;
 	}
 	
 	/**
