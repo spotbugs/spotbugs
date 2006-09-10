@@ -21,7 +21,7 @@ http://www.gnu.org/licenses/lgpl.html
 
    <url>
       <update label="FindBugs update site" url="http://findbugs.cs.umd.edu/eclipse/"/>
-      <discovery label="Findbugs home page" url="http://findbugs.sourceforge.net/"/>
+      <!-- <discovery label="Findbugs home page" url="http://findbugs.sourceforge.net/"/> -->
    </url>
 
    <requires>
