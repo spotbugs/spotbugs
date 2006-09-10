@@ -149,7 +149,7 @@ public class ValueNumberFrameModelingVisitor
 
 		// Don't do redundant load elimination for fields that
 		// are loaded in only one place.
-		if (loadedFieldSet.getLoadStoreCount(xfield).getLoadCount() <= 1)
+		if (false && loadedFieldSet.getLoadStoreCount(xfield).getLoadCount() <= 1)
 			return false;
 
 		return true;
