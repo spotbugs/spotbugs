@@ -202,6 +202,17 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		if (tos.isDefinitelyNull()) {
 			slotContainingNewNullValue = tosSlot;
 		}
+		if (trackValueNumbers) {
+			try {
+				ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(getLocation());
+				if (vnaFrameAfter.isValid()) {
+					ValueNumber tosVN = vnaFrameAfter.getTopValue();
+					getFrame().setKnownValue(tosVN, tos);
+					}
+				} catch (DataflowAnalysisException e) {
+					AnalysisContext.logError("error", e);
+			}
+		}
 	}
 
 	@Override
