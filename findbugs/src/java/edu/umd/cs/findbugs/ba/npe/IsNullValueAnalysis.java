@@ -55,6 +55,7 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
+import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -338,6 +339,9 @@ public class IsNullValueAnalysis
 				final BasicBlock sourceBlock = edge.getSource();
 				final BasicBlock targetBlock = edge.getTarget();
 				final ValueNumberFrame targetVnaFrame = vnaDataflow.getStartFact(destBlock);
+				final ValueNumberFrame sourceVnaFrame = vnaDataflow.getResultFact(sourceBlock);
+				
+				
 				assert targetVnaFrame != null;
 
 				// Determine if the edge conveys any information about the
@@ -377,7 +381,7 @@ public class IsNullValueAnalysis
 
 						}
 					}
-				}
+				} // if (edgeType == IFCMP_EDGE || edgeType == FALL_THROUGH_EDGE)
 
 				// If this is a fall-through edge from a null check,
 				// then we know the value checked is not null.
@@ -411,18 +415,27 @@ public class IsNullValueAnalysis
 						}
 						tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, noKaboomNonNullValue);
 					}
+				} // if (sourceBlock.isNullCheck() && edgeType == FALL_THROUGH_EDGE)
+
+				if (targetVnaFrame.phiNodeForLoads) {
+					for(ValueNumber v : fact.getKnownValues()) {
+						AvailableLoad loadForV = sourceVnaFrame.getLoad(v);
+						if (loadForV != null) 
+							for(ValueNumber v2 : targetVnaFrame.getAvailableLoad(loadForV)) {
+								tmpFact = modifyFrame(fact, tmpFact);
+								tmpFact.useNewValueNumberForLoad(v, v2);
+							}
+
+					}
 				}
 			}
-
 			if (tmpFact != null)
 				fact = tmpFact;
-		}
+		} // if (fact.isValid())
 
 		// Normal dataflow merge
 		mergeInto(fact, result);
 	}
-
-
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.FrameDataflowAnalysis#mergeInto(edu.umd.cs.findbugs.ba.Frame, edu.umd.cs.findbugs.ba.Frame)

@@ -21,11 +21,14 @@ package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Frame;
+import edu.umd.cs.findbugs.ba.vna.MergeTree;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.util.Strings;
 import edu.umd.cs.findbugs.util.Util;
@@ -71,16 +74,27 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 			System.out.println("                    now " + this);
 		}
 	}
-	
+	public void useNewValueNumberForLoad(ValueNumber oldValueNumber, ValueNumber newValueNumber) {
+		knownValueMap.put(newValueNumber, knownValueMap.get(oldValueNumber));
+		knownValueMap.remove(oldValueNumber);
+	}
 	public IsNullValue getKnownValue(ValueNumber valueNumber) {
 		return knownValueMap.get(valueNumber);
 	}
 	
+	public Collection<ValueNumber> getKnownValues() {
+		if (trackValueNumbers) {
+			return knownValueMap.keySet();
+		} else {
+			return Collections.EMPTY_SET;
+		}
+	}
+
 	public Collection<Map.Entry<ValueNumber, IsNullValue>> getKnownValueMapEntrySet() {
 		if (trackValueNumbers) {
 			return knownValueMap.entrySet();
 		} else {
-			return null;
+			return Collections.EMPTY_SET;
 		}
 	}
 	
