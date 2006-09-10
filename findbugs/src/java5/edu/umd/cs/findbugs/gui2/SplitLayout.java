@@ -22,7 +22,9 @@ package edu.umd.cs.findbugs.gui2;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JLabel;
 import javax.swing.JMenu;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
@@ -33,6 +35,7 @@ import javax.swing.UIManager;
 public class SplitLayout implements FindBugsLayoutManager {
 
 	final MainFrame frame;
+	JLabel sourceTitle;
 	
 	/**
 	 * @param frame
@@ -58,8 +61,13 @@ public class SplitLayout implements FindBugsLayoutManager {
 		topLeft.setOneTouchExpandable(true);
 		topLeft.setDividerLocation(0.65);
 		
+		JPanel sourcePanel = new JPanel();
+		sourcePanel.setLayout(new BorderLayout());
+		sourceTitle = new JLabel();
+		sourcePanel.add(sourceTitle, BorderLayout.NORTH);
+		sourcePanel.add(frame.createSourceCodePanel(), BorderLayout.CENTER);
 		JSplitPane top = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, 
-				topLeft, frame.createSourceCodePanel()
+				topLeft, sourcePanel
 				);
 		top.setOneTouchExpandable(true);
 		topLeft.setDividerLocation(0.25);
@@ -104,7 +112,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 	 * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#setSourceTitle(java.lang.String)
 	 */
 	public void setSourceTitle(String title) {
-
+		sourceTitle.setText(title);
 	}
 	
 }
