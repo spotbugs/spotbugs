@@ -420,11 +420,14 @@ public class IsNullValueAnalysis
 				if (targetVnaFrame.phiNodeForLoads) {
 					for(ValueNumber v : fact.getKnownValues()) {
 						AvailableLoad loadForV = sourceVnaFrame.getLoad(v);
-						if (loadForV != null) 
-							for(ValueNumber v2 : targetVnaFrame.getAvailableLoad(loadForV)) {
-								tmpFact = modifyFrame(fact, tmpFact);
-								tmpFact.useNewValueNumberForLoad(v, v2);
-							}
+						if (loadForV != null) {
+							ValueNumber[] matchingValueNumbers = targetVnaFrame.getAvailableLoad(loadForV);
+							if (matchingValueNumbers != null)
+								for(ValueNumber v2 : matchingValueNumbers) {
+									tmpFact = modifyFrame(fact, tmpFact);
+									tmpFact.useNewValueNumberForLoad(v, v2);
+								}
+						}
 
 					}
 				}
