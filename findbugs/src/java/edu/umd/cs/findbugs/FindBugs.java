@@ -201,7 +201,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 				return parseFromStream(u.getInputStream(), urlToParse.toString());
 			} catch (ClassFormatException e) {
 				throw new ClassFormatException("Invalid class file format for " +
-				        url.toString() + ": " + e.getMessage());
+				        urlToParse.toString() + ": " + e.getMessage());
 			}
 		}
 
