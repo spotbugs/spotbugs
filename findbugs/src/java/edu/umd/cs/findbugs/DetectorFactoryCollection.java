@@ -221,8 +221,6 @@ public class DetectorFactoryCollection {
 	 */
 	void loadPlugins() {
 		if (loaded) throw new IllegalStateException();
-		loaded = true;
-		// Load all detector plugins.
 	
 		//If we are running under jaws, just use the loaded plugin
 	    if (SystemProperties.getBoolean("findbugs.jaws")) {
@@ -244,6 +242,8 @@ public class DetectorFactoryCollection {
 		    }
 		}
 		
+		// Load all detector plugins.
+		loaded = true;
 	    determinePlugins();
 
 		int numLoaded = 0;
