@@ -500,6 +500,8 @@
 		<copy todir="${jnlp.dir}" file="${engine.jar}"/>
 		<copy todir="${jnlp.dir}" file="${gui.jar}"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/bcel.jar"/>
+		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-3.0_RC1.jar"/>
+		<copy todir="${jnlp.dir}" file="${jar.dir}/asm-tree-3.0_RC1.jar"/>
 		<copy todir="${jnlp.dir}" file="${jar.dir}/dom4j-full.jar"/>		
 		<copy todir="${jnlp.dir}/plugin" file="${plugin.dir}/coreplugin.jar"/>
 		<input message="Enter keystore password:"  addproperty="password"/>
