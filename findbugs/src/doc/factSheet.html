@@ -18,6 +18,7 @@
 on the concept of <i>bug patterns</i>.&nbsp; A bug pattern is a code
 idiom that is often an error.&nbsp; Bug patterns arise for a variety
 of reasons:
+</p>
 
 <ul>
 <li> Difficult language features
@@ -27,24 +28,44 @@ of reasons:
 </ul>
 
 <p> FindBugs uses <i>static analysis</i> to inspect Java bytecode
-for occurrences of bug patterns.&nbsp; We have found that FindBugs finds
-real errors in most Java software.&nbsp; Because its analysis is
+for occurrences of bug patterns.&nbsp;
+Static analysis means that FindBugs can find bugs by simply inspecting
+a program's code: executing the program is not necessary.&nbsp;
+This makes FindBugs very easy to use: in general, you should be
+able to use it to look for bugs in your code within a few minutes of downloading it.&nbsp;
+FindBugs works by analyzing Java bytecode (compiled class files),
+so you don't even need the program's source code to use it.&nbsp;
+Because its analysis is
 sometimes imprecise, FindBugs can report <i>false warnings</i>,
 which are warnings that do not indicate real errors.&nbsp; 
 In practice, the rate of false warnings reported by FindBugs
-is generally less than 50%.
+is less than 50%.
+</p>
+
+<p>
+FindBugs supports a plugin architecture allowing anyone to add new
+bug detectors.&nbsp; The <a href="publications.html">publications page</a>
+contains links to articles describing how to write a new detector
+for FindBugs.&nbsp; If you are familiar with Java bytecode
+you can write a new FindBugs detector in as little as a few minutes.
+</p>
 
 <p> FindBugs is free software, available under the terms of the
 <a href="http://www.gnu.org/copyleft/lesser.html">Lesser GNU Public License</a>.&nbsp;
 It is written in Java, and can be run with any virtual machine compatible
 with Sun's JDK 1.4.&nbsp; It can analyze programs written for any version
-of Java.&nbsp; FindBugs was originally developed by Bill Pugh.&nbsp;
-It is maintained by Bill Pugh, David Hovemeyer, and
+of Java.&nbsp; FindBugs was originally developed by Bill Pugh and David Hovemeyer.&nbsp;
+It is maintained by Brian Cole, Bill Pugh, and
 a <a href="team.html">team of volunteers</a>.
+</p>
 
 <p> FindBugs uses <a href="http://jakarta.apache.org/bcel/">BCEL</a> to
-analyze Java bytecode.&nbsp; It uses <a href="http://dom4j.org/">dom4j</a>
+analyze Java bytecode.&nbsp;
+As of version 1.1, FindBugs also supports bug detectors written using
+the <a href="http://asm.objectweb.org/">ASM</a> bytecode framework.&nbsp;
+FindBugs uses <a href="http://dom4j.org/">dom4j</a>
 for XML manipulation.
+</p>
 
 @HTML_FOOTER@
 
