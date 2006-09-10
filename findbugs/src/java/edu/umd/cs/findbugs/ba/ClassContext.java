@@ -538,7 +538,7 @@ public class ClassContext {
 	private AnalysisFactory<IsNullValueDataflow> invDataflowFactory =
 	        new DataflowAnalysisFactory<IsNullValueDataflow>("null value analysis") {
 		        @Override
-                         protected IsNullValueDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+                   protected IsNullValueDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
 			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
 			        CFG cfg = getCFG(method);
