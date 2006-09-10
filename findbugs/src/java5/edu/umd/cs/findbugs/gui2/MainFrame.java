@@ -141,11 +141,9 @@ public class MainFrame extends FBFrame implements LogSync
 	 * This is because saveProjectItemMenu is dependent on it for when
 	 * saveProjectMenuItem should be enabled.
 	 */
-	
 	private boolean projectChanged = false;
 	final private JMenuItem editProjectMenuItem = new JMenuItem("Add/Remove Files", KeyEvent.VK_F);
 	final private JMenuItem saveProjectMenuItem = new JMenuItem("Save Project", KeyEvent.VK_S);
-
 	private BugLeafNode currentSelectedBugLeaf;
 	private BugAspects currentSelectedBugAspects;
 	private JPopupMenu bugPopupMenu;
@@ -153,29 +151,21 @@ public class MainFrame extends FBFrame implements LogSync
 	private static MainFrame instance;
 	private JMenu recentProjectsMenu;
 	private JMenuItem preferencesMenuItem;
-	
 	private File projectDirectory;
 	private Project curProject;
 	private JScrollPane treeScrollPane;
 	SourceFinder sourceFinder;
 	private SourceLineAnnotation currSrcLineAnnotation;
-	
 	private Object lock = new Object();
-	
 	private boolean newProject = false;
-	
 	private Logger logger = new ConsoleLogger(this);
-
-	
 	SourceCodeDisplay displayer = new SourceCodeDisplay(this);
 	
 	static void makeInstance(FindBugsLayoutManagerFactory factory) {
-		
 		if (instance != null) throw new IllegalStateException();
 		instance=new MainFrame(factory);
 	}
-	static MainFrame getInstance()
-	{
+	static MainFrame getInstance() {
 		if (instance==null) throw new IllegalStateException();
 		return instance;
 	}
@@ -192,14 +182,11 @@ public class MainFrame extends FBFrame implements LogSync
 				setTitle("FindBugs: " + Project.UNNAMED_PROJECT);
 				
 				guiLayout.initialize();
-
 				bugPopupMenu = createBugPopupMenu();
 				branchPopupMenu = createBranchPopUpMenu();
-				
 				loadPrevCommentsList(GUISaveState.getInstance().getPreviousComments().toArray(new String[GUISaveState.getInstance().getPreviousComments().size()]));
 				updateStatusBar();
-				
-				setSize(new Dimension(700, 650));
+				setSize(new Dimension(800, 650));
 				Toolkit.getDefaultToolkit().setDynamicLayout(true);
 				setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 				setJMenuBar(createMainMenuBar());
@@ -208,10 +195,7 @@ public class MainFrame extends FBFrame implements LogSync
 				
 				if (SystemProperties.getProperty("os.name").startsWith("Mac"))
 				{
-					if (true) 
-						OSXAdapter.registerMacOSXApplication(MainFrame.this);
-					
-					else try {
+					 try {
 						Class osxAdapter = Class.forName("edu.umd.cs.findbugs.gui2.OSXAdapter");
 						Method registerMethod = osxAdapter.getDeclaredMethod("registerMacOSXApplication", MainFrame.class);
 						if (registerMethod != null) {
@@ -235,7 +219,6 @@ public class MainFrame extends FBFrame implements LogSync
 				}
 			
 				Driver.removeSplashScreen();
-				
 				addComponentListener(new ComponentAdapter(){
 					public void componentResized(ComponentEvent e){
 						resetPrevCommentsComboBox();
@@ -244,15 +227,12 @@ public class MainFrame extends FBFrame implements LogSync
 				});
 				
 				addWindowListener(new WindowAdapter(){
-
 					public void windowClosing(WindowEvent e) {
 						if(userCommentsText.hasFocus())
 							setProjectChanged(true);
-						
 						callOnClose();
 					}				
 				});
-				
 			}
 		});
 	}
@@ -292,11 +272,8 @@ public class MainFrame extends FBFrame implements LogSync
 			}				
 		}
 
-		
 		GUISaveState.getInstance().setPreviousComments(prevCommentsList);
-
 		guiLayout.saveState();
-
 		GUISaveState.getInstance().save();
 		
 		System.exit(0);
@@ -382,17 +359,19 @@ public class MainFrame extends FBFrame implements LogSync
 //							Debug.println("please wait called by open menu item");
 							BugTreeModel.pleaseWait();
 							MainFrame.this.setRebuilding(true);
-							BugSet bs=BugLoader.loadBugs(extraFinalReferenceToXmlFile);
+							Project newProject = new Project();
+							BugSet bs=BugLoader.loadBugs(newProject, extraFinalReferenceToXmlFile);
 							MainFrame.this.setRebuilding(false);
 							if (bs!=null)
 							{
 								model.getOffListenerList();
 								model.changeSet(bs);
-								curProject=BugLoader.getLoadedProject();
+								curProject=newProject;
 								MainFrame.getInstance().updateStatusBar();
+								MainFrame.this.setTitle("FindBugs: " + curProject.getProjectFileName());
 							}
 							
-							MainFrame.this.setTitle("FindBugs: " + projectDirectory.getName());
+							
 							
 							setProjectChanged(false);
 							editProjectMenuItem.setEnabled(true);
@@ -534,19 +513,15 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenu windowMenu = guiLayout.createWindowMenu();
 
 		
-		newProjectMenuItem.setEnabled(true);
-		newProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		attachAccelaratorKey(newProjectMenuItem, KeyEvent.VK_N);
+		
 		newProjectMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
-				saveCommentsToBug(currentSelectedBugLeaf);
-				new NewProjectWizard();
-				
-				newProject = true;
+				newProjectMenu();
 			}
 		});
 		
-		editProjectMenuItem.setEnabled(false);
-		editProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		attachAccelaratorKey(editProjectMenuItem, KeyEvent.VK_F);
 		editProjectMenuItem.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
@@ -557,193 +532,30 @@ public class MainFrame extends FBFrame implements LogSync
 		});
 		
 		openProjectMenuItem.setEnabled(true);
-		openProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		attachAccelaratorKey(openProjectMenuItem, KeyEvent.VK_O);
 		openProjectMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
-				saveCommentsToBug(currentSelectedBugLeaf);
-				
-				FBFileChooser jfc=new FBFileChooser();
-				jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				jfc.setFileFilter(FindBugsProjectFileFilter.INSTANCE);
-				File xmlFile=null;
-				if (projectChanged)
-				{
-					int response = JOptionPane.showConfirmDialog(MainFrame.this, 
-							"The current project has been changed, Save current changes?"
-							,"Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-
-					if (response == JOptionPane.YES_OPTION)
-					{
-						if (projectDirectory!=null)
-							save(projectDirectory);
-						else
-							projectSaveAs();
-					}
-					else if (response == JOptionPane.CANCEL_OPTION)
-						return;
-					//IF no, do nothing.
-				}
-				
-				boolean loading = true;
-				while (loading)
-				{
-					int value=jfc.showOpenDialog(MainFrame.this);
-					if(value==JFileChooser.APPROVE_OPTION){
-						loading = false;
-						final File dir = jfc.getSelectedFile();						
-						
-						if(!dir.exists() || !dir.isDirectory())
-						{
-							JOptionPane.showMessageDialog(null, "Warning! This project is not a directory.");
-							loading = true;
-							continue;
-						}
-						else
-						{
-							xmlFile= new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");		
-							File fasFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
-
-							if (!xmlFile.exists())
-							{
-								JOptionPane.showMessageDialog(null, "This directory does not contain saved bug XML data, please choose a different directory.");
-								loading=true;
-								continue;
-							}
-							
-							if (!fasFile.exists())
-							{
-								JOptionPane.showMessageDialog(MainFrame.this, "Filter settings not found, using default settings.");
-								try {
-									fasFile.createNewFile();
-									ProjectSettings.newInstance().save(new FileOutputStream(fasFile));
-								} catch (IOException e) {
-									if (MainFrame.DEBUG) System.err.println("Error saving new filter settings file, using default settings without saving these settings to the project.");
-									ProjectSettings.newInstance();
-								}
-							} 
-							else
-							{
-								try 
-								{
-									ProjectSettings.loadInstance(new FileInputStream(fasFile));
-								} catch (FileNotFoundException e) 
-								{
-									//Impossible.
-									if (MainFrame.DEBUG) System.err.println(".fas file not found, using default settings");
-									ProjectSettings.newInstance();
-								}
-							}
-							
-							final File extraFinalReferenceToXmlFile=xmlFile;
-							new Thread(new Runnable(){
-								public void run()
-								{
-									BugTreeModel model=(BugTreeModel)tree.getModel();
-//									Debug.println("please wait called by open menu item");
-									BugTreeModel.pleaseWait();
-									MainFrame.this.setRebuilding(true);
-									BugSet bs=BugLoader.loadBugs(extraFinalReferenceToXmlFile);
-									MainFrame.this.setRebuilding(false);
-									if (bs!=null)
-									{
-										editProjectMenuItem.setEnabled(true);
-										model.getOffListenerList();
-										updateDesignation();
-										model.changeSet(bs);
-										curProject=BugLoader.getLoadedProject();
-										projectDirectory=dir;
-										curProject.setProjectFileName(projectDirectory.getName());
-										MainFrame.getInstance().updateStatusBar();
-									}
-								}
-							}).start();
-							MainFrame.this.setTitle("FindBugs: " + dir.getName());
-						}
-					}
-					else if (value==JFileChooser.CANCEL_OPTION)
-					{
-						return;
-					}
-					else
-						loading = false;
-				}
-//				List<String> projectPaths=new ArrayList<String>();
-				ArrayList<File> xmlFiles=GUISaveState.getInstance().getRecentProjects();
-
-				if (!xmlFiles.contains(xmlFile))
-				{
-					GUISaveState.getInstance().addRecentProject(xmlFile);
-					MainFrame.this.addRecentProjectToMenu(xmlFile);
-				}
-				
-				//Clears the bottom tabs so they are blank. And makes comments
-				//tab not enabled.				
-				clearBottomTabs();
-
-				designationChanged = false;
-				projectChanged = false;
+				openProject();
 			}
 		});
 
 		mergeMenuItem.setEnabled(true);
 		mergeMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
-				saveCommentsToBug(currentSelectedBugLeaf);
-				
-				setCursor(new Cursor(Cursor.WAIT_CURSOR));
-				BugSet bs=BugLoader.combineBugHistories();
-				if (bs!=null)
-				{
-					((BugTreeModel)tree.getModel()).getOffListenerList();
-					updateDesignation();
-					((BugTreeModel)tree.getModel()).changeSet(bs);
-					curProject=BugLoader.getLoadedProject();
-				}
-				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				
-				setProjectChanged(true);
+				mergeAnalysis();
 			}
 		});
 		
 		redoAnalysis.setEnabled(true);
-		redoAnalysis.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		attachAccelaratorKey(redoAnalysis, KeyEvent.VK_R);
 		redoAnalysis.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
-				saveCommentsToBug(currentSelectedBugLeaf);
-				
-				setCursor(new Cursor(Cursor.WAIT_CURSOR));
-				new Thread()
-				{
-					public void run()
-					{
-						updateDesignation();
-						BugSet bs=BugLoader.redoAnalysisKeepComments(curProject);
-						
-						if (bs!=null)
-						{
-							//Dont clear data, the data's correct, just get the tree off the listener lists.
-							((BugTreeModel) tree.getModel()).getOffListenerList();
-							((BugTreeModel)tree.getModel()).changeSet(bs);
-							curProject=BugLoader.getLoadedProject();
-						}
-						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-						setProjectChanged(true);
-					}
-				}.start();
+				redoAnalysis();
 			}
 		});
-/*		This seems pointless, all we could do on closing is have an empty window		
-		closeProjectMenuItem.setEnabled(false);
-		closeProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_MASK));
-		closeProjectMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				JOptionPane.showMessageDialog(null, "Close Project!!");
-			}
-		});
-*/
 		
 		saveProjectMenuItem.setEnabled(false);
-		saveProjectMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		attachAccelaratorKey(saveProjectMenuItem, KeyEvent.VK_S);
 		saveProjectMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
 				saveCommentsToBug(currentSelectedBugLeaf);
@@ -764,108 +576,14 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		importBugsMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
-				saveCommentsToBug(currentSelectedBugLeaf);
-				
-				FBFileChooser jfc= new FBFileChooser();
-				jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				jfc.setFileFilter(new FindBugsAnalysisFileFilter());
-				
-				// jfc.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs()); this is done by FBFileChooser now.
-								
-				boolean importing = true;
-				while(importing){
-					int returnValue=jfc.showOpenDialog(new JFrame());
-					
-					if (returnValue==JFileChooser.APPROVE_OPTION)
-					{
-						File file=jfc.getSelectedFile();
-						
-						if(!file.exists()){
-							JOptionPane.showMessageDialog(jfc, "That file does not exist");
-							importing = true;
-							continue;
-						}
-						else
-							importing = false;
-						
-						setCursor(new Cursor(Cursor.WAIT_CURSOR));
-
-						
-						final File extraFinalReferenceToXmlFile=file;
-						new Thread(new Runnable(){
-							public void run()
-							{
-								BugTreeModel model=(BugTreeModel)tree.getModel();
-//								BugTreeModel.pleaseWait();
-								MainFrame.this.setRebuilding(true);
-								BugSet bs=BugLoader.loadBugs(extraFinalReferenceToXmlFile);
-								MainFrame.this.setRebuilding(false);
-								if (bs!=null)
-								{
-									ProjectSettings.newInstance();
-									model.getOffListenerList();
-									updateDesignation();
-									model.changeSet(bs);
-									curProject=BugLoader.getLoadedProject();
-									MainFrame.this.updateStatusBar();
-								}
-							}
-						}).start();
-
-						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-						
-						setProjectChanged(false);
-					}
-					else
-						return;
-//					GUISaveState.getInstance().setStarterDirectoryForLoadBugs(jfc.getCurrentDirectory()); This is done by FBFileChooser
-				}
+				loadAnalysis();
 			}
 		});
 		
 		exportBugsMenuItem.setEnabled(true);
 		exportBugsMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
-				saveCommentsToBug(currentSelectedBugLeaf);
-				
-				if (curProject==null)
-				{
-					JOptionPane.showMessageDialog(MainFrame.this,"There is no project to save");
-					return;
-				}
-				
-				FBFileChooser chooser=new FBFileChooser();
-				chooser.setFileFilter(new FindBugsAnalysisFileFilter());
-				boolean saving=true;
-				while (saving)
-				{
-		
-					int value=chooser.showSaveDialog(MainFrame.this);
-					if (value==JFileChooser.APPROVE_OPTION)
-					{
-						saving=false;
-						File xmlFile = chooser.getSelectedFile();
-						
-						if(!xmlFile.getName().endsWith(".xml"))
-							xmlFile = new File(xmlFile.getAbsolutePath()+".xml");
-						
-						if (xmlFile.exists())
-						{
-							int response = JOptionPane.showConfirmDialog(chooser, 
-									"This analysis already exists.\nReplace it?",
-									"Warning!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-							
-							if(response == JOptionPane.OK_OPTION)
-								saving = false;
-							if(response == JOptionPane.CANCEL_OPTION){
-								saving = true;
-								continue;
-							}
-						}
-						BugSaver.saveBugs(xmlFile, BugSet.getMainBugSet(), MainFrame.this.curProject);
-					}
-				else return;
-				}
+				saveAnalysis();
 
 			}
 		});
@@ -890,23 +608,9 @@ public class MainFrame extends FBFrame implements LogSync
 			fileMenu.addSeparator();
 			fileMenu.add(exitMenuItem);
 		}
-		
-		//TODO Delete later, this is just for testing purposes.
-//		JMenuItem temp = new JMenuItem("temp");
-//		temp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-//		temp.addActionListener(new ActionListener(){
-//			public void actionPerformed(ActionEvent evt){
-//				Debug.println("before v scrollbar max: " +sourceCodeScrollPane.getVerticalScrollBar().getMaximum());
-//				sourceCodeScrollPane.validate();
-//				Debug.println("after v scrollbar max: " +sourceCodeScrollPane.getVerticalScrollBar().getMaximum());
-//				Debug.println("scrollbar value: "+sourceCodeScrollPane.getVerticalScrollBar().getValue());
-//			}
-//		});
-//		fileMenu.add(temp);
-		
+				
 		menuBar.add(fileMenu);
 		
-		//This kind of works, the key stroke works for the jtree, but the menuitems doesn't.
 		//Edit editMenu Menu object.
 		JMenuItem cutMenuItem = new JMenuItem(new CutAction());
 		JMenuItem copyMenuItem = new JMenuItem(new CopyAction());
@@ -915,9 +619,9 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenuItem sortMenuItem = new JMenuItem("Sort Configuration...");
 		JMenuItem goToLineMenuItem = new JMenuItem("Go to line...");
 		
-		cutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-		copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-		pasteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		attachAccelaratorKey(cutMenuItem, KeyEvent.VK_X);
+		attachAccelaratorKey(copyMenuItem, KeyEvent.VK_C);
+		attachAccelaratorKey(pasteMenuItem, KeyEvent.VK_V);
 		
 		preferencesMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
@@ -933,27 +637,16 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 		});
 		
-		goToLineMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		attachAccelaratorKey(goToLineMenuItem, KeyEvent.VK_L);
 		goToLineMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){				
-				int num = 0;
-				boolean cont = true;
-				
+				guiLayout.makeSourceVisible();
 				try{
-					num = Integer.parseInt(JOptionPane.showInputDialog(MainFrame.this, "", "Go To Line:", JOptionPane.QUESTION_MESSAGE));
-				}
-				catch(NumberFormatException e){
-					cont = false;
-				}
-				
-				if(cont)
+					int num = Integer.parseInt(JOptionPane.showInputDialog(MainFrame.this, "", "Go To Line:", JOptionPane.QUESTION_MESSAGE));
 					displayer.showLine(num);
-				
-
-					guiLayout.makeSourceVisible();
-
-			}
-		});
+				}
+				catch(NumberFormatException e){}
+			}});
 		
 		editMenu.add(cutMenuItem);
 		editMenu.add(copyMenuItem);
@@ -972,9 +665,6 @@ public class MainFrame extends FBFrame implements LogSync
 			menuBar.add(windowMenu);
 		
 		final ActionMap map = tree.getActionMap();
-		System.out.println("tree action keys");
-		for(Object k : map.allKeys())
-			System.out.println("  " + k + " " + k.getClass().getName());
 		
 		JMenu navMenu = new JMenu("Navigation");
 		
@@ -1286,7 +976,6 @@ public class MainFrame extends FBFrame implements LogSync
 				setDesignation(menuName);
 			}});	
 		attachAccelaratorKey(toggleItem, keyEvent);
-		System.out.println(menuName + " " + keyEvent);
 		menu.add(toggleItem);
 	}
 	protected void updateDesignation() {
@@ -2112,6 +1801,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 	public void setProject(Project p) {
 		curProject=p;
+		setTitle(p.getProjectFileName());
 	}
 
 	public SourceFinder getSourceFinder() 
@@ -2215,5 +1905,295 @@ public class MainFrame extends FBFrame implements LogSync
 			System.out.println(message);
 		//		consoleMessageArea.append(message);
 		//		consoleMessageArea.append("\n");
+	}
+	/**
+	 * 
+	 */
+	private void saveAnalysis() {
+		saveCommentsToBug(currentSelectedBugLeaf);
+		
+		if (curProject==null)
+		{
+			JOptionPane.showMessageDialog(MainFrame.this,"There is no project to save");
+			return;
+		}
+		
+		FBFileChooser chooser=new FBFileChooser();
+		chooser.setFileFilter(new FindBugsAnalysisFileFilter());
+		boolean saving=true;
+		while (saving)
+		{
+
+			int value=chooser.showSaveDialog(MainFrame.this);
+			if (value==JFileChooser.APPROVE_OPTION)
+			{
+				saving=false;
+				File xmlFile = chooser.getSelectedFile();
+				
+				if(!xmlFile.getName().endsWith(".xml"))
+					xmlFile = new File(xmlFile.getAbsolutePath()+".xml");
+				
+				if (xmlFile.exists())
+				{
+					int response = JOptionPane.showConfirmDialog(chooser, 
+							"This analysis already exists.\nReplace it?",
+							"Warning!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+					
+					if(response == JOptionPane.OK_OPTION)
+						saving = false;
+					if(response == JOptionPane.CANCEL_OPTION){
+						saving = true;
+						continue;
+					}
+				}
+				BugSaver.saveBugs(xmlFile, BugSet.getMainBugSet(), MainFrame.this.curProject);
+			}
+		else return;
+		}
+	}
+	/**
+	 * 
+	 */
+	private void loadAnalysis() {
+		saveCommentsToBug(currentSelectedBugLeaf);
+		
+		FBFileChooser jfc= new FBFileChooser();
+		jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		jfc.setFileFilter(new FindBugsAnalysisFileFilter());
+		
+		// jfc.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs()); this is done by FBFileChooser now.
+						
+		boolean importing = true;
+		while(importing){
+			int returnValue=jfc.showOpenDialog(new JFrame());
+			
+			if (returnValue==JFileChooser.APPROVE_OPTION)
+			{
+				File file=jfc.getSelectedFile();
+				
+				if(!file.exists()){
+					JOptionPane.showMessageDialog(jfc, "That file does not exist");
+					importing = true;
+					continue;
+				}
+				else
+					importing = false;
+				
+				setCursor(new Cursor(Cursor.WAIT_CURSOR));
+
+				
+				final File extraFinalReferenceToXmlFile=file;
+				new Thread(new Runnable(){
+					public void run()
+					{
+						BugTreeModel model=(BugTreeModel)tree.getModel();
+//								BugTreeModel.pleaseWait();
+						MainFrame.this.setRebuilding(true);
+						Project project = new Project();
+						BugSet bs=BugLoader.loadBugs(project, extraFinalReferenceToXmlFile);
+						MainFrame.this.setRebuilding(false);
+						if (bs!=null)
+						{
+							ProjectSettings.newInstance();
+							model.getOffListenerList();
+							updateDesignation();
+							model.changeSet(bs);
+							curProject=project;
+							MainFrame.this.updateStatusBar();
+							MainFrame.this.setTitle(project.getProjectFileName());
+						}
+					}
+				}).start();
+
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				
+				setProjectChanged(false);
+			}
+			else
+				return;
+//					GUISaveState.getInstance().setStarterDirectoryForLoadBugs(jfc.getCurrentDirectory()); This is done by FBFileChooser
+		}
+	}
+	/**
+	 * 
+	 */
+	private void redoAnalysis() {
+		saveCommentsToBug(currentSelectedBugLeaf);
+		
+		setCursor(new Cursor(Cursor.WAIT_CURSOR));
+		new Thread()
+		{
+			public void run()
+			{
+				updateDesignation();
+				BugSet bs=BugLoader.redoAnalysisKeepComments(curProject);
+				
+				if (bs!=null)
+				{
+					//Dont clear data, the data's correct, just get the tree off the listener lists.
+					((BugTreeModel) tree.getModel()).getOffListenerList();
+					((BugTreeModel)tree.getModel()).changeSet(bs);
+					curProject=BugLoader.getLoadedProject();
+				}
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				setProjectChanged(true);
+			}
+		}.start();
+	}
+	/**
+	 * 
+	 */
+	private void mergeAnalysis() {
+		saveCommentsToBug(currentSelectedBugLeaf);
+		
+		setCursor(new Cursor(Cursor.WAIT_CURSOR));
+		BugSet bs=BugLoader.combineBugHistories();
+		if (bs!=null)
+		{
+			((BugTreeModel)tree.getModel()).getOffListenerList();
+			updateDesignation();
+			((BugTreeModel)tree.getModel()).changeSet(bs);
+			curProject=BugLoader.getLoadedProject();
+		}
+		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		
+		setProjectChanged(true);
+	}
+	/**
+	 * 
+	 */
+	private void openProject() {
+		saveCommentsToBug(currentSelectedBugLeaf);
+		
+		FBFileChooser jfc=new FBFileChooser();
+		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		jfc.setFileFilter(FindBugsProjectFileFilter.INSTANCE);
+		File xmlFile=null;
+		if (projectChanged)
+		{
+			int response = JOptionPane.showConfirmDialog(MainFrame.this, 
+					"The current project has been changed, Save current changes?"
+					,"Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+
+			if (response == JOptionPane.YES_OPTION)
+			{
+				if (projectDirectory!=null)
+					save(projectDirectory);
+				else
+					projectSaveAs();
+			}
+			else if (response == JOptionPane.CANCEL_OPTION)
+				return;
+			//IF no, do nothing.
+		}
+		
+		boolean loading = true;
+		while (loading)
+		{
+			int value=jfc.showOpenDialog(MainFrame.this);
+			if(value==JFileChooser.APPROVE_OPTION){
+				loading = false;
+				final File dir = jfc.getSelectedFile();						
+				
+				if(!dir.exists() || !dir.isDirectory())
+				{
+					JOptionPane.showMessageDialog(null, "Warning! This project is not a directory.");
+					loading = true;
+					continue;
+				}
+				else
+				{
+					xmlFile= new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");		
+					File fasFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
+
+					if (!xmlFile.exists())
+					{
+						JOptionPane.showMessageDialog(null, "This directory does not contain saved bug XML data, please choose a different directory.");
+						loading=true;
+						continue;
+					}
+					
+					if (!fasFile.exists())
+					{
+						JOptionPane.showMessageDialog(MainFrame.this, "Filter settings not found, using default settings.");
+						try {
+							fasFile.createNewFile();
+							ProjectSettings.newInstance().save(new FileOutputStream(fasFile));
+						} catch (IOException e) {
+							if (MainFrame.DEBUG) System.err.println("Error saving new filter settings file, using default settings without saving these settings to the project.");
+							ProjectSettings.newInstance();
+						}
+					} 
+					else
+					{
+						try 
+						{
+							ProjectSettings.loadInstance(new FileInputStream(fasFile));
+						} catch (FileNotFoundException e) 
+						{
+							//Impossible.
+							if (MainFrame.DEBUG) System.err.println(".fas file not found, using default settings");
+							ProjectSettings.newInstance();
+						}
+					}
+					
+					final File extraFinalReferenceToXmlFile=xmlFile;
+					new Thread(new Runnable(){
+						public void run()
+						{
+							BugTreeModel model=(BugTreeModel)tree.getModel();
+//									Debug.println("please wait called by open menu item");
+							BugTreeModel.pleaseWait();
+							MainFrame.this.setRebuilding(true);
+							Project project = new Project();
+							BugSet bs=BugLoader.loadBugs(project, extraFinalReferenceToXmlFile);
+							MainFrame.this.setRebuilding(false);
+							if (bs!=null)
+							{
+								editProjectMenuItem.setEnabled(true);
+								model.getOffListenerList();
+								updateDesignation();
+								model.changeSet(bs);
+								curProject=project;
+								projectDirectory=dir;
+								curProject.setProjectFileName(projectDirectory.getName());
+								MainFrame.this.setTitle("FindBugs: " + project.getProjectFileName());
+								MainFrame.getInstance().updateStatusBar();
+							}
+						}
+					}).start();
+				}
+			}
+			else if (value==JFileChooser.CANCEL_OPTION)
+			{
+				return;
+			}
+			else
+				loading = false;
+		}
+//				List<String> projectPaths=new ArrayList<String>();
+		ArrayList<File> xmlFiles=GUISaveState.getInstance().getRecentProjects();
+
+		if (!xmlFiles.contains(xmlFile))
+		{
+			GUISaveState.getInstance().addRecentProject(xmlFile);
+			MainFrame.this.addRecentProjectToMenu(xmlFile);
+		}
+		
+		//Clears the bottom tabs so they are blank. And makes comments
+		//tab not enabled.				
+		clearBottomTabs();
+
+		designationChanged = false;
+		projectChanged = false;
+	}
+	/**
+	 * 
+	 */
+	private void newProjectMenu() {
+		saveCommentsToBug(currentSelectedBugLeaf);
+		new NewProjectWizard();
+		
+		newProject = true;
 	}
 }

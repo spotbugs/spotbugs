@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -225,65 +226,27 @@ public class BugLoader {
 		
 	}
 	
-	public static BugSet loadBugs(String fileName)
+	public static BugSet loadBugs(Project project, File file)
 	{
-		try 
-		{
-			loadedProject=new Project();		
-			SortedBugCollection col=new SortedBugCollection();
-			col.readXML(fileName,loadedProject);
-			List<String> possibleDirectories=loadedProject.getSourceDirList();
-			MainFrame.getInstance().setSourceFinder(new SourceFinder());
-			MainFrame.getInstance().getSourceFinder().setSourceBaseList(possibleDirectories);
+		
+			try 
+			{
+				
+				SortedBugCollection col=new SortedBugCollection();
+				col.readXML(file,project);
+				List<String> possibleDirectories=project.getSourceDirList();
+				MainFrame.getInstance().setSourceFinder(new SourceFinder());
+				MainFrame.getInstance().getSourceFinder().setSourceBaseList(possibleDirectories);
 
-			return loadBugsHelper(col);
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null,"This file contains no bug data");
-		} catch (DocumentException e) {
-			JOptionPane.showMessageDialog(null,"This file does not have the correct format; it may be corrupt.");
-		}
-		return null;
+				return loadBugsHelper(col);
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null,"This file contains no bug data");
+			} catch (DocumentException e) {
+				JOptionPane.showMessageDialog(null,"This file does not have the correct format; it may be corrupt.");
+			}
+			return null;
 	}
 
-	public static BugSet loadBugs(File file)
-	{
-		try 
-		{
-			loadedProject=new Project();
-			SortedBugCollection col=new SortedBugCollection();
-			col.readXML(file,loadedProject);
-			List<String> possibleDirectories=loadedProject.getSourceDirList();
-			MainFrame.getInstance().setSourceFinder(new SourceFinder());
-			MainFrame.getInstance().getSourceFinder().setSourceBaseList(possibleDirectories);
-
-			return loadBugsHelper(col);
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null,"This file contains no bug data");
-		} catch (DocumentException e) {
-			JOptionPane.showMessageDialog(null,"This file does not have the correct format; it may be corrupt.");
-		}
-		return null;
-	}
-
-	public static BugSet loadBugs(InputStream in)
-	{
-		try 
-		{
-			loadedProject=new Project();
-			SortedBugCollection col=new SortedBugCollection();
-			col.readXML(in,loadedProject);
-			List<String> possibleDirectories=loadedProject.getSourceDirList();
-			MainFrame.getInstance().setSourceFinder(new SourceFinder());
-			MainFrame.getInstance().getSourceFinder().setSourceBaseList(possibleDirectories);
-
-			return loadBugsHelper(col);
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null,"This file contains no bug data");
-		} catch (DocumentException e) {
-			JOptionPane.showMessageDialog(null,"This file does not have the correct format; it may be corrupt.");
-		}
-		return null;
-	}
 
 	public static Project getLoadedProject()
 	{
