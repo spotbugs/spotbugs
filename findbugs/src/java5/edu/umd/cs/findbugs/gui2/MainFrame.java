@@ -27,7 +27,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -217,8 +220,26 @@ public class MainFrame extends FBFrame implements LogSync
 						}
 					}
 				}
-			
-				Driver.removeSplashScreen();
+				String loadFromURL = SystemProperties.getProperty("findbugs.loadBugsFromURL");
+				
+				if (loadFromURL != null) {
+					JOptionPane.showMessageDialog(MainFrame.this, "Loading from "  +loadFromURL);
+					InputStream in;
+					try {
+						in = new URL(loadFromURL).openConnection().getInputStream();
+						loadAnalysisFromInputStream(in);
+						JOptionPane.showMessageDialog(MainFrame.this, "Loaded from "  +loadFromURL);
+					} catch (MalformedURLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(MainFrame.this, "Error loading "  +e1.getMessage());
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(MainFrame.this, "Error loading "  +e1.getMessage());
+					}
+				}
+
 				addComponentListener(new ComponentAdapter(){
 					public void componentResized(ComponentEvent e){
 						resetPrevCommentsComboBox();
@@ -233,6 +254,7 @@ public class MainFrame extends FBFrame implements LogSync
 						callOnClose();
 					}				
 				});
+				Driver.removeSplashScreen();
 			}
 		});
 	}
@@ -1685,7 +1707,7 @@ public class MainFrame extends FBFrame implements LogSync
 		sourceCodeTextPane.setFont(sourceFont);
 		sourceCodeTextPane.setEditable(false);
 		sourceCodeTextPane.getCaret().setSelectionVisible(true);
-		sourceCodeTextPane.setText("Testing");
+		sourceCodeTextPane.setText("");
 		sourceCodeScrollPane = new JScrollPane(sourceCodeTextPane);
 		sourceCodeScrollPane.getVerticalScrollBar().setUnitIncrement(20);
 
@@ -1956,63 +1978,68 @@ public class MainFrame extends FBFrame implements LogSync
 	 */
 	private void loadAnalysis() {
 		saveCommentsToBug(currentSelectedBugLeaf);
-		
-		FBFileChooser jfc= new FBFileChooser();
+
+		FBFileChooser jfc = new FBFileChooser();
 		jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		jfc.setFileFilter(new FindBugsAnalysisFileFilter());
-		
-		// jfc.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs()); this is done by FBFileChooser now.
-						
-		boolean importing = true;
-		while(importing){
-			int returnValue=jfc.showOpenDialog(new JFrame());
-			
-			if (returnValue==JFileChooser.APPROVE_OPTION)
-			{
-				File file=jfc.getSelectedFile();
-				
-				if(!file.exists()){
-					JOptionPane.showMessageDialog(jfc, "That file does not exist");
-					importing = true;
-					continue;
-				}
-				else
-					importing = false;
-				
-				setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
-				
-				final File extraFinalReferenceToXmlFile=file;
-				new Thread(new Runnable(){
-					public void run()
-					{
-						BugTreeModel model=(BugTreeModel)tree.getModel();
-//								BugTreeModel.pleaseWait();
-						MainFrame.this.setRebuilding(true);
-						Project project = new Project();
-						BugSet bs=BugLoader.loadBugs(project, extraFinalReferenceToXmlFile);
-						MainFrame.this.setRebuilding(false);
-						if (bs!=null)
-						{
-							ProjectSettings.newInstance();
-							model.getOffListenerList();
-							updateDesignation();
-							model.changeSet(bs);
-							curProject=project;
-							MainFrame.this.updateStatusBar();
-							MainFrame.this.setTitle(project.getProjectFileName());
-						}
-					}
-				}).start();
+		// jfc.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs());
+		// this is done by FBFileChooser now.
 
-				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				
-				setProjectChanged(false);
-			}
-			else
+		while (true) {
+			int returnValue = jfc.showOpenDialog(new JFrame());
+
+			if (returnValue != JFileChooser.APPROVE_OPTION)
 				return;
-//					GUISaveState.getInstance().setStarterDirectoryForLoadBugs(jfc.getCurrentDirectory()); This is done by FBFileChooser
+
+			File file = jfc.getSelectedFile();
+
+			if (!file.exists()) {
+				JOptionPane.showMessageDialog(jfc, "That file does not exist");
+				continue;
+			} 
+			try {
+				FileInputStream in = new FileInputStream(file);
+				loadAnalysisFromInputStream(in);
+				return;
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(jfc, e.getMessage());
+			}
+
+
 		}
+	}
+	/**
+	 * @param file
+	 * @return
+	 */
+	private void loadAnalysisFromInputStream(final InputStream in) {
+		setCursor(new Cursor(Cursor.WAIT_CURSOR));
+		
+		new Thread(new Runnable(){
+			public void run()
+			{
+				BugTreeModel model=(BugTreeModel)tree.getModel();
+//								BugTreeModel.pleaseWait();
+				MainFrame.this.setRebuilding(true);
+				Project project = new Project();
+				BugSet bs=BugLoader.loadBugs(project, in);
+				MainFrame.this.setRebuilding(false);
+				if (bs!=null)
+				{
+					ProjectSettings.newInstance();
+					model.getOffListenerList();
+					updateDesignation();
+					model.changeSet(bs);
+					curProject=project;
+					MainFrame.this.updateStatusBar();
+					MainFrame.this.setTitle(project.getProjectFileName());
+					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					setProjectChanged(false);
+				}
+			}
+		}).start();
+		return;
 	}
 	/**
 	 * 

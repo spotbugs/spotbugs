@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -226,14 +228,28 @@ public class BugLoader {
 		
 	}
 	
-	public static BugSet loadBugs(Project project, File file)
+	public static BugSet loadBugs(Project project, URL url){
+		try {
+			return loadBugs(project, url.openConnection().getInputStream());
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null,"This file contains no bug data");
+		}	
+		return null;
+	}
+	public static BugSet loadBugs(Project project, File file){
+		try {
+			return loadBugs(project, new FileInputStream(file));
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null,"This file contains no bug data");
+		}	
+		return null;
+	}
+	public static BugSet loadBugs(Project project, InputStream in)
 	{
-		
 			try 
 			{
-				
 				SortedBugCollection col=new SortedBugCollection();
-				col.readXML(file,project);
+				col.readXML(in, project);
 				List<String> possibleDirectories=project.getSourceDirList();
 				MainFrame.getInstance().setSourceFinder(new SourceFinder());
 				MainFrame.getInstance().getSourceFinder().setSourceBaseList(possibleDirectories);
