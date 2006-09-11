@@ -1729,7 +1729,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * versions.
 	 * @param title
 	 */
-	private void setSourceTabTitle(final String title){
+	 void setSourceTabTitle(String title){
 		guiLayout.setSourceTitle(title);
 		
 	}
