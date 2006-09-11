@@ -34,6 +34,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -226,6 +228,8 @@ public class MainFrame extends FBFrame implements LogSync
 					InputStream in;
 					try {
 						in = new URL(loadFromURL).openConnection().getInputStream();
+						if (loadFromURL.endsWith(".gz"))
+							in = new GZIPInputStream(in);
 						loadAnalysisFromInputStream(in);
 					} catch (MalformedURLException e1) {
 						// TODO Auto-generated catch block
