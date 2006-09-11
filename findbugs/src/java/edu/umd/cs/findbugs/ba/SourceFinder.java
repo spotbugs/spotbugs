@@ -26,11 +26,13 @@ import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipEntry;
 
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -110,10 +112,18 @@ public class SourceFinder {
 		}
 	}
 
-	private static class JarURLConnectionSourceRepository extends ZipSourceRepository {
+	 static class JarURLConnectionSourceRepository extends ZipSourceRepository {
 
 		public JarURLConnectionSourceRepository(String url) throws MalformedURLException, IOException {
 			super(((JarURLConnection) new URL("jar:" + url +"!/").openConnection()).getJarFile());
+
+			if (DEBUG) {
+				System.out.println("JarURLConnectionSourceRepository entries");
+			for(Enumeration<? extends ZipEntry> e = zipFile.entries(); e.hasMoreElements(); ) {
+				ZipEntry ze = e.nextElement();
+				System.out.println(ze.getName());
+			}
+			}
 		}
 		
 	}
@@ -168,7 +178,7 @@ public class SourceFinder {
 			if (repos.endsWith(".zip") || repos.endsWith(".jar")) {
 				// Zip or jar archive
 				try {
-					if (repos.startsWith("http:") || repos.startsWith("file:")) 
+					if (repos.startsWith("http:") || repos.startsWith("https:") || repos.startsWith("file:")) 
 						repositoryList.add(new JarURLConnectionSourceRepository(repos));
 					else 
 						repositoryList.add(new ZipSourceRepository(new ZipFile(repos)));

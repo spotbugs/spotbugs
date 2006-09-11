@@ -2,6 +2,8 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.awt.Color;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -16,6 +18,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.sourceViewer.JavaSourceDocument;
 
 public final class SourceCodeDisplay implements Runnable {
@@ -51,19 +54,20 @@ public final class SourceCodeDisplay implements Runnable {
 	@NonNull
 	JavaSourceDocument getDocument(SourceLineAnnotation source) {
 		try {
-			String sourceFile = frame.sourceFinder.findSourceFile(source)
-					.getFullFileName();
-			JavaSourceDocument result = map.get(sourceFile);
+			SourceFile sourceFile = frame.sourceFinder.findSourceFile(source);
+			String fullFileName = sourceFile.getFullFileName();
+			JavaSourceDocument result = map.get(fullFileName);
 			if (result != null)
 				return result;
 			try {
+				InputStream in = sourceFile.getInputStream();
 				result = new JavaSourceDocument(source.getClassName(),
-						new FileReader(sourceFile));
+						new InputStreamReader(in));
 			} catch (Exception e) {
 				result = JavaSourceDocument.UNKNOWNSOURCE;
 				Debug.println(e); // e.printStackTrace();
 			}
-			map.put(sourceFile, result);
+			map.put(fullFileName, result);
 			return result;
 		} catch (Exception e) {
 			Debug.println(e); // e.printStackTrace();
