@@ -1248,7 +1248,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 		JSplitPane splitP = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, 
 				summaryScrollPane, summaryHtmlScrollPane);
-		splitP.setDividerLocation(75);
+		splitP.setDividerLocation(85);
 		splitP.setOneTouchExpandable(true);
 		return splitP;
 	}
