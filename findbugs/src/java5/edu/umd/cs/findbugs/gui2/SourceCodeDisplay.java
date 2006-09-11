@@ -60,12 +60,12 @@ public final class SourceCodeDisplay implements Runnable {
 						new FileReader(sourceFile));
 			} catch (Exception e) {
 				result = JavaSourceDocument.UNKNOWNSOURCE;
-				e.printStackTrace();
+				Debug.println(e); // e.printStackTrace();
 			}
 			map.put(sourceFile, result);
 			return result;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Debug.println(e); // e.printStackTrace();
 			return JavaSourceDocument.UNKNOWNSOURCE;
 		
 		}
@@ -127,7 +127,7 @@ public final class SourceCodeDisplay implements Runnable {
 				}
 			});
 		} catch (Exception e) {
-			e.printStackTrace();
+			Debug.println(e); // e.printStackTrace();
 		}
 		}
 	}
