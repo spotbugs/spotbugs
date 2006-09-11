@@ -42,7 +42,7 @@ public class GUISaveState{
 	private static final String DOCKINGLAYOUT="Docking Layout";
 	private static final int MAXNUMRECENTPROJECTS= 5;
 	private static final Sortables[] DEFAULT_COLUMN_HEADERS = new Sortables[] {
-		Sortables.PRIORITY, Sortables.CATEGORY, Sortables.CLASS, Sortables.DESIGNATION, Sortables.DIVIDER };
+		Sortables.CATEGORY, Sortables.BUGCODE, Sortables.TYPE, Sortables.DIVIDER, Sortables.PRIORITY };
 
 	private static final String[] RECENTPROJECTKEYS=new String[MAXNUMRECENTPROJECTS];//{"Project1","Project2","Project3","Project4","Project5"};//Make MAXNUMRECENTPROJECTS of these
 	static
