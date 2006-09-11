@@ -1234,6 +1234,11 @@ public class MainFrame extends FBFrame implements LogSync
 		summaryHtmlArea.setContentType("text/html");
 		summaryHtmlArea.setEditable(false);
 		summaryHtmlArea.setToolTipText("This gives a longer description of the detected bug pattern");
+		summaryHtmlArea.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
+	            public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
+	                AboutDialog.editorPaneHyperlinkUpdate(evt);
+	            }
+	        });
 		setStyleSheets();
 		//JPanel temp = new JPanel(new BorderLayout());
 		//temp.add(summaryTopPanel, BorderLayout.CENTER);

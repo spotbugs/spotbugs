@@ -210,7 +210,7 @@ public class AboutDialog extends javax.swing.JDialog {
         pack();
     }//GEN-END:initComponents
 
-    private void editorPaneHyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {//GEN-FIRST:event_editorPaneHyperlinkUpdate
+    static void editorPaneHyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {//GEN-FIRST:event_editorPaneHyperlinkUpdate
         try {
             if (evt.getEventType().equals( HyperlinkEvent.EventType.ACTIVATED)) {
                 URL url = evt.getURL();
