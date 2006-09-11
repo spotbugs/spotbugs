@@ -665,6 +665,7 @@ public class UnconditionalValueDerefAnalysis extends
 		ValueNumberFrame targetValueNumberFrame =
 			vnaDataflow.getStartFact(edge.getTarget());
 
+		UnconditionalValueDerefSet originalFact = fact;
 		fact = duplicateFact(fact);
 
 		if (blockValueNumberFrame.isValid() && targetValueNumberFrame.isValid() &&
@@ -674,26 +675,14 @@ public class UnconditionalValueDerefAnalysis extends
 				System.out.println("** Block : " + blockValueNumberFrame);
 				System.out.println("** Target: " + targetValueNumberFrame);
 			}
+
 			for (int i = 0; i < blockValueNumberFrame.getNumSlots(); i++) {
 				ValueNumber blockVN = blockValueNumberFrame.getValue(i);
 				ValueNumber targetVN = targetValueNumberFrame.getValue(i);
-				if (!blockVN.equals(targetVN)) {
-					if (DEBUG) {
-						System.out.println("Merge: " + targetVN + " -> " + blockVN);
-					}
-					if (fact.isUnconditionallyDereferenced(targetVN)
-							&& !fact.isUnconditionallyDereferenced(blockVN)) {
-						// Block VN is also dereferenced unconditionally.
-						if (DEBUG) {
-							System.out.println("** Copy vn derefs " + targetVN.getNumber() + 
-									" --> " + blockVN.getNumber());
-						}
-						fact.setDerefSet(blockVN, fact.getUnconditionalDerefLocationSet(targetVN));
-						if (DEBUG) {
-							System.out.println("Result is: " + fact);
-						}
-					}
-				}
+				fact.clearDerefSet(blockVN);
+				if (originalFact.isUnconditionallyDereferenced(targetVN))
+					fact.setDerefSet(blockVN, originalFact.getUnconditionalDerefLocationSet(targetVN));
+
 			} // for all slots
 	
 			for(ValueNumber blockVN : blockValueNumberFrame.valueNumbersForLoads()) {
