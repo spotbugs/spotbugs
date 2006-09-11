@@ -113,7 +113,7 @@ public final class SourceCodeDisplay implements Runnable {
 					frame.sourceCodeTextPane.setEditorKit(src.getEditorKit());
 					StyledDocument document = src.getDocument();
 					frame.sourceCodeTextPane.setDocument(document);
-					frame.setSourceTabTitle(thisSource.getSourceFile());
+					frame.setSourceTabTitle(thisSource.getSourceFile() + " in " + thisSource.getPackageName());
 					show(frame.sourceCodeTextPane, document, thisSource);
 					for(Iterator<BugAnnotation> i = thisBug.annotationIterator(); i.hasNext(); ) {
 						BugAnnotation annotation = i.next();
