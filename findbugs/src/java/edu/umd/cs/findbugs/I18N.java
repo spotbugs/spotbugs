@@ -284,11 +284,12 @@ public class I18N {
 			if (key == null) return -30;
 			if (key.length() <= 0) return -29;
 			switch (key.charAt(0)) {
-				case 'U': if ("UNCLASSIFIED".equals(key)) return -25;
+				case 'U': if ("UNCLASSIFIED".equals(key)) return 20;
 				          break;
-				case 'B': if ("BAD_ANALYSIS".equals(key)) return -20;
+				case 'B': if ("BAD_ANALYSIS".equals(key)) return 15;
 				          break;
-				case 'N': if ("NOT_A_BUG".equals(key)) return -15;
+				case 'N': if ("NEEDS_STUDY".equals(key)) return -22;
+						  if ("NOT_A_BUG".equals(key)) return -15;
 				          break;
 				case 'M': if ("MOSTLY_HARMLESS".equals(key)) return -10;
 				          if ("MUST_FIX".equals(key)) return 10;
