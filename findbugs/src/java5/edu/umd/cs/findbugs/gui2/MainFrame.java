@@ -1230,10 +1230,13 @@ public class MainFrame extends FBFrame implements LogSync
 		summaryHtmlArea.setEditable(false);
 		summaryHtmlArea.setToolTipText("This gives a longer description of the detected bug pattern");
 		setStyleSheets();
-		JPanel temp = new JPanel(new BorderLayout());
-		temp.add(summaryTopPanel, BorderLayout.CENTER);
+		//JPanel temp = new JPanel(new BorderLayout());
+		//temp.add(summaryTopPanel, BorderLayout.CENTER);
+		JScrollPane summaryScrollPane = new JScrollPane(summaryTopPanel);
+		summaryScrollPane.getVerticalScrollBar().setUnitIncrement( (int)Driver.getFontSize() );
+
 		JSplitPane splitP = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, 
-				new JScrollPane(temp), summaryHtmlScrollPane);
+				summaryScrollPane, summaryHtmlScrollPane);
 		splitP.setDividerLocation(75);
 		splitP.setOneTouchExpandable(true);
 		return splitP;
