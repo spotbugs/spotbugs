@@ -55,7 +55,7 @@ public class LaunchBrowser {
 
 	/** 
 	 * attempt to show the given URL.
-	 * will first attempt via the JNLP api, then will try eval().
+	 * will first attempt via the JNLP api, then will try showViaExec().
 	 * @param url the URL
 	 * @return true on success
 	 */
@@ -70,13 +70,13 @@ public class LaunchBrowser {
 			// do nothing
 		}
 
-	    // fallback to eval()
-		return showViaEval( url.toString() ); // or url.toExternalForm()
+	    // fallback to exec()
+		return showViaExec( url.toString() ); // or url.toExternalForm()
 	}
 
 
 	/** attempt to show the given URL string.
-	 *  will first attempt via the JNLP api, then will try eval().
+	 *  will first attempt via the JNLP api, then will try showViaExec().
 	 * @param url the url srtring
 	 * @return true on success
 	 */
@@ -98,17 +98,21 @@ public class LaunchBrowser {
 			// do nothing
 		}
 
-	    // fallback to eval()
-		return showViaEval(url);
+	    // fallback to exec()
+		return showViaExec(url);
 	}
 
 
 	/**
+	 * DISABLED -- simply returns false
+	 * 
      * Attempts to show the given URL in the OS's web browser.
      * @param url url to show
      * @return true if the show operation was successful, false otherwise.
      */
-    private static boolean showViaEval(String url){
+    private static boolean showViaExec(String url){
+    	return false;
+    	/*
     	String os = SystemProperties.getProperty("os.name").toLowerCase();
         Runtime rt = Runtime.getRuntime();
         try{
@@ -136,6 +140,7 @@ public class LaunchBrowser {
         	return false;
         }
         return true;
+        */
     }
 
 }
