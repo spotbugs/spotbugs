@@ -87,6 +87,7 @@ import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.gui.ConsoleLogger;
 import edu.umd.cs.findbugs.gui.LogSync;
@@ -399,7 +400,7 @@ public class MainFrame extends FBFrame implements LogSync
 							
 							setProjectChanged(false);
 							editProjectMenuItem.setEnabled(true);
-							clearBottomTabs();
+							clearIndividualBugInformation();
 						}
 					}).start();
 				}
@@ -444,7 +445,7 @@ public class MainFrame extends FBFrame implements LogSync
 				ProjectSettings.getInstance().getSuppressionMatcher().add(currentSelectedBugLeaf.getBug());						
 				PreferencesFrame.getInstance().suppressionsChanged(currentSelectedBugLeaf);
 				((BugTreeModel)(tree.getModel())).resetData();//Necessary to keep suppressions from getting out of sync with tree.  
-				clearBottomTabs();
+				clearIndividualBugInformation();
 				updateStatusBar();
 				
 				setProjectChanged(true);
@@ -745,7 +746,7 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 	void newProject(){
 		setProjectChanged(true);		
-		clearBottomTabs();
+		clearIndividualBugInformation();
 		
 		if(newProject){
 			setTitle("FindBugs: " + Project.UNNAMED_PROJECT);
@@ -941,7 +942,7 @@ public class MainFrame extends FBFrame implements LogSync
 						updateDesignation();
 						currentSelectedBugLeaf = null;
 						currentSelectedBugAspects = (BugAspects)path.getLastPathComponent();
-						clearBottomTabs();
+						clearIndividualBugInformation();
 					}
 				}
 //				Debug.println("Tree selection count:" + tree.getSelectionCount());
@@ -1083,7 +1084,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * Clears the bottom tabs so not show bug information.
 	 *
 	 */
-	private void clearBottomTabs(){
+	 void clearIndividualBugInformation(){
 			
 		setUserCommentInputEnable(false); //Do not put in Swing thread b/c already in it.
 		
@@ -1176,9 +1177,9 @@ public class MainFrame extends FBFrame implements LogSync
 			public void run(){
 				summaryTopPanel.removeAll();
 				
-				summaryTopPanel.add(bugSummaryComponent(bug.getMessageWithoutPrefix()));
+				summaryTopPanel.add(bugSummaryComponent(bug.getMessageWithoutPrefix(), bug));
 				for(BugAnnotation b : primaryAnnotations)
-					summaryTopPanel.add(bugSummaryComponent(b));
+					summaryTopPanel.add(bugSummaryComponent(b, bug));
 				
 				
 				if(!classIncluded2 && bug.getPrimaryClass() != null)
@@ -1192,7 +1193,7 @@ public class MainFrame extends FBFrame implements LogSync
 							cont = false;
 					
 					if(cont)
-						summaryTopPanel.add(bugSummaryComponent(b));
+						summaryTopPanel.add(bugSummaryComponent(b, bug));
 				}
 				
 				summaryHtmlArea.setText(bug.getBugPattern().getDetailHTML());
@@ -1254,9 +1255,10 @@ public class MainFrame extends FBFrame implements LogSync
 	 * connected to it and the source file is available will attach
 	 * a listener to the label.
 	 * @param obj
+	 * @param bug TODO
 	 * @return
 	 */
-	private Component bugSummaryComponent(Object obj){
+	private Component bugSummaryComponent(Object obj, BugInstance bug){
 		JLabel label = new JLabel();
 		label.setFont(label.getFont().deriveFont(Driver.getFontSize()));
 		label.setFont(label.getFont().deriveFont(Font.PLAIN));
@@ -1288,7 +1290,7 @@ public class MainFrame extends FBFrame implements LogSync
 					
 					label.setToolTipText("Click to go to " + srcStr);
 					
-					label.addMouseListener(new BugSummaryMouseListener(null, label, note));
+					label.addMouseListener(new BugSummaryMouseListener(bug, label, note));
 				}
 				
 				label.setText(note.toString());
@@ -1309,7 +1311,7 @@ public class MainFrame extends FBFrame implements LogSync
 					
 					if(!srcStr.equals("")){
 						label.setToolTipText("Click to go to " + srcStr);
-						label.addMouseListener(new BugSummaryMouseListener(null, label, noteSrc));
+						label.addMouseListener(new BugSummaryMouseListener(bug, label, noteSrc));
 					}
 				}
 				if(!srcStr.equals("source code."))
@@ -1339,7 +1341,7 @@ public class MainFrame extends FBFrame implements LogSync
 		private JLabel label;
 		private SourceLineAnnotation note;
 		
-		BugSummaryMouseListener(BugInstance bugInstance, JLabel label, SourceLineAnnotation note){
+		BugSummaryMouseListener(@NonNull BugInstance bugInstance, @NonNull JLabel label,  @NonNull SourceLineAnnotation note){
 			this.bugInstance = bugInstance;
 			this.label = label;
 			this.note = note;
@@ -2215,7 +2217,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		//Clears the bottom tabs so they are blank. And makes comments
 		//tab not enabled.				
-		clearBottomTabs();
+		clearIndividualBugInformation();
 
 		designationChanged = false;
 		projectChanged = false;

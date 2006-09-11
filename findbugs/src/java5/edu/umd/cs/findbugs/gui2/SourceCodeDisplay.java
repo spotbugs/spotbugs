@@ -14,6 +14,7 @@ import javax.swing.text.StyledDocument;
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.sourceViewer.JavaSourceDocument;
 
@@ -35,7 +36,7 @@ public final class SourceCodeDisplay implements Runnable {
 
 	boolean pendingUpdate;
 
-	BugInstance bugToDisplay;
+	@CheckForNull BugInstance bugToDisplay;
 
 	SourceLineAnnotation sourceToHighlight;
 
@@ -89,6 +90,11 @@ public final class SourceCodeDisplay implements Runnable {
 				sourceToHighlight = null;
 				pendingUpdate = false;
 			}
+			if (myBug == null) {
+				frame.clearIndividualBugInformation();
+				continue;
+			}
+			
 			try {
 			final JavaSourceDocument src = getDocument(mySourceLine);
 			src.getHighlightInformation().clear();
