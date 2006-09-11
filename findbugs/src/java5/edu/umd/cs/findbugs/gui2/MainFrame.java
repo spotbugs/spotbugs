@@ -697,7 +697,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		JMenu designationMenu = new JMenu("Designation");
 		int i = 0;
-		int keyEvents [] = {KeyEvent.VK_0, KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8};
+		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
 		for(String key :  I18N.instance().getUserDesignationKeys(true)) {
 			String name = I18N.instance().getUserDesignation(key);
 			addDesignationItem(designationMenu, name, keyEvents[i++]);
