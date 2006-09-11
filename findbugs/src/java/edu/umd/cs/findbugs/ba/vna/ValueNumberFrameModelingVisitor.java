@@ -367,6 +367,11 @@ public class ValueNumberFrameModelingVisitor
 							return;
 						}
 					}
+				} else {
+					// Don't know what this method invocation is doing.
+					// Kill all loads.
+					killLoadsOfObjectsPassed(obj);
+					getFrame().killAllLoadsOf(null);
 				}
 			} else {
 				// Don't know what this method invocation is doing.
