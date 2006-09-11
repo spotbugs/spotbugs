@@ -36,6 +36,7 @@ import org.apache.bcel.generic.LDC2_W;
 import org.apache.bcel.generic.MULTIANEWARRAY;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.NEWARRAY;
+import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
@@ -44,10 +45,12 @@ import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.InstanceField;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -212,6 +215,35 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 				} catch (DataflowAnalysisException e) {
 					AnalysisContext.logError("error", e);
 			}
+		}
+	}
+
+	@Override
+	public void visitPUTFIELD(PUTFIELD obj) {
+		if (getNumWordsConsumed(obj) != 2) {
+			super.visitPUTFIELD(obj);
+			return;
+		}
+		
+		IsNullValue nullValueStored = null;
+		try {
+			nullValueStored = getFrame().getTopValue();
+		} catch (DataflowAnalysisException e1) {
+			AnalysisContext.logError("Oops", e1);
+		}
+		super.visitPUTFIELD(obj);
+		InstanceField field = (InstanceField) XFactory.createXField(obj, cpg);
+		if (nullValueStored != null)
+			try {
+			ValueNumberFrame vnaFrameBefore = vnaDataflow.getFactAtLocation(getLocation());
+			ValueNumber refValue = vnaFrameBefore.getStackValue(1);
+			AvailableLoad load = new AvailableLoad(refValue, field);
+			ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(getLocation());
+			ValueNumber [] newValueNumbersForField = vnaFrameAfter.getAvailableLoad(load);
+			if (newValueNumbersForField != null) for(ValueNumber v : newValueNumbersForField)
+				getFrame().setKnownValue(v, nullValueStored);			
+		} catch (DataflowAnalysisException e) {
+			AnalysisContext.logError("Oops", e);
 		}
 	}
 
