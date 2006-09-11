@@ -85,7 +85,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	}
 
 	// Maximum number of iterations before we assume there is a bug and give up.
-	private static final int MAX_ITERS = SystemProperties.getInteger("dataflow.maxiters", 10000).intValue();
+	private static final int MAX_ITERS = SystemProperties.getInteger("dataflow.maxiters", 100).intValue();
 
 	private String getFullyQualifiedMethodName() {
 		String methodName;
@@ -235,9 +235,9 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 							// Merge the predecessor fact (possibly transformed by the edge transfer function)
 							// into the block's start fact.
-							if (DEBUG) debug(block, logicalPred, edge, "Meet " + start + " with " + edgeFact);
+							if (DEBUG) debug(block, logicalPred, edge, "Meet " + start + " with " + edgeFact + "\n");
 							analysis.meetInto(edgeFact, edge, start);
-							if (DEBUG) System.out.println(" ==> " + start);
+							if (DEBUG) System.out.println(" ==> " + start +"\n");
 						}
 					}
 				}

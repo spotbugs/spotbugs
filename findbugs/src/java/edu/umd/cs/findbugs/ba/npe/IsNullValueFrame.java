@@ -75,6 +75,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		}
 	}
 	public void useNewValueNumberForLoad(ValueNumber oldValueNumber, ValueNumber newValueNumber) {
+		if (newValueNumber.equals(oldValueNumber)) return;
 		knownValueMap.put(newValueNumber, knownValueMap.get(oldValueNumber));
 		knownValueMap.remove(oldValueNumber);
 	}
