@@ -52,6 +52,7 @@ public class Driver {
 				
 		try {
 			Class.forName("net.infonode.docking.DockingWindow");
+			Class.forName("edu.umd.cs.findbugs.gui2.DockLayout");
 		} catch (Exception e) {
 			docking = false;
 		}
