@@ -49,8 +49,9 @@ public interface BugAnnotation
 	 * be formatted.  If the key is empty, then the "default" format will be used.
 	 *
 	 * @param key how the annotation should be formatted
+	 * @param primaryClass TODO
 	 */
-	public String format(String key);
+	public String format(String key, ClassAnnotation primaryClass);
 
 	/**
 	 * Get a description of this bug annotation.

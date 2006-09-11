@@ -80,7 +80,7 @@ public class TypeAnnotation implements BugAnnotation {
 	}
 
 	
-	public String format(String key) {
+	public String format(String key, ClassAnnotation primaryClass) {
 		return new SignatureConverter(descriptor).parseNext();
 	}
 
@@ -115,7 +115,7 @@ public class TypeAnnotation implements BugAnnotation {
 	public String toString() {
 		String pattern = I18N.instance().getAnnotationDescription(roleDescription);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-		return format.format(new BugAnnotation[]{this});
+		return format.format(new BugAnnotation[]{this}, null);
 	}
 
 	/* ----------------------------------------------------------------------

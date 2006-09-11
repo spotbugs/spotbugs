@@ -101,7 +101,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		visitor.visitLocalVariableAnnotation(this);
 	}
 
-	public String format(String key) {
+	public String format(String key, ClassAnnotation primaryClass) {
 		// System.out.println("format: " + key + " reg: " + register + " name: " + value);
 		if (register < 0) return "??";
 		if (key.equals("register")) return String.valueOf(register);
@@ -141,7 +141,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	public String toString() {
 		String pattern = I18N.instance().getAnnotationDescription(description);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-		return format.format(new BugAnnotation[]{this});
+		return format.format(new BugAnnotation[]{this}, null);
 	}
 
 	/* ----------------------------------------------------------------------

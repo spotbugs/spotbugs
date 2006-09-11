@@ -268,16 +268,16 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	}
 
 	@Override
-	protected String formatPackageMember(String key) {
+	protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
 		if (key.equals(""))
-			return UGLY_METHODS ? getUglyMethod() : getFullMethod();
-		else if (key.equals("givenClass")) return getNameInClass();
+			return UGLY_METHODS ? getUglyMethod() : getFullMethod(primaryClass);
+		else if (key.equals("givenClass")) return getNameInClass(primaryClass);
 		else if (key.equals("shortMethod"))
 			return className + "." + methodName + "()";
 		else if (key.equals("returnType")) {
 			int i = methodSig.indexOf(')');
 			String returnType = methodSig.substring(i+1);
-			String pkgName = getPackageName();
+			String pkgName = primaryClass == null ? "" : primaryClass.getPackageName();
 			SignatureConverter converter = new SignatureConverter(returnType);
 			return shorten(pkgName, converter.parseNext());
 		}	else
@@ -289,10 +289,11 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * Get the "full" method name.
 	 * This is a format which looks sort of like a method signature
 	 * that would appear in Java source code.
+	 * @param primaryClass TODO
 	 */
-	public String getNameInClass() {
+	public String getNameInClass(ClassAnnotation primaryClass) {
 		if (nameInClass == null) {
-			nameInClass = getNameInClass(true);
+			nameInClass = getNameInClass(true, primaryClass);
 		}
 		return nameInClass;
 	}
@@ -308,8 +309,10 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * 
 	 * @param shortenPackages whether to shorten package names
 	 * if they are in java or in the same package as this method.
+	 * @param primaryClass TODO
 	 */
-	public String getNameInClass(boolean shortenPackages) {
+	public String getNameInClass(boolean shortenPackages, ClassAnnotation primaryClass) {
+		if (primaryClass == null) shortenPackages = false;
 		// Convert to "nice" representation
 		StringBuffer result = new StringBuffer();
 		result.append(methodName);
@@ -322,7 +325,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			throw new IllegalStateException("bad method signature " + methodSig);
 		converter.skip();
 
-		String pkgName = getPackageName();
+		String pkgName = null;
+		if (shortenPackages)
+			pkgName = primaryClass.getPackageName();
 		boolean needsComma = false;
 		while (converter.getFirst() != ')') {
 			if (needsComma)
@@ -344,10 +349,11 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * Get the "full" method name.
 	 * This is a format which looks sort of like a method signature
 	 * that would appear in Java source code.
+	 * @param primaryClass TODO
 	 */
-	public String getFullMethod() {
+	public String getFullMethod(ClassAnnotation primaryClass) {
 		if (fullMethod == null) {
-			fullMethod = className + "." + getNameInClass();
+			fullMethod = className + "." + getNameInClass(primaryClass);
 		}
 
 		return fullMethod;

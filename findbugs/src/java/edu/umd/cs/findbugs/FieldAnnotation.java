@@ -179,7 +179,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	}
 
 	@Override
-	protected String formatPackageMember(String key) {
+	protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
 		if (key.equals(""))
 			return className + "." + fieldName;
 		else if (key.equals("name"))

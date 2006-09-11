@@ -71,7 +71,7 @@ public class IntAnnotation implements BugAnnotation {
 		visitor.visitIntAnnotation(this);
 	}
 
-	public String format(String key) {
+	public String format(String key, ClassAnnotation primaryClass) {
 		return String.valueOf(value);
 	}
 
@@ -105,7 +105,7 @@ public class IntAnnotation implements BugAnnotation {
 	public String toString() {
 		String pattern = I18N.instance().getAnnotationDescription(description);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-		return format.format(new BugAnnotation[]{this});
+		return format.format(new BugAnnotation[]{this}, null);
 	}
 
 	/* ----------------------------------------------------------------------

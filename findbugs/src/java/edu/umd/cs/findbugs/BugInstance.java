@@ -300,8 +300,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			} else {
 				buf.append(":");
 				if (annotation instanceof LocalVariableAnnotation)
-					buf.append(annotation.format("name"));
-				else buf.append(annotation.format(""));
+					buf.append(annotation.format("name", null));
+				else buf.append(annotation.format("", null));
 			}
 		}
 		return buf.toString();
@@ -1275,7 +1275,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		else pattern = bugPattern.getLongDescription();
 		try {
 			FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]));
+			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
 		} catch (RuntimeException e) {
 			AnalysisContext.logError("Error generating bug msg ", e);
 			return bugPattern.getShortDescription() + " [Error generating customized description]";
@@ -1290,7 +1290,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		String pattern = I18N.instance().getMessage(type);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
 		try {
-			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]));
+			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
 		} catch (RuntimeException e) {
 			AnalysisContext.logError("Error generating bug msg ", e);
 			BugPattern bugPattern = I18N.instance().lookupBugPattern(type);

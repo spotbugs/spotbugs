@@ -94,13 +94,13 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	 * @param key the key
 	 * @return the formatted annotation
 	 */
-	public final String format(String key) {
+	public final String format(String key, ClassAnnotation primaryClass) {
 		if (key.equals("class"))
 			return className;
 		else if (key.equals("package"))
 			return getPackageName();
 		else
-			return formatPackageMember(key);
+			return formatPackageMember(key, primaryClass);
 	}
 
 	public void setDescription(String description) {
@@ -130,8 +130,9 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	 * Do default and subclass-specific formatting.
 	 *
 	 * @param key the key specifying how to do the formatting
+	 * @param primaryClass TODO
 	 */
-	protected abstract String formatPackageMember(String key);
+	protected abstract String formatPackageMember(String key, ClassAnnotation primaryClass);
 
 	/**
 	 * All PackageMemberAnnotation object share a common toString() implementation.
@@ -142,7 +143,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	public String toString() {
 		String pattern = I18N.instance().getAnnotationDescription(description);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-		return format.format(new BugAnnotation[]{this});
+		return format.format(new BugAnnotation[]{this}, null);
 	}
 	
 	/**

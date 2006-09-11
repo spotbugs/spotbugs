@@ -490,7 +490,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 		visitor.visitSourceLineAnnotation(this);
 	}
 
-	public String format(String key) {
+	public String format(String key, ClassAnnotation primaryClass) {
 		if (key.equals("")) {
 			StringBuffer buf = new StringBuffer();
 			buf.append(sourceFile);
@@ -550,7 +550,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 			desc = DEFAULT_ROLE_UNKNOWN_LINE;
 		String pattern = I18N.instance().getAnnotationDescription(desc);
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-		return format.format(new BugAnnotation[]{this});
+		return format.format(new BugAnnotation[]{this}, null);
 	}
 
 	public int compareTo(BugAnnotation o) {
