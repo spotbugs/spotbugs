@@ -222,7 +222,7 @@
 		<jar destfile="${gui.jar}"
 				manifest="etc/MANIFEST-findbugsGUI.MF">
 			<fileset dir="${classes.dir}">
-				<exclude name="${pkg.base}/sourceViewer/**/*.class"/>
+				<include name="${pkg.base}/sourceViewer/**/*.class"/>
 				<include name="${pkg.base}/gui/**/*.class"/>
 				<include name="${pkg.base}/gui/**/*.properties"/>
 				<include name="${pkg.base}/gui/**/*.png"/>

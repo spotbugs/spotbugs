@@ -26,6 +26,7 @@
     <jar href="plugin/coreplugin.jar"/>
     <property name="findbugs.jaws" value="true"/>
     <property name="findbugs.noSummary" value="true"/>
+    <property name="apple.laf.useScreenMenuBar" value="true"/>
   </resources> 
   <application-desc main-class="edu.umd.cs.findbugs.gui.FindBugsFrame"/> 
 </jnlp> 

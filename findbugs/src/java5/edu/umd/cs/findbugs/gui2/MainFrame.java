@@ -223,12 +223,10 @@ public class MainFrame extends FBFrame implements LogSync
 				String loadFromURL = SystemProperties.getProperty("findbugs.loadBugsFromURL");
 				
 				if (loadFromURL != null) {
-					JOptionPane.showMessageDialog(MainFrame.this, "Loading from "  +loadFromURL);
 					InputStream in;
 					try {
 						in = new URL(loadFromURL).openConnection().getInputStream();
 						loadAnalysisFromInputStream(in);
-						JOptionPane.showMessageDialog(MainFrame.this, "Loaded from "  +loadFromURL);
 					} catch (MalformedURLException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();

@@ -16,7 +16,7 @@
       <all-permissions/> 
   </security> 
   <resources> 
-    <j2se version="1.5" initial-heap-size="300m" max-heap-size="800m"/>
+    <j2se version="1.5+" initial-heap-size="300m" max-heap-size="800m"/>
     <jar href="findbugsGUI.jar"/> 
     <jar href="findbugs.jar"/> 
     <jar href="bcel.jar"/> 
