@@ -50,7 +50,7 @@ public class Version {
 	 * Release candidate number.
 	 * "0" indicates that the version is not a release candidate.
 	 */
-	public static final int RELEASE_CANDIDATE = 3;
+	public static final int RELEASE_CANDIDATE = 4;
 	
 	/**
 	 * Preview release number.
