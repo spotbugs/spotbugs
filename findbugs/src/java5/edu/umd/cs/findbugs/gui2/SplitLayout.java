@@ -64,6 +64,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 		JPanel sourcePanel = new JPanel();
 		sourcePanel.setLayout(new BorderLayout());
 		sourceTitle = new JLabel();
+		sourceTitle.setText("<source listing>");
 		sourcePanel.add(sourceTitle, BorderLayout.NORTH);
 		sourcePanel.add(frame.createSourceCodePanel(), BorderLayout.CENTER);
 		JSplitPane top = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, 
@@ -72,9 +73,6 @@ public class SplitLayout implements FindBugsLayoutManager {
 		top.setOneTouchExpandable(true);
 		topLeft.setDividerLocation(0.25);
 
-		
-		
-		
 		JSplitPane main = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 
 				top,  frame.summaryTab());
 		main.setOneTouchExpandable(true);

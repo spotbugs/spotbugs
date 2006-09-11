@@ -17,12 +17,12 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.sourceViewer.JavaSourceDocument;
 
-public class SourceCodeDisplay implements Runnable {
+public final class SourceCodeDisplay implements Runnable {
 	final MainFrame frame;
 
 	static final Color MAIN_HIGHLIGHT = new Color(1f, 1f, 0.5f);
 	static final Color MAIN_HIGHLIGHT_MORE = MAIN_HIGHLIGHT.brighter();
-	static final Color ALTERNATIVE_HIGHLIGHT = new Color(0.90f, 0.94f, 1.0f);
+	static final Color ALTERNATIVE_HIGHLIGHT = new Color(0.86f, 0.90f, 1.0f);
 	
 	Map<String, JavaSourceDocument> map = new HashMap<String, JavaSourceDocument>();
 
@@ -113,6 +113,7 @@ public class SourceCodeDisplay implements Runnable {
 					frame.sourceCodeTextPane.setEditorKit(src.getEditorKit());
 					StyledDocument document = src.getDocument();
 					frame.sourceCodeTextPane.setDocument(document);
+					frame.setTitle(thisSource.getSourceFile());
 					show(frame.sourceCodeTextPane, document, thisSource);
 					for(Iterator<BugAnnotation> i = thisBug.annotationIterator(); i.hasNext(); ) {
 						BugAnnotation annotation = i.next();
