@@ -194,6 +194,8 @@
 			<fileset dir="${classes.dir}">
 				<exclude name="${pkg.base}/tools/**"/>
 				<exclude name="${pkg.base}/gui/**"/>
+				<exclude name="${pkg.base}/gui2/**"/>
+				<exclude name="${pkg.base}/sourceViewer/**"/>
 				<exclude name="${pkg.base}/detect/**"/>
 				<exclude name="${pkg.base}/tools/**"/>
 				<exclude name="${pkg.base}/antTask/**"/>
@@ -220,10 +222,15 @@
 		<jar destfile="${gui.jar}"
 				manifest="etc/MANIFEST-findbugsGUI.MF">
 			<fileset dir="${classes.dir}">
+				<exclude name="${pkg.base}/sourceViewer/**/*.class"/>
 				<include name="${pkg.base}/gui/**/*.class"/>
 				<include name="${pkg.base}/gui/**/*.properties"/>
 				<include name="${pkg.base}/gui/**/*.png"/>
 				<include name="${pkg.base}/gui/**/*.html"/>
+				<include name="${pkg.base}/gui2/**/*.class"/>
+				<include name="${pkg.base}/gui2/**/*.properties"/>
+				<include name="${pkg.base}/gui2/**/*.png"/>
+				<include name="${pkg.base}/gui2/**/*.html"/>
 			</fileset>
 		</jar>
 
