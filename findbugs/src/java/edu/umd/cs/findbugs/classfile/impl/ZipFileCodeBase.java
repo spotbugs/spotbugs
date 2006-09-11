@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import edu.umd.cs.findbugs.classfile.ICodeBaseEntry;
@@ -53,8 +54,12 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 	 */
 	public ZipFileCodeBase(ICodeBaseLocator codeBaseLocator, File file) throws IOException {
 		super(codeBaseLocator);
+		try {
 		this.zipFile = new ZipFile(file);
 		setLastModifiedTime(file.lastModified());
+		} catch (ZipException e) {
+			throw new ZipException("Error opening " + file);
+		}
 	}
 	
 	/* (non-Javadoc)
