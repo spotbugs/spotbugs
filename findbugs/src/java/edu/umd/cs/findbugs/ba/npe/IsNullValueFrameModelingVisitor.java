@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import java.util.Map;
 import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.ANEWARRAY;
 import org.apache.bcel.generic.CHECKCAST;
@@ -186,6 +187,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 					if (value.isDefinitelyNull() || value.isNullOnSomePath()) {
 						frame.setValue(i, IsNullValue.nonReportingNotNullValue());
 					}
+				}
+				for(Map.Entry<ValueNumber,IsNullValue> e : frame.getKnownValueMapEntrySet()) {
+					IsNullValue value = e.getValue();
+					if (value.isDefinitelyNull() || value.isNullOnSomePath()) 
+						e.setValue(IsNullValue.nonReportingNotNullValue());
+					
 				}
 			}
 		}
