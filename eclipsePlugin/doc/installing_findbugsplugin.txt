@@ -1,37 +1,37 @@
 Here is how to install and use the Find Bugs Eclipse Plug-in:
 
 NOTE: Since FindBugs requires a JDK 1.4.x to run on, you MUST ENSURE that you
-start Eclipse using a JRE/JDK 1.4.x as well!
+start Eclipse using a JRE/JDK 1.4.x (or later) as well.
 
 Install the plug-in
 ===================================================
-1) Extract the contents of the files 
-   - de.tobject.findbugs_0.0.3.zip
-   - edu.umd.cs.findbugs_0.7.0.zip
+1) Extract the contents of the file 
+   - edu.umd.cs.findbugs.plugin.eclipse_1.1.0.v20060908.zip
    into the [plugins] folder of your Eclipse installation. This should result in
    the following directory structure:
    <eclipse-dir>
    |
    +- plugins
       |
-      +- de.tobject.findbugs_0.0.3
-      |  |
-      |  +- plugin.xml
-      |     findbugs-plugin.jar
-      |     findbugs-pluginsrc.jar
-      |     icons
-      |     |
-      |     +- bug.gif
-      +- edu.umd.cs.findbugs_0.7.0
+      +- edu.umd.cs.findbugs.plugin.eclipse_1.1.0.v20060908
          |
          +- plugin.xml
             findbugs.jar
+            findbugs-plugin.jar
+            annotations.jar
             dom4j-full.jar
             bcel.jar
+            asm-3.0_RC1.jar
             |
             +- plugin
+            |  |
+            |  +- coreplugin.jar
+            |     Fixes.xml
+            |
+            +- icons
                |
-               +- coreplugin.jar
+               +- bug.gif
+
 2) (Re-)start Eclipse
 
 
@@ -49,8 +49,8 @@ To enable the automatic mode:
 1) Open the context menu of a Java project (please go to the Java perspective first!) 
 2) Select [Properties] from the context menu
 3) In the properties dialog, switch to the [FindBugs} section and
-4) Check the [Enable Findbugs] option.
-5) Click [Apply] to persist your change.
+4) Check the [Run FindBugs automatically] option.
+5) Click [OK] or [Apply] to persist your change.
 
 Manual mode
 ------------
@@ -59,7 +59,7 @@ you may choose to run the plug-in in manual mode. As the name implies, you
 have to start the bug pattern detecion manually when the plug-in is in manual mode.
 
 To enable manual mode:
-1) Make sure that the [Enable FindBugs] checkbox on the Java project properties
+1) Make sure that the [Run FindBugs automatically] checkbox on the Java project properties
    page is disabled.
 2) Open the context menu of the current Java project.
-3) Select [Find Bugs]. The bug pattern detection process will be started.
+3) Select [Find Bugs -> Find Bugs]. The bug pattern detection process will be started.
