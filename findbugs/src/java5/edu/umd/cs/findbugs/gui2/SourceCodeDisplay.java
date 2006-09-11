@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 import javax.swing.JTextPane;
@@ -124,16 +125,25 @@ public final class SourceCodeDisplay implements Runnable {
 					StyledDocument document = src.getDocument();
 					frame.sourceCodeTextPane.setDocument(document);
 					frame.setSourceTabTitle(thisSource.getSourceFile() + " in " + thisSource.getPackageName());
-					show(frame.sourceCodeTextPane, document, thisSource);
+					int startLine = thisSource.getStartLine();
+					int endLine = thisSource.getEndLine();
+					int originLine = (startLine + endLine) / 2;
+					LinkedList<Integer> otherLines = new LinkedList<Integer>();
+					//show(frame.sourceCodeTextPane, document, thisSource);
 					for(Iterator<BugAnnotation> i = thisBug.annotationIterator(); i.hasNext(); ) {
 						BugAnnotation annotation = i.next();
 						if (annotation instanceof SourceLineAnnotation) {
 							SourceLineAnnotation sourceAnnotation = (SourceLineAnnotation) annotation;
-							if (sourceAnnotation != thisSource)  
-								show(frame.sourceCodeTextPane, document, sourceAnnotation);
+							if (sourceAnnotation != thisSource) {
+								//show(frame.sourceCodeTextPane, document, sourceAnnotation);
+								int otherLine = sourceAnnotation.getStartLine();
+								if (otherLine > originLine) otherLine = sourceAnnotation.getEndLine();
+								otherLines.add(otherLine);
+							}
 						}
 					}
-					show(frame.sourceCodeTextPane, document, thisSource);
+					//show(frame.sourceCodeTextPane, document, thisSource);
+					frame.sourceCodeTextPane.scrollLinesToVisible(startLine, endLine, otherLines);
 				}
 			});
 		} catch (Exception e) {
@@ -157,6 +167,8 @@ public final class SourceCodeDisplay implements Runnable {
 
 		int startLine = sourceAnnotation.getStartLine();
 		if (startLine == -1) return;
+		frame.sourceCodeTextPane.scrollLineToVisible(startLine);
+		/*
 		Element element = src.getDefaultRootElement().getElement(sourceAnnotation.getStartLine()-1);
 		if (element == null) {
 			if (MainFrame.DEBUG) {
@@ -166,12 +178,16 @@ public final class SourceCodeDisplay implements Runnable {
 			return;
 		}
 		pane.setCaretPosition(element.getStartOffset());
+		*/
 	}
 
 	public void showLine(int line) {
+		frame.sourceCodeTextPane.scrollLineToVisible(line);
+		/*
 		JTextPane pane = frame.sourceCodeTextPane;
 		Document doc = pane.getDocument();
 		Element element = doc.getDefaultRootElement().getElement(line-1);
 		pane.setCaretPosition(element.getStartOffset());
+		*/
 	}
 }

@@ -92,6 +92,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.gui.ConsoleLogger;
 import edu.umd.cs.findbugs.gui.LogSync;
 import edu.umd.cs.findbugs.gui.Logger;
+import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
 
 @SuppressWarnings("serial")
 
@@ -117,7 +118,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 	public static final boolean DEBUG = SystemProperties.getBoolean("gui2.debug");
 	
-	JTextPane sourceCodeTextPane = new JTextPane();
+	NavigableTextPane sourceCodeTextPane = new NavigableTextPane();
 	private JScrollPane sourceCodeScrollPane;
 	
 	private JTextArea userCommentsText = new JTextArea();
