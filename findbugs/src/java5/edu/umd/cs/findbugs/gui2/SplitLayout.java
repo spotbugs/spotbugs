@@ -59,7 +59,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 		JSplitPane topLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 
 				frame.bugListPanel(), frame.commentsPanel());
 		topLeft.setOneTouchExpandable(true);
-		topLeft.setDividerLocation(0.65);
+		topLeft.setDividerLocation(150); //0.65);
 		
 		JPanel sourcePanel = new JPanel();
 		sourcePanel.setLayout(new BorderLayout());
@@ -71,12 +71,12 @@ public class SplitLayout implements FindBugsLayoutManager {
 				topLeft, sourcePanel
 				);
 		top.setOneTouchExpandable(true);
-		topLeft.setDividerLocation(0.25);
+		//topLeft.setDividerLocation(0.25); //default behaviour seems ok
 
 		JSplitPane main = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 
 				top,  frame.summaryTab());
 		main.setOneTouchExpandable(true);
-		main.setDividerLocation(0.75);
+		main.setDividerLocation(300); //0.75);
 
 		frame.setLayout(new BorderLayout());
 		frame.add(main, BorderLayout.CENTER);
