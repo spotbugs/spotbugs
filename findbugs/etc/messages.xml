@@ -30,17 +30,18 @@ This plugin contains all of the standard FindBugs detectors.
     <Abbreviation>C</Abbreviation>
     <Details>Probable bug - an apparent coding mistake
             resulting in code that was probably not what the
-            developer intended. Low false positive rate.</Details>
+            developer intended. We strive for a low false positive rate.</Details>
   </BugCategory>
 
   <BugCategory category="BAD_PRACTICE">
     <Description>Bad practice</Description>
     <Abbreviation>B</Abbreviation>
-    <Details>violations of recommended and essential
+    <Details>Violations of recommended and essential
             coding practice. Examples include hash code and equals
             problems, cloneable idiom, dropped exceptions,  
             serializable problems, and misuse of finalize.
-            Low false positive rate, although some groups may
+            We strive to make this analysis accurate,
+		although some groups may
             not care about some of the bad practices.</Details>
   </BugCategory>
 
