@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
  * to the output stream.
  */
 public class PrintingBugReporter extends TextUIBugReporter {
+	private String stylesheet = null;
 	private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
 	public void observeClass(ClassDescriptor classDescriptor) {
@@ -57,6 +58,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
 		public PrintingCommandLine() {
 			addSwitch("-longBugCodes", "use long bug codes when generating text");
+			addSwitchWithOptionalExtraPart("-html", "stylesheet",
+			"Generate HTML output (default stylesheet is default.xsl)");
 		}
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
@@ -65,7 +68,13 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		protected void handleOption(String option, String optionExtraPart) throws IOException {
 			if (option.equals("-longBugCodes"))
 				setUseLongBugCodes(true);
-			
+			if (option.equals("-html")) {
+				if (!optionExtraPart.equals("")) {
+					stylesheet = optionExtraPart;
+				} else {
+					stylesheet = "default.xsl";
+				}
+			}
 		}
 
 		/* (non-Javadoc)
@@ -89,6 +98,11 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		// Load plugins, in order to get message files
 		DetectorFactoryCollection.instance();
 		
+		if (reporter.stylesheet != null) {
+			// actually do xsl via HTMLBugReporter instead of PrintingBugReporter
+			xslt(reporter.stylesheet, args, argCount);
+			return;
+		}
 		
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		if (argCount < args.length)
@@ -110,6 +124,24 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		}
 		if (storedException != null) throw storedException;
 		
+	}
+
+
+	public static void xslt(String stylesheet, String[] args, int argCount) throws Exception {
+		Project proj = new Project();
+		HTMLBugReporter reporter = new HTMLBugReporter(proj, stylesheet);
+		BugCollection bugCollection = reporter.getBugCollection();
+
+		if (argCount < args.length) {
+			bugCollection.readXML(args[argCount++], new Project());
+			if (proj.getProjectFileName()==null) proj.setProjectFileName(args[argCount]);
+		} else
+			bugCollection.readXML(System.in, new Project());
+
+		if (argCount < args.length)
+			reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));
+
+		reporter.finish();
 	}
 }
 
