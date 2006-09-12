@@ -45,6 +45,7 @@ public class ShowHelp {
 	public static void showGeneralOptions() {
 		System.out.println("General options:");
 		System.out.println("  -gui             Use the Graphical UI (default behavior)");
+		System.out.println("  -gui2            Use the new Graphical UI (requires 1.5)");
 		System.out.println("  -textui          Use the Text UI");
 		System.out.println("  -jvmArgs args    Pass args to JVM");
 		System.out.println("  -maxHeap size    Maximum Java heap size in megabytes (default=256)");
