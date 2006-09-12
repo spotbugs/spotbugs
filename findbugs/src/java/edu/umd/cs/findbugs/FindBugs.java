@@ -743,6 +743,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			detectorTimings = new HashMap<String,Long>();
 
 		Iterator<AnalysisPass> i = executionPlan.passIterator();
+		if (i.hasNext()) {
 		AnalysisPass firstPass = i.next();
 		// Do this to force referenced classes to be loaded
 		Set<JavaClass> allReferencedClasses = analysisContext.getSubtypes().getAllClasses();
@@ -752,9 +753,11 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		executeAnalysisPass(firstPass, listOfReferencedClasses);
 
 		analysisContext.clearClassContextCache();
+		}
+		else if (DEBUG) System.err.println("execution plan has no passes");
 		
 		
-		// Execute each analysis pass in the execution plan
+		// Execute each subsequent analysis pass in the execution plan
 		while (i.hasNext()) {
 			AnalysisPass analysisPass = i.next();
 			executeAnalysisPass(analysisPass, repositoryClassList);
