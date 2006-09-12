@@ -56,9 +56,16 @@ public class NavigableTextPane extends JTextPane {
 	
 	private int lineToOffset(int line) throws BadLocationException {
 		Document d = getDocument();
-		Element element = d.getDefaultRootElement().getElement(line-1);
-		if (element == null) throw new BadLocationException("line "+line+" does not exist", -line);
-		return element.getStartOffset();
+		try {
+			Element element = d.getDefaultRootElement().getElement(line-1);
+			if (element == null) throw new BadLocationException("line "+line+" does not exist", -line);
+			return element.getStartOffset();
+		}
+		catch (ArrayIndexOutOfBoundsException aioobe) {
+			BadLocationException ble = new BadLocationException("line "+line+" does not exist", -line);
+			ble.initCause(aioobe);
+			throw ble;
+		}
 	}
 
 	private int offsetToY(int offset) throws BadLocationException {
@@ -110,6 +117,7 @@ public class NavigableTextPane extends JTextPane {
     	try {
     		startY = lineToY(startLine);
     	} catch (BadLocationException ble) {
+			if (MainFrame.DEBUG) ble.printStackTrace();
     		return; // give up
     	}
     	try {
