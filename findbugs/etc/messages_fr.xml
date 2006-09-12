@@ -25,11 +25,11 @@
     <Details> </Details>
     </BugCategory -->
 
-  <BugCategory category="STYLE">
-    <Description>Style</Description>
-    <Abbreviation>S</Abbreviation>
-    <!-- Details subelement needed -->
-  </BugCategory>
+  <!-- BugCategory category="STYLE">
+    <Description> </Description>
+    <Abbreviation> </Abbreviation>
+    <Details> </Details>
+    </BugCategory -->
 
   <BugCategory category="PERFORMANCE">
     <Description>Performance</Description>
