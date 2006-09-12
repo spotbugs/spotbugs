@@ -137,9 +137,11 @@
 				</javac>
 		<!-- Copy codebase data files. -->
 		<echo level="info" message="copying data files"/>
-				
 		<copy todir="${classes.dir}">
 			<fileset dir="${src.dir}">
+				<patternset refid="codebase.data.pats"/>
+			</fileset>
+			<fileset dir="${src5.dir}">
 				<patternset refid="codebase.data.pats"/>
 			</fileset>
 			<fileset dir="${xslsrc.dir}">
