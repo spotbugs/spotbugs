@@ -16,7 +16,7 @@ public class EIFixer extends FindBugsFixer {
 		MethodDeclaration method;
 		
 		String className = bug.getPrimaryClass().getClassName();
-		String methodNameSig = bug.getPrimaryMethod().getNameInClass(false);
+		String methodNameSig = bug.getPrimaryMethod().getNameInClass(false, bug.getPrimaryClass());
 		String fieldName = bug.getPrimaryField().getFieldName();
 		
 		Expression retEx = null;
