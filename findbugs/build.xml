@@ -637,7 +637,7 @@
         Windowtitle="FindBugs ${release.number} API"
         bottom="&lt;font size='-1'&gt;&lt;a href='http://findbugs.sourceforge.net/' target='_parent'&gt;FindBugs&lt;/a&gt;&amp;trade; is licenced under the LGPL. Copyright &amp;copy; 2006 University of Maryland.&lt;/font&gt;"
 	    nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false" 
-        sourcepath="src/java" splitindex="true" use="true" version="true"/>
+        sourcepath="src/java:src/java5" splitindex="true" use="true" version="true"/>
 		</target>
 
     <target name="annotationJavadoc">
@@ -649,7 +649,7 @@
 	    packagenames="edu.umd.cs.findbugs.annotations"
         doctitle="FindBugs Annotation Documentation" 
 	    nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar= "false" notree="false" 
-        sourcepath="src/java" splitindex="true" use="true" version="true"/>
+        sourcepath="src/java5" splitindex="true" use="true" version="true"/>
 		</target>
 
 	
