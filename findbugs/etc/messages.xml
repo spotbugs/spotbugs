@@ -45,14 +45,16 @@ This plugin contains all of the standard FindBugs detectors.
   </BugCategory>
 
   <BugCategory category="STYLE">
-    <Description>Style</Description>
-    <Abbreviation>S</Abbreviation>
+    <Description>Dodgy</Description>
+    <Abbreviation>D</Abbreviation>
     <Details>code that is confusing, anomalous, or
             written in a way that that leads itself to errors.
             Examples include dead local stores, switch fall through,
             unconfirmed casts, and redundant null check of value
             known to be null.
-            More false positives accepted.</Details>
+            More false positives accepted.
+	    In previous versions of FindBugs, this category was known as Style.
+</Details>
   </BugCategory>
 
   <BugCategory category="PERFORMANCE">
