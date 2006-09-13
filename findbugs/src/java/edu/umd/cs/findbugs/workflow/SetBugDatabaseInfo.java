@@ -122,7 +122,6 @@ public class SetBugDatabaseInfo {
 		Map<String,Set<String>> missingFiles = new HashMap<String,Set<String>>();
 		if (!commandLine.searchSourcePaths.isEmpty()) {
 			sourceSearcher = new SourceSearcher(project);
-			Set<String> filenames = new HashSet<String>();
 			for(BugInstance bug : origCollection.getCollection()) {
 				SourceLineAnnotation src = bug.getPrimarySourceLineAnnotation();
 				if (!sourceSearcher.sourceNotFound.contains(src.getClassName())

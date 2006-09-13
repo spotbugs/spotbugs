@@ -58,9 +58,9 @@ public class FBFileChooser extends JFileChooser {
 					new Class[] { int.class } );
 			m.invoke( o, 0 );
 		}
-		catch ( NoSuchMethodException e ) { }
-		catch ( InvocationTargetException e ) { }
-		catch ( IllegalAccessException e ) { }
+		catch ( NoSuchMethodException e ) { assert false; }
+		catch ( InvocationTargetException e ) { assert false; }
+		catch ( IllegalAccessException e ) { assert false; }
 	}
 	
 	public int showOpenDialog(Component parent)

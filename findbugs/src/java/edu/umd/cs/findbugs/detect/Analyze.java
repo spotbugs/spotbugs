@@ -32,7 +32,7 @@ public class Analyze {
 		try {
 			remote = AnalysisContext.lookupSystemClass("java.rmi.Remote");
 		} catch (ClassNotFoundException e) {
-			// ignore it
+			if (storedException == null) storedException = e;
 		}
 	}
 

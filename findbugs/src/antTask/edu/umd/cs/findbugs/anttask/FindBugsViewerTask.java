@@ -214,7 +214,7 @@ public class FindBugsViewerTask extends Task {
 		findbugsEngine.setFork(true);
 		
 		if (timeout > 0) {
-			findbugsEngine.setTimeout(new Long(timeout));
+			findbugsEngine.setTimeout(timeout);
 		}
 		
 		

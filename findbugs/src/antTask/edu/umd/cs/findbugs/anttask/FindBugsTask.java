@@ -106,7 +106,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  *
- * @version $Revision: 1.40 $
+ * @version $Revision: 1.41 $
  *
  * @since Ant 1.5
  *
@@ -612,7 +612,7 @@ public class FindBugsTask extends Task {
 
 		findbugsEngine.setTaskName( getTaskName() );
 		findbugsEngine.setFork( true );
-		findbugsEngine.setTimeout( new Long( timeout ) );
+		findbugsEngine.setTimeout( timeout  );
 
 		if ( debug )
 			jvmargs = jvmargs + " -Dfindbugs.debug=true";

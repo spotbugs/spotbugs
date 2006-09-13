@@ -983,11 +983,11 @@ public class OpcodeStack implements Constants2
 	 					double d = (Double) it.getConstant();
 	 					double d2 = (Double) it.getConstant();
 	 					if (d2 < d)
-	 						push(new Item("I", new Integer(-1)));
+	 						push(new Item("I", (Integer) (-1) ));
 	 					else if (d2 > d)
-	 						push(new Item("I", new Integer(1)));
+	 						push(new Item("I", (Integer)1));
 	 					else
-	 						push(new Item("I", new Integer(0)));
+	 						push(new Item("I", (Integer)0));
 	 				} else {
 	 					push(new Item("I"));
 	 				}

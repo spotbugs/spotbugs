@@ -38,7 +38,7 @@ public class AnnotationRetentionDatabase {
 	}
 
 	public void setClassfileRetention(String dottedClassName, boolean value) {
-		annotationRetention.put(dottedClassName, value);
+		annotationRetention.put(dottedClassName, Boolean.valueOf(value));
 	}
 
 }

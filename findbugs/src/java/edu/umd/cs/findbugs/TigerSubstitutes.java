@@ -32,7 +32,7 @@ public class TigerSubstitutes {
 	}
 	public static Long valueOf(long value) {
 		// return Long.valueOf(value);
-		return  new Long(value);
+		return  (Long) value;
 	}
 	
 }

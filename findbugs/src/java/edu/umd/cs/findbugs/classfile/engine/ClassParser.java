@@ -273,19 +273,19 @@ public class ClassParser {
 				data[i] = in.readUTF();
 				break;
 			case 'I':
-				data[i] = new Integer(in.readInt());
+				data[i] = (Integer)in.readInt();
 				break;
 			case 'F':
 				data[i] = new Float(in.readFloat());
 				break;
 			case 'L':
-				data[i] = new Long(in.readLong());
+				data[i] = (Long)in.readLong();
 				break;
 			case 'D':
 				data[i] = new Double(in.readDouble());
 				break;
 			case 'i':
-				data[i] = new Integer(in.readUnsignedShort());
+				data[i] = (Integer)in.readUnsignedShort();
 				break;
 			default: throw new IllegalStateException();
 			}

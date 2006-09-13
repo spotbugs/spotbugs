@@ -35,8 +35,6 @@ class NumberedParagraphView extends ParagraphView {
         Rectangle r = (allocation instanceof Rectangle) ?
                 (Rectangle)allocation : allocation.getBounds();
 
-    	AttributeSet attributes = getAttributes();
-    	Object o = attributes.getAttribute(StyleConstants.Background);
     	Color oldColor = g.getColor();
 		Integer lineNumber = getLineNumber();
     	Color highlightColor = highlight.getHighlight(lineNumber);

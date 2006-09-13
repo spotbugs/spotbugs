@@ -45,7 +45,7 @@ public class LaunchBrowser {
 			showObject = lookupMethod.invoke(null, new Object[] { "javax.jnlp.BasicService" });
 			showMethod = showObject.getClass().getMethod("showDocument", new Class [] { URL.class });
 		} catch (Exception ex) {
-			// do nothing -- showMethod remains null
+			assert true;
 		}
 		jnlpShowMethod = showMethod;
 		jnlpShowObject = showObject;
