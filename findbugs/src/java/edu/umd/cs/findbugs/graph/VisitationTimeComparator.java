@@ -17,10 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// $Revision: 1.6 $
+// $Revision: 1.7 $
 
 package edu.umd.cs.findbugs.graph;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
@@ -30,7 +31,8 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
  * search; for example, it could compare the finishing times produced
  * by DepthFirstSearch.
  */
-public class VisitationTimeComparator <VertexType extends GraphVertex> implements Comparator<VertexType> {
+public class VisitationTimeComparator <VertexType extends GraphVertex> implements Comparator<VertexType>,
+Serializable {
 
 	/**
 	 * Compare in ascending order.

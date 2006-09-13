@@ -37,7 +37,7 @@ public class BugPattern implements Comparable {
 	private String shortDescription;
 	private String longDescription;
 	private String detailText;
-	private transient String detailHTML;
+	private String detailHTML;
 
 	/**
 	 * Constructor.

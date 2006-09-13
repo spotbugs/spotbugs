@@ -785,30 +785,30 @@ public class ClassContext {
 			}
 		};
 
-	private AnalysisFactory<UnconditionalDerefDataflow> unconditionalDerefDataflowFactory =
-		new DataflowAnalysisFactory<UnconditionalDerefDataflow>("unconditional deref analysis") {
-			@Override @CheckForNull
-			protected UnconditionalDerefDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
-				MethodGen methodGen = getMethodGen(method);
-				if (methodGen == null)
-					return null;
-				CFG cfg = getCFG(method); 
-				
-	
-				UnconditionalDerefAnalysis analysis = new UnconditionalDerefAnalysis(
-						getReverseDepthFirstSearch(method),
-						getDepthFirstSearch(method),
-						cfg,
-						methodGen,
-						getValueNumberDataflow(method),
-						getTypeDataflow(method));
-				UnconditionalDerefDataflow dataflow = new UnconditionalDerefDataflow(cfg, analysis);
-				
-				dataflow.execute();
-				
-				return dataflow;
-			}
-		};
+//	private AnalysisFactory<UnconditionalDerefDataflow> unconditionalDerefDataflowFactory =
+//		new DataflowAnalysisFactory<UnconditionalDerefDataflow>("unconditional deref analysis") {
+//			@Override @CheckForNull
+//			protected UnconditionalDerefDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+//				MethodGen methodGen = getMethodGen(method);
+//				if (methodGen == null)
+//					return null;
+//				CFG cfg = getCFG(method); 
+//				
+//	
+//				UnconditionalDerefAnalysis analysis = new UnconditionalDerefAnalysis(
+//						getReverseDepthFirstSearch(method),
+//						getDepthFirstSearch(method),
+//						cfg,
+//						methodGen,
+//						getValueNumberDataflow(method),
+//						getTypeDataflow(method));
+//				UnconditionalDerefDataflow dataflow = new UnconditionalDerefDataflow(cfg, analysis);
+//				
+//				dataflow.execute();
+//				
+//				return dataflow;
+//			}
+//		};
 	
 	private AnalysisFactory<LoadDataflow> loadDataflowFactory =
 		new DataflowAnalysisFactory<LoadDataflow>("field load analysis") {

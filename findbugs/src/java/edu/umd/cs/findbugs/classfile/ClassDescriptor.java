@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.classfile;
 
+import java.io.Serializable;
+
 import edu.umd.cs.findbugs.util.ClassName;
 
 /**
@@ -26,7 +28,8 @@ import edu.umd.cs.findbugs.util.ClassName;
  * 
  * @author David Hovemeyer
  */
-public class ClassDescriptor implements Comparable<ClassDescriptor> {
+public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializable {
+	private static final long serialVersionUID = 1L;
 	private final String className;
 	
 	/**

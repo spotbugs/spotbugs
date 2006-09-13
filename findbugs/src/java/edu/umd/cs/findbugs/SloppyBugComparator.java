@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.model.IdentityClassNameRewriter;
  * 
  * @author David Hovemeyer
  */
-public class SloppyBugComparator implements  WarningComparator, Serializable {
+public class SloppyBugComparator implements  WarningComparator {
 	
 	private static final boolean DEBUG = SystemProperties.getBoolean("sloppyComparator.debug");
 	

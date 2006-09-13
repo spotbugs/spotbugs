@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.model.ClassNameRewriter;
  * @see edu.umd.cs.findbugs.VersionInsensitiveBugComparator
  * @author David Hovemeyer
  */
-public class FuzzyBugComparator implements WarningComparator, Serializable {
+public class FuzzyBugComparator implements WarningComparator {
 	private static final boolean DEBUG = false;
 
 	// Don't use hashes for now.  Still ironing out issues there.
