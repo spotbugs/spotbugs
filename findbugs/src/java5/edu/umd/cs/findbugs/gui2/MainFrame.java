@@ -1226,11 +1226,12 @@ public class MainFrame extends FBFrame implements LogSync
 	{
 		int fontSize = (int) Driver.getFontSize();
 		summaryTopPanel = new JPanel();
-		//summaryTopPanel.setLayout(new GridLayout(0,1));
-		summaryTopPanel.setLayout(new BoxLayout(summaryTopPanel, BoxLayout.Y_AXIS));
+		summaryTopPanel.setLayout(new GridLayout(0,1));
 		summaryTopPanel.setBorder(BorderFactory.createEmptyBorder(2,4,2,4));
 		summaryTopPanel.setMinimumSize(new Dimension(fontSize * 50, fontSize*5));
 		
+		JPanel summaryTopOuter = new JPanel(new BorderLayout());
+		summaryTopOuter.add(summaryTopPanel, BorderLayout.NORTH);
 		
 		summaryHtmlArea.setContentType("text/html");
 		summaryHtmlArea.setEditable(false);
@@ -1243,7 +1244,7 @@ public class MainFrame extends FBFrame implements LogSync
 		setStyleSheets();
 		//JPanel temp = new JPanel(new BorderLayout());
 		//temp.add(summaryTopPanel, BorderLayout.CENTER);
-		JScrollPane summaryScrollPane = new JScrollPane(summaryTopPanel);
+		JScrollPane summaryScrollPane = new JScrollPane(summaryTopOuter);
 		summaryScrollPane.getVerticalScrollBar().setUnitIncrement( (int)Driver.getFontSize() );
 
 		JSplitPane splitP = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, 
