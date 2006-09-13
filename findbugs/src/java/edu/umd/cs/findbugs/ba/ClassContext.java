@@ -1295,7 +1295,7 @@ public class ClassContext {
         for(int i = 0; i < instructionList.length; i++)
         	if (checkForBranchExit(instructionList,i)) result.add(i);
         if (result.size() == 0)
-        	result = Collections.emptySet();
+        	result = Collections.EMPTY_SET; // alas, emptySet() is @since 1.5
         
         cachedLoopExits.put(xmethod, result);
         return result;
