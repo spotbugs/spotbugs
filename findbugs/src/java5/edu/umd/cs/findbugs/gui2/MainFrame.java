@@ -212,7 +212,7 @@ public class MainFrame extends FBFrame implements LogSync
 				branchPopupMenu = createBranchPopUpMenu();
 				loadPrevCommentsList(GUISaveState.getInstance().getPreviousComments().toArray(new String[GUISaveState.getInstance().getPreviousComments().size()]));
 				updateStatusBar();
-				setSize(new Dimension(800, 650));
+				setBounds(GUISaveState.getInstance().getFrameBounds()); //setSize(new Dimension(800, 650));
 				Toolkit.getDefaultToolkit().setDynamicLayout(true);
 				setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 				setJMenuBar(createMainMenuBar());
@@ -289,7 +289,7 @@ public class MainFrame extends FBFrame implements LogSync
 	void about() {
 		AboutDialog dialog = new AboutDialog(this, logger, true);
 		dialog.setSize(600, 554);
-		dialog.setLocationRelativeTo(null); // center the dialog
+		dialog.setLocationRelativeTo(this);
 		dialog.setVisible(true);
 	}
 	
@@ -319,6 +319,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 		GUISaveState.getInstance().setPreviousComments(prevCommentsList);
 		guiLayout.saveState();
+		GUISaveState.getInstance().setFrameBounds( getBounds() );
 		GUISaveState.getInstance().save();
 		
 		System.exit(0);

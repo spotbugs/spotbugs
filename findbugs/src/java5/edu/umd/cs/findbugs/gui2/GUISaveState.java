@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -59,6 +60,8 @@ public class GUISaveState{
 	private static final String PREVCOMMENTSSIZE="Previous Comments Size";
 	private static final String PREFERENCESDIRECTORY="Preference Directory";
 	private static final String DOCKINGLAYOUT="Docking Layout";
+	private static final String FRAME_BOUNDS="Frame Bounds";
+
 	private static final int MAXNUMRECENTPROJECTS= 5;
 	private static final Sortables[] DEFAULT_COLUMN_HEADERS = new Sortables[] {
 		Sortables.CATEGORY, Sortables.BUGCODE, Sortables.TYPE, Sortables.DIVIDER, Sortables.PRIORITY };
@@ -91,6 +94,7 @@ public class GUISaveState{
 	private SorterTableColumnModel starterTable;
 	private ArrayList<File> recentProjects;
 	private byte[] dockingLayout;
+	private Rectangle frameBounds;
 	
 	public byte[] getDockingLayout()
 	{
@@ -225,6 +229,25 @@ public class GUISaveState{
 
 		newInstance.dockingLayout = p.getByteArray(DOCKINGLAYOUT, new byte[0]);
 		
+		String boundsString = p.get(FRAME_BOUNDS, null);
+		Rectangle r = new Rectangle(0, 0, 800, 650);
+		if (boundsString != null) {
+			String[] a = boundsString.split(",", 4);
+			if (a.length > 0) try {
+				r.x = Math.max(0, Integer.parseInt(a[0]));
+			} catch (NumberFormatException nfe) { assert true; }
+			if (a.length > 1) try {
+				r.y = Math.max(0, Integer.parseInt(a[1]));
+			} catch (NumberFormatException nfe) { assert true; }
+			if (a.length > 2) try {
+				r.width = Math.max(40, Integer.parseInt(a[2]));
+			} catch (NumberFormatException nfe) { assert true; }
+			if (a.length > 3) try {
+				r.height = Math.max(40, Integer.parseInt(a[3]));
+			} catch (NumberFormatException nfe) { assert true; }
+		}
+		newInstance.frameBounds = r;
+		
 		instance=newInstance;
 	}
 	
@@ -263,6 +286,8 @@ public class GUISaveState{
 		}
 		
 		p.putByteArray(DOCKINGLAYOUT, dockingLayout);
+		
+		p.put(FRAME_BOUNDS, frameBounds.x+","+frameBounds.y+","+frameBounds.width+","+frameBounds.height);
 	}
 		
 	static void clear()
@@ -288,5 +313,19 @@ public class GUISaveState{
 	 */
 	public void setPreviousComments(LinkedList<String> previousComments) {
 		this.previousComments = previousComments;
+	}
+
+	/**
+	 * @return Returns the frame bounds Rectangle.
+	 */
+	public Rectangle getFrameBounds() {
+		return frameBounds;
+	}
+
+	/**
+	 * @param previousComments The frame bourds Rectangle to set.
+	 */
+	public void setFrameBounds(Rectangle frameBounds) {
+		this.frameBounds = frameBounds;
 	}
 }
