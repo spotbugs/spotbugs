@@ -120,7 +120,7 @@ public class ProjectFilterSettings implements Cloneable {
 	 */
 	public static ProjectFilterSettings fromEncodedString(String s) {
 		ProjectFilterSettings result = new ProjectFilterSettings();
-		
+
 		if (s.length() > 0) {
 			int bar = s.indexOf(FIELD_DELIMITER);
 			String minPriority;
@@ -169,7 +169,12 @@ public class ProjectFilterSettings implements Cloneable {
 			result.setDisplayFalseWarnings(Boolean.valueOf(displayFalseWarnings).booleanValue());
 		}
 		
-		// Can add other fields here...
+		if (s.length() > 0) {
+			// Can add other fields here...
+			assert true;
+		}
+	
+	
 		
 		return result;
 			
@@ -191,10 +196,8 @@ public class ProjectFilterSettings implements Cloneable {
 			String categories;
 			if (bar >= 0) {
 				categories = s.substring(0, bar);
-				s = s.substring(bar+1);
 			} else {
 				categories = s;
-				s = "";
 			}
 			StringTokenizer t = new StringTokenizer(categories, LISTITEM_DELIMITER);
 			while (t.hasMoreTokens()) {
