@@ -115,6 +115,7 @@ public class JavaSourceDocument {
 		StyleConstants.setTabSet(whiteAttributes, TAB_SET);
 		StyleConstants.setFontFamily(whiteAttributes, sourceFont.getFamily());
 		StyleConstants.setFontSize(whiteAttributes, sourceFont.getSize());
+		StyleConstants.setLeftIndent(whiteAttributes, NumberedParagraphView.NUMBERS_WIDTH);
 		
 		doc.setParagraphAttributes(0, doc.getLength(), whiteAttributes, true);
 		JavaScanner parser = new JavaScanner(new DocumentCharacterIterator(doc));

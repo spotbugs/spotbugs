@@ -13,18 +13,24 @@ import javax.swing.text.ParagraphView;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.View;
 
+import edu.umd.cs.findbugs.gui2.Driver;
+
 
 // Code inspired by http://www.developer.com/java/other/article.php/3318421
 
 class NumberedParagraphView extends ParagraphView {
-    public static short NUMBERS_WIDTH=45;
+    public final static int NUMBERS_WIDTH= (int) Driver.getFontSize()*3+9;
     HighlightInformation highlight;
     public NumberedParagraphView(Element e, HighlightInformation highlight) {
         super(e);
         this.highlight = highlight;
     }
 
-
+//    protected void setInsets(short top, short left, short bottom,
+//            short right) {super.setInsets
+//            (top,(short)(left+NUMBERS_WIDTH),
+//            bottom,right);
+//}
     public void paint(Graphics g, Shape allocation) {
         Rectangle r = (allocation instanceof Rectangle) ?
                 (Rectangle)allocation : allocation.getBounds();
@@ -39,7 +45,7 @@ class NumberedParagraphView extends ParagraphView {
     		g.fillRect(r.x, r.y, r.width, r.height);
     		g.setColor(oldColor);
     	}
-		r.x += NUMBERS_WIDTH;
+		// r.x += NUMBERS_WIDTH;
 		
 		super.paint(g, r);
 
@@ -49,13 +55,13 @@ class NumberedParagraphView extends ParagraphView {
         g.setColor(Color.GRAY);
         String lineNumberString = lineNumber.toString();
         int width = metrics.stringWidth(lineNumberString);
-        int numberX = r.x - width-9;
+        int numberX = r.x - width-9 + NUMBERS_WIDTH;
         int numberY = r.y + metrics.getAscent();
        
 		g.drawString(lineNumberString, numberX, numberY);
         g.setColor(oldColor);
         // System.out.println("Drawing line for " + lineNumber + " @ " + numberX +"," + numberY);
-        r.x -= NUMBERS_WIDTH;
+        // r.x -= NUMBERS_WIDTH;
         
     }
 
