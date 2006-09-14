@@ -23,7 +23,7 @@ or our <a href="http://findbugs.cs.umd.edu/demo/jnlp/gui2.jnlp">new gui (require
 The new gui provides a number of new features, but hasn't received as much testing and requires Java 1.5+. 
 Both use exactly the same analysis engine.
 
-<p>This web page provides results of running FindBugs 1.1
+</p><p>This web page provides results of running FindBugs 1.1
 against several open source applications. We provide a summary
 of the number of bugs we found, as well as a generated HTML listing
 of the bugs and 
@@ -32,7 +32,7 @@ WebStart</a> demo of the new GUI we've introduced in FindBugs version 1.1,
 displaying the warnings and the relevant source.
 
 
-<p>The applications and versions of them we report on
+</p><p>The applications and versions of them we report on
 are somewhat arbitrary. In some cases, they are release versions,
 in other cases nightly builds. We find lots of bugs in every large code
 base we examine; these applications are certainly not the worst we have seen.
@@ -42,14 +42,14 @@ the results I've seen there are not significantly different from
 what I've observed in open source code bases. 
 
 
-<p><em>Experimental details</em>: These results are from running
+</p><p><em>Experimental details</em>: These results are from running
 FindBugs 1.1-rc4 at standard effort level. Our results do not include
 any low priority warnings or any warnings about vulnerabilities to 
 malicious code. Although we have (repeatedly) manually audited the results,
 we haven't manually filtered out false positives from these warnings,
 so that you can get a feeling for the quality of the warnings generated
 by FindBugs.
-<p>In the webstart versions, we've only including the bugs for which
+</p><p>In the webstart versions, we've only including the bugs for which
 we were able to identify source files. In some cases, the bug counts displayed
 on this page and in the HTML pages may reflect compiled classes included in
 the binary distribution of the application for which no source is included
@@ -58,7 +58,7 @@ statements in the table below (KNCSS) is derived from the same files
 that we analyzed and in which we report bugs; we actually compute
 KNCSS from the classfiles, not the source files.
 
-<p><em>Vulnerability disclosure</em>: Thankfully, Java isn't C or C++. Dereferencing
+</p><p><em>Vulnerability disclosure</em>: Thankfully, Java isn't C or C++. Dereferencing
 a null pointer or accessing outside the bounds of an array generates a runtime
 exception rather than a shell exploit. We do not believe that any of the
 warnings here represents a security vulnerability, although we have not audited
@@ -68,14 +68,14 @@ for use both by developers and attackers, we don't believe that making
 these results available constitutes a reckless disclosure.
 
 
-<p><em>Recommendations</em>: First, review the correctness warnings.
+</p><p><em>Recommendations</em>: First, review the correctness warnings.
 Those are the warnings we are most confident in, and we put a <em>lot</em>
 of effort in FindBugs 1.1 into finding new real correctness bugs
 and reducing the number of false positives. We feel confident that developers
 would want to fix most of the high and medium priority correctness warnings we report.
 Once you've reviewed those,
 you might want to look at some of the other categories.  
-<p>
+</p><p>
 In other categories,
 such as Bad practice and Dodgy code, we accept more false positives. You
 might decide that a pattern bug pattern isn't relevant for your code
@@ -85,7 +85,7 @@ and even for the bug patterns relevant to your code base,
 perhaps only a minority will reflect problems serious enough to
 convince you to change your code.
 
-<p><em>Please be patient</em> The Web start  versions not only have to download the applications,
+</p><p><em>Please be patient</em> The Web start  versions not only have to download the applications,
 	they need to download about 10 megabytes of data and source files. Please
 	be patient. Sorry we don't have a progress bar for the data and source download;
 	the ability to remotely download a data and source archive is a little bit of 
@@ -94,54 +94,54 @@ convince you to change your code.
 	datasets are about a quarter of the sizes of the full datasets.
 	</p>
 <p>
-<table border="2">
-<tr><th rowspan="2">Application<th colspan=2>Details<th colspan=2>Correctness bugs<th rowspan=2>Bad Practice<th rowSpan=2>Dodgy<th rowspan="2">KNCSS
-<tr><th>HTML<th>WebStart<th>NP bugs<th>Other
-<tr><td align="right">Sun JDK 1.6.0-b51<td align="right">
+</p><table border="2">
+<tr><th rowspan="2">Application</th><th colspan="2">Details</th><th colspan="2">Correctness bugs</th><th rowspan="2">Bad Practice</th><th rowSpan="2">Dodgy</th><th rowspan="2">KNCSS
+</th></tr><tr><th>HTML</th><th>WebStart</th><th>NP bugs</th><th>Other
+</th></tr><tr><td align="right">Sun JDK 1.6.0-b51</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/index.html">All</a> 
-			<td align="right">
+			</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/index.jnlp">All</a> (no Src)
-	<td align="right">184<td align="right">405<td align="right">3,145<td align="right">1,244<td align="right">979
+	</td><td align="right">184</td><td align="right">405</td><td align="right">3,145</td><td align="right">1,244</td><td align="right">979
 
-<tr><td align="right">eclipse-SDK-3.2-solaris-gtk<td align="right">
+</td></tr><tr><td align="right">eclipse-SDK-3.2-solaris-gtk</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/eclipse/index.html">All</a>
-			<td align="right">
+			</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/eclipse/index.jnlp">All</a>
 					<a href="http://findbugs.cs.umd.edu/demo/eclipse/small.jnlp">Small</a>
-	<td align="right">236<td align="right">382<td align="right">1,559<td align="right">972<td align="right">1,577
+	</td><td align="right">236</td><td align="right">382</td><td align="right">1,559</td><td align="right">972</td><td align="right">1,577
 
-<tr><td align="right">netbeans-6_0-daily-bin-200607191800<td align="right">
+</td></tr><tr><td align="right">netbeans-6_0-daily-bin-200607191800</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/netbeans/index.html">All</a>
-			<td align="right">
+			</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/netbeans/index.jnlp">All</a>
 					<a href="http://findbugs.cs.umd.edu/demo/netbeans/small.jnlp">Small</a>
-	<td align="right">198<td align="right">412<td align="right">2,691<td align="right">1,262<td align="right">1,066
+	</td><td align="right">198</td><td align="right">412</td><td align="right">2,691</td><td align="right">1,262</td><td align="right">1,066
 
-<tr><td align="right">glassfish-v2-b09-appserv<td align="right">
+</td></tr><tr><td align="right">glassfish-v2-b09-appserv</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/glassfish/index.html">All</a>
-			<td align="right">
+			</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/glassfish/index.jnlp">All</a>
 					<a href="http://findbugs.cs.umd.edu/demo/glassfish/small.jnlp">Small</a>
-	<td align="right">296<td align="right">349<td align="right">1,913<td align="right">1,876<td align="right">958
+	</td><td align="right">296</td><td align="right">349</td><td align="right">1,913</td><td align="right">1,876</td><td align="right">958
 
-<tr><td align="right">jboss-4.0.2<td align="right">
+</td></tr><tr><td align="right">jboss-4.0.2</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/jboss/index.html">All</a>
-			<td align="right">
+			</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/jboss/index.jnlp">All</a>
 					<a href="http://findbugs.cs.umd.edu/demo/jboss/small.jnlp">Small</a>
-	<td align="right">102<td align="right">169<td align="right">1,203<td align="right">483<td align="right">516
+	</td><td align="right">102</td><td align="right">169</td><td align="right">1,203</td><td align="right">483</td><td align="right">516
 
-</table>
+</td></tr></table>
 <p><em>KNCSS</em>  - Thousands of lines of non-commenting source statements
 
-<h2>Bug categories</h2>
+</p><h2>Bug categories</h2>
 <dl>
 <dt>Correctness bug
-<dd>Probable bug - an apparent coding mistake
+</dt><dd>Probable bug - an apparent coding mistake
             resulting in code that was probably not what the
             developer intended. We strive for a low false positive rate
-<dt>Bad Practice
-<dd>
+</dd><dt>Bad Practice
+</dt><dd>
 Violations of recommended and essential
             coding practice. Examples include hash code and equals
             problems, cloneable idiom, dropped exceptions,
@@ -149,8 +149,8 @@ Violations of recommended and essential
             We strive to make this analysis accurate,
                 although some groups may
             not care about some of the bad practices.
-<dt>Dodgy
-<dd>
+</dd><dt>Dodgy
+</dt><dd>
 Code that is confusing, anomalous, or
             written in a way that that leads itself to errors.
             Examples include dead local stores, switch fall through,
@@ -162,7 +162,7 @@ Code that is confusing, anomalous, or
 
 @HTML_FOOTER@
 
-</td></tr></table>
+</dd></dl></td></tr></table>
 
 </body>
 </html>
