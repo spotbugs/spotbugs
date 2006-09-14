@@ -1112,8 +1112,8 @@ public class MainFrame extends FBFrame implements LogSync
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
 				setSourceTabTitle("Source");				
-				clearSummaryTab();				
-				sourceCodeTextPane.setText("");
+				clearSummaryTab();
+				sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
 				currSrcLineAnnotation = null;
 			}
 		});		
@@ -1742,7 +1742,7 @@ public class MainFrame extends FBFrame implements LogSync
 		sourceCodeTextPane.setFont(sourceFont);
 		sourceCodeTextPane.setEditable(false);
 		sourceCodeTextPane.getCaret().setSelectionVisible(true);
-		sourceCodeTextPane.setText("");
+		sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
 		sourceCodeScrollPane = new JScrollPane(sourceCodeTextPane);
 		sourceCodeScrollPane.getVerticalScrollBar().setUnitIncrement(20);
 
