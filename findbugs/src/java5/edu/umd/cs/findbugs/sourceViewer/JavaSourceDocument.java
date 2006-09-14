@@ -50,6 +50,7 @@ import javax.swing.text.StyledDocument;
 import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
 
+import edu.umd.cs.findbugs.gui2.Debug;
 import edu.umd.cs.findbugs.gui2.Driver;
 
 public class JavaSourceDocument {
@@ -80,20 +81,15 @@ public class JavaSourceDocument {
 
 	}
 
-	JEditorPane textArea;
+	
+	final HighlightInformation highlights = new HighlightInformation();
+	final NumberedEditorKit dek = new NumberedEditorKit(highlights);
 
-	JScrollPane scrollPane;
+	final StyleContext styleContext = new StyleContext();
 
-	HighlightInformation highlights = new HighlightInformation();
-	NumberedEditorKit dek = new NumberedEditorKit(highlights);
+	final Element root;
 
-	StyleContext styleContext = new StyleContext();
-
-	Style regular, comment, javadoc, quotes, keyword, highlight;
-
-	Element root;
-
-	DefaultStyledDocument doc;
+	final DefaultStyledDocument doc;
 
 	public HighlightInformation getHighlightInformation() {
 		return highlights;
@@ -104,9 +100,14 @@ public class JavaSourceDocument {
 	public NumberedEditorKit getEditorKit() {
 		return dek;
 	}
+	private final String title;
+	public String getTitle() {
+		return title;
+	}
 	public JavaSourceDocument(String title, Reader in) throws IOException  {
 		doc = new DefaultStyledDocument();
-
+		this.title = title;
+		Debug.println("Created JavaSourceDocument for " + title);
 		try {
 			dek.read(in, doc, 0);
 		} catch (BadLocationException e) {
