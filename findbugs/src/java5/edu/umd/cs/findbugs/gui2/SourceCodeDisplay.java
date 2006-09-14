@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import javax.swing.JTextPane;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.StyledDocument;
@@ -47,6 +48,8 @@ public final class SourceCodeDisplay implements Runnable {
 	static final Color MAIN_HIGHLIGHT = new Color(1f, 1f, 0.5f);
 	static final Color MAIN_HIGHLIGHT_MORE = MAIN_HIGHLIGHT.brighter();
 	static final Color ALTERNATIVE_HIGHLIGHT = new Color(0.86f, 0.90f, 1.0f);
+
+	public static final Document SOURCE_NOT_RELEVANT = new DefaultStyledDocument();;
 	
 	Map<String, JavaSourceDocument> map = new HashMap<String, JavaSourceDocument>();
 
