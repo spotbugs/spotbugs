@@ -16,6 +16,13 @@
 FindBugs 1.1 demo and results
 </h1>
 
+<p>If you just want to try running FindBugs against your
+own code, you can run using Java Webstart using either our 
+<a href="http://findbugs.cs.umd.edu/demo/jnlp/findbugs.jnlp">old gui</a> 
+or our <a href="http://findbugs.cs.umd.edu/demo/jnlp/findbugs.jnlp">new gui (requires Java 1.5+)</a>.
+The new gui provides a number of new features, but hasn't received as much testing and requires Java 1.5+. 
+Both use exactly the same analysis engine.
+
 <p>This web page provides results of running FindBugs 1.1
 against several open source applications. We provide a summary
 of the number of bugs we found, as well as a generated HTML listing
@@ -24,10 +31,15 @@ a <a href="http://java.sun.com/products/javawebstart/">Java
 WebStart</a> demo of the new GUI we've introduced in FindBugs version 1.1,
 displaying the warnings and the relevant source.
 
+
 <p>The applications and versions of them we report on
 are somewhat arbitrary. In some cases, they are release versions,
 in other cases nightly builds. We find lots of bugs in every large code
 base we examine; these applications are certainly not the worst we have seen.
+I have been allowed to confidentially examine the results of running FindBugs
+against several closed commercial code bases by well respected companies;
+the results I've seen there are not significantly different from
+what I've observed in open source code bases. 
 
 
 <p><em>Experimental details</em>: These results are from running
