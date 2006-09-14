@@ -431,7 +431,7 @@ public class FindBugs2 implements IFindBugsEngine {
 		
 	}
 	
-	private void buildReferencedClassSet() throws CheckedAnalysisException {
+	private void buildReferencedClassSet() throws CheckedAnalysisException, InterruptedException {
 		// XXX: should drive progress dialog (scanning phase)?
 		
 		referencedClassSet = new TreeSet<ClassDescriptor>();
@@ -445,6 +445,8 @@ public class FindBugs2 implements IFindBugsEngine {
 		Set<ClassDescriptor> badAppClassSet = new HashSet<ClassDescriptor>();
 		
 		while (!workList.isEmpty()) {
+			if (Thread.interrupted())
+				throw new InterruptedException();
 			ClassDescriptor classDesc = workList.removeFirst();
 			
 			if (seen.contains(classDesc)) {
@@ -555,7 +557,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	/**
 	 * Analyze the classes in the application codebase.
 	 */
-	private void analyzeApplication()  {
+	private void analyzeApplication() throws InterruptedException {
 		int passCount = 0;
 		boolean multiplePasses = executionPlan.getNumPasses() > 1;
 		
@@ -593,6 +595,8 @@ public class FindBugs2 implements IFindBugsEngine {
 				notifyClassObservers(classDescriptor);
 				
 				for (Detector2 detector : detectorList) {
+					if (Thread.interrupted())
+						throw new InterruptedException();
 					if (DEBUG) {
 						System.out.println("Applying " + detector.getDetectorClassName() + " to " + classDescriptor);
 					}
