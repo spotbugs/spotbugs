@@ -57,6 +57,7 @@ package edu.umd.cs.findbugs.anttask;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
@@ -71,42 +72,45 @@ import edu.umd.cs.findbugs.ExitCodes;
  * FindBugs in Java class files. This task can take the following
  * arguments:
  * <ul>
+ * <li>adjustExperimental (boolean default false)
+ * <li>auxAnalyzepath     (class, jar, zip files or directories containing classes to analyze)
  * <li>auxClasspath       (classpath or classpathRef)
- * <li>home               (findbugs install dir)
- * <li>quietErrors        (boolean - default false)
- * <li>failOnError        (boolean - default false)
- * <li>reportLevel        (enum experimental|low|medium|high)
- * <li>timestampNow       (boolean - default false)
- * <li>sort               (boolean default true)
+ * <li>class              (class, jar, zip or directory containing classes to analyze)
+ * <li>classpath          (classpath for running FindBugs)
+ * <li>conserveSpace      (boolean - default false)</li>
  * <li>debug              (boolean default false) 
+ * <li>effort             (enum min|default|max)</li>
+ * <li>excludeFilter      (filter filename)
+ * <li>failOnError        (boolean - default false)
+ * <li>home               (findbugs install dir)
+ * <li>includeFilter      (filter filename)
+ * <li>jvmargs            (any additional jvm arguments)
+ * <li>omitVisitors       (collection - comma seperated)
  * <li>output             (enum text|xml|xml:withMessages|html - default xml)
  * <li>outputFile         (name of output file to create)
- * <li>stylesheet         (name of stylesheet to generate HTML: default is "default.xsl")
- * <li>visitors           (collection - comma seperated)
- * <li>omitVisitors       (collection - comma seperated)
- * <li>excludeFilter      (filter filename)
- * <li>includeFilter      (filter filename)
- * <li>projectFile        (project filename)
- * <li>jvmargs            (any additional jvm arguments)
- * <li>classpath          (classpath for running FindBugs)
  * <li>pluginList         (list of plugin Jar files to load)
- * <li>systemProperty     (a system property to set)
- * <li>effort             (enum min|default|max)</li>
- * <li>conserveSpace      (boolean - default false)</li>
- * <li>workHard           (boolean default false)
+ * <li>projectFile        (project filename)
+ * <li>quietErrors        (boolean - default false)
  * <li>relaxed            (boolean - default false)
- * <li>adjustExperimental (boolean default false)
+ * <li>reportLevel        (enum experimental|low|medium|high)
+ * <li>sort               (boolean default true)
+ * <li>stylesheet         (name of stylesheet to generate HTML: default is "default.xsl")
+ * <li>systemProperty     (a system property to set)
+ * <li>timestampNow       (boolean - default false)
+ * <li>visitors           (collection - comma seperated)
+ * <li>workHard           (boolean default false)
  * </ul>
  * Of these arguments, the <b>home</b> is required.
- * <b>projectFile</b> is required if nested &lt;class&gt; are not
- * specified. the &lt;class&gt; tag defines the location of either a 
- *  class, jar file, zip file, or directory containing classes
+ * <b>projectFile</b> is required if nested &lt;class&gt; or 
+ * &lt;auxAnalyzepath&gt elements are not specified. the 
+ * &lt;class&gt; tag defines the location of either a 
+ * class, jar file, zip file, or directory containing classes.
  * <p>
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
  *
- * @version $Revision: 1.41 $
+ * @version $Revision: 1.42 $
  *
  * @since Ant 1.5
  *
@@ -135,6 +139,7 @@ public class FindBugsTask extends Task {
 	private File excludeFile = null;
 	private File includeFile = null;
 	private Path auxClasspath = null;
+	private Path auxAnalyzepath = null;
 	private Path sourcePath = null;
 	private String outputFormat = "xml";
 	private String reportLevel = null;
@@ -388,6 +393,46 @@ public class FindBugsTask extends Task {
 		createAuxClasspath().setRefid(r);
 	}
 
+    /**
+     * the auxAnalyzepath to use.
+     */
+    public void setAuxAnalyzepath(Path src) {
+        boolean nonEmpty = false;
+        
+        String[] elementList = src.list();
+        for (String anElementList : elementList) {
+            if (!anElementList.equals("")) {
+                nonEmpty = true;
+                break;
+            }
+        }
+        
+        if (nonEmpty) {
+            if (auxAnalyzepath == null) {
+                auxAnalyzepath = src;
+            } else {
+                auxAnalyzepath.append(src);
+            }
+        }
+    }
+
+    /**
+     * Path to use for auxAnalyzepath.
+     */
+    public Path createAuxAnalyzepath() {
+        if (auxAnalyzepath == null) {
+            auxAnalyzepath = new Path(getProject());
+        }
+        return auxAnalyzepath.createPath();
+    }
+
+    /**
+     * Adds a reference to a sourcepath defined elsewhere.
+     */
+    public void setAuxAnalyzepathRef(Reference r) {
+        createAuxAnalyzepath().setRefid(r);
+    }
+
 	/**
 	 * the sourcepath to use.
 	 */
@@ -546,8 +591,8 @@ public class FindBugsTask extends Task {
 			}
 		}
 
-		if ( projectFile == null && classLocations.size() == 0 ) {
-			throw new BuildException( "either projectfile or <class/> child " +
+		if ( projectFile == null && classLocations.size() == 0 && auxAnalyzepath == null) {
+			throw new BuildException( "either projectfile, <class/> or <auxAnalyzepath/> child " +
 									  "elements must be defined for task <"
 										+ getTaskName() + "/>",
 									  getLocation() );
@@ -719,9 +764,16 @@ public class FindBugsTask extends Task {
 		}
         
 		addArg("-exitcode");
-	    for (ClassLocation classLocation : classLocations) {
-		    addArg(classLocation.toString());
-	    }
+		for (ClassLocation classLocation : classLocations) {
+			addArg(classLocation.toString());
+		} 
+
+		if (auxAnalyzepath != null) {
+			String[] result = auxAnalyzepath.toString().split(java.io.File.pathSeparator);
+			for (int x=0; x<result.length; x++) {
+				addArg(result[x]);
+			}
+		}
 
 		log("Running FindBugs...");
 
