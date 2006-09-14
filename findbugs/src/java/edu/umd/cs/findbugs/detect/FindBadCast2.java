@@ -66,7 +66,6 @@ public class FindBadCast2 implements Detector {
 		abstractCollectionClasses.add("java.util.Set");
 		abstractCollectionClasses.add("java.util.SortedSet");
 		abstractCollectionClasses.add("java.util.SortedMap");
-		abstractCollectionClasses.add("java.util.Set");
 		abstractCollectionClasses.add("java.util.Map");
 		concreteCollectionClasses.add("java.util.LinkedHashMap");
 		concreteCollectionClasses.add("java.util.LinkedHashSet");
