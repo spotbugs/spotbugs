@@ -419,6 +419,9 @@ public class FindNullDeref
 			InvokeInstruction invokeInstruction,
 			BitSet nullArgSet, BitSet definitelyNullArgSet) throws DataflowAnalysisException, ClassNotFoundException {
 		
+		boolean caught = inCatchNullBlock(location);
+		if (caught && skipIfInsideCatchNull()) return;
+	
 		// See what methods might be called here
 		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
 		Set<JavaClassAndMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(invokeInstruction, typeFrame, cpg);
@@ -496,6 +499,7 @@ public class FindNullDeref
 			priority = LOW_PRIORITY;
 		}
 		
+		if (caught) priority++;
 		if (dangerousCallTargetList.size() > veryDangerousCallTargetList.size())
 			priority++;
 		else
@@ -578,6 +582,9 @@ public class FindNullDeref
 			BitSet nullArgSet,
 			BitSet definitelyNullArgSet) throws ClassNotFoundException {
 		
+		boolean caught = inCatchNullBlock(location);
+		if (caught && skipIfInsideCatchNull()) return;
+		
 		XMethod m = XFactory.createXMethod(invokeInstruction, cpg);
 
 		NullnessAnnotationDatabase db 
@@ -602,8 +609,10 @@ public class FindNullDeref
 				MethodGen methodGen = classContext.getMethodGen(method);
 				String sourceFile = classContext.getJavaClass().getSourceFileName();
 				
+				int priority = definitelyNull ? HIGH_PRIORITY : NORMAL_PRIORITY;
+				if (caught) priority++;
 				BugInstance warning = new BugInstance("NP_NONNULL_PARAM_VIOLATION", 
-						definitelyNull ? HIGH_PRIORITY : NORMAL_PRIORITY)
+						priority)
 						.addClassAndMethod(methodGen, sourceFile)
 						.addMethod(m).describe("METHOD_CALLED")
 						.addInt(i).describe("INT_NONNULL_PARAM")
@@ -618,6 +627,10 @@ public class FindNullDeref
 	public void report() {
 	}
 
+	public boolean skipIfInsideCatchNull() {
+		return classContext.getJavaClass().getClassName().indexOf("Test") >= 0
+		  || method.getName().indexOf("test") >= 0 || method.getName().indexOf("Test") >= 0;
+	}
 	public void foundNullDeref(ClassContext classContext, Location location, ValueNumber valueNumber, IsNullValue refValue, ValueNumberFrame vnaFrame) {
 		WarningPropertySet propertySet = new WarningPropertySet();
 		if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) return;
@@ -637,7 +650,7 @@ public class FindNullDeref
 		}
 
 		boolean caught = inCatchNullBlock(location);
-	
+		if (caught && skipIfInsideCatchNull()) return;
 
 		if (!duplicated && refValue.isDefinitelyNull()) {
 			String type = onExceptionPath ? "NP_ALWAYS_NULL_EXCEPTION" : "NP_ALWAYS_NULL";
@@ -952,7 +965,11 @@ public class FindNullDeref
 				derefOutsideCatchBlock = true;
 				break;
 			}
-		if (!derefOutsideCatchBlock) priority++;
+	
+		if (!derefOutsideCatchBlock) {
+			if (skipIfInsideCatchNull()) return;
+			priority++;
+		}
 		BugAnnotation variableAnnotation = null;
 		try {
 			for (Location loc : sourceLocations)  {
