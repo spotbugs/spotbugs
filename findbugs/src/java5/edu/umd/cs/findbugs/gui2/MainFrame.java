@@ -251,6 +251,7 @@ public class MainFrame extends FBFrame implements LogSync
 						in = new URL(loadFromURL).openConnection().getInputStream();
 						if (loadFromURL.endsWith(".gz"))
 							in = new GZIPInputStream(in);
+						BugTreeModel.pleaseWait("Loading bugs over network...");
 						loadAnalysisFromInputStream(in);
 					} catch (MalformedURLException e1) {
 						// TODO Auto-generated catch block
