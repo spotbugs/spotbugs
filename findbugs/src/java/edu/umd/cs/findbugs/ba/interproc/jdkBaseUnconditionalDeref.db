@@ -1616,7 +1616,7 @@ java.util.WeakHashMap$HashIterator,<init>,(Ljava/util/WeakHashMap;)V,0|1
 java.util.WeakHashMap$KeyIterator,<init>,(Ljava/util/WeakHashMap;Ljava/util/WeakHashMap$1;)V,4096|1
 java.util.WeakHashMap$ValueIterator,<init>,(Ljava/util/WeakHashMap;Ljava/util/WeakHashMap$1;)V,4096|1
 java.util.XMLUtils$Resolver,resolveEntity,(Ljava/lang/String;Ljava/lang/String;)Lorg/xml/sax/InputSource;,1|2
-java.util.concurrent.AbstractExecutorService,newTaskFor,(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/RunnableFuture;,4|3
+java.util.concurrent.AbstractExecutorService,newTaskFor,(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/RunnableFuture;,4|1
 java.util.concurrent.ConcurrentSkipListMap$Index,link,(Ljava/util/concurrent/ConcurrentSkipListMap$Index;Ljava/util/concurrent/ConcurrentSkipListMap$Index;)Z,16|2
 java.util.concurrent.CopyOnWriteArrayList,<init>,(Ljava/util/Collection;)V,1|1
 java.util.concurrent.CopyOnWriteArrayList,<init>,([Ljava/lang/Object;)V,1|1
@@ -1630,7 +1630,7 @@ java.util.concurrent.CopyOnWriteArraySet,addAll,(Ljava/util/Collection;)Z,1|1
 java.util.concurrent.CopyOnWriteArraySet,containsAll,(Ljava/util/Collection;)Z,1|1
 java.util.concurrent.CopyOnWriteArraySet,toArray,([Ljava/lang/Object;)[Ljava/lang/Object;,1|1
 java.util.concurrent.Exchanger,exchange,(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;,1|2
-java.util.concurrent.FutureTask,<init>,(Ljava/lang/Runnable;Ljava/lang/Object;)V,1|3
+java.util.concurrent.FutureTask,<init>,(Ljava/lang/Runnable;Ljava/lang/Object;)V,1|1
 java.util.concurrent.FutureTask,set,(Ljava/lang/Object;)V,4|1
 java.util.concurrent.FutureTask,setException,(Ljava/lang/Throwable;)V,4|1
 java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue$1,<init>,(Ljava/util/concurrent/ScheduledThreadPoolExecutor$DelayedWorkQueue;)V,0|1
