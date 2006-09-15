@@ -850,15 +850,14 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		private static class PleaseWaitTreeModel implements TreeModel
 		{
 			private String root = "Please wait...";
+			public PleaseWaitTreeModel() {}
+			public PleaseWaitTreeModel(String message) {if (message!=null) root=message;}
 			
 			public void addTreeModelListener(TreeModelListener l) {}
 			public Object getChild(Object parent, int index) {return null;}
 			public int getChildCount(Object parent) {return 0;}
 			public int getIndexOfChild(Object parent, Object child) {return -1;}
-			public Object getRoot()
-			{
-				return root;
-			}
+			public Object getRoot() {return root;}
 			public boolean isLeaf(Object node) {return true;}
 			public void removeTreeModelListener(TreeModelListener l) {}
 			public void valueForPathChanged(TreePath path, Object newValue) {}
@@ -880,13 +879,17 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		
 		static void pleaseWait()
 		{
+			pleaseWait(null);
+		}
+		static void pleaseWait(final String message)
+		{
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				public void run()
 				{
-					Debug.println("Please Wait!");
-					MainFrame.getInstance().getTree().setModel(new PleaseWaitTreeModel());
-//					MainFrame.getInstance().setSorting(false);
+					Debug.println("Please Wait! " + (message==null?"":message));
+					MainFrame.getInstance().getTree().setModel(new PleaseWaitTreeModel(message));
+					//MainFrame.getInstance().setSorting(false);
 					Debug.println("Please Stop Waiting");
 				}
 			});	
