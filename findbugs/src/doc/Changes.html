@@ -211,8 +211,9 @@
 								The English localization of STYLE has changed from "Style" to "Dodgy."
 							</p>
 							<p>
-								In generally, we've worked very hard to limit CORRECTNESS bugs
-								to be real programming errors and sins of commission. A number
+								In general, we've worked very hard to limit CORRECTNESS bugs
+								to be real programming errors and sins of commission. We have reclassified
+								as BAD_PRACTICE a number
 								of bad design practices that result in overly fragile code, such
 								as defining an equals method that doesn't accept null or
 								defining class with a equals method that inherits hashCode from
@@ -349,12 +350,12 @@
 
 
 					<p>
-						Changes since verson 0.9.7:
+						Changes since version 0.9.7:
 					</p>
 
 					<ul>
 						<li>
-							fix ObjectTypeFactory bug that was supressing some bugs
+							fix ObjectTypeFactory bug that was suppressing some bugs
 						</li>
 						<li>
 							opcode stack may determine definite zeros on some paths
@@ -561,7 +562,7 @@
 					</ul>
 
 					<p>
-						Changes since verson 0.9.6:
+						Changes since version 0.9.6:
 					</p>
 
 					<ul>
@@ -670,7 +671,7 @@
 					</ul>
 
 					<p>
-						Changes since verson 0.9.5:
+						Changes since version 0.9.5:
 					</p>
 
 					<ul>
@@ -689,7 +690,7 @@
 									FindRefComparison.java: smarter array comparison detection
 								</li>
 								<li>
-									IsNullValueAnalysis.java: dectect
+									IsNullValueAnalysis.java: detect
 									<tt>null instanceof</tt>
 								</li>
 								<li>
@@ -830,7 +831,7 @@
 					</ul>
 
 					<p>
-						Changes since verson 0.9.4:
+						Changes since version 0.9.4:
 					</p>
 					<ul>
 						<li>
@@ -939,7 +940,7 @@
 						</li>
 						<li>
 							Better handling of @CheckReturnValue and @CheckForNull
-							annotations (also, some additional methods seached for check
+							annotations (also, some additional methods searched for check
 							return value and check for null)
 						</li>
 						<li>
@@ -977,7 +978,7 @@
 									RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE
 								</li>
 								<li>
-									DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED
+									DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED
 								</li>
 								<li>
 									IMA_INEFFICIENT_MEMBER_ACCESS (Dave Brosius)
@@ -1049,7 +1050,7 @@
 					</ul>
 
 					<p>
-						Changes since verson 0.9.3:
+						Changes since version 0.9.3:
 					</p>
 					<ul>
 						<li>
@@ -1108,7 +1109,7 @@
 						</li>
 						<li>
 							Detector to find instances where code is attempting to write an
-							object out via an implemention of DataOutput, but the object is
+							object out via an implementation of DataOutput, but the object is
 							not guaranteed to be Serializable (Jon Christiansen, Bill Pugh)
 						</li>
 
@@ -1506,7 +1507,7 @@
 					<ul>
 						<!-- new detectors -->
 						<li>
-							New detector for violatile references to arrays (Bill Pugh)
+							New detector for volatile references to arrays (Bill Pugh)
 						</li>
 						<li>
 							New detector to find instanceof usage where inheritance can be
@@ -1611,7 +1612,7 @@
 							Brosius)
 						</li>
 						<li>
-							New detector to find comparisions of values computed with bitwise
+							New detector to find comparisons of values computed with bitwise
 							operators that always yield the same result (Tom Truscott)
 						</li>
 						<li>
@@ -1735,7 +1736,7 @@
 							String objects in a loop (Dave Brosius)
 						</li>
 						<li>
-							Reference comparision detector looks for places where the
+							Reference comparison detector looks for places where the
 							argument passed to the equals(Object) method isn't the same type
 							as the receiver object
 						</li>
