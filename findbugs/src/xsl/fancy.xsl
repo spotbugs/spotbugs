@@ -130,6 +130,7 @@
            margin: 2px;
            border: 1px black solid;
            padding: 2px;
+           overflow:auto;
          }
          #analyzed-files {
            width: 25%;
@@ -251,7 +252,7 @@
             </li>
             <li id='analysis-data-tab' class='menu-tab'>
                <xsl:attribute name="onclick">showmenu('analysis-data');return false;</xsl:attribute>
-               <a href='' onclick='return false;'>Analysis Informations</a>
+               <a href='' onclick='return false;'>Analysis Information</a>
             </li>
             <li id='list-by-category-tab' class='menu-tab'>
                <xsl:attribute name="onclick">showmenu('list-by-category');return false;</xsl:attribute>
@@ -347,6 +348,9 @@
                <xsl:for-each select="/BugCollection/Project/AuxClasspathEntry">
                   <li><xsl:apply-templates /></li>
                </xsl:for-each>
+               <xsl:if test="count(/BugCollection/Project/AuxClasspathEntry)=0" >
+                  <li>None</li>
+               </xsl:if>
             </ul>
          </div>
          <div id='analysis-error'>
