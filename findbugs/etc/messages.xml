@@ -1623,7 +1623,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   </BugPattern>
   <BugPattern type="DM_FP_NUMBER_CTOR">
     <ShortDescription>Method invokes inefficient floating-point Number constructor; use static valueOf instead</ShortDescription>
-    <LongDescription>Method {1} invokes dubious {3} constructor; use {4} instead</LongDescription>
+    <LongDescription>Method {1} invokes inefficient {3} constructor; use {4} instead</LongDescription>
     <Details>
       <![CDATA[
       <p>
@@ -1640,8 +1640,8 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   </BugPattern>
 
   <BugPattern type="DM_STRING_EMPTY_EQUALS">
-    <ShortDescription>Method invokes dubious String.equals(""); use String.length() == 0 instead</ShortDescription>
-    <LongDescription>Method {1} invokes dubious String.equals(""); use String.length() == 0 instead</LongDescription>
+    <ShortDescription>Method invokes inefficient String.equals(""); use String.length() == 0 instead</ShortDescription>
+    <LongDescription>Method {1} invokes inefficient String.equals(""); use String.length() == 0 instead</LongDescription>
     <Details>
 <![CDATA[
   <p> An object is compared to the empty String object using the equals() method here.
