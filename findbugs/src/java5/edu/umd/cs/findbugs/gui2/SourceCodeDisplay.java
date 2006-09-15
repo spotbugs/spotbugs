@@ -74,6 +74,10 @@ public final class SourceCodeDisplay implements Runnable {
 		notifyAll();
 	}
 
+	public void clearCache() {
+		map.clear();
+	}
+	
 	@NonNull
 	JavaSourceDocument getDocument(SourceLineAnnotation source) {
 		try {

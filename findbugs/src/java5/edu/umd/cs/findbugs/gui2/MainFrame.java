@@ -410,6 +410,7 @@ public class MainFrame extends FBFrame implements LogSync
 							MainFrame.this.setRebuilding(false);
 							if (bs!=null)
 							{
+								displayer.clearCache();
 								model.getOffListenerList();
 								model.changeSet(bs);
 								curProject=newProject;
@@ -2092,6 +2093,7 @@ public class MainFrame extends FBFrame implements LogSync
 				
 				if (bs!=null)
 				{
+					displayer.clearCache();
 					//Dont clear data, the data's correct, just get the tree off the listener lists.
 					((BugTreeModel) tree.getModel()).getOffListenerList();
 					((BugTreeModel)tree.getModel()).changeSet(bs);
@@ -2112,6 +2114,7 @@ public class MainFrame extends FBFrame implements LogSync
 		BugSet bs=BugLoader.combineBugHistories();
 		if (bs!=null)
 		{
+			displayer.clearCache();
 			((BugTreeModel)tree.getModel()).getOffListenerList();
 			updateDesignation();
 			((BugTreeModel)tree.getModel()).changeSet(bs);
@@ -2213,6 +2216,7 @@ public class MainFrame extends FBFrame implements LogSync
 							if (bs!=null)
 							{
 								editProjectMenuItem.setEnabled(true);
+								displayer.clearCache();
 								model.getOffListenerList();
 								updateDesignation();
 								model.changeSet(bs);
