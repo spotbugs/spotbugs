@@ -67,7 +67,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	}
 	
 	public void setKnownValue(ValueNumber valueNumber, IsNullValue knownValue) {
-		
+		assert trackValueNumbers;
 		knownValueMap.put(valueNumber, knownValue);
 		if (IsNullValueAnalysis.DEBUG) {
 			System.out.println("Updated information for " + valueNumber);
@@ -75,11 +75,12 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		}
 	}
 	public void useNewValueNumberForLoad(ValueNumber oldValueNumber, ValueNumber newValueNumber) {
-		if (newValueNumber.equals(oldValueNumber)) return;
+		if (newValueNumber.equals(oldValueNumber) || !trackValueNumbers) return;
 		knownValueMap.put(newValueNumber, knownValueMap.get(oldValueNumber));
 		knownValueMap.remove(oldValueNumber);
 	}
 	public IsNullValue getKnownValue(ValueNumber valueNumber) {
+		assert trackValueNumbers;
 		return knownValueMap.get(valueNumber);
 	}
 	
@@ -100,6 +101,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	}
 	
 	public void mergeKnownValuesWith(IsNullValueFrame otherFrame) {
+		assert trackValueNumbers;
 		Map<ValueNumber, IsNullValue> replaceMap = new HashMap<ValueNumber, IsNullValue>();
 		for (Map.Entry<ValueNumber, IsNullValue> entry : knownValueMap.entrySet()) {
 			IsNullValue otherKnownValue = otherFrame.knownValueMap.get(entry.getKey());
