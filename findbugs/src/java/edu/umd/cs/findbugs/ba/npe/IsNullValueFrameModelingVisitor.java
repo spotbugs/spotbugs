@@ -247,8 +247,9 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			AvailableLoad load = new AvailableLoad(refValue, field);
 			ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(getLocation());
 			ValueNumber [] newValueNumbersForField = vnaFrameAfter.getAvailableLoad(load);
-			if (newValueNumbersForField != null) for(ValueNumber v : newValueNumbersForField)
-				getFrame().setKnownValue(v, nullValueStored);			
+			if (newValueNumbersForField != null && trackValueNumbers)
+				for(ValueNumber v : newValueNumbersForField)
+					getFrame().setKnownValue(v, nullValueStored);			
 		} catch (DataflowAnalysisException e) {
 			AnalysisContext.logError("Oops", e);
 		}
