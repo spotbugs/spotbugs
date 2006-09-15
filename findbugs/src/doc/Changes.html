@@ -18,11 +18,9 @@
 						FindBugs Change Log
 					</h1>
 
-					<p>
-						Changes since verson 1.0.0:
-					</p>
+					<p>Changes since version 1.0.0:</p>
 
-					<ul>
+<ul>
 						<li>
 							Overall, the change from FindBugs 1.0.0 to FindBugs 1.1.0 has
 							been a big change. We've done a lot of work in a lot of areas,
@@ -39,7 +37,7 @@
 							that more than 75% of the high/medium priority correctness
 							warnings correspond to real coding defects that need addressing
 							in the source code. The remaining 25% are largely cases such as a
-							branch or statment that if taken would lead to an error, but in
+							branch or statement that if taken would lead to an error, but in
 							fact is a dead branch or statement that can never be taken. Such
 							coding is confusing and hard to maintain, so it should arguably
 							be fixed, but it is unlikely to actually result in an error
@@ -52,11 +50,11 @@
 							result in null pointer dereferences. Overall, our experience has
 							been that these changes have roughly doubled the number of null
 							pointer errors we detect, without increasing the number of false
-							posiives (in fact, our false positive rate has gone down). The
+							positives (in fact, our false positive rate has gone down). The
 							improvements are due to four factors:
 							<ul>
 								<li>
-									By default, we now do some interproceural analysis to determine
+									By default, we now do some interprocedural   analysis to determine
 									methods that unconditionally dereference their parameters.
 								</li>
 								<li>
@@ -114,7 +112,7 @@
 										<code>
 											x
 										</code>
-										were to be deferenced here, we would generate a warning,
+										were to be dereferenced here, we would generate a warning,
 										because if the else branch of the
 										<code>
 											if (x == null)
@@ -186,7 +184,7 @@
 
 						</li>
 						<li>
-							Prelimary support for detectors using the frameworks other than
+							Preliminary support for detectors using the frameworks other than
 							BCEL, such as the
 							<a href="http://asm.objectweb.org/">ASM</a> bytecode framework.
 							You may experiment with writing ASM-based detectors, but beware
@@ -221,7 +219,7 @@
 								class Object.
 							</p>
 							<p>
-								In general, our guidlines for deciding whether a bug should be
+								In general, our guidelines for deciding whether a bug should be
 								classified as CORRECTNESS, BAD_PRACTICE or STYLE are:
 							</p>
 							<dl>
@@ -232,7 +230,7 @@
 									A problem that we can recognize with high confidence and is an
 									issue that we believe almost all developers would want to
 									examine and address. We recommend that software teams review
-									all high and medium priority correctness warnings in their entire code
+									all high and medium priority warnings in their entire code
 									base.
 								</dd>
 								<dt>
@@ -261,17 +259,14 @@
 									warnings (e.g., you might have a coding practice or style in
 									your group that confuses one of the detectors into generating a
 									lot of STYLE warnings); you will likely want to selectively
-									supress or report the STYLE warnings that are effective for
+									suppress or report the STYLE warnings that are effective for
 									your group.
 								</dd>
 							</dl>
 						</li>
 						<li>
 							Released a preliminary version of a new GUI (known internally as
-							GUI2 -- not very creative, huh?). GUI2 requires Java SE 5. 
-							Among other features, GUI2 supports highlighting multiple lines per warning,
-							a dynamically reconfigurable JTree of bug warnings, and a way to provide
-							user designations and comments on each bug.
+							GUI2 -- not very creative, huh?)
 						</li>
 						<li>
 							Provided standard ways to mark user designations of bug warnings
@@ -304,8 +299,8 @@
 						<li>
 							Added check for uncallable method of an anonymous inner class.
 							For example, in the following code, it is impossible to invoke
-							the initalValue method (because the name is mispelled and as a
-							result is doesn't overrride a method in ThreadLocal).
+							the initalValue method (because the name is misspelled and as a
+							result is doesn't override a method in ThreadLocal).
 							<code>
 								<pre>private static ThreadLocal serialNum = new ThreadLocal() {
          protected synchronized Object initalValue() {
@@ -351,6 +346,7 @@
 						human readable format produced by BCEL</li>
 						<li>Provided -findSource option to setBugDatabaseInfo</li>
 					</ul>
+
 
 					<p>
 						Changes since verson 0.9.7:

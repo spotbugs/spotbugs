@@ -29,7 +29,7 @@ are trademarked by <a href="http://www.umd.edu">The University of Maryland</a>.<
 
 <p><a href="http://www.fortifysoftware.com/#findbugs"><img src="Fortify.png" alt="Fortify logo" border="0"  align="right"/></a>FindBugs is sponsored by <a href="http://www.fortifysoftware.com/#findbugs">Fortify Software</a>, which 
 sells security tools, including Fortify Source Code Analysis, 
-which scans for security vunerabilities (<a href="pressRelease.pdf">press release</a>).
+which scans for security vulnerabilities (<a href="pressRelease.pdf">press release</a>).
 
 </p><p> FindBugs requires JRE (or JDK) 1.4.0 or later to run.&nbsp; However, it
 can analyze programs compiled for any version of Java. The current version of FindBugs is @VERSION@,
@@ -59,7 +59,7 @@ Send your comments to <a href="mailto:findbugs@cs.umd.edu">findbugs@cs.umd.edu</
 
 <h1>News</h1>
 	
-<p>Changes since verson 1.0.0:</p>
+<p>Changes since version 1.0.0:</p>
 
 <ul>
 						<li>
@@ -78,7 +78,7 @@ Send your comments to <a href="mailto:findbugs@cs.umd.edu">findbugs@cs.umd.edu</
 							that more than 75% of the high/medium priority correctness
 							warnings correspond to real coding defects that need addressing
 							in the source code. The remaining 25% are largely cases such as a
-							branch or statment that if taken would lead to an error, but in
+							branch or statement that if taken would lead to an error, but in
 							fact is a dead branch or statement that can never be taken. Such
 							coding is confusing and hard to maintain, so it should arguably
 							be fixed, but it is unlikely to actually result in an error
@@ -91,11 +91,11 @@ Send your comments to <a href="mailto:findbugs@cs.umd.edu">findbugs@cs.umd.edu</
 							result in null pointer dereferences. Overall, our experience has
 							been that these changes have roughly doubled the number of null
 							pointer errors we detect, without increasing the number of false
-							posiives (in fact, our false positive rate has gone down). The
+							positives (in fact, our false positive rate has gone down). The
 							improvements are due to four factors:
 							<ul>
 								<li>
-									By default, we now do some interproceural analysis to determine
+									By default, we now do some interprocedural   analysis to determine
 									methods that unconditionally dereference their parameters.
 								</li>
 								<li>
@@ -153,7 +153,7 @@ Send your comments to <a href="mailto:findbugs@cs.umd.edu">findbugs@cs.umd.edu</
 										<code>
 											x
 										</code>
-										were to be deferenced here, we would generate a warning,
+										were to be dereferenced here, we would generate a warning,
 										because if the else branch of the
 										<code>
 											if (x == null)
@@ -225,7 +225,7 @@ Send your comments to <a href="mailto:findbugs@cs.umd.edu">findbugs@cs.umd.edu</
 
 						</li>
 						<li>
-							Prelimary support for detectors using the frameworks other than
+							Preliminary support for detectors using the frameworks other than
 							BCEL, such as the
 							<a href="http://asm.objectweb.org/">ASM</a> bytecode framework.
 							You may experiment with writing ASM-based detectors, but beware
@@ -260,7 +260,7 @@ Send your comments to <a href="mailto:findbugs@cs.umd.edu">findbugs@cs.umd.edu</
 								class Object.
 							</p>
 							<p>
-								In general, our guidlines for deciding whether a bug should be
+								In general, our guidelines for deciding whether a bug should be
 								classified as CORRECTNESS, BAD_PRACTICE or STYLE are:
 							</p>
 							<dl>
@@ -300,7 +300,7 @@ Send your comments to <a href="mailto:findbugs@cs.umd.edu">findbugs@cs.umd.edu</
 									warnings (e.g., you might have a coding practice or style in
 									your group that confuses one of the detectors into generating a
 									lot of STYLE warnings); you will likely want to selectively
-									supress or report the STYLE warnings that are effective for
+									suppress or report the STYLE warnings that are effective for
 									your group.
 								</dd>
 							</dl>
@@ -340,8 +340,8 @@ Send your comments to <a href="mailto:findbugs@cs.umd.edu">findbugs@cs.umd.edu</
 						<li>
 							Added check for uncallable method of an anonymous inner class.
 							For example, in the following code, it is impossible to invoke
-							the initalValue method (because the name is mispelled and as a
-							result is doesn't overrride a method in ThreadLocal).
+							the initalValue method (because the name is misspelled and as a
+							result is doesn't override a method in ThreadLocal).
 							<code>
 								<pre>private static ThreadLocal serialNum = new ThreadLocal() {
          protected synchronized Object initalValue() {
@@ -398,7 +398,7 @@ Send your comments to <a href="mailto:findbugs@cs.umd.edu">findbugs@cs.umd.edu</
 <a href="http://www.sun.com">Sun Microsystems</a>, 
  <a href="http://www.nsf.gov">National Science Foundation</a> grants
 ASC9720199 and CCR-0098162, and by a 2004 <a href="http://www-306.ibm.com/software/info/university/products/eclipse/eig-2004.html">IBM Eclipse Innovation award</a>.</p>
-<p>Any opinions, findings and conclusions or recomendations expressed 
+<p>Any opinions, findings and conclusions or recommendations expressed 
 in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation (NSF).
 @HTML_FOOTER@
 
