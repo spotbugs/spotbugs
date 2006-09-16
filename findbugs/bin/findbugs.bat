@@ -10,7 +10,6 @@ setlocal
 :: Set up default values
 :: ----------------------------------------------------------------------
 set appjar=findbugsGUI.jar
-set mainClass=
 set javahome=
 set launcher=javaw.exe
 set start=start "FindBugs"
@@ -55,12 +54,12 @@ set launcher=javaw.exe
 goto shift1
 :notGui
 
-if not "%firstArg%"=="-gui2" goto notGui2
+if not "%firstArg%"=="-gui1" goto notGui1
 set appjar=findbugsGUI.jar
-set mainClass=edu.umd.cs.findbugs.gui2.Driver
+set javaProps=-Dfindbugs.launchUI=1 %javaProps%
 set launcher=javaw.exe
 goto shift1
-:notGui2
+:notGui1
 
 if not "%firstArg%"=="-textui" goto notTextui
 set appjar=findbugs.jar
@@ -121,13 +120,7 @@ if not exist "%FINDBUGS_HOME%\lib\%appjar%" goto homeNotSet
 
 :found_home
 :: Launch FindBugs!
-
-if not "%mainClass%"=="" goto invokeMainClass
 %start% "%javahome%%launcher%" %debugArg% %conserveSpaceArg% %workHardArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% -jar "%FINDBUGS_HOME%\lib\%appjar%" %args%
-goto end
-
-:invokeMainClass
-%start% "%javahome%%launcher%" %debugArg% %conserveSpaceArg% %workHardArg% %javaProps% "-Dfindbugs.home=%FINDBUGS_HOME%" -Xmx%maxheap%m %jvmargs% -cp "%FINDBUGS_HOME%\lib\%appjar%" %mainClass% %args%
 goto end
 
 :: ----------------------------------------------------------------------
@@ -137,7 +130,7 @@ goto end
 echo Usage: findbugs [options]
 echo    -home dir       Use dir as FINDBUGS_HOME
 echo    -gui            Use the Graphical UI (default behavior)
-echo    -gui2           Use the new Graphical UI (requires 1.5)
+echo    -gui1           Use the older Graphical UI
 echo    -textui         Use the Text UI
 echo    -jvmArgs args   Pass args to JVM
 echo    -maxHeap size   Set maximum Java heap size in megabytes (default %maxheap%)

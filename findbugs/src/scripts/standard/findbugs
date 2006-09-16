@@ -30,13 +30,11 @@ user_props=''
 while [ $# -gt 0 ]; do
 	case $1 in
 	-gui)
-		fb_appjar="$findbugs_home/lib/findbugsGUI.jar"
-		fb_mainclass="edu.umd.cs.findbugs.gui.FindBugsFrame"
+		# this is the default
 		;;
 
-	-gui2)
-		fb_appjar="$findbugs_home/lib/findbugsGUI.jar"
-		fb_mainclass="edu.umd.cs.findbugs.gui2.Driver"
+	-gui1)
+		user_props="-Dfindbugs.launchUI=1 $user_props"
 		;;
 
 	-textui)
