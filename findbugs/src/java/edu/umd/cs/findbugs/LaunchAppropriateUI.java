@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs;
 
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 /**
  * Class to launch the appropriate GUI
@@ -31,22 +32,20 @@ public class LaunchAppropriateUI {
 		if (GraphicsEnvironment.isHeadless())
 			FindBugs2.main(args);
 		else {
-			boolean useGui1 = false;
 			String version = System.getProperty("java.version");
-			if ("1.5".compareTo(version) > 0)
-				useGui1 = true;
-
-			try {
-				Class.forName("edu.umd.cs.findbugs.gui2.MainFrame", false,
+			
+			Class launchClass = null;
+			if ("1.5".compareTo(version)  <= 0) try {
+				launchClass = Class.forName("edu.umd.cs.findbugs.gui2.Driver", false,
 						LaunchAppropriateUI.class.getClassLoader());
 			} catch (ClassNotFoundException e) {
-				useGui1 = true;
+				assert true;
 			}
-
-			if (useGui1)
-				edu.umd.cs.findbugs.gui.FindBugsFrame.main(args);
-			else
-				edu.umd.cs.findbugs.gui2.Driver.main(args);
+			if (launchClass == null) 
+				launchClass = edu.umd.cs.findbugs.gui.FindBugsFrame.class;
+			
+			Method mainMethod = launchClass.getMethod("main", args.getClass());
+			mainMethod.invoke(null, (Object) args);
 		}
 	}
 }
