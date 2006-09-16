@@ -443,5 +443,6 @@ public class NewProjectWizard extends FBDialog
 		if(width < 400)
 			width = 400;
 		setSize(new Dimension(width, 300));
+		setLocationRelativeTo(MainFrame.getInstance());
 	}
 }

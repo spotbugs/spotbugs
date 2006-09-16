@@ -674,6 +674,7 @@ public class MainFrame extends FBFrame implements LogSync
 		preferencesMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
 				saveCommentsToBug(currentSelectedBugLeaf);
+				PreferencesFrame.getInstance().setLocationRelativeTo(MainFrame.this);
 				PreferencesFrame.getInstance().setVisible(true);
 			}
 		});
@@ -681,6 +682,7 @@ public class MainFrame extends FBFrame implements LogSync
 		sortMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
 				saveCommentsToBug(currentSelectedBugLeaf);
+				SorterDialog.getInstance().setLocationRelativeTo(MainFrame.this);
 				SorterDialog.getInstance().setVisible(true);
 			}
 		});

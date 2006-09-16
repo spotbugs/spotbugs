@@ -122,6 +122,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 				cancelButton.setAlignmentX(CENTER_ALIGNMENT);
 				pack();
 				setSize(300, getHeight());
+				setLocationRelativeTo(MainFrame.getInstance());
 				setResizable(false);
 				setModal(true);
 				setVisible(true);
