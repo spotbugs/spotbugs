@@ -39,7 +39,7 @@ This plugin contains all of the standard FindBugs detectors.
     <Details>Violations of recommended and essential
             coding practice. Examples include hash code and equals
             problems, cloneable idiom, dropped exceptions,  
-            serializable problems, and misuse of finalize.
+            Serializable problems, and misuse of finalize.
             We strive to make this analysis accurate,
             although some groups may
             not care about some of the bad practices.</Details>
@@ -49,7 +49,7 @@ This plugin contains all of the standard FindBugs detectors.
     <Description>Dodgy</Description>
     <Abbreviation>D</Abbreviation>
     <Details>code that is confusing, anomalous, or
-            written in a way that that leads itself to errors.
+            written in a way that leads itself to errors.
             Examples include dead local stores, switch fall through,
             unconfirmed casts, and redundant null check of value
             known to be null.
@@ -278,7 +278,7 @@ Normally, this detector does nothing.</p>
   <Detector class="edu.umd.cs.findbugs.detect.HugeSharedStringConstants">
     <Details>
 <![CDATA[
-<p> THis detector looks for string constants that are duplicated across multiple classfiles.
+<p> This detector looks for string constants that are duplicated across multiple classfiles.
 </p>
 ]]>
     </Details>
@@ -1024,7 +1024,7 @@ This detector looks for bad casts of object references using data flow analysis.
     <Details>
 <![CDATA[
 <p>
-This detector looks for stores of non serializable objects into Http sessions.
+This detector looks for stores of non Serializable objects into Http sessions.
 </p>
 ]]>
     </Details>
@@ -1033,7 +1033,7 @@ This detector looks for stores of non serializable objects into Http sessions.
     <Details>
 <![CDATA[
 <p>
-This detector looks for stores of non serializable objects passed to the writeObject method of
+This detector looks for stores of non Serializable objects passed to the writeObject method of
 an ObjectOutput.
 </p>
 ]]>
@@ -1460,7 +1460,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
     </Details>
   </BugPattern>
 
-<BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED">
+<BugPattern type="DP_DO_INSIDE_DO_PRIVILEGED">
     <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
     <LongDescription>{1} invokes {2}, which should be invoked from within a doPrivileged block</LongDescription>
     <Details>
@@ -1471,7 +1471,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
-<BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED">
+<BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">
     <ShortDescription>Classloaders should only be created inside doPrivileged block</ShortDescription>
     <LongDescription>{1} creates a {2} classloader, which should be performed within a doPrivileged block</LongDescription>
     <Details>
@@ -1495,8 +1495,8 @@ that all fields are final.
     </Details>
   </BugPattern>
   <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
-    <ShortDescription>Can't use reflection to check for presense of annotation with default retention</ShortDescription>
-    <LongDescription>{1} uses reflection to check for the presense of an annotation that has default retention</LongDescription>
+    <ShortDescription>Can't use reflection to check for presence of annotation with default retention</ShortDescription>
+    <LongDescription>{1} uses reflection to check for the presence of an annotation that has default retention</LongDescription>
     <Details>
 <![CDATA[
   <p> Unless an annotation has itself been annotated with a @Retention other than the default
@@ -1716,7 +1716,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
     <Details>
 <![CDATA[
   <p>A random value from 0 to 1 is being coerced to the integer value 0. You probably
-want to multiple the random value by something else before coercing it to an integer, or use use the Random.nextInt(n) method.
+want to multiple the random value by something else before coercing it to an integer, or use the Random.nextInt(n) method.
 </p>
 ]]>
     </Details>
@@ -1860,7 +1860,7 @@ be used to make the prepared statement do something unexpected and undesirable.
 <p>If a connected set of objects beings finalizable, then the VM will invoke the
 finalize method on all the finalizable object, possibly at the same time in different threads.
 Thus, it is a particularly bad idea, in the finalize method for a class X, invoke finalize
-on objects referenced by X, because they may already be getting finalized in a seperate thread.
+on objects referenced by X, because they may already be getting finalized in a separate thread.
 ]]>
     </Details>
   </BugPattern>
@@ -1914,7 +1914,7 @@ that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=
       <p>
 	A parameter to this method has been identified as a value that should
 	always be checked to see whether or not it is null, but it is being dereferenced
-	without a preceeding null check.
+	without a preceding null check.
       </p>
       ]]>
    </Details>
@@ -2042,7 +2042,7 @@ the recommended <code>hashCode</code> implementation to use is:</p>
 <![CDATA[
   <p> This class inherits <code>equals(Object)</code> from an abstract
   superclass, and <code>hashCode()</code> from
-from <code>java.lang.Object</code> (which returns
+<code>java.lang.Object</code> (which returns
   the identity hash code, an arbitrary value assigned to the object
   by the VM).&nbsp; Therefore, the class is very likely to violate the
   invariant that equal objects must have equal hashcodes.</p>
@@ -2121,8 +2121,8 @@ using the <code>equals(Object)</code> method instead.</p>
 
 
   <BugPattern type="IS_FIELD_NOT_GUARDED">
-    <ShortDescription>Field not guarded against conconcurrent access</ShortDescription>
-    <LongDescription>{1} not guarded againsts concurrent access; locked {2}% of time</LongDescription>
+    <ShortDescription>Field not guarded against concurrent access</ShortDescription>
+    <LongDescription>{1} not guarded against concurrent access; locked {2}% of time</LongDescription>
     <Details>
 <![CDATA[
   <p> This field is annotated with net.jcip.annotations.GuardedBy, 
@@ -2735,11 +2735,11 @@ mechanism.
     </Details>
   </BugPattern>
   <BugPattern type="SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS">
-    <ShortDescription>Transient field of class that isn't seriablizable. </ShortDescription>
-    <LongDescription>{1} is transient but {0} isn't serializable</LongDescription>
+    <ShortDescription>Transient field of class that isn't Serializable. </ShortDescription>
+    <LongDescription>{1} is transient but {0} isn't Serializable</LongDescription>
     <Details>
 <![CDATA[
-  <p> The field is marked as transient, but the class isn't serializable, so marking it as transient
+  <p> The field is marked as transient, but the class isn't Serializable, so marking it as transient
 has absolutely no effect. 
 This may be leftover marking from a previous version of the code in which the class was transient, or
 it may indicate a misunderstanding of how serialization works.
@@ -2848,7 +2848,7 @@ is generally easy and good defensive programming.
     </Details>
   </BugPattern>
   <BugPattern type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH">
-   <ShortDescription>Dead store due to switch statement fall thorugh</ShortDescription>
+   <ShortDescription>Dead store due to switch statement fall through</ShortDescription>
    <LongDescription>Value of {2} from previous case is overwritten here due to switch statement fall through</LongDescription>
     <Details>
 <![CDATA[
@@ -3070,8 +3070,8 @@ to read, readLine() will return null and dereferencing that will generate a null
     <LongDescription>Read of unwritten field {2.name} in {1}</LongDescription>
     <Details>
 <![CDATA[
-  <p> The program is deferencing a field that does not seem to ever have a non-null value written to it.
-Deferencing this value will generate a null pointer exception.
+  <p> The program is dereferencing a field that does not seem to ever have a non-null value written to it.
+Dereferencing this value will generate a null pointer exception.
 </p>
 ]]>
     </Details>
@@ -3086,7 +3086,7 @@ Deferencing this value will generate a null pointer exception.
   to the object which created it.&nbsp; This reference makes the instances
   of the class larger, and may keep the reference to the creator object
   alive longer than necessary.&nbsp; If possible, the class should be
-   be made static.
+   made static.
 </p>
 ]]>
     </Details>
@@ -3237,7 +3237,7 @@ String dateString = getHeaderField(name);
 dateString.trim();
 </pre>
 </blockquote>
-<p>the programer seems to be thinking that the trim() method will update
+<p>the programmer seems to be thinking that the trim() method will update
 the String referenced by dateString. But since Strings are immutable, the trim()
 function returns a new String value, which is being ignored here. The code
 should be corrected to: </p>
@@ -3265,7 +3265,7 @@ String dateString = getHeaderField(name);
 dateString.trim();
 </pre>
 </blockquote>
-<p>the programer seems to be thinking that the trim() method will update
+<p>the programmer seems to be thinking that the trim() method will update
 the String referenced by dateString. But since Strings are immutable, the trim()
 function returns a new String value, which is being ignored here. The code
 should be corrected to: </p>
@@ -3522,7 +3522,7 @@ is not a directory.</p>
 <![CDATA[
 <p> This method contains a useless control flow statement, where
 control flow continues onto the same place regardless of whether or not
-the branch is taken. For examplpe,
+the branch is taken. For example,
 this is caused by having an empty statement
 block fot an <code>if</code> statement:</p>
 <pre>
@@ -3892,9 +3892,9 @@ you may need to change your code.
 If you know the divisor is a power of 2,
 you can use a bitwise and operator instead (i.e., instead of
 using <code>x.hashCode()%n</code>, use <code>x.hashCode()&amp;(n-1)</code>. 
-This is probably faster than computing the remainer as well.
-If you dont know that the divisor is a power of 2, take the absolute
-value of the result of the remainer operation (i.e., use
+This is probably faster than computing the remainder as well.
+If you don't know that the divisor is a power of 2, take the absolute
+value of the result of the remainder operation (i.e., use
 <code>Math.abs(x.hashCode()%n)</code>
 </p>
 ]]>
