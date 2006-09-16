@@ -53,6 +53,10 @@
 		 should happen in an earlier pass than FindNullDeref. -->	
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"/>
+		<Later class="edu.umd.cs.findbugs.detect.TrainUnconditionalDerefParams"/>
+	</SplitPass>
+	<SplitPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
 	</SplitPass>
 	<SplitPass>
@@ -660,7 +664,7 @@
   <BugPattern abbrev="Eq" type="EQ_SELF_NO_OBJECT" category="BAD_PRACTICE" />
   <BugPattern abbrev="NP" type="NP_DOES_NOT_HANDLE_NULL" category="BAD_PRACTICE"/>
   <BugPattern abbrev="Co" type="CO_SELF_NO_OBJECT" category="BAD_PRACTICE" />
-  <BugPattern abbrev="ES" type="ES_COMPARING_STRINGS_WITH_EQ" category="CORRECTNESS" />
+  <BugPattern abbrev="ES" type="ES_COMPARING_STRINGS_WITH_EQ" category="BAD_PRACTICE" />
   <BugPattern abbrev="ES" type="ES_COMPARING_PARAMETER_STRING_WITH_EQ" category="BAD_PRACTICE" />
   <BugPattern abbrev="HE" type="HE_USE_OF_UNHASHABLE_CLASS" category="CORRECTNESS" />
   <BugPattern abbrev="HE" type="HE_HASHCODE_USE_OBJECT_EQUALS" category="BAD_PRACTICE" />
