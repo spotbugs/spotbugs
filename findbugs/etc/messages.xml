@@ -1471,7 +1471,30 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 ]]>
     </Details>
   </BugPattern>
+<BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED"> <!-- misspelled for backward compatibility -->
+    <ShortDescription>Method invoked that should be only be invoked inside a doPrivileged block</ShortDescription>
+    <LongDescription>{1} invokes {2}, which should be invoked from within a doPrivileged block</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This code invokes a method that requires a security permission check.
+  If this code will be granted security permissions, but might be invoked by code that does not
+  have security permissions, then the invocation needs to occur inside a doPrivileged block.</p>
+]]>
+    </Details>
+  </BugPattern>
+
 <BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">
+    <ShortDescription>Classloaders should only be created inside doPrivileged block</ShortDescription>
+    <LongDescription>{1} creates a {2} classloader, which should be performed within a doPrivileged block</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This code creates a classloader,  which requires a security manager.
+  If this code will be granted security permissions, but might be invoked by code that does not
+  have security permissions, then the classloader creation  needs to occur inside a doPrivileged block.</p>
+]]>
+    </Details>
+  </BugPattern>
+<BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED"> <!-- misspelled for backward compatibility -->
     <ShortDescription>Classloaders should only be created inside doPrivileged block</ShortDescription>
     <LongDescription>{1} creates a {2} classloader, which should be performed within a doPrivileged block</LongDescription>
     <Details>
