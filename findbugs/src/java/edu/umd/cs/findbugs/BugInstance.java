@@ -795,7 +795,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		add(typeAnnotation);
 		return this;
 	}
-
+	
+	public BugInstance addTypeOfNamedClass(String typeName) {
+		TypeAnnotation typeAnnotation = new TypeAnnotation("L" + typeName.replace('.','/')+";");
+		add(typeAnnotation);
+		return this;
+	}
 	/* ----------------------------------------------------------------------
 	 * Field annotation adders
 	 * ---------------------------------------------------------------------- */

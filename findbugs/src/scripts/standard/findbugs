@@ -19,7 +19,7 @@ ShowHelpAndExit() {
 
 # Set defaults
 fb_appjar="$findbugs_home/lib/findbugsGUI.jar"
-fb_mainclass="edu.umd.cs.findbugs.gui.FindBugsFrame"
+fb_mainclass="edu.umd.cs.findbugs.LaunchAppropriateUI"
 user_jvmargs=''
 debug_arg=''
 conservespace_arg=''

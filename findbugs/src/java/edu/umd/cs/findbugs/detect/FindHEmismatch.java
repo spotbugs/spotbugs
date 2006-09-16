@@ -371,8 +371,8 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 			potentialBugs.put(type.getClassName(), 
 					new BugInstance("HE_USE_OF_UNHASHABLE_CLASS", getClassConstantOperand().indexOf("Hash") >= 0 ? HIGH_PRIORITY : NORMAL_PRIORITY)
 				.addClassAndMethod(this)
-				.addClass(type)
-				.addClass(getClassConstantOperand())
+				.addTypeOfNamedClass(type.getClassName())
+				.addTypeOfNamedClass(getClassConstantOperand())
 				.addSourceLine(this));
 	}
 	
