@@ -115,7 +115,7 @@ public class Driver {
 			e.printStackTrace();	
 		}
 
-		System.setProperty("findbugs.home",".."+File.separator+"findbugs");
+		// System.setProperty("findbugs.home",".."+File.separator+"findbugs");
 		DetectorFactoryCollection.instance();
 
 //		The bug with serializable idiom detection has been fixed on the findbugs end.
