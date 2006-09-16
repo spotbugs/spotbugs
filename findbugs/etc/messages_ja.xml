@@ -1171,7 +1171,7 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
     </Details>
   </BugPattern>
 
-  <BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED">
+  <BugPattern type="DP_DO_INSIDE_DO_PRIVILEGED">
     <ShortDescription>doPrivilegedブロックの中で呼び出さなければならないメソッドが呼び出されています。</ShortDescription>
     <LongDescription>{1} は {2} を呼び出していますが、これはdoPrivilegedブロックの中で呼び出さなければなりません。</LongDescription>
     <Details>
@@ -1181,7 +1181,7 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
     </Details>
   </BugPattern>
 
-  <BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED">
+  <BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">
     <ShortDescription>クラスローダはdoPrivilegedブロックの中でのみ作成可能です。</ShortDescription>
     <LongDescription>{1} で作成されているクラスローダ {2} は、doPrivilegedブロックの中で実行する必要があります。</LongDescription>
     <Details>

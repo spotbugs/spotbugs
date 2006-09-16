@@ -31,26 +31,26 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 /**
  * @author pugh
  */
-public class DoInsideDoPriviledged  extends BytecodeScanningDetector {
+public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
 	BugReporter bugReporter;
-	public DoInsideDoPriviledged(BugReporter bugReporter) {
+	public DoInsideDoPrivileged(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	boolean isDoPriviledged = false;
+	boolean isDoPrivileged = false;
 	@Override
 	public void visit(JavaClass obj) {
 		try {
-			isDoPriviledged =
+			isDoPrivileged =
 				Repository.implementationOf(getClassName(),"java/security/PrivilegedAction")
 				|| Repository.implementationOf(getClassName(),"java/security/PrivilegedExceptionAction");
 		} catch (ClassNotFoundException e) {
-			isDoPriviledged = true;
+			isDoPrivileged = true;
 		}
 	}
 	
 	@Override
 	public void visit(Code obj) {
-		if (isDoPriviledged && getMethodName().equals("run")) return;
+		if (isDoPrivileged && getMethodName().equals("run")) return;
 		if (getMethod().isPrivate()) return;
 		super.visit(obj);
 	}
@@ -60,7 +60,7 @@ public class DoInsideDoPriviledged  extends BytecodeScanningDetector {
 		if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("setAccessible")) {
 			String className = getDottedClassConstantOperand();
 			if (className.equals("java.lang.reflect.Field") || className.equals("java.lang.reflect.Method"))
-				bugReporter.reportBug(new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEDGED",
+				bugReporter.reportBug(new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEGED",
 						LOW_PRIORITY)
 					        .addClassAndMethod(this)
 					        .addCalledMethod(this)
@@ -72,7 +72,7 @@ public class DoInsideDoPriviledged  extends BytecodeScanningDetector {
 			JavaClass constructedClass = Repository.lookupClass(classOfConstructedClass);
 			if (Repository.instanceOf(constructedClass,"java/lang/ClassLoader") 
 					&& !(getMethodName().equals("main") && getMethodSig().equals("([Ljava/lang/String;)V") && getMethod().isStatic()) )
-				bugReporter.reportBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED",
+				bugReporter.reportBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED",
 					NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
 				        .addClass(constructedClass)

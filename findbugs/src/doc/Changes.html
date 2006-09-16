@@ -181,6 +181,50 @@
 									</p>
 								</li>
 							</ul>
+							<p>
+								The following screen shot of our new GUI shows an example of
+								this analysis, as well as showing off our new GUI and points out
+								a limitation of our current plugins for Eclipse and Netbeans.
+								The screen shot shows a null pointer bug in HelpDisplay.java.
+								The test for
+								<code>
+									href!=null
+								</code>
+								on line 78 suggests that
+								<code>
+									href
+								</code>
+								could be null. If it is, then
+								<code>
+									href
+								</code>
+								will be dereferenced on either line 87 or on line 90, generating
+								a NPE. Note that our analysis here also understands that passing
+								<code>
+									href
+								</code>
+								to
+								<code>
+									URLEncoder.encode
+								</code>
+								will deference it, and thus treats line 87 as a dereference,
+								even though
+								<code>
+									href
+								</code>
+								is not actually dereferenced at that line. Within our new GUI,
+								all of these locations are highlighted and listed in the summary
+								panel. In the original GUI (and in HTML output) we list all of
+								the locations, but only the primary location is highlighted by
+								the original GUI. In the Eclipse and Netbean plugins, only the
+								primary location is displayed; fixing this is on our todo list
+								(contributions welcome).
+							</p>
+							<p>
+								<img src="guaranteedDereference.png" alt="">
+
+
+							</p>
 
 						</li>
 						<li>

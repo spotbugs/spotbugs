@@ -1099,7 +1099,7 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED">
+ <BugPattern type="DP_DO_INSIDE_DO_PRIVILEGED">
   <ShortDescription>Méthode invoquée alors qu'elle ne devrait l'être qu'à partir d'un block doPrivileged</ShortDescription>
   <LongDescription>{1} invoque {2}, qui ne devrait être invoquée qu'à partir d'un block doPrivileged</LongDescription>
   <Details>
@@ -1108,7 +1108,7 @@ Un accesseur spécial est généré dans ce cas par la compilateur pour écrire 
 ]]>
   </Details>
  </BugPattern>
- <BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED">
+ <BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">
   <ShortDescription>Les chargeurs de classes ne doivent être créés qu'à partir de block doPrivileged</ShortDescription>
   <LongDescription>{1} créé un chargeur de classes {2} en dehors d'un block doPrivileged</LongDescription>
   <Details>

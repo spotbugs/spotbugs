@@ -1,64 +1,111 @@
 <html>
-<head>
-<title>FindBugs&trade; - Find Bugs in Java Programs</title>
-<link rel="stylesheet" type="text/css" href="findbugs.css" />
-@GOOGLE_ANALYTICS@
-</head>
+	<head>
+		<title>FindBugs&trade; - Find Bugs in Java Programs</title>
+		<link rel="stylesheet" type="text/css" href="findbugs.css" />
+		@GOOGLE_ANALYTICS@
+	</head>
 
-<body>
+	<body>
 
-<table width="100%"><tr>
+		<table width="100%">
+			<tr>
 
-@HTML_SIDEBAR@
+				@HTML_SIDEBAR@
 
-<td align="left" valign="top">
+				<td align="left" valign="top">
 
-<p>
-	<a href="@WEBSITE@/"><img src="buggy-sm.png" alt="FindBugs logo" border="0" /></a>
-	<a href="http://www.umd.edu/"><img src="informal.png" alt="UMD logo" border="0" /></a>
-</p>
+					<p>
+						<a href="@WEBSITE@/"><img src="buggy-sm.png"
+								alt="FindBugs logo" border="0" />
+						</a>
+						<a href="http://www.umd.edu/"><img src="informal.png"
+								alt="UMD logo" border="0" />
+						</a>
+					</p>
 
-<h1>FindBugs&trade; - Find Bugs in Java Programs</h1>
+					<h1>
+						FindBugs&trade; - Find Bugs in Java Programs
+					</h1>
 
-<p> This is the web page for FindBugs, a program which looks for bugs
-in Java code.&nbsp; It is free software, distributed under the terms
-of the <a href="http://www.gnu.org/licenses/lgpl.html">Lesser GNU Public License</a>.
-The name FindBugs&trade; and the <a href="buggy-sm.png">Findbugs logo</a>
-are trademarked by <a href="http://www.umd.edu">The University of Maryland</a>.</p>
+					<p>
+						This is the web page for FindBugs, a program which looks for bugs
+						in Java code.&nbsp; It is free software, distributed under the
+						terms of the
+						<a href="http://www.gnu.org/licenses/lgpl.html">Lesser GNU
+							Public License</a>. The name FindBugs&trade; and the
+						<a href="buggy-sm.png">FindBugs logo</a> are trademarked by
+						<a href="http://www.umd.edu">The University of Maryland</a>.
+					</p>
 
 
-<p><a href="http://www.fortifysoftware.com/#findbugs"><img src="Fortify.png" alt="Fortify logo" border="0"  align="right"/></a>FindBugs is sponsored by <a href="http://www.fortifysoftware.com/#findbugs">Fortify Software</a>, which 
-sells security tools, including Fortify Source Code Analysis, 
-which scans for security vulnerabilities (<a href="pressRelease.pdf">press release</a>).
+					<p>
+						<a href="http://www.fortifysoftware.com/#findbugs"><img
+								src="Fortify.png" alt="Fortify logo" border="0" align="right" />
+						</a>FindBugs is sponsored by
+						<a href="http://www.fortifysoftware.com/#findbugs">Fortify
+							Software</a>, which sells security tools, including Fortify Source
+						Code Analysis, which scans for security vulnerabilities (
+						<a href="pressRelease.pdf">press release</a>).
 
-</p><p> FindBugs requires JRE (or JDK) 1.4.0 or later to run.&nbsp; However, it
-can analyze programs compiled for any version of Java. The current version of FindBugs is @VERSION@,
-released on @RELEASE_DATE@.</p>
+					</p>
+					<p>
+						FindBugs requires JRE (or JDK) 1.4.0 or later to run.&nbsp;
+						However, it can analyze programs compiled for any version of Java.
+						The current version of FindBugs is @VERSION@, released on
+						@RELEASE_DATE@.
+					</p>
 
-<p>  We are very interested in getting feedback on how to improve FindBugs.&nbsp;
-Send your comments to <a href="mailto:findbugs@cs.umd.edu">findbugs@cs.umd.edu</a>.</p>
+					<p>
+						We are very interested in getting feedback on how to improve
+						FindBugs.&nbsp; Send your comments to
+						<a href="mailto:findbugs@cs.umd.edu">findbugs@cs.umd.edu</a>.
+					</p>
 
-<h1>Talks about FindBugs</h1>
-<ul>
-<li><a href="http://findbugs.cs.umd.edu/talks/findbugs.mov">Quicktime movie</a> showing of demo
-of our new GUI to view some of the null pointer bugs in Eclipse (Big file warning: 54 Megabytes)
+					<h1>
+						Talks about FindBugs
+					</h1>
+					<ul>
+						<li>
+							<a href="http://findbugs.cs.umd.edu/talks/findbugs.mov">Quicktime
+								movie</a> showing of demo of our new GUI to view some of the null
+							pointer bugs in Eclipse (Big file warning: 54 Megabytes)
 
-<li><a href="http://findbugs.cs.umd.edu/talks/fb-sdbp-2006.pdf">Talk</a> Bill Pugh gave
-at <a href="http://www.sdexpo.com/2006/sdbp/">SD Best Practices</a>, Sept 14th (more of a handle on tutorial about using FindBugs)
-</li><li><a href="http://findbugs.cs.umd.edu/talks/fb-Sept1213-2006.pdf">Talk</a> Bill Pugh gave 
-at <a href="http://itasoftware.com/">ITA Software</a> and <a href="http://www.csail.mit.edu/">MIT</a>, Sept 12th and 13th (more of a research focus)
-</li><li><a href="http://video.google.com/videoplay?docid=-8150751070230264609">Video of talk</a> Bill Pugh gave at <a href="http://www.google.com">Google</a>, July 6th, 2006
-</li></ul>
-<h1>Sample output</h1>
+						</li>
+						<li>
+							<a href="http://findbugs.cs.umd.edu/talks/fb-sdbp-2006.pdf">Talk</a>
+							Bill Pugh gave at
+							<a href="http://www.sdexpo.com/2006/sdbp/">SD Best Practices</a>,
+							Sept 14th (more of a handle on tutorial about using FindBugs)
+						</li>
+						<li>
+							<a href="http://findbugs.cs.umd.edu/talks/fb-Sept1213-2006.pdf">Talk</a>
+							Bill Pugh gave at
+							<a href="http://itasoftware.com/">ITA Software</a> and
+							<a href="http://www.csail.mit.edu/">MIT</a>, Sept 12th and 13th
+							(more of a research focus)
+						</li>
+						<li>
+							<a
+								href="http://video.google.com/videoplay?docid=-8150751070230264609">Video
+								of talk</a> Bill Pugh gave at
+							<a href="http://www.google.com">Google</a>, July 6th, 2006
+						</li>
+					</ul>
+					<h1>
+						Sample output
+					</h1>
 
-<p>
-	As an example of the kind of issues FindBugs can identify,
-	<a href="demo.html">we provide our results</a> on the Sun's JDK 1.6.0-b51, Eclipse, Netbeans,
-	Glassfish and JBoss. We present these results as a table showing the number of warnings
-	we generate, an html report generated by FindBugs, and using a Java Webstart demo of FindBugs
-	that loads the results of our analysis and the relevant source, so that you can view the source
-	corresponding to each of our warnings and judge for yourself the accuracy of Findbugs.
-</p>
+					<p>
+						As an example of the kind of issues FindBugs can identify,
+						<a href="demo.html">we provide our results</a> on the Sun's JDK
+						1.6.0-b51, Eclipse, Netbeans, Glassfish and JBoss. We present
+						these results as a table showing the number of warnings we
+						generate, an html report generated by FindBugs, and using a Java
+						Webstart demo of FindBugs that loads the results of our analysis
+						and the relevant source, so that you can view the source
+						corresponding to each of our warnings and judge for yourself the
+						accuracy of Findbugs.
+					</p>
 
 					<p>
 						Briefly, this table gives the number of warnings we found in
@@ -204,20 +251,28 @@ at <a href="http://itasoftware.com/">ITA Software</a> and <a href="http://www.cs
 						statements
 
 					</p>
-					<h1>Try FindBugs now on your project!</h1>
-<p>
-	Using Java Web Start you can try The GUI version of FindBugs now on your project.
-	As long as you have a 1.4 or better JRE installed, you can run FindBugs now by clicking 
-	<a href="http://findbugs.sourceforge.net/jnlp/findbugs.jnlp">here.</a> If you are using
-	Java 1.5 or later, you can use <a href="http://findbugs.sourceforge.net/jnlp/gui2.jnlp">our new GUI</a>
-	that we wrote over the summer.
-</p>
+					<h1>
+						Try FindBugs now on your project!
+					</h1>
+					<p>
+						Using Java Web Start you can try The GUI version of FindBugs now
+						on your project. As long as you have a 1.4 or better JRE
+						installed, you can run FindBugs now by clicking
+						<a href="http://findbugs.sourceforge.net/jnlp/findbugs.jnlp">here.</a>
+						If you are using Java 1.5 or later, you can use
+						<a href="http://findbugs.sourceforge.net/jnlp/gui2.jnlp">our
+							new GUI</a> that we wrote over the summer.
+					</p>
 
-<h1>News</h1>
-	
-<p>Changes since version 1.0.0:</p>
+					<h1>
+						News
+					</h1>
 
-<ul>
+					<p>
+						Changes since version 1.0.0:
+					</p>
+
+					<ul>
 						<li>
 							Overall, the change from FindBugs 1.0.0 to FindBugs 1.1.0 has
 							been a big change. We've done a lot of work in a lot of areas,
@@ -238,8 +293,8 @@ at <a href="http://itasoftware.com/">ITA Software</a> and <a href="http://www.cs
 							fact is a dead branch or statement that can never be taken. Such
 							coding is confusing and hard to maintain, so it should arguably
 							be fixed, but it is unlikely to actually result in an error
-							during execution. Thus, some might classify those warnings
-							as false positives.
+							during execution. Thus, some might classify those warnings as
+							false positives.
 
 						</li>
 						<li>
@@ -251,8 +306,9 @@ at <a href="http://itasoftware.com/">ITA Software</a> and <a href="http://www.cs
 							improvements are due to four factors:
 							<ul>
 								<li>
-									By default, we now do some interprocedural   analysis to determine
-									methods that unconditionally dereference their parameters.
+									By default, we now do some interprocedural analysis to
+									determine methods that unconditionally dereference their
+									parameters.
 								</li>
 								<li>
 									FindBugs also comes with a model of which JDK methods
@@ -379,6 +435,50 @@ at <a href="http://itasoftware.com/">ITA Software</a> and <a href="http://www.cs
 								</li>
 							</ul>
 
+							<p>
+								The following screen shot of our new GUI shows an example of
+								this analysis, as well as showing off our new GUI and points out
+								a limitation of our current plugins for Eclipse and Netbeans.
+								The screen shot shows a null pointer bug in HelpDisplay.java.
+								The test for
+								<code>
+									href!=null
+								</code>
+								on line 78 suggests that
+								<code>
+									href
+								</code>
+								could be null. If it is, then
+								<code>
+									href
+								</code>
+								will be dereferenced on either line 87 or on line 90, generating
+								a NPE. Note that our analysis here also understands that passing
+								<code>
+									href
+								</code>
+								to
+								<code>
+									URLEncoder.encode
+								</code>
+								will deference it, and thus treats line 87 as a dereference,
+								even though
+								<code>
+									href
+								</code>
+								is not actually dereferenced at that line. Within our new GUI,
+								all of these locations are highlighted and listed in the summary
+								panel. In the original GUI (and in HTML output) we list all of
+								the locations, but only the primary location is highlighted by
+								the original GUI. In the Eclipse and Netbean plugins, only the
+								primary location is displayed; fixing this is on our todo list
+								(contributions welcome).
+							</p>
+							<p>
+								<img src="guaranteedDereference.png" alt="">
+
+
+							</p>
 						</li>
 						<li>
 							Preliminary support for detectors using the frameworks other than
@@ -404,17 +504,16 @@ at <a href="http://itasoftware.com/">ITA Software</a> and <a href="http://www.cs
 						<li>
 							<p>
 								Several bug patterns have been moved from CORRECTNESS and STYLE
-								into a new category, BAD_PRACTICE.
-								The English localization of STYLE has changed from "Style" to "Dodgy."
+								into a new category, BAD_PRACTICE. The English localization of
+								STYLE has changed from "Style" to "Dodgy."
 							</p>
 							<p>
-								In general, we've worked very hard to limit CORRECTNESS bugs
-								to be real programming errors and sins of commission. We have reclassified
-								as BAD_PRACTICE a number
-								of bad design practices that result in overly fragile code, such
-								as defining an equals method that doesn't accept null or
-								defining class with a equals method that inherits hashCode from
-								class Object.
+								In general, we've worked very hard to limit CORRECTNESS bugs to
+								be real programming errors and sins of commission. We have
+								reclassified as BAD_PRACTICE a number of bad design practices
+								that result in overly fragile code, such as defining an equals
+								method that doesn't accept null or defining class with a equals
+								method that inherits hashCode from class Object.
 							</p>
 							<p>
 								In general, our guidelines for deciding whether a bug should be
@@ -527,39 +626,61 @@ at <a href="http://itasoftware.com/">ITA Software</a> and <a href="http://www.cs
 							software to your customers.
 
 						</li>
-						<li>More careful resolution of inherited methods and fields. 
-						Some of the shortcuts we were taking in FindBugs 1.0.0 were leading
-						to inaccurate results, and it was fairly easy to address this
-						by making the analysis more accurate.
+						<li>
+							More careful resolution of inherited methods and fields. Some of
+							the shortcuts we were taking in FindBugs 1.0.0 were leading to
+							inaccurate results, and it was fairly easy to address this by
+							making the analysis more accurate.
 						</li>
-						<li>Overall, analysis times are about 1.6 times longer in 
-						FindBugs 1.1.0 than in FindBugs 1.0.0. This is because 
-						we have enabled substantial additional analysis at the default
-						effort level (the actual analysis engine is significantly faster
-						than in FindBugs 1.0). On a recent AMD Athlon processor,
-						analyzing JDK1.6.0 (about 1 million lines of code) requires
-						about 15 minutes of wall clock time. 
+						<li>
+							Overall, analysis times are about 1.6 times longer in FindBugs
+							1.1.0 than in FindBugs 1.0.0. This is because we have enabled
+							substantial additional analysis at the default effort level (the
+							actual analysis engine is significantly faster than in FindBugs
+							1.0). On a recent AMD Athlon processor, analyzing JDK1.6.0 (about
+							1 million lines of code) requires about 15 minutes of wall clock
+							time.
 						</li>
-						<li>Provided class and script (printClass) to print classfile in the
-						human readable format produced by BCEL</li>
-						<li>Provided -findSource option to setBugDatabaseInfo</li>
+						<li>
+							Provided class and script (printClass) to print classfile in the
+							human readable format produced by BCEL
+						</li>
+						<li>
+							Provided -findSource option to setBugDatabaseInfo
+						</li>
 					</ul>
 
 
-<p> <a href="Changes.html">Older versions...</a></p>
+					<p>
+						<a href="Changes.html">Older versions...</a>
+					</p>
 
-<h1>Support</h1>
+					<h1>
+						Support
+					</h1>
 
-<p> This work has been supported by 
-<a href="http://www.fortifysoftware.com/#findbugs">Fortify Software</a>, <a href="http://www.google.com">Google</a>,
-<a href="http://www.sun.com">Sun Microsystems</a>, 
- <a href="http://www.nsf.gov">National Science Foundation</a> grants
-ASC9720199 and CCR-0098162, and by a 2004 <a href="http://www-306.ibm.com/software/info/university/products/eclipse/eig-2004.html">IBM Eclipse Innovation award</a>.</p>
-<p>Any opinions, findings and conclusions or recommendations expressed 
-in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation (NSF).
-@HTML_FOOTER@
+					<p>
+						This work has been supported by
+						<a href="http://www.fortifysoftware.com/#findbugs">Fortify
+							Software</a>,
+						<a href="http://www.google.com">Google</a>,
+						<a href="http://www.sun.com">Sun Microsystems</a>,
+						<a href="http://www.nsf.gov">National Science Foundation</a>
+						grants ASC9720199 and CCR-0098162, and by a 2004
+						<a
+							href="http://www-306.ibm.com/software/info/university/products/eclipse/eig-2004.html">IBM
+							Eclipse Innovation award</a>.
+					</p>
+					<p>
+						Any opinions, findings and conclusions or recommendations
+						expressed in this material are those of the author(s) and do not
+						necessarily reflect the views of the National Science Foundation
+						(NSF). @HTML_FOOTER@
 
-</p></td></tr></table>
+					</p>
+				</td>
+			</tr>
+		</table>
 
-</body>
+	</body>
 </html>

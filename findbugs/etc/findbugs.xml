@@ -157,9 +157,9 @@
 	        speed="moderate"
             reports="AM_CREATES_EMPTY_ZIP_FILE_ENTRY,AM_CREATES_EMPTY_JAR_FILE_ENTRY" />
           
- <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPriviledged" 
+ <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged" 
             speed="fast"
-            reports="DP_DO_INSIDE_DO_PRIVILEDGED,DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED"/>  
+            reports="DP_DO_INSIDE_DO_PRIVILEGED,DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"/>  
   <Detector class="edu.umd.cs.findbugs.detect.HugeSharedStringConstants" 
             speed="fast"
             reports="HSC_HUGE_SHARED_STRING_CONSTANT" />
@@ -612,7 +612,7 @@
 
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="BAD_PRACTICE" />
 
-  <BugPattern abbrev="DP" type="DP_DO_INSIDE_DO_PRIVILEDGED" category="BAD_PRACTICE" />
+  <BugPattern abbrev="DP" type="DP_DO_INSIDE_DO_PRIVILEGED" category="BAD_PRACTICE" />
   <BugPattern abbrev="DP" type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED" category="BAD_PRACTICE" />
   
   <BugPattern abbrev="IMSE" type="IMSE_DONT_CATCH_IMSE" category="BAD_PRACTICE" />

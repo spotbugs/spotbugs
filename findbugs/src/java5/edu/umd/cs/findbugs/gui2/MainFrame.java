@@ -212,7 +212,7 @@ public class MainFrame extends FBFrame implements LogSync
 				branchPopupMenu = createBranchPopUpMenu();
 				loadPrevCommentsList(GUISaveState.getInstance().getPreviousComments().toArray(new String[GUISaveState.getInstance().getPreviousComments().size()]));
 				updateStatusBar();
-				setBounds(GUISaveState.getInstance().getFrameBounds()); //setSize(new Dimension(800, 650));
+				setBounds(GUISaveState.getInstance().getFrameBounds()); 
 				Toolkit.getDefaultToolkit().setDynamicLayout(true);
 				setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 				setJMenuBar(createMainMenuBar());
@@ -855,7 +855,7 @@ public class MainFrame extends FBFrame implements LogSync
 	JPanel bugListPanel()
 	{
 		JPanel topPanel = new JPanel();
-		topPanel.setMinimumSize(new Dimension(300,300));
+		topPanel.setMinimumSize(new Dimension(200,200));
 		tableheader = new JTableHeader();
 		//Listener put here for when user double clicks on sorting
 		//column header SorterDialog appears.
