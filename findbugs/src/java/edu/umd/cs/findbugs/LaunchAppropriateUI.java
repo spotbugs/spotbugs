@@ -29,23 +29,42 @@ import java.lang.reflect.Method;
  */
 public class LaunchAppropriateUI {
 	public static void main(String args[]) throws Exception {
-		if (GraphicsEnvironment.isHeadless())
+		int launchProperty = getLaunchProperty();
+		if (GraphicsEnvironment.isHeadless() || launchProperty == 0)
 			FindBugs2.main(args);
 		else {
 			String version = System.getProperty("java.version");
 			
 			Class launchClass = null;
-			if ("1.5".compareTo(version)  <= 0) try {
+			if ("1.5".compareTo(version) <= 0) try {
 				launchClass = Class.forName("edu.umd.cs.findbugs.gui2.Driver", false,
 						LaunchAppropriateUI.class.getClassLoader());
 			} catch (ClassNotFoundException e) {
 				assert true;
 			}
-			if (launchClass == null) 
+			if (launchClass == null || launchProperty == 1) 
 				launchClass = edu.umd.cs.findbugs.gui.FindBugsFrame.class;
 			
 			Method mainMethod = launchClass.getMethod("main", args.getClass());
 			mainMethod.invoke(null, (Object) args);
 		}
 	}
+	
+	/** user should set -Dfindbugs.launchUI=0 for textui,
+	 *  or -Dfindbugs.launchUI=1 for the original swing gui.
+	 *  Any other value (or the absense of any value) will
+	 *  not change the default behavior, which is to launch
+	 *  the newer "gui2" on systems that support it.
+	 *  
+	 * @return 0, 1, or 2 (or possibly another user-set int value)
+	 */
+	public static int getLaunchProperty() {
+		String s = System.getProperty("findbugs.launchUI", "2");
+		try {
+			return Integer.parseInt(s);
+		} catch (NumberFormatException nfe) {
+			return 2;
+		}
+	}
+
 }
