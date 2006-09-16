@@ -210,7 +210,7 @@
 ]]>
   </Details>
  </Detector>
- <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPriviledged">
+ <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged">
   <Details>
 <![CDATA[
 <p>Recherche le code qui devrait être exécuté dans un block <code>doPrivileged</code>.</p>

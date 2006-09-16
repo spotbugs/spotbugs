@@ -196,7 +196,7 @@
     </Details>
   </Detector>
 
-<Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPriviledged">
+<Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged">
     <Details>
 <![CDATA[
 <p> doPrivilegedブロックの中で実行しなければならないコードを発見します。</p>

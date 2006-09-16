@@ -286,7 +286,7 @@ Normally, this detector does nothing.</p>
 
 
 
- <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPriviledged">
+ <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged">
     <Details>
 <![CDATA[
 <p> Look for code that should be executed inside doPrivileged blocks.</p>
