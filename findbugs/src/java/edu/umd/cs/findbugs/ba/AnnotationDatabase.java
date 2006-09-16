@@ -29,6 +29,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.util.MapCache;
@@ -37,7 +38,7 @@ import edu.umd.cs.findbugs.util.MapCache;
  * @author William Pugh
  */
 public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration> {
-	static final boolean DEBUG = false;
+	static final boolean DEBUG = SystemProperties.getBoolean("annotations.debug");;
 
 	/**
 	 * 
