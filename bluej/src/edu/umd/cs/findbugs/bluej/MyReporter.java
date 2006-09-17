@@ -5,6 +5,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.TextUIBugReporter;
+import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 
 public class MyReporter extends TextUIBugReporter {
@@ -32,6 +33,10 @@ public class MyReporter extends TextUIBugReporter {
 	}
 
 	public void observeClass(JavaClass javaClass) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void observeClass(ClassDescriptor classDescriptor) {
 		// TODO Auto-generated method stub
 		
 	}
