@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <jnlp 
   spec="1.0+" 
-  codebase="file:/Users/pugh/findbugs/jnlp" 
+  codebase="http://findbugs.cs.umd.edu/demo/jnlp" 
   href="findbugs.jnlp">
   <information> 
     <title>FindBugs</title>
@@ -26,7 +26,6 @@
     <jar href="plugin/coreplugin.jar"/>
     <property name="findbugs.jaws" value="true"/>
     <property name="findbugs.noSummary" value="true"/>
-    <property name="findbugs.loadBugsFromURL" value="file:/Users/pugh/findbugs/jnlp/b51.xml"/>
     <property name="apple.laf.useScreenMenuBar" value="true"/>
   </resources> 
   <application-desc main-class="edu.umd.cs.findbugs.gui2.Driver"/> 
