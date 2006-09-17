@@ -23,7 +23,7 @@ or our <a href="http://findbugs.cs.umd.edu/demo/jnlp/gui2.jnlp">new gui (require
 The new gui provides a number of new features, but hasn't received as much testing and requires Java 1.5+. 
 Both use exactly the same analysis engine.
 
-</p><p>This web page provides results of running FindBugs 1.1
+</p><p>This web page provides results of running FindBugs 1.1.0-rc6
 against several open source applications. We provide a summary
 of the number of bugs we found, as well as a generated HTML listing
 of the bugs and 
@@ -98,31 +98,43 @@ convince you to change your code.
 <tr><th rowspan="2">Application</th><th colspan="2">Details</th><th colspan="2">Correctness bugs</th><th rowspan="2">Bad Practice</th><th rowspan="2">Dodgy</th><th rowspan="2">KNCSS
 </th></tr><tr><th>HTML</th><th>WebStart</th><th>NP bugs</th><th>Other
 </th></tr><tr><td align="right">Sun JDK 1.6.0-b51</td><td align="right">
-					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/index.html">All</a> 
+					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/b51.html">All</a> 
 			</td><td align="right">
-					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/index.jnlp">All</a> (no Src)
-	</td><td align="right">184</td><td align="right">405</td><td align="right">3,145</td><td align="right">1,244</td><td align="right">979
+					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/b51.jnlp">All</a> (no Src)
+	</td><td align="right">190</td><td align="right">339</td><td align="right">1,776</td><td align="right">1,244</td><td align="right">979
+
+</th></tr><tr><td align="right">Sun JDK 1.6.0-b99</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/b99.html">All</a> 
+			</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/b99.jnlp">All</a> (no Src)
+	</td><td align="right">187</td><td align="right">324</td><td align="right">1,625</td><td align="right">1,191</td><td align="right">960
+
+</th></tr><tr><td align="right">  Warnings in b99 introduced by a change to existing code since b51</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/new.html">All</a> 
+			</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/new.jnlp">All</a> (no Src)
+	</td><td align="right">14</td><td align="right">13</td><td align="right">68</td><td align="right">30</td><td align="right"><em>n/a</em>
 
 </td></tr><tr><td align="right">eclipse-SDK-3.2-solaris-gtk</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/eclipse/index.html">All</a>
 			</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/eclipse/index.jnlp">All</a>
 					<a href="http://findbugs.cs.umd.edu/demo/eclipse/small.jnlp">Small</a>
-	</td><td align="right">236</td><td align="right">382</td><td align="right">1,559</td><td align="right">972</td><td align="right">1,577
+	</td><td align="right">236</td><td align="right">345</td><td align="right">1,594</td><td align="right">972</td><td align="right">1,577
 
 </td></tr><tr><td align="right">netbeans-6_0-daily-bin-200607191800</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/netbeans/index.html">All</a>
 			</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/netbeans/index.jnlp">All</a>
 					<a href="http://findbugs.cs.umd.edu/demo/netbeans/small.jnlp">Small</a>
-	</td><td align="right">198</td><td align="right">412</td><td align="right">2,691</td><td align="right">1,262</td><td align="right">1,066
+	</td><td align="right">198</td><td align="right">329</td><td align="right">2,774</td><td align="right">1,262</td><td align="right">1,066
 
 </td></tr><tr><td align="right">glassfish-v2-b09-appserv</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/glassfish/index.html">All</a>
 			</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/glassfish/index.jnlp">All</a>
 					<a href="http://findbugs.cs.umd.edu/demo/glassfish/small.jnlp">Small</a>
-	</td><td align="right">296</td><td align="right">349</td><td align="right">1,913</td><td align="right">1,876</td><td align="right">958
+	</td><td align="right">296</td><td align="right">312</td><td align="right">1,948</td><td align="right">1,876</td><td align="right">958
 
 </td></tr><tr><td align="right">jboss-4.0.2</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/jboss/index.html">All</a>
