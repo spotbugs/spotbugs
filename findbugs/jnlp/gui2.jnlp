@@ -2,7 +2,7 @@
 <jnlp 
   spec="1.0+" 
   codebase="http://findbugs.cs.umd.edu/demo/jnlp" 
-  href="findbugs.jnlp">
+  href="gui2.jnlp">
   <information> 
     <title>FindBugs</title>
     <vendor>University of Maryland</vendor> 
