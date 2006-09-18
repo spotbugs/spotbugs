@@ -1,4 +1,5 @@
 import java.io.*;
+import java.nio.channels.FileChannel;
 
 public class OpenStream {
 	public OutputStream os;
@@ -65,6 +66,28 @@ public class OpenStream {
 				f.close();
 		}
 	}
+
+	public static FileChannel createChannelDoNotReport(String fname) throws IOException {
+		FileInputStream fis = new FileInputStream(fname);
+		FileChannel ch = fis.getChannel();
+		return ch; // stream escapes via FileChannel
+	}
+	
+	public static long sizeViaChannel(String fname) throws IOException {
+		FileInputStream fis = new FileInputStream(fname);
+		FileChannel ch = fis.getChannel();
+		return ch.size(); // nothing escapes, probably should report
+	}
+
+	public static long sizeViaChannelCloseDoNotReport(String fname) throws IOException {
+		FileInputStream fis = new FileInputStream(fname);
+		FileChannel ch = fis.getChannel();
+		long sz = ch.size();
+		//fis.close();
+		ch.close();
+		return sz;
+	}
+
 }
 
 // vim:ts=4
