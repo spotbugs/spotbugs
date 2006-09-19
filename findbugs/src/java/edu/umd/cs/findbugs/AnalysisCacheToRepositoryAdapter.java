@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * An implementation of org.apache.bcel.util.Repository that
- * uses the AnalysisCache to load classe from.
+ * uses the AnalysisCache as its backing store.
  * 
  * @author David Hovemeyer
  */
