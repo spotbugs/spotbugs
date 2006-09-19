@@ -2282,16 +2282,16 @@ API documentation</ulink> at <ulink url="http://jcip.net/">Java Concurrency in P
 	<title>Data mining of bugs with &FindBugs;&trade;</title>
 
 <para>
-FindBugs now incorporates an ability to perform sophisticated queries on bug
+FindBugs incorporates an ability to perform sophisticated queries on bug
 databases and track warnings across multiple versions of code being
-studied, allowing you to do things such as seen when a bug was first introduced, or to examine
-just the warnings that have been introduced since the last release, or to graph the number
+studied, allowing you to do things such as seeing when a bug was first introduced, examining
+just the warnings that have been introduced since the last release, or graphing the number
 of infinite recursive loops in your code over time.</para>
 
 <para>
-These techniques all depend upon the XML storage format used by FindBugs for storing warnings.
-These XML files usually contain just the warnings from a particular analysis run, but
-you can also store the results from analyzing a sequence of software builds or versions.
+These techniques all depend upon the XML format used by FindBugs for storing warnings.
+These XML files usually contain just the warnings from one particular analysis run, but
+they can also store the results from analyzing a sequence of software builds or versions.
 	</para>
 
 <para>
@@ -2327,7 +2327,7 @@ Briefly, the commands are:</para>
 
 		<variablelist>
 			<varlistentry>
-				<term><command>unionBugs</command></term>
+				<term><command><link linkend="unionBugs">unionBugs</link></command></term>
 				<listitem>
 					<para>
 						 combine the results from separate analysis of disjoint
@@ -2336,7 +2336,7 @@ Briefly, the commands are:</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><command>computeBugHistory</command></term>
+				<term><command><link linkend="computeBugHistory">computeBugHistory</link></command></term>
 				<listitem>
 					<para>Merge bug warnings from multiple versions of
 			analyzed code into
@@ -2347,45 +2347,45 @@ Briefly, the commands are:</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><command>setBugDatabaseInfo</command></term>
+				<term><command><link linkend="setBugDatabaseInfo">setBugDatabaseInfo</link></command></term>
 				<listitem>
 					<para>Set information such as the revision name or
 timestamp in an XML bug database</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><command>listBugDatabaseInfo</command></term>
+				<term><command><link linkend="listBugDatabaseInfo">listBugDatabaseInfo</link></command></term>
 				<listitem>
 					<para>List information such as the revision name and
 timestamp for a list of XML bug databases</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><command>filterBugs</command></term>
+				<term><command><link linkend="filterBugs">filterBugs</link></command></term>
 				<listitem>
 					<para>Select a subset of a bug database</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><command>mineBugHistory</command></term>
+				<term><command><link linkend="mineBugHistory">mineBugHistory</link></command></term>
 				<listitem>
 					<para>Generate a tabular listing of the number of warnings in each
 		version of a multiversion bug database</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><command>defectDensity</command></term>
+				<term><command><link linkend="defectDensity">defectDensity</link></command></term>
 				<listitem>
 					<para>List information about defect density
 						 (warnings per 1000 NCSS)
-						 for the entire project and each class and package.</para>
+						 for the entire project and each class and package</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><command>convertXmlToText</command></term>
+				<term><command><link linkend="convertXmlToText">convertXmlToText</link></command></term>
 				<listitem>
 					<para>Convert bug warnings in XML format to 
-		a textual, one line per bug, format</para>
+					a textual one-line-per-bug format, or to HTML</para>
 				</listitem>
 			</varlistentry>
 		</variablelist>
@@ -2401,6 +2401,8 @@ timestamp for a list of XML bug databases</para>
 
 			<para>Do <emphasis>not</emphasis> use this command to combine results from analyzing different versions of the same
 			file; use <command>computeBugHistory</command> instead.</para>
+
+			<para>Specify the xml files on the command line. The result is sent to standard output.</para>
 		</sect2>
 
 		<sect2 id="computeBugHistory">
@@ -2409,7 +2411,7 @@ timestamp for a list of XML bug databases</para>
 <para>Use this command to generate a bug database containing information from different builds or versions
 of software you are analyzing.
 History is taken from the first file provided as input; any following
-files should be single version bug databases (if they contain history the history in those
+files should be single version bug databases (if they contain history, the history in those
 files will be ignored).</para>
 <para>By default, output is written to the standard output.
 </para>
@@ -2442,6 +2444,14 @@ files will be ignored).</para>
 		        <para>
 		          if a class seems to have moved from one package to another, treat
 		          warnings in that class as two seperate warnings
+		        </para>
+		      </listitem>
+		    </varlistentry>
+		    <varlistentry>
+		      <term><option>-preciseMatch</option></term>
+		      <listitem>
+		        <para>
+		          require bug patterns to match precisely
 		        </para>
 		      </listitem>
 		    </varlistentry>
@@ -2520,6 +2530,8 @@ to the second file name.</para>
 <row><entry>-class &lt;pattern&gt;</entry>      <entry>allow only bugs whose primary class name matches this pattern</entry></row>
 <row><entry>-bugPattern &lt;pattern&gt;</entry> <entry>allow only bugs whose type matches this pattern</entry></row>
 <row><entry>-category &lt;category&gt;</entry>  <entry>allow only warnings with a category that starts with this string</entry></row>
+<row><entry>-designation &lt;designation&gt;</entry> <entry>allow only warnings with this designation (e.g., -designation SHOULD_FIX)</entry></row>
+<row><entry>-withMessages[:truth] </entry>      <entry>the generated XML should contain textual messages</entry></row>
 				</tbody>
 			</tgroup>
 		</table>
@@ -2638,10 +2650,34 @@ row for the entire project, and one row for each package or class that contains 
 			
 			<para>
 				This command converts a warning collection in XML format to a text
-				format with one line per warning. It has a single option,
-				<option>-longBugCodes</option>, which causes it to use the full
-				bug pattern code instead of the two-letter abbreviation.
+				format with one line per warning, or to HTML.
 			</para>
+			<para>The options are:</para>
+			<variablelist>
+				<varlistentry>
+					<term><option>-longBugCodes</option></term>
+					<listitem>
+						<para>
+							use the full bug pattern code instead of the two-letter abbreviation
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>-html</option><replaceable>[:stylesheet]</replaceable></term>
+					<listitem>
+						<para>
+							Generate html output with the specified stylesheet,
+							or default.xsl if no stylesheet is specified.
+						</para>
+						<para>
+							You may specify plain.xsl, default.xsl, fancy.xsl,
+							or your own XSL stylesheet.
+							Despite the name of this option, you may specify
+							a stylesheet that emits something other than html.
+						</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
 		</sect2>
 		
 		<sect2 id="setBugDatabaseInfo">
@@ -2663,7 +2699,8 @@ row for the entire project, and one row for each package or class that contains 
   				<tbody>
 					  <row><entry>-name <replaceable>name</replaceable></entry><entry>set name for (last) revision</entry></row>
 					  <row><entry>-timestamp <replaceable>when</replaceable></entry><entry>set timestamp for (last) revision</entry></row>
-					  <row><entry>-source <replaceable>directory</replaceable></entry><entry>Add this directory to the source search path</entry></row>
+					  <row><entry>-source <replaceable>directory</replaceable></entry><entry>add specified directory to the source search path</entry></row>
+					  <row><entry>-findSource <replaceable>directory</replaceable></entry><entry>find and add all relevant source directions contained within specified directory</entry></row>
 			 	</tbody>
 				</tgroup>
 			</table>
