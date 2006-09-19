@@ -29,6 +29,8 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -43,6 +45,9 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassData;
  * @author David Hovemeyer
  */
 public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
+	private static final boolean DEBUG_MISSING_CLASSES =
+		SystemProperties.getBoolean("findbugs.debug.missingclasses");
+	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#analyze(edu.umd.cs.findbugs.classfile.IAnalysisCache, java.lang.Object)
 	 */
@@ -51,7 +56,16 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
 		try {
 			ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
 			JavaClass javaClass = new ClassParser(classData.getInputStream(), descriptor.toResourceName()).parse();
-			Repository.addClass(javaClass);
+
+			// Make sure that the JavaClass object knows the repository
+			// it was loaded from.
+			javaClass.setRepository(Repository.getRepository());
+			
+			if (DEBUG_MISSING_CLASSES &&
+					!(javaClass.getRepository() instanceof AnalysisCacheToRepositoryAdapter)) {
+				throw new IllegalStateException("this should not happen");
+			}
+			
 			return javaClass;
 		} catch (IOException e) {
 			throw new ResourceNotFoundException(descriptor.toResourceName(), e);

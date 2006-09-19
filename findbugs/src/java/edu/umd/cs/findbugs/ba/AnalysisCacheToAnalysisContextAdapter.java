@@ -28,6 +28,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.JavaClass;
 
+import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
@@ -124,7 +125,9 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 */
 	@Override
 	public void clearRepository() {
-		throw new UnsupportedOperationException();
+		// Set the backing store for the BCEL Repository to
+		// be the AnalysisCache.
+		Repository.setRepository(new AnalysisCacheToRepositoryAdapter());
 	}
 
 	/* (non-Javadoc)

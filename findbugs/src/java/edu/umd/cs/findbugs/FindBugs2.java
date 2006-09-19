@@ -495,6 +495,10 @@ public class FindBugs2 implements IFindBugsEngine {
 	private void createAnalysisContext() throws CheckedAnalysisException, IOException {
 		AnalysisCacheToAnalysisContextAdapter analysisContext =
 			new AnalysisCacheToAnalysisContextAdapter();
+		
+		// Make the AnalysisCache the backing store for
+		// the BCEL Repository
+		analysisContext.clearRepository();
 
 		// Specify which classes are application classes
 		analysisContext.setAppClassList(appClassList);
