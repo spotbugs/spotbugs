@@ -49,6 +49,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		assumedNonNull = new HashMap<XField,HashSet<ProgramPoint>>();
 	Set<XField> nullTested = new HashSet<XField>();
 	Set<XField> declaredFields = new TreeSet<XField>();
+	Set<XField> fieldsOfNativeClassed
+    = new HashSet<XField>();
 	Set<XField> fieldsOfSerializableOrNativeClassed
 	        = new HashSet<XField>();
 	Set<XField> staticFieldsReadInThisMethod = new HashSet<XField>();
@@ -123,8 +125,13 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	@Override
          public void visitAfter(JavaClass obj) {
 		declaredFields.addAll(myFields);
-		if (hasNativeMethods || isSerializable)
+		if (hasNativeMethods) {
 			fieldsOfSerializableOrNativeClassed.addAll(myFields);
+			fieldsOfNativeClassed.addAll(myFields);
+		}
+		if (isSerializable) {
+			fieldsOfSerializableOrNativeClassed.addAll(myFields);
+		}
 		if (sawSelfCallInConstructor) 
 			writtenInConstructorFields.addAll(myFields);
 		myFields.clear();
@@ -360,7 +367,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		opcodeStack.sawOpcode(this, seen);
 		previousPreviousOpcode = previousOpcode;
 		previousOpcode = seen;
-		if (DEBUG) {
+		if (false && DEBUG) {
 		System.out.println("After " + OPCODE_NAMES[seen] + " opcode stack is");
 		System.out.println(opcodeStack);
 		}
@@ -371,6 +378,21 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	@Override
          public void report() {
 
+		if (DEBUG) {
+			System.out.println("read fields:" );
+			for(XField f : readFields) 
+				System.out.println("  " + f);
+			System.out.println("written fields:" );
+			for (XField f : writtenFields) 
+				System.out.println("  " + f);
+			System.out.println("written nonnull fields:" );
+			for (XField f : writtenNonNullFields) 
+				System.out.println("  " + f);
+		
+			System.out.println("assumed nonnull fields:" );
+			for (XField f : assumedNonNull.keySet()) 
+				System.out.println("  " + f);
+		}
 		TreeSet<XField> notInitializedInConstructors =
 		        new TreeSet<XField>(declaredFields);
 		notInitializedInConstructors.retainAll(readFields);
@@ -396,10 +418,11 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			String className = f.getClassName();
 			String fieldSignature = f.getSignature();
 			if (f.isResolved()
-					&& !fieldsOfSerializableOrNativeClassed.contains(f)
+					&& !fieldsOfNativeClassed.contains(f)
 					&& (fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')
 					) {
 				int priority = LOW_PRIORITY;
+				if (assumedNonNull.containsKey(f)) priority--;
 				bugReporter.reportBug(new BugInstance(this,
 						"UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR",
 						priority)
@@ -414,7 +437,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			String className = f.getClassName();
 			String fieldSignature = f.getSignature();
 			if (f.isResolved()
-					&& !fieldsOfSerializableOrNativeClassed.contains(f)) {
+					&& !fieldsOfNativeClassed.contains(f)) {
 				int priority = NORMAL_PRIORITY;
 				if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '['))
 					priority++;
@@ -434,10 +457,14 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			if (DEBUG) {
 				System.out.println("Null only: " + f);
 				System.out.println("   : " + assumedNonNull.containsKey(f));
+				System.out.println("   : " + fieldsOfSerializableOrNativeClassed.contains(f));
 				System.out.println("   : " + f.isResolved());
 			}
 			if (!f.isResolved()) continue;
-			if (fieldsOfSerializableOrNativeClassed.contains(f)) continue;
+			if (fieldsOfNativeClassed.contains(f)) continue;
+			if (DEBUG) {
+				System.out.println("Ready to report");
+			}
 			int priority = NORMAL_PRIORITY;
 			if (assumedNonNull.containsKey(f)) {
 				priority = HIGH_PRIORITY;
@@ -452,6 +479,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			} else {
 				if (f.isStatic()) priority++;
 				if (finalFields.contains(f)) priority++;
+				if (fieldsOfSerializableOrNativeClassed.contains(f)) priority++;
 			}
 			if (!readOnlyFields.contains(f))
 				bugReporter.reportBug(new BugInstance(this,
