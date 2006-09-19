@@ -160,7 +160,9 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		try {
 			return Global.getAnalysisCache().getClassAnalysis(ClassContext.class, classDescriptor);
 		} catch (CheckedAnalysisException e) {
-			throw new IllegalStateException("Could not get ClassContext for JavaClass", e);
+			IllegalStateException ise = new IllegalStateException("Could not get ClassContext for JavaClass");
+			ise.initCause(e);
+			throw ise;
 		}
 	}
 
