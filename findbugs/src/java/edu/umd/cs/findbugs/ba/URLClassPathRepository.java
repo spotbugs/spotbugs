@@ -91,7 +91,11 @@ public class URLClassPathRepository implements Repository {
 			System.out.println("\t==> A previous class was evicted!");
 			dumpStack();
 		}
-		javaClass.setRepository(this);
+		Repository tmp = org.apache.bcel.Repository.getRepository();
+		if (tmp != null && tmp != this) 
+			throw new IllegalStateException("Wrong/multiple BCEL repository");
+		if (tmp == null)
+			org.apache.bcel.Repository.setRepository(this);
 	}
 
 	/* (non-Javadoc)
