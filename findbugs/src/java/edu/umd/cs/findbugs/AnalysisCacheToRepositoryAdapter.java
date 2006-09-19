@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 import edu.umd.cs.findbugs.classfile.IClassPath;
 import edu.umd.cs.findbugs.classfile.ICodeBase;
+import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * An implementation of org.apache.bcel.util.Repository that
@@ -58,7 +59,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
 	 * @see org.apache.bcel.util.Repository#findClass(java.lang.String)
 	 */
 	public JavaClass findClass(String className) {
-		className = toSlashedClassName(className);
+		className = ClassName.toSlashedClassName(className);
 		ClassDescriptor classDescriptor = new ClassDescriptor(className);
 		return Global.getAnalysisCache().probeClassAnalysis(JavaClass.class, classDescriptor);
 	}
@@ -74,7 +75,7 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
 	 * @see org.apache.bcel.util.Repository#loadClass(java.lang.String)
 	 */
 	public JavaClass loadClass(String className) throws ClassNotFoundException {
-		className = toSlashedClassName(className);
+		className = ClassName.toSlashedClassName(className);
 		ClassDescriptor classDescriptor = new ClassDescriptor(className);
 		try {
 			return Global.getAnalysisCache().getClassAnalysis(JavaClass.class, classDescriptor);
@@ -103,31 +104,4 @@ public class AnalysisCacheToRepositoryAdapter implements Repository {
 	public void storeClass(JavaClass cls) {
 		throw new UnsupportedOperationException();
 	}
-
-	/**
-	 * Transform a class name into JVM (slashed) format. 
-	 * 
-	 * @param className a class name
-	 * @return the same class name in JVM (slashed) format
-	 */
-	private static String toSlashedClassName(String className) {
-		if (className.indexOf('.') >= 0) {
-			className = className.replace('.', '/');
-		}
-		return className;
-	}
-	
-	/**
-	 * Transform a class name into dotted format. 
-	 * 
-	 * @param className a class name
-	 * @return the same class name in dotted format
-	 */
-	private static String toDottedClassName(String className) {
-		if (className.indexOf('/') >= 0) {
-			className = className.replace('/','.');
-		}
-		return className;
-	}
-
 }
