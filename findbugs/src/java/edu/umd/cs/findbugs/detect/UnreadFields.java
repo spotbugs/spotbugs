@@ -355,6 +355,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			
 			if (
 					getMethodName().equals("<init>") 
+					|| getMethodName().equals("init") 
+					|| getMethodName().equals("initialize") 
 					|| getMethodName().equals("<clinit>") 
 					|| getMethod().isPrivate()) {
 				writtenInConstructorFields.add(f);
