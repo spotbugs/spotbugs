@@ -56,7 +56,7 @@ public class UnionResults {
 	public static void main(String[] argv) throws Exception {
 
 
-		if (argv.length == 0) {
+		if (argv.length == 0 || "-help".equals(argv[0])) {
 			System.err.println("Usage: " + UnionResults.class.getName() + " <results1> <results2> ... <resultsn>");
 			System.exit(1);
 		}

@@ -47,6 +47,12 @@ public class DefectDensity {
 		return bugsPer10KNCSS/10.0;
 	}
 	public static void main(String args[]) throws Exception {
+
+		if (args.length>1 || (args.length>0 && "-help".equals(args[0]))) {
+			System.err.println("Usage: " + DefectDensity.class.getName() + " [<infile>]");
+			System.exit(1);
+		}
+
 		Project project = new Project();
 		BugCollection origCollection = new SortedBugCollection();
 		int argCount = 0;
