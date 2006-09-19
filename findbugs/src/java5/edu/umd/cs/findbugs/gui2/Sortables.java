@@ -141,9 +141,8 @@ public enum Sortables implements Comparator<StringPair>
 		
 		public String[] getAllSorted()
 		{//FIXME I think we always want user to see all possible designations, not just the ones he has set in his project, Agreement?  -Dan
-			List<String> sortedDesignations=I18N.instance().getUserDesignationKeys();
-			Collections.sort(sortedDesignations,I18N.designationKeyComparator);
-			return sortedDesignations.toArray(new String[I18N.instance().getUserDesignationKeys().size()]);
+			List<String> sortedDesignations=I18N.instance().getUserDesignationKeys(true);
+			return sortedDesignations.toArray(new String[sortedDesignations.size()]);
 		}
 	},
 	BUGCODE("Bug Kind")
