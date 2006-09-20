@@ -44,13 +44,13 @@ public class Version {
 	/**
 	 * Development version or release candidate?
 	 */
-	public static final boolean IS_DEVELOPMENT = true;
+	public static final boolean IS_DEVELOPMENT = false;
 
 	/**
 	 * Release candidate number.
 	 * "0" indicates that the version is not a release candidate.
 	 */
-	public static final int RELEASE_CANDIDATE = 6;
+	public static final int RELEASE_CANDIDATE = 0;
 	
 	/**
 	 * Preview release number.
@@ -74,9 +74,9 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = IS_DEVELOPMENT ? dateFormat.format(new Date()) : "August 1, 2006";
+	public static final String DATE = IS_DEVELOPMENT ? dateFormat.format(new Date()) : "September 20, 2006";
 
-	public static final String ECLIPSE_DATE = IS_DEVELOPMENT ? eclipseDateFormat.format(new Date()) : "20060801";
+	public static final String ECLIPSE_DATE = IS_DEVELOPMENT ? eclipseDateFormat.format(new Date()) : "20060920";
 
 	/**
 	 * Version of Eclipse plugin.
