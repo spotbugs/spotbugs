@@ -57,7 +57,6 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 	 *
 	 * @param cfg      the control flow graph
 	 * @param analysis the DataflowAnalysis to be run
-	 * @throws  
 	 */
 	public Dataflow(CFG cfg, AnalysisType analysis) {
 		this.cfg = cfg;

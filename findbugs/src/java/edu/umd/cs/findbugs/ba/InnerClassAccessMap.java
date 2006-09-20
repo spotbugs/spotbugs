@@ -70,7 +70,7 @@ public class InnerClassAccessMap {
 	/**
 	 * Create an instance.
 	 * 
-	 * @returns a new instance of InnerClassAccessMap
+	 * @return a new instance of InnerClassAccessMap
 	 */
 	public static InnerClassAccessMap create() {
 		return new InnerClassAccessMap();

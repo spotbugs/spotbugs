@@ -617,7 +617,7 @@ public abstract class Frame<ValueType> {
 	}
 
 	/**
-	 * @return
+	 * @return an unmodifiable Collection of the local variable and operand stack slots
 	 */
 	public Collection<ValueType> allSlots() {
 		if (slotList == null)

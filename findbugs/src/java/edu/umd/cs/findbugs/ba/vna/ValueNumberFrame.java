@@ -325,7 +325,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	/**
 	 * @param v1
 	 * @param v2
-	 * @return
+	 * @return true if v1 and v2 have a flag in common
 	 */
 	public boolean haveMatchingFlags(ValueNumber v1, ValueNumber v2) {
 		int flag1 = v1.getFlags();

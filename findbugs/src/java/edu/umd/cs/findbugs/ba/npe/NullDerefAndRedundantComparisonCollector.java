@@ -70,11 +70,14 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 *                               to be null and unconditionally dereferenced were
 	 *                               all on exception paths
 	 * @param npeIfStatementCovered TODO
-	 * @param assignedNullLocation set of locations where the value becomes null
+	 * @param assignedNullLocationSet set of locations where the value becomes null
 	 */
 	public void foundGuaranteedNullDeref(
 			Set<Location> assignedNullLocationSet,
 			Set<Location> derefLocationSet,
 			SortedSet<Location> doomedLocations,
-			ValueNumberDataflow vna, ValueNumber refValue, boolean alwaysOnExceptionPath, boolean npeIfStatementCovered);
+			ValueNumberDataflow vna,
+			ValueNumber refValue,
+			boolean alwaysOnExceptionPath,
+			boolean npeIfStatementCovered);
 }

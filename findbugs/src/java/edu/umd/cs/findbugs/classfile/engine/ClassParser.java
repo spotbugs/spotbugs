@@ -35,9 +35,10 @@ import edu.umd.cs.findbugs.util.ClassName;
 
 /**
  * Parse a class to extract symbolic information.
+ * see <a href=http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html">
+   http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html </a>
  * 
  * @author David Hovemeyer
- * @see http://java.sun.com/docs/books/vmspec/2nd-edition/html/ClassFile.doc.html
  */
 public class ClassParser {
 

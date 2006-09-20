@@ -62,7 +62,7 @@ import edu.umd.cs.findbugs.util.MapCache;
  *
  * @author David Hovemeyer
  * @see IAnalysisCache
- * @see Global
+ * @see edu.umd.cs.findbugs.classfile.Global
  */
 @NotThreadSafe
 public abstract class AnalysisContext {

@@ -102,15 +102,16 @@ public class UnconditionalValueDerefAnalysis extends
 	 * @param dfs TODO
 	 * @param cfg                the CFG for the method
 	 * @param methodGen          the MethodGen for the method
+	 * @param vnaDataflow
 	 * @param assertionMethods   AssertionMethods for the analyzed class
-	 * @param valueNumberFactory the value number factory
 	 */
 	public UnconditionalValueDerefAnalysis(
 			ReverseDepthFirstSearch rdfs,
 			DepthFirstSearch dfs,
 			CFG cfg,
 			MethodGen methodGen,
-			ValueNumberDataflow vnaDataflow, AssertionMethods assertionMethods
+			ValueNumberDataflow vnaDataflow,
+			AssertionMethods assertionMethods
 			) {
 		super(rdfs, dfs);
 		this.cfg = cfg;

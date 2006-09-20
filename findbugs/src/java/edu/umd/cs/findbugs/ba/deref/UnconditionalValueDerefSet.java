@@ -376,7 +376,6 @@ public class UnconditionalValueDerefSet {
 	}
 
 	/**
-	 * @param fact
 	 * @param location
 	 * @param vnaFrame
 	 */

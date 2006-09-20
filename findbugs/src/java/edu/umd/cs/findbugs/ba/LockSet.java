@@ -351,7 +351,7 @@ public final class LockSet {
 
 	/**
 	 * @param frame
-	 * @return
+	 * @return a set of the locked value numbers
 	 */
 	public Collection<ValueNumber> getLockedValueNumbers(ValueNumberFrame frame) {
 		if (frame == null) throw new IllegalArgumentException("Null Frame");

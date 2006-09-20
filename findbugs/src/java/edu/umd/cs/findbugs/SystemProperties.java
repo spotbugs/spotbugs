@@ -33,7 +33,7 @@ public class SystemProperties {
 	/**
 	 * Get boolean property, returning false if a security manager prevents us
 	 * from accessing system properties
-	 * @return
+	 * @return true if the property exists and is set to true
 	 */
 	public static boolean getBoolean(String arg0) {
 		try {
@@ -60,9 +60,9 @@ public class SystemProperties {
 
 	  
 	/**
-	 * @param arg0
-	 * @param arg1
-	 * @return
+	 * @param arg0 property name
+	 * @param arg1 default value
+	 * @return the int value (or arg1 if the property does not exist)
 	 */
 	public static Integer getInteger(String arg0, int arg1) {
 		try {
@@ -73,8 +73,8 @@ public class SystemProperties {
 	}
 
 	/**
-	 * @param arg0
-	 * @return
+	 * @param arg0 property name
+	 * @return string value (or null if the property does not exist)
 	 */
 	public static String getProperty(String arg0) {
 		try {
@@ -85,9 +85,9 @@ public class SystemProperties {
 	}
 
 	/**
-	 * @param arg0
-	 * @param arg1
-	 * @return
+	 * @param arg0 property name
+	 * @param arg1 default value
+	 * @return string value (or arg1 if the property does not exist)
 	 */
 	public static String getProperty(String arg0, String arg1) {
 		try {
