@@ -28,6 +28,6 @@
     <property name="findbugs.noSummary" value="true"/>
     <property name="apple.laf.useScreenMenuBar" value="true"/>
   </resources> 
-  <application-desc main-class="edu.umd.cs.findbugs.gui.FindBugsFrame"/> 
+  <application-desc main-class="edu.umd.cs.findbugs.LaunchAppropriateUI"/> 
 </jnlp> 
 
