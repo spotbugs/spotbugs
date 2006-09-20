@@ -17,8 +17,8 @@
   </security> 
   <resources> 
     <j2se version="1.4+" initial-heap-size="300m" max-heap-size="800m"/>
-    <jar href="findbugsGUI.jar"/> 
     <jar href="findbugs.jar"/> 
+    <jar href="findbugsGUI.jar"/> 
     <jar href="bcel.jar"/> 
     <jar href="asm-3.0_RC1.jar"/>
     <jar href="asm-tree-3.0_RC1.jar"/>
