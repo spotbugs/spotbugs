@@ -630,7 +630,7 @@
       <javadoc access="protected" 
        author="true" 
 	    packagenames="*"
-       classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-full.jar:lib/AppleJavaExtensions.jar"
+       classpath="lib/bcel.jar:lib/junit.jar:lib/dom4j-full.jar:lib/AppleJavaExtensions.jar:lib/asm-3.0_RC1.jar:lib/asm-tree-3.0_RC1.jar"
         destdir="${apiDoc.dir}" 
         doctitle="FindBugs API Documentation" 
         Header="&lt;b&gt;FindBugs&amp;trade; ${release.number}&lt;/b&gt;"
