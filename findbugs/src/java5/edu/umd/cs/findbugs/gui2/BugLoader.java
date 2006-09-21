@@ -298,7 +298,7 @@ public class BugLoader {
 	 * 
 	 * Merges bug collection histories from xmls selected by the user.  Right now all xmls must be in the same folder and he must select all of them at once
 	 * Makes use of FindBugs's mergeCollection method in the Update class of the workflow package
-	 * @return
+	 * @return the merged collecction of bugs
 	 */
 	public static BugSet combineBugHistories()
 	{
@@ -333,16 +333,13 @@ public class BugLoader {
 			Debug.println(e);
 			return null;
 		}
-		finally
-		{
-			
-		}
+
 	}
 	
 	/**
 	 * Does what it says it does, hit apple r (control r on pc) and the analysis is redone using the current project
 	 * @param p
-	 * @return
+	 * @return the bugs from the reanalysis, or null if cancelled
 	 */
 	public static BugSet redoAnalysisKeepComments(Project p)
 	{
