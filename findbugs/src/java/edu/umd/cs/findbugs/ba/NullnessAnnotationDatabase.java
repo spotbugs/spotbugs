@@ -70,7 +70,6 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$Transferer", NullnessAnnotation.UNKNOWN_NULLNESS);
 		
 		
-		addMethodParameterAnnotation("java.lang.System", "identityHashCode", "(Ljava/lang/Object;)I", true, 0, NullnessAnnotation.NONNULL);
 		addMethodParameterAnnotation("java.util.concurrent.FutureTask", "<init>", "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		addMethodParameterAnnotation("java.util.concurrent.Executors", "callable", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Callable;", true, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		
