@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="Shift_JIS"?>
 
-<!-- This messages file is based on revision 1.295 of message.xml. -->
+<!-- This messages file is based on revision 1.349 of message.xml. -->
 
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:noNamespaceSchemaLocation="messagecollection.xsd">
@@ -19,6 +19,64 @@
 ]]>
     </Details>
   </Plugin>
+
+  <!--
+  **********************************************************************
+  Categories (replacing the BugCategoryDescriptions.properties file)
+  **********************************************************************
+   -->
+
+  <BugCategory category="CORRECTNESS">
+    <Description>Correctness</Description>
+    <Abbreviation>C</Abbreviation>
+    <Details>バグの可能性 - 明らかなコーディングミスによって、開発者の意図しないコードになっている。
+             誤検出は最小限に留めなければならない。</Details>
+  </BugCategory>
+
+  <BugCategory category="BAD_PRACTICE">
+    <Description>良くない習慣</Description>
+    <Abbreviation>B</Abbreviation>
+    <Details>推奨される、あるいは本質的なコーディング規範からの逸脱。例えば、hashCodeとequalsの問題、
+             cloneableイディオム、例外の無視、直列化の問題、finalizeの誤用といったもの。
+             開発グループによっては、これらの幾つかの規範を気にとめないかもしれないが、
+             できる限り正確な解析を行う必要がある。</Details>
+  </BugCategory>
+
+  <BugCategory category="STYLE">
+    <Description>回避可能</Description>
+    <Abbreviation>D</Abbreviation>
+    <Details>誤解を与え易いコード、変則的、間違いを招き易いコード。
+             例えば不要なローカル変数への格納、switchのフォールスルー、確認されていないキャスト、
+             nullであることが明らかな値に対する冗長なnullチェックなど。
+             幾らかの誤検出が許容される。以前のバージョンのFindBugsではStyleカテゴリに属していたもの。
+</Details>
+  </BugCategory>
+
+  <BugCategory category="PERFORMANCE">
+    <Description>実行効率</Description>
+    <Abbreviation>P</Abbreviation>
+    <Details>必ずしも間違いではないが、実行効率が悪くなる可能性のあるもの。</Details>
+  </BugCategory>
+
+  <BugCategory category="MALICIOUS_CODE">
+    <Description>脆弱性を持つコード</Description>
+    <Abbreviation>V</Abbreviation>
+    <Details>信頼されていないコードからの攻撃に対して脆弱性を持つコード。</Details>
+  </BugCategory>
+
+  <BugCategory category="MT_CORRECTNESS">
+    <Description>マルチスレッド環境での正確性</Description>
+    <Abbreviation>M</Abbreviation>
+    <Details>スレッド、ロック、volatileの扱いに対するコードの欠陥。</Details>
+  </BugCategory>
+
+  <BugCategory category="I18N">
+    <Description>国際化</Description>
+    <Abbreviation>I</Abbreviation>
+    <Details>国際化、ロカールの扱いに対するコードの欠陥。</Details>
+    <!-- DM_CONVERT_CASE is the only core bug pattern in this category -->
+  </BugCategory>
+
 
   <!--
   **********************************************************************
@@ -196,6 +254,15 @@
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.HugeSharedStringConstants">
+    <Details>
+<![CDATA[
+<p> このディテクタは複数のクラスで重複している文字列定数を発見します。
+</p>
+]]>
+    </Details>
+  </Detector>
+
 <Detector class="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged">
     <Details>
 <![CDATA[
@@ -296,6 +363,15 @@
     <Details>
 <![CDATA[
 <p> このディテクタは、無意味なメソッド呼び出し、例えばStringのデフォルトコンストラクタの呼び出しを発見します。高速ディテクタです。</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.NumberConstructor">
+    <Details>
+<![CDATA[
+<p> プリミティブ型の引数を伴ったNumberのコンストラクタ呼び出しを発見します。
+It is a fast detector</p>                      
 ]]>
     </Details>
   </Detector>
@@ -1009,6 +1085,16 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.TestASM">
+    <Details>
+    <![CDATA[
+    <p>
+ASMバイトコード解析フレームワークを使用したディテクタの作成方法を示すためのサンプル。
+    </p>
+    ]]>
+    </Details>
+  </Detector>
+
   <!--
   **********************************************************************
   BugPatterns
@@ -1181,6 +1267,16 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
     </Details>
   </BugPattern>
 
+<BugPattern type="DP_DO_INSIDE_DO_PRIVILEDGED"> <!-- misspelled for backward compatibility -->
+    <ShortDescription>クラスローダはdoPrivilegedブロックの中でのみ作成可能です。</ShortDescription>
+    <LongDescription>{1} で作成されているクラスローダ {2} は、doPrivilegedブロックの中で実行する必要があります。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> このコードはクラスローダを生成していますが、これはセキュリティマネージャを必要とします。このコード自体がセキュリティ許可を得る予定でも、セキュリティ許可を持たないコードから呼び出されるのであれば、クラスローダの生成コードは、doPrivilegedブロックの中で行う必要があります。
+]]>
+     </Details>
+  </BugPattern>
+
   <BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">
     <ShortDescription>クラスローダはdoPrivilegedブロックの中でのみ作成可能です。</ShortDescription>
     <LongDescription>{1} で作成されているクラスローダ {2} は、doPrivilegedブロックの中で実行する必要があります。</LongDescription>
@@ -1190,6 +1286,17 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
 ]]>
      </Details>
   </BugPattern>
+
+<BugPattern type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEDGED"> <!-- misspelled for backward compatibility -->
+    <ShortDescription>クラスローダはdoPrivilegedブロックの中でのみ作成可能です。</ShortDescription>
+    <LongDescription>{1} で作成されているクラスローダ {2} は、doPrivilegedブロックの中で実行する必要があります。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> このコードはクラスローダを生成していますが、これはセキュリティマネージャを必要とします。このコード自体がセキュリティ許可を得る予定でも、セキュリティ許可を持たないコードから呼び出されるのであれば、クラスローダの生成コードは、doPrivilegedブロックの中で行う必要があります。
+]]>
+     </Details>
+  </BugPattern>
+
   <BugPattern type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS">
     <ShortDescription>イミュータブルクラスのフィールドはfinal宣言すべきです。</ShortDescription>
     <LongDescription>{0} はイミュータブルと宣言されているので、{1} はfinal宣言すべきです。</LongDescription>
@@ -1233,8 +1340,8 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
   </BugPattern>
 
   <BugPattern type="DM_STRING_CTOR">
-    <ShortDescription>メソッドで 推奨されない new String(String) コンストラクタを呼び出しています。これは引数の文字列をそのまま使うべきです。</ShortDescription>
-    <LongDescription>{1} new String(String) コンストラクタを呼び出しています。これは引数の文字列をそのまま使うべきです。</LongDescription>
+    <ShortDescription>メソッドで非効率な new String(String) コンストラクタを呼び出しています。これは引数の文字列をそのまま使うべきです。</ShortDescription>
+    <LongDescription>{1} で非効率な new String(String) コンストラクタを呼び出しています。これは引数の文字列をそのまま使うべきです。</LongDescription>
     <Details>
 <![CDATA[
 <p><code>java.lang.String(String)</code>コンストラクタの呼び出しはメモリを浪費するだけです。このようにして生成されたオブジェクトと元の<code>String</code>オブジェクトは機能的に区別が付きません。</p>
@@ -1243,8 +1350,8 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
   </BugPattern>
 
   <BugPattern type="DM_STRING_VOID_CTOR">
-    <ShortDescription>メソッドで 推奨されない new String() コンストラクタを呼び出しています。これは  "" をそのまま使うべきです。</ShortDescription>
-    <LongDescription>{1} new String() コンストラクタを呼び出しています。これは  "" をそのまま使うべきです。</LongDescription>
+    <ShortDescription>メソッドで非効率な new String() コンストラクタを呼び出しています。これは  "" をそのまま使うべきです。</ShortDescription>
+    <LongDescription>{1} で非効率な new String() コンストラクタを呼び出しています。これは  "" をそのまま使うべきです。</LongDescription>
     <Details>
 <![CDATA[
 <p><code>java.lang.String</code>の引数無しコンストラクタの呼び出しはメモリを浪費するだけです。このようにして生成されたオブジェクトと、空文字列<code>""</code>の間には機能的に違いがありません。Javaは、同一内容の文字列定数のインスタンスを1つにまとめます。従って単に空文字列を直接使用すべきです。</p>
@@ -1275,18 +1382,49 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
   </BugPattern>
 
   <BugPattern type="DM_BOOLEAN_CTOR">
-    <ShortDescription>メソッドでBooleanのコンストラクタを呼んでいます。その代わりにBoolean.valueOf(...) を使うべきです。</ShortDescription>
-    <LongDescription>{1} Booleanのコンストラクタを呼んでいます。その代わりにBoolean.valueOf(...) を使うべきです。</LongDescription>
+    <ShortDescription>メソッドで非効率なBooleanのコンストラクタを呼んでいます。その代わりにBoolean.valueOf(...) を使うべきです。</ShortDescription>
+    <LongDescription>{1} で非効率なBooleanのコンストラクタを呼んでいます。その代わりにBoolean.valueOf(...) を使うべきです。</LongDescription>
     <Details>
 <![CDATA[
-  <p> <code>java.lang.Boolean</code>のインスタンスを新規に生成するのはメモリの浪費です。<code>Boolean</code>クラスはイミュータブルなので、TRUEとFALSEの2つのオブジェクトがあれば十分です。 <code>Boolean.valueOf()</code>を替わりに使ってください。</p>
+  <p> <code>java.lang.Boolean</code>のインスタンスを新規に生成するのはメモリの浪費です。<code>Boolean</code>クラスはイミュータブルなので、TRUEとFALSEの2つのオブジェクトがあれば十分です。 <code>Boolean.valueOf()</code>(あるいは、Java 5以上ならばオートボクシング)を替わりに使ってください。</p>
 ]]>
     </Details>
   </BugPattern>
 
+  <BugPattern type="DM_NUMBER_CTOR">
+    <ShortDescription>非効率なNumberのコンストラクタが呼び出されています。valueOfスタティックメソッドを代わりに使用してください。</ShortDescription>
+    <LongDescription>{1} メソッドは、非効率な {3} コンストラクタを使用しています。代わりに {4} を使用してください。</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+<code>new Integer(int)</code>の呼び出しは、常に新たなオブジェクトが生成されます。これに対して<code>Integer.valueOf(int)</code>は、コンパイラ、クラスライブラリ、JVMによってキャッシュすることが可能です。キャッシュを使用することによって、余計なオブジェクトの生成を防ぎ、コードの実行効率を改善できます。
+      </p>
+      <p>
+-128から127までの値は、キャッシュされるので、<code>valueOf</code>を使用すると約3.5倍高速になります。この範囲外の場合にはパフォーマンスの差はありません。
+      </p>
+      <p>
+バージョン5.0より前のJava実行環境との互換性が不要であれば、オートボクシングか、<code>Long</code>、<code>Integer</code>、<code>Short</code>、<code>Character</code>、<code>Byte</code>の<code>valueOf()</code>メソッドを代わりに使用してください。</p>
+      ]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DM_FP_NUMBER_CTOR">
+    <ShortDescription>非効率な浮動小数点数のコンストラクタを呼び出しています。valueOfスタティックメソッドを代わりに使用してください。</ShortDescription>
+    <LongDescription>メソッド {1} で、非効率な {3} コンストラクタが呼び出されています。代わりに {4} を使用してください。</LongDescription>
+    <Details>
+      <![CDATA[
+      <p>
+<code>new Double(double)</code>を呼び出すと、常に新たなオブジェクトが生成されます。これに対し、<code>Double.valueOf(double)</code>は、コンパイラ、クラスライブラリ、JVMによってキャッシュすることが可能です。キャッシュを使用することによって、余計なオブジェクトの生成を防ぎ、コードの実行効率を改善できます。
+      </p>
+      <p>
+バージョン5.0より前のJava実行環境との互換性が不要であれば、オートボクシングか、<code>Double</code>、<code>Float</code>の<code>valueOf()</code>メソッドを代わりに使用してください。
+      </p>
+      ]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="DM_STRING_EMPTY_EQUALS">
-    <ShortDescription>メソッドは疑わしいString.equals("")呼び出しを行っています。String.length() == 0を替わりに使用してください。</ShortDescription>
-    <LongDescription>メソッド{1}は疑わしいString.equals("")呼び出しを行っています。String.length() == 0を替わりに使用してください。</LongDescription>
+    <ShortDescription>メソッドは非効率なString.equals("")呼び出しを行っています。String.length() == 0を替わりに使用してください。</ShortDescription>
+    <LongDescription>メソッド{1}は非効率なString.equals("")呼び出しを行っています。String.length() == 0を替わりに使用してください。</LongDescription>
     <Details>
 <![CDATA[
 <p> eauals()を使って空文字列との比較を行っています。length()メソッドを使って長さ0かどうか調べる方が高速です。また、このようにすることでクラスファイルから無駄な文字列を削除することが出来ます。</p>
@@ -1468,6 +1606,8 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
     <Details>
 <![CDATA[
 <p> このメソッド内で<code>finalize()</code>の明示的な呼び出しが行われています。ファイナライザは一度だけ呼び出されるべきで、それはVMによって行われるので、このコードの意図は間違っています。</p>
+<p> もしも参照によってつながった複数のオブジェクトがファイナライズされると、それぞれのオブジェクトのfinalize()がVMから呼び出されますが、もしかすると別々のスレッドによって複数のfinalize()が同時に呼び出されるかもしれません。このため、あるクラスXのfinalize()の中から、別のオブジェクト(クラスXから参照されている)のfinalize()を呼び出すのは、とりわけ間違ったやり方です。なぜならすでにそのオブジェクトは別のスレッドでファイナライズ済みかもしれないからです。
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1495,6 +1635,41 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
     </Details>
   </BugPattern>
 
+  <BugPattern type="HSC_HUGE_SHARED_STRING_CONSTANT">
+   <ShortDescription>複数のクラスに巨大な文字列定数が重複して存在しています。</ShortDescription>
+   <LongDescription>{1} は長さ {2} の文字列として {3} つのクラス内に重複しています。</LongDescription>
+   <Details>
+      <![CDATA[
+      <p>
+複数のクラスに巨大な文字列定数が重複して存在しています。これはもしかすると、finalフィールドが持つ文字列定数が、利用者側にクラスファイルに埋め込まれるJavaの特性によるものかもしれません。詳細、回避方法については、<a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6447475">JDK bug 6447475</a>を参照してください。これによってJDKのサイズを1MByte減らすことができました。
+</p>
+      ]]>
+   </Details>
+  </BugPattern>
+  <BugPattern type="NP_ARGUMENT_MIGHT_BE_NULL">
+   <ShortDescription>メソッドで引数のnullチェックが行われていません。</ShortDescription>
+   <LongDescription>{1} で引数のnullチェックが行われていません。</LongDescription>
+   <Details>
+      <![CDATA[
+      <p>
+このメソッド引数は、nullチェックが必要と認識されていますが、チェック無しに参照外しされています。
+      </p>
+      ]]>
+   </Details>
+  </BugPattern>
+
+  <BugPattern type="NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT">
+   <ShortDescription>equals() メソッドでnull引数をチェックしていません。</ShortDescription>
+   <LongDescription>{1} は、null引数のチェックをしていません。</LongDescription>
+   <Details>
+      <![CDATA[
+      <p>
+この equals(Object) の実装では引数のnullチェックをしておらず、java.lang.Object.equals() の規約に違反しています。equals()は、null引数に対してfalseを返さなければなりません。
+      </p>
+      ]]>
+   </Details>
+  </BugPattern>
+
   <BugPattern type="NP_DOES_NOT_HANDLE_NULL">
 	<ShortDescription>equals() メソッドがnull引数をチェックしていません。</ShortDescription>
 	<LongDescription>{1} でnull引数をチェックしていません。</LongDescription>
@@ -1514,6 +1689,16 @@ TrainNonNullAnnotationsディテクタは@NonNullと@PossiblyNullアノテーションの指定を
 <![CDATA[
   <p> このクラスは、引数が<code>java.lang.Object</code>でない<code>compareTo()</code>メソッドを定義しています。
   <code>Comparable</code>インターフェースの<code>compareTo()</code>メソッドを正しく実装するには、<code>compareTo()</code>メソッドの引数の型は、<code>java.lang.Object</code>でなければなりません。</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="HE_USE_OF_UNHASHABLE_CLASS">
+    <ShortDescription>hashCode()を持たないクラスをハッシュで使用しています。</ShortDescription>
+    <LongDescription>{2} はhashCode()メソッドを定義していませんがハッシュで使用しています。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> このクラスは equals(Object) を定義していますが hashCode() を定義していません。このため、同値のオブジェクトが等しいhashCode()を返さなければいけないという規約を満たしていません。しかも、このインスタンスは実際にハッシュに利用されています。早急にこのクラスを修正してください。
 ]]>
     </Details>
   </BugPattern>
@@ -1610,6 +1795,16 @@ public int hashCode() {
     </Details>
   </BugPattern>
 
+  <BugPattern type="ES_COMPARING_PARAMETER_STRING_WITH_EQ">
+    <ShortDescription>文字列引数の ==、!=による比較。</ShortDescription>
+    <LongDescription>{1}で、文字列引数を == 、!= で比較しています。</LongDescription>
+    <Details>
+<![CDATA[
+  <p>このコードは<code>java.lang.String</code>のパラメータを==、!=を使用して比較しています。これは呼び出し元が文字列定数か、internされた文字列しか渡せないことを意味しており、非常に脆いものになっています。このようにしても実行効率上のメリットはほとんどありません。<code>equals(Object)</code>を代わりに使用することを検討してください。</p>
+]]>
+    </Details>
+  </BugPattern>
+ 
   <BugPattern type="CO_ABSTRACT_SELF">
     <ShortDescription>抽象クラスで共変な compareTo() メソッドを宣言しています。</ShortDescription>
     <LongDescription>抽象クラス {0} で compareTo({0}) メソッドを宣言しています。</LongDescription>
@@ -1656,7 +1851,7 @@ public int hashCode() {
   </BugPattern>
 
   <BugPattern type="NN_NAKED_NOTIFY">
-    <ShortDescription>メソッドの中に裸の notify があります。</ShortDescription>
+    <ShortDescription>裸の notify。</ShortDescription>
     <LongDescription>{1} の中に裸の notify があります。</LongDescription>
     <Details>
 <![CDATA[
@@ -1733,6 +1928,7 @@ public int hashCode() {
     <Details>
 <![CDATA[
 <p> 非短絡的演算子(&amp;あるいは|)を、短絡的演算子(&amp;&amp;あるいは||)と間違えて使用しているようです。非短絡的演算子は、両側の式を必ず評価します。非短絡的演算子を短絡的演算子のかわりに使うと、効率が悪いだけでなく、もしも演算子の左側の式が右側の式にアクセスするためのガード条件になっている場合には、エラーになります。</p>
+<p>詳細については、<a href="http://java.sun.com/docs/books/jls/third_edition/html/expressions.html#15.22.2">Java言語仕様</a>を参照してください。</p>
 ]]>
     </Details>
   </BugPattern>
@@ -1747,7 +1943,7 @@ public int hashCode() {
     </Details>
   </BugPattern>
 
-   <BugPattern type="TLW_TWO_LOCK_NOTIFY" deprecated="true">
+   <BugPattern type="TLW_TWO_LOCK_NOTIFY" deprecated="true">  <!-- never generated -->
     <ShortDescription>2つのロックを保持したままでのnotify。</ShortDescription>
     <LongDescription>{1} で2つのロックを保持したままnotify()あるいはnotifyAll*()を実行しています。</LongDescription>
     <Details>
@@ -1758,7 +1954,7 @@ public int hashCode() {
   </BugPattern>
 
   <BugPattern type="UW_UNCOND_WAIT">
-    <ShortDescription>メソッドのwaitに条件文がありません。</ShortDescription>
+    <ShortDescription>waitに条件文がありません。</ShortDescription>
     <LongDescription>{1} のwaitに条件文がありません。</LongDescription>
     <Details>
 <![CDATA[
@@ -1769,7 +1965,7 @@ public int hashCode() {
 
   <BugPattern type="UR_UNINIT_READ">
     <ShortDescription>コンストラクタで初期化前のフィールドを読んでいます。</ShortDescription>
-    <LongDescription>{2} を {1} で初期化前に値を読み込んでいます。</LongDescription>
+    <LongDescription>{2.name} を {1} で初期化前に値を読み込んでいます。</LongDescription>
     <Details>
 <![CDATA[
 <p> このコンストラクタは、まだ何も値が代入されていないフィールドを読み込んでいます。これはしばしば、プログラマが間違えてコンストラクタのパラメータのかわりに、フィールドにアクセスしてしまった場合に起こります。</p>
@@ -1793,6 +1989,27 @@ public int hashCode() {
     <Details>
 <![CDATA[
 <p> 2つのクラスの静的初期化子が循環参照しています。様々な予測出来ない挙動が起こる可能性があります。</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION">
+    <ShortDescription>親クラスが初期化の際に子クラスを使用しています。</ShortDescription>
+    <LongDescription>{0} の初期化にあたり、まだ初期化されていない {2} を使用しています。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> あるクラスの初期化の間に子クラスを使用しています。子クラスはまだこの段階では初期化されていません。例えば、以下の例では、<code>foo</code>は、まだnullの状態になるでしょう。</p>
+
+<p><code><pre>
+public class CircularClassInitialization {
+	static class InnerClassSingleton extends CircularClassInitialization {
+		static InnerClassSingleton singleton = new InnerClassSingleton();
+	}
+	
+	static CircularClassInitialization foo = InnerClassSingleton.singleton;
+}
+</pre></code></p>
+
 ]]>
     </Details>
   </BugPattern>
@@ -1973,8 +2190,12 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
     <LongDescription>{1} と {3} のメソッドは、とても混乱しがちです。</LongDescription>
     <Details>
 <![CDATA[
-<p>これらのメソッド名は、大文字小文字が違うだけです。これらのメソッドは継承関係にあるクラスに宣言されているため、大変まぎらわしいです。</p>
+<p>これらのメソッド名は、大文字小文字が違う、あるいは引数のパッケージ名のみが異なるだけです。これらのメソッドは継承関係にあるクラスに宣言されているため、大変まぎらわしいです。</p>
 ]]>
+ <![CDATA[
+  <p> これらのメソッドは、名前の大文字小文字が違うだけ、あるいは引数のパッケージ名が異なるだけです。大文字小文字が一致する、あるいは引数のパッケージ名が同じであれば、これらはメソッドのオーバーライドになるため、非常に紛らわしいと言えます。
+</p>
+ ]]>
     </Details>
   </BugPattern>
 
@@ -2060,6 +2281,39 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
     </Details>
   </BugPattern>
 
+  <BugPattern type="SE_READ_RESOLVE_MUST_RETURN_OBJECT">
+    <ShortDescription>readResolveメソッドの戻り値の型は、Objectでなければなりません。 </ShortDescription>
+    <LongDescription>{1} の戻り値が{1.returnType}になっていますが、Objectにしなければなりません。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> 直列化機構から正しく認識されるためには、readResolveメソッドの戻り値の型はObjectでなければなりません。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS">
+    <ShortDescription>transientフィールドを持つクラスが直列化可能になっていません。</ShortDescription>
+    <LongDescription>{1} はtransientと宣言されていますが、{0}は直列化可能ではありません。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> transientフィールドを持つクラスが直列化可能になっていません。このためtransientと宣言しても何の効果もありません。これは、直列化可能クラスを修正する段階で間違えたか、直列化機構に対して誤解していることが原因と思われます。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="SE_TRANSIENT_FIELD_NOT_RESTORED">
+    <ShortDescription>直列化復元の際に設定されないtransientフィールドがあります。</ShortDescription>
+    <LongDescription>{1}フィールドは、transientですが、直列化復元の際に値が設定されません。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> このクラスには、クラス内の様々な場所で更新されるフィールドを持っています。しかしこのフィールドはtransientと宣言されているのに、readObject/readResolveメソッドで値が設定されません。このためこのクラスの全てのインスタンスで、このフィールドはデフォルト値を開始値として持つことになります。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
   <BugPattern type="SE_METHOD_MUST_BE_PRIVATE">
     <ShortDescription>直列化のためには、メソッドをprivate宣言しなければなりません。</ShortDescription>
     <LongDescription>メソッド {1.givenClass} はprivate宣言しなければ、{0}の直列化、直列化復元で呼び出されません。</LongDescription>
@@ -2121,6 +2375,17 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
     </Details> 
   </BugPattern>
 
+  <BugPattern type="SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH">
+   <ShortDescription>switchのフォールスルーによって、代入が無駄になっています。</ShortDescription>
+   <LongDescription>直前のcaseにおける値 {2} は、switchのフォールスルーによって単に上書きされます。</LongDescription>
+    <Details>
+<![CDATA[
+  <p> 直前のcaseで値が格納されていますが、switchのフォールスルーによって、単に上書きされます。恐らくbreak、returnを直前のcaseに入れ忘れたものと思われます。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="WS_WRITEOBJECT_SYNC">
     <ShortDescription>クラスの writeObject() メソッドは同期化されています。しかし それ以外のメソッドは同期化されていません。</ShortDescription>
     <LongDescription>{0} の writeObject メソッドは同期化されています。しかし、それ以外のメソッドは同期化されていません。</LongDescription>
@@ -2173,7 +2438,7 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
 
   <BugPattern type="SE_BAD_FIELD">
     <ShortDescription>直列化可能なクラスのインスタンスフィールドが、非transientで、非直列化可能です。</ShortDescription>
-    <LongDescription>クラス {0} が 非transientで非直列化可能なインスタンスフィールド {1} を宣言しています。</LongDescription>
+    <LongDescription>クラス {0} が 非transientで非直列化可能なインスタンスフィールド {1.name} を宣言しています。</LongDescription>
     <Details>
 <![CDATA[
 <p> この直列化可能クラスは、transientでもなく、直列化可能でもなく、<code>java.lang.Object</code>でもないインスタンスフィールドを持っています。また、<code>Externalizable</code> インターフェースも実装していませんし、<code>readObject()</code> も <code>writeObject()</code> メソッドも定義していません。このフィールドに実際に非直列化可能クラスのインスタンスを保持している場合、このクラスのオブジェクトは、直列化復元を正しく行えません。</p>
@@ -2297,7 +2562,7 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
 
   <BugPattern type="NP_UNWRITTEN_FIELD">
     <ShortDescription>書き込まれていないフィールドの読み出し。</ShortDescription>
-    <LongDescription>{1}で書き込まれていないフィールドを読み出しています。</LongDescription>
+    <LongDescription>{1}で書き込まれていないフィールド{2.name}を読み出しています。</LongDescription>
     <Details>
 <![CDATA[
   <p> このプログラムの中で、まだ書き込まれていないと考えられるフィールドの参照外しを行なっています。これはNullPointerExceptionのスローを招きます。
@@ -2316,7 +2581,7 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
     </Details>
   </BugPattern>
 
-  <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" deprecated="true">
+  <BugPattern type="NP_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" deprecated="true">  <!-- deprecated in favor of UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR -->
     <ShortDescription>コンストラクタで初期化されていないフィールドの読み出し。</ShortDescription>
     <LongDescription>コンストラクタで初期化されたいないフィールドが{1}で読み出されています。</LongDescription>
     <Details>
@@ -2359,7 +2624,7 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
   </BugPattern>
 
   <BugPattern type="WA_NOT_IN_LOOP">
-    <ShortDescription>メソッドで、waitがループの中にありません。</ShortDescription>
+    <ShortDescription>waitがループの中にありません。</ShortDescription>
     <LongDescription>{1} の中でwaitがループの中にありません。</LongDescription>
     <Details>
 <![CDATA[
@@ -2380,7 +2645,7 @@ finalでないフィールド名は、最初の文字以外の構成単語の最初の文字を大文字として、�
   </BugPattern>
  
   <BugPattern type="NO_NOTIFY_NOT_NOTIFYALL">
-    <ShortDescription>メソッドで、notifyAll() ではなく notify() を使っています。</ShortDescription>
+    <ShortDescription>notifyAll() ではなく notify() を使っています。</ShortDescription>
     <LongDescription>{1} において、notifyAll ではなく notify を使っています。</LongDescription>
     <Details>
 <![CDATA[
@@ -2456,7 +2721,7 @@ dateString = dateString.trim();
   </BugPattern>
 
   <BugPattern type="NP_ALWAYS_NULL">
-    <ShortDescription>メソッド内でnullポインタを参照外しをしています。</ShortDescription>
+    <ShortDescription>nullポインタを参照外しをしています。</ShortDescription>
     <LongDescription>{1} の中でnullポインタを参照外しをしています。</LongDescription>
     <Details>
 <![CDATA[
@@ -2476,7 +2741,7 @@ dateString = dateString.trim();
   </BugPattern>
   <BugPattern type="NP_ALWAYS_NULL_EXCEPTION">
     <ShortDescription>メソッドの例外経路において、nullポインタの参照外しをしています。</ShortDescription>
-    <LongDescription>Null pointer dereference in {1} で例外経路の際にnullポインタの参照外しをしています。</LongDescription>
+    <LongDescription>{1} の例外経路において{2}のnullポインタの参照外しをしています。</LongDescription>
     <Details>
 <![CDATA[
 <p> nullに設定された参照を通したアクセスが、例外処理の経路で行われています。コードがじっこうされれば、<code>NullPointerException</code>が発生するでしょう。現在のFindBugsは、実行され得ない例外処理経路を考慮しません。このため、この警告は誤って報告されるかもしれません。</p>
@@ -2486,8 +2751,8 @@ dateString = dateString.trim();
   </BugPattern>
 
   <BugPattern type="NP_NULL_ON_SOME_PATH">
-    <ShortDescription>メソッド内でnullポインタの参照外しをしている可能性があります。</ShortDescription>
-    <LongDescription>{1} の中でnullポインタの参照外しをしている可能性があります。</LongDescription>
+    <ShortDescription>nullポインタの参照外しをしている可能性があります。</ShortDescription>
+    <LongDescription>{1} の中で{2}をnullポインタの参照外しをしている可能性があります。</LongDescription>
     <Details>
 <![CDATA[
 <p> この参照変数を通したアクセスは、実行時に参照変数がnullとなる可能性があります。これは、実行時に<code>NullPointerException</code>を発生させる可能性があります。</p>
@@ -2496,8 +2761,8 @@ dateString = dateString.trim();
   </BugPattern>
 
   <BugPattern type="NP_NULL_ON_SOME_PATH_EXCEPTION">
-    <ShortDescription>メソッド内の例外経路においてnullポインタの参照外しをしている可能性があります。</ShortDescription>
-    <LongDescription>{1} の例外経路においてnullポインタの参照外しをしている可能性があります。</LongDescription>
+    <ShortDescription>例外経路においてnullポインタの参照外しをしている可能性があります。</ShortDescription>
+    <LongDescription>{1} の例外経路において{2}のnullポインタの参照外しをしている可能性があります。</LongDescription>
     <Details>
 <![CDATA[
 <p> 幾つかの例外制御経路の中で、nullとなる参照を通してアクセスが行われます。これは、実行時に<code>NullPointerException</code>を発生させる可能性があります。現在のFindBugsは、実行され得ない例外処理系を考慮しません。このため、この警告は誤って報告されるかもしれません。</p>
@@ -2576,6 +2841,28 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
     </Details>
   </BugPattern>
 
+  <BugPattern type="NP_GUARANTEED_DEREF">
+    <ShortDescription>Nullの参照外し。</ShortDescription>
+    <LongDescription>{2.name} はnullとなり、{1}で必ず参照外しされます。</LongDescription>
+    <Details>
+<![CDATA[
+<p>この文または分岐が実行されると、この値は必ずnullとなります。そしてこの値はその後必ず参照外しされます(RuntimeExceptionのスローを含むフォワードパスを通る場合を除きます)。
+ </p>
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH">
+    <ShortDescription>例外経路で必ずNullが参照外しされます。</ShortDescription>
+    <LongDescription>{2.name} はnullとなり、例外経路において {1} で必ず参照外しされます。</LongDescription>
+    <Details>
+<![CDATA[
+<p>例外経路で、この文または分岐が実行されると、この値は必ずnullとなります。そしてこの値は必ず参照外しされます(RuntimeExceptionのスローを含むフォワードパスを通る場合を除きます)。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
     <ShortDescription>クラスのstatic初期化子が全てのstatic finalフィールドが割り当てられる前にインスタンス生成をおこなっています。</ShortDescription>
     <LongDescription>{0} のstatic初期化子が全てのstatic fieldが割り当てられる前にインスタンス生成をおこなっています。</LongDescription>
@@ -2618,22 +2905,37 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
   </BugPattern>
 
   <BugPattern type="UCF_USELESS_CONTROL_FLOW">
-    <ShortDescription>メソッドで利用されないフロー制御ステートメントがあります。</ShortDescription>
+    <ShortDescription>利用されないフロー制御ステートメントがあります。</ShortDescription>
     <LongDescription>{1} に、利用されないフロー制御ステートメントあります。</LongDescription>
     <Details>
 <![CDATA[
-<p> このメソッドには、無駄なフロー制御ステートメントがあります。これは、例えば以下のような空の<code>if</code>文を間違って記述してしまった事が原因です。</p>
+<p> このメソッドには、無駄なフロー制御ステートメントがあります。分岐を通ったかどうかにかかわらず、制御の流れは変わりません。例えば以下のような空の<code>if</code>ブロックを記述してしまった事が原因です。</p>
 <pre>
-    if (argv.length == 1);
-        System.out.println("Hello, " + argv[0]);
+    if (argv.length == 1) {
+        // TODO: handle this case
+    }
 </pre>
 ]]>
     </Details>
   </BugPattern>
 
+  <BugPattern type="UCF_USELESS_CONTROL_FLOW_NEXT_LINE">
+    <ShortDescription>次の行へ移るだけの不要な制御フロー。</ShortDescription>
+    <LongDescription>{1} は次の行に移るだけなので、無駄です。</LongDescription>
+    <Details>
+<![CDATA[
+<p> このメソッド内には、制御フローを全く変えないか、単に次の行に移るだけの分岐が存在します。これは、不注意で以下のような空の<code>if</code>文を作成してしまった場合に起き得ます。</p>
+ <pre>
+     if (argv.length == 1);
+         System.out.println("Hello, " + argv[0]);
+ </pre>
+ ]]>
+     </Details>
+   </BugPattern>
+
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE">
     <ShortDescription>すでに参照外しされているのにnullチェックしています。</ShortDescription>
-    <LongDescription>{1} ですでに参照外しされているのに {2} でnullチェックされています。</LongDescription>
+    <LongDescription>{1} ですでに参照外しされているのに {2} でnullチェックされています(行{4.lineNumber})。</LongDescription>
     <Details>
 <![CDATA[
 <p> 参照がここでnullチェックされていますが、この参照がnullになることはあり得ません。なぜなら前に参照外しされているからで、もしもnullなら前の段階でNullPointerExceptionが発生しているはずです。そもそもここのコードと前の参照外ししているコードとは参照がnullであるかどうかという点で矛盾しているのです。チェック自体が余計か、前の参照外しが間違っています。</p>
@@ -2643,7 +2945,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE">
     <ShortDescription>nullであることが明らかな参照の無駄なnullチェック。</ShortDescription>
-    <LongDescription>nullであることが明らかな参照を無駄にnullチェックしています {1}。</LongDescription>
+    <LongDescription>nullであることが明らかな参照{2}を無駄にnullチェックしています {1}。</LongDescription>
     <Details>
 <![CDATA[
 <p> このメソッドはnullであることが分かっている参照を無駄にnullチェックしています。</p>
@@ -2653,7 +2955,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE">
     <ShortDescription>nullでないことが明らかな参照の無駄なnullチェック。</ShortDescription>
-    <LongDescription>nullでないことが明らかな参照を無駄にnullチェックしています{1}。</LongDescription>
+    <LongDescription>nullでないことが明らかな参照{2}を無駄にnullチェックしています{1}。</LongDescription>
     <Details>
 <![CDATA[
 <p> このメソッドはnullでないことが分かっている参照を無駄にnullチェックしています。</p>
@@ -2663,7 +2965,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 
   <BugPattern type="RCN_REDUNDANT_COMPARISON_TWO_NULL_VALUES">
     <ShortDescription>2つのnull参照を無駄に比較しています。</ShortDescription>
-    <LongDescription>2つのnull参照を無駄に比較しています{1}。</LongDescription>
+    <LongDescription>{1}で2つのnull参照を無駄に比較しています。</LongDescription>
     <Details>
 <![CDATA[
 <p> このメソッドでnullであることが明らかな2つの参照を無駄に比較しています。</p>
@@ -2681,9 +2983,9 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
     </Details>
   </BugPattern>
 
-  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true">
+  <BugPattern type="RCN_REDUNDANT_CHECKED_NULL_COMPARISON" deprecated="true"> <!-- deprecated in favor of two separate RCN_ patterns -->
     <ShortDescription>既にチェック済みの値を無駄にnullと比較しています。</ShortDescription>
-    <LongDescription>{1}で既にチェック済みの値を無駄にnullと比較しています。</LongDescription>
+    <LongDescription>{1}で既にチェック済みの値{2}を無駄にnullと比較しています。</LongDescription>
     <Details>
 <![CDATA[
 <p> このメソッドは、無駄な参照変数とnullとの比較を行っています。以下の2つのタイプの無駄な比較が報告されます。
@@ -2740,7 +3042,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 
   <BugPattern type="RC_REF_COMPARISON">
     <ShortDescription>疑わしい参照の比較です。</ShortDescription>
-    <LongDescription>{1} で参照されている {3} の比較は疑わしいです。</LongDescription>
+    <LongDescription>{1} で参照されている {2} の比較は疑わしいです。</LongDescription>
     <Details>
 <![CDATA[
 <p> このメソッドでは、2つの参照が == あるいは != 演算子で比較されていますが、一般には、equals()メソッドを使う方が正しいやり方です。例えばjava.lang.Integerやjava.lang.Floatは、このようなクラスの例で、参照の比較を使うべきではありません。</p>
@@ -2849,6 +3151,28 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
     </Details>
   </BugPattern>
 
+  <BugPattern type="RV_ABSOLUTE_VALUE_OF_RANDOM_INT">
+    <ShortDescription>不適切な符号付き32-bit整数の乱数の絶対値計算。</ShortDescription>
+    <LongDescription>{1}で符号付き32-bit整数の乱数の絶対値を間違って計算しています。</LongDescription>
+    <Details>
+<![CDATA[
+<p> このコードは符号付き整数の乱数を得た後、絶対値を計算しています。もしも生成された乱数が<code>Integer.MIN_VALUE</code>だと、絶対値は負になります(なぜなら<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code>だからです)。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="RV_ABSOLUTE_VALUE_OF_HASHCODE">
+    <ShortDescription>不適切な符号付き32-bit整数のハッシュコードの絶対値計算。</ShortDescription>
+    <LongDescription>{1}で符号付き32-bit整数のハッシュコードの絶対値を間違って計算しています。</LongDescription>
+    <Details>
+<![CDATA[
+<p> このコードは符号付き整数のハッシュコードを得た後、絶対値を計算しています。もしもハッシュコードが<code>Integer.MIN_VALUE</code>だと、絶対値は負になります(なぜなら<code>Math.abs(Integer.MIN_VALUE) == Integer.MIN_VALUE</code>だからです)。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="RV_REM_OF_RANDOM_INT">
     <ShortDescription>符号付き32bit整数の乱数の剰余計算。</ShortDescription>
     <LongDescription>符号付き32bit整数の乱数の剰余が {1} で計算されています。</LongDescription>
@@ -2858,6 +3182,29 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="RV_REM_OF_HASHCODE">
+    <ShortDescription>ハッシュコードの剰余は負になる場合があります。</ShortDescription>
+    <LongDescription>{1}でハッシュコードの剰余を計算していますが、これは負になる場合があります。</LongDescription>
+    <Details>
+<![CDATA[
+<p> このコードはハッシュコードを計算した後、剰余を計算しています。ハッシュコードは負になる場合があるため、この結果は負になるかもしれません。</p>
+<p> 計算結果が負にならないと思っているのであれば、コードを修正する必要があります。序数が2のn乗であることが明らかならば、かわりにビットANDを使用することができます(<code>x.hashCode()%n</code>の代わりに<code>x.hashCode()&amp;(n-1)</code>を使用します)。これは恐らく剰余計算よりも高速です。それ以外のケースでは剰余に対して絶対値を算出してください(<code>Math.abs(x.hashCode()%n)。</code>
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="INT_BAD_COMPARISON_WITH_SIGNED_BYTE">
+    <ShortDescription>符号付きbyteの間違った比較。</ShortDescription>
+    <LongDescription>{1}で符号付きbyteを {2} と比較しています。</LongDescription>
+    <Details>
+<![CDATA[
+<p> byteは符号付きであり取り得る値は、-128 to 127の範囲です。byteをこの範囲外の値と比較するのは、無意味で恐らく間違いです。byte型の<code>b</code>を符号無しの0..255に変換したいのであれば、<code>0xff & b</code>とします。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="INT_VACUOUS_COMPARISON">
     <ShortDescription>無意味な整数比較。</ShortDescription>
     <LongDescription>整数値 {1} が無意味に比較されています。</LongDescription>
@@ -2919,7 +3266,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
     </Details>
   </BugPattern>
 
-  <BugPattern type="LI_LAZY_INIT_INSTANCE" deprecated="true">
+  <BugPattern type="LI_LAZY_INIT_INSTANCE" deprecated="true"> <!-- never generated? -->
     <ShortDescription>インスタンスフィールドの不正な遅延初期化がおこなわれています。</ShortDescription>
     <LongDescription>{1} で {2} フィールドの不正な遅延初期化がおこなわれています。</LongDescription>
     <Details>
@@ -2940,7 +3287,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
   </BugPattern>
 
   <BugPattern type="JLM_JSR166_LOCK_MONITORENTER">
-    <ShortDescription>メソッド内で、java.util.concurrent の Lock による同期がおこなわれます。</ShortDescription>
+    <ShortDescription>java.util.concurrent の Lock による同期がおこなわれます。</ShortDescription>
     <LongDescription>メソッド {1} 内で、java.util.concurrent の Lock による同期がおこなわれます。</LongDescription>
 <Details>
 <![CDATA[
@@ -3078,17 +3425,7 @@ nullを返すかもしれないのに、このメソッド(あるいは、親クラスの該当メソッド)は@Non
     </Details>
    </BugPattern>
 
-  <BugPattern type="SQL_BAD_RESULTSET_ACCESS">
-    <ShortDescription>このメソッドは、ResultSetのインデックス0のフィールドにアクセスしようとしています。</ShortDescription>
-    <LongDescription>メソッド {1} は、インデックス0のフィールドにアクセスしようとしています。</LongDescription>
-    <Details>
-<![CDATA[
-<p> インデックスが0の状態で、ResultSetのgetXXXあるいはupdateXXXメソッドを呼び出そうとしています。ResultSetのインデックスは、1から始まるので、このコードは常に間違いです。</p>
-]]>
-    </Details>
-  </BugPattern>
- 
-  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true">
+  <BugPattern type="BRSA_BAD_RESULTSET_ACCESS" deprecated="true"> <!-- deprecated in favor of SQL_BAD_RESULTSET_ACCESS -->
     <ShortDescription>このメソッドは、ResultSetのインデックス0のフィールドにアクセスしようとしています。</ShortDescription>
     <LongDescription>メソッド {1} は、インデックス0のフィールドにアクセスしようとしています。</LongDescription>
     <Details>
@@ -3248,7 +3585,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
 
   <BugPattern type="MF_CLASS_MASKS_FIELD">
     <ShortDescription>親クラスで定義されたフィールドと同名のフィールドを定義しています。</ShortDescription>
-    <LongDescription>クラス {0} は、親クラスが定義しているフィールド {1} と同名のフィールドを定義しています。</LongDescription>
+    <LongDescription>親クラス{2.class}が定義しているフィールド {1} と同名のフィールドを定義しています。</LongDescription>
     <Details>
 <![CDATA[
 <p> このクラスは、親クラスが定義しているフィールドと同名のフィールドを定義しています。これは混乱を招きやすく、間違えて意図しないフィールドを更新したり参照したりするプログラミングミスにつながります。</p>
@@ -3288,6 +3625,18 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
   ]]>
 	  </Details>
 	</BugPattern>
+
+    <BugPattern type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER">
+     <ShortDescription>NaNとの無効な比較。</ShortDescription>
+     <LongDescription>{1}でNaNとの無効な比較が行われています。</LongDescription>
+     <Details>
+   <![CDATA[
+    <p>
+このコードは浮動小数点数がNaN(Not A Number)と比較されています(例：<code>if (x == Double.NaN)</code>)。しかし<code>NaN</code>の定義上、全てのとり得る値は<code>NaN</code>自身も含めて<code>Nan</code>とは等しくなりません。このため<code>x == Double.NaN</code>は常にfalseとなります。値<code>x</code>はNot A Numberであるかどうかを調べるには<code>Double.isNaN(x)</code> (もしも<code>x<code>がfloatならば<code>Float.isNaN(x)</code>を代わりに使用してください。
+    </p>
+    ]]>
+     </Details>
+   </BugPattern>
 
     <BugPattern type="FE_FLOATING_POINT_EQUALITY">
 	  <ShortDescription>浮動小数の同値比較。</ShortDescription>
@@ -3400,6 +3749,47 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
       </Details>
     </BugPattern>
 
+  <BugPattern type="ICAST_INTEGER_MULTIPLY_CAST_TO_LONG">
+    <ShortDescription>intの乗算結果をlongにキャストしています。</ShortDescription>
+    <LongDescription>{1}で、intの乗算結果をlongにキャストしています。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このコードはintの乗算を計算してから結果をlongに変換しています。
+<code>
+<pre> 
+	long convertDaysToMilliseconds(int days) { return 1000*3600*24*days; } 
+</pre></code>
+longの演算を用いて乗算を行うことで、オーバーフローしてしまう可能性を避けることができます。例えば、以下のように修正します。
+<code>
+<pre> 
+	long convertDaysToMilliseconds(int days) { return 1000L*3600*24*days; } 
+</pre></code>
+あるいは、
+<code>
+<pre> 
+	static final long MILLISECONDS_PER_DAY = 24L*3600*1000;
+	long convertDaysToMilliseconds(int days) { return days * MILLISECONDS_PER_DAY; } 
+</pre></code>
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="ICAST_INT_CAST_TO_FLOAT_PASSED_TO_ROUND">
+    <ShortDescription>intがfloatにキャストされてから、Math.roundに渡されています。</ShortDescription>
+    <LongDescription>{1}intがfloatにキャストされてから、Math.roundに渡されています。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このコードはintをfloatに変換してから、Math.round()に渡して、丸め処理をしています。intからfloatへの変換では小数点以下の部分は使用されないので、結局この処理には意味がありません。恐らくMath.roundに渡している式の計算を、浮動小数点数で行いたかったものと思われます。
+</p>
+
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL">
     <ShortDescription>intのdoubleへのキャスト後のMath.ceilへの引き渡し。</ShortDescription>
     <LongDescription>{1}でintがdoubleにキャストされた後にMath.ceilに引き渡されています。</LongDescription>
@@ -3418,7 +3808,7 @@ Objectのequalsメソッドをオーバーライドしていないfinalクラスの.equals(Object o)メ
     <LongDescription>{1}でintの除算結果をdoubleにキャストしています。</LongDescription>
     <Details> <![CDATA[
 <p>
-このコードはintの除算結果をdoubleにキャストしています。整数の除算は精度を失ないます。doubleへのキャストは、精度が維持されると考えている事を示唆しています。恐らくコードの意図は除算の<em>前に</em>doubleへのキャストを行なうことだったと考えられます。以下に例を示します。
+このコードはintの除算結果をdoubleにキャストしています。整数の除算は丸めが切り捨てが行われます。doubleへのキャストは、精度が維持されると考えている事を示唆しています。恐らくコードの意図は除算の<em>前に</em>doubleへのキャストを行なうことだったと考えられます。以下に例を示します。
 </p>
 <blockquote>
 <pre>
@@ -3460,7 +3850,7 @@ double value2 =  x / (double) y;
 
   <BugPattern type="VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG">
     <ShortDescription>可変引数をとるメソッドへのプリミティブ型の配列の引き渡し。</ShortDescription>
-    <LongDescription>{1} でプリミティブ型の配列を {2} に渡しています。</LongDescription>
+    <LongDescription>{1} で{2}が可変引数をとるメソッド{3}に渡されています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3469,13 +3859,37 @@ double value2 =  x / (double) y;
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS">
+    <ShortDescription>equalsメソッドは引数の型を仮定してはいけません。</ShortDescription>
+    <LongDescription>{0} のequalsメソッドは、型{2}を仮定してはいけません。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+<code>equals(Object o)</code>は引数<code>o</code>の型に対して仮定を置いてはいけません。もしも<code>o</code>が、<code>this</code>と互換性の無い型であれば、単純にfalseを返さなければなりません。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION">
     <ShortDescription>抽象コレクション型への疑わしいキャスト。</ShortDescription>
     <LongDescription>{1}でコレクションが抽象コレクション型{3}にキャストされています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
-このコードはコレクションを抽象コレクション型(例えばCollection)にキャストしています。そのオブジェクトは既にキャスト先の型でもあることに注意してください。また単にコレクションの中身を走査するだけなら、SetやListにキャストする必要はありません。
+このコードはコレクションを抽象コレクション型(例えば<code>List</code>、<code>Set</code>、<code>Map</code>)にキャストしています。そのオブジェクトは既にキャスト先の型でもあることに注意してください。また単にコレクションの中身を走査するだけなら、SetやListにキャストする必要はありません。
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="BC_IMPOSSIBLE_CAST_PRIMITIVE_ARRAY">
+    <ShortDescription>プリミティブ型の配列を含んだ不可能なキャスト。</ShortDescription>
+    <LongDescription>{1}でプリミティブ型の配列を含んだ不可能なキャストが行われています。</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+このキャストは常にClassCastExceptionのスローを招きます。
 </p>
 ]]>
     </Details>
@@ -3483,7 +3897,7 @@ double value2 =  x / (double) y;
 
   <BugPattern type="BC_IMPOSSIBLE_CAST">
     <ShortDescription>不可能なキャスト。</ShortDescription>
-    <LongDescription>{1}で{2}から{3}クラスへの不可能なキャストが行なわれています。</LongDescription>
+    <LongDescription>{1}で{2}から{3}への不可能なキャストが行なわれています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3504,7 +3918,7 @@ double value2 =  x / (double) y;
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="BC_NULL_INSTANCEOF" deprecated="true">
+  <BugPattern type="BC_NULL_INSTANCEOF" deprecated="true"> <!-- deprecated in favor of NP_NULL_INSTANCEOF -->
     <ShortDescription>nullと分かっている値をinstanceofで型チェックしています。</ShortDescription>
     <LongDescription>{1} でnullと分かっている値の型が {2} であるかどうかinstanceofでチェックしています。</LongDescription>
     <Details>
@@ -3541,7 +3955,7 @@ double value2 =  x / (double) y;
 
   <BugPattern type="BC_UNCONFIRMED_CAST">
     <ShortDescription>チェック/確認されていないキャスト。</ShortDescription>
-    <LongDescription>{1}における{2}から{3}クラスへのキャストはチェック/確認されていません。</LongDescription>
+    <LongDescription>{1}における{2}から{3}へのキャストはチェック/確認されていません。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3553,7 +3967,7 @@ double value2 =  x / (double) y;
 
   <BugPattern type="BC_BAD_CAST_TO_CONCRETE_COLLECTION">
     <ShortDescription>具象コレクションクラスへの疑わしいキャスト。</ShortDescription>
-    <LongDescription>{1}で{2}から{3}具象コレクションへの疑わしいキャストが行なわれています。</LongDescription>
+    <LongDescription>{1}で{2}から{3}への疑わしいキャストが行なわれています。</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -3637,12 +4051,24 @@ Stringの正規表現を受け取るメソッドに"."が渡されています。これは意図通りですか？<
     <Details>
 <![CDATA[
 <p>
-このコードは配列に対してtoStringを呼び出しています。これは"[C@16f0472"のような、あまり意味の無い結果を返します。かわりにArrays.toStringを使って配列の中身が分かるような文字列表現を得ることを検討してください。プログラミングパズルの第3章、問題12を参照してください。
+このコードは配列に対してtoStringを呼び出しています。これは"[C@16f0472"のような、あまり意味の無い結果を返します。かわりにArrays.toStringを使って配列の中身が分かるような文字列表現を得ることを検討してください。プログラミングパズルの第3章、パズル12を参照してください。
 </p>
 ]]>
     </Details>
   </BugPattern>
 
+  <BugPattern type="IM_AVERAGE_COMPUTATION_COULD_OVERFLOW">
+    <ShortDescription>オーバーフローの可能性がある平均値計算。</ShortDescription>
+    <LongDescription>{1}の平均値計算はオーバーフローの可能性があります。</LongDescription>
+    <Details>
+<![CDATA[
+<p>このコードは2つの整数の平均値を計算するのに、除算あるいは符号付き右ビットシフトを使用し、得られた結果を配列の添字に使用しています。もしも平均値計算の元となる値が非常に大きい値だと、オーバーフローして負となり、負の数の平均値計算となるかもしれません。結果が負になることを想定していないのであれば、代わりに符号無し右ビットシフトを使用することを検討してください。つまり<code>(low+high)/2</code>の代わりに<code>(low+high) &gt;&gt;&gt; 1</code>を使用します。
+</p>
+<p>このバグは昔の二分探索、マージソートで多く見られます。Martin Buchholz が<a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6412541">JDKの中に、このバグを発見、修正しています</a>。またJoshua Blochが<a href="http://googleresearch.blogspot.com/2006/06/extra-extra-read-all-about-it-nearly.html">より一般化したバグパターンの話として紹介</a>しています。
+</p>
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="IM_BAD_CHECK_FOR_ODD">
     <ShortDescription>この奇数判定は、負の数では正しく動作しません。</ShortDescription>
@@ -3839,12 +4265,12 @@ hasNext() で next() を呼び出しています。hasNext()はイテレータの状態を変えるもの�
   <BugCode abbrev="Dm" >疑わしいメソッドを使っています。</BugCode>
   <BugCode abbrev="UR" >コンストラクタで初期化の前にフィールドの値を読んでいます。</BugCode>
   <BugCode abbrev="RR" >メソッドでInputStream.read()の戻り値を無視しています。</BugCode>
-  <BugCode abbrev="NN" >メソッド内に裸のnotifyがあります。</BugCode>
-  <BugCode abbrev="UW" >メソッド内に無条件のwaitがあります。</BugCode>
+  <BugCode abbrev="NN" >裸のnotify。</BugCode>
+  <BugCode abbrev="UW" >無条件のwait。</BugCode>
   <BugCode abbrev="SP" >メソッドでフィールドのスピンロックをしています。</BugCode>
   <BugCode abbrev="DC" >フィールドをダブルチェックしている可能性があります。</BugCode>
-  <BugCode abbrev="Wa" >メソッド内のwaitがループ内にありません。</BugCode>
-  <BugCode abbrev="No" >メソッド内で notifyAll() ではなく notify() を使っています。</BugCode>
+  <BugCode abbrev="Wa" >waitがループ内にありません。</BugCode>
+  <BugCode abbrev="No" >notifyAll() ではなく notify() を使っています。</BugCode>
   <BugCode abbrev="DE" >例外を見落としている、または無視しています。</BugCode>
   <BugCode abbrev="Ru" >メソッドで run() を直接実行しています。</BugCode>
   <BugCode abbrev="It" >iteratorの宣言が不正です。</BugCode>
@@ -3863,6 +4289,8 @@ hasNext() で next() を呼び出しています。hasNext()はイテレータの状態を変えるもの�
   <BugCode abbrev="SIC" >スタティックな内部クラスにする事が可能です</BugCode>
   <BugCode abbrev="TLW" >2つのロックを持ったままwaitしています。</BugCode>
   <BugCode abbrev="RV" >メソッドの戻り値の間違った利用。</BugCode>
+  <BugCode abbrev="IA" >あいまいな呼び出し。</BugCode>
+  <BugCode abbrev="HSC" >巨大な文字列定数。</BugCode>
   <BugCode abbrev="NP" >nullポインタを参照外ししています。</BugCode>
   <BugCode abbrev="OS">ストリームがクローズされない経路があります。</BugCode>
   <BugCode abbrev="PZLA" >結果無しを指し示すためには、nullよりもむしろ0の長さの配列を利用した方が良いです。</BugCode>
