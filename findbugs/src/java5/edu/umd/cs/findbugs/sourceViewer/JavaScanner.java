@@ -131,12 +131,14 @@ public class JavaScanner {
 				kind = COMMENT;
 				return kind;
 			} else if (c2 == '*') {
-				while (true) {
+				scanComment: while (true) {
 					c2 = iterator.next();
 					if (c2 == '*') {
+						do {
 						c2 = iterator.next();
 						if (c2 == '/')
-							break;
+							break scanComment;
+						} while(c2 == '*');
 					}
 				}
 				kind = JAVADOC;
