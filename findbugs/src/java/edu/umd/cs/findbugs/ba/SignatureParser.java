@@ -140,7 +140,7 @@ public class SignatureParser {
 	 * 
 	 * @param inv
 	 * @param cpg
-	 * @return
+	 * @return int number of parameters
 	 */
 	public static int getNumParametersForInvocation(InvokeInstruction inv, ConstantPoolGen cpg) {
 		SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));

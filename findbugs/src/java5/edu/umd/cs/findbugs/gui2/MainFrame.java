@@ -526,7 +526,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 	/**
 	 * Creates the MainFrame's menu bar.
-	 * @return
+	 * @return the menu bar for the MainFrame
 	 */
 	protected JMenuBar createMainMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
@@ -1943,7 +1943,7 @@ public class MainFrame extends FBFrame implements LogSync
 	
 	/**
 	 * Returns the color of the source code pane's background.
-	 * @return
+	 * @return the color of the source code pane's background
 	 */
 	public Color getSourceColor(){
 		return sourceCodeTextPane.getBackground();

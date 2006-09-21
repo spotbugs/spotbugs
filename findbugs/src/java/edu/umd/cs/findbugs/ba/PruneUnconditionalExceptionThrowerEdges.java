@@ -170,11 +170,10 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 	}
 
 	/**
-	 * @param currentAnalysisContext
 	 * @param xMethod
 	 * @param javaClass
 	 * @param method
-	 * @return
+	 * @return true if method unconditionally throws
 	 */
 	static public  Boolean doesMethodUnconditionallyThrowException(XMethod xMethod, JavaClass javaClass, Method method) {
 		Boolean isUnconditionalThrower = cachedResults.get().get(xMethod);

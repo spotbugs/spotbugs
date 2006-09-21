@@ -156,7 +156,7 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 	}
 
 	/**
-	 * @return
+	 * @return true if modified
 	 */
 	public boolean wasCFGModified() {
 		return cfgModified;

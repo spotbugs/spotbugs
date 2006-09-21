@@ -323,7 +323,7 @@ public class GUISaveState{
 	}
 
 	/**
-	 * @param previousComments The frame bourds Rectangle to set.
+	 * @param frameBounds The frame bourds Rectangle to set.
 	 */
 	public void setFrameBounds(Rectangle frameBounds) {
 		this.frameBounds = frameBounds;

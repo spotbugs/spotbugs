@@ -233,14 +233,10 @@ public class BugSet implements Iterable<BugLeafNode>{
 	
 	/**
 	 * 
-	 * Matches takes two strings, key, and value, and a BugLeafNode p.  If that BugLeafNode's value under the category of key 
-	 * matches the value passed in, it returns true.  Otherwise, its false.  
+	 * Contains takes a key/value pair
 	 * 
-	 * 
-	 * @param key
-	 * @param value
-	 * @param p
-	 * @return
+	 * @param keyValuePair
+	 * @return true if a bug leaf from filterNoCache() matches the pair
 	 */	
 	public boolean contains(StringPair keyValuePair)
 	{

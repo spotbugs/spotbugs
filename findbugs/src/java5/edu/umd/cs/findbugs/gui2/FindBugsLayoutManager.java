@@ -27,7 +27,7 @@ import javax.swing.JMenu;
 public interface FindBugsLayoutManager {
 
 	/**
-	 * @return
+	 * 
 	 */
 	public abstract JMenu createWindowMenu();
 
