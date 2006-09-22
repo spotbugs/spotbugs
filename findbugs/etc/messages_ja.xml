@@ -27,7 +27,7 @@
    -->
 
   <BugCategory category="CORRECTNESS">
-    <Description>Correctness</Description>
+    <Description>³Šm«</Description>
     <Abbreviation>C</Abbreviation>
     <Details>ƒoƒO‚Ì‰Â”\« - –¾‚ç‚©‚ÈƒR[ƒfƒBƒ“ƒOƒ~ƒX‚É‚æ‚Á‚ÄAŠJ”­ŽÒ‚ÌˆÓ}‚µ‚È‚¢ƒR[ƒh‚É‚È‚Á‚Ä‚¢‚éB
              ŒëŒŸo‚ÍÅ¬ŒÀ‚É—¯‚ß‚È‚¯‚ê‚Î‚È‚ç‚È‚¢B</Details>
@@ -1219,7 +1219,7 @@ ASMƒoƒCƒgƒR[ƒh‰ðÍƒtƒŒ[ƒ€ƒ[ƒN‚ðŽg—p‚µ‚½ƒfƒBƒeƒNƒ^‚Ìì¬•û–@‚ðŽ¦‚·‚½‚ß‚ÌƒTƒ“ƒ
     <Details>
 <![CDATA[
 <p>
-ƒNƒ‰ƒX‚ÍCloneable‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·‚ªAcloneƒƒ\ƒbƒh‚ð’è‹`‚àŽg—p‚à‚µ‚Ä‚¢‚Ü‚¹‚ñB</p>
+ƒNƒ‰ƒX‚ÍCloneable‚ðŽÀ‘•‚µ‚Ä‚¢‚Ü‚·‚ªAcloneƒƒ\ƒbƒh‚ð’è‹`‚µ‚Ä‚¢‚È‚¢‚©Žg—p‚µ‚Ü‚¹‚ñB</p>
 ]]>
     </Details>
   </BugPattern>
