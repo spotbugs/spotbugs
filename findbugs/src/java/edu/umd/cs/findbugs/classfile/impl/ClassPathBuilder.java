@@ -78,6 +78,10 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		private boolean isAppCodeBase;
 		private int howDiscovered;
 		
+		public String toString() {
+			return "WorkListItem(" + codeBaseLocator +", " + isAppCodeBase + ", " + howDiscovered +")";
+		}
+		
 		public WorkListItem(ICodeBaseLocator codeBaseLocator, boolean isApplication, int howDiscovered) {
 			this.codeBaseLocator = codeBaseLocator;
 			this.isAppCodeBase = isApplication;
