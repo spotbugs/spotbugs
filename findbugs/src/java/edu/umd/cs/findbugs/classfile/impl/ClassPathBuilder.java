@@ -530,6 +530,9 @@ public class ClassPathBuilder implements IClassPathBuilder {
 	 * @param itemToAdd     the worklist item to add
 	 */
 	private void addToWorkList(LinkedList<WorkListItem> workList, WorkListItem itemToAdd) {
+		if (DEBUG) {
+			new RuntimeException("Adding work list item " + itemToAdd).printStackTrace(System.out);
+		}
 		if (!itemToAdd.isAppCodeBase()) {
 			// Auxiliary codebases are always added at the end
 			workList.addLast(itemToAdd);
