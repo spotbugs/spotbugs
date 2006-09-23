@@ -21,7 +21,9 @@ package edu.umd.cs.findbugs;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -36,6 +38,7 @@ public class RecursiveFileSearch {
 	private String baseDir;
 	private FileFilter fileFilter;
 	private LinkedList<File> directoryWorkList;
+	private HashSet<String> directoriesScanned = new HashSet<String>();
 	private ArrayList<String> resultList;
 
 	/**
@@ -52,6 +55,13 @@ public class RecursiveFileSearch {
 		this.resultList = new ArrayList<String>();
 	}
 
+	static String bestEffortCanonicalPath(File f) {
+		try {
+			return f.getCanonicalPath();
+		} catch (IOException e) {
+			return f.getAbsolutePath();
+		}
+	}
 	/**
 	 * Perform the search.
 	 *
@@ -60,7 +70,10 @@ public class RecursiveFileSearch {
 	 *                              search completes
 	 */
 	public RecursiveFileSearch search() throws InterruptedException {
-		directoryWorkList.add(new File(baseDir));
+		File baseFile = new File(baseDir);
+		String basePath = bestEffortCanonicalPath(baseFile);
+		directoryWorkList.add(baseFile);
+		directoriesScanned.add(basePath);
 
 		while (!directoryWorkList.isEmpty()) {
 			File dir = directoryWorkList.removeFirst();
@@ -77,8 +90,11 @@ public class RecursiveFileSearch {
 
 				if (!fileFilter.accept(file))
 					continue;
-				if (file.isDirectory())
-					directoryWorkList.add(file);
+				if (file.isDirectory()) {
+					String myPath = bestEffortCanonicalPath(file);
+					if (myPath.startsWith(basePath) && directoriesScanned.add(myPath))
+						directoryWorkList.add(file);
+				}
 				else
 					resultList.add(file.getPath());
 			}
