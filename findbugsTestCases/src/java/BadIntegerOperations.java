@@ -138,6 +138,16 @@ class BadIntegerOperations {
 		return Math.abs(System.identityHashCode(this));
 	}
 
+	/** This method is OK */
+	public int getRandomIntFalsePositive(int n) {
+		return Math.abs(r.nextInt() % n);
+	}
+	
+	/** This method is OK */
+	public static int getHashBucketFalsePositive(Object x, int n) {
+		return Math.abs(x.hashCode() % n);
+	}
+	
 	
 	public BadIntegerOperations() {
 	}
