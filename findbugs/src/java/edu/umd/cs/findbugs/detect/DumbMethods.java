@@ -173,10 +173,14 @@ public class DumbMethods extends BytecodeScanningDetector  {
 				.addClassAndMethod(this)
 				.addSourceLine(this));
 		}
-		if (pendingRemOfRandomIntBug != null && !(seen == INVOKESTATIC
-				&& getClassConstantOperand().equals("java/lang/Math")
-				&& getNameConstantOperand().equals("abs"))) 
-			bugReporter.reportBug(pendingRemOfRandomIntBug);
+		if (pendingRemOfRandomIntBug != null) {
+			if (seen == INVOKESTATIC
+					&& getClassConstantOperand().equals("java/lang/Math")
+					&& getNameConstantOperand().equals("abs")) 
+				pendingRemOfRandomIntBug = null;
+			else 
+				bugReporter.reportBug(pendingRemOfRandomIntBug);
+		}
 
 		if (seen == INVOKESTATIC && 
 				( getClassConstantOperand().equals("java/lang/Math") || getClassConstantOperand().equals("java/lang/StrictMath"))
