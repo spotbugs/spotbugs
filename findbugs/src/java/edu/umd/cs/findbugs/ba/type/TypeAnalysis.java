@@ -82,7 +82,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
         implements EdgeTypes {
 
-	private static final boolean DEBUG = SystemProperties.getBoolean("ta.debug");
+	public static final boolean DEBUG = SystemProperties.getBoolean("ta.debug");
 
 	/**
 	 * Force computation of accurate exceptions.
