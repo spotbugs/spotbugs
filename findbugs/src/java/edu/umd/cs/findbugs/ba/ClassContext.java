@@ -582,6 +582,9 @@ public class ClassContext {
 					
 					TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
 			        typeDataflow.execute();
+			        if (TypeAnalysis.DEBUG) {
+			        	dumpTypeDataflow(method, cfg, typeDataflow);
+			        }
 
 			        return typeDataflow;
 		        }
@@ -1638,6 +1641,31 @@ public class ClassContext {
 		}
 		System.out.println("}\n\n");
 	}
+	/**
+	 * @param method
+	 * @param cfg
+	 * @param typeDataflow 
+	 * @param vnd
+	 * @param inv
+	 * @param dataflow
+	 * @throws DataflowAnalysisException
+	 */
+	public static void dumpTypeDataflow(Method method, CFG cfg, TypeDataflow typeDataflow) throws DataflowAnalysisException {
+		System.out.println("\n\n{ Type analysis for " + cfg.getMethodGen().getClassName() + "." + method.getName());
+		TreeSet<Location> tree = new TreeSet<Location>();
+		
+		for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
+			Location loc = locs.next();
+			tree.add(loc);
+		}
+		for(Location loc : tree) {
+			System.out.println("\n Pre: " + typeDataflow.getFactAtLocation(loc));
+			System.out.println("Location: " + loc);
+			System.out.println("Post: " + typeDataflow.getFactAfterLocation(loc));	
+		}
+		System.out.println("}\n\n");
+	}
+
 }
 
 // vim:ts=3
