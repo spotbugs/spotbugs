@@ -7,6 +7,9 @@ import java.io.Serializable;
 public class TransientFieldOfNonserializableClass {
 	transient public int super_test = 1;
 
+	public  TransientFieldOfNonserializableClass() {
+		System.out.println("Constructing a TransientFieldOfNonserializableClass");
+	}
 	public void setTest(int t) {
 		super_test = t;
 	}
@@ -15,6 +18,9 @@ public class TransientFieldOfNonserializableClass {
  static class Sub extends TransientFieldOfNonserializableClass implements Serializable {
 	public int sub_test = 2;
 
+	public Sub() {
+		System.out.println("Constructing Sub");
+	}
 	public static void main(String[] args) {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
