@@ -110,13 +110,20 @@ class BadIntegerOperations {
 		return a[r.nextInt() % a.length];
 	}
 	public int getRandomElement2(int a[]) {
+		int i = r.nextInt() % a.length;
+		return a[i];
+	}
+	public int getSecureRandomElement(int a[]) {
 		return a[sr.nextInt() % a.length];
 	}
 
 	public static Object getHashBucket(Object a[], Object x) {
 		return a[x.hashCode() % a.length];
 	}
-
+	public static Object getHashBucket2(Object a[], Object x) {
+		int i = x.hashCode() % a.length;
+		return a[i];
+	}
 	public void operationsOnBooleanArrays(String[] args)
 	{
 	final boolean[] values = { false };
@@ -148,6 +155,17 @@ class BadIntegerOperations {
 		return Math.abs(x.hashCode() % n);
 	}
 	
+	/** This method is OK */
+	public int getRandomIntFalsePositive2(int n) {
+		int i = r.nextInt() % n;
+		return Math.abs(i);
+	}
+	
+	/** This method is OK */
+	public static int getHashBucketFalsePositive2(Object x, int n) {
+		int i = x.hashCode() % n;
+		return Math.abs(i);
+	}
 	
 	public BadIntegerOperations() {
 	}
