@@ -201,29 +201,44 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		}
 
 		try {
-
-		if (seen == IREM) {
-			OpcodeStack.Item item0 = stack.getStackItem(0);
-			Object constant0 = item0.getConstant();
-			OpcodeStack.Item item1 = stack.getStackItem(1);
-			int special = item1.getSpecialKind();
-			if (special == OpcodeStack.Item.RANDOM_INT) {
-				pendingRemOfRandomIntBug = new BugInstance(this, "RV_REM_OF_RANDOM_INT", HIGH_PRIORITY)
-						.addClassAndMethod(this)
-						.addSourceLine(this);
-						}
-			else if (special == OpcodeStack.Item.HASHCODE_INT) {
-				pendingRemOfRandomIntBug = new BugInstance(this, "RV_REM_OF_HASHCODE", HIGH_PRIORITY)
-			.addClassAndMethod(this)
-			.addSourceLine(this);
+			if (tosMustBeNonNegative(seen)) {
+				OpcodeStack.Item tos = stack.getStackItem(0);
+				switch (tos.getSpecialKind()) {
+				case OpcodeStack.Item.HASHCODE_INT:
+				case OpcodeStack.Item.HASHCODE_INT_REMAINDER:
+					bugReporter.reportBug(new BugInstance(this, "RV_REM_OF_HASHCODE", HIGH_PRIORITY)
+					.addClassAndMethod(this)
+					.addSourceLine(this));
+					break;
+				case OpcodeStack.Item.RANDOM_INT:
+				case OpcodeStack.Item.RANDOM_INT_REMAINDER:
+					bugReporter.reportBug(new BugInstance(this, "RV_REM_OF_RANDOM_INT", HIGH_PRIORITY)
+					.addClassAndMethod(this)
+					.addSourceLine(this));
+					break;
+				}
+				
 			}
-			else if (constant0 instanceof Integer && ((Integer)constant0).intValue() == 1)
-			bugReporter.reportBug(new BugInstance(this, "INT_BAD_REM_BY_1", HIGH_PRIORITY)
-			.addClassAndMethod(this)
-			.addSourceLine(this));
-			
-			
-		}
+			if (seen == IREM) {
+				OpcodeStack.Item item0 = stack.getStackItem(0);
+				Object constant0 = item0.getConstant();
+				OpcodeStack.Item item1 = stack.getStackItem(1);
+				int special = item1.getSpecialKind();
+				if (false && special == OpcodeStack.Item.RANDOM_INT) {
+					pendingRemOfRandomIntBug = new BugInstance(this, "RV_REM_OF_RANDOM_INT", HIGH_PRIORITY)
+					.addClassAndMethod(this)
+					.addSourceLine(this);
+				}
+				else if (false && special == OpcodeStack.Item.HASHCODE_INT) {
+					pendingRemOfRandomIntBug = new BugInstance(this, "RV_REM_OF_HASHCODE", HIGH_PRIORITY)
+					.addClassAndMethod(this)
+					.addSourceLine(this);
+				}
+				else if (constant0 instanceof Integer && ((Integer)constant0).intValue() == 1)
+					bugReporter.reportBug(new BugInstance(this, "INT_BAD_REM_BY_1", HIGH_PRIORITY)
+					.addClassAndMethod(this)
+					.addSourceLine(this));
+			}
 		
 		if (stack.getStackDepth() >= 1 && (seen == LOOKUPSWITCH || seen == TABLESWITCH)) {
 			OpcodeStack.Item item0 = stack.getStackItem(0);
@@ -605,6 +620,33 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	}
 	}
 
+	/**
+	 * @param seen
+	 * @return
+	 */
+	private boolean tosMustBeNonNegative(int seen) {
+		switch(seen) {
+		case IALOAD:
+		case AALOAD:
+		case SALOAD:
+		case CALOAD:
+		case BALOAD:
+		case LALOAD:
+		case DALOAD:
+		case FALOAD:
+		case IASTORE:
+		case AASTORE:
+		case SASTORE:
+		case CASTORE:
+		case BASTORE:
+		case LASTORE:
+		case DASTORE:
+		case FASTORE:
+			return true;
+		}
+		// TODO Auto-generated method stub
+		return false;
+	}
 	private void checkMonitorWait() {
 		try {
 			TypeDataflow typeDataflow = getClassContext().getTypeDataflow(getMethod());

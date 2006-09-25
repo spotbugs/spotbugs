@@ -95,6 +95,9 @@ public class OpcodeStack implements Constants2
 		public static final int INTEGER_SUM = 5;
 		public static final int AVERAGE_COMPUTED_USING_DIVISION = 6;
 		public static final int FLOAT_MATH = 7;
+		public static final int RANDOM_INT_REMAINDER = 8;
+		public static final int HASHCODE_INT_REMAINDER = 9;
+		
 		public static final Object UNKNOWN = null;
 		private int specialKind;
  		private String signature;
@@ -158,21 +161,36 @@ public class OpcodeStack implements Constants2
 		public String toString() {
 			StringBuffer buf = new StringBuffer("< ");
 			buf.append(signature);
-			if (specialKind == SIGNED_BYTE)
+			switch(specialKind) {
+			case SIGNED_BYTE:
 				buf.append(", byte_array_load");
-			else if (specialKind == RANDOM_INT)
+				break;
+			case  RANDOM_INT:
 				buf.append(", random_int");
-			else if (specialKind == LOW_8_BITS_CLEAR)
+				break;
+			case LOW_8_BITS_CLEAR:
 				buf.append(", low8clear");
-			else if (specialKind == HASHCODE_INT)
+				break;
+			case HASHCODE_INT:
 				buf.append(", hashcode_int");
-			else if (specialKind == INTEGER_SUM)
+				break;
+			case INTEGER_SUM:
 				buf.append(", int_sum");
-			else if (specialKind == AVERAGE_COMPUTED_USING_DIVISION)
+				break;
+			case AVERAGE_COMPUTED_USING_DIVISION:
 				buf.append(", averageComputingUsingDivision");
-			else if (specialKind == FLOAT_MATH)
+				break;
+			case FLOAT_MATH:
 				buf.append(", floatMath");
-			
+				break;
+			case HASHCODE_INT_REMAINDER:
+				buf.append(", hashcode_int_rem");
+				break;
+			case  RANDOM_INT_REMAINDER:
+				buf.append(", random_int_rem");
+				break;
+
+			}
 			if (constValue != UNKNOWN) {
 				buf.append(", ");
 				buf.append(constValue);
@@ -397,7 +415,11 @@ public class OpcodeStack implements Constants2
 		}
 
 		public boolean valueCouldBeNegative() {
-			return (getSpecialKind() == Item.RANDOM_INT || getSpecialKind() == Item.SIGNED_BYTE || getSpecialKind() == Item.HASHCODE_INT);
+			return (getSpecialKind() == Item.RANDOM_INT 
+					|| getSpecialKind() == Item.SIGNED_BYTE 
+					|| getSpecialKind() == Item.HASHCODE_INT 
+					|| getSpecialKind() == Item.RANDOM_INT_REMAINDER || getSpecialKind() == Item.HASHCODE_INT_REMAINDER);
+			
 		}
 	}
 
@@ -747,12 +769,12 @@ public class OpcodeStack implements Constants2
 	 			case ICONST_3:
 	 			case ICONST_4:
 	 			case ICONST_5:
-	 				push(new Item("I", new Integer(seen-ICONST_0)));
+	 				push(new Item("I", (Integer)(seen-ICONST_0)));
 	 			break;
 	 			
 	 			case LCONST_0:
 	 			case LCONST_1:
-	 				push(new Item("J", new Long(seen-LCONST_0)));
+	 				push(new Item("J", (Long)(long)(seen-LCONST_0)));
 	 			break;
 	 			
 	 			case DCONST_0:
@@ -866,7 +888,7 @@ public class OpcodeStack implements Constants2
 	 			
 	 			case BIPUSH:
 	 			case SIPUSH:
-	 				push(new Item("I", new Integer(dbc.getIntConstant())));
+	 				push(new Item("I", (Integer)dbc.getIntConstant()));
 	 			break;
 	 			
 	 			case IADD:
@@ -947,11 +969,11 @@ public class OpcodeStack implements Constants2
 	 					long l = (Long) it.getConstant();
 	 					long l2 = (Long) it.getConstant();
 	 					if (l2 < l)
-	 						push(new Item("I", new Integer(-1)));
+	 						push(new Item("I", (Integer)(-1)));
 	 					else if (l2 > l)
-	 						push(new Item("I", new Integer(1)));
+	 						push(new Item("I", (Integer)(1)));
 	 					else
-	 						push(new Item("I", new Integer(0)));
+	 						push(new Item("I", (Integer)(0)));
 	 				} else {
 	 					push(new Item("I"));
 	 				}
@@ -1553,6 +1575,10 @@ public class OpcodeStack implements Constants2
 		}
 		if (seen == IADD && newValue.specialKind == 0 &&   lhs.getConstant() == null && rhs.getConstant() == null ) 
 			newValue.specialKind = Item.INTEGER_SUM;
+		if (seen == IREM && lhs.specialKind == Item.HASHCODE_INT)
+			newValue.specialKind = Item.HASHCODE_INT_REMAINDER;
+		if (seen == IREM && lhs.specialKind == Item.RANDOM_INT)
+			newValue.specialKind = Item.RANDOM_INT_REMAINDER;
  		if (DEBUG) System.out.println("push: " + newValue);
  		push(newValue);
 	}
