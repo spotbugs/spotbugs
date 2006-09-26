@@ -374,7 +374,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 				// If it is a scannable codebase, check it for nested archives.
 				// In addition, if it is an application codebase then
 				// make a list of application classes.
-				if (discoveredCodeBase.getCodeBase() instanceof IScannableCodeBase) {
+				if (discoveredCodeBase.getCodeBase() instanceof IScannableCodeBase && discoveredCodeBase.codeBase.isApplicationCodeBase()) {
 					scanCodebase(classPath, workList, discoveredCodeBase);
 				}
 
