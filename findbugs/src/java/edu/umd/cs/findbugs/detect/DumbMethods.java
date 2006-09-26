@@ -205,7 +205,6 @@ public class DumbMethods extends BytecodeScanningDetector  {
 			if (stackLoc >= 0) {
 				OpcodeStack.Item tos = stack.getStackItem(stackLoc);
 				switch (tos.getSpecialKind()) {
-				case OpcodeStack.Item.HASHCODE_INT:
 				case OpcodeStack.Item.HASHCODE_INT_REMAINDER:
 					bugReporter.reportBug(new BugInstance(this, "RV_REM_OF_HASHCODE", HIGH_PRIORITY)
 					.addClassAndMethod(this)
@@ -594,27 +593,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 				}
 		}
 			
-		
-/*
-	//
-	// TODO: put this back in when we have a standard way
-	// of enabling and disabling warnings on a per-bug-pattern
-	// basis.
-	//
-	if ((seen == INVOKEVIRTUAL)
-				&& sawLDCEmptyString
-				&& getNameConstantOperand().equals("equals"))
-		bugReporter.reportBug(new BugInstance("DM_STRING_EMPTY_EQUALS", LOW_PRIORITY)
-				.addClassAndMethod(this)
-				.addSourceLine(this));
-	if ((seen == LDC)
-				&& (getConstantRefOperand() instanceof ConstantString)
-				&& (getStringConstantOperand().length() == 0))
-		sawLDCEmptyString = true;
-	else
-		sawLDCEmptyString = false;
-*/
-		
+				
 	} finally {
 		stack.sawOpcode(this,seen);
 		prevOpcode = seen;
