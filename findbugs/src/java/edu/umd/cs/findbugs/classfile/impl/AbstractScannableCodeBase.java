@@ -65,6 +65,8 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()
 	 */
 	public boolean containsSourceFiles() throws InterruptedException {
+		// MUSTFIX
+		if (true) return false;
 		if (!checkedForSourceFiles) {
 			ICodeBaseIterator i = iterator();
 			while (i.hasNext()) {
