@@ -54,7 +54,7 @@ public class ExceptionSet implements Serializable {
 	/**
 	 * Object to iterate over the exception types in the set.
 	 */
-	public class ThrownExceptionIterator implements Iterator {
+	public class ThrownExceptionIterator implements Iterator<ObjectType> {
 		private int last = -1, next = -1;
 
 		ThrownExceptionIterator() {
@@ -187,6 +187,18 @@ public class ExceptionSet implements Serializable {
 		return size == 0;
 	}
 
+	/**
+	 * Checks to see if the exception set is a singleton set
+	 * containing just the named exception
+	 * @param exceptionName (in dotted format)
+	 * @return true if it is
+	 */
+	public boolean isSingleton(String exceptionName) {
+		if (size != 1) return false;
+		ObjectType e = iterator().next();
+		return e.toString().equals(exceptionName);
+		
+	}
 	/**
 	 * Add an explicit exception.
 	 *
