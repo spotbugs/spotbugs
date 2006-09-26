@@ -49,6 +49,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		assumedNonNull = new HashMap<XField,HashSet<ProgramPoint>>();
 	Set<XField> nullTested = new HashSet<XField>();
 	Set<XField> declaredFields = new TreeSet<XField>();
+	Set<XField> ejb3Fields = new TreeSet<XField>();
+	
 	Set<XField> fieldsOfNativeClassed
     = new HashSet<XField>();
 	Set<XField> fieldsOfSerializableOrNativeClassed
@@ -153,6 +155,16 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		}
 	}
 
+	@Override
+	public void visitAnnotation(String annotationClass,
+			Map<String, Object> map, boolean runtimeVisible) {
+		if (!visitingField()) return;
+		if (annotationClass.startsWith("javax.ejb") || annotationClass.startsWith("javax.persistence")) {
+			ejb3Fields.add(XFactory.createXField(this));
+		}
+		
+
+	}
 	@Override
          public void visit(ConstantValue obj) {
 		// ConstantValue is an attribute of a field, so the instance variables
@@ -384,6 +396,13 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			System.out.println("read fields:" );
 			for(XField f : readFields) 
 				System.out.println("  " + f);
+			if (!ejb3Fields.isEmpty()) {
+				System.out.println("ejb3 fields:" );
+				for(XField f : ejb3Fields) 
+					System.out.println("  " + f);
+			}
+		
+		
 			System.out.println("written fields:" );
 			for (XField f : writtenFields) 
 				System.out.println("  " + f);
@@ -395,25 +414,33 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			for (XField f : assumedNonNull.keySet()) 
 				System.out.println("  " + f);
 		}
+		// Don't report anything about ejb3Fields
+		declaredFields.removeAll(ejb3Fields);
+		
+		
 		TreeSet<XField> notInitializedInConstructors =
 		        new TreeSet<XField>(declaredFields);
 		notInitializedInConstructors.retainAll(readFields);
 		notInitializedInConstructors.retainAll(writtenFields);
 		notInitializedInConstructors.retainAll(assumedNonNull.keySet());
 		notInitializedInConstructors.removeAll(writtenInConstructorFields);
+
 		
 		TreeSet<XField> readOnlyFields =
 		        new TreeSet<XField>(declaredFields);
 		readOnlyFields.removeAll(writtenFields);
+
 		readOnlyFields.retainAll(readFields);
 		
 		TreeSet<XField> nullOnlyFields =
 	        new TreeSet<XField>(declaredFields);
 		nullOnlyFields.removeAll(writtenNonNullFields);
+
 		nullOnlyFields.retainAll(readFields);
 		
 		Set<XField> writeOnlyFields = declaredFields;
 		writeOnlyFields.removeAll(readFields);
+
 
 		for (XField f : notInitializedInConstructors) {
 			String fieldName = f.getName();

@@ -43,7 +43,7 @@ import org.apache.bcel.classfile.LineNumberTable;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
-abstract public class DismantleBytecode extends PreorderVisitor {
+abstract public class DismantleBytecode extends AnnotationVisitor {
 
 	private int opcode;
 	private boolean opcodeIsWide;
