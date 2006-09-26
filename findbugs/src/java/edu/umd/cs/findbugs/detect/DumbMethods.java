@@ -201,8 +201,9 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		}
 
 		try {
-			if (tosMustBeNonNegative(seen)) {
-				OpcodeStack.Item tos = stack.getStackItem(0);
+			int stackLoc = stackEntryThatMustBeNonnegative(seen);
+			if (stackLoc >= 0) {
+				OpcodeStack.Item tos = stack.getStackItem(stackLoc);
 				switch (tos.getSpecialKind()) {
 				case OpcodeStack.Item.HASHCODE_INT:
 				case OpcodeStack.Item.HASHCODE_INT_REMAINDER:
@@ -621,11 +622,25 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	}
 
 	/**
+	 * Return index of stack entry that must be nonnegative.
+	 * 
+	 * Return -1 if no stack entry is required to be nonnegative.
 	 * @param seen
 	 * @return
 	 */
-	private boolean tosMustBeNonNegative(int seen) {
+	private int stackEntryThatMustBeNonnegative(int seen) {
 		switch(seen) {
+		case INVOKEINTERFACE:
+			if (getClassConstantOperand().equals("java/util/List")) {
+				return getStackEntryOfListCallThatMustBeNonnegative();
+			}
+			break;
+		case INVOKEVIRTUAL:
+			if (getClassConstantOperand().equals("java/util/LinkedList") || getClassConstantOperand().equals("java/util/ArrayList")) {
+				return getStackEntryOfListCallThatMustBeNonnegative();
+			}
+			break;
+			       
 		case IALOAD:
 		case AALOAD:
 		case SALOAD:
@@ -634,6 +649,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		case LALOAD:
 		case DALOAD:
 		case FALOAD:
+			return 0;
 		case IASTORE:
 		case AASTORE:
 		case SASTORE:
@@ -642,10 +658,19 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		case LASTORE:
 		case DASTORE:
 		case FASTORE:
-			return true;
+			return 1;
 		}
-		// TODO Auto-generated method stub
-		return false;
+		return -1;
+	}
+	private int getStackEntryOfListCallThatMustBeNonnegative() {
+		String name = getNameConstantOperand();
+		if ((name.equals("add") || name.equals("set"))
+		    && getSigConstantOperand().startsWith("(I"))
+			return 1;
+		if ((name.equals("get") || name.equals("remove"))
+		        && getSigConstantOperand().startsWith("(I)"))
+				return 0;
+		return -1;
 	}
 	private void checkMonitorWait() {
 		try {
