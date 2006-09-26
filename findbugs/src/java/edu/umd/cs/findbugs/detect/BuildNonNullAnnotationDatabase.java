@@ -107,9 +107,10 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 	public void visitAnnotation(String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
 
-		annotationClass = lastPortion(annotationClass);
+	
 
 		NullnessAnnotation n = NullnessAnnotation.Parser.parse(annotationClass);
+		annotationClass = lastPortion(annotationClass);
 		if (n == null) {
 			if (annotationClass.startsWith("DefaultAnnotation")) {
 
