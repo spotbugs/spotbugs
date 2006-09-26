@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
@@ -127,6 +128,13 @@ public class PruneInfeasibleExceptionEdges implements EdgeTypes {
 				// so we can delete the edge.
 				deletedEdgeSet.add(edge);
 			} else {
+				if (exceptionSet.isSingleton("java.lang.CloneNotSupportedException") && cfg.getMethodName().endsWith(".clone()")){
+					String className = cfg.getMethodGen().getClassName();
+					if (Repository.implementationOf(className,"java.lang.Cloneable")) {
+						deletedEdgeSet.add(edge);
+						continue;
+					}
+				} 
 				// Some exceptions appear to be thrown on the edge.
 				// Mark to indicate if any of the exceptions are checked,
 				// and if any are explicit (checked or explicitly declared
