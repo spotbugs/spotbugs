@@ -253,7 +253,7 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
 
 		// Seed worklist with system codebases.
-		addWorkListItemsForClasspath(workList, SystemProperties.getProperty("java.class.path"));
+		// addWorkListItemsForClasspath(workList, SystemProperties.getProperty("java.class.path"));
 		addWorkListItemsForClasspath(workList, SystemProperties.getProperty("sun.boot.class.path"));
 		String extPath = SystemProperties.getProperty("java.ext.dirs");
 		if (extPath != null) {
