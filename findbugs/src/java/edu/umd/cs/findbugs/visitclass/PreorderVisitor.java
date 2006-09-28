@@ -431,11 +431,12 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 			throw new IllegalStateException("getFullyQualifiedFieldName called while not visiting field");
 		if (fullyQualifiedFieldName == null)
 			fullyQualifiedFieldName = getDottedClassName() + "." + getFieldName()
-	        + " : " + getDottedFieldSig();
+	        + " : " + getFieldSig();
 		return fullyQualifiedFieldName;
 	}
 
 	/** If currently visiting a field, get the field's dot-formatted signature */
+	@Deprecated
 	public String getDottedFieldSig() {
 		if (!visitingField)
 			throw new IllegalStateException("getDottedFieldSig called while not visiting field");

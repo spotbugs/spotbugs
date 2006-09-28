@@ -165,7 +165,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 		FieldRecord f = new FieldRecord();
 		f.className = getDottedClassName();
 		f.name = getFieldName();
-		f.signature = getDottedFieldSig();
+		f.signature = getFieldSig();
 		f.isPublic = isPublic;
 		f.isFinal = isFinal;
 
@@ -195,13 +195,14 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 			boolean isHashtable = fieldSig.equals("Ljava.util.Hashtable;");
 			boolean isArray = fieldSig.charAt(0) == '['
 					&& unsafeValue.contains(name);
-			/*
+			
+			if (false) 
 			              System.out.println(className + "."  + fieldName
 						              + " : " + fieldSig
 					              + "	" + isHashtable
 					              + "	" + isArray
 						              );
-			              */
+			            
 
 			String bugType;
 			int priority = NORMAL_PRIORITY;

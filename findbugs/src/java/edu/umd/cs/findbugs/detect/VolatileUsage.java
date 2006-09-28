@@ -59,7 +59,7 @@ static class FieldRecord {
 		   FieldRecord f = new FieldRecord();
 			f.className = getDottedClassName();
 			f.name = getFieldName();
-			f.signature = getDottedFieldSig();
+			f.signature = getFieldSig();
 			f.isStatic = !((flags & ACC_STATIC) == 0);
 			fieldInfo.put(getDottedClassName() + "." + getFieldName(),
 					f);
