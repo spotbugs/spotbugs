@@ -63,6 +63,10 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 */
 	public FieldAnnotation(String className, String fieldName, String fieldSig, boolean isStatic) {
 		super(className, DEFAULT_ROLE);
+		if (fieldSig.indexOf(".") >= 0) {
+			IllegalArgumentException e = new IllegalArgumentException("signatures should not be dotted: " + fieldSig);
+			throw e;
+		}
 		this.fieldName = fieldName;
 		this.fieldSig = fieldSig;
 		this.isStatic = isStatic;
