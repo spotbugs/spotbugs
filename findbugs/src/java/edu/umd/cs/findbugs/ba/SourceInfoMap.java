@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.SystemProperties;
@@ -53,6 +54,9 @@ public class SourceInfoMap {
 			this.fieldName = fieldName;
 		}
 		
+		public String toString() {
+			return className +"." + fieldName;
+		}
 		/* (non-Javadoc)
 		 * @see java.lang.Comparable#compareTo(T)
 		 */
@@ -93,7 +97,9 @@ public class SourceInfoMap {
 			this.methodName = methodName;
 			this.methodSignature = methodSignature;
 		}
-		
+		public String toString() {
+			return className +"." + methodName;
+		}
 		/* (non-Javadoc)
 		 * @see java.lang.Comparable#compareTo(T)
 		 */
