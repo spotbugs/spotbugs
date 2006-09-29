@@ -71,6 +71,10 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	public MethodAnnotation(String className, String methodName, String methodSig, boolean isStatic) {
 		super(className, DEFAULT_ROLE);
 		this.methodName = methodName;
+		if (methodSig.indexOf(".") >= 0) {
+			assert false : "signatures should not be dotted: " + methodSig;
+			methodSig = methodSig.replace('.','/');
+		}
 		this.methodSig = methodSig;
 		this.isStatic = isStatic;
 		fullMethod = null;
