@@ -879,6 +879,7 @@ public class MainFrame extends FBFrame implements LogSync
 		});
 		sorter = GUISaveState.getInstance().getStarterTable();
 		tableheader.setColumnModel(sorter);
+		tableheader.setToolTipText("Drag to reorder tree folder and sort order");
 		
 		tree = new JTree();
 		treeUI = (BasicTreeUI) tree.getUI();
