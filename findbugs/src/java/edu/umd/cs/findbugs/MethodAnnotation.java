@@ -285,7 +285,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		if (key.equals(""))
 			return UGLY_METHODS ? getUglyMethod() : getFullMethod(primaryClass);
 		else if (key.equals("givenClass")) return getNameInClass(primaryClass);
-		else if (key.equals("shortMethod"))
+		else if (key.equals("shortMethod") || key.equals("hash"))
 			return className + "." + methodName + "()";
 		else if (key.equals("returnType")) {
 			int i = methodSig.indexOf(')');

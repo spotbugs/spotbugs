@@ -108,7 +108,7 @@ public class FindBugs2 implements IFindBugsEngine {
 		};
 		
 		// By default, we do want to scan nested archives
-		this.scanNestedArchives = true;
+		this.scanNestedArchives = false;
 	}
 	
 	/**

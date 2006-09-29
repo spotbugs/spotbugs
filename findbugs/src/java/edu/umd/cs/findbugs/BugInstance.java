@@ -299,9 +299,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 				// do nothing
 			} else {
 				buf.append(":");
-				if (annotation instanceof LocalVariableAnnotation)
-					buf.append(annotation.format("name", null));
-				else buf.append(annotation.format("", null));
+				buf.append(annotation.format("hash", null));
 			}
 		}
 		return buf.toString();

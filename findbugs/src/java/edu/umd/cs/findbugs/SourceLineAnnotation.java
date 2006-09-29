@@ -491,6 +491,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	}
 
 	public String format(String key, ClassAnnotation primaryClass) {
+		if (key.equals("hash")) return "";
 		if (key.equals("")) {
 			StringBuffer buf = new StringBuffer();
 			buf.append(sourceFile);
