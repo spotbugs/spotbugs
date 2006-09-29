@@ -19,23 +19,31 @@
 
 package de.tobject.findbugs.view;
 
+import java.util.Iterator;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.reporter.MarkerUtil;
+import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 
 /**
@@ -59,6 +67,8 @@ public class DetailsView extends ViewPart {
 
 	private String title = "";
 
+	private List annotationList;
+
 	// HTML presentation classes
 	private DefaultInformationControl.IInformationPresenter presenter;
 
@@ -70,7 +80,10 @@ public class DetailsView extends ViewPart {
 	 * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	public void createPartControl(Composite parent) {
-		control = new StyledText(parent, SWT.READ_ONLY | SWT.H_SCROLL
+		SashForm sash = new SashForm(parent, SWT.VERTICAL);
+		annotationList = new List(sash, SWT.V_SCROLL);
+
+		control = new StyledText(sash, SWT.READ_ONLY | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 		control.setEditable(false);
 		// Handle control resizing. The HTMLPresenter cares about window size
@@ -150,12 +163,25 @@ public class DetailsView extends ViewPart {
 
 				String bugType =  marker.getAttribute(
 						FindBugsMarker.BUG_TYPE, "");
+				DetectorFactoryCollection.instance().ensureLoaded(); // fix bug#1530195
 				BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
 				if (pattern != null) {
 					String shortDescription = pattern.getShortDescription();
 					String detailText = pattern.getDetailText();
 					DetailsView.getDetailsView().setContent(shortDescription,
 							detailText);
+				}
+
+				List anList = DetailsView.getDetailsView().annotationList;
+				anList.removeAll();
+				BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
+				// bug may be null, but if so then the error has already been logged.
+				if (bug != null) {
+					Iterator<BugAnnotation> it = bug.annotationIterator();
+					while (it.hasNext()) {
+						BugAnnotation ba = it.next();
+						anList.add(ba.toString());
+					}
 				}
 
 			} catch (PartInitException e) {

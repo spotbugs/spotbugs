@@ -461,6 +461,10 @@ public abstract class MarkerUtil {
 			}
 
 			BugCollection bugCollection = FindbugsPlugin.getBugCollection(project, null);
+			if (bugCollection == null) {
+				FindbugsPlugin.getDefault().logError("Could not get BugCollection for FindBugs marker");
+				return null;
+			}
 
 			return bugCollection.lookupFromUniqueId(uniqueId);
 		} catch (RuntimeException e) {

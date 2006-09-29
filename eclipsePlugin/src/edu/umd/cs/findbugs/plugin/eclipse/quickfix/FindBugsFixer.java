@@ -51,7 +51,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 public abstract class FindBugsFixer implements IMarkerResolution  {
 	static private final String MISSING_BUG_INSTANCE = "This bug is no longer in the system. " +
 	 "The bugs somehow got out of sync with the memory representation. " +
-	 "Try running FindBugs again. If that does not work, check the error log and remove the .fbwarnings files.";
+	 "Try running FindBugs again. If that does not work, check the error log and remove the *.fbwarnings files.";
 
 	 public void run(IMarker marker) {
 		try {
