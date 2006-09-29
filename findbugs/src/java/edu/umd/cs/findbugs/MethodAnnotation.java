@@ -112,7 +112,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	public static MethodAnnotation fromCalledMethod(DismantleBytecode visitor) {
 		String className = visitor.getDottedClassConstantOperand();
 		String methodName = visitor.getNameConstantOperand();
-		String methodSig = visitor.getDottedSigConstantOperand();
+		String methodSig = visitor.getSigConstantOperand();
 		
 		return fromCalledMethod(className, methodName, methodSig,
 				visitor.getOpcode() == Constants.INVOKESTATIC);
@@ -241,6 +241,15 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		return methodName;
 	}
 
+	public String getJavaSourceMethodName() {
+		if (methodName.equals("<clinit>")) return "<static initializer>";
+		if (methodName.equals("<init>")) {
+			String result = getClassName();
+			int pos = Math.max(result.lastIndexOf('$'),result.lastIndexOf('.'));
+			return className.substring(pos+1);
+		}
+		return methodName;
+	}
 	/**
 	 * Get the method type signature.
 	 */
@@ -319,7 +328,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		if (primaryClass == null) shortenPackages = false;
 		// Convert to "nice" representation
 		StringBuffer result = new StringBuffer();
-		result.append(methodName);
+		result.append(getJavaSourceMethodName());
 		result.append('(');
 
 		// append args

@@ -85,7 +85,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 		if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
 			lastCallClass = getDottedClassConstantOperand();
 			lastCallMethod = getNameConstantOperand();
-			lastCallSig = getDottedSigConstantOperand();
+			lastCallSig = getSigConstantOperand();
 		}
 
 		if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)

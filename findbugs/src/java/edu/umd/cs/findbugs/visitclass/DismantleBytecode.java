@@ -177,6 +177,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	}
 
 	/** If the current opcode has a reference constant operand, get its signature, dot-formatted */
+	@Deprecated
 	public String getDottedSigConstantOperand() {
 		if (dottedSigConstantOperand == NOT_AVAILABLE)
 			throw new IllegalStateException("getDottedSigConstantOperand called but value not available");
