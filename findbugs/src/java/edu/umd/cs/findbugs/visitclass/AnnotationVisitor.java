@@ -229,19 +229,19 @@ public class AnnotationVisitor extends PreorderVisitor {
 			Constant c = getConstantPool().getConstant(cp_index);
 			switch (tag) {
 			case 'B':
-				return new Byte((byte) ((ConstantInteger) c).getBytes());
+				return (Byte)(byte) ((ConstantInteger) c).getBytes();
 			case 'C':
-				return new Character((char) ((ConstantInteger) c).getBytes());
+				return (Character)(char) ((ConstantInteger) c).getBytes();
 			case 'D':
 				return new Double(((ConstantDouble) c).getBytes());
 			case 'F':
 				return new Float(((ConstantFloat) c).getBytes());
 			case 'I':
-				return new Integer(((ConstantInteger) c).getBytes());
+				return  (Integer)((ConstantInteger) c).getBytes();
 			case 'J':
-				return new Long(((ConstantLong) c).getBytes());
+				return (Long)((ConstantLong) c).getBytes();
 			case 'S':
-				return new Character((char) ((ConstantInteger) c).getBytes());
+				return ( Character)(char) ((ConstantInteger) c).getBytes();
 			case 'Z':
 				return Boolean.valueOf(((ConstantInteger) c).getBytes() != 0);
 			case 's':
