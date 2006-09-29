@@ -754,8 +754,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 		if (!currentExtendedPreferences.equals(origExtendedPreferences)) {
 			try {
 				// If user prefs do not exist save them to be sure a base prefs
-				// file exist.
-				if (!FindbugsPlugin.getUserPreferencesFile(project).exists()) {
+				// file exists.
+				if (!FindbugsPlugin.getUserPreferencesFile(project).toFile().exists()) {
 					FindbugsPlugin.saveUserPreferences(project,
 							currentUserPreferences);
 				}

@@ -18,6 +18,9 @@
  */
 package de.tobject.findbugs.io;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -89,4 +92,31 @@ public abstract class IO {
 		}
 		
 	}
+
+	/**
+	 * Write the contents of a java.io.File
+	 * 
+	 * @param file    the file to write to
+	 * @param output  the FileOutput object responsible for generating the data
+	 */
+	public static void writeFile(
+			final File file, final FileOutput output, final IProgressMonitor monitor) {
+		FileOutputStream fout=null;
+		try {
+			fout = new FileOutputStream(file);
+			BufferedOutputStream bout = new BufferedOutputStream(fout);
+			if (monitor!=null) monitor.subTask("writing data to "+file.getName());
+			output.writeFile(bout);
+		} catch (IOException e) {
+			FindbugsPlugin.getDefault().logException(
+					e, "Exception while " + output.getTaskDescription());
+		} finally {
+			try {
+				if (fout!=null) fout.close();
+			} catch (IOException e) {
+				// ignore
+			}
+		}
+	}
+
 }

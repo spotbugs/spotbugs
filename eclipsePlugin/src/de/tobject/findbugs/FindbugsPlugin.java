@@ -20,7 +20,9 @@
 
 package de.tobject.findbugs;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +40,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -390,11 +393,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * Get the file resource used to store findbugs warnings for a project.
 	 * 
 	 * @param project the project
-	 * @return the IFile (which may not actually exist in the filesystem yet)
+	 * @return the IPath to the file (which may not actually exist in the filesystem yet)
 	 */
-	private static IFile getBugCollectionFile(IProject project) {
-		IFile file = project.getFile(".fbwarnings");
-		return file;
+	private static IPath getBugCollectionFile(IProject project) {
+		//IPath path = project.getWorkingLocation(PLUGIN_ID); // project-specific but not user-specific?
+		IPath path = getDefault().getStateLocation(); // user-specific but not project-specific
+		return path.append(project.getName()+".fbwarnings");
 	}
 	
 	public static boolean isBugCollectionDirty(IProject project) throws CoreException {
@@ -499,17 +503,23 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	private static void readBugCollectionAndProject(IProject project, IProgressMonitor monitor) throws IOException, DocumentException, CoreException {
 		SortedBugCollection bugCollection;
 		Project findbugsProject;
-		
-		IFile bugCollectionFile = getBugCollectionFile(project);
+
+		IPath bugCollectionPath = getBugCollectionFile(project);
+		// Don't turn the path to an IFile because it isn't local to the project.
+		// see the javadoc for org.eclipse.core.runtime.Plugin
+		File bugCollectionFile = bugCollectionPath.toFile();
 		if (!bugCollectionFile.exists()) {
-			throw new FileNotFoundException(bugCollectionFile.getLocation().toOSString());
+			//throw new FileNotFoundException(bugCollectionFile.getLocation().toOSString());
+			getDefault().logWarning("findbugs collection file doesn't exist: "+bugCollectionPath.toOSString());
+			return;
 		}
 
 		bugCollection = new SortedBugCollection();
 		findbugsProject = new Project();
 
 		// FIXME: use progress monitor
-		bugCollection.readXML(bugCollectionFile.getContents(), findbugsProject);
+		InputStream contents = new BufferedInputStream(new FileInputStream(bugCollectionFile));
+		bugCollection.readXML(contents, findbugsProject);
 
 		cacheBugCollectionAndProject(project, bugCollection, findbugsProject);
 	}
@@ -565,7 +575,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			IProject project, final SortedBugCollection bugCollection, final Project findbugsProject, IProgressMonitor monitor)
 			throws IOException, CoreException {
 		// Save to file
-		IFile bugCollectionFile = FindbugsPlugin.getBugCollectionFile(project);
+		IPath bugCollectionPath = getBugCollectionFile(project);
+		// Don't turn the path to an IFile because it isn't local to the project.
+		// see the javadoc for org.eclipse.core.runtime.Plugin
+		File bugCollectionFile = bugCollectionPath.toFile();
 		FileOutput fileOutput = new FileOutput() {
 			public void writeFile(OutputStream os) throws IOException {
 				bugCollection.writeXML(os, findbugsProject);
@@ -583,10 +596,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * Get the FindBugs preferences file for a project.
 	 * 
 	 * @param project the project
-	 * @return the IFile for the FindBugs preferences file
+	 * @return the IPath for the project's FindBugs preferences file
 	 */
-	public static IFile getUserPreferencesFile(IProject project) {
-		return project.getFile(".fbprefs");
+	public static IPath getUserPreferencesFile(IProject project) {
+		//IPath path = project.getWorkingLocation(PLUGIN_ID); // project-specific but not user-specific?
+		IPath path = getDefault().getStateLocation(); // user-specific but not project-specific
+		return path.append(project.getName()+".fbprefs");
 	}
 	
 	/**
@@ -641,7 +656,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		// Make the new user preferences current for the project
 		project.setSessionProperty(SESSION_PROPERTY_USERPREFS, userPrefs);
 		
-		IFile userPrefsFile = getUserPreferencesFile(project);
+		IPath userPrefsPath = getUserPreferencesFile(project);
+		// Don't turn the path to an IFile because it isn't local to the project.
+		// see the javadoc for org.eclipse.core.runtime.Plugin
+		File userPrefsFile = userPrefsPath.toFile();
 		
 		FileOutput userPrefsOutput = new FileOutput() {
 			public void writeFile(OutputStream os) throws IOException {
@@ -668,14 +686,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		// Make the new extended preferences current for the project
 		project.setSessionProperty(SESSION_PROPERTY_EXTENDEDPREFS, extendedPrefs);
 		
-		IFile userPrefsFile = getUserPreferencesFile(project);
-		if (!userPrefsFile.exists()) {
+		IPath userPrefsFile = getUserPreferencesFile(project);
+		File prefsFile = userPrefsFile.toFile();
+		if (!prefsFile.exists()) {
 			throw new IOException("User preferences file not present yet. Save UserPreferences first.");
 		}		
-		File prefsFile = userPrefsFile.getLocation().toFile();
 		
 		extendedPrefs.write(prefsFile);
-		userPrefsFile.refreshLocal(IResource.DEPTH_INFINITE, null);
+		//userPrefsFile.refreshLocal(IResource.DEPTH_INFINITE, null);
 	}
 
 	/**
@@ -688,12 +706,16 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @throws CoreException
 	 */
 	private static UserPreferences readUserPreferences(IProject project) throws CoreException {
-		IFile userPrefsFile = getUserPreferencesFile(project);
+		IPath userPrefsPath = getUserPreferencesFile(project);
+		// Don't turn the path to an IFile because it isn't local to the project.
+		// see the javadoc for org.eclipse.core.runtime.Plugin
+		File userPrefsFile = userPrefsPath.toFile();
 		if (!userPrefsFile.exists())
 			return null;
 
 		try {
-			InputStream in = userPrefsFile.getContents();
+			//InputStream in = userPrefsFile.getContents();
+			InputStream in = new BufferedInputStream(new FileInputStream(userPrefsFile));
 			UserPreferences userPrefs = UserPreferences.createDefaultUserPreferences();
 			userPrefs.read(in);
 			return userPrefs;
@@ -705,13 +727,16 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	}
 	
 	private static ExtendedPreferences readExtendedPreferences(IProject project) {
-		IFile userPrefsFile = getUserPreferencesFile(project);
+		IPath userPrefsPath = getUserPreferencesFile(project);
+		// Don't turn the path to an IFile because it isn't local to the project.
+		// see the javadoc for org.eclipse.core.runtime.Plugin
+		File userPrefsFile = userPrefsPath.toFile();
 		if (!userPrefsFile.exists())
 			return null;
 
 		try {
 			ExtendedPreferences prefs = new ExtendedPreferences();
-			prefs.read(userPrefsFile.getLocation().toFile());
+			prefs.read(userPrefsFile);
 			return prefs;
 		} catch (IOException e) {
 			FindbugsPlugin.getDefault().logException(
