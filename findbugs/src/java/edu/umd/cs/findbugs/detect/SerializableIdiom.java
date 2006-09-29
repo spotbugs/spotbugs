@@ -474,7 +474,11 @@ public class SerializableIdiom extends BytecodeScanningDetector
 						+" " +  sawSerialVersionUID
 						+" " +  isGUIClass);
 					// Report is queued until after the entire class has been seen.
-					fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
+					
+					if (obj.getName().equals("this$0"))
+						fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_INNER_CLASS", priority)
+					        .addClass(getThisClass().getClassName()));
+						else fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
 					        .addClass(getThisClass().getClassName())
 					        .addField(getDottedClassName(), obj.getName(), getFieldSig(), false));
 				}

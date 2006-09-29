@@ -13,7 +13,7 @@
     <Details>
 <![CDATA[
 <p>
-This plugin contains all of the standard FindBugs detectors.
+This plugin contains all of the standard FindBug detectors.
 </p>
 ]]>
     </Details>
@@ -2958,6 +2958,23 @@ the <code>Externalizable</code> interface or the
 <code>readObject()</code> and <code>writeObject()</code> methods.&nbsp;
 Objects of this class will not be deserialized correctly if a non-Serializable
 object is stored in this field.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="SE_BAD_FIELD_INNER_CLASS">
+    <ShortDescription>Non-serializable class has a serializable inner class</ShortDescription>
+    <LongDescription>{0} is serializable but also an inner class of a non-serializable class</LongDescription>
+    <Details>
+<![CDATA[
+<p> This Serializable class is an inner class of a non-serializable class.
+Thus, attempts to serialize it will also attempt to associate instance of the outer
+class with which it is associated, leading to a runtime error.
+</p>
+<p>If possible, making the inner class a static inner class should solve the 
+problem. Making the outer class serializable might also work, but that would
+mean serializing an instance of the inner class would always also serialize the instance
+of the outer class, which it often not what you really want.
 ]]>
     </Details>
   </BugPattern>
