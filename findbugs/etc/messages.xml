@@ -4838,7 +4838,7 @@ This creates an array of length one to hold the primitive array and passes it to
   </BugPattern>
   <BugPattern type="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS">
     <ShortDescription>Equals method should assume anything about the type of its argument</ShortDescription>
-    <LongDescription>Equals method for {0} assumes the argument is of type {2}</LongDescription>
+    <LongDescription>Equals method for {0} assumes the argument is of type {0}</LongDescription>
     <Details>
 <![CDATA[
 <p>
