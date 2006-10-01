@@ -91,6 +91,9 @@ public class Filter {
 		public boolean newCode = false;
 		public boolean newCodeSpecified = false;
 
+		public boolean hashChanged = false;
+		public boolean hashChangedSpecified = false;
+
 		public boolean removedCode = false;
 		public boolean removedCodeSpecified = false;
 
@@ -114,6 +117,7 @@ public class Filter {
 			
 			addSwitch("-not", "reverse (all) switches for the filter");
 			addSwitchWithOptionalExtraPart("-withSource", "truth", "only warnings for switch source is available");
+			addSwitchWithOptionalExtraPart("-hashChanged", "truth", "only warnings for which the stored hash is not the same as the calculated hash");
 			addOption("-exclude", "filter file", "exclude bugs matching given filter");
 			addOption("-include", "filter file", "include only bugs matching given filter");
 			
@@ -267,6 +271,10 @@ public class Filter {
 			
 			if (withSourceSpecified) {
 				if (sourceSearcher.findSource(bug.getPrimarySourceLineAnnotation()) != withSource) 
+					return false;
+			}
+			if (hashChangedSpecified) {
+				if (bug.isInstanceHashConsistent()  == hashChanged) 
 					return false;
 			}
 
@@ -426,6 +434,8 @@ public class Filter {
 		int passed = 0;
 		int dropped = 0;
 		resultCollection.setWithMessages(commandLine.withMessages);
+		if (commandLine.hashChangedSpecified)
+			origCollection.computeBugHashes();
 		commandLine.adjustFilter(resultCollection);
 		resultCollection.getProjectStats().clearBugCounts();
 		sourceSearcher = new SourceSearcher(project);

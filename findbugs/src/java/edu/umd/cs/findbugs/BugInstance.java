@@ -91,6 +91,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	private @CheckForNull  BugDesignation userDesignation;
 	private BugProperty propertyListHead, propertyListTail;
 	private String uniqueId;
+	private String oldInstanceHash;
 	private String instanceHash;
 	private int instanceOccurrenceNum;
 	private int instanceOccurrenceMax;
@@ -1572,7 +1573,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public void setInstanceHash(String instanceHash) {
 		this.instanceHash = instanceHash;
 	}
-
+	/**
+	 * @param instanceHash The oldInstanceHash to set.
+	 */
+	public void setOldInstanceHash(String oldInstanceHash) {
+		this.oldInstanceHash = oldInstanceHash;
+	}
 	/**
 	 * @return Returns the instanceHash.
 	 */
@@ -1580,6 +1586,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return instanceHash;
 	}
 
+	public boolean isInstanceHashConsistent() {
+		return oldInstanceHash == null || instanceHash.equals(oldInstanceHash);
+	}
 	/**
 	 * @param instanceOccurrenceNum The instanceOccurrenceNum to set.
 	 */

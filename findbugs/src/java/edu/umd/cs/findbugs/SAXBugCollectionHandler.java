@@ -148,6 +148,10 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					if (removedByChange != null) {
 						bugInstance.setRemovedByChangeOfPersistingClass(TigerSubstitutes.parseBoolean(removedByChange));
 					}
+					String oldInstanceHash = attributes.getValue("instanceHash");
+					if (oldInstanceHash != null) {
+						bugInstance.setOldInstanceHash(oldInstanceHash);
+						}
 					
 					
 				} else if (qName.equals("FindBugsSummary")) {
