@@ -39,6 +39,12 @@ public class IntAnnotation implements BugAnnotation {
 	private String description;
 
 	/**
+	 * 
+	 */
+	public static final String INT_SYNC_PERCENT = "INT_SYNC_PERCENT";
+	public static final String INT_OCCURRENCES = "INT_OCCURRENCES";
+
+	/**
 	 * Constructor.
 	 *
 	 * @param value the integer value
@@ -72,6 +78,7 @@ public class IntAnnotation implements BugAnnotation {
 	}
 
 	public String format(String key, ClassAnnotation primaryClass) {
+		if (!isSignificant()) return "";
 		return String.valueOf(value);
 	}
 
@@ -127,6 +134,10 @@ public class IntAnnotation implements BugAnnotation {
 			attributeList.addAttribute("role", role);
 		
 		BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
+	}
+ 
+	public boolean isSignificant() {
+		return !description.equals(INT_SYNC_PERCENT) && !description.equals(INT_OCCURRENCES);
 	}
 }
 

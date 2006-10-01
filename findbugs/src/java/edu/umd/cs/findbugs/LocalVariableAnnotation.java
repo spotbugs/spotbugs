@@ -175,6 +175,11 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		
 		return value;
 	}
+
+
+	public boolean isSignificant() {
+		return !value.equals("?");
+	}
 }
 
 // vim:ts=4

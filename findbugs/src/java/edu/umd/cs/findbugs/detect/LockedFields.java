@@ -286,7 +286,7 @@ public class LockedFields extends BytecodeScanningDetector {
 			bugReporter.reportBug(new BugInstance(this, "IS_INCONSISTENT_SYNC", NORMAL_PRIORITY)
 					.addClass(f.getClassName())
 					.addField(f)
-					.addInt(freq).describe("INT_SYNC_PERCENT"));
+					.addInt(freq).describe(IntAnnotation.INT_SYNC_PERCENT));
 			if (DEBUG) {
 				System.out.print(freq
 						+ "	");

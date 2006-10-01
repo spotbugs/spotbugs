@@ -164,6 +164,11 @@ public class StringAnnotation implements BugAnnotation {
 		
 		BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
 	}
+
+
+	public boolean isSignificant() {
+		return true;
+	}
 }
 
 // vim:ts=4

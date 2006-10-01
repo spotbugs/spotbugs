@@ -328,7 +328,7 @@ public class FindInconsistentSync2 implements Detector {
 				BugInstance bugInstance = new BugInstance(guardedByThis? "IS_FIELD_NOT_GUARDED" : "IS2_INCONSISTENT_SYNC", priority)
 						.addClass(xfield.getClassName())
 						.addField(xfield)
-						.addInt(freq).describe("INT_SYNC_PERCENT");
+						.addInt(freq).describe(IntAnnotation.INT_SYNC_PERCENT);
 
 				if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 					propertySet.decorateBugInstance(bugInstance);

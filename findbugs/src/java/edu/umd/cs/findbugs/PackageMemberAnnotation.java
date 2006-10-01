@@ -166,7 +166,10 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 		return sourceLines;
 	}
 	
-	
+
+	public boolean isSignificant() {
+		return true;
+	}
 
 	
 }

@@ -94,15 +94,14 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 
 	private boolean isBoring(BugAnnotation annotation) {
 		// We ignore int annotations.
-		if (annotation.getClass() == IntAnnotation.class)
-			return true;
+		if (annotation.getClass() == IntAnnotation.class) {
+			if (annotation.getDescription().equals(IntAnnotation.INT_SYNC_PERCENT))
+				return true;
+		}
 
-		// Ignore source line annotations that aren't
-		// either default or unknown.
+		// Ignore  all source line annotations 
 		if (annotation instanceof SourceLineAnnotation) {
-			SourceLineAnnotation srcLine = (SourceLineAnnotation) annotation;
-			String description = srcLine.getDescription();
-			return !(description.equals("SOURCE_LINE_DEFAULT") || description.equals("SOURCE_LINE_UNKNOWN"));
+			return true;
 		}
 
 		return false;
@@ -213,17 +212,6 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 				cmp = lhsField.compareTo(rhsField);
 				if (cmp != 0)
 					return cmp;
-			} else if (lhsAnnotation.getClass() == SourceLineAnnotation.class) {
-				// We assume that source lines may change, but source files
-				// and bytecode offsets will not.
-				SourceLineAnnotation lhsSource = (SourceLineAnnotation) lhsAnnotation;
-				SourceLineAnnotation rhsSource = (SourceLineAnnotation) rhsAnnotation;
-				cmp = lhsSource.getSourceFile().compareTo(rhsSource.getSourceFile());
-				if (cmp != 0) return cmp;
-				cmp = lhsSource.getStartBytecode() - rhsSource.getStartBytecode();
-				if (cmp != 0) return cmp;
-				cmp = lhsSource.getEndBytecode() - rhsSource.getEndBytecode();
-				if (cmp != 0) return cmp;
 			} else if (isBoring(lhsAnnotation)) {
 				throw new IllegalStateException("Impossible");
 			} else

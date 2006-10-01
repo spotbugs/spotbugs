@@ -644,6 +644,11 @@ public class SourceLineAnnotation implements BugAnnotation {
 	public boolean isSynthetic() {
 		return synthetic;
 	}
+
+
+	public boolean isSignificant() {
+		return false;
+	}
 }
 
 // vim:ts=4
