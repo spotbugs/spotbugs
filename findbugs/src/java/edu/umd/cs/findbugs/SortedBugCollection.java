@@ -292,7 +292,9 @@ public class SortedBugCollection implements BugCollection {
 			String hash = bugInstance.getInstanceKey();
 			if (digest != null) {
 				byte [] data = digest.digest(hash.getBytes());
-				hash = new BigInteger(1,data).toString(16);
+				String tmp = new BigInteger(1,data).toString(16);
+				if (false) System.out.println(hash + " -> " + tmp);
+				hash = tmp;
 			}
 			bugInstance.setInstanceHash(hash);
 			Integer count = seen.get(hash);
