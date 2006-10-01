@@ -285,8 +285,13 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		if (key.equals(""))
 			return UGLY_METHODS ? getUglyMethod() : getFullMethod(primaryClass);
 		else if (key.equals("givenClass")) return getNameInClass(primaryClass);
-		else if (key.equals("shortMethod") || key.equals("hash"))
+		else if (key.equals("shortMethod") )
 			return className + "." + methodName + "()";
+		else if (key.equals("hash")){
+				String tmp= getNameInClass(true, primaryClass, true);
+
+				return className + "." + tmp;
+		}
 		else if (key.equals("returnType")) {
 			int i = methodSig.indexOf(')');
 			String returnType = methodSig.substring(i+1);
@@ -306,7 +311,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 */
 	public String getNameInClass(ClassAnnotation primaryClass) {
 		if (nameInClass == null) {
-			nameInClass = getNameInClass(true, primaryClass);
+			nameInClass = getNameInClass(true, primaryClass, false);
 		}
 		return nameInClass;
 	}
@@ -323,12 +328,15 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param shortenPackages whether to shorten package names
 	 * if they are in java or in the same package as this method.
 	 * @param primaryClass TODO
+	 * @param useJVMMethodName TODO
 	 */
-	public String getNameInClass(boolean shortenPackages, ClassAnnotation primaryClass) {
+	public String getNameInClass(boolean shortenPackages, ClassAnnotation primaryClass, boolean useJVMMethodName) {
 		if (primaryClass == null) shortenPackages = false;
 		// Convert to "nice" representation
 		StringBuffer result = new StringBuffer();
-		result.append(getJavaSourceMethodName());
+		if (useJVMMethodName)
+			result.append(getMethodName());
+		else result.append(getJavaSourceMethodName());
 		result.append('(');
 
 		// append args
