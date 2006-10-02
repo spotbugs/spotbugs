@@ -234,7 +234,10 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 							// Merge the predecessor fact (possibly transformed by the edge transfer function)
 							// into the block's start fact.
-							if (DEBUG) debug(block, logicalPred, edge, "Meet " + start + " with " + edgeFact + "\n");
+							if (DEBUG) debug(block, logicalPred, edge, "\n  Meet " + start + "\n   with " + edgeFact 
+									+ "\n   pred last updated at " +  analysis.getLastUpdateTimestamp(predFact) +"\n");
+
+							
 							analysis.meetInto(edgeFact, edge, start);
 							if (DEBUG) System.out.println(" ==> " + start +"\n");
 						}
