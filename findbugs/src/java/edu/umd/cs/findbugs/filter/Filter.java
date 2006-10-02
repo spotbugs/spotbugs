@@ -31,6 +31,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.util.Strings;
 
 /**
  * Filter to match a subset of BugInstances.
@@ -137,7 +138,7 @@ public class Filter extends OrMatcher {
 				throw new FilterException("Missing name attribute in Package element");
 			
 			String pName = nameAttr.getValue();
-			pName = pName.startsWith("~") ? pName : "~" + pName.replace(".", "\\.");			
+			pName = pName.startsWith("~") ? pName : "~" + Strings.replace(pName, ".", "\\.");			
 			return new ClassMatcher(pName + "\\.[^.]+");
 		} else if (name.equals("Method")) {
 			Attribute nameAttr = element.attribute("name");
