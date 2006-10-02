@@ -1520,28 +1520,29 @@ In other words, each of the children must be true for the predicate to be true.
 
 <variablelist>
  <varlistentry>
-   <term><literal>&lt;BugCode&gt;</literal></term>
+   <term><literal>&lt;Bug&gt;</literal></term>
    <listitem><para>
-    This element specifies abbreviations of bugs.
-   The <literal>name</literal> attribute is a comma-separated list of abbreviations.
-   </para></listitem>
- </varlistentry>
- 
- <varlistentry>
-	<term><literal>&lt;BugPattern&gt;</literal></term>
-	<listitem>
-		<para>
-			This element specifies a particular bug pattern or bug patterns to match.
-			The <literal>name</literal> attribute is a comma-separated list of
+			This element specifies a particular bug pattern or patterns to match.
+			The <literal>pattern</literal> attribute is a comma-separated list of
 			bug pattern types.  You can find the bug pattern types for particular
 			warnings by looking at the output produced by the <command>-xml</command>
 			output option (the <literal>type</literal> attribute of <literal>BugInstance</literal>
 			elements), or from the <ulink url="../bugDescriptions.html">bug
 			descriptions document</ulink>.
-		</para>
-	</listitem>
+   </para><para>
+   			For more coarse-grained matching, use <literal>code</literal> attribute. It takes
+   			a comma-separated list of bug abbreviations. If both attributes are specified, all
+   			bug patterns that match either one of specified pattern names, or abreviations will be 
+   			matched.
+   </para><para>   
+   			As a backwards compatibility measure, <literal>&lt;BugPattern&gt;</literal> and
+   			<literal>&lt;BugCode&gt;</literal> elements may be used instead of 
+   			<literal>&lt;Bug&gt;</literal> element. Each of these uses a
+   			<literal>name</literal> attribute for specifying accepted values list. Support for these
+   			elements may be removed in a future release.
+   </para></listitem>
  </varlistentry>
- 
+
  <varlistentry>
 	<term><literal>&lt;Priority&gt;</literal></term>
 	<listitem>
@@ -1554,6 +1555,19 @@ In other words, each of the children must be true for the predicate to be true.
 	</listitem>
  </varlistentry>
 
+
+ <varlistentry>
+   <term><literal>&lt;Package&gt;</literal></term>
+	<listitem>
+		<para> 
+			This element matches warnings associated with classes within the package specified 
+			using <literal>name</literal> attribute. Nested packages are not included (along the 
+			lines of Java import statement). However matching multiple packages can be achieved 
+			easily using regex name match.
+		</para>
+	</listitem>
+  </varlistentry>
+		
  <varlistentry>
    <term><literal>&lt;Class&gt;</literal></term>
 	<listitem>
@@ -1587,12 +1601,11 @@ In other words, each of the children must be true for the predicate to be true.
    The <literal>params</literal> attribute is a comma-separated list
    of the types of the method's parameters.  The <literal>returns</literal> attribute is
    the method's return type.  In <literal>params</literal> and <literal>returns</literal>, class names
-   must be fully qualified.  (E.g., "java.lang.String" instead of just
-   "String".)  Note that <literal>params</literal> and <literal>returns</literal> are optional; you can
-   just specify <literal>name</literal>, and the clause will match all methods with
-   that name (or methods with names matching the regex).  
-   However, if you specify either <literal>params</literal> or <literal>returns</literal>,
-   you must specify both of them.
+   must be fully qualified. (E.g., "java.lang.String" instead of just
+   "String".) If one of the latter attributes is specified the other is required for creating a method signature. 
+   Note that you can provide either <literal>name</literal> attribute or <literal>params</literal> 
+   and <literal>returns</literal> attributes or all three of them. This way you can provide various kinds of
+   name and signature based matches.
    </para></listitem>
  </varlistentry>
 
@@ -1600,7 +1613,9 @@ In other words, each of the children must be true for the predicate to be true.
    <term><literal>&lt;Field&gt;</literal></term>
 
    <listitem><para>This element specifies a field. The <literal>name</literal> attribute is is used to specify
-   the exact or regex match pattern for the field name.
+   the exact or regex match pattern for the field name. You can also filter fields according to their signature -
+   use <literal>type</literal> attribute to specify fully qualified type of the field. You can specify eiter or both
+   of these attributes in order to perform name / signature based matches.
    </para></listitem>
  </varlistentry>
    
@@ -1656,12 +1671,12 @@ two <literal>Match</literal> clauses:
 <programlisting>
    &lt;Match&gt;
       &lt;Class name="com.foobar.A" /&gt;
-      &lt;BugCode name="IC" /&gt;
+      &lt;Bug code="IC" /&gt;
    &lt;/Match&gt;
 
    &lt;Match&gt;
       &lt;Class name="com.foobar.B" /&gt;
-      &lt;BugCode name="IC" /&gt;
+      &lt;Bug code="IC" /&gt;
    &lt;/Match&gt;
 </programlisting>
 
@@ -1687,9 +1702,11 @@ as expected.
   1. Match all bug reports for a class.
 
 <programlisting>
-     &lt;Match&gt;
-       &lt;Class name="com.foobar.MyClass" /&gt;
-     &lt;/Match&gt;
+<![CDATA[
+     <Match>
+       <Class name="com.foobar.MyClass" />
+     </Match>
+]]>
 </programlisting>
 
 </para>
@@ -1697,10 +1714,12 @@ as expected.
 <para>
   2. Match certain tests from a class by specifying their abbreviations.
 <programlisting>
-     &lt;Match&gt;
-       &lt;Class name="com.foobar.MyClass"/ &gt;
-       &lt;BugCode name="DE,UrF,SIC" /&gt;
-     &lt;/Match&gt;
+<![CDATA[
+     <Match>
+       <Class name="com.foobar.MyClass"/ >
+       <Bug code="DE,UrF,SIC" />
+     </Match>
+]]>
 </programlisting>
 </para>
 
@@ -1708,9 +1727,11 @@ as expected.
   3. Match certain tests from all classes by specifying their abbreviations.
 
 <programlisting>
-     &lt;Match&gt;
-       &lt;BugCode name="DE,UrF,SIC" /&gt;
-     &lt;/Match&gt;
+<![CDATA[
+     <Match>
+       <Bug code="DE,UrF,SIC" />
+     </Match>
+]]>
 </programlisting>
 </para>
 
@@ -1718,14 +1739,16 @@ as expected.
   4. Match bug types from specified methods of a class by their abbreviations.
 
 <programlisting>
-     &lt;Match&gt;
-       &lt;Class name="com.foobar.MyClass" /&gt;
-       &lt;Or&gt;
-         &lt;Method name="frob" params="int,java.lang.String" returns="void" /&gt;
-         &lt;Method name="blat" params="" returns="boolean" /&gt;
-       &lt;/Or&gt;
-       &lt;BugCode name="DC" /&gt;
-     &lt;/Match&gt;
+<![CDATA[
+     <Match>
+       <Class name="com.foobar.MyClass" />
+       <Or>
+         <Method name="frob" params="int,java.lang.String" returns="void" />
+         <Method name="blat" params="" returns="boolean" />
+       </Or>
+       <Bug code="DC" />
+     </Match>
+]]>
 </programlisting>
 </para>
 
@@ -1738,7 +1761,7 @@ as expected.
     <Match>
       <Class name="com.foobar.MyClass" />
       <Method name="writeDataToFile" />
-      <BugPattern name="OS_OPEN_STREAM" />
+      <Bug pattern="OS_OPEN_STREAM" />
     </Match>
 ]]>
 </programlisting>
@@ -1753,7 +1776,7 @@ as expected.
     <Match>
       <Class name="com.foobar.MyClass" />
       <Method name="someMethod" />
-      <BugPattern name="DLS_DEAD_LOCAL_STORE" />
+      <Bug pattern="DLS_DEAD_LOCAL_STORE" />
       <Priority value="2" />
     </Match>
 ]]>
@@ -1767,61 +1790,103 @@ as expected.
 <programlisting>
 <![CDATA[
     <Match> 
-      <Class="~.*\$AjcClosure\d+" />
-      <BugPattern name="DLS_DEAD_LOCAL_STORE" />
+      <Class name="~.*\$AjcClosure\d+" />
+      <Bug pattern="DLS_DEAD_LOCAL_STORE" />
       <Method name="run" />
     </Match>
     <Match>
-      <BugPattern name="UUF_UNUSED_FIELD" />
+      <Bug pattern="UUF_UNUSED_FIELD" />
       <Field name="~ajc\$.*" />
     </Match>
 ]]>
 </programlisting>
 </para>
 
+<para>
+	8. Match bugs in specific parts of the code base
+	
+<programlisting>
+<![CDATA[
+    <!-- match unused fields warnings in Messages classes in all packages -->
+    <Match> 
+      <Class name="~.*\.Messages" />
+      <Bug code="UUF" />
+    </Match>
+    <!-- match mutable statics warnings in all internal packages -->
+    <Match>
+      <Package name="~.*\.internal" />
+      <Bug code="MS" />
+    </Match>
+    <!-- match anonymoous inner classes warnings in ui package hierarchy -->
+    <Match>
+      <Package name="~com\.foobar\.fooproject\.ui.*" />
+      <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON" />
+    </Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+	9. Match bugs on fieds or methods with specific signatures
+<programlisting>
+<![CDATA[
+	<!-- match System.exit(...) usage warnings in void main(String[]) methods in all classes -->
+	<Match>
+	  <Method returns="void" name="main" params="java.lang.String[]" />
+	  <Method pattern="DM_EXIT" />
+	</Match>
+	<!-- match UuF warnings on fields of type com.foobar.DebugInfo on all classes -->
+	<Match>
+	  <Field type="com.foobar.DebugInfo" />
+	  <Bug code="UuF" />
+	</Match>
+]]>
+</programlisting>	
+
+</para>
+	
 </sect1>
 
 <sect1>
 <title>Complete Example</title>
 
 <programlisting>
-
-&lt;FindBugsFilter&gt;
-     &lt;Match&gt;
-       &lt;Class name="com.foobar.ClassNotToBeAnalyzed" /&gt;
-     &lt;/Match&gt;
-
-     &lt;Match&gt;
-       &lt;Class name="com.foobar.ClassWithSomeBugsMatched" /&gt;
-       &lt;BugCode name="DE,UrF,SIC" /&gt;
-     &lt;/Match&gt;
-
-     &lt;!-- Match all XYZ violations. --&gt;
-     &lt;Match&gt;
-       &lt;BugCode name="XYZ" /&gt;
-     &lt;/Match&gt;
-
-     &lt;!-- Match all doublecheck violations in these methods of "AnotherClass". --&gt;
-     &lt;Match&gt;
-       &lt;Class name="com.foobar.AnotherClass" /&gt;
-       &lt;Or&gt;
-         &lt;Method name="nonOverloadedMethod" /&gt;
-         &lt;Method name="frob" params="int,java.lang.String" returns="void" /&gt;
-         &lt;Method name="blat" params="" returns="boolean" /&gt;
-       &lt;/Or&gt;
-       &lt;BugCode name="DC" /&gt;
-     &lt;/Match&gt;
-
 <![CDATA[
+<FindBugsFilter>
+     <Match>
+       <Class name="com.foobar.ClassNotToBeAnalyzed" />
+     </Match>
+
+     <Match>
+       <Class name="com.foobar.ClassWithSomeBugsMatched" />
+       <Bug code="DE,UrF,SIC" />
+     </Match>
+
+     <!-- Match all XYZ violations. -->
+     <Match>
+       <Bug code="XYZ" />
+     </Match>
+
+     <!-- Match all doublecheck violations in these methods of "AnotherClass". -->
+     <Match>
+       <Class name="com.foobar.AnotherClass" />
+       <Or>
+         <Method name="nonOverloadedMethod" />
+         <Method name="frob" params="int,java.lang.String" returns="void" />
+         <Method name="blat" params="" returns="boolean" />
+       </Or>
+       <Bug code="DC" />
+     </Match>
+
      <!-- A method with a dead local store false positive (medium priority). -->
      <Match>
        <Class class="com.foobar.MyClass" />
        <Method name="someMethod" />
-       <BugPattern name="DLS_DEAD_LOCAL_STORE" />
+       <Bug code="DLS_DEAD_LOCAL_STORE" />
        <Priority value="2" />
      </Match>
+</FindBugsFilter&gt;
 ]]>
-&lt;/FindBugsFilter&gt;
 </programlisting>
 
 </sect1>

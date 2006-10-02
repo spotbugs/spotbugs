@@ -19,37 +19,29 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import java.util.regex.Pattern;
-
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.FieldAnnotation;
 
 /**
+ * Match bug instances having one of given codes or patterns.
+ * 
  * @author rafal@caltha.pl
  */
-public class FieldMatcher implements Matcher {
-	private NameMatch name;
-	private String signature;
+public class BugMatcher implements Matcher {
+	private StringSetMatch codes;
+	private StringSetMatch patterns;
 	
-	public FieldMatcher(String name) {
-		this.name = new NameMatch(name);
-	}
-	
-	public FieldMatcher(String name, String type) {
-		this.name = new NameMatch(name);
-		this.signature = SignatureUtil.createFieldSignature(type);
+	/**
+	 * Constructor.
+	 * 
+	 * @param codes comma-separated list of bug codes
+	 * @param patterns coma-separated list of bug patterns.
+	 */
+	public BugMatcher(String codes, String patterns) {
+		this.codes = new StringSetMatch(codes);
+		this.patterns = new StringSetMatch(patterns);
 	}
 	
 	public boolean match(BugInstance bugInstance) {
-		FieldAnnotation fieldAnnotation = bugInstance.getPrimaryField();
-		if(fieldAnnotation == null) {
-			return false;
-		}
-		if(!name.match(fieldAnnotation.getFieldName())) {
-			return false;
-		}
-		if (signature != null && !signature.equals(fieldAnnotation.getFieldSignature()))
-			return false;
-		return true;
+		return codes.match(bugInstance.getAbbrev()) || patterns.match(bugInstance.getType());
 	}
 }

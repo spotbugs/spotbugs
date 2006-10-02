@@ -116,9 +116,11 @@ public class Filter extends OrMatcher {
 		// These will be either BugCode, Priority, Class, Method, Field, or Or elements.
 		String name = element.getName();
 		if (name.equals("BugCode")) {
-			return new BugCodeMatcher(element.valueOf("@name"));
+			return new BugMatcher(element.valueOf("@name"), "");
 		} else if (name.equals("BugPattern")) {
-			return new BugPatternMatcher(element.valueOf("@name"));
+			return new BugMatcher("", element.valueOf("@name"));
+		} else if (name.equals("Bug")) {
+			return new BugMatcher(element.valueOf("@code"), element.valueOf("@pattern"));
 		} else if (name.equals("Priority")) {
 			return new PriorityMatcher(element.valueOf("@value"));
 		} else if (name.equals("Class")) {
@@ -128,28 +130,53 @@ public class Filter extends OrMatcher {
 				throw new FilterException("Missing name attribute in Class element");
 			
 			return new ClassMatcher(nameAttr.getValue());
+		} else if (name.equals("Package")) {
+			Attribute nameAttr = element.attribute("name");
+			
+			if (nameAttr == null)
+				throw new FilterException("Missing name attribute in Package element");
+			
+			String pName = nameAttr.getValue();
+			pName = pName.startsWith("~") ? pName : "~" + pName.replace(".", "\\.");			
+			return new ClassMatcher(pName + "\\.[^.]+");
 		} else if (name.equals("Method")) {
 			Attribute nameAttr = element.attribute("name");
+			String nameValue;
 			Attribute paramsAttr = element.attribute("params");
 			Attribute returnsAttr = element.attribute("returns");
 
 			if (nameAttr == null)
-				throw new FilterException("Missing name attribute in Method element");
+				if(paramsAttr == null || returnsAttr == null)
+					throw new FilterException("Method element must have eiter name or params and returnss attributes");
+				else
+					nameValue = "~.*"; // any name
+			else
+				nameValue = nameAttr.getValue();
 
 			if ((paramsAttr != null || returnsAttr != null) && (paramsAttr == null || returnsAttr == null))
 				throw new FilterException("Method element must have both params and returns attributes if either is used");
 
 			if (paramsAttr == null)
-				return new MethodMatcher(nameAttr.getValue());
+				return new MethodMatcher(nameValue);
 			else
-				return new MethodMatcher(nameAttr.getValue(), paramsAttr.getValue(), returnsAttr.getValue());
+				return new MethodMatcher(nameValue, paramsAttr.getValue(), returnsAttr.getValue());
 		} else if (name.equals("Field")) {
 			Attribute nameAttr = element.attribute("name");
+			String nameValue;
+			Attribute typeAttr = element.attribute("type");
 			
 			if (nameAttr == null)
-				throw new FilterException("Missing name attribute in Field element");
+				if(typeAttr == null)
+					throw new FilterException("Field element must have either name or type attribute");
+				else
+					nameValue = "~.*"; // any name
+			else
+				nameValue = nameAttr.getValue();
 			
-			return new FieldMatcher(nameAttr.getValue());
+			if (typeAttr == null)
+				return new FieldMatcher(nameValue);
+			else
+				return new FieldMatcher(nameValue, typeAttr.getValue());
 		} else if (name.equals("Or")) {
 			OrMatcher orMatcher = new OrMatcher();
 			Iterator<Element> i = element.elementIterator();

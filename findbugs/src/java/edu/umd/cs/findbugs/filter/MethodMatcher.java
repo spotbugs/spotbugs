@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import java.util.StringTokenizer;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.MethodAnnotation;
@@ -34,7 +33,7 @@ public class MethodMatcher implements Matcher {
 
 	public MethodMatcher(String name, String params, String returns) {
 		this.name = new NameMatch(name);
-		this.signature = createSignature(params, returns);
+		this.signature = SignatureUtil.createMethodSignature(params, returns);
 	}
 
 	public boolean match(BugInstance bugInstance) {
@@ -46,44 +45,6 @@ public class MethodMatcher implements Matcher {
 		if (signature != null && !signature.equals(methodAnnotation.getMethodSignature()))
 			return false;
 		return true;
-	}
-
-	private static String createSignature(String params, String returns) {
-		StringBuffer buf = new StringBuffer();
-
-		buf.append('(');
-		StringTokenizer tok = new StringTokenizer(params, " \t\n\r\f,");
-		while (tok.hasMoreTokens()) {
-			String param = tok.nextToken();
-			buf.append(toSignature(param));
-		}
-		buf.append(')');
-		buf.append(toSignature(returns));
-
-		return buf.toString();
-	}
-
-	private static String toSignature(String type) {
-		if (type.equals("boolean"))
-			return "Z";
-		else if (type.equals("byte"))
-			return "B";
-		else if (type.equals("char"))
-			return "C";
-		else if (type.equals("short"))
-			return "S";
-		else if (type.equals("int"))
-			return "I";
-		else if (type.equals("long"))
-			return "J";
-		else if (type.equals("float"))
-			return "F";
-		else if (type.equals("double"))
-			return "D";
-		else if (type.equals("void"))
-			return "V";
-		else
-			return "L" + type.replace('.', '/') + ";";
 	}
 }
 

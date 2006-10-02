@@ -19,37 +19,44 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import java.util.regex.Pattern;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.FieldAnnotation;
 
 /**
- * @author rafal@caltha.pl
+ * Matches a string against a set of predefined values.
+ * 
+ * Value set is defined using a String containing a comma separated value list.
+ * Heading an trailing whitespace on the values is ignored in matching.
+ * 
+ * @author rak
  */
-public class FieldMatcher implements Matcher {
-	private NameMatch name;
-	private String signature;
-	
-	public FieldMatcher(String name) {
-		this.name = new NameMatch(name);
-	}
-	
-	public FieldMatcher(String name, String type) {
-		this.name = new NameMatch(name);
-		this.signature = SignatureUtil.createFieldSignature(type);
-	}
-	
-	public boolean match(BugInstance bugInstance) {
-		FieldAnnotation fieldAnnotation = bugInstance.getPrimaryField();
-		if(fieldAnnotation == null) {
-			return false;
+public class StringSetMatch {
+	private Set<String> strings = new HashSet<String>();
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param strings comma-separated list of Strings
+	 */
+	public StringSetMatch(String strings) {
+		if (strings != null) {
+			StringTokenizer tok = new StringTokenizer(strings, ",");
+			while (tok.hasMoreTokens()) {
+				this.strings.add(tok.nextToken().trim());
+			}
 		}
-		if(!name.match(fieldAnnotation.getFieldName())) {
-			return false;
-		}
-		if (signature != null && !signature.equals(fieldAnnotation.getFieldSignature()))
-			return false;
-		return true;
+	}
+
+	/**
+	 * Returns true if the given string is contained in the value set.
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public boolean match(String string) {
+		return strings.contains(string.trim());
 	}
 }
