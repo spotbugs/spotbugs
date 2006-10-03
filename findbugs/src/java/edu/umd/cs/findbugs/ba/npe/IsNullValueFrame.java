@@ -48,9 +48,14 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	}
 
 	public void cleanStaleKnowledge(ValueNumberFrame vnaFrameAfter) {
+		if (vnaFrameAfter.isTop() && !isTop()) throw new IllegalArgumentException("VNA frame is top");
 		for(Iterator<ValueNumber> i = knownValueMap.keySet().iterator(); i.hasNext(); ) {
 			ValueNumber v = i.next();
-			if (vnaFrameAfter.getLoad(v) == null) i.remove();
+			if (vnaFrameAfter.getLoad(v) == null) {
+				if (IsNullValueAnalysis.DEBUG) 
+					System.out.println("PURGING " + v);
+				i.remove();
+			}
 		}
 		
 	}
