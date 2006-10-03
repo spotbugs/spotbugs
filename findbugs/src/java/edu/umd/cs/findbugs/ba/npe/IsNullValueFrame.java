@@ -45,6 +45,12 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		}
 	}
 
+	@Override
+	public void setTop() {
+		super.setTop();
+		knownValueMap.clear();
+		decision = null;
+	}
 	public void toExceptionValues() {
 		for (int i = 0; i < getNumSlots(); ++i)
 			setValue(i, getValue(i).toExceptionValue());
