@@ -16,9 +16,11 @@ public class NonterminatingAnalysisBug implements Cloneable {
 					.clone();
 
 				newObject.fields = new Field[fields.length];
-				for (int i = 0; i < fields.length; i++)
-					newObject.fields[i] = (fields[i] == null ? null
-							: fields[i].clone(newObject));
+				for (int i = 0; i < fields.length; i++) {
+					Field field = fields[i];
+					newObject.fields[i] = (field == null ? null
+							: field.clone(newObject));
+				}
 
 			return newObject;
 	
