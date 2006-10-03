@@ -3,7 +3,7 @@ package npe;
 public class NonterminatingAnalysisBug implements Cloneable {
 
 	static class Field {
-		Object clone(NonterminatingAnalysisBug bug) {
+		Field clone(NonterminatingAnalysisBug bug) {
 			return this;
 		}
 	}
@@ -14,12 +14,12 @@ public class NonterminatingAnalysisBug implements Cloneable {
 
 			NonterminatingAnalysisBug newObject = (NonterminatingAnalysisBug) super
 					.clone();
-			if (fields.length > 0) {
+
 				newObject.fields = new Field[fields.length];
 				for (int i = 0; i < fields.length; i++)
-					newObject.fields[i] = (Field) (fields[i] == null ? null
+					newObject.fields[i] = (fields[i] == null ? null
 							: fields[i].clone(newObject));
-			}
+
 			return newObject;
 	
 	}
