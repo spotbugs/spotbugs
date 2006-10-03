@@ -165,7 +165,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					if (DEBUG) debug(block, "Init entry fact ==> " + start + "\n");
 					needToRecompute = true;
 				} else {
-					int lastUpdated = analysis.getLastUpdateTimestamp(result);
+					int lastCalculated = analysis.getLastUpdateTimestamp(start);
 					Iterator<Edge> predEdgeIter = logicalPredecessorEdgeIterator(block);
 
 					int predCount = 0;
@@ -178,11 +178,11 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 						int predLastUpdated = analysis.getLastUpdateTimestamp(predFact);
 						if (!analysis.isTop(predFact)) {
 							predCount++;
-							if (predLastUpdated >= lastUpdated) {
+							if (predLastUpdated >= lastCalculated) {
 
 							needToRecompute = true;
 							if (DEBUG) {
-							System.out.println("Need to recompute. My timestamp = " + lastUpdated + ", pred timestamp = " + predLastUpdated + ", pred fact = " + predFact);
+							System.out.println("Need to recompute. My timestamp = " + lastCalculated + ", pred timestamp = " + predLastUpdated + ", pred fact = " + predFact);
 							}
 							break;
 							}
@@ -194,7 +194,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 						if (DEBUG) {
 							debug(block, "Skipping: predecessors haven't changed");
 							System.out.println(" curr timestamp: " + timestamp);
-							System.out.println(" last timestamp: " + lastUpdated);
+							System.out.println(" last timestamp: " + lastCalculated);
 							predEdgeIter = logicalPredecessorEdgeIterator(block);
 
 							while (predEdgeIter.hasNext()) {
@@ -239,7 +239,12 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 							
 							analysis.meetInto(edgeFact, edge, start);
-							if (DEBUG) System.out.println(" ==> " + start +"\n");
+							analysis.setLastUpdateTimestamp(start, timestamp);
+							
+							int pos = -1;
+							if (block.getFirstInstruction() != null)
+								pos = block.getFirstInstruction().getPosition();
+							if (DEBUG) System.out.println(" [" + pos +"]==> " + start +" @ " + timestamp + " \n");
 						}
 					}
 				}
