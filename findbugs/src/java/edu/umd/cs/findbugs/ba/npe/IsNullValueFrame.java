@@ -23,6 +23,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -30,6 +31,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.vna.MergeTree;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.util.Strings;
 import edu.umd.cs.findbugs.util.Util;
 public class IsNullValueFrame extends Frame<IsNullValue> {
@@ -45,6 +47,13 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		}
 	}
 
+	public void cleanStaleKnowledge(ValueNumberFrame vnaFrameAfter) {
+		for(Iterator<ValueNumber> i = knownValueMap.keySet().iterator(); i.hasNext(); ) {
+			ValueNumber v = i.next();
+			if (vnaFrameAfter.getLoad(v) == null) i.remove();
+		}
+		
+	}
 	@Override
 	public void setTop() {
 		super.setTop();

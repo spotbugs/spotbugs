@@ -184,6 +184,9 @@ public class IsNullValueAnalysis
 		startTransfer();
 		super.transfer(basicBlock, end, start, result);
 		endTransfer(basicBlock, end, result);
+		ValueNumberFrame vnaFrameAfter = vnaDataflow.getFactAfterLocation(Location.getLastLocation(basicBlock));
+		// purge stale information
+		result.cleanStaleKnowledge(vnaFrameAfter);
 	}
 
 	public void startTransfer() throws DataflowAnalysisException {
@@ -411,6 +414,7 @@ public class IsNullValueAnalysis
 														);
 						if (DEBUG) {
 							System.out.println("\nGenerated NoKaboom value for location " + kaBoomLocation);
+							System.out.println("Dereferenced " + instance);
 							System.out.println("On fall through from source block " + sourceBlock);
 						}
 						tmpFact = replaceValues(fact, tmpFact, replaceMe, vnaFrame, targetVnaFrame, noKaboomNonNullValue);
