@@ -123,7 +123,8 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 			}
 
 			if (numIterations >= MAX_ITERS) {
-				throw new DataflowAnalysisException("Too many iterations (" + numIterations + ") in dataflow when analyzing " + getFullyQualifiedMethodName());
+				assert false : "Too many iterations (" + numIterations + ") in dataflow when analyzing " + getFullyQualifiedMethodName();
+				break;
 			}
 	
 			analysis.startIteration();
