@@ -8,7 +8,10 @@ import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import edu.umd.cs.findbugs.BugInstance;
 
 public class EIFixer extends FindBugsFixer {
-	public boolean resolveBindings() {return true;}
+
+	public boolean resolveBindings() {
+		return true;
+	}
 
 	@Override
 	protected boolean modify(ASTRewrite rewrite, CompilationUnit astRoot, BugInstance bug) {
@@ -16,7 +19,7 @@ public class EIFixer extends FindBugsFixer {
 		MethodDeclaration method;
 		
 		String className = bug.getPrimaryClass().getClassName();
-		String methodNameSig = bug.getPrimaryMethod().getNameInClass(false, bug.getPrimaryClass());
+		String methodNameSig = bug.getPrimaryMethod().getNameInClass(false, bug.getPrimaryClass(), false);
 		String fieldName = bug.getPrimaryField().getFieldName();
 		
 		Expression retEx = null;
