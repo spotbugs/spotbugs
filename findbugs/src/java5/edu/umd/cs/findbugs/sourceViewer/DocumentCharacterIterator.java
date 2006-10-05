@@ -25,50 +25,41 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Segment;
 
+/**
+ * A CharacterIterator over a Document.
+ * Only a partial implementation.
+ */
 public class DocumentCharacterIterator implements CharacterIterator {
+
+	private final Document doc;
+
+	private final Segment text;
+	
+	/** Position of iterator in document. */
+	private int docPos = 0;
+	
+	/** Index of end of current segment in document. */
+	private int segmentEnd;
+	
 	DocumentCharacterIterator(Document doc) {
 		this.doc = doc;
-		size = doc.getLength();
 		text = new Segment();
 		text.setPartialReturn(true);
-		prep();
+
+		try {
+			doc.getText(segmentEnd, doc.getLength(), text);
+		} catch (BadLocationException e) {
+			throw new RuntimeException(e);
+		}
+		segmentEnd = text.count;
 	}
 
 	public Object clone() {
 		throw new UnsupportedOperationException();
 	}
-	char nextChar = CharacterIterator.DONE;
-
-	int pos = 0;
-
-	private void prep() {
-		if (nextChar != CharacterIterator.DONE)
-			return;
-		nextChar = text.next();
-		if (nextChar != CharacterIterator.DONE)
-			return;
-		if (offset >= size)
-			return;
-		try {
-			doc.getText(offset, size - offset, text);
-		} catch (BadLocationException e) {
-			throw new RuntimeException(e);
-		}
-		offset += text.count;
-		nextChar = text.current();
-	}
-
-	Document doc;
-
-	int size;
-
-	int offset = 0;
-
-	Segment text;
 
 	public char current() {
-		prep();
-		return nextChar;
+		return text.current();
 	}
 
 	public char first() {
@@ -84,19 +75,28 @@ public class DocumentCharacterIterator implements CharacterIterator {
 	}
 
 	public int getIndex() {
-		return pos;
+		return docPos;
 	}
 
 	public char last() {
 		throw new UnsupportedOperationException();
 	}
 
+	/** Increments the iterator's index by one and returns the character at the new index.
+	 * @return the character at the new position, or DONE if the new position is off the end
+	 */
 	public char next() {
-		prep();
-		char result = nextChar;
-		pos++;
-		nextChar = Segment.DONE;
-		return result;
+		++docPos;
+		if (docPos < segmentEnd || segmentEnd >= doc.getLength()) {
+			return text.next();
+		}
+		try {
+			doc.getText(segmentEnd, doc.getLength() - segmentEnd, text);
+		} catch (BadLocationException e) {
+			throw new RuntimeException(e);
+		}
+		segmentEnd += text.count;
+		return text.current();
 	}
 
 	public char previous() {
