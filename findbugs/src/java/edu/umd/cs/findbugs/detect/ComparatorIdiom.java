@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class ComparatorIdiom extends PreorderVisitor implements Detector {
@@ -44,9 +45,10 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
 
 
 	@Override
-         public void visit(JavaClass obj) {
+	public void visit(JavaClass obj) {
 		try {
 			if (Repository.instanceOf(obj, "java.util.Comparator")
+					&& !ClassName.isAnonymous(getClassName())
 					&& !Repository.instanceOf(obj, "java.io.Serializable")) {
 				int priority = NORMAL_PRIORITY;
 				if (obj.isInterface() || obj.isAbstract()) {

@@ -72,4 +72,17 @@ public abstract class ClassName {
 		}
 		return true;
 	}
+
+	/** 
+	 * @param className  class name, slashed or dotted, fully qualified or unqualified
+	 * @return true if className is the name of an anonymous class
+	 */
+	public static boolean isAnonymous(String className) {
+		int i = className.lastIndexOf('$');
+		if (i >= 0 && i + 1 < className.length()) {
+			return Character.isDigit(className.charAt(i + 1));
+		}
+		return false;
+	}
+
 }

@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.util.ClassName;
 
 public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
@@ -41,12 +42,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 
 	@Override
 	public void visit(JavaClass obj) {
-		isInnerClass = false;
-		String name = getClassName();
-		int i = name.lastIndexOf('$');
-		if (i >= 0 && i + 1 < name.length()) {
-			isInnerClass = Character.isDigit(name.charAt(i + 1));
-		}
+		isInnerClass = ClassName.isAnonymous(getClassName());
 	}
 
 	boolean definedInThisClassOrSuper(JavaClass clazz, String method)
