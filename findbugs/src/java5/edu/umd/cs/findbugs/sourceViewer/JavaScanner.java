@@ -122,13 +122,13 @@ public class JavaScanner {
 			if (c2 == '/') {
 				while (true) {
 					c2 = iterator.next();
-					if (c2 == '\n' || c2 == '\r')
+					if (c2 == '\n' || c2 == '\r' || c2 == CharacterIterator.DONE)
 						break;
 				}
 				kind = COMMENT;
 				return kind;
 			} else if (c2 == '*') {
-				scanComment: while (true) {
+				scanComment: while (c2 != CharacterIterator.DONE) {
 					c2 = iterator.next();
 					if (c2 == '*') {
 						do {
@@ -144,7 +144,7 @@ public class JavaScanner {
 		} else if (c == '"') {
 			kind = QUOTE;
 			char c2 = iterator.current();
-			while (c2 != '"' && c2 != '\n' && c2 != '\r') {
+			while (c2 != '"' && c2 != '\n' && c2 != '\r' && c2 != CharacterIterator.DONE) {
 				if (c2 == '\\') {
 					c2 = iterator.next();
 					if (c2 == '\n' || c2 == '\r')
@@ -155,11 +155,13 @@ public class JavaScanner {
 			iterator.next(); // advance past closing char
 		} else if (c == '\'') {
 			 // need to catch '"' so isn't considered to start a String
-			kind = NORMAL_TEXT;
+			kind = QUOTE; // or NORMAL_TEXT ?
 			char c2 = iterator.current();
 			if (c2 == '\\') c2 = iterator.next(); // advance past the escape char
-			c2 = iterator.next(); // advance past the content char
-			if (c2 != '\n' && c2 != '\r') iterator.next(); // advance past closing char
+			if (c2 != '\n' && c2 != '\r' && c2 != CharacterIterator.DONE)
+				c2 = iterator.next(); // advance past the content char
+			if (c2 != '\n' && c2 != '\r' && c2 != CharacterIterator.DONE)
+				iterator.next(); // advance past closing char
 
 		} else
 			kind = NORMAL_TEXT;
