@@ -120,7 +120,7 @@ public class NewProjectWizard extends FBDialog
 		JPanel north0 = new JPanel();
 		north0.setLayout(new BoxLayout(north0, BoxLayout.Y_AXIS));
 		north0.add(Box.createVerticalStrut(20));
-		north0.add(new JLabel("Main project directory:"));
+		north0.add(new JLabel("Main project directory or JAR:"));
 		north0.add(Box.createVerticalStrut(5));
 		north0.add(directory);
 		directory.getDocument().addDocumentListener(new DocumentListener()
@@ -144,9 +144,8 @@ public class NewProjectWizard extends FBDialog
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				chooser.setFileFilter(null);
-//				chooser.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs());This is done by FBFileChooser
+				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+				chooser.setFileFilter(directoryOrJar);
 				if (chooser.showOpenDialog(NewProjectWizard.this) == JFileChooser.APPROVE_OPTION)
 					directory.setText(chooser.getSelectedFile().getAbsolutePath());
 			}
