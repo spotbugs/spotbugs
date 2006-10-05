@@ -510,7 +510,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		File bugCollectionFile = bugCollectionPath.toFile();
 		if (!bugCollectionFile.exists()) {
 			//throw new FileNotFoundException(bugCollectionFile.getLocation().toOSString());
-			getDefault().logWarning("findbugs collection file doesn't exist: "+bugCollectionPath.toOSString());
+			getDefault().logInfo("findbugs collection file doesn't exist: "+bugCollectionPath.toOSString());
+			createDefaultEmptyBugCollection(project); // since we no longer throw, have to do this here
 			return;
 		}
 
