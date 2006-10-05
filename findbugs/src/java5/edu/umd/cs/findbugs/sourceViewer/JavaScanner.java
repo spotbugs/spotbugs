@@ -61,15 +61,15 @@ public class JavaScanner {
 		MAX_KEYWORD_LENGTH = max;
 	}
 
-	StringBuffer buf = new StringBuffer();
+	private final StringBuffer buf = new StringBuffer();
 
-	int endPosition;
+	private int endPosition;
 
-	final CharacterIterator iterator;
+	private final CharacterIterator iterator;
 
-	int kind;
+	private int kind;
 
-	int startPosition;
+	private int startPosition;
 
 	public JavaScanner(CharacterIterator iterator) {
 		this.iterator = iterator;
@@ -91,35 +91,32 @@ public class JavaScanner {
 	}
 	public int next() {
 		startPosition = iterator.getIndex();
-		char c = iterator.next();
+		char c = iterator.current();
+		iterator.next(); // advance
 		if (c == CharacterIterator.DONE) {
 			kind = EOF;
 		}
 		else if (Character.isJavaIdentifierStart(c)) {
-			boolean couldBeKeyword = false;
-			if (Character.isLowerCase(c)) {
-				buf.append(c);
-				couldBeKeyword = true;
-			}
+			buf.append(c);
+			boolean couldBeKeyword = Character.isLowerCase(c);
 			while (true) {
 				c = iterator.current();
 				if (!Character.isJavaIdentifierPart(c))
 					break;
-				c = iterator.next();
+				buf.append(c);
 				if (couldBeKeyword) {
 					if (!Character.isLowerCase(c)
 							|| buf.length() >= MAX_KEYWORD_LENGTH)
 						couldBeKeyword = false;
-					else
-						buf.append(c);
 				}
+				c = iterator.next();
 			}
 			kind = NORMAL_TEXT;
 			if (couldBeKeyword) {
 				if (KEYWORDS.contains(buf.toString()))
 					kind = KEYWORD;
-				buf.setLength(0);
 			}
+			buf.setLength(0);
 		} else if (c == '/') {
 			char c2 = iterator.current();
 			if (c2 == '/') {
@@ -146,16 +143,23 @@ public class JavaScanner {
 			}
 		} else if (c == '"') {
 			kind = QUOTE;
-			while (true) {
-				char c2 = iterator.next();
-				if (c2 == '"' || c2 == '\n' || c2 == '\r')
-					break;
+			char c2 = iterator.current();
+			while (c2 != '"' && c2 != '\n' && c2 != '\r') {
 				if (c2 == '\\') {
 					c2 = iterator.next();
 					if (c2 == '\n' || c2 == '\r')
 						break;
 				}
+				c2 = iterator.next();
 			}
+			iterator.next(); // advance past closing char
+		} else if (c == '\'') {
+			 // need to catch '"' so isn't considered to start a String
+			kind = NORMAL_TEXT;
+			char c2 = iterator.current();
+			if (c2 == '\\') c2 = iterator.next(); // advance past the escape char
+			c2 = iterator.next(); // advance past the content char
+			if (c2 != '\n' && c2 != '\r') iterator.next(); // advance past closing char
 
 		} else
 			kind = NORMAL_TEXT;
