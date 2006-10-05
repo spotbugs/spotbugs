@@ -546,7 +546,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		project.setSessionProperty(SESSION_PROPERTY_BUG_COLLECTION, bugCollection);
 		project.setSessionProperty(SESSION_PROPERTY_FB_PROJECT, findbugsProject);
 
-		writeBugCollection(project, bugCollection, findbugsProject, monitor);
+		if (bugCollection != null && findbugsProject != null) {
+			writeBugCollection(project, bugCollection, findbugsProject, monitor);
+		}
 	}
 	
 	/**
@@ -596,12 +598,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * Get the FindBugs preferences file for a project.
 	 * 
 	 * @param project the project
-	 * @return the IPath for the project's FindBugs preferences file
+	 * @return the IFile for the FindBugs preferences file
 	 */
-	public static IPath getUserPreferencesFile(IProject project) {
-		//IPath path = project.getWorkingLocation(PLUGIN_ID); // project-specific but not user-specific?
-		IPath path = getDefault().getStateLocation(); // user-specific but not project-specific
-		return path.append(project.getName()+".fbprefs");
+	public static IFile getUserPreferencesFile(IProject project) {
+		return project.getFile(".fbprefs");
 	}
 	
 	/**
@@ -656,10 +656,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		// Make the new user preferences current for the project
 		project.setSessionProperty(SESSION_PROPERTY_USERPREFS, userPrefs);
 		
-		IPath userPrefsPath = getUserPreferencesFile(project);
-		// Don't turn the path to an IFile because it isn't local to the project.
-		// see the javadoc for org.eclipse.core.runtime.Plugin
-		File userPrefsFile = userPrefsPath.toFile();
+		IFile userPrefsFile = getUserPreferencesFile(project);
 		
 		FileOutput userPrefsOutput = new FileOutput() {
 			public void writeFile(OutputStream os) throws IOException {
@@ -686,14 +683,14 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		// Make the new extended preferences current for the project
 		project.setSessionProperty(SESSION_PROPERTY_EXTENDEDPREFS, extendedPrefs);
 		
-		IPath userPrefsFile = getUserPreferencesFile(project);
-		File prefsFile = userPrefsFile.toFile();
-		if (!prefsFile.exists()) {
+		IFile userPrefsFile = getUserPreferencesFile(project);
+		if (!userPrefsFile.exists()) {
 			throw new IOException("User preferences file not present yet. Save UserPreferences first.");
 		}		
+		File prefsFile = userPrefsFile.getLocation().toFile();
 		
 		extendedPrefs.write(prefsFile);
-		//userPrefsFile.refreshLocal(IResource.DEPTH_INFINITE, null);
+		userPrefsFile.refreshLocal(IResource.DEPTH_INFINITE, null);
 	}
 
 	/**
@@ -706,16 +703,12 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @throws CoreException
 	 */
 	private static UserPreferences readUserPreferences(IProject project) throws CoreException {
-		IPath userPrefsPath = getUserPreferencesFile(project);
-		// Don't turn the path to an IFile because it isn't local to the project.
-		// see the javadoc for org.eclipse.core.runtime.Plugin
-		File userPrefsFile = userPrefsPath.toFile();
+		IFile userPrefsFile = getUserPreferencesFile(project);
 		if (!userPrefsFile.exists())
 			return null;
 
 		try {
-			//InputStream in = userPrefsFile.getContents();
-			InputStream in = new BufferedInputStream(new FileInputStream(userPrefsFile));
+			InputStream in = userPrefsFile.getContents();
 			UserPreferences userPrefs = UserPreferences.createDefaultUserPreferences();
 			userPrefs.read(in);
 			return userPrefs;
@@ -727,16 +720,13 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	}
 	
 	private static ExtendedPreferences readExtendedPreferences(IProject project) {
-		IPath userPrefsPath = getUserPreferencesFile(project);
-		// Don't turn the path to an IFile because it isn't local to the project.
-		// see the javadoc for org.eclipse.core.runtime.Plugin
-		File userPrefsFile = userPrefsPath.toFile();
+		IFile userPrefsFile = getUserPreferencesFile(project);
 		if (!userPrefsFile.exists())
 			return null;
 
 		try {
 			ExtendedPreferences prefs = new ExtendedPreferences();
-			prefs.read(userPrefsFile);
+			prefs.read(userPrefsFile.getLocation().toFile());
 			return prefs;
 		} catch (IOException e) {
 			FindbugsPlugin.getDefault().logException(
