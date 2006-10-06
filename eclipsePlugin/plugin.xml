@@ -3,7 +3,7 @@
 <plugin
    id="edu.umd.cs.findbugs.plugin.eclipse"
    name="%pluginName"
-   version="1.1.1.v20061005-rc3"
+   version="1.1.1.v20061006"
    provider-name="%providerName"
    class="de.tobject.findbugs.FindbugsPlugin">
 
