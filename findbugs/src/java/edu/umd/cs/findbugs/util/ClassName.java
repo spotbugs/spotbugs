@@ -73,7 +73,10 @@ public abstract class ClassName {
 		return true;
 	}
 
-	/** 
+	/**
+	 * Does a class name appear to designate an anonymous class?
+	 * Only the name is analyzed. No classes are loaded or looked up.
+	 *
 	 * @param className  class name, slashed or dotted, fully qualified or unqualified
 	 * @return true if className is the name of an anonymous class
 	 */

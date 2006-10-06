@@ -54,7 +54,7 @@ public class StringSetMatch {
 	 * Returns true if the given string is contained in the value set.
 	 * 
 	 * @param string
-	 * @return
+	 * @return true if the given string is contained in the value set
 	 */
 	public boolean match(String string) {
 		return strings.contains(string.trim());

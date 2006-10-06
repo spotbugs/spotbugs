@@ -67,7 +67,7 @@ public interface BugAnnotation
 	
 	/**
 	 * Is this annotation used to compute instance hashes or match bug instances across versions
-	 * @return
+	 * @return true if significant
 	 */
 	public boolean isSignificant();
 }

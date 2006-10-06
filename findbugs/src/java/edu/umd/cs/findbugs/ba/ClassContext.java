@@ -1647,10 +1647,7 @@ public class ClassContext {
 	/**
 	 * @param method
 	 * @param cfg
-	 * @param typeDataflow 
-	 * @param vnd
-	 * @param inv
-	 * @param dataflow
+	 * @param typeDataflow
 	 * @throws DataflowAnalysisException
 	 */
 	public static void dumpTypeDataflow(Method method, CFG cfg, TypeDataflow typeDataflow) throws DataflowAnalysisException {

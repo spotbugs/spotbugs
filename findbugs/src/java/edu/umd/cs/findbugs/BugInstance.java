@@ -1574,7 +1574,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		this.instanceHash = instanceHash;
 	}
 	/**
-	 * @param instanceHash The oldInstanceHash to set.
+	 * @param oldInstanceHash The oldInstanceHash to set.
 	 */
 	public void setOldInstanceHash(String oldInstanceHash) {
 		this.oldInstanceHash = oldInstanceHash;
