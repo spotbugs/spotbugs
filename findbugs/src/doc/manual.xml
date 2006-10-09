@@ -1531,9 +1531,14 @@ In other words, each of the children must be true for the predicate to be true.
 			descriptions document</ulink>.
    </para><para>
    			For more coarse-grained matching, use <literal>code</literal> attribute. It takes
-   			a comma-separated list of bug abbreviations. If both attributes are specified, all
-   			bug patterns that match either one of specified pattern names, or abreviations will be 
-   			matched.
+   			a comma-separated list of bug abbreviations. For most-coarse grained matching use 
+   			<literal>category</literal> attriute, that takes a comma separated list of bug category names: 
+   			<literal>CORRECTNESS</literal>, <literal>MT_CORRECTNESS</literal>, 
+   			<literal>BAD_PRACTICICE</literal>, <literal>PERFORMANCE</literal>, <literal>STYLE</literal>. 
+   </para><para>   			
+   			If more than one of the attributes mentioned above are specified on the same 
+   			<literal>&lt;Bug&gt;</literal> element, all bug patterns that match either one of specified 
+   			pattern names, or abreviations, or categories will be matched.
    </para><para>   
    			As a backwards compatibility measure, <literal>&lt;BugPattern&gt;</literal> and
    			<literal>&lt;BugCode&gt;</literal> elements may be used instead of 
@@ -1736,7 +1741,19 @@ as expected.
 </para>
 
 <para>
-  4. Match bug types from specified methods of a class by their abbreviations.
+  4. Match certain tests from all classes by specifying their category.
+
+<programlisting>
+<![CDATA[
+     <Match>
+       <Bug category="PERFORMANCE" />
+     </Match>
+]]>
+</programlisting>
+</para>
+
+<para>
+  5. Match bug types from specified methods of a class by their abbreviations.
 
 <programlisting>
 <![CDATA[
@@ -1753,7 +1770,7 @@ as expected.
 </para>
 
 <para>
-	5. Match a particular bug pattern in a particular method.
+	6. Match a particular bug pattern in a particular method.
 	
 <programlisting>
 <![CDATA[
@@ -1768,7 +1785,7 @@ as expected.
 </para>
 
 <para>
-	6. Match a particular bug pattern with a given priority in a particular method.
+	7. Match a particular bug pattern with a given priority in a particular method.
 	
 <programlisting>
 <![CDATA[
@@ -1784,7 +1801,7 @@ as expected.
 </para>
 
 <para>
-	7. Match minor bugs introduced by AspectJ compiler (you are probably not interested in these unless
+	8. Match minor bugs introduced by AspectJ compiler (you are probably not interested in these unless
 	you are an AspectJ developer).
 	
 <programlisting>
@@ -1803,7 +1820,7 @@ as expected.
 </para>
 
 <para>
-	8. Match bugs in specific parts of the code base
+	9. Match bugs in specific parts of the code base
 	
 <programlisting>
 <![CDATA[
@@ -1827,7 +1844,7 @@ as expected.
 </para>
 
 <para>
-	9. Match bugs on fieds or methods with specific signatures
+	10. Match bugs on fieds or methods with specific signatures
 <programlisting>
 <![CDATA[
 	<!-- match System.exit(...) usage warnings in void main(String[]) methods in all classes -->

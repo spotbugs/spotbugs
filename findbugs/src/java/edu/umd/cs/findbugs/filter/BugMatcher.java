@@ -29,19 +29,24 @@ import edu.umd.cs.findbugs.BugInstance;
 public class BugMatcher implements Matcher {
 	private StringSetMatch codes;
 	private StringSetMatch patterns;
+	private StringSetMatch categories;
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param codes comma-separated list of bug codes
 	 * @param patterns coma-separated list of bug patterns.
+	 * @param categories coma-separated list of bug categories.
 	 */
-	public BugMatcher(String codes, String patterns) {
+	public BugMatcher(String codes, String patterns, String categories) {
 		this.codes = new StringSetMatch(codes);
 		this.patterns = new StringSetMatch(patterns);
+		this.categories = new StringSetMatch(categories);
 	}
 	
 	public boolean match(BugInstance bugInstance) {
-		return codes.match(bugInstance.getAbbrev()) || patterns.match(bugInstance.getType());
+		return codes.match(bugInstance.getAbbrev())
+				|| patterns.match(bugInstance.getType())
+				|| categories.match(bugInstance.getBugPattern().getCategory());
 	}
 }

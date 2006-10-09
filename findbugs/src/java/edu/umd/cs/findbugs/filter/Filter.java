@@ -117,11 +117,12 @@ public class Filter extends OrMatcher {
 		// These will be either BugCode, Priority, Class, Method, Field, or Or elements.
 		String name = element.getName();
 		if (name.equals("BugCode")) {
-			return new BugMatcher(element.valueOf("@name"), "");
+			return new BugMatcher(element.valueOf("@name"), "", "");
 		} else if (name.equals("BugPattern")) {
-			return new BugMatcher("", element.valueOf("@name"));
+			return new BugMatcher("", element.valueOf("@name"), "");
 		} else if (name.equals("Bug")) {
-			return new BugMatcher(element.valueOf("@code"), element.valueOf("@pattern"));
+			return new BugMatcher(element.valueOf("@code"), element
+					.valueOf("@pattern"), element.valueOf("@category"));
 		} else if (name.equals("Priority")) {
 			return new PriorityMatcher(element.valueOf("@value"));
 		} else if (name.equals("Class")) {
