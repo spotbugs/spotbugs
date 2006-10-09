@@ -39,12 +39,12 @@ public class Version {
 	/**
 	 * Patch level.
 	 */
-	public static final int PATCHLEVEL = 1;
+	public static final int PATCHLEVEL = 2;
 
 	/**
 	 * Development version or release candidate?
 	 */
-	public static final boolean IS_DEVELOPMENT = false;
+	public static final boolean IS_DEVELOPMENT = true;
 
 	/**
 	 * Release candidate number.
