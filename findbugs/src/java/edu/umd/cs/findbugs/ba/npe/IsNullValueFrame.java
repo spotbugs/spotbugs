@@ -62,7 +62,9 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	@Override
 	public void setTop() {
 		super.setTop();
-		knownValueMap.clear();
+		if (trackValueNumbers) {
+			knownValueMap.clear();
+		}
 		decision = null;
 	}
 	public void toExceptionValues() {
