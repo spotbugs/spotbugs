@@ -307,7 +307,8 @@ public class Update {
 	boolean verbose = true;
 
 	public static String[] getFilePathParts(String filePath) {
-		return filePath.split(File.separator);
+		String regex = (File.separatorChar=='\\' ? "\\\\" : File.separator);
+		return filePath.split(regex);
 	}
 
 	public static void main(String[] args) throws IOException,
