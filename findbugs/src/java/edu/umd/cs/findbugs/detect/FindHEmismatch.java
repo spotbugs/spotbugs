@@ -56,6 +56,8 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 	MethodAnnotation equalsMethod = null;
 
 	MethodAnnotation compareToMethod = null;
+	MethodAnnotation compareToObjectMethod = null;
+	MethodAnnotation compareToSelfMethod = null;
 
 	MethodAnnotation hashCodeMethod = null;
 
@@ -83,6 +85,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 		if ((accessFlags & ACC_INTERFACE) != 0)
 			return;
 		visibleOutsidePackage = obj.isPublic() || obj.isProtected();
+		
 		String whereEqual = getDottedClassName();
 		boolean classThatDefinesEqualsIsAbstract = false;
 		boolean classThatDefinesHashCodeIsAbstract = false;
@@ -159,14 +162,23 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 				bugReporter.reportBug(bug);
 			}
 		}
-		/*
-		 * System.out.println("Class " + betterClassName);
-		 * System.out.println("usesDefaultEquals: " + usesDefaultEquals);
-		 * System.out.println("hasHashCode: : " + hasHashCode);
-		 * System.out.println("usesDefaultHashCode: " + usesDefaultHashCode);
-		 * System.out.println("hasEquals: : " + hasEqualsObject);
-		 */
+		
+//		 System.out.println("Class " + getDottedClassName());
+//		  System.out.println("usesDefaultEquals: " + usesDefaultEquals);
+//		  System.out.println("hasHashCode: : " + hasHashCode);
+//		  System.out.println("usesDefaultHashCode: " + usesDefaultHashCode);
+//		  System.out.println("hasEquals: : " + hasEqualsObject);
+//		  System.out.println("hasCompareToObject: : " + hasCompareToObject);
+//		  System.out.println("hasCompareToSelf: : " + hasCompareToSelf);
+		 
 
+		if ((hasCompareToObject || hasCompareToSelf) && usesDefaultEquals) {
+			BugInstance bug = new BugInstance(this, "EQ_COMPARETO_USE_OBJECT_EQUALS",
+					Priorities.HIGH_PRIORITY).addClass(this);
+			if (compareToSelfMethod != null) bug.addMethod(compareToSelfMethod);
+			else bug.addMethod(compareToObjectMethod);
+			bugReporter.reportBug(bug);
+		}
 		if (!hasCompareToObject && hasCompareToSelf) {
 			if (!extendsObject)
 				bugReporter.reportBug(new BugInstance(this,
@@ -252,6 +264,8 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 		equalsMethodIsInstanceOfEquals = false;
 		equalsMethod = null;
 		compareToMethod = null;
+		compareToSelfMethod = null;
+		compareToObjectMethod = null;
 		hashCodeMethod = null;
 	}
 
@@ -315,11 +329,15 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 					equalsMethod = MethodAnnotation.fromVisitedMethod(this);
 			}
 		} else if (name.equals("compareTo")) {
-			compareToMethod = MethodAnnotation.fromVisitedMethod(this);
-			if (sig.equals("(Ljava/lang/Object;)I"))
+			MethodAnnotation tmp  = MethodAnnotation.fromVisitedMethod(this);
+			if (sig.equals("(Ljava/lang/Object;)I")) {
 				hasCompareToObject = true;
-			else if (sig.equals("(L" + getClassName() + ";)I"))
+				compareToObjectMethod = compareToMethod = tmp;
+			}
+			else if (sig.equals("(L" + getClassName() + ";)I")) {
 				hasCompareToSelf = true;
+				compareToSelfMethod = compareToMethod = tmp;
+			}
 		}
 	}
 

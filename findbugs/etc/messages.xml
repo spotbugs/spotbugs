@@ -2024,6 +2024,23 @@ the recommended <code>hashCode</code> implementation to use is:</p>
 
 
 
+  <BugPattern type="EQ_COMPARETO_USE_OBJECT_EQUALS">
+    <ShortDescription>Class defines compareTo(...) and uses Object.equals()</ShortDescription>
+    <LongDescription>{0} defines {1,givenClass} and uses Object.equals()</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class defines a <code>compareTo(...)</code> method but inherits its
+  <code>equals()</code> method from <code>java.lang.Object</code>.
+	The value of compareTo should return zero if and only if
+	equals returns true. If this is violated, weird and unpredictable
+	failures will occur in classes such as TreeMap and PriorityQueue.
+	Some of these failures  will be different in Java 5 and Java 6.
+]]>
+    </Details>
+  </BugPattern>
+
+
+
 
   <BugPattern type="HE_HASHCODE_NO_EQUALS">
     <ShortDescription>Class defines hashCode() but not equals()</ShortDescription>
