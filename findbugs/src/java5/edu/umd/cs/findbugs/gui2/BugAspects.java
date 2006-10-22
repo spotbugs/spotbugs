@@ -82,7 +82,13 @@ public class BugAspects extends ArrayList<BugAspects.StringPair>
 		result.add(sp);
 		return result;
 	}
-	
+	public StackedFilterMatcher getStackedFilterMatcher(){
+		FilterMatcher[] filters = new FilterMatcher[this.size()];
+		for (int i = 0; i < filters.length; i++)
+			filters[i] = new FilterMatcher(this.get(i));
+		StackedFilterMatcher sfm = new StackedFilterMatcher(filters);
+		return sfm;
+	}
 	static class StringPair
 	{
 		public Sortables key;

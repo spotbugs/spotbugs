@@ -131,6 +131,7 @@ public class SorterDialog extends FBDialog {
 			{
 				MainFrame.getInstance().getSorter().createFrom((SorterTableColumnModel)preview.getColumnModel());
 				((BugTreeModel)MainFrame.getInstance().getTree().getModel()).checkSorter();
+				instance.setVisible(false); //close window
 			}
 		});
 		bottomPanel.add(sortApply,BorderLayout.SOUTH);

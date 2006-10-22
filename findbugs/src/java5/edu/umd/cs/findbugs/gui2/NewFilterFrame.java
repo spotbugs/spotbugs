@@ -226,7 +226,6 @@ public class NewFilterFrame extends FBDialog
 		
 		setTitle("Create New Filter");
 		pack();
-		setResizable(false);
 	}
 	
 	public static void main(String[] args)

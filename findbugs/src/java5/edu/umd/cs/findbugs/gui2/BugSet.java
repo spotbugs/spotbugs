@@ -318,6 +318,17 @@ public class BugSet implements Iterable<BugLeafNode>{
 		return new BugSet(people,false);
 	}
 	
+	public BugSet getBugsMatchingFilter(Matcher m)
+	{
+		ArrayList<BugLeafNode> people=new ArrayList<BugLeafNode>();
+		for(BugLeafNode p:mainList)
+		{
+			if(!(m.match(p.getBug())))
+				people.add(p);
+		}
+		return new BugSet(people,false);
+	}
+	
 	public int size()
 	{
 		return filterNoCache().sizeUnfiltered();

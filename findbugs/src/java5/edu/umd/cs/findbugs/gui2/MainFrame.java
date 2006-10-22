@@ -473,6 +473,7 @@ public class MainFrame extends FBFrame implements LogSync
 				
 				setProjectChanged(true);
 			}
+			
 		});
 		
 		popupMenu.add(suppressMenuItem);
@@ -489,11 +490,22 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		popupMenu.add(filterMenuItem);
 		
+		JMenu changeDesignationMenu = new JMenu("Change bug designation");
+		
+		int i = 0;
+		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
+		for(String key :  I18N.instance().getUserDesignationKeys(true)) {
+			String name = I18N.instance().getUserDesignation(key);
+			addDesignationItem(changeDesignationMenu, name, keyEvents[i++]);
+		}
+		
+		popupMenu.add(changeDesignationMenu);
+		
 		return popupMenu;
 	}
 	
 	/**
-	 * Creates the branch pup up menu that ask if the user wants 
+	 * Creates the branch pop up menu that ask if the user wants 
 	 * to hide all the bugs in that branch.
 	 * @return
 	 */
@@ -508,10 +520,7 @@ public class MainFrame extends FBFrame implements LogSync
 			{
 				saveCommentsToBug(currentSelectedBugLeaf);
 				
-				FilterMatcher[] filters = new FilterMatcher[currentSelectedBugAspects.size()];
-				for (int i = 0; i < filters.length; i++)
-					filters[i] = new FilterMatcher(currentSelectedBugAspects.get(i));
-				StackedFilterMatcher sfm = new StackedFilterMatcher(filters);
+				StackedFilterMatcher sfm = currentSelectedBugAspects.getStackedFilterMatcher();
 				if (!ProjectSettings.getInstance().getAllMatchers().contains(sfm))
 					ProjectSettings.getInstance().addFilter(sfm);
 				
@@ -520,6 +529,17 @@ public class MainFrame extends FBFrame implements LogSync
 		});
 		
 		popupMenu.add(filterMenuItem);
+		
+		JMenu changeDesignationMenu = new JMenu("Change bug designation");
+		
+		int i = 0;
+		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
+		for(String key :  I18N.instance().getUserDesignationKeys(true)) {
+			String name = I18N.instance().getUserDesignation(key);
+			addDesignationItemNonLeaf(changeDesignationMenu, name, keyEvents[i++]);
+		}
+		
+		popupMenu.add(changeDesignationMenu);
 		
 		return popupMenu;
 	}
@@ -663,7 +683,7 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenuItem cutMenuItem = new JMenuItem(new CutAction());
 		JMenuItem copyMenuItem = new JMenuItem(new CopyAction());
 		JMenuItem pasteMenuItem = new JMenuItem(new PasteAction());
-		preferencesMenuItem = new JMenuItem("Preferences");
+		preferencesMenuItem = new JMenuItem("Filters/Suppressions...");
 		JMenuItem sortMenuItem = new JMenuItem("Sort Configuration...");
 		JMenuItem goToLineMenuItem = new JMenuItem("Go to line...");
 		
@@ -1011,14 +1031,12 @@ public class MainFrame extends FBFrame implements LogSync
 		});
 	}
 		
-	
 	void setDesignation(String value) {
 		if (currentSelectedBugLeaf != null) {
-			designationComboBox.setSelectedItem(value);
-			designationChanged=true;
-			guiLayout.makeCommentsVisible();
+			designationChanged = true;
+			changeDesignationOfBug(currentSelectedBugLeaf, ConvertMenuDesignationName(value));
 		}
-	}
+	}	
 	private void addDesignationItem(JMenu menu, final String menuName,  int keyEvent) {
 		JMenuItem toggleItem = new JMenuItem(menuName);
 
@@ -1029,17 +1047,66 @@ public class MainFrame extends FBFrame implements LogSync
 		attachAccelaratorKey(toggleItem, keyEvent);
 		menu.add(toggleItem);
 	}
+	private void addDesignationItemNonLeaf(JMenu menu, final String menuName,  int keyEvent) {
+		JMenuItem toggleItem = new JMenuItem(menuName);
+
+		toggleItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setDesignationNonLeaf(menuName);
+			}});	
+		attachAccelaratorKey(toggleItem, keyEvent);
+		menu.add(toggleItem);
+	}
+
 	protected void updateDesignation() {
-		
-		if (currentSelectedBugLeaf==null)
+		if(currentSelectedBugLeaf == null)
 			return;
-		
+		else
+		{
+			designationChanged = true;
+			changeDesignationOfBug(currentSelectedBugLeaf, designationList.get(designationComboBox.getSelectedIndex()));
+		}
+	}
+	
+	protected void setDesignationNonLeaf(String selection){
+		String newName = ConvertMenuDesignationName(selection);
+		if(currentSelectedBugAspects == null)
+			return;
+		else
+		{
+			BugSet filteredSet = BugSet.getMainBugSet().getBugsMatchingFilter(currentSelectedBugAspects.getStackedFilterMatcher());
+			System.out.println("Number to change: " + filteredSet.sizeUnfiltered());
+			Iterator<BugLeafNode> filteredIter = filteredSet.iterator();
+			if(!filteredIter.hasNext())
+				return;
+			else
+				do{
+					BugLeafNode nextNode = filteredIter.next();
+					designationChanged = true;
+					changeDesignationOfBug(nextNode, newName);
+				}while(filteredIter.hasNext());
+		}
+	}
+	
+	protected String ConvertMenuDesignationName(String name){
+		/* This converts a designation name from human-readable format ("mostly harmless", "critical") to
+		 * the program's internal format ("MOSTLY_HARMLESS", "CRITICAL") etc. This uses the DesignationComboBox
+		 * (this should probably be changed)
+		 */ 
+		int itemCount = designationComboBox.getItemCount();
+		for(int i=0; i<itemCount; i++)
+			if(name.equals(designationComboBox.getItemAt(i)))
+				return designationList.get(i);
+		return null;
+	}
+	
+	protected void changeDesignationOfBug(BugLeafNode theNode, String selection) {
+		System.out.println("Changing designation of " + theNode.toString() + " to " + selection);
 		if (!getSorter().getOrder().contains(Sortables.DESIGNATION))
 		{
 			if (designationChanged)
 			{
-				int index = designationComboBox.getSelectedIndex();
-				currentSelectedBugLeaf.getBug().getSafeUserDesignation().setDesignation(designationList.get(index));
+				theNode.getBug().getSafeUserDesignation().setDesignation(selection);
 				designationChanged=false;
 			}
 		}
@@ -1048,11 +1115,11 @@ public class MainFrame extends FBFrame implements LogSync
 			if (designationChanged)
 			{
 				Debug.println("What huh!?!?");
-				int index = designationComboBox.getSelectedIndex();
 				BugTreeModel model= (BugTreeModel)tree.getModel();
-				TreePath path=model.getPathToBug(currentSelectedBugLeaf.getBug());
+				TreePath path=model.getPathToBug(theNode.getBug());
 				if (path==null)
 				{
+					theNode.getBug().getSafeUserDesignation().setDesignation(selection);
 					designationChanged=false;
 					return;
 				}
@@ -1075,9 +1142,9 @@ public class MainFrame extends FBFrame implements LogSync
 					listOfNodesToReconstruct.add(pathToNode);
 				}
 		
-				currentSelectedBugLeaf.getBug().getSafeUserDesignation().setDesignation(designationList.get(index));
+				theNode.getBug().getSafeUserDesignation().setDesignation(selection);
 				model.suppressBug(path);
-				TreePath unsuppressPath=model.getPathToBug(currentSelectedBugLeaf.getBug());
+				TreePath unsuppressPath=model.getPathToBug(theNode.getBug());
 				if (unsuppressPath!=null)//If choosing their designation has not moved the bug under any filters
 				{
 					model.unsuppressBug(unsuppressPath);
@@ -1095,11 +1162,9 @@ public class MainFrame extends FBFrame implements LogSync
 		{
 			if (designationChanged)
 			{
-				int index = designationComboBox.getSelectedIndex();
-				currentSelectedBugLeaf.getBug().getSafeUserDesignation().setDesignation(designationList.get(index));
-				
+				theNode.getBug().getSafeUserDesignation().setDesignation(selection);
 				BugTreeModel model = (BugTreeModel)tree.getModel();
-				TreePath pathToBranch=model.getPathToBug(currentSelectedBugLeaf.getBug()).getParentPath();
+				TreePath pathToBranch=model.getPathToBug(theNode.getBug()).getParentPath();
 				model.sortBranch(pathToBranch);
 				designationChanged=false;
 			}

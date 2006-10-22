@@ -96,6 +96,7 @@ public class PreferencesFrame extends FBDialog {
 	private JButton unsuppressButton;
 
 	JButton removeButton;
+	JButton removeAllButton;
 	boolean frozen=false;
 	public static PreferencesFrame getInstance()
 	{
@@ -251,11 +252,12 @@ public class PreferencesFrame extends FBDialog {
 	{
 		addButton = new JButton("Add...");
 		removeButton = new JButton("Remove");
+		removeAllButton = new JButton("Remove All");
 		JPanel filterPanel = new JPanel();
 		filterPanel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		
-		gbc.gridheight = 3;
+		gbc.gridheight = 4;
 		gbc.gridwidth = 1;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
@@ -304,8 +306,27 @@ public class PreferencesFrame extends FBDialog {
 				
 			}
 		});
-		
 		gbc.gridy = 2;
+		gbc.weighty = 0;
+		gbc.insets = new Insets(5, 0, 0, 0);
+		filterPanel.add(removeAllButton, gbc);
+		removeAllButton.addActionListener(new ActionListener()
+				{
+					public void actionPerformed(ActionEvent evt)
+					{
+						ArrayList<FilterMatcher> theList = ProjectSettings.getInstance().getAllFilters();
+						int len = theList.size();
+						if(len > 0)
+						{
+							for (int j=len-1; j>=0; j--) // we have to go backwards because removing the first item changes the indices of all the rest
+								ProjectSettings.getInstance().removeFilter(ProjectSettings.getInstance().getAllFilters().get(j));
+							MainFrame.getInstance().setProjectChanged(true);
+						}
+						updateFilterPanel();
+						
+					}
+				});		
+		gbc.gridy = 3;
 		gbc.weighty = 1;
 		gbc.insets = new Insets(0, 0, 0, 0);
 		filterPanel.add(Box.createGlue(), gbc);

@@ -779,6 +779,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			}
 			//Using a hashlist to store bugs in BugSet will make getIndexOfChild Waaaaaay faster, thus making this O(1) (best case)
 			int index=getIndexOfChild(pathToBug.getLastPathComponent(),new BugLeafNode(b));
+			if(index == -1)
+				return null;
 			pathToBug=pathToBug.pathByAddingChild(getChild(pathToBug.getLastPathComponent(),index));
 			return pathToBug;
 
