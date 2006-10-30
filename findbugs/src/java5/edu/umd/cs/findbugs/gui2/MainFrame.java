@@ -519,7 +519,7 @@ public class MainFrame extends FBFrame implements LogSync
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				saveCommentsToBug(currentSelectedBugLeaf);
+				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 				
 				StackedFilterMatcher sfm = currentSelectedBugAspects.getStackedFilterMatcher();
 				if (!ProjectSettings.getInstance().getAllMatchers().contains(sfm))
@@ -537,7 +537,7 @@ public class MainFrame extends FBFrame implements LogSync
 		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
 		for(String key :  I18N.instance().getUserDesignationKeys(true)) {
 			String name = I18N.instance().getUserDesignation(key);
-			addDesignationItemNonLeaf(changeDesignationMenu, name, keyEvents[i++]);
+			addDesignationItem(changeDesignationMenu, name, keyEvents[i++]);
 		}
 		
 		popupMenu.add(changeDesignationMenu);
@@ -595,7 +595,7 @@ public class MainFrame extends FBFrame implements LogSync
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				saveCommentsToBug(currentSelectedBugLeaf);
+				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 				new NewProjectWizard(curProject);
 			}
 		});
@@ -627,7 +627,7 @@ public class MainFrame extends FBFrame implements LogSync
 		attachAccelaratorKey(saveProjectMenuItem, KeyEvent.VK_S);
 		saveProjectMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
-				saveCommentsToBug(currentSelectedBugLeaf);
+				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 				
 				save(projectDirectory);
 			}
@@ -636,7 +636,7 @@ public class MainFrame extends FBFrame implements LogSync
 		saveAsProjectMenuItem.setEnabled(true);
 		saveAsProjectMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
-				saveCommentsToBug(currentSelectedBugLeaf);
+				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 				
 				if(projectSaveAs())
 					saveProjectMenuItem.setEnabled(true);
@@ -694,7 +694,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		preferencesMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
-				saveCommentsToBug(currentSelectedBugLeaf);
+				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 				PreferencesFrame.getInstance().setLocationRelativeTo(MainFrame.this);
 				PreferencesFrame.getInstance().setVisible(true);
 			}
@@ -702,7 +702,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		sortMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
-				saveCommentsToBug(currentSelectedBugLeaf);
+				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 				SorterDialog.getInstance().setLocationRelativeTo(MainFrame.this);
 				SorterDialog.getInstance().setVisible(true);
 			}
@@ -968,7 +968,7 @@ public class MainFrame extends FBFrame implements LogSync
 				TreePath path = selectionEvent.getNewLeadSelectionPath();				
 				if (path != null)
 				{
-					saveCommentsToBug(currentSelectedBugLeaf);
+					saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 
 					if ((path.getLastPathComponent() instanceof BugLeafNode))
 					{	
@@ -990,7 +990,7 @@ public class MainFrame extends FBFrame implements LogSync
 						currentSelectedBugLeaf = null;
 						currentSelectedBugAspects = (BugAspects)path.getLastPathComponent();
 						clearIndividualBugInformation();
-						setUserCommentInputEnable(true);
+						updateCommentsForNonLeaf(currentSelectedBugAspects);
 					}
 				}
 //				Debug.println("Tree selection count:" + tree.getSelectionCount());
@@ -1044,49 +1044,58 @@ public class MainFrame extends FBFrame implements LogSync
 
 		toggleItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				setDesignation(menuName);
+				if(currentSelectedBugLeaf == null)
+					setDesignationNonLeaf(menuName);
+				else
+					setDesignation(menuName);
 			}});	
 		attachAccelaratorKey(toggleItem, keyEvent);
 		menu.add(toggleItem);
 	}
-	private void addDesignationItemNonLeaf(JMenu menu, final String menuName,  int keyEvent) {
-		JMenuItem toggleItem = new JMenuItem(menuName);
-
-		toggleItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				setDesignationNonLeaf(menuName);
-			}});	
-		attachAccelaratorKey(toggleItem, keyEvent);
-		menu.add(toggleItem);
-	}
+	
 
 	protected void updateDesignation() {
 		if(currentSelectedBugLeaf == null)
-			return;
+			updateDesignationNonLeaf(currentSelectedBugAspects);
 		else
 		{
 			designationChanged = true;
 			changeDesignationOfBug(currentSelectedBugLeaf, designationList.get(designationComboBox.getSelectedIndex()));
 		}
 	}
-	
+	protected void updateDesignationNonLeaf(BugAspects theAspects) {
+		if (theAspects == null)
+			return;
+		BugSet filteredSet = theAspects.getMatchingBugs(BugSet.getMainBugSet());
+		Iterator<BugLeafNode> filteredIter = filteredSet.iterator();
+		boolean allSame = true;
+		int first = -1;
+		for(BugLeafNode nextNode : filteredSet) {
+		
+				int designationIndex = designationList.indexOf(nextNode.getBug()
+										.getSafeUserDesignation().getDesignation());
+				if (first == -1)
+					first = designationIndex;
+				else if (designationIndex != first)
+					allSame = false;
+			};
+		if (allSame)
+			designationComboBox.setSelectedIndex(first);
+	}
+		 
+
 	protected void setDesignationNonLeaf(String selection){
 		String newName = ConvertMenuDesignationName(selection);
 		if(currentSelectedBugAspects == null)
 			return;
 		else
 		{
-			BugSet filteredSet = BugSet.getMainBugSet().getBugsMatchingFilter(currentSelectedBugAspects.getStackedFilterMatcher());
-			System.out.println("Number to change: " + filteredSet.sizeUnfiltered());
-			Iterator<BugLeafNode> filteredIter = filteredSet.iterator();
-			if(!filteredIter.hasNext())
-				return;
-			else
-				do{
-					BugLeafNode nextNode = filteredIter.next();
+			BugSet filteredSet = currentSelectedBugAspects.getMatchingBugs(BugSet.getMainBugSet());
+			for(BugLeafNode nextNode : filteredSet) {
 					designationChanged = true;
 					changeDesignationOfBug(nextNode, newName);
-				}while(filteredIter.hasNext());
+				};
+		       updateDesignation();
 		}
 	}
 	
@@ -1103,9 +1112,13 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 	
 	protected void changeDesignationOfBug(BugLeafNode theNode, String selection) {
-		System.out.println("Changing designation of " + theNode.toString() + " to " + selection);
-		if (!getSorter().getOrder().contains(Sortables.DESIGNATION))
-		{
+		int numItems = designationComboBox.getItemCount();
+		if(theNode.equals(currentSelectedBugLeaf))
+			for(int i=0; i<numItems; i++)
+				if(selection.equals(designationList.get(i)))
+					designationComboBox.setSelectedIndex(i);
+		if (!getSorter().getOrder().contains(Sortables.DESIGNATION)) {
+			//designation not sorted on at all
 			if (designationChanged)
 			{
 				theNode.getBug().getSafeUserDesignation().setDesignation(selection);
@@ -1116,7 +1129,6 @@ public class MainFrame extends FBFrame implements LogSync
 		{
 			if (designationChanged)
 			{
-				Debug.println("What huh!?!?");
 				BugTreeModel model= (BugTreeModel)tree.getModel();
 				TreePath path=model.getPathToBug(theNode.getBug());
 				if (path==null)
@@ -1166,8 +1178,8 @@ public class MainFrame extends FBFrame implements LogSync
 			{
 				theNode.getBug().getSafeUserDesignation().setDesignation(selection);
 				BugTreeModel model = (BugTreeModel)tree.getModel();
-				TreePath pathToBranch=model.getPathToBug(theNode.getBug()).getParentPath();
-				model.sortBranch(pathToBranch);
+				TreePath path=model.getPathToBug(theNode.getBug());
+				if (path != null) model.sortBranch(path.getParentPath());
 				designationChanged=false;
 			}
 		}
@@ -1593,6 +1605,11 @@ public class MainFrame extends FBFrame implements LogSync
 						designationChanged=true;
 						setProjectChanged(true);
 					}
+					if(e.getStateChange() == ItemEvent.SELECTED && currentSelectedBugLeaf == null)
+					{
+						designationChanged=true;
+						setDesignationNonLeaf(designationComboBox.getSelectedItem().toString());
+					}
 				}
 			}
 			
@@ -1668,6 +1685,17 @@ public class MainFrame extends FBFrame implements LogSync
 		});		
 	}
 	
+	private void updateCommentsForNonLeaf(final BugAspects theAspects){
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				boolean b = projectChanged;
+				commentChanged = false;
+				setProjectChanged(b);
+				updateDesignationNonLeaf(theAspects);
+				setUserCommentInputEnable(true);
+			}
+		});			
+	}
 	/**
 	 * Saves the current comments to the BugLeafNode passed in.
 	 * If the passed in node's annotation is already equal to the current
@@ -1689,6 +1717,8 @@ public class MainFrame extends FBFrame implements LogSync
 		addToPrevComments(getCurrentUserCommentsText());						
 		commentChanged = false;
 	}
+
+	
 	private boolean confirmAnnotation() {
 
 		String[] options = { "Yes", "No", "Yes, and don't ask me this again" };
@@ -2034,7 +2064,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 */
 	private boolean save(File dir)
 	{
-		saveCommentsToBug(currentSelectedBugLeaf);
+		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
 		dir.mkdir();
 		updateDesignation();
@@ -2042,7 +2072,7 @@ public class MainFrame extends FBFrame implements LogSync
 		File f = new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");	
 		File filtersAndSuppressions=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
 		//Saves current comment to current bug.
-		saveCommentsToBug(currentSelectedBugLeaf);
+		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 
 		BugSaver.saveBugs(f,BugSet.getMainBugSet(),curProject);
 		try {
@@ -2089,7 +2119,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * 
 	 */
 	private void saveAnalysis() {
-		saveCommentsToBug(currentSelectedBugLeaf);
+		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
 		if (curProject==null)
 		{
@@ -2134,7 +2164,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * 
 	 */
 	private void loadAnalysis() {
-		saveCommentsToBug(currentSelectedBugLeaf);
+		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 
 		FBFileChooser jfc = new FBFileChooser();
 		jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -2202,7 +2232,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * 
 	 */
 	private void redoAnalysis() {
-		saveCommentsToBug(currentSelectedBugLeaf);
+		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
 		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		new Thread()
@@ -2229,7 +2259,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * 
 	 */
 	private void mergeAnalysis() {
-		saveCommentsToBug(currentSelectedBugLeaf);
+		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
 		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		BugSet bs=BugLoader.combineBugHistories();
@@ -2249,7 +2279,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * 
 	 */
 	private void openProject() {
-		saveCommentsToBug(currentSelectedBugLeaf);
+		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
 		FBFileChooser jfc=new FBFileChooser();
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -2378,7 +2408,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * 
 	 */
 	private void newProjectMenu() {
-		saveCommentsToBug(currentSelectedBugLeaf);
+		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		new NewProjectWizard();
 		
 		newProject = true;
