@@ -144,7 +144,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			if (st.getOrderBeforeDivider().size()==0 && a.size()==0)//Root without any sortables
 				return data.get(index);
 
-			if ((a.size() == 0) || (a.get(a.size() - 1).key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
+			if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
 			{
 				BugAspects child=a.addToNew(enumsThatExist(a).get(index));
 				child.setCount(data.query(child).size());
@@ -166,7 +166,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					if (st.getOrderBeforeDivider().size()==0 && a.size() == 0)//If its the root and we aren't sorting by anything
 						return data.size();
 					
-					if ((a.size() == 0) || (a.get(a.size() - 1).key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
+					if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
 //			{
 //			System.out.println("#  before enumsThatExist: " + (bean.getCurrentThreadCpuTime() - start));
 						return enumsThatExist(a).size();
@@ -212,7 +212,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					
 					Sortables key = (a.size() == 0 ?
 							st.getOrderBeforeDivider().get(0) :
-								st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().indexOf(a.get(a.size() - 1).key) + 1));
+								st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().indexOf(a.last().key) + 1));
 					
 					String[] all = key.getAll(data.query(a));
 					ArrayList<StringPair> result = new ArrayList<StringPair>();
@@ -255,7 +255,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					return -1; 
 				}
 
-				return stringPairs.indexOf(((BugAspects)child).get(((BugAspects)child).size() -1));
+				return stringPairs.indexOf(((BugAspects)child).last());
 //				for (int i = 0; i < stringPairs.size(); i++)
 //					if (stringPairs.get(i).equals(((BugAspects)child).get(((BugAspects)child).size() -1)))
 //						return i;
@@ -976,11 +976,9 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			List<Sortables> order=st.getOrderBeforeDivider();
 			//Create an array of BugAspects of lengths from one to the full BugAspect list of the bugInstance	
 			BugAspects[] toBug=new BugAspects[stringsToBranch.size()];
-			for (int i=0; i < stringsToBranch.size(); i++)
-				toBug[i]=new BugAspects();
-			
-			for (int x=0; x< stringsToBranch.size();x++)
-			{
+			for (int x=0; x < stringsToBranch.size(); x++) {
+				toBug[x]=new BugAspects();
+	
 				for (int y=0; y<=x;y++)
 				{
 					Sortables s = order.get(y);

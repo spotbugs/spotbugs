@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * These are the branches in our tree, each branch forms a complete query that could be sent to the main bugset to return all the bugs it contains
@@ -33,21 +34,28 @@ import java.util.ArrayList;
  * 
  * @author All of us
  */
-public class BugAspects extends ArrayList<BugAspects.StringPair>
+public class BugAspects implements Iterable<BugAspects.StringPair>
 {
 	private static final long serialVersionUID = -5503915081879996968L;
-	private int countOfPeople=-1;
+	private int count=-1;
+	private ArrayList<BugAspects.StringPair> lst = new ArrayList<BugAspects.StringPair>();
 	
+	public StringPair last() {
+		return lst.get(lst.size() - 1);
+	}
+	public int size() {
+		return lst.size();
+	}
 	public String toString()
 	{
-		if (size() == 0)
-			return "Bugs (" + countOfPeople + ")";
+		if (lst.isEmpty())
+			return "Bugs (" + count + ")";
 		else	
 		{
-			if (countOfPeople==-1)
-				return get(size() - 1).value;
+			if (count==-1)
+				return last().value;
 			else
-				return get(size() - 1).key.formatValue(get(size() -1).value) + " (" + countOfPeople + ")";
+				return last().key.formatValue(last().value) + " (" + count + ")";
 		}
 	}
 	
@@ -57,12 +65,12 @@ public class BugAspects extends ArrayList<BugAspects.StringPair>
 	 */
 	public void setCount(int count)
 	{
-		countOfPeople=count;
+		this.count=count;
 	}
 	
 	public int getCount()
 	{
-		return countOfPeople;
+		return count;
 	}
 	
 	public BugAspects()
@@ -72,29 +80,36 @@ public class BugAspects extends ArrayList<BugAspects.StringPair>
 	
 	public BugAspects(BugAspects a)
 	{
-		super(a);
-		countOfPeople = a.countOfPeople;
+		lst = new ArrayList<StringPair>(a.lst);
+		count = a.count;
 	}
 	
+	public void add(StringPair sp) {
+		lst.add(sp);
+	}
 	public BugAspects addToNew(StringPair sp)
 	{
-		BugAspects result = new BugAspects(this);//(BugAspects)this.clone();
-		result.add(sp);
+		BugAspects result = new BugAspects(this);
+		result.lst.add(sp);
 		return result;
 	}
 	public StackedFilterMatcher getStackedFilterMatcher(){
-		FilterMatcher[] filters = new FilterMatcher[this.size()];
+		FilterMatcher[] filters = new FilterMatcher[lst.size()];
 		for (int i = 0; i < filters.length; i++)
-			filters[i] = new FilterMatcher(this.get(i));
+			filters[i] = new FilterMatcher(lst.get(i));
 		StackedFilterMatcher sfm = new StackedFilterMatcher(filters);
 		return sfm;
 	}
+         
+	public BugSet getMatchingBugs(BugSet theSet)
+	{        
+		return theSet.getBugsMatchingFilter(this.getStackedFilterMatcher());
+	}
 	static class StringPair
 	{
-		public Sortables key;
-		public String value;
+		final public Sortables key;
+		final public String value;
 		
-		public StringPair() {}
 		public StringPair(Sortables key, String value)
 		{
 			this.key = key;
@@ -108,14 +123,19 @@ public class BugAspects extends ArrayList<BugAspects.StringPair>
 		
 		public boolean equals(Object that)
 		{
-			if (that == null || !(that instanceof StringPair))
+			if (!(that instanceof StringPair))
 				return false;
-			return this.key.equals(((StringPair)that).key) && this.value.equals(((StringPair)that).value);
+			StringPair thatStringPair = ((StringPair)that);
+			return this.key.equals(thatStringPair.key) && this.value.equals(thatStringPair.value);
 		}
 		
 		public String toString()
 		{
 			return key +":"+ value;
 		}
+	}
+
+	public Iterator<StringPair> iterator() {
+		return lst.iterator();
 	}
 }

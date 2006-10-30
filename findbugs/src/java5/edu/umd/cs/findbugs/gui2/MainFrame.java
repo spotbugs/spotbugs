@@ -184,6 +184,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private SourceLineAnnotation currSrcLineAnnotation;
 	private Object lock = new Object();
 	private boolean newProject = false;
+	private boolean dontShowAnnotationConfirmation = false;
 	private Logger logger = new ConsoleLogger(this);
 	SourceCodeDisplay displayer = new SourceCodeDisplay(this);
 	
@@ -299,7 +300,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * the exit menuItem or by clicking on the window's system menu.
 	 */
 	void callOnClose(){
-		saveCommentsToBug(currentSelectedBugLeaf);
+		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		if(projectChanged){
 			int value = JOptionPane.showConfirmDialog(MainFrame.this, "You are closing " +
 					"without saving. Do you want to save?", 
@@ -460,7 +461,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		suppressMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){				
-				saveCommentsToBug(currentSelectedBugLeaf);
+				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 				//This MUST be done in this order:
 				//getIndexOfChild relies on the fact that things have not yet been removed from the tree!
 				TreePath path=tree.getSelectionPath();
@@ -989,6 +990,7 @@ public class MainFrame extends FBFrame implements LogSync
 						currentSelectedBugLeaf = null;
 						currentSelectedBugAspects = (BugAspects)path.getLastPathComponent();
 						clearIndividualBugInformation();
+						setUserCommentInputEnable(true);
 					}
 				}
 //				Debug.println("Tree selection count:" + tree.getSelectionCount());
@@ -1687,15 +1689,65 @@ public class MainFrame extends FBFrame implements LogSync
 		addToPrevComments(getCurrentUserCommentsText());						
 		commentChanged = false;
 	}
-	
+	private boolean confirmAnnotation() {
+
+		String[] options = { "Yes", "No", "Yes, and don't ask me this again" };
+		if (dontShowAnnotationConfirmation)
+			return true;
+		int choice = JOptionPane
+				.showOptionDialog(
+						this,
+						"Changing this text box will overwrite the annotations associated with all bugs in this folder and subfolders. Are you sure?",
+						"Annotation Change", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+		switch (choice) {
+		case 0:
+			return true;
+		case 1:
+			return false;
+		case 2:
+			dontShowAnnotationConfirmation = true;
+			return true;
+		default:
+			return true;
+		}
+
+	}
+
+	private void saveCommentsToNonLeaf(BugAspects aspects) {
+		if (aspects == null)
+			return;
+		String newComment = getCurrentUserCommentsText();
+		if (newComment.equals(""))
+			return;
+		else if (confirmAnnotation()) {
+
+			BugSet filteredSet = aspects
+					.getMatchingBugs(BugSet.getMainBugSet());
+			for (BugLeafNode nextNode : filteredSet) {
+				nextNode.getBug().setAnnotationText(newComment);
+			}
+		}
+
+	}
+
+
 	/**
 	 * Saves comments to the current selected bug.
 	 *
 	 */
+
 	public void saveComments(){
-		saveCommentsToBug(currentSelectedBugLeaf);
+		  saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 	}
-	
+
+	public void saveComments(BugLeafNode theNode, BugAspects theAspects){
+		if(theNode != null)
+			saveCommentsToBug(theNode);
+		else
+			saveCommentsToNonLeaf(theAspects);
+	}
+
 	/**
 	 * Deletes the list have already. Then loads from list. Will load from
 	 * the list until run out of room in the prevCommentsList.
