@@ -74,6 +74,8 @@ public abstract class FindBugsCommandLine extends CommandLine {
 		if (option.equals("-effort")) {
 			if (optionExtraPart.equals("min")) {
 				settingList = FindBugs.MIN_EFFORT;
+			} else if (optionExtraPart.equals("less")) {
+				settingList = FindBugs.LESS_EFFORT;
 			} else if (optionExtraPart.equals("default")) {
 				settingList = FindBugs.DEFAULT_EFFORT;
 			} else if (optionExtraPart.equals("more")) {
