@@ -335,6 +335,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	
 	public Collection<ValueNumber> valueNumbersForLoads() {
 		HashSet<ValueNumber> result = new HashSet<ValueNumber>();
+		if (REDUNDANT_LOAD_ELIMINATION)
 		for(Map.Entry<AvailableLoad, ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
 			if (e.getValue() != null)
 				for(ValueNumber v2 : e.getValue())
