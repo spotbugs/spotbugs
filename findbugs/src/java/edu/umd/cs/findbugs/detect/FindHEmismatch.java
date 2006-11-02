@@ -174,7 +174,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 
 		if ((hasCompareToObject || hasCompareToSelf) && usesDefaultEquals) {
 			BugInstance bug = new BugInstance(this, "EQ_COMPARETO_USE_OBJECT_EQUALS",
-					Priorities.HIGH_PRIORITY).addClass(this);
+					Priorities.NORMAL_PRIORITY).addClass(this);
 			if (compareToSelfMethod != null) bug.addMethod(compareToSelfMethod);
 			else bug.addMethod(compareToObjectMethod);
 			bugReporter.reportBug(bug);

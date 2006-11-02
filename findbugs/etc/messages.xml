@@ -2033,8 +2033,9 @@ the recommended <code>hashCode</code> implementation to use is:</p>
   <code>equals()</code> method from <code>java.lang.Object</code>.
 	The value of compareTo should return zero if and only if
 	equals returns true. If this is violated, weird and unpredictable
-	failures will occur in classes such as TreeMap and PriorityQueue.
-	Some of these failures  will be different in Java 5 and Java 6.
+	failures will occur in classes such as PriorityQueue.
+	In Java 5 the PriorityQueue.remove method uses the compareTo method,
+	while in Java 6 it uses the equals method.
 ]]>
     </Details>
   </BugPattern>
