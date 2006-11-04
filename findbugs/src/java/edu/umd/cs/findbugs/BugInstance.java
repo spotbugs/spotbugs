@@ -1273,16 +1273,19 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public String getMessageWithoutPrefix() {
 		BugPattern bugPattern = I18N.instance().lookupBugPattern(type);
-		String pattern;
-		if (bugPattern == null)
-			 pattern =  "Error: missing bug pattern for key " + type;
-		else pattern = bugPattern.getLongDescription();
+		String pattern, shortPattern;
+		if (bugPattern == null) 
+			shortPattern = pattern = "Error: missing bug pattern for key " + type;
+		else {
+			pattern = bugPattern.getLongDescription();
+			shortPattern = bugPattern.getShortDescription();
+		}
 		try {
 			FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
 			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
 		} catch (RuntimeException e) {
 			AnalysisContext.logError("Error generating bug msg ", e);
-			return bugPattern.getShortDescription() + " [Error generating customized description]";
+			return shortPattern + " [Error generating customized description]";
 		}
 	}
 	/**
