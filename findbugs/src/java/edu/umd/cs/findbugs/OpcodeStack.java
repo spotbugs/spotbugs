@@ -641,70 +641,27 @@ public class OpcodeStack implements Constants2
 	 				push(new Item("I"));
 	 			break;
 	 			
-	 			case DUP:
-	 				it = pop();
-	 				push(it);
-	 				push(it);
+	 			case DUP: 
+	 				handleDup();
 	 			break;
 	 			
 	 			case DUP2:
-	 				it = pop();
-	 				if  (it.getSize() == 2) {
-	 					push(it);
-	 					push(it);
-	 				}
-	 				else {
-	 					it2 = pop();
-	 					push(it2);
-		 				push(it);
-		 				push(it2);
-		 				push(it);
-	 				}
-	 			
+	 				handleDup2();
 	 			break;
 	 			
 	 			case DUP_X1:
-	 				it = pop();
-	 				it2 = pop();
-	 				push(it);
-	 				push(it2);
-	 				push(it);
+	 			handleDupX1();
 	 			break;
 	 			
 	 			case DUP_X2:
-	 				it = pop();
-	 				it2 = pop();
-	 				signature = it2.getSignature();
-	 				if (signature.equals("J") || signature.equals("D")) {
-	 					push(it);
-	 					push(it2);
-	 					push(it);	 				
-	 				} else {
-	 					it3 = pop();
-	 					push(it);
-	 					push(it3);
-	 					push(it2);
-	 					push(it);
-	 				}
+
+	 				handleDupX2();
 	 			break;
-	 			
+
 	 			case DUP2_X1:
-	 				it = pop();
-	 				it2 = pop();
-	 				signature = it.getSignature();
-	 				if (signature.equals("J") || signature.equals("D")) {
-	 					push(it);
-	 					push(it2);
-	 					push(it);	 				
-	 				} else {
-	 					it3 = pop();
-	 					push(it2);
-	 					push(it);
-	 					push(it3);
-	 					push(it2);
-	 					push(it);
-	 				}
+	 					handleDup2X1();
 	 			break;
+
 	 				 			
 	 			case IINC:
 	 				register = dbc.getRegisterOperand();
@@ -756,10 +713,7 @@ public class OpcodeStack implements Constants2
 	 				
 	 			
 	 			case SWAP:
-	 				Item i1 = pop();
-	 				Item i2 = pop();
-	 				push(i1);
-	 				push(i2);
+	 				handleSwap();
 	 			break;
 	 			
 	 			case ICONST_M1:
@@ -769,23 +723,23 @@ public class OpcodeStack implements Constants2
 	 			case ICONST_3:
 	 			case ICONST_4:
 	 			case ICONST_5:
-	 				push(new Item("I", (Integer)(seen-ICONST_0)));
+	 				push(new Item("I", (seen-ICONST_0)));
 	 			break;
 	 			
 	 			case LCONST_0:
 	 			case LCONST_1:
-	 				push(new Item("J", (Long)(long)(seen-LCONST_0)));
+	 				push(new Item("J", (long)(seen-LCONST_0)));
 	 			break;
 	 			
 	 			case DCONST_0:
 	 			case DCONST_1:
-	 				push(new Item("D", new Double(seen-DCONST_0)));
+	 				push(new Item("D", (double)(seen-DCONST_0)));
 	 			break;
 
 	 			case FCONST_0:
 	 			case FCONST_1:
 	 			case FCONST_2:
-	 				push(new Item("F", new Float(seen-FCONST_0)));
+	 				push(new Item("F", (float)(seen-FCONST_0)));
 	 			break;
 
 	 			case ACONST_NULL:
@@ -945,74 +899,23 @@ public class OpcodeStack implements Constants2
 	 			case LSHR:
 	 			case LREM:
 	 			case LUSHR:
-	 				if (DEBUG) 
-	 					System.out.println("Long math: " + this);
 	 				
 	 				it = pop();
 	 				it2 = pop();
-	 				try {
-	 				pushByLongMath(seen, it2, it);
-	 				}
-	 				catch (Exception e) {
-	 					e.printStackTrace();
-	 				} finally {
-	 				if (DEBUG) 
-	 					System.out.println("After long math: " + this);
-	 				}
-	 				
+	 				pushByLongMath(seen, it2, it);	 				
 	 			break;
  			
 	 			case LCMP:
-	 				it = pop();
-	 				it2 = pop();
-	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
-	 					long l = (Long) it.getConstant();
-	 					long l2 = (Long) it.getConstant();
-	 					if (l2 < l)
-	 						push(new Item("I", (Integer)(-1)));
-	 					else if (l2 > l)
-	 						push(new Item("I", (Integer)(1)));
-	 					else
-	 						push(new Item("I", (Integer)(0)));
-	 				} else {
-	 					push(new Item("I"));
-	 				}
+	 			handleLcmp();
 	 			break;
 	 				
 	 			case FCMPG:
-	 			case FCMPL:
-	 				it = pop();
-	 				it2 = pop();
-	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
-	 					float f = (Float) it.getConstant();
-	 					float f2 = (Float) it.getConstant();
-	 					if (f2 < f)
-	 						push(new Item("I", new Integer(-1)));
-	 					else if (f2 > f)
-	 						push(new Item("I", new Integer(1)));
-	 					else
-	 						push(new Item("I", new Integer(0)));
-	 				} else {
-	 					push(new Item("I"));
-	 				}
+	 			case FCMPL: handleFcmp();
 	 			break;
 
 	 			case DCMPG:
 	 			case DCMPL:
-	 				it = pop();
-	 				it2 = pop();
-	 				if ((it.getConstant() != null) && it2.getConstant() != null) {
-	 					double d = (Double) it.getConstant();
-	 					double d2 = (Double) it.getConstant();
-	 					if (d2 < d)
-	 						push(new Item("I", (Integer) (-1) ));
-	 					else if (d2 > d)
-	 						push(new Item("I", (Integer)1));
-	 					else
-	 						push(new Item("I", (Integer)0));
-	 				} else {
-	 					push(new Item("I"));
-	 				}
+	 				handleDcmp();
 	 			break;
 	 			
 	 			case FADD:
@@ -1037,7 +940,7 @@ public class OpcodeStack implements Constants2
 	 			case I2B:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					it =new Item("I", new Integer((int)((byte)((Integer)it.getConstant()).intValue())));
+	 					it =new Item("I", (byte)constantToInt(it));
 	 				} else {
 	 					it = new Item("I");
 	 				}
@@ -1048,35 +951,18 @@ public class OpcodeStack implements Constants2
 	 			case I2C:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("I", new Integer((int)((char)((Integer)it.getConstant()).intValue()))));
+	 					push(new Item("I", (char)constantToInt(it)));
 	 				} else {
 	 					push(new Item("I"));
 	 				}
 	 			break;
-
-	 			case I2D:
-	 				it = pop();
-	 				if (it.getConstant() != null) {
-	 					push(new Item("D", new Double((double)((Integer)it.getConstant()).intValue())));
-	 				} else {
-	 					push(new Item("D"));
-	 				}
-	 			break;
 	 			
-	 			case I2F:
-	 				it = pop();
-	 				if (it.getConstant() != null) {
-	 					push(new Item("F", new Float((float)((Integer)it.getConstant()).intValue())));
-	 				} else {
-	 					push(new Item("F"));
-	 				}
-	 			break;
-	 			
-	 			case I2L:{
+	 			case I2L:
+	 			case D2L:{
 	 				it = pop();
 	 				Item newValue;
 	 				if (it.getConstant() != null) {
-	 					newValue = new Item("J", new Long((long)((Integer)it.getConstant()).intValue()));
+	 					newValue = new Item("J", constantToLong(it));
 	 				} else {
 	 					newValue = new Item("J");
 	 				}
@@ -1088,79 +974,40 @@ public class OpcodeStack implements Constants2
 	 			case I2S:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("I", new Integer((int)((short)((Integer)it.getConstant()).intValue()))));
+	 					push(new Item("I", (short)constantToInt(it)));
 	 				} else {
 	 					push(new Item("I"));
-	 				}
-	 			break;
-	 			
-	 			case D2I:
-	 				it = pop();
-	 				if (it.getConstant() != null) {
-	 					push(new Item("I", (Integer) it.getConstant()));
-	 				} else {
-	 					push(new Item("I"));
-	 				}
-	 			break;
-	 			
-	 			case D2F:
-	 				it = pop();
-	 				if (it.getConstant() != null) {
-	 					push(new Item("F", new Float((float)((Double)it.getConstant()).doubleValue())));
-	 				} else {
-	 					push(new Item("F"));
-	 				}
-	 			break;
-
-	 			case D2L:
-	 				it = pop();
-	 				if (it.getConstant() != null) {
-	 					push(new Item("J", new Long((long)((Double)it.getConstant()).doubleValue())));
-	 				} else {
-	 					push(new Item("J"));
 	 				}
 	 			break;
 
 	 			case L2I:
+	 			case D2I:
+	 			case F2I:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("I", new Integer((int)((Long)it.getConstant()).longValue())));
+	 					push(new Item("I",constantToInt(it)));
 	 				} else {
 	 					push(new Item("I"));
 	 				}
 	 			break;
 	 			
-	 			case L2D:
-	 				it = pop();
-	 				if (it.getConstant() != null) {
-	 					push(new Item("D", new Double((double)((Long)it.getConstant()).longValue())));
-	 				} else {
-	 					push(new Item("D"));
-	 				}
-	 			break;
-	 			
 	 			case L2F:
+	 			case D2F:
+	 			case I2F:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("F", new Float((float)((Long)it.getConstant()).longValue())));
+	 					push(new Item("F", new Float(constantToFloat(it))));
 	 				} else {
 	 					push(new Item("F"));
 	 				}
 	 			break;
 
-	 			case F2I:
-	 				it = pop();
-	 				if (it.getConstant() != null) {
-	 					push(new Item("I", new Integer((int)((Float)it.getConstant()).floatValue())));
-	 				} else {
-	 					push(new Item("I"));
-	 				}
-	 			break;
-
 	 			case F2D:
+	 			case I2D:
+	 			case L2D:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("D", new Double((double)((Float)it.getConstant()).floatValue())));
+	 					push(new Item("D", constantToDouble(it)));
 	 				} else {
 	 					push(new Item("D"));
 	 				}
@@ -1224,7 +1071,7 @@ public class OpcodeStack implements Constants2
 	 			break;
 	 				
 	 			default:
-	 				throw new UnsupportedOperationException("OpCode not supported yet" );
+	 				throw new UnsupportedOperationException("OpCode " + OPCODE_NAMES[seen] + " not supported " );
 	 		}
 	 	}
 
@@ -1246,6 +1093,212 @@ public class OpcodeStack implements Constants2
 	 		}
 	 	}
  	}
+
+	/**
+	 * @param it
+	 * @return
+	 */
+	private int constantToInt(Item it) {
+		return ((Number)it.getConstant()).intValue();
+	}
+
+	/**
+	 * @param it
+	 * @return
+	 */
+	private float constantToFloat(Item it) {
+		return ((Number)it.getConstant()).floatValue();
+	}
+
+	/**
+	 * @param it
+	 * @return
+	 */
+	private double constantToDouble(Item it) {
+		return ((Number)it.getConstant()).doubleValue();
+	}
+
+	/**
+	 * @param it
+	 * @return
+	 */
+	private long constantToLong(Item it) {
+		return ((Number)it.getConstant()).longValue();
+	}
+
+	/**
+	 * 
+	 */
+	private void handleDcmp() {
+		Item it;
+		Item it2;
+
+		it = pop();
+
+		it2 = pop();
+		if ((it.getConstant() != null) && it2.getConstant() != null) {
+			double d = (Double) it.getConstant();
+			double d2 = (Double) it.getConstant();
+			if (d2 < d)
+				push(new Item("I", (Integer) (-1) ));
+			else if (d2 > d)
+				push(new Item("I", (Integer)1));
+			else
+				push(new Item("I", (Integer)0));
+		} else {
+			push(new Item("I"));
+		}
+
+	}
+
+	/**
+	 * 
+	 */
+	private void handleFcmp() {
+		Item it;
+		Item it2;
+			it = pop();
+			it2 = pop();
+			if ((it.getConstant() != null) && it2.getConstant() != null) {
+				float f = (Float) it.getConstant();
+				float f2 = (Float) it.getConstant();
+				if (f2 < f)
+					push(new Item("I", new Integer(-1)));
+				else if (f2 > f)
+					push(new Item("I", new Integer(1)));
+				else
+					push(new Item("I", new Integer(0)));
+			} else {
+				push(new Item("I"));
+			}
+	}
+
+	/**
+	 * 
+	 */
+	private void handleLcmp() {
+		Item it;
+		Item it2;
+
+			it = pop();
+			it2 = pop();
+			if ((it.getConstant() != null) && it2.getConstant() != null) {
+				long l = (Long) it.getConstant();
+				long l2 = (Long) it.getConstant();
+				if (l2 < l)
+					push(new Item("I", (Integer)(-1)));
+				else if (l2 > l)
+					push(new Item("I", (Integer)(1)));
+				else
+					push(new Item("I", (Integer)(0)));
+			} else {
+				push(new Item("I"));
+			}
+
+	}
+
+	/**
+	 * 
+	 */
+	private void handleSwap() {
+		Item i1 = pop();
+		Item i2 = pop();
+		push(i1);
+		push(i2);
+	}
+
+	/**
+	 * 
+	 */
+	private void handleDup() {
+		Item it;
+		it = pop();
+		push(it);
+		push(it);
+	}
+
+	/**
+	 * 
+	 */
+	private void handleDupX1() {
+		Item it;
+		Item it2;
+			it = pop();
+			it2 = pop();
+			push(it);
+			push(it2);
+			push(it);
+	}
+
+	/**
+	 * 
+	 */
+	private void handleDup2() {
+		Item it, it2;
+		it = pop();
+		if  (it.getSize() == 2) {
+			push(it);
+			push(it);
+		}
+		else {
+			it2 = pop();
+			push(it2);
+			push(it);
+			push(it2);
+			push(it);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void handleDup2X1() {
+		String signature;
+		Item it;
+		Item it2;
+		Item it3;
+
+		it = pop();
+
+	it2 = pop();
+	signature = it.getSignature();
+	if (signature.equals("J") || signature.equals("D")) {
+		push(it);
+		push(it2);
+		push(it);	 				
+	} else {
+		it3 = pop();
+		push(it2);
+		push(it);
+		push(it3);
+		push(it2);
+		push(it);
+	}
+	}
+
+	/**
+	 * 
+	 */
+	private void handleDupX2() {
+		String signature;
+		Item it;
+		Item it2;
+		Item it3;
+		it = pop();
+		it2 = pop();
+		signature = it2.getSignature();
+		if (signature.equals("J") || signature.equals("D")) {
+			push(it);
+			push(it2);
+			push(it);	 				
+		} else {
+			it3 = pop();
+			push(it);
+			push(it3);
+			push(it2);
+			push(it);
+		}
+	}
 
 	private void processMethodCall(DismantleBytecode dbc, int seen) {
  		String clsName = dbc.getClassConstantOperand();
