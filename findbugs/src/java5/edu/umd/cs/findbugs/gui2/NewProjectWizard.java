@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -48,6 +49,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
+import COM.stagecast.ifc.netscape.application.FileChooser;
+
 import edu.umd.cs.findbugs.Project;
 
 /**
@@ -62,8 +65,6 @@ public class NewProjectWizard extends FBDialog
 	
 	private Project project;
 	private boolean projectChanged = false;
-	private JTextField directory = new JTextField();
-	private JButton directoryBrowse = new JButton("Browse...");
 	private FBFileChooser chooser = new FBFileChooser();
 	private FileFilter directoryOrJar = new FileFilter()
 	{
@@ -81,24 +82,18 @@ public class NewProjectWizard extends FBDialog
 		}
 	};
 	
-//	private JList classList = new JList();
-	
+	private JList analyzeList = new JList();
+	private DefaultListModel analyzeModel = new DefaultListModel();
+
 	private JList auxList = new JList();
 	private DefaultListModel auxModel = new DefaultListModel();
-	private JButton auxAdd = new JButton("Add...");
-	private JButton auxRemove = new JButton("Remove");
 	
 	private JList sourceList = new JList();
 	private DefaultListModel sourceModel = new DefaultListModel();
-	private JButton sourceAdd = new JButton("Add...");
-	private JButton sourceRemove = new JButton("Remove");
 	
-	private JButton backButton = new JButton("< Back");
-	private JButton nextButton = new JButton("Next >");
 	private JButton finishButton = new JButton("Finish");
 	private JButton cancelButton = new JButton("Cancel");
 	
-//	private JPanel[] wizardPanels = new JPanel[4];
 	private JPanel[] wizardPanels = new JPanel[3];
 	private int currentPanel;
 	
@@ -114,246 +109,38 @@ public class NewProjectWizard extends FBDialog
 	{
 		project = curProject;
 		
-		setLayout(new BorderLayout());
+		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new GridLayout(3,1));
 		
-		wizardPanels[0] = new JPanel(new BorderLayout());
-		JPanel north0 = new JPanel();
-		north0.setLayout(new BoxLayout(north0, BoxLayout.Y_AXIS));
-		north0.add(Box.createVerticalStrut(20));
-		north0.add(new JLabel("Main project directory or JAR:"));
-		north0.add(Box.createVerticalStrut(5));
-		north0.add(directory);
-		directory.getDocument().addDocumentListener(new DocumentListener()
-		{
-			public void changedUpdate(DocumentEvent e) {}
-			public void insertUpdate(DocumentEvent e)
-			{
-				projectChanged = true;
-			}
-
-			public void removeUpdate(DocumentEvent e)
-			{
-				projectChanged = true;
-			}
-		});
-		JPanel glueAndBrowseButton = new JPanel();
-		glueAndBrowseButton.setLayout(new BoxLayout(glueAndBrowseButton, BoxLayout.X_AXIS));
-		glueAndBrowseButton.add(Box.createHorizontalGlue());
-		glueAndBrowseButton.add(directoryBrowse);
-		directoryBrowse.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				chooser.setFileFilter(directoryOrJar);
-				if (chooser.showOpenDialog(NewProjectWizard.this) == JFileChooser.APPROVE_OPTION)
-					directory.setText(chooser.getSelectedFile().getAbsolutePath());
-			}
-		});
-		north0.add(glueAndBrowseButton);
-		north0.add(Box.createVerticalGlue());
-		wizardPanels[0].add(north0, BorderLayout.NORTH);
-		wizardPanels[0].setBorder(border);
 		
-//		wizardPanels[1] = new JPanel(new BorderLayout());
-//		wizardPanels[1].add(new JLabel("Classes found:"), BorderLayout.NORTH);
-//		wizardPanels[1].add(new JScrollPane(classList), BorderLayout.CENTER);
-//		wizardPanels[1].setBorder(border);
+		wizardPanels[0] = createFilePanel("Class jars and directories to analyze:", 
+				analyzeList, analyzeModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrJar);
 		
-//		wizardPanels[2] = new JPanel(new GridBagLayout());
-		wizardPanels[1] = new JPanel(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.gridheight = 1;
-		gbc.gridwidth = 2;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-//		wizardPanels[2].add(new JLabel("Auxiliary class locations:"), gbc);
-		wizardPanels[1].add(new JLabel("Auxiliary class locations:"), gbc);
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.gridheight = 3;
-		gbc.gridwidth = 1;
-		gbc.weightx = 1;
-		gbc.weighty = 1;
-		gbc.fill = GridBagConstraints.BOTH;
-//		wizardPanels[2].add(new JScrollPane(auxList), gbc);
-		wizardPanels[1].add(new JScrollPane(auxList), gbc);
-		auxList.setModel(auxModel);
-		gbc.gridx = 1;
-		gbc.gridy = 1;
-		gbc.gridheight = 1;
-		gbc.gridwidth = 1;
-		gbc.weightx = 0;
-		gbc.weighty = 0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-//		wizardPanels[2].add(auxAdd, gbc);
-		wizardPanels[1].add(auxAdd, gbc);
-		gbc.gridx = 1;
-		gbc.gridy = 2;
-		gbc.insets = new Insets(5, 0, 0, 0);
-//		wizardPanels[2].add(auxRemove, gbc);
-		wizardPanels[1].add(auxRemove, gbc);
-		gbc.gridx = 1;
-		gbc.gridy = 3;
-		gbc.insets = new Insets(0, 0, 0, 0);
-//		wizardPanels[2].add(Box.createGlue(), gbc);
-//		wizardPanels[2].setBorder(border);
-		wizardPanels[1].add(Box.createGlue(), gbc);
-		wizardPanels[1].setBorder(border);
-		auxAdd.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				chooser.setFileFilter(directoryOrJar);
-				if (chooser.showOpenDialog(NewProjectWizard.this) == JFileChooser.APPROVE_OPTION)
-				{
-					auxModel.addElement(chooser.getSelectedFile().getAbsolutePath());
-					projectChanged = true;
-				}
-			}
-		});
-		auxRemove.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				if (auxList.getSelectedValues().length > 0)
-					projectChanged = true;
-				for (Object i : auxList.getSelectedValues())
-					auxModel.removeElement(i);
-			}
-		});
+		wizardPanels[1] = createFilePanel("Auxiliary class locations:", 
+				auxList, auxModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrJar);
 		
-//		wizardPanels[3] = new JPanel(new GridBagLayout());
-		wizardPanels[2] = new JPanel(new GridBagLayout());
-		gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.gridheight = 1;
-		gbc.gridwidth = 2;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		gbc.anchor = GridBagConstraints.WEST;
-//		wizardPanels[3].add(new JLabel("Source directories:"), gbc);
-		wizardPanels[2].add(new JLabel("Source directories:"), gbc);
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.gridheight = 3;
-		gbc.gridwidth = 1;
-		gbc.weightx = 1;
-		gbc.weighty = 1;
-		gbc.fill = GridBagConstraints.BOTH;
-//		wizardPanels[3].add(new JScrollPane(sourceList), gbc);
-		wizardPanels[2].add(new JScrollPane(sourceList), gbc);
-		sourceList.setModel(sourceModel);
-		gbc.gridx = 1;
-		gbc.gridy = 1;
-		gbc.gridheight = 1;
-		gbc.gridwidth = 1;
-		gbc.weightx = 0;
-		gbc.weighty = 0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-//		wizardPanels[3].add(sourceAdd, gbc);
-		wizardPanels[2].add(sourceAdd, gbc);
-		gbc.gridx = 1;
-		gbc.gridy = 2;
-		gbc.insets = new Insets(5, 0, 0, 0);
-//		wizardPanels[3].add(sourceRemove, gbc);
-		wizardPanels[2].add(sourceRemove, gbc);
-		gbc.gridx = 1;
-		gbc.gridy = 3;
-		gbc.insets = new Insets(0, 0, 0, 0);
-//		wizardPanels[3].add(Box.createGlue(), gbc);
-//		wizardPanels[3].setBorder(border);
-		wizardPanels[2].add(Box.createGlue(), gbc);
-		wizardPanels[2].setBorder(border);
-		sourceAdd.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				chooser.setFileFilter(null);
-				if (chooser.showOpenDialog(NewProjectWizard.this) == JFileChooser.APPROVE_OPTION)
-				{
-					sourceModel.addElement(chooser.getSelectedFile().getAbsolutePath());
-					projectChanged = true;
-				}
-			}
-		});
-		sourceRemove.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				if (sourceList.getSelectedValues().length > 0)
-					projectChanged = true;
-				for (Object i : sourceList.getSelectedValues())
-					sourceModel.removeElement(i);
-			}
-		});
-		
+		wizardPanels[2] = createFilePanel("Source directories:", sourceList, sourceModel, JFileChooser.FILES_AND_DIRECTORIES, null);
+				
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-		buttons.add(backButton);
-		buttons.add(nextButton);
 		buttons.add(Box.createHorizontalStrut(5));
 		buttons.add(finishButton);
 		buttons.add(Box.createHorizontalStrut(5));
 		buttons.add(cancelButton);
-		
-		backButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				loadPanel(currentPanel - 1);
-			}
-		});
-		
-		nextButton.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				switch (currentPanel)
-				{
-					case 0:
-						File f = new File(directory.getText());
-						if (!f.exists() || (!f.isDirectory() && !f.getName().endsWith(".jar")))
-						{
-							JOptionPane.showMessageDialog(NewProjectWizard.this, "Invalid path.", "Error", JOptionPane.ERROR_MESSAGE);
-							return;
-						}
-						break;
-					case 1:
-						for (int i = 0; i < auxModel.getSize(); i++){
-							File temp = new File((String)auxModel.get(i));
-							if(!(temp.exists() && (temp.isDirectory() || 
-									temp.getName().endsWith(".jar") || temp.getName().endsWith(".zip")))){
-								JOptionPane.showMessageDialog(NewProjectWizard.this, 
-										temp.getName()+" is invalid.", "Error", JOptionPane.ERROR_MESSAGE);
-								return;
-							}
-						}
-						break;
-					case 2:
-						// no need to check for this.
-						break;
-				}
-				
-				loadPanel(currentPanel + 1);
-			}
-		});
 		finishButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				File f = new File(directory.getText());
-				if (!f.exists() || (!f.isDirectory() && !f.getName().endsWith(".jar")))
-				{
-					JOptionPane.showMessageDialog(NewProjectWizard.this, "Invalid path.", "Error", JOptionPane.ERROR_MESSAGE);
-					return;
+					for (int i = 0; i < analyzeModel.getSize(); i++){
+					File temp = new File((String)auxModel.get(i));
+					if(!(temp.exists() && (temp.isDirectory() || 
+							temp.getName().endsWith(".jar") || temp.getName().endsWith(".zip")))){
+						JOptionPane.showMessageDialog(NewProjectWizard.this, 
+								temp.getName()+" is invalid.", "Error", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 				}
+			
 				
 				for (int i = 0; i < auxModel.getSize(); i++){
 					File temp = new File((String)auxModel.get(i));
@@ -366,7 +153,8 @@ public class NewProjectWizard extends FBDialog
 				}
 				
 				Project p = (project == null ? new Project() : project);
-				p.addFile(directory.getText());
+				for (int i = 0; i < analyzeModel.getSize(); i++)
+					p.addFile((String) auxModel.get(i));
 				for (int i = 0; i < auxModel.getSize(); i++)
 					p.addAuxClasspathEntry((String) auxModel.get(i));
 				for (int i = 0; i < sourceModel.getSize(); i++)
@@ -390,27 +178,100 @@ public class NewProjectWizard extends FBDialog
 		south.add(new JSeparator(), BorderLayout.NORTH);
 		south.add(buttons, BorderLayout.EAST);
 		
+		
 		if (curProject != null)
 		{
-			if (curProject.getFileCount() > 0)
-				directory.setText(curProject.getFile(0));
+			for (String i : curProject.getFileList()) 
+				analyzeModel.addElement(i);
 			for (String i : curProject.getAuxClasspathEntryList())
 				auxModel.addElement(i);
 			for (String i : curProject.getSourceDirList())
 				sourceModel.addElement(i);
 		}
 		
-		loadPanel(0);
+		//loadPanel(0);
+		loadAllPanels(mainPanel);
+		add(mainPanel, BorderLayout.CENTER);
+		add(south, BorderLayout.SOUTH);
 		
-		add(south, BorderLayout.SOUTH);		
-		//setSize(new Dimension(createWidth(), 300));
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 //		pack();
+		setTitle("New Project");
 		setModal(true);
 		setVisible(true);
 	}
-	
+
+	/**
+	 * @param label TODO
+	 * 
+	 */
+	private JPanel createFilePanel(String label, final JList list, 
+			final DefaultListModel listModel, final int fileSelectionMode, final FileFilter filter) {
+		JPanel myPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridheight = 1;
+		gbc.gridwidth = 2;
+		gbc.weightx = 1;
+		gbc.weighty = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		myPanel.add(new JLabel(label), gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.gridheight = 3;
+		gbc.gridwidth = 1;
+		gbc.weightx = 1;
+		gbc.weighty = 1;
+		gbc.fill = GridBagConstraints.BOTH;
+		myPanel.add(new JScrollPane(list), gbc);
+		list.setModel(listModel);
+		gbc.gridx = 1;
+		gbc.gridy = 1;
+		gbc.gridheight = 1;
+		gbc.gridwidth = 1;
+		gbc.weightx = 0;
+		gbc.weighty = 0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		final JButton addButton = new JButton("Add");
+		myPanel.add(addButton, gbc);
+		gbc.gridx = 1;
+		gbc.gridy = 2;
+		gbc.insets = new Insets(5, 0, 0, 0);
+		final JButton removeButton = new JButton("Remove");
+		myPanel.add(removeButton, gbc);
+		gbc.gridx = 1;
+		gbc.gridy = 3;
+		gbc.insets = new Insets(0, 0, 0, 0);
+		myPanel.add(Box.createGlue(), gbc);
+		myPanel.setBorder(border);
+		addButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				chooser.setFileSelectionMode(fileSelectionMode);
+				chooser.setFileFilter(filter);
+				if (chooser.showOpenDialog(NewProjectWizard.this) == JFileChooser.APPROVE_OPTION)
+				{
+					listModel.addElement(chooser.getSelectedFile().getAbsolutePath());
+					projectChanged = true;
+				}
+			}
+		});
+		removeButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				if (list.getSelectedValues().length > 0)
+					projectChanged = true;
+				for (Object i : list.getSelectedValues())
+					listModel.removeElement(i);
+			}
+		});
+		return myPanel;
+	}
+	/*
 	private void loadPanel(final int index)
 	{
 		SwingUtilities.invokeLater(new Runnable()
@@ -422,6 +283,23 @@ public class NewProjectWizard extends FBDialog
 				add(wizardPanels[index], BorderLayout.CENTER);
 				backButton.setEnabled(index > 0);
 				nextButton.setEnabled(index < wizardPanels.length - 1);
+				validate();
+				repaint();
+			}
+		});
+	}
+	*/
+	private void loadAllPanels(final JPanel mainPanel)
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				int numPanels = wizardPanels.length;
+				for(int i=0; i<numPanels; i++)
+					mainPanel.remove(wizardPanels[i]);
+				for(int i=0; i<numPanels; i++)
+					mainPanel.add(wizardPanels[i]);
 				validate();
 				repaint();
 			}
@@ -439,9 +317,9 @@ public class NewProjectWizard extends FBDialog
 		
 		int width = super.getWidth();
 		
-		if(width < 400)
-			width = 400;
-		setSize(new Dimension(width, 300));
+		if(width < 600)
+			width = 600;
+		setSize(new Dimension(width, 500));
 		setLocationRelativeTo(MainFrame.getInstance());
 	}
 }
