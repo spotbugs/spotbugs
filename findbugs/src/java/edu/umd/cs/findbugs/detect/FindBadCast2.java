@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
@@ -89,12 +90,14 @@ public class FindBadCast2 implements Detector {
 
 			try {
 				analyzeMethod(classContext, method);
+			} catch (MethodUnprofitableException e) {
+				assert true; // move along; nothing to see
 			} catch (CFGBuilderException e) {
 				bugReporter.logError("Detector " + this.getClass().getName()
 						+ " caught exception while analyzing " + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature() , e);
 			} catch (DataflowAnalysisException e) {
-//				bugReporter.logError("Detector " + this.getClass().getName()
-//						+ " caught exception", e);
+				bugReporter.logError("Detector " + this.getClass().getName()
+						+ " caught exception while analyzing " + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature(), e);
 			}
 		}
 	}
