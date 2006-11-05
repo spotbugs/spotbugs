@@ -154,7 +154,7 @@ public class NewProjectWizard extends FBDialog
 				
 				Project p = (project == null ? new Project() : project);
 				for (int i = 0; i < analyzeModel.getSize(); i++)
-					p.addFile((String) auxModel.get(i));
+					p.addFile((String) analyzeModel.get(i));
 				for (int i = 0; i < auxModel.getSize(); i++)
 					p.addAuxClasspathEntry((String) auxModel.get(i));
 				for (int i = 0; i < sourceModel.getSize(); i++)
