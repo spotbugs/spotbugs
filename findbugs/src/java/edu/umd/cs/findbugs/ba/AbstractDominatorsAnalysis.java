@@ -26,6 +26,8 @@ import java.util.Map;
 
 import org.apache.bcel.generic.InstructionHandle;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 /**
  * A dataflow analysis to compute dominator relationships between
  * basic blocks.  Use the {@link #getResultFact} method to get the dominator
@@ -109,7 +111,7 @@ public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAn
 		return fact1.equals(fact2);
 	}
 
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, BitSet start, BitSet result) throws DataflowAnalysisException {
+	public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, BitSet start, BitSet result) throws DataflowAnalysisException {
 		// Start with intersection of dominators of predecessors
 		copy(start, result);
 

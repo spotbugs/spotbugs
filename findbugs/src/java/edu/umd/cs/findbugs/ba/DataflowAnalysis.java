@@ -109,7 +109,7 @@ public interface DataflowAnalysis <Fact> {
 	 *                   or end of block (if backwards analysis)
 	 * @param result     resulting dataflow facts at other end of block
 	 */
-	public void transfer(BasicBlock basicBlock, @Nullable InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException;
+	public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException;
 
 	/**
 	 * Edge transfer function.

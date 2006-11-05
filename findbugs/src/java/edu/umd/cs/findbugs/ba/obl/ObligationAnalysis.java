@@ -32,6 +32,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
@@ -123,12 +124,12 @@ public class ObligationAnalysis
 	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transfer(edu.umd.cs.findbugs.ba.BasicBlock, org.apache.bcel.generic.InstructionHandle, java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, StateSet start, StateSet result) throws DataflowAnalysisException {
+	public void transfer(BasicBlock basicBlock, @CheckForNull  InstructionHandle end, StateSet start, StateSet result) throws DataflowAnalysisException {
 		super.transfer(basicBlock, end, start, result);
 		endTransfer(basicBlock, end, result);
 	}
 	
-	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, StateSet result)
+	public void endTransfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, StateSet result)
 			throws DataflowAnalysisException {
 		// Append this block id to the Paths of all States
 		for (Iterator<State> i = result.stateIterator(); i.hasNext(); ) {

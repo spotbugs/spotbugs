@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.bcel.generic.InstructionHandle;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 
 /**
@@ -98,7 +99,7 @@ public abstract class AbstractDataflowAnalysis <Fact> extends BasicAbstractDataf
 	 * Implementations of interface methods
 	 * ---------------------------------------------------------------------- */
 
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException {
+	public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, Fact start, Fact result) throws DataflowAnalysisException {
 		copy(start, result);
 
 		if (isFactValid(result)) {

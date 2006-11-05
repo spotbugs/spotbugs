@@ -294,6 +294,13 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 		return Arrays.equals(classHash, other.classHash);
 	}
 
+	public int hashCode() {
+		return Arrays.hashCode(classHash);
+	}
+	public boolean equals(Object o) {
+		if (!(o instanceof ClassHash)) return false;
+		return isSameHash((ClassHash)o);
+	}
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(T)
 	 */

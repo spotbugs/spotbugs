@@ -39,6 +39,7 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -346,7 +347,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transfer(edu.umd.cs.findbugs.ba.BasicBlock, org.apache.bcel.generic.InstructionHandle, java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, TypeFrame start, TypeFrame result) throws DataflowAnalysisException {
+	public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, TypeFrame start, TypeFrame result) throws DataflowAnalysisException {
 		visitor.startBasicBlock();
 		
 		super.transfer(basicBlock, end, start, result);
@@ -367,7 +368,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		}
 	}
 
-	private void computeThrownExceptionTypes(BasicBlock basicBlock, InstructionHandle end, TypeFrame result)
+	private void computeThrownExceptionTypes(BasicBlock basicBlock, @CheckForNull InstructionHandle end, TypeFrame result)
 	        throws DataflowAnalysisException {
 
 		// Do nothing if we're not computing propagated exceptions

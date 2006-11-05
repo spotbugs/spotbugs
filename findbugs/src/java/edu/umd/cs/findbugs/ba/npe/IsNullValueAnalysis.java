@@ -33,6 +33,7 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
@@ -179,7 +180,7 @@ public class IsNullValueAnalysis
 
 	
 	@Override
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, IsNullValueFrame start, IsNullValueFrame result)
+	public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, IsNullValueFrame start, IsNullValueFrame result)
 	throws DataflowAnalysisException {
 		startTransfer();
 		super.transfer(basicBlock, end, start, result);
@@ -195,7 +196,7 @@ public class IsNullValueAnalysis
 		instanceOfFrame = null;
 	}
 
-	public void endTransfer(BasicBlock basicBlock, InstructionHandle end, IsNullValueFrame result)
+	public void endTransfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, IsNullValueFrame result)
 			throws DataflowAnalysisException {
 		// Determine if this basic block ends in a redundant branch.
 		if (end == null) {

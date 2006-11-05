@@ -30,6 +30,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * Dataflow analysis to determine the nesting of catch and finally
@@ -84,7 +85,7 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
 		return fact1.sameAs(fact2);
 	}
 
-	public void transfer(BasicBlock basicBlock, InstructionHandle end, BlockType start, BlockType result)
+	public void transfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, BlockType start, BlockType result)
 			throws DataflowAnalysisException {
 		result.copyFrom(start);
 
