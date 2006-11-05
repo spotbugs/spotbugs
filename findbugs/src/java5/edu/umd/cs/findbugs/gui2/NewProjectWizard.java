@@ -132,7 +132,7 @@ public class NewProjectWizard extends FBDialog
 			public void actionPerformed(ActionEvent evt)
 			{
 					for (int i = 0; i < analyzeModel.getSize(); i++){
-					File temp = new File((String)auxModel.get(i));
+					File temp = new File((String)analyzeModel.get(i));
 					if(!(temp.exists() && (temp.isDirectory() || 
 							temp.getName().endsWith(".jar") || temp.getName().endsWith(".zip")))){
 						JOptionPane.showMessageDialog(NewProjectWizard.this, 
