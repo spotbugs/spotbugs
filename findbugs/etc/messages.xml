@@ -2026,7 +2026,7 @@ the recommended <code>hashCode</code> implementation to use is:</p>
 
   <BugPattern type="EQ_COMPARETO_USE_OBJECT_EQUALS">
     <ShortDescription>Class defines compareTo(...) and uses Object.equals()</ShortDescription>
-    <LongDescription>{0} defines {1,givenClass} and uses Object.equals()</LongDescription>
+    <LongDescription>{0} defines {1.givenClass} and uses Object.equals()</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a <code>compareTo(...)</code> method but inherits its
@@ -5352,8 +5352,8 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="IC" >Initialization circularity</BugCode>
   <BugCode abbrev="SI" >Suspicious static initializer</BugCode>
   <BugCode abbrev="IS" >Inconsistent synchronization</BugCode>
-  <BugCode abbrev="Eq" >Covariant equals()</BugCode>
-  <BugCode abbrev="Co" >Covariant compareTo()</BugCode>
+  <BugCode abbrev="Eq" >Problems with equals()</BugCode>
+  <BugCode abbrev="Co" >Problems with  compareTo()</BugCode>
   <BugCode abbrev="HE" >Equal objects must have equal hashcodes</BugCode>
   <BugCode abbrev="AM" >API misuse</BugCode>
   <BugCode abbrev="Dm" >Dubious method used</BugCode>
