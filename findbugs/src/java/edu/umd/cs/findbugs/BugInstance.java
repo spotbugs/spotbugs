@@ -345,7 +345,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 *  A previous calls to getSafeUserDesignation(), setAnnotationText(),
 	 *  or setUserDesignation() will ensure it will be non-null
 	 *  [barring an intervening setUserDesignation(null)].
-	 *  @see #getSafeUserDesignation() */
+	 *  @see #getNonnullUserDesignation() */
 	@Nullable public BugDesignation getUserDesignation() {
 		return userDesignation;
 	}
@@ -354,7 +354,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 *  <code>getSafeUserDesignation().setDesignation("HARMLESS")</code>
 	 *  will always work without the possibility of a NullPointerException.
 	 *  @see #getUserDesignation() */
-	@NonNull public BugDesignation getSafeUserDesignation() {
+	@NonNull public BugDesignation getNonnullUserDesignation() {
 		if (userDesignation == null)
 			userDesignation = new BugDesignation();
 		return userDesignation;
@@ -375,7 +375,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	@NonNull public String getUserDesignationKey() {
 		BugDesignation userDesignation = this.userDesignation;
 		if (userDesignation == null) return BugDesignation.UNCLASSIFIED;
-		return userDesignation.getDesignation();
+		return userDesignation.getDesignationKey();
 	}
 
 	/**
@@ -384,7 +384,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param annotationText the user annotation text
 	 */
 	public void setAnnotationText(String annotationText) {
-		getSafeUserDesignation().setAnnotationText(annotationText);
+		getNonnullUserDesignation().setAnnotationText(annotationText);
 	}
 
 	/**

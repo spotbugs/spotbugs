@@ -221,13 +221,14 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				} else if (qName.equals("UserAnnotation")) {
 					// ignore AnnotationText for now; will handle in endElement
 					String s = attributes.getValue("designation"); // optional
-					if (s != null) bugInstance.getSafeUserDesignation().setDesignation(s);
+					BugDesignation userDesignation = bugInstance.getNonnullUserDesignation();
+					if (s != null) userDesignation.setDesignationKey(s);
 					s = attributes.getValue("user"); // optional
-					if (s != null) bugInstance.getSafeUserDesignation().setUser(s);
+					if (s != null) userDesignation.setUser(s);
 					s = attributes.getValue("timestamp"); // optional
 					if (s != null) try {
 						long timestamp = Long.valueOf(s);
-						bugInstance.getSafeUserDesignation().setTimestamp(timestamp);
+						userDesignation.setTimestamp(timestamp);
 					}
 					catch (NumberFormatException nfe) {
 						// ok to contine -- just won't set a timestamp for the user designation.

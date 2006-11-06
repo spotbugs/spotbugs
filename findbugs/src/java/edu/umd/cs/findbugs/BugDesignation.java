@@ -57,7 +57,7 @@ public class BugDesignation implements XMLWriteable, Serializable {
 	 *  Note that this is the key, suitable for writing to XML,
 	 *  but not for showing to the user.
 	 *  @see I18N#getUserDesignation(String key) */
-    @NonNull public String getDesignation() {
+    @NonNull public String getDesignationKey() {
 		return designation;
     }
 
@@ -71,7 +71,7 @@ public class BugDesignation implements XMLWriteable, Serializable {
 	 *  if designationKey is not one of the keys returned by
 	 *  I18N.instance().getUserDesignations().
 	 *  @see I18N#getUserDesignationKeys() */
-    public void setDesignation(String designationKey) {
+    public void setDesignationKey(String designationKey) {
 		designation = (designationKey!=null ? designationKey : UNCLASSIFIED);
     }
 
