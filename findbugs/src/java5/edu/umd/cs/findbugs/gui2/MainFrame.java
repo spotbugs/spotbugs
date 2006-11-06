@@ -126,9 +126,9 @@ import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
  */
 public class MainFrame extends FBFrame implements LogSync
 {
-	private JTree tree;
+	JTree tree;
 	private BasicTreeUI treeUI;
-	private boolean userInputEnabled;
+	boolean userInputEnabled;
 		
 	static final String DEFAULT_SOURCE_CODE_MSG = "No available source";
 	
@@ -140,16 +140,7 @@ public class MainFrame extends FBFrame implements LogSync
 	NavigableTextPane sourceCodeTextPane = new NavigableTextPane();
 	private JScrollPane sourceCodeScrollPane;
 	
-	private JTextArea userCommentsText = new JTextArea();
-	private Color userCommentsTextUnenabledColor;
-	private boolean commentChanged = false;
-	private boolean designationChanged=false;
-	private JComboBox designationComboBox;
-	private ArrayList<String> designationList;
-	private LinkedList<String> prevCommentsList = new LinkedList<String>();
-	private int prevCommentsMaxSize = 10;
-	private JComboBox prevCommentsComboBox = new JComboBox();
-	
+	final CommentsArea comments;
 	private SorterTableColumnModel sorter;
 	private JTableHeader tableheader;
 	private JLabel statusBarLabel = new JLabel();
@@ -167,11 +158,11 @@ public class MainFrame extends FBFrame implements LogSync
 	 * This is because saveProjectItemMenu is dependent on it for when
 	 * saveProjectMenuItem should be enabled.
 	 */
-	private boolean projectChanged = false;
+	boolean projectChanged = false;
 	final private JMenuItem editProjectMenuItem = new JMenuItem("Add/Remove Files", KeyEvent.VK_F);
 	final private JMenuItem saveProjectMenuItem = new JMenuItem("Save Project", KeyEvent.VK_S);
-	private BugLeafNode currentSelectedBugLeaf;
-	private BugAspects currentSelectedBugAspects;
+	BugLeafNode currentSelectedBugLeaf;
+	BugAspects currentSelectedBugAspects;
 	private JPopupMenu bugPopupMenu;
 	private JPopupMenu branchPopupMenu;
 	private static MainFrame instance;
@@ -181,10 +172,9 @@ public class MainFrame extends FBFrame implements LogSync
 	private Project curProject;
 	private JScrollPane treeScrollPane;
 	SourceFinder sourceFinder;
-	private SourceLineAnnotation currSrcLineAnnotation;
 	private Object lock = new Object();
 	private boolean newProject = false;
-	private boolean dontShowAnnotationConfirmation = false;
+
 	private Logger logger = new ConsoleLogger(this);
 	SourceCodeDisplay displayer = new SourceCodeDisplay(this);
 	
@@ -202,6 +192,7 @@ public class MainFrame extends FBFrame implements LogSync
 	{
 		this.findBugsLayoutManagerFactory = factory;
 		this.guiLayout = factory.getInstance(this);
+		this.comments = new CommentsArea(this);
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
@@ -211,7 +202,7 @@ public class MainFrame extends FBFrame implements LogSync
 				guiLayout.initialize();
 				bugPopupMenu = createBugPopupMenu();
 				branchPopupMenu = createBranchPopUpMenu();
-				loadPrevCommentsList(GUISaveState.getInstance().getPreviousComments().toArray(new String[GUISaveState.getInstance().getPreviousComments().size()]));
+				comments.loadPrevCommentsList(GUISaveState.getInstance().getPreviousComments().toArray(new String[GUISaveState.getInstance().getPreviousComments().size()]));
 				updateStatusBar();
 				setBounds(GUISaveState.getInstance().getFrameBounds()); 
 				Toolkit.getDefaultToolkit().setDynamicLayout(true);
@@ -267,14 +258,13 @@ public class MainFrame extends FBFrame implements LogSync
 
 				addComponentListener(new ComponentAdapter(){
 					public void componentResized(ComponentEvent e){
-						resetPrevCommentsComboBox();
-						userCommentsText.validate();
+						comments.resized();
 					}
 				});
 				
 				addWindowListener(new WindowAdapter(){
 					public void windowClosing(WindowEvent e) {
-						if(userCommentsText.hasFocus())
+						if(comments.hasFocus())
 							setProjectChanged(true);
 						callOnClose();
 					}				
@@ -300,7 +290,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * the exit menuItem or by clicking on the window's system menu.
 	 */
 	void callOnClose(){
-		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
+		comments.saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		if(projectChanged){
 			int value = JOptionPane.showConfirmDialog(MainFrame.this, "You are closing " +
 					"without saving. Do you want to save?", 
@@ -319,7 +309,7 @@ public class MainFrame extends FBFrame implements LogSync
 			}				
 		}
 
-		GUISaveState.getInstance().setPreviousComments(prevCommentsList);
+		GUISaveState.getInstance().setPreviousComments(comments.prevCommentsList);
 		guiLayout.saveState();
 		GUISaveState.getInstance().setFrameBounds( getBounds() );
 		GUISaveState.getInstance().save();
@@ -385,7 +375,7 @@ public class MainFrame extends FBFrame implements LogSync
 					new Thread(new Runnable(){
 						public void run()
 						{
-							updateDesignation();
+							updateDesignationDisplay();
 							if (curProject != null && projectChanged)
 							{
 								int response = JOptionPane.showConfirmDialog(MainFrame.this, 
@@ -424,7 +414,7 @@ public class MainFrame extends FBFrame implements LogSync
 							
 							setProjectChanged(false);
 							editProjectMenuItem.setEnabled(true);
-							clearIndividualBugInformation();
+							clearSourcePane();
 						}
 					}).start();
 				}
@@ -469,7 +459,7 @@ public class MainFrame extends FBFrame implements LogSync
 				ProjectSettings.getInstance().getSuppressionMatcher().add(currentSelectedBugLeaf.getBug());						
 				PreferencesFrame.getInstance().suppressionsChanged(currentSelectedBugLeaf);
 				((BugTreeModel)(tree.getModel())).resetData();//Necessary to keep suppressions from getting out of sync with tree.  
-				clearIndividualBugInformation();
+				clearSourcePane();
 				updateStatusBar();
 				
 				setProjectChanged(true);
@@ -497,7 +487,7 @@ public class MainFrame extends FBFrame implements LogSync
 		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
 		for(String key :  I18N.instance().getUserDesignationKeys(true)) {
 			String name = I18N.instance().getUserDesignation(key);
-			addDesignationItem(changeDesignationMenu, name, keyEvents[i++]);
+			comments.addDesignationItem(changeDesignationMenu, name, keyEvents[i++]);
 		}
 		
 		popupMenu.add(changeDesignationMenu);
@@ -786,13 +776,13 @@ public class MainFrame extends FBFrame implements LogSync
 				selectPrevious.actionPerformed(e);	
 			}};
 	}
-	void attachAccelaratorKey(JMenuItem item, int keystroke) {
+	static void attachAccelaratorKey(JMenuItem item, int keystroke) {
 		item.setAccelerator(KeyStroke.getKeyStroke(keystroke,
             Toolkit.getDefaultToolkit(  ).getMenuShortcutKeyMask(  )));
 	}
 	void newProject(){
 		setProjectChanged(true);		
-		clearIndividualBugInformation();
+		clearSourcePane();
 		
 		if(newProject){
 			setTitle("FindBugs: " + Project.UNNAMED_PROJECT);
@@ -970,34 +960,28 @@ public class MainFrame extends FBFrame implements LogSync
 				{
 					saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 
-					if ((path.getLastPathComponent() instanceof BugLeafNode))
+					Object lastPathComponent = path.getLastPathComponent();
+					if (lastPathComponent instanceof BugLeafNode)
 					{	
 						boolean beforeProjectChanged = projectChanged;
-						updateDesignation();
-						setUserCommentInputEnable(true);
-						BugLeafNode bugLeaf = (BugLeafNode)path.getLastPathComponent();
-						BugInstance bug = bugLeaf.getBug();
-						currentSelectedBugLeaf = bugLeaf;
+						currentSelectedBugLeaf = (BugLeafNode)lastPathComponent;
 						currentSelectedBugAspects = null;
-						updateSummaryTab(bugLeaf);
-						updateCommentsTab(bugLeaf);
-						displayer.displaySource(bug, bug.getPrimarySourceLineAnnotation());
+						syncBugInformation();
 						setProjectChanged(beforeProjectChanged);
 					}
 					else
 					{
-						updateDesignation();
+						updateDesignationDisplay();
 						currentSelectedBugLeaf = null;
-						currentSelectedBugAspects = (BugAspects)path.getLastPathComponent();
-						clearIndividualBugInformation();
-						updateCommentsForNonLeaf(currentSelectedBugAspects);
+						currentSelectedBugAspects = (BugAspects)lastPathComponent;
+						syncBugInformation();
 					}
 				}
 //				Debug.println("Tree selection count:" + tree.getSelectionCount());
 				if (tree.getSelectionCount() !=1)
 				{
 					Debug.println("Tree selection count not equal to 1, disabling comments tab" + selectionEvent);
-				
+					assert false;
 					MainFrame.this.setUserCommentInputEnable(false);
 				}
 			}						
@@ -1033,178 +1017,48 @@ public class MainFrame extends FBFrame implements LogSync
 		});
 	}
 		
-	void setDesignation(String value) {
-		if (currentSelectedBugLeaf != null) {
-			designationChanged = true;
-			changeDesignationOfBug(currentSelectedBugLeaf, ConvertMenuDesignationName(value));
-		}
-	}	
-	private void addDesignationItem(JMenu menu, final String menuName,  int keyEvent) {
-		JMenuItem toggleItem = new JMenuItem(menuName);
-
-		toggleItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if(currentSelectedBugLeaf == null)
-					setDesignationNonLeaf(menuName);
-				else
-					setDesignation(menuName);
-			}});	
-		attachAccelaratorKey(toggleItem, keyEvent);
-		menu.add(toggleItem);
-	}
 	
-
-	protected void updateDesignation() {
-		if(currentSelectedBugLeaf == null)
-			updateDesignationNonLeaf(currentSelectedBugAspects);
-		else
-		{
-			designationChanged = true;
-			changeDesignationOfBug(currentSelectedBugLeaf, designationList.get(designationComboBox.getSelectedIndex()));
-		}
-	}
-	protected void updateDesignationNonLeaf(BugAspects theAspects) {
-		if (theAspects == null)
-			return;
-		BugSet filteredSet = theAspects.getMatchingBugs(BugSet.getMainBugSet());
-		Iterator<BugLeafNode> filteredIter = filteredSet.iterator();
-		boolean allSame = true;
-		int first = -1;
-		for(BugLeafNode nextNode : filteredSet) {
-		
-				int designationIndex = designationList.indexOf(nextNode.getBug()
-										.getSafeUserDesignation().getDesignation());
-				if (first == -1)
-					first = designationIndex;
-				else if (designationIndex != first)
-					allSame = false;
-			};
-		if (allSame)
-			designationComboBox.setSelectedIndex(first);
-	}
-		 
-
-	protected void setDesignationNonLeaf(String selection){
-		String newName = ConvertMenuDesignationName(selection);
-		if(currentSelectedBugAspects == null)
-			return;
-		else
-		{
-			BugSet filteredSet = currentSelectedBugAspects.getMatchingBugs(BugSet.getMainBugSet());
-			for(BugLeafNode nextNode : filteredSet) {
-					designationChanged = true;
-					changeDesignationOfBug(nextNode, newName);
-				};
-		       updateDesignation();
+	void syncBugInformation (){
+		if (currentSelectedBugLeaf != null)  {
+			BugInstance bug  = currentSelectedBugLeaf.getBug();
+			displayer.displaySource(bug, bug.getPrimarySourceLineAnnotation());
+			comments.updateCommentsForLeaf(currentSelectedBugLeaf);
+			updateDesignationDisplay();
+			comments.updateCommentsForLeaf(currentSelectedBugLeaf);
+			updateSummaryTab(currentSelectedBugLeaf);
+		} else if (currentSelectedBugAspects != null) {
+			updateDesignationDisplay();
+			comments.updateCommentsForNonLeaf(currentSelectedBugAspects);
+			displayer.displaySource(null, null);				
+			clearSummaryTab();
+		} else {
+			displayer.displaySource(null, null);			
+			clearSummaryTab();
 		}
 	}
 	
-	protected String ConvertMenuDesignationName(String name){
-		/* This converts a designation name from human-readable format ("mostly harmless", "critical") to
-		 * the program's internal format ("MOSTLY_HARMLESS", "CRITICAL") etc. This uses the DesignationComboBox
-		 * (this should probably be changed)
-		 */ 
-		int itemCount = designationComboBox.getItemCount();
-		for(int i=0; i<itemCount; i++)
-			if(name.equals(designationComboBox.getItemAt(i)))
-				return designationList.get(i);
-		return null;
-	}
-	
-	protected void changeDesignationOfBug(BugLeafNode theNode, String selection) {
-		int numItems = designationComboBox.getItemCount();
-		if(theNode.equals(currentSelectedBugLeaf))
-			for(int i=0; i<numItems; i++)
-				if(selection.equals(designationList.get(i)))
-					designationComboBox.setSelectedIndex(i);
-		if (!getSorter().getOrder().contains(Sortables.DESIGNATION)) {
-			//designation not sorted on at all
-			if (designationChanged)
-			{
-				theNode.getBug().getSafeUserDesignation().setDesignation(selection);
-				designationChanged=false;
-			}
-		}
-		else if (getSorter().getOrderBeforeDivider().contains(Sortables.DESIGNATION))
-		{
-			if (designationChanged)
-			{
-				BugTreeModel model= (BugTreeModel)tree.getModel();
-				TreePath path=model.getPathToBug(theNode.getBug());
-				if (path==null)
-				{
-					theNode.getBug().getSafeUserDesignation().setDesignation(selection);
-					designationChanged=false;
-					return;
-				}
-				Object[] objPath=path.getParentPath().getPath();
-				ArrayList<Object> reconstruct=new ArrayList<Object>();
-				ArrayList<TreePath> listOfNodesToReconstruct=new ArrayList<TreePath>();
-				for (int x=0; x< objPath.length;x++)
-				{
-					Object o=objPath[x];
-					reconstruct.add(o);
-					if (o instanceof BugAspects)
-					{
-						if (((BugAspects)o).getCount()==1)
-						{
-		//					Debug.println((BugAspects)(o));
-							break;
-						}
-					}
-					TreePath pathToNode=new TreePath(reconstruct.toArray());
-					listOfNodesToReconstruct.add(pathToNode);
-				}
-		
-				theNode.getBug().getSafeUserDesignation().setDesignation(selection);
-				model.suppressBug(path);
-				TreePath unsuppressPath=model.getPathToBug(theNode.getBug());
-				if (unsuppressPath!=null)//If choosing their designation has not moved the bug under any filters
-				{
-					model.unsuppressBug(unsuppressPath);
-		//			tree.setSelectionPath(unsuppressPath);
-				}
-				for (TreePath pathToNode: listOfNodesToReconstruct)
-				{
-					model.treeNodeChanged(pathToNode);
-				}
-				setProjectChanged(true);
-				designationChanged=false;
-			}
-		}
-		else if (getSorter().getOrderAfterDivider().contains(Sortables.DESIGNATION))
-		{
-			if (designationChanged)
-			{
-				theNode.getBug().getSafeUserDesignation().setDesignation(selection);
-				BugTreeModel model = (BugTreeModel)tree.getModel();
-				TreePath path=model.getPathToBug(theNode.getBug());
-				if (path != null) model.sortBranch(path.getParentPath());
-				designationChanged=false;
-			}
-		}
-	}
-
 	/**
 	 * Clears the bottom tabs so not show bug information.
 	 *
 	 */
-	 void clearIndividualBugInformation(){
-			
-		setUserCommentInputEnable(false); //Do not put in Swing thread b/c already in it.
-		
+	 void clearSourcePane(){
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
 				setSourceTabTitle("Source");				
-				clearSummaryTab();
 				sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
-				currSrcLineAnnotation = null;
 			}
 		});		
 	}
 	
 
 	
+	/**
+	 * @param b
+	 */
+	private void setUserCommentInputEnable(boolean b) {
+		comments.setUserCommentInputEnable(b);
+		
+	}
 	/**
 	 * Creates the status bar of the GUI.
 	 * @return
@@ -1496,6 +1350,9 @@ public class MainFrame extends FBFrame implements LogSync
         summaryHtmlArea.setEditorKit(htmlEditorKit);
 	}
 	
+	JPanel createCommentsInputPanel() {
+		return comments.createCommentsInputPanel();
+	}
 	/**
 	 * Creates the comments tab JPanel.
 	 */
@@ -1545,343 +1402,6 @@ public class MainFrame extends FBFrame implements LogSync
 		return commentsPanel;
 	}
 	
-	/**
-	 * Create center panel that holds the user input combo boxes and TextArea.
-	 */
-	private JPanel createCommentsInputPanel(){
-		JPanel centerPanel = new JPanel();
-		BorderLayout centerLayout = new BorderLayout();
-		centerLayout.setVgap(10);
-		centerPanel.setLayout(centerLayout);
-		
-		userCommentsText.getDocument().addDocumentListener(new DocumentListener(){
-
-			public void insertUpdate(DocumentEvent e) {
-				commentChanged = true;
-				setProjectChanged(true);
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-				commentChanged = true;
-				setProjectChanged(true);
-			}
-
-			public void changedUpdate(DocumentEvent e) {}
-			
-		});
-		
-		userCommentsTextUnenabledColor = centerPanel.getBackground();
-		
-		userCommentsText.setLineWrap(true);
-		userCommentsText.setToolTipText("Enter your comments about this bug here");
-		userCommentsText.setWrapStyleWord(true);
-		userCommentsText.setEnabled(false);
-		userCommentsText.setBackground(userCommentsTextUnenabledColor);
-		JScrollPane commentsScrollP = new JScrollPane(userCommentsText);
-
-		prevCommentsComboBox.setEnabled(false);
-		prevCommentsComboBox.setToolTipText("Use this to reuse a previous textual comment for this bug");
-		prevCommentsComboBox.addItemListener(new ItemListener(){
-			public void itemStateChanged(ItemEvent e) {	
-				if(e.getStateChange() == ItemEvent.SELECTED && prevCommentsComboBox.getSelectedIndex() != 0){
-					setCurrentUserCommentsText(getCurrentPrevCommentsSelection());
-					
-					prevCommentsComboBox.setSelectedIndex(0);					
-				}
-			}			
-		});
-		
-		designationComboBox = new JComboBox();
-		designationList = new ArrayList<String>();
-		
-		designationComboBox.setEnabled(false);
-		designationComboBox.setToolTipText("Select a user designation for this bug");
-		designationComboBox.addItemListener(new ItemListener(){
-			public void itemStateChanged(ItemEvent e) {	
-				if (userInputEnabled)
-				{
-					if(e.getStateChange() == ItemEvent.SELECTED && currentSelectedBugLeaf != null && !alreadySelected())
-					{
-						designationChanged=true;
-						setProjectChanged(true);
-					}
-					if(e.getStateChange() == ItemEvent.SELECTED && currentSelectedBugLeaf == null)
-					{
-						designationChanged=true;
-						setDesignationNonLeaf(designationComboBox.getSelectedItem().toString());
-					}
-				}
-			}
-			
-			/*
-			 * Checks to see if the designation is already selected as that.
-			 * This was created because it was found the itemStateChanged method is called
-			 * when the combo box is set when a bug is clicked.
-			 */
-			private boolean alreadySelected(){
-				return designationList.get(designationComboBox.getSelectedIndex()).
-						equals(currentSelectedBugLeaf.getBug().getSafeUserDesignation().getDesignation());
-			}
-		});
-		
-		for(String s : I18N.instance().getUserDesignationKeys(true)){
-			designationList.add(s);
-			designationComboBox.addItem(Sortables.DESIGNATION.formatValue(s));
-		}
-		
-		designationComboBox.setSelectedIndex(0); //WARNING: this is hard coded in here.
-		
-		centerPanel.add(designationComboBox, BorderLayout.NORTH);
-		centerPanel.add(commentsScrollP, BorderLayout.CENTER);
-		centerPanel.add(prevCommentsComboBox, BorderLayout.SOUTH);
-				
-		return centerPanel;
-	}
-	
-	/**
-	 * Sets the user comment panel to whether or not it is enabled.
-	 * If isEnabled is false will clear the user comments text pane.
-	 * @param isEnabled
-	 */
-	private void setUserCommentInputEnable(final boolean isEnabled){
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){				
-				userInputEnabled=isEnabled;
-				if(!isEnabled){
-					userCommentsText.setText("");
-					commentChanged = false;
-					//WARNING: this is hard coded in here, but needed
-					//so when not enabled shows default setting of designation
-					designationComboBox.setSelectedIndex(0);
-				}
-				
-				userCommentsText.setEnabled(isEnabled);
-				prevCommentsComboBox.setEnabled(isEnabled);
-				designationComboBox.setEnabled(isEnabled);
-				
-				if(isEnabled)
-					userCommentsText.setBackground(Color.WHITE);
-				else
-					userCommentsText.setBackground(userCommentsTextUnenabledColor);
-			}
-		});
-	}
-	
-	/**
-	 * Updates comments tab.
-	 * Takes node passed and sets the designation and comments.
-	 * @param node
-	 */
-	private void updateCommentsTab(final BugLeafNode node){
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				boolean b = projectChanged;
-				BugInstance bug = node.getBug();
-				setCurrentUserCommentsText(bug.getAnnotationText());
-				designationComboBox.setSelectedIndex(designationList.indexOf(node.getBug().getSafeUserDesignation().getDesignation()));
-				commentChanged = false;
-				setProjectChanged(b);
-			}
-		});		
-	}
-	
-	private void updateCommentsForNonLeaf(final BugAspects theAspects){
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				boolean b = projectChanged;
-				commentChanged = false;
-				setProjectChanged(b);
-				updateDesignationNonLeaf(theAspects);
-				setUserCommentInputEnable(true);
-			}
-		});			
-	}
-	/**
-	 * Saves the current comments to the BugLeafNode passed in.
-	 * If the passed in node's annotation is already equal to the current
-	 * user comment then will not do anything so setProjectedChanged is 
-	 * not made true. Will also add the comment if it is new to the previous
-	 * comments list.
-	 * @param node
-	 */
-	private void saveCommentsToBug(BugLeafNode node){
-		if(node == null || !commentChanged)
-			return;
-		
-		if(node.getBug().getAnnotationText().equals(getCurrentUserCommentsText()))
-			return;
-		
-		node.getBug().setAnnotationText(getCurrentUserCommentsText());		
-		setProjectChanged(true);
-		
-		addToPrevComments(getCurrentUserCommentsText());						
-		commentChanged = false;
-	}
-
-	
-	private boolean confirmAnnotation() {
-
-		String[] options = { "Yes", "No", "Yes, and don't ask me this again" };
-		if (dontShowAnnotationConfirmation)
-			return true;
-		int choice = JOptionPane
-				.showOptionDialog(
-						this,
-						"Changing this text box will overwrite the annotations associated with all bugs in this folder and subfolders. Are you sure?",
-						"Annotation Change", JOptionPane.DEFAULT_OPTION,
-						JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-		switch (choice) {
-		case 0:
-			return true;
-		case 1:
-			return false;
-		case 2:
-			dontShowAnnotationConfirmation = true;
-			return true;
-		default:
-			return true;
-		}
-
-	}
-
-	private void saveCommentsToNonLeaf(BugAspects aspects) {
-		if (aspects == null)
-			return;
-		String newComment = getCurrentUserCommentsText();
-		if (newComment.equals(""))
-			return;
-		else if (confirmAnnotation()) {
-
-			BugSet filteredSet = aspects
-					.getMatchingBugs(BugSet.getMainBugSet());
-			for (BugLeafNode nextNode : filteredSet) {
-				nextNode.getBug().setAnnotationText(newComment);
-			}
-		}
-
-	}
-
-
-	/**
-	 * Saves comments to the current selected bug.
-	 *
-	 */
-
-	public void saveComments(){
-		  saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-	}
-
-	public void saveComments(BugLeafNode theNode, BugAspects theAspects){
-		if(theNode != null)
-			saveCommentsToBug(theNode);
-		else
-			saveCommentsToNonLeaf(theAspects);
-	}
-
-	/**
-	 * Deletes the list have already. Then loads from list. Will load from
-	 * the list until run out of room in the prevCommentsList.
-	 * @param list
-	 */
-	private void loadPrevCommentsList(String[] list){
-		int count = 0;
-		for(String str : list){
-			if(str.equals(""))
-				count++;
-		}
-		
-		String[] ary = new String[list.length-count];
-		int j = 0;
-		for(String str : list){
-			if(!str.equals("")){
-				ary[j] = str;
-				j++;
-			}
-		}
-		
-		String[] temp;
-		prevCommentsList = new LinkedList<String>();
-		if((ary.length) > prevCommentsMaxSize){
-			temp = new String[prevCommentsMaxSize];
-			for(int i = 0; i < temp.length && i < ary.length; i++)
-				temp[i] = ary[i];
-		}
-		else{
-			temp = new String[ary.length];
-			for(int i = 0; i < ary.length; i++)
-				temp[i] = ary[i];
-		}
-		
-		for(String str : temp)
-			prevCommentsList.add(str);
-		
-		resetPrevCommentsComboBox();
-	}
-	
-	/**
-	 * Adds the comment into the list. If the comment is already in the list
-	 * then simply moves to the front. If the list is too big when adding
-	 * the comment then deletes the last comment on the list.
-	 * @param comment
-	 */
-	private void addToPrevComments(String comment){
-		if(comment.equals(""))
-			return;
-		
-		if(prevCommentsList.contains(comment)){
-			int index = prevCommentsList.indexOf(comment);
-			prevCommentsList.remove(index);
-		}
-		
-		prevCommentsList.addFirst(comment);			
-		
-		while(prevCommentsList.size() > prevCommentsMaxSize)
-			prevCommentsList.removeLast();
-		
-		resetPrevCommentsComboBox();
-	}
-	
-	/**
-	 * Removes all items in the comboBox for previous comments. Then
-	 * refills it using prevCommentsList.
-	 *
-	 */
-	private void resetPrevCommentsComboBox(){
-		prevCommentsComboBox.removeAllItems();	
-		
-		prevCommentsComboBox.addItem("");
-			
-		for(String str : prevCommentsList){
-			if (str.length() < 20)
-				prevCommentsComboBox.addItem(str);
-			else 
-				prevCommentsComboBox.addItem(str.substring(0,17)+"...");
-		}
-	}
-	
-	/**
-	 * Returns the text in the current user comments textArea.
-	 * @return
-	 */
-	private String getCurrentUserCommentsText(){
-		return userCommentsText.getText();
-	}
-
-	/**
-	 * Sets the current user comments text area to comment.
-	 * @param comment
-	 */
-	private void setCurrentUserCommentsText(String comment){
-		userCommentsText.setText(comment);
-	}
-	
-	/**
-	 * Returns the current selected previous comments. Returns as an
-	 * object.
-	 */
-	private String getCurrentPrevCommentsSelection(){
-		return prevCommentsList.get(prevCommentsComboBox.getSelectedIndex() - 1);
-	}
 	
 	/**
 	 * Creates the source code panel, but does not put anything in it.
@@ -2067,7 +1587,7 @@ public class MainFrame extends FBFrame implements LogSync
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
 		dir.mkdir();
-		updateDesignation();
+		updateDesignationDisplay();
 		
 		File f = new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");	
 		File filtersAndSuppressions=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
@@ -2089,6 +1609,19 @@ public class MainFrame extends FBFrame implements LogSync
 		return true;
 	}
 	
+	/**
+	 * @param currentSelectedBugLeaf2
+	 * @param currentSelectedBugAspects2
+	 */
+	private void saveComments(BugLeafNode theNode, BugAspects theAspects) {
+		comments.saveComments(theNode, theAspects);
+		
+	}
+
+	void saveComments() {
+		comments.saveComments();
+		
+	}
 	/**
 	 * Returns the color of the source code pane's background.
 	 * @return the color of the source code pane's background
@@ -2216,7 +1749,7 @@ public class MainFrame extends FBFrame implements LogSync
 				{
 					ProjectSettings.newInstance();
 					model.getOffListenerList();
-					updateDesignation();
+					updateDesignationDisplay();
 					model.changeSet(bs);
 					curProject=project;
 					MainFrame.this.updateStatusBar();
@@ -2239,7 +1772,7 @@ public class MainFrame extends FBFrame implements LogSync
 		{
 			public void run()
 			{
-				updateDesignation();
+				updateDesignationDisplay();
 				BugSet bs=BugLoader.redoAnalysisKeepComments(curProject);
 				
 				if (bs!=null)
@@ -2267,7 +1800,7 @@ public class MainFrame extends FBFrame implements LogSync
 		{
 			displayer.clearCache();
 			((BugTreeModel)tree.getModel()).getOffListenerList();
-			updateDesignation();
+			updateDesignationDisplay();
 			((BugTreeModel)tree.getModel()).changeSet(bs);
 			curProject=BugLoader.getLoadedProject();
 		}
@@ -2369,7 +1902,7 @@ public class MainFrame extends FBFrame implements LogSync
 								editProjectMenuItem.setEnabled(true);
 								displayer.clearCache();
 								model.getOffListenerList();
-								updateDesignation();
+								updateDesignationDisplay();
 								model.changeSet(bs);
 								curProject=project;
 								projectDirectory=dir;
@@ -2399,18 +1932,23 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		//Clears the bottom tabs so they are blank. And makes comments
 		//tab not enabled.				
-		clearIndividualBugInformation();
+		clearSourcePane();
 
-		designationChanged = false;
 		projectChanged = false;
 	}
 	/**
 	 * 
 	 */
 	private void newProjectMenu() {
-		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
+		comments.saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		new NewProjectWizard();
 		
 		newProject = true;
+	}
+	void updateDesignationDisplay() {
+		comments.updateDesignationComboBox();
+	}
+	void addDesignationItem(JMenu menu, final String menuName,  int keyEvent) {
+		comments.addDesignationItem(menu, menuName, keyEvent);
 	}
 }

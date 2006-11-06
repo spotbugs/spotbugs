@@ -223,7 +223,7 @@ public class SorterTableColumnModel implements TableColumnModel{
 
 	public void moveColumn(int fromIndex, int toIndex) {
 		
-		MainFrame.getInstance().updateDesignation();
+		MainFrame.getInstance().updateDesignationDisplay();
 		MainFrame.getInstance().saveComments();
 		TableColumn from=columnList.get(fromIndex);
 		TableColumn to=columnList.get(toIndex);

@@ -122,7 +122,7 @@ public final class SourceCodeDisplay implements Runnable {
 				pendingUpdate = false;
 			}
 			if (myBug == null) {
-				frame.clearIndividualBugInformation();
+				frame.clearSourcePane();
 				continue;
 			}
 			
