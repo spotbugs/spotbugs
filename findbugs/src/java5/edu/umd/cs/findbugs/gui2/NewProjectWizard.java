@@ -49,8 +49,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
-import COM.stagecast.ifc.netscape.application.FileChooser;
-
 import edu.umd.cs.findbugs.Project;
 
 /**
