@@ -57,7 +57,7 @@ public class SplitLayout implements FindBugsLayoutManager {
 	public void initialize() {
 
 		JSplitPane topLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 
-				frame.bugListPanel(), frame.commentsPanel());
+				frame.bugListPanel(), frame.createCommentsInputPanel());
 		topLeft.setOneTouchExpandable(true);
 		topLeft.setDividerLocation(250);
 		

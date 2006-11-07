@@ -112,7 +112,7 @@ public class TabbedLayout implements FindBugsLayoutManager {
 		JTabbedPane bottomTabs = new JTabbedPane();
 		
 		bottomTabs.addTab("Bug Summary", frame.summaryTab());
-		bottomTabs.addTab("Comments", null, frame.commentsPanel(), 
+		bottomTabs.addTab("Comments", null, frame.createCommentsInputPanel(), 
 				"User defined comments of current bug.");
 		bottomTabs.addTab("Source", null, frame.createSourceCodePanel(),
 				"Source code of current bug if available.");

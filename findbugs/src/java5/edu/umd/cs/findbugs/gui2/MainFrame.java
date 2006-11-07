@@ -1352,56 +1352,7 @@ public class MainFrame extends FBFrame implements LogSync
 	
 	JPanel createCommentsInputPanel() {
 		return comments.createCommentsInputPanel();
-	}
-	/**
-	 * Creates the comments tab JPanel.
-	 */
-	JPanel commentsPanel()
-	{	
-		if (true) return createCommentsInputPanel();
-		JPanel commentsPanel = new JPanel();
-		BorderLayout commentsLayout = new BorderLayout();
-		commentsLayout.setHgap(10);
-		commentsLayout.setVgap(10);
-		commentsPanel.setLayout(commentsLayout);
-		
-		commentsPanel.add(createCommentsInputPanel(), BorderLayout.CENTER);
-		
-		//Create labels for combo boxes and textArea.
-		//Got a little complicated so that spacing was correct.
-		//Possible need of revision
-		JPanel leftPanel = new JPanel();
-		leftPanel.setLayout(new BorderLayout());
-		
-		JPanel statusPanel= new JPanel();
-		JLabel statusLabel = new JLabel("Designation:");
-		statusLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.Y_AXIS));
-		statusPanel.setAlignmentY(Component.RIGHT_ALIGNMENT);
-		statusPanel.add(Box.createVerticalStrut(COMMENTS_TAB_STRUT_SIZE));		
-		statusPanel.add(statusLabel);
-				
-		JLabel commentsLabel = new JLabel("Comments:");
-		commentsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		
-		JPanel prevCommentsPanel = new JPanel();
-		JLabel prevCommentsLabel = new JLabel("Previous:");
-		prevCommentsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		prevCommentsPanel.setLayout(new BoxLayout(prevCommentsPanel, BoxLayout.Y_AXIS));
-		prevCommentsPanel.setAlignmentY(Component.RIGHT_ALIGNMENT);
-		prevCommentsPanel.add(prevCommentsLabel);
-		prevCommentsPanel.add(Box.createVerticalStrut(COMMENTS_TAB_STRUT_SIZE));
-		
-		leftPanel.add(statusPanel, BorderLayout.NORTH);
-		leftPanel.add(commentsLabel, BorderLayout.CENTER);
-		leftPanel.add(prevCommentsPanel, BorderLayout.SOUTH);
-		
-		commentsPanel.add(leftPanel, BorderLayout.WEST);
-		
-		commentsPanel.setBorder(BorderFactory.createEmptyBorder(COMMENTS_MARGIN,COMMENTS_MARGIN,COMMENTS_MARGIN,COMMENTS_MARGIN));
-		return commentsPanel;
-	}
-	
+	}	
 	
 	/**
 	 * Creates the source code panel, but does not put anything in it.

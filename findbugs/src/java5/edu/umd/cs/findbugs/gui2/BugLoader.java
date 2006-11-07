@@ -24,17 +24,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.apache.bcel.classfile.JavaClass;
 import org.dom4j.DocumentException;
 
+import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -154,6 +155,10 @@ public class BugLoader {
 		}
 
 		public void logError(String message, Throwable e) {
+			if (e instanceof MissingClassException) {
+				reportMissingClass(((MissingClassException)e).getClassNotFoundException());
+				return;
+			}
 //			System.out.println("logging an error with stack trace");
 //			e.printStackTrace();
 			errorLog.add(message);
@@ -172,10 +177,15 @@ public class BugLoader {
 //			System.out.println("method " + method.getMethodName() + " of class " + method.getClassName() + " was skipped");
 		}
 
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
+		 */
 		public void reportMissingClass(ClassDescriptor classDescriptor) {
 			// TODO Auto-generated method stub
 			
 		}
+
+		
 	}
 	
 	/**
