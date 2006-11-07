@@ -41,7 +41,7 @@ public final class FindMismatchedWaitOrNotify implements Detector, StatelessDete
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
+			throw new AssertionError(e);
 		}
 	}
 

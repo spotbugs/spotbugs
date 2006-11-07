@@ -445,7 +445,7 @@ public class ProjectFilterSettings implements Cloneable {
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			// Should not happen!
-			throw new IllegalStateException();
+			throw new AssertionError(e);
 		}
 		
 	}

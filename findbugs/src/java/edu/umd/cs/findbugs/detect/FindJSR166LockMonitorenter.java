@@ -48,7 +48,7 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
+			throw new AssertionError(e);
 		}
 	}
 

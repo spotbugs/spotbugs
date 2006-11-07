@@ -62,7 +62,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
+			throw new AssertionError(e);
 		}
 	}
 	@Override

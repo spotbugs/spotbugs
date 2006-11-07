@@ -56,7 +56,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException e) {
-			throw new IllegalStateException("impossible", e);
+			throw new AssertionError(e);
 		}
 	}
 

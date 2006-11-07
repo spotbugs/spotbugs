@@ -402,7 +402,7 @@ public class UserPreferences implements Cloneable {
 			
 			return dup;
 		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
+			throw new AssertionError(e);
 		}
 	}
 }

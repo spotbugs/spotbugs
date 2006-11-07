@@ -53,7 +53,7 @@ public class PackageStats implements XMLWriteable {
 				return super.clone();
 			} catch (CloneNotSupportedException e) {
 				// can't happen
-				throw new IllegalStateException();
+				throw new AssertionError(e);
 			}
 		}
 

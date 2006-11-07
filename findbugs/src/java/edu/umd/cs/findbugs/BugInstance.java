@@ -154,7 +154,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 			return dup;
 		} catch (CloneNotSupportedException e) {
-			throw new IllegalStateException("impossible", e);
+			throw new AssertionError(e);
 		}
 	}
 

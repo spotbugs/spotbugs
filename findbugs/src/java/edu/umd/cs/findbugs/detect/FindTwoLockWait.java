@@ -42,7 +42,7 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
+			throw new AssertionError(e);
 		}
 	}
 

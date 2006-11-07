@@ -220,7 +220,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
+			throw new AssertionError(e);
 		}
 	}
 	

@@ -63,7 +63,7 @@ public class TypeAnnotation implements BugAnnotation {
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException e) {
-			throw new IllegalStateException("impossible", e);
+			throw new AssertionError(e);
 		}
 	}
 

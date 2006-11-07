@@ -65,7 +65,7 @@ public class WarningPropertySet implements Cloneable {
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException e) {
-			throw new IllegalStateException();
+			throw new AssertionError(e);
 		}
 	}
 	

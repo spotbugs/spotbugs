@@ -1215,7 +1215,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 						try {
 							detector = (Detector) ((StatelessDetector) detector).clone();
 						} catch (CloneNotSupportedException e) {
-							throw new RuntimeException(e);
+							throw new AssertionError(e);
 						}
 				}
 
