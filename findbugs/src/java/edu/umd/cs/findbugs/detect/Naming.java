@@ -260,6 +260,9 @@ public class Naming extends PreorderVisitor implements Detector {
 				}
 				if (!obj.isPublic() && getThisClass().isPublic()) 
 					priority--;
+				for(Method m : getThisClass().getMethods()) {
+					if (m.getName().equals("<init>") && m.getSignature().equals("()V")) priority = Priorities.LOW_PRIORITY;
+				}
 				bugReporter.reportBug( new BugInstance(this, "NM_METHOD_CONSTRUCTOR_CONFUSION", priority).addClassAndMethod(this));
 				return;
 			}
