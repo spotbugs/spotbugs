@@ -318,7 +318,7 @@ public class IsNullValueAnalysis
 
 				// Downgrade NULL and NSP to DNR if the handler is for
 				// CloneNotSupportedException or InterruptedException
-				if (false) {
+				if (true) {
 				CodeExceptionGen handler = destBlock.getExceptionGen();
 				ObjectType catchType = handler.getCatchType();
 				if (catchType != null) {
