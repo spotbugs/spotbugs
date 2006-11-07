@@ -132,8 +132,13 @@ public abstract class AbstractBugReporter implements BugReporter {
 
 		// Try to decode the error message by extracting the class name.
 		String className = ClassNotFoundExceptionParser.getMissingClassName(ex);
-		if (className != null)
+		if (className != null) {
+			if (className.indexOf('/') >= 0) {
+				className = className.replace('/','.');
+			}
 			return className;
+			
+		}
 
 		// Just return the entire message.
 		// It hopefully will still make sense to the user.
@@ -150,9 +155,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 			return;
 
 		String message = getMissingClassName(ex);
-		if (message.indexOf("/") >= 0) {
-			message = message.replace('/','.');
-		}
+		
 		if (message.startsWith("[")) {
 			// Sometimes we see methods called on array classes.
 			// Obviously, these don't exist as class files.

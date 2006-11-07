@@ -93,11 +93,13 @@ public class FindBadCast2 implements Detector {
 			} catch (MethodUnprofitableException e) {
 				assert true; // move along; nothing to see
 			} catch (CFGBuilderException e) {
-				bugReporter.logError("Detector " + this.getClass().getName()
-						+ " caught exception while analyzing " + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature() , e);
+				String msg = "Detector " + this.getClass().getName()
+										+ " caught exception while analyzing " + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
+				bugReporter.logError(msg , e);
 			} catch (DataflowAnalysisException e) {
-				bugReporter.logError("Detector " + this.getClass().getName()
-						+ " caught exception while analyzing " + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature(), e);
+				String msg = "Detector " + this.getClass().getName()
+										+ " caught exception while analyzing " + javaClass.getClassName() + "." + method.getName() + " : " + method.getSignature();
+				bugReporter.logError(msg, e);
 			}
 		}
 	}
