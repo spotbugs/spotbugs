@@ -2,7 +2,6 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

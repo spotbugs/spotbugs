@@ -21,6 +21,9 @@ package de.tobject.findbugs.io;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
+
 /**
  * Interface for an object responsible for generating data to
  * use when writing the contents of a file in the Eclipse

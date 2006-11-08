@@ -21,6 +21,7 @@ package de.tobject.findbugs.builder;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
 import org.eclipse.core.runtime.CoreException;
 
 /**

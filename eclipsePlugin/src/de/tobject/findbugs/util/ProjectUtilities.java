@@ -20,10 +20,12 @@
 package de.tobject.findbugs.util;
 
 import java.util.ArrayList;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+
 import de.tobject.findbugs.FindbugsPlugin;
 
 /**
