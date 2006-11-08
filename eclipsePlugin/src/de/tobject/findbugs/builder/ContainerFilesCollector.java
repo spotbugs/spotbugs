@@ -91,7 +91,8 @@ public class ContainerFilesCollector extends AbstractFilesCollector {
 		
 		for (Iterator iter = folders.iterator();
 			iter.hasNext();
-			files.addAll(collectFiles((IContainer) iter.next())));
+			)
+			files.addAll(collectFiles((IContainer) iter.next()));
 			
 		return files;
 	}
