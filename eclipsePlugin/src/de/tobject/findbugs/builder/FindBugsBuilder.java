@@ -47,6 +47,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 	 * 
 	 * @see IncrementalProjectBuilder#build
 	 */
+	@Override
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 		monitor.subTask("Running FindBugs...");
 		switch (kind) {

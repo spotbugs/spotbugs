@@ -5,11 +5,13 @@ import org.eclipse.jdt.core.dom.Modifier;
 
 public class SSFixer extends FieldModifierFixer {
 
+	@Override
 	public Modifier.ModifierKeyword getModifierToAdd() {
 		return Modifier.ModifierKeyword.STATIC_KEYWORD;
 	}
 
 
+	@Override
 	public String getLabel() {
 		return "Change to a \"static\" field";
 	}

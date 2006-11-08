@@ -52,6 +52,7 @@ public class ResourceDeltaFilesCollector extends AbstractFilesCollector {
 	/* (non-Javadoc)
 	 * @see de.tobject.findbugs.builder.AbstractFilesCollector#getFiles()
 	 */
+	@Override
 	public Collection getFiles() {
 		return collectFiles(this.resourceDelta);
 	}

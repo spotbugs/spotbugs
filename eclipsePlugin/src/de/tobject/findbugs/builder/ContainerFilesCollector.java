@@ -56,6 +56,7 @@ public class ContainerFilesCollector extends AbstractFilesCollector {
 	/* (non-Javadoc)
 	 * @see de.tobject.findbugs.builder.AbstractFilesCollector#getFiles()
 	 */
+	@Override
 	public Collection getFiles() throws CoreException {
 		return collectFiles(this.container);
 	}

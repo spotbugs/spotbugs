@@ -9,6 +9,7 @@ import edu.umd.cs.findbugs.BugInstance;
 
 public class EIFixer extends FindBugsFixer {
 
+	@Override
 	public boolean resolveBindings() {
 		return true;
 	}

@@ -140,6 +140,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	/**
 	 * @see PreferencePage#createContents(Composite)
 	 */
+	@Override
 	protected Control createContents(Composite parent) {
 
 		noDefaultAndApplyButton();
@@ -178,6 +179,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		minPriorityCombo.setText(origUserPreferences.getFilterSettings().getMinPriority());
 		minPriorityCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
 		minPriorityCombo.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				String data = minPriorityCombo.getText();
 				System.out.println("Minimum priority changed to " + data + "!");
@@ -227,6 +229,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 			 */
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				restoreDefaultSettings();
 			}
@@ -339,6 +342,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		addButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false,
 				false));
 		addButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				FileSelectionDialog dialog = new FileSelectionDialog(addButton
 						.getShell(), title, ".xml");
@@ -375,6 +379,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		removeButton.setText(removeButtonLabel);
 		removeButton.setEnabled(false);
 		removeButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Iterator selectionIter = ((IStructuredSelection) viewer
 						.getSelection()).iterator();
@@ -611,6 +616,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		TableColumn column,
 		final int columnIdx) {
 		column.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				sorter.setSortColumnIndex(columnIdx);
 				availableFactoriesTableViewer.refresh();
@@ -723,6 +729,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 * Will be called when the user presses the OK button.
 	 * @see IPreferencePage#performOk()
 	 */
+	@Override
 	public boolean performOk() {
 		boolean selection = this.chkEnableFindBugs.getSelection();
 		boolean result = true;
@@ -955,6 +962,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			this.page = page;
 		}
 
+		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
 			return compare(e1, e2);
 		}
@@ -1006,6 +1014,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			return result;
 		}
 
+		@Override
 		public boolean isSorterProperty(Object element, String property) {
 			return property.equals(COLUMN_PROPS_NAME)
 				|| property.equals(COLUMN_PROPS_BUG_ABBREV);
@@ -1153,6 +1162,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			this.effortLevel = effortLevel;
 		}
 
+		@Override
 		public String getLabel(Object object) {
 			return name;
 		}
@@ -1178,10 +1188,12 @@ public class FindbugsPropertyPage extends PropertyPage {
 			this.file = file;
 		}
 
+		@Override
 		public String getLabel(Object object) {
 			return file.getProjectRelativePath().toString();
 		}
 
+		@Override
 		public ImageDescriptor getImageDescriptor(Object object) {
 			IWorkbenchAdapter adapter = (IWorkbenchAdapter) file
 					.getAdapter(IWorkbenchAdapter.class);
@@ -1203,6 +1215,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			return file;
 		}
 
+		@Override
 		public boolean equals(Object obj) {
 			if (obj == null) {
 				return false;
@@ -1217,6 +1230,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			return false;
 		}
 
+		@Override
 		public int hashCode() {
 			return file.hashCode();
 		}

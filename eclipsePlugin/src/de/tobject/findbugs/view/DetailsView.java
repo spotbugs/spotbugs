@@ -79,6 +79,7 @@ public class DetailsView extends ViewPart {
 	 * 
 	 * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
+	@Override
 	public void createPartControl(Composite parent) {
 		SashForm sash = new SashForm(parent, SWT.VERTICAL);
 		annotationList = new List(sash, SWT.V_SCROLL);
@@ -89,6 +90,7 @@ public class DetailsView extends ViewPart {
 		// Handle control resizing. The HTMLPresenter cares about window size
 		// when presenting HTML, so we should redraw the control.
 		control.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent e) {
 				updateDisplay();
 			}
@@ -102,6 +104,7 @@ public class DetailsView extends ViewPart {
 	 * 
 	 * @see org.eclipse.ui.IWorkbenchPart#setFocus()
 	 */
+	@Override
 	public void setFocus() {
 		control.setFocus();
 	}
@@ -111,6 +114,7 @@ public class DetailsView extends ViewPart {
 	 * 
 	 * @see org.eclipse.ui.IWorkbenchPart#dispose()
 	 */
+	@Override
 	public void dispose() {
 		control.dispose();
 	}

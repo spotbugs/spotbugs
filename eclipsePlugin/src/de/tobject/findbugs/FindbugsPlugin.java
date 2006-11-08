@@ -164,6 +164,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	/* (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
+	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		

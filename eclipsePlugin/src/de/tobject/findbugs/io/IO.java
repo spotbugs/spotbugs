@@ -55,6 +55,7 @@ public abstract class IO {
 		
 		// Create a thread to write bug collection to output stream
 		Thread worker = new Thread() {
+			@Override
 			public void run() {
 				try {
 					//bugCollection.writeXML(pout, findbugsProject);

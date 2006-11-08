@@ -90,6 +90,7 @@ public class AccuracyClassificationPulldownAction
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 			 */
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (bugInstance != null) {
 					classifyWarning(bugInstance, true);
@@ -101,6 +102,7 @@ public class AccuracyClassificationPulldownAction
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 			 */
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (bugInstance != null) {
 					classifyWarning(bugInstance, false);
@@ -109,6 +111,7 @@ public class AccuracyClassificationPulldownAction
 		});
 		
 		menu.addMenuListener(new MenuAdapter() {
+			@Override
 			public void menuShown(MenuEvent e) {
 				// Before showing the menu, sync its contents
 				// with the current BugInstance (if any)

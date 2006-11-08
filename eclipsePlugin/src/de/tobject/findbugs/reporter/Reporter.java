@@ -105,6 +105,7 @@ public class Reporter extends AbstractBugReporter {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.AbstractBugReporter#doReportBug(edu.umd.cs.findbugs.BugInstance)
 	 */
+	@Override
 	protected void doReportBug(BugInstance bug) {
 		getBugCollection().add(bug);
 		if (MarkerUtil.displayWarning(bug, userPrefs.getFilterSettings())) {
@@ -226,10 +227,12 @@ public class Reporter extends AbstractBugReporter {
 		return name;
 	}
 
+	@Override
 	public void reportAnalysisError(AnalysisError error) {
 		FindbugsPlugin.getDefault().logWarning("FindBugs analysis error: " + error.getMessage());
 	}
 
+	@Override
 	public void reportMissingClass(String missingClass) {
 		FindbugsPlugin.getDefault().logWarning("FindBugs missing class: " + missingClass);
 	}

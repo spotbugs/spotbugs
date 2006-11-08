@@ -222,6 +222,7 @@ public class ExtendedPreferences implements Cloneable {
 		effort = props.getProperty(EFFORT_KEY, EFFORT_DEFAULT);
 	}
 
+	@Override
 	public Object clone() {
 		try {
 			return super.clone();
@@ -230,6 +231,7 @@ public class ExtendedPreferences implements Cloneable {
 		}
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;

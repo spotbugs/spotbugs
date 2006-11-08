@@ -41,6 +41,7 @@ public class FileSelectionDialog extends ElementTreeSelectionDialog {
 		setTitle(title);
 		addFilter(new ViewerFilter() {
 
+			@Override
 			public boolean select(Viewer viewer, Object parentElement, Object element) {
 				if (element instanceof IContainer) {
 					try {

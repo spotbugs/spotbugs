@@ -68,6 +68,7 @@ public class SeverityClassificationPulldownAction implements
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 			 */
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Widget w = e.widget;
 				int index;
@@ -98,6 +99,7 @@ public class SeverityClassificationPulldownAction implements
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.events.MenuAdapter#menuShown(org.eclipse.swt.events.MenuEvent)
 			 */
+			@Override
 			public void menuShown(MenuEvent e) {
 				syncMenu();
 			}
