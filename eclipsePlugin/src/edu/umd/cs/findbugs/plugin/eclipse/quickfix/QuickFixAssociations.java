@@ -3,7 +3,9 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -16,11 +18,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import de.tobject.findbugs.FindbugsPlugin;
+
 public class QuickFixAssociations {
-	private Map<String, Class<IMarkerResolution>[]> fixMap;
+	private Map<String, List<Class<? extends IMarkerResolution>>> fixMap;
 	
 	public QuickFixAssociations() {
-		fixMap = new HashMap<String, Class<IMarkerResolution>[]>();
+		fixMap = new HashMap<String, List<Class<? extends IMarkerResolution>>>();
 	}
 	
 	public void load(File fixFile) {
@@ -28,17 +32,13 @@ public class QuickFixAssociations {
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();		
 			Document doc = builder.parse(fixFile);
 			NodeList list = ((Element)doc.getFirstChild()).getElementsByTagName("BugFix");
-			Element item;
-			String type;
-			Class<IMarkerResolution>[] classes;
 			
 			for (int ndx = 0; ndx < list.getLength(); ndx++) {
-				item = (Element)list.item(ndx);
-				type = item.getAttribute("type");
+				Element item = (Element)list.item(ndx);
+				String type = item.getAttribute("type");
 
 				try {
-					classes = loadClasses(item);
-					fixMap.put(type, classes);
+					fixMap.put(type,  loadClasses(item));
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -53,44 +53,46 @@ public class QuickFixAssociations {
 		}
 	}
 
-	private Class<IMarkerResolution>[] loadClasses(Element item) throws ClassNotFoundException {
+	@SuppressWarnings("unchecked")
+	private List<Class<? extends IMarkerResolution>> loadClasses(Element item) throws ClassNotFoundException {
 		NodeList list = item.getElementsByTagName("Fixer");
-		Element classElement;
-		Class<IMarkerResolution>[] classes = new Class[list.getLength()];
-		String className;
+
+		ArrayList<Class<? extends IMarkerResolution>> classes
+			= new ArrayList<Class<? extends IMarkerResolution>>(list.getLength());
+		
 		
 		for (int ndx = 0; ndx < list.getLength(); ndx++) {
-			classElement = (Element)list.item(ndx);
-			className = classElement.getAttribute("classname");
+			Element classElement = (Element)list.item(ndx);
+			String className = classElement.getAttribute("classname");
 
-			classes[ndx] = (Class<IMarkerResolution>) Class.forName(className);
+			Class<?> fixerClass = Class.forName(className);
+			if (!IMarkerResolution.class.isAssignableFrom(fixerClass)) {
+				FindbugsPlugin.getDefault().logError(className + " is not the name of a IMarkerResolution");
+			}
+			else classes.add((Class<? extends IMarkerResolution>) fixerClass);
 		}
 		return classes;
 	}
 
 	public IMarkerResolution[] createFixers(String type) {
-		Class<IMarkerResolution>[] classes = fixMap.get(type);
+		List<Class<? extends IMarkerResolution>> classes = fixMap.get(type);
 		IMarkerResolution[] res;
 		if (classes == null)
 			return new IMarkerResolution[0];
 		
-		res = new IMarkerResolution[classes.length];
+		res = new IMarkerResolution[classes.size()];
 		
-		for (int ndx = 0; ndx < classes.length; ndx++) {
+		for (int ndx = 0; ndx < classes.size(); ndx++) {
 			try {
-				res[ndx] = classes[ndx].getConstructor(new Class[0]).newInstance(new Object[0]);
+				res[ndx] = classes.get(ndx).newInstance();
 			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
+				FindbugsPlugin.getDefault().logException(e, "Could not instantiate " + classes.get(ndx).getName());
 			} catch (SecurityException e) {
-				e.printStackTrace();
+				FindbugsPlugin.getDefault().logException(e, "Could not instantiate " + classes.get(ndx).getName());
 			} catch (InstantiationException e) {
-				e.printStackTrace();
+				FindbugsPlugin.getDefault().logException(e, "Could not instantiate " + classes.get(ndx).getName());
 			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
+				FindbugsPlugin.getDefault().logException(e, "Could not instantiate " + classes.get(ndx).getName());
 			}
 		}
 		return res;
