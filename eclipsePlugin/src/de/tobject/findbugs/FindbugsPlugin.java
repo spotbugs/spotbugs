@@ -352,7 +352,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		logMessage(IStatus.INFO, message, null);
 	}
 
-	private void logMessage(int severity, String message, Exception e) {
+	public void logMessage(int severity, String message, Exception e) {
 		if (FindbugsPlugin.DEBUG) {
 			String what = (severity == IStatus.ERROR)
 				? (e != null ? "Exception" : "Error")
