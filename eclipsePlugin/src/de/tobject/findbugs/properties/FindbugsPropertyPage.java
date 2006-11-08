@@ -323,8 +323,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 			filterFiles = currentExtendedPreferences.getExcludeFilterFiles();
 		}
 
-		//final List<FilePlaceHolder> filters = new ArrayList<FilePlaceHolder>();
-		final List filters = new ArrayList();
+		final List<FilePlaceHolder> filters = new ArrayList<FilePlaceHolder>();
 		if (filterFiles != null) {
 			for (int i = 0; i < filterFiles.length; i++) {
 				filters.add(new FilePlaceHolder(project.getFile(filterFiles[i])));
