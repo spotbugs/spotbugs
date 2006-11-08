@@ -25,15 +25,18 @@ public class PluginInfo {
 		
 		SAXReader reader = new SAXReader();
 		Document document = reader.read(new File(args[0]));
-		
+		String date = eclipseDateFormat.format(new Date());
 		emitProperty(document, "plugin.id", "/plugin/@id");
-		emitProperty(document, "plugin.version", "/plugin/@version".replace("qualifier", eclipseDateFormat.format(new Date())));
+		System.out.println("plugin.version" + "=" + getValue(document, "/plugin/@version").replace("qualifier", date));
 	}
 
 	private static void emitProperty(Document document, String propName, String xpath) {
+		System.out.println(propName + "=" + getValue(document, xpath));
+	}
+	private static String getValue(Document document, String xpath) {
 		Node node = document.selectSingleNode(xpath);
 		if (node == null)
 			throw new RuntimeException("No node found for xpath " + xpath);
-		System.out.println(propName + "=" + node.getText());
+		return  node.getText();
 	}
 }
