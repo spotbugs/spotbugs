@@ -59,7 +59,6 @@ import de.tobject.findbugs.io.FileOutput;
 import de.tobject.findbugs.io.IO;
 import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.reporter.Reporter;
-import de.tobject.findbugs.view.DetailsView;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
@@ -132,9 +131,6 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	
 	/** The shared instance. */
 	private static FindbugsPlugin plugin;
-	
-	/** Details view instance */
-	private static DetailsView viewDetails;
 	
 	/** Resource bundle. */
 	private ResourceBundle resourceBundle;
