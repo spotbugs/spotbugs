@@ -139,7 +139,7 @@ public class ExtendedPreferences implements Cloneable {
 	 * @return The array of Strings, or an empty array if no values exist.
 	 */
 	private String[] readFilters(Properties props, String keyPrefix) {
-		List filters = new ArrayList();
+		List<String> filters = new ArrayList<String>();
 		int counter = 0;
 		boolean keyFound = true;
 		while (keyFound) {
