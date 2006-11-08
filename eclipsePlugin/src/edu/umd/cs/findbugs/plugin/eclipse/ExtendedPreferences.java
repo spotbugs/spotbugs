@@ -232,6 +232,10 @@ public class ExtendedPreferences implements Cloneable {
 	}
 
 	@Override
+	public int hashCode() {
+		return effort.hashCode() + Arrays.hashCode(includeFilterFiles) + Arrays.hashCode(excludeFilterFiles);
+	}
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;

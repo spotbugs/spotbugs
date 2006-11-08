@@ -100,14 +100,13 @@ public class FindBugsWorker {
 	 */
 	public void work(Collection files) throws CoreException {
 		if (files == null) {
-			if (DEBUG) {
-				System.out.println("No files to build"); //$NON-NLS-1$
-			}
+			FindbugsPlugin.getDefault().logError("No files to build");
+			return;
 		}
 
 		String findBugsHome = FindbugsPlugin.getFindBugsEnginePluginLocation();
 		if (DEBUG) {
-			System.out.println("Looking for detectors in: " + findBugsHome); //$NON-NLS-1$
+			FindbugsPlugin.getDefault().logInfo("Looking for detectors in: " + findBugsHome); //$NON-NLS-1$
 		}
 
 		// FIXME hardcoded findbugs.home property

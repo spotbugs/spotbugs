@@ -82,44 +82,8 @@ public class ClearMarkersAction implements IObjectActionDelegate {
 		if (!selection.isEmpty()) {
 			if (selection instanceof IStructuredSelection) {
 				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-				/*
-				Object element = structuredSelection.getFirstElement();
-				IResource resource = (IResource) ((IAdaptable) element)
-						.getAdapter(IResource.class);
-				IProject project = resource.getProject();
-				work(project);
-				*/
 				work(structuredSelection);
 			}
-		}
-	}
-
-	/**
-	 * Clear the FindBugs markers on the given project, displaying a progress monitor.
-	 * 
-	 * @param project
-	 */
-	private void work(final IProject project) {
-		try {
-
-			IRunnableWithProgress r = new IRunnableWithProgress() {
-				public void run(IProgressMonitor pm)
-						throws InvocationTargetException {
-					try {
-						MarkerUtil.removeMarkers(project);
-					} catch (CoreException ex) {
-						throw new InvocationTargetException(ex);
-					}
-				}
-			};
-
-			ProgressMonitorDialog progress = new ProgressMonitorDialog(
-					FindbugsPlugin.getShell());
-			progress.run(true, true, r);
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 	}
 

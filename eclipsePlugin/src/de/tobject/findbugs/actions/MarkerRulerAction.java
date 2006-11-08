@@ -151,7 +151,6 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 
 		// Obtain all markers in the editor
 		IMarker[] allMarkers;
-		int line = ruler.getLineOfLastMouseButtonActivity() + 1;
 		IResource resource = (IResource) editor.getEditorInput().getAdapter(IFile.class);
 		try {
 			allMarkers = resource.findMarkers(FindBugsMarker.NAME, true, 0);

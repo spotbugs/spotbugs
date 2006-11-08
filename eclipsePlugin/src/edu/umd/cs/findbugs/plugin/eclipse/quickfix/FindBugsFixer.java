@@ -65,6 +65,10 @@ public abstract class FindBugsFixer implements IMarkerResolution  {
 			IProject project = marker.getResource().getProject();
 			
 			unit = getCompilationUnit(marker);
+			if (unit == null) {
+				FindbugsPlugin.getDefault().logError("Can't fix " + marker);
+				return;
+			}
 			oldSource = unit.getBuffer().getContents();
 			
 			unit.becomeWorkingCopy(null, null);

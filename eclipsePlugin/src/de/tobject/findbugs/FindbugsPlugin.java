@@ -739,12 +739,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		UserPreferences userPrefs = UserPreferences.createDefaultUserPreferences();
 		
 		try {
-			// For backwards-compatibility, try to use the old project filter settings
-			// and active detector set. 
-			
-			// Project filter settings
-			ProjectFilterSettings filterSettings = getProjectFilterSettings(project);
-			
+		
 			// Active detector set
 			String activeDetectorList =
 				(String) project.getSessionProperty(SESSION_PROPERTY_ACTIVE_DETECTORS);

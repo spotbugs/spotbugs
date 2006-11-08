@@ -37,7 +37,7 @@ import org.eclipse.core.runtime.Path;
 public class FilesCollectorFactory {
 
 	/** Controls debugging. */
-	public static boolean DEBUG;
+	public  static boolean DEBUG = false;
 	
 	/**
 	 * Produces a file collector for the given container.
