@@ -48,6 +48,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	Map<XField,HashSet<ProgramPoint> >
 		assumedNonNull = new HashMap<XField,HashSet<ProgramPoint>>();
 	Set<XField> nullTested = new HashSet<XField>();
+	Set<XField> staticFields = new HashSet<XField>();
 	Set<XField> declaredFields = new TreeSet<XField>();
 	Set<XField> ejb3Fields = new TreeSet<XField>();
 	
@@ -60,7 +61,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	Set<XField> myFields = new TreeSet<XField>();
 	Set<XField> writtenFields = new HashSet<XField>();
 	Set<XField> writtenNonNullFields = new HashSet<XField>();
-	
+	Set<String> calledFromConstructors = new HashSet<String>();
 	Set<XField> writtenInConstructorFields = new HashSet<XField>();
 	Set<XField> readFields = new HashSet<XField>();
 	Set<XField> constantFields = new HashSet<XField>();
@@ -83,6 +84,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 
 	@Override
          public void visit(JavaClass obj) {
+		calledFromConstructors.clear();
 		hasNativeMethods = false;
 		sawSelfCallInConstructor = false;
 		publicOrProtectedConstructor = false;
@@ -138,8 +140,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			writtenInConstructorFields.addAll(myFields);
 		myFields.clear();
 		allMyFields.clear();
+		calledFromConstructors.clear();
 	}
-
 
 	@Override
          public void visit(Field obj) {
@@ -152,6 +154,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 
 			myFields.add(f);
 			if (obj.isFinal()) finalFields.add(f);
+			if (obj.isStatic()) staticFields.add(f);
 		}
 	}
 
@@ -255,26 +258,37 @@ public class UnreadFields extends BytecodeScanningDetector  {
 
 
 		if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE
-			|| seen == INVOKESPECIAL)  {
-				String sig = getSigConstantOperand();
-				int pos = PreorderVisitor.getNumberArguments(sig);
-				if (opcodeStack.getStackDepth() > pos) {
+				|| seen == INVOKESPECIAL || seen==INVOKESTATIC )  {
+
+			String sig = getSigConstantOperand();
+			String invokedClassName = getClassConstantOperand();
+			if (invokedClassName.equals(getClassName()) 
+					&& (getMethodName().equals("<init>") || getMethodName().equals("<clinit>"))) {
+				
+				calledFromConstructors.add(getNameConstantOperand()+":"+sig);
+			}
+			int pos = PreorderVisitor.getNumberArguments(sig);
+			if (opcodeStack.getStackDepth() > pos) {
 				OpcodeStack.Item item = opcodeStack.getStackItem(pos);
-				if (DEBUG)
-				System.out.println("In " + getFullyQualifiedMethodName()
-					+ " saw call on " + item);
 				boolean superCall = seen == INVOKESPECIAL
-					&&  !getClassConstantOperand() .equals(getClassName());
+				&&  !invokedClassName .equals(getClassName());
+
+				if (DEBUG)
+					System.out.println("In " + getFullyQualifiedMethodName()
+							+ " saw call on " + item);
+
+
+
 				boolean selfCall = item.getRegisterNumber() == 0 
-					&& !superCall;
+				&& !superCall;
 				if (selfCall && getMethodName().equals("<init>")) {
 					sawSelfCallInConstructor = true;	
 					if (DEBUG)
-					System.out.println("Saw self call in " + getFullyQualifiedMethodName()  + " to " + getClassConstantOperand() + "." + getNameConstantOperand()
-					);
-					}
+						System.out.println("Saw self call in " + getFullyQualifiedMethodName()  + " to " + invokedClassName + "." + getNameConstantOperand()
+						);
 				}
 			}
+		}
 
 		if ((seen == IFNULL || seen == IFNONNULL) 
 			&& opcodeStack.getStackDepth() > 0)  {
@@ -365,12 +379,14 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			}
 			else if (DEBUG) System.out.println("put: " + f);
 			
-			if (
-					getMethodName().equals("<init>") 
-					|| getMethodName().equals("init") 
+			if ( getMethod().isStatic() == f.isStatic() && (
+					calledFromConstructors.contains(getMethodName()+":"+getMethodSig())
+					|| getMethodName().equals("<init>") 
+					|| getMethodName().equals("init")  
+					|| getMethodName().equals("init")  
 					|| getMethodName().equals("initialize") 
 					|| getMethodName().equals("<clinit>") 
-					|| getMethod().isPrivate()) {
+					|| getMethod().isPrivate())) {
 				writtenInConstructorFields.add(f);
 				if (previousOpcode != ACONST_NULL || previousPreviousOpcode == GOTO ) 
 					assumedNonNull.remove(f);
@@ -417,14 +433,13 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		// Don't report anything about ejb3Fields
 		declaredFields.removeAll(ejb3Fields);
 		
-		
 		TreeSet<XField> notInitializedInConstructors =
 		        new TreeSet<XField>(declaredFields);
 		notInitializedInConstructors.retainAll(readFields);
 		notInitializedInConstructors.retainAll(writtenFields);
 		notInitializedInConstructors.retainAll(assumedNonNull.keySet());
 		notInitializedInConstructors.removeAll(writtenInConstructorFields);
-
+		// notInitializedInConstructors.removeAll(staticFields);
 		
 		TreeSet<XField> readOnlyFields =
 		        new TreeSet<XField>(declaredFields);
