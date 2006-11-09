@@ -65,6 +65,20 @@ public class DebugRepositoryLookupFailureCallback implements
 	 */
 	@SuppressWarnings("DM_EXIT")
 	public void logError(String message, Throwable e) {
+		if (e instanceof MissingClassException) {
+			MissingClassException missingClassEx = (MissingClassException) e;
+			ClassNotFoundException cnfe = missingClassEx.getClassNotFoundException();
+
+			reportMissingClass(cnfe);
+			// Don't report dataflow analysis exceptions due to missing classes.
+			// Too much noise.
+			return;
+
+		}
+		if (e instanceof MethodUnprofitableException) {
+			// TODO: log this
+			return;
+		}
 		System.err.println("Error: " + message);
 		e.printStackTrace();
 		System.exit(1);
