@@ -44,15 +44,15 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 public class IO {
-	static ThreadLocal myByteBuf = new ThreadLocal() {
+	static ThreadLocal<byte[]> myByteBuf  = new ThreadLocal<byte[]>() {
 		@Override
-		protected Object initialValue() {
+		protected byte[] initialValue() {
 			return new byte[4096];
 		}
 	};
-	static ThreadLocal myCharBuf = new ThreadLocal() {
+	static ThreadLocal<char[]> myCharBuf  = new ThreadLocal<char[]>() {
 		@Override
-		protected Object initialValue() {
+		protected char[] initialValue() {
 			return new char[4096];
 		}
 	};
@@ -87,7 +87,7 @@ public class IO {
 
 		int sz;
 
-		byte buf [] = (byte[]) myByteBuf.get();
+		byte buf [] =  myByteBuf.get();
 
 		while (maxBytes > 0 &&
 		        (sz = in.read(buf, 0,
@@ -108,7 +108,7 @@ public class IO {
 
 		int sz;
 
-		char buf [] = (char[]) myCharBuf.get();
+		char buf [] =  myCharBuf.get();
 
 		while (maxChars > 0 &&
 		        (sz = in.read(buf, 0,

@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 /**
  * @author pugh
  */
-public class NullnessAnnotation extends AnnotationEnumeration {
+public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation> {
 	public final static NullnessAnnotation CHECK_FOR_NULL = new NullnessAnnotation(
 			"CheckForNull", 3);
 

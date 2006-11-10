@@ -27,7 +27,7 @@ public class AnalysisLocal<T> {
 	}
 	
 	protected Map <AnalysisLocal<T>, T> getMap() {
-		Map m = AnalysisContext.currentAnalysisContext().getAnalysisLocals();
+		Map<?,?> m = AnalysisContext.currentAnalysisContext().getAnalysisLocals();
 		return (Map<AnalysisLocal<T>, T>) m;
 	}
 	

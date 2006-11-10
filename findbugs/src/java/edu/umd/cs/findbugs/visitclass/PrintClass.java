@@ -104,11 +104,9 @@ public class PrintClass {
 						.entries(); e.hasMoreElements();)
 					zipEntries.add(e.nextElement());
 
-				for (Iterator i = zipEntries.iterator(); i.hasNext();) {
-					ZipEntry ze = (ZipEntry) i.next();
+				for (ZipEntry ze : zipEntries) {
 					String name = ze.getName();
 					if (name.endsWith(".class")) 
-
 						printClass(new ClassParser(z.getInputStream(ze), name));
 
 

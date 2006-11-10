@@ -25,7 +25,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 /**
  * @author pugh
  */
-public class CheckReturnValueAnnotation extends AnnotationEnumeration {
+public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckReturnValueAnnotation> {
 
 	 final int priority;
 	public final static CheckReturnValueAnnotation CHECK_RETURN_VALUE_UNKNOWN = new CheckReturnValueAnnotation(

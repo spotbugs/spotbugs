@@ -166,7 +166,7 @@ public abstract class AbstractDepthFirstSearch
 	 *
 	 * @return this object
 	 */
-	public AbstractDepthFirstSearch search() {
+	public AbstractDepthFirstSearch<GraphType, EdgeType, VertexType> search() {
 		visitAll();
 		classifyUnknownEdges();
 

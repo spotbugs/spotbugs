@@ -633,9 +633,9 @@ public class ConvertToARFF {
 	 */
 	public void generateInstances(Document document, final String appName, final Writer out)
 			throws MissingNodeException, IOException {
-		List bugInstanceList = getBugInstanceList(document);
+		List<Element> bugInstanceList = getBugInstanceList(document);
 
-		for (final Element element : (List<Element>) bugInstanceList) {
+		for (final Element element : bugInstanceList) {
 			scanAttributeList(new AttributeCallback() {
 				boolean first = true;
 

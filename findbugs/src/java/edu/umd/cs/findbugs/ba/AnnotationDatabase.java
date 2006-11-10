@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.util.MapCache;
 /**
  * @author William Pugh
  */
-public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration> {
+public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<AnnotationEnum>> {
 	static final boolean DEBUG = SystemProperties.getBoolean("annotations.debug");;
 
 	/**

@@ -24,7 +24,7 @@ package edu.umd.cs.findbugs;
  * for a category of bugs. BugCategories derive from
  * the BugCategory elements in messages*.xml files.
  */
-public class BugCategory implements Comparable {
+public class BugCategory implements Comparable<BugCategory> {
 	final private String category;
 	final private String shortDescription;
 	 private String abbrev;
@@ -101,9 +101,7 @@ public class BugCategory implements Comparable {
 	}
 
 
-	public int compareTo(Object o) {
-		if (!(o instanceof BugCategory)) return -1;
-		BugCategory other = (BugCategory)o;
+	public int compareTo(BugCategory other) {
 		return category.compareTo(other.category);
 	}
 

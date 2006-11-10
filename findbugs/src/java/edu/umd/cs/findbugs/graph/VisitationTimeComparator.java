@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
  * search; for example, it could compare the finishing times produced
  * by DepthFirstSearch.
  */
-public class VisitationTimeComparator <VertexType extends GraphVertex> implements Comparator<VertexType>,
+public class VisitationTimeComparator <VertexType extends GraphVertex<VertexType>> implements Comparator<VertexType>,
 Serializable {
 
 	/**

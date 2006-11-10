@@ -29,7 +29,7 @@ package edu.umd.cs.findbugs;
  * @author David Hovemeyer
  * @see BugInstance
  */
-public class BugPattern implements Comparable {
+public class BugPattern implements Comparable<BugPattern> {
 	private String type;
 	private String abbrev;
 	private String category;
@@ -130,10 +130,7 @@ public class BugPattern implements Comparable {
 		return detailHTML;
 	}
 
-	public int compareTo(Object o) {
-		if (!(o instanceof BugPattern))
-			return -1;
-		BugPattern other = (BugPattern) o;
+	public int compareTo(BugPattern other) {
 		return type.compareTo(other.type);
 	}
 

@@ -266,7 +266,7 @@ public class UserPreferences implements Cloneable {
 	 */
 	public void removeProject(String projectName) {
 		//It should only be in list once (usually in slot 0) but check entire list...
-		Iterator it = recentProjectsList.iterator();
+		Iterator<String> it = recentProjectsList.iterator();
 		while (it.hasNext()) {
 			//LinkedList, so remove() via iterator is faster than remove(index).
 			if (projectName.equals(it.next())) it.remove();
