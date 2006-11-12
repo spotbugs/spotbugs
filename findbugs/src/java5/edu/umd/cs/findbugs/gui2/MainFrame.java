@@ -25,6 +25,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -137,6 +138,9 @@ public class MainFrame extends FBFrame implements LogSync
 
 	public static final boolean DEBUG = SystemProperties.getBoolean("gui2.debug");
 	
+	private static final boolean MAC_OS_X = SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
+	final static String WINDOW_MODIFIED = "windowModified";
+
 	NavigableTextPane sourceCodeTextPane = new NavigableTextPane();
 	private JScrollPane sourceCodeScrollPane;
 	
@@ -211,7 +215,7 @@ public class MainFrame extends FBFrame implements LogSync
 				setVisible(true);
 				
 				
-				if (SystemProperties.getProperty("os.name").startsWith("Mac"))
+				if (MAC_OS_X)
 				{
 					 try {
 						Class osxAdapter = Class.forName("edu.umd.cs.findbugs.gui2.OSXAdapter");
@@ -561,7 +565,7 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenuItem mergeMenuItem = new JMenuItem("Merge Analysis...");
 		
 		JMenuItem exitMenuItem = null;
-		if (!System.getProperty("os.name").startsWith("Mac")) {
+		if (!MAC_OS_X) {
 			exitMenuItem = new JMenuItem("Exit", KeyEvent.VK_X);
 			exitMenuItem.addActionListener(new ActionListener(){			
 			public void actionPerformed(ActionEvent evt){
@@ -624,6 +628,7 @@ public class MainFrame extends FBFrame implements LogSync
 		});
 		
 		saveAsProjectMenuItem.setEnabled(true);
+		attachAccelaratorKey(saveAsProjectMenuItem, KeyEvent.VK_S, Event.SHIFT_MASK);
 		saveAsProjectMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
 				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
@@ -633,6 +638,7 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 		});
 		
+		attachAccelaratorKey(importBugsMenuItem, KeyEvent.VK_O, Event.ALT_MASK);
 		importBugsMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
 				loadAnalysis();
@@ -640,10 +646,10 @@ public class MainFrame extends FBFrame implements LogSync
 		});
 		
 		exportBugsMenuItem.setEnabled(true);
+		attachAccelaratorKey(exportBugsMenuItem, KeyEvent.VK_S, Event.ALT_MASK);
 		exportBugsMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
 				saveAnalysis();
-
 			}
 		});
 
@@ -744,18 +750,20 @@ public class MainFrame extends FBFrame implements LogSync
 			addDesignationItem(designationMenu, name, keyEvents[i++]);
 		}
 		menuBar.add(designationMenu);
-		
-		
-		JMenu helpMenu = new JMenu("Help");
-		JMenuItem aboutItem = new JMenuItem("About FindBugs");
-		helpMenu.add(aboutItem);
 
-         aboutItem.addActionListener(new java.awt.event.ActionListener() {
-             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                 about();
-             }
-         });
-         menuBar.add(helpMenu);
+		if (!MAC_OS_X) {		
+		    // On Mac, 'About' appears under Findbugs menu, so no need for it here
+		    JMenu helpMenu = new JMenu("Help");
+		    JMenuItem aboutItem = new JMenuItem("About FindBugs");
+		    helpMenu.add(aboutItem);
+
+				aboutItem.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(java.awt.event.ActionEvent evt) {
+							about();
+						}
+					});
+				menuBar.add(helpMenu);
+		}
 		return menuBar;
 	}
 	/**
@@ -777,8 +785,19 @@ public class MainFrame extends FBFrame implements LogSync
 			}};
 	}
 	static void attachAccelaratorKey(JMenuItem item, int keystroke) {
+		attachAccelaratorKey(item, keystroke, 0);
+	}
+	static void attachAccelaratorKey(JMenuItem item, int keystroke,
+																	 int additionalMask) {
+		// As far as I know, Mac is the only platform on which it is normal
+		// practice to use accelerator masks such as Shift and Alt, so
+		// if we're not running on Mac, just ignore them
+		if (!MAC_OS_X && additionalMask != 0) {
+			return;
+		}
+
 		item.setAccelerator(KeyStroke.getKeyStroke(keystroke,
-            Toolkit.getDefaultToolkit(  ).getMenuShortcutKeyMask(  )));
+																							 Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | additionalMask));
 	}
 	void newProject(){
 		setProjectChanged(true);		
@@ -1526,6 +1545,8 @@ public class MainFrame extends FBFrame implements LogSync
 		if(projectDirectory != null && projectDirectory.exists())
 			saveProjectMenuItem.setEnabled(b);
 		
+		getRootPane().putClientProperty(WINDOW_MODIFIED, Boolean.valueOf(b));
+
 		projectChanged = b;
 	}
 	
@@ -1556,7 +1577,6 @@ public class MainFrame extends FBFrame implements LogSync
 		setProjectChanged(false);
 		MainFrame.this.setTitle("FindBugs: " + dir.getName());
 		
-		saveProjectMenuItem.setEnabled(false);
 		return true;
 	}
 	
