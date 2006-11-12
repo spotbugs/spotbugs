@@ -58,10 +58,8 @@ public enum Sortables implements Comparator<StringPair>
 				return "Low";
 			if (value.equals(String.valueOf(Detector.EXP_PRIORITY)))
 				return "Experimental";
-			if (value.equals(String.valueOf(Detector.IGNORE_PRIORITY)))
-				return "Ignore"; // This probably shouldn't ever happen, but what the hell, let's be complete
+			return "Ignore"; // This probably shouldn't ever happen, but what the hell, let's be complete
 			
-			throw new IllegalArgumentException(value + " is not a valid priority");
 		}
 		
 		@Override

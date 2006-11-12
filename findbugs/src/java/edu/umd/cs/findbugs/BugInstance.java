@@ -217,8 +217,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * Set the bug priority.
 	 */
 	public void setPriority(int p) {
-		priority = p < Detector.HIGH_PRIORITY 
-			? Detector.HIGH_PRIORITY : p;
+		priority = Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, p));
 	}
 
 	/**

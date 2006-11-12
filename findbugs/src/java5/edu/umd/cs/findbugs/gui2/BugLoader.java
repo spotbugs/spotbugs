@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.IFindBugsEngine;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -78,6 +79,7 @@ public class BugLoader {
 		ArrayList<BugReporterObserver> bros;
 		ArrayList<String> errorLog;
 		boolean done;
+		int priorityThreadhold = Priorities.LOW_PRIORITY;
 		
 		PrintCallBack()
 		{
@@ -105,12 +107,12 @@ public class BugLoader {
 		}
 
 		public void setPriorityThreshold(int threshold) {
-//			System.out.println("Priority Threshhold set at " + threshold);
+			priorityThreadhold = Math.min(Priorities.EXP_PRIORITY, threshold);
 		}
 
 		public void reportBug(BugInstance bugInstance) {
+			if (bugInstance.getPriority() > priorityThreadhold) return;
 			BugLeafNode b = new BugLeafNode(bugInstance);
-			Debug.println("We got a bug!: " + b.getBug().getMessage());
 			bugs.add(b);
 		}
 
