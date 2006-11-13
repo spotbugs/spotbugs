@@ -50,7 +50,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 
 		Field[] fields = obj.getFields();
 		String fieldName;
-		for (Field field : fields) {
+		for (Field field : fields) if (!field.isStatic() && !field.isPrivate()){
 			fieldName = field.getName();
 			classFields.put(fieldName, field);
 		}
