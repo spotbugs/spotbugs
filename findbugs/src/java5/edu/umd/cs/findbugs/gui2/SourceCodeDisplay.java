@@ -186,6 +186,7 @@ public final class SourceCodeDisplay implements Runnable {
 
 		int startLine = sourceAnnotation.getStartLine();
 		if (startLine == -1) return;
+		if (!sourceAnnotation.getClassName().equals(src.getTitle())) return;
 		src.getHighlightInformation().setHighlight(startLine, sourceAnnotation.getEndLine(), color);
 	}
 
