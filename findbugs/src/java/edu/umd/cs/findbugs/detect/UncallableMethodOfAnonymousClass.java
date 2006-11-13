@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -72,19 +75,33 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 		return false;
 	}
 
+	Set<String> definedInClass(JavaClass clazz) {
+		HashSet<String> result = new HashSet<String>();
+		for(Method m : clazz.getMethods()) {
+			if (!skip(m)) 
+				result.add(m.getName()+m.getSignature());
+		}
+		return result;
+	}
+	
+	static private boolean skip(Method obj) {
+		if (obj.getName().equals("<init>"))
+			return true;
+		if (obj.getName().startsWith("access$"))
+			return true;
+		if (obj.isSynthetic())
+			return true;
+		if (obj.isPrivate())
+			return true;
+		if (obj.isAbstract()) return true;
+		return false;
+	}
 	@Override
 	public void visit(Method obj) {
 		try {
 			if (!isInnerClass)
 				return;
-			if (getMethodName().equals("<init>"))
-				return;
-			if (getMethodName().startsWith("access$"))
-				return;
-			if (obj.isSynthetic())
-				return;
-			if (obj.isPrivate())
-				return;
+			if (skip(obj)) return;
 
 			JavaClass clazz = getThisClass();
 			XMethod xmethod = XFactory.createXMethod(clazz, obj);
@@ -93,7 +110,14 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 					&& !definedInSuperClassOrInterface(clazz, obj.getName()
 							+ ":" + obj.getSignature())) {
 				int priority = NORMAL_PRIORITY;
-				if (!clazz.getSuperclassName().equals("java.lang.Object")) priority = HIGH_PRIORITY;
+				JavaClass superClass = clazz.getSuperClass();
+				String superClassName = superClass.getClassName();
+				if (superClass.isInterface() || superClassName.equals("java.lang.Object"))
+						priority = HIGH_PRIORITY;
+				else if (definedInClass(superClass).containsAll(definedInClass(clazz)))
+						priority = NORMAL_PRIORITY;
+				else
+					priority = HIGH_PRIORITY;
 				bugReporter.reportBug(new BugInstance("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS",
 						priority).addClassAndMethod(this));
 			
