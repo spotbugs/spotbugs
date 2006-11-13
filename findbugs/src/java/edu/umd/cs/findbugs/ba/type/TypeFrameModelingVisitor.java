@@ -826,7 +826,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	public void visitNEWARRAY(NEWARRAY obj) {
 		consumeStack(obj);
 		Type elementType = obj.getType();
-		pushValue(new ArrayType(elementType, 1));
+		pushValue(elementType);
 
 		// We now have an exact type for this value.
 		setTopOfStackIsExact();
