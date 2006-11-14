@@ -20,8 +20,15 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.bcel.classfile.Code;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.StatelessDetector;
 
 public class FindFieldSelfAssignment extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;
@@ -38,11 +45,13 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
          public void visit(Code obj) {
 		state = 0;
 		super.visit(obj);
+		initializedFields.clear();
 	}
 
 
 	String f;
 	String className;
+	Set<String> initializedFields = new HashSet<String>();
 
 	@Override
          public void sawOpcode(int seen) {
@@ -69,14 +78,20 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 		case 3:
 			if (seen == PUTFIELD && getRefConstantOperand().equals(f) && getClassConstantOperand().equals(className)) {
 
-				bugReporter.reportBug(new BugInstance(this, "SA_FIELD_SELF_ASSIGNMENT", 
-							getMethodName().equals("<init>") ? HIGH_PRIORITY : NORMAL_PRIORITY)
+				int priority = NORMAL_PRIORITY;
+				if (getMethodName().equals("<init>") && !initializedFields.contains(getRefConstantOperand()))
+						priority = HIGH_PRIORITY;
+				bugReporter.reportBug(new BugInstance(this, "SA_FIELD_SELF_ASSIGNMENT", priority)
 				        .addClassAndMethod(this)
 				        .addReferencedField(this)
 				        .addSourceLine(this));
 			}
 			state = 0;
 		}
+		
+		if (seen == PUTFIELD  && getClassConstantOperand().equals(className))
+			initializedFields.add(getRefConstantOperand());
+
 	}
 
 }
