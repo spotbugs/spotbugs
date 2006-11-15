@@ -50,7 +50,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	Set<XField> nullTested = new HashSet<XField>();
 	Set<XField> staticFields = new HashSet<XField>();
 	Set<XField> declaredFields = new TreeSet<XField>();
-	Set<XField> ejb3Fields = new TreeSet<XField>();
+	Set<XField> containerFields = new TreeSet<XField>();
 	
 	Set<XField> fieldsOfNativeClassed
     = new HashSet<XField>();
@@ -162,8 +162,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	public void visitAnnotation(String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
 		if (!visitingField()) return;
-		if (annotationClass.startsWith("javax.ejb") || annotationClass.startsWith("javax.persistence")) {
-			ejb3Fields.add(XFactory.createXField(this));
+		if (annotationClass.startsWith("javax.annotation.") || annotationClass.startsWith("javax.ejb") || annotationClass.startsWith("javax.persistence")) {
+			containerFields.add(XFactory.createXField(this));
 		}
 		
 
@@ -412,9 +412,9 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			System.out.println("read fields:" );
 			for(XField f : readFields) 
 				System.out.println("  " + f);
-			if (!ejb3Fields.isEmpty()) {
+			if (!containerFields.isEmpty()) {
 				System.out.println("ejb3 fields:" );
-				for(XField f : ejb3Fields) 
+				for(XField f : containerFields) 
 					System.out.println("  " + f);
 			}
 		
@@ -431,7 +431,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				System.out.println("  " + f);
 		}
 		// Don't report anything about ejb3Fields
-		declaredFields.removeAll(ejb3Fields);
+		declaredFields.removeAll(containerFields);
 		
 		TreeSet<XField> notInitializedInConstructors =
 		        new TreeSet<XField>(declaredFields);
