@@ -34,80 +34,92 @@ public class SuspiciousThreadInterrupted extends BytecodeScanningDetector implem
 	public static final int SEEN_CURRENTTHREAD = 1;
 	public static final int SEEN_POP_AFTER_CURRENTTHREAD = 2;
 	public static final int SEEN_UNKNOWNCONTEXT_POP = 3;
-	
+	public static final int SEEN_POSSIBLE_THREAD = 4;
 	private BugReporter bugReporter;
 	private BitSet localsWithCurrentThreadValue;
 	private int state;
-	
+
 	public SuspiciousThreadInterrupted(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 
 
 	@Override
-         public void visit(Method obj) {
+	public void visit(Method obj) {
 		localsWithCurrentThreadValue = new BitSet();
 		state = SEEN_NOTHING;
 		super.visit(obj);
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+	public void sawOpcode(int seen) {
+
+		if (state == SEEN_POSSIBLE_THREAD) {
+			if (seen == POP) {
+				state = SEEN_UNKNOWNCONTEXT_POP;
+				return;
+			}
+			else state = SEEN_NOTHING;
+		}
 		switch (state) {
-			case SEEN_NOTHING:
-				if ((seen == INVOKESTATIC)
-		        && getClassConstantOperand().equals("java/lang/Thread")
-		        && getNameConstantOperand().equals("currentThread")
-		        && getSigConstantOperand().equals("()Ljava/lang/Thread;"))
-		        	state = SEEN_CURRENTTHREAD;
-		        else if (seen == ALOAD) {
-		        	if (localsWithCurrentThreadValue.get(getRegisterOperand())) {
-		        		state = SEEN_CURRENTTHREAD;
-		        	}
-		        } else if ((seen >= ALOAD_0) && (seen <= ALOAD_3)) {
-		        	if (localsWithCurrentThreadValue.get(seen - ALOAD_0)) {
-		        		state = SEEN_CURRENTTHREAD;
-		        	}
-		        } else if (seen == POP) {
-		        	state = SEEN_UNKNOWNCONTEXT_POP;
-		        }
-		    break;
-		    
-		    case SEEN_CURRENTTHREAD:
-		    	if (seen == POP) {
-		    		state = SEEN_POP_AFTER_CURRENTTHREAD;
-		    	}
-		    	else if (seen == ASTORE) {
-		    		localsWithCurrentThreadValue.set(getRegisterOperand());
-		    		state = SEEN_NOTHING;
-		    	} else if ((seen >= ASTORE_0) && (seen <= ASTORE_3)) {
-		    		localsWithCurrentThreadValue.set(seen - ASTORE_0);
-		    		state = SEEN_NOTHING;
-		    	} else {
-		    		state = SEEN_NOTHING;
-		    	}
-		    break;
-		    
-		    default:
-				if ((seen == INVOKESTATIC)
-		        && getClassConstantOperand().equals("java/lang/Thread")
-		        && getNameConstantOperand().equals("interrupted")
-		        && getSigConstantOperand().equals("()Z")) {
-		        	if (state == SEEN_POP_AFTER_CURRENTTHREAD) {
-						bugReporter.reportBug(new BugInstance(this, "STI_INTERRUPTED_ON_CURRENTTHREAD", LOW_PRIORITY)
-						        .addClassAndMethod(this)
-						        .addSourceLine(this));
-		        	} else if (state == SEEN_UNKNOWNCONTEXT_POP) {
-						bugReporter.reportBug(new BugInstance(this, "STI_INTERRUPTED_ON_UNKNOWNTHREAD", NORMAL_PRIORITY)
-						        .addClassAndMethod(this)
-						        .addSourceLine(this));
-		        	}
-		        }
-				state = SEEN_NOTHING;		        	
-		    break;
+		case SEEN_NOTHING:
+			if ((seen == INVOKESTATIC)
+					&& getClassConstantOperand().equals("java/lang/Thread")
+					&& getNameConstantOperand().equals("currentThread")
+					&& getSigConstantOperand().equals("()Ljava/lang/Thread;"))
+				state = SEEN_CURRENTTHREAD;
+			else if ((seen == INVOKESTATIC || seen == INVOKEINTERFACE 
+					|| seen == INVOKEVIRTUAL || seen == INVOKESPECIAL)
+					&& getSigConstantOperand().endsWith("Ljava/lang/Thread;"))
+				state = SEEN_POSSIBLE_THREAD;
+			else if (seen == ALOAD) {
+				if (localsWithCurrentThreadValue.get(getRegisterOperand())) {
+					state = SEEN_CURRENTTHREAD;
+				} else state = SEEN_POSSIBLE_THREAD;
+			} else if ((seen >= ALOAD_0) && (seen <= ALOAD_3)) {
+				if (localsWithCurrentThreadValue.get(seen - ALOAD_0)) {
+					state = SEEN_CURRENTTHREAD;
+				} else state = SEEN_POSSIBLE_THREAD;
+			} else if ((seen == GETFIELD || seen == GETSTATIC) 
+					&& getSigConstantOperand().equals("Ljava/lang/Thread;"))
+				state = SEEN_POSSIBLE_THREAD;
+			break;
+
+		case SEEN_CURRENTTHREAD:
+			if (seen == POP) {
+				state = SEEN_POP_AFTER_CURRENTTHREAD;
+			}
+			else if (seen == ASTORE) {
+				localsWithCurrentThreadValue.set(getRegisterOperand());
+				state = SEEN_NOTHING;
+			} else if ((seen >= ASTORE_0) && (seen <= ASTORE_3)) {
+				localsWithCurrentThreadValue.set(seen - ASTORE_0);
+				state = SEEN_NOTHING;
+			} else {
+				state = SEEN_NOTHING;
+			}
+			break;
+
+		default:
+			if ((seen == INVOKESTATIC)
+					&& getClassConstantOperand().equals("java/lang/Thread")
+					&& getNameConstantOperand().equals("interrupted")
+					&& getSigConstantOperand().equals("()Z")) {
+				if (state == SEEN_POP_AFTER_CURRENTTHREAD) {
+					bugReporter.reportBug(new BugInstance(this, "STI_INTERRUPTED_ON_CURRENTTHREAD", LOW_PRIORITY)
+					.addClassAndMethod(this)
+					.addSourceLine(this));
+				} else if (state == SEEN_UNKNOWNCONTEXT_POP) {
+					bugReporter.reportBug(new BugInstance(this, "STI_INTERRUPTED_ON_UNKNOWNTHREAD", NORMAL_PRIORITY)
+					.addClassAndMethod(this)
+					.addSourceLine(this));
+				}
+			}
+		state = SEEN_NOTHING;		        	
+		break;
 		}
 	}
 }
 
-// vim:ts=4
+//vim:ts=4
