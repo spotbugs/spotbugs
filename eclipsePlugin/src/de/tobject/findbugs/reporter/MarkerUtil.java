@@ -28,6 +28,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.IParent;
@@ -51,6 +52,7 @@ import de.tobject.findbugs.marker.FindBugsMarker;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -100,14 +102,39 @@ public abstract class MarkerUtil {
 			// default - first class line
 
 			int startLine = 1;
-			if (bug.getPrimarySourceLineAnnotation() != null)
+			if (bug.getPrimarySourceLineAnnotation() != null) {
 				  startLine = bug.getPrimarySourceLineAnnotation().getStartLine();
-			/* TODO: DHH - Eclipse can help us find the line number for fields.
-			 * Need a way to distinguish bugs where the field is the primary item
-			 * of interest.
-			 */
+			}
 
+			int fieldLine = -1;
+			if (startLine <= 0 && bug.getPrimaryField() != null
+					&& bug.getPrimaryField().getSourceLines() != null) {
+				fieldLine = bug.getPrimaryField().getSourceLines().getStartLine();
+			}
+
+			// Eclipse editor starts with 1, otherwise the marker will not be shown in editor at all
+			if(startLine <= 0 && fieldLine > 0) {
+				startLine = fieldLine;
+			}
+			addMarker(bug, project, resource, startLine);
+			if(startLine != fieldLine && fieldLine > 0){
+				addMarker(bug, project, resource, startLine);
+			}
+
+		} else {
 			if (Reporter.DEBUG) {
+				System.out.println("NOT found resource for a BUG in class: " //$NON-NLS-1$
+				+ packageName + "." //$NON-NLS-1$
+				+ className + ": \n\t" //$NON-NLS-1$
+				+ bug.getMessage() + " / Annotation: " //$NON-NLS-1$
+				+ bug.getAnnotationText() + " / Source Line: " //$NON-NLS-1$
+				+ bug.getPrimarySourceLineAnnotation());
+			}
+		}
+	}
+
+	private static void addMarker(BugInstance bug, IProject project, IResource resource, int startLine) {
+		if (Reporter.DEBUG) {
 				System.out.println("Creating marker for " //$NON-NLS-1$
 				+ resource.getLocation() + ": line " //$NON-NLS-1$
 				+ startLine);
@@ -123,7 +150,6 @@ public abstract class MarkerUtil {
 				e.printStackTrace();
 			}
 		}
-	}
 
 	/**
 	 * Get the underlying resource (Java class) for given BugInstance.
@@ -159,39 +185,88 @@ public abstract class MarkerUtil {
 			+ packageName + ", " //$NON-NLS-1$
 			+ qualifiedClassName);
 		}
-		int lastDollar =
-			Math.max(
-				qualifiedClassName.lastIndexOf('$'),
-				qualifiedClassName.lastIndexOf('+'));
+
+		int lastDollar = qualifiedClassName.lastIndexOf('$');
 		boolean isInnerClass = lastDollar > 0;
-		//        boolean isAnonInnerClass = Character.isDigit(qualifiedClassName
-		//            .charAt(lastDollar + 1));
+		String innerName = null;
 		IType type = null;
 		if (isInnerClass) {
 			// cut the useless number value
-			String innerName = qualifiedClassName.substring(lastDollar + 1);
+			innerName = qualifiedClassName.substring(lastDollar + 1);
 			String shortQualifiedClassName =
 				qualifiedClassName.substring(0, lastDollar);
 			type = Reporter.getJavaProject(project).findType(shortQualifiedClassName);
+			/*
+			 * code below only points to the first line of inner class
+			 * even if this is not a class bug but field bug
+			 */
 			completeInnerClassInfo(qualifiedClassName, innerName, type, bug);
-		}
-		else {
+		} else {
 			type = Reporter.getJavaProject(project).findType(qualifiedClassName);
 		}
+
+		// reassign it as it may be changed for inner classes
+		primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
+
+		int startLine;
+		/*
+		 *  Eclipse can help us find the line number for fields => we trying to add line
+		 *  info for fields here
+		 */
+		if (primarySourceLineAnnotation != null) {
+			startLine = primarySourceLineAnnotation.getStartLine();
+			if(startLine <= 0 && bug.getPrimaryField() != null){
+				completeFieldInfo(qualifiedClassName, innerName, type, bug);
+			}
+		} else {
+			if(bug.getPrimaryField() != null){
+				completeFieldInfo(qualifiedClassName, innerName, type, bug);
+			}
+		}
+
 		if (type != null) {
 			return type.getUnderlyingResource();
 		}
 		return null;
 	}
 
+	private static void completeFieldInfo(String qualifiedClassName, String innerName,
+			IType type, BugInstance bug)  throws JavaModelException  {
+		FieldAnnotation field = bug.getPrimaryField();
+		if (field == null || type == null) {
+			return;
+		}
+
+		IField ifield = type.getField(field.getFieldName());
+		if (type instanceof SourceType) {
+			IScanner scanner = initScanner(type);
+			ISourceRange sourceRange = ifield.getSourceRange();
+			int offset = sourceRange.getOffset();
+			int lineNbr = scanner.getLineNumber(offset);
+			lineNbr = lineNbr <= 0 ? 1 : lineNbr;
+			String sourceFileStr = ""; //$NON-NLS-1$
+			IResource res = type.getUnderlyingResource();
+			if (res != null) {
+				sourceFileStr = res.getRawLocation().toOSString();
+			}
+			field.setSourceLines(
+					new SourceLineAnnotation(
+						qualifiedClassName,
+						sourceFileStr,
+						lineNbr,
+						lineNbr,
+						0,
+						0));
+		}
+	}
+
 	/**
 	 * @param innerName
 	 * @param type
-	 * @param res
-	 * @return
 	 * @throws JavaModelException
 	 */
-	public static void completeInnerClassInfo(String qualifiedClassName, String innerName, IType type, BugInstance bug) throws JavaModelException {
+	public static void completeInnerClassInfo(String qualifiedClassName,
+			String innerName, IType type, BugInstance bug) throws JavaModelException {
 		int lineNbr = findChildSourceLine(type, innerName);
 		// should be always first line, if not found
 		lineNbr = lineNbr <= 0 ? 1 : lineNbr;
@@ -212,14 +287,30 @@ public abstract class MarkerUtil {
 
 	/**
 	 * @param source
-	 * @return
+	 * @return start line of given type, or 1 if line could not be found
 	 * @throws JavaModelException
 	 */
 	public static int getLineStart(SourceType source) throws JavaModelException {
 		IOpenable op = source.getOpenable();
 		if (op instanceof CompilationUnit) {
-			CompilationUnit cu = (CompilationUnit) op;
+			IScanner scanner = initScanner(source);
 			ISourceRange range = source.getSourceRange();
+			return scanner.getLineNumber(range.getOffset());
+		}
+		// start line of enclosing type
+		return 1;
+	}
+
+	/**
+	 * @param source must be not null
+	 * @return may return null, otherwise an initialized scanner which may answer which
+	 * source offset index belongs to which source line
+	 * @throws JavaModelException
+	 */
+	private static IScanner initScanner(IJavaElement source) throws JavaModelException {
+		IOpenable op = source.getOpenable();
+		if (op instanceof CompilationUnit) {
+			CompilationUnit cu = (CompilationUnit) op;
 			IScanner scanner =
 				ToolFactory.createScanner(false, false, false, true);
 			scanner.setSource(cu.getContents());
@@ -229,12 +320,11 @@ public abstract class MarkerUtil {
 				}
 			}
 			catch (InvalidInputException e) {
-				FindbugsPlugin.getDefault().logException(e, "Could not find line number for Java type");
+				FindbugsPlugin.getDefault().logException(e, "Could not init scanner for type: " + source);
 			}
-			return scanner.getLineNumber(range.getOffset());
+			return scanner;
 		}
-		// start line of enclosing type
-		return 1;
+		return null;
 	}
 
 	public static int findChildSourceLine(IJavaElement javaElement, String name) throws JavaModelException {
@@ -242,8 +332,15 @@ public abstract class MarkerUtil {
 			//new Exception("trace: javaElement is null").printStackTrace();
 			return -1;
 		}
-		if (!Character.isDigit(name.charAt(0))) {
+		char firstChar = name.charAt(0);
+		boolean firstIsDigit = Character.isDigit(firstChar);
+		if (!firstIsDigit) {
 			return findInnerClassSourceLine(javaElement, name);
+		}
+		boolean innerFromMember = firstIsDigit && name.length() > 1
+			&& !Character.isDigit(name.charAt(1));
+		if(innerFromMember){
+			return findInnerClassSourceLine(javaElement, name.substring(1));
 		}
 		try {
 			int innerNumber = Integer.parseInt(name);
