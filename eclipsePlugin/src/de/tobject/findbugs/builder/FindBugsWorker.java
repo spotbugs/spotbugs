@@ -23,6 +23,7 @@ package de.tobject.findbugs.builder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +33,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -56,14 +59,14 @@ import edu.umd.cs.findbugs.plugin.eclipse.ExtendedPreferences;
 
 /**
  * Execute FindBugs on a collection of Java resources in a project.
- * 
+ *
  * @author Peter Friese
  * @version 1.0
  * @since 26.09.2003
  */
 public class FindBugsWorker {
 	private static final boolean INCREMENTAL_UPDATE = false;
-	
+
 	/** Controls debugging. */
 	public static boolean DEBUG;
 
@@ -74,7 +77,7 @@ public class FindBugsWorker {
 
 	/**
 	 * Creates a new worker.
-	 * 
+	 *
 	 * @param project The project to work on.
 	 * @param monitor A progress monitor.
 	 */
@@ -89,13 +92,13 @@ public class FindBugsWorker {
 		catch (CoreException e) {
 			FindbugsPlugin.getDefault().logException(e, "Could not get selected detectors for project");
 		}
-		
+
 	}
 
 	/**
 	 * Run FindBugs on the given collection of files. (note: This is not thread-safe.)
-	 * 
-	 * @param files A collection of {@link IResource}s. 
+	 *
+	 * @param files A collection of {@link IResource}s.
 	 * @throws CoreException
 	 */
 	public void work(Collection files) throws CoreException {
@@ -112,6 +115,8 @@ public class FindBugsWorker {
 		// FIXME hardcoded findbugs.home property
 		System.setProperty("findbugs.home", findBugsHome); //$NON-NLS-1$
 
+		Set<IPath> outLocations = createOutputLocations();
+
 		Project findBugsProject = new Project();
 		Iterator iter = files.iterator();
 		while (iter.hasNext()) {
@@ -125,9 +130,10 @@ public class FindBugsWorker {
 					IResource.DEPTH_INFINITE);
 			}
 
-			if (Util.isClassFile(res)) {
+			IPath location = res.getLocation();
+			if (Util.isClassFile(res) && containsIn(outLocations, location)) {
 				// add this file to the work list:
-				String fileName = res.getLocation().toOSString();
+				String fileName = location.toOSString();
 
 				res.refreshLocal(IResource.DEPTH_INFINITE, null);
 				if (DEBUG) {
@@ -141,13 +147,13 @@ public class FindBugsWorker {
 
 		Reporter bugReporter = new Reporter(this.project, this.monitor, findBugsProject);
 		bugReporter.setPriorityThreshold(Detector.LOW_PRIORITY);
-    
+
 		String[] classPathEntries = createClassPathEntries();
 		// add to findbugs classpath
 		for (int i = 0; i < classPathEntries.length; i++) {
 			findBugsProject.addAuxClasspathEntry(classPathEntries[i]);
 		}
-        
+
 		IFindBugsEngine findBugs;
 		if (true) {
 			FindBugs2 engine = new FindBugs2();
@@ -166,7 +172,7 @@ public class FindBugsWorker {
 		try {
 			// Perform the analysis! (note: This is not thread-safe.)
 			findBugs.execute();
-			
+
 			// Merge new results into existing results.
 			updateBugCollection(findBugsProject, bugReporter);
 		}
@@ -185,7 +191,7 @@ public class FindBugsWorker {
 
 	/**
 	 * Update the BugCollection for the project.
-	 * 
+	 *
 	 * @param findBugsProject FindBugs project representing analyzed classes
 	 * @param bugReporter     Reporter used to collect the new warnings
 	 * @throws CoreException
@@ -211,7 +217,7 @@ public class FindBugsWorker {
 	 * Update the original bug collection to include the information in
 	 * the new bug collection, preserving the history and classification
 	 * of each warning.
-	 * 
+	 *
 	 * @param bugReporter      Reporter used to collect the new warnings
 	 * @param oldBugCollection original warnings
 	 * @param newBugCollection new warnings
@@ -230,7 +236,7 @@ public class FindBugsWorker {
 	 * Update the original bug collection destructively.
 	 * Each warning in the set of analyzed classes is replaced with
 	 * warnings from the new bug collection.  Past history is discarded.
-	 * 
+	 *
 	 * @param bugReporter      Reporter used to collect the new warnings
 	 * @param oldBugCollection original warnings
 	 * @param newBugCollection new warnings
@@ -286,7 +292,7 @@ public class FindBugsWorker {
 				}
 			}
 		}
-		
+
 		String[] excludeFilterFiles = extendedPrefs.getExcludeFilterFiles();
 		for (int i = 0; i < excludeFilterFiles.length; i++) {
 			IFile file = project.getFile(excludeFilterFiles[i]);
@@ -315,5 +321,62 @@ public class FindBugsWorker {
 			}
 		}
 		return new String[0];
+	}
+
+	/**
+	 * @return set with IPath objects which represents all known output locations for
+	 * current java project, never null
+	 * @throws CoreException
+	 */
+	private Set<IPath> createOutputLocations() throws CoreException {
+		Set<IPath> set = new HashSet<IPath>();
+		IJavaProject javaProject = JavaCore.create(this.project);
+        // path to the project without project name itself
+		IPath projectLocation = javaProject.getProject().getLocation();
+
+		if (javaProject.exists() && javaProject.getProject().isOpen()) {
+			IClasspathEntry entries[] = javaProject.getRawClasspath();
+			for (int i = 0; i < entries.length; i++) {
+				IClasspathEntry classpathEntry = entries[i];
+				if (classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
+                    // this location is workspace relative and starts with project dir
+					IPath path = classpathEntry.getOutputLocation();
+					if (path != null) {
+                        if(path.segmentCount() > 0) {
+                            // remove project name, which may differ from project folder
+                            path = path.removeFirstSegments(1);
+                        }
+                        set.add(projectLocation.append(path));
+					}
+				}
+			}
+		}
+		if (set.isEmpty()) {
+			// add the default location if not already included
+			IPath def = javaProject.getOutputLocation();
+            if(def.segmentCount() > 0) {
+                // remove project name, which may differ from project folder
+                def = def.removeFirstSegments(1);
+            }
+            def = projectLocation.append(def);
+			if (!set.contains(def)) {
+				set.add(def);
+			}
+		}
+		return set;
+	}
+
+	/**
+	 * @param outputLocations
+	 * @param path
+	 * @return true if given path is a child of any one of path objects from given set
+	 */
+	private boolean containsIn(Set<IPath> outputLocations, IPath path){
+		for (IPath dir : outputLocations) {
+			if(dir.isPrefixOf(path)){
+				return true;
+			}
+		}
+		return false;
 	}
 }
