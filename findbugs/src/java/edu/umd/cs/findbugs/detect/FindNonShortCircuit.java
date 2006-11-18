@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
+
 import org.apache.bcel.classfile.Method;
 
 public class FindNonShortCircuit extends BytecodeScanningDetector implements
@@ -39,8 +40,11 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		this.bugReporter = bugReporter;
 	}
 
+	OpcodeStack stack = new OpcodeStack();
+
 	@Override
 	public void visit(Method obj) {
+		stack.resetForMethodEntry(this);
 		stage1 = 0;
 		stage2 = 0;
 		distance = 1000000;
@@ -49,10 +53,14 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 
 	@Override
 	public void sawOpcode(int seen) {
+		stack.mergeJumps(this);
+		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stage1 + " " + stage2);
+		// System.out.println(stack);
 		distance++;
 		scanForBooleanValue(seen);
 		scanForDanger(seen);
 		scanForShortCircuit(seen);
+		stack.sawOpcode(this, seen);
 	}
 
 	private void scanForDanger(int seen) {
@@ -86,8 +94,11 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		case IAND:
 		case IOR:
 			// System.out.println("Saw IOR or IAND at distance " + distance);
-
-			if (distance < 4) {
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			OpcodeStack.Item item1 = stack.getStackItem(1);
+			System.out.println(item0);
+			System.out.println(item1);
+			if (item0.getConstant() == null && item1.getConstant() == null && distance < 4) {
 				operator = seen;
 				stage2 = 1;
 			} else
