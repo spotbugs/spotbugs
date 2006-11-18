@@ -1,6 +1,9 @@
 class NonShortCircuit {
 	boolean b;
 
+	boolean bothBitsFalsePositive(int i) {
+		return and((i & 0x1) != 0, (i & 0x2) != 0);
+	}
 	boolean and(boolean x, boolean y) {
 		return x & y;
 	}
