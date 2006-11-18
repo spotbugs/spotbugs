@@ -2681,7 +2681,10 @@ identical then one of the methods would override the other.
     <Details>
 <![CDATA[
   <p> This regular method has the same name as the class it is defined in. It is likely that this was intended to be a constructor.
-      If it was intended to be a constructor, remove the declaration of a return value.</p>
+      If it was intended to be a constructor, remove the declaration of a void return value.
+	If you had accidently defined this method, realized the mistake, defined a proper constructor
+	but can't get rid of this method due to backwards compatibility, deprecate the method.
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -3476,6 +3479,19 @@ was return from a method which is known to return possibly-null values.</p>
       <p>
       This method may return a null value, but the method (or a superclass method
       which it overrides) is declared to return @NonNull.
+      </p>
+      ]]>
+   </Details>
+  </BugPattern>
+  <BugPattern type="NP_CLONE_COULD_RETURN_NULL">
+   <ShortDescription>Clone method may return null</ShortDescription>
+   <LongDescription>{1} may return null</LongDescription>
+   <Details>
+      <![CDATA[
+      <p>
+	This clone method seems to return null in some circumstances, but clone is never
+	allowed to return a null value.  If you are convinced this path is unreachable, throw an AssertionError
+	instead.
       </p>
       ]]>
    </Details>
