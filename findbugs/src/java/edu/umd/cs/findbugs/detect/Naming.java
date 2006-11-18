@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.regex.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.Deprecated;
 
 public class Naming extends PreorderVisitor implements Detector {
 	String baseClassName;
@@ -230,6 +231,26 @@ public class Naming extends PreorderVisitor implements Detector {
 		}
 		}
 	private final static Pattern sigType = Pattern.compile("L([^;]*/)?([^/]+;)");
+	private boolean isInnerClass(JavaClass obj) {
+		for(Field f : obj.getFields())
+			if (f.getName().startsWith("this$")) return true;
+		return false;
+	}
+	private boolean markedAsNotUsable(Method obj) {
+		for(Attribute a : obj.getAttributes())
+			if (a instanceof Deprecated) return true;
+		Code code = obj.getCode();
+		if (code == null) return false;
+		byte [] codeBytes = code.getCode();
+		if (codeBytes.length > 1 && codeBytes.length < 10) {
+			int lastOpcode = codeBytes[codeBytes.length-1] & 0xff;
+			if (lastOpcode != ATHROW) return false;
+			for(int b : codeBytes) 
+				if ((b & 0xff) == RETURN) return false;
+			return true;
+			}
+		return false;
+	}
 	@Override
          public void visit(Method obj) {
 		String mName = getMethodName();
@@ -247,22 +268,15 @@ public class Naming extends PreorderVisitor implements Detector {
 				: LOW_PRIORITY)
 			        .addClassAndMethod(this));
 		String sig = getMethodSig();
-
 		if (mName.equals(baseClassName) && sig.equals("()V")) {
 			Code code = obj.getCode();
-			if (code != null) {
-				byte [] codeBytes = code.getCode();
+			if (code != null && !markedAsNotUsable(obj)) {
 				int priority = NORMAL_PRIORITY;
-				if (codeBytes.length > 1) {
+				byte [] codeBytes = code.getCode();
+				if (codeBytes.length > 1)
 					priority--;
-					int lastOpcode = codeBytes[codeBytes.length-1] & 0xff;
-					if (codeBytes.length < 10 && lastOpcode == ATHROW) return;
-				}
-				if (!obj.isPublic() && getThisClass().isPublic()) 
+				if (!obj.isPrivate() && getThisClass().isPublic()) 
 					priority--;
-				for(Method m : getThisClass().getMethods()) {
-					if (m.getName().equals("<init>") && m.getSignature().equals("()V")) priority = Priorities.LOW_PRIORITY;
-				}
 				bugReporter.reportBug( new BugInstance(this, "NM_METHOD_CONSTRUCTOR_CONFUSION", priority).addClassAndMethod(this));
 				return;
 			}
