@@ -2366,9 +2366,10 @@ This not necessarily a bug, but is worth examining
     <Details>
 <![CDATA[
   <p> This method contains a call to <code>java.lang.Object.wait()</code> which
-  is not guarded by conditional control flow.&nbsp; If the condition that
-  the method intends to wait for has already happened, the thread could
-  wait indefinitely.</p>
+  is not guarded by conditional control flow.&nbsp; The code should
+	verify that condition it intends to wait for is not already satisfied
+	before calling wait; any previous notifications will be ignored.
+  </p>
 ]]>
     </Details>
   </BugPattern>
