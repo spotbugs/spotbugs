@@ -277,7 +277,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		if (!foundSynthetic) priority++;
 		if (seenTransientField) priority--;
 		if (!isAnonymousInnerClass 
-			&& !isExternalizable && !isGUIClass
+			&& !isExternalizable && !isGUIClass && !obj.isAbstract()
 		        && isSerializable && !isAbstract && !sawSerialVersionUID)
 			bugReporter.reportBug(new BugInstance(this, "SE_NO_SERIALVERSIONID", priority).addClass(this));
 
