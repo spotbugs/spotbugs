@@ -507,6 +507,8 @@ public class OpcodeStack implements Constants2
  				convertJumpToOneZeroState = 3;
  			else convertJumpToOneZeroState = 0;
  			break;
+ 			default:convertJumpToOneZeroState = 0;
+ 				
  		}
  		switch (seen) {
  		case ICONST_0:
@@ -523,6 +525,7 @@ public class OpcodeStack implements Constants2
  				convertJumpToZeroOneState = 3;
  			else convertJumpToZeroOneState = 0;
  			break;
+ 		default:convertJumpToZeroOneState = 0;
  		}
 
  		try
