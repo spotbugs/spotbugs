@@ -96,8 +96,6 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 			// System.out.println("Saw IOR or IAND at distance " + distance);
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			OpcodeStack.Item item1 = stack.getStackItem(1);
-			System.out.println(item0);
-			System.out.println(item1);
 			if (item0.getConstant() == null && item1.getConstant() == null && distance < 4) {
 				operator = seen;
 				stage2 = 1;
