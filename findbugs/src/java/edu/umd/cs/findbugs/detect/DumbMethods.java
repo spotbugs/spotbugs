@@ -87,6 +87,9 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	public void visitAfter(JavaClass obj) {
 		accumulator.reportAccumulatedBugs();
 	}
+	public static boolean isTestMethod(Method method) {
+		return method.getName().startsWith("test");
+	}
 	@Override
          public void visit(Method method) {
 		String cName = getDottedClassName();
@@ -489,6 +492,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 					// System.out.println("Skipping GC complaint in main method");
 					return;
 				}
+				if (isTestMethod(getMethod())) return;
 				// Just save this report in a field; it will be flushed
 				// IFF there were no calls to System.currentTimeMillis();
 				// in the method.
