@@ -439,8 +439,17 @@ public class OpcodeStack implements Constants2
 	boolean reachOnlyByBranch = false;
 	
 	public void mergeJumps(DismantleBytecode dbc) {
+		
 		if (!needToMerge) return;
 		needToMerge = false;
+		if (convertJumpToOneZeroState == 3 || convertJumpToZeroOneState == 3) {
+ 			pop();
+ 			Item top = new Item("I"); 
+ 			top.couldBeZero = true;
+ 			push(top);
+ 			convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
+ 		}
+ 	
 		List<Item> jumpEntry = jumpEntries.get(dbc.getPC());
  		if (jumpEntry != null) {
 			if (DEBUG) {
@@ -471,6 +480,10 @@ public class OpcodeStack implements Constants2
 			} }
  		reachOnlyByBranch = false;
 		}
+	
+	int convertJumpToOneZeroState = 0;
+	int convertJumpToZeroOneState = 0;
+	
  	public void sawOpcode(DismantleBytecode dbc, int seen) {
  		int register;
  		String signature;
@@ -479,8 +492,39 @@ public class OpcodeStack implements Constants2
 
  		mergeJumps(dbc);
  		needToMerge = true;
- 	
- 		
+ 		switch (seen) {
+ 		case ICONST_1:
+ 			convertJumpToOneZeroState = 1;
+ 			break;
+ 		case GOTO:
+ 			if (convertJumpToOneZeroState == 1 && dbc.getBranchOffset() == 4) 
+ 				convertJumpToOneZeroState = 2;
+ 			else 
+ 				convertJumpToOneZeroState = 0;
+ 			break;
+ 		case ICONST_0:
+ 			if (convertJumpToOneZeroState == 2)
+ 				convertJumpToOneZeroState = 3;
+ 			else convertJumpToOneZeroState = 0;
+ 			break;
+ 		}
+ 		switch (seen) {
+ 		case ICONST_0:
+ 			convertJumpToZeroOneState = 1;
+ 			break;
+ 		case GOTO:
+ 			if (convertJumpToZeroOneState == 1 && dbc.getBranchOffset() == 4) 
+ 				convertJumpToZeroOneState = 2;
+ 			else 
+ 				convertJumpToZeroOneState = 0;
+ 			break;
+ 		case ICONST_1:
+ 			if (convertJumpToZeroOneState == 2)
+ 				convertJumpToZeroOneState = 3;
+ 			else convertJumpToZeroOneState = 0;
+ 			break;
+ 		}
+
  		try
  		{
 	 		switch (seen) {
@@ -1422,7 +1466,7 @@ public class OpcodeStack implements Constants2
  	public int resetForMethodEntry(final DismantleBytecode v) {
  		methodName = v.getMethodName();
 		jumpEntries.clear();
-		
+		convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
 		reachOnlyByBranch = false;
  		int result= resetForMethodEntry0(v);
  		Code code = v.getMethod().getCode();
