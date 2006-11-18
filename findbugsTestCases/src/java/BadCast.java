@@ -128,4 +128,10 @@ class BadCast {
 			return (String[]) tmp[0];
 		return null;
 	}
+	
+	public static String doNotReport(Object o) {
+		if (o == null || o instanceof String)
+			return ((String) o);
+		else throw new IllegalArgumentException();
+	}
 }
