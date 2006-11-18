@@ -52,6 +52,7 @@ public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
 	public void visit(Code obj) {
 		if (isDoPrivileged && getMethodName().equals("run")) return;
 		if (getMethod().isPrivate()) return;
+		if (DumbMethods.isTestMethod(getMethod())) return;
 		super.visit(obj);
 	}
 	@Override
