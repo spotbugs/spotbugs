@@ -41,6 +41,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.TreePath;
 
+import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -66,6 +67,7 @@ public class CommentsArea {
 
 	private boolean dontShowAnnotationConfirmation = false;
 
+	private boolean changed;
 	final MainFrame frame;
 
 	CommentsArea(MainFrame frame) {
@@ -86,13 +88,16 @@ public class CommentsArea {
 
 					public void insertUpdate(DocumentEvent e) {
 						frame.setProjectChanged(true);
+						changed = true;
 					}
 
 					public void removeUpdate(DocumentEvent e) {
 						frame.setProjectChanged(true);
+						changed = true;
 					}
 
 					public void changedUpdate(DocumentEvent e) {
+						changed = true;
 					}
 
 				});
@@ -215,7 +220,7 @@ public class CommentsArea {
 	 * 
 	 * @param node
 	 */
-	void updateCommentsForLeaf(final BugLeafNode node) {
+	void updateCommentsFromLeafInformation(final BugLeafNode node) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				BugInstance bug = node.getBug();
@@ -223,15 +228,17 @@ public class CommentsArea {
 				designationComboBox.setSelectedIndex(designationKeys
 						.indexOf(bug.getNonnullUserDesignation()
 								.getDesignationKey()));
+				changed = false;
 			}
 		});
 	}
 
-	void updateCommentsForNonLeaf(final BugAspects theAspects) {
+	void updateCommentsFromNonLeafInformation(final BugAspects theAspects) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				updateDesignationComboBoxForNonLeaf(theAspects);
+				updateCommentsFromNonLeafInformationFromSwingThread(theAspects);
 				setUserCommentInputEnableFromSwingThread(true);
+				changed = false;
 			}
 		});
 	}
@@ -254,7 +261,7 @@ public class CommentsArea {
 
 		node.getBug().setAnnotationText(comments);
 		setProjectChanged(true);
-
+		changed = false;
 		addToPrevComments(comments);
 	}
 
@@ -286,6 +293,7 @@ public class CommentsArea {
 	private void saveCommentsToNonLeaf(BugAspects aspects) {
 		if (aspects == null)
 			return;
+		if (!changed) return;
 		String newComment = getCurrentUserCommentsText();
 		if (newComment.equals(""))
 			return;
@@ -296,6 +304,7 @@ public class CommentsArea {
 				saveCommentsToBug(nextNode);
 			}
 		}
+		changed = false;
 
 	}
 
@@ -415,6 +424,7 @@ public class CommentsArea {
 	 * @param comment
 	 */
 	private void setCurrentUserCommentsText(String comment) {
+		changed = true;
 		userCommentsText.setText(comment);
 	}
 
@@ -447,7 +457,8 @@ public class CommentsArea {
 		String designationKey = convertDesignationNameToDesignationKey(designationName);
 		if (designationKey == null)
 			return;
-		changeDesignationOfBug(frame.currentSelectedBugLeaf, designationKey);
+		if (changeDesignationOfBug(frame.currentSelectedBugLeaf, designationKey))
+			changed = true;
 		setDesignationComboBox(designationName);
 	}
 
@@ -459,24 +470,26 @@ public class CommentsArea {
 		BugSet filteredSet = frame.currentSelectedBugAspects
 				.getMatchingBugs(BugSet.getMainBugSet());
 		for (BugLeafNode nextNode : filteredSet)
-			changeDesignationOfBug(nextNode, designationKey);
+			if (changeDesignationOfBug(nextNode, designationKey)) changed = true;
 		setDesignationComboBox(designationName);
 	}
 
-	protected void changeDesignationOfBug(BugLeafNode theNode, String selection) {
-		theNode.getBug().getNonnullUserDesignation().setDesignationKey(
-				selection);
+	protected boolean changeDesignationOfBug(BugLeafNode theNode, String selection) {
+		BugDesignation userDesignation = theNode.getBug().getNonnullUserDesignation();
+		if (userDesignation.getDesignationKey().equals(selection)) return false;
+		userDesignation.setDesignationKey(selection);
+		return true;
 	}
 
 	protected void updateDesignationComboBox() {
 		if (frame.currentSelectedBugLeaf == null)
-			updateDesignationComboBoxForNonLeaf(frame.currentSelectedBugAspects);
+			updateCommentsFromNonLeafInformationFromSwingThread(frame.currentSelectedBugAspects);
 		else
 			setDesignationComboBox(designationKeys.get(designationComboBox
 					.getSelectedIndex()));
 	}
 
-	protected void updateDesignationComboBoxForNonLeaf(BugAspects theAspects) {
+	protected void updateCommentsFromNonLeafInformationFromSwingThread(BugAspects theAspects) {
 		if (theAspects == null)
 			return;
 		BugSet filteredSet = theAspects.getMatchingBugs(BugSet.getMainBugSet());
@@ -506,7 +519,7 @@ public class CommentsArea {
 			designationComboBox.setSelectedIndex(0);
 			userCommentsText.setText("");
 		}
-
+		changed = false;
 		// setUserCommentInputEnableFromSwingThread(true);
 	}
 

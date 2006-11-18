@@ -1041,13 +1041,13 @@ public class MainFrame extends FBFrame implements LogSync
 		if (currentSelectedBugLeaf != null)  {
 			BugInstance bug  = currentSelectedBugLeaf.getBug();
 			displayer.displaySource(bug, bug.getPrimarySourceLineAnnotation());
-			comments.updateCommentsForLeaf(currentSelectedBugLeaf);
+			comments.updateCommentsFromLeafInformation(currentSelectedBugLeaf);
 			updateDesignationDisplay();
-			comments.updateCommentsForLeaf(currentSelectedBugLeaf);
+			comments.updateCommentsFromLeafInformation(currentSelectedBugLeaf);
 			updateSummaryTab(currentSelectedBugLeaf);
 		} else if (currentSelectedBugAspects != null) {
 			updateDesignationDisplay();
-			comments.updateCommentsForNonLeaf(currentSelectedBugAspects);
+			comments.updateCommentsFromNonLeafInformation(currentSelectedBugAspects);
 			displayer.displaySource(null, null);				
 			clearSummaryTab();
 		} else {
