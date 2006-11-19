@@ -592,10 +592,14 @@ public class UnreadFields extends BytecodeScanningDetector  {
 					bugReporter.reportBug(new BugInstance(this, "UUF_UNUSED_FIELD", NORMAL_PRIORITY)
 							.addClass(className)
 							.addField(f));
-				else if (!f.isStatic() && !finalFields.contains(f))
-					bugReporter.reportBug(new BugInstance(this, "URF_UNREAD_FIELD", NORMAL_PRIORITY)
+				else if (f.getName().toLowerCase().indexOf("guardian") < 0) {
+					int priority = NORMAL_PRIORITY;
+					if (f.isStatic()) priority++;
+					if (finalFields.contains(f)) priority++;
+					bugReporter.reportBug(new BugInstance(this, "URF_UNREAD_FIELD", priority)
 							.addClass(className)
 							.addField(f));
+				}
 			}
 		}
 
