@@ -411,6 +411,52 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 
 	@Override
+	public void visitIFNULL(IFNULL obj) {
+
+		if (valueNumberDataflow != null) {
+			// Record the value number of the value checked by this instruction,
+			// and the type the value was compared to.
+			try {
+				ValueNumberFrame vnaFrame = valueNumberDataflow
+						.getFactAtLocation(getLocation());
+				if (vnaFrame.isValid()) {
+					instanceOfValueNumber = vnaFrame.getTopValue();
+
+					instanceOfType = NullType.instance();
+					instanceOfFollowedByBranch = true;
+				}
+			} catch (DataflowAnalysisException e) {
+				// Ignore
+			}
+		}
+
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+	@Override
+	public void visitIFNONNULL(IFNONNULL obj) {
+
+		if (valueNumberDataflow != null) {
+			// Record the value number of the value checked by this instruction,
+			// and the type the value was compared to.
+			try {
+				ValueNumberFrame vnaFrame = valueNumberDataflow
+						.getFactAtLocation(getLocation());
+				if (vnaFrame.isValid()) {
+					instanceOfValueNumber = vnaFrame.getTopValue();
+
+					instanceOfType = NullType.instance();
+					instanceOfFollowedByBranch = true;
+				}
+			} catch (DataflowAnalysisException e) {
+				// Ignore
+			}
+		}
+
+		consumeStack(obj);
+		pushValue(Type.INT);
+	}
+	@Override
 	public void visitFCMPL(FCMPL obj) {
 		consumeStack(obj);
 		pushValue(Type.INT);

@@ -507,11 +507,12 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 
 		short branchOpcode = edge.getSource().getLastInstruction().getInstruction().getOpcode();
 		
-		if (   (edge.getType() == EdgeTypes.IFCMP_EDGE &&
-						(branchOpcode == Constants.IFNE || branchOpcode == Constants.IFGT))
+		int edgeType = edge.getType();
+		if (    (edgeType == EdgeTypes.IFCMP_EDGE &&
+						(branchOpcode == Constants.IFNE || branchOpcode == Constants.IFGT || branchOpcode == Constants.IFNULL))
 				
-			|| (edge.getType() == EdgeTypes.FALL_THROUGH_EDGE &&
-						(branchOpcode == Constants.IFEQ || branchOpcode == Constants.IFLE))
+			|| (edgeType == EdgeTypes.FALL_THROUGH_EDGE &&
+						(branchOpcode == Constants.IFEQ || branchOpcode == Constants.IFLE || branchOpcode == Constants.IFNONNULL))
 		) {
 			//System.out.println("Successful check on edge " + edge);
 			
@@ -537,7 +538,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 				// Only refine the type if the cast is feasible: i.e., a downcast.
 				// Otherwise, just set it to TOP.
 				try {
-					boolean feasibleCheck = Hierarchy.isSubtype(
+					boolean feasibleCheck = instanceOfType.equals(NullType.instance()) 
+						|| Hierarchy.isSubtype(
 							(ReferenceType) instanceOfType,
 							(ReferenceType) checkedType);
 					if (!feasibleCheck && instanceOfType instanceof ObjectType 
