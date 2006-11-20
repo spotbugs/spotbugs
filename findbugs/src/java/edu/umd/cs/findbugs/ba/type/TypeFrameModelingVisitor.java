@@ -431,7 +431,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		}
 
 		consumeStack(obj);
-		pushValue(Type.INT);
 	}
 	@Override
 	public void visitIFNONNULL(IFNONNULL obj) {
@@ -454,7 +453,6 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		}
 
 		consumeStack(obj);
-		pushValue(Type.INT);
 	}
 	@Override
 	public void visitFCMPL(FCMPL obj) {
