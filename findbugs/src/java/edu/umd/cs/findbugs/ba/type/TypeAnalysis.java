@@ -522,7 +522,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 				return tmpFact;
 			
 			Type instanceOfType = check.getType();
-			if (!(instanceOfType instanceof ReferenceType))
+			if (!(instanceOfType instanceof ReferenceType || instanceOfType instanceof NullType))
 				return tmpFact;
 			
 			int numSlots = Math.min(fact.getNumSlots(), vnaFrame.getNumSlots());
