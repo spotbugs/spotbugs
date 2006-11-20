@@ -620,6 +620,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		Type lhsType = frame.getValue(numSlots - 1);
 		Type rhsType = frame.getValue(numSlots - 2);
 
+		if (rhsType instanceof NullType || lhsType instanceof NullType) return;
 		if (lhsType instanceof ReferenceType && rhsType instanceof ReferenceType) {
 			String lhs = SignatureConverter.convert(lhsType.getSignature());
 			String rhs = SignatureConverter.convert(rhsType.getSignature());
