@@ -1,17 +1,15 @@
 package sfBugs;
 
 public class Bug1570926 {
-	static class MySubClass extends Bug1570926 {
-	};
 
-	public static void doNotReport(Bug1570926 anItem) {
-		if (anItem == null || anItem instanceof MySubClass) {
-			doIt((MySubClass) anItem);
+	public static void doNotReport(Object anItem) {
+		if (anItem == null || anItem instanceof String) {
+			doIt((String) anItem);
 		} else
 			throw new IllegalArgumentException();
 	}
 
-	private static void doIt(MySubClass class1) {
+	private static void doIt(String class1) {
 
 	}
 
