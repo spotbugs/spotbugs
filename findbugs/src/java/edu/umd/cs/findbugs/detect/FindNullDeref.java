@@ -1023,7 +1023,10 @@ public class FindNullDeref
 	boolean inCatchNullBlock(Location loc) {
 		int pc = loc.getHandle().getPosition();
 		int catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getConstantPoolGen().getConstantPool(), method.getCode(), "java/lang/NullPointerException", pc);
-		return catchSize < Integer.MAX_VALUE;
+		if ( catchSize < Integer.MAX_VALUE) return true;
+		catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getConstantPoolGen().getConstantPool(), method.getCode(), "java/lang/Exception", pc);
+		return catchSize < 5;
+		
 	}
 }
 
