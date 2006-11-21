@@ -126,6 +126,11 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		super.visit(obj);
 	}
 
+	public static boolean classHasParameter(JavaClass obj) {
+		for(Attribute a : obj.getAttributes()) 
+			if (a instanceof Signature) return true;
+		return false;
+	}
 	@Override
          public void visitAfter(JavaClass obj) {
 		declaredFields.addAll(myFields);
@@ -555,6 +560,14 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			if (dontComplainAbout.matcher(fieldName).find()) continue;
 			if (fieldName.startsWith("this$")
 					|| fieldName.startsWith("this+")) {
+				String outerClassName = className.substring(0, lastDollar);
+
+				try {
+					JavaClass outerClass = Repository.lookupClass(outerClassName);
+					if (classHasParameter(outerClass)) continue;
+				} catch (ClassNotFoundException e) {
+					bugReporter.reportMissingClass(e);
+				}
 				if (!innerClassCannotBeStatic.contains(className)) {
 					boolean easyChange = !needsOuterObjectInConstructor.contains(className);
 					if (easyChange || !isAnonymousInnerClass) {
