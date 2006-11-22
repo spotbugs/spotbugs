@@ -19,114 +19,94 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
+
 import org.apache.bcel.classfile.*;
 
-public class InfiniteLoop extends BytecodeScanningDetector  {
+public class InfiniteLoop extends BytecodeScanningDetector {
 
 	private static final boolean active = true;
 
 	BugReporter bugReporter;
 
 	OpcodeStack stack = new OpcodeStack();
+
 	public InfiniteLoop(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
-	int state = 0;
-	int age = 0;
+	@Override
+	public void visit(JavaClass obj) {
+	}
+
+	@Override
+	public void visit(Method obj) {
+	}
+
+	@Override
+	public void visit(Code obj) {
+		stack.resetForMethodEntry(this);
+		super.visit(obj);
+	}
+
 	int lastBranch;
 
 	@Override
-         public void visit(JavaClass obj) {
-	}
-
-	@Override
-         public void visit(Method obj) {
-	}
-
-	@Override
-         public void visit(Code obj) {
-		// System.out.println(getFullyQualifiedMethodName());
-		// unless active, don't bother dismantling bytecode
-		if (active) {
-			for(int i = 0; i < lastUpdate.length; i++)
-				lastUpdate[i] = -1;
-			lastBranch = age = -1;
-			// System.out.println("TestingGround: " + getFullyQualifiedMethodName());
-                	stack.resetForMethodEntry(this);
-			super.visit(obj);
-		}
-	}
-
-	int lastUpdate[] = new int[256];
-
-	@Override
 	public void sawOffset(int offset) {
-		lastBranch  = getPC();
+		lastBranch = getPC();
 	}
+
 	@Override
 	public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
-		switch(seen) {
+		switch (seen) {
 		case ARETURN:
 		case IRETURN:
 		case RETURN:
 		case DRETURN:
 		case FRETURN:
 		case LRETURN:
-		lastBranch = getPC();
-		}
-		// System.out.println(getPC() + "\t" + OPCODE_NAMES[seen] + "\t" + state);
-		if (isRegisterStore()) lastUpdate[getRegisterOperand()] = getPC();
-		else {
-			switch(state) {
-			case 0:
-				if (isRegisterLoad()) {
-					state = 1;
-					age = lastUpdate[getRegisterOperand()];
-				}
+			lastBranch = getPC();
+			break;
+		case IF_ICMPNE:
+		case IF_ICMPEQ:
+		case IF_ICMPGT:
+		case IF_ICMPLE:
+		case IF_ICMPLT:
+		case IF_ICMPGE:
+			if (getBranchOffset() > 0)
 				break;
-			case 1: 
-				switch(seen) {
-				case ICONST_0:
-				case ICONST_1:
-				case ICONST_2:
-				case ICONST_3:
-				case ICONST_4:
-				case ICONST_5:
-				case ICONST_M1:
-				case BIPUSH:
-				case SIPUSH:
-					state = 2;
-					break;
-				default:
-					state = 0;
-				}
+			if (getBranchTarget() < lastBranch)
 				break;
-			case 2:
-				switch(seen) {
-				case IF_ICMPNE:
-				case IF_ICMPEQ:
-				case IF_ICMPGT:
-				case IF_ICMPLE:
-				case IF_ICMPLT:
-				case IF_ICMPGE:
-					if (getBranchOffset() < 0 && age <  getBranchTarget() && lastBranch < getBranchTarget()) {
-						BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP", HIGH_PRIORITY)
-				        .addClassAndMethod(this).addSourceLine(this,getPC());
-			
-						bugReporter.reportBug(bug);
-						System.out.println("Found it");
-						
-					}
-				}
-				state = 0;
-					
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			OpcodeStack.Item item1 = stack.getStackItem(1);
+			if (constantSince(item0, getBranchTarget())
+					&& constantSince(item1, getBranchTarget())) {
+				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
+						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
+						this, getPC());
+
+				bugReporter.reportBug(bug);
 			}
+
+			break;
 		}
-		
-		stack.sawOpcode(this,seen);
+
+		stack.sawOpcode(this, seen);
+	}
+
+	/**
+	 * @param item1
+	 * @param branchTarget
+	 * @return
+	 */
+	private boolean constantSince(Item item1, int branchTarget) {
+		if (item1.getConstant() != null)
+			return true;
+		int reg = item1.getRegisterNumber();
+		if (reg < 0)
+			return false;
+		return stack.getLastUpdate(reg) < branchTarget;
 	}
 }

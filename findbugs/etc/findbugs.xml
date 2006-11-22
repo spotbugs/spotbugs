@@ -141,7 +141,6 @@
 
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteLoop" 
 	        speed="fast"
-		disabled="true"
             reports="IL_INFINITE_LOOP" /> 
 
   <Detector class="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop2"

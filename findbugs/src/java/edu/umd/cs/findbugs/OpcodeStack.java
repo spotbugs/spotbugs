@@ -76,6 +76,7 @@ public class OpcodeStack implements Constants2
 		= SystemProperties.getBoolean("ocstack.debug");
 	private List<Item> stack;
 	private List<Item> lvValues;
+	private List<Integer> lastUpdate;
 	private int jumpTarget;
 	private Stack<List<Item>> jumpStack;
 		
@@ -433,6 +434,7 @@ public class OpcodeStack implements Constants2
 		stack = new ArrayList<Item>();
 		lvValues = new ArrayList<Item>();
 		jumpStack = new Stack<List<Item>>();
+		lastUpdate = new ArrayList<Integer>();
 	}
 
 	boolean needToMerge = true;
@@ -484,12 +486,23 @@ public class OpcodeStack implements Constants2
 	int convertJumpToOneZeroState = 0;
 	int convertJumpToZeroOneState = 0;
 	
+	private void setLastUpdate(int reg, int pc) {
+		while (lastUpdate.size() <= reg) lastUpdate.add(0);
+		lastUpdate.set(reg, pc);
+	}
+	
+	public int getLastUpdate(int reg) {
+		if (lastUpdate.size() <= reg) return 0;
+		return lastUpdate.get(reg);
+	}
+	
  	public void sawOpcode(DismantleBytecode dbc, int seen) {
  		int register;
  		String signature;
  		Item it, it2, it3;
  		Constant cons;
-
+ 		if (dbc.isRegisterStore()) 
+ 			setLastUpdate(dbc.getRegisterOperand(), dbc.getPC());
  		mergeJumps(dbc);
  		needToMerge = true;
  		switch (seen) {
@@ -1469,6 +1482,7 @@ public class OpcodeStack implements Constants2
  	public int resetForMethodEntry(final DismantleBytecode v) {
  		methodName = v.getMethodName();
 		jumpEntries.clear();
+		lastUpdate.clear();
 		convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
 		reachOnlyByBranch = false;
  		int result= resetForMethodEntry0(v);
