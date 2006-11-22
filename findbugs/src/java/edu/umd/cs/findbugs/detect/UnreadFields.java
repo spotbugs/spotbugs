@@ -128,7 +128,10 @@ public class UnreadFields extends BytecodeScanningDetector  {
 
 	public static boolean classHasParameter(JavaClass obj) {
 		for(Attribute a : obj.getAttributes()) 
-			if (a instanceof Signature) return true;
+			if (a instanceof Signature) {
+				String sig = ((Signature)a).getSignature();
+				return  sig.charAt(0) == '<';
+			}
 		return false;
 	}
 	@Override
