@@ -19,17 +19,52 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.OpcodeStack.Item;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 
 public class InfiniteLoop extends BytecodeScanningDetector {
 
 	private static final boolean active = true;
 
+	static class ForwardJump {
+		int from, to;
+		ForwardJump(int from, int to) {
+			this.from = from;
+			this.to = to;
+		}
+	}
 	BugReporter bugReporter;
 
+	LinkedList<ForwardJump> forwardJumps = new LinkedList<ForwardJump>();
+	void purgeForwardJumps(int before) {
+		for(Iterator<ForwardJump> i = forwardJumps.iterator(); i.hasNext(); ) {
+			ForwardJump j = i.next();
+			if (j.to < before) i.remove();
+		}
+	}
+	void addForwardJump(int from, int to) {
+		if (from >= to) return;
+		purgeForwardJumps(from);
+		forwardJumps.add(new ForwardJump(from, to));
+	}
+	
+	int getFurthestJump(int from) {
+		int result = Integer.MIN_VALUE;
+		for(ForwardJump f : forwardJumps) 
+			if (f.from >= from && f.to > result)
+				result = f.to;
+		return result;
+	}
 	OpcodeStack stack = new OpcodeStack();
 
 	public InfiniteLoop(BugReporter bugReporter) {
@@ -47,16 +82,13 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	@Override
 	public void visit(Code obj) {
 		stack.resetForMethodEntry(this);
+		forwardJumps.clear();
 		super.visit(obj);
 	}
-
-	int lastBranch;
-
 	@Override
-	public void sawOffset(int offset) {
-		lastBranch = getPC();
+	public void sawBranchTo(int target) {
+		addForwardJump(getPC(), target);
 	}
-
 	@Override
 	public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
@@ -67,7 +99,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		case DRETURN:
 		case FRETURN:
 		case LRETURN:
-			lastBranch = getPC();
+			addForwardJump(getPC(), Integer.MAX_VALUE);
 			break;
 		case IF_ICMPNE:
 		case IF_ICMPEQ:
@@ -77,7 +109,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		case IF_ICMPGE:
 			if (getBranchOffset() > 0)
 				break;
-			if (getBranchTarget() < lastBranch)
+			if (getFurthestJump(getBranchTarget()) > getPC())
 				break;
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			OpcodeStack.Item item1 = stack.getStackItem(1);
