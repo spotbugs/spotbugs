@@ -596,7 +596,7 @@
 		<mkdir dir="${build.dir}/src"/>
 		<delete dir="${build.dir}/src/findbugs-${release.number}"/>
 
-		<cvs cvsRoot="bassclar@findbugs.cvs.sourceforge.net:/cvsroot/findbugs"
+		<cvs cvsRoot="wpugh@findbugs.cvs.sourceforge.net:/cvsroot/findbugs"
 			cvsRsh="ssh"
 			dest="${build.dir}/src"
 			command="export -r HEAD -d findbugs-${release.number} findbugs"/>

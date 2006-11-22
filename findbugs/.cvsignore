@@ -14,3 +14,4 @@ annotationJavaDoc
 *.fvdl
 .fbwarnings
 local.properties
+.svn
