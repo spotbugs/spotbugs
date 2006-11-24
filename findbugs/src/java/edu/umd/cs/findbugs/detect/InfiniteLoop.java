@@ -118,7 +118,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		for(BackwardsBranch bb : backwardBranches) {
 			LinkedList<ForwardConditionalBranch> myForwardBranches = new LinkedList<ForwardConditionalBranch>();
 			for(ForwardConditionalBranch fcb : forwardConditionalBranches) 
-				if (bb.to < fcb.from && bb.from < fcb.to)
+				if (bb.to < fcb.from && fcb.from <= bb.from &&  bb.from < fcb.to)
 					myForwardBranches.add(fcb);
 			if (myForwardBranches.size() != 1) continue;
 			ForwardConditionalBranch fcb = myForwardBranches.get(0);
