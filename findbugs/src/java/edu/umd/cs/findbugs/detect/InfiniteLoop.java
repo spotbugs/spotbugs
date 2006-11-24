@@ -48,10 +48,12 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		}
 	}
 	static class BackwardsBranch extends ForwardJump {
-		List<Integer> invariantRegisters = new LinkedList<Integer>();
+		final List<Integer> invariantRegisters = new LinkedList<Integer>();
+		final int numLastUpdates;
 		BackwardsBranch(OpcodeStack stack, int from, int to) {
 			super(from,to);
-			for(int i = 0; i < stack.getNumLastUpdates(); i++) 
+			numLastUpdates = stack.getNumLastUpdates();
+			for(int i = 0; i < numLastUpdates; i++) 
 				if (stack.getLastUpdate(i) < to) 
 					invariantRegisters.add(i);
 			}
@@ -120,8 +122,8 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 					myForwardBranches.add(fcb);
 			if (myForwardBranches.size() != 1) continue;
 			ForwardConditionalBranch fcb = myForwardBranches.get(0);
-			if (isConstant(fcb.item0, bb.invariantRegisters) && 
-					isConstant(fcb.item1, bb.invariantRegisters)) {
+			if (isConstant(fcb.item0, bb) && 
+					isConstant(fcb.item1, bb)) {
 				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
 						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
 						this, fcb.from);
@@ -135,10 +137,11 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	 * @param invariantRegisters
 	 * @return
 	 */
-	private boolean isConstant(Item item0, Collection<Integer> invariantRegisters) {
+	private boolean isConstant(Item item0, BackwardsBranch bb) {
+		
 		if (item0.getConstant() != null) return true;
 		int reg = item0.getRegisterNumber();
-		if (reg >= 0 && invariantRegisters.contains(reg)) return true;
+		if (reg >= 0 && (bb.invariantRegisters.contains(reg) || reg >= bb.numLastUpdates)) return true;
 		return false;
 	}
 	@Override
