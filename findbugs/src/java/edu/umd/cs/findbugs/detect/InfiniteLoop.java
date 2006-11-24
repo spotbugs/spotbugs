@@ -19,8 +19,11 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -36,15 +39,39 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 
 	private static final boolean active = true;
 
+
 	static class ForwardJump {
-		int from, to;
+		final int from, to;
 		ForwardJump(int from, int to) {
 			this.from = from;
 			this.to = to;
 		}
 	}
+	static class BackwardsBranch extends ForwardJump {
+		List<Integer> invariantRegisters = new LinkedList<Integer>();
+		BackwardsBranch(OpcodeStack stack, int from, int to) {
+			super(from,to);
+			for(int i = 0; i < stack.getNumLastUpdates(); i++) 
+				if (stack.getLastUpdate(i) < to) 
+					invariantRegisters.add(i);
+			}
+					
+		}
+	static class ForwardConditionalBranch  extends ForwardJump {
+		final OpcodeStack.Item item0, item1;
+		ForwardConditionalBranch(OpcodeStack.Item item0, OpcodeStack.Item item1, int from, int to) {
+			super(from,to);
+			this.item0 = item0;
+			this.item1 = item1;
+		}
+		
+	}
 	BugReporter bugReporter;
 
+	LinkedList<BackwardsBranch> backwardBranches = new LinkedList<BackwardsBranch>();
+	
+	LinkedList<ForwardConditionalBranch> forwardConditionalBranches = new LinkedList<ForwardConditionalBranch>();
+	
 	LinkedList<ForwardJump> forwardJumps = new LinkedList<ForwardJump>();
 	void purgeForwardJumps(int before) {
 		for(Iterator<ForwardJump> i = forwardJumps.iterator(); i.hasNext(); ) {
@@ -78,12 +105,41 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	@Override
 	public void visit(Method obj) {
 	}
-
+ 
 	@Override
 	public void visit(Code obj) {
 		stack.resetForMethodEntry(this);
+		backwardBranches.clear();
+		forwardConditionalBranches.clear();
 		forwardJumps.clear();
 		super.visit(obj);
+		for(BackwardsBranch bb : backwardBranches) {
+			LinkedList<ForwardConditionalBranch> myForwardBranches = new LinkedList<ForwardConditionalBranch>();
+			for(ForwardConditionalBranch fcb : forwardConditionalBranches) 
+				if (bb.to < fcb.from && bb.from < fcb.to)
+					myForwardBranches.add(fcb);
+			if (myForwardBranches.size() != 1) continue;
+			ForwardConditionalBranch fcb = myForwardBranches.get(0);
+			if (isConstant(fcb.item0, bb.invariantRegisters) && 
+					isConstant(fcb.item1, bb.invariantRegisters)) {
+				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
+						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
+						this, fcb.from);
+				bugReporter.reportBug(bug);
+			}
+			
+		}
+	}
+	/**
+	 * @param item0
+	 * @param invariantRegisters
+	 * @return
+	 */
+	private boolean isConstant(Item item0, Collection<Integer> invariantRegisters) {
+		if (item0.getConstant() != null) return true;
+		int reg = item0.getRegisterNumber();
+		if (reg >= 0 && invariantRegisters.contains(reg)) return true;
+		return false;
 	}
 	@Override
 	public void sawBranchTo(int target) {
@@ -93,6 +149,12 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		switch (seen) {
+		case GOTO:
+			if (getBranchOffset() < 0) {
+				BackwardsBranch bb = new BackwardsBranch(stack, getPC(), getBranchTarget());
+				if (bb.invariantRegisters.size() > 0) backwardBranches.add(bb);
+			}
+			break;
 		case ARETURN:
 		case IRETURN:
 		case RETURN:
@@ -107,12 +169,15 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		case IF_ICMPLE:
 		case IF_ICMPLT:
 		case IF_ICMPGE:
-			if (getBranchOffset() > 0)
-				break;
-			if (getFurthestJump(getBranchTarget()) > getPC())
-				break;
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			OpcodeStack.Item item1 = stack.getStackItem(1);
+			if (getBranchOffset() > 0) {
+				forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), getBranchTarget()));
+				break;
+			}
+			if (getFurthestJump(getBranchTarget()) > getPC())
+				break;
+
 			if (constantSince(item0, getBranchTarget())
 					&& constantSince(item1, getBranchTarget())) {
 				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
