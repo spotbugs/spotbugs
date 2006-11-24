@@ -496,6 +496,9 @@ public class OpcodeStack implements Constants2
 		return lastUpdate.get(reg);
 	}
 	
+	public int getNumLastUpdates() {
+		return lastUpdate.size();
+	}
  	public void sawOpcode(DismantleBytecode dbc, int seen) {
  		int register;
  		String signature;
