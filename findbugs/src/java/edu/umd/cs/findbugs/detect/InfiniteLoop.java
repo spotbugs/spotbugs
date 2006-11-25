@@ -76,6 +76,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	
 	LinkedList<ForwardJump> forwardJumps = new LinkedList<ForwardJump>();
 	void purgeForwardJumps(int before) {
+		if (true) return;
 		for(Iterator<ForwardJump> i = forwardJumps.iterator(); i.hasNext(); ) {
 			ForwardJump j = i.next();
 			if (j.to < before) i.remove();
@@ -115,13 +116,15 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		forwardConditionalBranches.clear();
 		forwardJumps.clear();
 		super.visit(obj);
-		for(BackwardsBranch bb : backwardBranches) {
+		backwardBranchLoop: for(BackwardsBranch bb : backwardBranches) {
 			LinkedList<ForwardConditionalBranch> myForwardBranches = new LinkedList<ForwardConditionalBranch>();
 			for(ForwardConditionalBranch fcb : forwardConditionalBranches) 
 				if (bb.to < fcb.from && fcb.from < bb.from &&  bb.from < fcb.to)
 					myForwardBranches.add(fcb);
 			if (myForwardBranches.size() != 1) continue;
 			ForwardConditionalBranch fcb = myForwardBranches.get(0);
+			for(ForwardJump fj : forwardJumps) 
+				if (bb.to < fj.from && bb.from < fj.to) continue backwardBranchLoop;
 			if (isConstant(fcb.item0, bb) && 
 					isConstant(fcb.item1, bb)) {
 				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
