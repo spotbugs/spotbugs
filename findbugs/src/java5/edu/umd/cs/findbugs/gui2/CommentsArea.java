@@ -484,9 +484,13 @@ public class CommentsArea {
 	protected void updateDesignationComboBox() {
 		if (frame.currentSelectedBugLeaf == null)
 			updateCommentsFromNonLeafInformationFromSwingThread(frame.currentSelectedBugAspects);
-		else
-			setDesignationComboBox(designationKeys.get(designationComboBox
-					.getSelectedIndex()));
+		else {
+			int selectedIndex = designationComboBox
+								.getSelectedIndex();
+			if (selectedIndex >= 0) setDesignationComboBox(designationKeys.get(selectedIndex));
+			else
+				Debug.println("Couldn't find selected index in designationComboBox: " + designationComboBox.getSelectedItem());
+		}
 	}
 
 	protected void updateCommentsFromNonLeafInformationFromSwingThread(BugAspects theAspects) {
