@@ -32,6 +32,7 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 
@@ -131,6 +132,12 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
 						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
 						this, fcb.from);
+				int reg0 = fcb.item0.getRegisterNumber();
+				if (reg0 >= 0)
+					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from));
+				int reg1 = fcb.item0.getRegisterNumber();
+				if (reg1 >= 0)
+					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from));
 				bugReporter.reportBug(bug);
 			}
 			
@@ -191,6 +198,12 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
 						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
 						this, getPC());
+				int reg0 = item0.getRegisterNumber();
+				if (reg0 >= 0)
+					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), getBranchTarget()));
+				int reg1 = item0.getRegisterNumber();
+				if (reg1 >= 0)
+					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, getPC(), getBranchTarget()));
 
 				bugReporter.reportBug(bug);
 			}
