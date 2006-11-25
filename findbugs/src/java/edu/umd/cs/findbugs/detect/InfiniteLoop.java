@@ -124,7 +124,8 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 			if (myForwardBranches.size() != 1) continue;
 			ForwardConditionalBranch fcb = myForwardBranches.get(0);
 			for(ForwardJump fj : forwardJumps) 
-				if (bb.to < fj.from && bb.from < fj.to) continue backwardBranchLoop;
+				if (fcb.from != fj.from && bb.to < fj.from && fj.from < bb.from && bb.from < fj.to) 
+					continue backwardBranchLoop;
 			if (isConstant(fcb.item0, bb) && 
 					isConstant(fcb.item1, bb)) {
 				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
