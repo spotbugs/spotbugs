@@ -150,7 +150,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	}
 	@Override
 	public void sawOpcode(int seen) {
-		System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stack);
+		if (false) System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stack);
 		stack.mergeJumps(this);
 		switch (seen) {
 		case GOTO:
