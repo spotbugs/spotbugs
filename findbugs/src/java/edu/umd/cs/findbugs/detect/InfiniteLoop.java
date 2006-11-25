@@ -135,7 +135,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				int reg0 = fcb.item0.getRegisterNumber();
 				if (reg0 >= 0)
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from));
-				int reg1 = fcb.item0.getRegisterNumber();
+				int reg1 = fcb.item1.getRegisterNumber();
 				if (reg1 >= 0)
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from));
 				bugReporter.reportBug(bug);
@@ -151,7 +151,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	private boolean isConstant(Item item0, BackwardsBranch bb) {
 		
 		int reg = item0.getRegisterNumber();
-		if (reg >= 0 && (bb.invariantRegisters.contains(reg) || reg >= bb.numLastUpdates)) return true;
+		if (reg >= 0) return bb.invariantRegisters.contains(reg) || reg >= bb.numLastUpdates;
 		if (item0.getConstant() != null) return true;
 		return false;
 	}
@@ -201,7 +201,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				int reg0 = item0.getRegisterNumber();
 				if (reg0 >= 0)
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), getBranchTarget()));
-				int reg1 = item0.getRegisterNumber();
+				int reg1 = item1.getRegisterNumber();
 				if (reg1 >= 0)
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, getPC(), getBranchTarget()));
 
