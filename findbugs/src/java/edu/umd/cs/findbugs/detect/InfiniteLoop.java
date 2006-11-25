@@ -118,7 +118,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		for(BackwardsBranch bb : backwardBranches) {
 			LinkedList<ForwardConditionalBranch> myForwardBranches = new LinkedList<ForwardConditionalBranch>();
 			for(ForwardConditionalBranch fcb : forwardConditionalBranches) 
-				if (bb.to < fcb.from && fcb.from <= bb.from &&  bb.from < fcb.to)
+				if (bb.to < fcb.from && fcb.from < bb.from &&  bb.from < fcb.to)
 					myForwardBranches.add(fcb);
 			if (myForwardBranches.size() != 1) continue;
 			ForwardConditionalBranch fcb = myForwardBranches.get(0);
@@ -139,9 +139,9 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	 */
 	private boolean isConstant(Item item0, BackwardsBranch bb) {
 		
-		if (item0.getConstant() != null) return true;
 		int reg = item0.getRegisterNumber();
 		if (reg >= 0 && (bb.invariantRegisters.contains(reg) || reg >= bb.numLastUpdates)) return true;
+		if (item0.getConstant() != null) return true;
 		return false;
 	}
 	@Override
@@ -150,6 +150,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	}
 	@Override
 	public void sawOpcode(int seen) {
+		System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stack);
 		stack.mergeJumps(this);
 		switch (seen) {
 		case GOTO:
@@ -202,11 +203,12 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	 * @return
 	 */
 	private boolean constantSince(Item item1, int branchTarget) {
+			int reg = item1.getRegisterNumber();
+		if (reg >= 0)
+		return stack.getLastUpdate(reg) < branchTarget;
 		if (item1.getConstant() != null)
 			return true;
-		int reg = item1.getRegisterNumber();
-		if (reg < 0)
-			return false;
-		return stack.getLastUpdate(reg) < branchTarget;
+		return false;
+	
 	}
 }

@@ -1463,6 +1463,7 @@ public class OpcodeStack implements Constants2
  	private void addJumpValue(int target) {
  		if (DEBUG)
  			System.out.println("Set jump entry at " + methodName + ":" + target + "pc to " + lvValues);
+ 		
  		List<Item> atTarget = jumpEntries.get(target);
  		if (atTarget == null) {
  			if (DEBUG)
@@ -1510,7 +1511,7 @@ public class OpcodeStack implements Constants2
 			};
 			branchAnalysis.setupVisitorForClass(v.getThisClass());
 			branchAnalysis.doVisitMethod(v.getMethod());
-			if (false && !jumpEntries.isEmpty()) 
+			if (!jumpEntries.isEmpty()) 
 				branchAnalysis.doVisitMethod(v.getMethod());
 			if (DEBUG && !jumpEntries.isEmpty()) {
 				System.out.println("Found dataflow for jumps in " + v.getMethodName());
