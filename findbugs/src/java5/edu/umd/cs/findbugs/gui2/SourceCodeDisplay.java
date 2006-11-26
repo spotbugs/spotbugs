@@ -169,6 +169,7 @@ public final class SourceCodeDisplay implements Runnable {
 						}
 					}
 					//show(frame.sourceCodeTextPane, document, thisSource);
+					if (startLine >= 0 && endLine >= 0)
 					frame.sourceCodeTextPane.scrollLinesToVisible(startLine, endLine, otherLines);
 				}
 			});
