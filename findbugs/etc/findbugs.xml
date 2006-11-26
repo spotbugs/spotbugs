@@ -67,6 +67,10 @@
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
 	</WithinPass>
+	<WithinPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
+		<Later class="edu.umd.cs.findbugs.detect.FindMaskedFields"/>
+	</WithinPass>
 	<SplitPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations"/>
 		<Later class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"/>

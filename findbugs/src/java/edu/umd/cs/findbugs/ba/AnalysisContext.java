@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
 import edu.umd.cs.findbugs.detect.NoteAnnotationRetention;
+import edu.umd.cs.findbugs.detect.UnreadFields;
 import edu.umd.cs.findbugs.util.ClassName;
 import edu.umd.cs.findbugs.util.MapCache;
 
@@ -150,7 +151,15 @@ public abstract class AnalysisContext {
 		return currentXFactory.get();
 	}
 	
-	
+	UnreadFields unreadFields;
+	public UnreadFields getUnreadFields() {
+		if (unreadFields == null) throw new IllegalStateException("UnreadFields detector not set");
+		return unreadFields;
+	}
+	public void setUnreadFields(@NonNull UnreadFields unreadFields) {
+		if (this.unreadFields != null) throw new IllegalStateException("UnreadFields detector already set");
+		this.unreadFields = unreadFields;
+	}
 	/**
 	 * file a ClassNotFoundException with the lookupFailureCallback
 	 * @see #getLookupFailureCallback()

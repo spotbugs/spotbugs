@@ -63,6 +63,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	Set<XField> writtenNonNullFields = new HashSet<XField>();
 	Set<String> calledFromConstructors = new HashSet<String>();
 	Set<XField> writtenInConstructorFields = new HashSet<XField>();
+	Set<XField> writtenOutsideOfConstructorFields = new HashSet<XField>();
+	
 	Set<XField> readFields = new HashSet<XField>();
 	Set<XField> constantFields = new HashSet<XField>();
 	Set<XField> finalFields = new HashSet<XField>();
@@ -75,10 +77,21 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	boolean publicOrProtectedConstructor;
 	private XFactory xFactory = AnalysisContext.currentXFactory();
 
+	public Set<? extends XField> getReadFields() {
+		return readFields;
+	}
+	public Set<? extends XField> getWrittenFields() {
+		return writtenFields;
+	}
+	public Set<? extends XField> getWrittenOutsideOfConstructorFields() {
+		return writtenOutsideOfConstructorFields;
+	}
 	static final int doNotConsider = ACC_PUBLIC | ACC_PROTECTED;
 
 	public UnreadFields(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		AnalysisContext context = AnalysisContext.currentAnalysisContext();
+		context.setUnreadFields(this);
 	}
 
 
@@ -398,6 +411,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				writtenInConstructorFields.add(f);
 				if (previousOpcode != ACONST_NULL || previousPreviousOpcode == GOTO ) 
 					assumedNonNull.remove(f);
+			} else {
+				writtenOutsideOfConstructorFields.add(f);
 			}
 			
 			

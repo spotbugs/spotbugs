@@ -21,10 +21,29 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
+import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import java.util.*;
-import org.apache.bcel.classfile.*;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 
 public class FindMaskedFields extends BytecodeScanningDetector {
 	private BugReporter bugReporter;
@@ -33,6 +52,19 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 	private Map<String, Field> classFields = new HashMap<String, Field>();
 	private boolean staticMethod;
 
+	private Collection<RememberedBug> 
+		rememberedBugs = new LinkedList<RememberedBug>();
+		
+	class RememberedBug {
+		BugInstance bug;
+		XField maskingField, maskedField;
+		RememberedBug(BugInstance bug, 
+				FieldAnnotation maskingField, FieldAnnotation maskedField) {
+			this.bug = bug;
+			this.maskingField = XFactory.createXField(maskingField);
+			this.maskedField = XFactory.createXField(maskedField);
+		}
+	}
 	public FindMaskedFields(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
@@ -92,15 +124,15 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 
 							FieldAnnotation maskedFieldAnnotation
 									= FieldAnnotation.fromBCELField(superClass.getClassName(), fld);
-							bugReporter.reportBug(new BugInstance(this, "MF_CLASS_MASKS_FIELD",
+							BugInstance bug = new BugInstance(this, "MF_CLASS_MASKS_FIELD",
 									priority)
 									.addClass(this)
 									.addField(fa)
 									.describe("FIELD_MASKING")
 									.addField(maskedFieldAnnotation)
-									.describe("FIELD_MASKED")
-
-									);
+									.describe("FIELD_MASKED");
+							rememberedBugs.add(new RememberedBug(bug, fa, maskedFieldAnnotation));
+								
 						}
 					}
 				}
@@ -160,6 +192,35 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 			}
 		}
 		super.visit(obj);
+	}
+	
+	@Override
+    public void report() {
+		UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
+		for(RememberedBug rb : rememberedBugs) {
+			BugInstance bug = rb.bug;
+			int score = 0;
+			
+			if (unreadFields.getReadFields().contains(rb.maskedField))
+				score++;
+			if (unreadFields.getReadFields().contains(rb.maskingField))
+				score++;
+			if (unreadFields.getWrittenFields().contains(rb.maskedField))
+				score++;
+			if (unreadFields.getWrittenFields().contains(rb.maskingField))
+				score++;
+			if (unreadFields.getWrittenOutsideOfConstructorFields().contains(rb.maskedField))
+				score++;
+			if (unreadFields.getWrittenOutsideOfConstructorFields().contains(rb.maskingField))
+				score++;
+			if (score >= 5) 
+				bug.setPriority(Priorities.HIGH_PRIORITY);
+			else if (score >= 3) 
+				bug.setPriority(Priorities.NORMAL_PRIORITY);
+			else
+				bug.setPriority(Priorities.LOW_PRIORITY);
+			bugReporter.reportBug(bug);
+	}
 	}
 }
 
