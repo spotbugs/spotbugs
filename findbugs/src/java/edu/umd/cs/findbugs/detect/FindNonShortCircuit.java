@@ -31,8 +31,15 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	int distance = 0;
 	int operator;
 
-	boolean sawDanger = false;
-	boolean sawDangerOld = false;
+	boolean sawDanger;
+	boolean sawNullTestOld;
+	boolean sawNullTestVeryOld;
+	boolean sawNullTest;
+	boolean sawDangerOld;
+	boolean sawArrayIndex;
+	boolean sawArrayIndexOld;
+	boolean sawNumericTest, sawNumericTestOld, sawNumericTestVeryOld;
+	boolean sawArrayDanger, sawArrayDangerOld;
 
 	private BugReporter bugReporter;
 
@@ -48,9 +55,14 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		stage1 = 0;
 		stage2 = 0;
 		distance = 1000000;
-		sawDanger = sawDangerOld = true;
+		sawArrayDanger = sawArrayDangerOld = false;
+		sawDanger = sawDangerOld = false;
+		sawNullTest = sawNullTestOld = sawNullTestVeryOld = false;
+		sawNumericTest = sawNumericTestOld = sawNumericTestVeryOld = false;
+		prevOpcode = NOP;
 	}
 
+	int prevOpcode;
 	@Override
 	public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
@@ -61,15 +73,11 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		scanForDanger(seen);
 		scanForShortCircuit(seen);
 		stack.sawOpcode(this, seen);
+		prevOpcode = seen;
 	}
 
 	private void scanForDanger(int seen) {
 		switch (seen) {
-		case INVOKEINTERFACE:
-		case INVOKESPECIAL:
-		case INVOKEVIRTUAL:
-		case INVOKESTATIC:
-		case ARRAYLENGTH:
 		case AALOAD:
 		case BALOAD:
 		case SALOAD:
@@ -78,6 +86,15 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		case LALOAD:
 		case FALOAD:
 		case DALOAD:
+			sawArrayDanger = true;
+			sawDanger = true;
+			break;
+			
+		case INVOKEINTERFACE:
+		case INVOKESPECIAL:
+		case INVOKEVIRTUAL:
+		case INVOKESTATIC:
+		case ARRAYLENGTH:
 		case IDIV:
 		case IREM:
 		case GETFIELD:
@@ -125,16 +142,36 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	}
 
 	private void reportBug() {
+		int priority = LOW_PRIORITY;
+		if (sawDangerOld) 
+			if (sawNullTestVeryOld) priority = HIGH_PRIORITY;
+			else if (sawNumericTestVeryOld && sawArrayDangerOld)  priority = HIGH_PRIORITY;
+			else priority = NORMAL_PRIORITY;
+
 		bugReporter.reportBug(new BugInstance(this, "NS_NON_SHORT_CIRCUIT",
-				sawDangerOld ? NORMAL_PRIORITY : LOW_PRIORITY)
-				.addClassAndMethod(this).addSourceLine(this, getPC()));
+				priority)
+		.addClassAndMethod(this).addSourceLine(this, getPC()));
 	}
+
 
 	private void scanForBooleanValue(int seen) {
 		switch (seen) {
 
 		case ICONST_1:
 			stage1 = 1;
+			switch(prevOpcode) {
+			case IFNONNULL:
+			case IFNULL:
+				sawNullTest = true;
+				break;
+			case IF_ICMPGT:
+			case IF_ICMPGE:
+			case IF_ICMPLT:
+			case IF_ICMPLE:
+				sawNumericTest = true;
+			break;
+			}
+
 			break;
 		case GOTO:
 			if (stage1 == 1)
@@ -163,6 +200,12 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 
 	private void sawBooleanValue() {
 		sawDangerOld = sawDanger;
+		sawArrayDangerOld = sawArrayDanger;
+		sawNullTestVeryOld = sawNullTestOld;
+		sawNullTestOld = sawNullTest;
+		sawNumericTestVeryOld = sawNumericTestOld;
+		sawNumericTestOld = sawNumericTest;
+		sawNumericTest = false;
 		sawDanger = false;
 		distance = 0;
 		stage1 = 0;
