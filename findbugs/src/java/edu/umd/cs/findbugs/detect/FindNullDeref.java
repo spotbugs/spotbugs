@@ -1028,6 +1028,8 @@ public class FindNullDeref
 		if ( catchSize < 5) return true;
 		catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getConstantPoolGen().getConstantPool(), method.getCode(), "java/lang/RuntimeException", pc);
 		if ( catchSize < 5) return true;
+		catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getConstantPoolGen().getConstantPool(), method.getCode(), "java/lang/Throwable", pc);
+		if ( catchSize < 5) return true;
 		return false;
 		
 	}
