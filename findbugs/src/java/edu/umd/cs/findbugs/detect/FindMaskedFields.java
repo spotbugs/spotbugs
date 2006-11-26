@@ -200,7 +200,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 		for(RememberedBug rb : rememberedBugs) {
 			BugInstance bug = rb.bug;
 			int score = 0;
-			
+			int priority = bug.getPriority();
 			if (unreadFields.getReadFields().contains(rb.maskedField))
 				score++;
 			if (unreadFields.getReadFields().contains(rb.maskingField))
@@ -214,11 +214,9 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 			if (unreadFields.getWrittenOutsideOfConstructorFields().contains(rb.maskingField))
 				score++;
 			if (score >= 5) 
-				bug.setPriority(Priorities.HIGH_PRIORITY);
-			else if (score >= 3) 
-				bug.setPriority(Priorities.NORMAL_PRIORITY);
-			else
-				bug.setPriority(Priorities.LOW_PRIORITY);
+				bug.setPriority(priority-1);
+			else if (score < 3) 
+				bug.setPriority(priority+1);
 			bugReporter.reportBug(bug);
 	}
 	}
