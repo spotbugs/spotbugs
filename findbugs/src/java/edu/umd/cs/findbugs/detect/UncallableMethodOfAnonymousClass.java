@@ -22,6 +22,8 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -118,6 +120,13 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 						priority = NORMAL_PRIORITY;
 				else
 					priority = HIGH_PRIORITY;
+				Code code = null;
+				for(Attribute a : obj.getAttributes()) 
+					if (a instanceof Code) {
+						code = (Code) a;
+						break;
+					}
+				if (code.getLength() == 1) priority++;
 				bugReporter.reportBug(new BugInstance("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS",
 						priority).addClassAndMethod(this));
 			
