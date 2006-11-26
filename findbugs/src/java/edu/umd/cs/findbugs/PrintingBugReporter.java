@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
  */
 public class PrintingBugReporter extends TextUIBugReporter {
 	private String stylesheet = null;
+	private boolean annotationUploadFormat = false;
 	private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
 	public void observeClass(ClassDescriptor classDescriptor) {
@@ -58,6 +59,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
 		public PrintingCommandLine() {
 			addSwitch("-longBugCodes", "use long bug codes when generating text");
+			addSwitch("-annotationUpload", "generate annotations in upload format");
 			addSwitchWithOptionalExtraPart("-html", "stylesheet",
 			"Generate HTML output (default stylesheet is default.xsl)");
 		}
@@ -68,13 +70,15 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		protected void handleOption(String option, String optionExtraPart) throws IOException {
 			if (option.equals("-longBugCodes"))
 				setUseLongBugCodes(true);
-			if (option.equals("-html")) {
+			else if (option.equals("-annotationUpload"))
+				annotationUploadFormat = true;
+			else if (option.equals("-html")) {
 				if (!optionExtraPart.equals("")) {
 					stylesheet = optionExtraPart;
 				} else {
 					stylesheet = "default.xsl";
 				}
-			}
+			} else throw new IllegalArgumentException("Unknown option '"+option+"'");
 		}
 
 		/* (non-Javadoc)
@@ -113,6 +117,34 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		if (argCount < args.length)
 			reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));
 		RuntimeException storedException = null;
+		if (reporter.annotationUploadFormat) {
+			bugCollection.computeBugHashes();
+			for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
+				BugInstance warning = i.next();
+				try {
+					String fHash = "fb-"+ 	warning.getInstanceHash() +"-"+	warning.getInstanceOccurrenceNum()
+					+"-"+warning.getInstanceOccurrenceMax();
+					
+					
+				System.out.print("#" + fHash);
+				String key = warning.getUserDesignationKey();
+				if (key.equals(BugDesignation.UNCLASSIFIED))
+					System.out.print("#-1#"+key);
+				else if (key.equals("MUST_FIX") || key.equals("SHOULD_FIX"))
+					System.out.print("#7#"+key);
+				System.out.print("#0#"+key);
+				SourceLineAnnotation sourceLine = warning.getPrimarySourceLineAnnotation();
+				if (sourceLine != null) 
+					System.out.println("#" + sourceLine.getSourceFile() + "#"+sourceLine.getStartLine());
+				else System.out.println("##");
+				System.out.println(warning.getAnnotationText());
+				} catch (RuntimeException e) {
+					if (storedException == null) 
+					storedException = e;
+				}
+			}
+		}
+		else {
 		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext();) {
 			BugInstance warning = i.next();
 			try {
@@ -121,6 +153,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 				if (storedException == null) 
 				storedException = e;
 			}
+		}
 		}
 		if (storedException != null) throw storedException;
 		
