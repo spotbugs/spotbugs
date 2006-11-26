@@ -128,7 +128,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 					
 				System.out.print("#" + fHash);
 				String key = warning.getUserDesignationKey();
-				if (key.equals(BugDesignation.UNCLASSIFIED))
+				if (key.equals(BugDesignation.UNCLASSIFIED) || key.equals("NEEDS_FURTHER_STUDY"))
 					System.out.print("#-1#"+key);
 				else if (key.equals("MUST_FIX") || key.equals("SHOULD_FIX"))
 					System.out.print("#7#"+key);
