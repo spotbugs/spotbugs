@@ -121,6 +121,28 @@ public class DumbMethods extends BytecodeScanningDetector  {
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		
+		if ((seen == INVOKEVIRTUAL
+				&& getClassConstantOperand().equals("java/util/HashMap") && getNameConstantOperand()
+				.equals("get"))
+				|| (seen == INVOKEINTERFACE
+						&& getClassConstantOperand().equals("java/util/Map") && getNameConstantOperand()
+						.equals("get"))
+				|| (seen == INVOKEVIRTUAL
+						&& getClassConstantOperand()
+								.equals("java/util/HashSet") && getNameConstantOperand()
+						.equals("contains"))
+				|| (seen == INVOKEINTERFACE
+						&& getClassConstantOperand().equals("java/util/Set") && getNameConstantOperand()
+						.equals("contains"))) {
+			OpcodeStack.Item top = stack.getStackItem(0);
+			if (top.getSignature().equals("Ljava/net/URL;"))
+				bugReporter.reportBug(new BugInstance(this,
+						"DMI_BLOCKING_METHODS_ON_URL", HIGH_PRIORITY)
+						.addClassAndMethod(this).addCalledMethod(this)
+						.addSourceLine(this));
+		}
+		
+		
 		if (isEqualsObject && !reportedBadCastInEquals) {
 			if (seen == INSTANCEOF || seen == INVOKEVIRTUAL && getNameConstantOperand().equals("getClass")
 					&& getSigConstantOperand().equals("()Ljava/lang/Class;")
