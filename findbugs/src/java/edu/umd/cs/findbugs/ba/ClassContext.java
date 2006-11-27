@@ -39,6 +39,8 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.IFNE;
 import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
@@ -378,6 +380,7 @@ public class ClassContext {
 			// request for the pruned CFG of a method.  In this case,
 			// we just return the raw CFG.
 			String methodId = methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature();
+			// System.out.println("CC: getting refined CFG for " + methodId);
 			if (DEBUG_CFG) {
 				indent();
 				System.out.println("CC: getting refined CFG for " + methodId);
@@ -390,6 +393,54 @@ public class ClassContext {
 				analysisContext.getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS);
 			
 			boolean changed = false;
+			boolean ASSUME_ASSERTIONS_ENABLED = true;
+			if (ASSUME_ASSERTIONS_ENABLED) {
+				LinkedList<Edge> edgesToRemove = new LinkedList<Edge>();
+				for (Iterator<Edge> i = cfg.edgeIterator(); i.hasNext();) {
+					Edge e = i.next();
+					if (e.getType() == EdgeTypes.IFCMP_EDGE) {
+						try {
+							BasicBlock source = e.getSource();
+							InstructionHandle last = source
+									.getLastInstruction();
+							Instruction lastInstruction = last.getInstruction();
+							InstructionHandle prev = last.getPrev();
+							Instruction prevInstruction = prev.getInstruction();
+							if (prevInstruction instanceof GETSTATIC
+									&& lastInstruction instanceof IFNE) {
+								GETSTATIC getStatic = (GETSTATIC) prevInstruction;
+								if (false) {
+									System.out.println(prev);
+
+									System.out.println(getStatic
+											.getClassName(methodGen
+													.getConstantPool()));
+									System.out.println(getStatic
+											.getFieldName(methodGen
+													.getConstantPool()));
+									System.out.println(getStatic
+											.getSignature(methodGen
+													.getConstantPool()));
+									System.out.println(last);
+								}
+								if (getStatic.getFieldName(
+										methodGen.getConstantPool()).equals(
+										"$assertionsDisabled")
+										&& getStatic.getSignature(
+												methodGen.getConstantPool())
+												.equals("Z"))
+									edgesToRemove.add(e);
+							}
+						} catch (RuntimeException exception) {
+							assert true; // ignore it
+						}
+					}
+				}
+				for (Edge e : edgesToRemove) {
+					cfg.removeEdge(e);
+				}
+			}
+			
 			
 			if (PRUNE_INFEASIBLE_EXCEPTION_EDGES && !cfg.isFlagSet(PRUNED_INFEASIBLE_EXCEPTIONS)) {
 				try {
@@ -1164,10 +1215,19 @@ public class ClassContext {
 	 * @throws CFGBuilderException if a CFG cannot be constructed for the method
 	 */
 	public CFG getCFG(Method method) throws CFGBuilderException {
+		if (method == cachedMethod) {
+			// System.out.println("hit on " + method.getName());
+			return cachedCFG;
+		}
+		if (false && cachedMethod != null) System.out.println(cachedMethod.getName() + " -> " + method.getName());
 		CFG cfg = cfgFactory.getRefinedCFG(method);
+		cachedMethod = method;
+		cachedCFG = cfg;
 		return cfg;
 	}
 
+	Method cachedMethod;
+	CFG cachedCFG = null;
 	/**
 	 * Get the ConstantPoolGen used to create the MethodGens
 	 * for this class.
