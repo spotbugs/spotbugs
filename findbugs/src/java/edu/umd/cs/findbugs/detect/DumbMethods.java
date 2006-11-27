@@ -137,8 +137,8 @@ public class DumbMethods extends BytecodeScanningDetector  {
 			OpcodeStack.Item top = stack.getStackItem(0);
 			if (top.getSignature().equals("Ljava/net/URL;"))
 				bugReporter.reportBug(new BugInstance(this,
-						"DMI_BLOCKING_METHODS_ON_URL", HIGH_PRIORITY)
-						.addClassAndMethod(this).addCalledMethod(this)
+						"DMI_COLLECTION_OF_URLS", HIGH_PRIORITY)
+						.addClassAndMethod(this)
 						.addSourceLine(this));
 		}
 		
