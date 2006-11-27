@@ -60,6 +60,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	Set<XField> allMyFields = new TreeSet<XField>();
 	Set<XField> myFields = new TreeSet<XField>();
 	Set<XField> writtenFields = new HashSet<XField>();
+	Map<XField,SourceLineAnnotation> fieldAccess = new HashMap<XField, SourceLineAnnotation>();
 	Set<XField> writtenNonNullFields = new HashSet<XField>();
 	Set<String> calledFromConstructors = new HashSet<String>();
 	Set<XField> writtenInConstructorFields = new HashSet<XField>();
@@ -386,6 +387,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			XField f = XFactory.createReferencedXField(this);
 			if (DEBUG) System.out.println("get: " + f);
 			readFields.add(f);
+			if (!fieldAccess.containsKey(f))
+				fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
 		} else if (seen == PUTFIELD || seen == PUTSTATIC) {
 			XField f = XFactory.createReferencedXField(this);
 			OpcodeStack.Item item = null;
@@ -394,6 +397,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				if (!item.isNull()) nullTested.add(f);
 			}
 			writtenFields.add(f);
+			if (!fieldAccess.containsKey(f))
+				fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
 			if (previousOpcode != ACONST_NULL || previousPreviousOpcode == GOTO )  {
 				writtenNonNullFields.add(f);
 				if (DEBUG) System.out.println("put nn: " + f);
@@ -509,11 +514,9 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '['))
 					priority++;
 
-				bugReporter.reportBug(new BugInstance(this,
+				bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this,
 						"UWF_UNWRITTEN_FIELD",
-						priority)
-						.addClass(className)
-						.addField(f));
+						priority),f));
 			}
 
 		}
@@ -548,12 +551,10 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				if (finalFields.contains(f)) priority++;
 				if (fieldsOfSerializableOrNativeClassed.contains(f)) priority++;
 			}
-			if (!readOnlyFields.contains(f))
-				bugReporter.reportBug(new BugInstance(this,
-						"UWF_NULL_FIELD",
-						priority)
-						.addClass(className)
-						.addField(f));
+			if (!readOnlyFields.contains(f)) 
+				bugReporter.reportBug(
+						addClassFieldAndAccess(new BugInstance(this,"UWF_NULL_FIELD",priority), f)
+					);
 		}
 
 		for (XField f : writeOnlyFields) {
@@ -612,11 +613,9 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			} else {
 				if (constantFields.contains(f)) {
 					if (!f.isStatic())
-						bugReporter.reportBug(new BugInstance(this,
+						bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this,
 								"SS_SHOULD_BE_STATIC",
-								NORMAL_PRIORITY)
-								.addClass(className)
-								.addField(f));
+								NORMAL_PRIORITY), f));
 				} else if (fieldsOfSerializableOrNativeClassed.contains(f)) {
 					// ignore it
 				} else if (!writtenFields.contains(f) && f.isResolved())
@@ -627,12 +626,21 @@ public class UnreadFields extends BytecodeScanningDetector  {
 					int priority = NORMAL_PRIORITY;
 					if (f.isStatic()) priority++;
 					if (finalFields.contains(f)) priority++;
-					bugReporter.reportBug(new BugInstance(this, "URF_UNREAD_FIELD", priority)
-							.addClass(className)
-							.addField(f));
+					bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this, "URF_UNREAD_FIELD", priority),f));
 				}
 			}
 		}
 
 	}
+	/**
+	 * @param instance
+	 * @return
+	 */
+	private BugInstance addClassFieldAndAccess(BugInstance instance, XField f) {
+		instance.addClass(f.getClassName()).addField(f);
+		if (fieldAccess.containsKey(f))
+			instance.add(fieldAccess.get(f));
+		return instance;
+	}
+	
 }
