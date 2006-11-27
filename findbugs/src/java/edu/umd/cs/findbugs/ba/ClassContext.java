@@ -89,7 +89,7 @@ public class ClassContext {
 
 	private static final int PRUNED_INFEASIBLE_EXCEPTIONS = 1;
 	private static final int PRUNED_UNCONDITIONAL_THROWERS = 2;
-	private static final int REFINED = 2;
+	private static final int REFINED = 4;
 
 	private static final boolean TIME_ANALYSES = SystemProperties.getBoolean("classContext.timeAnalyses");
 
