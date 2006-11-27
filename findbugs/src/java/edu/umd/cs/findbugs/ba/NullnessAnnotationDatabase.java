@@ -44,6 +44,8 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		addMethodAnnotation("java.lang.reflect.Method", "getParameterTypes", "()[Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
 		addMethodAnnotation("java.lang.Object", "clone", "()[Ljava/lang/Class;", false, NullnessAnnotation.NONNULL);
 		
+		addMethodParameterAnnotation("java.util.Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;", true, 0, NullnessAnnotation.NONNULL);
+				
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.package-info", NullnessAnnotation.NONNULL);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.CopyOnWriteArrayList", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.CopyOnWriteArraySet", NullnessAnnotation.UNKNOWN_NULLNESS);
@@ -123,7 +125,11 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		if (!anyAnnotations(NullnessAnnotation.NONNULL)) return false;
 		XMethodParameter xmp = new XMethodParameter(m,param);
 		NullnessAnnotation resolvedAnnotation = getResolvedAnnotation(xmp, true);
-		// System.out.println("QQQ parameter " + param + " of " + m + " is " + resolvedAnnotation);
+		if (false) {
+			System.out.println("QQQ parameter " + param + " of " + m + " is " + resolvedAnnotation);
+			System.out.println(m.getSignature());
+		}
+		
 		return resolvedAnnotation == NullnessAnnotation.NONNULL;
 	}
 	
