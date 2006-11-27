@@ -265,6 +265,17 @@ that are probably intended to but do not override methods in a superclass.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.URLProblems">
+    <Details>
+<![CDATA[
+<p> The equals and hashCode method on <code>java.net.URL</code> resolve
+the domain name. As a result, these operations can be very expensive, and this
+detector looks for places where those methods might be invoked.
+</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround">
     <Details>
 <![CDATA[
@@ -1517,6 +1528,33 @@ that all fields are final.
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="DMI_COLLECTION_OF_URLS">
+    <ShortDescription>Maps and sets of URLs can be performance hogs</ShortDescription>
+    <LongDescription>{1} is or uses a map or set of URLs, which can be a performance hog</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This method or field is or uses a Map or Set of URLs. Since both the equals and hashCode
+method of URL perform domain name resolution, this can result in a big performance hit.
+See <a href="http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html">http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html</a> for more information.
+Consider using <code>java.net.URI</code> instead.
+   /p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DMI_BLOCKING_METHODS_ON_URL">
+    <ShortDescription>The equals and hashCode methods of URL are blocking</ShortDescription>
+    <LongDescription>{1} invokes {2}, which blocks to do domain name resolution</LongDescription>
+    <Details>
+<![CDATA[
+  <p> Yhe equals and hashCode
+method of URL perform domain name resolution, this can result in a big performance hit.
+See <a href="http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html">http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html</a> for more information.
+Consider using <code>java.net.URI</code> instead.
+   /p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
     <ShortDescription>Can't use reflection to check for presence of annotation with default retention</ShortDescription>
     <LongDescription>{1} uses reflection to check for the presence of an annotation that has default retention</LongDescription>
@@ -1529,6 +1567,8 @@ of source-only retention, the annotation isn't retained in the classfile and can
 ]]>
     </Details>
   </BugPattern>
+
+
   <BugPattern type="DM_EXIT">
     <ShortDescription>Method invokes System.exit(...)</ShortDescription>
     <LongDescription>{1} invokes System.exit(...), which shuts down the entire virtual machine</LongDescription>
