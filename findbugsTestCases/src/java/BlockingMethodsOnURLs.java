@@ -29,4 +29,10 @@ public class BlockingMethodsOnURLs {
 	public static Map<URL, String> map;
 	public static Map<String, URL> falsePositiveMap;
 	public static Set<URL> set;
+	static boolean contains(Set<?> m, URL u) {
+		return m.contains(u);
+	}
+	static Object get(Map<?, ?> m, URL u) {
+		return m.get(u);
+	}
 }
