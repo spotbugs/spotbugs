@@ -89,6 +89,7 @@ public class ClassContext {
 
 	private static final int PRUNED_INFEASIBLE_EXCEPTIONS = 1;
 	private static final int PRUNED_UNCONDITIONAL_THROWERS = 2;
+	private static final int REFINED = 2;
 
 	private static final boolean TIME_ANALYSES = SystemProperties.getBoolean("classContext.timeAnalyses");
 
@@ -350,7 +351,7 @@ public class ClassContext {
 		}
 
 		@Override
-                 public CFG getAnalysis(Method method) throws CFGBuilderException {
+        public CFG getAnalysis(Method method) throws CFGBuilderException {
 			try {
 				return super.getAnalysis(method);
 			} catch (DataflowAnalysisException e) {
@@ -363,14 +364,16 @@ public class ClassContext {
 		}
 
 		public CFG getRefinedCFG(Method method) throws CFGBuilderException {
+			CFG cfg = getRawCFG(method);
+			if (cfg.isFlagSet(REFINED)) return cfg;
+			
 			MethodGen methodGen = getMethodGen(method);
 			if (methodGen == null) {
 				JavaClassAndMethod javaClassAndMethod = new JavaClassAndMethod(jclass, method);
 				getLookupFailureCallback().reportSkippedAnalysis(javaClassAndMethod.toMethodDescriptor());
 				throw new MethodUnprofitableException(javaClassAndMethod);
 			}
-			CFG cfg = getRawCFG(method);
-			
+
 			// Record method name and signature for informational purposes
 			cfg.setMethodName(SignatureConverter.convertMethodSignature(methodGen));
 			cfg.setMethodGen(methodGen);
@@ -389,8 +392,7 @@ public class ClassContext {
 			if (!busyCFGSet.add(methodId))
 				return cfg;
 
-			final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES =
-				analysisContext.getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS);
+			cfg.setFlags(REFINED);
 			
 			boolean changed = false;
 			boolean ASSUME_ASSERTIONS_ENABLED = true;
@@ -441,7 +443,9 @@ public class ClassContext {
 				}
 			}
 			
-			
+			final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES =
+				analysisContext.getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS);
+		
 			if (PRUNE_INFEASIBLE_EXCEPTION_EDGES && !cfg.isFlagSet(PRUNED_INFEASIBLE_EXCEPTIONS)) {
 				try {
 					TypeDataflow typeDataflow = getTypeDataflow(method);
