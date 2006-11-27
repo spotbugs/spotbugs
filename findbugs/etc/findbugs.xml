@@ -638,8 +638,8 @@
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="BAD_PRACTICE" />
   <BugPattern abbrev="Dm" type="DM_EXIT" category="BAD_PRACTICE" />
   <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS" category="CORRECTNESS" />
-  <BugPattern abbrev="Dm" type="DMI_BLOCKING_METHODS_ON_URL" category="CORRECTNESS" />
-  <BugPattern abbrev="Dm" type="DMI_COLLECTION_OF_URLS" category="CORRECTNESS" />
+  <BugPattern abbrev="Dm" type="DMI_BLOCKING_METHODS_ON_URL" category="PERFORMANCE" />
+  <BugPattern abbrev="Dm" type="DMI_COLLECTION_OF_URLS" category="PERFORMANCE" />
   <BugPattern abbrev="Dm" type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DM_RUN_FINALIZERS_ON_EXIT" category="BAD_PRACTICE" />
   <BugPattern abbrev="Dm" type="DM_STRING_CTOR" category="PERFORMANCE" />

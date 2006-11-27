@@ -46,14 +46,14 @@ public class URLProblems extends BytecodeScanningDetector {
 			if (sig.indexOf(s) >= 0) {
 				if (visitingField())
 					bugReporter.reportBug(new BugInstance(this, "DMI_COLLECTION_OF_URLS",
-							NORMAL_PRIORITY).addClass(this).addVisitedField(
+							HIGH_PRIORITY).addClass(this).addVisitedField(
 							this));
 				else if (visitingMethod())
 					bugReporter.reportBug(new BugInstance(this, "DMI_COLLECTION_OF_URLS",
-							NORMAL_PRIORITY).addClassAndMethod(this));
+							HIGH_PRIORITY).addClassAndMethod(this));
 				else
 					bugReporter.reportBug(new BugInstance(this, "DMI_COLLECTION_OF_URLS",
-							NORMAL_PRIORITY).addClass(this).addClass(this));
+							HIGH_PRIORITY).addClass(this).addClass(this));
 			}
 	}
 
@@ -66,7 +66,7 @@ public class URLProblems extends BytecodeScanningDetector {
 					|| getNameConstantOperand().equals("hashCode")
 					&& getSigConstantOperand().equals("()I")) {
 				bugReporter.reportBug(new BugInstance(this, "DMI_BLOCKING_METHODS_ON_URL",
-						NORMAL_PRIORITY).addClassAndMethod(this)
+						HIGH_PRIORITY).addClassAndMethod(this)
 						.addCalledMethod(this).addSourceLine(this));
 			}
 		}
