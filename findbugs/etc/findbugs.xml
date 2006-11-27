@@ -534,7 +534,7 @@
 	    />
   <Detector class="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression"
             speed="fast"
-            reports="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION,RE_POSSIBLE_UNINTENDED_PATTERN"
+            reports="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION,RE_POSSIBLE_UNINTENDED_PATTERN,RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION"
 	    />
   <Detector class="edu.umd.cs.findbugs.detect.VarArgsProblems"
             speed="fast"
@@ -870,6 +870,7 @@
   <BugPattern abbrev="BC" type="BC_BAD_CAST_TO_ABSTRACT_COLLECTION" category="STYLE"/>
   <BugPattern abbrev="RE" type="RE_POSSIBLE_UNINTENDED_PATTERN" category="CORRECTNESS"/>
   <BugPattern abbrev="RE" type="RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION" category="CORRECTNESS"/>
+  <BugPattern abbrev="RE" type="RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION" category="CORRECTNESS"/>
   <BugPattern abbrev="DLS" type="DLS_OVERWRITTEN_INCREMENT" category="CORRECTNESS"/>
   <BugPattern abbrev="ICAST" type="ICAST_BAD_SHIFT_AMOUNT" category="CORRECTNESS"/>
   <BugPattern abbrev="IM" type="IM_MULTIPLYING_RESULT_OF_IREM" category="CORRECTNESS"/>

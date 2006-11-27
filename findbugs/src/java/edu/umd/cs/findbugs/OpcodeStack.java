@@ -98,6 +98,7 @@ public class OpcodeStack implements Constants2
 		public static final int FLOAT_MATH = 7;
 		public static final int RANDOM_INT_REMAINDER = 8;
 		public static final int HASHCODE_INT_REMAINDER = 9;
+		public static final int FILE_SEPARATOR_STRING = 10;
 		
 		public static final Object UNKNOWN = null;
 		private int specialKind;
@@ -605,8 +606,11 @@ public class OpcodeStack implements Constants2
 	 			
 	 			case GETSTATIC:
 					{
-	 				Item i = new Item(dbc.getSigConstantOperand(), 
-						FieldAnnotation.fromReferencedField(dbc));
+					FieldAnnotation field = FieldAnnotation.fromReferencedField(dbc);
+	 				Item i = new Item(dbc.getSigConstantOperand(), field);
+	 				if (field.getFieldName().equals("separator") && field.getClassName().equals("java.io.File"))
+	 					i.setSpecialKind(Item.FILE_SEPARATOR_STRING);
+	 				
 	 				push(i);
 					break;
 					}

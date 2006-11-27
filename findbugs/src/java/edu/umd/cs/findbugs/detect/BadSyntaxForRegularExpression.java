@@ -91,6 +91,14 @@ extends BytecodeScanningDetector {
     private void sawRegExPattern(int stackDepth, int flags) {
         if (stack.getStackDepth() < stackDepth) return;
         OpcodeStack.Item it = stack.getStackItem(stackDepth);
+        if (it.getSpecialKind() == OpcodeStack.Item.FILE_SEPARATOR_STRING && (flags & Pattern.LITERAL) == 0) {
+        	  bugReporter.reportBug(new BugInstance(this, "RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION", 
+      				HIGH_PRIORITY)
+                                      .addClassAndMethod(this)
+                                      .addSourceLine(this)
+      				);
+        	  return;
+        }
         Object value = it.getConstant();
         if (value == null || !(value instanceof String)) return;
         String regex = (String) value;
