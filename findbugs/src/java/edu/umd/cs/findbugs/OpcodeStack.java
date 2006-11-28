@@ -191,6 +191,14 @@ public class OpcodeStack implements Constants2
 			case  RANDOM_INT_REMAINDER:
 				buf.append(", random_int_rem");
 				break;
+			case  FILE_SEPARATOR_STRING:
+				buf.append(", file_separator_string");
+				break;
+			case 0 :
+				break;
+			default:
+					buf.append(", #" + specialKind);
+				break;
 
 			}
 			if (constValue != UNKNOWN) {
