@@ -207,6 +207,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		sawNumericTestOld = sawNumericTest;
 		sawNumericTest = false;
 		sawDanger = false;
+		sawArrayDanger = false;
 		distance = 0;
 		stage1 = 0;
 
