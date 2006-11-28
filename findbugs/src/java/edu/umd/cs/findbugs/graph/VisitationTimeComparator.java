@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
  */
 public class VisitationTimeComparator <VertexType extends GraphVertex<VertexType>> implements Comparator<VertexType>,
 Serializable {
-
+	private static final long serialVersionUID = 0L;
 	/**
 	 * Compare in ascending order.
 	 */
