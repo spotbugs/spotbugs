@@ -77,8 +77,7 @@ public class OpcodeStack implements Constants2
 	private List<Item> stack;
 	private List<Item> lvValues;
 	private List<Integer> lastUpdate;
-	private int jumpTarget;
-	private Stack<List<Item>> jumpStack;
+
 		
 
 	private boolean seenTransferOfControl = false;
@@ -442,7 +441,6 @@ public class OpcodeStack implements Constants2
 	{
 		stack = new ArrayList<Item>();
 		lvValues = new ArrayList<Item>();
-		jumpStack = new Stack<List<Item>>();
 		lastUpdate = new ArrayList<Integer>();
 	}
 
@@ -468,28 +466,20 @@ public class OpcodeStack implements Constants2
  			System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + Integer.toString(System.identityHashCode(jumpEntry),16) + " " + jumpEntry);
  			System.out.println(" current lvValues " + lvValues);
 			}
- 			
-			if (reachOnlyByBranch) lvValues = new ArrayList<Item>(jumpEntry);
-			else mergeLists(lvValues, jumpEntry, false);
+ 			List<Item> jumpStackEntry = jumpStackEntries.get(dbc.getPC());
+			if (reachOnlyByBranch) {
+				lvValues = new ArrayList<Item>(jumpEntry);
+				if (jumpStackEntry != null) stack = new ArrayList<Item>(jumpStackEntry);
+				else stack.clear();
+			}
+			else {
+				mergeLists(lvValues, jumpEntry, false);
+				if (jumpStackEntry != null) mergeLists(stack, jumpStackEntry, false);
+			}
 			if (DEBUG)
  			System.out.println(" merged lvValues " + lvValues);
  		}
- 		else if (dbc.getPC() == jumpTarget) {
-			jumpTarget = -1;
-			if (!jumpStack.empty()) {
-				
-				List<Item> stackToMerge = jumpStack.pop();
-				if (DEBUG) {
-					System.out.println("************");
-					System.out.println("merging stacks at " + dbc.getPC() + " -> " + stackToMerge);
-					System.out.println(" current stack " + stack);
-					}
-				if (reachOnlyByBranch) lvValues = new ArrayList<Item>(stackToMerge);
-				else mergeLists(stack, stackToMerge, true);
-				if (DEBUG) 
-					System.out.println(" updated stack " + stack);
-			} }
- 		reachOnlyByBranch = false;
+ 			reachOnlyByBranch = false;
 		}
 	
 	int convertJumpToOneZeroState = 0;
@@ -616,8 +606,9 @@ public class OpcodeStack implements Constants2
 					{
 					FieldAnnotation field = FieldAnnotation.fromReferencedField(dbc);
 	 				Item i = new Item(dbc.getSigConstantOperand(), field);
-	 				if (field.getFieldName().equals("separator") && field.getClassName().equals("java.io.File"))
+	 				if (field.getFieldName().equals("separator") && field.getClassName().equals("java.io.File")) {
 	 					i.setSpecialKind(Item.FILE_SEPARATOR_STRING);
+	 				}
 	 				
 	 				push(i);
 					break;
@@ -777,12 +768,8 @@ public class OpcodeStack implements Constants2
 	 			case GOTO_W:					//It is assumed that no stack items are present when
 					seenTransferOfControl = true;
 					reachOnlyByBranch = true;
-					if (getStackDepth() > 0) {
-						jumpStack.push(new ArrayList<Item>(stack));
-						pop();
-						jumpTarget = dbc.getBranchTarget();
-						}
 					addJumpValue(dbc.getBranchTarget());
+					stack.clear();
 					
 	 			break;
 	 				
@@ -1468,13 +1455,14 @@ public class OpcodeStack implements Constants2
  	public void clear() {
  		stack.clear();
  		lvValues.clear();
-		jumpStack.clear();
  	}
  	BitSet exceptionHandlers = new BitSet();
  	private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
+ 	private Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
+ 	
  	private void addJumpValue(int target) {
  		if (DEBUG)
- 			System.out.println("Set jump entry at " + methodName + ":" + target + "pc to " + lvValues);
+ 			System.out.println("Set jump entry at " + methodName + ":" + target + "pc to " + stack + " : " +  lvValues );
  		
  		List<Item> atTarget = jumpEntries.get(target);
  		if (atTarget == null) {
@@ -1488,16 +1476,22 @@ public class OpcodeStack implements Constants2
 				List<Item> list = jumpEntries.get(pc);
 				System.out.println(pc + "pc -> " + Integer.toString(System.identityHashCode(list),16) + " " + list);
  			}}
+ 			if (stack.size() > 0)
+ 				jumpStackEntries.put(target, new ArrayList<Item>(stack));
  			return;
  		}
  		mergeLists(atTarget, lvValues, false);
-			if (DEBUG)
+ 		List<Item> stackAtTarget = jumpStackEntries.get(target);
+ 		if (stack.size() > 0 && stackAtTarget != null) 
+ 			mergeLists(stackAtTarget, stack, false);
+		if (DEBUG)
  	 			System.out.println("merge target for " + methodName + ":" + target + "pc is " + atTarget);
  	}
  	private String methodName;
  	public int resetForMethodEntry(final DismantleBytecode v) {
  		methodName = v.getMethodName();
 		jumpEntries.clear();
+		jumpStackEntries.clear();
 		lastUpdate.clear();
 		convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
 		reachOnlyByBranch = false;
@@ -1546,9 +1540,7 @@ public class OpcodeStack implements Constants2
 	private int resetForMethodEntry0(PreorderVisitor v) {
 		if (DEBUG) System.out.println(" --- ");
  		stack.clear();
-		jumpTarget = -1;
  		lvValues.clear();
-		jumpStack.clear();
 		reachOnlyByBranch = false;
 		seenTransferOfControl = false;
 		String className = v.getClassName();
