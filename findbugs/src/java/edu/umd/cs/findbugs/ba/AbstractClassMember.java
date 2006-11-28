@@ -38,14 +38,14 @@ public abstract class AbstractClassMember implements ClassMember {
 			// className = className.replace('.','/');
 			dottedCountClass++;
 		} else if (className.indexOf('/') >= 0)  {
+			assert false;
 			slashCountClass++;
 			className = className.replace('/','.');
-			assert false;
 		}
 		if (signature.indexOf('.') >= 0) {
+			assert false;
 			signature = signature.replace('.','/');
 			dottedCountSignature++;
-			assert false;
 		} else if (signature.indexOf('/') >= 0)  slashCountSignature++;
 		this.className = className;
 		this.name = name;
