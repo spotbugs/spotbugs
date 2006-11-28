@@ -109,6 +109,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	static final Pattern anonymousInnerClassNamePattern =
 			Pattern.compile(".+\\$\\d+");
 	boolean isAnonymousInnerClass;
+	boolean innerClassHasOuterInstance;
 	private boolean isEnum;
 	@Override
          public void visit(JavaClass obj) {
@@ -122,7 +123,13 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		isAnonymousInnerClass 
 		  = anonymousInnerClassNamePattern
 			.matcher(getClassName()).matches();
-		
+		innerClassHasOuterInstance = false;
+		for(Field f : obj.getFields()) {
+			if (f.getName().equals("this$0")) {
+				innerClassHasOuterInstance = true;
+				break;
+			}
+		}
 		
 		sawSerialVersionUID = false;
 		isSerializable = implementsSerializableDirectly = false;
@@ -466,6 +473,10 @@ public class SerializableIdiom extends BytecodeScanningDetector
 					if (priority > NORMAL_PRIORITY
 							&& obj.getName().startsWith("this$"))
 						    priority = NORMAL_PRIORITY;
+					else if (innerClassHasOuterInstance) {
+						if (isAnonymousInnerClass) priority+=2;
+						else priority+=1;
+					}
 					if (false)
 					System.out.println("SE_BAD_FIELD: " + getThisClass().getClassName()
 						+" " +  obj.getName()	
