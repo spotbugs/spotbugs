@@ -493,7 +493,8 @@ public class SerializableIdiom extends BytecodeScanningDetector
 					        .addClass(getThisClass().getClassName())
 					        .addField(getDottedClassName(), obj.getName(), getFieldSig(), false));
 				} else if (obj.getName().equals("this$0"))
-					fieldWarningList.add(new BugInstance(this, "SE_INNER_CLASS", NORMAL_PRIORITY)
+					fieldWarningList.add(new BugInstance(this, "SE_INNER_CLASS",
+							implementsSerializableDirectly ? NORMAL_PRIORITY : LOW_PRIORITY)
 			        .addClass(getThisClass().getClassName()));
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
