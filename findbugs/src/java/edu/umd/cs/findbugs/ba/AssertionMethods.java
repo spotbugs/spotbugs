@@ -116,22 +116,24 @@ public class AssertionMethods implements Constants {
 					boolean voidReturnType = methodSig.endsWith(")V");
 					
 					if (DEBUG) {
-						System.out.print("Is " + className + "." + methodName + " assertion method: ");
+						System.out.print("Is " + className + "." + methodName + " assertion method: " + voidReturnType);
 					}
 
-					if (isUserAssertionMethod(className, methodName) ||
-							className.endsWith("Assert") && methodName.startsWith("is") || 
-					        voidReturnType &&  // comment this out for now
-					        (classNameLC.indexOf("assert") >= 0 ||
-					        methodNameLC.startsWith("throw") ||
-					        methodNameLC.equals("insist")  ||
-					        methodNameLC.equals("usage")  
-					        ||methodNameLC.indexOf("assert") >= 0 
-					        ||methodNameLC.indexOf("legal") >= 0 
-					        || methodNameLC.indexOf("error") >= 0 ||
-					        methodNameLC.indexOf("abort") >= 0 
-					        || methodNameLC.indexOf("check") >= 0 ||
-					        methodNameLC.indexOf("failed") >= 0)) {
+					if (isUserAssertionMethod(className, methodName)
+							|| className.endsWith("Assert")
+							&& methodName.startsWith("is")
+							|| voidReturnType
+							&& (classNameLC.indexOf("assert") >= 0
+									|| methodNameLC.startsWith("throw")
+									|| methodNameLC.equals("insist")
+									|| methodNameLC.equals("usage")
+									|| methodNameLC.startsWith("fail")
+									|| methodNameLC.startsWith("fatal")
+									|| methodNameLC.indexOf("assert") >= 0
+									|| methodNameLC.indexOf("legal") >= 0
+									|| methodNameLC.indexOf("error") >= 0
+									|| methodNameLC.indexOf("abort") >= 0
+									|| methodNameLC.indexOf("check") >= 0 || methodNameLC.indexOf("failed") >= 0)) {
 						assertionMethodRefSet.set(i);
 						if (DEBUG) {
 							System.out.println("==> YES");
