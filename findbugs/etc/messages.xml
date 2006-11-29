@@ -3040,6 +3040,19 @@ of the outer class, which it often not what you really want.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SE_INNER_CLASS">
+    <ShortDescription>Serializable inner class</ShortDescription>
+    <LongDescription>{0} is serializable and an inner class</LongDescription>
+    <Details>
+<![CDATA[
+<p> This Serializable class is an inner class.  Any attempt to serialize
+it will also serialize the associated outer instance. The outer instance is serializable,
+so this won't fail, but it might serialize a lot more data than intended.
+If possible, making the inner class a static inner class (also known as a nested class) should solve the 
+problem. 
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="SE_BAD_FIELD_STORE">
     <ShortDescription>Non-serializable value stored into instance field of a serializable class</ShortDescription>

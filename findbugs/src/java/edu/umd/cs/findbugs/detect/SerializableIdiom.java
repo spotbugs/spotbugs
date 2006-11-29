@@ -441,9 +441,9 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	private OpcodeStack stack = new OpcodeStack();
 	
 	@Override
-         public void visit(Field obj) {
+    public void visit(Field obj) {
 		int flags = obj.getAccessFlags();
-
+		
 		if (obj.isTransient()) {
 			if (isSerializable) {
 				seenTransientField = true;
@@ -489,10 +489,12 @@ public class SerializableIdiom extends BytecodeScanningDetector
 					if (obj.getName().equals("this$0"))
 						fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_INNER_CLASS", priority)
 					        .addClass(getThisClass().getClassName()));
-						else fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
+						else if (isSerializable < 0.9) fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
 					        .addClass(getThisClass().getClassName())
 					        .addField(getDottedClassName(), obj.getName(), getFieldSig(), false));
-				}
+				} else if (obj.getName().equals("this$0"))
+					fieldWarningList.add(new BugInstance(this, "SE_INNER_CLASS", NORMAL_PRIORITY)
+			        .addClass(getThisClass().getClassName()));
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
 			}
