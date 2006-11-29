@@ -177,6 +177,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			myFields.add(f);
 			if (obj.isFinal()) finalFields.add(f);
 			if (obj.isStatic()) staticFields.add(f);
+			if (obj.getName().equals("_jspx_dependants"))
+				containerFields.add(f);
 		}
 	}
 
