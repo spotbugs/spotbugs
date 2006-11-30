@@ -310,7 +310,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			}
 			
 			// [Added: Support for Generics]
-			String s = iter == null ? null : iter.next();
+			String s = ( iter == null  || !iter.hasNext() )? null : iter.next();
 			if (	s != null && 
 					(argType instanceof ObjectType || argType instanceof ArrayType) &&
 					!(argType instanceof ExceptionObjectType) 
