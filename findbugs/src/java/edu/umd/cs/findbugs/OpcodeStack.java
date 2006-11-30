@@ -732,7 +732,7 @@ public class OpcodeStack implements Constants2
 	 			case IINC:
 	 				register = dbc.getRegisterOperand();
 	 				it = getLVValue( register );
-	 				it2 = new Item("I", new Integer(dbc.getIntConstant()));
+	 				it2 = new Item("I", dbc.getIntConstant());
 	 				pushByIntMath( IADD, it2, it);
 	 				pushByLocalStore(register);
 	 			break;
@@ -926,7 +926,7 @@ public class OpcodeStack implements Constants2
 	 			case INEG:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("I", new Integer(-(Integer) it.getConstant())));
+	 					push(new Item("I", ( Integer)(-(Integer) it.getConstant())));
 	 				} else {
 	 					push(new Item("I"));
 	 				}
@@ -935,7 +935,7 @@ public class OpcodeStack implements Constants2
 	 			case LNEG:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("J", new Long(-(Long) it.getConstant())));
+	 					push(new Item("J", ( Long)(-(Long) it.getConstant())));
 	 				} else {
 	 					push(new Item("J"));
 	 				}
@@ -944,7 +944,7 @@ public class OpcodeStack implements Constants2
 	 			case DNEG:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("D", new Double(-(Double) it.getConstant())));
+	 					push(new Item("D", ( Double)(-(Double) it.getConstant())));
 	 				} else {
 	 					push(new Item("D"));
 	 				}
@@ -1058,7 +1058,7 @@ public class OpcodeStack implements Constants2
 	 			case I2F:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("F", new Float(constantToFloat(it))));
+	 					push(new Item("F", (Float)(constantToFloat(it))));
 	 				} else {
 	 					push(new Item("F"));
 	 				}
@@ -1225,11 +1225,11 @@ public class OpcodeStack implements Constants2
 				float f = (Float) it.getConstant();
 				float f2 = (Float) it.getConstant();
 				if (f2 < f)
-					push(new Item("I", new Integer(-1)));
+					push(new Item("I", (Integer)(-1)));
 				else if (f2 > f)
-					push(new Item("I", new Integer(1)));
+					push(new Item("I", (Integer)(1)));
 				else
-					push(new Item("I", new Integer(0)));
+					push(new Item("I", (Integer)(0)));
 			} else {
 				push(new Item("I"));
 			}
@@ -1617,17 +1617,17 @@ public class OpcodeStack implements Constants2
 		if (c instanceof ConstantClass)
 			push(new Item("Ljava/lang/Class;", ((ConstantClass)c).getConstantValue(dbc.getConstantPool())));
 		else if (c instanceof ConstantInteger)
-			push(new Item("I", new Integer(((ConstantInteger) c).getBytes())));
+			push(new Item("I", (Integer)(((ConstantInteger) c).getBytes())));
 		else if (c instanceof ConstantString) {
 			int s = ((ConstantString) c).getStringIndex();
 			push(new Item("Ljava/lang/String;", getStringFromIndex(dbc, s)));
 		}
 		else if (c instanceof ConstantFloat)
-			push(new Item("F", new Float(((ConstantFloat) c).getBytes())));
+			push(new Item("F", (Float)(((ConstantFloat) c).getBytes())));
 		else if (c instanceof ConstantDouble)
-			push(new Item("D", new Double(((ConstantDouble) c).getBytes())));
+			push(new Item("D", (Double)(((ConstantDouble) c).getBytes())));
 		else if (c instanceof ConstantLong)
-			push(new Item("J", new Long(((ConstantLong) c).getBytes())));
+			push(new Item("J", (Long)(((ConstantLong) c).getBytes())));
 		else
 			throw new UnsupportedOperationException("Constant type not expected" );
  	}

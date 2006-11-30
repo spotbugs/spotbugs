@@ -63,7 +63,7 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
 		int shift = isStatic ? 0 : 1;
 		for (int i = 0; i < numParams; ++i) {
 			valueNumberToParamMap.put(
-					frameAtEntry.getValue(i + shift), new Integer(i));
+					frameAtEntry.getValue(i + shift), (Integer)(i));
 		}
 		
 		return valueNumberToParamMap;

@@ -62,10 +62,10 @@ public class ProjectFilterSettings implements Cloneable {
 	/** Map of priority level names to their numeric values.  */
 	private static Map<String, Integer> priorityNameToValueMap = new HashMap<String, Integer>();
 	static {
-		priorityNameToValueMap.put(HIGH_PRIORITY, new Integer(Detector.HIGH_PRIORITY));
-		priorityNameToValueMap.put(MEDIUM_PRIORITY, new Integer(Detector.NORMAL_PRIORITY));
-		priorityNameToValueMap.put(LOW_PRIORITY, new Integer(Detector.LOW_PRIORITY));
-		priorityNameToValueMap.put(EXPERIMENTAL_PRIORITY, new Integer(Detector.EXP_PRIORITY));
+		priorityNameToValueMap.put(HIGH_PRIORITY, (Integer)(Detector.HIGH_PRIORITY));
+		priorityNameToValueMap.put(MEDIUM_PRIORITY, (Integer)(Detector.NORMAL_PRIORITY));
+		priorityNameToValueMap.put(LOW_PRIORITY, (Integer)(Detector.LOW_PRIORITY));
+		priorityNameToValueMap.put(EXPERIMENTAL_PRIORITY, (Integer)(Detector.EXP_PRIORITY));
 	}
 	
 	/**

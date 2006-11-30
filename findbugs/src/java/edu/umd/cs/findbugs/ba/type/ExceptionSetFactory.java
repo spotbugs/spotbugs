@@ -45,7 +45,7 @@ public class ExceptionSetFactory implements Serializable {
 	int getIndexOfType(ObjectType type) {
 		Integer index = typeIndexMap.get(type);
 		if (index == null) {
-			index = new Integer(getNumTypes());
+			index = (Integer)(getNumTypes());
 			typeList.add(type);
 			typeIndexMap.put(type, index);
 		}
