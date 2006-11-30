@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -112,43 +113,47 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 					argumentParameterIndex);
 	}
 
+	String [] collectionMembers = new String [] {
+			"java.util.Collection",
+			"java.util.AbstractCollection",
+			"java.util.List",
+			"java.util.AbstractList",
+			"java.util.ArrayList",
+			"java.util.LinkedList",
+			"java.util.Set",
+			"java.util.SortedSet",
+			"java.util.LinkedHashSet",
+			"java.util.HashSet",
+			"java.util.TreeSet"	
+	};
+	
+	String [] mapMembers = new String [] {
+			"java.util.Map",
+			"java.util.AbstractMap",
+			"java.util.SortedMap",
+			"java.util.TreeMap",
+			"java.util.HashMap",
+			"java.util.LinkedHashMap",
+			"java.util.concurrent.ConcurrentHashMap",
+			"java.util.EnumMap",
+			"java.util.Hashtable",
+			"java.util.IdentityHashMap",
+			"java.util.WeakHashMap"
+	};
+	
+	String [] listMembers = new String [] {
+			"java.util.List",
+			"java.util.AbstractList",
+			"java.util.ArrayList",
+			"java.util.LinkedList"
+	};
+
 	public FindUnrelatedTypesInGenericContainer(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		String basicSignature = "(Ljava/lang/Object;)Z";
 		String collectionSignature = "(Ljava/util/Collection<*>;)Z";
 		String indexSignature = "(Ljava/lang/Object;)I";
 		
-		String [] collectionMembers = new String [] {
-				"java.util.Collection",
-				"java.util.AbstractCollection",
-				"java.util.List",
-				"java.util.AbstractList",
-				"java.util.ArrayList",
-				"java.util.LinkedList",
-				"java.util.Set",
-				"java.util.SortedSet",
-				"java.util.LinkedHashSet",
-				"java.util.HashSet",
-				"java.util.TreeSet"	
-		};
-		
-		String [] mapMembers = new String [] {
-				"java.util.Map",
-				"java.util.AbstractMap",
-				"java.util.SortedMap",
-				"java.util.TreeMap",
-				"java.util.HashMap",
-				"java.util.LinkedHashMap",
-				"java.util.concurrent.ConcurrentHashMap"
-		};
-		
-		String [] listMembers = new String [] {
-				"java.util.List",
-				"java.util.AbstractList",
-				"java.util.ArrayList",
-				"java.util.LinkedList"
-		};
-
 		// Collection<E>
 		addToCollectionsMap(collectionMembers, "contains", basicSignature, 0);
 		//addToCollectionsMap(collectionMembers, "equals",   basicSignature, 0);
@@ -375,6 +380,17 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	private @CheckForNull String [] getRelevantTriplet(String [] instructionTriplet) {
 		if (collectionsMap.containsKey( getCollectionsMapKey(instructionTriplet) ))
 			return instructionTriplet;
+		
+		// HARDCODES
+		// Map "get" and "remove"
+		if (Arrays.asList(mapMembers).contains(instructionTriplet[0])) {
+			if ( "get"   .equals(instructionTriplet[1]) || 
+				 "remove".equals(instructionTriplet[1]) ) {
+				addToCollectionsMap(instructionTriplet[0], 
+						instructionTriplet[1], instructionTriplet[2], 0);
+				return instructionTriplet;
+			}
+		}
 		
 		// XXX The rest not implemented
 		
