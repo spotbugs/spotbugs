@@ -24,6 +24,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.FieldOrMethod;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -181,19 +182,47 @@ public class GenericSignatureParser {
 	 *  		signature of method. Returns null if the
 	 *  		generic signature cannot be parsed
 	 */
-	public static @CheckForNull Iterator<String> getGenericSignatureIterator(FieldOrMethod target) {
+	public static @CheckForNull Iterator<String> getGenericSignatureIterator(Method target) {
 		try {
 			GenericSignatureParser parser = null;
+			String genericSignature = null;			
 			for (Attribute a : target.getAttributes()) {
-				if (a instanceof Signature) {				
-						parser = new GenericSignatureParser( ((Signature) a).getSignature() );
-						break;
+				if (a instanceof Signature) {
+					
+					Signature sig = (Signature) a;
+					if ( genericSignature != null) {
+						if (!genericSignature.equals(sig.getSignature()) )
+							return null; // we've seen two inconsistent signatures
+						continue;
+					}
+					
+					genericSignature = sig.getSignature();
+					if (compareSignatures(target.getSignature(), genericSignature))
+						parser = new GenericSignatureParser( genericSignature );
 				}
 			}
-			Iterator<String> iter = parser.parameterSignatureIterator();			
+			Iterator<String> iter = parser == null ? null :
+				parser.parameterSignatureIterator();			
 			return iter;
 		} catch (RuntimeException e) {} // degrade gracefully
 		return null;
+	}
+	
+	/**
+	 * Compare a plain method signature to the a generic method Signature and
+	 * return true if they match
+	 */
+	public static boolean compareSignatures(
+			String plainSignature, String genericSignature) {
+		GenericSignatureParser plainParser =
+			new GenericSignatureParser( plainSignature );
+		GenericSignatureParser genericParser =
+			new GenericSignatureParser( genericSignature );
+		
+		if (plainParser.getNumParameters() != genericParser.getNumParameters())
+			return false;
+		
+		return true;
 	}
 
 	

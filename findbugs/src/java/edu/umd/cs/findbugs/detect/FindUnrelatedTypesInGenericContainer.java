@@ -116,6 +116,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		this.bugReporter = bugReporter;
 		String basicSignature = "(Ljava/lang/Object;)Z";
 		String collectionSignature = "(Ljava/util/Collection<*>;)Z";
+		String indexSignature = "(Ljava/lang/Object;)I";
 		
 		String [] collectionMembers = new String [] {
 				"java.util.Collection",
@@ -153,17 +154,19 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		//addToCollectionsMap(collectionMembers, "equals",   basicSignature, 0);
 		addToCollectionsMap(collectionMembers, "remove",   basicSignature, 0);
 
-		addToCollectionsMap(collectionMembers, "containsAll", collectionSignature, 0);
-		addToCollectionsMap(collectionMembers, "removeAll",   collectionSignature, 0);
-		addToCollectionsMap(collectionMembers, "retainAll",   collectionSignature, 0);
+		//addToCollectionsMap(collectionMembers, "containsAll", collectionSignature, 0);
+		//addToCollectionsMap(collectionMembers, "removeAll",   collectionSignature, 0);
+		//addToCollectionsMap(collectionMembers, "retainAll",   collectionSignature, 0);
 		
 		// List<E>
-		addToCollectionsMap(listMembers, "indexOf", basicSignature, 0);
-		addToCollectionsMap(listMembers, "lastIndexOf", basicSignature, 0);
+		addToCollectionsMap(listMembers, "indexOf", indexSignature, 0);
+		addToCollectionsMap(listMembers, "lastIndexOf", indexSignature, 0);
 		
 		// Map<K,V>
 		addToCollectionsMap(mapMembers, "containsKey", basicSignature, 0);
 		addToCollectionsMap(mapMembers, "containsValue", basicSignature, 1);
+		
+		// XXX these do not work, to support these need changeable return types
 		addToCollectionsMap(mapMembers, "get", basicSignature, 0);
 		addToCollectionsMap(mapMembers, "remove", basicSignature, 0);
 	}
@@ -290,8 +293,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			
 			int numArguments = frame.getNumArguments(inv, cpg);
 			
-			if (numArguments <= 0 || operand.getNumParameters() != numArguments ||
-					argumentParameterIndex.length != numArguments)
+			if (numArguments <= 0 || argumentParameterIndex.length != numArguments)
 				continue; 
 			
 			// compare containers type parameters to corresponding arguments
@@ -302,6 +304,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			Type parmType = null, argType = null;			
 			for (int ii=0; ii < numArguments; ii++) {
 				if (argumentParameterIndex[ii] < 0) continue; // not relevant argument
+				if (argumentParameterIndex[ii] >= operand.getNumParameters()) 
+					continue; // should never happen
 				
 				parmType = operand.getParameterAt(argumentParameterIndex[ii]);
 				argType = frame.getArgument(inv, cpg, ii, numArguments);
