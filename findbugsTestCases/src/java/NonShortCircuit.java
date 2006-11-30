@@ -1,6 +1,9 @@
 class NonShortCircuit {
 	boolean b;
 
+	boolean arrayDanger(int [] a, int i, int x) {
+		return i < a.length & a[i] == x;
+	}
 	boolean bothBitsFalsePositive(int i) {
 		return and((i & 0x1) != 0, (i & 0x2) != 0);
 	}
@@ -11,6 +14,11 @@ class NonShortCircuit {
 	void orIt(boolean x, boolean y) {
 		x |= y;
 		b |= x;
+	}
+
+	void andIt(boolean x, boolean y) {
+		x &= y;
+		b &= x;
 	}
 
 	boolean ordered(int x, int y, int z) {

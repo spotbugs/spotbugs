@@ -4,6 +4,11 @@ import java.nio.channels.FileChannel;
 public class OpenStream {
 	public OutputStream os;
 
+	
+	int simpleObviousBug(String f) throws IOException {
+		FileInputStream in = new FileInputStream(f);
+		return in.read();
+	}
 	public static void main(String[] argv) throws Exception {
 		FileInputStream in = null;
 
