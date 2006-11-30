@@ -58,7 +58,7 @@ public class FindBadCast2 implements Detector {
 
 	private static final boolean DEBUG = SystemProperties.getBoolean("bc.debug");
 
-	public FindBadCast2(BugReporter bugReporter) {
+	public FindBadCast2(BugReporter bugReporter) {		
 		this.bugReporter = bugReporter;
 		veryAbstractCollectionClasses.add("java.util.Collection");
 		veryAbstractCollectionClasses.add("java.util.Iterable");

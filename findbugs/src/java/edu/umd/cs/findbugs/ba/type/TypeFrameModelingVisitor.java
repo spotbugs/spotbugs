@@ -20,6 +20,9 @@
 package edu.umd.cs.findbugs.ba.type;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.generic.*;
 
 import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
@@ -31,6 +34,7 @@ import edu.umd.cs.findbugs.ba.InvalidBytecodeException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -299,22 +303,46 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		consumeStack(obj);
 
 		Type loadType = obj.getType(getCPG());
-		if (database != null && (loadType instanceof ReferenceType)) {
+		Type originalLoadType = loadType;
+
+		try {
 			// Check the field store type database to see if we can
 			// get a more precise type for this load.
-			try {
-				XField xfield = Hierarchy.findXField(obj, getCPG());
-				if (xfield != null) {
-					FieldStoreType property = database.getProperty(xfield);
-					if (property != null) {
-						loadType = property.getLoadType((ReferenceType) loadType);
+			XField xfield = Hierarchy.findXField(obj, getCPG());
+			if (database != null && (loadType instanceof ReferenceType) && xfield != null) {
+				FieldStoreType property = database.getProperty(xfield);
+				if (property != null) {
+					loadType = property.getLoadType((ReferenceType) loadType);
+				}
+			}
+
+			// [Added: Support for Generics]
+			// XXX If the loadType was not changed by the FieldStoreTypeDatabase, then
+			// we can assume, that the signature for obj is still relevant. This should
+			// be updated by inserting generic information in the FieldStoreTypeDatabase
+			if (originalLoadType.equals(loadType) && xfield != null) {
+				// find the field and its signature
+				Field field = Hierarchy.findField(xfield.getClassName(), xfield.getName());
+				String signature = null;
+				for (Attribute a : field.getAttributes()) {
+					if (a instanceof Signature) {
+						signature = ((Signature) a).getSignature();
+						break;
 					}
 				}
-			} catch (ClassNotFoundException e) {
-				AnalysisContext.reportMissingClass(e);
+				
+				// replace loadType with information from field signature (conservative)
+				if (signature != null && 
+					(loadType instanceof ObjectType || loadType instanceof ArrayType) &&
+					!(loadType instanceof ExceptionObjectType)
+					) {
+					loadType = GenericUtilities.getType( signature );
+				}
 			}
-		}
-		
+		} catch (ClassNotFoundException e) {
+			AnalysisContext.reportMissingClass(e);
+		} catch (RuntimeException e) {} // degrade gracefully
+				
 		pushValue(loadType);
 	}
 

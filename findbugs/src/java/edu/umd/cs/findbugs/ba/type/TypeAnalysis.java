@@ -24,8 +24,11 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.generic.ATHROW;
+import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.CodeExceptionGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ExceptionThrower;
@@ -60,6 +63,8 @@ import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
+import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -284,10 +289,17 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		if (!methodGen.isStatic())
 			result.setValue(slot++, ObjectTypeFactory.getInstance(methodGen.getClassName()));
 
+		// [Added: Support for Generics]
+		// Get a parser that reads the generic signature of the method and
+		// can be used to get the correct GenericObjectType if an argument
+		// has a class type
+		Iterator<String> iter = 
+			GenericSignatureParser.getGenericSignatureIterator(methodGen.getMethod());
+		
 		// Add locals for parameters.
 		// Note that long and double parameters need to be handled
 		// specially because they occupy two locals.
-		Type[] argumentTypes = methodGen.getArgumentTypes();
+		Type[] argumentTypes = methodGen.getArgumentTypes();		
 		for (Type argType : argumentTypes) {
 			// Add special "extra" type for long or double params.
 			// These occupy the slot before the "plain" type.
@@ -295,6 +307,18 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 				result.setValue(slot++, TypeFrame.getLongExtraType());
 			} else if (argType.getType() == Constants.T_DOUBLE) {
 				result.setValue(slot++, TypeFrame.getDoubleExtraType());
+			}
+			
+			// [Added: Support for Generics]
+			String s = iter == null ? null : iter.next();
+			if (	s != null && 
+					(argType instanceof ObjectType || argType instanceof ArrayType) &&
+					!(argType instanceof ExceptionObjectType) 
+				) {
+				// replace with a generic version of the type
+				try { 
+					argType = GenericUtilities.getType(s);
+				} catch (RuntimeException e) {} // degrade gracefully
 			}
 
 			// Add the plain parameter type.

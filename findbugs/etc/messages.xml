@@ -1259,6 +1259,22 @@ factory pattern to create these objects.</p>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer">
+    <Details>
+    <![CDATA[
+    <p> This detector looks at the arguments of calls to generic 
+    container methods that receive a <code>java.lang.Object</code>
+    to see if the argument's type is related to the container's 
+    parameter. Arguments with unrelated class types are never going 
+    to be in the container. For example, if <code>foo</code> is a 
+    <code>List&lt;String&gt;</code> and <code>bar</code> is a 
+    <code>StringBuffer</code>, the call <code>foo.contains(bar)</code>
+    will always return false. This is a fast detector. 
+    </p>
+    ]]>
+    </Details>
+  </Detector>
+
   <!--
   **********************************************************************
   BugPatterns
@@ -5419,6 +5435,20 @@ and the next method is supposed to change the state of the iterator.
     </Details>
   </BugPattern>
 
+  <BugPattern type="GC_UNRELATED_TYPES">
+    <ShortDescription>No relationship between generic parameter and method argument</ShortDescription>
+    <LongDescription>Generic parameter '{2}' is not related to the argument '{3}' used in {1}</LongDescription>
+    <Details>
+     <![CDATA[
+     <p> This call to a generic container's method contains an argument
+     with a different class type from that of the container's parameter. 
+     Therefore, it is unlikely that the container contains any objects 
+     with the same type as the method argument used here.
+     </p>
+     ]]>
+    </Details>
+  </BugPattern>
+
   <!--
   **********************************************************************
    BugCodes
@@ -5535,4 +5565,5 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="QBA">Questionable Boolean Assignment</BugCode>
   <BugCode abbrev="VR">Version compatibility issue</BugCode>
   <BugCode abbrev="DP">Use doPrivileged</BugCode>
+  <BugCode abbrev="GC">Suspicious calls to generic container methods</BugCode>
   </MessageCollection>

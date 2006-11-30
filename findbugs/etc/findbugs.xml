@@ -606,6 +606,10 @@
   
   <Detector class="edu.umd.cs.findbugs.detect.TestASM" speed="fast" disabled="true" reports="" />
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer" 
+            speed="fast"
+            reports="GC_UNRELATED_TYPES" />
+
   <BugPattern abbrev="VR" type="VR_UNRESOLVABLE_REFERENCE" category="CORRECTNESS"
     experimental="true"/>
 
@@ -904,4 +908,5 @@
         experimental="true"/>
   <BugPattern abbrev="CI" type="CI_CONFUSED_INHERITANCE" category="STYLE"/>
   <BugPattern abbrev="QBA" type="QBA_QUESTIONABLE_BOOLEAN_ASSIGNMENT" category="CORRECTNESS"/>
+  <BugPattern abbrev="GC" type="GC_UNRELATED_TYPES" category="CORRECTNESS"/>  
 </FindbugsPlugin>
