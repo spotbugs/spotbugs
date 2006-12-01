@@ -65,39 +65,32 @@ public class TestGenericObjectType extends TestCase {
 		assertEquals(obj.getClassName(), underlyingClass);
 		assertEquals(obj.getTypeCategory(), typeCategory);
 		
-		switch(typeCategory) {
-			case PARAMETERS:
-				assertTrue(obj.hasParameters());
-				assertTrue(obj.getNumParameters() == parameters.size());
-				for (int i=0; i<obj.getNumParameters(); i++)
-					compareTypes(obj.getParameterAt(i), parameters.get(i));
-				assertNull(obj.getVariable());
-				assertNull(obj.getExtension());
-				break;
-				
-			case TYPE_VARIABLE:
-				assertFalse(obj.hasParameters());
-				assertNull(obj.getExtension());
-				assertNotNull(obj.getVariable());
-				assertEquals(obj.getVariable(), variable);
-				break;
-				
-			case WILDCARD:
-				assertFalse(obj.hasParameters());
-				assertNull(obj.getExtension());
-				assertNotNull(obj.getVariable());
-				assertEquals(obj.getVariable(), "*");
-				break;
-				
-			case WILDCARD_EXTENDS:
-			case WILDCARD_SUPER:
-				assertFalse(obj.hasParameters());
-				assertNotNull(obj.getExtension());
-				assertNotNull(obj.getVariable());
-				assertEquals(obj.getVariable(), variable);
-				compareTypes(obj.getExtension(), extension);
+		if (typeCategory == TypeCategory.PARAMETERS) {
+			assertTrue(obj.hasParameters());
+			assertTrue(obj.getNumParameters() == parameters.size());
+			for (int i=0; i<obj.getNumParameters(); i++)
+				compareTypes(obj.getParameterAt(i), parameters.get(i));
+			assertNull(obj.getVariable());
+			assertNull(obj.getExtension());
+		}else if (typeCategory == TypeCategory.TYPE_VARIABLE) { 
+			assertFalse(obj.hasParameters());
+			assertNull(obj.getExtension());
+			assertNotNull(obj.getVariable());
+			assertEquals(obj.getVariable(), variable);
+		}else if (typeCategory == TypeCategory.WILDCARD) { 
+			assertFalse(obj.hasParameters());
+			assertNull(obj.getExtension());
+			assertNotNull(obj.getVariable());
+			assertEquals(obj.getVariable(), "*");
+		} else if (typeCategory == TypeCategory.WILDCARD_EXTENDS || typeCategory == TypeCategory.WILDCARD_SUPER) { 
+			assertFalse(obj.hasParameters());
+			assertNotNull(obj.getExtension());
+			assertNotNull(obj.getVariable());
+			assertEquals(obj.getVariable(), variable);
+			compareTypes(obj.getExtension(), extension);
 		}
 	}
+
 	
 	private void compareTypes(Type a, Type b) {
 		assertEquals(a, b);

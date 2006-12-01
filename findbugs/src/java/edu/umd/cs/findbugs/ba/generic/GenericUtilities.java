@@ -36,33 +36,36 @@ import org.apache.bcel.generic.Type;
  */
 public class GenericUtilities {
 
-	public static enum TypeCategory {
+	public static abstract class TypeCategory {
 		/** anything that is not a reference */
-		NON_REFERENCE_TYPE {
+		public static final TypeCategory NON_REFERENCE_TYPE = new TypeCategory(){
 			public String asString(GenericObjectType obj) {
 				// obj.getTypeCategory() does not return NON_REFERENCE_TYPE
 				return GenericUtilities.getString(obj);
 			}
-		},
+		};
 	
 		/** A simple (non-generic ObjectType) */
-		PLAIN_OBJECT_TYPE {
+		public static final TypeCategory PLAIN_OBJECT_TYPE = new TypeCategory()
+		 {
 			public String asString(GenericObjectType obj) {
 				// obj.getTypeCategory() does not return PLAIN_OBJECT_TYPE
 				return GenericUtilities.getString(obj);
 			}
-		},
+		};
 	
 		/** A array */
-		ARRAY_TYPE {
+		public static final TypeCategory ARRAY_TYPE = new TypeCategory()
+		 {
 			public String asString(GenericObjectType obj) {
 				// obj.getTypeCategory() does not return ARRAY_TYPE
 				return GenericUtilities.getString(obj);
 			}
-		},
+		};
 	
 		/** A parameterized class e.g. <code>List&lt;String&gt;</code> */
-		PARAMETERS {
+		public static final TypeCategory PARAMETERS = new TypeCategory()
+		 {
 			public String asString(GenericObjectType obj) {
 				String result = obj.toString();
 				result += "<";
@@ -71,37 +74,41 @@ public class GenericUtilities {
 				}
 				return result.substring(0,result.length()-1) + ">";				
 			}
-		},
+		};
 	
 		/** A simple type variable e.g. <code>E</code>. 
 		 *  Underlying ObjectType is <code>java.lang.Object</code> */
-		TYPE_VARIABLE {
+		public static final TypeCategory TYPE_VARIABLE = new TypeCategory()
+		 {
 			public String asString(GenericObjectType obj) {				
 				return obj.variable;				
 			}
-		},
+		};
 	
 		/** A simple wildcard i.e. <code>?</code>. 
 		 *  Underlying ObjectType is <code>java.lang.Object</code> */
-		WILDCARD {
+		public static final TypeCategory WILDCARD = new TypeCategory()
+		 {
 			public String asString(GenericObjectType obj) {				
 				return "?";				
 			}
-		},
+		};
 	
 		/** A wildcard that extends another ObjectType e.g. <code>? extends Comparable</code>. 
 		 *  Underlying ObjectType is <code>java.lang.Object</code>.
 		 *  The extended type can be an ObjectType or a GenericObjectType */
-		WILDCARD_EXTENDS {
+		public static final TypeCategory WILDCARD_EXTENDS = new TypeCategory()
+		 {
 			public String asString(GenericObjectType obj) {				
 				return "? extends " + GenericUtilities.getString(obj.extension);
 			}
-		},
+		};
 	
 		/** A wildcard that is extended by another ObjectType e.g. <code>? super Comparable</code>. 
 		 *  Underlying ObjectType is <code>java.lang.Object</code>.
 		 *  The super type can be an ObjectType or a GenericObjectType */
-		WILDCARD_SUPER {
+		public static final TypeCategory WILDCARD_SUPER = new TypeCategory()
+		 {
 			public String asString(GenericObjectType obj) {				
 				return "? super " + GenericUtilities.getString(obj.extension);
 			}
