@@ -192,9 +192,11 @@ public class GenericSignatureParser {
 					Signature sig = (Signature) a;
 					if ( genericSignature != null) {
 						if (!genericSignature.equals(sig.getSignature()) ) {
-							System.out.println("Inconsistent signatures: " );
-							System.out.println(genericSignature);
-							System.out.println(sig.getSignature());
+							if (false) {
+								System.out.println("Inconsistent signatures: " );
+								System.out.println(genericSignature);
+								System.out.println(sig.getSignature());
+								}
 							return null; // we've seen two inconsistent signatures
 						}
 						continue;
