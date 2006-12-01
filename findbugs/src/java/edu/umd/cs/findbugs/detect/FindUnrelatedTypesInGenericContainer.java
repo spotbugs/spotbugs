@@ -307,15 +307,15 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			IncompatibleTypes [] matches = new IncompatibleTypes [numArguments];
 			for (int i=0; i<numArguments; i++) matches[i] = IncompatibleTypes.SEEMS_OK;
 			
-			Type parmType = null, argType = null;			
 			for (int ii=0; ii < numArguments; ii++) {
 				if (argumentParameterIndex[ii] < 0) continue; // not relevant argument
 				if (argumentParameterIndex[ii] >= operand.getNumParameters()) 
 					continue; // should never happen
-				
-				parmType = operand.getParameterAt(argumentParameterIndex[ii]);
-				argType = frame.getArgument(inv, cpg, ii, numArguments);
+		
+				Type parmType = operand.getParameterAt(argumentParameterIndex[ii]);
+				Type argType = frame.getArgument(inv, cpg, ii, numArguments);
 				matches[ii] = compareTypes(parmType, argType);
+
 				if (matches[ii] != IncompatibleTypes.SEEMS_OK) match = false;
 			}
 			
@@ -330,8 +330,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			for (int i=0; i<numArguments; i++) {
 				if (matches[i] == IncompatibleTypes.SEEMS_OK) continue;
 
-				parmType = operand.getParameterAt(argumentParameterIndex[i]);
-				argType = frame.getArgument(inv, cpg, i, numArguments);
+				Type parmType = operand.getParameterAt(argumentParameterIndex[i]);
+				Type argType = frame.getArgument(inv, cpg, i, numArguments);
 				
 				accumulator.accumulateBug(new BugInstance(this,
 						"GC_UNRELATED_TYPES", matches[i].getPriority())

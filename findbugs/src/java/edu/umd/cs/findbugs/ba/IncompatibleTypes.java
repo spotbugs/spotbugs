@@ -28,6 +28,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class IncompatibleTypes {
 	final int priority;
@@ -44,7 +45,7 @@ public class IncompatibleTypes {
 	}
 
 	public String getMsg() {
-		return getMsg();
+		return msg;
 	}
 
 	public String toString() {
@@ -69,7 +70,7 @@ public class IncompatibleTypes {
 	public static final IncompatibleTypes UNRELATED_INTERFACES = new IncompatibleTypes(
 			"Unrelated interfaces", Priorities.NORMAL_PRIORITY);
 
-	static public IncompatibleTypes getPriorityForAssumingCompatible(
+	static public @NonNull IncompatibleTypes getPriorityForAssumingCompatible(
 			Type lhsType, Type rhsType) {
 		if (!(lhsType instanceof ReferenceType))
 			return SEEMS_OK;
@@ -111,7 +112,7 @@ public class IncompatibleTypes {
 
 	}
 
-	static public IncompatibleTypes getPriorityForAssumingCompatible(
+	static public @NonNull IncompatibleTypes getPriorityForAssumingCompatible(
 			ObjectType lhsType, ObjectType rhsType) {
 		// See if the types are related by inheritance.
 		try {
@@ -154,7 +155,7 @@ public class IncompatibleTypes {
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}
-		return null;
+		return SEEMS_OK;
 	}
 
 	private static boolean containsAtLeastOneInstantiableClass(
