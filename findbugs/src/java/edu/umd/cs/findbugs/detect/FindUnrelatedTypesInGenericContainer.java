@@ -56,6 +56,7 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.IncompatibleTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
@@ -303,8 +304,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			
 			// compare containers type parameters to corresponding arguments
 			boolean match = true;
-			boolean [] matches = new boolean [numArguments];
-			for (int i=0; i<numArguments; i++) matches[i] = true;
+			IncompatibleTypes [] matches = new IncompatibleTypes [numArguments];
+			for (int i=0; i<numArguments; i++) matches[i] = IncompatibleTypes.SEEMS_OK;
 			
 			Type parmType = null, argType = null;			
 			for (int ii=0; ii < numArguments; ii++) {
@@ -314,11 +315,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				
 				parmType = operand.getParameterAt(argumentParameterIndex[ii]);
 				argType = frame.getArgument(inv, cpg, ii, numArguments);
-				
-				if (!compareTypes(parmType, argType)) {
-					match = false;
-					matches[ii] = false;
-				}
+				matches[ii] = compareTypes(parmType, argType);
+				if (matches[ii] != IncompatibleTypes.SEEMS_OK) match = false;
 			}
 			
 			if (match)
@@ -330,13 +328,13 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 			// Report a bug that mentions each of the failed arguments in matches
 			for (int i=0; i<numArguments; i++) {
-				if (matches[i]) continue;
+				if (matches[i] == IncompatibleTypes.SEEMS_OK) continue;
 
 				parmType = operand.getParameterAt(argumentParameterIndex[i]);
 				argType = frame.getArgument(inv, cpg, i, numArguments);
 				
 				accumulator.accumulateBug(new BugInstance(this,
-						"GC_UNRELATED_TYPES", NORMAL_PRIORITY)
+						"GC_UNRELATED_TYPES", matches[i].getPriority())
 						.addClassAndMethod(methodGen, sourceFile)					
 						.addString(GenericUtilities.getString(parmType))
 						.addString(GenericUtilities.getString(argType))
@@ -406,85 +404,74 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	 * If the parameter type is a type variable (e.g. <code>T</code>) then we don't 
 	 * know enough (yet) to decide if they do not match so return true.
 	 */
-	private boolean compareTypes(Type parmType, Type argType) {
+	private IncompatibleTypes compareTypes(Type parmType, Type argType) {
 		// XXX equality not implemented for GenericObjectType
 		// if (parmType.equals(argType)) return true;
 		// Compare type signatures instead
 		String parmString = GenericUtilities.getString(parmType);
 		String argString = GenericUtilities.getString(argType);
-		if (parmString.equals(argString)) return true;
-		
+		if (parmString.equals(argString)) return IncompatibleTypes.SEEMS_OK;
+
 		// if either type is java.lang.Object, then automatically true!
 		// again compare strings...
 		String objString = GenericUtilities.getString(Type.OBJECT);
 		if ( parmString.equals(objString) || 
-			 argString.equals(objString) ) {
-			return true;
+				argString.equals(objString) ) {
+			return IncompatibleTypes.SEEMS_OK;
 		}
-		
+
 		// get a category for each type
 		TypeCategory parmCat = GenericUtilities.getTypeCategory(parmType);
 		TypeCategory argCat  = GenericUtilities.getTypeCategory(argType);
-		
+
 		// -~- plain objects are easy
 		if ( parmCat == TypeCategory.PLAIN_OBJECT_TYPE && 
-			 argCat == TypeCategory.PLAIN_OBJECT_TYPE ) {
+				argCat == TypeCategory.PLAIN_OBJECT_TYPE ) 
 
-			try {		
-				String parmName = ((ObjectType)parmType).getClassName();
-				String argName  = ((ObjectType)argType) .getClassName();
-				
-				// e.g. List<String>.contains(CharSequence)
-				if (Repository.instanceOf(parmName, argName)) return true;
-				
-				// e.g. List<CharSequence>.contains(String)
-				return Repository.instanceOf(argName, parmName);
-				
-			} catch (ClassNotFoundException e) { return true; }			
-		}
-		
+
+			return IncompatibleTypes.getPriorityForAssumingCompatible(parmType, argType);
+
 		// -~- parmType is: "? extends Another Type" OR "? super Another Type"
 		if ( parmCat == TypeCategory.WILDCARD_EXTENDS || 
-			 parmCat == TypeCategory.WILDCARD_SUPER ) {
+				parmCat == TypeCategory.WILDCARD_SUPER ) 
 			return compareTypes( 
 					((GenericObjectType)parmType).getExtension(), argType);
-		}
-		
+
+
 		// -~- Not handling type variables
 		if ( parmCat == TypeCategory.TYPE_VARIABLE || 
-			 argCat == TypeCategory.TYPE_VARIABLE ) {
-			return true;
-		}
-		
+				argCat == TypeCategory.TYPE_VARIABLE ) 
+			return IncompatibleTypes.SEEMS_OK;
+
+
 		// -~- Array Types: compare dimensions, then base type
 		if ( parmCat == TypeCategory.ARRAY_TYPE && 
-			 argCat  == TypeCategory.ARRAY_TYPE ) {
+				argCat  == TypeCategory.ARRAY_TYPE ) {
 			ArrayType parmArray = (ArrayType) parmType;
 			ArrayType argArray  = (ArrayType) argType;
-			
+
 			if (parmArray.getDimensions() != argArray.getDimensions())
-				return false;
-			
+				return IncompatibleTypes.ARRAY_AND_NON_ARRAY;
+
 			return compareTypes(parmArray.getBasicType(), argArray.getBasicType());
 		}
 		//     If one is an Array Type and the other is not, then they
 		//     are incompatible. (We already know neither is java.lang.Object)
 		if ( parmCat == TypeCategory.ARRAY_TYPE ^ 
-			 argCat  == TypeCategory.ARRAY_TYPE ) {
-			return false;
+				argCat  == TypeCategory.ARRAY_TYPE ) {
+			return IncompatibleTypes.ARRAY_AND_NON_ARRAY;
 		}
-		
+
 		// -~- Parameter Types: compare base type then parameters
 		if ( parmCat == TypeCategory.PARAMETERS && 
-			 argCat  == TypeCategory.PARAMETERS ) {
+				argCat  == TypeCategory.PARAMETERS ) {
 			GenericObjectType parmGeneric = (GenericObjectType) parmType;
 			GenericObjectType argGeneric  = (GenericObjectType) argType;
-			
+
 			// base types should be related
-			if (!compareTypes( parmGeneric.getObjectType(), 
-					argGeneric.getObjectType()) )
-				return false;
-			
+			return compareTypes( parmGeneric.getObjectType(), 
+					argGeneric.getObjectType());
+
 			// XXX More to come
 		}
 		//     If one is a Parameter Type and the other is not, then they
@@ -492,25 +479,26 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		if (false) {
 			// not true. Consider class Foo extends ArrayList<String>
 			if ( parmCat == TypeCategory.PARAMETERS ^ 
-				 argCat  == TypeCategory.PARAMETERS ) {
-				return false;
+					argCat  == TypeCategory.PARAMETERS ) {
+				return IncompatibleTypes.SEEMS_OK; // fix this when we know what we are doing here
 			}
 		}
-		
+
 		// -~- Wildcard e.g. List<*>.contains(...)		
 		if (parmCat == TypeCategory.WILDCARD) // No Way to know 
-			return true;
-		
+			return IncompatibleTypes.SEEMS_OK;
+
 		// -~- Non Reference types
 		// if ( parmCat == TypeCategory.NON_REFERENCE_TYPE || 
 		// 	    argCat == TypeCategory.NON_REFERENCE_TYPE )
 		if (parmType instanceof BasicType || argType instanceof BasicType) {
 			// this should not be possible, compiler will complain (pre 1.5) 
 			// or autobox primitive types (1.5 +)
-			assert false;
+			throw new IllegalArgumentException("checking for compatibility of " + parmType + " with " + argType);
 		}
-		
-		return true;
+
+		return IncompatibleTypes.SEEMS_OK;
+
 	}
 	
 	// old version of compare types
@@ -525,7 +513,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		if (parmType instanceof GenericObjectType) {
 			GenericObjectType o = (GenericObjectType) parmType;
 			if (o.getTypeCategory() == GenericUtilities.TypeCategory.WILDCARD_EXTENDS) {
-				return compareTypes(o.getExtension(), argType);
+				return compareTypesOld(o.getExtension(), argType);
 			}
 		}
 		// ignore type variables for now
