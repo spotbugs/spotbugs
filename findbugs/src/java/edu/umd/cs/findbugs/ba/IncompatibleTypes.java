@@ -79,10 +79,10 @@ public class IncompatibleTypes {
 		ReferenceType originalLhsType = (ReferenceType) lhsType;
 		ReferenceType originalRhsType = (ReferenceType) rhsType;
 
-		do {
+		while (lhsType instanceof ArrayType && rhsType instanceof ArrayType) {
 			lhsType = ((ArrayType) lhsType).getElementType();
 			rhsType = ((ArrayType) rhsType).getElementType();
-		} while (lhsType instanceof ArrayType && rhsType instanceof ArrayType);
+		} 
 
 		if (lhsType instanceof ArrayType) {
 
