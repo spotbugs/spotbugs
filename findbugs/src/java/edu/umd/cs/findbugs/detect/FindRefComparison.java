@@ -789,7 +789,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 		else if (result == IncompatibleTypes.UNRELATED_INTERFACES) 
-			bugReporter.reportBug(new BugInstance(this, "EC_INTERFACES", result.getPriority())
+			bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority())
 			.addClassAndMethod(methodGen, sourceFile)
 			.addType(lhsType_.getSignature())
 			.addType(rhsType_.getSignature())
