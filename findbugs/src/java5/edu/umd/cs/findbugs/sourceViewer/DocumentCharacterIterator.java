@@ -47,6 +47,7 @@ public class DocumentCharacterIterator implements CharacterIterator {
 		text.setPartialReturn(true);
 
 		try {
+			// FIXME: Findbugs warning
 			doc.getText(segmentEnd, doc.getLength(), text);
 		} catch (BadLocationException e) {
 			throw new RuntimeException(e);

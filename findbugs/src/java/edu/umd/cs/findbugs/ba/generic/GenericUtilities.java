@@ -217,7 +217,8 @@ public class GenericUtilities {
 		
 		Iterator<String> iter = parser.parameterSignatureIterator();
 		while (iter.hasNext()) {
-			types.add(getType(iter.next()));
+			String parameterString = iter.next();
+			types.add(getType(parameterString));
 		}
 		return types;
 	}

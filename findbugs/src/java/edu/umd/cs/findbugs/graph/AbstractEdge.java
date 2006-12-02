@@ -65,6 +65,11 @@ public class AbstractEdge
 		this.label = label;
 	}
 
+	public boolean equals(Object o) {
+		if (!(o instanceof AbstractEdge)) return false;
+		ActualEdgeType other = (ActualEdgeType) o;
+		return source.equals(other.source) && target.equals(other.target);
+	}
 	public int compareTo(ActualEdgeType other) {
 		int cmp = source.compareTo(other.source);
 		if (cmp != 0)

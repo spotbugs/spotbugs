@@ -137,7 +137,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		directlyImplementsExternalizable = false;
 		isGUIClass = false;
 		seenTransientField = false;
-		boolean isEnum = obj.getSuperclassName().equals("java.lang.Enum");
+		// boolean isEnum = obj.getSuperclassName().equals("java.lang.Enum");
 		fieldsThatMightBeAProblem.clear();
 		transientFields.clear();
 		transientFieldsUpdates.clear();

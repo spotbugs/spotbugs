@@ -1243,9 +1243,9 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 							String detectorName = detector.getClass().getName();
 							Long total = detectorTimings.get(detectorName);
 							if (total == null)
-								total = new Long(delta);
+								total = (Long)(delta);
 							else
-								total = new Long(total.longValue() + delta);
+								total = (Long)(total.longValue() + delta);
 							detectorTimings.put(detectorName, total);
 						}
 					}

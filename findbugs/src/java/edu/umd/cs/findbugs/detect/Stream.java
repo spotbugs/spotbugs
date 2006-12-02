@@ -233,6 +233,22 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 		        && inv.getName(cpg).equals(methodName);
 	}
 
+	public int hashCode() {
+		return 
+		getLocation().hashCode()
+		+ 3*streamBase.hashCode() 
+		+ 7*getResourceClass().hashCode()
+		+ 11*instanceParam;
+	}
+	public boolean equals(Object o) {
+		if (!(o instanceof Stream)) return false;
+		Stream other = (Stream) o;
+		if (!getLocation().equals(other.getLocation())) return false;
+		if (!streamBase.equals(other.streamBase)) return false;
+		if (!getResourceClass().equals(other.getResourceClass())) return false;
+		if (instanceParam != other.instanceParam) return false;
+		return true;
+	}
 	public int compareTo(Stream other) {
 		int cmp;
 

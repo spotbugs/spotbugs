@@ -77,9 +77,7 @@ public class IncompatibleTypes {
 		if (!(rhsType instanceof ReferenceType))
 			return SEEMS_OK;
 
-		ReferenceType originalLhsType = (ReferenceType) lhsType;
-		ReferenceType originalRhsType = (ReferenceType) rhsType;
-
+	
 		while (lhsType instanceof ArrayType && rhsType instanceof ArrayType) {
 			lhsType = ((ArrayType) lhsType).getElementType();
 			rhsType = ((ArrayType) rhsType).getElementType();

@@ -186,7 +186,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	public void visitAnnotation(String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
 		if (!visitingField()) return;
-		if (annotationClass.startsWith("javax.annotation.") || annotationClass.startsWith("javax.ejb")|| annotationClass.equals("org.jboss.seam.annotations.In")  | annotationClass.startsWith("javax.persistence")) {
+		if (annotationClass.startsWith("javax.annotation.") || annotationClass.startsWith("javax.ejb")|| annotationClass.equals("org.jboss.seam.annotations.In")  || annotationClass.startsWith("javax.persistence")) {
 			containerFields.add(XFactory.createXField(this));
 		}
 		

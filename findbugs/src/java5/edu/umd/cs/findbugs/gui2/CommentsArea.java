@@ -497,7 +497,6 @@ public class CommentsArea {
 		if (theAspects == null)
 			return;
 		BugSet filteredSet = theAspects.getMatchingBugs(BugSet.getMainBugSet());
-		Iterator<BugLeafNode> filteredIter = filteredSet.iterator();
 		boolean allSame = true;
 		int first = -1;
 		String comments = null;
