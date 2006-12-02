@@ -48,6 +48,10 @@ public class GenericObjectType extends ObjectType {
 	
 	final Type extension;
 
+	public Type getUpperBound() {
+		if (variable.equals("+")) return extension;
+		return this;
+	}
 	
 	/**
 	 * @return Returns the extension.

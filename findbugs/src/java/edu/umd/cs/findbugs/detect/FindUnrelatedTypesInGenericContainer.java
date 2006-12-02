@@ -331,15 +331,18 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				if (matches[i] == IncompatibleTypes.SEEMS_OK) continue;
 
 				Type parmType = operand.getParameterAt(argumentParameterIndex[i]);
+				if (parmType instanceof GenericObjectType)
+					parmType = ((GenericObjectType)parmType).getUpperBound();
 				Type argType = frame.getArgument(inv, cpg, i, numArguments);
 				
 				accumulator.accumulateBug(new BugInstance(this,
 						"GC_UNRELATED_TYPES", matches[i].getPriority())
 						.addClassAndMethod(methodGen, sourceFile)					
-						.addString(GenericUtilities.getString(parmType))
-						.addString(GenericUtilities.getString(argType))
+						//.addString(GenericUtilities.getString(parmType))
+						//.addString(GenericUtilities.getString(argType))
 						.addType(parmType.getSignature()) //XXX addType not handling 
 						.addType(argType.getSignature())  //    generics properly
+						.addCalledMethod(methodGen, (InvokeInstruction) ins)
 						,sourceLineAnnotation);
 			}
 			
