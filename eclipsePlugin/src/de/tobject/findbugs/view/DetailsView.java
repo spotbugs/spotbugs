@@ -26,6 +26,7 @@ import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ControlAdapter;
@@ -61,19 +62,14 @@ public class DetailsView extends ViewPart {
 
 	private static DetailsView detailsView;
 
-	private StyledText control;
-
+	
 	private String description = "";
 
 	private String title = "";
 
 	private List annotationList;
 
-	// HTML presentation classes
-	private DefaultInformationControl.IInformationPresenter presenter;
-
-	private TextPresentation presentation = new TextPresentation();
-
+	private Browser browser;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -83,20 +79,9 @@ public class DetailsView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		SashForm sash = new SashForm(parent, SWT.VERTICAL);
 		annotationList = new List(sash, SWT.V_SCROLL);
-
-		control = new StyledText(sash, SWT.READ_ONLY | SWT.H_SCROLL
-				| SWT.V_SCROLL);
-		control.setEditable(false);
-		// Handle control resizing. The HTMLPresenter cares about window size
-		// when presenting HTML, so we should redraw the control.
-		control.addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				updateDisplay();
-			}
-		});
-		presenter = new HTMLTextPresenter(false);
+		browser = new Browser(sash, SWT.NONE);
 		DetailsView.detailsView = this;
+		
 	}
 
 	/*
@@ -106,7 +91,7 @@ public class DetailsView extends ViewPart {
 	 */
 	@Override
 	public void setFocus() {
-		control.setFocus();
+		annotationList.setFocus();
 	}
 
 	/*
@@ -116,7 +101,8 @@ public class DetailsView extends ViewPart {
 	 */
 	@Override
 	public void dispose() {
-		control.dispose();
+		annotationList.dispose();
+		browser.dispose();
 	}
 
 	/**
@@ -124,15 +110,10 @@ public class DetailsView extends ViewPart {
 	 * title and description fields.
 	 */
 	private void updateDisplay() {
-		if (control != null && !control.isDisposed()) {
-			presentation.clear();
-			Rectangle size = this.control.getClientArea();
+		if (browser != null && !browser.isDisposed()) {
 			String html = ("<b>" + title + "</b><br/>" + description);
-			html = presenter.updatePresentation(getSite().getShell()
-					.getDisplay(), html, presentation, size.width, size.height);
-			control.setText(html);
-			TextPresentation.applyTextPresentation(presentation, control);
-		}
+			browser.setText(html);
+			}
 	}
 
 	/**
