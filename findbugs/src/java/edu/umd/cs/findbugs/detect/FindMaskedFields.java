@@ -55,7 +55,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 	private Collection<RememberedBug> 
 		rememberedBugs = new LinkedList<RememberedBug>();
 		
-	class RememberedBug {
+	static class RememberedBug {
 		BugInstance bug;
 		XField maskingField, maskedField;
 		RememberedBug(BugInstance bug, 

@@ -99,7 +99,6 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		        && getMethodName().equals("main")
 		        || cName.toLowerCase().indexOf("benchmark") >= 0;
 		prevOpcodeWasReadLine = false;
-		pendingRemOfRandomIntBug = null;
 		Code code = method.getCode();
 		if (code != null)
 			this.exceptionTable = code.getExceptionTable();
@@ -116,7 +115,6 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		
 	}
 
-	BugInstance pendingRemOfRandomIntBug;
 	@Override
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
@@ -198,15 +196,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 				.addClassAndMethod(this)
 				.addSourceLine(this));
 		}
-		if (pendingRemOfRandomIntBug != null) {
-			if (seen == INVOKESTATIC
-					&& getClassConstantOperand().equals("java/lang/Math")
-					&& getNameConstantOperand().equals("abs")) 
-				pendingRemOfRandomIntBug = null;
-			else 
-				bugReporter.reportBug(pendingRemOfRandomIntBug);
-		}
-
+	
 		if (seen == INVOKESTATIC && 
 				( getClassConstantOperand().equals("java/lang/Math") || getClassConstantOperand().equals("java/lang/StrictMath"))
 				&& getNameConstantOperand().equals("abs")
@@ -249,17 +239,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 				Object constant0 = item0.getConstant();
 				OpcodeStack.Item item1 = stack.getStackItem(1);
 				int special = item1.getSpecialKind();
-				if (false && special == OpcodeStack.Item.RANDOM_INT) {
-					pendingRemOfRandomIntBug = new BugInstance(this, "RV_REM_OF_RANDOM_INT", HIGH_PRIORITY)
-					.addClassAndMethod(this)
-					.addSourceLine(this);
-				}
-				else if (false && special == OpcodeStack.Item.HASHCODE_INT) {
-					pendingRemOfRandomIntBug = new BugInstance(this, "RV_REM_OF_HASHCODE", HIGH_PRIORITY)
-					.addClassAndMethod(this)
-					.addSourceLine(this);
-				}
-				else if (constant0 instanceof Integer && ((Integer)constant0).intValue() == 1)
+				if (constant0 instanceof Integer && ((Integer)constant0).intValue() == 1)
 					bugReporter.reportBug(new BugInstance(this, "INT_BAD_REM_BY_1", HIGH_PRIORITY)
 					.addClassAndMethod(this)
 					.addSourceLine(this));

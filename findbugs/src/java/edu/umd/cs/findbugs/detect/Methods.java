@@ -30,7 +30,7 @@ import org.apache.bcel.classfile.Method;
 public class Methods extends PreorderVisitor implements Detector,
 		NonReportingDetector {
 	
-	XFactory xFactory = AnalysisContext.currentXFactory();
+	private XFactory xFactory = AnalysisContext.currentXFactory();
 
 	public Methods(BugReporter bugReporter) {
 	}
