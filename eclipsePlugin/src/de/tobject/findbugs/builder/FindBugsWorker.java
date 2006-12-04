@@ -159,6 +159,7 @@ public class FindBugsWorker {
 			FindBugs2 engine = new FindBugs2();
 			engine.setBugReporter(bugReporter);
 			engine.setProject(findBugsProject);
+			engine.setProgressCallback(bugReporter);
 			engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
 			findBugs = engine;
 		} else {

@@ -20,6 +20,7 @@
  
 package de.tobject.findbugs.reporter;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,7 +59,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	/** Controls debugging for the reporter */
 	public static boolean DEBUG = false;
 
-	private static final int MAX_CLASS_NAME_LENGTH = 30;
+	private static final int MAX_CLASS_NAME_LENGTH = 35;
 	
 	private IProject project;
 	private Project findBugsProject;
@@ -82,6 +83,8 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	int [] classesPerPass;
 	int expectedWork;
 	int pass = -1;
+	int filteredBugCount = 0;
+	int workCount = 0;
 	/**
 	 * Constructor.
 	 * 
@@ -113,6 +116,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 		getBugCollection().add(bug);
 		if (MarkerUtil.displayWarning(bug, userPrefs.getFilterSettings())) {
 			MarkerUtil.createMarker(bug, project);
+			filteredBugCount++;
 		}
 	}
 	
@@ -121,7 +125,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	 */
 	public void finish() {
 		if (DEBUG) {
-			System.out.println("Finish: Found " + getBugCollection().getCollection().size() + " bugs."); //$NON-NLS-1$//$NON-NLS-2$
+			System.out.println("Finish: Found " + filteredBugCount + " bugs."); //$NON-NLS-1$//$NON-NLS-2$
 		}
 	}
 	
@@ -194,28 +198,31 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 			// causes break in FindBugs main loop
 			Thread.currentThread().interrupt();
 		}
-		int bugsNbr = getBugCollection().getCollection().size();
-		if (pass == 0)
+		
+		if (pass <= 0)
 			monitor.setTaskName(
 					"Prescanning... (found "
-					+ bugsNbr
+					+ filteredBugCount
 					+ ", checking "
 					+ getAbbreviatedClassName(clazz)
 					+ ")");
 		else 	if (pass == 1)
 			monitor.setTaskName(
-					"Bug checking... (found "
-					+ bugsNbr
+					"Checking... (found "
+					+ filteredBugCount
 					+ ", checking "
 					+ getAbbreviatedClassName(clazz)
 					+ ")");
 		else 	if (pass == 2)
 			monitor.setTaskName(
-					"Bug checking... (2nd pass) (found "
-					+ bugsNbr
+					"Checking... (3rd pass) (found "
+					+ filteredBugCount
 					+ ", checking "
 					+ getAbbreviatedClassName(clazz)
-					+ ")");monitor.worked(MONITOR_INTERVAL);
+					+ ")");
+	    int work = pass == 0 ? 1 : 2;
+		monitor.worked( work);
+		workCount+= work;
 	}
 	
 	/**
@@ -279,7 +286,8 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 
 	public void predictPassCount(int[] classesPerPass) {
 		this.classesPerPass = classesPerPass;
-		for(int count : classesPerPass) expectedWork += count;
+		for(int count : classesPerPass) expectedWork += 2*count;
+		expectedWork -= classesPerPass[0];
 		
 	}
 }
