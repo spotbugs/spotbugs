@@ -22,16 +22,9 @@ package de.tobject.findbugs.view;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
-import org.eclipse.jface.text.DefaultInformationControl;
-import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.ui.IWorkbenchPage;
@@ -61,7 +54,6 @@ import edu.umd.cs.findbugs.I18N;
 public class DetailsView extends ViewPart {
 
 	private static DetailsView detailsView;
-
 	
 	private String description = "";
 
