@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.AnalysisError;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
@@ -52,7 +53,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @version 1.0
  * @since 28.07.2003
  */
-public class Reporter extends AbstractBugReporter {
+public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	
 	/** Controls debugging for the reporter */
 	public static boolean DEBUG = false;
@@ -78,7 +79,9 @@ public class Reporter extends AbstractBugReporter {
 	private boolean workStarted;
 	int filesNumber;
 	int observed = 0;
-	
+	int [] classesPerPass;
+	int expectedWork;
+	int pass = -1;
 	/**
 	 * Constructor.
 	 * 
@@ -171,10 +174,11 @@ public class Reporter extends AbstractBugReporter {
 		if (DEBUG) {
 			System.out.println("Observing class: " + clazz.getClassName()); //$NON-NLS-1$
 		}
-
-		// Keep track of classes analyzed
+			// Keep track of classes analyzed
 		analyzedClassNameSet.add(clazz.getClassName());
-
+		if (filesNumber < analyzedClassNameSet.size())
+			filesNumber = analyzedClassNameSet.size();
+		
 		// Update progress monitor
 		if (monitor == null) {
 			return;
@@ -183,7 +187,7 @@ public class Reporter extends AbstractBugReporter {
 			workStarted = true;
 			filesNumber = findBugsProject.getFileCount();
 			if (!(monitor instanceof SubProgressMonitor)) {
-				monitor.beginTask("Performing bug checking...", filesNumber*2);
+				monitor.beginTask("Performing bug checking...", expectedWork);
 			}
 		}
 		if (monitor.isCanceled()) {
@@ -191,21 +195,27 @@ public class Reporter extends AbstractBugReporter {
 			Thread.currentThread().interrupt();
 		}
 		int bugsNbr = getBugCollection().getCollection().size();
-		if (observed++ < filesNumber)
+		if (pass == 0)
 			monitor.setTaskName(
 					"Prescanning... (found "
 					+ bugsNbr
-					+ ", check in "
+					+ ", checking "
 					+ getAbbreviatedClassName(clazz)
 					+ ")");
-		else 
+		else 	if (pass == 1)
 			monitor.setTaskName(
 					"Bug checking... (found "
 					+ bugsNbr
-					+ ", check in "
+					+ ", checking "
 					+ getAbbreviatedClassName(clazz)
 					+ ")");
-		monitor.worked(MONITOR_INTERVAL);
+		else 	if (pass == 2)
+			monitor.setTaskName(
+					"Bug checking... (2nd pass) (found "
+					+ bugsNbr
+					+ ", checking "
+					+ getAbbreviatedClassName(clazz)
+					+ ")");monitor.worked(MONITOR_INTERVAL);
 	}
 	
 	/**
@@ -239,5 +249,37 @@ public class Reporter extends AbstractBugReporter {
 
 	public BugReporter getRealBugReporter() {
 		return this;
+	}
+
+	public void finishArchive() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void finishClass() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void finishPerClassAnalysis() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void reportNumberOfArchives(int numArchives) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void startAnalysis(int numClasses) {
+		pass++;
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void predictPassCount(int[] classesPerPass) {
+		this.classesPerPass = classesPerPass;
+		for(int count : classesPerPass) expectedWork += count;
+		
 	}
 }
