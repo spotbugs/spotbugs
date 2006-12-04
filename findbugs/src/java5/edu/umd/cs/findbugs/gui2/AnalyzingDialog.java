@@ -221,4 +221,12 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 			MainFrame.getInstance().newProject();
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.FindBugsProgress#predictPassCount(int[])
+	 */
+	public void predictPassCount(int[] classesPerPass) {
+		// TODO Auto-generated method stub
+		
+	}
 }

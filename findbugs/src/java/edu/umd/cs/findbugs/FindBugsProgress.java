@@ -43,6 +43,11 @@ public interface FindBugsProgress extends IClassPathBuilderProgress {
 	public void finishArchive();
 
 	/**
+	 * Provide an array that predicts the number of classes in each pass
+	 * @param classesPerPass
+	 */
+	public void predictPassCount(int [] classesPerPass);
+	/**
 	 * Report that FindBugs has finished scanning the archives and will
 	 * start analysing the classes contained therein.
 	 *

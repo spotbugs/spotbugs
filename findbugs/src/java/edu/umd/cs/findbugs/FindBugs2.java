@@ -564,7 +564,11 @@ public class FindBugs2 implements IFindBugsEngine {
 	private void analyzeApplication() throws InterruptedException {
 		int passCount = 0;
 		boolean multiplePasses = executionPlan.getNumPasses() > 1;
-		
+		int [] classesPerPass = new int[executionPlan.getNumPasses()];
+		classesPerPass[0] = referencedClassSet .size();
+		for(int i = 0; i < classesPerPass.length; i++)
+			classesPerPass[i] = appClassList.size();
+		progress.predictPassCount(classesPerPass);
 		for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext(); ) {
 			AnalysisPass pass = i.next();
 

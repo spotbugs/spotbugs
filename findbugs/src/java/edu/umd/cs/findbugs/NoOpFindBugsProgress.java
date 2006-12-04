@@ -18,4 +18,12 @@ public class NoOpFindBugsProgress implements FindBugsProgress {
 
 	public void finishPerClassAnalysis() {
 	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.FindBugsProgress#predictPassCount(int[])
+	 */
+	public void predictPassCount(int[] classesPerPass) {
+		// TODO Auto-generated method stub
+		
+	}
 }
