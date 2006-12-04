@@ -23,6 +23,8 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -127,6 +129,32 @@ public class XDocsBugReporter extends TextUIBugReporter {
 		return document;
 	}
 
+	private static String xmlEscape(String theString)
+	{
+		//Replaces characters '>', '<', '"', '&', ''' with XML equivalents
+		StringBuffer buf = new StringBuffer();
+		int len = theString.length();
+		char theChar;
+		for (int i=0; i<len; i++)
+		{
+			theChar = theString.charAt(i);
+			switch(theChar){
+			case '>': buf.append("&gt;");
+			break;
+			case '<': buf.append("&lt;");
+			break;
+			case '"': buf.append("&quot;");
+			break;
+			case '&': buf.append("&amp;");
+			break;
+			case '\'': buf.append("&apos;");
+			break;
+			default: buf.append(theChar);
+			}
+		}
+		return buf.toString();
+	}
+	
 	public void toElement(BugInstance bugInstance) {
 
 		String className = bugInstance.getPrimaryClass().getClassName();
@@ -157,7 +185,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 			break;
 		}
 
-		element.addAttribute("message", bugInstance.getMessage());
+		element.addAttribute("message", xmlEscape(bugInstance.getMessage()));
 
 		SourceLineAnnotation line =
 		        bugInstance.getPrimarySourceLineAnnotation();
@@ -169,7 +197,16 @@ public class XDocsBugReporter extends TextUIBugReporter {
 
 
 	}
-
+/*
+	public static void main(String args[])
+	{
+		String x = "Less than: < Greater than: > Ampersand: & Quotation mark: \" Apostrophe: '";
+		String y = xmlEscape(x);
+		System.out.println(x);
+		System.out.println(y);
+	}
+*/
+	
 }
 
 // vim:ts=3
