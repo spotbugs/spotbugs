@@ -100,18 +100,25 @@ public class LoadOfKnownNullValue implements Detector {
 		}
 		
 		
-		IdentityHashMap<InstructionHandle, Object> atLeastOnce = new	IdentityHashMap<InstructionHandle, Object>();
-		IdentityHashMap<InstructionHandle, Object> atLeastTwice = new	IdentityHashMap<InstructionHandle, Object>();
+		IdentityHashMap<InstructionHandle, Object> sometimesGood = new	IdentityHashMap<InstructionHandle, Object>();
 		
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-			InstructionHandle handle = i.next().getHandle();
+			Location location = i.next();
+			InstructionHandle handle = location.getHandle();
 			Instruction ins = handle.getInstruction();
-			if (ins instanceof ALOAD) {
-				if (atLeastOnce.containsKey(handle))
-					atLeastTwice.put(handle, null);
-				else
-					atLeastOnce.put(handle, null);
+			if (!(ins instanceof ALOAD)) continue;
+			IsNullValueFrame frame = nullValueDataflow.getFactAtLocation(location);
+			if (!frame.isValid()) {
+				// This basic block is probably dead
+				continue;
 			}
+			// System.out.println(handle.getPosition() + "\t" + ins.getName() +  "\t" + frame);
+	
+			ALOAD load = (ALOAD) ins;
+
+			int index = load.getIndex();
+			IsNullValue v = frame.getValue(index);
+			if (!v.isDefinitelyNull()) sometimesGood.put(handle, null);
 		}
 		
 		// System.out.println(nullValueDataflow);
@@ -123,7 +130,7 @@ public class LoadOfKnownNullValue implements Detector {
 			if (!(ins instanceof ALOAD))
 				continue;
 
-			if (atLeastTwice.containsKey(handle)) continue;
+			if (sometimesGood.containsKey(handle)) continue;
 			IsNullValueFrame frame = nullValueDataflow
 					.getFactAtLocation(location);
 			if (!frame.isValid()) {
