@@ -1,6 +1,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 
 import org.apache.bcel.classfile.LineNumberTable;
@@ -97,6 +98,22 @@ public class LoadOfKnownNullValue implements Detector {
 				}
 		}
 		}
+		
+		
+		IdentityHashMap<InstructionHandle, Object> atLeastOnce = new	IdentityHashMap<InstructionHandle, Object>();
+		IdentityHashMap<InstructionHandle, Object> atLeastTwice = new	IdentityHashMap<InstructionHandle, Object>();
+		
+		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+			InstructionHandle handle = i.next().getHandle();
+			Instruction ins = handle.getInstruction();
+			if (ins instanceof ALOAD) {
+				if (atLeastOnce.containsKey(handle))
+					atLeastTwice.put(handle, null);
+				else
+					atLeastOnce.put(handle, null);
+			}
+		}
+		
 		// System.out.println(nullValueDataflow);
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
@@ -106,6 +123,7 @@ public class LoadOfKnownNullValue implements Detector {
 			if (!(ins instanceof ALOAD))
 				continue;
 
+			if (atLeastTwice.containsKey(handle)) continue;
 			IsNullValueFrame frame = nullValueDataflow
 					.getFactAtLocation(location);
 			if (!frame.isValid()) {
