@@ -155,8 +155,8 @@ public class MainFrame extends FBFrame implements LogSync
 	private JScrollPane summaryHtmlScrollPane = new JScrollPane(summaryHtmlArea);
 	
 
-	private FindBugsLayoutManagerFactory findBugsLayoutManagerFactory;
-	private FindBugsLayoutManager guiLayout;
+	final private FindBugsLayoutManagerFactory findBugsLayoutManagerFactory;
+	final private FindBugsLayoutManager guiLayout;
 	
 	/* To change this method must use setProjectChanged(boolean b).
 	 * This is because saveProjectItemMenu is dependent on it for when
@@ -185,6 +185,7 @@ public class MainFrame extends FBFrame implements LogSync
 	static void makeInstance(FindBugsLayoutManagerFactory factory) {
 		if (instance != null) throw new IllegalStateException();
 		instance=new MainFrame(factory);
+		instance.initializeGUI();
 	}
 	static MainFrame getInstance() {
 		if (instance==null) throw new IllegalStateException();
@@ -192,92 +193,15 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 	
 	
+	private void initializeGUI() {
+		SwingUtilities.invokeLater(new InitializeGUI());
+	}
 	private MainFrame(FindBugsLayoutManagerFactory factory)
 	{
 		this.findBugsLayoutManagerFactory = factory;
 		this.guiLayout = factory.getInstance(this);
 		this.comments = new CommentsArea(this);
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				setTitle("FindBugs: " + Project.UNNAMED_PROJECT);
-				
-				guiLayout.initialize();
-				bugPopupMenu = createBugPopupMenu();
-				branchPopupMenu = createBranchPopUpMenu();
-				comments.loadPrevCommentsList(GUISaveState.getInstance().getPreviousComments().toArray(new String[GUISaveState.getInstance().getPreviousComments().size()]));
-				updateStatusBar();
-				setBounds(GUISaveState.getInstance().getFrameBounds()); 
-				Toolkit.getDefaultToolkit().setDynamicLayout(true);
-				setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-				setJMenuBar(createMainMenuBar());
-				setVisible(true);
-				
-				
-				if (MAC_OS_X)
-				{
-					 try {
-						Class osxAdapter = Class.forName("edu.umd.cs.findbugs.gui2.OSXAdapter");
-						Method registerMethod = osxAdapter.getDeclaredMethod("registerMacOSXApplication", MainFrame.class);
-						if (registerMethod != null) {
-							registerMethod.invoke(osxAdapter, MainFrame.this);
-						}
-					} catch (NoClassDefFoundError e) {
-						// This will be thrown first if the OSXAdapter is loaded on a system without the EAWT
-						// because OSXAdapter extends ApplicationAdapter in its def
-						System.err.println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled (" + e + ")");
-					} catch (ClassNotFoundException e) {
-						// This shouldn't be reached; if there's a problem with the OSXAdapter we should get the
-						// above NoClassDefFoundError first.
-						System.err.println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled (" + e + ")");
-					} catch (Exception e) {
-						System.err.println("Exception while loading the OSXAdapter: " + e);
-						e.printStackTrace();
-						if (DEBUG) {
-							e.printStackTrace();
-						}
-					}
-				}
-				String loadFromURL = SystemProperties.getProperty("findbugs.loadBugsFromURL");
-				
-				if (loadFromURL != null) {
-					InputStream in;
-					try {
-						in = new URL(loadFromURL).openConnection().getInputStream();
-						if (loadFromURL.endsWith(".gz"))
-							in = new GZIPInputStream(in);
-						BugTreeModel.pleaseWait("Loading bugs over network...");
-						loadAnalysisFromInputStream(in);
-					} catch (MalformedURLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-						JOptionPane.showMessageDialog(MainFrame.this, "Error loading "  +e1.getMessage());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-						JOptionPane.showMessageDialog(MainFrame.this, "Error loading "  +e1.getMessage());
-					}
-				}
-
-				addComponentListener(new ComponentAdapter(){
-					public void componentResized(ComponentEvent e){
-						comments.resized();
-					}
-				});
-				
-				addWindowListener(new WindowAdapter(){
-					public void windowClosing(WindowEvent e) {
-						if(comments.hasFocus())
-							setProjectChanged(true);
-						callOnClose();
-					}				
-				});
-				Driver.removeSplashScreen();
-			}
-		});
 	}
-	
 	
 	/**
 	 * Show About
@@ -828,44 +752,43 @@ public class MainFrame extends FBFrame implements LogSync
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		jfc.setFileFilter(new FindBugsProjectFileFilter());
 		jfc.setDialogTitle("Save as...");
-		boolean saving = true;
+
 		boolean exists = false;
 		File dir=null;
-		while (saving)
+		boolean retry;
+		do  
 		{
+			retry = false;
 			int value=jfc.showSaveDialog(MainFrame.this);
-			if(value==JFileChooser.APPROVE_OPTION)
-			{
-				saving = false;
-				dir = jfc.getSelectedFile();
-				File xmlFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");
-				File fasFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
-				exists=xmlFile.exists() && fasFile.exists();
+			if (value!=JFileChooser.APPROVE_OPTION) return false;
 
-				if(exists){
-					int response = JOptionPane.showConfirmDialog(jfc, 
-							"This project already exists.\nDo you want to replace it?",
-							"Warning!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-					
-					if(response == JOptionPane.OK_OPTION)
-						saving = false;
-					if(response == JOptionPane.CANCEL_OPTION){
-						saving = true;
-						continue;
-					}
+			dir = jfc.getSelectedFile();
+			File xmlFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");
+			File fasFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
+			exists=xmlFile.exists() && fasFile.exists();
+
+			if(exists){
+				int response = JOptionPane.showConfirmDialog(jfc, 
+						"This project already exists.\nDo you want to replace it?",
+						"Warning!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+
+				if(response == JOptionPane.OK_OPTION)
+					retry = false;
+				if(response == JOptionPane.CANCEL_OPTION){
+					retry = true;
+					continue;
 				}
-						
-				boolean good=save(dir);
-				if (good==false)
-				{
-					JOptionPane.showMessageDialog(MainFrame.this, "An error occured in saving");
-					return false;
-				}
-				projectDirectory=dir;				
 			}
-			else
+
+			boolean good=save(dir);
+			if (good==false)
+			{
+				JOptionPane.showMessageDialog(MainFrame.this, "An error occured in saving");
 				return false;
-		}
+			}
+			projectDirectory=dir;				
+
+		} while (retry);
 		curProject.setProjectFileName(projectDirectory.getName());
 		File xmlFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");
 
@@ -1311,6 +1234,88 @@ public class MainFrame extends FBFrame implements LogSync
 		return label;
 	}
 	
+	/**
+	 * @author pugh
+	 */
+	private final class InitializeGUI implements Runnable {
+		public void run()
+		{
+			setTitle("FindBugs: " + Project.UNNAMED_PROJECT);
+			
+			guiLayout.initialize();
+			bugPopupMenu = createBugPopupMenu();
+			branchPopupMenu = createBranchPopUpMenu();
+			comments.loadPrevCommentsList(GUISaveState.getInstance().getPreviousComments().toArray(new String[GUISaveState.getInstance().getPreviousComments().size()]));
+			updateStatusBar();
+			setBounds(GUISaveState.getInstance().getFrameBounds()); 
+			Toolkit.getDefaultToolkit().setDynamicLayout(true);
+			setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+			setJMenuBar(createMainMenuBar());
+			setVisible(true);
+			
+			
+			if (MAC_OS_X)
+			{
+				 try {
+					Class osxAdapter = Class.forName("edu.umd.cs.findbugs.gui2.OSXAdapter");
+					Method registerMethod = osxAdapter.getDeclaredMethod("registerMacOSXApplication", MainFrame.class);
+					if (registerMethod != null) {
+						registerMethod.invoke(osxAdapter, MainFrame.this);
+					}
+				} catch (NoClassDefFoundError e) {
+					// This will be thrown first if the OSXAdapter is loaded on a system without the EAWT
+					// because OSXAdapter extends ApplicationAdapter in its def
+					System.err.println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled (" + e + ")");
+				} catch (ClassNotFoundException e) {
+					// This shouldn't be reached; if there's a problem with the OSXAdapter we should get the
+					// above NoClassDefFoundError first.
+					System.err.println("This version of Mac OS X does not support the Apple EAWT. Application Menu handling has been disabled (" + e + ")");
+				} catch (Exception e) {
+					System.err.println("Exception while loading the OSXAdapter: " + e);
+					e.printStackTrace();
+					if (DEBUG) {
+						e.printStackTrace();
+					}
+				}
+			}
+			String loadFromURL = SystemProperties.getProperty("findbugs.loadBugsFromURL");
+			
+			if (loadFromURL != null) {
+				InputStream in;
+				try {
+					in = new URL(loadFromURL).openConnection().getInputStream();
+					if (loadFromURL.endsWith(".gz"))
+						in = new GZIPInputStream(in);
+					BugTreeModel.pleaseWait("Loading bugs over network...");
+					loadAnalysisFromInputStream(in);
+				} catch (MalformedURLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(MainFrame.this, "Error loading "  +e1.getMessage());
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(MainFrame.this, "Error loading "  +e1.getMessage());
+				}
+			}
+		
+			addComponentListener(new ComponentAdapter(){
+				public void componentResized(ComponentEvent e){
+					comments.resized();
+				}
+			});
+			
+			addWindowListener(new WindowAdapter(){
+				public void windowClosing(WindowEvent e) {
+					if(comments.hasFocus())
+						setProjectChanged(true);
+					callOnClose();
+				}				
+			});
+			Driver.removeSplashScreen();
+		}
+	}
+
 	/**
 	 * Listens for when cursor is over the label and when it is clicked.
 	 * When the cursor is over the label will make the label text blue 
