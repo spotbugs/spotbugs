@@ -101,6 +101,7 @@
 			output="${bin.dir}/plugininfo.properties">
 			<classpath refid="tools.classpath"/>
 			<arg value="plugin.xml"/>
+			<arg value="${dist.dir}/plugin.xml"/>
 		</java>
 		
 		<!-- Read plugin id and plugin version properties. -->
