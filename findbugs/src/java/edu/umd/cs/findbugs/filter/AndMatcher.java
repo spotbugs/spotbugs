@@ -25,6 +25,10 @@ import edu.umd.cs.findbugs.BugInstance;
 
 public class AndMatcher extends CompoundMatcher {
 
+	boolean anyMatches = false;
+	public boolean anyMatches() {
+		return anyMatches;
+	}
 	public boolean match(BugInstance bugInstance) {
 		Iterator<Matcher> i = childIterator();
 		while (i.hasNext()) {
@@ -32,7 +36,9 @@ public class AndMatcher extends CompoundMatcher {
 			if (!child.match(bugInstance))
 				return false;
 		}
+		anyMatches = true;
 		return true;
+		
 	}
 
 }

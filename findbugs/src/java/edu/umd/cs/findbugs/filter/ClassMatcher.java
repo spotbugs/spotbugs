@@ -27,6 +27,10 @@ public class ClassMatcher implements Matcher {
 	private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
 
 	private NameMatch className;
+	
+	public String toString() {
+		return "class=\"" + className.getValue() +"\"";
+	}
 
 	public ClassMatcher(String className) {
 		this.className = new NameMatch(className);
@@ -36,7 +40,6 @@ public class ClassMatcher implements Matcher {
 		ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
 		String bugClassName = primaryClassAnnotation.getClassName();
 		if (DEBUG) System.out.println("Matching " + bugClassName + " with " + className);
-
 		return className.match(bugClassName);
 	}
 }

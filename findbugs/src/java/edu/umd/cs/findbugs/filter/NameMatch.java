@@ -42,6 +42,10 @@ public class NameMatch {
 	
 	private Pattern pattern;
 	
+	public String getValue() {
+		if (exact != null) return exact;
+		return pattern.toString();
+	}
 	public NameMatch(String matchSpec) {
 		if (matchSpec != null) {			
 			if (matchSpec.startsWith("~")) {

@@ -113,7 +113,7 @@ public class Filter extends OrMatcher {
 	 * @return a Matcher representing that element
 	 * @throws FilterException
 	 */
-	private Matcher getMatcher(Element element) throws FilterException {
+	private static Matcher getMatcher(Element element) throws FilterException {
 		// These will be either BugCode, Priority, Class, Method, Field, or Or elements.
 		String name = element.getName();
 		if (name.equals("BugCode")) {
