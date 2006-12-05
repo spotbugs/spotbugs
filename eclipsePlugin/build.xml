@@ -91,8 +91,23 @@
 	</target>
 
 	
+	<target name="version" depends="clean,classes" description="Extract the plugin id and version">
+		<!-- Extract the plugin id and version from plugin.xml. -->
+		<java
+			fork="true"
+			dir="."
+			classname="de.tobject.findbugs.tools.PluginInfo"
+			failonerror="true"
+			output="${bin.dir}/plugininfo.properties">
+			<classpath refid="tools.classpath"/>
+			<arg value="plugin.xml"/>
+		</java>
+		
+		<!-- Read plugin id and plugin version properties. -->
+		<property file="${bin.dir}/plugininfo.properties"/>
+	</target>
 
-	<target name="dist" depends="clean,classes" description="Build a plugin distributable, including the conversion of all classes to 1.4 compatible bytecode">
+	<target name="dist" depends="clean,classes,version" description="Build a plugin distributable, including the conversion of all classes to 1.4 compatible bytecode">
 		<jar destfile="${dist.dir}/findbugs-plugin.jar">
 				<fileset dir="${bin.dir}" excludes="de/tobject/findbugs/tools/**" />
 		</jar>
@@ -118,25 +133,27 @@
 			<fileset dir="icons" />
 		</copy>
 		
-		<!-- Extract the plugin id and version from plugin.xml. -->
-		<java
-			fork="true"
-			dir="."
-			classname="de.tobject.findbugs.tools.PluginInfo"
-			failonerror="true"
-			output="${bin.dir}/plugininfo.properties">
-			<classpath refid="tools.classpath"/>
-			<arg value="plugin.xml"/>
-		</java>
-		
-		<!-- Read plugin id and plugin version properties. -->
-		<property file="${bin.dir}/plugininfo.properties"/>
 		
 		<!-- Create plugin zipfile. -->
 		<zip destfile="${bin.dir}/${plugin.id}_${plugin.version}.zip">
 			<zipfileset prefix="${plugin.id}_${plugin.version}" dir="${dist.dir}" includes="**"/>
 		</zip>
 	</target>
+       <!-- Build source distribution. -->
+        <target name="srcdist" depends="clean,classes,version">
+		<property file="${bin.dir}/plugininfo.properties"/>
+                <mkdir dir="${dist.dir}/src"/>
+                <delete dir="${dist.dir}/src/eclipsePlugin-${plugin.version}"/>
+
+                <cvs cvsRoot="wpugh@findbugs.cvs.sourceforge.net:/cvsroot/findbugs"
+                        cvsRsh="ssh"
+                        dest="${dist.dir}/src"
+                        command="export -r HEAD -d eclipsePlugin-${plugin.version} eclipsePlugin"/>
+
+                <zip destfile="${dist.dir}/eclipsePlugin-${plugin.version}-source.zip" compress="true">
+                        <zipfileset dir="${dist.dir}/src" includes="eclipsePlugin-${plugin.version}/**"/>
+                </zip>
+        </target>
 
 	<target name="site" depends="dist" description="create files for eclipse auto-update site">
 		<filterset id="sitevars">
