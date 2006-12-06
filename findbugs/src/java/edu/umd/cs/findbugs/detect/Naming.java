@@ -21,7 +21,10 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import java.util.*;
 import java.util.regex.*;
@@ -33,67 +36,26 @@ public class Naming extends PreorderVisitor implements Detector {
 	String baseClassName;
 	boolean classIsPublicOrProtected;
 
-	static class MyMethod {
-		final String className;
-		final String methodName;
-		final String methodSig;
-		final boolean isStatic;
 
-		MyMethod(String cName, String n, String s, boolean isStatic) {
-			className = cName;
-			methodName = n;
-			methodSig = s;
-			this.isStatic = isStatic;
-		}
-
-		public String getClassName() {
-			return className;
-		}
-
-		@Override
-                 public boolean equals(Object o) {
-			if (!(o instanceof MyMethod)) return false;
-			MyMethod m2 = (MyMethod) o;
-			return
-					className.equals(m2.className)
-			        && methodName.equals(m2.methodName)
-			        && methodSig.equals(m2.methodSig);
-		}
-
-		@Override
-                 public int hashCode() {
-			return className.hashCode()
-			        + methodName.hashCode()
-			        + methodSig.hashCode();
-		}
-
-		public boolean confusingMethodNames(MyMethod m) {
-			if (className.equals(m.className)) return false;
-			if (methodName.equalsIgnoreCase(m.methodName)
-			        && !methodName.equals(m.methodName)) return true;
-			if (methodSig.equals(m.methodSig)) return false;
-			if (removePackageNamesFromSignature(methodSig).equals(removePackageNamesFromSignature(m.methodSig))) {
-					return true;
-			}
-			return false;
-				
-		}
-
-		@Override
-        public String toString() {
-			return className
-			        + "." + methodName
-			        + ":" + methodSig;
-		}
+	public static  boolean confusingMethodNames(XMethod m1, XMethod m2) {
+		if (m1.isStatic() != m2.isStatic()) return false;
+		if (m1.getClassName().equals(m2.getClassName())) return false;
+		
+		if (m1.getName().equalsIgnoreCase(m2.getName())
+		        && !m1.getName().equals(m2.getName())
+		        && m1.getSignature().equals(m2.getSignature())) return true;
+		if (m1.getSignature().equals(m2.getSignature())) return false;
+		if (removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()))) 
+				return true;
+		return false;		
 	}
-
 
 	// map of canonicalName -> trueMethodName
 	HashMap<String, HashSet<String>> canonicalToTrueMapping
 	        = new HashMap<String, HashSet<String>>();
-	// map of canonicalName -> Set<MyMethod>
-	HashMap<String, HashSet<MyMethod>> canonicalToMyMethod
-	        = new HashMap<String, HashSet<MyMethod>>();
+	// map of canonicalName -> Set<XMethod>
+	HashMap<String, HashSet<XMethod>> canonicalToXMethod
+	        = new HashMap<String, HashSet<XMethod>>();
 
 	HashSet<String> visited = new HashSet<String>();
 
@@ -107,19 +69,22 @@ public class Naming extends PreorderVisitor implements Detector {
 		classContext.getJavaClass().accept(this);
 	}
 
-	private boolean checkSuper(MyMethod m, HashSet<MyMethod> others) {
-		for (MyMethod m2 : others) {
+	private boolean checkSuper(XMethod m, HashSet<XMethod> others) {
+		for (XMethod m2 : others) {
 			try {
-				if (m.confusingMethodNames(m2)
-						&& Repository.instanceOf(m.className, m2.className)) {
-					MyMethod m3 = new MyMethod(m.className, m2.methodName, m2.methodSig, m.isStatic);
-					boolean r = others.contains(m3);
-					if (r) continue;
-					bugReporter.reportBug(new BugInstance(this, "NM_VERY_CONFUSING", HIGH_PRIORITY)
-							.addClass(m.getClassName())
-							.addMethod(m.getClassName(), m.methodName, m.methodSig, m.isStatic)
-							.addClass(m2.getClassName())
-							.addMethod(m2.getClassName(), m2.methodName, m2.methodSig, m2.isStatic));
+				if (confusingMethodNames(m, m2)
+						&& Repository.instanceOf(m.getClassName(), m2.getClassName())) {
+					int priority = HIGH_PRIORITY;
+					for(XMethod m3 : others) 
+						if (m.getClassName().equals(m3.getClassName()) && m2.getName().equals(m3.getName()) && m2.getSignature().equals(m3.getSignature())) 
+							priority = LOW_PRIORITY;
+
+					if (AnalysisContext.currentXFactory().isCalled(m)) priority++;
+					bugReporter.reportBug(new BugInstance(this, "NM_VERY_CONFUSING", priority)
+					.addClass(m.getClassName())
+					.addMethod(m)
+					.addClass(m2.getClassName())
+					.addMethod(m2));
 					return true;
 				}
 			} catch (ClassNotFoundException e) {
@@ -128,14 +93,14 @@ public class Naming extends PreorderVisitor implements Detector {
 		return false;
 	}
 
-	private boolean checkNonSuper(MyMethod m, HashSet<MyMethod> others) {
-		for (MyMethod m2 : others) {
-			if (m.confusingMethodNames(m2)) {
+	private boolean checkNonSuper(XMethod m, HashSet<XMethod> others) {
+		for (XMethod m2 : others) {
+			if (confusingMethodNames(m,m2)) {
 				bugReporter.reportBug(new BugInstance(this, "NM_CONFUSING", LOW_PRIORITY)
 						.addClass(m.getClassName())
-						.addMethod(m.getClassName(), m.methodName, m.methodSig, m.isStatic)
+						.addMethod(m)
 						.addClass(m2.getClassName())
-						.addMethod(m2.getClassName(), m2.methodName, m2.methodSig, m2.isStatic));
+						.addMethod(m2));
 				return true;
 			}
 		}
@@ -150,12 +115,12 @@ public class Naming extends PreorderVisitor implements Detector {
 		HashSet<String> s = canonicalToTrueMapping.get(allSmall);
 		if (s.size() <= 1)
 			continue;
-		HashSet<MyMethod> conflictingMethods = canonicalToMyMethod.get(allSmall);
-		for (Iterator<MyMethod> j = conflictingMethods.iterator(); j.hasNext();) {
+		HashSet<XMethod> conflictingMethods = canonicalToXMethod.get(allSmall);
+		for (Iterator<XMethod> j = conflictingMethods.iterator(); j.hasNext();) {
 			if (checkSuper(j.next(), conflictingMethods))
 				j.remove();
 		}
-		for (MyMethod conflictingMethod : conflictingMethods) {
+		for (XMethod conflictingMethod : conflictingMethods) {
 			if (checkNonSuper(conflictingMethod, conflictingMethods))
 				continue canonicalNameIterator;
 		}
@@ -313,7 +278,7 @@ public class Naming extends PreorderVisitor implements Detector {
 		String allSmall = mName.toLowerCase() + sig2;
 	
 
-		MyMethod mm = new MyMethod(getThisClass().getClassName(), mName, sig, obj.isStatic());
+		XMethod xm = XFactory.createXMethod(this);
 		{
 			HashSet<String> s = canonicalToTrueMapping.get(allSmall);
 			if (s == null) {
@@ -323,12 +288,12 @@ public class Naming extends PreorderVisitor implements Detector {
 			s.add(trueName);
 		}
 		{
-			HashSet<MyMethod> s = canonicalToMyMethod.get(allSmall);
+			HashSet<XMethod> s = canonicalToXMethod.get(allSmall);
 			if (s == null) {
-				s = new HashSet<MyMethod>();
-				canonicalToMyMethod.put(allSmall, s);
+				s = new HashSet<XMethod>();
+				canonicalToXMethod.put(allSmall, s);
 			}
-			s.add(mm);
+			s.add(xm);
 		}
 
 	}
