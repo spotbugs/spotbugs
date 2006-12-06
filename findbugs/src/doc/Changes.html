@@ -18,6 +18,21 @@
 						FindBugs Change Log
 					</h1>
 
+				<p>Changes since version 1.1.1:</p>
+				<ul>
+				<li>Added check for infinite iterative loops
+				<li>Added check for use of incompatible types in a collection (e.g., checking to see if
+				a Set&lt;String&gt; contains a StringBuffer).
+				<li>Added check for invocations of equals or hashCode on a URL, which, 
+				<a href="http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html">surprising many people</a>,
+				requires DNS resolution.
+				<li>Added check for classes that define compareTo but not equals; such class can exhibit some anomalous behavour (e.g.,
+				they are treated differently by PriorityQueues in Java 5 and Java 6).
+				<li>Fixed a datarace that could cause the GUI to fail on startup
+				<li>Tuning to reduce false positives
+				<li>Fixed progress bar in Eclipse plugin
+				</ul>
+					
 					<p>Changes since version 1.1.0:</p>
 					<ul>
 						<li>less scanning of classes not on the analysis path
