@@ -1561,6 +1561,12 @@ public class MainFrame extends FBFrame implements LogSync
 	 */
 	private boolean save(File dir)
 	{
+		if (curProject == null) {
+			curProject = new Project(); 
+			JOptionPane.showMessageDialog(MainFrame.this, "Null project; this is unexpected. "
+					+" Creating a new Project so the bugs can be saved, but please report this error.");
+
+		}
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
 		dir.mkdir();
