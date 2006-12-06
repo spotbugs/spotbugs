@@ -147,6 +147,17 @@ public class MethodHash implements Comparable<MethodHash> {
 		return MethodHash.compareHashes(this.hash, other.hash);
 	}
 	
+	public boolean equals(Object o) {
+		if (o instanceof MethodHash) 
+			return isSameHash((MethodHash)o);
+		return false;
+	}
+	public int hashCode() {
+		int result = 0;
+		for(byte b : hash) 
+			result = result * 17 + b;
+		return result;
+	}
 	public static int compareHashes(byte[] a, byte[] b) {
 		int pfxlen = Math.min(a.length, b.length);
 		for (int i = 0; i < pfxlen; ++i) {

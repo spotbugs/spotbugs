@@ -53,6 +53,14 @@ public class AbstractVertex <
 		this.label = label;
 	}
 
+	public int hashCode() {
+		return id;
+	}
+	public boolean equals(Object o) {
+		if (o instanceof AbstractVertex) 
+			return id == ((AbstractVertex)o).id;
+		return false;
+	}
 	public int compareTo(ActualVertexType other) {
 		return id - other.id;
 	}
