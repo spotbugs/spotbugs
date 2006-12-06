@@ -23,6 +23,8 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
+
 import java.util.*;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
@@ -171,6 +173,9 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 					}
 				}
 			}
+		} catch (MethodUnprofitableException e) {
+			Method m = getMethod();
+			bugReporter.reportSkippedAnalysis(new MethodDescriptor(getClassName(), getMethodName(), getMethodSig(), m.isStatic()));
 		} catch (DataflowAnalysisException e) {
 			bugReporter.logError("Error checking for dead exception store", e);
 		} catch (CFGBuilderException e) {

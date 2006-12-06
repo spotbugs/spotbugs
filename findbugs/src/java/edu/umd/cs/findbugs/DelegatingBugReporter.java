@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
@@ -112,6 +113,7 @@ public class DelegatingBugReporter implements BugReporter {
 	}
 
 	public void logError(String message, Throwable e) {
+		if (e instanceof MethodUnprofitableException) return;
 		delegate.logError(message, e);
 	}
 	/**
