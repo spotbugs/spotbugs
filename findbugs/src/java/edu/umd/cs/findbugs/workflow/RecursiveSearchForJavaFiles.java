@@ -36,7 +36,8 @@ public class RecursiveSearchForJavaFiles {
 		worklist.add(root);
 		while (!worklist.isEmpty()) {
 			File next = worklist.removeFirst();
-			for (File f : next.listFiles()) {
+			File[] files = next.listFiles();
+			if (files != null) for (File f : files) {
 				if (f.getName().endsWith(".java"))
 					result.add(f);
 				else if (f.isDirectory() && directories.add(f)) {
