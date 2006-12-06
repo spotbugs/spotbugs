@@ -36,6 +36,11 @@ public class Naming extends PreorderVisitor implements Detector {
 	String baseClassName;
 	boolean classIsPublicOrProtected;
 
+	public static boolean definedIn(JavaClass clazz, XMethod m) {
+		for(Method m2 : clazz.getMethods()) 
+			if (m.getName().equals(m2.getName()) && m.getSignature().equals(m2.getSignature()) && m.isStatic() == m2.isStatic()) return true;
+		return false;
+	}
 
 	public static  boolean confusingMethodNames(XMethod m1, XMethod m2) {
 		if (m1.isStatic() != m2.isStatic()) return false;
@@ -75,11 +80,21 @@ public class Naming extends PreorderVisitor implements Detector {
 				if (confusingMethodNames(m, m2)
 						&& Repository.instanceOf(m.getClassName(), m2.getClassName())) {
 					int priority = HIGH_PRIORITY;
-					for(XMethod m3 : others) 
-						if (m.getClassName().equals(m3.getClassName()) && m2.getName().equals(m3.getName()) && m2.getSignature().equals(m3.getSignature())) 
-							priority = LOW_PRIORITY;
-
 					if (AnalysisContext.currentXFactory().isCalled(m)) priority++;
+					try {
+					JavaClass clazz = Repository.lookupClass(m.getClassName());
+					if (definedIn(clazz, m2))
+						priority+=2;
+					for(JavaClass i : clazz.getAllInterfaces()) 
+						if (definedIn(i, m)) 
+							priority+=2;
+					for(JavaClass s : clazz.getSuperClasses()) 
+						if (definedIn(s, m)) 
+							priority+=2;
+					} catch (ClassNotFoundException e) {
+						priority++;
+						AnalysisContext.reportMissingClass(e);
+					}
 					bugReporter.reportBug(new BugInstance(this, "NM_VERY_CONFUSING", priority)
 					.addClass(m.getClassName())
 					.addMethod(m)
@@ -88,6 +103,7 @@ public class Naming extends PreorderVisitor implements Detector {
 					return true;
 				}
 			} catch (ClassNotFoundException e) {
+				AnalysisContext.reportMissingClass(e);
 			}
 		}
 		return false;
