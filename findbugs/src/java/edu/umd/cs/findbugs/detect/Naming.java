@@ -80,7 +80,6 @@ public class Naming extends PreorderVisitor implements Detector {
 				if (confusingMethodNames(m, m2)
 						&& Repository.instanceOf(m.getClassName(), m2.getClassName())) {
 					int priority = HIGH_PRIORITY;
-					if (AnalysisContext.currentXFactory().isCalled(m)) priority++;
 					try {
 					JavaClass clazz = Repository.lookupClass(m.getClassName());
 					if (definedIn(clazz, m2))
@@ -95,6 +94,8 @@ public class Naming extends PreorderVisitor implements Detector {
 						priority++;
 						AnalysisContext.reportMissingClass(e);
 					}
+					if (priority == HIGH_PRIORITY && AnalysisContext.currentXFactory().isCalled(m)
+							|| priority > NORMAL_PRIORITY && m.getSignature().equals(m2.getSignature())) priority = NORMAL_PRIORITY;
 					bugReporter.reportBug(new BugInstance(this, "NM_VERY_CONFUSING", priority)
 					.addClass(m.getClassName())
 					.addMethod(m)
