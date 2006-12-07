@@ -386,8 +386,11 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 			}
 			if (type == null) return;
 			if (!AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(type)) return;
+			int priority = NORMAL_PRIORITY;
+			if (getClassConstantOperand().indexOf("Hash") >= 0) priority--;
+			if (type.isAbstract() || type.isInterface()) priority++;
 			potentialBugs.put(type.getClassName(), 
-					new BugInstance("HE_USE_OF_UNHASHABLE_CLASS", getClassConstantOperand().indexOf("Hash") >= 0 ? HIGH_PRIORITY : NORMAL_PRIORITY)
+					new BugInstance("HE_USE_OF_UNHASHABLE_CLASS",priority)
 				.addClassAndMethod(this)
 				.addTypeOfNamedClass(type.getClassName())
 				.addTypeOfNamedClass(getClassConstantOperand())

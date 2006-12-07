@@ -437,7 +437,9 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	Pattern dontComplainAbout = Pattern.compile("class[$]");
 	@Override
          public void report() {
-
+		Set<String> fieldNamesSet = new HashSet<String>();
+		for(XField f : writtenNonNullFields)
+			fieldNamesSet.add(f.getName());
 		if (DEBUG) {
 			System.out.println("read fields:" );
 			for(XField f : readFields) 
@@ -530,6 +532,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				System.out.println("Null only: " + f);
 				System.out.println("   : " + assumedNonNull.containsKey(f));
 				System.out.println("   : " + fieldsOfSerializableOrNativeClassed.contains(f));
+				System.out.println("   : " + fieldNamesSet.contains(f.getName()));
 				System.out.println("   : " + f.isResolved());
 			}
 			if (!f.isResolved()) continue;
@@ -538,8 +541,9 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				System.out.println("Ready to report");
 			}
 			int priority = NORMAL_PRIORITY;
+			if (fieldNamesSet.contains(f.getName())) priority++;
 			if (assumedNonNull.containsKey(f)) {
-				priority = HIGH_PRIORITY;
+				priority--;
 				for (ProgramPoint p : assumedNonNull.get(f))
 					bugReporter.reportBug(new BugInstance(this,
 							"NP_UNWRITTEN_FIELD",
