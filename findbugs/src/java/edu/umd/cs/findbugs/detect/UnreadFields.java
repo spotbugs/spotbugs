@@ -51,6 +51,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	Set<XField> staticFields = new HashSet<XField>();
 	Set<XField> declaredFields = new TreeSet<XField>();
 	Set<XField> containerFields = new TreeSet<XField>();
+	Set<String> abstractClasses = new HashSet<String>();
+	Set<String> hasNonAbstractSubClass = new HashSet<String>();
 	
 	Set<XField> fieldsOfNativeClassed
     = new HashSet<XField>();
@@ -103,6 +105,14 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		sawSelfCallInConstructor = false;
 		publicOrProtectedConstructor = false;
 		isSerializable = false;
+		if (obj.isAbstract()) {
+			abstractClasses.add(getDottedClassName());
+		}
+		else {
+			String superClass = obj.getSuperclassName();
+			if (superClass != null) hasNonAbstractSubClass.add(superClass);
+		}
+			
 		if (getSuperclassName().indexOf("$") >= 0
 		        || getSuperclassName().indexOf("+") >= 0) {
 			// System.out.println("hicfsc: " + betterClassName);
@@ -533,6 +543,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				System.out.println("   : " + assumedNonNull.containsKey(f));
 				System.out.println("   : " + fieldsOfSerializableOrNativeClassed.contains(f));
 				System.out.println("   : " + fieldNamesSet.contains(f.getName()));
+				System.out.println("   : " + abstractClasses.contains(f.getClassName()));
+				System.out.println("   : " + hasNonAbstractSubClass.contains(f.getClassName()));
 				System.out.println("   : " + f.isResolved());
 			}
 			if (!f.isResolved()) continue;
@@ -541,6 +553,10 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				System.out.println("Ready to report");
 			}
 			int priority = NORMAL_PRIORITY;
+			if (abstractClasses.contains(f.getClassName())) {
+				priority++;
+				if (! hasNonAbstractSubClass.contains(f.getClassName())) priority++;
+			}
 			if (fieldNamesSet.contains(f.getName())) priority++;
 			if (assumedNonNull.containsKey(f)) {
 				priority--;
