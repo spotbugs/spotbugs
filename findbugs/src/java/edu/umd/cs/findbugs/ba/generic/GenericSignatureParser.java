@@ -121,7 +121,7 @@ public class GenericSignatureParser {
 	 */
 	public GenericSignatureParser(String signature) {
 		// XXX not currently handling Type parameters for class, interface or method definitions
-		if (!signature.contains("(") || signature.contains(":"))
+		if (signature.indexOf('(') < 0 || signature.indexOf(':') >= 0)
 			throw new IllegalArgumentException("Bad method signature: " + signature);
 		if (!signature.startsWith("(")) 
 			this.signature = signature.substring( signature.indexOf("(") );

@@ -295,7 +295,15 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 	}
 
 	public int hashCode() {
-		return Arrays.hashCode(classHash);
+		if (classHash == null)
+			return 0;
+
+		int result = 1;
+		for (byte element : classHash)
+			result = 31 * result + element;
+
+		return result;
+
 	}
 	public boolean equals(Object o) {
 		if (!(o instanceof ClassHash)) return false;
