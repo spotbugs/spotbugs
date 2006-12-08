@@ -101,6 +101,13 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 							continue;
 						if (fieldName.equals("serialVersionUID"))
 							continue;
+						String superClassName = superClass.getClassName();
+						if (superClassName.startsWith("java.io") &&  
+								(superClassName.endsWith("InputStream")
+								&& fieldName.equals("in")
+								|| superClassName.endsWith("OutputStream")
+								&& fieldName.equals("out"))
+								) continue;
 						if (classFields.containsKey(fieldName)) {
 							maskedFields.add(fld);
 							Field maskingField = classFields.get(fieldName);
@@ -123,7 +130,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 								priority++;
 
 							FieldAnnotation maskedFieldAnnotation
-									= FieldAnnotation.fromBCELField(superClass.getClassName(), fld);
+									= FieldAnnotation.fromBCELField(superClassName, fld);
 							BugInstance bug = new BugInstance(this, "MF_CLASS_MASKS_FIELD",
 									priority)
 									.addClass(this)
@@ -201,15 +208,17 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 			BugInstance bug = rb.bug;
 			int score = 0;
 			int priority = bug.getPriority();
-			if (unreadFields.getReadFields().contains(rb.maskedField))
-				score++;
+			if (unreadFields.classesScanned.contains(rb.maskedField.getClassName())) {
+				if (unreadFields.getReadFields().contains(rb.maskedField))
+					score++;
+				if (unreadFields.getWrittenFields().contains(rb.maskedField))
+					score++;
+				if (unreadFields.getWrittenOutsideOfConstructorFields().contains(rb.maskedField))
+					score++;
+			} else score += 2;
 			if (unreadFields.getReadFields().contains(rb.maskingField))
 				score++;
-			if (unreadFields.getWrittenFields().contains(rb.maskedField))
-				score++;
-			if (unreadFields.getWrittenFields().contains(rb.maskingField))
-				score++;
-			if (unreadFields.getWrittenOutsideOfConstructorFields().contains(rb.maskedField))
+				if (unreadFields.getWrittenFields().contains(rb.maskingField))
 				score++;
 			if (unreadFields.getWrittenOutsideOfConstructorFields().contains(rb.maskingField))
 				score++;

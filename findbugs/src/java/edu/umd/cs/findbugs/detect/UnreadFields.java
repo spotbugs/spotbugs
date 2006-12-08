@@ -53,7 +53,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	Set<XField> containerFields = new TreeSet<XField>();
 	Set<String> abstractClasses = new HashSet<String>();
 	Set<String> hasNonAbstractSubClass = new HashSet<String>();
-	
+	Set<String> classesScanned = new HashSet<String>();
 	Set<XField> fieldsOfNativeClassed
     = new HashSet<XField>();
 	Set<XField> fieldsOfSerializableOrNativeClassed
