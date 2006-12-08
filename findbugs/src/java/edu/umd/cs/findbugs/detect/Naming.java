@@ -94,9 +94,16 @@ public class Naming extends PreorderVisitor implements Detector {
 						priority++;
 						AnalysisContext.reportMissingClass(e);
 					}
-					if (priority == HIGH_PRIORITY && AnalysisContext.currentXFactory().isCalled(m)
-							|| priority > NORMAL_PRIORITY && m.getSignature().equals(m2.getSignature())) priority = NORMAL_PRIORITY;
-					bugReporter.reportBug(new BugInstance(this, "NM_VERY_CONFUSING", priority)
+					String pattern = "NM_VERY_CONFUSING";
+					if (priority == HIGH_PRIORITY && AnalysisContext.currentXFactory().isCalled(m)) priority = NORMAL_PRIORITY;
+					else if (priority > NORMAL_PRIORITY && m.getSignature().equals(m2.getSignature())) {
+						pattern = "NM_VERY_CONFUSING_INTENTIONAL";
+						priority = NORMAL_PRIORITY;
+					}
+					XFactory xFactory = AnalysisContext.currentXFactory();
+					if (xFactory.getDeprecated().contains(m) || xFactory.getDeprecated().contains(m2)) priority++;
+					
+					bugReporter.reportBug(new BugInstance(this, pattern, priority)
 					.addClass(m.getClassName())
 					.addMethod(m)
 					.addClass(m2.getClassName())

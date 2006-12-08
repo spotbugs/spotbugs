@@ -2729,6 +2729,20 @@ identical then one of the methods would override the other.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="NM_VERY_CONFUSING_INTENTIONAL">
+    <ShortDescription>Very confusing method names (but intentional)</ShortDescription>
+    <LongDescription>VERY confusing (but perhaps intentional) to have methods {1} and {3}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> The referenced methods have names that differ only by capitalization or the packages of their parameters. 
+This is very confusing because if the capitalization were
+identical then one of the methods would override the other. From the existence of other methods, it
+seems that the existence of both of these methods is intentional, but is sure is confusing. 
+You should try hard to eliminate one of them, unless you are forced to have both due to frozen APIs.
+</p>
+]]>
+    </Details>
+  </BugPattern>
 
 
   <BugPattern type="NM_CONFUSING">

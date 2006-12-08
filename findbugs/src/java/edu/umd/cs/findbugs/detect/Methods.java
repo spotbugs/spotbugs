@@ -19,19 +19,28 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.*;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
-import java.util.*;
-
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Deprecated;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.NonReportingDetector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class Methods extends PreorderVisitor implements Detector,
 		NonReportingDetector {
 	
 	private XFactory xFactory = AnalysisContext.currentXFactory();
 
+	XMethod m;
+	XField f;
 	public Methods(BugReporter bugReporter) {
 	}
 
@@ -41,12 +50,19 @@ public class Methods extends PreorderVisitor implements Detector,
 
 	@Override
 	public void visit(Method obj) {
-		xFactory.createXMethod(this);
+		m = xFactory.createXMethod(this);
+	}
+	@Override 
+	public void visit(Attribute a) {
+		if (a instanceof Deprecated) {
+			if (visitingMethod()) xFactory.deprecate(m);
+			else if (visitingField())xFactory.deprecate(f);
+		}
 	}
 
 	@Override
 	public void visit(Field obj) {
-		xFactory.createXField(this);
+		f = xFactory.createXField(this);
 	}
 
 	public void report() {

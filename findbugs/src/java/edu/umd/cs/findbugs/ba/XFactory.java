@@ -52,6 +52,8 @@ public  class XFactory {
 
 	private  Map<XMethod,XMethod> methods = new HashMap<XMethod,XMethod>();
 
+	private Set<ClassMember> deprecated = new HashSet<ClassMember>();
+	private Set<? extends ClassMember> deprecatedView = Collections.unmodifiableSet(deprecated);
 	private  Map<XField,XField> fields = new HashMap<XField,XField>();
 
 	private  Set<XMethod> methodsView = Collections
@@ -357,5 +359,15 @@ public  class XFactory {
 		
 	}
 
+	/**
+	 * @param m
+	 */
+	public void deprecate(ClassMember m) {
+		deprecated.add(m);
+		
+	}
+	public Set<? extends ClassMember> getDeprecated() {
+		return deprecatedView;
+	}
 
 }

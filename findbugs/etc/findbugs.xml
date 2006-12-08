@@ -326,7 +326,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.Naming" 
             speed="fast"
-            reports="NM_VERY_CONFUSING,NM_CONFUSING,NM_METHOD_CONSTRUCTOR_CONFUSION,NM_LCASE_HASHCODE,NM_LCASE_TOSTRING,NM_BAD_EQUAL,NM_CLASS_NAMING_CONVENTION,NM_FIELD_NAMING_CONVENTION,NM_METHOD_NAMING_CONVENTION,NM_CLASS_NOT_EXCEPTION" />
+            reports="NM_VERY_CONFUSING,NM_VERY_CONFUSING_INTENTIONAL,NM_CONFUSING,NM_METHOD_CONSTRUCTOR_CONFUSION,NM_LCASE_HASHCODE,NM_LCASE_TOSTRING,NM_BAD_EQUAL,NM_CLASS_NAMING_CONVENTION,NM_FIELD_NAMING_CONVENTION,NM_METHOD_NAMING_CONVENTION,NM_CLASS_NOT_EXCEPTION" />
             
   <Detector class="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" 
             speed="fast"
@@ -728,6 +728,7 @@
   <BugPattern abbrev="Nm" type="NM_FIELD_NAMING_CONVENTION" category="BAD_PRACTICE" />
   <BugPattern abbrev="Nm" type="NM_CLASS_NAMING_CONVENTION" category="BAD_PRACTICE" />
   <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING" category="CORRECTNESS" />
+  <BugPattern abbrev="Nm" type="NM_VERY_CONFUSING_INTENTIONAL" category="BAD_PRACTICE" />
   <BugPattern abbrev="Nm" type="NM_CONFUSING" category="BAD_PRACTICE" />
   <BugPattern abbrev="Nm" type="NM_METHOD_CONSTRUCTOR_CONFUSION" category="CORRECTNESS" />
   <BugPattern abbrev="Nm" type="NM_LCASE_HASHCODE" category="CORRECTNESS" />
