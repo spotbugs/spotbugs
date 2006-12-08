@@ -557,7 +557,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				priority++;
 				if (! hasNonAbstractSubClass.contains(f.getClassName())) priority++;
 			}
-			if (fieldNamesSet.contains(f.getName())) priority++;
+			// if (fieldNamesSet.contains(f.getName())) priority++;
 			if (assumedNonNull.containsKey(f)) {
 				priority--;
 				for (ProgramPoint p : assumedNonNull.get(f))
