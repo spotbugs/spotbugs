@@ -141,14 +141,14 @@ public class DockLayout implements FindBugsLayoutManager {
 	 */
 	public void initialize() {
 		ViewMap viewMap = new ViewMap();
-		topView = new View("Bugs", null, frame.bugListPanel());
+		topView = new View(L10N.getLocalString("view.bugs", "Bugs"), null, frame.bugListPanel());
 		topView.getWindowProperties().setCloseEnabled(false);
 		viewMap.addView(0, topView);
-		summaryView = new View("Bug summary", null, frame.summaryTab());
+		summaryView = new View(L10N.getLocalString("view.bug_summary", "Bug Summary"), null, frame.summaryTab());
 		viewMap.addView(1, summaryView);
-		commentsView = new View("Comments", null, frame.commentsPanel());
+		commentsView = new View(L10N.getLocalString("view.comments", "Comments"), null, frame.commentsPanel());
 		viewMap.addView(2, commentsView);
-		sourceView = new View("Source", null, frame.createSourceCodePanel());
+		sourceView = new View(L10N.getLocalString("view.source", "Source"), null, frame.createSourceCodePanel());
 		viewMap.addView(3, sourceView);
 		
 		rootWindow = DockingUtil.createRootWindow(viewMap, true);

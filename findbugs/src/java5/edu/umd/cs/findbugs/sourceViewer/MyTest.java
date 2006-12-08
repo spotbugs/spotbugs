@@ -61,7 +61,7 @@ public class MyTest extends JPanel {
 
 		add(scrollPane);
 	
-		JavaSourceDocument source = new JavaSourceDocument(fileName, new FileReader(fileName));
+		JavaSourceDocument source = new JavaSourceDocument(fileName, new FileReader(fileName), null);
 
 		textArea.setEditorKit(source.getEditorKit());
 		textArea.setDocument(source.getDocument());

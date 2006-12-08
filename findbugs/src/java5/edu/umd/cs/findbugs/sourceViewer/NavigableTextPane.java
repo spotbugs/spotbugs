@@ -54,6 +54,10 @@ public class NavigableTextPane extends JTextPane {
 		return getHeight(); // entire pane height, may be huge
 	}
 	
+	public int getLineOffset(int line) throws BadLocationException {
+		return lineToOffset(line);
+	}
+	
 	private int lineToOffset(int line) throws BadLocationException {
 		Document d = getDocument();
 		try {

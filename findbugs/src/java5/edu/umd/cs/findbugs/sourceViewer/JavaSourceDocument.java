@@ -52,6 +52,7 @@ import javax.swing.text.TabStop;
 
 import edu.umd.cs.findbugs.gui2.Debug;
 import edu.umd.cs.findbugs.gui2.Driver;
+import edu.umd.cs.findbugs.ba.SourceFile;
 
 public class JavaSourceDocument {
 
@@ -90,6 +91,8 @@ public class JavaSourceDocument {
 	final Element root;
 
 	final DefaultStyledDocument doc;
+	
+	final SourceFile sourceFile;
 
 	public HighlightInformation getHighlightInformation() {
 		return highlights;
@@ -104,9 +107,15 @@ public class JavaSourceDocument {
 	public String getTitle() {
 		return title;
 	}
-	public JavaSourceDocument(String title, Reader in) throws IOException  {
+	
+	public SourceFile getSourceFile() {
+		return sourceFile;
+	}
+	
+	public JavaSourceDocument(String title, Reader in, SourceFile theSource) throws IOException  {
 		doc = new DefaultStyledDocument();
 		this.title = title;
+		this.sourceFile = theSource;
 		Debug.println("Created JavaSourceDocument for " + title);
 		try {
 			dek.read(in, doc, 0);
@@ -172,7 +181,7 @@ public class JavaSourceDocument {
 	public static final JavaSourceDocument UNKNOWNSOURCE;
 	static {
 		try {
-			UNKNOWNSOURCE= new JavaSourceDocument("Unknown source", new StringReader("Unable to find source"));
+			UNKNOWNSOURCE= new JavaSourceDocument("Unknown source", new StringReader("Unable to find source"), null);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

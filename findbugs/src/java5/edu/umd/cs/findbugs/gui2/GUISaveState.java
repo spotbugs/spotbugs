@@ -118,7 +118,7 @@ public class GUISaveState{
 	
 	SorterTableColumnModel getStarterTable()
 	{
-		if (useDefault)
+		if (useDefault || (starterTable == null))
 			starterTable=new SorterTableColumnModel(GUISaveState.DEFAULT_COLUMN_HEADERS);
 
 		return starterTable;
@@ -222,7 +222,8 @@ public class GUISaveState{
 					newInstance.useDefault=true;
 				}
 			}
-			newInstance.starterTable=new SorterTableColumnModel(sortColumns);
+			if(!newInstance.useDefault)
+				newInstance.starterTable=new SorterTableColumnModel(sortColumns);
 		}
 		else
 			newInstance.useDefault=true;

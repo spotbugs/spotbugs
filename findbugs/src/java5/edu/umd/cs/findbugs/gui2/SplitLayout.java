@@ -64,9 +64,10 @@ public class SplitLayout implements FindBugsLayoutManager {
 		JPanel sourcePanel = new JPanel();
 		sourcePanel.setLayout(new BorderLayout());
 		sourceTitle = new JLabel();
-		sourceTitle.setText("<source listing>");
+		sourceTitle.setText(L10N.getLocalString("txt.source_listing", "<source listing>"));
 		sourcePanel.add(sourceTitle, BorderLayout.NORTH);
 		sourcePanel.add(frame.createSourceCodePanel(), BorderLayout.CENTER);
+		sourcePanel.add(frame.createSourceSearchPanel(), BorderLayout.SOUTH);
 		JSplitPane top = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, 
 				topLeft, sourcePanel
 				);

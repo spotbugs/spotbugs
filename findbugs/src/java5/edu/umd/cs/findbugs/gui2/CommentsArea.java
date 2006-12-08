@@ -43,6 +43,7 @@ import javax.swing.tree.TreePath;
 
 import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
@@ -106,7 +107,7 @@ public class CommentsArea {
 
 		userCommentsText.setLineWrap(true);
 		userCommentsText
-				.setToolTipText("Enter your comments about this bug here");
+				.setToolTipText(L10N.getLocalString("tooltip.enter_comments", "Enter your comments about this bug here"));
 		userCommentsText.setWrapStyleWord(true);
 		userCommentsText.setEnabled(false);
 		userCommentsText.setBackground(userCommentsTextUnenabledColor);
@@ -114,7 +115,7 @@ public class CommentsArea {
 
 		prevCommentsComboBox.setEnabled(false);
 		prevCommentsComboBox
-				.setToolTipText("Use this to reuse a previous textual comment for this bug");
+				.setToolTipText(L10N.getLocalString("tooltip.reuse_comments", "Use this to reuse a previous textual comment for this bug"));
 		prevCommentsComboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED
@@ -131,7 +132,7 @@ public class CommentsArea {
 
 		designationComboBox.setEnabled(false);
 		designationComboBox
-				.setToolTipText("Select a user designation for this bug");
+				.setToolTipText(L10N.getLocalString("tooltip.select_designation", "Select a user designation for this bug"));
 		designationComboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				if (frame.userInputEnabled
@@ -228,6 +229,7 @@ public class CommentsArea {
 				designationComboBox.setSelectedIndex(designationKeys
 						.indexOf(bug.getNonnullUserDesignation()
 								.getDesignationKey()));
+				setUserCommentInputEnableFromSwingThread(true);
 				changed = false;
 			}
 		});
@@ -267,14 +269,14 @@ public class CommentsArea {
 
 	private boolean confirmAnnotation() {
 
-		String[] options = { "Yes", "No", "Yes, and don't ask me this again" };
+		String[] options = { L10N.getLocalString("dlg.yes_btn", "Yes"), L10N.getLocalString("dlg.no_btn", "No"), L10N.getLocalString("dlg.yes_dont_ask_btn", "Yes, and don't ask me this again")};
 		if (dontShowAnnotationConfirmation)
 			return true;
 		int choice = JOptionPane
 				.showOptionDialog(
 						frame,
-						"Changing this text box will overwrite the annotations associated with all bugs in this folder and subfolders. Are you sure?",
-						"Annotation Change", JOptionPane.DEFAULT_OPTION,
+						L10N.getLocalString("dlg.changing_text_lbl", "Changing this text box will overwrite the annotations associated with all bugs in this folder and subfolders. Are you sure?"),
+						L10N.getLocalString("dlg.annotation_change_ttl", "Annotation Change"), JOptionPane.DEFAULT_OPTION,
 						JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 		switch (choice) {
 		case 0:
@@ -295,7 +297,7 @@ public class CommentsArea {
 			return;
 		if (!changed) return;
 		String newComment = getCurrentUserCommentsText();
-		if (newComment.equals(""))
+		if (newComment.equals(getNonLeafCommentsText(aspects)))
 			return;
 		else if (confirmAnnotation()) {
 			BugSet filteredSet = aspects
@@ -437,7 +439,7 @@ public class CommentsArea {
 	}
 
 	void addDesignationItem(JMenu menu, final String menuName, int keyEvent) {
-		JMenuItem toggleItem = new JMenuItem(menuName);
+		JMenuItem toggleItem = MainFrame.newJMenuItem(menuName);
 
 		toggleItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -499,31 +501,47 @@ public class CommentsArea {
 		BugSet filteredSet = theAspects.getMatchingBugs(BugSet.getMainBugSet());
 		boolean allSame = true;
 		int first = -1;
-		String comments = null;
 		for (BugLeafNode nextNode : filteredSet) {
 
 			int designationIndex = designationKeys.indexOf(nextNode.getBug()
 					.getNonnullUserDesignation().getDesignationKey());
-			String commentsOnThisBug = nextNode.getBug().getAnnotationText();
 			if (first == -1) {
 				first = designationIndex;
-				comments = commentsOnThisBug;
 			} else {
-				if (designationIndex != first
-						|| !commentsOnThisBug.equals(comments))
+				if (designationIndex != first)
 					allSame = false;
 			}
 		}
 		;
 		if (allSame) {
 			designationComboBox.setSelectedIndex(first);
-			userCommentsText.setText(comments);
 		} else {
 			designationComboBox.setSelectedIndex(0);
-			userCommentsText.setText("");
 		}
+		userCommentsText.setText(getNonLeafCommentsText(theAspects));
 		changed = false;
 		// setUserCommentInputEnableFromSwingThread(true);
+	}
+	
+	protected String getNonLeafCommentsText(BugAspects theAspects)
+	{	if (theAspects == null)
+			return "";
+		BugSet filteredSet = theAspects.getMatchingBugs(BugSet.getMainBugSet());
+		Iterator<BugLeafNode> filteredIter = filteredSet.iterator();
+		boolean allSame = true;
+		String comments = null;
+		for (BugLeafNode nextNode : filteredSet) {
+		String commentsOnThisBug = nextNode.getBug().getAnnotationText();
+			if (comments == null) {
+				comments = commentsOnThisBug;
+			} else {
+				if (!commentsOnThisBug.equals(comments))
+					allSame = false;
+			}
+		}
+		if((comments == null) || (allSame == false))
+			return "";
+		else return comments;
 	}
 
 	protected void setDesignationComboBox(String selection) {

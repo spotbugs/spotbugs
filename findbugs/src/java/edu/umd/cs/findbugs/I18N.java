@@ -29,9 +29,12 @@ import java.util.Iterator;
 import java.util.Comparator;
 import java.io.Serializable;
 import java.util.ResourceBundle;
+import java.util.Locale;
+import java.util.MissingResourceException;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.gui2.L10N;
 
 /**
  * Singleton responsible for returning localized strings for information
@@ -40,11 +43,12 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  * @author David Hovemeyer
  */
 public class I18N {
-
+	private static final boolean DEBUG = SystemProperties.getBoolean("i18n.debug");
 	/** a Comparator to compare user designation keys */
 	public static final Comparator<String> designationKeyComparator = new DesignationKeyComparator();
-
+	public static Locale defaultLocale = Locale.getDefault();
 	private final ResourceBundle annotationDescriptionBundle;
+	private final ResourceBundle englishAnnotationDescriptionBundle; //used if local one can't be found
 	//private final ResourceBundle bugCategoryDescriptionBundle;
 	private final HashMap<String, BugCategory> categoryDescriptionMap;
 	private final ResourceBundle userDesignationBundle;
@@ -52,10 +56,11 @@ public class I18N {
 	private final HashMap<String, BugCode> bugCodeMap;
 
 	private I18N() {
-		annotationDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsAnnotationDescriptions");
+		annotationDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsAnnotationDescriptions", defaultLocale);
+		englishAnnotationDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.FindBugsAnnotationDescriptions", Locale.ENGLISH);
 		//bugCategoryDescriptionBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.BugCategoryDescriptions");
 		categoryDescriptionMap = new HashMap<String, BugCategory>();
-		userDesignationBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.UserDesignations");
+		userDesignationBundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.UserDesignations", defaultLocale);
 		bugPatternMap = new HashMap<String, BugPattern>();
 		bugCodeMap = new HashMap<String, BugCode>();
 	}
@@ -113,7 +118,7 @@ public class I18N {
 	public @NonNull String getMessage(String key) {
 		BugPattern bugPattern = bugPatternMap.get(key);
 		if (bugPattern == null)
-			return "Error: missing bug pattern for key " + key;
+			return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
 		return bugPattern.getAbbrev() + ": " + bugPattern.getLongDescription();
 	}
 
@@ -127,13 +132,13 @@ public class I18N {
 	public @NonNull String getShortMessage(String key) {
 		BugPattern bugPattern = bugPatternMap.get(key);
 		if (bugPattern == null)
-			return "Error: missing bug pattern for key " + key;
+			return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
 		return bugPattern.getAbbrev() + ": " + bugPattern.getShortDescription();
 	}
 	public @NonNull String getShortMessageWithoutCode(String key) {
 		BugPattern bugPattern = bugPatternMap.get(key);
 		if (bugPattern == null)
-			return "Error: missing bug pattern for key " + key;
+			return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
 		return  bugPattern.getShortDescription();
 	}
 
@@ -145,7 +150,7 @@ public class I18N {
 	public @NonNull String getDetailHTML(String key) {
 		BugPattern bugPattern = bugPatternMap.get(key);
 		if (bugPattern == null)
-			return "Error: missing bug pattern for key " + key;
+			return L10N.getLocalString("err.missing_pattern", "Error: missing bug pattern for key") + " " + key;
 		return bugPattern.getDetailHTML();
 	}
 
@@ -158,7 +163,15 @@ public class I18N {
 	 * @param key the annotation description to retrieve
 	 */
 	public String getAnnotationDescription(String key) {
-		return annotationDescriptionBundle.getString(key);
+		try{
+			return annotationDescriptionBundle.getString(key);
+		}
+		catch(MissingResourceException mre){
+			if(DEBUG)
+				return "TRANSLATE(key=" + key + ") (param={0}}";
+			else
+				return englishAnnotationDescriptionBundle.getString(key);
+		}
 	}
 
 	/**
@@ -174,7 +187,7 @@ public class I18N {
 	public @NonNull String getBugTypeDescription(String shortBugType) {
 		BugCode bugCode = bugCodeMap.get(shortBugType);
 		if (bugCode == null)
-			return "Error: missing bug code for key " + shortBugType;
+			return L10N.getLocalString("err.missing_code", "Error: missing bug code for key") + " " + shortBugType;
 		return bugCode.getDescription();
 	}
 

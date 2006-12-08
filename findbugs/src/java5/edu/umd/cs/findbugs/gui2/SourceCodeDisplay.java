@@ -33,6 +33,7 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.StyledDocument;
+import javax.swing.text.BadLocationException;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
@@ -48,8 +49,12 @@ public final class SourceCodeDisplay implements Runnable {
 	static final Color MAIN_HIGHLIGHT = new Color(1f, 1f, 0.5f);
 	static final Color MAIN_HIGHLIGHT_MORE = MAIN_HIGHLIGHT.brighter();
 	static final Color ALTERNATIVE_HIGHLIGHT = new Color(0.86f, 0.90f, 1.0f);
+	static final Color FOUND_HIGHLIGHT = new Color(0.75f, 0.75f, 1f);
 
 	public static final Document SOURCE_NOT_RELEVANT = new DefaultStyledDocument();;
+	
+	public JavaSourceDocument myDocument;
+	private int currentChar = -1; //for find
 	
 	Map<String, JavaSourceDocument> map = new HashMap<String, JavaSourceDocument>();
 
@@ -89,7 +94,7 @@ public final class SourceCodeDisplay implements Runnable {
 			try {
 				InputStream in = sourceFile.getInputStream();
 				result = new JavaSourceDocument(source.getClassName(),
-						new InputStreamReader(in));
+						new InputStreamReader(in), sourceFile);
 			} catch (Exception e) {
 				result = JavaSourceDocument.UNKNOWNSOURCE;
 				Debug.println(e); // e.printStackTrace();
@@ -128,6 +133,7 @@ public final class SourceCodeDisplay implements Runnable {
 			
 			try {
 			final JavaSourceDocument src = getDocument(mySourceLine);
+			this.myDocument = src;
 			src.getHighlightInformation().clear();
 			String primaryKind = mySourceLine.getDescription();
 			// Display myBug and mySourceLine
@@ -190,7 +196,90 @@ public final class SourceCodeDisplay implements Runnable {
 		if (!sourceAnnotation.getClassName().equals(src.getTitle())) return;
 		src.getHighlightInformation().setHighlight(startLine, sourceAnnotation.getEndLine(), color);
 	}
-
+	
+	public void foundItem(int lineNum) {
+		myDocument.getHighlightInformation().updateFoundLineNum(lineNum);
+		myDocument.getHighlightInformation().setHighlight(lineNum, FOUND_HIGHLIGHT);
+		frame.sourceCodeTextPane.scrollLineToVisible(lineNum);
+		frame.sourceCodeTextPane.updateUI();
+	}
+	
+	private int search(JavaSourceDocument document, String target, int start, Boolean backwards)
+	{
+		String docContent = null;
+		try{
+		docContent = document.getDocument().getText(0, document.getDocument().getLength());
+		}
+		catch(BadLocationException ble){System.out.println("Bad location exception");}
+		if(docContent == null) return -1;
+		int targetLen = target.length();
+		int sourceLen = docContent.length();
+		if(targetLen > sourceLen)
+			return -1;
+		else if(backwards)
+		{
+			for(int i=start; i>=0; i--)
+				if(docContent.substring(i, i+targetLen).equals(target))
+					return i;
+			for(int i=(sourceLen-targetLen); i>start; i--)
+				if(docContent.substring(i, i+targetLen).equals(target))
+					return i;
+			return -1;
+		}
+		else
+		{
+			for(int i=start; i<=(sourceLen-targetLen); i++)
+				if(docContent.substring(i, i+targetLen).equals(target))
+					return i;
+			for(int i=0; i<start; i++)
+				if(docContent.substring(i, i+targetLen).equals(target))
+					return i;
+			return -1;
+		}
+	}
+	
+	private int charToLineNum(int charNum)
+	{
+		if(charNum==-1) return -1;
+		try
+		{
+			for(int i=1; true; i++){
+				if(frame.sourceCodeTextPane.getLineOffset(i) > charNum)
+					return i-1;
+				else if(frame.sourceCodeTextPane.getLineOffset(i) == -1)
+					return -1;
+			}
+		}
+		catch(BadLocationException ble){return -1;}
+	}
+	
+	public int find(String target)
+	{
+		int charFoundAt = search(myDocument, target, 0, false);
+		currentChar = charFoundAt;
+		//System.out.println(currentChar);
+		//System.out.println(charToLineNum(currentChar));
+		return charToLineNum(currentChar);
+	}
+	
+	public int findNext(String target)
+	{
+		int charFoundAt = search(myDocument, target, currentChar+1, false);
+		currentChar = charFoundAt;
+		//System.out.println(currentChar);
+		//System.out.println(charToLineNum(currentChar));
+		return charToLineNum(currentChar);
+	}
+	
+	public int findPrevious(String target)
+	{
+		int charFoundAt = search(myDocument, target, currentChar-1, true);
+		currentChar = charFoundAt;
+		//System.out.println(currentChar);
+		//System.out.println(charToLineNum(currentChar));
+		return charToLineNum(currentChar);
+	}
+	
 	private void show(JTextPane pane, Document src, SourceLineAnnotation sourceAnnotation) {
 
 		int startLine = sourceAnnotation.getStartLine();

@@ -139,7 +139,8 @@ public class PluginLoader extends URLClassLoader {
 
 		// Load the message collections
 		try {
-			Locale locale = Locale.getDefault();
+			//Locale locale = Locale.getDefault();
+			Locale locale = I18N.defaultLocale;
 			String language = locale.getLanguage();
 			String country = locale.getCountry();
 

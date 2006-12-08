@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
+import java.awt.Button;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -28,6 +29,9 @@ import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -77,6 +81,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
@@ -127,6 +132,21 @@ import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
  */
 public class MainFrame extends FBFrame implements LogSync
 {
+	 static Button newButton(String name) {
+		return new Button(L10N.translate(name));
+	}
+	 static JMenuItem newJMenuItem(String string, int vkF) {
+		return new JMenuItem(L10N.translate(string), vkF);
+		
+	}
+	 static JMenuItem newJMenuItem(String string) {
+		return new JMenuItem(L10N.translate(string));
+		
+	}
+	 static JMenu newJMenu(String string) {
+			return new JMenu(L10N.translate(string));
+			
+		}
 	JTree tree;
 	private BasicTreeUI treeUI;
 	boolean userInputEnabled;
@@ -135,6 +155,12 @@ public class MainFrame extends FBFrame implements LogSync
 	
 	static final int COMMENTS_TAB_STRUT_SIZE = 5;
 	static final int COMMENTS_MARGIN = 5;
+	static final int SEARCH_TEXT_FIELD_SIZE = 32;
+	
+	private JTextField sourceSearchTextField = new JTextField(SEARCH_TEXT_FIELD_SIZE);
+	private Button findButton = newButton("Find");
+	private Button findNextButton = newButton("Find Next");
+	private Button findPreviousButton = newButton("Find Previous");
 
 	public static final boolean DEBUG = SystemProperties.getBoolean("gui2.debug");
 	
@@ -163,8 +189,8 @@ public class MainFrame extends FBFrame implements LogSync
 	 * saveProjectMenuItem should be enabled.
 	 */
 	boolean projectChanged = false;
-	final private JMenuItem editProjectMenuItem = new JMenuItem("Add/Remove Files", KeyEvent.VK_F);
-	final private JMenuItem saveProjectMenuItem = new JMenuItem("Save Project", KeyEvent.VK_S);
+	final private JMenuItem editProjectMenuItem = newJMenuItem("Add/Remove Files", KeyEvent.VK_F);
+	final private JMenuItem saveProjectMenuItem = newJMenuItem("Save Project", KeyEvent.VK_S);
 	BugLeafNode currentSelectedBugLeaf;
 	BugAspects currentSelectedBugAspects;
 	private JPopupMenu bugPopupMenu;
@@ -187,6 +213,12 @@ public class MainFrame extends FBFrame implements LogSync
 		instance=new MainFrame(factory);
 		instance.initializeGUI();
 	}
+	/**
+	 * @param string
+	 * @param vkF
+	 * @return
+	 */
+
 	static MainFrame getInstance() {
 		if (instance==null) throw new IllegalStateException();
 		return instance;
@@ -259,7 +291,7 @@ public class MainFrame extends FBFrame implements LogSync
 			if (MainFrame.DEBUG) System.err.println("a recent project was not found, removing it from menu");
 			return;
 		}
-		final JMenuItem item=new JMenuItem(f.getName().substring(0,f.getName().length()-4));
+		final JMenuItem item=newJMenuItem(f.getName().substring(0,f.getName().length()-4));
 		item.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e)
 			{
@@ -375,7 +407,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private JPopupMenu createBugPopupMenu() {
 		JPopupMenu popupMenu = new JPopupMenu();
 		
-		JMenuItem suppressMenuItem = new JMenuItem("Suppress this bug");
+		JMenuItem suppressMenuItem = newJMenuItem("Suppress this bug");
 		
 		suppressMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){				
@@ -397,7 +429,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		popupMenu.add(suppressMenuItem);
 		
-		JMenuItem filterMenuItem = new JMenuItem("Filter bugs like this");
+		JMenuItem filterMenuItem = newJMenuItem("Filter bugs like this");
 		
 		filterMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
@@ -409,7 +441,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		popupMenu.add(filterMenuItem);
 		
-		JMenu changeDesignationMenu = new JMenu("Change bug designation");
+		JMenu changeDesignationMenu = newJMenu("Change bug designation");
 		
 		int i = 0;
 		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
@@ -431,7 +463,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private JPopupMenu createBranchPopUpMenu(){
 		JPopupMenu popupMenu = new JPopupMenu();
 		
-		JMenuItem filterMenuItem = new JMenuItem("Filter these bugs");
+		JMenuItem filterMenuItem = newJMenuItem("Filter these bugs");
 		
 		filterMenuItem.addActionListener(new ActionListener()
 		{
@@ -449,7 +481,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		popupMenu.add(filterMenuItem);
 		
-		JMenu changeDesignationMenu = new JMenu("Change bug designation");
+		JMenu changeDesignationMenu = newJMenu("Change bug designation");
 		
 		int i = 0;
 		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
@@ -471,26 +503,26 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenuBar menuBar = new JMenuBar();
 		
 		//Create JMenus for menuBar.
-		JMenu fileMenu = new JMenu("File");
+		JMenu fileMenu = newJMenu("File");
 		fileMenu.setMnemonic(KeyEvent.VK_F);
-		JMenu editMenu = new JMenu("Edit");
+		JMenu editMenu = newJMenu("Edit");
 		editMenu.setMnemonic(KeyEvent.VK_E);
 		
 		//Edit fileMenu JMenu object.
-		JMenuItem newProjectMenuItem = new JMenuItem("New Project", KeyEvent.VK_N);
-		JMenuItem openProjectMenuItem = new JMenuItem("Open Project...", KeyEvent.VK_O);
-		recentProjectsMenu = new JMenu("Recent Projects");
+		JMenuItem newProjectMenuItem = newJMenuItem("New Project", KeyEvent.VK_N);
+		JMenuItem openProjectMenuItem = newJMenuItem("Open Project...", KeyEvent.VK_O);
+		recentProjectsMenu = newJMenu("Recent Projects");
 		recentProjectsMenu.setMnemonic(KeyEvent.VK_E);
 		createRecentProjectsMenu();
-		JMenuItem saveAsProjectMenuItem = new JMenuItem("Save Project As...", KeyEvent.VK_A);
-		JMenuItem importBugsMenuItem = new JMenuItem("Load Analysis...", KeyEvent.VK_L);
-		JMenuItem exportBugsMenuItem = new JMenuItem("Save Analysis...", KeyEvent.VK_B);
-		JMenuItem redoAnalysis = new JMenuItem("Redo Analysis", KeyEvent.VK_R);
-		JMenuItem mergeMenuItem = new JMenuItem("Merge Analysis...");
+		JMenuItem saveAsProjectMenuItem = newJMenuItem("Save Project As...", KeyEvent.VK_A);
+		JMenuItem importBugsMenuItem = newJMenuItem("Load Analysis...", KeyEvent.VK_L);
+		JMenuItem exportBugsMenuItem = newJMenuItem("Save Analysis...", KeyEvent.VK_B);
+		JMenuItem redoAnalysis = newJMenuItem("Redo Analysis", KeyEvent.VK_R);
+		JMenuItem mergeMenuItem = newJMenuItem("Merge Analysis...");
 		
 		JMenuItem exitMenuItem = null;
 		if (!MAC_OS_X) {
-			exitMenuItem = new JMenuItem("Exit", KeyEvent.VK_X);
+			exitMenuItem = newJMenuItem("Exit", KeyEvent.VK_X);
 			exitMenuItem.addActionListener(new ActionListener(){			
 			public void actionPerformed(ActionEvent evt){
 				callOnClose();
@@ -604,9 +636,9 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenuItem cutMenuItem = new JMenuItem(new CutAction());
 		JMenuItem copyMenuItem = new JMenuItem(new CopyAction());
 		JMenuItem pasteMenuItem = new JMenuItem(new PasteAction());
-		preferencesMenuItem = new JMenuItem("Filters/Suppressions...");
-		JMenuItem sortMenuItem = new JMenuItem("Sort Configuration...");
-		JMenuItem goToLineMenuItem = new JMenuItem("Go to line...");
+		preferencesMenuItem = newJMenuItem("Filters/Suppressions...");
+		JMenuItem sortMenuItem = newJMenuItem("Sort Configuration...");
+		JMenuItem goToLineMenuItem = newJMenuItem("Go to line...");
 		
 		attachAccelaratorKey(cutMenuItem, KeyEvent.VK_X);
 		attachAccelaratorKey(copyMenuItem, KeyEvent.VK_C);
@@ -657,7 +689,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		final ActionMap map = tree.getActionMap();
 		
-		JMenu navMenu = new JMenu("Navigation");
+		JMenu navMenu = newJMenu("Navigation");
 		
 		addNavItem(map, navMenu, "Expand", "expand", KeyEvent.VK_RIGHT );
 		addNavItem(map, navMenu, "Collapse", "collapse", KeyEvent.VK_LEFT);
@@ -666,7 +698,7 @@ public class MainFrame extends FBFrame implements LogSync
 				
 		menuBar.add(navMenu);
 		
-		JMenu designationMenu = new JMenu("Designation");
+		JMenu designationMenu = newJMenu("Designation");
 		int i = 0;
 		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
 		for(String key :  I18N.instance().getUserDesignationKeys(true)) {
@@ -677,8 +709,8 @@ public class MainFrame extends FBFrame implements LogSync
 
 		if (!MAC_OS_X) {		
 		    // On Mac, 'About' appears under Findbugs menu, so no need for it here
-		    JMenu helpMenu = new JMenu("Help");
-		    JMenuItem aboutItem = new JMenuItem("About FindBugs");
+		    JMenu helpMenu = newJMenu("Help");
+		    JMenuItem aboutItem = newJMenuItem("About FindBugs");
 		    helpMenu.add(aboutItem);
 
 				aboutItem.addActionListener(new java.awt.event.ActionListener() {
@@ -695,7 +727,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * @param navMenu
 	 */
 	private void addNavItem(final ActionMap map, JMenu navMenu, String menuName, String actionName, int keyEvent) {
-		JMenuItem toggleItem = new JMenuItem(menuName);
+		JMenuItem toggleItem = newJMenuItem(menuName);
 		toggleItem.addActionListener(treeActionAdapter(map, actionName));	
 		attachAccelaratorKey(toggleItem, keyEvent);
 		navMenu.add(toggleItem);
@@ -1400,6 +1432,70 @@ public class MainFrame extends FBFrame implements LogSync
 		panel.revalidate();
 		if (DEBUG) System.out.println("Created source code panel");
 		return panel;
+	}
+
+	JPanel createSourceSearchPanel()
+	{
+		GridBagLayout gridbag = new GridBagLayout();
+		GridBagConstraints c = new GridBagConstraints();
+		JPanel thePanel = new JPanel();
+		thePanel.setLayout(gridbag);
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weightx = 1.0;
+		c.insets = new Insets(0, 5, 0, 5);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		gridbag.setConstraints(sourceSearchTextField, c);
+		thePanel.add(sourceSearchTextField);
+		//add the buttons
+		findButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				searchSource(0);
+			}
+		});
+		c.gridx = 1;
+		c.weightx = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		gridbag.setConstraints(findButton, c);
+		thePanel.add(findButton);
+		findNextButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				searchSource(1);
+			}
+		});
+		c.gridx = 2;
+		c.weightx = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		gridbag.setConstraints(findNextButton, c);
+		thePanel.add(findNextButton);
+		findPreviousButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				searchSource(2);
+			}
+		});
+		c.gridx = 3;
+		c.weightx = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		gridbag.setConstraints(findPreviousButton, c);
+		thePanel.add(findPreviousButton);
+		return thePanel;
+	}
+
+	void searchSource(int type)
+	{
+		int targetLineNum = -1;
+		String targetString = sourceSearchTextField.getText();
+		switch(type)
+		{
+		case 0: targetLineNum = displayer.find(targetString);
+				break;
+		case 1: targetLineNum = displayer.findNext(targetString);
+				break;
+		case 2: targetLineNum = displayer.findPrevious(targetString);
+				break;
+		}
+		if(targetLineNum != -1)
+			displayer.foundItem(targetLineNum);
 	}
 
 	

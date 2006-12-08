@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
  */
 public enum Sortables implements Comparator<StringPair>
 {
-	PRIORITY("Priority")
+	PRIORITY(L10N.getLocalString("sort.priority", "Priority"))
 	{
 		public String getFrom(BugInstance bug)
 		{
@@ -51,14 +51,14 @@ public enum Sortables implements Comparator<StringPair>
 		public String formatValue(String value)
 		{
 			if (value.equals(String.valueOf(Detector.HIGH_PRIORITY)))
-				return "High";
+				return L10N.getLocalString("sort.priority_high", "High");
 			if (value.equals(String.valueOf(Detector.NORMAL_PRIORITY)))
-				return "Normal";
+				return L10N.getLocalString("sort.priority_normal", "Normal");
 			if (value.equals(String.valueOf(Detector.LOW_PRIORITY)))
-				return "Low";
+				return L10N.getLocalString("sort.priority_low", "Low");
 			if (value.equals(String.valueOf(Detector.EXP_PRIORITY)))
-				return "Experimental";
-			return "Ignore"; // This probably shouldn't ever happen, but what the hell, let's be complete
+				return L10N.getLocalString("sort.priority_experimental", "Experimental");
+			return L10N.getLocalString("sort.priority_ignore", "Ignore"); // This probably shouldn't ever happen, but what the hell, let's be complete
 			
 		}
 		
@@ -69,7 +69,7 @@ public enum Sortables implements Comparator<StringPair>
 			return Integer.valueOf(one.value).compareTo(Integer.valueOf(two.value));
 		}
 	},
-	CLASS("Class")
+	CLASS(L10N.getLocalString("sort.class", "Class"))
 	{
 		public String getFrom(BugInstance bug)
 		{
@@ -92,7 +92,7 @@ public enum Sortables implements Comparator<StringPair>
 			return one.value.compareTo(two.value);
 		}
 	},
-	PACKAGE("Package")
+	PACKAGE(L10N.getLocalString("sort.package", "Package"))
 	{
 		public String getFrom(BugInstance bug)
 		{
@@ -106,7 +106,7 @@ public enum Sortables implements Comparator<StringPair>
 			return value;
 		}
 	},
-	CATEGORY("Category")
+	CATEGORY(L10N.getLocalString("sort.category", "Category"))
 	{
 		public String getFrom(BugInstance bug)
 		{
@@ -119,7 +119,7 @@ public enum Sortables implements Comparator<StringPair>
 			return I18N.instance().getBugCategoryDescription(value);
 		}
 	},
-	DESIGNATION("Designation")
+	DESIGNATION(L10N.getLocalString("sort.designation", "Designation"))
 	{
 		public String getFrom(BugInstance bug)
 		{
@@ -143,7 +143,7 @@ public enum Sortables implements Comparator<StringPair>
 			return sortedDesignations.toArray(new String[sortedDesignations.size()]);
 		}
 	},
-	BUGCODE("Bug Kind")
+	BUGCODE(L10N.getLocalString("sort.bug_kind", "Bug Kind"))
 	{
 		public String getFrom(BugInstance bug)
 		{
@@ -161,7 +161,7 @@ public enum Sortables implements Comparator<StringPair>
 			return formatValue(one.value).compareTo(formatValue(two.value));
 		}
 	},
-	TYPE("Bug Pattern")
+	TYPE(L10N.getLocalString("sort.bug_pattern", "Bug Pattern"))
 	{
 		public String getFrom(BugInstance bug)
 		{

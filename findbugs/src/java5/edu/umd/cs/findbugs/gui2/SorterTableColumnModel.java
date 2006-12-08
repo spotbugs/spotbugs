@@ -66,6 +66,7 @@ public class SorterTableColumnModel implements TableColumnModel{
 		for(int x = 0; x < columnHeaders.length; x++)
 		{
 			Sortables c=columnHeaders[x];
+			//System.out.println(c);
 			for (int y=0; y<Sortables.values().length;y++)
 			{
 				if (c.equals(Sortables.values()[y])) 

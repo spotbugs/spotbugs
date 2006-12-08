@@ -98,7 +98,7 @@ public class SorterDialog extends FBDialog {
 		
 		for(Sortables s : Sortables.values()){
 			if (s == Sortables.DIVIDER)
-				checkBoxSortList.add(new JCheckBox("[divider]"));
+				checkBoxSortList.add(new JCheckBox(L10N.getLocalString("sort.divider", "[divider]")));
 			else
 				checkBoxSortList.add(new JCheckBox(s.toString()));
 		}
@@ -125,7 +125,7 @@ public class SorterDialog extends FBDialog {
 		insidePanel.add(bottomPanel,BorderLayout.SOUTH);
 		
 		
-		sortApply=new JButton("Apply");
+		sortApply=new JButton(L10N.getLocalString("dlg.apply_btn", "Apply"));
 		sortApply.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e)
 			{

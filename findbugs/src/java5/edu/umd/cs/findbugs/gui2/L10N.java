@@ -20,19 +20,38 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.event.KeyEvent;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import javax.swing.AbstractButton;
 
+import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.gui.AnnotatedString;
 
 public class L10N {
+	private static final boolean DEBUG = SystemProperties.getBoolean("i18n.debug");
 	private static ResourceBundle bundle;
+	private static ResourceBundle bundle_en;
 
+	private static Map<String,String> reverseMap = new HashMap<String,String>();
 	static {
 		try {
-			bundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.gui2.bundle.findbugs");
+			bundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.gui2.bundle.findbugs", I18N.defaultLocale);
+			bundle_en = ResourceBundle.getBundle("edu.umd.cs.findbugs.gui2.bundle.findbugs", Locale.ENGLISH);
+
+			for(Enumeration<String> e = bundle.getKeys(); e.hasMoreElements(); ) {
+				String k = e.nextElement();
+				Object v = bundle.getObject(k);
+				if (v instanceof String && !reverseMap.containsKey(v))
+					reverseMap.put((String)v, k);
+			}
+			
+				
 		} catch (MissingResourceException mre) {
 			bundle = null;
 		}
@@ -41,14 +60,30 @@ public class L10N {
 	private L10N() {
 	}
 
+	public static String translate(String english) {
+		String key = reverseMap.get(english);
+		return getLocalString(key, english);
+		
+	}
+	private static  String lookup(ResourceBundle b, String key) {
+		if (b == null || key == null ) throw new MissingResourceException(null,null,null);
+		
+		return bundle.getString(key);
+	}
 	public static String getLocalString(String key, String defaultString) {
+		if (key == null) return "TRANSLATE("+defaultString+")";
 		try {
-			if (bundle != null)
-				return bundle.getString(key);
-			else
-				return defaultString;
+			return lookup(bundle, key);
 		} catch (MissingResourceException mre) {
-			return defaultString;
+			try {
+				String en = lookup(bundle_en, key);
+				if (DEBUG) return "TRANSLATE("+en+")";
+				else return en;
+			} catch (MissingResourceException mre2) {
+				String en = defaultString;
+				if (DEBUG) return "TRANSLATE("+en+")";
+				else return en;
+		}
 		}
 	}
 
