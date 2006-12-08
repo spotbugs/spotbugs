@@ -575,7 +575,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			}
 			if (!readOnlyFields.contains(f)) 
 				bugReporter.reportBug(
-						addClassFieldAndAccess(new BugInstance(this,"UWF_NULL_FIELD",priority), f)
+						addClassFieldAndAccess(new BugInstance(this,"UWF_NULL_FIELD",priority), f).lowerPriorityIfDeprecated()
 					);
 		}
 
