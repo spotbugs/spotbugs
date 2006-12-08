@@ -34,11 +34,9 @@ public class SourceSearcher {
 	HashSet<String> sourceFound = new HashSet<String>();
 	HashSet<String> sourceNotFound = new HashSet<String>();
 	 SourceFinder sourceFinder = new SourceFinder();
-	Project project;
-	public SourceSearcher(Project project) {
-		this.project = project;
-		sourceFinder.setSourceBaseList(project.getSourceDirList());
 
+	public SourceSearcher(Project project) {
+		sourceFinder.setSourceBaseList(project.getSourceDirList());
 	}
 	
 	public boolean findSource(SourceLineAnnotation srcLine) {
