@@ -36,6 +36,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -159,7 +160,9 @@ public  class XFactory {
 		return m;
 	}
 
-
+	public static XMethod createXMethod(MethodAnnotation ma) {
+		return createXMethod(ma.getClassName(), ma.getMethodName(), ma.getMethodSignature(), ma.isStatic());
+	}
 
 	
 	/**

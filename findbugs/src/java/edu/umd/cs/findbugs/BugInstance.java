@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.bcp.FieldVariable;
@@ -248,6 +249,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return (FieldAnnotation) findAnnotationOfType(FieldAnnotation.class);
 	}
 
+	
+	public BugInstance lowerPriorityIfDeprecated() {
+		MethodAnnotation m = getPrimaryMethod();
+		if (m != null && AnalysisContext.currentXFactory().getDeprecated().contains(XFactory.createXMethod(m)))
+				priority++;
+		FieldAnnotation f = getPrimaryField();
+		if (f != null && AnalysisContext.currentXFactory().getDeprecated().contains(XFactory.createXField(f)))
+			priority++;
+		return this;
+	}
 	/**
 	 * Find the first BugAnnotation in the list of annotations
 	 * that is the same type or a subtype as the given Class parameter.

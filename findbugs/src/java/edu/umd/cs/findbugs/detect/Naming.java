@@ -266,7 +266,7 @@ public class Naming extends PreorderVisitor implements Detector {
 					priority--;
 				if (!obj.isPrivate() && getThisClass().isPublic()) 
 					priority--;
-				bugReporter.reportBug( new BugInstance(this, "NM_METHOD_CONSTRUCTOR_CONFUSION", priority).addClassAndMethod(this));
+				bugReporter.reportBug( new BugInstance(this, "NM_METHOD_CONSTRUCTOR_CONFUSION", priority).addClassAndMethod(this).lowerPriorityIfDeprecated());
 				return;
 			}
 		}
@@ -276,17 +276,17 @@ public class Naming extends PreorderVisitor implements Detector {
 
 		if (mName.equals("equal") && sig.equals("(Ljava/lang/Object;)Z")) {
 			bugReporter.reportBug(new BugInstance(this, "NM_BAD_EQUAL", HIGH_PRIORITY)
-			        .addClassAndMethod(this));
+			        .addClassAndMethod(this).lowerPriorityIfDeprecated());
 			return;
 		}
 		if (mName.equals("hashcode") && sig.equals("()I")) {
 			bugReporter.reportBug(new BugInstance(this, "NM_LCASE_HASHCODE", HIGH_PRIORITY)
-			        .addClassAndMethod(this));
+			        .addClassAndMethod(this).lowerPriorityIfDeprecated());
 			return;
 		}
 		if (mName.equals("tostring") && sig.equals("()Ljava/lang/String;")) {
 			bugReporter.reportBug(new BugInstance(this, "NM_LCASE_TOSTRING", HIGH_PRIORITY)
-			        .addClassAndMethod(this));
+			        .addClassAndMethod(this).lowerPriorityIfDeprecated());
 			return;
 		}
 

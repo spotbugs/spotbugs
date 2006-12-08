@@ -643,7 +643,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				} else if (!writtenFields.contains(f) && f.isResolved())
 					bugReporter.reportBug(new BugInstance(this, "UUF_UNUSED_FIELD", NORMAL_PRIORITY)
 							.addClass(className)
-							.addField(f));
+							.addField(f).lowerPriorityIfDeprecated());
 				else if (f.getName().toLowerCase().indexOf("guardian") < 0) {
 					int priority = NORMAL_PRIORITY;
 					if (f.isStatic()) priority++;
