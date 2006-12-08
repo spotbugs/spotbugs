@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="Shift_JIS"?>
 
-<!-- This messages file is based on revision 1.349 of message.xml. -->
+<!-- This messages file is based on revision 1.357 of message.xml. -->
 
 <MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:noNamespaceSchemaLocation="messagecollection.xsd">
@@ -241,6 +241,15 @@
     <Details>
 <![CDATA[
 <p> ‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA“½–¼ƒNƒ‰ƒX‚Ì’†‚Ìƒƒ\ƒbƒh‚Ì‚¤‚¿AƒI[ƒo[ƒ‰ƒCƒh‚ðˆÓ}‚µ‚Ä‚¢‚È‚ª‚çAŽÀÛ‚ÍƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚Ä‚¢‚È‚¢ƒƒ\ƒbƒh‚ð”­Œ©‚µ‚Ü‚·B
+</p>
+]]>
+    </Details>
+  </Detector>
+
+  <Detector class="edu.umd.cs.findbugs.detect.URLProblems">
+    <Details>
+<![CDATA[
+<p><code>java.net.URL</code>‚Ìequals()‚ÆhashCode()‚ÍƒhƒƒCƒ“–¼‚Ì‰ðŒˆ‚ð•K—v‚Æ‚µ‚Ü‚·BŒ‹‰Ê‚Æ‚µ‚ÄA‚±‚ê‚ç‚Í”ñí‚Éd‚¢ˆ—‚Æ‚È‚é‚Ì‚ÅA‚±‚ÌƒfƒBƒeƒNƒ^‚ÍA‚±‚ê‚ç‚Ìƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚ð”­Œ©‚µ‚Ü‚·B
 </p>
 ]]>
     </Details>
@@ -1095,6 +1104,14 @@ ASMƒoƒCƒgƒR[ƒh‰ðÍƒtƒŒ[ƒ€ƒ[ƒN‚ðŽg—p‚µ‚½ƒfƒBƒeƒNƒ^‚Ìì¬•û–@‚ðŽ¦‚·‚½‚ß‚ÌƒTƒ“ƒ
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer">
+    <Details>
+    <![CDATA[
+    <p> ‚±‚ÌƒfƒBƒeƒNƒ^‚ÍAƒRƒ“ƒeƒi“à‚Ì<code>java.lang.Object</code>‚ðŽó‚¯Žæ‚é”Ä—pŒ^ƒƒ\ƒbƒh‚Ìˆø”‚ð’²¸‚µA‚±‚ê‚ªƒRƒ“ƒeƒi‚ÌŒ^ƒpƒ‰ƒ[ƒ^‚ÆŠÖ˜A‚µ‚Ä‚¢‚é‚©ƒ`ƒFƒbƒN‚µ‚Ü‚·BŠÖŒW‚Ì–³‚¢Œ^‚ÌƒIƒuƒWƒFƒNƒg‚ðƒRƒ“ƒeƒi‚ÉŠi”[‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB—á‚¦‚Î<code>foo</code>‚ª<code>List&lt;String&gt;</code>‚Å‚ ‚èA<code>bar</code>‚ª<code>StringBuffer</code>‚Ìê‡A<code>foo.contains(bar)</code>‚Íí‚Éfalse‚ð•Ô‚µ‚Ü‚·B‚‘¬ƒfƒBƒeƒNƒ^‚Å‚·B</p>
+    ]]>
+    </Details>
+  </Detector>
+
   <!--
   **********************************************************************
   BugPatterns
@@ -1307,6 +1324,30 @@ ASMƒoƒCƒgƒR[ƒh‰ðÍƒtƒŒ[ƒ€ƒ[ƒN‚ðŽg—p‚µ‚½ƒfƒBƒeƒNƒ^‚Ìì¬•û–@‚ðŽ¦‚·‚½‚ß‚ÌƒTƒ“ƒ
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="DMI_COLLECTION_OF_URLS">
+    <ShortDescription>URL‚ÌMap‚âSet‚ÍƒpƒtƒH[ƒ}ƒ“ƒX‚ðˆ«‰»‚³‚¹‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÍA‚»‚êŽ©g‚ªURL‚ÌMapASet‚Å‚ ‚é‚©A‚ ‚é‚¢‚ÍURL‚ÌMapASet‚ð—˜—p‚µ‚Ä‚¢‚Ü‚·B‚±‚ê‚ÍƒpƒtƒH[ƒ}ƒ“ƒX‚Ìˆ«‰»‚ðµ‚«‚Ü‚·B</LongDescription>
+    <Details>
+<![CDATA[
+  <p> ‚±‚ÌƒtƒB[ƒ‹ƒh‚ ‚é‚¢‚Íƒƒ\ƒbƒh‚ÍAURL‚ÌMapASet‚ðŽg—p‚µ‚Ä‚¢‚é‚©AURL‚ÌMapASetŽ©g‚Å‚·BURL‚Ìequals()‚ÆhashCode()‚ÍAƒhƒƒCƒ“–¼‚Ì‰ðŒˆ‚ðs‚¤‚½‚ßAƒpƒtƒH[ƒ}ƒ“ƒX‚ª‘å‚«‚­‘¹‚í‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·BÚ×‚É‚Â‚¢‚Ä‚ÍA<a href="http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html">http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html</a>‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
+‘Ö‚í‚è‚É<code>java.net.URI</code>‚ðŽg—p‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+   </p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DMI_BLOCKING_METHODS_ON_URL">
+    <ShortDescription>URL‚Ìequals()AhashCode()‚ÍAƒuƒƒbƒN‚³‚ê‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÅŒÄ‚Ño‚µ‚Ä‚¢‚é {2} ‚ÍAƒhƒƒCƒ“–¼‰ðŒˆ‚Ì‚½‚ß‚ÉƒuƒƒbƒN‚³‚ê‚Ü‚·B</LongDescription>
+    <Details>
+<![CDATA[
+  <p> URL‚Ìquals()‚ÆhashCode()‚ÍAƒhƒƒCƒ“–¼‚Ì‰ðŒˆ‚ðs‚¤‚Ì‚ÅAƒpƒtƒH[ƒ}ƒ“ƒX‚ª‘å‚«‚­‘¹‚í‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·BÚ×‚Í<a href="http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html">http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html</a>‚ðŽQÆ‚µ‚Ä‚­‚¾‚³‚¢B
+‘Ö‚í‚è‚É<code>java.net.URI</code>‚ðŽg—p‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+   </p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="DMI_ANNOTATION_IS_NOT_VISIBLE_TO_REFLECTION">
     <ShortDescription>ƒfƒtƒHƒ‹ƒg‚ÌretentionƒŒƒxƒ‹‚ÌƒAƒmƒe[ƒVƒ‡ƒ“‚Ì—L–³‚ðƒŠƒtƒŒƒNƒVƒ‡ƒ“‚ÅŠm”F‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñB</ShortDescription>
     <LongDescription>{1} ‚ÅƒŠƒtƒŒƒNƒVƒ‡ƒ“‚ð—p‚¢‚ÄƒAƒmƒe[ƒVƒ‡ƒ“‚Ì—L–³‚ðŠm”F‚µ‚Ä‚¢‚Ü‚·‚ªA‚±‚ÌƒAƒmƒe[ƒVƒ‡ƒ“‚ÌretentionƒŒƒxƒ‹‚ÍƒfƒtƒHƒ‹ƒg‚É‚È‚Á‚Ä‚¢‚Ü‚·B</LongDescription>
@@ -1721,6 +1762,16 @@ public int hashCode() {
     </Details>
   </BugPattern>
 
+  <BugPattern type="EQ_COMPARETO_USE_OBJECT_EQUALS">
+    <ShortDescription>compareTo(...)‚ðéŒ¾‚µAObject.equals()‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{0} ‚ÍA{1.givenClass}‚ðéŒ¾‚µObject.equals()‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B</LongDescription>
+    <Details>
+<![CDATA[
+  <p> ‚±‚ÌƒNƒ‰ƒX‚ÍA<code>compareTo(...)</code>‚ðéŒ¾‚µ‚Ä‚¢‚Ü‚·‚ª<code>equals()</code>‚ð<code>java.lang.Object</code>‚©‚çŒp³‚µ‚Ä‚¢‚Ü‚·BcompareTo‚ª0‚ð•Ô‚·ðŒ‚ÍAequals‚ªtrue‚ð•Ô‚·ðŒ‚Æˆê’v‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B‚±‚ê‚ðŽç‚ç‚È‚¢‚Æ•¡ŽG‚Å—\‘ª•s‰Â”\‚È–â‘è‚ªA—á‚¦‚ÎPriorityQueue‚Å”­¶‚·‚é‚Å‚µ‚å‚¤BJava 5‚Å‚ÍAPriorityQueue.remove()‚ÍAcompareTo()‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·‚ªJava 6‚Å‚ÍAequals()‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="HE_HASHCODE_NO_EQUALS">
     <ShortDescription>ƒNƒ‰ƒX‚Å hashCode() ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ªAequals() ‚Í’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</ShortDescription>
     <LongDescription>{0} ‚Í hashCode ‚ð’è‹`‚µ‚Ä‚¢‚Ü‚·‚ªAequals ‚Í’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB</LongDescription>
@@ -1958,7 +2009,7 @@ public int hashCode() {
     <LongDescription>{1} ‚Ìwait‚ÉðŒ•¶‚ª‚ ‚è‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
-<p> ‚±‚Ìƒƒ\ƒbƒh‚Ì’†‚Å<code>java.lang.Object.wait()</code>‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·‚ªAðŒ”»’f‚É‚æ‚Á‚ÄƒK[ƒh‚³‚ê‚Ä‚¢‚Ü‚¹‚ñBwait()‚É‚æ‚Á‚Ä‘Ò‚¿‡‚í‚¹‚½‚¢ðŒ‚ªŠù‚É¬—§Ï‚Ý‚Ìê‡‚É‚ÍA‚±‚Ìwait()ƒƒ\ƒbƒh‚Í‰i‰“‚É”²‚¯‚ç‚ê‚È‚­‚È‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B</p>
+<p> ‚±‚Ìƒƒ\ƒbƒh‚Ì’†‚Å<code>java.lang.Object.wait()</code>‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·‚ªAðŒ”»’f‚É‚æ‚Á‚ÄƒK[ƒh‚³‚ê‚Ä‚¢‚Ü‚¹‚ñBwait()‚ðŒÄ‚Ño‚·‘O‚ÉA‘Ò‚¿ðŒ‚ªŠù‚É¬—§‚µ‚Ä‚¢‚È‚¢‚©‚Ç‚¤‚©A’²¸‚·‚é•K—v‚ª‚ ‚è‚Ü‚·Bwait()ŒÄ‚Ño‚µ‘O‚És‚í‚ê‚½’Ê’m‚Í–³Ž‹‚³‚ê‚Ä‚µ‚Ü‚¢‚Ü‚·B</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2214,7 +2265,7 @@ final‚Å‚È‚¢ƒtƒB[ƒ‹ƒh–¼‚ÍAÅ‰‚Ì•¶ŽšˆÈŠO‚Ì\¬’PŒê‚ÌÅ‰‚Ì•¶Žš‚ð‘å•¶Žš‚Æ‚µ‚ÄAŽ
     <LongDescription>{1} ‚Í‹°‚ç‚­ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚É‚µ‚½‚©‚Á‚½‚Ì‚Å‚µ‚å‚¤B</LongDescription>
     <Details>
 <![CDATA[
-  <p> ‚±‚Ìƒƒ\ƒbƒh‚ÍŽ©•ª‚ªéŒ¾‚³‚ê‚½ƒNƒ‰ƒX–¼‚Æ“¯‚¶–¼‘O‚ð—^‚¦‚ç‚ê‚Ä‚¢‚Ü‚·B‚±‚ê‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Æ‚µ‚½‚©‚Á‚½‚Ì‚¾‚ÆŽv‚í‚ê‚Ü‚·B‚»‚¤‚Å‚ ‚ê‚ÎA–ß‚è’l‚ÌéŒ¾‚ðŽæ‚èœ‚¢‚ÄƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Æ‚µ‚Ä‚­‚¾‚³‚¢B</p>
+  <p> ‚±‚Ìƒƒ\ƒbƒh‚ÍŽ©•ª‚ªéŒ¾‚³‚ê‚½ƒNƒ‰ƒX–¼‚Æ“¯‚¶–¼‘O‚ð—^‚¦‚ç‚ê‚Ä‚¢‚Ü‚·B‚±‚ê‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Æ‚µ‚½‚©‚Á‚½‚Ì‚¾‚ÆŽv‚í‚ê‚Ü‚·B‚»‚¤‚Å‚ ‚ê‚ÎAvoid–ß‚è’l‚ÌéŒ¾‚ðŽæ‚èœ‚¢‚Ä‚­‚¾‚³‚¢B‚à‚µ‚àŠÔˆá‚Á‚Äƒƒ\ƒbƒh‚Æ‚µ‚ÄéŒ¾‚µ‚Ä‚µ‚Ü‚¢AŒã‚©‚çŠÔˆá‚¢‚É‹C•t‚¢‚ÄA³‚µ‚¢ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ðéŒ¾‚µAŒã•ûŒÝŠ·«‚Ì‚½‚ßAƒƒ\ƒbƒh‚à‚»‚Ì‚Ü‚ÜŽc‚µ‚½‚Ì‚Å‚ ‚ê‚ÎAƒƒ\ƒbƒh‚Ì•û‚ðdeprecateéŒ¾‚µ‚Ä‚­‚¾‚³‚¢B</p>
 ]]>
     </Details>
   </BugPattern>
@@ -2442,6 +2493,27 @@ final‚Å‚È‚¢ƒtƒB[ƒ‹ƒh–¼‚ÍAÅ‰‚Ì•¶ŽšˆÈŠO‚Ì\¬’PŒê‚ÌÅ‰‚Ì•¶Žš‚ð‘å•¶Žš‚Æ‚µ‚ÄAŽ
     <Details>
 <![CDATA[
 <p> ‚±‚Ì’¼—ñ‰»‰Â”\ƒNƒ‰ƒX‚ÍAtransient‚Å‚à‚È‚­A’¼—ñ‰»‰Â”\‚Å‚à‚È‚­A<code>java.lang.Object</code>‚Å‚à‚È‚¢ƒCƒ“ƒXƒ^ƒ“ƒXƒtƒB[ƒ‹ƒh‚ðŽ‚Á‚Ä‚¢‚Ü‚·B‚Ü‚½A<code>Externalizable</code> ƒCƒ“ƒ^[ƒtƒF[ƒX‚àŽÀ‘•‚µ‚Ä‚¢‚Ü‚¹‚ñ‚µA<code>readObject()</code> ‚à <code>writeObject()</code> ƒƒ\ƒbƒh‚à’è‹`‚µ‚Ä‚¢‚Ü‚¹‚ñB‚±‚ÌƒtƒB[ƒ‹ƒh‚ÉŽÀÛ‚É”ñ’¼—ñ‰»‰Â”\ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð•ÛŽ‚µ‚Ä‚¢‚éê‡A‚±‚ÌƒNƒ‰ƒX‚ÌƒIƒuƒWƒFƒNƒg‚ÍA’¼—ñ‰»•œŒ³‚ð³‚µ‚­s‚¦‚Ü‚¹‚ñB</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="SE_BAD_FIELD_INNER_CLASS">
+    <ShortDescription>’¼—ñ‰»‰Â”\‚Å‚È‚¢ƒNƒ‰ƒX‚ªA’¼—ñ‰»‰Â”\‚ÈƒCƒ“ƒi[ƒNƒ‰ƒX‚ðŽ‚Á‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{0} ‚Í’¼—ñ‰»‰Â”\‚Å‚·‚ªA’¼—ñ‰»‰Â”\‚Å‚È‚¢ƒNƒ‰ƒX‚ÌƒCƒ“ƒi[ƒNƒ‰ƒX‚Æ‚È‚Á‚Ä‚¢‚Ü‚·B</LongDescription>
+    <Details>
+<![CDATA[
+<p> ‚±‚Ì’¼—ñ‰»‰Â”\ƒNƒ‰ƒX‚ÍA’¼—ñ‰»‰Â”\‚Å‚È‚¢ƒNƒ‰ƒX‚ÌƒCƒ“ƒi[ƒNƒ‰ƒX‚Æ‚È‚Á‚Ä‚¢‚Ü‚·B‚±‚ê‚ð’¼—ñ‰»‚·‚é‚ÆAˆê‚ÉouterƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚à’¼—ñ‰»‚µ‚æ‚¤‚Æ‚µ‚ÄAŽÀsŽž‚ÉƒGƒ‰[‚Æ‚È‚é‚Å‚µ‚å‚¤B
+</p>
+<p>‰Â”\‚Å‚ ‚ê‚ÎAƒCƒ“ƒi[ƒNƒ‰ƒX‚ðstatic‚Æ‚µ‚Ä‚­‚¾‚³‚¢BouterƒNƒ‰ƒX‚ð’¼—ñ‰»‰Â”\‚Æ‚·‚é‚±‚Æ‚Å‚à–â‘è‚ð‰ðŒˆ‚Å‚«‚Ü‚·‚ªA‚±‚Ìê‡ƒCƒ“ƒi[ƒNƒ‰ƒX‚Ì’¼—ñ‰»‚É‚ ‚½‚Á‚ÄouterƒNƒ‰ƒX‚à’¼—ñ‰»‚³‚ê‚é‚±‚Æ‚É’ˆÓ‚µ‚Ä‚­‚¾‚³‚¢B‚¨‚»‚ç‚­‚±‚ê‚ÍƒvƒƒOƒ‰ƒ}‚ÌˆÓ}‚Æ‚ÍˆÙ‚È‚é‚Å‚µ‚å‚¤B
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SE_INNER_CLASS">
+    <ShortDescription>’¼—ñ‰»‰Â”\‚ÈƒCƒ“ƒi[ƒNƒ‰ƒX</ShortDescription>
+    <LongDescription>{0} ‚Í’¼—ñ‰»‰Â”\‚ÈƒCƒ“ƒi[ƒNƒ‰ƒX‚Å‚·B</LongDescription>
+    <Details>
+<![CDATA[
+<p> ‚±‚Ì’¼—ñ‰»‰Â”\‚ÈƒNƒ‰ƒX‚ÍƒCƒ“ƒi[ƒNƒ‰ƒX‚Å‚·B‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ð’¼—ñ‰»‚µ‚æ‚¤‚Æ‚·‚é‚ÆAŠÖ˜A‚·‚éouterƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚àˆê‚É’¼—ñ‰»‚³‚ê‚Ü‚·BouterƒNƒ‰ƒX‚ª’¼—ñ‰»‰Â”\‚È‚Ì‚ÅA–â‘è‚Í‚ ‚è‚Ü‚¹‚ñ‚ªA—\‘zŠO‚É‘å—Ê‚Ìƒf[ƒ^‚ª’¼—ñ‰»‚³‚ê‚é‰Â”\«‚ª‚ ‚è‚Ü‚·B‰Â”\‚Å‚ ‚ê‚ÎAƒCƒ“ƒi[ƒNƒ‰ƒX‚ðstatic‚Æ‚µ‚Ä‚­‚¾‚³‚¢B
 ]]>
     </Details>
   </BugPattern>
@@ -2839,6 +2911,18 @@ null‚ð•Ô‚·‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÉA‚±‚Ìƒƒ\ƒbƒh(‚ ‚é‚¢‚ÍAeƒNƒ‰ƒX‚ÌŠY“–ƒƒ\ƒbƒh)‚Í@Non
 </p>
 ]]>
     </Details>
+  </BugPattern>
+
+  <BugPattern type="NP_CLONE_COULD_RETURN_NULL">
+   <ShortDescription>clone()‚ªnull‚ð•Ô‚·‰Â”\«‚ª‚ ‚è‚Ü‚·B</ShortDescription>
+   <LongDescription>{1} ‚Ínull‚ð•Ô‚·‰Â”\«‚ª‚ ‚è‚Ü‚·B</LongDescription>
+   <Details>
+      <![CDATA[
+      <p>
+‚±‚Ìclone()ƒƒ\ƒbƒh‚ÍAðŒ‚É‚æ‚Á‚Ä‚Ínull‚ð•Ô‚·ê‡‚ª‚ ‚é‚æ‚¤‚Å‚·B‚µ‚©‚µclone()‚Ínull‚ð•Ô‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB‚à‚µ‚à‚±‚ÌŒo˜H‚ª‹N‚±‚è“¾‚È‚¢‚ÆŠmM‚Å‚«‚é‚Ì‚Å‚ ‚ê‚ÎAAssertionError‚ðƒXƒ[‚·‚é‚±‚Æ‚ðŒŸ“¢‚µ‚Ä‚­‚¾‚³‚¢B
+      </p>
+      ]]>
+   </Details>
   </BugPattern>
 
   <BugPattern type="NP_GUARANTEED_DEREF">
@@ -3861,7 +3945,7 @@ double value2 =  x / (double) y;
   </BugPattern>
   <BugPattern type="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS">
     <ShortDescription>equalsƒƒ\ƒbƒh‚Íˆø”‚ÌŒ^‚ð‰¼’è‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB</ShortDescription>
-    <LongDescription>{0} ‚Ìequalsƒƒ\ƒbƒh‚ÍAŒ^{2}‚ð‰¼’è‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB</LongDescription>
+    <LongDescription>{0} ‚Ìequalsƒƒ\ƒbƒh‚ÍAŒ^{0}‚ð‰¼’è‚µ‚Ä‚Í‚¢‚¯‚Ü‚¹‚ñB</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4000,6 +4084,19 @@ String‚Ì³‹K•\Œ»‚ðŽó‚¯Žæ‚éƒƒ\ƒbƒh‚É"."‚ª“n‚³‚ê‚Ä‚¢‚Ü‚·B‚±‚ê‚ÍˆÓ}’Ê‚è‚Å‚·‚©H<
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION">
+    <ShortDescription>File.separator‚ª³‹K•\Œ»‚ÅŽg—p‚³‚ê‚Ä‚¢‚Ü‚·B</ShortDescription>
+    <LongDescription>{1} ‚ÅFile.separator‚ª³‹K•\Œ»‚ÉŽg—p‚³‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
+    <Details>
+<![CDATA[
+<p>
+³‹K•\Œ»‚ª•K—v‚Æ‚³‚ê‚éêŠ‚ÅA<code>File.separator</code>‚ªŽg—p‚³‚ê‚Ä‚¢‚Ü‚·B‚±‚ê‚ÍWindowsƒvƒ‰ƒbƒgƒtƒH[ƒ€‚Å‚Í³‚µ‚­“®ì‚µ‚Ü‚¹‚ñB<code>File.separator</code>‚ªƒoƒbƒNƒXƒ‰ƒbƒVƒ…‚Æ‚È‚é‚½‚ß‚Å‚·B‚±‚ê‚Í³‹K•\Œ»‚ÌƒGƒXƒP[ƒvƒLƒƒƒ‰ƒNƒ^‚Å‚·B‰ñ”ð•û–@‚Æ‚µ‚ÄA<code>File.separatorChar=='\\' &amp; "\\\\" : File.separator</code>‚ðA<code>File.separator</code>‚Ì‘Ö‚í‚è‚ÉŽg—p‚·‚é•û–@‚ª‚ ‚è‚Ü‚·B
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="DLS_OVERWRITTEN_INCREMENT">
     <ShortDescription>ƒCƒ“ƒNƒŠƒƒ“ƒg‚Ìã‘‚«B</ShortDescription>
     <LongDescription>{1}‚ÅƒCƒ“ƒNƒŠƒƒ“ƒg‚Ìã‘‚«‚ªs‚È‚í‚ê‚Ä‚¢‚Ü‚·B</LongDescription>
@@ -4237,6 +4334,18 @@ hasNext() ‚Å next() ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·BhasNext()‚ÍƒCƒeƒŒ[ƒ^‚Ìó‘Ô‚ð•Ï‚¦‚é‚à‚Ì‚
       ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="GC_UNRELATED_TYPES">
+    <ShortDescription>Œ^ƒpƒ‰ƒ[ƒ^‚Æƒƒ\ƒbƒhˆø”‚ÌŒ^‚ÉŒÝŠ·«‚ª‚ ‚è‚Ü‚¹‚ñB</ShortDescription>
+    <LongDescription>{1}‚ÅŽg—p‚³‚ê‚Ä‚¢‚é{3}‚ÍA–{—ˆŠú‘Ò‚³‚ê‚éŒ^{2}‚ÆŒÝŠ·«‚ª‚ ‚è‚Ü‚¹‚ñB</LongDescription>
+    <Details>
+     <![CDATA[
+     <p> ‚±‚ÌƒWƒFƒlƒŠƒbƒNƒƒ\ƒbƒh‚Ìˆø”Œ^‚ÍAƒRƒ“ƒeƒi‚ÌŒ^ƒpƒ‰ƒ[ƒ^‚ÌŒ^‚ÆˆÙ‚È‚é‚à‚Ì‚Å‚·B‚±‚Ì‚½‚ßAƒRƒ“ƒeƒi‚ªˆø”‚ÌŒ^‚ÌƒIƒuƒWƒFƒNƒg‚ð•ÛŽ‚µ‚Ä‚¢‚é‚±‚Æ‚Íl‚¦‚É‚­‚¢‚Å‚·B
+     </p>
+     ]]>
+    </Details>
+  </BugPattern>
+
   <!--
   **********************************************************************
    BugCodes
@@ -4255,11 +4364,10 @@ hasNext() ‚Å next() ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·BhasNext()‚ÍƒCƒeƒŒ[ƒ^‚Ìó‘Ô‚ð•Ï‚¦‚é‚à‚Ì‚
   <BugCode abbrev="ML" >XV‚³‚ê‚éƒtƒB[ƒ‹ƒh‚Å“¯Šú‚ðŽæ‚ë‚¤‚Æ‚µ‚Ä‚¢‚Ü‚·B(ƒ~ƒ…[ƒ^ƒuƒ‹ƒƒbƒN)</BugCode>
   <BugCode abbrev="UG" >“¯Šú‰»(synchronized)‚³‚ê‚Ä‚¢‚È‚¢getƒƒ\ƒbƒh‚ÅA“¯Šú‰»‚³‚ê‚Ä‚¢‚ésetƒƒ\ƒbƒh‚Å‚·B</BugCode>
   <BugCode abbrev="IC" >‰Šú‰»‚ªƒ‹[ƒv‚µ‚Ä‚¢‚Ü‚·B</BugCode>
-  <BugCode abbrev="SI" >ƒXƒ^ƒeƒBƒbƒN‰Šú‰»ˆ—‚ª‹^‚í‚µ‚¢‚Å‚·B</BugCode>
+  <BugCode abbrev="SI" >‹^‚í‚µ‚¢ƒXƒ^ƒeƒBƒbƒN‰Šú‰»Žq</BugCode>
   <BugCode abbrev="IS" >“¯Šú‚ÌŽd•û‚ÉˆêŠÑ«‚ª‚ ‚è‚Ü‚¹‚ñB</BugCode>
-  <BugCode abbrev="IS2" >“¯Šú‚ÌŽd•û‚ÉˆêŠÑ«‚ª‚ ‚è‚Ü‚¹‚ñB</BugCode>
-  <BugCode abbrev="Eq" >‹¤•Ï‚Èequals()‚Å‚·B</BugCode>
-  <BugCode abbrev="Co" >‹¤•Ï‚ÈcompareTo()‚Å‚·B</BugCode>
+  <BugCode abbrev="Eq" >equals()‚Ì–â‘èB</BugCode>
+  <BugCode abbrev="Co" >compareTo()‚Ì–â‘èB</BugCode>
   <BugCode abbrev="HE" >“¯‚¶(equal)ƒIƒuƒWƒFƒNƒg‚Í“¯‚¶ƒnƒbƒVƒ…’l‚ðŽ‚Â‚×‚«‚Å‚·B</BugCode>
   <BugCode abbrev="AM" >API‚ÌŒë—p</BugCode>
   <BugCode abbrev="Dm" >‹^‚í‚µ‚¢ƒƒ\ƒbƒh‚ðŽg‚Á‚Ä‚¢‚Ü‚·B</BugCode>
@@ -4316,7 +4424,6 @@ hasNext() ‚Å next() ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·BhasNext()‚ÍƒCƒeƒŒ[ƒ^‚Ìó‘Ô‚ð•Ï‚¦‚é‚à‚Ì‚
   <BugCode abbrev="IJU">JUnit TestCase‚Ì³‚µ‚­‚È‚¢ŽÀ‘•</BugCode>
   <BugCode abbrev="BOA">•s“KØ‚ÉƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚½ƒAƒ_ƒvƒ^</BugCode>
   <BugCode abbrev="SF">switch case‚ÌƒtƒH[ƒ‹ƒXƒ‹[</BugCode>
-  <BugCode abbrev="BRSA">ResultSet‚Ö‚ÌŠÔˆá‚Á‚½ƒAƒNƒZƒX</BugCode>
   <BugCode abbrev="SIO">—]Œv‚Èinstanceof</BugCode>
   <BugCode abbrev="BAC">ŠÔˆá‚Á‚½ƒAƒvƒŒƒbƒg‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^</BugCode>
   <BugCode abbrev="UOE">Object‚Ìequals‚ÌŽg—p</BugCode>
@@ -4355,4 +4462,5 @@ hasNext() ‚Å next() ‚ðŒÄ‚Ño‚µ‚Ä‚¢‚Ü‚·BhasNext()‚ÍƒCƒeƒŒ[ƒ^‚Ìó‘Ô‚ð•Ï‚¦‚é‚à‚Ì‚
   <BugCode abbrev="QBA">‹^‚í‚µ‚¢boolean’l‚Ì‘ã“ü</BugCode>
   <BugCode abbrev="VR">ƒo[ƒWƒ‡ƒ“ŒÝŠ·«‚Ì–â‘è</BugCode>
   <BugCode abbrev="DP">doPrivileged‚ÌŽg—p</BugCode>
+  <BugCode abbrev="GC">ƒRƒ“ƒeƒi‚Ì”Ä—pŒ^ƒƒ\ƒbƒh‚Ì‹^‚í‚µ‚¢ŒÄ‚Ño‚µ</BugCode>
 </MessageCollection>
