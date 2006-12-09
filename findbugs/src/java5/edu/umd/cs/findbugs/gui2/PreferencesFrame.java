@@ -108,14 +108,14 @@ public class PreferencesFrame extends FBDialog {
 	}
 	
 	private PreferencesFrame(){
-		setTitle(L10N.getLocalString("dlg.fil_sup_ttl", "Filters/Suppressions"));
+		setTitle(edu.umd.cs.findbugs.gui.L10N.getLocalString("dlg.fil_sup_ttl", "Filters/Suppressions"));
 		setModal(true);
 		
 		JTabbedPane mainTabPane = new JTabbedPane();
 		
-		mainTabPane.add(L10N.getLocalString("pref.filters", "Filters"), createFilterPane());		
+		mainTabPane.add(edu.umd.cs.findbugs.gui.L10N.getLocalString("pref.filters", "Filters"), createFilterPane());		
 
-		mainTabPane.add(L10N.getLocalString("pref.suppressions_tab", "Suppressions"), createSuppressionPane());
+		mainTabPane.add(edu.umd.cs.findbugs.gui.L10N.getLocalString("pref.suppressions_tab", "Suppressions"), createSuppressionPane());
 		MainFrame.getInstance().updateStatusBar();
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		
@@ -128,7 +128,7 @@ public class PreferencesFrame extends FBDialog {
 		JPanel bottom = new JPanel();
 		bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
 		bottom.add(Box.createHorizontalGlue());
-		bottom.add(new JButton(new AbstractAction(L10N.getLocalString("pref.close", "Close"))
+		bottom.add(new JButton(new AbstractAction(edu.umd.cs.findbugs.gui.L10N.getLocalString("pref.close", "Close"))
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
@@ -184,16 +184,16 @@ public class PreferencesFrame extends FBDialog {
 		final JTable table=new JTable();
 		JScrollPane scrollable= new JScrollPane(table);
 		
-		suppressionTableModel=new UneditableTableModel(new Object[0][4],new String[]{L10N.getLocalString("pref.name", "Name"),L10N.getLocalString("pref.type", "Type"),L10N.getLocalString("pref.description", "Description"),L10N.getLocalString("pref.comments", "Comments")});
+		suppressionTableModel=new UneditableTableModel(new Object[0][4],new String[]{edu.umd.cs.findbugs.gui.L10N.getLocalString("pref.name", "Name"),edu.umd.cs.findbugs.gui.L10N.getLocalString("pref.type", "Type"),edu.umd.cs.findbugs.gui.L10N.getLocalString("pref.description", "Description"),edu.umd.cs.findbugs.gui.L10N.getLocalString("pref.comments", "Comments")});
 		table.setModel(suppressionTableModel);
 		table.doLayout();
 		table.setCellEditor(null);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);	
 		table.setRowHeight((int)(Driver.getFontSize() * 1.25) + table.getRowMargin());
 		
-		suppressP.add(new JLabel(L10N.getLocalString("pref.suppressions", "Bug Suppressions")),BorderLayout.NORTH);
+		suppressP.add(new JLabel(edu.umd.cs.findbugs.gui.L10N.getLocalString("pref.suppressions", "Bug Suppressions")),BorderLayout.NORTH);
 		suppressP.add(scrollable,BorderLayout.CENTER);
-		suppressP.add(new JLabel(L10N.getLocalString("pref.suppressions", "Bug Suppressions")));
+		suppressP.add(new JLabel(edu.umd.cs.findbugs.gui.L10N.getLocalString("pref.suppressions", "Bug Suppressions")));
 		suppressP.add(scrollable);
 		
 		ActionListener buttonListener=new ActionListener(){
@@ -218,7 +218,7 @@ public class PreferencesFrame extends FBDialog {
 			}
 		};
 		
-		unsuppressButton=new JButton(L10N.getLocalString("dlg.unsuppress_btn", "Unsuppress"));
+		unsuppressButton=new JButton(edu.umd.cs.findbugs.gui.L10N.getLocalString("dlg.unsuppress_btn", "Unsuppress"));
 
 		table.addKeyListener(new KeyListener(){
 
@@ -250,9 +250,9 @@ public class PreferencesFrame extends FBDialog {
 	 */
 	private JPanel createFilterPane()
 	{
-		addButton = new JButton(L10N.getLocalString("dlg.add_dot_btn", "Add..."));
-		removeButton = new JButton(L10N.getLocalString("dlg.remove_btn", "Remove"));
-		removeAllButton = new JButton(L10N.getLocalString("dlg.remove_all_btn", "Remove All"));
+		addButton = new JButton(edu.umd.cs.findbugs.gui.L10N.getLocalString("dlg.add_dot_btn", "Add..."));
+		removeButton = new JButton(edu.umd.cs.findbugs.gui.L10N.getLocalString("dlg.remove_btn", "Remove"));
+		removeAllButton = new JButton(edu.umd.cs.findbugs.gui.L10N.getLocalString("dlg.remove_all_btn", "Remove All"));
 		JPanel filterPanel = new JPanel();
 		filterPanel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();

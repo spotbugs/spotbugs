@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
+import edu.umd.cs.findbugs.gui.L10N;
 
 /**
  * A useful enum for dealing with all the types of filterable and sortable data in BugInstances
@@ -51,14 +52,14 @@ public enum Sortables implements Comparator<StringPair>
 		public String formatValue(String value)
 		{
 			if (value.equals(String.valueOf(Detector.HIGH_PRIORITY)))
-				return L10N.getLocalString("sort.priority_high", "High");
+				return edu.umd.cs.findbugs.gui.L10N.getLocalString("sort.priority_high", "High");
 			if (value.equals(String.valueOf(Detector.NORMAL_PRIORITY)))
-				return L10N.getLocalString("sort.priority_normal", "Normal");
+				return edu.umd.cs.findbugs.gui.L10N.getLocalString("sort.priority_normal", "Normal");
 			if (value.equals(String.valueOf(Detector.LOW_PRIORITY)))
-				return L10N.getLocalString("sort.priority_low", "Low");
+				return edu.umd.cs.findbugs.gui.L10N.getLocalString("sort.priority_low", "Low");
 			if (value.equals(String.valueOf(Detector.EXP_PRIORITY)))
-				return L10N.getLocalString("sort.priority_experimental", "Experimental");
-			return L10N.getLocalString("sort.priority_ignore", "Ignore"); // This probably shouldn't ever happen, but what the hell, let's be complete
+				return edu.umd.cs.findbugs.gui.L10N.getLocalString("sort.priority_experimental", "Experimental");
+			return edu.umd.cs.findbugs.gui.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This probably shouldn't ever happen, but what the hell, let's be complete
 			
 		}
 		

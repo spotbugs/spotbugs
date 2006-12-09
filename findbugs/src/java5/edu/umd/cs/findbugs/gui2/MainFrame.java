@@ -28,19 +28,16 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -57,17 +54,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.InflaterInputStream;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
+import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -80,16 +74,11 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.basic.BasicTreeUI;
@@ -102,7 +91,6 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.BugDesignation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
@@ -132,21 +120,29 @@ import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
  */
 public class MainFrame extends FBFrame implements LogSync
 {
-	 static Button newButton(String name) {
-		return new Button(L10N.translate(name));
+	static JButton newButton(String key, String name) {
+		JButton b = new JButton();
+		edu.umd.cs.findbugs.gui.L10N.localiseButton(b, key, name, false);
+		return b;
 	}
-	 static JMenuItem newJMenuItem(String string, int vkF) {
-		return new JMenuItem(L10N.translate(string), vkF);
-		
+	static JMenuItem newJMenuItem(String key, String string, int vkF) {
+		JMenuItem m = new JMenuItem();
+		edu.umd.cs.findbugs.gui.L10N.localiseButton(m, key, string, false);
+		m.setMnemonic(vkF);
+		return m;
+
 	}
-	 static JMenuItem newJMenuItem(String string) {
-		return new JMenuItem(L10N.translate(string));
-		
+	static JMenuItem newJMenuItem(String key, String string) {
+		JMenuItem m = new JMenuItem();
+		edu.umd.cs.findbugs.gui.L10N.localiseButton(m, key, string, true);
+		return m;
+
 	}
-	 static JMenu newJMenu(String string) {
-			return new JMenu(L10N.translate(string));
-			
-		}
+	static JMenu newJMenu(String key, String string) {
+		JMenu m = new JMenu();
+		edu.umd.cs.findbugs.gui.L10N.localiseButton(m, key, string, true);
+		return m;
+	}
 	JTree tree;
 	private BasicTreeUI treeUI;
 	boolean userInputEnabled;
@@ -158,9 +154,9 @@ public class MainFrame extends FBFrame implements LogSync
 	static final int SEARCH_TEXT_FIELD_SIZE = 32;
 	
 	private JTextField sourceSearchTextField = new JTextField(SEARCH_TEXT_FIELD_SIZE);
-	private Button findButton = newButton("Find");
-	private Button findNextButton = newButton("Find Next");
-	private Button findPreviousButton = newButton("Find Previous");
+	private JButton findButton = newButton("button.find", "Find");
+	private JButton findNextButton = newButton("button.findNext", "Find Next");
+	private JButton findPreviousButton = newButton("button.findPrev", "Find Previous");
 
 	public static final boolean DEBUG = SystemProperties.getBoolean("gui2.debug");
 	
@@ -189,8 +185,8 @@ public class MainFrame extends FBFrame implements LogSync
 	 * saveProjectMenuItem should be enabled.
 	 */
 	boolean projectChanged = false;
-	final private JMenuItem editProjectMenuItem = newJMenuItem("Add/Remove Files", KeyEvent.VK_F);
-	final private JMenuItem saveProjectMenuItem = newJMenuItem("Save Project", KeyEvent.VK_S);
+	final private JMenuItem editProjectMenuItem = newJMenuItem("menu.addRemoveFiles", "Add/Remove Files", KeyEvent.VK_F);
+	final private JMenuItem saveProjectMenuItem = newJMenuItem("menu.save_item", "Save Project", KeyEvent.VK_S);
 	BugLeafNode currentSelectedBugLeaf;
 	BugAspects currentSelectedBugAspects;
 	private JPopupMenu bugPopupMenu;
@@ -291,7 +287,7 @@ public class MainFrame extends FBFrame implements LogSync
 			if (MainFrame.DEBUG) System.err.println("a recent project was not found, removing it from menu");
 			return;
 		}
-		final JMenuItem item=newJMenuItem(f.getName().substring(0,f.getName().length()-4));
+		final JMenuItem item=new JMenuItem(f.getName().substring(0,f.getName().length()-4));
 		item.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e)
 			{
@@ -407,7 +403,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private JPopupMenu createBugPopupMenu() {
 		JPopupMenu popupMenu = new JPopupMenu();
 		
-		JMenuItem suppressMenuItem = newJMenuItem("Suppress this bug");
+		JMenuItem suppressMenuItem = newJMenuItem("menu.suppress", "Suppress this bug");
 		
 		suppressMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){				
@@ -429,7 +425,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		popupMenu.add(suppressMenuItem);
 		
-		JMenuItem filterMenuItem = newJMenuItem("Filter bugs like this");
+		JMenuItem filterMenuItem = newJMenuItem("menu.filterBugsLikeThis", "Filter bugs like this");
 		
 		filterMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
@@ -441,7 +437,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		popupMenu.add(filterMenuItem);
 		
-		JMenu changeDesignationMenu = newJMenu("Change bug designation");
+		JMenu changeDesignationMenu = newJMenu("menu.changeDesignation", "Change bug designation");
 		
 		int i = 0;
 		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
@@ -463,7 +459,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private JPopupMenu createBranchPopUpMenu(){
 		JPopupMenu popupMenu = new JPopupMenu();
 		
-		JMenuItem filterMenuItem = newJMenuItem("Filter these bugs");
+		JMenuItem filterMenuItem = newJMenuItem("menu.filterTheseBugs", "Filter these bugs");
 		
 		filterMenuItem.addActionListener(new ActionListener()
 		{
@@ -481,7 +477,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		popupMenu.add(filterMenuItem);
 		
-		JMenu changeDesignationMenu = newJMenu("Change bug designation");
+		JMenu changeDesignationMenu = newJMenu("menu.changeDesignation", "Change bug designation");
 		
 		int i = 0;
 		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
@@ -503,26 +499,26 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenuBar menuBar = new JMenuBar();
 		
 		//Create JMenus for menuBar.
-		JMenu fileMenu = newJMenu("File");
+		JMenu fileMenu = newJMenu("menu.file_menu", "File");
 		fileMenu.setMnemonic(KeyEvent.VK_F);
-		JMenu editMenu = newJMenu("Edit");
+		JMenu editMenu = newJMenu("menu.edit_menu", "Edit");
 		editMenu.setMnemonic(KeyEvent.VK_E);
 		
 		//Edit fileMenu JMenu object.
-		JMenuItem newProjectMenuItem = newJMenuItem("New Project", KeyEvent.VK_N);
-		JMenuItem openProjectMenuItem = newJMenuItem("Open Project...", KeyEvent.VK_O);
-		recentProjectsMenu = newJMenu("Recent Projects");
+		JMenuItem newProjectMenuItem = newJMenuItem("menu.new_item", "New Project", KeyEvent.VK_N);
+		JMenuItem openProjectMenuItem = newJMenuItem("menu.open_item", "Open Project...", KeyEvent.VK_O);
+		recentProjectsMenu = newJMenu("menu.recent_menu", "menu.recent_menu");
 		recentProjectsMenu.setMnemonic(KeyEvent.VK_E);
 		createRecentProjectsMenu();
-		JMenuItem saveAsProjectMenuItem = newJMenuItem("Save Project As...", KeyEvent.VK_A);
-		JMenuItem importBugsMenuItem = newJMenuItem("Load Analysis...", KeyEvent.VK_L);
-		JMenuItem exportBugsMenuItem = newJMenuItem("Save Analysis...", KeyEvent.VK_B);
-		JMenuItem redoAnalysis = newJMenuItem("Redo Analysis", KeyEvent.VK_R);
-		JMenuItem mergeMenuItem = newJMenuItem("Merge Analysis...");
+		JMenuItem saveAsProjectMenuItem = newJMenuItem("menu.saveas_item", "Save Project As...", KeyEvent.VK_A);
+		JMenuItem importBugsMenuItem = newJMenuItem("menu.loadbugs_item", "Load Analysis...", KeyEvent.VK_L);
+		JMenuItem exportBugsMenuItem = newJMenuItem("menu.savebugs_item", "Save Analysis...", KeyEvent.VK_B);
+		JMenuItem redoAnalysis = newJMenuItem("menu.rerunAnalysis", "Redo Analysis", KeyEvent.VK_R);
+		JMenuItem mergeMenuItem = newJMenuItem("menu.mergeAnalysis", "Merge Analysis...");
 		
 		JMenuItem exitMenuItem = null;
 		if (!MAC_OS_X) {
-			exitMenuItem = newJMenuItem("Exit", KeyEvent.VK_X);
+			exitMenuItem = newJMenuItem("menu.exit", "Exit", KeyEvent.VK_X);
 			exitMenuItem.addActionListener(new ActionListener(){			
 			public void actionPerformed(ActionEvent evt){
 				callOnClose();
@@ -636,9 +632,9 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenuItem cutMenuItem = new JMenuItem(new CutAction());
 		JMenuItem copyMenuItem = new JMenuItem(new CopyAction());
 		JMenuItem pasteMenuItem = new JMenuItem(new PasteAction());
-		preferencesMenuItem = newJMenuItem("Filters/Suppressions...");
-		JMenuItem sortMenuItem = newJMenuItem("Sort Configuration...");
-		JMenuItem goToLineMenuItem = newJMenuItem("Go to line...");
+		preferencesMenuItem = newJMenuItem("menu.filtersAndSupressions", "Filters/Suppressions...");
+		JMenuItem sortMenuItem = newJMenuItem("menu.sortConfiguration", "Sort Configuration...");
+		JMenuItem goToLineMenuItem = newJMenuItem("menu.gotoLine", "Go to line...");
 		
 		attachAccelaratorKey(cutMenuItem, KeyEvent.VK_X);
 		attachAccelaratorKey(copyMenuItem, KeyEvent.VK_C);
@@ -689,16 +685,16 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		final ActionMap map = tree.getActionMap();
 		
-		JMenu navMenu = newJMenu("Navigation");
+		JMenu navMenu = newJMenu("menu.navigation", "Navigation");
 		
-		addNavItem(map, navMenu, "Expand", "expand", KeyEvent.VK_RIGHT );
-		addNavItem(map, navMenu, "Collapse", "collapse", KeyEvent.VK_LEFT);
-		addNavItem(map, navMenu, "Up", "selectPrevious", KeyEvent.VK_UP );
-		addNavItem(map, navMenu, "Down", "selectNext", KeyEvent.VK_DOWN);
+		addNavItem(map, navMenu, "menu.expand", "expand", KeyEvent.VK_RIGHT );
+		addNavItem(map, navMenu, "menu.collapse", "collapse", KeyEvent.VK_LEFT);
+		addNavItem(map, navMenu, "menu.up", "selectPrevious", KeyEvent.VK_UP );
+		addNavItem(map, navMenu, "menu.down", "selectNext", KeyEvent.VK_DOWN);
 				
 		menuBar.add(navMenu);
 		
-		JMenu designationMenu = newJMenu("Designation");
+		JMenu designationMenu = newJMenu("menu.designation", "Designation");
 		int i = 0;
 		int keyEvents [] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9};
 		for(String key :  I18N.instance().getUserDesignationKeys(true)) {
@@ -709,8 +705,8 @@ public class MainFrame extends FBFrame implements LogSync
 
 		if (!MAC_OS_X) {		
 		    // On Mac, 'About' appears under Findbugs menu, so no need for it here
-		    JMenu helpMenu = newJMenu("Help");
-		    JMenuItem aboutItem = newJMenuItem("About FindBugs");
+		    JMenu helpMenu = newJMenu("menu.help_menu", "Help");
+		    JMenuItem aboutItem = newJMenuItem("menu.about_item", "About FindBugs");
 		    helpMenu.add(aboutItem);
 
 				aboutItem.addActionListener(new java.awt.event.ActionListener() {
@@ -727,7 +723,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * @param navMenu
 	 */
 	private void addNavItem(final ActionMap map, JMenu navMenu, String menuName, String actionName, int keyEvent) {
-		JMenuItem toggleItem = newJMenuItem(menuName);
+		JMenuItem toggleItem = newJMenuItem(menuName, menuName);
 		toggleItem.addActionListener(treeActionAdapter(map, actionName));	
 		attachAccelaratorKey(toggleItem, keyEvent);
 		navMenu.add(toggleItem);
