@@ -34,6 +34,7 @@ import java.util.MissingResourceException;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.gui.L10N;
 
 /**
  * Singleton responsible for returning localized strings for information
