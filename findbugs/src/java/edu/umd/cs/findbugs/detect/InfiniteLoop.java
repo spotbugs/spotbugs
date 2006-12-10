@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.visitclass.Util;
 
 public class InfiniteLoop extends BytecodeScanningDetector {
 
@@ -199,7 +200,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 			}
 			if (getFurthestJump(target) > getPC())
 				break;
-
+			
 			if (constantSince(item0, target)) {
 				int since0 = constantSince(item0);
 				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
@@ -209,7 +210,8 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				if (reg0 >= 0)
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), target));
 				
-				bugReporter.reportBug(bug);
+				reportPossibleBug(bug);
+				
 			}
 		}
 			break;
@@ -235,8 +237,8 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 
 			if (constantSince(item0, target)
 					&& constantSince(item1, target)) {
-				int since0 = constantSince(item0);
-				int since1 = constantSince(item1);
+				// int since0 = constantSince(item0);
+				// int since1 = constantSince(item1);
 				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
 						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
 						this, getPC());
@@ -247,8 +249,9 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				if (reg1 >= 0)
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, getPC(), target));
 
-				bugReporter.reportBug(bug);
-			}
+				reportPossibleBug(bug);
+				}
+			
 		}
 			break;
 		}
@@ -299,5 +302,16 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		if (reg >= 0) return stack.getLastUpdate(reg);
 		return Integer.MAX_VALUE;
 
+	}
+	
+	void reportPossibleBug(BugInstance bug) {
+		int catchSize = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getCode(), "java/io/EOFException", getPC());
+		if (catchSize < Integer.MAX_VALUE) bug.setPriority(LOW_PRIORITY);
+		else {
+			catchSize = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getCode(), "java/lang/NoSuchElementException", getPC());
+			if (catchSize < Integer.MAX_VALUE) bug.setPriority(LOW_PRIORITY);
+		}
+		bugReporter.reportBug(bug);
+		
 	}
 }
