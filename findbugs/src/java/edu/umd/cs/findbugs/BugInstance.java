@@ -276,6 +276,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return null;
 	}
 	
+	public LocalVariableAnnotation getPrimaryLocalVariableAnnotation() {
+		for (BugAnnotation annotation : annotationList) 
+			if (annotation instanceof LocalVariableAnnotation)
+				return (LocalVariableAnnotation) annotation;
+		return null;
+	}
 	/**
 	 * Get the primary source line annotation.
 	 * There is guaranteed to be one (unless some Detector constructed

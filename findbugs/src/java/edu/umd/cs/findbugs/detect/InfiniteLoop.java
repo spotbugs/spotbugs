@@ -318,8 +318,11 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		else {
 			catchSize = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getCode(), "java/lang/NoSuchElementException", getPC());
 			if (catchSize < Integer.MAX_VALUE) bug.setPriority(LOW_PRIORITY);
+			else {
+				LocalVariableAnnotation lv = bug.getPrimaryLocalVariableAnnotation();
+				if (lv == null && getMethodName().equals("run")) bug.setPriority(NORMAL_PRIORITY);
+			} 
 		}
 		bugReporter.reportBug(bug);
-		
 	}
 }
