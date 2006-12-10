@@ -263,7 +263,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		if (getBranchOffset() >= 0) return;
 		int target = getBranchTarget();
 		for(Jump j : backwardReach) 
-			if (target <= j.from) target = j.to;
+			if (j.to < target && target <= j.from) target = j.to;
 		assert target <= getBranchTarget();
 		assert target < getPC();
 		for(Iterator<Jump> i = backwardReach.iterator(); i.hasNext(); ) {
