@@ -48,6 +48,9 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 			this.from = from;
 			this.to = to;
 		}
+		public String toString() {
+			return from + " -> " + to;
+		}
 	}
 	static class BackwardsBranch extends Jump {
 		final List<Integer> invariantRegisters = new LinkedList<Integer>();
@@ -285,7 +288,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	private int getBackwardsReach(int target) {
 		int originalTarget = target;
 		for(Jump j : backwardReach) 
-			if (target <= j.from) target = j.to;
+			if (j.to < target && target <= j.from) target = j.to;
 		assert target <= originalTarget;
 		return target;
 	}
