@@ -93,6 +93,9 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	
 	int getFurthestJump(int from) {
 		int result = Integer.MIN_VALUE;
+		int from2 = getBackwardsReach(from);
+		assert from2 <= from;
+		from = from2;
 		for(Jump f : forwardJumps) 
 			if (f.from >= from && f.to > result)
 				result = f.to;
@@ -123,7 +126,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		backwardBranchLoop: for(BackwardsBranch bb : backwardBranches) {
 			LinkedList<ForwardConditionalBranch> myForwardBranches = new LinkedList<ForwardConditionalBranch>();
 			for(ForwardConditionalBranch fcb : forwardConditionalBranches) 
-				if (bb.to < fcb.from && fcb.from < bb.from &&  bb.from < fcb.to)
+				if (getBackwardsReach(bb.to) < fcb.from && fcb.from < bb.from &&  bb.from < fcb.to)
 					myForwardBranches.add(fcb);
 			if (myForwardBranches.size() != 1) continue;
 			ForwardConditionalBranch fcb = myForwardBranches.get(0);
@@ -136,11 +139,13 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
 						this, fcb.from);
 				int reg0 = fcb.item0.getRegisterNumber();
-				if (reg0 >= 0)
-					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from));
+				if (reg0 >= 0) 
+					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from))
+					.addSourceLine(this, constantSince(fcb.item0));
 				int reg1 = fcb.item1.getRegisterNumber();
 				if (reg1 >= 0 && reg1 != reg0)
-					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from));
+					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from))
+										.addSourceLine(this, constantSince(fcb.item1));
 				bugReporter.reportBug(bug);
 			}
 			
@@ -207,8 +212,9 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
 						this, getPC());
 				int reg0 = item0.getRegisterNumber();
-				if (reg0 >= 0)
-					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), target));
+				if (reg0 >= 0) 
+					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), target))
+					.addSourceLine(this, since0);
 				
 				reportPossibleBug(bug);
 				
@@ -277,8 +283,10 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	}
 	
 	private int getBackwardsReach(int target) {
+		int originalTarget = target;
 		for(Jump j : backwardReach) 
 			if (target <= j.from) target = j.to;
+		assert target <= originalTarget;
 		return target;
 	}
 	
