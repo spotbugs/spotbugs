@@ -41,14 +41,14 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	private static final boolean active = true;
 
 
-	static class ForwardJump {
+	static class Jump {
 		final int from, to;
-		ForwardJump(int from, int to) {
+		Jump(int from, int to) {
 			this.from = from;
 			this.to = to;
 		}
 	}
-	static class BackwardsBranch extends ForwardJump {
+	static class BackwardsBranch extends Jump {
 		final List<Integer> invariantRegisters = new LinkedList<Integer>();
 		final int numLastUpdates;
 		BackwardsBranch(OpcodeStack stack, int from, int to) {
@@ -60,7 +60,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 			}
 					
 		}
-	static class ForwardConditionalBranch  extends ForwardJump {
+	static class ForwardConditionalBranch  extends Jump {
 		final OpcodeStack.Item item0, item1;
 		ForwardConditionalBranch(OpcodeStack.Item item0, OpcodeStack.Item item1, int from, int to) {
 			super(from,to);
@@ -71,27 +71,28 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	}
 	BugReporter bugReporter;
 
+	LinkedList<Jump> backwardReach = new LinkedList<Jump>();
 	LinkedList<BackwardsBranch> backwardBranches = new LinkedList<BackwardsBranch>();
 	
 	LinkedList<ForwardConditionalBranch> forwardConditionalBranches = new LinkedList<ForwardConditionalBranch>();
 	
-	LinkedList<ForwardJump> forwardJumps = new LinkedList<ForwardJump>();
+	LinkedList<Jump> forwardJumps = new LinkedList<Jump>();
 	void purgeForwardJumps(int before) {
 		if (true) return;
-		for(Iterator<ForwardJump> i = forwardJumps.iterator(); i.hasNext(); ) {
-			ForwardJump j = i.next();
+		for(Iterator<Jump> i = forwardJumps.iterator(); i.hasNext(); ) {
+			Jump j = i.next();
 			if (j.to < before) i.remove();
 		}
 	}
 	void addForwardJump(int from, int to) {
 		if (from >= to) return;
 		purgeForwardJumps(from);
-		forwardJumps.add(new ForwardJump(from, to));
+		forwardJumps.add(new Jump(from, to));
 	}
 	
 	int getFurthestJump(int from) {
 		int result = Integer.MIN_VALUE;
-		for(ForwardJump f : forwardJumps) 
+		for(Jump f : forwardJumps) 
 			if (f.from >= from && f.to > result)
 				result = f.to;
 		return result;
@@ -116,6 +117,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		backwardBranches.clear();
 		forwardConditionalBranches.clear();
 		forwardJumps.clear();
+		backwardReach.clear();
 		super.visit(obj);
 		backwardBranchLoop: for(BackwardsBranch bb : backwardBranches) {
 			LinkedList<ForwardConditionalBranch> myForwardBranches = new LinkedList<ForwardConditionalBranch>();
@@ -124,7 +126,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 					myForwardBranches.add(fcb);
 			if (myForwardBranches.size() != 1) continue;
 			ForwardConditionalBranch fcb = myForwardBranches.get(0);
-			for(ForwardJump fj : forwardJumps) 
+			for(Jump fj : forwardJumps) 
 				if (fcb.from != fj.from && bb.to < fj.from && fj.from < bb.from && bb.from < fj.to) 
 					continue backwardBranchLoop;
 			if (isConstant(fcb.item0, bb) && 
@@ -136,7 +138,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				if (reg0 >= 0)
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from));
 				int reg1 = fcb.item1.getRegisterNumber();
-				if (reg1 >= 0)
+				if (reg1 >= 0 && reg1 != reg0)
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from));
 				bugReporter.reportBug(bug);
 			}
@@ -168,6 +170,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 			if (getBranchOffset() < 0) {
 				BackwardsBranch bb = new BackwardsBranch(stack, getPC(), getBranchTarget());
 				if (bb.invariantRegisters.size() > 0) backwardBranches.add(bb);
+				addBackwardsReach();
 			}
 			break;
 		case ARETURN:
@@ -178,36 +181,75 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		case LRETURN:
 			addForwardJump(getPC(), Integer.MAX_VALUE);
 			break;
+		case IFNE:
+		case IFEQ:
+		case IFLE:
+		case IFLT:
+		case IFGE:
+		case IFGT:
+		case IFNONNULL:
+		case IFNULL:
+		{
+			addBackwardsReach();
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			int target = getBranchTarget();
+			if (getBranchOffset() > 0) {
+				forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), target));
+				break;
+			}
+			if (getFurthestJump(target) > getPC())
+				break;
+
+			if (constantSince(item0, target)) {
+				int since0 = constantSince(item0);
+				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
+						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
+						this, getPC());
+				int reg0 = item0.getRegisterNumber();
+				if (reg0 >= 0)
+					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), target));
+				
+				bugReporter.reportBug(bug);
+			}
+		}
+			break;
+		case IF_ACMPEQ:
+		case IF_ACMPNE:
 		case IF_ICMPNE:
 		case IF_ICMPEQ:
 		case IF_ICMPGT:
 		case IF_ICMPLE:
 		case IF_ICMPLT:
 		case IF_ICMPGE:
+		{
+			addBackwardsReach();
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			OpcodeStack.Item item1 = stack.getStackItem(1);
+			int target = getBranchTarget();
 			if (getBranchOffset() > 0) {
-				forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), getBranchTarget()));
+				forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item1, getPC(), target));
 				break;
 			}
-			if (getFurthestJump(getBranchTarget()) > getPC())
+			if (getFurthestJump(target) > getPC())
 				break;
 
-			if (constantSince(item0, getBranchTarget())
-					&& constantSince(item1, getBranchTarget())) {
+			if (constantSince(item0, target)
+					&& constantSince(item1, target)) {
+				int since0 = constantSince(item0);
+				int since1 = constantSince(item1);
 				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
 						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
 						this, getPC());
 				int reg0 = item0.getRegisterNumber();
 				if (reg0 >= 0)
-					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), getBranchTarget()));
+					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), target));
 				int reg1 = item1.getRegisterNumber();
 				if (reg1 >= 0)
-					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, getPC(), getBranchTarget()));
+					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, getPC(), target));
 
 				bugReporter.reportBug(bug);
 			}
-
+		}
 			break;
 		}
 
@@ -215,17 +257,47 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	}
 
 	/**
+	 * 
+	 */
+	private void addBackwardsReach() {
+		if (getBranchOffset() >= 0) return;
+		int target = getBranchTarget();
+		for(Jump j : backwardReach) 
+			if (target <= j.from) target = j.to;
+		assert target <= getBranchTarget();
+		assert target < getPC();
+		for(Iterator<Jump> i = backwardReach.iterator(); i.hasNext(); ) {
+			Jump j = i.next();
+			if (target <= j.to && getPC() >= j.from) i.remove();
+		}
+		backwardReach.add(new Jump(getPC(), target));
+	}
+	
+	private int getBackwardsReach(int target) {
+		for(Jump j : backwardReach) 
+			if (target <= j.from) target = j.to;
+		return target;
+	}
+	
+
+	
+	/**
 	 * @param item1
 	 * @param branchTarget
 	 * @return
 	 */
 	private boolean constantSince(Item item1, int branchTarget) {
-			int reg = item1.getRegisterNumber();
+		int reg = item1.getRegisterNumber();
 		if (reg >= 0)
-		return stack.getLastUpdate(reg) < branchTarget;
+		return stack.getLastUpdate(reg) < getBackwardsReach(branchTarget);
 		if (item1.getConstant() != null)
 			return true;
 		return false;
-	
+	}
+	private int constantSince(Item item1) {
+		int reg = item1.getRegisterNumber();
+		if (reg >= 0) return stack.getLastUpdate(reg);
+		return Integer.MAX_VALUE;
+
 	}
 }
