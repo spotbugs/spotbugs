@@ -22,10 +22,14 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
 import java.util.*;
+
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 public class MutableLock extends BytecodeScanningDetector implements  StatelessDetector {
 	Set<String> setFields = new HashSet<String>();
+	Set<String> finalFields = new HashSet<String>();
 	boolean thisOnTOS = false;
 	private BugReporter bugReporter;
 
@@ -34,7 +38,17 @@ public class MutableLock extends BytecodeScanningDetector implements  StatelessD
 	}
 
 
+	@Override
+	public void visit(JavaClass obj) {
+		finalFields.clear();
+		super.visit(obj);
+	}
 
+	@Override
+    public void visit(Field obj) {
+	super.visit(obj);
+	if (obj.isFinal()) finalFields.add(obj.getName());
+}
 	@Override
          public void visit(Method obj) {
 		super.visit(obj);
@@ -61,6 +75,8 @@ public class MutableLock extends BytecodeScanningDetector implements  StatelessD
 			        && setFields.contains(getNameConstantOperand())
 			        && asUnsignedByte(codeBytes[getPC() + 3]) == DUP
 			        && asUnsignedByte(codeBytes[getPC() + 5]) == MONITORENTER
+			        
+			        && !finalFields.contains(getNameConstantOperand())
 			)
 				bugReporter.reportBug(new BugInstance(this, "ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
