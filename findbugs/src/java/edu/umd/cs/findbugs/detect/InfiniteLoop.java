@@ -134,7 +134,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 			if (myForwardBranches.size() != 1) continue;
 			ForwardConditionalBranch fcb = myForwardBranches.get(0);
 			for(Jump fj : forwardJumps) 
-				if (fcb.from != fj.from && bb.to < fj.from && fj.from < bb.from && bb.from < fj.to) 
+				if (fcb.from != fj.from && getBackwardsReach(bb.to) < fj.from && fj.from < bb.from && bb.from < fj.to) 
 					continue backwardBranchLoop;
 			if (isConstant(fcb.item0, bb) && 
 					isConstant(fcb.item1, bb)) {
@@ -190,6 +190,16 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		case LRETURN:
 			addForwardJump(getPC(), Integer.MAX_VALUE);
 			break;
+		case LOOKUPSWITCH:
+		case TABLESWITCH: 
+		{
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			if (getDefaultSwitchOffset() > 0) 
+				forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC() + getDefaultSwitchOffset() ));
+			for(int offset : getSwitchOffsets()) if (offset > 0) 
+				forwardConditionalBranches.add(new ForwardConditionalBranch(item0, item0, getPC(), getPC() + offset));
+			break;
+		}
 		case IFNE:
 		case IFEQ:
 		case IFLE:
