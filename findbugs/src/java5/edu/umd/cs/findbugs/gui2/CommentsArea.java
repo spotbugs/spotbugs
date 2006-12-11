@@ -461,7 +461,7 @@ public class CommentsArea {
 			return;
 		if (changeDesignationOfBug(frame.currentSelectedBugLeaf, designationKey))
 			changed = true;
-		setDesignationComboBox(designationName);
+		setDesignationComboBox(designationKey);
 	}
 
 	protected void setDesignationNonLeaf(String designationName) {
@@ -473,7 +473,7 @@ public class CommentsArea {
 				.getMatchingBugs(BugSet.getMainBugSet());
 		for (BugLeafNode nextNode : filteredSet)
 			if (changeDesignationOfBug(nextNode, designationKey)) changed = true;
-		setDesignationComboBox(designationName);
+		setDesignationComboBox(designationKey);
 	}
 
 	protected boolean changeDesignationOfBug(BugLeafNode theNode, String selection) {
@@ -544,11 +544,16 @@ public class CommentsArea {
 		else return comments;
 	}
 
-	protected void setDesignationComboBox(String selection) {
+	protected void setDesignationComboBox(String designationKey) {
 		int numItems = designationComboBox.getItemCount();
-		for (int i = 0; i < numItems; i++)
-			if (selection.equals(designationKeys.get(i)))
+		for (int i = 0; i < numItems; i++) {
+			String value = designationKeys.get(i);
+			if (designationKey.equals(value)) {
 				designationComboBox.setSelectedIndex(i);
+				return;
+				}
+		}
+		if (MainFrame.DEBUG) System.out.println("Couldn't find combo box for " + designationKey);
 	}
 
 	public void moveNodeAccordingToDesignation(BugLeafNode theNode,
