@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
@@ -29,6 +30,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 
 public class FindFieldSelfAssignment extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;
@@ -79,8 +81,18 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 			if (seen == PUTFIELD && getRefConstantOperand().equals(f) && getClassConstantOperand().equals(className)) {
 
 				int priority = NORMAL_PRIORITY;
-				if (getMethodName().equals("<init>") && !initializedFields.contains(getRefConstantOperand()))
-						priority = HIGH_PRIORITY;
+				SignatureParser parser = new SignatureParser(getMethodSig());
+				boolean foundMatch = false;
+				for(Iterator<String> i =  parser.parameterSignatureIterator(); i.hasNext(); ) {
+					String s = i.next();
+					if (s.equals(getSigConstantOperand())) {
+						foundMatch = true;
+						break;
+					}
+				}
+				if (getMethodName().equals("<init>") && !initializedFields.contains(getRefConstantOperand()) && foundMatch)
+					priority = HIGH_PRIORITY;
+			
 				bugReporter.reportBug(new BugInstance(this, "SA_FIELD_SELF_ASSIGNMENT", priority)
 				        .addClassAndMethod(this)
 				        .addReferencedField(this)
