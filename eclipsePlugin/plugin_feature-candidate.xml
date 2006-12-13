@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="@FEATURE_ID@"
+      label="FindBugs Feature"
+      version="@FEATURE_VERSION@"
+      provider-name="FindBugs Project"
+      plugin="@PLUGIN_ID@">
+
+   <description url="http://findbugs.sourceforge.net">
+      This feature is a wrapper for the FindBugs plugin for installation via the Eclipse Update Manager.
+   </description>
+
+   <copyright>
+      (c) 2006, University of Maryland
+   </copyright>
+
+   <license url="http://findbugs.sourceforge.net/manual/license.html">
+      FindBugs is free software distributed under the terms of the Lesser GNU Public License.
+http://www.gnu.org/licenses/lgpl.html
+   </license>
+
+   <url>
+      <update label="FindBugs candidate release update site" url="http://findbugs.cs.umd.edu/eclipse-candidate/"/>
+      <!-- <discovery label="FindBugs discovery site" url="http://findbugs.cs.umd.edu/eclipse-candidate/"/> -->
+   </url>
+
+   <requires>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.jdt"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.jdt.launching"/>
+      <import plugin="org.eclipse.jdt.ui"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+   </requires>
+
+   <plugin
+         id="@PLUGIN_ID@"
+         download-size="2500"
+         install-size="2700"
+         version="@PLUGIN_VERSION@"/>
+
+</feature>
