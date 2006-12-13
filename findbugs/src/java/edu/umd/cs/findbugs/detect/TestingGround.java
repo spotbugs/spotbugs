@@ -61,24 +61,34 @@ public class TestingGround extends BytecodeScanningDetector  {
 	@Override
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
-		if (seen == INVOKESTATIC
-			&& getNameConstantOperand().equals("forName")
-			&& getClassConstantOperand().equals("java/lang/Class")
-			&& getSigConstantOperand().equals("(Ljava/lang/String;)Ljava/lang/Class;"))
-			if (stack.getStackDepth() == 0) 
-				System.out.println("empty stack");
-			else {
+		switch (seen) {
+		case IF_ACMPEQ:
+		case IF_ACMPNE:
+		case IF_ICMPNE:
+		case IF_ICMPEQ:
+		case IF_ICMPGT:
+		case IF_ICMPLE:
+		case IF_ICMPLT:
+		case IF_ICMPGE:
+		{
 
-			OpcodeStack.Item item = stack.getStackItem(0);
-			Object constantValue = item.getConstant();
-			if (constantValue != null
-				&& constantValue instanceof String)
-				System.out.println("XXYYZ: " + getFullyQualifiedMethodName() + " Class.forName("+constantValue+")");
-			else
-				System.out.println("XXYYZ: " + getFullyQualifiedMethodName() + " Class.forName(???)");
-
-			}
-
+			OpcodeStack.Item item0 = stack.getStackItem(0);
+			OpcodeStack.Item item1 = stack.getStackItem(1);
+			if (item0.getSignature().equals("D") || item0.getSignature().equals("F")) break;
+			if (item1.getSignature().equals("D") || item1.getSignature().equals("F")) break;
+			
+			
+			FieldAnnotation field0 = item0.getField();
+			FieldAnnotation field1 = item1.getField();
+			if (field0 != null && field0.equals(field1))
+				System.out.println("Saw self field comparison");
+			
+			int reg0 = item0.getRegisterNumber();
+			int reg1 = item1.getRegisterNumber();
+			if (reg0 >= 0 && reg0 == reg1)
+				System.out.println("Saw self variable comparison");
+		}
+		}
 		stack.sawOpcode(this,seen);
 	}
 }
