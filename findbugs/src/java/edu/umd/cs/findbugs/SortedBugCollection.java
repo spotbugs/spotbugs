@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.zip.GZIPInputStream;
 
 import javax.xml.transform.TransformerException;
 
@@ -139,7 +140,9 @@ public class SortedBugCollection implements BugCollection {
 	public void readXML(String fileName, Project project)
 	        throws IOException, DocumentException {
 		try {
-		BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileName));
+		InputStream  in = new BufferedInputStream(new FileInputStream(fileName));
+		if (fileName.endsWith(".gz"))
+			in = new GZIPInputStream(in);
 		readXML(in, project);
 		} catch (IOException e) {
 			IOException e2 = new IOException("Error reading " + fileName + ": " + e.getMessage());
@@ -157,7 +160,9 @@ public class SortedBugCollection implements BugCollection {
 	 */
 	public void readXML(File file, Project project)
 	        throws IOException, DocumentException {
-		BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
+		InputStream in = new BufferedInputStream(new FileInputStream(file));
+		if (file.getName().endsWith(".gz"))
+			in = new GZIPInputStream(in);
 		readXML(in, project);
 	}
 

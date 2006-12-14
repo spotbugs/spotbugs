@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -68,6 +69,8 @@ public class GenerateUIDs {
 			in = System.in;
 		} else {
 			in = new BufferedInputStream(new FileInputStream(inputFilename));
+			if (inputFilename.endsWith(".gz"))
+				in = new GZIPInputStream(in);
 		}
 		
 		bugCollection.readXML(in, project);
