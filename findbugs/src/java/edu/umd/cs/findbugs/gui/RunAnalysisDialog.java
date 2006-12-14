@@ -31,6 +31,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import edu.umd.cs.findbugs.FindBugsProgress;
+import edu.umd.cs.findbugs.L10N;
 
 /**
  * A modal dialog to run the actual FindBugs analysis on a project.

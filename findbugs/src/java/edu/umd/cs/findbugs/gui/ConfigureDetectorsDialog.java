@@ -39,6 +39,7 @@ import javax.swing.table.TableModel;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.config.UserPreferences;
 
 /**

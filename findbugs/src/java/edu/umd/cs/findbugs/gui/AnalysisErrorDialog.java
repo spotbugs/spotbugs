@@ -26,6 +26,7 @@
 package edu.umd.cs.findbugs.gui;
 
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.L10N;
 
 /**
  * A dialog to report errors that occured during analysis.

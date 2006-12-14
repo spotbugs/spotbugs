@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.IFindBugsEngine;
+import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SystemProperties;

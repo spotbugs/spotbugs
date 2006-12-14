@@ -27,6 +27,8 @@ package edu.umd.cs.findbugs.gui;
 
 import java.util.Date;
 
+import edu.umd.cs.findbugs.L10N;
+
 /**
  * @author David Hovemeyer
  */

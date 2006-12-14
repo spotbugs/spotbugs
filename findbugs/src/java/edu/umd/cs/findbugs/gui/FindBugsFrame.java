@@ -110,6 +110,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugsCommandLine;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.ShowHelp;

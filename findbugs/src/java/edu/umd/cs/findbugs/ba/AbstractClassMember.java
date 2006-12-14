@@ -27,10 +27,10 @@ public abstract class AbstractClassMember implements ClassMember {
 	private final int accessFlags;
 	private boolean resolved;
 	private int cachedHashCode = 0;
-	static public int slashCountClass = 0;
-	static public int dottedCountClass = 0;
-	static public int slashCountSignature= 0;
-	static public int dottedCountSignature = 0;
+	static  int slashCountClass = 0;
+	static  int dottedCountClass = 0;
+	static  int slashCountSignature= 0;
+	static  int dottedCountSignature = 0;
 	
 
 	protected AbstractClassMember(String className, String name, String signature, int accessFlags) {

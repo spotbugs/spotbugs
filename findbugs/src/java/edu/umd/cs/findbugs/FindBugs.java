@@ -1514,12 +1514,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		int bugCount = findBugs.getBugCount();
 		int missingClassCount = findBugs.getMissingClassCount();
 		int errorCount = findBugs.getErrorCount();
-		if (false) 
-		System.err.println("Slashed/Dotted Slashed/Dotted: " 
-				+ AbstractClassMember.slashCountClass +"/" + AbstractClassMember.dottedCountClass
-				+ " " + AbstractClassMember.slashCountSignature +"/" + AbstractClassMember.dottedCountSignature
-				);
-		
+			
 		if (!commandLine.quiet() || commandLine.setExitCode()) {
 			if (bugCount > 0)
 				System.err.println("Warnings generated: " + bugCount);

@@ -50,7 +50,7 @@ public class Methods extends PreorderVisitor implements Detector,
 
 	@Override
 	public void visit(Method obj) {
-		m = xFactory.createXMethod(this);
+		m = XFactory.createXMethod(this);
 	}
 	@Override 
 	public void visit(Attribute a) {
@@ -62,7 +62,7 @@ public class Methods extends PreorderVisitor implements Detector,
 
 	@Override
 	public void visit(Field obj) {
-		f = xFactory.createXField(this);
+		f = XFactory.createXField(this);
 	}
 
 	public void report() {
