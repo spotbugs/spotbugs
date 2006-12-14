@@ -65,7 +65,7 @@ public enum Sortables implements Comparator<StringPair>
 			if(appVersion != null)
 			{
 				String timestamp = new Timestamp(appVersion.getTimestamp()).toString();
-				appendItem = appVersion.getReleaseName().toString() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
+				appendItem = appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
 			}
 			if(appendItem == "")
 				appendItem = "AppVersion not found, sequence number=" + seqNum;
@@ -109,12 +109,16 @@ public enum Sortables implements Comparator<StringPair>
 		@Override
 		public int compare(StringPair one, StringPair two)
 		{
+			if (one.value.equals(two.value)) return 0;
+			
 			// Numerical (except that -1 is last)
 			int first = Integer.valueOf(one.value);
 			int second = Integer.valueOf(two.value);
-			if(first==-1) first = Integer.MAX_VALUE;
-			if(second==-1) second = Integer.MAX_VALUE;
-			return new Integer(first).compareTo(second);
+			if (first == second) return 0;
+			if (first < 0) return 1;
+			if (second < 0) return -1;
+			if (first < second) return -1;
+			return 1;
 		}
 	},
 	
