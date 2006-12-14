@@ -34,7 +34,7 @@
          point="org.eclipse.ui.propertyPages">
       <page
             objectClass="org.eclipse.jdt.core.IJavaProject"
-            name="Findbugs"
+            name="FindBugs"
             class="de.tobject.findbugs.properties.FindbugsPropertyPage"
             id="de.tobject.findbugs.properties.findbugsPropertyPage">
          <filter
@@ -44,7 +44,7 @@
       </page>
       <page
             objectClass="org.eclipse.core.resources.IProject"
-            name="Findbugs"
+            name="FindBugs"
             class="de.tobject.findbugs.properties.FindbugsPropertyPage"
             id="de.tobject.findbugs.properties.findbugsPropertyPage">
          <filter
