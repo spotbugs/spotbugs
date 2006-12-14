@@ -490,6 +490,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 * @param project       the project being configured
 	 */
 	private void buildBugCategoryList(Composite categoryGroup, final IProject project) {
+		DetectorFactoryCollection.instance(); // ensure detectors loaded
+		
 		List<String> bugCategoryList = new LinkedList<String>(I18N.instance().getBugCategories());
 		List<Button> checkBoxList = new LinkedList<Button>();
 		for (Iterator<String> i = bugCategoryList.iterator(); i.hasNext(); ) {
