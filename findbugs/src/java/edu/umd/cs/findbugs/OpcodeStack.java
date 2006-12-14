@@ -110,6 +110,7 @@ public class OpcodeStack implements Constants2
 		private boolean isInitialParameter = false;
 		private boolean couldBeZero = false;
 		private Object userValue = null;
+		private int fieldLoadedFromRegister = -1;
 
 		
 		public int getSize() {
@@ -154,7 +155,8 @@ public class OpcodeStack implements Constants2
 				&& this.registerNumber == that.registerNumber
 				&& this.isInitialParameter == that.isInitialParameter
 				&& this.couldBeZero == that.couldBeZero
-				&& this.userValue == that.userValue;
+				&& this.userValue == that.userValue
+				&& this.fieldLoadedFromRegister == that.fieldLoadedFromRegister;
 				
 			}
 
@@ -244,6 +246,9 @@ public class OpcodeStack implements Constants2
 				m.isNull = i1.isNull;
 			if (i1.registerNumber == i2.registerNumber)
 				m.registerNumber = i1.registerNumber;
+			if (i1.fieldLoadedFromRegister == i2.fieldLoadedFromRegister)
+				m.fieldLoadedFromRegister = i1.fieldLoadedFromRegister;
+		
 			if (i1.specialKind == i2.specialKind)
 				m.specialKind = i1.specialKind;
 			else if (i1.specialKind == FLOAT_MATH || i2.specialKind == FLOAT_MATH)
@@ -258,14 +263,7 @@ public class OpcodeStack implements Constants2
  		public Item(String signature) {
  			this(signature, UNKNOWN);
  		}
- 		public Item(String signature, FieldAnnotation f, int reg) {
-			this.signature = signature;
-			field = f;
-			if (f != null)
-				xfield = XFactory.createXField(f);
-			registerNumber = reg;
- 		}
- 		public Item(Item it) {
+  		public Item(Item it) {
 			this.signature = it.signature;
 			this.constValue = it.constValue;
 			this.field = it.field;
@@ -289,9 +287,24 @@ public class OpcodeStack implements Constants2
 			this.specialKind = it.specialKind;
  		}
  		public Item(String signature, FieldAnnotation f) {
-			this(signature, f, -1);
+			this.signature = signature;
+			field = f;
+			if (f != null)
+				xfield = XFactory.createXField(f);
+			fieldLoadedFromRegister = -1;
+ 		}
+		public Item(String signature, FieldAnnotation f, int fieldLoadedFromRegister) {
+			this.signature = signature;
+			field = f;
+			if (f != null)
+				xfield = XFactory.createXField(f);
+			this.fieldLoadedFromRegister = fieldLoadedFromRegister;
  		}
  		
+		public int getFieldLoadedFromRegister() {
+			return fieldLoadedFromRegister;
+		}
+
  		public Item(String signature, Object constantValue) {
  			this.signature = signature;
  			constValue = constantValue;
@@ -605,7 +618,7 @@ public class OpcodeStack implements Constants2
 	 			case GETSTATIC:
 					{
 					FieldAnnotation field = FieldAnnotation.fromReferencedField(dbc);
-	 				Item i = new Item(dbc.getSigConstantOperand(), field);
+	 				Item i = new Item(dbc.getSigConstantOperand(), field, Integer.MAX_VALUE);
 	 				if (field.getFieldName().equals("separator") && field.getClassName().equals("java.io.File")) {
 	 					i.setSpecialKind(Item.FILE_SEPARATOR_STRING);
 	 				}
@@ -853,9 +866,12 @@ public class OpcodeStack implements Constants2
 	 			break;
 
 	 			case GETFIELD:
-	 				pop();
+	 				{
+	 					Item item = pop();
+	 					int reg = item.getRegisterNumber();
 	 				push(new Item(dbc.getSigConstantOperand(), 
-						FieldAnnotation.fromReferencedField(dbc)));
+						FieldAnnotation.fromReferencedField(dbc), reg));
+	 				}
 	 			break;
 	 			
 	 			case ARRAYLENGTH:
@@ -1809,7 +1825,7 @@ public class OpcodeStack implements Constants2
 	private void pushBySignature(String s) {
  		if ("V".equals(s))
  			return;
- 	 	push(new Item(s, null));
+ 	 	push(new Item(s, (Object) null));
  	}
  	
  	private void pushByLocalStore(int register) {

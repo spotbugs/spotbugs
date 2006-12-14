@@ -84,7 +84,9 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 
 			FieldAnnotation field0 = item0.getField();
 			FieldAnnotation field1 = item1.getField();
-			if (field0 != null && field0.equals(field1))
+			int fr0 = item0.getFieldLoadedFromRegister();
+			int fr1 = item1.getFieldLoadedFromRegister();
+			if (field0 != null && field0.equals(field1) && fr0 != -1 && fr0 == fr1)
 				bugReporter.reportBug(new BugInstance(this,
 						"SA_SELF_COMPARISON", NORMAL_PRIORITY)
 						.addClassAndMethod(this).add(field0)
