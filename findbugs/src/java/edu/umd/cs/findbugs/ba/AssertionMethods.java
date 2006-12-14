@@ -126,6 +126,7 @@ public class AssertionMethods implements Constants {
 							&& (classNameLC.indexOf("assert") >= 0
 									|| methodNameLC.startsWith("throw")
 									|| methodName.startsWith("affirm")
+									|| methodName.startsWith("panic")
 									|| methodNameLC.equals("insist")
 									|| methodNameLC.equals("usage")
 									|| methodNameLC.startsWith("fail")
