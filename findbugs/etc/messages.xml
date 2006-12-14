@@ -4004,7 +4004,7 @@ Such assignments are useless, and may indicate a logic error or typo.
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="SA_FIELD SELF_COMPARISON">
+  <BugPattern type="SA_FIELD_SELF_COMPARISON">
     <ShortDescription>Self comparison of field with itself</ShortDescription>
     <LongDescription>Self comparison of {2} with itself {1}</LongDescription>
     <Details>
