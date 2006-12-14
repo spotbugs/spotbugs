@@ -207,6 +207,9 @@
   <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" 
             speed="fast"
             reports="SA_FIELD_SELF_ASSIGNMENT" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindSelfComparison" 
+            speed="fast"
+            reports="SA_SELF_COMPARISON" />
             
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException" 
             speed="fast"
@@ -823,6 +826,7 @@
   <BugPattern abbrev="BIT" type="BIT_AND_ZZ" category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_IOR"    category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_FIELD_SELF_ASSIGNMENT" category="CORRECTNESS" />
+  <BugPattern abbrev="SA" type="SA_SELF_COMPARISON" category="CORRECTNESS" />
   <BugPattern abbrev="LI" type="LI_LAZY_INIT_INSTANCE" category="MT_CORRECTNESS"
          experimental="true" />  <!-- has never been generated? -->
   <BugPattern abbrev="LI" type="LI_LAZY_INIT_STATIC" category="MT_CORRECTNESS" />

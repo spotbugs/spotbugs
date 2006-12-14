@@ -3996,6 +3996,17 @@ Such assignments are useless, and may indicate a logic error or typo.
 ]]>
     </Details>
   </BugPattern>
+  <BugPattern type="SA_SELF_COMPARISON">
+    <ShortDescription>Self comparison of value with itself</ShortDescription>
+    <LongDescription>Self comparison of {2} with itself {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method compares a field or local variable with itself, and may indicate a type or
+a logic error.  Make sure that you are comparing the right things.
+</p>
+]]>
+    </Details>
+  </BugPattern>
 
   <BugPattern type="RV_ABSOLUTE_VALUE_OF_RANDOM_INT">
     <ShortDescription>Bad attempt to compute absolute value of signed 32-bit random integer</ShortDescription>
