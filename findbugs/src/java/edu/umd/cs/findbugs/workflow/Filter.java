@@ -264,7 +264,7 @@ public class Filter {
 			if (className != null && !className.matcher(bug.getPrimaryClass().getClassName()).find())
 					return false;
 
-			if (categoryKey != null && !bug.getBugPattern().getCategory().equals(categoryKey))
+			if (categoryKey != null && !categoryKey.equals(bug.getBugPattern().getCategory()))
 				return false;
 			if (designationKey != null && !designationKey.equals(bug.getUserDesignationKey()))
 				return false;
