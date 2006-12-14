@@ -19,12 +19,15 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import edu.umd.cs.findbugs.AppVersion;
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.Detector;
@@ -39,9 +42,83 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
  * 
  * @author Reuven
  */
+
 public enum Sortables implements Comparator<StringPair>
 {
-	PRIORITY(L10N.getLocalString("sort.priority", "Priority"))
+
+	FIRSTVERSION(edu.umd.cs.findbugs.L10N.getLocalString("sort.first_version", "First Version"))
+	{
+		public String getFrom(BugInstance bug)
+		{
+			return Long.toString(bug.getFirstVersion());
+		}
+		
+		@Override
+		public String formatValue(String value)
+		{	
+			//System.out.println("Formatting first version value");
+			if(value.equals("0"))
+				return edu.umd.cs.findbugs.L10N.getLocalString("sort.first_version_not_defined", "First version not defined");
+			int seqNum = Integer.parseInt(value);
+			AppVersion appVersion = BugLoader.mainBugCollection.getAppVersionFromSequenceNumber(seqNum);
+			String appendItem = "";
+			if(appVersion != null)
+			{
+				String timestamp = new Timestamp(appVersion.getTimestamp()).toString();
+				appendItem = appVersion.getReleaseName().toString() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
+			}
+			if(appendItem == "")
+				appendItem = "AppVersion not found, sequence number=" + seqNum;
+			return (edu.umd.cs.findbugs.L10N.getLocalString("sort.first_version", "First Version") + ": " + appendItem);
+		}
+		
+		@Override
+		public int compare(StringPair one, StringPair two)
+		{
+			// Numerical (zero is first)
+			return Integer.valueOf(one.value).compareTo(Integer.valueOf(two.value));
+		}
+	},
+	
+	LASTVERSION(edu.umd.cs.findbugs.L10N.getLocalString("sort.last_version", "Last Version"))
+	{
+		public String getFrom(BugInstance bug)
+		{
+			return Long.toString(bug.getLastVersion());
+		}
+		
+		@Override
+		public String formatValue(String value)
+		{
+			//System.out.println("Formatting last version value");
+			if(value.equals("-1"))
+				return edu.umd.cs.findbugs.L10N.getLocalString("sort.last_version_not_defined", "Last version not defined");
+			int seqNum = Integer.parseInt(value);
+			AppVersion appVersion = BugLoader.mainBugCollection.getAppVersionFromSequenceNumber(seqNum);
+			String appendItem = "";
+			if(appVersion != null)
+			{
+				String timestamp = new Timestamp(appVersion.getTimestamp()).toString();
+				appendItem = appVersion.getReleaseName().toString() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
+			}
+			if(appendItem == "")
+				appendItem = "AppVersion not found, sequence number=" + seqNum;
+			return (edu.umd.cs.findbugs.L10N.getLocalString("sort.last_version", "Last Version") + ": " + appendItem);		
+			}
+		
+		@Override
+		public int compare(StringPair one, StringPair two)
+		{
+			// Numerical (except that -1 is last)
+			int first = Integer.valueOf(one.value);
+			int second = Integer.valueOf(two.value);
+			if(first==-1) first = Integer.MAX_VALUE;
+			if(second==-1) second = Integer.MAX_VALUE;
+			return new Integer(first).compareTo(second);
+		}
+	},
+	
+	PRIORITY(edu.umd.cs.findbugs.L10N.getLocalString("sort.priority", "Priority"))
 	{
 		public String getFrom(BugInstance bug)
 		{
@@ -70,7 +147,7 @@ public enum Sortables implements Comparator<StringPair>
 			return Integer.valueOf(one.value).compareTo(Integer.valueOf(two.value));
 		}
 	},
-	CLASS(L10N.getLocalString("sort.class", "Class"))
+	CLASS(edu.umd.cs.findbugs.L10N.getLocalString("sort.class", "Class"))
 	{
 		public String getFrom(BugInstance bug)
 		{
@@ -93,7 +170,7 @@ public enum Sortables implements Comparator<StringPair>
 			return one.value.compareTo(two.value);
 		}
 	},
-	PACKAGE(L10N.getLocalString("sort.package", "Package"))
+	PACKAGE(edu.umd.cs.findbugs.L10N.getLocalString("sort.package", "Package"))
 	{
 		public String getFrom(BugInstance bug)
 		{
@@ -107,7 +184,7 @@ public enum Sortables implements Comparator<StringPair>
 			return value;
 		}
 	},
-	CATEGORY(L10N.getLocalString("sort.category", "Category"))
+	CATEGORY(edu.umd.cs.findbugs.L10N.getLocalString("sort.category", "Category"))
 	{
 		public String getFrom(BugInstance bug)
 		{
@@ -120,7 +197,7 @@ public enum Sortables implements Comparator<StringPair>
 			return I18N.instance().getBugCategoryDescription(value);
 		}
 	},
-	DESIGNATION(L10N.getLocalString("sort.designation", "Designation"))
+	DESIGNATION(edu.umd.cs.findbugs.L10N.getLocalString("sort.designation", "Designation"))
 	{
 		public String getFrom(BugInstance bug)
 		{
@@ -144,7 +221,7 @@ public enum Sortables implements Comparator<StringPair>
 			return sortedDesignations.toArray(new String[sortedDesignations.size()]);
 		}
 	},
-	BUGCODE(L10N.getLocalString("sort.bug_kind", "Bug Kind"))
+	BUGCODE(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_kind", "Bug Kind"))
 	{
 		public String getFrom(BugInstance bug)
 		{
@@ -162,11 +239,13 @@ public enum Sortables implements Comparator<StringPair>
 			return formatValue(one.value).compareTo(formatValue(two.value));
 		}
 	},
-	TYPE(L10N.getLocalString("sort.bug_pattern", "Bug Pattern"))
+	TYPE(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_pattern", "Bug Pattern"))
 	{
 		public String getFrom(BugInstance bug)
 		{
-			return bug.getBugPattern().getType();
+			if((bug.getBugPattern()) == null)
+				return "Missing bug pattern";
+			else return bug.getBugPattern().getType();
 		}
 				
 		public String formatValue(String value)
@@ -253,12 +332,12 @@ public enum Sortables implements Comparator<StringPair>
 	
 	public Comparator<BugLeafNode> getBugLeafNodeComparator()
 	{
+		final Sortables key = this;
 		return new Comparator<BugLeafNode>()
 		{
 			public int compare(BugLeafNode one, BugLeafNode two)
 			{
-				Sortables key = Sortables.this;
-				return Sortables.this.compare(new StringPair(key, key.getFrom(one.getBug())), new StringPair(key, key.getFrom(two.getBug())));
+				return key.compare(new StringPair(key, key.getFrom(one.getBug())), new StringPair(key, key.getFrom(two.getBug())));
 			}
 		};
 	}

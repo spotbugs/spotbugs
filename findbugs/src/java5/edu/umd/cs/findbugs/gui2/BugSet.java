@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
+import edu.umd.cs.findbugs.gui2.SortableStringComparator;
 
 /**
  * BugSet is what we use instead of SortedBugCollections.  BugSet is somewhat poorly named, in that its actually a HashList of bugs, 
@@ -70,11 +71,12 @@ public class BugSet implements Iterable<BugLeafNode>{
 	/**
 	 * Gets all the string values out of the bugs in the set
 	 * @param s The Sortables you want all values for
-	 * @return all values of the sortable passed in that occur in this bugset
+	 * @return all values of the sortable passed in that occur in this bugset, in order based on the sortable's compare method.
 	 */
 	public String[] getAll(Sortables s)
 	{
 		HashList<String> list=sortablesToStrings.get(s);
+		Collections.sort(list, new SortableStringComparator(s));
 		return list.toArray(new String[list.size()]);
 	}
 

@@ -527,6 +527,7 @@ public class CommentsArea {
 	{	if (theAspects == null)
 			return "";
 		BugSet filteredSet = theAspects.getMatchingBugs(BugSet.getMainBugSet());
+		Iterator<BugLeafNode> filteredIter = filteredSet.iterator();
 		boolean allSame = true;
 		String comments = null;
 		for (BugLeafNode nextNode : filteredSet) {
@@ -542,7 +543,27 @@ public class CommentsArea {
 			return "";
 		else return comments;
 	}
-
+	/*
+	protected String getNonLeafCommentsText(BugAspects theAspects)
+	{	if (theAspects == null)
+			return "";
+		BugSet filteredSet = theAspects.getMatchingBugs(BugSet.getMainBugSet());
+		boolean allSame = true;
+		String comments = null;
+		for (BugLeafNode nextNode : filteredSet) {
+		String commentsOnThisBug = nextNode.getBug().getAnnotationText();
+			if (comments == null) {
+				comments = commentsOnThisBug;
+			} else {
+				if (!commentsOnThisBug.equals(comments))
+					allSame = false;
+			}
+		}
+		if((comments == null) || (allSame == false))
+			return "";
+		else return comments;
+	}
+	*/
 	protected void setDesignationComboBox(String designationKey) {
 		int numItems = designationComboBox.getItemCount();
 		for (int i = 0; i < numItems; i++) {

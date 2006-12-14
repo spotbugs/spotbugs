@@ -90,7 +90,13 @@ public interface BugCollection
 	 */
 	public long getAnalysisTimestamp();
 	
-
+	
+	/**
+	 * Gets the AppVersion corresponding to the given sequence number.
+	 */
+	
+	public AppVersion getAppVersionFromSequenceNumber(long target);
+	
 	/**
 	 * Set the sequence number of the BugCollection.
 	 * 

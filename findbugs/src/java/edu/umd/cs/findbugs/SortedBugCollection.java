@@ -967,6 +967,15 @@ public class SortedBugCollection implements BugCollection {
 	public boolean getWithMessages() {
 		return withMessages;
 	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#getAppVersionFromSequenceNumber(int)
+	 */
+	public AppVersion getAppVersionFromSequenceNumber(long target) {
+		for(AppVersion av : appVersionList)
+			if (av.getSequenceNumber() == target) return av;
+		return null;
+	}
 }
 
 // vim:ts=4

@@ -96,7 +96,7 @@ public class NewFilterFrame extends FBDialog
 		JPanel north = new JPanel();
 		north.setLayout(new BoxLayout(north, BoxLayout.X_AXIS));
 		north.add(Box.createHorizontalStrut(3));
-		north.add(new JLabel("Filter out all bugs whose "));
+		north.add(new JLabel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.filter_bugs_lbl", "Filter out all bugs whose") + " "));
 		
 		//Argh divider
 		Sortables[] valuesWithoutDivider=new Sortables[Sortables.values().length-1];
@@ -140,10 +140,14 @@ public class NewFilterFrame extends FBDialog
 		});
 		comboBox.validate();
 		north.add(comboBox);
-		north.add(new JLabel(" is:"));
+		north.add(new JLabel(" " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " "));
+		String[] filterModes = {edu.umd.cs.findbugs.L10N.getLocalString("mode.equal_to", "equal to"), edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_after", "at or after"), edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_before", "at or before")};
+		final JComboBox filterModeComboBox = new JComboBox(filterModes);
+		north.add(filterModeComboBox);
+		north.add(new JLabel(":"));
 		north.add(Box.createHorizontalGlue());
 		JPanel south = new JPanel();
-		JButton okButton = new JButton("OK");
+		JButton okButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
 		okButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
@@ -158,14 +162,14 @@ public class NewFilterFrame extends FBDialog
 //				}
 				FilterMatcher[] newFilters = new FilterMatcher[list.getSelectedIndices().length];
 				for (int i = 0; i < newFilters.length; i++)
-					newFilters[i] = new FilterMatcher(key, values[list.getSelectedIndices()[i]]);
+					newFilters[i] = new FilterMatcher(key, values[list.getSelectedIndices()[i]], filterModeComboBox.getSelectedIndex());
 				ProjectSettings.getInstance().addFilters(newFilters);
 				PreferencesFrame.getInstance().updateFilterPanel();
 				MainFrame.getInstance().setProjectChanged(newFilters.length > 0);
 				close();
 			}
 		});
-		JButton cancelButton = new JButton("Cancel");
+		JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
 		cancelButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
@@ -224,7 +228,7 @@ public class NewFilterFrame extends FBDialog
 			}
 		});
 		
-		setTitle("Create New Filter");
+		setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.create_new_filter_ttl", "Create New Filter"));
 		pack();
 	}
 	

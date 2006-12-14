@@ -62,6 +62,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -74,7 +75,9 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -147,7 +150,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private BasicTreeUI treeUI;
 	boolean userInputEnabled;
 		
-	static final String DEFAULT_SOURCE_CODE_MSG = "No available source";
+	static final String DEFAULT_SOURCE_CODE_MSG = edu.umd.cs.findbugs.L10N.getLocalString("msg.nosource_txt", "No available source");
 	
 	static final int COMMENTS_TAB_STRUT_SIZE = 5;
 	static final int COMMENTS_MARGIN = 5;
@@ -248,9 +251,9 @@ public class MainFrame extends FBFrame implements LogSync
 	void callOnClose(){
 		comments.saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		if(projectChanged){
-			int value = JOptionPane.showConfirmDialog(MainFrame.this, "You are closing " +
-					"without saving. Do you want to save?", 
-					"Do you want to save?", JOptionPane.YES_NO_CANCEL_OPTION,
+			int value = JOptionPane.showConfirmDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString("msg.you_are_closing_txt", "You are closing") + " " +
+					edu.umd.cs.findbugs.L10N.getLocalString("msg.without_saving_txt", "without saving. Do you want to save?"), 
+					edu.umd.cs.findbugs.L10N.getLocalString("msg.confirm_save_txt", "Do you want to save?"), JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.QUESTION_MESSAGE);
 			
 			if(value == JOptionPane.CANCEL_OPTION || value == JOptionPane.CLOSED_OPTION)
@@ -297,7 +300,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 					if (!f.exists())
 					{
-						JOptionPane.showMessageDialog(null,"This project can no longer be found");
+						JOptionPane.showMessageDialog(null,edu.umd.cs.findbugs.L10N.getLocalString("msg.proj_not_found", "This project can no longer be found"));
 						GUISaveState.getInstance().projectNotFound(f);
 						return;
 					}
@@ -335,8 +338,8 @@ public class MainFrame extends FBFrame implements LogSync
 							if (curProject != null && projectChanged)
 							{
 								int response = JOptionPane.showConfirmDialog(MainFrame.this, 
-										"The current project has been changed, Save current changes?"
-										,"Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+										edu.umd.cs.findbugs.L10N.getLocalString("dlg.save_current_changes", "The current project has been changed, Save current changes?")
+										,edu.umd.cs.findbugs.L10N.getLocalString("dlg.save_changes", "Save Changes?"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 
 								if (response == JOptionPane.YES_OPTION)
 								{
@@ -661,7 +664,7 @@ public class MainFrame extends FBFrame implements LogSync
 			public void actionPerformed(ActionEvent evt){				
 				guiLayout.makeSourceVisible();
 				try{
-					int num = Integer.parseInt(JOptionPane.showInputDialog(MainFrame.this, "", "Go To Line:", JOptionPane.QUESTION_MESSAGE));
+					int num = Integer.parseInt(JOptionPane.showInputDialog(MainFrame.this, "", edu.umd.cs.findbugs.L10N.getLocalString("dlg.go_to_line_lbl", "Go To Line") + ":", JOptionPane.QUESTION_MESSAGE));
 					displayer.showLine(num);
 				}
 				catch(NumberFormatException e){}
@@ -687,10 +690,10 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		JMenu navMenu = newJMenu("menu.navigation", "Navigation");
 		
-		addNavItem(map, navMenu, "menu.expand", "expand", KeyEvent.VK_RIGHT );
-		addNavItem(map, navMenu, "menu.collapse", "collapse", KeyEvent.VK_LEFT);
-		addNavItem(map, navMenu, "menu.up", "selectPrevious", KeyEvent.VK_UP );
-		addNavItem(map, navMenu, "menu.down", "selectNext", KeyEvent.VK_DOWN);
+		addNavItem(map, navMenu, "menu.expand", "Expand", "expand", KeyEvent.VK_RIGHT );
+		addNavItem(map, navMenu, "menu.collapse", "Collapse", "collapse", KeyEvent.VK_LEFT);
+		addNavItem(map, navMenu, "menu.up", "Up", "selectPrevious", KeyEvent.VK_UP );
+		addNavItem(map, navMenu, "menu.down", "Down", "selectNext", KeyEvent.VK_DOWN);
 				
 		menuBar.add(navMenu);
 		
@@ -722,8 +725,8 @@ public class MainFrame extends FBFrame implements LogSync
 	 * @param map
 	 * @param navMenu
 	 */
-	private void addNavItem(final ActionMap map, JMenu navMenu, String menuName, String actionName, int keyEvent) {
-		JMenuItem toggleItem = newJMenuItem(menuName, menuName);
+	private void addNavItem(final ActionMap map, JMenu navMenu, String menuNameKey, String menuNameDefault, String actionName, int keyEvent) {
+		JMenuItem toggleItem = newJMenuItem(menuNameKey, menuNameDefault);
 		toggleItem.addActionListener(treeActionAdapter(map, actionName));	
 		attachAccelaratorKey(toggleItem, keyEvent);
 		navMenu.add(toggleItem);
@@ -772,14 +775,14 @@ public class MainFrame extends FBFrame implements LogSync
 	private boolean projectSaveAs(){
 		if (curProject==null)
 		{
-			JOptionPane.showMessageDialog(MainFrame.this,"There is no project to save");
+			JOptionPane.showMessageDialog(MainFrame.this,edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_proj_save_lbl", "There is no project to save"));
 			return false;
 		}
 		
 		FBFileChooser jfc=new FBFileChooser();
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		jfc.setFileFilter(new FindBugsProjectFileFilter());
-		jfc.setDialogTitle("Save as...");
+		jfc.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.saveas_ttl", "Save as..."));
 
 		boolean exists = false;
 		File dir=null;
@@ -797,8 +800,8 @@ public class MainFrame extends FBFrame implements LogSync
 
 			if(exists){
 				int response = JOptionPane.showConfirmDialog(jfc, 
-						"This project already exists.\nDo you want to replace it?",
-						"Warning!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+						edu.umd.cs.findbugs.L10N.getLocalString("dlg.proj_already_exists_lbl", "This project already exists.\nDo you want to replace it?"),
+						edu.umd.cs.findbugs.L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 
 				if(response == JOptionPane.OK_OPTION)
 					retry = false;
@@ -811,7 +814,7 @@ public class MainFrame extends FBFrame implements LogSync
 			boolean good=save(dir);
 			if (good==false)
 			{
-				JOptionPane.showMessageDialog(MainFrame.this, "An error occured in saving");
+				JOptionPane.showMessageDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
 				return false;
 			}
 			projectDirectory=dir;				
@@ -860,7 +863,7 @@ public class MainFrame extends FBFrame implements LogSync
 		});
 		sorter = GUISaveState.getInstance().getStarterTable();
 		tableheader.setColumnModel(sorter);
-		tableheader.setToolTipText("Drag to reorder tree folder and sort order");
+		tableheader.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.reorder_message", "Drag to reorder tree folder and sort order"));
 		
 		tree = new JTree();
 		treeUI = (BasicTreeUI) tree.getUI();
@@ -1058,9 +1061,9 @@ public class MainFrame extends FBFrame implements LogSync
 		if (countFilteredBugs == 0)
 			statusBarLabel.setText("  http://findbugs.sourceforge.net/");
 		else if (countFilteredBugs == 1)
-			statusBarLabel.setText("  1 bug hidden");
+			statusBarLabel.setText("  1 " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bug_hidden", "bug hidden"));
 		else 
-			statusBarLabel.setText("  " + countFilteredBugs + " bugs hidden");
+			statusBarLabel.setText("  " + countFilteredBugs + " " + edu.umd.cs.findbugs.L10N.getLocalString("statusbar.bugs_hidden", "bugs hidden"));
 	}
 	
 	private void updateSummaryTab(BugLeafNode node)
@@ -1163,7 +1166,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		summaryHtmlArea.setContentType("text/html");
 		summaryHtmlArea.setEditable(false);
-		summaryHtmlArea.setToolTipText("This gives a longer description of the detected bug pattern");
+		summaryHtmlArea.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.longer_description", "This gives a longer description of the detected bug pattern"));
 		summaryHtmlArea.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
 	            public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
 	                AboutDialog.editorPaneHyperlinkUpdate(evt);
@@ -1208,7 +1211,7 @@ public class MainFrame extends FBFrame implements LogSync
 			BugAnnotation value = (BugAnnotation) obj;
 			
 			if(value == null)
-				return new JLabel("null");
+				return new JLabel(edu.umd.cs.findbugs.L10N.getLocalString("summary.null", "null"));
 			
 			if(value instanceof SourceLineAnnotation){
 				final SourceLineAnnotation note = (SourceLineAnnotation) value;
@@ -1217,13 +1220,13 @@ public class MainFrame extends FBFrame implements LogSync
 					int start = note.getStartLine();
 					int end = note.getEndLine();
 					if(start < 0 && end < 0)
-						srcStr = "source code.";
+						srcStr = edu.umd.cs.findbugs.L10N.getLocalString("summary.source_code", "source code.");
 					else if(start == end)
-						srcStr = " [Line " + start + "]";
+						srcStr = " [" + edu.umd.cs.findbugs.L10N.getLocalString("summary.line", "Line") + " " + start + "]";
 					else if(start < end)
-						srcStr = " [Lines " + start + " - " + end + "]";
+						srcStr = " [" + edu.umd.cs.findbugs.L10N.getLocalString("summary.lines", "Lines") + " " + start + " - " + end + "]";
 					
-					label.setToolTipText("Click to go to " + srcStr);
+					label.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.click_to_go_to", "Click to go to") + " " + srcStr);
 					
 					label.addMouseListener(new BugSummaryMouseListener(bug, label, note));
 				}
@@ -1238,18 +1241,18 @@ public class MainFrame extends FBFrame implements LogSync
 					int start = noteSrc.getStartLine();
 					int end = noteSrc.getEndLine();
 					if(start < 0 && end < 0)
-						srcStr = "source code.";
+						srcStr = edu.umd.cs.findbugs.L10N.getLocalString("summary.source_code", "source code.");
 					else if(start == end)
-						srcStr = " [Line " + start + "]";
+						srcStr = " [" + edu.umd.cs.findbugs.L10N.getLocalString("summary.line", "Line") + " " + start + "]";
 					else if(start < end)
-						srcStr = " [Lines " + start + " - " + end + "]";
+						srcStr = " [" + edu.umd.cs.findbugs.L10N.getLocalString("summary.lines", "Lines") + " " + start + " - " + end + "]";
 					
 					if(!srcStr.equals("")){
-						label.setToolTipText("Click to go to " + srcStr);
+						label.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.click_to_go_to", "Click to go to") + " " + srcStr);
 						label.addMouseListener(new BugSummaryMouseListener(bug, label, noteSrc));
 					}
 				}
-				if(!srcStr.equals("source code."))
+				if(!srcStr.equals(edu.umd.cs.findbugs.L10N.getLocalString("summary.source_code", "source code.")))
 					label.setText(note.toString() + srcStr);
 				else
 					label.setText(note.toString());
@@ -1314,7 +1317,7 @@ public class MainFrame extends FBFrame implements LogSync
 					in = new URL(loadFromURL).openConnection().getInputStream();
 					if (loadFromURL.endsWith(".gz"))
 						in = new GZIPInputStream(in);
-					BugTreeModel.pleaseWait("Loading bugs over network...");
+					BugTreeModel.pleaseWait(edu.umd.cs.findbugs.L10N.getLocalString("msg.loading_bugs_over_network_txt", "Loading bugs over network..."));
 					loadAnalysisFromInputStream(in);
 				} catch (MalformedURLException e1) {
 					// TODO Auto-generated catch block
@@ -1550,7 +1553,7 @@ public class MainFrame extends FBFrame implements LogSync
 	static class CutAction extends TextAction {
 		
 		public CutAction() {
-			super("Cut");
+			super(edu.umd.cs.findbugs.L10N.getLocalString("txt.cut", "Cut"));
 		}
 
 		public void actionPerformed( ActionEvent evt ) {
@@ -1566,7 +1569,7 @@ public class MainFrame extends FBFrame implements LogSync
 	static class CopyAction extends TextAction {
 		
 		public CopyAction() {
-			super("Copy");
+			super(edu.umd.cs.findbugs.L10N.getLocalString("txt.copy", "Copy"));
 		}
 		
 		public void actionPerformed( ActionEvent evt ) {
@@ -1582,7 +1585,7 @@ public class MainFrame extends FBFrame implements LogSync
 	static class PasteAction extends TextAction {
 		
 		public PasteAction() {
-			super("Paste");
+			super(edu.umd.cs.findbugs.L10N.getLocalString("txt.paste", "Paste"));
 		}
 		
 		public void actionPerformed( ActionEvent evt ) {
@@ -1730,7 +1733,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		if (curProject==null)
 		{
-			JOptionPane.showMessageDialog(MainFrame.this,"There is no project to save");
+			JOptionPane.showMessageDialog(MainFrame.this,edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_proj_save_lbl", "There is no project to save"));
 			return;
 		}
 		
@@ -1752,8 +1755,8 @@ public class MainFrame extends FBFrame implements LogSync
 				if (xmlFile.exists())
 				{
 					int response = JOptionPane.showConfirmDialog(chooser, 
-							"This analysis already exists.\nReplace it?",
-							"Warning!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+							edu.umd.cs.findbugs.L10N.getLocalString("dlg.analysis_exists_lbl", "This analysis already exists.\nReplace it?"),
+							edu.umd.cs.findbugs.L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 					
 					if(response == JOptionPane.OK_OPTION)
 						saving = false;
@@ -1789,7 +1792,7 @@ public class MainFrame extends FBFrame implements LogSync
 			File file = jfc.getSelectedFile();
 
 			if (!file.exists()) {
-				JOptionPane.showMessageDialog(jfc, "That file does not exist");
+				JOptionPane.showMessageDialog(jfc, edu.umd.cs.findbugs.L10N.getLocalString("dlg.file_does_not_exist_lbl", "That file does not exist"));
 				continue;
 			} 
 			try {
@@ -1895,8 +1898,8 @@ public class MainFrame extends FBFrame implements LogSync
 		if (projectChanged)
 		{
 			int response = JOptionPane.showConfirmDialog(MainFrame.this, 
-					"The current project has been changed, Save current changes?"
-					,"Save Changes?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+					edu.umd.cs.findbugs.L10N.getLocalString("dlg.save_current_changes", "The current project has been changed, Save current changes?")
+					,edu.umd.cs.findbugs.L10N.getLocalString("dlg.save_changes", "Save Changes?"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 
 			if (response == JOptionPane.YES_OPTION)
 			{
@@ -1920,7 +1923,7 @@ public class MainFrame extends FBFrame implements LogSync
 				
 				if(!dir.exists() || !dir.isDirectory())
 				{
-					JOptionPane.showMessageDialog(null, "Warning! This project is not a directory.");
+					JOptionPane.showMessageDialog(null, edu.umd.cs.findbugs.L10N.getLocalString("dlg.proj_not_dir_warning_lbl", "Warning! This project is not a directory."));
 					loading = true;
 					continue;
 				}
@@ -1931,14 +1934,14 @@ public class MainFrame extends FBFrame implements LogSync
 
 					if (!xmlFile.exists())
 					{
-						JOptionPane.showMessageDialog(null, "This directory does not contain saved bug XML data, please choose a different directory.");
+						JOptionPane.showMessageDialog(null, edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_xml_data_lbl", "This directory does not contain saved bug XML data, please choose a different directory."));
 						loading=true;
 						continue;
 					}
 					
 					if (!fasFile.exists())
 					{
-						JOptionPane.showMessageDialog(MainFrame.this, "Filter settings not found, using default settings.");
+						JOptionPane.showMessageDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.filter_settings_not_found_lbl", "Filter settings not found, using default settings."));
 						try {
 							fasFile.createNewFile();
 							ProjectSettings.newInstance().save(new FileOutputStream(fasFile));

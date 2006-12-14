@@ -63,6 +63,8 @@ import edu.umd.cs.findbugs.workflow.Update;
  *
  */
 public class BugLoader {
+	
+	public static BugCollection mainBugCollection = null; //this is so the Sortables can look up AppVersions; this probably isn't the right place to put it
 
 	private static Project loadedProject;
 	
@@ -248,6 +250,7 @@ public class BugLoader {
 	
 	public static BugSet loadBugsHelper(BugCollection collection)
 	{
+		mainBugCollection = collection;
 		ArrayList<BugLeafNode> bugList=new ArrayList<BugLeafNode>();
 		Iterator<BugInstance> i=collection.iterator();
 		while (i.hasNext())

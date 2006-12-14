@@ -21,7 +21,7 @@ package edu.umd.cs.findbugs.gui2;
 
 import java.io.Serializable;
 import java.util.HashSet;
-
+import java.lang.RuntimeException;
 import javax.swing.tree.TreePath;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -35,9 +35,13 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
  */
 public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMatcher>
 {
-	private static final long serialVersionUID = -4859486064351510016L;	
+	private static final long serialVersionUID = -4859486064351510016L;
+	public static final int FILTER_EXACTLY = 0;
+	public static final int FILTER_AT_OR_AFTER = 1;
+	public static final int FILTER_AT_OR_BEFORE = 2;
 	private Sortables filterBy;
 	private String value;
+	private int mode;
 	protected boolean active;
 	private static HashSet<FilterListener> listeners = new HashSet<FilterListener>();
 	
@@ -56,13 +60,21 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		return value;
 	}
 	
+	public FilterMatcher(Sortables filterBy, String value, int mode) //0 = exactly; 1 = at or after; 2 = at or before
+	{
+		this.filterBy = filterBy;
+		this.value = value;
+		this.mode = mode;
+		this.active = true;
+	}
+	
 	public FilterMatcher(Sortables filterBy, String value)
 	{
 		this.filterBy = filterBy;
 		this.value = value;
+		this.mode = FILTER_EXACTLY;
 		this.active = true;
 	}
-	
 	public void setActive(boolean active)
 	{
 		if (active != this.active)
@@ -85,12 +97,25 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		if (!active)
 			return true;
 		
-		return !filterBy.getFrom(bugInstance).equals(value);
+		SortableStringComparator ssc = new SortableStringComparator(filterBy);
+		switch(mode)
+		{
+		case FILTER_EXACTLY: return (ssc.compare(filterBy.getFrom(bugInstance), value) != 0);
+		case FILTER_AT_OR_AFTER: return (ssc.compare(filterBy.getFrom(bugInstance), value) == -1);
+		case FILTER_AT_OR_BEFORE: return (ssc.compare(filterBy.getFrom(bugInstance), value) == 1);
+		default: return true;
+		}
 	}
 	
 	public String toString()
 	{
-		return filterBy.toString() + " is " + filterBy.formatValue(value);
+		switch(mode)
+		{
+		case FILTER_EXACTLY: return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " " + edu.umd.cs.findbugs.L10N.getLocalString("mode.equal_to", "equal to") + " " + filterBy.formatValue(value);
+		case FILTER_AT_OR_AFTER: return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " " + edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_after", "at or after") + " " + filterBy.formatValue(value);
+		case FILTER_AT_OR_BEFORE: return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " " + edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_before", "at or before") + " " + filterBy.formatValue(value);
+		default: throw new RuntimeException();
+		}
 	}
 	
 	public static boolean addFilterListener(FilterListener newListener)
