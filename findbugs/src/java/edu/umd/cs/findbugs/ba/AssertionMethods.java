@@ -125,6 +125,7 @@ public class AssertionMethods implements Constants {
 							|| voidReturnType
 							&& (classNameLC.indexOf("assert") >= 0
 									|| methodNameLC.startsWith("throw")
+									|| methodName.startsWith("affirm")
 									|| methodNameLC.equals("insist")
 									|| methodNameLC.equals("usage")
 									|| methodNameLC.startsWith("fail")
