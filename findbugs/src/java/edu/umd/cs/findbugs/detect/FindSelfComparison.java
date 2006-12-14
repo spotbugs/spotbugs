@@ -50,6 +50,8 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 
 	@Override
 	public void visit(Code obj) {
+		whichRegister = -1;
+		registerLoadCount = 0;
 		stack.resetForMethodEntry(this);
 		super.visit(obj);
 	}
@@ -88,25 +90,34 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 			int fr1 = item1.getFieldLoadedFromRegister();
 			if (field0 != null && field0.equals(field1) && fr0 != -1 && fr0 == fr1)
 				bugReporter.reportBug(new BugInstance(this,
-						"SA_SELF_COMPARISON", NORMAL_PRIORITY)
+						"SA_FIELD_SELF_COMPARISON", NORMAL_PRIORITY)
 						.addClassAndMethod(this).add(field0)
 						.addSourceLine(this));
 
-			else {
-				int reg0 = item0.getRegisterNumber();
-				int reg1 = item1.getRegisterNumber();
-				if (reg0 >= 0 && reg0 == reg1)
+			else if (registerLoadCount >= 2) {
 					bugReporter.reportBug(new BugInstance(this,
-							"SA_SELF_COMPARISON", NORMAL_PRIORITY)
+							"SA_LOCAL_SELF_COMPARISON", NORMAL_PRIORITY)
 							.addClassAndMethod(this).add(
 									LocalVariableAnnotation
 											.getLocalVariableAnnotation(
-													getMethod(), reg0, getPC(),
+													getMethod(), whichRegister, getPC(),
 													getPC() - 1))
 							.addSourceLine(this));
 			}
 		}
 		}
 		stack.sawOpcode(this, seen);
+		if (isRegisterLoad()) {
+			if (getRegisterOperand() == whichRegister) registerLoadCount++;
+			else {
+				whichRegister = getRegisterOperand();
+				registerLoadCount = 1;
+			}
+		} else {
+			whichRegister = -1;
+			registerLoadCount = 0;
+		}
 	}
+	int whichRegister;
+	int registerLoadCount;
 }
