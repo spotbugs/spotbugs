@@ -69,7 +69,7 @@ public class AboutDialog extends javax.swing.JDialog {
 			l.logMessage(ConsoleLogger.ERROR, e.toString());
 		}
 
-		setTitle(MessageFormat.format(edu.umd.cs.findbugs.gui.L10N.getLocalString("dlg.aboutfindbugs_ttl", "About FindBugs {0}"), new Object[]{Version.RELEASE}));
+		setTitle(MessageFormat.format(edu.umd.cs.findbugs.L10N.getLocalString("dlg.aboutfindbugs_ttl", "About FindBugs {0}"), new Object[]{Version.RELEASE}));
 	}
 
 	static Pattern pattern = Pattern.compile("@VERSION@");
@@ -87,7 +87,7 @@ public class AboutDialog extends javax.swing.JDialog {
 			// Open the file as a stream
 			in = getClass().getClassLoader().getResourceAsStream(fileName);
 			if (in == null)
-				throw new IOException(MessageFormat.format(edu.umd.cs.findbugs.gui.L10N.getLocalString("msg.couldntload_txt", "Couldn't load {0}"), new Object[]{fileName}));
+				throw new IOException(MessageFormat.format(edu.umd.cs.findbugs.L10N.getLocalString("msg.couldntload_txt", "Couldn't load {0}"), new Object[]{fileName}));
 			 reader = new BufferedReader(new InputStreamReader(in));
 
 			// Replace instances of @VERSION@ with actual version number
@@ -182,9 +182,9 @@ public class AboutDialog extends javax.swing.JDialog {
         getContentPane().add(aboutTabPane, gridBagConstraints);
 
         {
-            aboutTabPane.setTitleAt(0, edu.umd.cs.findbugs.gui.L10N.getLocalString("dlg.about_tab", "About"));
-            aboutTabPane.setTitleAt(1, edu.umd.cs.findbugs.gui.L10N.getLocalString("dlg.license_tab", "License"));
-            aboutTabPane.setTitleAt(2, edu.umd.cs.findbugs.gui.L10N.getLocalString("dlg.acknowledgements_tab", "Acknowledgements"));
+            aboutTabPane.setTitleAt(0, edu.umd.cs.findbugs.L10N.getLocalString("dlg.about_tab", "About"));
+            aboutTabPane.setTitleAt(1, edu.umd.cs.findbugs.L10N.getLocalString("dlg.license_tab", "License"));
+            aboutTabPane.setTitleAt(2, edu.umd.cs.findbugs.L10N.getLocalString("dlg.acknowledgements_tab", "Acknowledgements"));
         }
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -194,7 +194,7 @@ public class AboutDialog extends javax.swing.JDialog {
 
         okButton.setMnemonic('O');
         okButton.setText("OK");
-        okButton.setText(edu.umd.cs.findbugs.gui.L10N.getLocalString("dlg.ok_btn", "OK"));
+        okButton.setText(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);

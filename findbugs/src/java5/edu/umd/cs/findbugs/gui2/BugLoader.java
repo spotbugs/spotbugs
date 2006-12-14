@@ -320,7 +320,7 @@ public class BugLoader {
 			chooser.setFileFilter(new FindBugsAnalysisFileFilter());
 //			chooser.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs());  This is done by FBFileChooser.
 			chooser.setMultiSelectionEnabled(true);
-			chooser.setDialogTitle(edu.umd.cs.findbugs.gui.L10N.getLocalString("dlg.choose_xmls_ttl", "Choose All XML's To Combine"));
+			chooser.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.choose_xmls_ttl", "Choose All XML's To Combine"));
 			if (chooser.showOpenDialog(MainFrame.getInstance())==JFileChooser.CANCEL_OPTION)
 				return null;
 			

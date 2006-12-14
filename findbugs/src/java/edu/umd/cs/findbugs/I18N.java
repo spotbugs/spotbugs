@@ -34,7 +34,6 @@ import java.util.MissingResourceException;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.gui.L10N;
 
 /**
  * Singleton responsible for returning localized strings for information
@@ -46,7 +45,7 @@ public class I18N {
 	private static final boolean DEBUG = SystemProperties.getBoolean("i18n.debug");
 	/** a Comparator to compare user designation keys */
 	public static final Comparator<String> designationKeyComparator = new DesignationKeyComparator();
-	public static Locale defaultLocale = Locale.getDefault();
+	public static final Locale defaultLocale = Locale.getDefault();
 	private final ResourceBundle annotationDescriptionBundle;
 	private final ResourceBundle englishAnnotationDescriptionBundle; //used if local one can't be found
 	//private final ResourceBundle bugCategoryDescriptionBundle;
