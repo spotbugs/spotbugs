@@ -74,15 +74,15 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = IS_DEVELOPMENT ? dateFormat.format(new Date()) : "October 6, 2006";
+	public static final String DATE = dateFormat.format(new Date());
 
-	public static final String ECLIPSE_DATE = IS_DEVELOPMENT ? eclipseDateFormat.format(new Date()) : "20061006";
+	public static final String ECLIPSE_DATE = eclipseDateFormat.format(new Date()) ;
 
 	/**
 	 * Version of Eclipse plugin.
 	 */
 	public static final String ECLIPSE_UI_VERSION = // same as RELEASE except .vYYYYMMDD before optional -suffix
-		MAJOR + "." + MINOR + "." + PATCHLEVEL + ".v" + ECLIPSE_DATE + (IS_DEVELOPMENT ? "-"+RELEASE_SUFFIX_WORD : "");
+		MAJOR + "." + MINOR + "." + PATCHLEVEL + "." + ECLIPSE_DATE;
 
 	/**
 	 * FindBugs website.
