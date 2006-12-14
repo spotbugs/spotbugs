@@ -87,7 +87,7 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 			if (field0 != null && field0.equals(field1))
 				bugReporter.reportBug(new BugInstance(this,
 						"SA_SELF_COMPARISON", NORMAL_PRIORITY)
-						.addClassAndMethod(this).addReferencedField(this)
+						.addClassAndMethod(this).add(field0)
 						.addSourceLine(this));
 
 			else {
