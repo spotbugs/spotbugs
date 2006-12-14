@@ -234,7 +234,7 @@ public class OpcodeStack implements Constants2
 			if (i2 == null) return i1;
 			if (i1.equals(i2)) return i1;
 			Item m = new Item();
-			m.setNull(false);	
+			m.flags = i1.flags & i2.flags;
 			m.setCouldBeZero(i1.isCouldBeZero() || i2.isCouldBeZero());
 			if (equals(i1.signature,i2.signature))
 				m.signature = i1.signature;
@@ -243,9 +243,7 @@ public class OpcodeStack implements Constants2
 			if (equals(i1.xfield,i2.xfield)) {
 				m.xfield = i1.xfield;
 			}
-			if (i1.isNull2() == i2.isNull2())
-				m.setNull(i1.isNull2());
-			if (i1.registerNumber == i2.registerNumber)
+				if (i1.registerNumber == i2.registerNumber)
 				m.registerNumber = i1.registerNumber;
 			if (i1.fieldLoadedFromRegister == i2.fieldLoadedFromRegister)
 				m.fieldLoadedFromRegister = i1.fieldLoadedFromRegister;
