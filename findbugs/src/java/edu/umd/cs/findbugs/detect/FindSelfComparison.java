@@ -58,6 +58,7 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 
 	@Override
 	public void sawOpcode(int seen) {
+		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + whichRegister + " " + registerLoadCount);
 		stack.mergeJumps(this);
 		switch (seen) {
 		case FCMPG:
@@ -107,7 +108,7 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 		}
 		}
 		stack.sawOpcode(this, seen);
-		if (isRegisterLoad()) {
+		if (isRegisterLoad() && seen != IINC) {
 			if (getRegisterOperand() == whichRegister) registerLoadCount++;
 			else {
 				whichRegister = getRegisterOperand();
