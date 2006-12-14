@@ -22,11 +22,20 @@ package de.tobject.findbugs.view;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
+import org.eclipse.jface.text.DefaultInformationControl;
+import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
@@ -39,6 +48,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * View which shows bug details.
@@ -54,6 +64,7 @@ import edu.umd.cs.findbugs.I18N;
 public class DetailsView extends ViewPart {
 
 	private static DetailsView detailsView;
+
 	
 	private String description = "";
 
@@ -61,7 +72,12 @@ public class DetailsView extends ViewPart {
 
 	private List annotationList;
 
-	private Browser browser;
+	// HTML presentation classes that don't depend upon Browser
+	private StyledText control;
+	private DefaultInformationControl.IInformationPresenter presenter;
+	private TextPresentation presentation = new TextPresentation();
+
+	@CheckForNull private Browser browser;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -71,9 +87,25 @@ public class DetailsView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		SashForm sash = new SashForm(parent, SWT.VERTICAL);
 		annotationList = new List(sash, SWT.V_SCROLL);
-		browser = new Browser(sash, SWT.NONE);
+		try {
+			if (true) throw new SWTError("test");
+			browser = new Browser(sash, SWT.NONE);
+		} catch (SWTError e) {
+			control = new StyledText(sash, SWT.READ_ONLY | SWT.H_SCROLL
+					| SWT.V_SCROLL);
+			control.setEditable(false);
+			// Handle control resizing. The HTMLPresenter cares about window size
+			// when presenting HTML, so we should redraw the control.
+			control.addControlListener(new ControlAdapter() {
+				@Override
+				public void controlResized(ControlEvent e) {
+					updateDisplay();
+				}
+			});
+			presenter = new HTMLTextPresenter(false);
+		}
 		DetailsView.detailsView = this;
-		
+
 	}
 
 	/*
@@ -84,6 +116,7 @@ public class DetailsView extends ViewPart {
 	@Override
 	public void setFocus() {
 		annotationList.setFocus();
+		control.setFocus();
 	}
 
 	/*
@@ -94,7 +127,8 @@ public class DetailsView extends ViewPart {
 	@Override
 	public void dispose() {
 		annotationList.dispose();
-		browser.dispose();
+		if (browser != null) browser.dispose();
+		else if (control != null) control.dispose();
 	}
 
 	/**
@@ -102,12 +136,20 @@ public class DetailsView extends ViewPart {
 	 * title and description fields.
 	 */
 	private void updateDisplay() {
-		if (browser != null && !browser.isDisposed()) {
-			String html = ("<b>" + title + "</b><br/>" + description);
-			browser.setText(html);
-			}
+		String html = ("<b>" + title + "</b><br/>" + description);
+		setHTMLText(html);
 	}
 
+	private void setHTMLText(String html) {
+		if (browser != null && !browser.isDisposed()) browser.setText(html);
+		else if (control != null && !control.isDisposed()) {
+			Rectangle size = this.control.getClientArea();
+			html = presenter.updatePresentation(getSite().getShell()
+					.getDisplay(), html, presentation, size.width, size.height);
+			control.setText(html);
+			TextPresentation.applyTextPresentation(presentation, control);
+		}
+	}
 	/**
 	 * Set the content to be displayed.
 	 * 
