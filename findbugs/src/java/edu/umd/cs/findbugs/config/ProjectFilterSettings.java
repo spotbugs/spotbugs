@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.BugProperty;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 
 /**
@@ -89,6 +90,8 @@ public class ProjectFilterSettings implements Cloneable {
 	 * This is not meant to be called directly; use one of the factory methods instead.
 	 */
 	private ProjectFilterSettings() {
+		DetectorFactoryCollection.instance(); // ensure detectors loaded
+		
 		// initially all known bug categories are active
 		this.activeBugCategorySet = new HashSet<String>( I18N.instance().getBugCategories() );
 		this.hiddenBugCategorySet = new HashSet<String>();

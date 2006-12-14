@@ -89,6 +89,7 @@ public class I18N {
 	 * @return the BugPattern, or null if it can't be found
 	 */
 	public @CheckForNull BugPattern lookupBugPattern(String bugType) {
+		DetectorFactoryCollection.instance(); // ensure detectors loaded
 		return bugPatternMap.get(bugType);
 	}
 
@@ -96,6 +97,8 @@ public class I18N {
 	 * Get an Iterator over all registered bug patterns.
 	 */
 	public Iterator<BugPattern> bugPatternIterator() {
+		DetectorFactoryCollection.instance(); // ensure detectors loaded
+		
 		return bugPatternMap.values().iterator();
 	}
 
@@ -234,9 +237,13 @@ public class I18N {
 	 * @return Collection of bug category keys.
 	 */
 	public Collection<String> getBugCategories() {
+		DetectorFactoryCollection.instance(); // ensure detectors loaded
+		
 		return categoryDescriptionMap.keySet(); // backed by the Map
 	}
 	public Collection<BugCategory> getBugCategoryObjects() {
+		DetectorFactoryCollection.instance(); // ensure detectors loaded
+		
 		return categoryDescriptionMap.values(); // backed by the Map
 	}
 	/**
