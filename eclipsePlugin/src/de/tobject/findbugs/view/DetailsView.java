@@ -88,7 +88,6 @@ public class DetailsView extends ViewPart {
 		SashForm sash = new SashForm(parent, SWT.VERTICAL);
 		annotationList = new List(sash, SWT.V_SCROLL);
 		try {
-			if (true) throw new SWTError("test");
 			browser = new Browser(sash, SWT.NONE);
 		} catch (SWTError e) {
 			control = new StyledText(sash, SWT.READ_ONLY | SWT.H_SCROLL
