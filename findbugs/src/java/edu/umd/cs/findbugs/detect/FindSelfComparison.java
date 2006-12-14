@@ -62,10 +62,11 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 		stack.mergeJumps(this);
 		switch (seen) {
 		case FCMPG:
-		case LCMP:
 		case DCMPG:
 		case DCMPL:
 		case FCMPL:
+			break;
+		case LCMP:
 		case IF_ACMPEQ:
 		case IF_ACMPNE:
 		case IF_ICMPNE:
