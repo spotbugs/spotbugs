@@ -99,16 +99,20 @@ public class OpcodeStack implements Constants2
 		public static final int HASHCODE_INT_REMAINDER = 9;
 		public static final int FILE_SEPARATOR_STRING = 10;
 		
+		private static final int IS_INITIAL_PARAMETER_FLAG=1;
+		private static final int COULD_BE_ZERO_FLAG = 2;
+		private static final int IS_NULL_FLAG = 3;
+		
 		public static final Object UNKNOWN = null;
 		private int specialKind;
  		private String signature;
  		private Object constValue = UNKNOWN;
-		private FieldAnnotation field;
 		private XField xfield;
- 		private boolean isNull = false;
+		private int flags;
+ 		// private boolean isNull = false;
 		private int registerNumber = -1;
-		private boolean isInitialParameter = false;
-		private boolean couldBeZero = false;
+		// private boolean isInitialParameter = false;
+		// private boolean couldBeZero = false;
 		private Object userValue = null;
 		private int fieldLoadedFromRegister = -1;
 
@@ -133,11 +137,11 @@ public class OpcodeStack implements Constants2
 			if (constValue != null)
 				r+= constValue.hashCode();
 			r *= 31;
-			if (field != null)
-				r+= field.hashCode();
+			if (xfield != null)
+				r+= xfield.hashCode();
 			r *= 31;
-			if (isInitialParameter)
-				r += 17;
+			r += flags;
+			r *= 31;
 			r += registerNumber;
 			return r;
 			
@@ -149,12 +153,10 @@ public class OpcodeStack implements Constants2
 
 			return equals(this.signature, that.signature)
 				&& equals(this.constValue, that.constValue)
-				&& equals(this.field, that.field)
-				&& this.isNull == that.isNull
+				&& equals(this.xfield, that.xfield)
 				&& this.specialKind == that.specialKind
 				&& this.registerNumber == that.registerNumber
-				&& this.isInitialParameter == that.isInitialParameter
-				&& this.couldBeZero == that.couldBeZero
+				&& this.flags == that.flags
 				&& this.userValue == that.userValue
 				&& this.fieldLoadedFromRegister == that.fieldLoadedFromRegister;
 				
@@ -210,10 +212,10 @@ public class OpcodeStack implements Constants2
 				buf.append(", ");
 				buf.append(xfield);
 				}
-			if (isInitialParameter) {
+			if (isInitialParameter()) {
 				buf.append(", IP");
 				}
-			if (isNull) {
+			if (isNull2()) {
 				buf.append(", isNull");
 				}
 				
@@ -221,7 +223,7 @@ public class OpcodeStack implements Constants2
 				buf.append(", r");
 				buf.append(registerNumber);
 				}
-			if (couldBeZero) buf.append(", cbz");
+			if (isCouldBeZero()) buf.append(", cbz");
 			buf.append(" >");
 			return buf.toString();
 			}
@@ -232,18 +234,17 @@ public class OpcodeStack implements Constants2
 			if (i2 == null) return i1;
 			if (i1.equals(i2)) return i1;
 			Item m = new Item();
-			m.isNull = false;	
-			m.couldBeZero = i1.couldBeZero || i2.couldBeZero;
+			m.setNull(false);	
+			m.setCouldBeZero(i1.isCouldBeZero() || i2.isCouldBeZero());
 			if (equals(i1.signature,i2.signature))
 				m.signature = i1.signature;
 			if (equals(i1.constValue,i2.constValue))
 				m.constValue = i1.constValue;
 			if (equals(i1.xfield,i2.xfield)) {
-				m.field = i1.field;
 				m.xfield = i1.xfield;
 			}
-			if (i1.isNull == i2.isNull)
-				m.isNull = i1.isNull;
+			if (i1.isNull2() == i2.isNull2())
+				m.setNull(i1.isNull2());
 			if (i1.registerNumber == i2.registerNumber)
 				m.registerNumber = i1.registerNumber;
 			if (i1.fieldLoadedFromRegister == i2.fieldLoadedFromRegister)
@@ -266,36 +267,24 @@ public class OpcodeStack implements Constants2
   		public Item(Item it) {
 			this.signature = it.signature;
 			this.constValue = it.constValue;
-			this.field = it.field;
 			this.xfield = it.xfield;
-			this.isNull = it.isNull;
 			this.registerNumber = it.registerNumber;
-			this.couldBeZero = it.couldBeZero;
 			this.userValue = it.userValue;
-			this.isInitialParameter = it.isInitialParameter;
+			this.flags = it.flags;
 			this.specialKind = it.specialKind;
  		}
  		public Item(Item it, int reg) {
-			this.signature = it.signature;
-			this.constValue = it.constValue;
-			this.field = it.field;
-			this.isNull = it.isNull;
-			this.registerNumber = reg;
-			this.couldBeZero = it.couldBeZero;
-			this.userValue = it.userValue;
-			this.isInitialParameter = it.isInitialParameter;
-			this.specialKind = it.specialKind;
+ 			this(it);
+ 			this.registerNumber = reg;
  		}
  		public Item(String signature, FieldAnnotation f) {
 			this.signature = signature;
-			field = f;
 			if (f != null)
 				xfield = XFactory.createXField(f);
 			fieldLoadedFromRegister = -1;
  		}
 		public Item(String signature, FieldAnnotation f, int fieldLoadedFromRegister) {
 			this.signature = signature;
-			field = f;
 			if (f != null)
 				xfield = XFactory.createXField(f);
 			this.fieldLoadedFromRegister = fieldLoadedFromRegister;
@@ -312,14 +301,14 @@ public class OpcodeStack implements Constants2
  				int value = (Integer) constantValue;
  				if (value != 0 && (value & 0xff) == 0)
  					specialKind = LOW_8_BITS_CLEAR;
- 				if (value == 0) couldBeZero = true;
+ 				if (value == 0) setCouldBeZero(true);
  
  			}
  			else if (constantValue instanceof Long) {
  				long value = (Long) constantValue;
  				if (value != 0 && (value & 0xff) == 0)
  					specialKind = LOW_8_BITS_CLEAR;
- 				if (value == 0) couldBeZero = true;
+ 				if (value == 0) setCouldBeZero(true);
  			}
  			
  		}
@@ -327,7 +316,7 @@ public class OpcodeStack implements Constants2
  		public Item() {
  			signature = "Ljava/lang/Object;";
  			constValue = null;
- 			isNull = true;
+ 			setNull(true);
  		}
  		 		 		
  		public JavaClass getJavaClass() throws ClassNotFoundException {
@@ -352,10 +341,7 @@ public class OpcodeStack implements Constants2
  		public boolean isArray() {
  			return signature.startsWith("[");
  		}
- 		public boolean isInitialParameter() {
- 			return isInitialParameter;
- 		}
- 		
+ 				
  		public String getElementSignature() {
  			if (!isArray())
  				return signature;
@@ -383,15 +369,11 @@ public class OpcodeStack implements Constants2
  		}
  		
  		public boolean isNull() {
- 			return isNull;
+ 			return isNull2();
  		}
  		
  		public Object getConstant() {
  			return constValue;
- 		}
-
- 		public FieldAnnotation getField() {
- 			return field;
  		}
 
  		public XField getXField() {
@@ -421,7 +403,7 @@ public class OpcodeStack implements Constants2
 		}
 		
 		public boolean couldBeZero() {
-			return couldBeZero;
+			return isCouldBeZero();
 		}
 		public boolean mustBeZero() {
 			Object value = getConstant();
@@ -442,6 +424,54 @@ public class OpcodeStack implements Constants2
 					|| getSpecialKind() == Item.HASHCODE_INT 
 					|| getSpecialKind() == Item.RANDOM_INT_REMAINDER || getSpecialKind() == Item.HASHCODE_INT_REMAINDER);
 			
+		}
+
+		/**
+		 * @param isInitialParameter The isInitialParameter to set.
+		 */
+		private void setInitialParameter(boolean isInitialParameter) {
+			setFlag(isInitialParameter, IS_INITIAL_PARAMETER_FLAG);
+		}
+
+		/**
+		 * @return Returns the isInitialParameter.
+		 */
+		public boolean isInitialParameter() {
+			return (flags & IS_INITIAL_PARAMETER_FLAG) != 0;
+		}
+
+		/**
+		 * @param couldBeZero The couldBeZero to set.
+		 */
+		private void setCouldBeZero(boolean couldBeZero) {
+			setFlag(couldBeZero, COULD_BE_ZERO_FLAG);
+		}
+
+		/**
+		 * @return Returns the couldBeZero.
+		 */
+		private boolean isCouldBeZero() {
+			return (flags & COULD_BE_ZERO_FLAG) != 0;
+		}
+
+		/**
+		 * @param isNull The isNull to set.
+		 */
+		private void setNull(boolean isNull) {
+			setFlag(isNull, IS_NULL_FLAG);
+		}
+
+		private void setFlag(boolean value, int flagBit) {
+			if (value)
+				flags |= flagBit;
+			else
+				flags &= ~flagBit;
+		}
+		/**
+		 * @return Returns the isNull.
+		 */
+		private boolean isNull2() {
+			return (flags & IS_NULL_FLAG) != 0;
 		}
 	}
 
@@ -467,7 +497,7 @@ public class OpcodeStack implements Constants2
 		if (convertJumpToOneZeroState == 3 || convertJumpToZeroOneState == 3) {
  			pop();
  			Item top = new Item("I"); 
- 			top.couldBeZero = true;
+ 			top.setCouldBeZero(true);
  			push(top);
  			convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
  		}
@@ -1420,7 +1450,6 @@ public class OpcodeStack implements Constants2
  			i.constValue = appenderValue;
  			if (sbItem != null) {
  				 i.registerNumber = sbItem.registerNumber;
- 				 i.field = sbItem.field;
  				 i.xfield = sbItem.xfield;
  				 i.userValue = sbItem.userValue;
  				 if (sbItem.registerNumber >= 0)
@@ -1578,7 +1607,7 @@ public class OpcodeStack implements Constants2
 		int reg = 0;
 		if (!m.isStatic()) {
 			Item it = new Item("L" + className+";");
-			it.isInitialParameter = true;
+			it.setInitialParameter(true);
 			it.registerNumber = reg;
 			setLVValue( reg, it);
 			reg += it.getSize();
@@ -1586,7 +1615,7 @@ public class OpcodeStack implements Constants2
 		 for (Type argType : argTypes) {
 			 Item it = new Item(argType.getSignature());
 			 it.registerNumber = reg;
-			 it.isInitialParameter = true;
+			 it.setInitialParameter(true);
 			 setLVValue(reg, it);
 			 reg += it.getSize();
 		 }

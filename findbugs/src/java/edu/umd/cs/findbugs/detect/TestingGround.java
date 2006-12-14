@@ -61,34 +61,6 @@ public class TestingGround extends BytecodeScanningDetector  {
 	@Override
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
-		switch (seen) {
-		case IF_ACMPEQ:
-		case IF_ACMPNE:
-		case IF_ICMPNE:
-		case IF_ICMPEQ:
-		case IF_ICMPGT:
-		case IF_ICMPLE:
-		case IF_ICMPLT:
-		case IF_ICMPGE:
-		{
-
-			OpcodeStack.Item item0 = stack.getStackItem(0);
-			OpcodeStack.Item item1 = stack.getStackItem(1);
-			if (item0.getSignature().equals("D") || item0.getSignature().equals("F")) break;
-			if (item1.getSignature().equals("D") || item1.getSignature().equals("F")) break;
-			
-			
-			FieldAnnotation field0 = item0.getField();
-			FieldAnnotation field1 = item1.getField();
-			if (field0 != null && field0.equals(field1))
-				System.out.println("Saw self field comparison");
-			
-			int reg0 = item0.getRegisterNumber();
-			int reg1 = item1.getRegisterNumber();
-			if (reg0 >= 0 && reg0 == reg1)
-				System.out.println("Saw self variable comparison");
-		}
-		}
-		stack.sawOpcode(this,seen);
+				stack.sawOpcode(this,seen);
 	}
 }

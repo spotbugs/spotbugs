@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.XField;
 
 public class FindSelfComparison extends BytecodeScanningDetector {
 
@@ -86,14 +87,14 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 					|| item1.getSignature().equals("F"))
 				break;
 
-			FieldAnnotation field0 = item0.getField();
-			FieldAnnotation field1 = item1.getField();
+			XField field0 = item0.getXField();
+			XField field1 = item1.getXField();
 			int fr0 = item0.getFieldLoadedFromRegister();
 			int fr1 = item1.getFieldLoadedFromRegister();
 			if (field0 != null && field0.equals(field1) && fr0 != -1 && fr0 == fr1)
 				bugReporter.reportBug(new BugInstance(this,
 						"SA_FIELD_SELF_COMPARISON", NORMAL_PRIORITY)
-						.addClassAndMethod(this).add(field0)
+						.addClassAndMethod(this).addField(field0)
 						.addSourceLine(this));
 
 			else if (registerLoadCount >= 2) {
