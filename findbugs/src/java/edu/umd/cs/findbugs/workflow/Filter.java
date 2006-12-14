@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCategory;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Project;
@@ -264,7 +265,8 @@ public class Filter {
 			if (className != null && !className.matcher(bug.getPrimaryClass().getClassName()).find())
 					return false;
 
-			if (categoryKey != null && !categoryKey.equals(bug.getBugPattern().getCategory()))
+			BugPattern thisBugPattern = bug.getBugPattern();
+			if (categoryKey != null && thisBugPattern != null && !categoryKey.equals(thisBugPattern.getCategory()))
 				return false;
 			if (designationKey != null && !designationKey.equals(bug.getUserDesignationKey()))
 				return false;
