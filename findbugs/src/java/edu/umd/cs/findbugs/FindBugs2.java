@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.bcel.classfile.ClassFormatException;
+
 import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
@@ -610,6 +612,8 @@ public class FindBugs2 implements IFindBugsEngine {
 					}
 					try {
 						detector.visitClass(classDescriptor);
+					} catch (ClassFormatException e) {
+						logRecoverableException(classDescriptor, detector, e);
 					} catch (MissingClassException e) {
 						Global.getAnalysisCache().getErrorLogger().reportMissingClass(e.getClassDescriptor());
 					} catch (CheckedAnalysisException e) {
