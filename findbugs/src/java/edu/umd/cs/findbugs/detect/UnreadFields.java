@@ -508,7 +508,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 					&& (fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')
 					) {
 				int priority = LOW_PRIORITY;
-				// if (assumedNonNull.containsKey(f)) priority--;
+				if (assumedNonNull.containsKey(f)) 
 				bugReporter.reportBug(new BugInstance(this,
 						"UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR",
 						priority)
