@@ -125,6 +125,11 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	
 	public void mergeKnownValuesWith(IsNullValueFrame otherFrame) {
 		assert trackValueNumbers;
+		if (IsNullValueAnalysis.DEBUG) {
+			System.out.println("merge");
+			System.out.println("     " + this);
+			System.out.println(" with" + otherFrame);
+		}
 		Map<ValueNumber, IsNullValue> replaceMap = new HashMap<ValueNumber, IsNullValue>();
 		for (Map.Entry<ValueNumber, IsNullValue> entry : knownValueMap.entrySet()) {
 			IsNullValue otherKnownValue = otherFrame.knownValueMap.get(entry.getKey());
@@ -143,6 +148,10 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		}
 		knownValueMap.clear();
 		knownValueMap.putAll(replaceMap);
+		if (IsNullValueAnalysis.DEBUG) {
+			System.out.println("resulting in" + this);
+
+		}
 	}
 	
 	/* (non-Javadoc)

@@ -94,6 +94,7 @@ public class ClassContext {
 	private static final boolean TIME_ANALYSES = SystemProperties.getBoolean("classContext.timeAnalyses");
 
 	private static final boolean DEBUG_CFG = SystemProperties.getBoolean("classContext.debugCFG");
+	private static final boolean DUMP_DATAFLOW_ANALYSIS = SystemProperties.getBoolean("dataflow.dump");
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -575,7 +576,7 @@ public class ClassContext {
 			        
 			        ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, analysis);
 			        vnaDataflow.execute();
-			        if (ValueNumberAnalysis.DEBUG) {
+			        if (DUMP_DATAFLOW_ANALYSIS) {
 			        	TreeSet<Location> tree = new TreeSet<Location>();
 			    		for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
 			    			Location loc = locs.next();
@@ -612,6 +613,20 @@ public class ClassContext {
 					
 			        IsNullValueDataflow invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
 			        invDataflow.execute();
+			        if (DUMP_DATAFLOW_ANALYSIS) {
+			        	TreeSet<Location> tree = new TreeSet<Location>();
+			    		for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
+			    			Location loc = locs.next();
+			    			tree.add(loc);
+			    		}
+			        	System.out.println("\n\nInv analysis for " + method.getName() + " {");
+			        	for(Location loc : tree) {
+			        		System.out.println("\nBefore: " + invDataflow.getFactAtLocation(loc));
+			        		System.out.println("Location: " + loc);
+			        		System.out.println("After: " + invDataflow.getFactAfterLocation(loc));	
+			        	}
+			        	System.out.println("}\n");
+			        }
 			        return invDataflow;
 		        }
 	        };

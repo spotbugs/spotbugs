@@ -110,6 +110,7 @@ public class FindNullDeref
 	private static final boolean REPORT_SAFE_METHOD_TARGETS = true;
 
 	private static final String METHOD = SystemProperties.getProperty("fnd.method");
+	private static final String CLASS = SystemProperties.getProperty("fnd.class");
 	
 	// Fields
 	private BugReporter bugReporter;
@@ -136,6 +137,8 @@ public class FindNullDeref
 		String currentMethod = null;
 
 		JavaClass jclass = classContext.getJavaClass();
+		String className = jclass.getClassName();
+		if (CLASS != null && !className.equals(CLASS)) return;
 		Method[] methodList = jclass.getMethods();
 		for (Method method : methodList) {
 			try {
@@ -148,6 +151,7 @@ public class FindNullDeref
 					continue;
 				}
 				currentMethod = SignatureConverter.convertMethodSignature(mg);
+
 
 				if (METHOD != null && !method.getName().equals(METHOD))
 					continue;

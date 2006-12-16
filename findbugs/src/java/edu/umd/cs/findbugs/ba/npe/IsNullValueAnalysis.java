@@ -415,6 +415,8 @@ public class IsNullValueAnalysis
 														new Location(kaBoomLocation, targetBlock)
 														);
 						if (DEBUG) {
+							System.out.println("Start vna fact: " + vnaFrame);
+							System.out.println("inva fact: " + fact);
 							System.out.println("\nGenerated NoKaboom value for location " + kaBoomLocation);
 							System.out.println("Dereferenced " + instance);
 							System.out.println("On fall through from source block " + sourceBlock);

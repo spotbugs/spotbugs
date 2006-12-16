@@ -118,6 +118,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		while (i.hasNext()) {
 			AvailableLoad availableLoad = i.next();
 			if (availableLoad.getField().equals(field)) {
+				if (RLE_DEBUG) 
+					System.out.println("KILLING Load of " + availableLoad + " in " + this);
 				i.remove();
 			}
 		}
@@ -133,7 +135,8 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 			for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
 				AvailableLoad availableLoad = i.next();
 				if (!availableLoad.getField().isFinal()) {
-					if (RLE_DEBUG) System.out.println("KILLING load of " + availableLoad + " in " + this);
+					if (RLE_DEBUG) 
+						System.out.println("KILLING load of " + availableLoad + " in " + this);
 					i.remove();
 				}
 			}
