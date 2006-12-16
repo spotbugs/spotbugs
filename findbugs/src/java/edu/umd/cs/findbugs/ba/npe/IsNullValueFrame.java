@@ -100,9 +100,10 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		if (oldValueNumber == null || newValueNumber == null) throw new NullPointerException();
 		if (newValueNumber.equals(oldValueNumber) || !trackValueNumbers) return;
 		IsNullValue isNullValue = knownValueMap.get(oldValueNumber);
-		if (isNullValue == null) throw new NullPointerException();
-		knownValueMap.put(newValueNumber, isNullValue);
-		knownValueMap.remove(oldValueNumber);
+		if (isNullValue != null) {
+			knownValueMap.put(newValueNumber, isNullValue);
+			knownValueMap.remove(oldValueNumber);
+		}
 	}
 	public IsNullValue getKnownValue(ValueNumber valueNumber) {
 		assert trackValueNumbers;
