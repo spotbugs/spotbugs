@@ -19,7 +19,6 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,9 +26,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.Frame;
-import edu.umd.cs.findbugs.ba.vna.MergeTree;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.util.Strings;
@@ -89,8 +87,9 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		return decision;
 	}
 	
-	public void setKnownValue(ValueNumber valueNumber, IsNullValue knownValue) {
+	public void setKnownValue(@NonNull ValueNumber valueNumber, @NonNull IsNullValue knownValue) {
 		assert trackValueNumbers;
+		if (valueNumber == null || knownValue == null ) throw new NullPointerException();
 		knownValueMap.put(valueNumber, knownValue);
 		if (IsNullValueAnalysis.DEBUG) {
 			System.out.println("Updated information for " + valueNumber);
@@ -98,8 +97,11 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		}
 	}
 	public void useNewValueNumberForLoad(ValueNumber oldValueNumber, ValueNumber newValueNumber) {
+		if (oldValueNumber == null || newValueNumber == null) throw new NullPointerException();
 		if (newValueNumber.equals(oldValueNumber) || !trackValueNumbers) return;
-		knownValueMap.put(newValueNumber, knownValueMap.get(oldValueNumber));
+		IsNullValue isNullValue = knownValueMap.get(oldValueNumber);
+		if (isNullValue == null) throw new NullPointerException();
+		knownValueMap.put(newValueNumber, isNullValue);
 		knownValueMap.remove(oldValueNumber);
 	}
 	public IsNullValue getKnownValue(ValueNumber valueNumber) {
@@ -134,6 +136,10 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		for (Map.Entry<ValueNumber, IsNullValue> entry : knownValueMap.entrySet()) {
 			IsNullValue otherKnownValue = otherFrame.knownValueMap.get(entry.getKey());
 			if (otherKnownValue == null) {
+				if (IsNullValueAnalysis.DEBUG) {
+					System.out.println("No match for " + entry.getKey());
+					
+				}
 				continue;
 			}
 			IsNullValue mergedValue = IsNullValue.merge(entry.getValue(), otherKnownValue);
@@ -149,7 +155,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		knownValueMap.clear();
 		knownValueMap.putAll(replaceMap);
 		if (IsNullValueAnalysis.DEBUG) {
-			System.out.println("resulting in" + this);
+			System.out.println("resulting in " + this);
 
 		}
 	}

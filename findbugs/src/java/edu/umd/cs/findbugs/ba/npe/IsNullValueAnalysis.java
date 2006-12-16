@@ -364,6 +364,9 @@ public class IsNullValueAnalysis
 							// Use the value to update the is-null information in
 							// the start fact for this block.
 
+							if (DEBUG) {
+								System.out.println("Updating edge information for " + decision.getValue());
+							}
 							final Location atIf = new Location(sourceBlock.getLastInstruction(), sourceBlock);
 							// TODO: prevIsNullValueFrame is not used
 							final IsNullValueFrame prevIsNullValueFrame = getFactAtLocation(atIf);
@@ -379,7 +382,12 @@ public class IsNullValueAnalysis
 											decision.getValue()
 									));
 								}
-
+								if (DEBUG) {
+									System.out.println("Set decision information");
+									System.out.println("  " + decision.getValue() + " becomes " + decisionValue);
+									System.out.println("  prev available loads: " + prevVnaFrame.availableLoadMapAsString());
+									System.out.println("  target available loads: " + targetVnaFrame.availableLoadMapAsString());
+								}
 								tmpFact = replaceValues(fact, tmpFact, decision.getValue(), prevVnaFrame,
 										targetVnaFrame, decisionValue);
 							}
@@ -426,14 +434,20 @@ public class IsNullValueAnalysis
 				} // if (sourceBlock.isNullCheck() && edgeType == FALL_THROUGH_EDGE)
 
 				if (targetVnaFrame.phiNodeForLoads) {
+					if (DEBUG) 
+						System.out.println("Is phi node for loads");
 					for(ValueNumber v : fact.getKnownValues()) {
 						AvailableLoad loadForV = sourceVnaFrame.getLoad(v);
+						if (DEBUG) {
+							System.out.println("  " + v + " for " + loadForV);
+						}
 						if (loadForV != null) {
 							ValueNumber[] matchingValueNumbers = targetVnaFrame.getAvailableLoad(loadForV);
 							if (matchingValueNumbers != null)
 								for(ValueNumber v2 : matchingValueNumbers) {
 									tmpFact = modifyFrame(fact, tmpFact);
 									tmpFact.useNewValueNumberForLoad(v, v2);
+									if (DEBUG) System.out.println("For " + loadForV + " switch from " + v + " to " + v2);
 								}
 						}
 
@@ -680,7 +694,16 @@ public class IsNullValueAnalysis
 		final int prefixNumSlots = Math.min(frame.getNumSlots(), prevVnaFrame.getNumSlots());
 
 		if (trackValueNumbers) {
-			frame.setKnownValue(replaceMe, replacementValue);
+			AvailableLoad loadForV = prevVnaFrame.getLoad(replaceMe);
+			
+			if (loadForV != null) {
+				ValueNumber[] matchingValueNumbers = targetVnaFrame.getAvailableLoad(loadForV);
+				if (matchingValueNumbers != null)
+					for(ValueNumber v2 : matchingValueNumbers) if (!replaceMe.equals(v2)) {
+						frame.setKnownValue(v2, replacementValue);
+						if (DEBUG) System.out.println("For " + loadForV + " switch from " + replaceMe + " to " + v2);
+					}
+			}	else frame.setKnownValue(replaceMe, replacementValue);
 		}
 		// Here's the deal:
 		// - "replaceMe" is the value number from the previous frame (at the if branch)
