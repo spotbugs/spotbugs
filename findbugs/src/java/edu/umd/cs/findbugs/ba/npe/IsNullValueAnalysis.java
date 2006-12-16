@@ -695,15 +695,21 @@ public class IsNullValueAnalysis
 
 		if (trackValueNumbers) {
 			AvailableLoad loadForV = prevVnaFrame.getLoad(replaceMe);
-			
-			if (false && loadForV != null) {
+			if (DEBUG && loadForV != null) {
+				System.out.println("For " + replaceMe + " availableLoad is " + loadForV);
+				ValueNumber[] matchingValueNumbers = targetVnaFrame.getAvailableLoad(loadForV);
+				if (matchingValueNumbers != null)
+					for(ValueNumber v2 : matchingValueNumbers) System.out.println("  matches " + v2);
+			}
+			if (loadForV != null) {
 				ValueNumber[] matchingValueNumbers = targetVnaFrame.getAvailableLoad(loadForV);
 				if (matchingValueNumbers != null)
 					for(ValueNumber v2 : matchingValueNumbers) if (!replaceMe.equals(v2)) {
 						frame.setKnownValue(v2, replacementValue);
 						if (DEBUG) System.out.println("For " + loadForV + " switch from " + replaceMe + " to " + v2);
 					}
-			}	else frame.setKnownValue(replaceMe, replacementValue);
+			}	
+			frame.setKnownValue(replaceMe, replacementValue);
 		}
 		// Here's the deal:
 		// - "replaceMe" is the value number from the previous frame (at the if branch)
