@@ -22,12 +22,15 @@ package de.tobject.findbugs.reporter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IOpenable;
@@ -40,6 +43,7 @@ import org.eclipse.jdt.core.compiler.IScanner;
 import org.eclipse.jdt.core.compiler.ITerminalSymbols;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.core.CompilationUnit;
+import org.eclipse.jdt.internal.core.NamedMember;
 import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -137,7 +141,8 @@ public abstract class MarkerUtil {
 		if (Reporter.DEBUG) {
 				System.out.println("Creating marker for " //$NON-NLS-1$
 				+ resource.getLocation() + ": line " //$NON-NLS-1$
-				+ startLine);
+				+ startLine
+				+ bug.getMessage());
 			}
 			try {
 				project.getWorkspace().run(
@@ -150,6 +155,8 @@ public abstract class MarkerUtil {
 				e.printStackTrace();
 			}
 		}
+
+	final static 	Pattern fullName = Pattern.compile("^(.+?)((\\$[0-9].*)?)");
 
 	/**
 	 * Get the underlying resource (Java class) for given BugInstance.
@@ -186,23 +193,23 @@ public abstract class MarkerUtil {
 			+ qualifiedClassName);
 		}
 
-		int lastDollar = qualifiedClassName.lastIndexOf('$');
-		boolean isInnerClass = lastDollar > 0;
+	
+		Matcher m = fullName.matcher(qualifiedClassName);
+		IType type;
 		String innerName = null;
-		IType type = null;
-		if (isInnerClass) {
-			// cut the useless number value
-			innerName = qualifiedClassName.substring(lastDollar + 1);
-			String shortQualifiedClassName =
-				qualifiedClassName.substring(0, lastDollar);
-			type = Reporter.getJavaProject(project).findType(shortQualifiedClassName);
+		if (m.matches() && m.group(2).length() > 0) {
+			String outerQualifiedClassName = m.group(1).replace('$','.');
+			innerName  = m.group(1).substring(1);
+			type = Reporter.getJavaProject(project).findType(outerQualifiedClassName);
+			// dump(type, 0);
+			
 			/*
 			 * code below only points to the first line of inner class
 			 * even if this is not a class bug but field bug
 			 */
 			completeInnerClassInfo(qualifiedClassName, innerName, type, bug);
 		} else {
-			type = Reporter.getJavaProject(project).findType(qualifiedClassName);
+			type =  Reporter.getJavaProject(project).findType(qualifiedClassName.replace('$','.'));
 		}
 
 		// reassign it as it may be changed for inner classes
@@ -403,6 +410,22 @@ public abstract class MarkerUtil {
 		return -1;
 	}
 
+	private static void dump(IJavaElement javaElement, int indentation) {
+		try {
+		for(int i = 0; i < indentation; i++) System.out.print(" ");
+		System.out.println(javaElement.getElementName() + " " + javaElement.getClass().getName());
+		if (javaElement instanceof SourceType) {
+			for(int i = 0; i < indentation; i++) System.out.print(" ");
+			System.out.println("--> " + ((NamedMember)javaElement).getFullyQualifiedName('.', false));
+			
+		}
+		if (javaElement instanceof IParent) 	for(IJavaElement child : ((IParent) javaElement).getChildren()) 
+				dump(child, indentation+1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
 	/**
 	 * @param javaElement
 	 * @param name
