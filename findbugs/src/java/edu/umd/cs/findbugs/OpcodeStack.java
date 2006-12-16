@@ -374,6 +374,11 @@ public class OpcodeStack implements Constants2
  			return constValue;
  		}
 
+ 		/** Use getXField instead */
+ 		@Deprecated
+ 		public FieldAnnotation getFieldAnnotation() {
+ 			return FieldAnnotation.fromXField(xfield);
+ 		}
  		public XField getXField() {
  			return xfield;
  		}

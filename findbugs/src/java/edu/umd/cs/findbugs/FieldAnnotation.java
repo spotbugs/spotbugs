@@ -33,6 +33,7 @@ import org.apache.bcel.generic.PUTSTATIC;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -125,6 +126,13 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 				fieldDescriptor.isStatic());
 	}
 
+	public static FieldAnnotation fromXField(XField fieldDescriptor) {
+		return new FieldAnnotation(
+				fieldDescriptor.getClassName(),
+				fieldDescriptor.getName(),
+				fieldDescriptor.getSignature(),
+				fieldDescriptor.isStatic());
+	}
 	/**
 	 * Get the field name.
 	 */
