@@ -12,9 +12,9 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/AppleJavaExtensions.jar"/>
-	<classpathentry exported="true" sourcepath="/jakarta-bcel/src/main/java" kind="lib" path="lib/bcel.jar">
+	<classpathentry exported="true" kind="lib" path="lib/bcel.jar">
 		<attributes>
-			<attribute value="http://jakarta.apache.org/bcel/apidocs/" name="javadoc_location"/>
+			<attribute name="javadoc_location" value="http://jakarta.apache.org/bcel/apidocs/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/dom4j-full.jar"/>
@@ -22,12 +22,12 @@
 	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.apache.ant_1.6.5/lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/asm-3.0_RC1.jar">
 		<attributes>
-			<attribute value="http://www.cs.umd.edu/~daveho/asm/asm-3.0_RC1/output/dist/doc/javadoc/user/" name="javadoc_location"/>
+			<attribute name="javadoc_location" value="http://www.cs.umd.edu/~daveho/asm/asm-3.0_RC1/output/dist/doc/javadoc/user/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/asm-tree-3.0_RC1.jar">
 		<attributes>
-			<attribute value="http://www.cs.umd.edu/~daveho/asm/asm-3.0_RC1/output/dist/doc/javadoc/user/" name="javadoc_location"/>
+			<attribute name="javadoc_location" value="http://www.cs.umd.edu/~daveho/asm/asm-3.0_RC1/output/dist/doc/javadoc/user/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="build/classes"/>
