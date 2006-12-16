@@ -66,7 +66,7 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 		case IAND:
 		case IXOR:
 		case ISUB:
-			checkForSelfOperation("COMPUTATION");
+			checkForSelfOperation(seen, "COMPUTATION");
 			break;
 		case FCMPG:
 		case DCMPG:
@@ -82,7 +82,7 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 		case IF_ICMPLE:
 		case IF_ICMPLT:
 		case IF_ICMPGE: 
-			checkForSelfOperation("COMPARISON");
+			checkForSelfOperation(seen, "COMPARISON");
 		}
 		stack.sawOpcode(this, seen);
 		if (isRegisterLoad() && seen != IINC) {
@@ -101,7 +101,7 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 
 
 
-private void checkForSelfOperation(String op) {
+private void checkForSelfOperation(int opCode, String op) {
 	{
 
 		OpcodeStack.Item item0 = stack.getStackItem(0);
@@ -126,7 +126,7 @@ private void checkForSelfOperation(String op) {
 
 		else if (registerLoadCount >= 2) {
 			bugReporter.reportBug(new BugInstance(this,
-					"SA_LOCAL_SELF_" + op, NORMAL_PRIORITY)
+					"SA_LOCAL_SELF_" + op, HIGH_PRIORITY)
 			.addClassAndMethod(this).add(
 					LocalVariableAnnotation
 					.getLocalVariableAnnotation(
