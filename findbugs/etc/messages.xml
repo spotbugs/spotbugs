@@ -3274,8 +3274,8 @@ but not necessarily wrong).
     <Details>
 <![CDATA[
   <p> This field is never initialized within any constructor, and is therefore could be null after
-the object is initialized.
-This is a either an error or a questionable design, since
+the object is constructed.
+This could be a either an error or a questionable design, since
 it means a null pointer exception will be generated if that field is dereferenced
 before being initialized.
 </p>
@@ -4004,12 +4004,43 @@ Such assignments are useless, and may indicate a logic error or typo.
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="SA_FIELD_SELF_COMPUTATION">
+    <ShortDescription>Nonsensical self computation involving a field (e.g., x &amp; x)</ShortDescription>
+    <LongDescription>Nonsensical self computation of {2} with itself {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method performs a nonsensical computation of a field with another
+reference to the same field (e.g., x&x or x-x). Because of the nature
+of the computation, this operation doesn't seem to make sense,
+and may indicate a typo or
+a logic error.  Double check the computation.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SA_LOCAL_SELF_COMPUTATION">
+    <ShortDescription>Nonsensical self computation involving a variable (e.g., x &amp; x)</ShortDescription>
+    <LongDescription>Nonsensical self computation of {2} with itself {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method performs a nonsensical computation of a local variable with another
+reference to the same variable (e.g., x&x or x-x). Because of the nature
+of the computation, this operation doesn't seem to make sense,
+and may indicate a typo or
+a logic error.  Double check the computation.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
   <BugPattern type="SA_FIELD_SELF_COMPARISON">
     <ShortDescription>Self comparison of field with itself</ShortDescription>
     <LongDescription>Self comparison of {2} with itself {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares a field with itself, and may indicate a type or
+<p> This method compares a field with itself, and may indicate a typo or
 a logic error.  Make sure that you are comparing the right things.
 </p>
 ]]>
@@ -4021,12 +4052,15 @@ a logic error.  Make sure that you are comparing the right things.
     <LongDescription>Self comparison of {2} with itself {1}</LongDescription>
     <Details>
 <![CDATA[
-<p> This method compares a local variable with itself, and may indicate a type or
+<p> This method compares a local variable with itself, and may indicate a typo or
 a logic error.  Make sure that you are comparing the right things.
 </p>
 ]]>
     </Details>
   </BugPattern>
+
+
+
 
   <BugPattern type="RV_ABSOLUTE_VALUE_OF_RANDOM_INT">
     <ShortDescription>Bad attempt to compute absolute value of signed 32-bit random integer</ShortDescription>

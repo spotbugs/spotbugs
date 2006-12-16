@@ -62,6 +62,12 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + whichRegister + " " + registerLoadCount);
 		stack.mergeJumps(this);
 		switch (seen) {
+		case IOR:
+		case IAND:
+		case IXOR:
+		case ISUB:
+			checkForSelfOperation("COMPUTATION");
+			break;
 		case FCMPG:
 		case DCMPG:
 		case DCMPL:
@@ -75,39 +81,8 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 		case IF_ICMPGT:
 		case IF_ICMPLE:
 		case IF_ICMPLT:
-		case IF_ICMPGE: {
-
-			OpcodeStack.Item item0 = stack.getStackItem(0);
-			OpcodeStack.Item item1 = stack.getStackItem(1);
-
-			if (item0.getSignature().equals("D")
-					|| item0.getSignature().equals("F"))
-				break;
-			if (item1.getSignature().equals("D")
-					|| item1.getSignature().equals("F"))
-				break;
-
-			XField field0 = item0.getXField();
-			XField field1 = item1.getXField();
-			int fr0 = item0.getFieldLoadedFromRegister();
-			int fr1 = item1.getFieldLoadedFromRegister();
-			if (field0 != null && field0.equals(field1) && fr0 != -1 && fr0 == fr1)
-				bugReporter.reportBug(new BugInstance(this,
-						"SA_FIELD_SELF_COMPARISON", NORMAL_PRIORITY)
-						.addClassAndMethod(this).addField(field0)
-						.addSourceLine(this));
-
-			else if (registerLoadCount >= 2) {
-					bugReporter.reportBug(new BugInstance(this,
-							"SA_LOCAL_SELF_COMPARISON", NORMAL_PRIORITY)
-							.addClassAndMethod(this).add(
-									LocalVariableAnnotation
-											.getLocalVariableAnnotation(
-													getMethod(), whichRegister, getPC(),
-													getPC() - 1))
-							.addSourceLine(this));
-			}
-		}
+		case IF_ICMPGE: 
+			checkForSelfOperation("COMPARISON");
 		}
 		stack.sawOpcode(this, seen);
 		if (isRegisterLoad() && seen != IINC) {
@@ -123,4 +98,42 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 	}
 	int whichRegister;
 	int registerLoadCount;
+
+
+
+private void checkForSelfOperation(String op) {
+	{
+
+		OpcodeStack.Item item0 = stack.getStackItem(0);
+		OpcodeStack.Item item1 = stack.getStackItem(1);
+
+		if (item0.getSignature().equals("D")
+				|| item0.getSignature().equals("F"))
+			return;
+		if (item1.getSignature().equals("D")
+				|| item1.getSignature().equals("F"))
+			return;
+
+		XField field0 = item0.getXField();
+		XField field1 = item1.getXField();
+		int fr0 = item0.getFieldLoadedFromRegister();
+		int fr1 = item1.getFieldLoadedFromRegister();
+		if (field0 != null && field0.equals(field1) && fr0 != -1 && fr0 == fr1)
+			bugReporter.reportBug(new BugInstance(this,
+					"SA_FIELD_SELF_" + op, NORMAL_PRIORITY)
+			.addClassAndMethod(this).addField(field0)
+			.addSourceLine(this));
+
+		else if (registerLoadCount >= 2) {
+			bugReporter.reportBug(new BugInstance(this,
+					"SA_LOCAL_SELF_" + op, NORMAL_PRIORITY)
+			.addClassAndMethod(this).add(
+					LocalVariableAnnotation
+					.getLocalVariableAnnotation(
+							getMethod(), whichRegister, getPC(),
+							getPC() - 1))
+							.addSourceLine(this));
+		}
+	}
+}
 }
