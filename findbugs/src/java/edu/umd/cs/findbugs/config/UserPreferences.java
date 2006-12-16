@@ -34,12 +34,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.Vector;
+import java.util.Map.Entry;
 
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -134,20 +141,21 @@ public class UserPreferences implements Cloneable {
 				recentProjectsList.add(projectName);
 		}
 
-		int i = 0;
-		while (true) {
-			String key = "detector" + i;
-			String detectorState = (String) props.get(key);
-			if (detectorState == null)
-				break;
-			int pipePos = detectorState.indexOf("|");
-			if (pipePos >= 0) {
-				String name = detectorState.substring(0, pipePos);
-				String enabled = detectorState.substring(pipePos + 1);
-				detectorEnablementMap.put(name, Boolean.valueOf(enabled));
-			}
-			i++;
-		}
+        Iterator propKeysIter = props.keySet().iterator();
+        while(propKeysIter.hasNext()){
+            String key = (String) propKeysIter.next();
+            if(!key.startsWith("detector") || key.startsWith("detector_")){
+                // it is not a detector enablement property
+                continue;
+            }
+            String detectorState = (String) props.get(key);
+            int pipePos = detectorState.indexOf("|");
+            if (pipePos >= 0) {
+                String name = detectorState.substring(0, pipePos);
+                String enabled = detectorState.substring(pipePos + 1);
+                detectorEnablementMap.put(name, Boolean.valueOf(enabled));
+            }
+        }
 
 		if (props.get(FILTER_SETTINGS_KEY) != null) {
 			// Properties contain encoded project filter settings.
@@ -197,20 +205,32 @@ public class UserPreferences implements Cloneable {
 	 * @throws IOException
 	 */
 	public void write(OutputStream out) throws IOException {
-		Properties props = new Properties();
+        
+		Properties props = new Properties() {
+		    /**
+             * Overriden to be able to write properties sorted by keys to the disk
+		     * @see java.util.Hashtable#keys()
+		     */
+		    @SuppressWarnings("unchecked")
+            @Override
+		    public synchronized Enumeration<Object> keys() {
+                // sort elements based on detector (prop key) names
+                Set set = keySet();
+		        return sortKeys(set);
+		    }
+        };
+        
 		for (int i = 0; i < recentProjectsList.size(); i++) {
 			String projectName = recentProjectsList.get(i);
 			String key = "recent" + i;
 			props.put(key, projectName);
 		}
 
-		Iterator<Map.Entry<String, Boolean>> it = detectorEnablementMap.entrySet().iterator();
-		int i = 0;
-		while (it.hasNext()) {
-			Map.Entry<String, Boolean> entry = it.next();
-			props.put("detector" + i, entry.getKey() + "|" + String.valueOf(entry.getValue().booleanValue()));
-			i++;
-		}
+        Iterator<Entry<String, Boolean>> it = detectorEnablementMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry<String, Boolean> entry = it.next();
+            props.put("detector" + entry.getKey(), entry.getKey() + "|" + String.valueOf(entry.getValue().booleanValue()));
+        }
 
 		// Save ProjectFilterSettings
 		props.put(FILTER_SETTINGS_KEY, filterSettings.toEncodedString());
@@ -236,7 +256,23 @@ public class UserPreferences implements Cloneable {
 			}
 		}
 	}
-
+    
+    /**
+     * To be compatible with version control systems, we need to sort properties before
+     * storing them to disk. Otherwise each change may lead to problems by diff against
+     * previous version - because Property entries are randomly distributed (it's a map).
+     *
+     * @param keySet non null set instance to sort
+     * @return non null list wich contains all given keys, sorted lexicographically.
+     * The list may be empty if given set was empty
+     */
+    private Enumeration sortKeys(Set<String> keySet) {
+        List<String> sortedList = new ArrayList<String>();
+        sortedList.addAll(keySet);
+        Collections.sort(sortedList);
+        return Collections.enumeration(sortedList);
+    }
+    
 	/**
 	 * Get List of recent project filenames.
 	 * 
