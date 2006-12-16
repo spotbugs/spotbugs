@@ -21,6 +21,14 @@ public class MapTests {
 		map.remove(new StringBuffer("Remove"));
 	}
 
+
+	public void test1aBugs(HashMap<? extends String, String> map) {
+		map.containsKey(new StringBuffer("Key"));
+		map.containsValue(new StringBuffer("Value"));
+		map.get(new StringBuffer("Get"));
+		map.remove(new StringBuffer("Remove"));
+	}
+
 	public void test2NoBugs(HashMap<CharSequence, CharSequence> map) {
 		map.containsValue(new StringBuffer("Value"));
 		map.get(new StringBuffer("Get"));
