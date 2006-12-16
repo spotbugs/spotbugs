@@ -5598,7 +5598,7 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="RC">Suspicious reference comparison</BugCode>
   <BugCode abbrev="EC">Suspicious equals() comparison</BugCode>
   <BugCode abbrev="MWN">Mismatched wait() or notify()</BugCode>
-  <BugCode abbrev="SA">Useless self-assignment</BugCode>
+  <BugCode abbrev="SA">Useless self-operation</BugCode>
   <BugCode abbrev="INT">Suspicious integer expression</BugCode>
   <BugCode abbrev="BIT">Suspicious bitwise logical expression</BugCode>
   <BugCode abbrev="LI">Unsynchronized Lazy Initialization</BugCode>
