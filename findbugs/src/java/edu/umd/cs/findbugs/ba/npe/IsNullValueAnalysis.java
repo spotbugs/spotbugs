@@ -696,7 +696,7 @@ public class IsNullValueAnalysis
 		if (trackValueNumbers) {
 			AvailableLoad loadForV = prevVnaFrame.getLoad(replaceMe);
 			
-			if (loadForV != null) {
+			if (false && loadForV != null) {
 				ValueNumber[] matchingValueNumbers = targetVnaFrame.getAvailableLoad(loadForV);
 				if (matchingValueNumbers != null)
 					for(ValueNumber v2 : matchingValueNumbers) if (!replaceMe.equals(v2)) {
