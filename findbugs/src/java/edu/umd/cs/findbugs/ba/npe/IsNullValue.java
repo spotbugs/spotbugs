@@ -451,7 +451,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		
 		if (NCP_EXTRA_BRANCH) {
 			// Experimental: track two distinct kinds of "null on complex path" values.
-			if (value.equals(nullOnSimplePathValue()))
+			if (value.isNullOnSomePath())
 				value = nullOnComplexPathValue();
 			else if (value.equals(nullOnComplexPathValue()))
 				value = nullOnComplexPathValue3();
@@ -459,7 +459,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		} else {
 			// Downgrade "null on simple path" values to
 			// "null on complex path".
-			if (value.equals(nullOnSimplePathValue()))
+			if (value.isNullOnSomePath())
 				value = nullOnComplexPathValue();
 		}
 		return value;
