@@ -108,6 +108,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.gui.ConsoleLogger;
 import edu.umd.cs.findbugs.gui.LogSync;
 import edu.umd.cs.findbugs.gui.Logger;
+import edu.umd.cs.findbugs.gui2.BugTreeModel.PleaseWaitTreeModel;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
 
 @SuppressWarnings("serial")
@@ -923,11 +924,15 @@ public class MainFrame extends FBFrame implements LogSync
 		
 	}
 	
+	boolean pleaseWait = false;
+	private boolean isPleaseWaitTree() {
+		return MainFrame.getInstance().getTree().getModel() instanceof BugTreeModel.PleaseWaitTreeModel;
+	}
 	private void setupTreeListeners()
 	{
 		tree.addTreeSelectionListener(new TreeSelectionListener(){
 			public void valueChanged(TreeSelectionEvent selectionEvent) {
-				
+					
 				TreePath path = selectionEvent.getNewLeadSelectionPath();				
 				if (path != null)
 				{
@@ -950,12 +955,18 @@ public class MainFrame extends FBFrame implements LogSync
 						syncBugInformation();
 					}
 				}
+				if (isPleaseWaitTree() || pleaseWait) {
+					return;
+				}
+
 //				Debug.println("Tree selection count:" + tree.getSelectionCount());
 				if (tree.getSelectionCount() !=1)
 				{
 					Debug.println("Tree selection count not equal to 1, disabling comments tab" + selectionEvent);
-					assert false;
+
 					MainFrame.this.setUserCommentInputEnable(false);
+					assert false : "Tree selection count is " + tree.getSelectionCount()+", disabling comments tab" 
+					+ selectionEvent;
 				}
 			}						
 		});
@@ -1858,7 +1869,7 @@ public class MainFrame extends FBFrame implements LogSync
 					//Dont clear data, the data's correct, just get the tree off the listener lists.
 					((BugTreeModel) tree.getModel()).getOffListenerList();
 					((BugTreeModel)tree.getModel()).changeSet(bs);
-					curProject=BugLoader.getLoadedProject();
+					//curProject=BugLoader.getLoadedProject();
 				}
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				setProjectChanged(true);

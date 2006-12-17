@@ -849,7 +849,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			return selectedBugLeafNodes;
 		}
 		
-		private static class PleaseWaitTreeModel implements TreeModel
+		public static class PleaseWaitTreeModel implements TreeModel
 		{
 			private String root = "Please wait...";
 			public PleaseWaitTreeModel() {}
@@ -889,8 +889,10 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			{
 				public void run()
 				{
+					MainFrame.getInstance().pleaseWait = true;
 					Debug.println("Please Wait! " + (message==null?"":message));
 					MainFrame.getInstance().getTree().setModel(new PleaseWaitTreeModel(message));
+					MainFrame.getInstance().pleaseWait = false;
 					//MainFrame.getInstance().setSorting(false);
 					Debug.println("Please Stop Waiting");
 				}
