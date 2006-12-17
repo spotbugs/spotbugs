@@ -122,7 +122,7 @@ public class FindBugsWorker {
 		while (iter.hasNext()) {
 			// get the resource
 			IResource res = (IResource) iter.next();
-
+			if (res == null) continue;
 			if (Util.isJavaArtifact(res)) {
 				res.deleteMarkers(
 					FindBugsMarker.NAME,
