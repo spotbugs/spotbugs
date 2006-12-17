@@ -78,6 +78,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 	 */
 	public AnalyzingDialog(@NonNull Project project, AnalysisCallback callback, boolean joinThread)
 	{
+		assert project != null;
 		this.project = project;
 		this.callback = callback;
 		initComponents();
@@ -209,6 +210,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		
 		public void run()
 		{
+			assert project != null;
 			BugSet data = BugLoader.doAnalysis(project, AnalyzingDialog.this);
 			if (data == null) // We were interrupted
 			{
