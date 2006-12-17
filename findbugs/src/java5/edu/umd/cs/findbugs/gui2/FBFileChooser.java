@@ -36,6 +36,7 @@ public class FBFileChooser extends JFileChooser {
 	
 	public FBFileChooser(){
 		super();
+		assert java.awt.EventQueue.isDispatchThread();
 		this.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs());
 	}
 	
@@ -84,6 +85,7 @@ public class FBFileChooser extends JFileChooser {
 	
 	public int showOpenDialog(Component parent)
 	{
+		 assert java.awt.EventQueue.isDispatchThread();
 		int x=super.showOpenDialog(parent);
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
 			workAroundJFileChooserBug();
@@ -94,6 +96,7 @@ public class FBFileChooser extends JFileChooser {
 	}
 
 	public int showSaveDialog(Component parent){
+		 assert java.awt.EventQueue.isDispatchThread();
 		int x=super.showSaveDialog(parent);
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
 			workAroundJFileChooserBug();
@@ -104,6 +107,7 @@ public class FBFileChooser extends JFileChooser {
 	}
 
 	public int showDialog(Component parent, String approveButtonText){
+		 assert java.awt.EventQueue.isDispatchThread();
 		int x=super.showDialog(parent, approveButtonText);
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
 			workAroundJFileChooserBug();
