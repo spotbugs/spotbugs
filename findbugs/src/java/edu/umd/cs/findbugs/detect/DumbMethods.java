@@ -118,6 +118,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	@Override
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
+		String opcodeName = OPCODE_NAMES[seen];
 		
 		if ((seen == INVOKEVIRTUAL
 				&& getClassConstantOperand().equals("java/util/HashMap") && getNameConstantOperand()
@@ -322,7 +323,10 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		} else checkForBitIorofSignedByte = false;
 
 	if (prevOpcodeWasReadLine && seen == INVOKEVIRTUAL
-		&& getClassConstantOperand().equals("java/lang/String")) {
+		&& getClassConstantOperand().equals("java/lang/String")
+		&& getSigConstantOperand().startsWith("()")) {
+		String method = getNameConstantOperand();
+		String sig = getSigConstantOperand();
 	  bugReporter.reportBug(new BugInstance(this, "NP_IMMEDIATE_DEREFERENCE_OF_READLINE", NORMAL_PRIORITY)
 		.addClassAndMethod(this)
 		.addSourceLine(this));
