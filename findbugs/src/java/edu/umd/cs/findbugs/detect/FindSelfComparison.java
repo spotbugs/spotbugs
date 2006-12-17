@@ -126,7 +126,7 @@ private void checkForSelfOperation(int opCode, String op) {
 
 		else if (registerLoadCount >= 2) {
 			bugReporter.reportBug(new BugInstance(this,
-					"SA_LOCAL_SELF_" + op, HIGH_PRIORITY)
+					"SA_LOCAL_SELF_" + op, opCode == ISUB ? NORMAL_PRIORITY : HIGH_PRIORITY)
 			.addClassAndMethod(this).add(
 					LocalVariableAnnotation
 					.getLocalVariableAnnotation(
