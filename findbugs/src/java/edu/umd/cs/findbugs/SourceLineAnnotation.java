@@ -60,13 +60,13 @@ public class SourceLineAnnotation implements BugAnnotation {
 	public static final String UNKNOWN_SOURCE_FILE = "<Unknown>";
 
 	private String description;
-	private String className;
+	final private String className;
 	private String sourceFile;
-	private int startLine;
-	private int endLine;
-	private int startBytecode;
-	private int endBytecode;
-	private boolean synthetic = false;
+	final private int startLine;
+	final private int endLine;
+	final private int startBytecode;
+	final private int endBytecode;
+	private boolean synthetic;
 
 	/**
 	 * Constructor.
