@@ -356,7 +356,7 @@ public class BugLoader {
 	 * @param p
 	 * @return the bugs from the reanalysis, or null if cancelled
 	 */
-	public static BugSet redoAnalysisKeepComments(Project p)
+	public static BugSet redoAnalysisKeepComments(@NonNull Project p)
 	{
 		BugSet oldSet=BugSet.getMainBugSet();
 		SortedBugCollection current=new SortedBugCollection();
