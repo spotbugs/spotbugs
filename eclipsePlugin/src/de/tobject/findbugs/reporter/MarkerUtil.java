@@ -156,7 +156,7 @@ public abstract class MarkerUtil {
 			}
 		}
 
-	final static 	Pattern fullName = Pattern.compile("^(.+?)((\\$[0-9].*)?)");
+	final static 	Pattern fullName = Pattern.compile("^(.+?)(([$+][0-9].*)?)");
 
 	/**
 	 * Get the underlying resource (Java class) for given BugInstance.
