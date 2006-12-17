@@ -171,7 +171,7 @@ public class SourceFile {
 		return lineNumberMap[line];
 	}
 
-	private void loadFileData() throws IOException {
+	private synchronized void loadFileData() throws IOException {
 		if (data != null)
 			return;
 
