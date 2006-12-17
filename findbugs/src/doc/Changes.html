@@ -28,9 +28,14 @@
 				requires DNS resolution.
 				<li>Added check for classes that define compareTo but not equals; such classes can exhibit some anomalous behavour (e.g.,
 				they are treated differently by PriorityQueues in Java 5 and Java 6).
+				<li>Added a check for useless self operations (e.g., x < x or x ^ x).
 				<li>Fixed a datarace that could cause the GUI to fail on startup
 				<li>Partial internationalization of the new GUI
 				<li>Tuning to reduce false positives
+				<li>Fixed a bug in null pointer analysis that was generating false positive null pointer warnings on
+				exception paths. Fixing this bug eliminates about 1/4 of the warnings on null pointer exceptions on exception paths.
+				<li>Fixed a bug in the processing of phi nodes for fields in the null pointer analysis
+				<li>Applied contributed patch that provides more quick fixes in Eclipse plugin.
 				<li>Fixed progress bar in Eclipse plugin
 				<li>A number of other bug fixes.
 				</ul>
