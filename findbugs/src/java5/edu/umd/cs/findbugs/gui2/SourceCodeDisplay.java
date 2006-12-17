@@ -46,17 +46,17 @@ import edu.umd.cs.findbugs.sourceViewer.JavaSourceDocument;
 public final class SourceCodeDisplay implements Runnable {
 	final MainFrame frame;
 
-	static final Color MAIN_HIGHLIGHT = new Color(1f, 1f, 0.5f);
-	static final Color MAIN_HIGHLIGHT_MORE = MAIN_HIGHLIGHT.brighter();
-	static final Color ALTERNATIVE_HIGHLIGHT = new Color(0.86f, 0.90f, 1.0f);
-	static final Color FOUND_HIGHLIGHT = new Color(0.75f, 0.75f, 1f);
+	private static final Color MAIN_HIGHLIGHT = new Color(1f, 1f, 0.5f);
+	private static final Color MAIN_HIGHLIGHT_MORE = MAIN_HIGHLIGHT.brighter();
+	private static final Color ALTERNATIVE_HIGHLIGHT = new Color(0.86f, 0.90f, 1.0f);
+	private static final Color FOUND_HIGHLIGHT = new Color(0.75f, 0.75f, 1f);
 
-	public static final Document SOURCE_NOT_RELEVANT = new DefaultStyledDocument();;
+	static final Document SOURCE_NOT_RELEVANT = new DefaultStyledDocument();;
 	
 	public JavaSourceDocument myDocument;
 	private int currentChar = -1; //for find
 	
-	Map<String, JavaSourceDocument> map = new HashMap<String, JavaSourceDocument>();
+	private final Map<String, JavaSourceDocument> map = new HashMap<String, JavaSourceDocument>();
 
 	SourceCodeDisplay(MainFrame frame) {
 		this.frame = frame;
@@ -65,11 +65,11 @@ public final class SourceCodeDisplay implements Runnable {
 		t.start();
 	}
 
-	boolean pendingUpdate;
+	private boolean pendingUpdate;
 
-	@CheckForNull BugInstance bugToDisplay;
+	@CheckForNull private BugInstance bugToDisplay;
 
-	SourceLineAnnotation sourceToHighlight;
+	private SourceLineAnnotation sourceToHighlight;
 
 	public synchronized void displaySource(BugInstance bug,
 			SourceLineAnnotation source) {
@@ -84,7 +84,7 @@ public final class SourceCodeDisplay implements Runnable {
 	}
 	
 	@NonNull
-	JavaSourceDocument getDocument(SourceLineAnnotation source) {
+	private JavaSourceDocument getDocument(SourceLineAnnotation source) {
 		try {
 			SourceFile sourceFile = frame.sourceFinder.findSourceFile(source);
 			String fullFileName = sourceFile.getFullFileName();
