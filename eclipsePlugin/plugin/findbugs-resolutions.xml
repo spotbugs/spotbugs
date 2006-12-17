@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<findbugs-resolutions>
+	<bug type="DM_BOOLEAN_CTOR">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution">
+			<attr name="label">Use valueOf(...) instead</attr>
+		</resolution>
+	</bug>
+		<bug type="DM_FP_NUMBER_CTOR">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution">
+			<attr name="label">Use valueOf(...) instead</attr>
+		</resolution>
+	</bug>
+	<bug type="DM_NUMBER_CTOR">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution">
+			<attr name="label">Use valueOf(...) instead</attr>
+		</resolution>
+	</bug>
+	<bug type="DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateDoPrivilegedBlockResolution">
+			<attr name="label">Create doPrivileged()-Block.</attr>
+		</resolution>
+	</bug>
+	<bug type="EI_EXPOSE_REP">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateMutableCloneResolution">
+			<attr name="label">Clone the field (Think about performance first!)</attr>
+		</resolution>
+	</bug>
+	<bug type="FI_EMPTY">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.RemoveUselessMethodResolution">
+			<attr name="label">Remove empty finalizer.</attr>
+		</resolution>
+	</bug>
+	<bug type="FI_MISSING_SUPER_CALL">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution">
+			<attr name="label">Add super.finalize() call.</attr>
+			<attr name="insertLast">true</attr>
+		</resolution>
+	</bug>
+	<bug type="FI_USELESS">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.RemoveUselessMethodResolution">
+			<attr name="label">Remove useless finalizer.</attr>
+		</resolution>
+	</bug>
+	<bug type="FI_PUBLIC_SHOULD_BE_PROTECTED">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.ChangePublicToProtectedResolution">
+			<attr name="label">Change public to protected.</attr>
+		</resolution>
+	</bug>
+	<bug type="IJU_SETUP_NO_SUPER">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution">
+			<attr name="label">Add super.setUp() call.</attr>
+			<attr name="insertFirst">true</attr>
+		</resolution>
+	</bug>
+	<bug type="IJU_TEARDOWN_NO_SUPER">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateSuperCallResolution">
+			<attr name="label">Add super.tearDown() call.</attr>
+			<attr name="insertLast">true</attr>
+		</resolution>
+	</bug>
+	<bug type="IM_BAD_CHECK_FOR_ODD">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateRemainderOddnessCheckResolution">
+			<attr name="label">Replace if-condition by 'x % 2 != 0'</attr>
+		</resolution>
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateAndOddnessCheckResolution">
+			<attr name="label"><![CDATA[Replace if-condition by '(x & 1) == 1']]></attr>
+		</resolution>
+	</bug>
+	<bug type="MS_SHOULD_BE_FINAL">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.MakeFieldFinalResolution">
+			<attr name="label">Add final-modifier to field</attr>
+		</resolution>
+	</bug>
+		<bug type="SIC_INNER_SHOULD_BE_STATIC">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.MakeInnerTypeStaticResolution">
+            <attr name="label">Make inner class static</attr>
+        </resolution>
+	</bug>
+	<bug type="SS_SHOULD_BE_STATIC">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.MakeFieldStaticResolution">
+            <attr name="label">Change to a static field</attr>
+        </resolution>
+	</bug>
+</findbugs-resolutions>

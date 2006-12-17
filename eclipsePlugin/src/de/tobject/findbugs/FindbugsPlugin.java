@@ -67,7 +67,8 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.plugin.eclipse.ExtendedPreferences;
-import edu.umd.cs.findbugs.plugin.eclipse.quickfix.QuickFixAssociations;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionAssociations;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.BugResolutionLoader;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -135,7 +136,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	/** Resource bundle. */
 	private ResourceBundle resourceBundle;
 	
-	private QuickFixAssociations quickFixes;
+	private BugResolutionAssociations bugResolutions;
 
 	/**
 	 * Constructor.
@@ -759,12 +760,17 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		return userPrefs;
 	}
 
-	public QuickFixAssociations getQuickFixes() {
-		if (quickFixes == null) {
-			quickFixes = new QuickFixAssociations();
-			quickFixes.load(new File(FindBugs.getHome() + File.separator + "plugin" + File.separator + "Fixes.xml"));
-		}
-		return quickFixes;
-	}
+    public BugResolutionAssociations getBugResolutions() {
+        if (bugResolutions == null)
+            bugResolutions = loadBugResolutions();
+        return bugResolutions;
+    }
+
+    private BugResolutionAssociations loadBugResolutions() {
+        BugResolutionLoader loader = new BugResolutionLoader();
+        File xmlFile = new File(FindBugs.getHome() + File.separator + "plugin" + File.separator + "findbugs-resolutions.xml");
+        return loader.loadBugResolutions(xmlFile);
+    }
+
 }
 
