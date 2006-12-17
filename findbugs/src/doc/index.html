@@ -16,11 +16,9 @@
 
 					<p>
 						<a href="@WEBSITE@/"><img src="buggy-sm.png"
-								alt="FindBugs logo" border="0" />
-						</a>
+								alt="FindBugs logo" border="0" /> </a>
 						<a href="http://www.umd.edu/"><img src="informal.png"
-								alt="UMD logo" border="0" />
-						</a>
+								alt="UMD logo" border="0" /> </a>
 					</p>
 
 					<h1>
@@ -37,26 +35,38 @@
 						<a href="http://www.umd.edu">The University of Maryland</a>.
 					</p>
 
-						<a href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs"><img
-								src="Fortify.png" alt="Fortify logo" border="0" align="right" /></a>
+					<a
+						href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs"><img
+							src="Fortify.png" alt="Fortify logo" border="0" align="right" />
+					</a>
 					<p>
-					FindBugs is sponsored by 
-					<a href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs">software 
-					security company Fortify Software</a>, 
-					which sells security tools, including Fortify Source Code Analysis, which which uses static analysis to
-					search for security vulnerabilities (much as FindBugs uses static analysis to look for general code quality problems.
-					FindBugs is integrated into Fortify's tools, providing an integrated tool set to look for and audit both security 
-					and quality problems (<a href="pressRelease.pdf">press release</a>).
+						FindBugs is sponsored by
+						<a
+							href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs">software
+							security company Fortify Software</a>, which sells security tools,
+						including Fortify Source Code Analysis, which which uses static
+						analysis to search for security vulnerabilities (much as FindBugs
+						uses static analysis to look for general code quality problems.
+						FindBugs is integrated into Fortify's tools, providing an
+						integrated tool set to look for and audit both security and
+						quality problems (
+						<a href="pressRelease.pdf">press release</a>).
 					</p>
-					<p>Fortify Software now provides <a href="http://opensource.fortifysoftware.com/">Java Open Review, a 
-					free analysis and on-line reviewing service</a>
-					to selected open source projects. This provides analysis for both correctness issues 
-					identified by FindBugs and security issues (such
-					as SQL injection and Cross-site scripting
-					identified by Fortify's 	<a href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs">Source Code Analsysis</a>,
-					and provides a on-line auditing and commenting facility for contributors of each project. Defect warnings
-					are not visible to the general public, only to contributors of each project.
-					There is a place on the web page where you can request that your project be included in the set of projects reviewed.
+					<p>
+						Fortify Software now provides
+						<a href="http://opensource.fortifysoftware.com/">Java Open
+							Review, a free analysis and on-line reviewing service</a> to selected
+						open source projects. This provides analysis for both correctness
+						issues identified by FindBugs and security issues (such as SQL
+						injection and Cross-site scripting identified by Fortify's
+						<a
+							href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs">Source
+							Code Analsysis</a>, and provides a on-line auditing and commenting
+						facility for contributors of each project. Defect warnings are not
+						visible to the general public, only to contributors of each
+						project. There is a place on the web page where you can request
+						that your project be included in the set of projects reviewed.
+					</p>
 					<p>
 						FindBugs requires JRE (or JDK) 1.4.0 or later to run.&nbsp;
 						However, it can analyze programs compiled for any version of Java.
@@ -99,15 +109,22 @@
 								of talk</a> Bill Pugh gave at
 							<a href="http://www.google.com">Google</a>, July 6th, 2006
 						</li>
-						<li><a href="http://javaposse.com/index.php?post_id=95780">Java Posse podcast interview with Bill Pugh
-						and Brian Goetz</a>
+						<li>
+							<a href="http://javaposse.com/index.php?post_id=95780">Java
+								Posse podcast interview with Bill Pugh and Brian Goetz</a>
+						</li>
 					</ul>
 					<h1>
-					FindBugs blog
+						FindBugs blog
 					</h1>
-					<p>We've started a blog at <a href="http://findbugs.blogspot.com">http://findbugs.blogspot.com</a>,
-					to talk about FindBugs news, features, tips and other issues related to software quality
-					(such as <a href="http://jcp.org/en/jsr/detail?id=305">JSR-305 - annotations for software defect detection tools</a>.
+					<p>
+						We've started a blog at
+						<a href="http://findbugs.blogspot.com">http://findbugs.blogspot.com</a>,
+						to talk about FindBugs news, features, tips and other issues
+						related to software quality (such as
+						<a href="http://jcp.org/en/jsr/detail?id=305">JSR-305 -
+							annotations for software defect detection tools</a>.
+					</p>
 					<h1>
 						Sample output
 					</h1>
@@ -199,9 +216,8 @@
 						</tr>
 						<tr>
 							<td align="right">
-								Warnings in b99
-								introduced by a change to existing code
-								since b51
+								Warnings in b99 introduced by a change to existing code since
+								b51
 							</td>
 							<td align="right">
 								14
@@ -318,9 +334,9 @@
 					<p>
 						Using Java Web Start you can try the GUI version of FindBugs now
 						on your project. As long as you have a 1.4 or better JRE
-						installed, you can 
-						<a href="http://findbugs.cs.umd.edu/demo/jnlp/findbugs.jnlp">run FindBugs now</a>.
-						If you are using Java 1.5 or later, you will see
+						installed, you can
+						<a href="http://findbugs.cs.umd.edu/demo/jnlp/findbugs.jnlp">run
+							FindBugs now</a>. If you are using Java 1.5 or later, you will see
 						the new GUI that we wrote over the summer.
 					</p>
 
@@ -329,31 +345,62 @@
 					</h1>
 
 					<p>
-						Changes since version 1.1.0:
+						Changes since version 1.1.1:
 					</p>
-
 					<ul>
-						<li>less scanning of classes not on the analysis path
-							(This was causing some performance problems.)
+						<li>
+							Added check for infinite iterative loops
 						</li>
-						<li>no unread field warnings for fields annotated with
-							javax.persistent or javax.ejb3
+						<li>
+							Added check for use of incompatible types in a collection (e.g.,
+							checking to see if a Set&lt;String&gt; contains a StringBuffer).
 						</li>
-						<li>Eclipse plugin
-							<ul>
-								<li>bug annotation info displayed in Bug Details tab
-								</li>
-								<li>.fbwarnings data file now stored in .metadata (not in the project itself)
-								</li>
-							</ul>
+						<li>
+							Added check for invocations of equals or hashCode on a URL,
+							which,
+							<a
+								href="http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html">surprising
+								many people</a>, requires DNS resolution.
 						</li>
-						<li>new SE_BAD_FIELD_INNER_CLASS pattern
+						<li>
+							Added check for classes that define compareTo but not equals;
+							such classes can exhibit some anomalous behavour (e.g., they are
+							treated differently by PriorityQueues in Java 5 and Java 6).
 						</li>
-						<li>updates to Japanese translation (ruimo)
+						<li>
+							Added a check for useless self operations (e.g., x < x or x ^ x).
 						</li>
-						<li>fix some internal slashed/dotted path confusion
+						<li>
+							Fixed a datarace that could cause the GUI to fail on startup
 						</li>
-						<li>other minor improvements
+						<li>
+							Partial internationalization of the new GUI
+						</li>
+						<li>
+							Fix bug in "Redo analysis" option of new GUI
+						</li>
+						<li>
+							Tuning to reduce false positives
+						</li>
+						<li>
+							Fixed a bug in null pointer analysis that was generating false
+							positive null pointer warnings on exception paths. Fixing this
+							bug eliminates about 1/4 of the warnings on null pointer
+							exceptions on exception paths.
+						</li>
+						<li>
+							Fixed a bug in the processing of phi nodes for fields in the null
+							pointer analysis
+						</li>
+						<li>
+							Applied contributed patch that provides more quick fixes in
+							Eclipse plugin.
+						</li>
+						<li>
+							Fixed progress bar in Eclipse plugin
+						</li>
+						<li>
+							A number of other bug fixes.
 						</li>
 					</ul>
 
@@ -368,7 +415,8 @@
 
 					<p>
 						This work has been supported by
-						<a href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs">Fortify
+						<a
+							href="http://www.fortifysoftware.com/products/sca40.jsp#findbugs">Fortify
 							Software</a>,
 						<a href="http://www.google.com">Google</a>,
 						<a href="http://www.sun.com">Sun Microsystems</a>,
