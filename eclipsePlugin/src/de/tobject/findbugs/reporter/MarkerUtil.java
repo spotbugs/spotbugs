@@ -199,7 +199,7 @@ public abstract class MarkerUtil {
 		String innerName = null;
 		if (m.matches() && m.group(2).length() > 0) {
 			String outerQualifiedClassName = m.group(1).replace('$','.');
-			innerName  = m.group(1).substring(1);
+			innerName  = m.group(2).substring(1);
 			type = Reporter.getJavaProject(project).findType(outerQualifiedClassName);
 			// dump(type, 0);
 			
