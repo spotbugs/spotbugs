@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="asm-3.0_RC1.jar"/>
-	<classpathentry exported="true" kind="lib" path="asm-tree-3.0_RC1.jar"/>
 	<classpathentry kind="lib" path="bcel.jar"/>
 	<classpathentry kind="lib" path="dom4j-full.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="src" path="buildtools"/>
+	<classpathentry kind="lib" path="asm-3.0.jar"/>
+	<classpathentry kind="lib" path="asm-tree-3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
