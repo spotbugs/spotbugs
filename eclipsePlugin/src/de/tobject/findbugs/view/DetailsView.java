@@ -115,7 +115,6 @@ public class DetailsView extends ViewPart {
 	@Override
 	public void setFocus() {
 		annotationList.setFocus();
-		control.setFocus();
 	}
 
 	/*
