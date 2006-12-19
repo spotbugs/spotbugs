@@ -21,7 +21,7 @@ Install the plug-in
             annotations.jar
             dom4j-full.jar
             bcel.jar
-            asm-3.0_RC1.jar
+            asm-3.0.jar
             |
             +- plugin
             |  |
