@@ -12,8 +12,12 @@
       <library name="bcel.jar"/>
       <library name="dom4j-full.jar"/>
       <library name="findbugs.jar"/>
-      <library name="asm-3.0_RC1.jar"/>
-      <library name="asm-tree-3.0_RC1.jar"/>
+      <library name="asm-tree-3.0.jar">
+         <export name="*"/>
+      </library>
+      <library name="asm-3.0.jar">
+         <export name="*"/>
+      </library>
    </runtime>
 
    <requires>
