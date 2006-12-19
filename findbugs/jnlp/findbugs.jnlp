@@ -20,8 +20,8 @@
     <jar href="findbugs.jar"/> 
     <jar href="findbugsGUI.jar"/> 
     <jar href="bcel.jar"/> 
-    <jar href="asm-3.0_RC1.jar"/>
-    <jar href="asm-tree-3.0_RC1.jar"/>
+    <jar href="asm-3.0.jar"/>
+    <jar href="asm-tree-3.0.jar"/>
     <jar href="dom4j-full.jar"/> 
     <jar href="plugin/coreplugin.jar"/>
     <property name="findbugs.jaws" value="true"/>
