@@ -586,11 +586,12 @@ public abstract class MarkerUtil {
 				return null;
 			}
 
-			BugInstance bug = bugCollection.lookupFromUniqueId(uniqueId);
-			if (bug == null) {
-				return null;
-			}
-			assert bug.getUniqueId().equals(uniqueId);
+			BugInstance bug = bugCollection.findBug(
+					(String) marker.getAttribute(FindBugsMarker.UNIQUE_ID), 
+					(String) marker.getAttribute(FindBugsMarker.BUG_TYPE),
+					(Integer)marker.getAttribute(IMarker.LINE_NUMBER));
+
+
 			return bug;
 		} catch (RuntimeException e) {
 			throw e;
