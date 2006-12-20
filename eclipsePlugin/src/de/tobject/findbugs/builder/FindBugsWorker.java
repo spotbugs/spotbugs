@@ -352,7 +352,7 @@ public class FindBugsWorker {
 				}
 			}
 		}
-		if (set.isEmpty()) {
+		if (true) {
 			// add the default location if not already included
 			IPath def = javaProject.getOutputLocation();
             if(def.segmentCount() > 0) {
