@@ -251,7 +251,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 
 	@Override
 	public void reportMissingClass(String missingClass) {
-		FindbugsPlugin.getDefault().logWarning("FindBugs missing class: " + missingClass);
+		FindbugsPlugin.getDefault().logWarning("FindBugs could not find a class that would be useful in analyzing your code: " + missingClass);
 	}
 
 	public BugReporter getRealBugReporter() {
