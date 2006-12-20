@@ -59,7 +59,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 		
 		// Set unique id of warning, so we can easily refer back
 		// to it later: for example, when the user classifies the warning.
-		String uniqueId = bug.getUniqueId();
+		String uniqueId = bug.getInstanceHash();
 		if (uniqueId != null) {
 			marker.setAttribute(FindBugsMarker.UNIQUE_ID, uniqueId);
 		}
