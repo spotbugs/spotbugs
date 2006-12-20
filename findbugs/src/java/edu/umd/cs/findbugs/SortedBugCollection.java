@@ -39,6 +39,7 @@ import java.util.zip.GZIPInputStream;
 import javax.xml.transform.TransformerException;
 
 import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.gui2.SourceCodeDisplay;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.xml.*;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -979,6 +980,17 @@ public class SortedBugCollection implements BugCollection {
 	public AppVersion getAppVersionFromSequenceNumber(long target) {
 		for(AppVersion av : appVersionList)
 			if (av.getSequenceNumber() == target) return av;
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugCollection#findBug(java.lang.String, java.lang.String, int)
+	 */
+	public BugInstance findBug(String instanceHash, String bugType,
+			int lineNumber) {
+		for(BugInstance bug : bugSet) 
+			if (bug.getInstanceHash().equals(instanceHash) && bug.getBugPattern().getType().equals(bugType)
+					&&  bug.getPrimarySourceLineAnnotation().getStartLine() == lineNumber) return bug;
 		return null;
 	}
 }

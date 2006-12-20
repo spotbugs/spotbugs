@@ -293,5 +293,6 @@ public interface BugCollection
 	 */
 	public void computeHash(BugInstance bug);
 	
+	public BugInstance findBug(String instanceHash, String bugType, int lineNumber);
 
 }
