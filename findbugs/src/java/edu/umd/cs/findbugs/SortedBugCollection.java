@@ -284,7 +284,38 @@ public class SortedBugCollection implements BugCollection {
 		project.writeXML(xmlOutput);
 	}
 	
+	private String getQuickInstanceHash(BugInstance bugInstance) {
+		String hash = bugInstance.getInstanceHash();
+		if (hash != null) return hash;
+		MessageDigest digest = null;
+		try { digest = MessageDigest.getInstance("MD5");
+		} catch (Exception e2) {
+			// OK, we won't digest
+		}
+		hash = bugInstance.getInstanceKey();
+		if (digest != null) {
+			byte [] data = digest.digest(hash.getBytes());
+			String tmp = new BigInteger(1,data).toString(16);
+			if (false) System.out.println(hash + " -> " + tmp);
+			hash = tmp;
+		}
+		bugInstance.setInstanceHash(hash);
+		Integer count = quickHashCount.get(hash);
+		if (count == null) {
+			bugInstance.setInstanceOccurrenceNum(0);
+			quickHashCount.put(hash,0);
+		} else {
+			bugInstance.setInstanceOccurrenceNum(count+1);
+			quickHashCount.put(hash, count+1);
+		}
+		return hash;
+	}
+
+	HashMap<String, Integer> quickHashCount = new HashMap<String, Integer>();
+
 	public void computeBugHashes() {
+		if (preciseHashOccurrenceNumbersAvailable) return;
+		invalidateHashes();
 		MessageDigest digest = null;
 		try { digest = MessageDigest.getInstance("MD5");
 		} catch (Exception e2) {
@@ -294,14 +325,18 @@ public class SortedBugCollection implements BugCollection {
 		HashMap<String, Integer> seen = new HashMap<String, Integer>();
 		
 		for(BugInstance bugInstance : getCollection()) {
-			String hash = bugInstance.getInstanceKey();
-			if (digest != null) {
-				byte [] data = digest.digest(hash.getBytes());
-				String tmp = new BigInteger(1,data).toString(16);
-				if (false) System.out.println(hash + " -> " + tmp);
-				hash = tmp;
+			String hash = bugInstance.getInstanceHash();
+			if (hash == null) {
+				hash = bugInstance.getInstanceKey();
+
+				if (digest != null) {
+					byte [] data = digest.digest(hash.getBytes());
+					String tmp = new BigInteger(1,data).toString(16);
+					if (false) System.out.println(hash + " -> " + tmp);
+					hash = tmp;
+				}
+				bugInstance.setInstanceHash(hash);
 			}
-			bugInstance.setInstanceHash(hash);
 			Integer count = seen.get(hash);
 			if (count == null) {
 				bugInstance.setInstanceOccurrenceNum(0);
@@ -313,7 +348,7 @@ public class SortedBugCollection implements BugCollection {
 		}
 		for(BugInstance bugInstance : getCollection()) 
 			bugInstance.setInstanceOccurrenceMax(seen.get(bugInstance.getInstanceHash()));
-	
+		preciseHashOccurrenceNumbersAvailable = true;
 	}
 	/**
 	 * Write the BugCollection to an XMLOutput object.
@@ -602,9 +637,9 @@ public class SortedBugCollection implements BugCollection {
 	private Map<String, ClassFeatureSet> classFeatureSetMap;
 	private List<AppVersion> appVersionList;
 
-	private Map<String, BugInstance> uniqueIdToBugInstanceMap;
-	private int nextUniqueId;
-
+	private Map<String, BugInstance> hashToBugInstanceMap;
+	
+	private boolean preciseHashOccurrenceNumbersAvailable = false;
 	/**
 	 * Sequence number of the most-recently analyzed version
 	 * of the code.
@@ -659,8 +694,7 @@ public class SortedBugCollection implements BugCollection {
 		missingClassSet = new TreeSet<String>();
 		summaryHTML = null;
 		classFeatureSetMap = new TreeMap<String, ClassFeatureSet>();
-		uniqueIdToBugInstanceMap = new HashMap<String, BugInstance>();
-		nextUniqueId = 0;
+		hashToBugInstanceMap = new HashMap<String, BugInstance>();
 		sequence = 0L;
 		appVersionList = new LinkedList<AppVersion>();
 		releaseName = "";
@@ -668,8 +702,7 @@ public class SortedBugCollection implements BugCollection {
 	}
 
 	public boolean add(BugInstance bugInstance, boolean updateActiveTime) {
-		registerUniqueId(bugInstance);
-
+		preciseHashOccurrenceNumbersAvailable = false;
 		if (updateActiveTime) {
 			bugInstance.setFirstVersion(sequence);
 		}
@@ -677,87 +710,21 @@ public class SortedBugCollection implements BugCollection {
 		return bugSet.add(bugInstance);
 	}
 
-	public void checkUniqueIds() {
-		if (true) return;
-		for(BugInstance bug : bugSet) {
-			String id = bug.getUniqueId();
-			BugInstance bug2 = uniqueIdToBugInstanceMap.get(id);
-			if (bug != bug2) {
-				System.out.println(bug.getUniqueId() + " doesn't match");
-			}
-		}
+	public void computeUniqueId(BugInstance bug) {
+		String value =  getQuickInstanceHash(bug)+"-"+ bug.getInstanceOccurrenceNum();
+		bug.setUniqueId(value);
 	}
-	/**
-	 * Create a unique id for a BugInstance if it doesn't already have one,
-	 * or if the unique id it has conflicts with a BugInstance that is
-	 * already in the collection.
-	 * 
-	 * @param bugInstance the BugInstance
-	 */
-	private static boolean debug = false;
-	private void registerUniqueId(BugInstance bugInstance) {
-		if (debug) System.out.println("Bug collection: " + System.identityHashCode(this));
-		// If the BugInstance has no unique id, generate one.
-		// If the BugInstance has a unique id which conflicts with
-		// an existing BugInstance, then we also generate a new
-		// unique id.
-		String uniqueId = bugInstance.getUniqueId();
-		if (uniqueId == null)  {
-			uniqueId = assignUniqueId(bugInstance);
-			if (debug) 
-				System.out.println("Assigned unique ID of " + uniqueId + " to " + bugInstance.getMessage());
-		} else {
-			BugInstance bugInstance2 = uniqueIdToBugInstanceMap.get(uniqueId);
-			if (bugInstance2 != null) {
-				if (bugInstance2 == bugInstance) {
-					if (debug) System.out.println("Reusing bug id of " + uniqueId);
-					return;
-				}
-
-				if (debug) {
-					System.out.println("Discarding unique ID of " + uniqueId + " for " + bugInstance.getMessage());
-					System.out.println("already held by  " + bugInstance2.getMessage());
-				}
-
-				uniqueId = assignUniqueId(bugInstance);
-				if (debug) System.out.println("assigning new unique ID of " + uniqueId  + " for " + bugInstance.getMessage());
-			} else if (debug) {
-				System.out.println("unique ID of " + uniqueId + " is new to this collection for  " + bugInstance.getMessage());
-				for(Map.Entry<String,BugInstance> e : uniqueIdToBugInstanceMap.entrySet() ) {
-					BugInstance b = e.getValue();
-					System.out.println(e.getKey() + " " + b.getUniqueId() + " " + b.getMessage());
-				}
-			}
-		}
-		uniqueIdToBugInstanceMap.put(uniqueId, bugInstance);
-		bugInstance.setUniqueId(uniqueId);
-		checkUniqueIds();
+	
+	private void invalidateUniqueIds() {
+		hashToBugInstanceMap.clear();
+		hashToBugMapAvailable = false;
 	}
-
-	/**
-	 * Assign a unique id to given BugInstance.
-	 * 
-	 * @param bugInstance the BugInstance to be assigned a unique id
-	 */
-	private String assignUniqueId(BugInstance bugInstance) {
-		String uniqueId;
-		while (true) {
-			uniqueId = String.valueOf(nextUniqueId++);
-			BugInstance bug2 = uniqueIdToBugInstanceMap.get(uniqueId);
-			if (bug2 == null) break;
-			if (debug) System.out.println("found collision for "+uniqueId);
-		};
-
-		bugInstance.setUniqueId(uniqueId);
-		return uniqueId;
+	private void invalidateHashes() {
+		preciseHashOccurrenceNumbersAvailable = false;
 	}
-
 	public boolean remove(BugInstance bugInstance) {
-		boolean present = bugSet.remove(bugInstance);
-		if (present) {
-			uniqueIdToBugInstanceMap.remove(bugInstance.getUniqueId());
-		}
-		return present;
+		invalidateHashes();
+		return bugSet.remove(bugInstance);
 	}
 
 	public Iterator<BugInstance> iterator() {
@@ -841,12 +808,21 @@ public class SortedBugCollection implements BugCollection {
 	     * @see edu.umd.cs.findbugs.BugCollection#lookupFromUniqueId(java.lang.String)
 	     */
 	public BugInstance lookupFromUniqueId(String uniqueId) {
-		checkUniqueIds();
-		BugInstance result =  uniqueIdToBugInstanceMap.get(uniqueId);
-		if (debug) System.out.println(uniqueId + " = " + result.getMessage());
+		prepareHashToBugInstanceMap();
+		BugInstance result =  hashToBugInstanceMap.get(uniqueId);
 		return result;
 	}
 
+	boolean hashToBugMapAvailable = false;
+	private void prepareHashToBugInstanceMap() {
+		computeBugHashes();
+		if (hashToBugMapAvailable) return;
+		for(BugInstance bug : bugSet) {
+			computeUniqueId(bug);
+			hashToBugInstanceMap.put(bug.getUniqueId(), bug);
+		}
+		hashToBugMapAvailable = true;
+	}
 	public long getSequenceNumber() {
 		return sequence;
 	}
@@ -866,10 +842,6 @@ public class SortedBugCollection implements BugCollection {
 		dup.summaryHTML = this.summaryHTML;
 //		dup.classHashMap.putAll(this.classHashMap);
 		dup.classFeatureSetMap.putAll(this.classFeatureSetMap);
-		for (BugInstance bugInstance : dup.bugSet) {
-			uniqueIdToBugInstanceMap.put(bugInstance.getUniqueId(), bugInstance);
-		}
-		dup.nextUniqueId = this.nextUniqueId;
 		dup.sequence = this.sequence;
 		dup.timestamp = this.timestamp;
 		dup.releaseName = this.releaseName;
@@ -886,8 +858,8 @@ public class SortedBugCollection implements BugCollection {
 
 	public void clearBugInstances() {
 		bugSet.clear();
-		uniqueIdToBugInstanceMap.clear();
-		nextUniqueId = 0;
+		invalidateHashes();
+
 	}
 
 	/* (non-Javadoc)
@@ -946,7 +918,6 @@ public class SortedBugCollection implements BugCollection {
 		for (AppVersion appVersion : appVersionList) {
 			dup.appVersionList.add((AppVersion) appVersion.clone());
 		}
-		dup.uniqueIdToBugInstanceMap.clear();
 
 		return dup;
 	}

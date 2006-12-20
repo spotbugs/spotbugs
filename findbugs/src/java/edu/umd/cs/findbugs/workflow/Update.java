@@ -248,7 +248,6 @@ public class Update {
 				BugInstance origWarning = mapFromNewToOldBug.get(bug);
 				assert origWarning.getLastVersion() == -1;
 
-				newBug.setUniqueId(origWarning.getUniqueId());
 				copyBugHistory(origWarning, newBug);
 				// handle getAnnotationText()/setAnnotationText() and
 				// designation key

@@ -287,5 +287,11 @@ public interface BugCollection
 	 * Return whether textual messages will be added to any generated XML
 	 */
 	public boolean getWithMessages();
+	
+	/**
+	 * compute the unique id for this bug
+	 */
+	public void computeUniqueId(BugInstance bug);
+	
 
 }

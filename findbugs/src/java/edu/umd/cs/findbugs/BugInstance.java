@@ -444,7 +444,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * Get the BugInstance's unique id.
 	 * 
 	 * @return the unique id, or null if no unique id has been assigned
+	 * 
+	 * 
 	 */
+
 	public String getUniqueId() {
 		return uniqueId;
 	}
@@ -453,8 +456,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * Set the unique id of the BugInstance.
 	 * 
 	 * @param uniqueId the unique id
+	 * 
+	 *  This method is deprecated; ask the BugCollection for the uniqueId instead
 	 */
-	public void setUniqueId(String uniqueId) {
+
+	
+	 void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
 	}
 
