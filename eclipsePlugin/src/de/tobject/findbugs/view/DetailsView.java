@@ -73,7 +73,7 @@ public class DetailsView extends ViewPart {
 	private List annotationList;
 
 	// HTML presentation classes that don't depend upon Browser
-	private StyledText control;
+	@CheckForNull private StyledText control;
 	private DefaultInformationControl.IInformationPresenter presenter;
 	private TextPresentation presentation = new TextPresentation();
 
