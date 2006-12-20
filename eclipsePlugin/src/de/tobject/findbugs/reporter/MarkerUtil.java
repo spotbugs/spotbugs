@@ -586,7 +586,12 @@ public abstract class MarkerUtil {
 				return null;
 			}
 
-			return bugCollection.lookupFromUniqueId(uniqueId);
+			BugInstance bug = bugCollection.lookupFromUniqueId(uniqueId);
+			if (bug == null) {
+				return null;
+			}
+			assert bug.getUniqueId().equals(uniqueId);
+			return bug;
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
