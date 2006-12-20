@@ -611,7 +611,7 @@ public abstract class MarkerUtil {
 	 *         (or we can't find the marker for some reason)
 	 */
 	public IMarker findMarkerForWarning(IProject project, BugInstance warning) {
-		String warningUID = warning.getUniqueId();
+		String warningUID = warning.getInstanceHash();
 		if (warningUID == null) {
 			FindbugsPlugin.getDefault().logError("Bug instance has no unique id");
 			return null;
