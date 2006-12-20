@@ -165,7 +165,10 @@ public interface BugCollection
 	 * @param uniqueId the BugInstance's unique id.
 	 * @return the BugInstance with the given unique id,
 	 *         or null if there is no such BugInstance
+	 *         
+	 *         This is deprecated; uniqueIDs are not persistent.
 	 */
+	@Deprecated
 	public BugInstance lookupFromUniqueId(String uniqueId);
 	
 	/**

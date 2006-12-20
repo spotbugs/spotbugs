@@ -798,6 +798,7 @@ public class SortedBugCollection implements BugCollection {
 	/* (non-Javadoc)
 	     * @see edu.umd.cs.findbugs.BugCollection#lookupFromUniqueId(java.lang.String)
 	     */
+	@Deprecated
 	public BugInstance lookupFromUniqueId(String uniqueId) {
 		prepareHashToBugInstanceMap();
 		BugInstance result =  hashToBugInstanceMap.get(uniqueId);

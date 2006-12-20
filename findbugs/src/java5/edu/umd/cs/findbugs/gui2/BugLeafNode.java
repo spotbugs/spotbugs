@@ -89,10 +89,7 @@ public class BugLeafNode {
 	
 	public int hashCode()
 	{
-		if (bug.getUniqueId() != null)
-			return bug.getUniqueId().hashCode() + 7;
-		else
-			return bug.hashCode() + 7;
+		return bug.hashCode();
 	}
 	
 	public boolean matches(BugAspects aspects) {
