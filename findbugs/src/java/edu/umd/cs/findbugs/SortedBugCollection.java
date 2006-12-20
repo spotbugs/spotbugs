@@ -603,7 +603,7 @@ public class SortedBugCollection implements BugCollection {
 	private List<AppVersion> appVersionList;
 
 	private Map<String, BugInstance> uniqueIdToBugInstanceMap;
-	private int generatedUniqueIdCount;
+	private int nextUniqueId;
 
 	/**
 	 * Sequence number of the most-recently analyzed version
@@ -660,7 +660,7 @@ public class SortedBugCollection implements BugCollection {
 		summaryHTML = null;
 		classFeatureSetMap = new TreeMap<String, ClassFeatureSet>();
 		uniqueIdToBugInstanceMap = new HashMap<String, BugInstance>();
-		generatedUniqueIdCount = 0;
+		nextUniqueId = 0;
 		sequence = 0L;
 		appVersionList = new LinkedList<AppVersion>();
 		releaseName = "";
@@ -677,6 +677,16 @@ public class SortedBugCollection implements BugCollection {
 		return bugSet.add(bugInstance);
 	}
 
+	public void checkUniqueIds() {
+		if (true) return;
+		for(BugInstance bug : bugSet) {
+			String id = bug.getUniqueId();
+			BugInstance bug2 = uniqueIdToBugInstanceMap.get(id);
+			if (bug != bug2) {
+				System.out.println(bug.getUniqueId() + " doesn't match");
+			}
+		}
+	}
 	/**
 	 * Create a unique id for a BugInstance if it doesn't already have one,
 	 * or if the unique id it has conflicts with a BugInstance that is
@@ -684,16 +694,44 @@ public class SortedBugCollection implements BugCollection {
 	 * 
 	 * @param bugInstance the BugInstance
 	 */
+	private static boolean debug = false;
 	private void registerUniqueId(BugInstance bugInstance) {
+		if (debug) System.out.println("Bug collection: " + System.identityHashCode(this));
 		// If the BugInstance has no unique id, generate one.
 		// If the BugInstance has a unique id which conflicts with
 		// an existing BugInstance, then we also generate a new
 		// unique id.
 		String uniqueId = bugInstance.getUniqueId();
-		if (uniqueId == null || uniqueIdToBugInstanceMap.get(uniqueId) != null) {
+		if (uniqueId == null)  {
 			uniqueId = assignUniqueId(bugInstance);
+			if (debug) 
+				System.out.println("Assigned unique ID of " + uniqueId + " to " + bugInstance.getMessage());
+		} else {
+			BugInstance bugInstance2 = uniqueIdToBugInstanceMap.get(uniqueId);
+			if (bugInstance2 != null) {
+				if (bugInstance2 == bugInstance) {
+					if (debug) System.out.println("Reusing bug id of " + uniqueId);
+					return;
+				}
+
+				if (debug) {
+					System.out.println("Discarding unique ID of " + uniqueId + " for " + bugInstance.getMessage());
+					System.out.println("already held by  " + bugInstance2.getMessage());
+				}
+
+				uniqueId = assignUniqueId(bugInstance);
+				if (debug) System.out.println("assigning new unique ID of " + uniqueId  + " for " + bugInstance.getMessage());
+			} else if (debug) {
+				System.out.println("unique ID of " + uniqueId + " is new to this collection for  " + bugInstance.getMessage());
+				for(Map.Entry<String,BugInstance> e : uniqueIdToBugInstanceMap.entrySet() ) {
+					BugInstance b = e.getValue();
+					System.out.println(e.getKey() + " " + b.getUniqueId() + " " + b.getMessage());
+				}
+			}
 		}
 		uniqueIdToBugInstanceMap.put(uniqueId, bugInstance);
+		bugInstance.setUniqueId(uniqueId);
+		checkUniqueIds();
 	}
 
 	/**
@@ -703,9 +741,12 @@ public class SortedBugCollection implements BugCollection {
 	 */
 	private String assignUniqueId(BugInstance bugInstance) {
 		String uniqueId;
-		do {
-			uniqueId = String.valueOf(generatedUniqueIdCount++);
-		} while (uniqueIdToBugInstanceMap.get(uniqueId) != null);
+		while (true) {
+			uniqueId = String.valueOf(nextUniqueId++);
+			BugInstance bug2 = uniqueIdToBugInstanceMap.get(uniqueId);
+			if (bug2 == null) break;
+			if (debug) System.out.println("found collision for "+uniqueId);
+		};
 
 		bugInstance.setUniqueId(uniqueId);
 		return uniqueId;
@@ -800,7 +841,10 @@ public class SortedBugCollection implements BugCollection {
 	     * @see edu.umd.cs.findbugs.BugCollection#lookupFromUniqueId(java.lang.String)
 	     */
 	public BugInstance lookupFromUniqueId(String uniqueId) {
-		return uniqueIdToBugInstanceMap.get(uniqueId);
+		checkUniqueIds();
+		BugInstance result =  uniqueIdToBugInstanceMap.get(uniqueId);
+		if (debug) System.out.println(uniqueId + " = " + result.getMessage());
+		return result;
 	}
 
 	public long getSequenceNumber() {
@@ -825,7 +869,7 @@ public class SortedBugCollection implements BugCollection {
 		for (BugInstance bugInstance : dup.bugSet) {
 			uniqueIdToBugInstanceMap.put(bugInstance.getUniqueId(), bugInstance);
 		}
-		dup.generatedUniqueIdCount = this.generatedUniqueIdCount;
+		dup.nextUniqueId = this.nextUniqueId;
 		dup.sequence = this.sequence;
 		dup.timestamp = this.timestamp;
 		dup.releaseName = this.releaseName;
@@ -843,7 +887,7 @@ public class SortedBugCollection implements BugCollection {
 	public void clearBugInstances() {
 		bugSet.clear();
 		uniqueIdToBugInstanceMap.clear();
-		generatedUniqueIdCount = 0;
+		nextUniqueId = 0;
 	}
 
 	/* (non-Javadoc)
