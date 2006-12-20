@@ -291,7 +291,7 @@ public interface BugCollection
 	/**
 	 * compute the unique id for this bug
 	 */
-	public void computeUniqueId(BugInstance bug);
+	public void computeHash(BugInstance bug);
 	
 
 }

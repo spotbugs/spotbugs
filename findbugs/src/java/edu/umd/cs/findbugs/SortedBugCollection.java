@@ -300,18 +300,8 @@ public class SortedBugCollection implements BugCollection {
 			hash = tmp;
 		}
 		bugInstance.setInstanceHash(hash);
-		Integer count = quickHashCount.get(hash);
-		if (count == null) {
-			bugInstance.setInstanceOccurrenceNum(0);
-			quickHashCount.put(hash,0);
-		} else {
-			bugInstance.setInstanceOccurrenceNum(count+1);
-			quickHashCount.put(hash, count+1);
-		}
 		return hash;
 	}
-
-	HashMap<String, Integer> quickHashCount = new HashMap<String, Integer>();
 
 	public void computeBugHashes() {
 		if (preciseHashOccurrenceNumbersAvailable) return;
@@ -710,8 +700,8 @@ public class SortedBugCollection implements BugCollection {
 		return bugSet.add(bugInstance);
 	}
 
-	public void computeUniqueId(BugInstance bug) {
-		String value =  getQuickInstanceHash(bug)+"-"+ bug.getInstanceOccurrenceNum();
+	public void computeHash(BugInstance bug) {
+		String value =  getQuickInstanceHash(bug);
 		bug.setUniqueId(value);
 	}
 	
@@ -818,7 +808,7 @@ public class SortedBugCollection implements BugCollection {
 		computeBugHashes();
 		if (hashToBugMapAvailable) return;
 		for(BugInstance bug : bugSet) {
-			computeUniqueId(bug);
+			computeHash(bug);
 			hashToBugInstanceMap.put(bug.getUniqueId(), bug);
 		}
 		hashToBugMapAvailable = true;

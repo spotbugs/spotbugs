@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -1609,7 +1611,19 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return Returns the instanceHash.
 	 */
 	public String getInstanceHash() {
-		return instanceHash;
+		if (instanceHash != null) return instanceHash;
+			MessageDigest digest = null;
+			try { digest = MessageDigest.getInstance("MD5");
+			} catch (Exception e2) {
+				// OK, we won't digest
+			}
+			instanceHash = getInstanceKey();
+			if (digest != null) {
+				byte [] data = digest.digest(instanceHash.getBytes());
+				String tmp = new BigInteger(1,data).toString(16);
+				instanceHash = tmp;
+			}
+			return instanceHash;
 	}
 
 	public boolean isInstanceHashConsistent() {
