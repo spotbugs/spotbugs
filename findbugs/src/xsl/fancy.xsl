@@ -329,7 +329,7 @@
       <!-- bug descriptions - hidden -->
       <xsl:for-each select="/BugCollection/BugInstance">
             <div style="display:none;">
-               <xsl:attribute name="id">b-uid-<xsl:value-of select="@uid" /></xsl:attribute>
+               <xsl:attribute name="id">b-uid-<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" /></xsl:attribute>
                <xsl:for-each select="*/Message">
                   <div class="b-r"><xsl:apply-templates /></div>
                </xsl:for-each>
@@ -340,7 +340,7 @@
       </xsl:for-each>
    </div>
    <div id='fixedbox'>
-      <div id='bug-placeholder'>...</div>
+      <div id='bug-placeholder'></div>
    </div>
    </body>
 </html>
@@ -479,7 +479,7 @@
    <div class="bb">
       <a>
          <xsl:attribute name="href"></xsl:attribute>
-         <xsl:attribute name="onclick">showbug('b-uid-<xsl:value-of select="@uid" />','<xsl:value-of select="$which-list" />');return false;</xsl:attribute>
+         <xsl:attribute name="onclick">showbug('b-uid-<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" />','<xsl:value-of select="$which-list" />');return false;</xsl:attribute>
          <span>
             <xsl:attribute name="class">b-<xsl:value-of select="@priority"/></xsl:attribute>
             &#160;&#160;
@@ -487,7 +487,7 @@
          <span class="b-t"><xsl:value-of select="@abbrev" />: </span> <xsl:value-of select="Class/Message" />
       </a>
       <div style="display:none;">
-         <xsl:attribute name="id">b-uid-<xsl:value-of select="@uid" />-ph-<xsl:value-of select="$which-list" /></xsl:attribute>
+         <xsl:attribute name="id">b-uid-<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" />-ph-<xsl:value-of select="$which-list" /></xsl:attribute>
          loading...
       </div>
    </div>
@@ -627,10 +627,11 @@
       <div style="display:none;">
          <xsl:attribute name="id">category-<xsl:value-of select="$category" />-and-code-<xsl:value-of select="$code" />-and-bug-<xsl:value-of select="$bug" /></xsl:attribute>
          <xsl:variable name="cat-code-type">category-<xsl:value-of select="$category" />-and-code-<xsl:value-of select="$code" />-and-bug-<xsl:value-of select="$bug" /></xsl:variable>
+         <xsl:variable name="bug-id">b-uid-<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" /></xsl:variable>
          <xsl:for-each select="/BugCollection/BugInstance[@category=$category and @abbrev=$code and @type=$bug]">
             <xsl:call-template name="display-bug">
                <xsl:with-param name="b-t"     select="@type" />
-               <xsl:with-param name="bug-id"       select="@uid" />
+               <xsl:with-param name="bug-id"       select="$bug-id" />
                <xsl:with-param name="which-list"   select="'c'" />
             </xsl:call-template>
          </xsl:for-each>
@@ -794,10 +795,11 @@
       <div style="display:none;">
          <xsl:attribute name="id">package-<xsl:value-of select="$package" />-and-class-<xsl:value-of select="$class" />-and-type-<xsl:value-of select="$type" /></xsl:attribute>
          <xsl:variable name="package-class-type">package-<xsl:value-of select="$package" />-and-class-<xsl:value-of select="$class" />-and-type-<xsl:value-of select="$type" /></xsl:variable>
+         <xsl:variable name="bug-id">b-uid-<xsl:value-of select="@instanceHash" />-<xsl:value-of select="@instanceOccurrenceNum" /></xsl:variable>
          <xsl:for-each select="/BugCollection/BugInstance[@type=$type and Class[position()=1 and @classname=$class]]">
             <xsl:call-template name="display-bug">
                <xsl:with-param name="b-t"     select="@type" />
-               <xsl:with-param name="bug-id"       select="@uid" />
+               <xsl:with-param name="bug-id"       select="$bug-id" />
                <xsl:with-param name="which-list"   select="'p'" />
             </xsl:call-template>
          </xsl:for-each>
@@ -806,5 +808,3 @@
 </xsl:template>
 
 </xsl:transform>
-
- 	  	 
