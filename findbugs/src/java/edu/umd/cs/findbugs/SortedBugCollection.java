@@ -19,7 +19,19 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.Collection;
@@ -38,19 +50,22 @@ import java.util.zip.GZIPInputStream;
 
 import javax.xml.transform.TransformerException;
 
-import edu.umd.cs.findbugs.ba.MissingClassException;
-import edu.umd.cs.findbugs.gui2.SourceCodeDisplay;
-import edu.umd.cs.findbugs.model.ClassFeatureSet;
-import edu.umd.cs.findbugs.xml.*;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-
-import org.dom4j.DocumentException;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
-import org.xml.sax.XMLReader;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXParseException;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.model.ClassFeatureSet;
+import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 
 /**
  * An implementation of {@link BugCollection} that keeps the BugInstances
