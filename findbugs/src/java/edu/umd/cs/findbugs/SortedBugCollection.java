@@ -307,6 +307,7 @@ public class SortedBugCollection implements BugCollection {
 		try { digest = MessageDigest.getInstance("MD5");
 		} catch (Exception e2) {
 			// OK, we won't digest
+			assert true;
 		}
 		hash = bugInstance.getInstanceKey();
 		if (digest != null) {
@@ -643,7 +644,6 @@ public class SortedBugCollection implements BugCollection {
 	private Map<String, ClassFeatureSet> classFeatureSetMap;
 	private List<AppVersion> appVersionList;
 
-	private Map<String, BugInstance> hashToBugInstanceMap;
 	
 	private boolean preciseHashOccurrenceNumbersAvailable = false;
 	/**
@@ -700,7 +700,6 @@ public class SortedBugCollection implements BugCollection {
 		missingClassSet = new TreeSet<String>();
 		summaryHTML = null;
 		classFeatureSetMap = new TreeMap<String, ClassFeatureSet>();
-		hashToBugInstanceMap = new HashMap<String, BugInstance>();
 		sequence = 0L;
 		appVersionList = new LinkedList<AppVersion>();
 		releaseName = "";
@@ -716,15 +715,8 @@ public class SortedBugCollection implements BugCollection {
 		return bugSet.add(bugInstance);
 	}
 
-	public void computeHash(BugInstance bug) {
-		String value =  getQuickInstanceHash(bug);
-		bug.setUniqueId(value);
-	}
+
 	
-	private void invalidateUniqueIds() {
-		hashToBugInstanceMap.clear();
-		hashToBugMapAvailable = false;
-	}
 	private void invalidateHashes() {
 		preciseHashOccurrenceNumbersAvailable = false;
 	}
@@ -815,22 +807,12 @@ public class SortedBugCollection implements BugCollection {
 	     */
 	@Deprecated
 	public BugInstance lookupFromUniqueId(String uniqueId) {
-		prepareHashToBugInstanceMap();
-		BugInstance result =  hashToBugInstanceMap.get(uniqueId);
-		return result;
+		for(BugInstance bug : bugSet)
+			if (bug.getInstanceHash().equals(uniqueId)) return bug;
+		return null;
 	}
 
-	boolean hashToBugMapAvailable = false;
-	private void prepareHashToBugInstanceMap() {
-		computeBugHashes();
-		if (hashToBugMapAvailable) return;
-		for(BugInstance bug : bugSet) {
-			computeHash(bug);
-			hashToBugInstanceMap.put(bug.getUniqueId(), bug);
-		}
-		hashToBugMapAvailable = true;
-	}
-	public long getSequenceNumber() {
+		public long getSequenceNumber() {
 		return sequence;
 	}
 

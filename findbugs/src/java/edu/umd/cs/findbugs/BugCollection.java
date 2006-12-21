@@ -290,12 +290,7 @@ public interface BugCollection
 	 * Return whether textual messages will be added to any generated XML
 	 */
 	public boolean getWithMessages();
-	
-	/**
-	 * compute the unique id for this bug
-	 */
-	public void computeHash(BugInstance bug);
-	
+		
 	public BugInstance findBug(String instanceHash, String bugType, int lineNumber);
 
 }
