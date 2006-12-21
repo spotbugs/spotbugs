@@ -138,16 +138,23 @@ public class DetailsView extends ViewPart {
 		setHTMLText(html);
 	}
 
-	private void setHTMLText(String html) {
-		if (browser != null && !browser.isDisposed()) browser.setText(html);
-		else if (control != null && !control.isDisposed()) {
-			Rectangle size = this.control.getClientArea();
-			html = presenter.updatePresentation(getSite().getShell()
-					.getDisplay(), html, presentation, size.width, size.height);
-			control.setText(html);
-			TextPresentation.applyTextPresentation(presentation, control);
-		}
-	}
+	@SuppressWarnings("deprecation")
+    private void setHTMLText(String html) {
+        if (browser != null && !browser.isDisposed())
+            browser.setText(html);
+
+        else {
+            StyledText control = this.control;
+            if (control != null && !control.isDisposed()) {
+                Rectangle size = this.control.getClientArea();
+                html = presenter.updatePresentation(getSite().getShell()
+                        .getDisplay(), html, presentation, size.width,
+                        size.height);
+                control.setText(html);
+                TextPresentation.applyTextPresentation(presentation, control);
+            }
+        }
+    }
 	/**
 	 * Set the content to be displayed.
 	 * 
