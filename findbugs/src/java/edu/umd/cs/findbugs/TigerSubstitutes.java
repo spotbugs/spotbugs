@@ -34,5 +34,28 @@ public class TigerSubstitutes {
 		// return Long.valueOf(value);
 		return  (Long) value;
 	}
-	
+    
+    /**
+     * Copied from java.util.Arrays;
+     * 
+     */
+      public static int hashCode(Object a[]) {
+            if (a == null)
+                return 0;
+
+            int result = 1;
+
+            for (Object element : a)
+                result = 31 * result + (element == null ? 0 : element.hashCode());
+
+            return result;
+        }
+
+      public static <U> Class<? extends U> asSubclass(Class base, Class<U> clazz) {
+          if (clazz.isAssignableFrom(base))
+              return (Class<? extends U>) base;
+          else
+              throw new ClassCastException(base.toString());
+      }
+
 }
