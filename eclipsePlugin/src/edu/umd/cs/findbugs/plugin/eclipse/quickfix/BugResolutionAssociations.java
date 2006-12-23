@@ -264,7 +264,7 @@ public class BugResolutionAssociations {
         StringBuffer sb = new StringBuffer();
         for (Entry<String, Set<Class<? extends IMarkerResolution>>> entry : resolutionClasses.entrySet()) {
             final String bugType = entry.getKey();
-            sb.append(bugType, 0, bugType.length());
+            sb.append(bugType);
             sb.append(" { ");
             for (Class<? extends IMarkerResolution> resolutionClass : entry.getValue()) {
                 sb.append(resolutionClass.getName());
@@ -272,7 +272,7 @@ public class BugResolutionAssociations {
             }
             sb.replace(sb.length() - 2, sb.length(), " }\n");
         }
-        sb.trimToSize();
+        // sb.trimToSize();
         return sb.toString();
     }
 
