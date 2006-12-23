@@ -59,6 +59,7 @@ import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 
@@ -180,7 +181,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
         Name accessControllerName;
         if (isUpdateImports()) {
-            accessControllerName = ast.newSimpleName(AccessController.class.getSimpleName());
+            accessControllerName = ast.newSimpleName(TigerSubstitutes.getSimpleName(AccessController.class));
         } else {
             accessControllerName = ast.newName(AccessController.class.getName());
         }
@@ -209,7 +210,7 @@ public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
         Name privilegedActionName;
         if (isUpdateImports()) {
-            privilegedActionName = ast.newSimpleName(PrivilegedAction.class.getSimpleName());
+            privilegedActionName = ast.newSimpleName(TigerSubstitutes.getSimpleName(PrivilegedAction.class));
         } else {
             privilegedActionName = ast.newName(PrivilegedAction.class.getName());
         }

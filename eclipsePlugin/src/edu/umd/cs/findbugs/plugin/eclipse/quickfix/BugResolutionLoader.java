@@ -163,7 +163,8 @@ public class BugResolutionLoader {
             loadAttributes(resolution, attributes);
             return resolution;
         } catch (InstantiationException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to instaniate Fixer '" + resolutionClass.getSimpleName() + "'.");
+            FindbugsPlugin.getDefault().logException(e, "Failed to instaniate Fixer '" + 
+                    TigerSubstitutes.getSimpleName(resolutionClass)+ "'.");
             return null;
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(e);
