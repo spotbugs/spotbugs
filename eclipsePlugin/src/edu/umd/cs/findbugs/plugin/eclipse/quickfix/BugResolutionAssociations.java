@@ -261,7 +261,7 @@ public class BugResolutionAssociations {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         for (Entry<String, Set<Class<? extends IMarkerResolution>>> entry : resolutionClasses.entrySet()) {
             final String bugType = entry.getKey();
             sb.append(bugType, 0, bugType.length());

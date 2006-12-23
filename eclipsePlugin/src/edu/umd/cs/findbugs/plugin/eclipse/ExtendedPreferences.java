@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Properties;
 
 import edu.umd.cs.findbugs.FindBugs;
+import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
 
 /**
@@ -233,7 +234,8 @@ public class ExtendedPreferences implements Cloneable {
 
 	@Override
 	public int hashCode() {
-		return effort.hashCode() + Arrays.hashCode(includeFilterFiles) + Arrays.hashCode(excludeFilterFiles);
+		return effort.hashCode() + TigerSubstitutes.hashCode(includeFilterFiles) 
+        + TigerSubstitutes.hashCode(excludeFilterFiles);
 	}
 	@Override
 	public boolean equals(Object obj) {

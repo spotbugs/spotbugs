@@ -22,7 +22,6 @@
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.checkForNull;
-import static java.lang.Boolean.parseBoolean;
 import static java.lang.Double.parseDouble;
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
@@ -49,6 +48,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
@@ -220,7 +220,7 @@ public class BugResolutionLoader {
             return value;
         }
         if (boolean.class == type || Boolean.class == type) {
-            return parseBoolean(value);
+            return TigerSubstitutes.parseBoolean(value);
         }
         if (int.class == type || Integer.class == type) {
             return parseInt(value);
@@ -247,7 +247,7 @@ public class BugResolutionLoader {
         try {
             Class<?> resolutionClass = Class.forName(className);
             if (IMarkerResolution.class.isAssignableFrom(resolutionClass)) {
-                return resolutionClass.asSubclass(IMarkerResolution.class);
+                return TigerSubstitutes.asSubclass(resolutionClass, IMarkerResolution.class);
             }
 
             FindbugsPlugin.getDefault().logError("Fixer '" + className + "' not a IMarkerResolution");
