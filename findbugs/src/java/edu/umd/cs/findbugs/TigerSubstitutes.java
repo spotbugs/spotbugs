@@ -57,5 +57,20 @@ public class TigerSubstitutes {
           else
               throw new ClassCastException(base.toString());
       }
-
+      
+      public static String getSimpleName(Class c) {
+              if (c.isArray())
+                  return getSimpleName(c.getComponentType())+"[]";
+              String name = c.getName();
+             name =  name.substring(name.lastIndexOf(".")+1);
+             int index = name.lastIndexOf("$");
+             if (index == -1) return name;
+             if (index +1 ==name.length() )
+                 throw new InternalError("Malformed class name");
+             if (isAsciiDigit(name.charAt(index+1))) return "";
+             return name.substring(index+1);
+      }
+      private static boolean isAsciiDigit(char c) {
+          return '0' <= c && c <= '9';
+      }
 }
