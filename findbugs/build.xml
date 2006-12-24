@@ -152,7 +152,7 @@
 		<javac srcdir="${junitsrc.dir}"
 				destdir="${classes.dir}"
 				source="1.5"
-				target="jsr14"
+				target="1.5"
 				deprecation="on"
 				debug="on">
 			<classpath refid="tools.classpath"/>
