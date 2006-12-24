@@ -41,6 +41,7 @@ public class TigerSubstitutesTest extends TestCase {
     };
 
     public void testGetSimpleName() {
+	main(new String[0]);
         check("a");
         check(new int[1]);
         check(new Object[1]);
@@ -57,11 +58,14 @@ public class TigerSubstitutesTest extends TestCase {
         check(o.getClass());
     }
     public void check(Class c) {
-        assertEquals(c.getSimpleName(), TigerSubstitutes.getSimpleName(c));
+	String sn = c.getSimpleName();
+	String ts = TigerSubstitutes.getSimpleName(c);
+	System.out.println( sn + " " + ts);
+        assertEquals(sn, ts);
     }
     
-    public static void main(String args[]) throws Exception {
-        Class c = bar.getClass();
+    public static void main(String args[]) {
+        Class c = test.getClass();
         System.out.println(c.getName());
         System.out.println(c.getCanonicalName());
         System.out.println(c.getSimpleName());
