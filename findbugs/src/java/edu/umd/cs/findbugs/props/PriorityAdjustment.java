@@ -49,6 +49,10 @@ public class PriorityAdjustment {
 	/** Raise the priority. */
 	public static final PriorityAdjustment RAISE_PRIORITY_TO_HIGH =
 		new PriorityAdjustment("RAISE_PRIORITY_TO_HIGH");
+    /** Priority is at most low. */
+    public static final PriorityAdjustment AT_MOST_LOW =
+        new PriorityAdjustment("AT_MOST_LOW");
+
 	/** Lower the priority. */
 	public static final PriorityAdjustment LOWER_PRIORITY =
 		new PriorityAdjustment("LOWER_PRIORITY");

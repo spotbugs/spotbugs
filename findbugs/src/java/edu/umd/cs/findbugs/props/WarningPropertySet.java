@@ -153,6 +153,7 @@ public class WarningPropertySet implements Cloneable {
 	
 		boolean atLeastMedium = false;
 		boolean falsePositive = false;
+        boolean atMostLow = false;
 		int priority = basePriority;
 		if (!relaxedReporting) {
 			for (WarningProperty warningProperty : map.keySet()) {
@@ -169,10 +170,15 @@ public class WarningPropertySet implements Cloneable {
 				} else if (adj == PriorityAdjustment.RAISE_PRIORITY_TO_HIGH) {
 					
 					return Detector.HIGH_PRIORITY;
-				}else if (adj == PriorityAdjustment.LOWER_PRIORITY)
+				}else if (adj == PriorityAdjustment.LOWER_PRIORITY) {
 					++priority;
+                }else if (adj == PriorityAdjustment.AT_MOST_LOW) {
+                    priority++;
+                    atMostLow = true;
+                } else throw new IllegalStateException("Unknown priority " + adj);
+                 
 			}
-			
+			if (atMostLow) return Math.min(Math.max(Detector.LOW_PRIORITY, priority), Detector.EXP_PRIORITY);
 			if (atLeastMedium && priority > Detector.NORMAL_PRIORITY) priority = Detector.NORMAL_PRIORITY;
 			else if (falsePositive && !atLeastMedium) return Detector.EXP_PRIORITY+1;
 			
