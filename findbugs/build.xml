@@ -187,6 +187,13 @@
 		</xmlvalidate>
 	</target>
 	
+	<target name="validatefancy" depends="runanttask">
+		<xmlvalidate lenient="false" failonerror="yes" file="${jar.dir}/findbugs.html">
+			<attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
+			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
+		</xmlvalidate>
+	</target>
+	
 	<!-- Build jar files. -->
 	<target name="jars" depends="classes, validate">
 		<!-- Main engine and command line jar file. -->
@@ -324,8 +331,9 @@
    <property name="findbugs.home" value="/Users/pugh/findbugs" />
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
     <findbugs home="/Users/pugh/findbugs"
-              output="xml"
-              outputFile="${jar.dir}/findbugs.xml" >
+              output="html"
+    	      stylesheet="fancy.xsl"
+              outputFile="${jar.dir}/findbugs.html" >
       <sourcePath path="${src.dir}" />
       <auxClasspath path="${jar.dir}/bcel.jar" />
       <class location="${jar.dir}/findbugs.jar" />
