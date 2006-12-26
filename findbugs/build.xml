@@ -43,6 +43,7 @@
 	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
 	<property name="gui.jar" value="${jar.dir}/findbugsGUI.jar"/>
 	<property name="test.jar" value="${test.dir}/dumb.jar"/>
+	<property name="sampleoutput.dir" value="build/sampleoutput"/>
 	<property name="junittests.jar" value="build/junittests.jar"/>
 	<property name="anttask.jar" value="${jar.dir}/findbugs-ant.jar"/>
 	<property name="scripts.props" value="etc/script.properties"/>
@@ -187,10 +188,11 @@
 		</xmlvalidate>
 	</target>
 	
-	<target name="validatefancy" depends="runanttask">
-		<xmlvalidate lenient="false" failonerror="yes" file="${jar.dir}/findbugs.html">
+	<target name="validatesampleoutput" depends="runanttask">
+		<xmlvalidate lenient="false" failonerror="yes">
 			<attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
 			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
+			<fileset dir="${sampleoutput.dir}" includes="*.html"/>
 		</xmlvalidate>
 	</target>
 	
@@ -330,13 +332,34 @@
   <target name="runanttask" depends="anttask,jars">
    <property name="findbugs.home" value="/Users/pugh/findbugs" />
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
+    <mkdir dir="${sampleoutput.dir}"/>
+    <findbugs home="/Users/pugh/findbugs"
+              output="html"
+    	      stylesheet="default.xsl"
+			  jvmargs="-Xmx600m"
+              outputFile="${sampleoutput.dir}/default.html" >
+      <class location="${jar.dir}/bcel.jar" />
+    </findbugs>
+    <findbugs home="/Users/pugh/findbugs"
+              output="html"
+    	      stylesheet="plain.xsl"
+			  jvmargs="-Xmx600m"
+              outputFile="${sampleoutput.dir}/plain.html" >
+      <class location="${jar.dir}/bcel.jar" />
+    </findbugs>
+    <findbugs home="/Users/pugh/findbugs"
+              output="html"
+    	      stylesheet="summary.xsl"
+			  jvmargs="-Xmx600m"
+              outputFile="${sampleoutput.dir}/summary.html" >
+      <class location="${jar.dir}/bcel.jar" />
+    </findbugs>
     <findbugs home="/Users/pugh/findbugs"
               output="html"
     	      stylesheet="fancy.xsl"
-              outputFile="${jar.dir}/findbugs.html" >
-      <sourcePath path="${src.dir}" />
-      <auxClasspath path="${jar.dir}/bcel.jar" />
-      <class location="${jar.dir}/findbugs.jar" />
+			  jvmargs="-Xmx600m"
+              outputFile="${sampleoutput.dir}/fancy.html" >
+      <class location="${jar.dir}/bcel.jar" />
     </findbugs>
   </target>
 
@@ -354,7 +377,7 @@
 			<arg value="${engine.jar}"/>
 		</java>
 	</target>
-	<target name="quicktest" depends="runjunit,runanttask"/>
+	<target name="smoketest" depends="runjunit,runanttask"/>
 
 
 	<!-- Get version properties. -->
