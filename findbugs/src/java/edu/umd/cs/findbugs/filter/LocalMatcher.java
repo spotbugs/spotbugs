@@ -1,6 +1,6 @@
 /*
- * FindBugs - Find bugs in Java programs
- * Copyright (C) 2003-2005, University of Maryland
+ * FindBugs - Find Bugs in Java programs
+ * Copyright (C) 2006, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,23 +19,32 @@
 
 package edu.umd.cs.findbugs.filter;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.regex.Pattern;
 
-public abstract class CompoundMatcher implements Matcher {
-	private List<Matcher> childList = new LinkedList<Matcher>();
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 
-    public int numberChildren() {
-        return childList.size();
-    }
-	public void addChild(Matcher child) {
-		childList.add(child);
+
+public class LocalMatcher implements Matcher {
+	private NameMatch name;
+	
+	public LocalMatcher(String name) {
+		this.name = new NameMatch(name);
 	}
-
-	public Iterator<Matcher> childIterator() {
-		return childList.iterator();
+	
+	public LocalMatcher(String name, String type) {
+		this.name = new NameMatch(name);
+	}
+	
+	public boolean match(BugInstance bugInstance) {
+		LocalVariableAnnotation localAnnotation = bugInstance.getPrimaryLocalVariableAnnotation();
+		if(localAnnotation == null) {
+			return false;
+		}
+		if(!name.match(localAnnotation.getName())) {
+			return false;
+		}
+		return true;
 	}
 }
-
-// vim:ts=4

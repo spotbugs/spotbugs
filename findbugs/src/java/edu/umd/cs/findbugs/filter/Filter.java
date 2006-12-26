@@ -74,12 +74,13 @@ public class Filter extends OrMatcher {
 			throw new FilterException("Couldn't parse filter file " + fileName, e);
 		}
 
+        int count = 1;
 		// Iterate over Match elements
 		for (Object matchObj : filterDoc.selectNodes("/FindBugsFilter/Match")) {
 			Element matchNode = (Element) matchObj;
 			AndMatcher matchMatcher = new AndMatcher();
 
-			// Each match node must have either "class" or "classregex" attributes
+			// Each match node may have either "class" or "classregex" attributes
 			Matcher classMatcher = null;
 			String classAttr = matchNode.valueOf("@class");
 			if (!classAttr.equals("")) {
@@ -101,10 +102,14 @@ public class Filter extends OrMatcher {
 				Matcher matcher = getMatcher(child);
 				matchMatcher.addChild(matcher);
 			}
-
+			if (matchMatcher.numberChildren() == 0)
+                throw new IllegalArgumentException("Match element #" + count + " (starting at 1) is invalid in filter file " + fileName);
 			// Add the Match matcher to the overall Filter
 			this.addChild(matchMatcher);
+            count++;
 		}
+        if (this.numberChildren() == 0)
+           throw new  IllegalArgumentException("Could not find any /FindBugsFilter/Match nodes in filter file " + fileName);
 
 	}
 
@@ -120,7 +125,9 @@ public class Filter extends OrMatcher {
 		String name = element.getName();
 		if (name.equals("BugCode")) {
 			return new BugMatcher(element.valueOf("@name"), "", "");
-		} else if (name.equals("BugPattern")) {
+        } else  if (name.equals("Local")) {
+                return new LocalMatcher(element.valueOf("@name"));
+        } else if (name.equals("BugPattern")) {
 			return new BugMatcher("", element.valueOf("@name"), "");
 		} else if (name.equals("Bug")) {
 			return new BugMatcher(element.valueOf("@code"), element
