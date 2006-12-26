@@ -75,7 +75,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private int priorityThreshold = Detector.NORMAL_PRIORITY;
 	private PrintStream outputStream = null;
 	private Set<String> bugCategorySet = null;
-	private UserPreferences userPreferences = UserPreferences.createDefaultUserPreferences();
+	private UserPreferences userPreferences;
 	private String trainingOutputDir;
 	private String trainingInputDir;
 	private String releaseName = "";
@@ -244,7 +244,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				// Selecting detectors explicitly, so start out by
 				// disabling all of them.  The selected ones will
 				// be re-enabled.
-				userPreferences.enableAllDetectors(false);
+				getUserPreferences().enableAllDetectors(false);
 			}
 
 			// Explicitly enable or disable the selected detectors.
@@ -254,7 +254,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				DetectorFactory factory = DetectorFactoryCollection.instance().getFactory(visitorName);
 				if (factory == null)
 					throw new IllegalArgumentException("Unknown detector: " + visitorName);
-				userPreferences.enableDetector(factory, !omit);
+				getUserPreferences().enableDetector(factory, !omit);
 			}
 		} else if (option.equals("-chooseVisitors")) {
 			// This is like -visitors and -omitVisitors, but
@@ -269,9 +269,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 					if (FindBugs.DEBUG) {
 						System.err.println("Detector " + factory.getShortName() + " " +
 								(enabled ? "enabled" : "disabled") +
-								", userPreferences="+System.identityHashCode(userPreferences));
+								", userPreferences="+System.identityHashCode(getUserPreferences()));
 					}
-					userPreferences.enableDetector(factory, enabled);
+					getUserPreferences().enableDetector(factory, enabled);
 				}
 			});
 		} else if (option.equals("-choosePlugins")) {
@@ -310,7 +310,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				factory.setPriorityAdjustment(adjustment.equals("raise") ? -1 : +1);
 			}
 		} else if (option.equals("-bugCategories")) {
-			this.bugCategorySet = FindBugs.handleBugCategories(userPreferences, argument);
+			this.bugCategorySet = FindBugs.handleBugCategories(getUserPreferences(), argument);
 		} else if (option.equals("-onlyAnalyze")) {
 			// The argument is a comma-separated list of classes and packages
 			// to select to analyze.  (If a list item ends with ".*",
@@ -419,7 +419,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		findBugs.setBugReporter(bugReporter);
 		findBugs.setProject(project);
 
-		findBugs.setUserPreferences(userPreferences);
+		findBugs.setUserPreferences(getUserPreferences());
 
 		if (includeFilterFile != null) 
 			findBugs.addFilter(includeFilterFile, true);
@@ -465,4 +465,20 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			}
 		}
 	}
+
+    /**
+     * @param userPreferences The userPreferences to set.
+     */
+    private void setUserPreferences(UserPreferences userPreferences) {
+        this.userPreferences = userPreferences;
+    }
+
+    /**
+     * @return Returns the userPreferences.
+     */
+    private UserPreferences getUserPreferences() {
+        if (userPreferences == null) 
+            userPreferences = UserPreferences.createDefaultUserPreferences();
+        return userPreferences;
+    }
 }
