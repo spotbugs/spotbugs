@@ -202,8 +202,10 @@ public class FindDeadLocalStores implements Detector {
 			LocalVariableAnnotation lvAnnotation 
 			= LocalVariableAnnotation.getLocalVariableAnnotation(method, location, ins);			
 			
-			if (EXCLUDED_LOCALS.contains(lvAnnotation.getName())) continue;
-			propertySet.setProperty(DeadLocalStoreProperty.LOCAL_NAME, lvAnnotation.getName());
+			String name = lvAnnotation.getName();
+            if (name.charAt(0) == '$' || name.charAt(0) == '_') propertySet.addProperty(DeadLocalStoreProperty.SYNTHETIC_NAME);
+            if (EXCLUDED_LOCALS.contains(name)) continue;
+			propertySet.setProperty(DeadLocalStoreProperty.LOCAL_NAME, name);
 			
 			int local = ins.getIndex();
 			// Is this a store to a parameter which was dead on entry to the method?
