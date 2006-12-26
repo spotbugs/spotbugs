@@ -86,7 +86,7 @@
 
 	<!-- Default target builds scripts and jars, allowing execution using
 		the working directory as FINDBUGS_HOME.  Also build test case jarfile. -->
-	<target name="build" depends="jars,scripts,anttask,runanttask"/>
+	<target name="build" depends="jars,scripts,anttask"/>
 	
 	<!-- Rebuild from scratch. -->
 	<target name="rebuild" depends="clean,build"/>
