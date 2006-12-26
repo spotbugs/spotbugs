@@ -1134,6 +1134,19 @@ using the &FindBugs; task.
        </para>
     </listitem>
   </varlistentry>
+ <varlistentry>
+    <term><literal>stylesheet</literal></term>
+    <listitem>
+       <para>
+       Optional attribute.
+      It specifies the stylesheet to use to generate html output when the output is set to html.
+      Stylesheets included in the FindBugs distribution include default.xsl,     fancy.xsl,      plain.xsl, and      summary.xsl.
+       The default value, if no stylesheet attribute
+      is provided, is default.xsl.
+      
+       </para>
+    </listitem>
+  </varlistentry>
 
   <varlistentry>
     <term><literal>sort</literal></term>
@@ -1621,6 +1634,14 @@ In other words, each of the children must be true for the predicate to be true.
    the exact or regex match pattern for the field name. You can also filter fields according to their signature -
    use <literal>type</literal> attribute to specify fully qualified type of the field. You can specify eiter or both
    of these attributes in order to perform name / signature based matches.
+   </para></listitem>
+ </varlistentry>
+   
+   <varlistentry>
+   <term><literal>&lt;Local&gt;</literal></term>
+
+   <listitem><para>This element specifies a local variable. The <literal>name</literal> attribute is is used to specify
+   the exact or regex match pattern for the local variable name. Local variables are variables defined within a method.
    </para></listitem>
  </varlistentry>
    
