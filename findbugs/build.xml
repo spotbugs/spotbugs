@@ -86,7 +86,7 @@
 
 	<!-- Default target builds scripts and jars, allowing execution using
 		the working directory as FINDBUGS_HOME.  Also build test case jarfile. -->
-	<target name="build" depends="jars,scripts,anttask"/>
+	<target name="build" depends="jars,scripts,anttask,runanttask"/>
 	
 	<!-- Rebuild from scratch. -->
 	<target name="rebuild" depends="clean,build"/>
@@ -319,6 +319,20 @@
 		</jar>
 	</target>
 
+
+  <target name="runanttask" depends="anttask,jars">
+   <property name="findbugs.home" value="/Users/pugh/findbugs" />
+    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
+    <findbugs home="/Users/pugh/findbugs"
+              output="xml"
+              outputFile="${jar.dir}/findbugs.xml" >
+      <sourcePath path="${src.dir}" />
+      <auxClasspath path="${jar.dir}/bcel.jar" />
+      <class location="${jar.dir}/findbugs.jar" />
+    </findbugs>
+  </target>
+
+
 	<!-- Run JUnit test cases -->
 	<target name="runjunit" depends="junittests,jars">
 		<echo>Running JUnit test cases for FindBugs...</echo>
@@ -332,6 +346,8 @@
 			<arg value="${engine.jar}"/>
 		</java>
 	</target>
+	<target name="quicktest" depends="runjunit,runanttask"/>
+
 
 	<!-- Get version properties. -->
 	<target name="version" depends="classes">
