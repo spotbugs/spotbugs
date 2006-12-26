@@ -175,7 +175,9 @@ public class WarningPropertySet implements Cloneable {
                 }else if (adj == PriorityAdjustment.AT_MOST_LOW) {
                     priority++;
                     atMostLow = true;
-                } else throw new IllegalStateException("Unknown priority " + adj);
+                }else if (adj == PriorityAdjustment.NO_ADJUSTMENT) {
+                    assert true; // do nothing
+               } else throw new IllegalStateException("Unknown priority " + adj);
                  
 			}
 			if (atMostLow) return Math.min(Math.max(Detector.LOW_PRIORITY, priority), Detector.EXP_PRIORITY);
