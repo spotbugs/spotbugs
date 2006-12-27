@@ -51,7 +51,7 @@ public class TigerSubstitutesTest extends TestCase {
         check(Integer.TYPE);
         check(Foo.class);
         check(Map.Entry.class);
-        check(test);
+        // check(test);
         check(bar);
     }
     public void check(Object o) {
