@@ -394,35 +394,6 @@
               outputFile="${sampleoutput.dir}/bcel.xml" >
       <class location="${jar.dir}/bcel.jar" />
     </findbugs>
-    <findbugs home="."
-              output="html"
-    	      stylesheet="default.xsl"
-			  jvmargs="-Xmx600m"
-              outputFile="${sampleoutput.dir}/default.html" >
-      <class location="${jar.dir}/bcel.jar" />
-    </findbugs>
-
-    <findbugs home="."
-              output="html"
-    	      stylesheet="plain.xsl"
-			  jvmargs="-Xmx600m"
-              outputFile="${sampleoutput.dir}/plain.html" >
-      <class location="${jar.dir}/bcel.jar" />
-    </findbugs>
-    <findbugs home="."
-              output="html"
-    	      stylesheet="summary.xsl"
-			  jvmargs="-Xmx600m"
-              outputFile="${sampleoutput.dir}/summary.html" >
-      <class location="${jar.dir}/bcel.jar" />
-    </findbugs>
-    <findbugs home="."
-              output="html"
-    	      stylesheet="fancy.xsl"
-			  jvmargs="-Xmx600m"
-              outputFile="${sampleoutput.dir}/fancy.html" >
-      <class location="${jar.dir}/bcel.jar" />
-    </findbugs>
   </target>
 
 
