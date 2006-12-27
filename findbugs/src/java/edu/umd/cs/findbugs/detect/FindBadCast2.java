@@ -193,6 +193,7 @@ public class FindBadCast2 implements Detector {
 					pc).size();
 			boolean split = occurrences > 1;
 			IsNullValueFrame nullFrame = isNullDataflow.getFactAtLocation(location);
+            if (!nullFrame.isValid()) continue;
 			IsNullValue operandNullness = nullFrame.getTopValue();
 			if (DEBUG) {
 				System.out
