@@ -2141,10 +2141,10 @@ is "Note: this class has a natural ordering that is inconsistent with equals."
 
 <p>If you don't think instances of this class will ever be inserted into a HashMap/HashTable,
 the recommended <code>hashCode</code> implementation to use is:</p>
-<p><pre>public int hashCode() {
+<pre>public int hashCode() {
   assert false : "hashCode not designed";
   return 42; // any arbitrary constant will do 
-  }</pre></p>
+  }</pre>
 ]]>
     </Details>
   </BugPattern>
@@ -2491,7 +2491,7 @@ This not necessarily a bug, but is worth examining
 That subclass will not yet be initialized at the time of this use.
 For example, in the following code, <code>foo</code> will be null.</p>
 
-<p><code><pre>
+<pre>
 public class CircularClassInitialization {
 	static class InnerClassSingleton extends CircularClassInitialization {
 		static InnerClassSingleton singleton = new InnerClassSingleton();
@@ -2499,7 +2499,7 @@ public class CircularClassInitialization {
 	
 	static CircularClassInitialization foo = InnerClassSingleton.singleton;
 }
-</pre></code></p>
+</pre>
 
 ]]>
     </Details>
