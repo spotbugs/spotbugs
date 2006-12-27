@@ -188,7 +188,7 @@
 		</xmlvalidate>
 	</target>
 	
-	<target name="validatesampleoutput" depends="runanttask">
+	<target name="validatesampleoutput">
 		<xmlvalidate lenient="false" failonerror="yes">
 			<attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
 			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
@@ -329,32 +329,94 @@
 	</target>
 
 
+  <target name="applystylesheets" depends="jars">
+   <property name="findbugs.home" value="." />
+   <java classname="edu.umd.cs.findbugs.PrintingBugReporter"
+           fork="true"
+           failonerror="true"
+		   output="${sampleoutput.dir}/fancy.html" 
+           maxmemory="400m">
+		<classpath>
+           <pathelement location="${jar.dir}/findbugs.jar"/>
+		</classpath>
+    <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
+	    <arg value="-html:fancy.xsl"/>
+	    <arg value="${sampleoutput.dir}/bcel.xml"/>
+	</java>
+   <java classname="edu.umd.cs.findbugs.PrintingBugReporter"
+           fork="true"
+           failonerror="true"
+		   output="${sampleoutput.dir}/default.html" 
+           maxmemory="400m">
+		<classpath>
+           <pathelement location="${jar.dir}/findbugs.jar"/>
+		</classpath>
+    <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
+	    <arg value="-html:default.xsl"/>
+	    <arg value="${sampleoutput.dir}/bcel.xml"/>
+	</java>
+   <java classname="edu.umd.cs.findbugs.PrintingBugReporter"
+           fork="true"
+           failonerror="true"
+		   output="${sampleoutput.dir}/plain.html" 
+           maxmemory="400m">
+		<classpath>
+           <pathelement location="${jar.dir}/findbugs.jar"/>
+		</classpath>
+    <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
+	    <arg value="-html:plain.xsl"/>
+	    <arg value="${sampleoutput.dir}/bcel.xml"/>
+	</java>
+   <java classname="edu.umd.cs.findbugs.PrintingBugReporter"
+           fork="true"
+           failonerror="true"
+		   output="${sampleoutput.dir}/summary.html" 
+           maxmemory="400m">
+		<classpath>
+           <pathelement location="${jar.dir}/findbugs.jar"/>
+		</classpath>
+    <jvmarg value="-Dfindbugs.home=${findbugs.home}"/>
+	    <arg value="-html:summary.xsl"/>
+	    <arg value="${sampleoutput.dir}/bcel.xml"/>
+	</java>
+
+
+
+
+  </target>
   <target name="runanttask" depends="anttask,jars">
-   <property name="findbugs.home" value="/Users/pugh/findbugs" />
+   <property name="findbugs.home" value="." />
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${anttask.jar}"/>
     <mkdir dir="${sampleoutput.dir}"/>
-    <findbugs home="/Users/pugh/findbugs"
+    <findbugs home="."
+              output="xml:withMessages"
+			  jvmargs="-Xmx600m"
+              outputFile="${sampleoutput.dir}/bcel.xml" >
+      <class location="${jar.dir}/bcel.jar" />
+    </findbugs>
+    <findbugs home="."
               output="html"
     	      stylesheet="default.xsl"
 			  jvmargs="-Xmx600m"
               outputFile="${sampleoutput.dir}/default.html" >
       <class location="${jar.dir}/bcel.jar" />
     </findbugs>
-    <findbugs home="/Users/pugh/findbugs"
+
+    <findbugs home="."
               output="html"
     	      stylesheet="plain.xsl"
 			  jvmargs="-Xmx600m"
               outputFile="${sampleoutput.dir}/plain.html" >
       <class location="${jar.dir}/bcel.jar" />
     </findbugs>
-    <findbugs home="/Users/pugh/findbugs"
+    <findbugs home="."
               output="html"
     	      stylesheet="summary.xsl"
 			  jvmargs="-Xmx600m"
               outputFile="${sampleoutput.dir}/summary.html" >
       <class location="${jar.dir}/bcel.jar" />
     </findbugs>
-    <findbugs home="/Users/pugh/findbugs"
+    <findbugs home="."
               output="html"
     	      stylesheet="fancy.xsl"
 			  jvmargs="-Xmx600m"
