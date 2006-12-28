@@ -188,13 +188,21 @@
 		</xmlvalidate>
 	</target>
 	
-	<target name="validatesampleoutput">
-		<xmlvalidate lenient="false" failonerror="yes">
+	<target name="validatesamplexmloutput" depends="runanttask">
+		<schemavalidate failonerror="yes" noNamespaceFile="${etc.dir}/bugcollection.xsd">
+			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
+			<fileset dir="${sampleoutput.dir}" includes="*.xml"/>
+		</schemavalidate>
+	</target>
+	<target name="validatesamplehtmloutput" depends="applystylesheets">
+
+		<xmlvalidate failonerror="no">
 			<attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
 			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
 			<fileset dir="${sampleoutput.dir}" includes="*.html"/>
 		</xmlvalidate>
 	</target>
+	<target name="validatesampleoutput" depends="validatesamplexmloutput,validatesamplehtmloutput"/>
 	
 	<!-- Build jar files. -->
 	<target name="jars" depends="classes, validate">
@@ -329,7 +337,7 @@
 	</target>
 
 
-  <target name="applystylesheets" depends="jars">
+  <target name="applystylesheets" depends="jars,runanttask">
    <property name="findbugs.home" value="." />
    <java classname="edu.umd.cs.findbugs.PrintingBugReporter"
            fork="true"
@@ -410,7 +418,8 @@
 			<arg value="${engine.jar}"/>
 		</java>
 	</target>
-	<target name="smoketest" depends="runjunit,runanttask"/>
+
+	<target name="smoketest" depends="runjunit,validatesampleoutput"/>
 
 
 	<!-- Get version properties. -->
