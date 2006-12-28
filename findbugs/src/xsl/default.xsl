@@ -62,7 +62,7 @@
 
 <xsl:variable name="bugTableHeader">
 	<tr class="tableheader">
-		<th align="left">Code<xsl:value-of select="$literalNbsp" disable-output-escaping="yes"/></th>
+		<th align="left">Code<xsl:value-of select="$literalNbsp"/></th>
 		<th align="left">Warning</th>
 	</tr>
 </xsl:variable>
@@ -252,7 +252,7 @@
 			<p id="{$warningId}" style="display: none;">
 				<a href="#{@type}">Bug type <xsl:value-of select="@type"/> (click for details)</a>
 				<xsl:for-each select="./*/Message">
-					<br/><xsl:value-of select="text()"/>
+					<br/><xsl:value-of select="text()" disable-output-escaping="no"/>
 				</xsl:for-each>
 			</p>
 		</td>
