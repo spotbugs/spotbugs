@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XField;
 
 public class FindSelfComparison extends BytecodeScanningDetector {
@@ -61,7 +62,22 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + whichRegister + " " + registerLoadCount);
 		stack.mergeJumps(this);
-		switch (seen) {
+		
+        switch (seen) {
+        case INVOKEVIRTUAL:
+        case INVOKEINTERFACE:
+            String name = getNameConstantOperand();
+            if (name.equals("equals") || 
+                    name.equals("compareTo")) {
+            String sig = getSigConstantOperand();
+            SignatureParser parser = new SignatureParser(sig);
+            if (parser.getNumParameters() == 1 && 
+                    (name.equals("equals") && sig.endsWith(";)Z")
+                    || name.equals("compareTo")  && sig.endsWith(";)I")))
+                checkForSelfOperation(seen, "COMPARISON");
+            }
+            break;
+            
 		case IOR:
 		case IAND:
 		case IXOR:
