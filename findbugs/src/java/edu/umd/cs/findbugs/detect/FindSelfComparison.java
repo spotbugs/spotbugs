@@ -66,6 +66,10 @@ public class FindSelfComparison extends BytecodeScanningDetector {
         switch (seen) {
         case INVOKEVIRTUAL:
         case INVOKEINTERFACE:
+            if (getClassName().toLowerCase().indexOf("test") >= 0) break;
+            if (getMethodName().toLowerCase().indexOf("test") >= 0) break;
+            if (getSuperclassName().toLowerCase().indexOf("test") >= 0) break;
+             
             String name = getNameConstantOperand();
             if (name.equals("equals") || 
                     name.equals("compareTo")) {
@@ -142,7 +146,7 @@ private void checkForSelfOperation(int opCode, String op) {
 
 		else if (registerLoadCount >= 2) {
 			bugReporter.reportBug(new BugInstance(this,
-					"SA_LOCAL_SELF_" + op, opCode == ISUB ? NORMAL_PRIORITY : HIGH_PRIORITY)
+					"SA_LOCAL_SELF_" + op, (opCode == ISUB || opCode == INVOKEINTERFACE || opCode == INVOKEVIRTUAL) ? NORMAL_PRIORITY : HIGH_PRIORITY)
 			.addClassAndMethod(this).add(
 					LocalVariableAnnotation
 					.getLocalVariableAnnotation(
