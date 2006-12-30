@@ -645,7 +645,7 @@ public class FindNullDeref
 			propertySet.addProperty(GeneralWarningProperty.ON_EXCEPTION_PATH);
 		}
 		int pc = location.getHandle().getPosition();
-		BugAnnotation variable = findLocalVariable(location, valueNumber, vnaFrame);
+		BugAnnotation variable = findAnnotationFromValueNumber(null, location, valueNumber, vnaFrame);
 		
 		boolean duplicated = false;
 		try {
@@ -685,12 +685,13 @@ public class FindNullDeref
 	}
 
 	/**
+	 * @param method TODO
 	 * @param location
 	 * @param valueNumber
 	 * @param vnaFrame
 	 * @return
 	 */
-	BugAnnotation findLocalVariable(Location location, ValueNumber valueNumber, ValueNumberFrame vnaFrame) {
+     public static BugAnnotation findAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber, ValueNumberFrame vnaFrame) {
 		BugAnnotation variable = null;
 			if (DEBUG) {
 				System.out.println("Dereference at " + location + " of " + valueNumber);
@@ -884,7 +885,7 @@ public class FindNullDeref
 
 		ValueNumber valueNumber = vnaFrame.getInstance(ins, classContext.getConstantPoolGen());
 		if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) return;
-		variableAnnotation = findLocalVariable(location, valueNumber, vnaFrame);
+		variableAnnotation = findAnnotationFromValueNumber(null, location, valueNumber, vnaFrame);
 
 			}
 		} catch (DataflowAnalysisException e) {
@@ -978,11 +979,11 @@ public class FindNullDeref
 		BugAnnotation variableAnnotation = null;
 		try {
 			for (Location loc : sourceLocations)  {
-				variableAnnotation = findLocalVariable(loc, refValue, vna.getFactAtLocation(loc));
+				variableAnnotation = findAnnotationFromValueNumber(null, loc, refValue, vna.getFactAtLocation(loc));
 				if (variableAnnotation != null) break;
 			}
 			if (variableAnnotation == null) for (Location loc : sortedDerefLocationSet) {
-				variableAnnotation = findLocalVariable(loc, refValue, vna.getFactAtLocation(loc));
+				variableAnnotation = findAnnotationFromValueNumber(null, loc, refValue, vna.getFactAtLocation(loc));
 				if (variableAnnotation != null) break;
 			}
 			

@@ -340,6 +340,14 @@ by reading the value of the same field.  It is a fast detector.</p>
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FindSelfComparison2">
+    <Details>
+<![CDATA[
+<p> This detector looks for places where a value is compared with itself.</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.FindNonShortCircuit">
     <Details>
 <![CDATA[

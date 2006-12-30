@@ -209,6 +209,10 @@
             reports="SA_FIELD_SELF_ASSIGNMENT" />
   <Detector class="edu.umd.cs.findbugs.detect.FindSelfComparison" 
             speed="fast"
+	    disabled="true"
+            reports="SA_FIELD_SELF_COMPARISON,SA_LOCAL_SELF_COMPARISON,SA_FIELD_SELF_COMPUTATION,SA_LOCAL_SELF_COMPUTATION" />
+  <Detector class="edu.umd.cs.findbugs.detect.FindSelfComparison2" 
+            speed="fast"
             reports="SA_FIELD_SELF_COMPARISON,SA_LOCAL_SELF_COMPARISON,SA_FIELD_SELF_COMPUTATION,SA_LOCAL_SELF_COMPUTATION" />
             
   <Detector class="edu.umd.cs.findbugs.detect.DroppedException" 
