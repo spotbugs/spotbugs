@@ -1,24 +1,6 @@
 package edu.umd.cs.findbugs.detect;
 
-import static org.apache.bcel.Constants.DCMPG;
-import static org.apache.bcel.Constants.DCMPL;
-import static org.apache.bcel.Constants.FCMPG;
-import static org.apache.bcel.Constants.FCMPL;
-import static org.apache.bcel.Constants.IAND;
-import static org.apache.bcel.Constants.IF_ACMPEQ;
-import static org.apache.bcel.Constants.IF_ACMPNE;
-import static org.apache.bcel.Constants.IF_ICMPEQ;
-import static org.apache.bcel.Constants.IF_ICMPGE;
-import static org.apache.bcel.Constants.IF_ICMPGT;
-import static org.apache.bcel.Constants.IF_ICMPLE;
-import static org.apache.bcel.Constants.IF_ICMPLT;
-import static org.apache.bcel.Constants.IF_ICMPNE;
-import static org.apache.bcel.Constants.INVOKEINTERFACE;
-import static org.apache.bcel.Constants.INVOKEVIRTUAL;
-import static org.apache.bcel.Constants.IOR;
-import static org.apache.bcel.Constants.ISUB;
-import static org.apache.bcel.Constants.IXOR;
-import static org.apache.bcel.Constants.LCMP;
+import static org.apache.bcel.Constants.*;
 
 import java.util.Iterator;
 
@@ -110,7 +92,11 @@ public class FindSelfComparison2 implements Detector {
        
                 }
                 break;
-                
+               
+            case LOR:
+            case LAND:
+            case LXOR:
+            case LSUB:
             case IOR:
             case IAND:
             case IXOR:
@@ -150,16 +136,20 @@ public class FindSelfComparison2 implements Detector {
     private void checkForSelfOperation(ClassContext classContext, Location location, ValueNumberDataflow valueNumberDataflow, String op, MethodGen methodGen, String sourceFile) throws DataflowAnalysisException {
         ValueNumberFrame frame = valueNumberDataflow.getFactAtLocation(location);
         if (!frame.isValid())  return;
+        Instruction ins = location.getHandle().getInstruction();
+        int opcode = ins.getOpcode();
+        int offset = 1;
+        if (opcode == LCMP || opcode == LXOR || opcode == LAND || opcode == LOR || opcode == LSUB)
+            offset = 2;
         ValueNumber v0 = frame.getStackValue(0);
-        ValueNumber v1 = frame.getStackValue(1);
+        ValueNumber v1 = frame.getStackValue(2);
         if (!v1.equals(v0)) return;
 
-        Instruction ins = location.getHandle().getInstruction();
         int priority = HIGH_PRIORITY;
-        int opcode = ins.getOpcode();
-        if (opcode == ISUB || opcode == INVOKEINTERFACE || opcode == INVOKEVIRTUAL)
+        if (opcode == ISUB || opcode == LSUB || opcode == INVOKEINTERFACE || opcode == INVOKEVIRTUAL)
             priority = NORMAL_PRIORITY;
         BugAnnotation annotation = FindNullDeref.findAnnotationFromValueNumber(methodGen.getMethod(), location, v0, frame);
+        if (annotation == null) return;
         String prefix = "SA_LOCAL_SELF_" ;
         if (annotation instanceof FieldAnnotation)
             prefix = "SA_FIELD_SELF_";
