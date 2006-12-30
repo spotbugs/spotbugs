@@ -24,6 +24,8 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -150,6 +152,11 @@ public class FindSelfComparison2 implements Detector {
             priority = NORMAL_PRIORITY;
         BugAnnotation annotation = FindNullDeref.findAnnotationFromValueNumber(methodGen.getMethod(), location, v0, frame);
         if (annotation == null) return;
+        if (annotation instanceof FieldAnnotation) {
+            FieldAnnotation f = (FieldAnnotation) annotation;
+            XField xf = XFactory.createXField(f);
+            if (xf.isVolatile()) return;
+        }
         String prefix = "SA_LOCAL_SELF_" ;
         if (annotation instanceof FieldAnnotation)
             prefix = "SA_FIELD_SELF_";
