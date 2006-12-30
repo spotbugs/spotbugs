@@ -645,7 +645,7 @@ public class FindNullDeref
 			propertySet.addProperty(GeneralWarningProperty.ON_EXCEPTION_PATH);
 		}
 		int pc = location.getHandle().getPosition();
-		BugAnnotation variable = findAnnotationFromValueNumber(null, location, valueNumber, vnaFrame);
+		BugAnnotation variable = findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
 		
 		boolean duplicated = false;
 		try {
@@ -885,7 +885,7 @@ public class FindNullDeref
 
 		ValueNumber valueNumber = vnaFrame.getInstance(ins, classContext.getConstantPoolGen());
 		if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) return;
-		variableAnnotation = findAnnotationFromValueNumber(null, location, valueNumber, vnaFrame);
+		variableAnnotation = findAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
 
 			}
 		} catch (DataflowAnalysisException e) {
@@ -979,11 +979,11 @@ public class FindNullDeref
 		BugAnnotation variableAnnotation = null;
 		try {
 			for (Location loc : sourceLocations)  {
-				variableAnnotation = findAnnotationFromValueNumber(null, loc, refValue, vna.getFactAtLocation(loc));
+				variableAnnotation = findAnnotationFromValueNumber(method, loc, refValue, vna.getFactAtLocation(loc));
 				if (variableAnnotation != null) break;
 			}
 			if (variableAnnotation == null) for (Location loc : sortedDerefLocationSet) {
-				variableAnnotation = findAnnotationFromValueNumber(null, loc, refValue, vna.getFactAtLocation(loc));
+				variableAnnotation = findAnnotationFromValueNumber(method, loc, refValue, vna.getFactAtLocation(loc));
 				if (variableAnnotation != null) break;
 			}
 			
