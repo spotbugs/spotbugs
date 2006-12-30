@@ -151,13 +151,17 @@ public class FindSelfComparison2 implements Detector {
         if (opcode == ISUB || opcode == LSUB || opcode == INVOKEINTERFACE || opcode == INVOKEVIRTUAL)
             priority = NORMAL_PRIORITY;
         XField field = FindNullDeref.findXFieldFromValueNumber(methodGen.getMethod(), location, v0, frame);
-        if (field != null && field.isVolatile()) return;
-        BugAnnotation annotation = FindNullDeref.findLocalAnnotationFromValueNumber(methodGen.getMethod(), location, v0, frame);
-        if ((annotation == null || !((LocalVariableAnnotation)annotation).isSignificant() ) && field != null)
-            annotation =  FieldAnnotation.fromXField(field);
-        String prefix = "SA_LOCAL_SELF_" ;
-        if (annotation instanceof FieldAnnotation)
+        BugAnnotation annotation;
+        String prefix;
+        if (field != null) {
+            if (field.isVolatile()) return;
+            annotation = FieldAnnotation.fromXField(field);
             prefix = "SA_FIELD_SELF_";
+        } else {
+            annotation  = FindNullDeref.findLocalAnnotationFromValueNumber(methodGen.getMethod(), location, v0, frame);
+            prefix = "SA_LOCAL_SELF_" ;
+        }
+
         BugInstance bug = new BugInstance(this, "SA_LOCAL_SELF_" + op, priority).addClassAndMethod(methodGen, sourceFile)
         .add(annotation).addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
         bugReporter.reportBug(bug);
