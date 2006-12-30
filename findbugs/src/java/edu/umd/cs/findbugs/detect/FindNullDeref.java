@@ -692,34 +692,46 @@ public class FindNullDeref
 	 * @return
 	 */
      public static BugAnnotation findAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber, ValueNumberFrame vnaFrame) {
-		BugAnnotation variable = null;
-			if (DEBUG) {
-				System.out.println("Dereference at " + location + " of " + valueNumber);
-				System.out.println("Value number frame: " + vnaFrame);
-			}
+         LocalVariableAnnotation ann = findLocalAnnotationFromValueNumber(method, location, valueNumber, vnaFrame);
+         if (ann != null && ann.isSignificant()) return ann;
+         FieldAnnotation field = findFieldAnnotationFromValueNumber(method, location, valueNumber, vnaFrame); 
+         if (field != null) return field;
+         return ann;
+     }
+     
+     public static FieldAnnotation findFieldAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber, ValueNumberFrame vnaFrame) {
+         XField field = findXFieldFromValueNumber(method, location, valueNumber, vnaFrame);  
+         if (field == null) return null;
+         return  FieldAnnotation.fromXField(field);
+     }
+         
+     public static XField findXFieldFromValueNumber(Method method, Location location, ValueNumber valueNumber, ValueNumberFrame vnaFrame) {
+         if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop())  return null;
 
-			if (vnaFrame != null && !vnaFrame.isBottom() && !vnaFrame.isTop())
-			for(int i = 0; i < vnaFrame.getNumLocals(); i++) {
-				if (valueNumber.equals(vnaFrame.getValue(i))) {
-					if (DEBUG) System.out.println("Found it in local " + i);
-					InstructionHandle handle = location.getHandle();
-					int position1 = handle.getPrev().getPosition();
-					int position2 = handle.getPosition();
-					variable = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, position1, position2);
-					if (variable != null) break;
-				}
-			}
-			if (variable == null) {
-				AvailableLoad load = vnaFrame.getLoad(valueNumber);
-				if (load != null) {
-					XField field = load.getField();
-					variable = new FieldAnnotation(field.getClassName(), field.getName(), field.getSignature(), field.isStatic());
-				}
-				
-				
-			}
-		return variable;
-	}
+         AvailableLoad load = vnaFrame.getLoad(valueNumber);
+         if (load != null) {
+             return  load.getField();
+         }
+         return null;
+     }
+
+     public static LocalVariableAnnotation findLocalAnnotationFromValueNumber(Method method, Location location, ValueNumber valueNumber, ValueNumberFrame vnaFrame) {
+
+         if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop())  return null;
+
+         LocalVariableAnnotation localAnnotation = null;
+         for(int i = 0; i < vnaFrame.getNumLocals(); i++) {
+             if (valueNumber.equals(vnaFrame.getValue(i))) {
+                 if (DEBUG) System.out.println("Found it in local " + i);
+                 InstructionHandle handle = location.getHandle();
+                 int position1 = handle.getPrev().getPosition();
+                 int position2 = handle.getPosition();
+                 localAnnotation = LocalVariableAnnotation.getLocalVariableAnnotation(method, i, position1, position2);
+                 if (localAnnotation != null) return localAnnotation;
+             }
+         }
+         return null;
+     }
 
 	private void reportNullDeref(
 			WarningPropertySet propertySet,

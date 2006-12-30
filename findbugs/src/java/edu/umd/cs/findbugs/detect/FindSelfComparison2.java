@@ -150,13 +150,11 @@ public class FindSelfComparison2 implements Detector {
         int priority = HIGH_PRIORITY;
         if (opcode == ISUB || opcode == LSUB || opcode == INVOKEINTERFACE || opcode == INVOKEVIRTUAL)
             priority = NORMAL_PRIORITY;
-        BugAnnotation annotation = FindNullDeref.findAnnotationFromValueNumber(methodGen.getMethod(), location, v0, frame);
-        if (annotation == null) return;
-        if (annotation instanceof FieldAnnotation) {
-            FieldAnnotation f = (FieldAnnotation) annotation;
-            XField xf = XFactory.createXField(f);
-            if (xf.isVolatile()) return;
-        }
+        XField field = FindNullDeref.findXFieldFromValueNumber(methodGen.getMethod(), location, v0, frame);
+        if (field != null && field.isVolatile()) return;
+        BugAnnotation annotation = FindNullDeref.findLocalAnnotationFromValueNumber(methodGen.getMethod(), location, v0, frame);
+        if ((annotation == null || !((LocalVariableAnnotation)annotation).isSignificant() ) && field != null)
+            annotation =  FieldAnnotation.fromXField(field);
         String prefix = "SA_LOCAL_SELF_" ;
         if (annotation instanceof FieldAnnotation)
             prefix = "SA_FIELD_SELF_";
