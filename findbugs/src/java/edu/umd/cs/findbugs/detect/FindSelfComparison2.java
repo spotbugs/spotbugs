@@ -165,10 +165,7 @@ public class FindSelfComparison2 implements Detector {
             prefix = "SA_FIELD_SELF_";
         BugInstance bug = new BugInstance(this, "SA_LOCAL_SELF_" + op, priority).addClassAndMethod(methodGen, sourceFile)
         .add(annotation).addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
-        
-        
-
-        
+        bugReporter.reportBug(bug);
     }
 
     public void report() {
