@@ -142,7 +142,7 @@ public class FindSelfComparison2 implements Detector {
         if (opcode == LCMP || opcode == LXOR || opcode == LAND || opcode == LOR || opcode == LSUB)
             offset = 2;
         ValueNumber v0 = frame.getStackValue(0);
-        ValueNumber v1 = frame.getStackValue(2);
+        ValueNumber v1 = frame.getStackValue(offset);
         if (!v1.equals(v0)) return;
 
         int priority = HIGH_PRIORITY;
