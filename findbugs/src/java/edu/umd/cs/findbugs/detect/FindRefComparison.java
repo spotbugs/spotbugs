@@ -702,6 +702,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet(), location));
 	}
 
+    private static boolean testLikeName(String name) {
+        return name.toLowerCase().indexOf("test") >= 0;
+    }
 	private void checkEqualsComparison(
 			Location location,
 			JavaClass jclass,
@@ -725,15 +728,24 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				|| rhsType_.getType() == T_TOP || rhsType_.getType() == T_BOTTOM)
 			return;
 
+        Method method = methodGen.getMethod();
+        boolean looksLikeTestCase = method.getName().startsWith("test") && method.isPublic() && method.getSignature().equals("()V")
+                || testLikeName(jclass.getClassName())|| testLikeName(jclass.getSuperclassName());
+        int priorityModifier = 0;
+        if (looksLikeTestCase) priorityModifier = 1;
+        if (methodGen.getName().startsWith("test") && methodGen.getSignature().equals("()V")) {
+            try {
+                if (jclass.getSuperclassName().equals("junit.framework.TestCase") || Hierarchy.isSubtype(methodGen.getClassName(), "junit.framework.TestCase"))
+                    priorityModifier=2;
+            } catch (ClassNotFoundException e) { 
+                AnalysisContext.reportMissingClass(e);
+            }
+        }
+
 		if (!(lhsType_ instanceof ReferenceType) || !(rhsType_ instanceof ReferenceType)) {
-			if (rhsType_.getType() == T_NULL) {
-				boolean isTestCase = false;
-				Method method = methodGen.getMethod();
-				if (method.getName().startsWith("test") && method.isPublic() && method.getSignature().equals("()V")
-						|| methodGen.getClassName().endsWith("Test"))
-					isTestCase = true;
+			if (rhsType_.getType() == T_NULL) {	
 				// A literal null value was passed directly to equals().
-				if (!isTestCase)
+				if (!looksLikeTestCase)
 					bugReporter.reportBug(new BugInstance(this, "EC_NULL_ARG", NORMAL_PRIORITY)
 					.addClassAndMethod(methodGen, sourceFile)
 					.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle()));
@@ -758,29 +770,28 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 		IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_);
-		int priorityModifier = 0;
-		if (methodGen.getName().startsWith("test") && methodGen.getSignature().equals("()V")) {
-			try {
-				if (Hierarchy.isSubtype(methodGen.getClassName(), "junit.framework.TestCase"))
-					priorityModifier=2;
-			} catch (ClassNotFoundException e) { 
-				AnalysisContext.reportMissingClass(e);
-			}
-		}
-		if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) 
+				if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) 
 			bugReporter.reportBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority())
 			.addClassAndMethod(methodGen, sourceFile)
 			.addType(lhsType_.getSignature())
 			.addType(rhsType_.getSignature())
 			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
-		else if (result == IncompatibleTypes.INCOMPATIBLE_CLASSES) 
-			bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
+		else if (result == IncompatibleTypes.INCOMPATIBLE_CLASSES) {
+            String lhsSig = lhsType_.getSignature();
+            String rhsSig = rhsType_.getSignature();
+            boolean core = lhsSig.startsWith("Ljava") && rhsSig.startsWith("Ljava");
+            if (core) {
+                looksLikeTestCase = false;
+                priorityModifier = 0;
+            }
+			if (!looksLikeTestCase) bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addType(lhsType_.getSignature())
-			.addType(rhsType_.getSignature())
+			.addType(lhsSig)
+			.addType(rhsSig)
 			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
+        }
 		else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE) 
 			bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority())
 			.addClassAndMethod(methodGen, sourceFile)
