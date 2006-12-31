@@ -162,7 +162,7 @@ public class FindSelfComparison2 implements Detector {
             annotation  = FindNullDeref.findLocalAnnotationFromValueNumber(methodGen.getMethod(), location, v0, frame);
             prefix = "SA_LOCAL_SELF_" ;
         }
-
+        if (annotation == null) return;
         BugInstance bug = new BugInstance(this, prefix + op, priority).addClassAndMethod(methodGen, sourceFile)
         .add(annotation).addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
         bugReporter.reportBug(bug);
