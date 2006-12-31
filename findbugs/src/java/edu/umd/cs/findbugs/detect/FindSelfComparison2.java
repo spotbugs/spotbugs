@@ -163,6 +163,7 @@ public class FindSelfComparison2 implements Detector {
         } else {
             annotation  = FindNullDeref.findLocalAnnotationFromValueNumber(methodGen.getMethod(), location, v0, frame);
             prefix = "SA_LOCAL_SELF_" ;
+            if (opcode == ISUB) return; // only report this if simple detector reports it
         }
         if (annotation == null) return;
         SourceLineAnnotation sourceLine = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle());
