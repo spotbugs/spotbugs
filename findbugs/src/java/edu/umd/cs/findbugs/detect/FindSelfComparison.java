@@ -148,7 +148,7 @@ private void checkForSelfOperation(int opCode, String op) {
 			.addClassAndMethod(this).addField(field0)
 			.addSourceLine(this));
 
-		else if (registerLoadCount >= 2) {
+		else if (false && registerLoadCount >= 2) { // let FindSelfComparison2 report this; more accurate
 			bugReporter.reportBug(new BugInstance(this,
 					"SA_LOCAL_SELF_" + op, (opCode == ISUB || opCode == LSUB  || opCode == INVOKEINTERFACE || opCode == INVOKEVIRTUAL) ? NORMAL_PRIORITY : HIGH_PRIORITY)
 			.addClassAndMethod(this).add(
