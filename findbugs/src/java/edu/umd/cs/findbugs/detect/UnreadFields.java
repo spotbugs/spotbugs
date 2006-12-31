@@ -224,8 +224,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		previousPreviousOpcode = -1;
 		nullTested.clear();
 		seenInvokeStatic = false;
-                opcodeStack.resetForMethodEntry(this);
-                staticFieldsReadInThisMethod.clear();
+        opcodeStack.resetForMethodEntry(this);
+        staticFieldsReadInThisMethod.clear();
 		super.visit(obj);
 		if (getMethodName().equals("<init>") && count_aload_1 > 1
 		        && (getClassName().indexOf('$') >= 0
