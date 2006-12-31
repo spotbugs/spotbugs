@@ -490,7 +490,13 @@ public class OpcodeStack implements Constants2
 
 	boolean needToMerge = true;
 	boolean reachOnlyByBranch = false;
-	
+	public static String getExceptionSig(DismantleBytecode dbc, CodeException e) {
+        if (e.getCatchType() == 0) return "Ljava/lang/Throwable;";
+        Constant c = dbc.getConstantPool().getConstant(e.getCatchType());
+        if (c instanceof ConstantClass)
+            return "L"+((ConstantClass)c).getBytes(dbc.getConstantPool())+";";
+        return "Ljava/lang/Throwable;";
+    }
 	public void mergeJumps(DismantleBytecode dbc) {
 		
 		if (!needToMerge) return;
@@ -502,30 +508,44 @@ public class OpcodeStack implements Constants2
  			push(top);
  			convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
  		}
- 	
+        
+		
 		List<Item> jumpEntry = jumpEntries.get(dbc.getPC());
- 		if (jumpEntry != null) {
-			if (DEBUG) {
- 			System.out.println("XXXXXXX " + reachOnlyByBranch);
- 			System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + Integer.toString(System.identityHashCode(jumpEntry),16) + " " + jumpEntry);
- 			System.out.println(" current lvValues " + lvValues);
-			}
- 			List<Item> jumpStackEntry = jumpStackEntries.get(dbc.getPC());
-			if (reachOnlyByBranch) {
-				lvValues = new ArrayList<Item>(jumpEntry);
-				if (jumpStackEntry != null) stack = new ArrayList<Item>(jumpStackEntry);
-				else stack.clear();
-			}
-			else {
-				mergeLists(lvValues, jumpEntry, false);
-				if (jumpStackEntry != null) mergeLists(stack, jumpStackEntry, false);
-			}
-			if (DEBUG)
- 			System.out.println(" merged lvValues " + lvValues);
- 		}
- 			reachOnlyByBranch = false;
+		if (jumpEntry != null) {
+		    if (DEBUG) {
+		        System.out.println("XXXXXXX " + reachOnlyByBranch);
+		        System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + Integer.toString(System.identityHashCode(jumpEntry),16) + " " + jumpEntry);
+		        System.out.println(" current lvValues " + lvValues);
+		    }
+		    List<Item> jumpStackEntry = jumpStackEntries.get(dbc.getPC());
+		    if (reachOnlyByBranch) {
+		        lvValues = new ArrayList<Item>(jumpEntry);
+		        if (jumpStackEntry != null) stack = new ArrayList<Item>(jumpStackEntry);
+		        else stack.clear();
+		    }
+		    else {
+		        mergeLists(lvValues, jumpEntry, false);
+		        if (jumpStackEntry != null) mergeLists(stack, jumpStackEntry, false);
+		    }
+		    if (DEBUG)
+		        System.out.println(" merged lvValues " + lvValues);
 		}
-	
+        else if (reachOnlyByBranch) {
+            stack.clear();
+       
+            boolean foundException = false;
+            for(CodeException e : dbc.getCode().getExceptionTable()) {
+                if (e.getHandlerPC() == dbc.getPC()) {
+                    push(new Item(getExceptionSig(dbc, e)));
+                    foundException = true;
+                }
+            }
+            if (!foundException)
+                push(new Item("Ljava/lang/Throwable;"));
+        }
+		reachOnlyByBranch = false;
+	}
+
 	int convertJumpToOneZeroState = 0;
 	int convertJumpToZeroOneState = 0;
 	
@@ -686,8 +706,8 @@ public class OpcodeStack implements Constants2
 					if (top.valueCouldBeNegative() 
 							&& (seen == IFLT || seen == IFLE || seen == IFGT || seen == IFGE)) {
 						int specialKind = top.getSpecialKind();
-						for(Item item : stack) if (item.getSpecialKind() == specialKind) item.setSpecialKind(0);
-						for(Item item : lvValues) if (item.getSpecialKind() == specialKind) item.setSpecialKind(0);
+						for(Item item : stack) if (item != null && item.getSpecialKind() == specialKind) item.setSpecialKind(0);
+						for(Item item : lvValues) if (item != null && item.getSpecialKind() == specialKind) item.setSpecialKind(0);
 									
 					}
  				}
@@ -713,6 +733,7 @@ public class OpcodeStack implements Constants2
 	 			case LRETURN:
 	 			
 					seenTransferOfControl = true;
+                    reachOnlyByBranch = true;
 	 				pop();
 	 			break;
 	 			case MONITORENTER:
