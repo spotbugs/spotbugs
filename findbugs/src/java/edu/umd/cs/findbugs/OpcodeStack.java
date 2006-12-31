@@ -101,7 +101,7 @@ public class OpcodeStack implements Constants2
 		
 		private static final int IS_INITIAL_PARAMETER_FLAG=1;
 		private static final int COULD_BE_ZERO_FLAG = 2;
-		private static final int IS_NULL_FLAG = 3;
+		private static final int IS_NULL_FLAG = 4;
 		
 		public static final Object UNKNOWN = null;
 		private int specialKind;
@@ -210,12 +210,14 @@ public class OpcodeStack implements Constants2
 				}
 			if (xfield!= UNKNOWN) {
 				buf.append(", ");
+                if (fieldLoadedFromRegister != -1)
+                    buf.append(fieldLoadedFromRegister).append(':');
 				buf.append(xfield);
 				}
 			if (isInitialParameter()) {
 				buf.append(", IP");
 				}
-			if (isNull2()) {
+			if (isNull()) {
 				buf.append(", isNull");
 				}
 				
@@ -366,10 +368,6 @@ public class OpcodeStack implements Constants2
  			return signature;
  		}
  		
- 		public boolean isNull() {
- 			return isNull2();
- 		}
- 		
  		public Object getConstant() {
  			return constValue;
  		}
@@ -473,7 +471,7 @@ public class OpcodeStack implements Constants2
 		/**
 		 * @return Returns the isNull.
 		 */
-		private boolean isNull2() {
+		public boolean isNull() {
 			return (flags & IS_NULL_FLAG) != 0;
 		}
 	}
@@ -702,7 +700,7 @@ public class OpcodeStack implements Constants2
 					seenTransferOfControl = true;
 	 				pop();
 	 				addJumpValue(dbc.getBranchTarget());
-	 				int pc = dbc.getBranchOffset() - dbc.getBranchTarget();
+	 				int pc = dbc.getBranchTarget() - dbc.getBranchOffset();
 	 				for(int offset : dbc.getSwitchOffsets())
 	 					addJumpValue(offset+pc);
 	 			
@@ -1862,6 +1860,16 @@ public class OpcodeStack implements Constants2
  	
  	private void pushByLocalStore(int register) {
 		Item it = pop();
+        if (it.getRegisterNumber() != register) {
+        for(Item i : lvValues) if (i != null) {
+            if (i.registerNumber == register) i.registerNumber = -1;
+            if (i.fieldLoadedFromRegister == register) i.fieldLoadedFromRegister  = -1;
+        }
+        for(Item i : stack) if (i != null) {
+            if (i.registerNumber == register) i.registerNumber = -1;
+            if (i.fieldLoadedFromRegister == register) i.fieldLoadedFromRegister  = -1;
+        }
+        }
 		setLVValue( register, it );
  	}
  	
