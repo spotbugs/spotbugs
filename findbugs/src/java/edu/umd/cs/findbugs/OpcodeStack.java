@@ -501,12 +501,14 @@ public class OpcodeStack implements Constants2
 		
 		if (!needToMerge) return;
 		needToMerge = false;
+        boolean stackUpdated = false;
 		if (convertJumpToOneZeroState == 3 || convertJumpToZeroOneState == 3) {
  			pop();
  			Item top = new Item("I"); 
  			top.setCouldBeZero(true);
  			push(top);
  			convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
+            stackUpdated = true;
  		}
         
 		
@@ -520,17 +522,20 @@ public class OpcodeStack implements Constants2
 		    List<Item> jumpStackEntry = jumpStackEntries.get(dbc.getPC());
 		    if (reachOnlyByBranch) {
 		        lvValues = new ArrayList<Item>(jumpEntry);
-		        if (jumpStackEntry != null) stack = new ArrayList<Item>(jumpStackEntry);
-		        else stack.clear();
+		        if (!stackUpdated) {
+                    if (jumpStackEntry != null) stack = new ArrayList<Item>(jumpStackEntry);
+                    else stack.clear();
+                    }
+		
 		    }
 		    else {
 		        mergeLists(lvValues, jumpEntry, false);
-		        if (jumpStackEntry != null) mergeLists(stack, jumpStackEntry, false);
+		        if (!stackUpdated && jumpStackEntry != null) mergeLists(stack, jumpStackEntry, false);
 		    }
 		    if (DEBUG)
 		        System.out.println(" merged lvValues " + lvValues);
 		}
-        else if (reachOnlyByBranch) {
+        else if (reachOnlyByBranch && !stackUpdated) {
             stack.clear();
        
             boolean foundException = false;
