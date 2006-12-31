@@ -162,7 +162,7 @@ public class FindSelfComparison2 implements Detector {
             prefix = "SA_LOCAL_SELF_" ;
         }
 
-        BugInstance bug = new BugInstance(this, "SA_LOCAL_SELF_" + op, priority).addClassAndMethod(methodGen, sourceFile)
+        BugInstance bug = new BugInstance(this, prefix + op, priority).addClassAndMethod(methodGen, sourceFile)
         .add(annotation).addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
         bugReporter.reportBug(bug);
     }
