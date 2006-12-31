@@ -480,6 +480,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		notInitializedInConstructors.retainAll(readFields);
 		notInitializedInConstructors.retainAll(writtenFields);
 		notInitializedInConstructors.retainAll(assumedNonNull.keySet());
+        notInitializedInConstructors.removeAll(staticFields);
 		notInitializedInConstructors.removeAll(writtenInConstructorFields);
 		// notInitializedInConstructors.removeAll(staticFields);
 		
