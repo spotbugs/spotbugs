@@ -2,6 +2,7 @@ package edu.umd.cs.findbugs.detect;
 
 import static org.apache.bcel.Constants.*;
 
+import java.util.BitSet;
 import java.util.Iterator;
 
 import org.apache.bcel.classfile.Method;
@@ -16,6 +17,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -163,6 +165,10 @@ public class FindSelfComparison2 implements Detector {
             prefix = "SA_LOCAL_SELF_" ;
         }
         if (annotation == null) return;
+        SourceLineAnnotation sourceLine = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle());
+        int line = sourceLine.getStartLine();
+        BitSet occursMultipleTimes = classContext.linesMentionedMultipleTimes(methodGen.getMethod());
+        if (line > 0 && occursMultipleTimes.get(line)) return;
         BugInstance bug = new BugInstance(this, prefix + op, priority).addClassAndMethod(methodGen, sourceFile)
         .add(annotation).addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
         bugReporter.reportBug(bug);
