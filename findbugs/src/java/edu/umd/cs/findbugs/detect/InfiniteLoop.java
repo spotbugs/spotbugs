@@ -19,8 +19,8 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.visitclass.Util;
 
 public class InfiniteLoop extends BytecodeScanningDetector {
@@ -42,6 +43,25 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	private static final boolean active = true;
 
 
+    ArrayList<BitSet> regModifiedAt = new ArrayList<BitSet>();
+    @NonNull BitSet getModifiedBitSet(int reg) {
+        while (regModifiedAt.size() <= reg)
+            regModifiedAt.add(new BitSet());
+        return regModifiedAt.get(reg);
+    }
+    private void regModifiedAt(int reg, int pc) {
+        BitSet b = getModifiedBitSet(reg);
+        b.set(pc);
+    }
+    private void clearRegModified() {
+        for(BitSet b : regModifiedAt )
+            b.clear();
+    }
+    private boolean isRegModified(int reg, int firstPC, int lastPC) {
+        BitSet b = getModifiedBitSet(reg);
+        int modified = b.nextSetBit(firstPC);
+        return (modified >= firstPC && modified <= lastPC);
+    }
 	static class Jump {
 		final int from, to;
 		Jump(int from, int to) {
@@ -120,6 +140,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
  
 	@Override
 	public void visit(Code obj) {
+        clearRegModified();
 		stack.resetForMethodEntry(this);
 		backwardBranches.clear();
 		forwardConditionalBranches.clear();
@@ -133,8 +154,9 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 					myForwardBranches.add(fcb);
 			if (myForwardBranches.size() != 1) continue;
 			ForwardConditionalBranch fcb = myForwardBranches.get(0);
+            int backwardsReach = getBackwardsReach(bb.to);
 			for(Jump fj : forwardJumps) 
-				if (fcb.from != fj.from && getBackwardsReach(bb.to) < fj.from && fj.from < bb.from && bb.from < fj.to) 
+				if (fcb.from != fj.from && backwardsReach < fj.from && fj.from < bb.from && bb.from < fj.to) 
 					continue backwardBranchLoop;
 			if (isConstant(fcb.item0, bb) && 
 					isConstant(fcb.item1, bb)) {
@@ -142,14 +164,21 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
 						this, fcb.from);
 				int reg0 = fcb.item0.getRegisterNumber();
-				if (reg0 >= 0) 
+                boolean reg0Invariant = false;
+				if (reg0 >= 0) {
+				    reg0Invariant = !isRegModified(reg0, backwardsReach, bb.from);
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from))
 					.addSourceLine(this, constantSince(fcb.item0));
+                }
 				int reg1 = fcb.item1.getRegisterNumber();
-				if (reg1 >= 0 && reg1 != reg0)
+				if (reg1 >= 0 && reg1 != reg0) 
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from))
 										.addSourceLine(this, constantSince(fcb.item1));
-				bugReporter.reportBug(bug);
+                  boolean reg1Invariant = false;
+                if (reg1 >= 0) 
+                    reg1Invariant = !isRegModified(reg1, backwardsReach, bb.from);
+                if (reg0Invariant && reg1Invariant)
+                    bugReporter.reportBug(bug);
 			}
 			
 		}
@@ -174,6 +203,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 		if (false) System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stack);
 		stack.mergeJumps(this);
+        if (isRegisterStore())  regModifiedAt(getRegisterOperand(), getPC());
 		switch (seen) {
 		case GOTO:
 			if (getBranchOffset() < 0) {
@@ -228,8 +258,8 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				if (reg0 >= 0) 
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), target))
 					.addSourceLine(this, since0);
-				
-				reportPossibleBug(bug);
+				if (!isRegModified(reg0, target, getPC()))
+				    reportPossibleBug(bug);
 				
 			}
 		}
