@@ -214,10 +214,11 @@ public class InfiniteLoop extends BytecodeScanningDetector {
                 int target = getBranchTarget();
                 if (getFurthestJump(target) > getPC())
                     break;
+                if (getMethodName().equals("run") || getMethodName().equals("main")) break;
                 BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
                         LOW_PRIORITY).addClassAndMethod(this).addSourceLine(
                         this, getPC());
-                reportPossibleBug(bug);
+                bugReporter.reportBug(bug);
 			}
             
 			break;
