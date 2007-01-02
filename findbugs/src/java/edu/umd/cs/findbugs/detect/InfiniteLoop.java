@@ -58,6 +58,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
             b.clear();
     }
     private boolean isRegModified(int reg, int firstPC, int lastPC) {
+        if (reg < 0) return false;
         BitSet b = getModifiedBitSet(reg);
         int modified = b.nextSetBit(firstPC);
         return (modified >= firstPC && modified <= lastPC);
@@ -164,7 +165,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
 						this, fcb.from);
 				int reg0 = fcb.item0.getRegisterNumber();
-                boolean reg0Invariant = false;
+                boolean reg0Invariant = true;
 				if (reg0 >= 0) {
 				    reg0Invariant = !isRegModified(reg0, backwardsReach, bb.from);
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from))
@@ -174,7 +175,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				if (reg1 >= 0 && reg1 != reg0) 
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from))
 										.addSourceLine(this, constantSince(fcb.item1));
-                  boolean reg1Invariant = false;
+                  boolean reg1Invariant = true;
                 if (reg1 >= 0) 
                     reg1Invariant = !isRegModified(reg1, backwardsReach, bb.from);
                 if (reg0Invariant && reg1Invariant)
@@ -258,7 +259,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				if (reg0 >= 0) 
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), target))
 					.addSourceLine(this, since0);
-				if (!isRegModified(reg0, target, getPC()))
+				if (reg0 < 0 || !isRegModified(reg0, target, getPC()))
 				    reportPossibleBug(bug);
 				
 			}
