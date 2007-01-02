@@ -218,7 +218,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
                 BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
                         LOW_PRIORITY).addClassAndMethod(this).addSourceLine(
                         this, getPC());
-                bugReporter.reportBug(bug);
+                reportPossibleBug(bug);
 			}
             
 			break;
@@ -367,13 +367,13 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	
 	void reportPossibleBug(BugInstance bug) {
 		int catchSize = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getCode(), "java/io/EOFException", getPC());
-		if (catchSize < Integer.MAX_VALUE) bug.setPriority(LOW_PRIORITY);
+		if (catchSize < Integer.MAX_VALUE) bug.lowerPriorityALot();
 		else {
 			catchSize = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getCode(), "java/lang/NoSuchElementException", getPC());
-			if (catchSize < Integer.MAX_VALUE) bug.setPriority(LOW_PRIORITY);
+			if (catchSize < Integer.MAX_VALUE) bug.lowerPriorityALot();
 			else {
 				LocalVariableAnnotation lv = bug.getPrimaryLocalVariableAnnotation();
-				if (lv == null && getMethodName().equals("run")) bug.setPriority(NORMAL_PRIORITY);
+				if (lv == null && getMethodName().equals("run")) bug.lowerPriority();
 			} 
 		}
 		bugReporter.reportBug(bug);
