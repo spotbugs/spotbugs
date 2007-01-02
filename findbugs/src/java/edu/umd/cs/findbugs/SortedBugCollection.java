@@ -978,6 +978,8 @@ public class SortedBugCollection implements BugCollection {
 	public AppVersion getAppVersionFromSequenceNumber(long target) {
 		for(AppVersion av : appVersionList)
 			if (av.getSequenceNumber() == target) return av;
+		if(target == this.getSequenceNumber())
+			return this.getCurrentAppVersion();
 		return null;
 	}
 
