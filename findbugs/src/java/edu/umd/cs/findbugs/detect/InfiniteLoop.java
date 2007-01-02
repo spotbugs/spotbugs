@@ -211,7 +211,15 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				BackwardsBranch bb = new BackwardsBranch(stack, getPC(), getBranchTarget());
 				if (bb.invariantRegisters.size() > 0) backwardBranches.add(bb);
 				addBackwardsReach();
+                int target = getBranchTarget();
+                if (getFurthestJump(target) > getPC())
+                    break;
+                BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
+                        NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(
+                        this, getPC());
+                reportPossibleBug(bug);
 			}
+            
 			break;
 		case ARETURN:
 		case IRETURN:
