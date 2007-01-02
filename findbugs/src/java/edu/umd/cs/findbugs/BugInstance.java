@@ -222,6 +222,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public void setPriority(int p) {
 		priority = Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, p));
 	}
+    public void raisePriority() {
+        priority = Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, priority-1));
+    }
+    public void lowerPriority() {
+        priority = Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, priority+1));
+    }
+
+    public void lowerPriorityALot() {
+        priority = Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, priority+2));
+    }
 
 	/**
 	 * Is this bug instance the result of an experimental detector?
