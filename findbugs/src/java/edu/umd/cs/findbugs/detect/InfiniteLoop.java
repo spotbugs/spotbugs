@@ -215,7 +215,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
                 if (getFurthestJump(target) > getPC())
                     break;
                 BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
-                        NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(
+                        LOW_PRIORITY).addClassAndMethod(this).addSourceLine(
                         this, getPC());
                 reportPossibleBug(bug);
 			}
