@@ -211,6 +211,7 @@ public final class SourceCodeDisplay implements Runnable {
 		docContent = document.getDocument().getText(0, document.getDocument().getLength());
 		}
 		catch(BadLocationException ble){System.out.println("Bad location exception");}
+		catch(NullPointerException npe){return -1;}
 		if(docContent == null) return -1;
 		int targetLen = target.length();
 		int sourceLen = docContent.length();
