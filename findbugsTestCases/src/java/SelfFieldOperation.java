@@ -1,6 +1,10 @@
 
 public class SelfFieldOperation {
     int x,y;
+    volatile int z;
+    boolean volatileFalsePositive() {
+        return z == z;
+    }
     int f(int x, int y) {
         if (x < x)
             x = y^y;
