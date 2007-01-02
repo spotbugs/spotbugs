@@ -6,7 +6,7 @@ public class DetectThrowers {
 		throw new RuntimeException(s);
 	}
 	
-	public int test(Object x) {
+	public int falsePositive(Object x) {
 		if (x == null) oops("x is null");
 		return x.hashCode();
 	}
