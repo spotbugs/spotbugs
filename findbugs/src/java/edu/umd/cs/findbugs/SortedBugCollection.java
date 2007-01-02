@@ -57,6 +57,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.MissingClassException;
@@ -210,9 +211,18 @@ public class SortedBugCollection implements BugCollection {
 		try {
 			SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, project);
 
-			// FIXME: for now, use dom4j's XML parser
-			XMLReader xr = new org.dom4j.io.aelfred.SAXDriver();
-
+			
+			XMLReader xr = null;
+            if (false) try { // try this in 1.1.4
+                xr = XMLReaderFactory.createXMLReader();
+              } catch (SAXException e) {
+                System.err.println(e.getMessage());         
+              }
+            
+            if (xr == null) {
+               //  FIXME: for now, use dom4j's XML parser
+                xr = new org.dom4j.io.aelfred.SAXDriver();
+                }
 			xr.setContentHandler(handler);
 			xr.setErrorHandler(handler);
 
