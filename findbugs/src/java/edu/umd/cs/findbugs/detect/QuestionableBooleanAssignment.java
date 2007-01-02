@@ -68,7 +68,7 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 			break;
 			
 			case SEEN_DUP:
-				if (((seen >= ISTORE_0) && (seen < ISTORE_3)) || (seen == ISTORE))
+				if (((seen >= ISTORE_0) && (seen <= ISTORE_3)) || (seen == ISTORE))
 					state = SEEN_ISTORE;
 				else
 					state = SEEN_NOTHING;
