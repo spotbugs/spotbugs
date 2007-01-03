@@ -88,7 +88,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 				i++;
 			if (co instanceof ConstantClass) {
 				String ref = getClassName(obj, i).replace('/','.');
-				if (ref.startsWith("java") && !defined.contains(ref))
+				if ((ref.startsWith("java") || ref.startsWith("org.w3c.dom")) && !defined.contains(ref))
 					bugReporter.reportBug(new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY)
 					        .addClass(obj).addString(ref));
 					
@@ -119,8 +119,8 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 				
 				try {
 					JavaClass target = Repository.lookupClass(className);
-					if (target.isInterface() || target.isAbstract()) {
-						// System.out.println("Skipping interface for " + ref);
+					if (false && (target.isInterface() || target.isAbstract())) {
+						// System.out.println("Skipping interface for " + ref); // TODO: WHY skip these
 						continue checkConstant;
 					}
 					while (true) {
