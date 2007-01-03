@@ -37,6 +37,7 @@ import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -81,13 +82,16 @@ public  class XFactory {
 		return calledMethods.contains(m);
 	}
 	
-	
+    public boolean isInterned(XMethod m) {
+        return methods.containsKey(m);
+    }
+
 	public @CheckReturnValue @NonNull XMethod intern(XMethod m) {
 		XMethod m2 = methods.get(m);
 		if (m2 != null) return m2;
 	
-			methods.put(m,m);
-			return m;
+		methods.put(m,m);
+		return m;
 	}
 
 	public @CheckReturnValue @NonNull XField intern(XField f) {
@@ -164,7 +168,26 @@ public  class XFactory {
 		return createXMethod(ma.getClassName(), ma.getMethodName(), ma.getMethodSignature(), ma.isStatic());
 	}
 
-	
+	static class RecursionDepth {
+       private static final int MAX_DEPTH = 40;
+     private int depth = 0;
+     public boolean enter() {
+         if (depth > MAX_DEPTH) 
+             return false;
+         depth++;
+         return true;
+     }
+     public void exit() {
+        depth--;
+        assert depth >= 0;
+     }
+    }
+    static ThreadLocal<RecursionDepth> recursionDepth = new  ThreadLocal<RecursionDepth>() {
+        @Override
+        public RecursionDepth initialValue() {
+            return new RecursionDepth();
+        }
+    };
 	/**
 	 * Create an XField object
 	 * 
@@ -194,72 +217,93 @@ public  class XFactory {
 		return f;
 	}
 	
+    public static boolean QUIT_ON_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
 	/**
 	 * @param f
 	 * @return
 	 */
-	private @NonNull XField resolve(XField f) {
-		if (f.isResolved()) return f;
-		if (f.isStatic()) return f;
-		if (f.getName().startsWith("this$")) return f;
-		XField f2 = f;
-		String classname = f.getClassName();
-		try {
-			JavaClass javaClass = Repository.lookupClass(classname);
-			while (true) {
-				javaClass = javaClass.getSuperClass();
-				if (javaClass == null) return f;
-				f2 = createXField(javaClass.getClassName(), f.getName(), f.getSignature(), f.isStatic());
-				f2 = intern(f2);
-				if (f2.isResolved()) {
-					fields.put(f, f2);
-					return f2;	
-				}
-			}
-		} catch (ClassNotFoundException e) {
-			AnalysisContext.reportMissingClass(e);
-		}
-		return f;
-	}
+    private @NonNull XField resolve(XField f) {
+        if (f.isResolved()) return f;
+        if (f.isStatic()) return f;
+        if (f.getName().startsWith("this$")) return f;
+        try {
+            if (!recursionDepth.get().enter()) {
+                AnalysisContext.logError("recursive cycle trying to resolve " + f);
+                if (QUIT_ON_CIRCULARITY) {
+                    System.out.println("Recursive cycle trying to resolve " + f);
+                    System.exit(1);
+                }
+                return f;
+            }
 
+            XField f2 = f;
+            String classname = f.getClassName();
+            try {
+                JavaClass javaClass = Repository.lookupClass(classname);
+                javaClass = javaClass.getSuperClass();
+                if (javaClass == null) return f;
+                if (f.getClassName().equals(javaClass.getClassName())) return f;
+                f2 = createXField(javaClass.getClassName(), f.getName(), f.getSignature(), f.isStatic());
+                f2 = intern(f2);
+                if (f2.isResolved()) {
+                    fields.put(f, f2);
+                }
+                return f2;	
+
+            } catch (ClassNotFoundException e) {
+                AnalysisContext.reportMissingClass(e);
+            }
+            return f;
+        } finally {
+            recursionDepth.get().exit();
+        }
+    }
+
+    /**
+     * If a method is not marked as resolved, look in superclasses to see if the method can be found there.
+     * Return whatever method is found. 
+     * @param m
+     * @return
+     */
 	private @NonNull XMethod resolve(XMethod m) {
-		if (m.isResolved()) return m;
-		// if (m.isStatic()) return m;
-		XMethod m2 = m;
-		String classname = m.getClassName();
-		if (false && m.getName().equals("<init>")) {
-			System.out.println("Can't find " + m.hashCode() + " " + m);
-			for(XMethod m0 : methods.keySet()) {
-				if (m.getClassName().equals(m0.getClassName()))
-					System.out.println("  " + m0.hashCode() + " " + m.equals(m0) + " " + m0);
-			}
-		}
-		if (classname.charAt(0)=='[' || m.getName().equals("<init>") || m.getName().startsWith("access$")) {
-			((AbstractMethod)m).markAsResolved();
-			return m;
-		}
-		try {
-			JavaClass javaClass = Repository.lookupClass(classname);
-			while (true) {
-				javaClass = javaClass.getSuperClass();
-				if (javaClass == null) return m;
-				m2 = createXMethod(javaClass.getClassName(), m.getName(), m.getSignature(), m.isStatic());
-				m2 = intern(m2);
-				if (m2.isResolved()) {
-					methods.put(m, m2);
-					if (false) {
-						System.out.println("Update " + m);
-						System.out.println("   ->  " + m2);
-					}
-					
-					return m2;	
-				}
-			}
-		} catch (ClassNotFoundException e) {
-			AnalysisContext.reportMissingClass(e);
-		}
-		// ((AbstractMethod)m).markAsResolved();
-		return m;
+	    if (m.isResolved()) return m;
+	    // if (m.isStatic()) return m;
+	    try {
+	        if (!recursionDepth.get().enter()) {
+	            AnalysisContext.logError("recursive cycle trying to resolve " + m);
+	            if (QUIT_ON_CIRCULARITY) {
+	                System.out.println("Recursive cycle trying to resolve " + m);
+	                System.exit(1);
+	            }
+	            return m;
+	        }
+
+	        XMethod m2 = m;
+	        String classname = m.getClassName();
+
+	        if (classname.charAt(0)=='[' || m.getName().equals("<init>") || m.getName().equals("<clinit>") || m.getName().startsWith("access$")) {
+	            ((AbstractMethod)m).markAsResolved();
+	            return m;
+	        }
+	        try {
+	            JavaClass javaClass = Repository.lookupClass(classname);
+	            javaClass = javaClass.getSuperClass();
+	            if (javaClass == null) return m;
+	            if (m.getClassName().equals(javaClass.getClassName())) return m;
+	            m2 = createXMethod(javaClass.getClassName(), m.getName(), m.getSignature(), m.isStatic());
+	            if (m2.isResolved()) {
+	                methods.put(m, m2);			
+	            }
+	            return m2;
+	        } catch (ClassNotFoundException e) {
+	            AnalysisContext.reportMissingClass(e);
+	        }
+	        // ((AbstractMethod)m).markAsResolved();
+	        return m;
+	    } finally {
+	        recursionDepth.get().exit();
+	    }
+
 	}
 
 	public static XField createXField(FieldInstruction fieldInstruction, ConstantPoolGen cpg) {
