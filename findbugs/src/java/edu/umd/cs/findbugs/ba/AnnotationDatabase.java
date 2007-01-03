@@ -278,6 +278,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		// Look in supermethod
 		XMethod superMethod = XFactory.createXMethod(classToLookIn, originalMethod.getName(),
 				originalMethod.getSignature(), originalMethod.isStatic());
+		if (!superMethod.isResolved()) return null;
 		if (DEBUG)
 			System.out.println("Looking for overridden method " + superMethod);
 		
