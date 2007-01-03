@@ -63,7 +63,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 	private String getClassName(JavaClass c, int classIndex) {
 		String name = c.getConstantPool().getConstantString(classIndex,
 				CONSTANT_Class);
-		return Subtypes.extractClassName(name);
+		return Subtypes.extractClassName(name).replace('/','.');
 	}
 
 	private String getMemberName(JavaClass c, String className,
@@ -76,7 +76,24 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 						+ ((ConstantUtf8) c.getConstantPool().getConstant(
 						signatureIndex, CONSTANT_Utf8)).getBytes();
 	}
-
+	private String getMemberName(String className,
+			String memberName, String signature) {
+		return className.replace('/','.')
+				+ "."
+				+ memberName
+						+ " : "
+						+ signature;
+	}
+	private boolean find(JavaClass target, String name, String signature) throws ClassNotFoundException {
+		if (target == null) return false;
+		String ref = getMemberName(target.getClassName(), name,
+				signature);
+		if (defined.contains(ref)) return true;
+		if (find(target.getSuperClass(), name, signature)) return true;
+		for(JavaClass i : target.getInterfaces())
+			if (find(i, name, signature)) return true;
+		return false;
+	}
 	@Override
          public void visit(JavaClass obj) {
 		compute();
@@ -87,7 +104,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 			if (co instanceof ConstantDouble || co instanceof ConstantLong)
 				i++;
 			if (co instanceof ConstantClass) {
-				String ref = getClassName(obj, i).replace('/','.');
+				String ref = getClassName(obj, i);
 				if ((ref.startsWith("java") || ref.startsWith("org.w3c.dom")) && !defined.contains(ref))
 					bugReporter.reportBug(new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY)
 					        .addClass(obj).addString(ref));
@@ -97,46 +114,28 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 				// do nothing until we handle static fields defined in interfaces
 			} else if (co instanceof ConstantCP) {
 				ConstantCP co2 = (ConstantCP) co;
-				String className = getClassName(obj, co2.getClassIndex()).replace('/','.');
+				String className = getClassName(obj, co2.getClassIndex());
 
-				ConstantNameAndType nt = (ConstantNameAndType) cp
-						.getConstant(co2.getNameAndTypeIndex());
-
-				String ref = getMemberName(obj, className, nt.getNameIndex(),
-						nt.getSignatureIndex());
 				// System.out.println("checking " + ref);
 				if (className.equals(obj.getClassName())
 						|| !defined.contains(className)) {
 					// System.out.println("Skipping check of " + ref);
 					continue checkConstant;
 				}
-				
-				if (defined.contains(ref)) {
-					
-					continue checkConstant;
-				}
-			
+				ConstantNameAndType nt = (ConstantNameAndType) cp
+				.getConstant(co2.getNameAndTypeIndex());
+				String name = ((ConstantUtf8) obj.getConstantPool().getConstant(
+						nt.getNameIndex(), CONSTANT_Utf8)).getBytes();
+				String signature = ((ConstantUtf8) obj.getConstantPool().getConstant(
+						nt.getSignatureIndex(), CONSTANT_Utf8)).getBytes();
+
 				
 				try {
 					JavaClass target = Repository.lookupClass(className);
-					if (false && (target.isInterface() || target.isAbstract())) {
-						// System.out.println("Skipping interface for " + ref); // TODO: WHY skip these
-						continue checkConstant;
-					}
-					while (true) {
-						
-						target = target.getSuperClass();
-						if (target == null || !defined.contains(target.getClassName())) break;
-						
-						String ref2 = getMemberName(obj, target.getClassName(), nt
-								.getNameIndex(), nt.getSignatureIndex());
-						if (defined.contains(ref2)) {
-							
-							continue checkConstant;
-						}
-					}
-					bugReporter.reportBug(new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY)
-					        .addClass(obj).addString(ref));
+					if (! find(target, name, signature))
+						bugReporter.reportBug(new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY)
+					        .addClass(obj).addString(getMemberName(target.getClassName(), name,
+									signature)));
 					
 				} catch (ClassNotFoundException e) {
 					bugReporter.reportMissingClass(e);
