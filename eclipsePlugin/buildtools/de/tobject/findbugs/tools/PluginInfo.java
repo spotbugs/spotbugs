@@ -33,7 +33,7 @@ public class PluginInfo {
 		Document document = reader.read(new File(args[0]));
 		String date = eclipseDateFormat.format(new Date());
 		emitProperty(document, "plugin.id", "/plugin/@id");
-		String modifiedVersion = getValue(document, "/plugin/@version").replace("qualifier", date);
+		String modifiedVersion = getValue(document, "/plugin/@version").replaceFirst("qualifier", date);
 		setValue(document, "/plugin/@version", modifiedVersion );
 		emitProperty(document, "plugin.version", "/plugin/@version");
 		if (args.length == 2)
