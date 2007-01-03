@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -171,14 +172,20 @@ public  class XFactory {
 	static class RecursionDepth {
        private static final int MAX_DEPTH = 40;
      private int depth = 0;
-     public boolean enter() {
+     ArrayList<Object> list = new ArrayList<Object>();
+     public String toString() {
+    	 return list.toString();
+     }
+     public boolean enter(Object value) {
          if (depth > MAX_DEPTH) 
              return false;
+         if (DEBUG_CIRCULARITY) list.add(value);
          depth++;
          return true;
      }
      public void exit() {
         depth--;
+        if (DEBUG_CIRCULARITY) list.remove(list.size()-1);
         assert depth >= 0;
      }
     }
@@ -217,7 +224,7 @@ public  class XFactory {
 		return f;
 	}
 	
-    public static boolean QUIT_ON_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
+    public static boolean DEBUG_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
 	/**
 	 * @param f
 	 * @return
@@ -227,10 +234,11 @@ public  class XFactory {
         if (f.isStatic()) return f;
         if (f.getName().startsWith("this$")) return f;
         try {
-            if (!recursionDepth.get().enter()) {
+            if (!recursionDepth.get().enter(f)) {
                 AnalysisContext.logError("recursive cycle trying to resolve " + f);
-                if (QUIT_ON_CIRCULARITY) {
+                if (DEBUG_CIRCULARITY) {
                     System.out.println("Recursive cycle trying to resolve " + f);
+                    System.out.println("Recursion: " + recursionDepth.get());
                     System.exit(1);
                 }
                 return f;
@@ -269,10 +277,11 @@ public  class XFactory {
 	    if (m.isResolved()) return m;
 	    // if (m.isStatic()) return m;
 	    try {
-	        if (!recursionDepth.get().enter()) {
+	        if (!recursionDepth.get().enter(m)) {
 	            AnalysisContext.logError("recursive cycle trying to resolve " + m);
-	            if (QUIT_ON_CIRCULARITY) {
+	            if (DEBUG_CIRCULARITY) {
 	                System.out.println("Recursive cycle trying to resolve " + m);
+	                System.out.println("Recursion: " + recursionDepth.get());
 	                System.exit(1);
 	            }
 	            return m;
