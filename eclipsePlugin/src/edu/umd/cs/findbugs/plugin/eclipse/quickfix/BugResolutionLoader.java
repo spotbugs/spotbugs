@@ -265,7 +265,7 @@ public class BugResolutionLoader {
         for (int i = 0; i < length; i++) {
             Element attrElement = (Element) attrList.item(i);
             String name = attrElement.getAttribute(ATTR_NAME);
-            String value = attrElement.getTextContent();
+            String value = attrElement.getNodeValue(); // TODO: Was getTextValue() -- is this compatible?
             attributes.put(name, value);
         }
         return attributes;
