@@ -508,7 +508,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	public FindBugs() {
 		
 		this.relaxedReportingMode = false;
-		this.userPreferences = UserPreferences.createDefaultUserPreferences();
+
 		this.classObserverList = new LinkedList<IClassObserver>();
 
 		// Create a no-op progress callback.
@@ -821,6 +821,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getUserPreferences()
 	 */
 	public UserPreferences getUserPreferences() {
+		if (userPreferences == null)
+			userPreferences = UserPreferences.createDefaultUserPreferences();
 		return userPreferences;
 	}
 	
