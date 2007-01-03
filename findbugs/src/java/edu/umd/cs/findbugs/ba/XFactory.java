@@ -176,6 +176,11 @@ public  class XFactory {
      public String toString() {
     	 return list.toString();
      }
+     public void dump() {
+    	 System.out.println("Recursive calls" );
+    	 for(Object o : list) 
+    		 System.out.println("  resolve " + o);
+     }
      public boolean enter(Object value) {
          if (depth > MAX_DEPTH) 
              return false;
@@ -238,7 +243,7 @@ public  class XFactory {
                 AnalysisContext.logError("recursive cycle trying to resolve " + f);
                 if (DEBUG_CIRCULARITY) {
                     System.out.println("Recursive cycle trying to resolve " + f);
-                    System.out.println("Recursion: " + recursionDepth.get());
+                    recursionDepth.get().dump();
                     System.exit(1);
                 }
                 return f;
@@ -282,7 +287,7 @@ public  class XFactory {
 	            AnalysisContext.logError("recursive cycle trying to resolve " + m);
 	            if (DEBUG_CIRCULARITY) {
 	                System.out.println("Recursive cycle trying to resolve " + m);
-	                System.out.println("Recursion: " + recursionDepth.get());
+	                recursionDepth.get().dump();
 	                System.exit(1);
 	            }
 	            return m;
