@@ -32,6 +32,10 @@ import java.nio.charset.Charset;
  */
 public class OutputStreamXMLOutput implements XMLOutput {
 	private static final String OPENING = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+	private static String getStylesheetCode(String stylesheet) {
+		if (stylesheet == null) return "";
+		return "<?xml-stylesheet type=\"text/xsl\" href=\"" + stylesheet + "\"?>\n";
+	}
 
 	private static final MetaCharacterMap textMetaCharacterMap = new MetaCharacterMap();
 	static {
@@ -55,19 +59,23 @@ public class OutputStreamXMLOutput implements XMLOutput {
 	private Writer out;
 	private int nestingLevel;
 	private boolean newLine;
-
+	private String stylesheet;
 	/**
 	 * Constructor.
 	 * @param os OutputStream to write XML output to
 	 */
 	public OutputStreamXMLOutput(OutputStream os) {
+		this(os, null);
+	}
+
+	public OutputStreamXMLOutput(OutputStream os, String stylesheet) {
 		this.out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
 		this.nestingLevel = 0;
 		this.newLine = true;
 	}
-
 	public void beginDocument() throws IOException {
 		out.write(OPENING);
+		out.write(getStylesheetCode(stylesheet));
 		out.write("\n");
 		newLine = true;
 	}

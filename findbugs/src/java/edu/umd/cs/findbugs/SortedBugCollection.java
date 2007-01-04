@@ -291,7 +291,9 @@ public class SortedBugCollection implements BugCollection {
 	 * @param project the Project from which the BugCollection was generated
 	 */
 	public void writeXML(OutputStream out, Project project) throws IOException {
-		XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
+		XMLOutput xmlOutput;
+		if (withMessages) xmlOutput= new OutputStreamXMLOutput(out, "http://findbugs.sourceforge.net/xsl/default.xsl");
+		else xmlOutput= new OutputStreamXMLOutput(out);
 
 		writeXML(xmlOutput, project);
 	}
