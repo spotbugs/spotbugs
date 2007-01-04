@@ -240,12 +240,7 @@ public  class XFactory {
         if (f.getName().startsWith("this$")) return f;
         try {
             if (!recursionDepth.get().enter(f)) {
-                AnalysisContext.logError("recursive cycle trying to resolve " + f);
-                if (DEBUG_CIRCULARITY) {
-                    System.out.println("Recursive cycle trying to resolve " + f);
-                    recursionDepth.get().dump();
-                    System.exit(1);
-                }
+                fail("recursive cycle trying to resolve " + f);
                 return f;
             }
 
@@ -273,6 +268,14 @@ public  class XFactory {
         }
     }
 
+    private static void fail(String s) {
+        if (DEBUG_CIRCULARITY) {
+            System.out.println(s);
+            recursionDepth.get().dump();
+            System.exit(1);
+        }
+        AnalysisContext.logError(s);
+    }
     /**
      * If a method is not marked as resolved, look in superclasses to see if the method can be found there.
      * Return whatever method is found. 
@@ -284,28 +287,33 @@ public  class XFactory {
 	    // if (m.isStatic()) return m;
 	    try {
 	        if (!recursionDepth.get().enter(m)) {
-	            AnalysisContext.logError("recursive cycle trying to resolve " + m);
-	            if (DEBUG_CIRCULARITY) {
-	                System.out.println("Recursive cycle trying to resolve " + m);
-	                recursionDepth.get().dump();
-	                System.exit(1);
-	            }
+	            fail("recursive cycle trying to resolve " + m);
 	            return m;
 	        }
 
-	        XMethod m2 = m;
 	        String classname = m.getClassName();
 
-	        if (classname.charAt(0)=='[' || m.getName().equals("<init>") || m.getName().equals("<clinit>") || m.getName().startsWith("access$")) {
+	        String methodName = m.getName();
+            if (classname.charAt(0)=='[' || methodName.equals("<init>") || methodName.equals("<clinit>") || methodName.startsWith("access$")) {
 	            ((AbstractMethod)m).markAsResolved();
 	            return m;
 	        }
 	        try {
 	            JavaClass javaClass = Repository.lookupClass(classname);
-	            javaClass = javaClass.getSuperClass();
-	            if (javaClass == null) return m;
-	            if (m.getClassName().equals(javaClass.getClassName())) return m;
-	            m2 = createXMethod(javaClass.getClassName(), m.getName(), m.getSignature(), m.isStatic());
+                if (!javaClass.getClassName().equals(classname)) {
+                    fail("Looked up " + classname + ", got a class named " + javaClass.getClassName());
+                    return m;
+                }
+                JavaClass superClass = javaClass.getSuperClass();
+	            if (superClass == null) return m;
+	            String superClassName = superClass.getClassName();
+                if (classname.equals("java.security.MessageDigest") && !superClassName.equals("java.security.MessageDigestSpi")
+                        || classname.equals("java.security.MessageDigestSpi") && !superClassName.equals("java.lang.Object")) {
+                    fail("superclass of  " + classname + " is " + superClassName);
+                    return m;
+                }
+                if (classname.equals(superClassName)) return m;
+                XMethod m2 = createXMethod(superClassName, methodName, m.getSignature(), m.isStatic());
 	            if (m2.isResolved()) {
 	                methods.put(m, m2);
 	                return m2;
