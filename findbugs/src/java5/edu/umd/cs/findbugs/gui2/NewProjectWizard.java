@@ -195,7 +195,7 @@ public class NewProjectWizard extends FBDialog
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 //		pack();
-		setTitle(edu.umd.cs.findbugs.L10N.getLocalString("menu.new_item", "New Project"));
+		setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.new_item", "New Project"));
 		setModal(true);
 		setVisible(true);
 	}
