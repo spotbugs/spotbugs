@@ -578,7 +578,7 @@ public class SortedBugCollection implements BugCollection {
 
 	private void checkInputStream(InputStream in) throws IOException {
 		if (in.markSupported()) {
-			byte[] buf = new byte[60];
+			byte[] buf = new byte[200];
 			in.mark(buf.length);
 
 			int numRead = 0;
