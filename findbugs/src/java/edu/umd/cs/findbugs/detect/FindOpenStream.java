@@ -69,12 +69,12 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 		// ignoring byte array, object stream, char array, and String variants.
 		streamFactoryCollection.add(new IOStreamFactory("java.io.InputStream",
 		        new String[]{"java.io.ByteArrayInputStream", "java.io.StringBufferInputStream",  "java.io.PipedInputStream"
-				// ,"java.io.ObjectInputStream"
+				,"java.io.ObjectInputStream"
 				},
 		        "OS_OPEN_STREAM"));
 		streamFactoryCollection.add(new IOStreamFactory("java.io.OutputStream",
 		        new String[]{"java.io.ByteArrayOutputStream", "java.io.PipedOutputStream"
-				// , "java.io.ObjectOutputStream"
+				 , "java.io.ObjectOutputStream"
 				},
 		        "OS_OPEN_STREAM"));
 		streamFactoryCollection.add(new IOStreamFactory("java.io.Reader",
