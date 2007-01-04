@@ -1579,11 +1579,11 @@ Consider using <code>java.net.URI</code> instead.
     <LongDescription>{1} invokes {2}, which blocks to do domain name resolution</LongDescription>
     <Details>
 <![CDATA[
-  <p> Yhe equals and hashCode
+  <p> The equals and hashCode
 method of URL perform domain name resolution, this can result in a big performance hit.
 See <a href="http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html">http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html</a> for more information.
 Consider using <code>java.net.URI</code> instead.
-   /p>
+   </p>
 ]]>
     </Details>
   </BugPattern>
