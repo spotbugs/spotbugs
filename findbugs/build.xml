@@ -472,6 +472,12 @@
 		<move todir="${web.dir}/api">
 			<fileset dir="${apiDoc.dir}"/>
 		</move>
+		<mkdir dir="${docoutput.dir}/xsl"/>
+		<copy todir="${docoutput.dir}/xsl">
+			<fileset dir="${xslsrc.dir}">
+				<include name="*.xsl"/>
+			</fileset>
+		</copy>
 	</target>
 
 	<target name="checkbugdesc">
