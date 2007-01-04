@@ -240,7 +240,7 @@ public  class XFactory {
         if (f.getName().startsWith("this$")) return f;
         try {
             if (!recursionDepth.get().enter(f)) {
-                fail("recursive cycle trying to resolve " + f);
+                fail("recursive cycle trying to resolve " + f, null);
                 return f;
             }
 
@@ -268,10 +268,12 @@ public  class XFactory {
         }
     }
 
-    private static void fail(String s) {
+    private static void fail(String s, JavaClass jClass) {
         if (DEBUG_CIRCULARITY) {
             System.out.println(s);
             recursionDepth.get().dump();
+            if (jClass != null)
+                System.out.println(jClass);
             System.exit(1);
         }
         AnalysisContext.logError(s);
@@ -287,7 +289,7 @@ public  class XFactory {
 	    // if (m.isStatic()) return m;
 	    try {
 	        if (!recursionDepth.get().enter(m)) {
-	            fail("recursive cycle trying to resolve " + m);
+	            fail("recursive cycle trying to resolve " + m, null);
 	            return m;
 	        }
 
@@ -301,15 +303,18 @@ public  class XFactory {
 	        try {
 	            JavaClass javaClass = Repository.lookupClass(classname);
                 if (!javaClass.getClassName().equals(classname)) {
-                    fail("Looked up " + classname + ", got a class named " + javaClass.getClassName());
+                    fail("Looked up " + classname + ", got a class named " + javaClass.getClassName(), javaClass);
                     return m;
                 }
                 JavaClass superClass = javaClass.getSuperClass();
 	            if (superClass == null) return m;
 	            String superClassName = superClass.getClassName();
+                if (!javaClass.getSuperclassName().equals(superClassName))
+                    fail("requested superclass of " + classname + ", expecting to get " + javaClass.getSuperclassName()  
+                            + ", instead got " + superClassName, javaClass);
                 if (classname.equals("java.security.MessageDigest") && !superClassName.equals("java.security.MessageDigestSpi")
                         || classname.equals("java.security.MessageDigestSpi") && !superClassName.equals("java.lang.Object")) {
-                    fail("superclass of  " + classname + " is " + superClassName);
+                    fail("superclass of  " + classname + " is " + superClassName, javaClass);
                     return m;
                 }
                 if (classname.equals(superClassName)) return m;
