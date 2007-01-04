@@ -1045,12 +1045,12 @@ public class OpcodeStack implements Constants2
 	 			break;
 	 				
 	 			case FCMPG:
-	 			case FCMPL: handleFcmp();
+	 			case FCMPL: handleFcmp(seen);
 	 			break;
 
 	 			case DCMPG:
 	 			case DCMPL:
-	 				handleDcmp();
+	 				handleDcmp(seen);
 	 			break;
 	 			
 	 			case FADD:
@@ -1262,9 +1262,10 @@ public class OpcodeStack implements Constants2
 	}
 
 	/**
+	 * @param opcode TODO
 	 * 
 	 */
-	private void handleDcmp() {
+	private void handleDcmp(int opcode) {
 		Item it;
 		Item it2;
 
@@ -1274,6 +1275,12 @@ public class OpcodeStack implements Constants2
 		if ((it.getConstant() != null) && it2.getConstant() != null) {
 			double d = (Double) it.getConstant();
 			double d2 = (Double) it.getConstant();
+			if (Double.isNaN(d) || Double.isNaN(d2)) {
+				if (opcode == DCMPG)
+					push(new Item("I", (Integer)(1)));
+				else 
+					push(new Item("I", (Integer)(-1)));
+			}
 			if (d2 < d)
 				push(new Item("I", (Integer) (-1) ));
 			else if (d2 > d)
@@ -1287,9 +1294,10 @@ public class OpcodeStack implements Constants2
 	}
 
 	/**
+	 * @param opcode TODO
 	 * 
 	 */
-	private void handleFcmp() {
+	private void handleFcmp(int opcode) {
 		Item it;
 		Item it2;
 			it = pop();
@@ -1297,6 +1305,12 @@ public class OpcodeStack implements Constants2
 			if ((it.getConstant() != null) && it2.getConstant() != null) {
 				float f = (Float) it.getConstant();
 				float f2 = (Float) it.getConstant();
+				if (Float.isNaN(f) || Float.isNaN(f2)) {
+					if (opcode == FCMPG)
+						push(new Item("I", (Integer)(1)));
+					else 
+						push(new Item("I", (Integer)(-1)));
+				}
 				if (f2 < f)
 					push(new Item("I", (Integer)(-1)));
 				else if (f2 > f)
