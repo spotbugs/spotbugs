@@ -68,16 +68,20 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 		// Examine InputStreams, OutputStreams, Readers, and Writers,
 		// ignoring byte array, object stream, char array, and String variants.
 		streamFactoryCollection.add(new IOStreamFactory("java.io.InputStream",
-		        new String[]{"java.io.ByteArrayInputStream", "java.io.ObjectInputStream"},
+		        new String[]{"java.io.ByteArrayInputStream", "java.io.StringBufferInputStream",  "java.io.PipedInputStream"
+				// ,"java.io.ObjectInputStream"
+				},
 		        "OS_OPEN_STREAM"));
 		streamFactoryCollection.add(new IOStreamFactory("java.io.OutputStream",
-		        new String[]{"java.io.ByteArrayOutputStream", "java.io.ObjectOutputStream"},
+		        new String[]{"java.io.ByteArrayOutputStream", "java.io.PipedOutputStream"
+				// , "java.io.ObjectOutputStream"
+				},
 		        "OS_OPEN_STREAM"));
 		streamFactoryCollection.add(new IOStreamFactory("java.io.Reader",
-		        new String[]{"java.io.StringReader", "java.io.CharArrayReader"},
+		        new String[]{"java.io.StringReader", "java.io.CharArrayReader", "java.io.PipedReader"},
 		        "OS_OPEN_STREAM"));
 		streamFactoryCollection.add(new IOStreamFactory("java.io.Writer",
-		        new String[]{"java.io.StringWriter", "java.io.CharArrayWriter"},
+		        new String[]{"java.io.StringWriter", "java.io.CharArrayWriter", "java.io.PipedWriter"},
 		        "OS_OPEN_STREAM"));
 
 		// Ignore socket input and output streams
