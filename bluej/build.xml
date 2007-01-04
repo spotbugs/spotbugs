@@ -1,4 +1,6 @@
 <project name="fbbluej" default="dist"> 
+        <property file="build.properties" />
+
 	<property name="src.dir" value="src"/>
 		<property name="lib.dir" value="lib"/>
 		<property name="dist.dir" value="dist"/>
@@ -29,7 +31,7 @@
 			<mkdir dir="${dist.dir}"/>
 			<mkdir dir="${bin.dir}"/>
 		</target>
-	<target name="classes" depends="init" description="Compile java source files">
+	<target name="classes" depends="init,fbjars" description="Compile java source files">
 
 	        <!-- Compile Java source files. -->
 	        <javac srcdir="${src.dir}"
@@ -48,6 +50,14 @@
 				
 		
 		</target>
+
+        <target name="fbjars" description="Copy required jar files from the main findbugs project (which should be a sibling of this project)">
+                <ant dir="${findbugs.dir}" inheritall="false" target="build"/>
+                <copy todir="${lib.dir}">
+                        <fileset dir="${findbugs.dir}/lib" includes="asm-3.0.jar,bcel.jar,findbugs.jar, asm-tree-3.0.jar,dom4j-full.jar"/>
+                        <fileset dir="${findbugs.dir}/plugin" includes="coreplugin.jar"/>
+                </copy>
+        </target>
 	
 	<target name="dist" depends="clean,classes" description="Build a plugin distributable">
 			<jar destfile="${dist.dir}/FindBugs.jar">
