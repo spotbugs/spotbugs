@@ -56,6 +56,8 @@
 				 <zipfileset src="lib/findbugs.jar"/>
 				 <zipfileset src="lib/coreplugin.jar"/>
 				 <zipfileset src="lib/bcel.jar"/>
+				 <zipfileset src="lib/asm-3.0.jar"/>
+				 <zipfileset src="lib/asm-tree-3.0.jar"/>
 				 <zipfileset src="lib/dom4j-full.jar"/>
 				 <fileset file="smallBuggy.png"/>
 			
