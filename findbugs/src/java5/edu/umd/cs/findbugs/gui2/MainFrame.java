@@ -189,7 +189,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * saveProjectMenuItem should be enabled.
 	 */
 	boolean projectChanged = false;
-	final private JMenuItem editProjectMenuItem = newJMenuItem("menu.addRemoveFiles", "Add/Remove Files", KeyEvent.VK_F);
+	final private JMenuItem editProjectMenuItem = newJMenuItem("menu.addRemoveFiles", "Add/Remove Files...", KeyEvent.VK_F);
 	final private JMenuItem saveProjectMenuItem = newJMenuItem("menu.save_item", "Save Project", KeyEvent.VK_S);
 	BugLeafNode currentSelectedBugLeaf;
 	BugAspects currentSelectedBugAspects;
