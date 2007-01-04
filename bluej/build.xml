@@ -1,4 +1,4 @@
-<project name="fbbluej" default="dist">
+<project name="fbbluej" default="dist"> 
 	<property name="src.dir" value="src"/>
 		<property name="lib.dir" value="lib"/>
 		<property name="dist.dir" value="dist"/>
