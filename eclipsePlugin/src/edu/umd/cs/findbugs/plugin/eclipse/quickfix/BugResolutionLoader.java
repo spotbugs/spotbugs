@@ -265,7 +265,10 @@ public class BugResolutionLoader {
         for (int i = 0; i < length; i++) {
             Element attrElement = (Element) attrList.item(i);
             String name = attrElement.getAttribute(ATTR_NAME);
-            String value = attrElement.getNodeValue(); // TODO: Was getTextValue() -- is this compatible?
+            String value = TigerSubstitutes.getTextContent(attrElement);
+            if (!value.equals(attrElement.getTextContent())) {
+                System.out.println("Expected " + attrElement.getTextContent() + ", got " + value);
+            }
             attributes.put(name, value);
         }
         return attributes;
