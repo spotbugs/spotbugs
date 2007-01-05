@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 
 /**
  * This class provides substitutes for 1.5 methods that we don't want to depend upon in
@@ -72,5 +75,15 @@ public class TigerSubstitutes {
       }
       private static boolean isAsciiDigit(char c) {
           return '0' <= c && c <= '9';
+      }
+      
+      public static String getTextContent(Node n) {
+          NodeList nodeList= n.getChildNodes();
+          StringBuffer buf = new StringBuffer();
+          for (int j=0; j < nodeList.getLength(); j++) {
+              Node k = nodeList.item(j);
+              buf.append( k.getNodeValue()); 
+          }
+          return buf.toString();
       }
 }
