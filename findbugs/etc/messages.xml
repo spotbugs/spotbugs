@@ -3604,6 +3604,19 @@ was return from a method which is known to return possibly-null values.</p>
       ]]>
    </Details>
   </BugPattern>
+  <BugPattern type="NP_TOSTRING_COULD_RETURN_NULL">
+   <ShortDescription>toString method may return null</ShortDescription>
+   <LongDescription>{1} may return null</LongDescription>
+   <Details>
+      <![CDATA[
+      <p>
+	This toString method seems to return null in some circumstances. A liberal reading of the
+	spec could be interpreted as allowing this, but it is probably a bad idea and could cause
+	other code to break. Return the empty string or some other appropriate string rather than null.
+      </p>
+      ]]>
+   </Details>
+  </BugPattern>
 	
 	
   <BugPattern type="NP_GUARANTEED_DEREF">

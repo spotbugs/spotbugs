@@ -407,8 +407,13 @@ public class FindNullDeref
 			MethodGen methodGen = classContext.getMethodGen(method);
 			String sourceFile = classContext.getJavaClass().getSourceFileName();
 						
-			
-			BugInstance warning = new BugInstance(method.getName().equals("clone") ? "NP_CLONE_COULD_RETURN_NULL" : "NP_NONNULL_RETURN_VIOLATION", tos.isDefinitelyNull() ?
+            String bugPattern = "NP_NONNULL_RETURN_VIOLATION";
+            String methodName = method.getName();
+            if (methodName.equals("clone"))
+                bugPattern = "NP_CLONE_COULD_RETURN_NULL";
+            else if (methodName.equals("toString"))
+                bugPattern = "NP_TOSTRING_COULD_RETURN_NULL";
+			BugInstance warning = new BugInstance(bugPattern, tos.isDefinitelyNull() ?
 					HIGH_PRIORITY : NORMAL_PRIORITY)
 				.addClassAndMethod(methodGen, sourceFile)
 				.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
