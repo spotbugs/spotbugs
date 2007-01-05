@@ -331,6 +331,9 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 	protected void addMethodParameterAnnotation(String cName, String mName, String mSig, boolean isStatic, int param, AnnotationEnum annotation) {
 		subtypes.addNamedClass(cName);
 		if (addClassOnly) return;
+		SignatureParser parser = new SignatureParser(mSig);
+		if (param < 0 || param >= parser.getNumParameters())
+			throw new IllegalArgumentException("can't annotation parameter #" + param + " of " + cName +"." + mName + mSig);
 		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
 		addDirectAnnotation(new XMethodParameter(m, param), annotation);
 	}
