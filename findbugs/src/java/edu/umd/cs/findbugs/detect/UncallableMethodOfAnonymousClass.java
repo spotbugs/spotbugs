@@ -87,27 +87,23 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 	}
 	
 	static private boolean skip(Method obj) {
-		String methodName = obj.getName();
-        if (methodName.equals("<init>"))
-			return true;
-        if (methodName.equals("readResolve"))
-            return true;
-        if (methodName.equals("readObject"))
-            return true;
-        if (methodName.equals("readObjectNoData"))
-            return true;
-        if (methodName.equals("writeObject"))
-            return true;
-        if (methodName.equals("writeReplace"))
-            return true;
-		if (methodName.startsWith("access$"))
-			return true;
-		if (obj.isSynthetic())
-			return true;
-		if (obj.isPrivate())
-			return true;
-		if (obj.isAbstract()) return true;
-		return false;
+	    if (obj.isSynthetic())
+	        return true;
+	    if (obj.isPrivate())
+	        return true;
+	    if (obj.isAbstract()) return true;
+
+	    String methodName = obj.getName();
+	    String sig = obj.getSignature();
+	    if (methodName.equals("<init>"))
+	        return true;
+	    if (sig.equals("()Ljava/lang/Object;") 
+	            && (methodName.equals("readResolve") 
+	                    || methodName.equals("writeReplace")))
+	        return true;
+	    if (methodName.startsWith("access$"))
+	        return true;
+	    return false;
 	}
 	@Override
 	public void visit(Method obj) {
