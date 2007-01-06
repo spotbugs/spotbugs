@@ -72,6 +72,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
 		this.out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
 		this.nestingLevel = 0;
 		this.newLine = true;
+        this.stylesheet = stylesheet;
 	}
 	public void beginDocument() throws IOException {
 		out.write(OPENING);
