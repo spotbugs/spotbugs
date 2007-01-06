@@ -6,6 +6,9 @@ public class InfiniteIterativeLoop {
 		return result;
 	}
 
+    void falsePositive(int i) {
+        while (--i > 0);
+    }
 	int sumDoWhile(int n) {
 		int result = 0;
 		int i = 0;

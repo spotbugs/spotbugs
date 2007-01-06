@@ -1,9 +1,21 @@
-import java.util.*;
-import java.net.*;
-import java.security.*;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class UMAC {
 	
+    Serializable x = new Serializable() {
+        private static final long serialVersionUID = 1L;
+        Object writeReplace() throws ObjectStreamException { return this; }
+        Object readResolve() throws ObjectStreamException { return this; }
+    };
 	Iterator<Integer> emptyIterator() {
 		return new Iterator<Integer>() {
 
