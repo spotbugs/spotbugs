@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.gui.FindBugsFrame;
 
 /**
  * This is where it all begins
- * run with -f int to set font size 
+ * run with -f int to set font size
  * run with -clear to clear recent projects menu, or any other issues with program not starting properly due to 
  * something being corrupted (or just faulty) in backend store for GUISaveState.
  * 
