@@ -1,6 +1,6 @@
 package edu.umd.cs.findbugs.bluej;
 
-
+//
 import bluej.extensions.BlueJ;
 import bluej.extensions.event.CompileEvent;
 import bluej.extensions.event.CompileListener;
