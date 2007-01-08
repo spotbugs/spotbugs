@@ -234,7 +234,7 @@ public class FindBadCast2 implements Detector {
 				String castName = castSig.substring(1, castSig.length() - 1)
 				.replace('/', '.');
 				if (!isCast) accumulator.accumulateBug(new BugInstance(this,
-						"NP_NULL_INSTANCEOF", NORMAL_PRIORITY)
+						"NP_NULL_INSTANCEOF", split ? LOW_PRIORITY : NORMAL_PRIORITY)
 						.addClassAndMethod(methodGen, sourceFile)
 						.addClass(castName), sourceLineAnnotation);
 				continue;
@@ -271,9 +271,12 @@ public class FindBadCast2 implements Detector {
 				if ( refSig2.charAt(0) == '[' && (castSig2.equals("Ljava/io/Serializable;") 
 						|| castSig2.equals("Ljava/lang/Object;")
 						|| castSig2.equals("Ljava/lang/Cloneable;"))) continue;
+                int priority = HIGH_PRIORITY;
+                if (split && (castSig2.endsWith("Error;") || castSig2.endsWith("Exception;")))
+                    priority = LOW_PRIORITY;
 				bugReporter.reportBug(
 						new BugInstance(this,
-						"BC_IMPOSSIBLE_CAST", HIGH_PRIORITY )
+						"BC_IMPOSSIBLE_CAST",  priority)
 						.addClassAndMethod(methodGen, sourceFile)
 						.addType(refSig)
 						.addType(castSig)
