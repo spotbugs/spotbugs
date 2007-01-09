@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.gui2;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -140,6 +141,7 @@ public class SorterTableColumnModel implements TableColumnModel{
 			if (comp instanceof JLabel) {
 				JLabel cell = (JLabel)comp;
 				cell.setFont(cell.getFont().deriveFont(Driver.getFontSize()));
+				cell.setFont(cell.getFont().deriveFont(Font.BOLD));
 				cell.setBorder(BorderFactory.createCompoundBorder(cell.getBorder(), BorderFactory.createEmptyBorder(0, 6, 0, 6)));
 				cell.setHorizontalAlignment(SwingConstants.CENTER);
 				if (value == Sortables.DIVIDER)

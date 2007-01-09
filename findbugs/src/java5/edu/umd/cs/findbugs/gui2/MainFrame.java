@@ -75,6 +75,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -85,7 +86,9 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.basic.BasicTreeUI;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
 import javax.swing.text.html.HTMLEditorKit;
@@ -163,6 +166,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private JButton findPreviousButton = newButton("button.findPrev", "Find Previous");
 
 	public static final boolean DEBUG = SystemProperties.getBoolean("gui2.debug");
+	//public static final boolean DEBUG = true;
 	
 	private static final boolean MAC_OS_X = SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
 	final static String WINDOW_MODIFIED = "windowModified";
@@ -184,7 +188,7 @@ public class MainFrame extends FBFrame implements LogSync
 	final private FindBugsLayoutManagerFactory findBugsLayoutManagerFactory;
 	final private FindBugsLayoutManager guiLayout;
 	
-	/* To change this method must use setProjectChanged(boolean b).
+	/* To change this value must use setProjectChanged(boolean b).
 	 * This is because saveProjectItemMenu is dependent on it for when
 	 * saveProjectMenuItem should be enabled.
 	 */
@@ -849,6 +853,7 @@ public class MainFrame extends FBFrame implements LogSync
 		tableheader.addMouseListener(new MouseAdapter(){
 
 			public void mouseClicked(MouseEvent e) {
+				Debug.println("tableheader.getReorderingAllowed() = " + tableheader.getReorderingAllowed());
 				if (!tableheader.getReorderingAllowed())
 					return;
 				if (e.getClickCount()==2)
@@ -887,7 +892,18 @@ public class MainFrame extends FBFrame implements LogSync
 		treeScrollPane = new JScrollPane(tree);
 		topPanel.setLayout(new BorderLayout());
 
-		topPanel.add(tableheader, BorderLayout.NORTH);
+		//New code to fix problem in Windows
+		JTable t = new JTable(new DefaultTableModel(0, Sortables.values().length));
+		t.setTableHeader(tableheader);
+		JScrollPane sp = new JScrollPane(t);
+		//This sets the height of the scrollpane so it is dependent on the fontsize.
+		int num = (int) (Driver.getFontSize()*1.2);
+		sp.setPreferredSize(new Dimension(0, 10+num));
+		//End of new code.
+		//Changed code.
+		topPanel.add(sp, BorderLayout.NORTH);
+		//topPanel.add(tableheader, BorderLayout.NORTH);
+		//End of changed code.
 		topPanel.add(treeScrollPane, BorderLayout.CENTER);
 		
 		return topPanel;

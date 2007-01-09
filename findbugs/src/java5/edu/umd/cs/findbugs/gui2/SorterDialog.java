@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -29,10 +30,12 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 /**
@@ -120,7 +123,18 @@ public class SorterDialog extends FBDialog {
 		JPanel bottomPanel=new JPanel();
 		bottomPanel.setLayout(new BorderLayout());
 		//bottomPanel.add(previewLabel,BorderLayout.NORTH);
-		bottomPanel.add(preview, BorderLayout.CENTER);
+		//New code to fix problem in Windows
+		JTable t = new JTable(new DefaultTableModel(0, Sortables.values().length));
+		t.setTableHeader(preview);
+		JScrollPane sp = new JScrollPane(t);
+		//This sets the height of the scrollpane so it is dependent on the fontsize.
+		int num = (int) (Driver.getFontSize()*1.2);
+		sp.setPreferredSize(new Dimension(670, 10+num));
+		//End of new code.
+		//Changed code.
+		bottomPanel.add(sp, BorderLayout.CENTER);
+		//bottomPanel.add(preview, BorderLayout.CENTER);
+		//End of changed code.
 
 		insidePanel.add(bottomPanel,BorderLayout.SOUTH);
 		
