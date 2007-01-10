@@ -51,7 +51,8 @@ import edu.umd.cs.findbugs.SystemProperties;
  * @author Dan
  *
  */
-//GUISaveState uses the Preferences API, dont look for a file anywhere, there isn't one, well... there might be, but its all system dependent where it is and how its stored
+/*GUISaveState uses the Preferences API, dont look for a file anywhere,
+  there isn't one, well... there might be, but its all system dependent where it is and how its stored*/
 public class GUISaveState{
 
 	private static GUISaveState instance;
@@ -95,6 +96,19 @@ public class GUISaveState{
 	private ArrayList<File> recentProjects;
 	private byte[] dockingLayout;
 	private Rectangle frameBounds;
+	
+	private static final String TAB_SIZE = "TabSize";
+	private int tabSize; //Tab size in the source code display.
+	private static final String FONT_SIZE = "FontSize";
+	private float fontSize; //Font size of entire GUI.
+	
+	public int getTabSize() {
+		return tabSize;
+	}
+
+	public void setTabSize(int tabSize) {
+		this.tabSize = tabSize;
+	}
 	
 	public byte[] getDockingLayout()
 	{
@@ -192,6 +206,10 @@ public class GUISaveState{
 		newInstance.recentProjects=new ArrayList<File>();
 		Preferences p=Preferences.userNodeForPackage(GUISaveState.class);
 		
+		newInstance.tabSize = p.getInt(TAB_SIZE, 4);
+		
+		newInstance.fontSize = p.getFloat(FONT_SIZE, 12.0f);
+		
 		newInstance.starterDirectoryForLoadBugs=new File(p.get(GUISaveState.STARTERDIRECTORY, SystemProperties.getProperty("user.dir")));
 		
 		int prevCommentsSize=p.getInt(GUISaveState.PREVCOMMENTSSIZE, 0);
@@ -255,6 +273,10 @@ public class GUISaveState{
 	public void save()
 	{	
 		Preferences p=Preferences.userNodeForPackage(GUISaveState.class);
+		
+		p.putInt(TAB_SIZE, tabSize);
+		
+		p.putFloat(FONT_SIZE, fontSize);
 		
 		int sorterLength=MainFrame.getInstance().getSorter().getColumnCount();
 		ArrayList<Sortables> sortables=MainFrame.getInstance().getSorter().getOrder();
@@ -328,5 +350,19 @@ public class GUISaveState{
 	 */
 	public void setFrameBounds(Rectangle frameBounds) {
 		this.frameBounds = frameBounds;
+	}
+
+	/**
+	 * @return Returns the fontSize.
+	 */
+	public float getFontSize() {
+		return fontSize;
+	}
+
+	/**
+	 * @param fontSize The fontSize to set.
+	 */
+	public void setFontSize(float fontSize) {
+		this.fontSize = fontSize;
 	}
 }

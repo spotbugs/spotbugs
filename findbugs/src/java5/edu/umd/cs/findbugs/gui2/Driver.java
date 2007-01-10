@@ -75,6 +75,7 @@ public class Driver {
 		} catch (Exception e) {
 			docking = false;
 		}
+		
 		for(int i = 0; i < args.length; i++){
 			if((args[i].equals("-f")) && (i+1 < args.length)){
 				float num = 0;
@@ -107,13 +108,18 @@ public class Driver {
 			if (args[i].equals("-d") || args[i].equals("--nodock"))
 				docking = false;
 		}
-
+		
 		try {
-		GUISaveState.loadInstance();
+			GUISaveState.loadInstance();
 		} catch (RuntimeException e) {
 			GUISaveState.clear();
 			e.printStackTrace();	
 		}
+		
+		if(fontSize == 12 && GUISaveState.getInstance().getFontSize() != 12)
+			fontSize = GUISaveState.getInstance().getFontSize();
+		else
+			GUISaveState.getInstance().setFontSize(fontSize);
 
 		// System.setProperty("findbugs.home",".."+File.separator+"findbugs");
 		DetectorFactoryCollection.instance();
