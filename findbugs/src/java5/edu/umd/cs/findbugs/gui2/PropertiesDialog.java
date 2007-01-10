@@ -59,12 +59,10 @@ public class PropertiesDialog extends FBDialog {
 		mainPanel.setLayout(new GridLayout(2,2));
 		mainPanel.add(new JLabel("Tab Size"));
 		tabTextField = new JTextField(Integer.toString(GUISaveState.getInstance().getTabSize()));
-		//tabTextField.setPreferredSize(new Dimension(40, 20));
 		mainPanel.add(tabTextField);
 		
 		mainPanel.add(new JLabel("Font Size"));
 		fontTextField = new JTextField(Float.toString(GUISaveState.getInstance().getFontSize()));
-		//fontTextField.setPreferredSize(new Dimension(40, 20));
 		mainPanel.add(fontTextField);
 		
 		contentPanel.add(mainPanel, BorderLayout.CENTER);
@@ -89,17 +87,16 @@ public class PropertiesDialog extends FBDialog {
 			}
 		}));
 		
-		/*bottomPanel.add(new JButton(new AbstractAction("Cancel")
+		bottomPanel.add(new JButton(new AbstractAction("Reset")
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
 				tabTextField.setText(Integer.toString(GUISaveState.getInstance().getTabSize()));
-				setVisible(false);
+				fontTextField.setText(Float.toString(GUISaveState.getInstance().getFontSize()));
 			}
-		}));*/
+		}));
 		
 		contentPanel.add(bottomPanel, BorderLayout.SOUTH);
-		//contentPanel.setPreferredSize(new Dimension(100, 100));
 		setContentPane(contentPanel);
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		setModal(true);

@@ -643,7 +643,6 @@ public class MainFrame extends FBFrame implements LogSync
 		preferencesMenuItem = newJMenuItem("menu.filtersAndSupressions", "Filters/Suppressions...");
 		JMenuItem sortMenuItem = newJMenuItem("menu.sortConfiguration", "Sort Configuration...");
 		JMenuItem goToLineMenuItem = newJMenuItem("menu.gotoLine", "Go to line...");
-		JMenuItem propertiesMenuItem = new JMenuItem("Properties");
 		
 		attachAccelaratorKey(cutMenuItem, KeyEvent.VK_X);
 		attachAccelaratorKey(copyMenuItem, KeyEvent.VK_C);
@@ -662,12 +661,6 @@ public class MainFrame extends FBFrame implements LogSync
 				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 				SorterDialog.getInstance().setLocationRelativeTo(MainFrame.this);
 				SorterDialog.getInstance().setVisible(true);
-			}
-		});
-		
-		propertiesMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				PropertiesDialog.getInstance().setVisible(true);
 			}
 		});
 		
@@ -692,7 +685,6 @@ public class MainFrame extends FBFrame implements LogSync
 //		editMenu.addSeparator();
 		editMenu.add(preferencesMenuItem);
 		editMenu.add(sortMenuItem);
-		editMenu.add(propertiesMenuItem);
 		
 		menuBar.add(editMenu);
 		

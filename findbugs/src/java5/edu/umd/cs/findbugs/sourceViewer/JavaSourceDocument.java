@@ -52,6 +52,7 @@ import javax.swing.text.TabStop;
 
 import edu.umd.cs.findbugs.gui2.Debug;
 import edu.umd.cs.findbugs.gui2.Driver;
+import edu.umd.cs.findbugs.gui2.GUISaveState;
 import edu.umd.cs.findbugs.ba.SourceFile;
 
 public class JavaSourceDocument {
@@ -129,9 +130,10 @@ public class JavaSourceDocument {
 		FontMetrics fontMetrics = toolkit.getFontMetrics(sourceFont);
 		TabStop[] tabs = new TabStop[50];
 		float width = fontMetrics.stringWidth(" ");
-			
+		
+		int tabSize = GUISaveState.getInstance().getTabSize();
 		for (int i = 0; i < tabs.length; i++)
-			tabs[i] = new TabStop(width * (4 + 4 * i));
+			tabs[i] = new TabStop(width * (tabSize + tabSize * i));
 		TAB_SET = new TabSet(tabs);
 		StyleConstants.setTabSet(commentAttributes, TAB_SET);
 		StyleConstants.setTabSet(javadocAttributes, TAB_SET);
