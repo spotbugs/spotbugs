@@ -112,14 +112,33 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		&& !method.isStatic();
 		sawInstanceofCheck = false;
 		reportedBadCastInEquals = false;
+        freshRandomOnTos = false;
 		
 	}
 
+    boolean freshRandomOnTos = false;
+    boolean freshRandomOneBelowTos = false;
 	@Override
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		String opcodeName = OPCODE_NAMES[seen];
-		
+        
+        System.out.println(freshRandomOnTos + " " + freshRandomOneBelowTos + " " + OPCODE_NAMES[seen]);
+        if (freshRandomOnTos && seen == INVOKEVIRTUAL || freshRandomOneBelowTos  && seen == INVOKEVIRTUAL 
+                && getClassConstantOperand().equals("java/util/Random") ) {
+            bugReporter.reportBug(new BugInstance(this,
+                    "DMI_RANDOM_USED_ONLY_ONCE", HIGH_PRIORITY)
+                    .addClassAndMethod(this)
+                    .addCalledMethod(this)
+                    .addSourceLine(this));
+        }
+        
+        freshRandomOneBelowTos = freshRandomOnTos && isRegisterLoad();
+        freshRandomOnTos = seen == INVOKESPECIAL 
+                    && getClassConstantOperand().equals("java/util/Random") 
+                    && getNameConstantOperand().equals("<init>");
+        
+        
 		if ((seen == INVOKEVIRTUAL
 				&& getClassConstantOperand().equals("java/util/HashMap") && getNameConstantOperand()
 				.equals("get"))

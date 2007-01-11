@@ -1570,7 +1570,7 @@ that all fields are final.
 method of URL perform domain name resolution, this can result in a big performance hit.
 See <a href="http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html">http://michaelscharf.blogspot.com/2006/11/javaneturlequals-and-hashcode-make.html</a> for more information.
 Consider using <code>java.net.URI</code> instead.
-   /p>
+   </p>
 ]]>
     </Details>
   </BugPattern>
@@ -4083,6 +4083,24 @@ a logic error.  Make sure that you are comparing the right things.
 
 
 
+  <BugPattern type="DMI_RANDOM_USED_ONLY_ONCE">
+    <ShortDescription>Random object created and used only once</ShortDescription>
+    <LongDescription>Random object created and used only once in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This code creates a java.util.Random object, uses it to generate one random number, and then discards
+the Random object. This produces mediocre quality random numbers and is inefficient. 
+If possible, rewrite the code so that the Random object is created once and saved, and each time a new random number
+is required invoke a method on the existing Random object to obtain it.
+</p>
+
+<p>If it is important that the generated Random numbers not be guessable, you <em>must</em> not create a new Random for each random
+number; the values are too easily guessable. You should strongly consider using a java.security.SecureRandom instead
+(and avoid allocating a new SecureRandom for each random number needed).
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="RV_ABSOLUTE_VALUE_OF_RANDOM_INT">
     <ShortDescription>Bad attempt to compute absolute value of signed 32-bit random integer</ShortDescription>
     <LongDescription>Bad attempt to compute absolute value of signed 32-bit random integer in {1}</LongDescription>
@@ -4219,8 +4237,8 @@ This may indicate a logic error or typo.</p>
   </BugPattern>
 
   <BugPattern type="BIT_AND_ZZ">
-    <ShortDescription>Incompatible bit masks</ShortDescription>
-    <LongDescription>Incompatible bit masks yield a constant result in {1}</LongDescription>
+    <ShortDescription>Check to see if ((...) &amp; 0) == 0</ShortDescription>
+    <LongDescription>Check to see if ((...) &amp; 0) == 0 in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method compares an expression of the form (a &amp; 0) to 0,
