@@ -169,12 +169,12 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				if (reg0 >= 0) {
 				    reg0Invariant = !isRegModified(reg0, backwardsReach, bb.from);
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from))
-					.addSourceLine(this, constantSince(fcb.item0));
+					.addSourceLine(this, constantSince(fcb.item0)).describe("SOURCE_LINE_LAST_CHANGE");
                 }
 				int reg1 = fcb.item1.getRegisterNumber();
 				if (reg1 >= 0 && reg1 != reg0) 
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from))
-										.addSourceLine(this, constantSince(fcb.item1));
+										.addSourceLine(this, constantSince(fcb.item1)).describe("SOURCE_LINE_LAST_CHANGE");
                   boolean reg1Invariant = true;
                 if (reg1 >= 0) 
                     reg1Invariant = !isRegModified(reg1, backwardsReach, bb.from);

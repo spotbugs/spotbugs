@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -340,8 +341,8 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 						.addClassAndMethod(methodGen, sourceFile)					
 						//.addString(GenericUtilities.getString(parmType))
 						//.addString(GenericUtilities.getString(argType))
-						.addType(parmType.getSignature()) //XXX addType not handling 
-						.addType(argType.getSignature())  //    generics properly
+						.addType(parmType.getSignature()).describe(TypeAnnotation.EXPECTED_ROLE) //XXX addType not handling 
+						.addType(argType.getSignature()).describe(TypeAnnotation.FOUND_ROLE)  //    generics properly
 						.addCalledMethod(methodGen, (InvokeInstruction) ins)
 						,sourceLineAnnotation);
 			}
