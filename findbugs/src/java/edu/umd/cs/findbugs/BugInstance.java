@@ -1028,7 +1028,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addCalledMethod(DismantleBytecode visitor) {
-		return addMethod(MethodAnnotation.fromCalledMethod(visitor));
+		return addMethod(MethodAnnotation.fromCalledMethod(visitor)).describe("METHOD_CALLED");
 	}
 
 	/**
@@ -1041,7 +1041,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this object
 	 */
 	public BugInstance addCalledMethod(String className, String methodName, String methodSig, boolean isStatic) {
-		return addMethod(MethodAnnotation.fromCalledMethod(className, methodName, methodSig, isStatic));
+		return addMethod(MethodAnnotation.fromCalledMethod(className, methodName, methodSig, isStatic)).describe("METHOD_CALLED");
 	}
 
 	/**

@@ -34,7 +34,9 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class TypeAnnotation implements BugAnnotation {
 	private static final long serialVersionUID = 1L;
 
-	private static final String DEFAULT_ROLE = "TYPE_DEFAULT";
+	public static final String DEFAULT_ROLE = "TYPE_DEFAULT";
+    public static final String EXPECTED_ROLE = "TYPE_EXPECTED";
+    public static final String FOUND_ROLE = "TYPE_FOUND";
 
 	final private String descriptor; // jvm type descriptor, such as "[I"
 	private String roleDescription;
