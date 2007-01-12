@@ -123,7 +123,6 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		stack.mergeJumps(this);
 		String opcodeName = OPCODE_NAMES[seen];
         
-        System.out.println(freshRandomOnTos + " " + freshRandomOneBelowTos + " " + OPCODE_NAMES[seen]);
         if (freshRandomOnTos && seen == INVOKEVIRTUAL || freshRandomOneBelowTos  && seen == INVOKEVIRTUAL 
                 && getClassConstantOperand().equals("java/util/Random") ) {
             bugReporter.reportBug(new BugInstance(this,
