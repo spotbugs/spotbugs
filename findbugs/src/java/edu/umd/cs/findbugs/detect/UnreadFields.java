@@ -196,12 +196,24 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	public void visitAnnotation(String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
 		if (!visitingField()) return;
-		if (annotationClass.startsWith("javax.annotation.") || annotationClass.startsWith("javax.ejb")|| annotationClass.equals("org.jboss.seam.annotations.In")  || annotationClass.startsWith("javax.persistence")) {
+		if (isInjectionAttribute(annotationClass)) {
 			containerFields.add(XFactory.createXField(this));
 		}
 		
 
 	}
+    /**
+     * @param annotationClass
+     * @return
+     */
+    private boolean isInjectionAttribute(String annotationClass) {
+        if ( annotationClass.startsWith("javax.annotation.") || annotationClass.startsWith("javax.ejb")|| annotationClass.equals("org.jboss.seam.annotations.In")  || annotationClass.startsWith("javax.persistence"))
+            return true;
+        int lastDot = annotationClass.lastIndexOf('.');
+        String lastPart = annotationClass.substring(lastDot+1);
+        if (lastPart.startsWith("Inject")) return true;
+        return false;
+    }
 	@Override
          public void visit(ConstantValue obj) {
 		// ConstantValue is an attribute of a field, so the instance variables
