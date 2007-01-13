@@ -1,5 +1,16 @@
+import java.util.HashMap;
+import java.util.Map;
+
 public class MismatchedWait {
 
+    private static Map m = new HashMap();
+    
+    public void falsePositive(Object o) {
+        synchronized(m) {
+            m.put(o, o);
+            m.notifyAll();
+        }
+    }
 	public void foo(Object a, Object b) throws InterruptedException {
 		synchronized (a) {
 			b.wait();
