@@ -68,6 +68,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	private boolean sawInstanceofCheck;
 	private boolean reportedBadCastInEquals;
 	
+    private int sinceBufferedInputStreamReady;
 	private int randomNextIntState;
 	private boolean checkForBitIorofSignedByte;
 	
@@ -113,6 +114,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		sawInstanceofCheck = false;
 		reportedBadCastInEquals = false;
         freshRandomOnTos = false;
+        sinceBufferedInputStreamReady = 100000;
 		
 	}
 
@@ -340,7 +342,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 			else checkForBitIorofSignedByte = false;
 		} else checkForBitIorofSignedByte = false;
 
-	if (prevOpcodeWasReadLine && seen == INVOKEVIRTUAL
+	if (prevOpcodeWasReadLine && sinceBufferedInputStreamReady >= 100 && seen == INVOKEVIRTUAL
 		&& getClassConstantOperand().equals("java/lang/String")
 		&& getSigConstantOperand().startsWith("()")) {
 		String method = getNameConstantOperand();
@@ -349,6 +351,15 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		.addClassAndMethod(this)
 		.addSourceLine(this));
 		}
+
+
+    if 
+        (seen == INVOKEVIRTUAL
+        && getClassConstantOperand().equals("java/io/BufferedReader")
+        && getNameConstantOperand().equals("ready")
+        && getSigConstantOperand().equals("()Z"))
+        sinceBufferedInputStreamReady = 0;
+    else sinceBufferedInputStreamReady++;
 
 	prevOpcodeWasReadLine =
 		(seen == INVOKEVIRTUAL||seen == INVOKEINTERFACE)
