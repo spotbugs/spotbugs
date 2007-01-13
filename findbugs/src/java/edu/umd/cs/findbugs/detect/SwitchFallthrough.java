@@ -68,7 +68,8 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		priority = NORMAL_PRIORITY;
 		fallthroughDistance = 1000;
 		super.visit(obj);
-		if (!found.isEmpty() && found.size() < 4) {
+		if (!found.isEmpty() // && found.size() < 4
+                ) {
 			BugInstance bug = new BugInstance(this, "SF_SWITCH_FALLTHROUGH", priority)
         			.addClassAndMethod(this).addAnnotations(found);
 			bugReporter.reportBug(bug);
@@ -78,7 +79,12 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 
 	@Override
          public void sawOpcode(int seen) {
+        if (DEBUG)   System.out.println(getPC() + ": " + OPCODE_NAMES[seen] + " " + reachable + " " + switchHdlr.isOnSwitchOffset(this));
+         
 		if (reachable && switchHdlr.isOnSwitchOffset(this)) {
+            if (DEBUG) {
+                System.out.println("Fallthrough at : " + getPC() + ": " + OPCODE_NAMES[seen]);
+            }
 			fallthroughDistance = 0;
 			potentiallyDeadStoresFromBeforeFallthrough = (BitSet) potentiallyDeadStores.clone();
 			if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
