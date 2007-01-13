@@ -4214,9 +4214,29 @@ Did you mean (exp & 1) or (exp % 2) instead?
     <Details>
 <![CDATA[
 <p> Loads a value from a byte array and performs a bitwise OR with
-that value. Values loaded from byte arrays are signed bytes, and
-thus this may not give the desired results.
+that value. Values loaded from a byte array are sign extended to 32 bits
+before any any bitwise operations are performed on the value.
+Thus, if <code>b[0]</code> contains the value <code>0xff</code>, and
+<code>x</code> is initially 0, then the code 
+<code>((x << 8) | b[0])</code>  will sign extend <code>0xff</code>
+to get <code>0xffffffff</code>, and thus give the value
+<code>0xffffffff</code> as the result.
 </p>
+
+<p>In particular, the following code for packing a byte array into an int is badly wrong: </p>
+<code>
+int result = 0;
+for(int i = 0; i < 4; i++) 
+  result = ((result << 8) | b[i]);
+</code>
+
+<p>The following idiom will work instead: </p>
+<code>
+int result = 0;
+for(int i = 0; i < 4; i++) 
+  result = ((result << 8) | (b[i] &amps; 0xff));
+</code>
+
 ]]>
     </Details>
   </BugPattern>
