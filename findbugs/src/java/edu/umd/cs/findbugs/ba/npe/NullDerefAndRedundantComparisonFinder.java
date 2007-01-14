@@ -244,7 +244,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			}
 			{
 				Instruction in = location.getHandle().getInstruction();
-				if (in instanceof InvokeInstruction &&assertionMethods.isAssertionCall((InvokeInstruction) in) ) {
+				if (in instanceof InvokeInstruction && assertionMethods.isAssertionCall((InvokeInstruction) in) ) {
 					if (DEBUG_DEREFS) 
 						System.out.println("Skipping because it is an assertion method ");
 					continue;
@@ -278,7 +278,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			Location location = Location.getLastLocation(edge.getSource());
 			if (location != null) {
 				Instruction in = location.getHandle().getInstruction();
-				if (in instanceof InvokeInstruction &&assertionMethods.isAssertionCall((InvokeInstruction) in) ) {
+				if (in instanceof InvokeInstruction && assertionMethods.isAssertionCall((InvokeInstruction) in) ) {
 					if (DEBUG_DEREFS) 
 						System.out.println("Skipping because it is an assertion method ");
 					continue;
@@ -366,38 +366,30 @@ public class NullDerefAndRedundantComparisonFinder {
 
 		// See if there are any definitely-null values in the frame
 		for (int j = 0; j < invFrame.getNumSlots(); j++) {
-			IsNullValue isNullValue = invFrame.getValue(j); 
-			
-			if (isNullValue.isDefinitelyNull()) {
-				// Is this value unconditionally dereferenced?
-				ValueNumber valueNumber = vnaFrame.getValue(j);
-				
-				if (derefSet.isUnconditionallyDereferenced(valueNumber)) {
-					noteUnconditionallyDereferencedNullValue(
-							thisLocation,
-							bugLocations,
-							nullValueGuaranteedDerefMap,
-							derefSet, isNullValue, valueNumber);
-				}
-			}
+		    IsNullValue isNullValue = invFrame.getValue(j); 
+		    ValueNumber valueNumber = vnaFrame.getValue(j);
+		    if (isNullValue.isDefinitelyNull() && derefSet.isUnconditionallyDereferenced(valueNumber)) {
+		        noteUnconditionallyDereferencedNullValue(
+		                thisLocation,
+		                bugLocations,
+		                nullValueGuaranteedDerefMap,
+		                derefSet, isNullValue, valueNumber);
+		    }
 		}
 
 		// See if there are any known-null values in the heap that
 		// will be dereferenced in the future.
 		for (Map.Entry<ValueNumber, IsNullValue> entry : invFrame.getKnownValueMapEntrySet()) {
-			if (!entry.getValue().isDefinitelyNull()) {
-				continue;
-			}
-			
-			if (derefSet.isUnconditionallyDereferenced(entry.getKey())) {
-				noteUnconditionallyDereferencedNullValue(
-						thisLocation,
-						bugLocations,
-						nullValueGuaranteedDerefMap,
-						derefSet, entry.getValue(), entry.getKey());
-			}
+		    ValueNumber valueNumber = entry.getKey();
+		    IsNullValue isNullValue = entry.getValue();
+		    if (isNullValue.isDefinitelyNull() && derefSet.isUnconditionallyDereferenced(valueNumber)) {
+		        noteUnconditionallyDereferencedNullValue(
+		                thisLocation,
+		                bugLocations,
+		                nullValueGuaranteedDerefMap,
+		                derefSet, isNullValue, valueNumber);
+		    }
 		}
-		
 	}
 
 	/**
