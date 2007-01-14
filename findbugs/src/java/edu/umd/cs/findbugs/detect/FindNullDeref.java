@@ -758,7 +758,7 @@ public class FindNullDeref
 		if (variable != null)
 			bugInstance.add(variable);
 		else bugInstance.add(new LocalVariableAnnotation("?",-1,-1));
-		bugInstance.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
+		bugInstance.addSourceLine(classContext, methodGen, sourceFile, location.getHandle()).describe("SOURCE_LINE_DEREF");
 
 		if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 			WarningPropertyUtil.addPropertiesForLocation(propertySet, classContext, method, location);
@@ -1037,7 +1037,7 @@ public class FindNullDeref
 		}
 	
 		for(SourceLineAnnotation sourceLineAnnotation : knownNullLocations)
-			bugInstance.add(sourceLineAnnotation);
+			bugInstance.add(sourceLineAnnotation).describe("SOURCE_LINE_KNOWN_NULL");
 		
 
 		for (Location loc : sortedDerefLocationSet) {
