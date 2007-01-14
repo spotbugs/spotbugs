@@ -1639,25 +1639,21 @@ public class ClassContext {
 		Code code = method.getCode();
 		if (code == null || code.getExceptionTable() == null) return lineMentionedMultipleTimes;
 		BitSet foundOnce = new BitSet();
-        BitSet hashFoundOnce = new BitSet();
 		LineNumberTable lineNumberTable = method.getLineNumberTable();
 		int lineNum = -1;
 		if (lineNumberTable != null) 
-			for(LineNumber  line : lineNumberTable.getLineNumberTable()) {
-				int newLine = line.getLineNumber();
-				if (newLine == lineNum || newLine == -1) continue;
-                int opcode = code.getCode()[line.getStartPC()];
-                int hash = Math.abs( (opcode * 257 + newLine) % 1024);
-                
-				lineNum = newLine;
-				if (foundOnce.get(lineNum) && hashFoundOnce.get(hash))
-					lineMentionedMultipleTimes.set(lineNum);
-				else  {
-					foundOnce.set(lineNum);	
-                    hashFoundOnce.set(hash);
-                }
-			}
-       return lineMentionedMultipleTimes;
+		    for(LineNumber  line : lineNumberTable.getLineNumberTable()) {
+		        int newLine = line.getLineNumber();
+		        if (newLine == lineNum || newLine == -1) continue;
+		        lineNum = newLine;
+		        if (foundOnce.get(lineNum)  ) {
+		            lineMentionedMultipleTimes.set(lineNum);
+		        }
+		        else  {
+		            foundOnce.set(lineNum);	
+		        }
+		    }
+		return lineMentionedMultipleTimes;
 	}
 	
 	/**
