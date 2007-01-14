@@ -200,7 +200,7 @@ public class FindBadCast2 implements Detector {
 			boolean split = occurrences > 1;
             if (lineNumberTable != null) {
                 int line = lineNumberTable.getSourceLine(handle.getPosition());
-                if (linesMentionedMultipleTimes.get(line)) split=true;
+                if (line > 0 && linesMentionedMultipleTimes.get(line)) split=true;
             }
 
 			IsNullValueFrame nullFrame = isNullDataflow.getFactAtLocation(location);
