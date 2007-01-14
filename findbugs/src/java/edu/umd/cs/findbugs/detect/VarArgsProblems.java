@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+
 import java.util.regex.Pattern;
 import org.apache.bcel.classfile.Code;
 
@@ -132,7 +133,7 @@ public class VarArgsProblems extends BytecodeScanningDetector implements
 							priority = HIGH_PRIORITY;
 					bugReporter.reportBug( new BugInstance( this, "VA_PRIMITIVE_ARRAY_PASSED_TO_OBJECT_VARARG", priority)
 							.addClassAndMethod(this)
-							.addType(primitiveArraySig)
+							.addType(primitiveArraySig).describe(TypeAnnotation.FOUND_ROLE)
 							.addCalledMethod(this)
 							.addSourceLine(this));
 				}

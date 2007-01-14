@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
@@ -288,8 +289,8 @@ public class FindBadCast2 implements Detector {
 						new BugInstance(this,
 						"BC_IMPOSSIBLE_CAST",  priority)
 						.addClassAndMethod(methodGen, sourceFile)
-						.addType(refSig)
-						.addType(castSig)
+						.addType(refSig).describe(TypeAnnotation.FOUND_ROLE)
+						.addType(castSig).describe(TypeAnnotation.EXPECTED_ROLE)
 						.addSourceLine(sourceLineAnnotation));
 				continue;
 			}
@@ -327,8 +328,8 @@ public class FindBadCast2 implements Detector {
 								"BC_VACUOUS_INSTANCEOF", NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
 							
-								.addType(refSig)
-								.addType(castSig)
+								.addType(refSig).describe(TypeAnnotation.FOUND_ROLE)
+								.addType(castSig).describe(TypeAnnotation.EXPECTED_ROLE)
 								,sourceLineAnnotation);
 				} else {
 					boolean downcast = Repository.instanceOf(castJavaClass,
@@ -380,8 +381,8 @@ public class FindBadCast2 implements Detector {
 								isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
 								
-								.addType(refSig)
-								.addType(castSig)
+								.addType(refSig).describe(TypeAnnotation.FOUND_ROLE)
+								.addType(castSig).describe(TypeAnnotation.EXPECTED_ROLE)
 								.addSourceLine(sourceLineAnnotation));
 					else if (isCast && rank < 0.9) {
 
@@ -439,8 +440,8 @@ public class FindBadCast2 implements Detector {
 
 							accumulator.accumulateBug(new BugInstance(this, bug, priority)
 									.addClassAndMethod(methodGen, sourceFile)
-									.addType(refSig)
-									.addType(castSig),
+									.addType(refSig).describe(TypeAnnotation.FOUND_ROLE)
+									.addType(castSig).describe(TypeAnnotation.EXPECTED_ROLE),
 									sourceLineAnnotation
 									);
 						}
