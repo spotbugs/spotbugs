@@ -9,6 +9,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.CHECKCAST;
@@ -30,6 +31,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -175,6 +177,9 @@ public class FindBadCast2 implements Detector {
 					haveMultipleInstanceOf.add(sourceLineAnnotation);
 			}
 		}
+        BitSet linesMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
+        LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
+        
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 	
@@ -192,6 +197,11 @@ public class FindBadCast2 implements Detector {
 			int occurrences = cfg.getLocationsContainingInstructionWithOffset(
 					pc).size();
 			boolean split = occurrences > 1;
+            if (lineNumberTable != null) {
+                int line = lineNumberTable.getSourceLine(handle.getPosition());
+                if (linesMentionedMultipleTimes.get(line)) split=true;
+            }
+
 			IsNullValueFrame nullFrame = isNullDataflow.getFactAtLocation(location);
             if (!nullFrame.isValid()) continue;
 			IsNullValue operandNullness = nullFrame.getTopValue();
