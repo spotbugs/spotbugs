@@ -447,4 +447,9 @@ public  class XFactory {
 		return deprecatedView;
 	}
 
+
+    public static XMethod createXMethod(JavaClassAndMethod classAndMethod) {
+        return createXMethod(classAndMethod.getJavaClass(), classAndMethod.getMethod());
+    }
+
 }

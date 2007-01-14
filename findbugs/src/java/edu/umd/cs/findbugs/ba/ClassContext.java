@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -64,8 +65,6 @@ import edu.umd.cs.findbugs.ba.heap.StoreAnalysis;
 import edu.umd.cs.findbugs.ba.heap.StoreDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
-import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefAnalysis;
-import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefDataflow;
 import edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSetAnalysis;
 import edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSetDataflow;
 import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
@@ -470,7 +469,7 @@ public class ClassContext {
 			if (PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES && !cfg.isFlagSet(PRUNED_UNCONDITIONAL_THROWERS)) {
 				try {
 					PruneUnconditionalExceptionThrowerEdges pruner =
-						new PruneUnconditionalExceptionThrowerEdges(methodGen, cfg, getConstantPoolGen(), analysisContext);
+						new PruneUnconditionalExceptionThrowerEdges(ClassContext.this, jclass, methodGen, cfg, getConstantPoolGen(), analysisContext);
 					pruner.execute();
 					changed = changed || pruner.wasCFGModified();
 				} catch (DataflowAnalysisException e) {
@@ -1632,25 +1631,33 @@ public class ClassContext {
 			throws CFGBuilderException, DataflowAnalysisException {
 		return callListDataflowFactory.getAnalysis(method);
 	}
-	
+    
+	 
 	public static BitSet linesMentionedMultipleTimes(Method method) {
+        
 		BitSet lineMentionedMultipleTimes = new BitSet();
 		Code code = method.getCode();
 		if (code == null || code.getExceptionTable() == null) return lineMentionedMultipleTimes;
 		BitSet foundOnce = new BitSet();
+        BitSet hashFoundOnce = new BitSet();
 		LineNumberTable lineNumberTable = method.getLineNumberTable();
 		int lineNum = -1;
 		if (lineNumberTable != null) 
 			for(LineNumber  line : lineNumberTable.getLineNumberTable()) {
 				int newLine = line.getLineNumber();
 				if (newLine == lineNum || newLine == -1) continue;
+                int opcode = code.getCode()[line.getStartPC()];
+                int hash = Math.abs( (opcode * 257 + newLine) % 1024);
+                
 				lineNum = newLine;
-				if (foundOnce.get(lineNum))
+				if (foundOnce.get(lineNum) && hashFoundOnce.get(hash))
 					lineMentionedMultipleTimes.set(lineNum);
-				else 
+				else  {
 					foundOnce.set(lineNum);	
+                    hashFoundOnce.set(hash);
+                }
 			}
-		return lineMentionedMultipleTimes;
+       return lineMentionedMultipleTimes;
 	}
 	
 	/**
