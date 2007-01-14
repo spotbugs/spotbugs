@@ -75,6 +75,8 @@ public class Naming extends PreorderVisitor implements Detector {
 	}
 
 	private boolean checkSuper(XMethod m, HashSet<XMethod> others) {
+        if (m.isStatic()) return false;
+        if (m.getName().equals("<init>") || m.getName().equals("<clinit>")) return false;
 		for (XMethod m2 : others) {
 			try {
 				if (confusingMethodNames(m, m2)
@@ -118,6 +120,8 @@ public class Naming extends PreorderVisitor implements Detector {
 	}
 
 	private boolean checkNonSuper(XMethod m, HashSet<XMethod> others) {
+        if (m.isStatic()) return false;
+        if (m.getName().startsWith("<init>") || m.getName().startsWith("<clinit>")) return false;
 		for (XMethod m2 : others) {
 			if (confusingMethodNames(m,m2)) {
 				bugReporter.reportBug(new BugInstance(this, "NM_CONFUSING", LOW_PRIORITY)
