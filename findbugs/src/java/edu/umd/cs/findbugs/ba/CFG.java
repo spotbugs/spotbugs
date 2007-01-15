@@ -312,8 +312,13 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		BasicBlock basicBlock = (handle.getInstruction() instanceof ATHROW)
 			? exceptionEdge.getSource()
 			: getSuccessorWithEdgeType(exceptionEdge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
-		if (basicBlock == null)
+		if (basicBlock == null) {
+            for(Iterator<Edge> i = outgoingEdgeIterator(basicBlock); i.hasNext(); ) {
+                Edge e = i.next();
+                System.out.println("Outgoing edge(" + e.getType() + ": " + e.toString());
+            }
 			throw new IllegalStateException("No basic block for thrower " + handle);
+        }
 		
 		return new Location(handle, basicBlock);
 	}
