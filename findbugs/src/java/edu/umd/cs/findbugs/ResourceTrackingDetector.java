@@ -136,6 +136,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 
 		MethodGen methodGen = classContext.getMethodGen(method);
 		if (methodGen == null) return;
+        try {
 		CFG cfg = classContext.getCFG(method);
 		DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 
@@ -152,6 +153,11 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 			dataflow.execute();
 			inspectResult(classContext, methodGen, cfg, dataflow, resource);
 		}
+        } catch (RuntimeException e) {
+            System.out.println("Exception while analyzing " + methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature());
+            e.printStackTrace();
+            throw e;
+        }
 	}
 
 	public void report() {
