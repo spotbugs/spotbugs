@@ -113,14 +113,35 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
 
             Location loc = new Location(instructionHandle, basicBlock);
             TypeFrame typeFrame = typeDataflow.getFactAtLocation(loc);
+            Boolean oldIsUnconditionalThrower = null;
+            XMethod primaryXMethod = null;
+            Set<JavaClassAndMethod> targetSet = null;
+            try {
 
+            {
+             primaryXMethod = XFactory.createXMethod(inv, cpg);
+			JavaClass primaryJavaClass = Repository.lookupClass(primaryXMethod.getClassName());
+				
+			JavaClassAndMethod primaryClassAndMethod = Hierarchy.findMethod(primaryJavaClass, primaryXMethod.getName(), primaryXMethod.getSignature(), Hierarchy.CONCRETE_METHOD);
+				if (primaryClassAndMethod == null) {
+					if (DEBUG) System.out.println("\tNOT FOUND");
+					continue;
+				}
+				Method method = primaryClassAndMethod.getMethod();
+				if (DEBUG) System.out.println("\tFound " + primaryXMethod);
+		
+				if (!(method.isStatic() || method.isPrivate() || method.isFinal() || primaryJavaClass.isFinal() || !subtypes.hasSubtypes(primaryJavaClass))) {
+					if (!Repository.instanceOf(methodGen.getClassName(), primaryJavaClass)) continue;
+				}
+                oldIsUnconditionalThrower = doesMethodUnconditionallyThrowException(primaryXMethod, primaryJavaClass, method);
+            }
             if (className.startsWith("["))
                 continue;
             String methodSig = inv.getSignature(cpg);
             if (!methodSig.endsWith("V")) 
                 continue;
-            try {
-                Set<JavaClassAndMethod> targetSet = Hierarchy.resolveMethodCallTargets(inv, typeFrame, cpg);
+
+                targetSet = Hierarchy.resolveMethodCallTargets(inv, typeFrame, cpg);
 
                 for(JavaClassAndMethod classAndMethod : targetSet) {
 
@@ -171,8 +192,16 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
             } catch (ClassNotFoundException e) {
                 analysisContext.getLookupFailureCallback().reportMissingClass(e);
             }
+            boolean newResult = foundThrower && !foundNonThrower;
+            if (oldIsUnconditionalThrower != null && oldIsUnconditionalThrower.booleanValue() != newResult) {
+                System.out.println("Found place where old pruner and new pruner diverge: ");
+                System.out.println("In : " + SignatureConverter.convertMethodSignature(methodGen));
+                System.out.println("Call to :"+ primaryXMethod);
+                if (targetSet != null) for(JavaClassAndMethod jcm : targetSet)
+                    System.out.println(jcm);
 
-            if (foundThrower && !foundNonThrower) {
+            }
+            if (newResult) {
                 // Method always throws an unhandled exception
                 // Remove the normal control flow edge from the CFG.
                 Edge fallThrough = cfg.getOutgoingEdgeWithType(basicBlock,
