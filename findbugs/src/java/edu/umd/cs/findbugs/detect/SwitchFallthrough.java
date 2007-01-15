@@ -68,8 +68,8 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		priority = NORMAL_PRIORITY;
 		fallthroughDistance = 1000;
 		super.visit(obj);
-		if (!found.isEmpty() // && found.size() < 4
-                ) {
+		if (!found.isEmpty()) {
+            if (found.size() >= 4 && priority == NORMAL_PRIORITY) priority = LOW_PRIORITY;
 			BugInstance bug = new BugInstance(this, "SF_SWITCH_FALLTHROUGH", priority)
         			.addClassAndMethod(this).addAnnotations(found);
 			bugReporter.reportBug(bug);
