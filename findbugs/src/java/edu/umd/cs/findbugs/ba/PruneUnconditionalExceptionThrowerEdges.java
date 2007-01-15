@@ -195,10 +195,15 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
             boolean newResult = foundThrower && !foundNonThrower;
             if (oldIsUnconditionalThrower != null && oldIsUnconditionalThrower.booleanValue() != newResult) {
                 System.out.println("Found place where old pruner and new pruner diverge: ");
+                System.out.println(" oldResult: " + oldIsUnconditionalThrower);
+                System.out.println(" newResult: " + newResult);
+                System.out.println(" foundThrower: " + foundThrower);
+                System.out.println(" foundNonThrower: " + foundNonThrower);
                 System.out.println("In : " + SignatureConverter.convertMethodSignature(methodGen));
                 System.out.println("Call to :"+ primaryXMethod);
                 if (targetSet != null) for(JavaClassAndMethod jcm : targetSet)
                     System.out.println(jcm);
+                System.out.println();
 
             }
             if (newResult) {
