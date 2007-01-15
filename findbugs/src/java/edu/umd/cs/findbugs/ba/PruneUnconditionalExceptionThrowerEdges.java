@@ -44,7 +44,8 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
 public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
     private static final boolean DEBUG = SystemProperties.getBoolean("cfg.prune.throwers.debug");
-
+    private static final boolean DEBUG_DIFFERENCES = SystemProperties.getBoolean("cfg.prune.throwers.differences.debug");
+    
     private MethodGen methodGen;
     private CFG cfg;
     private ConstantPoolGen cpg;
@@ -193,7 +194,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
                 analysisContext.getLookupFailureCallback().reportMissingClass(e);
             }
             boolean newResult = foundThrower && !foundNonThrower;
-            if (oldIsUnconditionalThrower != null && oldIsUnconditionalThrower.booleanValue() != newResult) {
+            if (DEBUG_DIFFERENCES && oldIsUnconditionalThrower != null && oldIsUnconditionalThrower.booleanValue() != newResult) {
                 System.out.println("Found place where old pruner and new pruner diverge: ");
                 System.out.println(" oldResult: " + oldIsUnconditionalThrower);
                 System.out.println(" newResult: " + newResult);
