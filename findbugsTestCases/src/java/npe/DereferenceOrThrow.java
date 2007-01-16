@@ -2,17 +2,25 @@ package npe;
 
 public class DereferenceOrThrow {
     
-    void fail() {
-        throw new RuntimeException();
+   /*
+    static int f0(Object x, boolean b) {
+       if (b) throw new IllegalArgumentException();
+        return x.hashCode();
     }
-    int f(Object x, boolean b) {
+    */
+
+
+    static int f(Object x) {
         int result = 0;
         if (x == null) result += 1;
         if (result >= 0) throw new IllegalArgumentException();
         return x.hashCode();
     }
-    
     /*
+ void fail() {
+        throw new RuntimeException();
+    }
+
     int f2(Object x, boolean b) {
         int result = 0;
         if (x == null) result += 1;
