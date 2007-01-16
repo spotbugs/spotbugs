@@ -601,7 +601,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			boolean isAnonymousInnerClass =
 					(lastDollar > 0)
 							&& (lastDollar < className.length() - 1)
-							&& Character.isDigit(className.charAt(className.length() - 1));
+							&& Character.isDigit(className.charAt(lastDollar+1));
 
 			if (DEBUG) {
 				System.out.println("Checking write only field " + className
