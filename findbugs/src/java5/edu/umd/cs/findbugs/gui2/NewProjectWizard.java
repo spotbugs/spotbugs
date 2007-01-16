@@ -64,19 +64,20 @@ public class NewProjectWizard extends FBDialog
 	private Project project;
 	private boolean projectChanged = false;
 	private FBFileChooser chooser = new FBFileChooser();
-	private FileFilter directoryOrJar = new FileFilter()
+	private FileFilter directoryOrArchive = new FileFilter()
 	{
 
 		@Override
 		public boolean accept(File f)
 		{
-			return f.isDirectory() || f.getName().endsWith(".jar") || f.getName().endsWith(".zip");
+			String fileName = f.getName().toLowerCase(); 
+			return f.isDirectory() || fileName.endsWith(".jar") || fileName.endsWith(".ear") || fileName.endsWith(".war") || fileName.endsWith(".zip");
 		}
 
 		@Override
 		public String getDescription()
 		{
-			return edu.umd.cs.findbugs.L10N.getLocalString("file.jar_or_zip", "JAR or ZIP files (*.jar, *.zip)");
+			return edu.umd.cs.findbugs.L10N.getLocalString("file.accepted_extensions", "Class archive files (*.jar, *.war, *.ear, *.zip)");
 		}
 	};
 	
@@ -111,11 +112,11 @@ public class NewProjectWizard extends FBDialog
 		mainPanel.setLayout(new GridLayout(3,1));
 		
 		
-		wizardPanels[0] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl", "Class jars and directories to analyze:"), 
-				analyzeList, analyzeModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrJar);
+		wizardPanels[0] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl", "Class archives and directories to analyze:"), 
+				analyzeList, analyzeModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive);
 		
 		wizardPanels[1] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.aux_class_lbl", "Auxiliary class locations:"), 
-				auxList, auxModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrJar);
+				auxList, auxModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive);
 		
 		wizardPanels[2] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.source_dirs_lbl", "Source directories:"), sourceList, sourceModel, JFileChooser.FILES_AND_DIRECTORIES, null);
 				
@@ -131,8 +132,7 @@ public class NewProjectWizard extends FBDialog
 			{
 					for (int i = 0; i < analyzeModel.getSize(); i++){
 					File temp = new File((String)analyzeModel.get(i));
-					if(!(temp.exists() && (temp.isDirectory() || 
-							temp.getName().endsWith(".jar") || temp.getName().endsWith(".zip")))){
+					if(!temp.exists() && directoryOrArchive.accept(temp)) { 
 						JOptionPane.showMessageDialog(NewProjectWizard.this, 
 								temp.getName()+edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Error"), JOptionPane.ERROR_MESSAGE);
 						return;
@@ -142,8 +142,7 @@ public class NewProjectWizard extends FBDialog
 				
 				for (int i = 0; i < auxModel.getSize(); i++){
 					File temp = new File((String)auxModel.get(i));
-					if(!(temp.exists() && (temp.isDirectory() || 
-							temp.getName().endsWith(".jar") || temp.getName().endsWith(".zip")))){
+					if(!temp.exists() && directoryOrArchive.accept(temp)) { 
 						JOptionPane.showMessageDialog(NewProjectWizard.this, 
 								temp.getName()+edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Error"), JOptionPane.ERROR_MESSAGE);
 						return;
