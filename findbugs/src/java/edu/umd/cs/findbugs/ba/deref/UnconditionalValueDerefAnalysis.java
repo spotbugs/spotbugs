@@ -366,14 +366,14 @@ public class UnconditionalValueDerefAnalysis extends
 				methodGen.getConstantPool());
 		SignatureParser sigParser = new SignatureParser(called.getSignature());
 		int numParams = sigParser.getNumParameters();
-
+		IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
 		for (int i = 0; i < numParams; i++) {
-			IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
-			int slot = invFrame.getArgumentSlot(i, numParams);
-			if (reportDereference(invFrame, slot) 
-					&& database.parameterMustBeNonNull(called, i)) {
+			int offset = sigParser.getSlotsFromTopOfStackForParameter(i);
+			int slot = invFrame.getStackLocation(offset);
+			IsNullValue value = invFrame.getValue(slot);
+			if (reportDereference(invFrame, slot) && database.parameterMustBeNonNull(called, i)) {
 				// Get the corresponding value number
-				ValueNumber vn = vnaFrame.getArgument(inv, methodGen.getConstantPool(), i, numParams);
+				ValueNumber vn = vnaFrame.getArgument(inv, methodGen.getConstantPool(), i, numParams, sigParser);
 				fact.addDeref(vn, location);
 			}
 		}

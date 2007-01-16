@@ -60,6 +60,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.IncompatibleTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
@@ -307,14 +308,15 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			boolean match = true;
 			IncompatibleTypes [] matches = new IncompatibleTypes [numArguments];
 			for (int i=0; i<numArguments; i++) matches[i] = IncompatibleTypes.SEEMS_OK;
-			
+			SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
+
 			for (int ii=0; ii < numArguments; ii++) {
 				if (argumentParameterIndex[ii] < 0) continue; // not relevant argument
 				if (argumentParameterIndex[ii] >= operand.getNumParameters()) 
 					continue; // should never happen
 		
 				Type parmType = operand.getParameterAt(argumentParameterIndex[ii]);
-				Type argType = frame.getArgument(inv, cpg, ii, numArguments);
+				Type argType = frame.getArgument(inv, cpg, ii, numArguments, sigParser);
 				matches[ii] = compareTypes(parmType, argType);
 
 				if (matches[ii] != IncompatibleTypes.SEEMS_OK) match = false;
@@ -334,7 +336,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				Type parmType = operand.getParameterAt(argumentParameterIndex[i]);
 				if (parmType instanceof GenericObjectType)
 					parmType = ((GenericObjectType)parmType).getUpperBound();
-				Type argType = frame.getArgument(inv, cpg, i, numArguments);
+				Type argType = frame.getArgument(inv, cpg, i, numArguments, sigParser);
 				
 				accumulator.accumulateBug(new BugInstance(this,
 						"GC_UNRELATED_TYPES", matches[i].getPriority())

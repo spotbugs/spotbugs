@@ -341,8 +341,8 @@ public abstract class Frame<ValueType> {
 	 */
 	public int getNumArguments(InvokeInstruction ins, ConstantPoolGen cpg)
 			throws DataflowAnalysisException {
-		int numConsumed = getNumArgumentsIncludingObjectInstance(ins, cpg);
-		return (ins instanceof INVOKESTATIC) ? numConsumed : numConsumed - 1;
+		SignatureParser parser = new SignatureParser(ins.getSignature(cpg));
+		return parser.getNumParameters();
 	}
 
 	/**
@@ -379,11 +379,31 @@ public abstract class Frame<ValueType> {
 	 * @return the <i>i</i>th argument
 	 * @throws DataflowAnalysisException
 	 */
-	public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg,
+	@Deprecated public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg,
 			int i, int numArguments) throws DataflowAnalysisException {
+		SignatureParser sigParser = new SignatureParser(ins.getSignature(cpg));
+		return getArgument(ins, cpg, i, numArguments, sigParser );
+	}
+
+	/**
+	 * Get the <i>i</i>th argument passed to given method invocation.
+	 * 
+	 * @param ins
+	 *            the method invocation instruction
+	 * @param cpg
+	 *            the ConstantPoolGen for the class containing the method
+	 * @param i
+	 *            index of the argument; 0 for the first argument, etc.
+	 * @param numArguments
+	 *            total number of arguments to the method
+	 * @return the <i>i</i>th argument
+	 * @throws DataflowAnalysisException
+	 */
+	public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg,
+			int i, int numArguments, SignatureParser sigParser) throws DataflowAnalysisException {
 		if (i >= numArguments)
 			throw new IllegalArgumentException();
-		return getStackValue((numArguments - 1) - i);
+		return getStackValue(sigParser.getSlotsFromTopOfStackForParameter(i));
 	}
 
 	/**
@@ -444,11 +464,13 @@ public abstract class Frame<ValueType> {
 			ConstantPoolGen cpg, DataflowValueChooser<ValueType> chooser)
 			throws DataflowAnalysisException {
 		BitSet chosenArgSet = new BitSet();
+		SignatureParser sigParser = new SignatureParser(invokeInstruction.getSignature(cpg));
+		
 		int numArguments = getNumArguments(invokeInstruction, cpg);
 
 		for (int i = 0; i < numArguments; ++i) {
 			ValueType value = getArgument(invokeInstruction, cpg, i,
-					numArguments);
+					numArguments, sigParser);
 			if (chooser.choose(value))
 				chosenArgSet.set(i);
 		}

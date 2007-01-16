@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -31,6 +32,32 @@ import org.apache.bcel.generic.InvokeInstruction;
  * @author David Hovemeyer
  */
 public class SignatureParser {
+	int totalArgumentSize;
+	int parameterOffset[] = null;
+	
+	private void calculateOffsets() {
+		if (parameterOffset != null) return;
+		ArrayList<Integer> offsets = new ArrayList<Integer>();
+		Iterator<String> i = parameterSignatureIterator();
+		totalArgumentSize = 0;
+		while(i.hasNext()) {
+			String s = i.next();
+
+			if (s.equals("D") || s.equals("J")) totalArgumentSize += 2;
+			else totalArgumentSize += 1;
+			offsets.add(totalArgumentSize);
+		}
+		parameterOffset = new int[offsets.size()];
+		for(int j = 0; j < offsets.size(); j++)
+			parameterOffset[j] = offsets.get(j);
+	}
+	
+	public int getSlotsFromTopOfStackForParameter(int paramNum) {
+		calculateOffsets();
+		int result = totalArgumentSize - parameterOffset[paramNum];
+		return result;
+	}
+	
 	private class ParameterSignatureIterator implements Iterator<String> {
 		private int index = 1;
 

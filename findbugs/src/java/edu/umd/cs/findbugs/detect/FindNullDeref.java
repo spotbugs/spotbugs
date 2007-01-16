@@ -592,38 +592,31 @@ public class FindNullDeref
 		NullnessAnnotationDatabase db 
 		= AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
 		for(int i=nullArgSet.nextSetBit(0); i>=0; i=nullArgSet.nextSetBit(i+1)) {
-			int paramNum = 0;
 			
-	      String signature = invokeInstruction.getSignature(cpg);
-	      Type[] args      = Type.getArgumentTypes(signature);
-	      int words =0;
-	      while (words < i) 
-	    	  words += args[paramNum++].getSize();
-	
-			if (db.parameterMustBeNonNull(m, paramNum)) {
+			if (db.parameterMustBeNonNull(m, i)) {
 				boolean definitelyNull = definitelyNullArgSet.get(i);
 				if (DEBUG_NULLARG) {
-			    System.out.println("QQQ2: " + i + " -- " + paramNum + " is null");
-			    System.out.println("QQQ nullArgSet: " + nullArgSet);
-			    System.out.println("QQQ dnullArgSet: " + definitelyNullArgSet);
+					System.out.println("QQQ2: " + i + " -- " + i + " is null");
+					System.out.println("QQQ nullArgSet: " + nullArgSet);
+					System.out.println("QQQ dnullArgSet: " + definitelyNullArgSet);
 				}
-				
+
 				MethodGen methodGen = classContext.getMethodGen(method);
 				String sourceFile = classContext.getJavaClass().getSourceFileName();
-				
+
 				int priority = definitelyNull ? HIGH_PRIORITY : NORMAL_PRIORITY;
 				if (caught) priority++;
 				BugInstance warning = new BugInstance("NP_NONNULL_PARAM_VIOLATION", 
 						priority)
-						.addClassAndMethod(methodGen, sourceFile)
-						.addMethod(m).describe("METHOD_CALLED")
-						.addInt(i).describe("INT_NONNULL_PARAM")
-						.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
-				
+				.addClassAndMethod(methodGen, sourceFile)
+				.addMethod(m).describe("METHOD_CALLED")
+				.addInt(i).describe("INT_NONNULL_PARAM")
+				.addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
+
 				bugReporter.reportBug(warning);
 			}
 		}
-		
+
 	}
 
 	public void report() {
