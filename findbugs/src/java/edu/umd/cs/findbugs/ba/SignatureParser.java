@@ -116,6 +116,9 @@ public class SignatureParser {
 
 	private final String signature;
 
+	public String toString() {
+		return signature;
+	}
 	/**
 	 * Constructor.
 	 *

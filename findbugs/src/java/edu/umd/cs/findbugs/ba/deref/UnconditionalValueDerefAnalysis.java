@@ -367,6 +367,7 @@ public class UnconditionalValueDerefAnalysis extends
 		SignatureParser sigParser = new SignatureParser(called.getSignature());
 		int numParams = sigParser.getNumParameters();
 		IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
+		if (!invFrame.isValid()) return;
 		for (int i = 0; i < numParams; i++) {
 			int offset = sigParser.getSlotsFromTopOfStackForParameter(i);
 			int slot = invFrame.getStackLocation(offset);
