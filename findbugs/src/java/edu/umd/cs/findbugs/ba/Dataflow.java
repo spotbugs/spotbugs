@@ -25,6 +25,9 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefAnalysis;
+import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
+import edu.umd.cs.findbugs.ba.npe.UnconditionalDerefAnalysis;
 
 /**
  * Perform dataflow analysis on a method using a control flow graph.
@@ -170,8 +173,11 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					Iterator<Edge> predEdgeIter = logicalPredecessorEdgeIterator(block);
 
 					int predCount = 0;
+                    int rawPredCount = 0;
 					while (predEdgeIter.hasNext()) {
 						Edge edge = predEdgeIter.next();
+                        rawPredCount++;
+                        if (needToRecompute) continue;
 						BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
 	
 						// Get the predecessor result fact
@@ -185,7 +191,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 							if (DEBUG) {
 							System.out.println("Need to recompute. My timestamp = " + lastCalculated + ", pred timestamp = " + predLastUpdated + ", pred fact = " + predFact);
 							}
-							break;
+							// break;
 							}
 						}
 					}
@@ -239,7 +245,10 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 									+ "\n   pred last updated at " +  analysis.getLastUpdateTimestamp(predFact) +"\n");
 
 							
-							analysis.meetInto(edgeFact, edge, start);
+                            if (analysis instanceof UnconditionalValueDerefAnalysis) {
+                                ((UnconditionalValueDerefAnalysis)analysis).meetInto((UnconditionalValueDerefSet)edgeFact, edge, (UnconditionalValueDerefSet) start, rawPredCount==1);
+                            }
+                            else analysis.meetInto(edgeFact, edge, start);
 							analysis.setLastUpdateTimestamp(start, timestamp);
 							
 							int pos = -1;

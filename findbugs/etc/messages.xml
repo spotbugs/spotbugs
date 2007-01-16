@@ -3633,10 +3633,25 @@ was return from a method which is known to return possibly-null values.</p>
 		  ]]>
 	  </Details>
   </BugPattern>
+  <BugPattern type="NP_GUARANTEED_DEREF_OR_EXCEPTION">
+	  <ShortDescription>Null value likely to be dereferenced</ShortDescription>
+	  <LongDescription>{2.name} is null and likely to be dereferenced in {1}</LongDescription>
+	  <Details>
+		  <![CDATA[
+			  <p>
+			  There is a statement or branch that if executed guarantees that
+			  a value is null at this point, and that 
+			  value is dereferenced
+			  on all forward paths except
+				on which exceptions are throw.
+			  </p>
+		  ]]>
+	  </Details>
+  </BugPattern>
   
   <BugPattern type="NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH">
-	  <ShortDescription>Null value is guaranteed to be dereferenced on exception path</ShortDescription>
-	  <LongDescription>{2.name} could be null and is guaranteed to be dereferenced in {1} on exception path</LongDescription>
+	  <ShortDescription>On an exception path, value is null and guaranteed to be dereferenced on exception path</ShortDescription>
+	  <LongDescription>On an exception path, {2.name} is null guaranteed to be dereferenced in {1} on exception path</LongDescription>
 	  <Details>
 		  <![CDATA[
 			  <p>
@@ -3645,6 +3660,22 @@ was return from a method which is known to return possibly-null values.</p>
 			  a value is null at this point, and that 
 			  value that is guaranteed to be dereferenced
 			  (except on forward paths involving runtime exceptions).
+			  </p>
+		  ]]>
+	  </Details>
+  </BugPattern>
+  <BugPattern type="NP_GUARANTEED_DEREF_OR_EXCEPTION_ON_EXCEPTION_PATH">
+	  <ShortDescription>On an exception path, a value is null and is likely to be dereferenced </ShortDescription>
+	  <LongDescription>On an exception path, {2.name} is null and is likely to be dereferenced in {1} </LongDescription>
+	  <Details>
+		  <![CDATA[
+			  <p>
+			  There is a statement or branch on an exception path
+				that if executed guarantees that
+			  a value is null at this point, and that 
+			  value that is guaranteed to be dereferenced
+			  on all forward paths except
+				on which exceptions are throw.
 			  </p>
 		  ]]>
 	  </Details>

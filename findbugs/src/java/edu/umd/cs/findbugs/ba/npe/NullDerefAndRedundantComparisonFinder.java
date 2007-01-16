@@ -235,6 +235,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap =
 			new HashMap<ValueNumber, NullValueUnconditionalDeref>();
 		
+        HashSet<ValueNumber> npeOrException = new HashSet<ValueNumber>();
 		// Check every location
 		for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
 			Location location = i.next();
@@ -256,7 +257,7 @@ public class NullDerefAndRedundantComparisonFinder {
 					location,
 					bugLocationMap,
 					nullValueGuaranteedDerefMap,
-					vnaDataflow.getFactAtLocation(location), invDataflow.getFactAtLocation(location), uvdDataflow.getFactAfterLocation(location));
+                    npeOrException, vnaDataflow.getFactAtLocation(location), invDataflow.getFactAtLocation(location), uvdDataflow.getFactAfterLocation(location));
 		}
 		HashSet<ValueNumber> npeIfStatementCovered = new HashSet<ValueNumber>(nullValueGuaranteedDerefMap.keySet());
 		
@@ -289,7 +290,7 @@ public class NullDerefAndRedundantComparisonFinder {
 					location,
 					bugLocationMap,
 					nullValueGuaranteedDerefMap,
-					vnaFact, invFact, uvdFact);
+                    npeOrException, vnaFact, invFact, uvdFact);
 			}
 		}
 		//	For each value number that is null somewhere in the
@@ -328,12 +329,13 @@ public class NullDerefAndRedundantComparisonFinder {
 				+ " while analyzing " + classContext.getJavaClass().getClassName() + "." + method.getName();
 				assignedNullLocationSet = Collections.EMPTY_SET;
 			}
+
 			collector.foundGuaranteedNullDeref(
 					assignedNullLocationSet,
 					derefLocationSet,
 					bugLocationMap.get(valueNumber),
 					vnaDataflow, valueNumber, 
-					e.getValue().isAlwaysOnExceptionPath(), npeIfStatementCovered.contains(valueNumber));
+					e.getValue().isAlwaysOnExceptionPath(), npeIfStatementCovered.contains(valueNumber),  npeOrException.contains(valueNumber));
 		}
 	}
 
@@ -343,6 +345,7 @@ public class NullDerefAndRedundantComparisonFinder {
 	 * @param thisLocation TODO
 	 * @param bugLocations TODO
 	 * @param nullValueGuaranteedDerefMap map to be populated with null values and where they are derefed 
+	 * @param npeOrException TODO
 	 * @param vnaFrame                    value number frame to check
 	 * @param invFrame                    null-value frame to check
 	 * @param derefSet                    set of unconditionally derefed values at this location 
@@ -351,7 +354,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			Location thisLocation,
 			Map<ValueNumber, SortedSet<Location>> bugLocations,
 			Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap,
-			ValueNumberFrame vnaFrame, IsNullValueFrame invFrame, UnconditionalValueDerefSet derefSet) {
+			HashSet<ValueNumber> npeOrException, ValueNumberFrame vnaFrame, IsNullValueFrame invFrame, UnconditionalValueDerefSet derefSet) {
 		
 		if (DEBUG_DEREFS) {
 			System.out.println("vna *** " + vnaFrame);
@@ -368,7 +371,9 @@ public class NullDerefAndRedundantComparisonFinder {
 		for (int j = 0; j < invFrame.getNumSlots(); j++) {
 		    IsNullValue isNullValue = invFrame.getValue(j); 
 		    ValueNumber valueNumber = vnaFrame.getValue(j);
-		    if (isNullValue.isDefinitelyNull() && derefSet.isUnconditionallyDereferenced(valueNumber)) {
+		    if (isNullValue.isDefinitelyNull() && (derefSet.isUnconditionallyDereferenced(valueNumber) 
+                    || derefSet.isUnconditionallyDereferencedOnNonExceptionPath(valueNumber))) {
+                if (!derefSet.isUnconditionallyDereferenced(valueNumber) ) npeOrException.add(valueNumber);
 		        noteUnconditionallyDereferencedNullValue(
 		                thisLocation,
 		                bugLocations,
@@ -382,7 +387,9 @@ public class NullDerefAndRedundantComparisonFinder {
 		for (Map.Entry<ValueNumber, IsNullValue> entry : invFrame.getKnownValueMapEntrySet()) {
 		    ValueNumber valueNumber = entry.getKey();
 		    IsNullValue isNullValue = entry.getValue();
-		    if (isNullValue.isDefinitelyNull() && derefSet.isUnconditionallyDereferenced(valueNumber)) {
+		    if (isNullValue.isDefinitelyNull() && (derefSet.isUnconditionallyDereferenced(valueNumber) 
+                    || derefSet.isUnconditionallyDereferencedOnNonExceptionPath(valueNumber))) {
+                if (!derefSet.isUnconditionallyDereferenced(valueNumber) ) npeOrException.add(valueNumber);
 		        noteUnconditionallyDereferencedNullValue(
 		                thisLocation,
 		                bugLocations,

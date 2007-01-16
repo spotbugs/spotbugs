@@ -673,6 +673,7 @@ public class FindNullDeref
 			if (caught) priority++;
 			reportNullDeref(propertySet, classContext, method, location, type, priority, variable);
 		} else if (refValue.isNullOnSomePath() || duplicated &&  refValue.isDefinitelyNull()) {
+
 			String type =  "NP_NULL_ON_SOME_PATH";
 			int priority =  NORMAL_PRIORITY;
 			if (caught) priority++;
@@ -690,6 +691,7 @@ public class FindNullDeref
 			}
 			
 			if (DEBUG) System.out.println("Reporting null on some path: value=" + refValue);
+            if (type.equals("NP_NULL_ON_SOME_PATH")) return;
 			reportNullDeref(propertySet, classContext, method, location, type, priority, variable);
 		}
 	}
@@ -962,7 +964,10 @@ public class FindNullDeref
 			@NonNull Set<Location> assignedNullLocationSet,
 			@NonNull Set<Location> derefLocationSet,
 			SortedSet<Location> doomedLocations,
-			ValueNumberDataflow vna, ValueNumber refValue, boolean alwaysOnExceptionPath, boolean npeIfStatementCovered) {
+			ValueNumberDataflow vna, ValueNumber refValue, 
+            boolean alwaysOnExceptionPath, 
+            boolean npeIfStatementCovered, 
+            boolean npeOnlyOnNonExceptionPaths) {
 		if (refValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT)) return;
 		
 		if (DEBUG) {
@@ -971,9 +976,13 @@ public class FindNullDeref
 				System.out.println("Doomed at " + loc);
 		}
 		
-		String bugType = alwaysOnExceptionPath
-			? "NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH"
-			: "NP_GUARANTEED_DEREF";
+        
+        
+		String bugType = "NP_GUARANTEED_DEREF";
+        if (npeOnlyOnNonExceptionPaths)
+            bugType += "_OR_EXCEPTION";
+        if (alwaysOnExceptionPath)
+            bugType += "_ON_EXCEPTION_PATH";
 		int priority = alwaysOnExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
 		if (!npeIfStatementCovered) priority++;
 		

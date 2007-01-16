@@ -19,8 +19,9 @@
 
 package edu.umd.cs.findbugs.ba.deref;
 
-import java.util.BitSet;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.Stack;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ATHROW;
@@ -63,7 +64,6 @@ import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-import edu.umd.cs.findbugs.detect.BuildUnconditionalParamDerefDatabase;
 
 /**
  * Dataflow analysis to find values unconditionally derefenced in the future.
@@ -76,10 +76,10 @@ public class UnconditionalValueDerefAnalysis extends
 	public static final boolean DEBUG = SystemProperties.getBoolean("fnd.derefs.debug");
 	public static final boolean ASSUME_NONZERO_TRIP_LOOPS = SystemProperties.getBoolean("fnd.derefs.nonzerotrip");
 	public static final boolean IGNORE_DEREF_OF_NONNCP = 
-		SystemProperties.getBoolean("fnd.derefs.ignorenonNCP", true);
+		SystemProperties.getBoolean("fnd.derefs.ignorenonNCP", false);
 
 	public static final boolean IGNORE_DEREF_OF_NONNULL = IGNORE_DEREF_OF_NONNCP 
-									|| SystemProperties.getBoolean("fnd.derefs.ignorenonnull");
+									|| SystemProperties.getBoolean("fnd.derefs.ignorenonnull", true);
 	public static final boolean CHECK_ANNOTATIONS = 
 		SystemProperties.getBoolean("fnd.derefs.checkannotations", true);
 	public static final boolean CHECK_CALLS = 
@@ -160,6 +160,13 @@ public class UnconditionalValueDerefAnalysis extends
 			BasicBlock basicBlock, UnconditionalValueDerefSet fact)
 			throws DataflowAnalysisException {
 		
+        if (DEBUG) {
+            System.out.println("XXX: " + handle.getPosition() + " " + handle.getInstruction());
+        }
+        if (handle.getInstruction() instanceof ATHROW )  {
+            fact.clear();
+            fact.markAsOnExceptionPath();
+        }
 		if (fact.isTop()) return;
 		Location location = new Location(handle, basicBlock);
 		
@@ -169,7 +176,8 @@ public class UnconditionalValueDerefAnalysis extends
 		// be guaranteed only if the assertion methods
 		// returns normally.
 		// TODO: at some point, evaluate whether we should revisit this
-		if (isAssertion(handle) || handle.getInstruction() instanceof ATHROW ) {
+		if (isAssertion(handle) // || handle.getInstruction() instanceof ATHROW 
+                ) {
 			if (DEBUG) System.out.println("MAKING BOTTOM0 AT: " + location);
 			fact.clear();
 			return;
@@ -265,7 +273,7 @@ public class UnconditionalValueDerefAnalysis extends
 					// Hmm...no information for this target.
 					// assume it doesn't dereference anything
 					if (DEBUG_CHECK_CALLS) {
-						System.out.print("==> no information, assume no guaranteed dereferences");
+						System.out.println("==> no information, assume no guaranteed dereferences");
 					}
 			
 					return;
@@ -296,16 +304,29 @@ public class UnconditionalValueDerefAnalysis extends
 					invFrame = null;
 				}
 			}
-			
-			for (int i = 0; i < numParams; i++) {
+			Iterator<String> paramSigIterator = sigParser.parameterSignatureIterator();
+            Stack<String> paramSigStack = new Stack<String>();
+            while(paramSigIterator.hasNext()) paramSigStack.push(paramSigIterator.next());
+            
+            int stackPos = 0;
+			for (int i= numParams-1; i >= 0; i--) {
+                String paramSig = paramSigStack.pop();
+                if (DEBUG_CHECK_CALLS) System.out.println("Param# " + i + ",  stack pos = " + stackPos + ", sig = " + paramSig);
+                if (paramSig.equals("D") || paramSig.equals("F")) {
+                    stackPos += 2;
+                    continue;
+                }
+                
 				if (!derefParamSet.isNonNull(i)) {
+                    stackPos++;
 					continue;
 				}
-				
-				int argSlot = vnaFrame.getArgumentSlot(i, numParams);
-
+                 if (DEBUG_CHECK_CALLS)  System.out.println("  parameter must be non null");
+                    
+				int argSlot = vnaFrame.getStackLocation(stackPos++);
 				if (invFrame != null) {
 					IsNullValue val = invFrame.getValue(argSlot);
+                     if (DEBUG_CHECK_CALLS)  System.out.println("inv: " + val);
 					if (val.isDefinitelyNotNull()) {
 						continue;
 					}
@@ -430,6 +451,11 @@ public class UnconditionalValueDerefAnalysis extends
 			return;
 		}
 		
+        if ( invDataflow != null
+                && isDerefOfDefinitelyNullValue(location, startFact)) {
+            return;
+        }
+    
 		if (DEBUG) {
 			System.out.println("FOUND GUARANTEED DEREFERENCE");
 			System.out.println("Load: " + vnaFrame.getLoad(vn));
@@ -464,7 +490,7 @@ public class UnconditionalValueDerefAnalysis extends
 			throws DataflowAnalysisException {
 		if (!invFrameAtNullCheck.isValid()) {
 			// Probably dead code
-			return false;
+			return true;
 		}
 		
 		int instance = invFrameAtNullCheck.getInstanceSlot(
@@ -494,6 +520,25 @@ public class UnconditionalValueDerefAnalysis extends
 				locationOfDeref.getHandle().getInstruction(),
 				methodGen.getConstantPool());
 		return isNullOnComplexPath(invFrameAtNullCheck, instance);
+	}
+	private boolean isDerefOfDefinitelyNullValue(Location locationOfDeref, IsNullValueFrame invFrameAtNullCheck)
+	throws DataflowAnalysisException {
+	    if (!invFrameAtNullCheck.isValid()) {
+	        // Probably dead code
+	        return false;
+	    }
+
+	    int instance = invFrameAtNullCheck.getInstanceSlot(
+	            locationOfDeref.getHandle().getInstruction(),
+	            methodGen.getConstantPool());
+	    return isDefinitelyNullValue(invFrameAtNullCheck, instance);
+	}
+
+	private boolean isDefinitelyNullValue(IsNullValueFrame invFrame, int slot) {
+	    if (invFrame == null || !invFrame.isValid()) {
+	        return false;
+	    }
+	    return invFrame.getValue(slot).isDefinitelyNull();
 	}
 	/**
 	 * Return whether or not given slot in given is-null frame
@@ -567,23 +612,37 @@ public class UnconditionalValueDerefAnalysis extends
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#makeFactTop(java.lang.Object)
 	 */
-	public void makeFactTop(UnconditionalValueDerefSet fact) {
+	public void makeFactTop(UnconditionalValueDerefSet fact) {  
 		fact.setIsTop();
 	}
 
 	public boolean isTop(UnconditionalValueDerefSet fact) {
 		return fact.isTop();
 	}
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(java.lang.Object, edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
+     */
+    public void meetInto(UnconditionalValueDerefSet fact, Edge edge,
+            UnconditionalValueDerefSet result) throws DataflowAnalysisException {
+        meetInto(fact, edge, result, false);
+    }
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(java.lang.Object, edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
 	 */
 	public void meetInto(UnconditionalValueDerefSet fact, Edge edge,
-			UnconditionalValueDerefSet result) throws DataflowAnalysisException {
+			UnconditionalValueDerefSet result, boolean onlyEdge) throws DataflowAnalysisException {
 		
-		if (ignoreThisEdge(edge)) {
-			return;
-		}
-		
+        if (isExceptionEdge(edge) && !onlyEdge) {
+            if (DEBUG) System.out.println("Skipping exception edge");
+            return;
+        }
+        
+        if (false && isExceptionEdge(edge) && !result.isTop() && !result.isBottom()) {
+            UnconditionalValueDerefSet tmpFact = createFact();
+            tmpFact.makeSameAs(fact);
+            fact = tmpFact;
+            fact.markAsOnExceptionPath();
+        }
 		ValueNumber knownNonnullOnBranch = null;
 		// Edge transfer function
 		if (isFactValid(fact)) {
@@ -627,25 +686,28 @@ public class UnconditionalValueDerefAnalysis extends
 		} else {
 			// Dataflow merge
 			// (intersection of unconditional deref values)
-			if (ASSUME_NONZERO_TRIP_LOOPS && result.resultsFromBackEdge) {
+           if (ASSUME_NONZERO_TRIP_LOOPS && result.resultsFromBackEdge) {
 				result.backEdgeUpdateCount++;
 				if (result.backEdgeUpdateCount < 10) {
 					if (DEBUG) System.out.println("\n Union update of " +  System.identityHashCode(result) + " due to backedge info");
 					result.unionWith(fact, vnaDataflow.getAnalysis().getFactory());
-					return;
+                    return;
 				}
 			}
-			result.mergeWith(fact, knownNonnullOnBranch, vnaDataflow.getAnalysis().getFactory());
+		    result.mergeWith(fact, knownNonnullOnBranch, vnaDataflow.getAnalysis().getFactory());
 			if (DEBUG) {
 				System.out.println("  updated: " + System.identityHashCode(result));
-				 System.out.println("  result: " +  result);
-				 return;
+				System.out.println("  result: " +  result);
+				
 			}
 		}
 		if (DEBUG && isBackEdge && edge.getType() == EdgeTypes.IFCMP_EDGE) {
 		 System.out.println("  result: " +  result);
 		}
+    
+    
 	}
+
 
 	/**
 	 * Find out if any VNs in the source block
@@ -680,6 +742,7 @@ public class UnconditionalValueDerefAnalysis extends
 			for (int i = 0; i < blockValueNumberFrame.getNumSlots(); i++) {
 				ValueNumber blockVN = blockValueNumberFrame.getValue(i);
 				ValueNumber targetVN = targetValueNumberFrame.getValue(i);
+                if (blockVN.equals(targetVN)) continue;
 				fact.clearDerefSet(blockVN);
 				if (originalFact.isUnconditionallyDereferenced(targetVN))
 					fact.setDerefSet(blockVN, originalFact.getUnconditionalDerefLocationSet(targetVN));
@@ -771,8 +834,11 @@ public class UnconditionalValueDerefAnalysis extends
 	 * @param edge the edge
 	 * @return true if dataflow should be propagated on the edge, false otherwise
 	 */
-	private boolean ignoreThisEdge(Edge edge) {
-		return edge.isExceptionEdge();
+	private boolean isExceptionEdge(Edge edge) {
+		boolean isExceptionEdge = edge.isExceptionEdge();
+        if (DEBUG && isExceptionEdge)
+            System.out.println("Ignoring " + edge);
+        return isExceptionEdge;
 	}
 
 	/* (non-Javadoc)

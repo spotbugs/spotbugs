@@ -62,6 +62,7 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 * assigned null (or that become null through a comparison and branch)
 	 * that are guaranteed to reach a dereference (ignoring
 	 * implicit exception paths).
+	 * @param assignedNullLocationSet set of locations where the value becomes null
 	 * @param derefLocationSet     set of locations where dereferences occur
 	 * @param doomedLocations locations at which the value is doomed
 	 * @param vna ValueNumberDataflow
@@ -70,7 +71,7 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 *                               to be null and unconditionally dereferenced were
 	 *                               all on exception paths
 	 * @param npeIfStatementCovered true if doom location is a statement
-	 * @param assignedNullLocationSet set of locations where the value becomes null
+	 * @param npeOnlyOnNonExceptionPaths TODO
 	 */
 	public void foundGuaranteedNullDeref(
 			Set<Location> assignedNullLocationSet,
@@ -79,5 +80,5 @@ public interface NullDerefAndRedundantComparisonCollector {
 			ValueNumberDataflow vna,
 			ValueNumber refValue,
 			boolean alwaysOnExceptionPath,
-			boolean npeIfStatementCovered);
+			boolean npeIfStatementCovered, boolean npeOnlyOnNonExceptionPaths);
 }

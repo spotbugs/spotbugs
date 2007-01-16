@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.BitSet;
+import java.util.Iterator;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ReferenceType;
@@ -38,7 +39,6 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
-import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 
@@ -81,18 +81,25 @@ public class BuildUnconditionalParamDerefDatabase {
 			UnconditionalValueDerefDataflow dataflow =
 				classContext.getUnconditionalValueDerefDataflow(method);
 	
-			int numParams = new SignatureParser(method.getSignature()).getNumParameters();
+            SignatureParser parser =  new SignatureParser(method.getSignature());
 			int paramLocalOffset = method.isStatic() ? 0 : 1;
 
 			// Build BitSet of params that are unconditionally dereferenced
 			BitSet unconditionalDerefSet = new BitSet();
 			UnconditionalValueDerefSet entryFact = dataflow.getResultFact(cfg.getEntry());
-			for (int i = 0; i < numParams; i++) {
-				ValueNumber paramVN = vnaDataflow.getAnalysis().getEntryValue(i + paramLocalOffset);
+            Iterator<String> paramIterator = parser.parameterSignatureIterator();
+            int i = 0;
+			while (paramIterator.hasNext()) {
+                String paramSig = paramIterator.next();
+                
+				ValueNumber paramVN = vnaDataflow.getAnalysis().getEntryValue(paramLocalOffset);
 				
 				if (entryFact.isUnconditionallyDereferenced(paramVN)) {
 					unconditionalDerefSet.set(i);
 				}
+                i++;
+                if (paramSig.equals("D") || paramSig.equals("J")) paramLocalOffset += 2;
+                else paramLocalOffset += 1;
 			}
 			
 			// No need to add properties if there are no unconditionally dereferenced params
