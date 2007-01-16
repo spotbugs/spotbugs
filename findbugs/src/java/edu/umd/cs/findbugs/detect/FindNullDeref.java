@@ -236,21 +236,8 @@ public class FindNullDeref
 	 * use exist and are nonempty.
 	 */
 	private void checkDatabases() {
-		AnalysisContext analysisContext = AnalysisContext
-				.currentAnalysisContext();
-		unconditionalDerefParamDatabase = analysisContext
-				.getUnconditionalDerefParamDatabase();
-		if (false) {
-		XFactory xFactory = AnalysisContext.currentXFactory();
-		
-		for (XMethod xMethod : unconditionalDerefParamDatabase.getKeys()) {
-			XMethod m2 = xFactory.intern(xMethod);
-			if (!xMethod.equals(m2)) {
-				System.out.println("WWW: " + xMethod);
-				System.out.println(" ->: " + m2);
-			}
-		}
-		}
+		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
+		unconditionalDerefParamDatabase = analysisContext.getUnconditionalDerefParamDatabase();	
 	}
 
 	private<

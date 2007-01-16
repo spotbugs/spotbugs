@@ -78,8 +78,6 @@ public class UnconditionalValueDerefAnalysis extends
 	public static final boolean IGNORE_DEREF_OF_NONNCP = 
 		SystemProperties.getBoolean("fnd.derefs.ignorenonNCP", false);
 
-	public static final boolean IGNORE_DEREF_OF_NONNULL = IGNORE_DEREF_OF_NONNCP 
-									|| SystemProperties.getBoolean("fnd.derefs.ignorenonnull", true);
 	public static final boolean CHECK_ANNOTATIONS = 
 		SystemProperties.getBoolean("fnd.derefs.checkannotations", true);
 	public static final boolean CHECK_CALLS = 
@@ -121,9 +119,7 @@ public class UnconditionalValueDerefAnalysis extends
 		if (DEBUG) {
 			System.out.println("UnconditionalValueDerefAnalysis analysis " + methodGen.getClassName() + "." + methodGen.getName() + " : " + methodGen.getSignature());
 		}
-		if (DEBUG && IGNORE_DEREF_OF_NONNULL) {
-			System.out.println("** Ignoring dereferences of definitely non-null values");
-		}
+
 	}
 	
 	/**
@@ -297,59 +293,49 @@ public class UnconditionalValueDerefAnalysis extends
 				System.out.println("** Summary of call: " + derefParamSet);
 			}
 			
-			IsNullValueFrame invFrame = null;
-			if (IGNORE_DEREF_OF_NONNULL && invDataflow != null) {
-				invFrame = invDataflow.getFactAtLocation(location);
-				if (!invFrame.isValid()) {
-					invFrame = null;
-				}
-			}
-			Iterator<String> paramSigIterator = sigParser.parameterSignatureIterator();
-            Stack<String> paramSigStack = new Stack<String>();
-            while(paramSigIterator.hasNext()) paramSigStack.push(paramSigIterator.next());
-            
-            int stackPos = 0;
-			for (int i= numParams-1; i >= 0; i--) {
-                String paramSig = paramSigStack.pop();
-                if (DEBUG_CHECK_CALLS) System.out.println("Param# " + i + ",  stack pos = " + stackPos + ", sig = " + paramSig);
-                if (paramSig.equals("D") || paramSig.equals("F")) {
-                    stackPos += 2;
-                    continue;
-                }
-                
-				if (!derefParamSet.isNonNull(i)) {
-                    stackPos++;
-					continue;
-				}
-                 if (DEBUG_CHECK_CALLS)  System.out.println("  parameter must be non null");
-                    
-				int argSlot = vnaFrame.getStackLocation(stackPos++);
-				if (invFrame != null) {
-					IsNullValue val = invFrame.getValue(argSlot);
-                     if (DEBUG_CHECK_CALLS)  System.out.println("inv: " + val);
-					if (val.isDefinitelyNotNull()) {
+			IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
+
+			if (invFrame != null && invFrame.isValid()) {
+				Iterator<String> paramSigIterator = sigParser.parameterSignatureIterator();
+				Stack<String> paramSigStack = new Stack<String>();
+				while(paramSigIterator.hasNext()) paramSigStack.push(paramSigIterator.next());
+
+				int stackPos = 0;
+				for (int i= numParams-1; i >= 0; i--) {
+					String paramSig = paramSigStack.pop();
+					if (DEBUG_CHECK_CALLS) System.out.println("Param# " + i + ",  stack pos = " + stackPos + ", sig = " + paramSig);
+					if (paramSig.equals("D") || paramSig.equals("F")) {
+						stackPos += 2;
 						continue;
 					}
-					if (IGNORE_DEREF_OF_NONNCP && !val.isNullOnComplicatedPath()) continue;
-				}
-				
-				fact.addDeref(vnaFrame.getValue(argSlot), location);
-				if (DEBUG_CHECK_CALLS ||VERBOSE_NULLARG_DEBUG) {
-					System.out.println("Adding deref of " + vnaFrame.getValue(argSlot) + " at location " + location);
-					for (JavaClassAndMethod target : targetSet) {
 
-						System.out.print("Checking " + target + ": ");
-						ParameterNullnessProperty targetDerefParamSet = database.getProperty(target.toXMethod());
-						if (targetDerefParamSet == null) {
-							System.out.println(" ==> unknown");
-							continue;
+					if (!derefParamSet.isNonNull(i)) {
+						stackPos++;
+						continue;
+					}
+					if (DEBUG_CHECK_CALLS)  System.out.println("  parameter must be non null");
+
+					int argSlot = vnaFrame.getStackLocation(stackPos++);
+					if (!reportDereference(invFrame, argSlot)) continue;
+
+					fact.addDeref(vnaFrame.getValue(argSlot), location);
+					if (DEBUG_CHECK_CALLS ||VERBOSE_NULLARG_DEBUG) {
+						System.out.println("Adding deref of " + vnaFrame.getValue(argSlot) + " at location " + location);
+						for (JavaClassAndMethod target : targetSet) {
+
+							System.out.print("Checking " + target + ": ");
+							ParameterNullnessProperty targetDerefParamSet = database.getProperty(target.toXMethod());
+							if (targetDerefParamSet == null) {
+								System.out.println(" ==> unknown");
+								continue;
+							}
+
+
+							System.out.println("==> " + targetDerefParamSet);
+
 						}
 
-
-						System.out.println("==> " + targetDerefParamSet);
-
 					}
-
 				}
 			}
 		} catch (ClassNotFoundException e) {
@@ -382,14 +368,10 @@ public class UnconditionalValueDerefAnalysis extends
 		int numParams = sigParser.getNumParameters();
 
 		for (int i = 0; i < numParams; i++) {
-			if (IGNORE_DEREF_OF_NONNULL
-					&& invDataflow != null) {
-				IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
-				if (isNonNullValue(invFrame, invFrame.getArgumentSlot(i, numParams))) {
-					continue;
-				}				
-			}
-			if (database.parameterMustBeNonNull(called, i)) {
+			IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
+			int slot = invFrame.getArgumentSlot(i, numParams);
+			if (reportDereference(invFrame, slot) 
+					&& database.parameterMustBeNonNull(called, i)) {
 				// Get the corresponding value number
 				ValueNumber vn = vnaFrame.getArgument(inv, methodGen.getConstantPool(), i, numParams);
 				fact.addDeref(vn, location);
@@ -416,6 +398,7 @@ public class UnconditionalValueDerefAnalysis extends
 		if (!location.isFirstInstructionInBasicBlock()) {
 			return;
 		}
+		if (invDataflow == null) return;
 		BasicBlock fallThroughPredecessor =
 			cfg.getPredecessorWithEdgeType(location.getBasicBlock(), EdgeTypes.FALL_THROUGH_EDGE);
 		if (fallThroughPredecessor == null || !fallThroughPredecessor.isNullCheck()) {
@@ -434,28 +417,16 @@ public class UnconditionalValueDerefAnalysis extends
 
 		IsNullValueFrame startFact = null;
 
-		if (invDataflow != null) {
-			startFact = invDataflow.getStartFact(fallThroughPredecessor);
-		}
 
-		// Ignore dereferences of values that are definitely non-null
-		if (IGNORE_DEREF_OF_NONNULL
-				&& invDataflow != null
-				&& isDerefOfNonNullValue(location, startFact)) {
-			return;
-		}
-		
-		if (IGNORE_DEREF_OF_NONNCP
-				&& invDataflow != null
-				&& !isDerefOfNullOnComplexPathValue(location, startFact)) {
-			return;
-		}
-		
-        if ( invDataflow != null
-                && isDerefOfDefinitelyNullValue(location, startFact)) {
-            return;
-        }
-    
+		startFact = invDataflow.getStartFact(fallThroughPredecessor);
+
+
+		if (!startFact.isValid()) return;
+
+		int slot = startFact.getInstanceSlot(
+				location.getHandle().getInstruction(),
+				methodGen.getConstantPool());
+        if (!reportDereference(startFact, slot)) return;
 		if (DEBUG) {
 			System.out.println("FOUND GUARANTEED DEREFERENCE");
 			System.out.println("Load: " + vnaFrame.getLoad(vn));
@@ -466,108 +437,20 @@ public class UnconditionalValueDerefAnalysis extends
 			System.out.println("Dereferenced valueNumber: " + vn);
 			System.out.println("invDataflow: " + startFact);
 			System.out.println("IGNORE_DEREF_OF_NONNCP: " + IGNORE_DEREF_OF_NONNCP);
-			System.out.println("IGNORE_DEREF_OF_NONNULL: " + IGNORE_DEREF_OF_NONNULL);
-			System.out.println("isNonNull: " + isDerefOfNonNullValue(location, startFact));
-			System.out.println("isDerefOfNullOnComplexPathValue: " + isDerefOfNullOnComplexPathValue(location, startFact));
-
-			
 		}
 		// Mark the value number as being dereferenced at this location
 		fact.addDeref(vn, location);
 	}
 
-	/**
-	 * Determine whether instruction at given Location is a dereference of
-	 * a definitely non-null value.
-	 * 
-	 * @param locationOfDeref     the dereference instruction Location
-	 * @param invFrameAtNullCheck the IsNullValueFrame at the location of the null check
-	 * @return true if the instruction at the location is a dereference of a definitely
-	 *          non-null value, false otherwise
-	 * @throws DataflowAnalysisException
-	 */
-	private boolean isDerefOfNonNullValue(Location locationOfDeref, IsNullValueFrame invFrameAtNullCheck)
-			throws DataflowAnalysisException {
-		if (!invFrameAtNullCheck.isValid()) {
-			// Probably dead code
-			return true;
-		}
-		
-		int instance = invFrameAtNullCheck.getInstanceSlot(
-				locationOfDeref.getHandle().getInstruction(),
-				methodGen.getConstantPool());
-		return isNonNullValue(invFrameAtNullCheck, instance);
-	}
-
-	/**
-	 * Determine whether instruction at given Location is a dereference of
-	 * a value null on a complex path
-	 * 
-	 * @param locationOfDeref     the dereference instruction Location
-	 * @param invFrameAtNullCheck the IsNullValueFrame at the location of the null check
-	 * @return true if the instruction at the location is a dereference of a definitely
-	 *          non-null value, false otherwise
-	 * @throws DataflowAnalysisException
-	 */
-	private boolean isDerefOfNullOnComplexPathValue(Location locationOfDeref, IsNullValueFrame invFrameAtNullCheck)
-			throws DataflowAnalysisException {
-		if (!invFrameAtNullCheck.isValid()) {
-			// Probably dead code
-			return false;
-		}
-		
-		int instance = invFrameAtNullCheck.getInstanceSlot(
-				locationOfDeref.getHandle().getInstruction(),
-				methodGen.getConstantPool());
-		return isNullOnComplexPath(invFrameAtNullCheck, instance);
-	}
-	private boolean isDerefOfDefinitelyNullValue(Location locationOfDeref, IsNullValueFrame invFrameAtNullCheck)
-	throws DataflowAnalysisException {
-	    if (!invFrameAtNullCheck.isValid()) {
-	        // Probably dead code
-	        return false;
-	    }
-
-	    int instance = invFrameAtNullCheck.getInstanceSlot(
-	            locationOfDeref.getHandle().getInstruction(),
-	            methodGen.getConstantPool());
-	    return isDefinitelyNullValue(invFrameAtNullCheck, instance);
-	}
-
-	private boolean isDefinitelyNullValue(IsNullValueFrame invFrame, int slot) {
-	    if (invFrame == null || !invFrame.isValid()) {
-	        return false;
-	    }
-	    return invFrame.getValue(slot).isDefinitelyNull();
-	}
-	/**
-	 * Return whether or not given slot in given is-null frame
-	 * is definitely non-null.
-	 * 
-	 * @param invFrame an IsNullValueFrame
-	 * @param slot     slot in the frame
-	 * @return true if value in the slot is definitely non-null, false otherwise
-	 */
-	private boolean isNonNullValue(IsNullValueFrame invFrame, int slot) {
-		if (invFrame == null || !invFrame.isValid()) {
-			return false;
-		}
-		return invFrame.getValue(slot).isDefinitelyNotNull();
-	}
-	/**
-	 * Return whether or not given slot in given is-null frame
-	 * is definitely non-null.
-	 * 
-	 * @param invFrame an IsNullValueFrame
-	 * @param slot     slot in the frame
-	 * @return true if value in the slot is null on a complicated path
-	 */
-	private boolean isNullOnComplexPath(IsNullValueFrame invFrame, int slot) {
-		if (invFrame == null || !invFrame.isValid()) {
-			return false;
-		}
-		IsNullValue value = invFrame.getValue(slot);
-		return value.isNullOnComplicatedPath();
+	
+	
+	private boolean reportDereference(IsNullValueFrame invFrameAtNullCheck, int instance) {
+		IsNullValue value = invFrameAtNullCheck.getValue(instance);
+		if (value.isDefinitelyNotNull()) return false;
+		if (value.isDefinitelyNull()) return false;
+		if (IGNORE_DEREF_OF_NONNCP
+				&& !value.isNullOnComplicatedPath()) return false;
+		return true;
 	}
 	/**
 	 * Return whether or not given instruction is an assertion.
