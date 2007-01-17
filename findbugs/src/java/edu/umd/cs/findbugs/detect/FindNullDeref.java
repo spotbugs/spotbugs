@@ -975,7 +975,9 @@ public class FindNullDeref
 		
 		TreeSet<Location> sortedDerefLocationSet = new TreeSet<Location>(derefLocationSet);
 		SortedSet<Location> sourceLocations;
-		if (doomedLocations.isEmpty()) sourceLocations= new TreeSet<Location>(assignedNullLocationSet);
+		if (doomedLocations.isEmpty() 
+                || doomedLocations.size() > 3 && doomedLocations.size() > assignedNullLocationSet.size()) 
+            sourceLocations= new TreeSet<Location>(assignedNullLocationSet);
 		else sourceLocations = doomedLocations;
 		
 		if (doomedLocations.isEmpty() || sortedDerefLocationSet.isEmpty()) return;
@@ -1006,10 +1008,7 @@ public class FindNullDeref
 		}
 		if (variableAnnotation == null) variableAnnotation = new LocalVariableAnnotation("?",-1,-1);
 //		 Create BugInstance
-		BugInstance bugInstance = new BugInstance(this, bugType, priority)
-			.addClassAndMethod(classContext.getJavaClass(), method);
-		
-		bugInstance.add(variableAnnotation);
+
 		BitSet knownNull = new BitSet();
 		
 		SortedSet<SourceLineAnnotation> knownNullLocations = new TreeSet<SourceLineAnnotation>();
@@ -1027,16 +1026,27 @@ public class FindNullDeref
 				knownNullLocations.add(sourceLineAnnotation);
 			}
 		}
-	
+        
+        if (sortedDerefLocationSet.size() == 1 && !npeOnlyOnNonExceptionPaths) {
+            if (alwaysOnExceptionPath) bugType = "NP_NULL_ON_SOME_PATH";
+            else bugType = "NP_NULL_ON_SOME_PATH_EXCEPTION";
+        }
+            
+        BugInstance bugInstance = new BugInstance(this, bugType, priority)
+        .addClassAndMethod(classContext.getJavaClass(), method);
+    
+        bugInstance.add(variableAnnotation);
+        for (Location loc : sortedDerefLocationSet) {
+            bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_DEREF");
+            
 		for(SourceLineAnnotation sourceLineAnnotation : knownNullLocations)
 			bugInstance.add(sourceLineAnnotation).describe("SOURCE_LINE_KNOWN_NULL");
 		
 
-		for (Location loc : sortedDerefLocationSet) {
-			bugInstance.addSourceLine(classContext, method, loc).describe("SOURCE_LINE_DEREF");
+
 		}
 		
-				// Report it
+		// Report it
 		bugReporter.reportBug(bugInstance);
 	}
 	boolean inCatchNullBlock(Location loc) {
