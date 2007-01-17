@@ -296,26 +296,15 @@ public class UnconditionalValueDerefAnalysis extends
 			IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
 
 			if (invFrame != null && invFrame.isValid()) {
-				Iterator<String> paramSigIterator = sigParser.parameterSignatureIterator();
-				Stack<String> paramSigStack = new Stack<String>();
-				while(paramSigIterator.hasNext()) paramSigStack.push(paramSigIterator.next());
-
-				int stackPos = 0;
-				for (int i= numParams-1; i >= 0; i--) {
-					String paramSig = paramSigStack.pop();
-					if (DEBUG_CHECK_CALLS) System.out.println("Param# " + i + ",  stack pos = " + stackPos + ", sig = " + paramSig);
-					if (paramSig.equals("D") || paramSig.equals("F")) {
-						stackPos += 2;
-						continue;
-					}
-
+			
+				
+				for (int i = 0; i < numParams; i++) {
 					if (!derefParamSet.isNonNull(i)) {
-						stackPos++;
 						continue;
 					}
 					if (DEBUG_CHECK_CALLS)  System.out.println("  parameter must be non null");
 
-					int argSlot = vnaFrame.getStackLocation(stackPos++);
+					int argSlot = vnaFrame.getStackLocation(sigParser.getSlotsFromTopOfStackForParameter(i));
 					if (!reportDereference(invFrame, argSlot)) continue;
 
 					fact.addDeref(vnaFrame.getValue(argSlot), location);
