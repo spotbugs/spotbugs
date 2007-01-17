@@ -320,7 +320,8 @@ public class FindNullDeref
 			classContext.getIsNullValueDataflow(method).getFactAtLocation(location);
 		if (!frame.isValid())
 			return;
-		BitSet nullArgSet = frame.getArgumentSet(invokeInstruction, cpg, new DataflowValueChooser<IsNullValue>() {
+		BitSet nullArgSet = true ? new BitSet() : 
+            frame.getArgumentSet(invokeInstruction, cpg, new DataflowValueChooser<IsNullValue>() {
 			public boolean choose(IsNullValue value) {
 				// Only choose non-exception values.
 				// Values null on an exception path might be due to
