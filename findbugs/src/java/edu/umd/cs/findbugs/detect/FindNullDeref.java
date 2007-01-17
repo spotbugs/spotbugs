@@ -320,7 +320,7 @@ public class FindNullDeref
 			classContext.getIsNullValueDataflow(method).getFactAtLocation(location);
 		if (!frame.isValid())
 			return;
-		BitSet nullArgSet = true ? new BitSet() : 
+		BitSet nullArgSet = new BitSet() : 
             frame.getArgumentSet(invokeInstruction, cpg, new DataflowValueChooser<IsNullValue>() {
 			public boolean choose(IsNullValue value) {
 				// Only choose non-exception values.
@@ -344,6 +344,7 @@ public class FindNullDeref
 			System.out.print("Signature: " + xm.getSignature());
 		}
 		
+        nullArgSet.and(definitelyNullArgSet);
 		if (unconditionalDerefParamDatabase != null) {
 			checkUnconditionallyDereferencedParam(location, cpg, typeDataflow, invokeInstruction, nullArgSet, definitelyNullArgSet);
 		}
