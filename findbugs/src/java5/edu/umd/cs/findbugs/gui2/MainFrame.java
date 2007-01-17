@@ -640,7 +640,7 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenuItem cutMenuItem = new JMenuItem(new CutAction());
 		JMenuItem copyMenuItem = new JMenuItem(new CopyAction());
 		JMenuItem pasteMenuItem = new JMenuItem(new PasteAction());
-		preferencesMenuItem = newJMenuItem("menu.filtersAndSupressions", "Filters/Suppressions...");
+		preferencesMenuItem = newJMenuItem("menu.preferences_menu", "Filters/Suppressions...");
 		JMenuItem sortMenuItem = newJMenuItem("menu.sortConfiguration", "Sort Configuration...");
 		JMenuItem goToLineMenuItem = newJMenuItem("menu.gotoLine", "Go to line...");
 		
