@@ -122,11 +122,14 @@ public class BuildUnconditionalParamDerefDatabase {
 				System.out.println("Unconditional deref: " + xmethod + "=" + property);
 			}
 		} catch (CFGBuilderException e) {
+            XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+            
 			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
-					"Error analyzing " + method + " for unconditional deref training", e);
+					"Error analyzing " + xmethod + " for unconditional deref training", e);
 		} catch (DataflowAnalysisException e) {
-			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
-					"Error analyzing " + method + " for unconditional deref training", e);
+            XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+               AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
+					"Error analyzing " + xmethod + " for unconditional deref training", e);
 		}
 	}
 
