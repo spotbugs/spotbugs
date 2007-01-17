@@ -40,7 +40,6 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.PUTFIELD;
 import org.apache.bcel.generic.ReturnInstruction;
-import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
@@ -60,7 +59,6 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.DataflowValueChooser;
 import edu.umd.cs.findbugs.ba.Edge;
-import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
@@ -80,13 +78,13 @@ import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
+import edu.umd.cs.findbugs.ba.npe.UsagesRequiringNonNullValues;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
-import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
@@ -183,6 +181,7 @@ public class FindNullDeref
 			checkedDatabases = true;
 		}
 		
+        // UsagesRequiringNonNullValues uses = classContext.getUsagesRequiringNonNullValues(method);
 		this.method = method;
 		this.methodAnnotation = getMethodNullnessAnnotation();
 
@@ -940,6 +939,7 @@ public class FindNullDeref
 			|| instruction.getOpcode() == Constants.GOTO_W;
 	}
 
+    
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector#foundGuaranteedNullDeref(java.util.Set, java.util.Set, edu.umd.cs.findbugs.ba.vna.ValueNumber, boolean)
 	 */

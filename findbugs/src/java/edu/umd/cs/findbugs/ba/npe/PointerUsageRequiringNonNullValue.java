@@ -28,16 +28,17 @@ import edu.umd.cs.findbugs.ba.XMethodParameter;
  */
 public class PointerUsageRequiringNonNullValue {
 
+	private static final PointerUsageRequiringNonNullValue instance = new PointerUsageRequiringNonNullValue();
 	public static PointerUsageRequiringNonNullValue getPointerDereference() {
-		return null;
+		return instance;
 	}
 	public static PointerUsageRequiringNonNullValue getReturnFromNonNullMethod(XMethod m) {
-		return null;
+		return instance;
 	}
-	public static PointerUsageRequiringNonNullValue getPassedAsNonNullParameter(XMethodParameter param) {
-		return null;
+	public static PointerUsageRequiringNonNullValue getPassedAsNonNullParameter(XMethod m, int param) {
+		return instance;
 	}
 	public static PointerUsageRequiringNonNullValue getStoredIntoNonNullField(XField f) {
-		return null;
+		return instance;
 	}
 }

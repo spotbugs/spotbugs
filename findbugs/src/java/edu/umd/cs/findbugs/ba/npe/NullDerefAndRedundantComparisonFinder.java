@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.PostDominatorsAnalysis;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefDataflow;
 import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -228,7 +229,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			System.out.println("----------------------- examineNullValues " + locationWhereValueBecomesNullSet.size());
 		}
 		
-				Map<ValueNumber, SortedSet<Location>> bugLocationMap =
+		Map<ValueNumber, SortedSet<Location>> bugStatementLocationMap =
 			new HashMap<ValueNumber, SortedSet<Location>>();
 		// Inspect the method for locations where a null value is guaranteed to
 		// be dereferenced.  Add the dereference locations
@@ -255,12 +256,15 @@ public class NullDerefAndRedundantComparisonFinder {
 
 			checkForUnconditionallyDereferencedNullValues(
 					location,
-					bugLocationMap,
+                    bugStatementLocationMap,
 					nullValueGuaranteedDerefMap,
-                    npeOrException, vnaDataflow.getFactAtLocation(location), invDataflow.getFactAtLocation(location), uvdDataflow.getFactAfterLocation(location));
+                    npeOrException, vnaDataflow.getFactAtLocation(location), invDataflow.getFactAtLocation(location), 
+                    uvdDataflow.getFactAfterLocation(location));
 		}
 		HashSet<ValueNumber> npeIfStatementCovered = new HashSet<ValueNumber>(nullValueGuaranteedDerefMap.keySet());
-		
+        Map<ValueNumber, SortedSet<Location>> bugEdgeLocationMap =
+            new HashMap<ValueNumber, SortedSet<Location>>();
+        
 		// Check every non-exception control edge
 		for (Iterator<Edge> i = classContext.getCFG(method).edgeIterator(); i.hasNext();) {
 			Edge edge = i.next();
@@ -288,11 +292,13 @@ public class NullDerefAndRedundantComparisonFinder {
 
 			checkForUnconditionallyDereferencedNullValues(
 					location,
-					bugLocationMap,
+                    bugEdgeLocationMap,
 					nullValueGuaranteedDerefMap,
                     npeOrException, vnaFact, invFact, uvdFact);
 			}
 		}
+        Map<ValueNumber, SortedSet<Location>> bugLocationMap = bugEdgeLocationMap;
+        bugLocationMap.putAll(bugStatementLocationMap);
 		//	For each value number that is null somewhere in the
 		// method, collect the set of locations where it becomes null.
 		// FIXME: we may see some locations that are not guaranteed to be dereferenced (how to fix this?)
@@ -330,14 +336,49 @@ public class NullDerefAndRedundantComparisonFinder {
 				assignedNullLocationSet = Collections.EMPTY_SET;
 			}
 
+            PostDominatorsAnalysis postDomAnalysis =
+                classContext.getNonExceptionPostDominatorsAnalysis(method);
+            removeStrictlyPostDominatedLocations(derefLocationSet, postDomAnalysis);
+            
+            SortedSet<Location> knownNullAt = bugLocationMap.get(valueNumber);
+            
+            removeStrictlyPostDominatedLocations(knownNullAt, postDomAnalysis);
+            
+            removeStrictlyPostDominatedLocations(assignedNullLocationSet, postDomAnalysis);
+            
+            
 			collector.foundGuaranteedNullDeref(
 					assignedNullLocationSet,
 					derefLocationSet,
-					bugLocationMap.get(valueNumber),
+					knownNullAt,
 					vnaDataflow, valueNumber, 
 					e.getValue().isAlwaysOnExceptionPath(), npeIfStatementCovered.contains(valueNumber),  npeOrException.contains(valueNumber));
 		}
 	}
+
+    private void removeStrictlyPostDominatedLocations(Set<Location> locations, PostDominatorsAnalysis postDomAnalysis) {
+        BitSet strictlyDominated = new BitSet();
+        for(Location loc : locations) {
+            BitSet allDominatedBy = postDomAnalysis.getAllDominatedBy(loc.getBasicBlock());
+            allDominatedBy.clear(loc.getBasicBlock().getId());
+            strictlyDominated.or(allDominatedBy);
+        }
+        LinkedList<Location> locations2 = new LinkedList<Location>(locations);
+        
+        for(Iterator<Location> i = locations.iterator(); i.hasNext(); ) {
+            Location loc = i.next();
+            if (strictlyDominated.get(loc.getBasicBlock().getId())) { 
+                i.remove();
+                continue;
+            }
+            for(Location loc2 : locations2) {
+                if (loc.getBasicBlock().equals(loc2.getBasicBlock()) && loc.getHandle().getPosition() > loc2.getHandle().getPosition()) {
+                    i.remove();
+                    break;
+                }
+            }
+        }
+    }
 
 	/**
 	 * Check for unconditionally dereferenced null values

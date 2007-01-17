@@ -118,6 +118,14 @@ public class ParameterNullnessProperty {
 		return result;
 	}
 	
+	public BitSet getAsBitSet() {
+		BitSet result = new BitSet();
+		if (isEmpty()) return result;
+		for (int i = 0; i < 32; ++i) {
+			result.set(i,  isNonNull(i));
+		}
+		return result;
+	}
 	/**
 	 * Return whether or not the set of non-null parameters
 	 * is empty.

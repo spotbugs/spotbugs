@@ -63,8 +63,10 @@ import edu.umd.cs.findbugs.ba.heap.LoadAnalysis;
 import edu.umd.cs.findbugs.ba.heap.LoadDataflow;
 import edu.umd.cs.findbugs.ba.heap.StoreAnalysis;
 import edu.umd.cs.findbugs.ba.heap.StoreDataflow;
+import edu.umd.cs.findbugs.ba.npe.DerefFinder;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.npe.UsagesRequiringNonNullValues;
 import edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSetAnalysis;
 import edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSetDataflow;
 import edu.umd.cs.findbugs.ba.type.ExceptionSetFactory;
@@ -560,6 +562,24 @@ public class ClassContext {
 
 	private CFGFactory cfgFactory = new CFGFactory();
 
+    private AnalysisFactory<UsagesRequiringNonNullValues> derefFactory =
+        new AnalysisFactory<UsagesRequiringNonNullValues>("Dereference factory") {
+
+            @Override
+            protected UsagesRequiringNonNullValues analyze(Method method) throws CFGBuilderException,
+                    DataflowAnalysisException {
+                return DerefFinder.getAnalysis(ClassContext.this, method);
+            }
+
+            @Override
+            public boolean isDataflow() {
+                return false;
+            }
+
+           
+        };
+        
+        
 	private AnalysisFactory<ValueNumberDataflow> vnaDataflowFactory =
 	        new DataflowAnalysisFactory<ValueNumberDataflow>("value number analysis") {
 				@Override
@@ -1257,6 +1277,17 @@ public class ClassContext {
 			classGen = new ClassGen(jclass);
 		return classGen.getConstantPool();
 	}
+
+    
+    /**
+     * Get a UsagesRequiringNonNullValues for given method.
+     *
+     * @param method the method
+     * @return the UsagesRequiringNonNullValues
+     */
+    public UsagesRequiringNonNullValues getUsagesRequiringNonNullValues(Method method) throws DataflowAnalysisException, CFGBuilderException {
+        return derefFactory.getAnalysis(method);
+    }
 
 	/**
 	 * Get a ValueNumberDataflow for given method.
