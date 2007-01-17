@@ -66,6 +66,7 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 public class Project implements XMLWriteable {
 	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.project.debug");
 
+    private File currentWorkingDirectory;
 	/**
 	 * Project filename.
 	 */
@@ -122,6 +123,7 @@ public class Project implements XMLWriteable {
 	public Project duplicate() {
 		Project dup = new Project();
 		dup.projectFileName = this.projectFileName;
+        dup.currentWorkingDirectory = this.currentWorkingDirectory;
 		dup.optionsMap.clear();
 		dup.optionsMap.putAll(this.optionsMap);
 		dup.fileList.addAll(this.fileList);
@@ -132,6 +134,9 @@ public class Project implements XMLWriteable {
 		return dup;
 	}
 
+    public void setCurrentWorkingDirectory(File f) {
+        this.currentWorkingDirectory = f;
+    }
 	/**
 	 * Return whether or not this Project has unsaved modifications.
 	 */
@@ -796,16 +801,19 @@ public class Project implements XMLWriteable {
 		return fileName;
 	}
 
+
 	/**
 	 * Make the given filename absolute relative to the
 	 * current working directory.
 	 */
-	private static String makeAbsoluteCWD(String fileName) {
-		File file = new File(fileName);
+	private  String makeAbsoluteCWD(String fileName) {
+		 
 		boolean hasProtocol = (URLClassPath.getURLProtocol(fileName) != null);
-		if (!hasProtocol && !file.isAbsolute())
-			fileName = file.getAbsolutePath();
-		return fileName;
+        if (hasProtocol) return fileName;
+
+        if (new File(fileName).isAbsolute()) return fileName;
+        return new File(currentWorkingDirectory, fileName).getAbsolutePath();
+        
 	}
 
 	/**
