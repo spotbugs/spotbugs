@@ -156,16 +156,7 @@ public class SortedBugCollection implements BugCollection {
 	 */
 	public void readXML(String fileName, Project project)
 	        throws IOException, DocumentException {
-		try {
-		InputStream  in = new BufferedInputStream(new FileInputStream(fileName));
-		if (fileName.endsWith(".gz"))
-			in = new GZIPInputStream(in);
-		readXML(in, project);
-		} catch (IOException e) {
-			IOException e2 = new IOException("Error reading " + fileName + ": " + e.getMessage());
-			e2.setStackTrace(e.getStackTrace());
-			throw e2;
-		}
+        readXML(new File(fileName), project);
 	}
 
 	/**
@@ -180,36 +171,41 @@ public class SortedBugCollection implements BugCollection {
 		InputStream in = new BufferedInputStream(new FileInputStream(file));
 		if (file.getName().endsWith(".gz"))
 			in = new GZIPInputStream(in);
-		readXML(in, project);
+		readXML(in, project, file);
 	}
 
-	/**
-	 * Read XML data from given input stream into this
-	 * object, populating the Project as a side effect.
-	 * An attempt will be made to close the input stream
-	 * (even if an exception is thrown).
-	 *
-	 * @param in      the InputStream
-	 * @param project the Project
-	 */
+    /**
+     * Read XML data from given input stream into this
+     * object, populating the Project as a side effect.
+     * An attempt will be made to close the input stream
+     * (even if an exception is thrown).
+     *
+     * @param in      the InputStream
+     * @param project the Project
+     */
+    public void readXML(InputStream in, Project project, File base)
+            throws IOException, DocumentException {
+        if (in == null) throw new IllegalArgumentException();
+
+        try {
+            if (project == null) throw new IllegalArgumentException();
+            doReadXML(in, project, base);
+        } finally {
+            in.close();
+        }
+    }
 	public void readXML(InputStream in, Project project)
 	        throws IOException, DocumentException {
-		if (in == null) throw new IllegalArgumentException();
+			doReadXML(in, project, null);
 
-		try {
-			if (project == null) throw new IllegalArgumentException();
-			doReadXML(in, project);
-		} finally {
-			in.close();
-		}
 	}
 
-	private void doReadXML(InputStream in, Project project) throws IOException, DocumentException {
+	private void doReadXML(InputStream in, Project project, File base) throws IOException, DocumentException {
 
 		checkInputStream(in);
 
 		try {
-			SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, project);
+			SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, project, base);
 
 			
 			XMLReader xr = null;

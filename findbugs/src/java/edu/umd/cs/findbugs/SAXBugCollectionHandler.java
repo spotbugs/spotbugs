@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -53,14 +54,16 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private ClassFeatureSet classFeatureSet;
 	private ArrayList<String> stackTrace;
 	private int nestingOfIgnoredElements = 0;
+    private final File base;
 
-	public SAXBugCollectionHandler(BugCollection bugCollection, Project project) {
+	public SAXBugCollectionHandler(BugCollection bugCollection, Project project, File base) {
 		this.bugCollection = bugCollection;
 		this.project = project;
 
 		this.elementStack = new ArrayList<String>();
 		this.textBuffer = new StringBuffer();
 		this.stackTrace = new ArrayList<String>();
+        this.base = base;
 	}
 
 	Pattern ignoredElement = Pattern.compile("Message|ShortMessage|LongMessage|BugCategory|BugPattern|BugCode");
@@ -443,24 +446,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		return value;
 	}
 
-	// Just a test driver
-	public static void main(String[] argv) throws Exception {
-		XMLReader xr = XMLReaderFactory.createXMLReader();
-
-		BugCollection bugCollection = new SortedBugCollection();
-		Project project = new Project();
-
-		SAXBugCollectionHandler handler = new SAXBugCollectionHandler(bugCollection, project);
-		xr.setContentHandler(handler);
-		xr.setErrorHandler(handler);
-
-		// Parse each file provided on the
-		// command line.
-		for (String aArgv : argv) {
-			FileReader r = new FileReader(aArgv);
-			xr.parse(new InputSource(r));
-		}
-	}
+	
 }
 
 // vim:ts=4
