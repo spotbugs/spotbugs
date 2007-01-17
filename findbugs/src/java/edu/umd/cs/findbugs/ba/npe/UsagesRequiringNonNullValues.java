@@ -20,24 +20,39 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.util.MultiMap;
 
 /**
  * @author pugh
  */
 public class UsagesRequiringNonNullValues {
-	
-
+	public static class Pair {
+     public final ValueNumber vn;
+     public final PointerUsageRequiringNonNullValue pu;
+     Pair(ValueNumber vn, PointerUsageRequiringNonNullValue pu) {
+         this.vn = vn;
+         this.pu = pu;
+     }
+    }
+    MultiMap<Location, Pair> map = new MultiMap<Location, Pair>(LinkedList.class);
 	public void add(Location loc, ValueNumber vn, PointerUsageRequiringNonNullValue usage) {
-		throw new UnsupportedOperationException();
+		Pair p = new Pair(vn, usage);
+        map.add(loc, p);
+        
 	}
-	public PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn) {
-		throw new UnsupportedOperationException();
+	public @CheckForNull PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn) {
+        for(Pair p : map.get(loc)) {
+            if (p.vn.equals(vn)) return p.pu;
+        }
+		return null;
 	}
-	public Collection<ValueNumber> getValueNumbers(Location loc) {
-		throw new UnsupportedOperationException();
+	public Collection<? extends Pair> getValueNumbers(Location loc) {
+		return map.get(loc);
 	}
 	
 
