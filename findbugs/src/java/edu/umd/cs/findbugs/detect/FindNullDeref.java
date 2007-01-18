@@ -1077,7 +1077,7 @@ public class FindNullDeref implements Detector,
         }
 
         if (derefLocationSet.size() == 1 && !npeOnlyOnNonExceptionPaths) {
-            if (alwaysOnExceptionPath)
+            if (!alwaysOnExceptionPath)
                 bugType = "NP_NULL_ON_SOME_PATH";
             else
                 bugType = "NP_NULL_ON_SOME_PATH_EXCEPTION";
