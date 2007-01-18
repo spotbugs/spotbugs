@@ -23,6 +23,7 @@ import java.util.BitSet;
 import java.util.Set;
 import java.util.SortedSet;
 
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -67,6 +68,7 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 * @param doomedLocations locations at which the value is doomed
 	 * @param vna ValueNumberDataflow
 	 * @param refValue             the null value
+	 * @param variableAnnotation TODO
 	 * @param alwaysOnExceptionPath true if the location(s) where the value was observed
 	 *                               to be null and unconditionally dereferenced were
 	 *                               all on exception paths
@@ -79,6 +81,6 @@ public interface NullDerefAndRedundantComparisonCollector {
 			SortedSet<Location> doomedLocations,
 			ValueNumberDataflow vna,
 			ValueNumber refValue,
-			boolean alwaysOnExceptionPath,
-			boolean npeIfStatementCovered, boolean npeOnlyOnNonExceptionPaths);
+			BugAnnotation variableAnnotation,
+			boolean alwaysOnExceptionPath, boolean npeIfStatementCovered, boolean npeOnlyOnNonExceptionPaths);
 }

@@ -38,6 +38,8 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 
+import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
@@ -54,6 +56,7 @@ import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.detect.FindNullDeref;
 
 /**
  * A user-friendly front end for finding null pointer dereferences
@@ -335,12 +338,32 @@ public class NullDerefAndRedundantComparisonFinder {
 				+ " while analyzing " + classContext.getJavaClass().getClassName() + "." + method.getName();
 				assignedNullLocationSet = Collections.EMPTY_SET;
 			}
+            SortedSet<Location> knownNullAt = bugLocationMap.get(valueNumber);
+                 
+            BugAnnotation variableAnnotation = null;
+            try {
+                for (Location loc : derefLocationSet)  {
+                    variableAnnotation = FindNullDeref.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
+                    if (variableAnnotation != null) break;
+                }
+                if (variableAnnotation == null) for (Location loc : knownNullAt) {
+                    variableAnnotation = FindNullDeref.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
+                    if (variableAnnotation != null) break;
+                }
+                if (variableAnnotation == null) for (Location loc : assignedNullLocationSet) {
+                    variableAnnotation = FindNullDeref.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
+                    if (variableAnnotation != null) break;
+                }
+                
+                
+            } catch (DataflowAnalysisException e2) {
+            }
+            if (variableAnnotation == null) variableAnnotation = new LocalVariableAnnotation("?",-1,-1);
 
+            
             PostDominatorsAnalysis postDomAnalysis =
                 classContext.getNonExceptionPostDominatorsAnalysis(method);
             removeStrictlyPostDominatedLocations(derefLocationSet, postDomAnalysis);
-            
-            SortedSet<Location> knownNullAt = bugLocationMap.get(valueNumber);
             
             removeStrictlyPostDominatedLocations(knownNullAt, postDomAnalysis);
             
@@ -352,7 +375,7 @@ public class NullDerefAndRedundantComparisonFinder {
 					derefLocationSet,
 					knownNullAt,
 					vnaDataflow, valueNumber, 
-					e.getValue().isAlwaysOnExceptionPath(), npeIfStatementCovered.contains(valueNumber),  npeOrException.contains(valueNumber));
+                    variableAnnotation, e.getValue().isAlwaysOnExceptionPath(),  npeIfStatementCovered.contains(valueNumber), npeOrException.contains(valueNumber));
 		}
 	}
 
