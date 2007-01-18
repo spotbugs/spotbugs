@@ -45,7 +45,6 @@ import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
-import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -81,7 +80,6 @@ import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
 import edu.umd.cs.findbugs.ba.npe.UsagesRequiringNonNullValues;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
-import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
@@ -102,7 +100,7 @@ import edu.umd.cs.findbugs.visitclass.Util;
 public class FindNullDeref implements Detector,
         NullDerefAndRedundantComparisonCollector {
 
-    private static final boolean DEBUG = SystemProperties
+    public static final boolean DEBUG = SystemProperties
             .getBoolean("fnd.debug");
 
     private static final boolean DEBUG_NULLARG = SystemProperties
@@ -699,7 +697,7 @@ public class FindNullDeref implements Detector,
             propertySet.addProperty(GeneralWarningProperty.ON_EXCEPTION_PATH);
         }
         int pc = location.getHandle().getPosition();
-        BugAnnotation variable = findAnnotationFromValueNumber(method,
+        BugAnnotation variable = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
                 location, valueNumber, vnaFrame);
 
         boolean duplicated = false;
@@ -753,76 +751,6 @@ public class FindNullDeref implements Detector,
             reportNullDeref(propertySet, classContext, method, location, type,
                     priority, variable);
         }
-    }
-
-    /**
-     * @param method
-     *            TODO
-     * @param location
-     * @param valueNumber
-     * @param vnaFrame
-     * @return
-     */
-    public static BugAnnotation findAnnotationFromValueNumber(Method method,
-            Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
-        LocalVariableAnnotation ann = findLocalAnnotationFromValueNumber(
-                method, location, valueNumber, vnaFrame);
-        if (ann != null && ann.isSignificant())
-            return ann;
-        FieldAnnotation field = findFieldAnnotationFromValueNumber(method,
-                location, valueNumber, vnaFrame);
-        if (field != null)
-            return field;
-        return ann;
-    }
-
-    public static FieldAnnotation findFieldAnnotationFromValueNumber(
-            Method method, Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
-        XField field = findXFieldFromValueNumber(method, location, valueNumber,
-                vnaFrame);
-        if (field == null)
-            return null;
-        return FieldAnnotation.fromXField(field);
-    }
-
-    public static XField findXFieldFromValueNumber(Method method,
-            Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
-        if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop())
-            return null;
-
-        AvailableLoad load = vnaFrame.getLoad(valueNumber);
-        if (load != null) {
-            return load.getField();
-        }
-        return null;
-    }
-
-    public static LocalVariableAnnotation findLocalAnnotationFromValueNumber(
-            Method method, Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
-
-        if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop())
-            return null;
-
-        LocalVariableAnnotation localAnnotation = null;
-        for (int i = 0; i < vnaFrame.getNumLocals(); i++) {
-            if (valueNumber.equals(vnaFrame.getValue(i))) {
-                if (DEBUG)
-                    System.out.println("Found it in local " + i);
-                InstructionHandle handle = location.getHandle();
-                int position1 = handle.getPrev().getPosition();
-                int position2 = handle.getPosition();
-                localAnnotation = LocalVariableAnnotation
-                        .getLocalVariableAnnotation(method, i, position1,
-                                position2);
-                if (localAnnotation != null)
-                    return localAnnotation;
-            }
-        }
-        return null;
     }
 
     private void reportNullDeref(WarningPropertySet propertySet,
@@ -1017,7 +945,7 @@ public class FindNullDeref implements Detector,
                         classContext.getConstantPoolGen());
                 if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
                     return;
-                variableAnnotation = findAnnotationFromValueNumber(method,
+                variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
                         location, valueNumber, vnaFrame);
 
             }
