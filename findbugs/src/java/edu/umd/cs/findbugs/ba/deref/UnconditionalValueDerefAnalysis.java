@@ -159,7 +159,7 @@ public class UnconditionalValueDerefAnalysis extends
         if (DEBUG) {
             System.out.println("XXX: " + handle.getPosition() + " " + handle.getInstruction());
         }
-        if (handle.getInstruction() instanceof ATHROW )  {
+        if (false && handle.getInstruction() instanceof ATHROW )  {
             fact.clear();
             fact.markAsOnExceptionPath();
         }
