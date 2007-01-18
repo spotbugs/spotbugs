@@ -48,8 +48,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.tobject.findbugs.FindbugsPlugin;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 /**
  * Loades the <CODE>BugResolutions</CODE> form a xml document.
@@ -260,16 +262,21 @@ public class BugResolutionLoader {
 
     private Map<String, String> parseAttributes(Element resolutionElement) {
         Map<String, String> attributes = new Hashtable<String, String>();
+        try {
         NodeList attrList = resolutionElement.getElementsByTagName(ATTR);
         int length = attrList.getLength();
         for (int i = 0; i < length; i++) {
             Element attrElement = (Element) attrList.item(i);
             String name = attrElement.getAttribute(ATTR_NAME);
             String value = TigerSubstitutes.getTextContent(attrElement);
-            if (!value.equals(attrElement.getTextContent())) {
-                System.out.println("Expected " + attrElement.getTextContent() + ", got " + value);
-            }
-            attributes.put(name, value);
+            if (SystemProperties.ASSERTIONS_ENABLED)
+                if (value.equals(attrElement.getTextContent())) {
+                    System.out.println("Expected " + attrElement.getTextContent() + ", got " + value);
+                }
+            if (name != null && value != null) attributes.put(name, value);
+        }
+        } catch (RuntimeException e) {
+            AnalysisContext.logError("Error parsing attributes", e);
         }
         return attributes;
     }
