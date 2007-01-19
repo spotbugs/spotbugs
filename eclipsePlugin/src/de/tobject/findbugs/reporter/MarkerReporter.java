@@ -20,13 +20,19 @@
 
 package de.tobject.findbugs.reporter;
 
+import java.sql.Timestamp;
+
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.tobject.findbugs.marker.FindBugsMarker;
+import de.tobject.findbugs.view.BugTreeView;
+import edu.umd.cs.findbugs.AppVersion;
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Detector;
 
@@ -37,18 +43,35 @@ public class MarkerReporter implements IWorkspaceRunnable {
 	BugInstance bug;
 	IResource resource;
 	int startLine;
+	BugCollection collection;
+	IProject project;
 
-	public MarkerReporter(BugInstance bug, IResource resource, int startLine) {
+	public MarkerReporter(BugInstance bug, IResource resource, int startLine, BugCollection theCollection, IProject project) {
 		this.startLine = startLine;
 		this.bug=bug;
 		this.resource=resource;
+		this.collection=theCollection;
+		this.project=project;
 	}
 
 	public void run(IProgressMonitor monitor) throws CoreException {
 
 		IMarker marker = resource.createMarker(FindBugsMarker.NAME);
 		marker.setAttribute(IMarker.LINE_NUMBER, startLine);
+		marker.setAttribute(FindBugsMarker.BUG_LINE_NUMBER, startLine);
 		marker.setAttribute(FindBugsMarker.BUG_TYPE, bug.getType());
+		AppVersion theVersion;
+		long seqNum = bug.getFirstVersion();
+		if(seqNum == 0)
+			marker.setAttribute(FindBugsMarker.FIRST_VERSION, "First version analyzed");
+		else
+		{
+			theVersion = collection.getAppVersionFromSequenceNumber(seqNum);
+			if(theVersion == null)
+				marker.setAttribute(FindBugsMarker.FIRST_VERSION, "Cannot find AppVersion: seqnum=" + seqNum + "; collection seqnum=" + collection.getSequenceNumber());
+			else
+				marker.setAttribute(FindBugsMarker.FIRST_VERSION, new Timestamp(theVersion.getTimestamp()).toString());
+		}
 		marker.setAttribute(IMarker.MESSAGE, bug.getMessage());
 		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
 		if (bug.getPriority() == Detector.HIGH_PRIORITY)
@@ -63,6 +86,10 @@ public class MarkerReporter implements IWorkspaceRunnable {
 		if (uniqueId != null) {
 			marker.setAttribute(FindBugsMarker.UNIQUE_ID, uniqueId);
 		}
-
+		BugTreeView theView = BugTreeView.getBugTreeView();
+		if(theView == null)
+			System.out.println("BTV null");
+		else
+			theView.addMarker(project, marker);
 	}
 }

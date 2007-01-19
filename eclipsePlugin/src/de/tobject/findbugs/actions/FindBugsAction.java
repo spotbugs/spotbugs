@@ -157,7 +157,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 						new FindBugsWorker(resource.getProject(), monitor);
 					try {
 						findbugsExecuteLock.acquire();
-						worker.work(files);
+						worker.work(files, resource);
 					} catch (CoreException e) {
 						e.printStackTrace();
 						return Status.CANCEL_STATUS;

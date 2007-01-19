@@ -348,11 +348,11 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	}
 
 	public void logMessage(int severity, String message, Exception e) {
-		if (FindbugsPlugin.DEBUG) {
+		if (true) {
 			String what = (severity == IStatus.ERROR)
 				? (e != null ? "Exception" : "Error")
 				: "Warning";
-			System.err.println(what + " in FindBugs plugin: " + message);
+			System.out.println(what + " in FindBugs plugin: " + message);
 			if (e != null)
 				e.printStackTrace();
 		}

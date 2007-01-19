@@ -29,7 +29,6 @@ public class PluginInfo {
 		}
 		
 		SAXReader reader = new SAXReader();
-		SAXWriter writer = new SAXWriter();
 		Document document = reader.read(new File(args[0]));
 		String date = eclipseDateFormat.format(new Date());
 		emitProperty(document, "plugin.id", "/plugin/@id");

@@ -32,6 +32,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.view.DetailsView;
+import de.tobject.findbugs.view.UserAnnotationsView;
 
 /**
  * Show details on a selected FindBugs marker.
@@ -79,7 +80,8 @@ public class MarkerShowDetailsAction implements IObjectActionDelegate {
 						IMarker marker = (IMarker) iter.next();
 						if (!marker.getType().equals(FindBugsMarker.NAME))
 							continue;
-						DetailsView.showMarker(marker);
+						UserAnnotationsView.showMarker(marker, true);
+						DetailsView.showMarker(marker, true);
 					}
 				}
 			}

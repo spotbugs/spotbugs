@@ -115,7 +115,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	protected void doReportBug(BugInstance bug) {
 		getBugCollection().add(bug);
 		if (MarkerUtil.displayWarning(bug, userPrefs.getFilterSettings())) {
-			MarkerUtil.createMarker(bug, project);
+			MarkerUtil.createMarker(bug, project, getBugCollection());
 			filteredBugCount++;
 		}
 	}

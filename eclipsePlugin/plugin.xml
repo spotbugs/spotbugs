@@ -224,6 +224,18 @@
             class="de.tobject.findbugs.view.DetailsView"
             id="de.tobject.findbugs.view.detailsview">
       </view>
+      <view
+            category="de.tobject.findbugs.view.findBugsCategory"
+            class="de.tobject.findbugs.view.UserAnnotationsView"
+            icon="icons/bugview.gif"
+            id="de.tobject.findbugs.view.userannotationsview"
+            name="Bug User Annotations"/>
+      <view
+            category="de.tobject.findbugs.view.findBugsCategory"
+            class="de.tobject.findbugs.view.BugTreeView"
+            icon="icons/bugview.gif"
+            id="de.tobject.findbugs.view.bugtreeview"
+            name="Bug Tree View"/>
    </extension>
    
    <extension

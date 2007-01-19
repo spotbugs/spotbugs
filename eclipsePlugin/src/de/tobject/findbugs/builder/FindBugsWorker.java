@@ -43,6 +43,7 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.Reporter;
+import de.tobject.findbugs.reporter.MarkerUtil;
 import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -56,6 +57,7 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.plugin.eclipse.ExtendedPreferences;
+import edu.umd.cs.findbugs.workflow.Update;
 
 /**
  * Execute FindBugs on a collection of Java resources in a project.
@@ -99,9 +101,11 @@ public class FindBugsWorker {
 	 * Run FindBugs on the given collection of files. (note: This is not thread-safe.)
 	 *
 	 * @param files A collection of {@link IResource}s.
+	 * @param resource The main resource, used to determine the AppVersion name and timestamp. This
+	 * may be set as "null", which produces a timestamp of 0 and a name equal to the empty string.
 	 * @throws CoreException
 	 */
-	public void work(Collection files) throws CoreException {
+	public void work(Collection files, IResource resource) throws CoreException {
 		if (files == null) {
 			FindbugsPlugin.getDefault().logError("No files to build");
 			return;
@@ -175,7 +179,14 @@ public class FindBugsWorker {
 			findBugs.execute();
 
 			// Merge new results into existing results.
-			updateBugCollection(findBugsProject, bugReporter);
+			updateBugCollection(findBugsProject, bugReporter, resource);
+			
+			// Redisplay markers (this makes sure version information can get in)
+			Iterator it = files.iterator();
+			if(it.hasNext()){
+				IResource res = (IResource) it.next();
+				MarkerUtil.redisplayMarkersWithoutProgressDialog(res.getProject());
+			}
 		}
 		catch (InterruptedException e) {
 			if (DEBUG) {
@@ -184,8 +195,10 @@ public class FindBugsWorker {
 			// @see IncrementalProjectBuilder.build
 			//throw new OperationCanceledException("FindBugs operation cancelled by user");
 		} catch (RuntimeException e) {
+			e.printStackTrace();
 			throw e;
 		} catch (Exception e) {
+			e.printStackTrace();
 			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs analysis");
 		}
 	}
@@ -195,15 +208,16 @@ public class FindBugsWorker {
 	 *
 	 * @param findBugsProject FindBugs project representing analyzed classes
 	 * @param bugReporter     Reporter used to collect the new warnings
+	 * @param resource		  Resource used to determine timestamp and project name for new BugCollection
 	 * @throws CoreException
 	 * @throws IOException
 	 * @throws DocumentException
 	 */
-	private void updateBugCollection(Project findBugsProject, Reporter bugReporter)
+	private void updateBugCollection(Project findBugsProject, Reporter bugReporter, IResource resource)
 			throws CoreException, IOException, DocumentException {
 		SortedBugCollection oldBugCollection = FindbugsPlugin.getBugCollection(project, monitor);
 		SortedBugCollection newBugCollection = bugReporter.getBugCollection();
-
+		/*
 		if (INCREMENTAL_UPDATE) {
 			updateBugCollectionIncrementally(bugReporter, oldBugCollection, newBugCollection);
 		} else {
@@ -212,8 +226,22 @@ public class FindBugsWorker {
 
 		// Store updated BugCollection
 		FindbugsPlugin.storeBugCollection(project, oldBugCollection, findBugsProject, monitor);
+ 		*/
+		SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection, newBugCollection);
+		resultCollection.setTimestamp(System.currentTimeMillis());
+		if(resource==null)
+			resultCollection.setReleaseName(findBugsProject.getProjectFileName());
+		else
+			resultCollection.setReleaseName(resource.getName());
+		FindbugsPlugin.storeBugCollection(project, resultCollection, findBugsProject, monitor);
 	}
 
+	private SortedBugCollection mergeBugCollections(SortedBugCollection firstCollection, SortedBugCollection secondCollection)
+	{
+		Update update = new Update();
+		return (SortedBugCollection)(update.mergeCollections(firstCollection, secondCollection, false));
+	}
+	
 	/**
 	 * Update the original bug collection to include the information in
 	 * the new bug collection, preserving the history and classification
@@ -223,6 +251,7 @@ public class FindBugsWorker {
 	 * @param oldBugCollection original warnings
 	 * @param newBugCollection new warnings
 	 */
+	
 	private void updateBugCollectionIncrementally(
 			Reporter bugReporter,
 			SortedBugCollection oldBugCollection,

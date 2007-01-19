@@ -49,6 +49,7 @@ import org.eclipse.ui.texteditor.IUpdate;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.view.DetailsView;
+import de.tobject.findbugs.view.UserAnnotationsView;
 
 /**
  * An action that can display a bug marker's details in the FindBugs details view.
@@ -186,7 +187,8 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 	public void update() {
 		if (markers.size() > 0) {
 			IMarker marker = markers.get(0);
-			DetailsView.showMarker(marker);
+			UserAnnotationsView.showMarker(marker, true);
+			DetailsView.showMarker(marker, true);
 		}
 	}
 

@@ -20,6 +20,8 @@
  
 package de.tobject.findbugs.marker;
 
+import edu.umd.cs.findbugs.BugInstance;
+
 /**
  * Marker for the findbugs plug-in.
  * 
@@ -44,4 +46,17 @@ public class FindBugsMarker {
 	 * in its BugCollection.
 	 */
 	public static final String UNIQUE_ID = "FINDBUGS_UNIQUE_ID";
+	
+	/**
+	 * Marker attribute recording the line number of the BugInstance
+	 * in its BugCollection. This enables the BugInstance to be located
+	 * even if the line number of the markers changes due to the user
+	 * adding or deleting lines.
+	 */
+	public static final String BUG_LINE_NUMBER = "BUG_LINE_NUMBER";
+	
+	/**
+	 * Marker attribute recording the name and timestamp of the first version.
+	 */
+	public static final String FIRST_VERSION = "FIRST_VERSION";
 }
