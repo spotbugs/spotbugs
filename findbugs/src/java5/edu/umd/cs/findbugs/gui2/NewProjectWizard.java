@@ -29,6 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -50,6 +51,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.ba.SourceFinder;
 
 /**
  * The User Interface for creating a Project and editing it after the fact.  
@@ -128,40 +130,64 @@ public class NewProjectWizard extends FBDialog
 		buttons.add(cancelButton);
 		finishButton.addActionListener(new ActionListener()
 		{
-			public void actionPerformed(ActionEvent evt)
-			{
-					for (int i = 0; i < analyzeModel.getSize(); i++){
-					File temp = new File((String)analyzeModel.get(i));
-					if(!temp.exists() && directoryOrArchive.accept(temp)) { 
-						JOptionPane.showMessageDialog(NewProjectWizard.this, 
-								temp.getName()+edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Error"), JOptionPane.ERROR_MESSAGE);
-						return;
-					}
-				}
-			
-				
-				for (int i = 0; i < auxModel.getSize(); i++){
-					File temp = new File((String)auxModel.get(i));
-					if(!temp.exists() && directoryOrArchive.accept(temp)) { 
-						JOptionPane.showMessageDialog(NewProjectWizard.this, 
-								temp.getName()+edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Error"), JOptionPane.ERROR_MESSAGE);
-						return;
-					}
-				}
-				
-				Project p = (project == null ? new Project() : project);
-				for (int i = 0; i < analyzeModel.getSize(); i++)
-					p.addFile((String) analyzeModel.get(i));
-				for (int i = 0; i < auxModel.getSize(); i++)
-					p.addAuxClasspathEntry((String) auxModel.get(i));
-				for (int i = 0; i < sourceModel.getSize(); i++)
-					p.addSourceDir((String) sourceModel.get(i));
-				
-				if (project == null || (projectChanged && JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.project_settings_changed_lbl", "Project settings have been changed.  Perform a new analysis with the changed files?"), edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION))
-					new AnalyzingDialog(p);
-				
-				dispose();
-			}
+            boolean keepGoing = false;
+            private boolean displayWarningAndAskIfWeShouldContinue(String msg, String title) {
+                if (keepGoing) return true;
+                boolean result =  JOptionPane.showConfirmDialog(NewProjectWizard.this, msg, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION;
+                if (result) keepGoing = true;
+                return result;
+
+            }
+            public void actionPerformed(ActionEvent evt)
+            {
+                
+                System.out.println("analyzeModel size : " + analyzeModel.getSize());
+                for (int i = 0; i < analyzeModel.getSize(); i++){
+                    File temp = new File((String)analyzeModel.get(i));
+                    if(!temp.exists() && directoryOrArchive.accept(temp)) { 
+                        if (!displayWarningAndAskIfWeShouldContinue(temp.getName()+" " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), 
+                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file"))) return;
+
+                    }
+                }
+
+                System.out.println("sourceModel size : " + sourceModel.getSize());
+                for (int i = 0; i < sourceModel.getSize(); i++){
+                    File temp = new File((String)sourceModel.get(i));
+                    if(!temp.exists() && directoryOrArchive.accept(temp)) { 
+                        if (!displayWarningAndAskIfWeShouldContinue(temp.getName()+" " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), 
+                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file"))) return;
+                    }
+                }
+                System.out.println("auxModel size : " + auxModel.getSize());
+                for (int i = 0; i < auxModel.getSize(); i++){
+                    File temp = new File((String)auxModel.get(i));
+                    if(!temp.exists() && directoryOrArchive.accept(temp)) { 
+                        if (!displayWarningAndAskIfWeShouldContinue(temp.getName()+" " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), 
+                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file"))) return;
+                    }
+                }
+
+                Project p = (project == null ? new Project() : project);
+                for (int i = 0; i < analyzeModel.getSize(); i++)
+                    p.addFile((String) analyzeModel.get(i));
+                for (int i = 0; i < auxModel.getSize(); i++)
+                    p.addAuxClasspathEntry((String) auxModel.get(i));
+                for (int i = 0; i < sourceModel.getSize(); i++)
+                    p.addSourceDir((String) sourceModel.get(i));
+
+                if (keepGoing) {
+                    MainFrame.getInstance().setProject(p);
+                    List<String> possibleDirectories=p.getSourceDirList();
+                    MainFrame.getInstance().setSourceFinder(new SourceFinder());
+                    MainFrame.getInstance().getSourceFinder().setSourceBaseList(possibleDirectories);
+
+                }
+                else if (project == null || (projectChanged && JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.project_settings_changed_lbl", "Project settings have been changed.  Perform a new analysis with the changed files?"), edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION))
+                    new AnalyzingDialog(p);
+
+                dispose();
+            }
 		});
 		cancelButton.addActionListener(new ActionListener()
 		{
