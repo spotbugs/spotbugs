@@ -194,6 +194,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
 		if (key.equals("") || key.equals("hash"))
 			return className + "." + fieldName;
+        else if (key.equals("givenClass")) return getNameInClass(primaryClass);
 		else if (key.equals("name"))
 			return fieldName;
 		else if (key.equals("fullField")) {
@@ -211,7 +212,21 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			throw new IllegalArgumentException("unknown key " + key);
 	}
 
-	@Override
+	/**
+     * @param primaryClass
+     * @return
+     */
+    private String getNameInClass(ClassAnnotation primaryClass) {
+        if (primaryClass == null)
+            return   className + "." + fieldName;
+        String givenPackageName = primaryClass.getPackageName();
+        String thisPackageName = this.getPackageName();
+        if (thisPackageName.equals(givenPackageName))
+            return className.substring(thisPackageName.length() + 1) +"." + fieldName;
+        return   className + "." + fieldName;
+    }
+
+    @Override
 	public int hashCode() {
 		return className.hashCode() + fieldName.hashCode() + fieldSig.hashCode();
 	}

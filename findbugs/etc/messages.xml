@@ -3450,7 +3450,7 @@ dateString = dateString.trim();
 
   <BugPattern type="NP_ALWAYS_NULL">
     <ShortDescription>Null pointer dereference</ShortDescription>
-    <LongDescription>Null pointer dereference of {2} in {1}</LongDescription>
+    <LongDescription>Null pointer dereference of {2.givenClass} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> A null pointer is dereferenced here.&nbsp; This will lead to a
@@ -3460,7 +3460,7 @@ dateString = dateString.trim();
   </BugPattern>
   <BugPattern type="NP_STORE_INTO_NONNULL_FIELD">
     <ShortDescription>Store of null value into field annotated NonNull</ShortDescription>
-    <LongDescription>Store of null value into field {2} annotated NonNull at {1}</LongDescription>
+    <LongDescription>Store of null value into field {2.givenClass} annotated NonNull at {1}</LongDescription>
     <Details>
       <![CDATA[
 <p> A value that could be null is stored into a field that has been annotated as NonNull. </p>
@@ -3469,7 +3469,7 @@ dateString = dateString.trim();
   </BugPattern>
   <BugPattern type="NP_ALWAYS_NULL_EXCEPTION">
     <ShortDescription>Null pointer dereference in method on exception path</ShortDescription>
-    <LongDescription>Null pointer dereference of {2} in {1} on exception path</LongDescription>
+    <LongDescription>Null pointer dereference of {2.givenClass} in {1} on exception path</LongDescription>
     <Details>
 <![CDATA[
 <p> A pointer which is null on an exception path is dereferenced here.&nbsp;
@@ -3485,7 +3485,7 @@ be an exception path, since the default case is often infeasible.</p>
 
   <BugPattern type="NP_NULL_ON_SOME_PATH">
     <ShortDescription>Possible null pointer dereference</ShortDescription>
-    <LongDescription>Possible null pointer dereference of {2} in {1}</LongDescription>
+    <LongDescription>Possible null pointer dereference of {2.givenClass} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> A reference value dereferenced here might be null at runtime.&nbsp;
@@ -3496,7 +3496,7 @@ This may lead to a <code>NullPointerException</code> when the code is executed.<
 
   <BugPattern type="NP_NULL_ON_SOME_PATH_EXCEPTION">
     <ShortDescription>Possible null pointer dereference in method on exception path</ShortDescription>
-    <LongDescription>Possible null pointer dereference of {2} in {1} on exception path</LongDescription>
+    <LongDescription>Possible null pointer dereference of {2.givenClass} in {1} on exception path</LongDescription>
     <Details>
 <![CDATA[
 <p> A reference value which is null on some exception control path is
@@ -3621,7 +3621,7 @@ was return from a method which is known to return possibly-null values.</p>
 	
   <BugPattern type="NP_GUARANTEED_DEREF">
 	  <ShortDescription>Null value is guaranteed to be dereferenced</ShortDescription>
-	  <LongDescription>{2.name} could be null and is guaranteed to be dereferenced in {1}</LongDescription>
+	  <LongDescription>{2.givenClass} could be null and is guaranteed to be dereferenced in {1}</LongDescription>
 	  <Details>
 		  <![CDATA[
 			  <p>
@@ -3779,7 +3779,7 @@ body of an <code>if</code> statement, e.g.:</p>
 
   <BugPattern type="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE">
     <ShortDescription>Nullcheck of value previously dereferenced</ShortDescription>
-    <LongDescription>Nullcheck of {2} at {4.lineNumber} of value previously dereferenced in {1}</LongDescription>
+    <LongDescription>Nullcheck of {2.givenClass} at {4.lineNumber} of value previously dereferenced in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> A value is checked here to see whether it is null, but this value can't
@@ -4106,6 +4106,19 @@ a logic error.  Make sure that you are comparing the right things.
 <![CDATA[
 <p> This method compares a local variable with itself, and may indicate a typo or
 a logic error.  Make sure that you are comparing the right things.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT">
+    <ShortDescription>Double.longBitsToDouble invoked on an int</ShortDescription>
+    <LongDescription>Double.longBitsToDouble invoked on an int in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> The Double.longBitsToDouble method is invoked, but a 32 bit int value is passed
+	as an argument. This almostly certainly is not intended and is unlikely 
+	to give the intended result.
 </p>
 ]]>
     </Details>
@@ -4713,7 +4726,7 @@ as of Java SE 6.0, this is no longer needed or useful.
 
    <BugPattern type="MF_METHOD_MASKS_FIELD">
     <ShortDescription>Method defines a variable that obscures a field</ShortDescription>
-    <LongDescription>Method {1} defines a variable that obscures field {2}</LongDescription>
+    <LongDescription>Method {1} defines a variable that obscures field {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method defines a local variable with the same name as a field
@@ -4726,7 +4739,7 @@ or both.</p>
 
   <BugPattern type="MF_CLASS_MASKS_FIELD">
     <ShortDescription>Class defines field that masks a superclass field</ShortDescription>
-    <LongDescription>Field {1} masks field in superclass {2.class}</LongDescription>
+    <LongDescription>Field {1.givenClass} masks field in superclass {2.class}</LongDescription>
     <Details>
 <![CDATA[
 <p> This class defines a field with the same name as a visible

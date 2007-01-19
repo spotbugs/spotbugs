@@ -125,6 +125,15 @@ public class DumbMethods extends BytecodeScanningDetector  {
 		stack.mergeJumps(this);
 		String opcodeName = OPCODE_NAMES[seen];
         
+        if (prevOpcode == I2L && seen == INVOKESTATIC
+            && getClassConstantOperand().equals("java/lang/Double") && getNameConstantOperand()
+            .equals("longBitsToDouble"))
+            bugReporter.reportBug(new BugInstance(this,
+                    "DMI_LONG_BITS_TO_DOUBLE_INVOKED_ON_INT", HIGH_PRIORITY)
+                    .addClassAndMethod(this)
+                    .addCalledMethod(this)
+                    .addSourceLine(this));
+        
         if (freshRandomOnTos && seen == INVOKEVIRTUAL || freshRandomOneBelowTos  && seen == INVOKEVIRTUAL 
                 && getClassConstantOperand().equals("java/util/Random") ) {
             bugReporter.reportBug(new BugInstance(this,

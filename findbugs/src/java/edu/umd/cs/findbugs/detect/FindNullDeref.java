@@ -1012,7 +1012,7 @@ public class FindNullDeref implements Detector,
     Set<Location> derefLocationSet, SortedSet<Location> doomedLocations,
             ValueNumberDataflow vna, ValueNumber refValue,
             BugAnnotation variableAnnotation, boolean alwaysOnExceptionPath,
-            boolean npeIfStatementCovered, boolean npeOnlyOnNonExceptionPaths) {
+            boolean npeIfStatementCovered) {
         if (refValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
             return;
 
@@ -1024,8 +1024,7 @@ public class FindNullDeref implements Detector,
         }
 
         String bugType = "NP_GUARANTEED_DEREF";
-        if (npeOnlyOnNonExceptionPaths)
-            bugType += "_OR_EXCEPTION";
+
         if (alwaysOnExceptionPath)
             bugType += "_ON_EXCEPTION_PATH";
         int priority = alwaysOnExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
@@ -1093,7 +1092,7 @@ public class FindNullDeref implements Detector,
             }
         }
 
-        if (derefLocationSet.size() == 1 && !npeOnlyOnNonExceptionPaths) {
+        if (derefLocationSet.size() == 1) {
             if (!alwaysOnExceptionPath)
                 bugType = "NP_NULL_ON_SOME_PATH";
             else

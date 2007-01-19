@@ -110,7 +110,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		if (register < 0) return "?";
 		if (key.equals("register")) return String.valueOf(register);
 		else if (key.equals("pc")) return String.valueOf(pc);
-		else if (key.equals("name")) return value;
+		else if (key.equals("name") || key.equals("givenClass")) return value;
 		else if (!value.equals("?")) return value;
 		return "$L"+register;
 	}
