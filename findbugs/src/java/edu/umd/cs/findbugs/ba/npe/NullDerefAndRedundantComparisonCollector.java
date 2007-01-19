@@ -73,7 +73,6 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 *                               to be null and unconditionally dereferenced were
 	 *                               all on exception paths
 	 * @param npeIfStatementCovered true if doom location is a statement
-	 * @param npeOnlyOnNonExceptionPaths TODO
 	 */
 	public void foundGuaranteedNullDeref(
 			Set<Location> assignedNullLocationSet,
@@ -82,5 +81,5 @@ public interface NullDerefAndRedundantComparisonCollector {
 			ValueNumberDataflow vna,
 			ValueNumber refValue,
 			BugAnnotation variableAnnotation,
-			boolean alwaysOnExceptionPath, boolean npeIfStatementCovered, boolean npeOnlyOnNonExceptionPaths);
+			boolean alwaysOnExceptionPath, boolean npeIfStatementCovered);
 }
