@@ -10,10 +10,10 @@ public class DereferenceOrThrow {
     */
 
 
-    static int f(Object x) {
+    static int falsePositive(Object x) {
         int result = 0;
         if (x == null) result += 1;
-        if (result >= 0) throw new IllegalArgumentException();
+        if (result > 0) throw new IllegalArgumentException();
         return x.hashCode();
     }
     /*

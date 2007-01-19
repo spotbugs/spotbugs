@@ -9,9 +9,7 @@ class Test6 {
 	Object c) {
 	}
 
-	void g(@NonNull
-	Object a, Object b, @NonNull
-	Object c, double x) {
+	void g(@NonNull Object a, Object b, @NonNull Object c, double x) {
 	}
 
 	int f2(double x, Object a, Object b, Object c) {
