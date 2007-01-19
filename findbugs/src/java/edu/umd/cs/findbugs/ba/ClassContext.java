@@ -66,6 +66,8 @@ import edu.umd.cs.findbugs.ba.heap.StoreDataflow;
 import edu.umd.cs.findbugs.ba.npe.DerefFinder;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueAnalysis;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
+import edu.umd.cs.findbugs.ba.npe.ReturnPathTypeAnalysis;
+import edu.umd.cs.findbugs.ba.npe.ReturnPathTypeDataflow;
 import edu.umd.cs.findbugs.ba.npe.UsagesRequiringNonNullValues;
 import edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSetAnalysis;
 import edu.umd.cs.findbugs.ba.npe2.DefinitelyNullSetDataflow;
@@ -1142,6 +1144,25 @@ public class ClassContext {
 			return dataflow;
 		}
 	};
+	
+	private DataflowAnalysisFactory<ReturnPathTypeDataflow> returnPathTypeDataflowFactory =
+		new DataflowAnalysisFactory<ReturnPathTypeDataflow>("return path type dataflow") {
+		/* (non-Javadoc)
+		 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#analyze(org.apache.bcel.classfile.Method)
+		 */
+		@Override
+		protected ReturnPathTypeDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+			CFG cfg = getCFG(method);
+			DepthFirstSearch dfs = getDepthFirstSearch(method);
+			ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(method);
+			ReturnPathTypeAnalysis analysis = new ReturnPathTypeAnalysis(cfg, rdfs, dfs);
+			ReturnPathTypeDataflow dataflow = new ReturnPathTypeDataflow(cfg, analysis);
+			
+			dataflow.execute();
+			
+			return dataflow;
+		}
+	};
 			
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
@@ -1723,6 +1744,19 @@ public class ClassContext {
 	public DefinitelyNullSetDataflow getDefinitelyNullSetDataflow(Method method)
 			throws CFGBuilderException, DataflowAnalysisException {
 		return definitelyNullSetDataflowFactory.getAnalysis(method);
+	}
+
+	/**
+	 * Get ReturnPathTypeDataflow for a method.
+	 * 
+	 * @param method the method
+	 * @return the ReturnPathTypeDataflow for the method
+	 * @throws CFGBuilderException
+	 * @throws DataflowAnalysisException
+	 */
+	public ReturnPathTypeDataflow getReturnPathTypeDataflow(Method method)
+			throws CFGBuilderException, DataflowAnalysisException {
+		return returnPathTypeDataflowFactory.getAnalysis(method);
 	}
 
 	/**
