@@ -30,5 +30,9 @@ class DumbMethodInvocations implements Iterator {
 		today.setDate(16);
 		System.out.println(today);
 	}
+    
+    double convertToDouble(int i) {
+        return Double.longBitsToDouble(i);
+    }
 
 }
