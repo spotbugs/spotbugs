@@ -127,6 +127,7 @@ public class AssertionMethods implements Constants {
 									|| methodNameLC.startsWith("throw")
 									|| methodName.startsWith("affirm")
 									|| methodName.startsWith("panic")
+                                    || methodName.equals("logTerminal")
 									|| methodNameLC.equals("insist")
 									|| methodNameLC.equals("usage")
 									|| methodNameLC.startsWith("fail")
