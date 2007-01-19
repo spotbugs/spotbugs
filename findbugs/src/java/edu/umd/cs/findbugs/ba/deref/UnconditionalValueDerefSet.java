@@ -338,6 +338,7 @@ public class UnconditionalValueDerefSet {
 			if (!valueNumbers.contains(v)) {
 				i.remove();
 				valueNumbersUnconditionallyDereferenced.clear(v.getNumber());
+                valueNumbersUnconditionallyDereferencedOnNonExceptionPath.clear(v.getNumber());
 			}
 		}
 	}

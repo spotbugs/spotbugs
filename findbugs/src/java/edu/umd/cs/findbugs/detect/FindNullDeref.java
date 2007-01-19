@@ -30,6 +30,7 @@ import java.util.TreeSet;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.ConstantPoolGen;
@@ -1050,11 +1051,27 @@ public class FindNullDeref implements Detector,
                 break;
             }
 
+        boolean uniqueDereferenceLocations = false;
+        LineNumberTable table = method.getLineNumberTable();
+        if (table == null)
+            uniqueDereferenceLocations = true;
+        else {
+            BitSet linesMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
+            for(Location loc : derefLocationSet) {
+              int lineNumber = table.getSourceLine(loc.getHandle().getPosition());
+              if (!linesMentionedMultipleTimes.get(lineNumber)) uniqueDereferenceLocations = true;
+            }
+        }
+
+            
         if (!derefOutsideCatchBlock) {
-            if (skipIfInsideCatchNull())
+            if (!uniqueDereferenceLocations || skipIfInsideCatchNull())
                 return;
             priority++;
         }
+        if (!uniqueDereferenceLocations)
+            priority++;
+        
         // Create BugInstance
 
         BitSet knownNull = new BitSet();
