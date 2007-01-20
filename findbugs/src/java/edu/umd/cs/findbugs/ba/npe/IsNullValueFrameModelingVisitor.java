@@ -46,6 +46,7 @@ import edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.InstanceField;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -297,6 +298,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			return;
 		}
 		XField field = XFactory.createXField(obj, cpg);
+        if (field.getClassName().equals("java.util.logging.Level")
+                && field.getName().equals("SEVERE")
+                || field.getClassName().equals("org.apache.log4j.Level") 
+                && (field.getName().equals("ERROR") || field.getName().equals("FATAL")))
+            getFrame().toExceptionValues();
+            
 		if (field.getName().startsWith("class$")) {
 			produce(IsNullValue.nonNullValue());
 			return;
