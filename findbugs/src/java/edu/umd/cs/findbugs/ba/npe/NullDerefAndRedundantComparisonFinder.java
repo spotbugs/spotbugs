@@ -436,7 +436,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		    IsNullValue isNullValue = invFrame.getValue(j); 
 		    ValueNumber valueNumber = vnaFrame.getValue(j);
 		    if (isNullValue.isDefinitelyNull() && (derefSet.isUnconditionallyDereferenced(valueNumber) 
-                    || derefSet.isUnconditionallyDereferencedOnNonExceptionPath(valueNumber))) {
+                  )) {
                 if (MY_DEBUG) {
                     System.out.println("Found NP bug");
                     System.out.println("Location: " + thisLocation);
@@ -445,8 +445,7 @@ public class NullDerefAndRedundantComparisonFinder {
                     System.out.println("IsNullValue value: " + isNullValue);
                     System.out.println("Unconditional dere framef: " + derefSet);
                     System.out.println("Unconditionally dereferenced: " + derefSet.isUnconditionallyDereferenced(valueNumber) );
-                    System.out.println("Uncexceptionally dereferenced: " + derefSet.isUnconditionallyDereferencedOnNonExceptionPath(valueNumber) );
-
+              
                 }
                 noteUnconditionallyDereferencedNullValue(
 		                thisLocation,
@@ -461,8 +460,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		for (Map.Entry<ValueNumber, IsNullValue> entry : invFrame.getKnownValueMapEntrySet()) {
 		    ValueNumber valueNumber = entry.getKey();
 		    IsNullValue isNullValue = entry.getValue();
-		    if (isNullValue.isDefinitelyNull() && (derefSet.isUnconditionallyDereferenced(valueNumber) 
-                    || derefSet.isUnconditionallyDereferencedOnNonExceptionPath(valueNumber))) {
+		    if (isNullValue.isDefinitelyNull() && derefSet.isUnconditionallyDereferenced(valueNumber) ) {
                noteUnconditionallyDereferencedNullValue(
 		                thisLocation,
 		                knownNullAndDoomedAt,

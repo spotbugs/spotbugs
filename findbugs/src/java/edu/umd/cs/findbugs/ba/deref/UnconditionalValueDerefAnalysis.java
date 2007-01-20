@@ -159,11 +159,7 @@ public class UnconditionalValueDerefAnalysis extends
         if (DEBUG) {
             System.out.println("XXX: " + handle.getPosition() + " " + handle.getInstruction());
         }
-        if (false && handle.getInstruction() instanceof ATHROW )  {
-            fact.clear();
-            fact.markAsOnExceptionPath();
-        }
-		if (fact.isTop()) return;
+       	if (fact.isTop()) return;
 		Location location = new Location(handle, basicBlock);
 		
 		// If this is a call to an assertion method,
@@ -510,13 +506,7 @@ public class UnconditionalValueDerefAnalysis extends
             return;
         }
         
-        if (false && isExceptionEdge(edge) && !result.isTop() && !result.isBottom()) {
-            UnconditionalValueDerefSet tmpFact = createFact();
-            tmpFact.makeSameAs(fact);
-            fact = tmpFact;
-            fact.markAsOnExceptionPath();
-        }
-		ValueNumber knownNonnullOnBranch = null;
+        ValueNumber knownNonnullOnBranch = null;
 		// Edge transfer function
 		if (isFactValid(fact)) {
 			fact = propagateDerefSetsToMergeInputValues(fact, edge);
