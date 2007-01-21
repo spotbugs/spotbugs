@@ -32,6 +32,9 @@ import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.GETSTATIC;
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InvokeInstruction;
 
 import edu.umd.cs.findbugs.SystemProperties;
@@ -164,9 +167,30 @@ public class AssertionMethods implements Constants {
 	/**
 	 * Does the given InvokeInstruction refer to a likely assertion method?
 	 *
-	 * @param inv the InvokeInstruction
+	 * @param ins the InvokeInstruction
 	 * @return true if the instruction likely refers to an assertion, false if not
 	 */
+    
+    public boolean isAssertionInstruction(Instruction ins, ConstantPoolGen cpg) {
+    
+        if (ins instanceof InvokeInstruction)
+            return isAssertionCall((InvokeInstruction)ins);
+        if (ins instanceof GETSTATIC) {
+            GETSTATIC getStatic = (GETSTATIC) ins;
+            String className = getStatic.getClassName(cpg);
+            String fieldName = getStatic.getFieldName(cpg);
+            if (className.equals("java.util.logging.Level")
+                    && fieldName.equals("SEVERE")) return true;
+            if (className.equals("org.apache.log4j.Level") 
+                    && (fieldName.equals("ERROR") || fieldName.equals("FATAL")))
+                    return true;
+            return false;
+      
+        }
+        return false;
+    }
+        
+    
 	public boolean isAssertionCall(InvokeInstruction inv) {
 //		if (DEBUG) {
 //			System.out.print("Checking if " + inv + " is an assertion method: ");

@@ -250,7 +250,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			}
 			{
 				Instruction in = location.getHandle().getInstruction();
-				if (in instanceof InvokeInstruction && assertionMethods.isAssertionCall((InvokeInstruction) in) ) {
+				if (assertionMethods.isAssertionInstruction (in, classContext.getConstantPoolGen()) ) {
 					if (DEBUG_DEREFS) 
 						System.out.println("Skipping because it is an assertion method ");
 					continue;
@@ -286,7 +286,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			Location location = Location.getLastLocation(edge.getSource());
 			if (location != null) {
 				Instruction in = location.getHandle().getInstruction();
-				if (in instanceof InvokeInstruction && assertionMethods.isAssertionCall((InvokeInstruction) in) ) {
+				if (assertionMethods.isAssertionInstruction(in, classContext.getConstantPoolGen())) {
 					if (DEBUG_DEREFS) 
 						System.out.println("Skipping because it is an assertion method ");
 					continue;
