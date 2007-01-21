@@ -384,10 +384,11 @@ public class ValueNumberFrameModelingVisitor
 		handleNormalInstruction(obj);
 	}
 
-	private void killLoadsOfObjectsPassed(Instruction ins) {
-		int passed = getNumWordsConsumed(ins);
-		ValueNumber [] arguments = new ValueNumber[passed];
+	private void killLoadsOfObjectsPassed(InvokeInstruction ins) {
 		try {
+            int passed = getNumWordsConsumed(ins);
+            ValueNumber [] arguments = new ValueNumber[passed];
+            getFrame().killLoadsWithSimilarName(ins.getClassName(cpg), ins.getMethodName(cpg));
 			getFrame().getTopStackWords(arguments);
 			for(ValueNumber v : arguments)
 				getFrame().killAllLoadsOf(v);

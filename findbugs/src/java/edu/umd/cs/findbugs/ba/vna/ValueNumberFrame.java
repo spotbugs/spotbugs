@@ -159,6 +159,30 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 	}
 
+    public void killLoadsWithSimilarName(String className, String methodName) {
+        String packageName = extractPackageName(className);
+        if (REDUNDANT_LOAD_ELIMINATION) {
+            for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
+                AvailableLoad availableLoad = i.next();
+                
+                XField field = availableLoad.getField();
+                String fieldPackageName = extractPackageName(field.getClassName());
+                if (packageName.equals(fieldPackageName) && field.isStatic() 
+                        && methodName.toLowerCase().indexOf(field.getName().toLowerCase()) >= 0)
+                    i.remove();
+                
+            }
+        }
+    }
+
+    /**
+     * @param className
+     * @return
+     */
+    private String extractPackageName(String className) {
+        return className.substring(className.lastIndexOf('.'));
+    }
+
 	void mergeAvailableLoadSets(ValueNumberFrame other, ValueNumberFactory factory, MergeTree mergeTree) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
 			// Merge available load sets.
