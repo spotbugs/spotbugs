@@ -19,9 +19,15 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Code;
+
+import edu.umd.cs.findbugs.BugAccumulator;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.StatelessDetector;
 
 public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 		implements StatelessDetector {
@@ -35,8 +41,8 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 	int sawAvailable = 0;
 
 	boolean wasBufferedInputStream = false;
-
-	private BugReporter bugReporter;
+    BugAccumulator accumulator;
+    
 
 	private int readPC, skipPC;
 
@@ -44,15 +50,16 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 			lastCallSig = null;
 
 	public ReadReturnShouldBeChecked(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+      this.accumulator = new BugAccumulator(bugReporter);
 	}
 
 	@Override
-	public void visit(Method obj) {
+	public void visit(Code obj) {
 		sawAvailable = 0;
 		sawRead = false;
 		sawSkip = false;
-		// check = (obj.getAccessFlags() & (ACC_PUBLIC | ACC_PROTECTED)) != 0;
+		super.visit(obj);
+        accumulator.reportAccumulatedBugs();
 	}
 
 	private boolean isInputStream()  {
@@ -135,19 +142,22 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 		if ((seen == POP) || (seen == POP2)) {
 
 			if (sawRead) {
-				bugReporter.reportBug(new BugInstance(this, "RR_NOT_CHECKED",
+				accumulator.accumulateBug(new BugInstance(this, "RR_NOT_CHECKED",
 						recentCallToAvailable ? LOW_PRIORITY : NORMAL_PRIORITY)
 						.addClassAndMethod(this).addCalledMethod(lastCallClass,
-								lastCallMethod, lastCallSig, false)
-						.addSourceLine(this, readPC));
+								lastCallMethod, lastCallSig, false),
+                               SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, readPC));
+
+
 			} else if (sawSkip) {
 
-				bugReporter.reportBug(new BugInstance(this, "SR_NOT_CHECKED",
+                accumulator.accumulateBug(new BugInstance(this, "SR_NOT_CHECKED",
 						(wasBufferedInputStream ? HIGH_PRIORITY
 								: recentCallToAvailable ? LOW_PRIORITY
 										: NORMAL_PRIORITY)).addClassAndMethod(
 						this).addCalledMethod(lastCallClass, lastCallMethod,
-						lastCallSig, false).addSourceLine(this, skipPC));
+						lastCallSig, false),
+                        SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, readPC));
 			}
 		}
 		sawRead = false;
