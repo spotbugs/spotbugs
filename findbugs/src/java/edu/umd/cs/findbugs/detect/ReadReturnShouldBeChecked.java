@@ -114,8 +114,11 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 			return;
 		}
 		if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) 
-				&& getNameConstantOperand().equals("skip")
+				&& 
+               ( getNameConstantOperand().equals("skip")
 				&& getSigConstantOperand().equals("(J)J")
+                ||  getNameConstantOperand().equals("skipBytes")
+                && getSigConstantOperand().equals("(I)I"))
 				&& isInputStream() ) {
 			// if not ByteArrayInput Stream
 			// and either no recent calls to length
