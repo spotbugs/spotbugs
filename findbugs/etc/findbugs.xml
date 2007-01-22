@@ -281,7 +281,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindNonShortCircuit" 
             speed="fast"
-            reports="NS_NON_SHORT_CIRCUIT" />
+            reports="NS_NON_SHORT_CIRCUIT,NS_DANGEROUS_NON_SHORT_CIRCUIT" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindTwoLockWait" 
             speed="slow"
@@ -709,7 +709,8 @@
   <BugPattern abbrev="MS" type="EI_EXPOSE_STATIC_REP2" category="MALICIOUS_CODE" />
   <BugPattern abbrev="Ru" type="RU_INVOKE_RUN" category="MT_CORRECTNESS" />
   <BugPattern abbrev="SP" type="SP_SPIN_ON_FIELD" category="MT_CORRECTNESS" />
-  <BugPattern abbrev="NS" type="NS_NON_SHORT_CIRCUIT" category="CORRECTNESS" />
+  <BugPattern abbrev="NS" type="NS_NON_SHORT_CIRCUIT" category="BAD_PRACTICE" />
+  <BugPattern abbrev="NS" type="NS_DANGEROUS_NON_SHORT_CIRCUIT" category="CORRECTNESS" />
   <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_WAIT" category="MT_CORRECTNESS" />
   <BugPattern abbrev="TLW" type="TLW_TWO_LOCK_NOTIFY" category="MT_CORRECTNESS"
          experimental="true" />  <!-- has never been generated -->

@@ -40,6 +40,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	boolean sawArrayIndexOld;
 	boolean sawNumericTest, sawNumericTestOld, sawNumericTestVeryOld;
 	boolean sawArrayDanger, sawArrayDangerOld;
+    boolean sawMethodCall, sawMethodCallOld, sawMethodCallVeryOld;
 
 	private BugReporter bugReporter;
 
@@ -57,6 +58,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		distance = 1000000;
 		sawArrayDanger = sawArrayDangerOld = false;
 		sawDanger = sawDangerOld = false;
+        sawMethodCall = sawMethodCallOld = sawMethodCallVeryOld = false;
 		sawNullTest = sawNullTestOld = sawNullTestVeryOld = false;
 		sawNumericTest = sawNumericTestOld = sawNumericTestVeryOld = false;
 		prevOpcode = NOP;
@@ -93,11 +95,14 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
         case INVOKEVIRTUAL:
             if (getNameConstantOperand().equals("length") && getClassConstantOperand().equals("java/lang/String")) break;
             sawDanger = true;
+            sawMethodCall = true;
             break;
 		case INVOKEINTERFACE:
 		case INVOKESPECIAL:
-
 		case INVOKESTATIC:
+               sawDanger = true;
+                sawMethodCall = true;
+                break;
 		case IDIV:
 		case IREM:
         case LDIV:
@@ -151,15 +156,21 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	}
 
 	private void reportBug() {
-		int priority = LOW_PRIORITY;
-		if (sawDangerOld) 
-			if (sawNullTestVeryOld) priority = HIGH_PRIORITY;
-			else if (sawNumericTestVeryOld && sawArrayDangerOld)  priority = HIGH_PRIORITY;
-			else priority = NORMAL_PRIORITY;
+	    int priority = LOW_PRIORITY;
+	    String pattern = "NS_NON_SHORT_CIRCUIT";
 
-		bugReporter.reportBug(new BugInstance(this, "NS_NON_SHORT_CIRCUIT",
-				priority)
-		.addClassAndMethod(this).addSourceLine(this, getPC()));
+	    if (sawDangerOld) {
+	        if (sawNullTestVeryOld) priority = HIGH_PRIORITY;
+	        if (sawMethodCallOld || sawNumericTestVeryOld && sawArrayDangerOld)  {
+	            priority = HIGH_PRIORITY;
+	            pattern = "NS_DANGEROUS_NON_SHORT_CIRCUIT";
+	        }
+	        else priority = NORMAL_PRIORITY;
+	    }
+
+	    bugReporter.reportBug(new BugInstance(this, pattern,
+	            priority)
+	    .addClassAndMethod(this).addSourceLine(this, getPC()));
 	}
 
 
@@ -208,6 +219,8 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	}
 
 	private void sawBooleanValue() {
+        sawMethodCallVeryOld = sawMethodCallOld;
+        sawMethodCallOld = sawMethodCall;
 		sawDangerOld = sawDanger;
 		sawArrayDangerOld = sawArrayDanger;
 		sawNullTestVeryOld = sawNullTestOld;
