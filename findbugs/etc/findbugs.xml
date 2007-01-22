@@ -909,7 +909,7 @@
   <BugPattern abbrev="ICAST" type="ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT" category="STYLE"/>
   <BugPattern abbrev="DMI" type="DMI_HARDCODED_ABSOLUTE_FILENAME" category="STYLE"/>
   <BugPattern abbrev="DMI" type="DMI_BAD_MONTH" category="CORRECTNESS"/>
-  <BugPattern abbrev="DMI" type="DMI_USELESS_SUBSTRING" category="CORRECTNESS"/>
+  <BugPattern abbrev="DMI" type="DMI_USELESS_SUBSTRING" category="STYLE"/>
   <BugPattern abbrev="DMI" type="DMI_CALLING_NEXT_FROM_HASNEXT" category="CORRECTNESS"/>
   <BugPattern abbrev="ST" type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" category="STYLE"/>
   <BugPattern abbrev="SWL" type="SWL_SLEEP_WITH_LOCK_HELD" category="MT_CORRECTNESS"/>
