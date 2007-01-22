@@ -36,8 +36,6 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	boolean sawNullTestVeryOld;
 	boolean sawNullTest;
 	boolean sawDangerOld;
-	boolean sawArrayIndex;
-	boolean sawArrayIndexOld;
 	boolean sawNumericTest, sawNumericTestOld, sawNumericTestVeryOld;
 	boolean sawArrayDanger, sawArrayDangerOld;
     boolean sawMethodCall, sawMethodCallOld, sawMethodCallVeryOld;
@@ -53,24 +51,27 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	@Override
 	public void visit(Method obj) {
 		stack.resetForMethodEntry(this);
-		stage1 = 0;
-		stage2 = 0;
-		distance = 1000000;
-		sawArrayDanger = sawArrayDangerOld = false;
-		sawDanger = sawDangerOld = false;
-        sawMethodCall = sawMethodCallOld = sawMethodCallVeryOld = false;
-		sawNullTest = sawNullTestOld = sawNullTestVeryOld = false;
-		sawNumericTest = sawNumericTestOld = sawNumericTestVeryOld = false;
+		clearAll();
 		prevOpcode = NOP;
 	}
 
+    private void clearAll() {
+        stage1 = 0;
+        stage2 = 0;
+        distance = 1000000;
+        sawArrayDanger = sawArrayDangerOld = false;
+        sawDanger = sawDangerOld = false;
+        sawMethodCall = sawMethodCallOld = sawMethodCallVeryOld = false;
+        sawNullTest = sawNullTestOld = sawNullTestVeryOld = false;
+        sawNumericTest = sawNumericTestOld = sawNumericTestVeryOld = false;
+    }
 	int prevOpcode;
 	@Override
 	public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stage1 + " " + stage2);
 		// System.out.println(stack);
-        System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + sawMethodCall + " " + sawMethodCallOld + " " + stage1 + " " + stage2);
+        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + sawMethodCall + " " + sawMethodCallOld + " " + stage1 + " " + stage2);
 		distance++;
 		scanForBooleanValue(seen);
 		scanForDanger(seen);
@@ -130,6 +131,9 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			OpcodeStack.Item item1 = stack.getStackItem(1);
 			if (item0.getConstant() == null && item1.getConstant() == null && distance < 4) {
+                if (item0.getRegisterNumber() >= 0 && item1.getRegisterNumber() >= 0)
+                    if (false) 
+                        clearAll();
 				operator = seen;
 				stage2 = 1;
 			} else
@@ -187,7 +191,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
             case ILOAD_1:
             case ILOAD_2:
             case ILOAD_3:
-                sawBooleanValue();
+                sawBooleanValue();sawBooleanValue();
             }
             break;
 		case ICONST_1:
@@ -209,8 +213,10 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		case GOTO:
 			if (stage1 == 1)
 				stage1 = 2;
-			else
+			else {
 				stage1 = 0;
+                clearAll();
+            }
 			break;
 		case ICONST_0:
 			if (stage1 == 2) 
