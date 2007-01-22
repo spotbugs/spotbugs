@@ -76,7 +76,10 @@ public abstract class BugResolution implements IMarkerResolution {
 
             IProject project = marker.getResource().getProject();
             ICompilationUnit originalUnit = getCompilationUnit(marker);
-
+            if (originalUnit == null) {
+                MessageDialog.openError(FindbugsPlugin.getShell(), "Can't find compilation unit", MISSING_BUG_INSTANCE);
+                return;
+            }
             Document doc = new Document(originalUnit.getBuffer().getContents());
             CompilationUnit workingUnit = createWorkingCopy(originalUnit);
 

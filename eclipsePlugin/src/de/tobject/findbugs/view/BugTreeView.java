@@ -6,7 +6,6 @@ import java.util.HashMap;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.TextPresentation;
@@ -161,15 +160,16 @@ public class BugTreeView extends ViewPart{
                     }
                     
 					String pattern = bug.getBugPattern().getType();
-					if(!theMap.containsKey(pattern))
+                    String bugPatternName = I18N.instance().getShortMessageWithoutCode(pattern);
+					if(!theMap.containsKey(bugPatternName))
 					{
 						TreeItem newItem = new TreeItem(theTree, SWT.LEFT);
-						newItem.setText(pattern);
-						theMap.put(pattern, newItem);
+						newItem.setText(bugPatternName);
+						theMap.put(bugPatternName, newItem);
 					}
-					TreeItem instanceItem = new TreeItem(theMap.get(pattern), SWT.LEFT);
+					TreeItem instanceItem = new TreeItem(theMap.get(bugPatternName), SWT.LEFT);
 					instanceMap.put(instanceItem, theMarker);
-					instanceItem.setText(bug.getMessage());}
+					instanceItem.setText(bug.getMessageWithoutPrefix());}
 				catch(Exception e){e.printStackTrace();}
 			}
 		});
