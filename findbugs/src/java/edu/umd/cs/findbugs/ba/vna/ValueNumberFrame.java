@@ -180,7 +180,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
      * @return
      */
     private String extractPackageName(String className) {
-        return className.substring(className.lastIndexOf('.'));
+        return className.substring(className.lastIndexOf('.')+1);
     }
 
 	void mergeAvailableLoadSets(ValueNumberFrame other, ValueNumberFactory factory, MergeTree mergeTree) {
