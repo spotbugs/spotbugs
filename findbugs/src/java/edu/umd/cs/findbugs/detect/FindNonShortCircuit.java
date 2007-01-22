@@ -70,6 +70,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		stack.mergeJumps(this);
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stage1 + " " + stage2);
 		// System.out.println(stack);
+        System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + sawMethodCall + " " + sawMethodCallOld + " " + stage1 + " " + stage2);
 		distance++;
 		scanForBooleanValue(seen);
 		scanForDanger(seen);
@@ -124,6 +125,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		switch (seen) {
 		case IAND:
 		case IOR:
+            
 			// System.out.println("Saw IOR or IAND at distance " + distance);
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			OpcodeStack.Item item1 = stack.getStackItem(1);
@@ -177,6 +179,17 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	private void scanForBooleanValue(int seen) {
 		switch (seen) {
 
+        case IAND:
+        case IOR:
+            switch(prevOpcode) {
+            case ILOAD:
+            case ILOAD_0:
+            case ILOAD_1:
+            case ILOAD_2:
+            case ILOAD_3:
+                sawBooleanValue();
+            }
+            break;
 		case ICONST_1:
 			stage1 = 1;
 			switch(prevOpcode) {
@@ -230,6 +243,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		sawNumericTest = false;
 		sawDanger = false;
 		sawArrayDanger = false;
+        sawMethodCall = false;
 		distance = 0;
 		stage1 = 0;
 
