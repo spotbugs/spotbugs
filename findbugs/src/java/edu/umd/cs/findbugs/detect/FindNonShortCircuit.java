@@ -90,16 +90,25 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 			sawDanger = true;
 			break;
 			
+        case INVOKEVIRTUAL:
+            if (getNameConstantOperand().equals("length") && getClassConstantOperand().equals("java/lang/String")) break;
+            sawDanger = true;
+            break;
 		case INVOKEINTERFACE:
 		case INVOKESPECIAL:
-		case INVOKEVIRTUAL:
+
 		case INVOKESTATIC:
-		case ARRAYLENGTH:
 		case IDIV:
 		case IREM:
-		case GETFIELD:
+        case LDIV:
+        case LREM:
 			sawDanger = true;
 			break;
+            
+        case ARRAYLENGTH:
+        case GETFIELD:
+            // null pointer detector will handle these
+            break;
 		default:
 			break;
 		}
