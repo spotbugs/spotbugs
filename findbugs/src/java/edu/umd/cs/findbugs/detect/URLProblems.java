@@ -30,7 +30,8 @@ import org.apache.bcel.classfile.*;
  */
 public class URLProblems extends BytecodeScanningDetector {
 
-	final static String[] BAD_SIGNATURES = { "Map<Ljava/net/URL",
+	final static String[] BAD_SIGNATURES = { "Hashtable<Ljava/net/URL", 
+        "Map<Ljava/net/URL",
 			"Set<Ljava/net/URL" };
 
 	final private BugReporter bugReporter;

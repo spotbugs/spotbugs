@@ -22,12 +22,26 @@ package edu.umd.cs.findbugs.detect;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Signature;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.Lookup;
+import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.Priorities;
+import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 public class FindHEmismatch extends BytecodeScanningDetector implements
 		StatelessDetector {
@@ -376,32 +390,90 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 		stack.sawOpcode(this, seen);
 	}
 	private void check(int pos) {
-		OpcodeStack.Item item = stack.getStackItem(pos);
-		JavaClass type = null;
-	
-			try {
-				type = item.getJavaClass();
-			} catch (ClassNotFoundException e) {
-				AnalysisContext.reportMissingClass(e);
-			}
-			if (type == null) return;
-			if (!AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(type)) return;
-			int priority = NORMAL_PRIORITY;
-			if (getClassConstantOperand().indexOf("Hash") >= 0) priority--;
-			if (type.isAbstract() || type.isInterface()) priority++;
-			potentialBugs.put(type.getClassName(), 
-					new BugInstance("HE_USE_OF_UNHASHABLE_CLASS",priority)
-				.addClassAndMethod(this)
-				.addTypeOfNamedClass(type.getClassName())
-				.addTypeOfNamedClass(getClassConstantOperand())
-				.addSourceLine(this));
+	    OpcodeStack.Item item = stack.getStackItem(pos);
+	    JavaClass type = null;
+
+	    try {
+	        type = item.getJavaClass();
+	    } catch (ClassNotFoundException e) {
+	        AnalysisContext.reportMissingClass(e);
+	    }
+	    if (type == null) return;
+	     int priority = NORMAL_PRIORITY;
+	    if (getClassConstantOperand().indexOf("Hash") >= 0) priority--;
+        if (!AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(type)) priority++;
+           
+	    if (type.isAbstract() || type.isInterface()) priority++;
+	    potentialBugs.put(type.getClassName(), 
+	            new BugInstance("HE_USE_OF_UNHASHABLE_CLASS",priority)
+	    .addClassAndMethod(this)
+	    .addTypeOfNamedClass(type.getClassName())
+	    .addTypeOfNamedClass(getClassConstantOperand())
+	    .addSourceLine(this));
 	}
 	
+    static final Pattern mapPattern = Pattern.compile("Map<L([^;]*);");
+    static final Pattern hashTablePattern = Pattern.compile("Hashtable<L([^;]*);");
+    
+    static final Pattern setPattern = Pattern.compile("Set<L([^;]*);");
+    @CheckForNull String findHashedClassInSignature(String sig) {
+        Matcher m = mapPattern.matcher(sig);
+        if (m.find())
+            return m.group(1).replace('/','.');
+        m = hashTablePattern.matcher(sig);
+        if (m.find()) return m.group(1).replace('/','.');
+      
+        m = setPattern.matcher(sig);
+        if (m.find()) return m.group(1).replace('/','.');;
+        return null;
+
+    }
+    
+    @Override
+    public void visit(Signature obj) {
+        String sig = obj.getSignature();
+        String className = findHashedClassInSignature(sig);
+        if (className == null) return;
+        JavaClass type = null;
+
+        try {
+            type = Repository.lookupClass(className);
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+        }
+        if (type == null) return;
+      
+        int priority = NORMAL_PRIORITY;
+        if (sig.indexOf("Hash") >= 0) priority--;
+        if (type.isAbstract() || type.isInterface()) priority++;
+        if (!AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(type)) priority++;
+        
+      
+        BugInstance bug = null;
+
+        if (visitingField())
+            bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
+                    priority).addClass(this).addVisitedField(
+                            this).addTypeOfNamedClass(className);
+        else if (visitingMethod())
+            bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
+                    priority).addClassAndMethod(this).addTypeOfNamedClass(className);
+        else
+            bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
+                    priority).addClass(this).addClass(this).addTypeOfNamedClass(className);
+        potentialBugs.put(className, bug);
+    }
+
+
+    
 	@Override
 	public void report() {
 		for(Map.Entry<String, BugInstance> e : potentialBugs.entrySet()) {
-			if (!isHashableClassName(e.getKey())) 
-				bugReporter.reportBug(e.getValue());
+			if (!isHashableClassName(e.getKey())) {
+                BugInstance bug = e.getValue();
+               
+                bugReporter.reportBug(bug);
+            }
 		}
 		
 	}
