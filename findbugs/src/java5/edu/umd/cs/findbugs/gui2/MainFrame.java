@@ -371,7 +371,8 @@ public class MainFrame extends FBFrame implements LogSync
 								model.changeSet(bs);
 								curProject=newProject;
 								MainFrame.getInstance().updateStatusBar();
-								MainFrame.this.setTitle("FindBugs: " + curProject.getProjectFileName());
+								//MainFrame.this.setTitle("FindBugs: " + curProject.getProjectFileName());
+								MainFrame.this.setTitle("FindBugs: " + item.getText());
 							}
 							
 							
@@ -379,6 +380,7 @@ public class MainFrame extends FBFrame implements LogSync
 							setProjectChanged(false);
 							editProjectMenuItem.setEnabled(true);
 							clearSourcePane();
+							clearSummaryTab();
 						}
 					}).start();
 				}
@@ -594,7 +596,7 @@ public class MainFrame extends FBFrame implements LogSync
 				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 				
 				if(projectSaveAs())
-					saveProjectMenuItem.setEnabled(true);
+					saveProjectMenuItem.setEnabled(false);
 			}
 		});
 		
@@ -1656,11 +1658,8 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 	
 	/**
-	 * Called when something in the project is changed and the change
-	 * needs to be saved.
-	 */
-	/*
-	 * This should be called instead of using projectChanged = b.
+	 * Called when something in the project is changed and the change needs to be saved.
+	 * This method should be called instead of using projectChanged = b.
 	 */
 	public void setProjectChanged(boolean b){
 		if(curProject == null)
@@ -1825,12 +1824,12 @@ public class MainFrame extends FBFrame implements LogSync
 			try {
 				FileInputStream in = new FileInputStream(file);
 				loadAnalysisFromInputStream(in);
+				clearSourcePane();
+				clearSummaryTab();
 				return;
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(jfc, e.getMessage());
 			}
-
-
 		}
 	}
 	/**
@@ -2038,7 +2037,7 @@ public class MainFrame extends FBFrame implements LogSync
 		//tab not enabled.				
 		clearSourcePane();
 
-		projectChanged = false;
+		setProjectChanged(false);
 	}
 	/**
 	 * 

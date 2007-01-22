@@ -161,7 +161,10 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 //			{
 //			System.out.println("# getChildCount [o = " + o + "]");
 		//			System.out.println("getChildCount: " + Thread.currentThread().toString());
-					BugAspects a = (BugAspects) o;
+			if(!(o instanceof BugAspects))
+				return 0;
+			
+			BugAspects a = (BugAspects) o;
 					
 					if (st.getOrderBeforeDivider().size()==0 && a.size() == 0)//If its the root and we aren't sorting by anything
 						return data.size();

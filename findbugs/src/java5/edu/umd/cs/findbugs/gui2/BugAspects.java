@@ -23,12 +23,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * These are the branches in our tree, each branch forms a complete query that could be sent to the main bugset to return all the bugs it contains
- * For example, a single bugAspects could be <priority,high> or it could be <priority,high>,<designation,must fix>,<class,fishpond>,<package,default> 
+ * These are the branches in our tree, each branch forms a complete query that could be sent 
+ * to the main bugset to return all the bugs it contains
+ * For example, a single bugAspects could be <priority,high> or it could be <priority,high>,
+ * <designation,must fix>,<class,fishpond>,<package,default> 
  * 
- * In this implementation, <priority,high>,<designation,unclassified> is different from <designation,unclassified>,<priority,high>.  (I'm not talking about the fact we use the .equals from ArrayList, I'm talking about what a query would return, though both are true)
- * For a speed boost, this class could be rewritten to make these equal, BugSet could be rewritten to cache full queries off the main BugSet, (instead of caching each part of the query separately in the BugSets created)
- * and resetData could be rewritten to work more like Swing's validate, only clearing data if the data is wrong.  This would save time after changing certain aspects of the tree. 
+ * In this implementation, <priority,high>,<designation,unclassified> is different from 
+ * <designation,unclassified>,<priority,high>.  (I'm not talking about the fact we use the .equals 
+ * from ArrayList, I'm talking about what a query would return, though both are true)
+ * For a speed boost, this class could be rewritten to make these equal, BugSet could be rewritten 
+ * to cache full queries off the main BugSet, (instead of caching each part of the query separately 
+ * in the BugSets created) and resetData could be rewritten to work more like Swing's validate, only 
+ * clearing data if the data is wrong.  This would save time after changing certain aspects of the tree. 
  * Just an idea, I wouldn't suggest it unless its absolutely necessary. -Dan
  * 
  * 
