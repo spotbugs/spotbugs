@@ -51,7 +51,6 @@ import javax.swing.table.JTableHeader;
  */
 public class SorterDialog extends FBDialog {
 
-	private JLabel previewLabel=new JLabel("Preview:");
 	private JTableHeader preview;
 	private ArrayList<JCheckBox> checkBoxSortList = new ArrayList<JCheckBox>();
 	private CheckBoxList chBList;
@@ -70,8 +69,10 @@ public class SorterDialog extends FBDialog {
 	{
 		super.setVisible(visible);
 		
-		if (visible)
+		if (visible){
 			((SorterTableColumnModel)(preview.getColumnModel())).createFrom(MainFrame.getInstance().getSorter());
+			setSorterCheckBoxes();
+		}
 	}
 	
 	private SorterDialog()
