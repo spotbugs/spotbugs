@@ -31,6 +31,7 @@ import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.LDC;
+import org.apache.bcel.generic.NOP;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -92,10 +93,6 @@ public class FindSqlInjection implements Detector {
 		this.bugReporter = bugReporter;
 	}
 	
-	private boolean prescreen(ClassContext classContext, Method method) {
-		return true;
-	}
-	
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass javaClass = classContext.getJavaClass();
 		Method[] methodList = javaClass.getMethods();
@@ -103,9 +100,6 @@ public class FindSqlInjection implements Detector {
 		for (Method method : methodList) {
 			MethodGen methodGen = classContext.getMethodGen(method);
 			if (methodGen == null)
-				continue;
-
-			if (!prescreen(classContext, method))
 				continue;
 
 			try {
@@ -221,17 +215,33 @@ public class FindSqlInjection implements Detector {
 			} else if (isStringAppend(ins, cpg)) { 
 				stringAppendState.setSawAppend(true);
 
-				InstructionHandle prev = location.getHandle().getPrev();
+				InstructionHandle prev = getPreviousInstruction(location.getHandle(), true);
 				if (prev != null) {
 					Instruction prevIns = prev.getInstruction();
 					if (!(prevIns instanceof LDC || prevIns instanceof GETSTATIC))
 						stringAppendState.setSawUnsafeAppend(true);
+				} else {
+					// FIXME: when would prev legitimately be null, and why would we report?
+					stringAppendState.setSawUnsafeAppend(true);
 				}
-				else stringAppendState.setSawUnsafeAppend(true);
 			}
 		}
 
 		return stringAppendState;
+	}
+
+	private InstructionHandle getPreviousInstruction(InstructionHandle startHandle, boolean skipNops) {
+		InstructionHandle previousHandle = startHandle.getPrev();
+		while (previousHandle != null) {
+			Instruction prevIns = previousHandle.getInstruction();
+			if (!skipNops && !(prevIns instanceof NOP)) {
+				return previousHandle;
+			}
+
+			previousHandle = previousHandle.getPrev();
+		}
+
+		return null;
 	}
 
 	private BugInstance generateBugInstance(JavaClass javaClass, MethodGen methodGen, Instruction ins, StringAppendState stringAppendState) {
