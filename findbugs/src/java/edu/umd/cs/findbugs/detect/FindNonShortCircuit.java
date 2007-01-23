@@ -191,7 +191,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
             case ILOAD_1:
             case ILOAD_2:
             case ILOAD_3:
-                sawBooleanValue();sawBooleanValue();
+                clearAll();
             }
             break;
 		case ICONST_1:
