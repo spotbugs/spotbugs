@@ -37,6 +37,7 @@ import org.apache.bcel.generic.MethodGen;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -51,6 +52,7 @@ import edu.umd.cs.findbugs.ba.constant.ConstantFrame;
  * 
  * @author David Hovemeyer
  * @author Bill Pugh
+ * @author Matt Hargett
  */
 public class FindSqlInjection implements Detector {
 	private static class StringAppendState {
@@ -222,6 +224,7 @@ public class FindSqlInjection implements Detector {
 						stringAppendState.setSawUnsafeAppend(true);
 				} else {
 					// FIXME: when would prev legitimately be null, and why would we report?
+                    AnalysisContext.logError("In FindSqlInjection, saw null previous in " + cfg.getMethodGen().getClassName() +"." + cfg.getMethodName());
 					stringAppendState.setSawUnsafeAppend(true);
 				}
 			}
