@@ -54,7 +54,9 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	Set<String> abstractClasses = new HashSet<String>();
 	Set<String> hasNonAbstractSubClass = new HashSet<String>();
 	Set<String> classesScanned = new HashSet<String>();
-	Set<XField> fieldsOfNativeClassed
+	Set<XField> fieldsOfNativeClasses
+    = new HashSet<XField>();
+    Set<XField> reflectiveFields
     = new HashSet<XField>();
 	Set<XField> fieldsOfSerializableOrNativeClassed
 	        = new HashSet<XField>();
@@ -78,7 +80,6 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	boolean sawSelfCallInConstructor;
 	private BugReporter bugReporter;
 	boolean publicOrProtectedConstructor;
-	private XFactory xFactory = AnalysisContext.currentXFactory();
 
 	public Set<? extends XField> getReadFields() {
 		return readFields;
@@ -163,7 +164,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		declaredFields.addAll(myFields);
 		if (hasNativeMethods) {
 			fieldsOfSerializableOrNativeClassed.addAll(myFields);
-			fieldsOfNativeClassed.addAll(myFields);
+			fieldsOfNativeClasses.addAll(myFields);
 		}
 		if (isSerializable) {
 			fieldsOfSerializableOrNativeClassed.addAll(myFields);
@@ -266,6 +267,36 @@ public class UnreadFields extends BytecodeScanningDetector  {
          public void sawOpcode(int seen) {
 		
 		opcodeStack.mergeJumps(this);
+        if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicReferenceFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
+           String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
+           String fieldSignature = (String) opcodeStack.getStackItem(1).getConstant();
+            String  fieldClass = (String) opcodeStack.getStackItem(2).getConstant();
+            if (fieldName != null && fieldSignature != null && fieldClass != null) {
+               XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "L"+fieldSignature+";", false);
+               reflectiveFields.add(f);
+             }
+                  
+        }
+        if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicIntegerFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
+            String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
+             String  fieldClass = (String) opcodeStack.getStackItem(1).getConstant();
+             if (fieldName != null && fieldClass != null) {
+                XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "I", false);
+                reflectiveFields.add(f);
+              }
+                   
+         }
+        if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicLongFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
+            String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
+             String  fieldClass = (String) opcodeStack.getStackItem(1).getConstant();
+             if (fieldName != null && fieldClass != null) {
+                XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "J", false);
+                reflectiveFields.add(f);
+              }
+                   
+         }
+
+
 		if (seen == GETSTATIC) {
 			XField f = XFactory.createReferencedXField(this);
                 	staticFieldsReadInThisMethod.add(f);
@@ -471,7 +502,12 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				for(XField f : containerFields) 
 					System.out.println("  " + f);
 			}
-		
+            if (!reflectiveFields.isEmpty()) {
+                System.out.println("reflective fields:" );
+                for(XField f : reflectiveFields) 
+                    System.out.println("  " + f);
+            }
+        
 		
 			System.out.println("written fields:" );
 			for (XField f : writtenFields) 
@@ -486,6 +522,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		}
 		// Don't report anything about ejb3Fields
 		declaredFields.removeAll(containerFields);
+        declaredFields.removeAll(reflectiveFields);
 		
 		TreeSet<XField> notInitializedInConstructors =
 		        new TreeSet<XField>(declaredFields);
@@ -517,7 +554,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			String className = f.getClassName();
 			String fieldSignature = f.getSignature();
 			if (f.isResolved()
-					&& !fieldsOfNativeClassed.contains(f)
+					&& !fieldsOfNativeClasses.contains(f)
 					&& (fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '[')
 					) {
 				int priority = LOW_PRIORITY;
@@ -536,7 +573,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			String className = f.getClassName();
 			String fieldSignature = f.getSignature();
 			if (f.isResolved()
-					&& !fieldsOfNativeClassed.contains(f)) {
+					&& !fieldsOfNativeClasses.contains(f)) {
 				int priority = NORMAL_PRIORITY;
 				if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '['))
 					priority++;
@@ -561,7 +598,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				System.out.println("   : " + f.isResolved());
 			}
 			if (!f.isResolved()) continue;
-			if (fieldsOfNativeClassed.contains(f)) continue;
+			if (fieldsOfNativeClasses.contains(f)) continue;
 			if (DEBUG) {
 				System.out.println("Ready to report");
 			}
