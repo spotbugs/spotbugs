@@ -29,6 +29,7 @@ import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NOP;
@@ -131,9 +132,11 @@ public class FindSqlInjection implements Detector {
 			INVOKEVIRTUAL invoke = (INVOKEVIRTUAL) ins;
 
 			if (invoke.getMethodName(cpg).equals("append")
-				&& invoke.getClassName(cpg).startsWith("java.lang.StringB")) {
-
-				return true;
+				&& invoke.getClassName(cpg).startsWith("java.lang.StringB")
+                ) {
+			    String sig = invoke.getSignature(cpg);
+                char firstChar = sig.charAt(1);
+				return firstChar == '[' || firstChar == 'L';
 			}
 		}
 
@@ -223,7 +226,7 @@ public class FindSqlInjection implements Detector {
 				InstructionHandle prev = getPreviousInstruction(cfg, location, true);
 				if (prev != null) {
 					Instruction prevIns = prev.getInstruction();
-					if (!(prevIns instanceof LDC || prevIns instanceof GETSTATIC))
+					if (!isSafeValue(prevIns, cpg))
 						stringAppendState.setSawUnsafeAppend(true);
 				} else {
 					// FIXME: when would prev legitimately be null, and why would we report?
@@ -235,6 +238,15 @@ public class FindSqlInjection implements Detector {
 
 		return stringAppendState;
 	}
+
+    private boolean isSafeValue(Instruction prevIns, ConstantPoolGen cpg) {
+        if (prevIns instanceof LDC || prevIns instanceof GETSTATIC) return true;
+        if (prevIns instanceof InvokeInstruction) {
+            String methodName = ((InvokeInstruction)prevIns).getMethodName(cpg);
+            if (methodName.startsWith("to") && methodName.endsWith("String")) return true; 
+        }
+        return false;
+    }
     private @CheckForNull InstructionHandle getPreviousInstruction(InstructionHandle handle, boolean skipNops) {
         while (handle.getPrev() != null) {
             handle = handle.getPrev();
