@@ -54,6 +54,8 @@ public class ReturnPathTypeAnalysis implements DataflowAnalysis<ReturnPathType> 
 		this.cfg = cfg;
 		this.dfs = dfs;
 		this.rdfs = rdfs;
+		this.startFactMap = new HashMap<BasicBlock, ReturnPathType>();
+		this.resultFactMap = new HashMap<BasicBlock, ReturnPathType>();
 	}
 
 	/* (non-Javadoc)
