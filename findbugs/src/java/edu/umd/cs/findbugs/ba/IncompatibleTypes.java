@@ -48,7 +48,8 @@ public class IncompatibleTypes {
 		return msg;
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return msg;
 	}
 

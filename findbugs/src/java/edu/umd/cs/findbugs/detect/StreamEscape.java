@@ -50,7 +50,8 @@ public class StreamEscape implements Comparable<StreamEscape> {
 		return target.compareTo(other.target);
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return source.hashCode() + 7*target.hashCode();
 	}
 	@Override

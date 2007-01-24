@@ -173,7 +173,8 @@ public  class XFactory {
        private static final int MAX_DEPTH = 50;
      private int depth = 0;
      ArrayList<Object> list = new ArrayList<Object>();
-     public String toString() {
+     @Override
+    public String toString() {
     	 return list.toString();
      }
      public void dump() {

@@ -169,7 +169,7 @@ public class FindSelfComparison2 implements Detector {
         if (annotation == null) return;
         SourceLineAnnotation sourceLine = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle());
         int line = sourceLine.getStartLine();
-        BitSet occursMultipleTimes = classContext.linesMentionedMultipleTimes(methodGen.getMethod());
+        BitSet occursMultipleTimes = ClassContext.linesMentionedMultipleTimes(methodGen.getMethod());
         if (line > 0 && occursMultipleTimes.get(line)) return;
         BugInstance bug = new BugInstance(this, prefix + op, priority).addClassAndMethod(methodGen, sourceFile)
         .add(annotation).addSourceLine(classContext, methodGen, sourceFile, location.getHandle());

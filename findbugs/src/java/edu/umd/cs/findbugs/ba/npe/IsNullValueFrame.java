@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.Frame;
@@ -114,7 +115,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		if (trackValueNumbers) {
 			return knownValueMap.keySet();
 		} else {
-			return Collections.EMPTY_SET;
+			return TigerSubstitutes.emptySet();
 		}
 	}
 
@@ -122,7 +123,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		if (trackValueNumbers) {
 			return knownValueMap.entrySet();
 		} else {
-			return Collections.EMPTY_SET;
+			return TigerSubstitutes.emptySet();
 		}
 	}
 	

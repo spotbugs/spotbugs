@@ -20,17 +20,29 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Deprecated;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
-import java.util.*;
-import java.util.regex.*;
-import org.apache.bcel.Repository;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.classfile.Deprecated;
 
 public class Naming extends PreorderVisitor implements Detector {
 	String baseClassName;
@@ -244,6 +256,12 @@ public class Naming extends PreorderVisitor implements Detector {
 			}
 		return false;
 	}
+    private static @CheckForNull Method findVoidConstructor(JavaClass clazz) {
+        for(Method m : clazz.getMethods()) 
+            if (m.getName().equals("<init>") && m.getSignature().equals("()V")) return m;
+        return null;
+        
+    }
 	@Override
          public void visit(Method obj) {
 		String mName = getMethodName();
@@ -263,13 +281,15 @@ public class Naming extends PreorderVisitor implements Detector {
 		String sig = getMethodSig();
 		if (mName.equals(baseClassName) && sig.equals("()V")) {
 			Code code = obj.getCode();
+            Method realVoidConstructor = findVoidConstructor(getThisClass());
 			if (code != null && !markedAsNotUsable(obj)) {
 				int priority = NORMAL_PRIORITY;
-				byte [] codeBytes = code.getCode();
-				if (codeBytes.length > 1)
+				if (codeDoesSomething(code))
 					priority--;
-				if (!obj.isPrivate() && getThisClass().isPublic()) 
+                else if (!obj.isPublic() && getThisClass().isPublic()) 
 					priority--;
+                if (realVoidConstructor == null) priority++;
+                
 				bugReporter.reportBug( new BugInstance(this, "NM_METHOD_CONSTRUCTOR_CONFUSION", priority).addClassAndMethod(this).lowerPriorityIfDeprecated());
 				return;
 			}
@@ -325,6 +345,11 @@ public class Naming extends PreorderVisitor implements Detector {
 		}
 
 	}
+
+    private boolean codeDoesSomething(Code code) {
+        byte [] codeBytes = code.getCode();
+        return codeBytes.length > 1;
+    }
 
 	private static String removePackageNamesFromSignature(String sig) {
 		int end = sig.indexOf(")");

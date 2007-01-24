@@ -54,7 +54,8 @@ public class SourceInfoMap {
 			this.fieldName = fieldName;
 		}
 		
-		public String toString() {
+		@Override
+        public String toString() {
 			return className +"." + fieldName;
 		}
 		/* (non-Javadoc)
@@ -97,7 +98,8 @@ public class SourceInfoMap {
 			this.methodName = methodName;
 			this.methodSignature = methodSignature;
 		}
-		public String toString() {
+		@Override
+        public String toString() {
 			return className +"." + methodName;
 		}
 		/* (non-Javadoc)

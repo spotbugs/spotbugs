@@ -49,6 +49,7 @@ import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -1431,7 +1432,7 @@ public class ClassContext {
         for(int i = 0; i < instructionList.length; i++)
         	if (checkForBranchExit(instructionList,i)) result.add(i);
         if (result.size() == 0)
-        	result = Collections.EMPTY_SET; // alas, emptySet() is @since 1.5
+        	result = TigerSubstitutes.emptySet(); // alas, emptySet() is @since 1.5
         
         cachedLoopExits.put(xmethod, result);
         return result;

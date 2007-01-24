@@ -116,7 +116,8 @@ public class SignatureParser {
 
 	private final String signature;
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return signature;
 	}
 	/**

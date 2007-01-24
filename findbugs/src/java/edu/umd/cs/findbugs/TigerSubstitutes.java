@@ -19,6 +19,9 @@
 
 package edu.umd.cs.findbugs;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -29,6 +32,12 @@ import org.w3c.dom.NodeList;
  * 
  */
 public class TigerSubstitutes {
+    
+   @SuppressWarnings("unchecked")
+   public static final <T> Set<T> emptySet() {
+        return (Set<T>) Collections.EMPTY_SET;
+    }
+
 	public static boolean parseBoolean(String s) {
 		// return Boolean.parseBoolean(s);
 		return Boolean.valueOf(s).booleanValue();

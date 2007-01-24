@@ -147,12 +147,14 @@ public class MethodHash implements Comparable<MethodHash> {
 		return MethodHash.compareHashes(this.hash, other.hash);
 	}
 	
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		if (o instanceof MethodHash) 
 			return isSameHash((MethodHash)o);
 		return false;
 	}
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		int result = 0;
 		for(byte b : hash) 
 			result = result * 17 + b;

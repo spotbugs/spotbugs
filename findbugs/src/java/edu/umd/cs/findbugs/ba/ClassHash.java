@@ -294,7 +294,8 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 		return Arrays.equals(classHash, other.classHash);
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (classHash == null)
 			return 0;
 
@@ -305,7 +306,8 @@ public class ClassHash implements XMLWriteable, Comparable<ClassHash> {
 		return result;
 
 	}
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		if (!(o instanceof ClassHash)) return false;
 		return isSameHash((ClassHash)o);
 	}

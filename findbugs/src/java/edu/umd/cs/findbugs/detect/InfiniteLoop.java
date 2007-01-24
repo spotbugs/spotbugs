@@ -69,7 +69,8 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 			this.from = from;
 			this.to = to;
 		}
-		public String toString() {
+		@Override
+        public String toString() {
 			return from + " -> " + to;
 		}
 	}
