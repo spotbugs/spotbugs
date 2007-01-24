@@ -25,4 +25,14 @@ class SqlInjection {
 				ResultSet.CONCUR_READ_ONLY);
 		return statement.executeQuery("FOO '" + name + "'");
 	}
+    ResultSet h(Connection conn, int x) throws Exception {
+        Statement statement = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        return statement.executeQuery("FOO '" + x + "'");
+    }
+    ResultSet h2(Connection conn, int x) throws Exception {
+        Statement statement = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        return statement.executeQuery("FOO '" + Integer.toHexString(x) + "'");
+    }
 }

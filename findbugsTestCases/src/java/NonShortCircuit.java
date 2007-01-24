@@ -21,6 +21,10 @@ class NonShortCircuit {
 		b &= x;
 	}
 
+    void hardWay(Object x, Object y) {
+        boolean r = x != null;
+        r &= y != null;
+    }
 	boolean ordered(int x, int y, int z) {
 		if (x >= y | y >= z)
 			System.out.println("Not ordered");
