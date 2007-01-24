@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.Iterator;
-import java.lang.IllegalArgumentException;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -31,17 +30,21 @@ import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.LDC;
-import org.apache.bcel.generic.NOP;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.NOP;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.constant.Constant;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
@@ -217,7 +220,7 @@ public class FindSqlInjection implements Detector {
 			} else if (isStringAppend(ins, cpg)) { 
 				stringAppendState.setSawAppend(true);
 
-				InstructionHandle prev = getPreviousInstruction(location.getHandle(), true);
+				InstructionHandle prev = getPreviousInstruction(cfg, location, true);
 				if (prev != null) {
 					Instruction prevIns = prev.getInstruction();
 					if (!(prevIns instanceof LDC || prevIns instanceof GETSTATIC))
@@ -232,20 +235,30 @@ public class FindSqlInjection implements Detector {
 
 		return stringAppendState;
 	}
+    private @CheckForNull InstructionHandle getPreviousInstruction(InstructionHandle handle, boolean skipNops) {
+        while (handle.getPrev() != null) {
+            handle = handle.getPrev();
+            Instruction prevIns = handle.getInstruction();
+            if (!skipNops && !(prevIns instanceof NOP)) {
+                return handle;
+            }
+        }
+        return null;
+    }
 
-	private InstructionHandle getPreviousInstruction(InstructionHandle startHandle, boolean skipNops) {
-		InstructionHandle previousHandle = startHandle.getPrev();
-		while (previousHandle != null) {
-			Instruction prevIns = previousHandle.getInstruction();
-			if (!skipNops && !(prevIns instanceof NOP)) {
-				return previousHandle;
-			}
-
-			previousHandle = previousHandle.getPrev();
-		}
-
-		return null;
-	}
+    private @CheckForNull InstructionHandle getPreviousInstruction(CFG cfg, Location startLocation, boolean skipNops) {
+        Location loc = startLocation;
+        InstructionHandle prev = getPreviousInstruction(loc.getHandle(), skipNops);
+        if (prev != null) return prev;
+        BasicBlock block =  loc.getBasicBlock();
+        while (true) {
+            block = cfg.getPredecessorWithEdgeType(block, EdgeTypes.FALL_THROUGH_EDGE);
+            if (block == null) 
+                return null;
+            InstructionHandle lastInstruction = block.getLastInstruction();
+            if (lastInstruction != null) return lastInstruction;
+        }
+    }
 
 	private BugInstance generateBugInstance(JavaClass javaClass, MethodGen methodGen, Instruction ins, StringAppendState stringAppendState) {
 		ConstantPoolGen cpg = methodGen.getConstantPool();
