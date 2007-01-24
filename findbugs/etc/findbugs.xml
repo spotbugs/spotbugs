@@ -206,7 +206,7 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" 
             speed="fast"
-            reports="SA_FIELD_SELF_ASSIGNMENT" />
+            reports="SA_FIELD_SELF_ASSIGNMENT,SA_FIELD_DOUBLE_ASSIGNMENT,SA_LOCAL_DOUBLE_ASSIGNMENT" />
   <Detector class="edu.umd.cs.findbugs.detect.FindSelfComparison" 
             speed="fast"
             reports="SA_FIELD_SELF_COMPARISON,SA_LOCAL_SELF_COMPARISON,SA_FIELD_SELF_COMPUTATION,SA_LOCAL_SELF_COMPUTATION" />
@@ -833,6 +833,8 @@
   <BugPattern abbrev="BIT" type="BIT_AND_ZZ" category="CORRECTNESS" />
   <BugPattern abbrev="BIT" type="BIT_IOR"    category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_FIELD_SELF_ASSIGNMENT" category="CORRECTNESS" />
+  <BugPattern abbrev="SA" type="SA_LOCAL_DOUBLE_ASSIGNMENT" category="CORRECTNESS" />
+  <BugPattern abbrev="SA" type="SA_FIELD_DOUBLE_ASSIGNMENT" category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_FIELD_SELF_COMPUTATION" category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_LOCAL_SELF_COMPUTATION" category="CORRECTNESS" />
   <BugPattern abbrev="SA" type="SA_FIELD_SELF_COMPARISON" category="CORRECTNESS" />

@@ -29,12 +29,15 @@ import org.apache.bcel.classfile.Code;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.ba.SignatureParser;
+import edu.umd.cs.findbugs.ba.XField;
 
 public class FindFieldSelfAssignment extends BytecodeScanningDetector implements StatelessDetector {
 	private BugReporter bugReporter;
 	int state;
+
 
 
 	public FindFieldSelfAssignment(BugReporter bugReporter) {
@@ -51,6 +54,7 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 	}
 
 
+    int register;
 	String f;
 	String className;
 	Set<String> initializedFields = new HashSet<String>();
@@ -62,6 +66,10 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 		case 0:
 			if (seen == ALOAD_0)
 				state = 1;
+            else if (seen == DUP_X1)
+                state = 4;
+            else if (seen == DUP)
+                state = 6;
 			break;
 		case 1:
 			if (seen == ALOAD_0)
@@ -99,6 +107,39 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 				        .addSourceLine(this));
 			}
 			state = 0;
+            break;
+        case 4:
+            if (seen == PUTFIELD) {
+                state = 5;
+                f = getRefConstantOperand();
+                className = getClassConstantOperand();
+            } else
+                state = 0;
+            break;
+        case 5:
+            if (seen == PUTFIELD && getRefConstantOperand().equals(f) && getClassConstantOperand().equals(className)) {
+                bugReporter.reportBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
+                .addClassAndMethod(this)
+                .addReferencedField(this)
+                .addSourceLine(this));
+            }
+            state = 0;
+            break;
+        case 6:
+            if (isRegisterStore()) {
+                state = 7;
+                register = getRegisterOperand();
+            } else state = 0;
+            break;
+        case 7:
+            if (isRegisterStore() && register ==  getRegisterOperand()) {
+                bugReporter.reportBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
+                .addClassAndMethod(this)
+                .add( LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC(), getPC()-1))
+                .addSourceLine(this));
+            } 
+            state = 0;
+            break;
 		}
 		
 		if (seen == PUTFIELD  && getClassConstantOperand().equals(className))

@@ -4087,6 +4087,41 @@ Such assignments are useless, and may indicate a logic error or typo.
     </Details>
   </BugPattern>
 
+  <BugPattern type="SA_FIELD_DOUBLE_ASSIGNMENT">
+    <ShortDescription>Double assignment of field</ShortDescription>
+    <LongDescription>Double assignment of field {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains a double assignment of a field; e.g.
+</p>
+<pre>
+  int x,y;
+  public void foo() {
+    x = x = 17;
+  }
+</pre>
+<p>Assigning to a field twice is useless, and may indicate a logic error or typo.</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="SA_LOCAL_DOUBLE_ASSIGNMENT">
+    <ShortDescription>Double assignment of local variable </ShortDescription>
+    <LongDescription>Double assignment of {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This method contains a double assignment of a local variable; e.g.
+</p>
+<pre>
+  public void foo() {
+    int x,y;
+    x = x = 17;
+  }
+</pre>
+<p>Assigning the same value to  a variable twice is useless, and may indicate a logic error or typo.</p>
+]]>
+    </Details>
+  </BugPattern>
+
   <BugPattern type="SA_FIELD_SELF_COMPUTATION">
     <ShortDescription>Nonsensical self computation involving a field (e.g., x &amp; x)</ShortDescription>
     <LongDescription>Nonsensical self computation of {2} with itself {1}</LongDescription>
