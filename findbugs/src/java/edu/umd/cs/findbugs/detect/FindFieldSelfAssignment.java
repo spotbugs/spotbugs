@@ -133,7 +133,7 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
             break;
         case 7:
             if (isRegisterStore() && register ==  getRegisterOperand()) {
-                bugReporter.reportBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
+                bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
                 .addClassAndMethod(this)
                 .add( LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC(), getPC()-1))
                 .addSourceLine(this));
