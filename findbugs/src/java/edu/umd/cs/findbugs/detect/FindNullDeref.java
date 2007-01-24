@@ -749,6 +749,9 @@ public class FindNullDeref implements Detector,
                         + refValue);
             if (type.equals("NP_NULL_ON_SOME_PATH"))
                 return;
+            
+            if (type.equals("NP_NULL_ON_SOME_PATH_EXCEPTION"))
+                return;
             reportNullDeref(propertySet, classContext, method, location, type,
                     priority, variable);
         }
