@@ -39,6 +39,7 @@ public class ReturnPathType {
 	private static final int TOP = 2;
 	
 	private int type;
+	private int timestamp;
 
 	/**
 	 * Constructor.
@@ -131,5 +132,19 @@ public class ReturnPathType {
 	 */
 	public boolean isValid() {
 		return type != TOP;
+	}
+	
+	/**
+	 * @param timestamp The timestamp to set.
+	 */
+	public void setTimestamp(int timestamp) {
+		this.timestamp = timestamp;
+	}
+	
+	/**
+	 * @return Returns the timestamp.
+	 */
+	public int getTimestamp() {
+		return timestamp;
 	}
 }

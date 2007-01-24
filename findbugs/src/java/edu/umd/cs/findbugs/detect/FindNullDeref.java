@@ -44,6 +44,7 @@ import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugProperty;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
@@ -78,13 +79,17 @@ import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
+import edu.umd.cs.findbugs.ba.npe.ReturnPathType;
+import edu.umd.cs.findbugs.ba.npe.ReturnPathTypeDataflow;
 import edu.umd.cs.findbugs.ba.npe.UsagesRequiringNonNullValues;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
+import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 import edu.umd.cs.findbugs.visitclass.Util;
@@ -109,6 +114,9 @@ public class FindNullDeref implements Detector,
 
     private static final boolean DEBUG_NULLRETURN = SystemProperties
             .getBoolean("fnd.debug.nullreturn");
+    
+    private static final boolean MARK_DOOMED = SystemProperties
+    		.getBoolean("fnd.markdoomed");
 
     private static final boolean REPORT_SAFE_METHOD_TARGETS = true;
 
@@ -1113,6 +1121,38 @@ public class FindNullDeref implements Detector,
         for (SourceLineAnnotation sourceLineAnnotation : knownNullLocations)
             bugInstance.add(sourceLineAnnotation).describe(
                     "SOURCE_LINE_KNOWN_NULL");
+        
+        if (MARK_DOOMED) {
+        	// If all deref locations are doomed
+        	// (i.e., locations where a normal return is not possible),
+        	// add a warning property indicating such.
+        	try {
+        		ReturnPathTypeDataflow rptDataflow = classContext.getReturnPathTypeDataflow(method);
+
+        		// Are all derefs at doomed locations?
+        		boolean allDerefsAtDoomedLocations = true;
+        		for (Location derefLoc : derefLocationSet) {
+            		ReturnPathType rpt = rptDataflow.getFactAtLocation(derefLoc);
+
+            		if (rpt.canReturnNormally()) {
+            			// This derefence does not occur at a doomed location
+            			allDerefsAtDoomedLocations = false;
+            			break;
+            		}
+        		}
+        		
+        		if (allDerefsAtDoomedLocations) {
+        			// Add a WarningProperty
+        			WarningPropertySet propertySet = new WarningPropertySet();
+        			propertySet.addProperty(DoomedCodeWarningProperty.DOOMED_CODE);
+        			propertySet.decorateBugInstance(bugInstance);
+        		}
+        		
+        	} catch (CheckedAnalysisException e) {
+        		// Should not happen
+        		bugReporter.logError("FindNullDeref: error checking doomed code analysis", e);
+        	}
+        }
 
         // Report it
         bugReporter.reportBug(bugInstance);
