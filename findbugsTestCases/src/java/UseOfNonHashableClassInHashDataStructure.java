@@ -2,8 +2,13 @@ import java.util.*;
 
 public class UseOfNonHashableClassInHashDataStructure {
 
+    
+    static class UMap extends HashMap<UseOfNonHashableClassInHashDataStructure, String> {};
 	static HashMap<UseOfNonHashableClassInHashDataStructure, String> m = new HashMap<UseOfNonHashableClassInHashDataStructure, String>();
 
+    static int foo(HashMap<UseOfNonHashableClassInHashDataStructure, String> map) {
+        return map.size();
+    }
 	public boolean equals(Object o) {
 		return hashCode() == o.hashCode();
 	}
