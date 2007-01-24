@@ -1,7 +1,7 @@
 package nonnull;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 abstract class Foo {
 	protected abstract @CheckForNull

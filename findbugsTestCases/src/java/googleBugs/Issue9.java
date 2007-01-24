@@ -1,8 +1,8 @@
 package googleBugs;
 
 public class Issue9 {
-		private void testNamedInnerClass() {
-			class B implements Runnable {
+		 private void testNamedInnerClass() {
+			 class B implements Runnable {
 				public void run() {
 					String s = null;
 					s.equals(new Object() {

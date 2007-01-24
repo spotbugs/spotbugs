@@ -8,7 +8,8 @@ public class UnconditionalDerefFalsePositive {
 		this.x = x;
 	}
 
-	public Object clone() {
+	@Override
+    public Object clone() {
 		UnconditionalDerefFalsePositive e = null;
 		try {
 			e = (UnconditionalDerefFalsePositive) super.clone();

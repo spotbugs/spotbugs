@@ -1,5 +1,5 @@
 package tigerTraps;
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 @interface Test { }
 public class Testy {
    @Test public static void test() { System.out.print("Pass"); }

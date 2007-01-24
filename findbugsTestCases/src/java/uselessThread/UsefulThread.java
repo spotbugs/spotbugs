@@ -5,7 +5,8 @@ class UsefulThread extends Thread {
 		super("Usefull-" + System.currentTimeMillis());
 	}
 
-	public void run() {
+	@Override
+    public void run() {
 		System.out.println("I am a useful thread!");
 	}
 }

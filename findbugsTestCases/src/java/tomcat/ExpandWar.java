@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-//   /home/cvs/jakarta-tomcat-4.0/catalina/src/share/org/apache/catalina/startup/ExpandWar.java,v 1.2 2003/01/14 17:44:47 glenn Exp $
 
 public class ExpandWar {
 
