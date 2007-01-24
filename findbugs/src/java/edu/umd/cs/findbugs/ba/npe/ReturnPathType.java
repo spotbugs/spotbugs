@@ -53,8 +53,8 @@ public class ReturnPathType {
 	 *          location, false otherwise
 	 */
 	public boolean canReturnNormally() throws DataflowAnalysisException {
-		if (isTop()) {
-			throw new DataflowAnalysisException();
+		if (!isValid()) {
+			throw new DataflowAnalysisException("Checking invalid ReturnPathType");
 		}
 		return type == CAN_RETURN_NORMALLY;
 	}
@@ -114,7 +114,22 @@ public class ReturnPathType {
 		}
 	}
 
+	/**
+	 * Determine whether this dataflow fact is identical to another one.
+	 * 
+	 * @param other another dataflow fact
+	 * @return true if the two dataflow facts are identical,
+	 *          false if they are different
+	 */
 	boolean sameAs(ReturnPathType other) {
 		return this.type == other.type;
+	}
+
+	/**
+	 * @return true if this is a valid dataflow fact (not top or bottom),
+	 *          false if not a valid dataflow fact
+	 */
+	public boolean isValid() {
+		return type != TOP;
 	}
 }
