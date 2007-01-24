@@ -1,5 +1,5 @@
-import java.awt.*;
-import java.util.*;
+import java.awt.Point;
+import java.util.Hashtable;
 
 public class MutableStatic {
 

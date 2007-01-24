@@ -22,7 +22,8 @@ public class InfiniteLoopFalsePositive {
 		public int f() {
 			return 42;
 		}
-		public int g() {
+		@Override
+        public int g() {
 			return 42;
 		}
 	}

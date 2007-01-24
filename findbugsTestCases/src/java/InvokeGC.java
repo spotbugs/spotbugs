@@ -4,7 +4,8 @@ public class InvokeGC {
 		System.currentTimeMillis();
 	}
 
-	protected void finalize() {
+	@Override
+    protected void finalize() {
 		System.gc();
 	}
 

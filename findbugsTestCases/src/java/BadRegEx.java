@@ -1,4 +1,4 @@
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
 class BadRegEx {
 

@@ -1,4 +1,6 @@
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class WMITest {
 	public void test(Map m) {

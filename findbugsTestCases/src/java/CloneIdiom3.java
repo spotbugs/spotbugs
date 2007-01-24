@@ -1,5 +1,6 @@
 public class CloneIdiom3 implements Cloneable {
-	public Object clone() {
+	@Override
+    public Object clone() {
 		return new CloneIdiom3();
 	}
 }

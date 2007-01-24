@@ -1,4 +1,6 @@
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public abstract class StreamClose {
 	public void frotz(String fileName) throws IOException {

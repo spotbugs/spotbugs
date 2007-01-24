@@ -11,11 +11,13 @@ class FieldsNotSetInConstructor {
 		b = x;
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return a.hashCode() + b.hashCode() + c.hashCode() + e.hashCode();
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		if (c == null || d == null)
 			return a.toString();
 		return a.toString() + b.toString() + c.toString() + d.toString();

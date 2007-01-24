@@ -1,4 +1,4 @@
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 class CHM {
 

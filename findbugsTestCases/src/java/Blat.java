@@ -1,4 +1,4 @@
-import java.io.*;
+import java.io.Serializable;
 
 public class Blat implements Runnable, java.util.Iterator, Serializable {
 	private final int yarg = 2;
@@ -12,7 +12,8 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
 	}
 
 	private static class Y extends Thread {
-		public void run() {
+		@Override
+        public void run() {
 		}
 	}
 
@@ -43,7 +44,8 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
 			System.out.println("oog");
 		}
 
-		protected void finalize() {
+		@Override
+        protected void finalize() {
 		}
 	}
 
@@ -51,7 +53,8 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
 		return new Bleem();
 	}
 
-	public void finalize() {
+	@Override
+    public void finalize() {
 		System.out.println("This is dumb");
 	}
 

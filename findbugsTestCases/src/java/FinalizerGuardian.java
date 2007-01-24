@@ -5,6 +5,7 @@ class FinalizerGuardian {
     }
 
     private final Object finalizerGuardian = new Object() {
+        @Override
         protected void finalize() {
             free();
         }

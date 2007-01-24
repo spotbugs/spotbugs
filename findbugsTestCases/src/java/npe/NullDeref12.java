@@ -1,7 +1,5 @@
 package npe;
 
-import java.io.*;
-import java.util.*;
 
 public class NullDeref12 {
 

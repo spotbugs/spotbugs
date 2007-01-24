@@ -1,4 +1,4 @@
-import java.util.*;
+import java.util.Iterator;
 
 class ReallyDumb implements Iterator {
 

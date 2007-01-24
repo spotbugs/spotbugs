@@ -10,7 +10,8 @@ public class Equality {
 		return true;
 	}
 	
-	public boolean equals(Object o)
+	@Override
+    public boolean equals(Object o)
 	{
 		return false;
 	}

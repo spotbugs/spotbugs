@@ -1,6 +1,6 @@
 package nullnessAnnotations;
 
-import edu.umd.cs.findbugs.annotations.*;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class TestNonNull1 {
 

@@ -1,4 +1,5 @@
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
 // This causes a fatal exception in FindBugs 0.8.1
 // Array types can be merged with exception objects

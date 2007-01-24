@@ -1,7 +1,8 @@
 
 public class InitializeInSetupMethod {
 	String x;
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return x.hashCode();
 	}
 	InitializeInSetupMethod() {

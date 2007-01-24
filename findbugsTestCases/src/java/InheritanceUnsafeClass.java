@@ -1,5 +1,5 @@
-import java.net.URL;
 import java.io.InputStream;
+import java.net.URL;
 
 public class InheritanceUnsafeClass {
 	// This detector only reports one per class, so rearrange to check

@@ -9,7 +9,8 @@ public class BadDowncastOfToArray {
 		return (Integer[]) lst.toArray();
 	}
 	
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		return lst.equals(((BadDowncastOfToArray)o).lst);
 	}
 

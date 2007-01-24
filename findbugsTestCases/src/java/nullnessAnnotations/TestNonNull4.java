@@ -1,10 +1,10 @@
 package nullnessAnnotations;
 
-import edu.umd.cs.findbugs.annotations.*;
 
 public class TestNonNull4 extends TestNonNull3 {
 
-	Object f(Object o) {
+	@Override
+    Object f(Object o) {
 		return o;
 	}
 

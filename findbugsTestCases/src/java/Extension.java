@@ -5,10 +5,13 @@
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
-import sun.security.x509.*;
 import java.io.IOException;
 import java.util.Arrays;
-import sun.security.util.*;
+
+import sun.security.util.DerInputStream;
+import sun.security.util.DerOutputStream;
+import sun.security.util.DerValue;
+import sun.security.util.ObjectIdentifier;
 
 /**
  * Represent a X509 Extension Attribute.
@@ -172,7 +175,8 @@ public class Extension {
 	/**
 	 * Returns the Extension in user readable form.
 	 */
-	public String toString() {
+	@Override
+    public String toString() {
 		String s = "ObjectId: " + extensionId.toString();
 		if (critical) {
 			s += " Criticality=true\n";
@@ -190,7 +194,8 @@ public class Extension {
 	 * 
 	 * @return the hashcode value.
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		int h = 0;
 		if (extensionValue != null) {
 			byte[] val = extensionValue;
@@ -215,7 +220,8 @@ public class Extension {
 	 *         criticality flag, object identifier and encoded extension value
 	 *         of the two Extensions match, false otherwise.
 	 */
-	public boolean equals(Object other) {
+	@Override
+    public boolean equals(Object other) {
 		if (this == other)
 			return true;
 		if (!(other instanceof Extension))

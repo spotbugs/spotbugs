@@ -1,4 +1,4 @@
-import java.io.*;
+import java.io.FileInputStream;
 
 class OverbroadCatch {
 	public void foo(String f) {

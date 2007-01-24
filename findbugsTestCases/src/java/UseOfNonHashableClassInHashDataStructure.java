@@ -1,4 +1,4 @@
-import java.util.*;
+import java.util.HashMap;
 
 public class UseOfNonHashableClassInHashDataStructure {
 
@@ -9,7 +9,8 @@ public class UseOfNonHashableClassInHashDataStructure {
     static int foo(HashMap<UseOfNonHashableClassInHashDataStructure, String> map) {
         return map.size();
     }
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		return hashCode() == o.hashCode();
 	}
 

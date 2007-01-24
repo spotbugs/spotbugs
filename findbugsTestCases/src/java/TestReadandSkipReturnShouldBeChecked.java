@@ -1,4 +1,5 @@
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 
 public class TestReadandSkipReturnShouldBeChecked {
 	public static void test() throws Exception {

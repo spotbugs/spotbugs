@@ -1,5 +1,7 @@
-import java.util.concurrent.*;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 class TryLock {
 	public static void main(String args[]) throws Exception {

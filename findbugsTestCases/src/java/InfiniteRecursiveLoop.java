@@ -14,11 +14,13 @@ class InfiniteRecursiveLoop {
 		return 2 + muchMore();
 	}
 
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		return equals(o);
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		int i = System.identityHashCode(this);
 		return i + hashCode();
 	}

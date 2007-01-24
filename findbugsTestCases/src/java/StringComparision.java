@@ -1,9 +1,10 @@
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
 
 class StringComparision {
 	int x, y;
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return x + "," + y;
 	}
 

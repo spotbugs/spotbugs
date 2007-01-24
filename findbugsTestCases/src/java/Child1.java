@@ -12,7 +12,8 @@
 			new Child1().blargh();
 		}
 		
-		public void blargh()
+		@Override
+        public void blargh()
 		{
 			
 		}

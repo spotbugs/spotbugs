@@ -1,5 +1,7 @@
-import java.util.zip.*;
-import java.util.jar.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class EmptyEntry {
 	public void testZip(ZipOutputStream zos) throws Exception {

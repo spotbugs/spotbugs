@@ -5,7 +5,8 @@
  *  or indirectly invoke some kind of non-final copy() method.
  */
 public class CloneIdiom4 implements Cloneable {
-	final public Object clone() throws CloneNotSupportedException {
+	@Override
+    final public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 }

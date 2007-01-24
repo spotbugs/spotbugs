@@ -13,7 +13,8 @@ public class hashCODEnoEQUALS {
 
 	}
 
-	public int hashCode()
+	@Override
+    public int hashCode()
 	{
 		return 189234712;
 	}

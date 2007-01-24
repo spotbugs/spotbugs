@@ -1,5 +1,4 @@
-import java.io.*;
-import java.util.*;
+import java.io.FileInputStream;
 
 class RedundantNullCheck3 {
 

@@ -1,6 +1,6 @@
 package npe;
 
-import java.util.*;
+import java.util.Set;
 
 class NullDeref6 {
 

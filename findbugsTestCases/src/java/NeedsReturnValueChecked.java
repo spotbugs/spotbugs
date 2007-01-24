@@ -1,4 +1,4 @@
-import edu.umd.cs.findbugs.annotations.*;
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 
 class NeedsReturnValueChecked {
 

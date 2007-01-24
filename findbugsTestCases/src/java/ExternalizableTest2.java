@@ -1,4 +1,10 @@
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.Externalizable;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 
 public class ExternalizableTest2 implements Externalizable {
 	ExternalizableTest2() {
@@ -17,11 +23,13 @@ public class ExternalizableTest2 implements Externalizable {
 			x = i;
 		}
 
-		public void readExternal(ObjectInput in) {
+		@Override
+        public void readExternal(ObjectInput in) {
 			x = 42;
 		}
 
-		public void writeExternal(ObjectOutput out) {
+		@Override
+        public void writeExternal(ObjectOutput out) {
 		}
 	}
 

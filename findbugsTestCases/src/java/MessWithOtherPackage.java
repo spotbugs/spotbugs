@@ -1,6 +1,6 @@
 
-import messWithMe.UnprotectedClass;
 import messWithMe.DumbPublicClass;
+import messWithMe.UnprotectedClass;
 public class MessWithOtherPackage extends DumbPublicClass //Hoohoo!
 {	
 	public static void main(String[] args) {

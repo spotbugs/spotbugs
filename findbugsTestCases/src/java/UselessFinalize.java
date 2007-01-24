@@ -1,5 +1,6 @@
 class UselessFinalize {
-	protected void finalize() throws Throwable {
+	@Override
+    protected void finalize() throws Throwable {
 		super.finalize();
 	}
 }

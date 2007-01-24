@@ -1,11 +1,13 @@
-import junit.framework.TestCase;
 import junit.framework.Test;
+import junit.framework.TestCase;
 
 public abstract class MyTestCase extends TestCase {
-	public void setUp() {
+	@Override
+    public void setUp() {
 	}
 
-	public void tearDown() {
+	@Override
+    public void tearDown() {
 	}
 
 	public Test suite() {

@@ -1,4 +1,7 @@
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 class CloseStream {
 	public static void writeFile(File f, Object o) throws IOException {

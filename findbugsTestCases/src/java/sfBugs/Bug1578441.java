@@ -7,7 +7,8 @@ public class Bug1578441 {
 	@In Object x;
 	@Out Object y;
 	
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return x.hashCode();
 	}
 	

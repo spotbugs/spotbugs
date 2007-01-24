@@ -1,4 +1,5 @@
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 
 public class FindRRTest {
 	public static void main(String[] args) throws Exception {

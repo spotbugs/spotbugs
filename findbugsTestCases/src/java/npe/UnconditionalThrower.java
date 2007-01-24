@@ -8,6 +8,7 @@ public class UnconditionalThrower {
         }
     }
     static class B extends A {
+        @Override
         void foo() {
             throw new IllegalStateException();
         }

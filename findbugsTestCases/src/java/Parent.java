@@ -2,7 +2,8 @@
 
 public class Parent
 {
-	public boolean equals(Object o)
+	@Override
+    public boolean equals(Object o)
 	{
 		return false;
 	}
