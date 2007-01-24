@@ -51,6 +51,7 @@ class NumberedParagraphView extends ParagraphView {
 //            (top,(short)(left+NUMBERS_WIDTH),
 //            bottom,right);
 //}
+    @Override
     public void paint(Graphics g, Shape allocation) {
         Rectangle r = (allocation instanceof Rectangle) ?
                 (Rectangle)allocation : allocation.getBounds();

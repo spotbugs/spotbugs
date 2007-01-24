@@ -55,7 +55,8 @@ public class DocumentCharacterIterator implements CharacterIterator {
 		segmentEnd = text.count;
 	}
 
-	public Object clone() {
+	@Override
+    public Object clone() {
 		throw new UnsupportedOperationException();
 	}
 

@@ -106,7 +106,8 @@ public class SplashFrame extends JWindow
 		
 	}
 	
-	public void setVisible(boolean b){
+	@Override
+    public void setVisible(boolean b){
 		super.setVisible(b);
 		if(!b)
 			animator.interrupt();			
@@ -193,7 +194,8 @@ public class SplashFrame extends JWindow
 			animator.start();
 		}
 		
-		public void setPreferredSize(Dimension d)
+		@Override
+        public void setPreferredSize(Dimension d)
 		{
 			super.setPreferredSize(d);
 		}
@@ -213,7 +215,8 @@ public class SplashFrame extends JWindow
 			}
 		}
 		
-		public void paint(Graphics graphics) {
+		@Override
+        public void paint(Graphics graphics) {
 			super.paint(graphics);
 			
 //			graphics.clearRect(0,0,500,500);

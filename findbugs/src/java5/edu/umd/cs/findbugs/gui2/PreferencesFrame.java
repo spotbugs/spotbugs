@@ -246,7 +246,8 @@ public class PreferencesFrame extends FBDialog {
 		contentPanel.add(bottomPanel, BorderLayout.SOUTH);
 		
 		addWindowListener(new WindowAdapter(){
-			public void windowDeactivated(WindowEvent e) {
+			@Override
+            public void windowDeactivated(WindowEvent e) {
 				resetPropertiesPane();
 			}
 		});
@@ -441,7 +442,8 @@ public class PreferencesFrame extends FBDialog {
 		public UneditableTableModel(Object[][] tableData, String[] strings) {
 			super(tableData,strings);
 		}
-		public boolean isCellEditable(int x, int y)
+		@Override
+        public boolean isCellEditable(int x, int y)
 		{
 			return false;
 		}

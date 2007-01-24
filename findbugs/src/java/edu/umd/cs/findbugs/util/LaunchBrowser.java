@@ -86,23 +86,22 @@ public class LaunchBrowser {
 	 * @param url the url srtring
 	 * @return true on success
 	 */
-	public static boolean showDocument(String url) {
-		URL wrapper = null;
-		if (jnlpShowMethod != null) try {
-			wrapper = new URL(url);
-		} catch (MalformedURLException mue) {
-			wrapper = null;
-		}
-		
-		if (wrapper != null) try {
-			Object result = jnlpShowMethod.invoke(jnlpShowObject, new Object [] { url });
-			System.out.println("jnlp result is "+result);
-			return (Boolean.TRUE.equals(result));
-		} catch (InvocationTargetException ite) {
-			// do nothing
-		} catch (IllegalAccessException iae) {
-			// do nothing
-		}
+    public static boolean showDocument(String url) {
+       
+        if (jnlpShowMethod != null)
+            try {
+                URL wrapper = new URL(url);
+
+                Object result = jnlpShowMethod.invoke(jnlpShowObject, new Object[] { url });
+                System.out.println("jnlp result is " + result);
+                return (Boolean.TRUE.equals(result));
+            } catch (InvocationTargetException ite) {
+                assert true; // do nothing
+            } catch (IllegalAccessException iae) {
+                assert true; // do nothing
+            } catch (MalformedURLException mue) {
+                return false;
+            }
 
 	    // fallback to exec()
 		return showViaExec(url);

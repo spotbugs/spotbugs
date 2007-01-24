@@ -86,7 +86,8 @@ public class NewFilterFrame extends FBDialog
 		super(PreferencesFrame.getInstance());
 		setContentPane(new JPanel()
 		{
-			public Insets getInsets()
+			@Override
+            public Insets getInsets()
 			{
 				return new Insets(3, 3, 3, 3);
 			}
@@ -186,7 +187,8 @@ public class NewFilterFrame extends FBDialog
 		
 		list.addMouseListener(new MouseAdapter()
 		{
-			public void mouseClicked(MouseEvent evt)
+			@Override
+            public void mouseClicked(MouseEvent evt)
 			{
 				if (evt.getClickCount() == 2)
 				{

@@ -78,7 +78,8 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		private boolean isAppCodeBase;
 		private int howDiscovered;
 		
-		public String toString() {
+		@Override
+        public String toString() {
 			return "WorkListItem(" + codeBaseLocator +", " + isAppCodeBase + ", " + howDiscovered +")";
 		}
 		

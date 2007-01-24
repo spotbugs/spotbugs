@@ -35,7 +35,8 @@ import edu.umd.cs.findbugs.Detector;
  */  
 public class BugRenderer extends DefaultTreeCellRenderer
 {
-	public Component getTreeCellRendererComponent(JTree tree, Object node, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) 
+	@Override
+    public Component getTreeCellRendererComponent(JTree tree, Object node, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) 
 	{
 		Component toReturn=super.getTreeCellRendererComponent(tree,node,selected,expanded,leaf,row,hasFocus);
 		

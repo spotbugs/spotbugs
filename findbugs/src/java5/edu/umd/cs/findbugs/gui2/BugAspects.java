@@ -52,7 +52,8 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 	public int size() {
 		return lst.size();
 	}
-	public String toString()
+	@Override
+    public String toString()
 	{
 		if (lst.isEmpty())
 			return edu.umd.cs.findbugs.L10N.getLocalString("tree.bugs", "Bugs") + " (" + count + ")";
@@ -122,12 +123,14 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 			this.value = value;
 		}
 		
-		public int hashCode()
+		@Override
+        public int hashCode()
 		{
 			return key.hashCode() + value.hashCode();
 		}
 		
-		public boolean equals(Object that)
+		@Override
+        public boolean equals(Object that)
 		{
 			if (!(that instanceof StringPair))
 				return false;
@@ -135,7 +138,8 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 			return this.key.equals(thatStringPair.key) && this.value.equals(thatStringPair.value);
 		}
 		
-		public String toString()
+		@Override
+        public String toString()
 		{
 			return key +":"+ value;
 		}

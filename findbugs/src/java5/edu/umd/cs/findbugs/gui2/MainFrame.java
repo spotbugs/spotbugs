@@ -854,7 +854,8 @@ public class MainFrame extends FBFrame implements LogSync
 		//column header SorterDialog appears.
 		tableheader.addMouseListener(new MouseAdapter(){
 
-			public void mouseClicked(MouseEvent e) {
+			@Override
+            public void mouseClicked(MouseEvent e) {
 				Debug.println("tableheader.getReorderingAllowed() = " + tableheader.getReorderingAllowed());
 				if (!tableheader.getReorderingAllowed())
 					return;
@@ -862,7 +863,8 @@ public class MainFrame extends FBFrame implements LogSync
 					SorterDialog.getInstance().setVisible(true);
 			}
 
-			public void mouseReleased(MouseEvent arg0) {
+			@Override
+            public void mouseReleased(MouseEvent arg0) {
 				if (!tableheader.getReorderingAllowed())
 					return;
 				BugTreeModel bt=(BugTreeModel) (MainFrame.this.getTree().getModel());
@@ -1360,13 +1362,15 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 		
 			addComponentListener(new ComponentAdapter(){
-				public void componentResized(ComponentEvent e){
+				@Override
+                public void componentResized(ComponentEvent e){
 					comments.resized();
 				}
 			});
 			
 			addWindowListener(new WindowAdapter(){
-				public void windowClosing(WindowEvent e) {
+				@Override
+                public void windowClosing(WindowEvent e) {
 					if(comments.hasFocus())
 						setProjectChanged(true);
 					callOnClose();
@@ -1396,14 +1400,17 @@ public class MainFrame extends FBFrame implements LogSync
 			this.note = note;
 		}
 		
-		public void mouseClicked(MouseEvent e) {			
+		@Override
+        public void mouseClicked(MouseEvent e) {			
 			displayer.displaySource(bugInstance, note);
 		}
-		public void mouseEntered(MouseEvent e){
+		@Override
+        public void mouseEntered(MouseEvent e){
 			label.setForeground(Color.blue);
 			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		}
-		public void mouseExited(MouseEvent e){
+		@Override
+        public void mouseExited(MouseEvent e){
 			label.setForeground(Color.black);
 			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
@@ -1553,7 +1560,8 @@ public class MainFrame extends FBFrame implements LogSync
 	/*
 	 * This is overridden for changing the font size
 	 */
-	public void addNotify(){
+	@Override
+    public void addNotify(){
 		super.addNotify();
 		
 		float size = Driver.getFontSize();
@@ -1873,7 +1881,8 @@ public class MainFrame extends FBFrame implements LogSync
 		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		new Thread()
 		{
-			public void run()
+			@Override
+            public void run()
 			{
 				updateDesignationDisplay();
 				BugSet bs=BugLoader.redoAnalysisKeepComments(curProject);

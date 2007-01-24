@@ -65,10 +65,12 @@ public class AbstractEdge
 		this.label = label;
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return source.hashCode() + target.hashCode()*3;
 	}
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		if (!(o instanceof AbstractEdge)) return false;
 		ActualEdgeType other = (ActualEdgeType) o;
 		return source.equals(other.source) && target.equals(other.target);

@@ -94,10 +94,12 @@ public class ValueNumber implements Comparable<ValueNumber> {
 		return number + ",";
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return number;
 	}
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		if (o instanceof ValueNumber) 
 			return number == ((ValueNumber)o).number;
 		return false;

@@ -39,7 +39,8 @@ public class GenericUtilities {
 	public static abstract class TypeCategory {
 		/** anything that is not a reference */
 		public static final TypeCategory NON_REFERENCE_TYPE = new TypeCategory(){
-			public String asString(GenericObjectType obj) {
+			@Override
+            public String asString(GenericObjectType obj) {
 				// obj.getTypeCategory() does not return NON_REFERENCE_TYPE
 				return GenericUtilities.getString(obj);
 			}
@@ -48,7 +49,8 @@ public class GenericUtilities {
 		/** A simple (non-generic ObjectType) */
 		public static final TypeCategory PLAIN_OBJECT_TYPE = new TypeCategory()
 		 {
-			public String asString(GenericObjectType obj) {
+			@Override
+            public String asString(GenericObjectType obj) {
 				// obj.getTypeCategory() does not return PLAIN_OBJECT_TYPE
 				return GenericUtilities.getString(obj);
 			}
@@ -57,7 +59,8 @@ public class GenericUtilities {
 		/** A array */
 		public static final TypeCategory ARRAY_TYPE = new TypeCategory()
 		 {
-			public String asString(GenericObjectType obj) {
+			@Override
+            public String asString(GenericObjectType obj) {
 				// obj.getTypeCategory() does not return ARRAY_TYPE
 				return GenericUtilities.getString(obj);
 			}
@@ -66,7 +69,8 @@ public class GenericUtilities {
 		/** A parameterized class e.g. <code>List&lt;String&gt;</code> */
 		public static final TypeCategory PARAMETERS = new TypeCategory()
 		 {
-			public String asString(GenericObjectType obj) {
+			@Override
+            public String asString(GenericObjectType obj) {
 				String result = obj.toString();
 				result += "<";
 				for (Type t : obj.parameters) {
@@ -80,7 +84,8 @@ public class GenericUtilities {
 		 *  Underlying ObjectType is <code>java.lang.Object</code> */
 		public static final TypeCategory TYPE_VARIABLE = new TypeCategory()
 		 {
-			public String asString(GenericObjectType obj) {				
+			@Override
+            public String asString(GenericObjectType obj) {				
 				return obj.variable;				
 			}
 		};
@@ -89,7 +94,8 @@ public class GenericUtilities {
 		 *  Underlying ObjectType is <code>java.lang.Object</code> */
 		public static final TypeCategory WILDCARD = new TypeCategory()
 		 {
-			public String asString(GenericObjectType obj) {				
+			@Override
+            public String asString(GenericObjectType obj) {				
 				return "?";				
 			}
 		};
@@ -99,7 +105,8 @@ public class GenericUtilities {
 		 *  The extended type can be an ObjectType or a GenericObjectType */
 		public static final TypeCategory WILDCARD_EXTENDS = new TypeCategory()
 		 {
-			public String asString(GenericObjectType obj) {				
+			@Override
+            public String asString(GenericObjectType obj) {				
 				return "? extends " + GenericUtilities.getString(obj.extension);
 			}
 		};
@@ -109,7 +116,8 @@ public class GenericUtilities {
 		 *  The super type can be an ObjectType or a GenericObjectType */
 		public static final TypeCategory WILDCARD_SUPER = new TypeCategory()
 		 {
-			public String asString(GenericObjectType obj) {				
+			@Override
+            public String asString(GenericObjectType obj) {				
 				return "? super " + GenericUtilities.getString(obj.extension);
 			}
 		};

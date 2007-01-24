@@ -38,12 +38,14 @@ public class StackedFilterMatcher extends FilterMatcher
 	private static final long serialVersionUID = 3958267780332359162L;
 	private FilterMatcher[] filters;
 	
-	Sortables getFilterBy()
+	@Override
+    Sortables getFilterBy()
 	{
 		throw new UnsupportedOperationException("Stacked filter matchers do not filter out a single Sortables, use getFilters()");
 	}
 	
-	String getValue()
+	@Override
+    String getValue()
 	{
 		throw new UnsupportedOperationException("Stacked filter matchers do not filter out a single Sortables's value, use getFilters and getValue individually on returned filters.");
 	}
@@ -57,7 +59,8 @@ public class StackedFilterMatcher extends FilterMatcher
 	//If only FilterMatcher's setActive were as simple as this one... not.
 	//See BugTreeModel's long ranting comment about filtering to see the reason for all this
 	//All this does is not force the tree to rebuild when you turn filters for branches on and off
-	public void setActive(boolean active)
+	@Override
+    public void setActive(boolean active)
 	{
 		TreeModelEvent event=null;
 		int whatToDo=-1;
@@ -141,7 +144,8 @@ public class StackedFilterMatcher extends FilterMatcher
 		return filters;
 	}
 	
-	public boolean match(BugInstance bugInstance)
+	@Override
+    public boolean match(BugInstance bugInstance)
 	{
 		if (!isActive())
 			return true;

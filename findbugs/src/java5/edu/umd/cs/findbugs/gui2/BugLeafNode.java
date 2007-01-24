@@ -47,7 +47,8 @@ public class BugLeafNode {
 		return bug;
 	}
 	
-	public String toString()
+	@Override
+    public String toString()
 	{
 		
 		
@@ -78,7 +79,8 @@ public class BugLeafNode {
 		return keyValuePair.key.getFrom(bug).equals(keyValuePair.value);
 	}
 
-	public boolean equals(Object o)
+	@Override
+    public boolean equals(Object o)
 	{
 		if (!(o instanceof BugLeafNode))
 			return false;
@@ -87,7 +89,8 @@ public class BugLeafNode {
 	}
 
 	
-	public int hashCode()
+	@Override
+    public int hashCode()
 	{
 		return bug.hashCode();
 	}

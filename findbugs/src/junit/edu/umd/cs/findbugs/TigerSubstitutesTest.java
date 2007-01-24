@@ -35,6 +35,7 @@ public class TigerSubstitutesTest extends TestCase {
         { 
             bar = new Bar();
         }
+        @Override
         public String toString() {
             return new Bar().toString();
         }

@@ -329,7 +329,8 @@ public class NewProjectWizard extends FBDialog
 		});
 	}
 	
-	public void addNotify(){
+	@Override
+    public void addNotify(){
 		super.addNotify();
 		
 		for(JPanel panel : wizardPanels){

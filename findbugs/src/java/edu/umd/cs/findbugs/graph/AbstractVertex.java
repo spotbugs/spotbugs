@@ -53,10 +53,12 @@ public class AbstractVertex <
 		this.label = label;
 	}
 
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return id;
 	}
-	public boolean equals(Object o) {
+	@Override
+    public boolean equals(Object o) {
 		if (o instanceof AbstractVertex) 
 			return id == ((AbstractVertex)o).id;
 		return false;

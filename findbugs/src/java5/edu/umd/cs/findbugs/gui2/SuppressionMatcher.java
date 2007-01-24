@@ -37,7 +37,8 @@ public class SuppressionMatcher extends ArrayList<BugInstance> implements Matche
 		return (!contains(bugInstance));
 	}
 
-	public boolean add(BugInstance bugInstance)
+	@Override
+    public boolean add(BugInstance bugInstance)
 	{
 		if (contains(bugInstance))
 			return false;

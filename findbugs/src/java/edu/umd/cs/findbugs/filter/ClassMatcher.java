@@ -28,7 +28,8 @@ public class ClassMatcher implements Matcher {
 
 	private NameMatch className;
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		return "class=\"" + className.getValue() +"\"";
 	}
 

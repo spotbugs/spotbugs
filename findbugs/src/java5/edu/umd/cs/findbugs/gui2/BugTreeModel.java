@@ -409,7 +409,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			pleaseWait();
 			rebuildingThread = new Thread()
 			{
-				public void run()
+				@Override
+                public void run()
 				{	
 					try
 					{
@@ -795,7 +796,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			return getPathToBug(b);
 		}
 		
-		protected void finalize() throws Throwable
+		@Override
+        protected void finalize() throws Throwable
 		{
 			super.finalize();
 			

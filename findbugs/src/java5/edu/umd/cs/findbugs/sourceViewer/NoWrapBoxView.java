@@ -28,11 +28,13 @@ class NoWrapBoxView extends BoxView {
 		super(elem, axis);
 	}
 
-	public void layout(int width, int height) {
+	@Override
+    public void layout(int width, int height) {
 		super.layout(32768, height);
 	}
 
-	public float getMinimumSpan(int axis) {
+	@Override
+    public float getMinimumSpan(int axis) {
 		return super.getPreferredSpan(axis);
 	}
 }

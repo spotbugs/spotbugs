@@ -208,7 +208,8 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 			setPriority(NORM_PRIORITY - 1);
 		}
 		
-		public void run()
+		@Override
+        public void run()
 		{
 			assert project != null;
 			BugSet data = BugLoader.doAnalysis(project, AnalyzingDialog.this);
