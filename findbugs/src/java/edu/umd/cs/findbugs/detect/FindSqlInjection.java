@@ -243,7 +243,7 @@ public class FindSqlInjection implements Detector {
         if (prevIns instanceof LDC || prevIns instanceof GETSTATIC) return true;
         if (prevIns instanceof InvokeInstruction) {
             String methodName = ((InvokeInstruction)prevIns).getMethodName(cpg);
-            if (methodName.startsWith("to") && methodName.endsWith("String")) return true; 
+            if (methodName.startsWith("to") && methodName.endsWith("String") && methodName.length() > 8) return true; 
         }
         return false;
     }
