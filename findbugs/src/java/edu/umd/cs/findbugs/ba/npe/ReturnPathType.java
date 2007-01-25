@@ -132,4 +132,21 @@ public class ReturnPathType {
 	public boolean isValid() {
 		return type != TOP;
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		switch (type) {
+		case TOP:
+			return "[TOP]";
+		case CAN_RETURN_NORMALLY:
+			return "-";
+		case CANNOT_RETURN_NORMALLY:
+			return "X";
+		default:
+			throw new IllegalStateException();
+		}
+	}
 }
