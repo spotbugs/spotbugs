@@ -206,10 +206,10 @@
             
   <Detector class="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" 
             speed="fast"
-            reports="SA_FIELD_SELF_ASSIGNMENT,SA_FIELD_DOUBLE_ASSIGNMENT,SA_LOCAL_DOUBLE_ASSIGNMENT" />
+            reports="SA_FIELD_SELF_ASSIGNMENT,SA_LOCAL_DOUBLE_ASSIGNMENT" />
   <Detector class="edu.umd.cs.findbugs.detect.FindSelfComparison" 
             speed="fast"
-            reports="SA_FIELD_SELF_COMPARISON,SA_LOCAL_SELF_COMPARISON,SA_FIELD_SELF_COMPUTATION,SA_LOCAL_SELF_COMPUTATION" />
+            reports="SA_FIELD_SELF_COMPARISON,SA_LOCAL_SELF_COMPARISON,SA_FIELD_SELF_COMPUTATION,SA_LOCAL_SELF_COMPUTATION,SA_FIELD_DOUBLE_ASSIGNMENT" />
   <Detector class="edu.umd.cs.findbugs.detect.FindSelfComparison2" 
             speed="fast"
             reports="SA_FIELD_SELF_COMPARISON,SA_LOCAL_SELF_COMPARISON,SA_FIELD_SELF_COMPUTATION,SA_LOCAL_SELF_COMPUTATION" />
