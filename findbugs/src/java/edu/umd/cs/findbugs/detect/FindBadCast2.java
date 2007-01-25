@@ -24,11 +24,14 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.TypedInstruction;
 
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.TypeAnnotation;
@@ -42,6 +45,7 @@ import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
+import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
 import edu.umd.cs.findbugs.ba.type.NullType;
 import edu.umd.cs.findbugs.ba.type.TopType;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
@@ -137,7 +141,6 @@ public class FindBadCast2 implements Detector {
 		if (isSynthetic(method) || !prescreen(classContext, method))
 			return;
 		BugAccumulator accumulator = new BugAccumulator(bugReporter);
-		
 		
 		CFG cfg = classContext.getCFG(method);
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
@@ -315,8 +318,11 @@ public class FindBadCast2 implements Detector {
 			ValueNumberFrame vFrame = vnaDataflow.getFactAtLocation(location);
 			if (paramValueNumberSet == null) 
 				paramValueNumberSet = getParameterValueNumbers(classContext, method, cfg);
-			boolean isParameter = paramValueNumberSet.contains(vFrame
-					.getTopValue());
+			ValueNumber valueNumber = vFrame
+					.getTopValue();
+            boolean isParameter = paramValueNumberSet.contains(valueNumber);
+            BugAnnotation variable = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+                    location, valueNumber, vFrame);
 			try {
 				JavaClass castJavaClass = Repository.lookupClass(castName);
 				JavaClass refJavaClass = Repository.lookupClass(refName);
@@ -371,7 +377,7 @@ public class FindBadCast2 implements Detector {
 						System.out.println("  complete information: "
 								+ completeInformation);
 						System.out.println("  isParameter: "
-								+ vFrame.getTopValue());
+								+ valueNumber);
 						System.out.println("  score: " + rank);
 					}
 					if (!downcast && completeInformation || operandTypeIsExact)
@@ -383,8 +389,11 @@ public class FindBadCast2 implements Detector {
 								
 								.addType(refSig).describe(TypeAnnotation.FOUND_ROLE)
 								.addType(castSig).describe(TypeAnnotation.EXPECTED_ROLE)
+                                .addOptionalAnnotation(variable)
 								.addSourceLine(sourceLineAnnotation));
-					else if (isCast && rank < 0.9) {
+					else if (isCast && rank < 0.9 && variable instanceof LocalVariableAnnotation
+                            && !valueNumber.hasFlag(ValueNumber.ARRAY_VALUE)
+                            && !valueNumber.hasFlag(ValueNumber.RETURN_VALUE)) {
 
 						int priority = NORMAL_PRIORITY;
 
@@ -427,7 +436,7 @@ public class FindBadCast2 implements Detector {
 							priority++;
 						else if (methodGen.isPublic() && isParameter)
 							priority--;
-						if (DEBUG)
+                       if (DEBUG)
 							System.out.println(" priority h: " + priority);
 						if (priority < HIGH_PRIORITY)
 							priority = HIGH_PRIORITY;
@@ -438,10 +447,13 @@ public class FindBadCast2 implements Detector {
 							else if (castToAbstractCollection)
 								bug = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION";
 
-							accumulator.accumulateBug(new BugInstance(this, bug, priority)
+							BugInstance bugInstance = new BugInstance(this, bug, priority)
 									.addClassAndMethod(methodGen, sourceFile)
 									.addType(refSig).describe(TypeAnnotation.FOUND_ROLE)
-									.addType(castSig).describe(TypeAnnotation.EXPECTED_ROLE),
+									.addType(castSig).describe(TypeAnnotation.EXPECTED_ROLE)
+                                     .addOptionalAnnotation(variable);
+                            
+                            accumulator.accumulateBug(bugInstance,
 									sourceLineAnnotation
 									);
 						}
