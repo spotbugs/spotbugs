@@ -78,12 +78,13 @@ public class ReturnPathTypeAnalysis implements DataflowAnalysis<ReturnPathType> 
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
 	 */
 	public void edgeTransfer(Edge edge, ReturnPathType fact) {
-		/**
-		 * Exception edges targeting the CFG exit block
-		 * indicate an abnormal return.
-		 */
-		if (edge.isExceptionEdge() && edge.getTarget() == cfg.getExit()) {
-			fact.setCanReturnNormally(false);
+		// The edges leading into the exit block create the "seed" values
+		// for the analysis.  The exception edges create values indicating
+		// that a normal (non-exception) return is not possible,
+		// while the non-exception edges create values indicating that
+		// a normal return is possible.
+		if (edge.getTarget() == cfg.getExit()) {
+			fact.setCanReturnNormally(!edge.isExceptionEdge());
 		}
 	}
 
