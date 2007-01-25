@@ -105,7 +105,7 @@ public class ReturnPathTypeAnalysis implements DataflowAnalysis<ReturnPathType> 
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#getLastUpdateTimestamp(java.lang.Object)
 	 */
 	public int getLastUpdateTimestamp(ReturnPathType fact) {
-		return fact.getTimestamp();
+		return 0;
 	}
 
 	/* (non-Javadoc)
@@ -199,7 +199,7 @@ public class ReturnPathTypeAnalysis implements DataflowAnalysis<ReturnPathType> 
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#setLastUpdateTimestamp(java.lang.Object, int)
 	 */
 	public void setLastUpdateTimestamp(ReturnPathType fact, int timestamp) {
-		fact.setTimestamp(timestamp);
+		// ignore
 	}
 
 	/* (non-Javadoc)
