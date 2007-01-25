@@ -41,7 +41,10 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 	public FindSelfComparison(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-
+    String f;
+    String className;
+    int state;
+    int putFieldRegister;
 	@Override
 	public void visit(JavaClass obj) {
 	}
@@ -63,6 +66,36 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + whichRegister + " " + registerLoadCount);
 		stack.mergeJumps(this);
 		
+        switch (state) {
+        case 0:
+            if (seen == DUP_X1)
+            state = 4;
+       
+        case 4:
+            if (seen == PUTFIELD) {
+   
+                f = getRefConstantOperand();
+                className = getClassConstantOperand();
+                OpcodeStack.Item item1 = stack.getStackItem(1);
+                putFieldRegister = item1.getRegisterNumber();
+                if (putFieldRegister >= 0)
+                    state = 5;
+                else state = 0;
+            } else
+                state = 0;
+            break;
+        case 5:
+            if (seen == PUTFIELD && getRefConstantOperand().equals(f) && getClassConstantOperand().equals(className)) {
+                OpcodeStack.Item item1 = stack.getStackItem(1);
+                if (putFieldRegister == item1.getRegisterNumber())
+                bugReporter.reportBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
+                .addClassAndMethod(this)
+                .addReferencedField(this)
+                .addSourceLine(this));
+            }
+            state = 0;
+            break;
+        }
         switch (seen) {
         case INVOKEVIRTUAL:
         case INVOKEINTERFACE:

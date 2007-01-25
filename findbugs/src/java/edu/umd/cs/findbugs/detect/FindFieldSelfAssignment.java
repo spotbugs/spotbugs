@@ -66,8 +66,6 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 		case 0:
 			if (seen == ALOAD_0)
 				state = 1;
-            else if (seen == DUP_X1)
-                state = 4;
             else if (seen == DUP)
                 state = 6;
 			break;
@@ -108,24 +106,7 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 			}
 			state = 0;
             break;
-        case 4:
-            if (seen == PUTFIELD) {
-                state = 5;
-                f = getRefConstantOperand();
-                className = getClassConstantOperand();
-            } else
-                state = 0;
-            break;
-        case 5:
-            if (seen == PUTFIELD && getRefConstantOperand().equals(f) && getClassConstantOperand().equals(className)) {
-                bugReporter.reportBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
-                .addClassAndMethod(this)
-                .addReferencedField(this)
-                .addSourceLine(this));
-            }
-            state = 0;
-            break;
-        case 6:
+         case 6:
             if (isRegisterStore()) {
                 state = 7;
                 register = getRegisterOperand();
