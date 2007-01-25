@@ -48,6 +48,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
 
+
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -1101,7 +1102,7 @@ public class ClassContext {
 					new UnconditionalValueDerefDataflow(getCFG(method), analysis);
 				dataflow.execute();
 				 if (UnconditionalValueDerefAnalysis.DEBUG) {
-			        	dumpUnconditionalValueDerefDataflow(method, cfg, vnd, inv, dataflow);
+			        	dumpDataflowInformation(method, cfg, vnd, inv, dataflow, null);
 			        }
 			 
 				return dataflow;
@@ -1760,15 +1761,27 @@ public class ClassContext {
 		return returnPathTypeDataflowFactory.getAnalysis(method);
 	}
 
+    public  void dumpDataflowInformation(Method method) {
+        try {
+            dumpDataflowInformation(method, getCFG(method), getValueNumberDataflow(method), getIsNullValueDataflow(method), getUnconditionalValueDerefDataflow(method), getTypeDataflow(method));
+        } catch (DataflowAnalysisException e) {
+            AnalysisContext.logError("Could not dump data information for " + getJavaClass().getClassName() +"." + method.getName(), e);
+        } catch (CFGBuilderException e) {
+            AnalysisContext.logError("Could not dump data information for " + getJavaClass().getClassName() +"." + method.getName(), e);
+            
+        }
+    }
+    
 	/**
 	 * @param method
 	 * @param cfg
 	 * @param vnd
 	 * @param inv
 	 * @param dataflow
+	 * @param typeDataflow TODO
 	 * @throws DataflowAnalysisException
 	 */
-	public static void dumpUnconditionalValueDerefDataflow(Method method, CFG cfg, ValueNumberDataflow vnd, IsNullValueDataflow inv, UnconditionalValueDerefDataflow dataflow) throws DataflowAnalysisException {
+	public static void dumpDataflowInformation(Method method, CFG cfg, ValueNumberDataflow vnd, IsNullValueDataflow inv, UnconditionalValueDerefDataflow dataflow, TypeDataflow typeDataflow) throws DataflowAnalysisException {
 		System.out.println("\n\n{ UnconditionalValueDerefAnalysis analysis for " + method.getName());
 		TreeSet<Location> tree = new TreeSet<Location>();
 		
@@ -1781,14 +1794,12 @@ public class ClassContext {
 			System.out.println("\n Pre: " + factAfterLocation);
 			System.out.println("Vna: " + vnd.getFactAtLocation(loc));
 			System.out.println("inv: " + inv.getFactAtLocation(loc));
+            if (typeDataflow != null) System.out.println("type: " + typeDataflow.getFactAtLocation(loc));
 			System.out.println("Location: " + loc);
 			System.out.println("Post: " + dataflow.getFactAtLocation(loc));
 			System.out.println("Vna: " + vnd.getFactAfterLocation(loc));
 			System.out.println("inv: " + inv.getFactAfterLocation(loc));
-			
-			
-			
-			
+               if (typeDataflow != null)  System.out.println("type: " + typeDataflow.getFactAfterLocation(loc));
 		}
 		System.out.println("}\n\n");
 	}
