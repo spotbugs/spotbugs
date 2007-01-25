@@ -41,6 +41,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -49,6 +50,8 @@ import edu.umd.cs.findbugs.ba.XField;
 public class SerializableIdiom extends BytecodeScanningDetector
         {
 
+    final static boolean reportTransientFieldOfNonSerializableClass =
+        SystemProperties.getBoolean("reportTransientFieldOfNonSerializableClass");
 
 	boolean sawSerialVersionUID;
 	boolean isSerializable, implementsSerializableDirectly;
@@ -449,7 +452,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 				seenTransientField = true;
 				transientFields.put(obj.getName(), XFactory.createXField(this));
 				transientFieldsUpdates.put(obj.getName(), 0);
-			} else{
+			} else if (reportTransientFieldOfNonSerializableClass) {
 				bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS", NORMAL_PRIORITY)
 				.addClass(this)
 				.addVisitedField(this));
