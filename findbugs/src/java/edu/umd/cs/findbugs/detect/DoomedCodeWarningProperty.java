@@ -36,6 +36,6 @@ public class DoomedCodeWarningProperty extends AbstractWarningProperty {
 	/**
 	 * Singleton instance of DoomedCodeWarningProperty. 
 	 */
-	public static DoomedCodeWarningProperty DOOMED_CODE =
+	public static final DoomedCodeWarningProperty DOOMED_CODE =
 		new DoomedCodeWarningProperty("DOOMED_CODE", PriorityAdjustment.NO_ADJUSTMENT);
 }
