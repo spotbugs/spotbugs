@@ -1458,6 +1458,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
 
+    public BugInstance addOptionalAnnotation(@CheckForNull BugAnnotation annotation) {
+        if (annotation == null) return this;
+        return add(annotation);
+    }
 	public BugInstance add(BugAnnotation annotation) {
 		if (annotation == null)
 			throw new IllegalStateException("Missing BugAnnotation!");
