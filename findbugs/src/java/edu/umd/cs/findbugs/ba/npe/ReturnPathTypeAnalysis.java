@@ -216,7 +216,8 @@ public class ReturnPathTypeAnalysis implements DataflowAnalysis<ReturnPathType> 
 	public void transfer(BasicBlock basicBlock, InstructionHandle end,
 			ReturnPathType start, ReturnPathType result)
 			throws DataflowAnalysisException {
-		// nothing to do
+		// just copy the start fact
+		result.copyFrom(start);
 	}
 
 }
