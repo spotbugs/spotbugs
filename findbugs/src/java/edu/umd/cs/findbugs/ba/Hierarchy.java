@@ -806,7 +806,7 @@ public class Hierarchy {
 				classDefiningField = classDefiningField.getSuperClass();
 			}
 
-		if (classDefiningField == null)
+		if (classDefiningField == null || field == null)
 			return null;
 		else {
 			String realClassName = classDefiningField.getClassName();
