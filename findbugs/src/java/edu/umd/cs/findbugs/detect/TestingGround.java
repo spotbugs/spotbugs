@@ -21,7 +21,9 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 
 public class TestingGround extends BytecodeScanningDetector  {
@@ -38,9 +40,19 @@ public class TestingGround extends BytecodeScanningDetector  {
 	}
 
 
-
+	boolean checked = false;
 	@Override
          public void visit(JavaClass obj) {
+        if (!checked) {
+            checked = true;
+             try {
+                 JavaClass javaLangClass = Repository.lookupClass("java.lang.Class");
+                 bugReporter.reportBug(new BugInstance(this, 
+                         "TESTING", HIGH_PRIORITY).addClass(obj).addString(javaLangClass.toString()));
+            } catch (ClassNotFoundException e) {
+             AnalysisContext.logError("Error looking up java.lang.Class", e);
+            }
+        }
 	}
 
 	@Override

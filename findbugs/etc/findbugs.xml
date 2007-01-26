@@ -175,7 +175,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
-            disabled="true"
+            disabled="false"
             hidden="true" />
   <Detector class="edu.umd.cs.findbugs.detect.ResolveAllReferences" 
             speed="fast"
@@ -630,7 +630,7 @@
   <BugPattern abbrev="VO" type="VO_VOLATILE_REFERENCE_TO_ARRAY" category="MT_CORRECTNESS"/>
   <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="BAD_PRACTICE"/>
   <BugPattern abbrev="HSC" type="HSC_HUGE_SHARED_STRING_CONSTANT" category="PERFORMANCE" />
-  <BugPattern abbrev="TEST" type="TESTING" category="STYLE" />
+  <BugPattern abbrev="TEST" type="TESTING" category="CORRECTNESS" />
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_ZIP_FILE_ENTRY" category="BAD_PRACTICE" />
 
   <BugPattern abbrev="AM" type="AM_CREATES_EMPTY_JAR_FILE_ENTRY" category="BAD_PRACTICE" />
