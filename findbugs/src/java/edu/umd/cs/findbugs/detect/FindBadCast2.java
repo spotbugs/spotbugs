@@ -64,6 +64,8 @@ public class FindBadCast2 implements Detector {
 	private Set<String> veryAbstractCollectionClasses = new HashSet<String>();
 
 	private static final boolean DEBUG = SystemProperties.getBoolean("bc.debug");
+    private JavaClass javaLangClass,javaLangReflectType;
+    
 
 	public FindBadCast2(BugReporter bugReporter) {		
 		this.bugReporter = bugReporter;
@@ -85,6 +87,16 @@ public class FindBadCast2 implements Detector {
 		concreteCollectionClasses.add("java.util.LinkedList");
 		concreteCollectionClasses.add("java.util.Hashtable");
 		concreteCollectionClasses.add("java.util.Vector");
+        try {
+            javaLangClass = Repository.lookupClass("java.lang.Class");
+        } catch (ClassNotFoundException e) {
+           assert true;
+        }
+        try {
+            javaLangReflectType = Repository.lookupClass("java.lang.reflect.Type");
+        } catch (ClassNotFoundException e) {
+           assert true;
+        }
 	}
 
 	public void visitClassContext(ClassContext classContext) {
@@ -326,6 +338,7 @@ public class FindBadCast2 implements Detector {
 			try {
 				JavaClass castJavaClass = Repository.lookupClass(castName);
 				JavaClass refJavaClass = Repository.lookupClass(refName);
+
 				boolean upcast = Repository.instanceOf(refJavaClass,
 						castJavaClass);
 				if (upcast) {
@@ -359,7 +372,15 @@ public class FindBadCast2 implements Detector {
 							&& rank > 0.3)
 						  rank = (rank + 0.3) /2;
 					}
-					
+					if (castName.equals("java.lang.Class") && refName.equals("java.lang.reflect.Type") && !downcast) {
+                        String msg = "java.lang.Class and java.lang.reflect.Type are incompatible\n" + castJavaClass + "\n"+refJavaClass;
+                        AnalysisContext.logError(msg);
+                        BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(methodGen, sourceFile)
+                        .addString(msg);
+                        bugReporter.reportBug(bug);
+                        downcast = true;
+                        rank = 0.99;
+                    }
 						
 					if (false)
 						System.out.println("Rank:\t" + rank + "\t" + refName

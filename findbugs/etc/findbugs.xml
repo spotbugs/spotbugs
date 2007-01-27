@@ -175,7 +175,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
-            disabled="false"
+            disabled="true"
             hidden="true" />
   <Detector class="edu.umd.cs.findbugs.detect.ResolveAllReferences" 
             speed="fast"
