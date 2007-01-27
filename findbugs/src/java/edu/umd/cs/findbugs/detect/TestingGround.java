@@ -40,7 +40,7 @@ public class TestingGround extends BytecodeScanningDetector  {
 	}
 
 
-	boolean checked = false;
+	boolean checked = true;
 	@Override
          public void visit(JavaClass obj) {
         if (!checked) {
