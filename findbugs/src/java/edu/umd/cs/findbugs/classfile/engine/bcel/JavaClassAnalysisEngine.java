@@ -57,7 +57,7 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
 		try {
 			ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
 			JavaClass javaClass = new ClassParser(classData.getInputStream(), descriptor.toResourceName()).parse();
-			{
+			if (false) {
 			    char jVersion = JVM_VERSION.charAt(2);
                 if (jVersion < '5' && javaClass.getMajor() >= 49 || jVersion < '6' && javaClass.getMajor() >= 50)
                     throw new CheckedAnalysisException(descriptor.toResourceName() + " is version " 
