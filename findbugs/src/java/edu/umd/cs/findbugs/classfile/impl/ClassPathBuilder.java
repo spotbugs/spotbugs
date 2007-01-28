@@ -190,7 +190,20 @@ public class ClassPathBuilder implements IClassPathBuilder {
 			throws CheckedAnalysisException, IOException, InterruptedException {
 		// Discover all directly and indirectly referenced codebases
 		processWorkList(classPath, projectWorkList, progress);
-		processWorkList(classPath, buildSystemCodebaseList(), progress);
+        
+        boolean foundJavaLangObject = false;
+        
+        for (DiscoveredCodeBase discoveredCodeBase : discoveredCodeBaseList) {
+            try {
+            ICodeBaseEntry entry = discoveredCodeBase.getCodeBase().lookupResource("java/lang/Object.class");
+            foundJavaLangObject = true;
+            } catch (ResourceNotFoundException e) {
+                assert true;
+            }
+        }
+        
+		if (!foundJavaLangObject) 
+            processWorkList(classPath, buildSystemCodebaseList(), progress);
 		
 		// Add all discovered codebases to the classpath
 		for (DiscoveredCodeBase discoveredCodeBase : discoveredCodeBaseList) {
@@ -253,9 +266,10 @@ public class ClassPathBuilder implements IClassPathBuilder {
 		
 		LinkedList<WorkListItem> workList = new LinkedList<WorkListItem>();
 
-		// Seed worklist with system codebases.
+		String bootClassPath = SystemProperties.getProperty("sun.boot.class.path");
+        // Seed worklist with system codebases.
 		// addWorkListItemsForClasspath(workList, SystemProperties.getProperty("java.class.path"));
-		addWorkListItemsForClasspath(workList, SystemProperties.getProperty("sun.boot.class.path"));
+		addWorkListItemsForClasspath(workList, bootClassPath);
 		String extPath = SystemProperties.getProperty("java.ext.dirs");
 		if (extPath != null) {
 			StringTokenizer st = new StringTokenizer(extPath, File.pathSeparator);
