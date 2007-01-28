@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ARETURN;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -47,6 +48,7 @@ import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 import edu.umd.cs.findbugs.ba.SignatureParser;
@@ -199,6 +201,11 @@ public class UnconditionalValueDerefAnalysis extends
 			checkNonNullParams(location, vnaFrame, fact);
 		}
 
+        if (CHECK_ANNOTATIONS && handle.getInstruction() instanceof ARETURN) {
+            XMethod thisMethod = XFactory.createXMethod(methodGen);
+            checkNonNullReturnValue(thisMethod, location, vnaFrame, fact);
+        }
+
 		// Check to see if an instance value is dereferenced here
 		checkInstance(location, vnaFrame, fact);
 		
@@ -329,6 +336,35 @@ public class UnconditionalValueDerefAnalysis extends
 	}
 	public static final boolean VERBOSE_NULLARG_DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg.verbose");
 	
+    /**
+     * If this is a method call instruction,
+     * check to see if any of the parameters are @NonNull,
+     * and treat them as dereferences.
+     * @param thisMethod TODO
+     * @param location  the Location of the instruction
+     * @param vnaFrame  the ValueNumberFrame at the Location of the instruction
+     * @param fact      the dataflow value to modify
+     * 
+     * @throws DataflowAnalysisException
+     */
+    private void checkNonNullReturnValue(XMethod thisMethod, Location location, ValueNumberFrame vnaFrame, UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
+        NullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
+        if (database == null) {
+            return;
+        }
+        IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
+        if (!invFrame.isValid()) return;
+       
+        if (database.getResolvedAnnotation(thisMethod, true) !=  NullnessAnnotation.NONNULL)
+            return;
+        IsNullValue value = invFrame.getTopValue();
+        if (value.isDefinitelyNotNull()) return;
+        if (value.isDefinitelyNull()) return;
+        ValueNumber vn = vnaFrame.getTopValue();
+        if (true)  fact.addDeref(vn, location);
+    }
+
+    
 	/**
 	 * If this is a method call instruction,
 	 * check to see if any of the parameters are @NonNull,
