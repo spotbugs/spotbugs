@@ -382,7 +382,7 @@ public abstract class Frame<ValueType> {
 	@Deprecated public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg,
 			int i, int numArguments) throws DataflowAnalysisException {
 		SignatureParser sigParser = new SignatureParser(ins.getSignature(cpg));
-		return getArgument(ins, cpg, i, numArguments, sigParser );
+		return getArgument(ins, cpg, i, sigParser );
 	}
 
 	/**
@@ -394,14 +394,12 @@ public abstract class Frame<ValueType> {
 	 *            the ConstantPoolGen for the class containing the method
 	 * @param i
 	 *            index of the argument; 0 for the first argument, etc.
-	 * @param numArguments
-	 *            total number of arguments to the method
 	 * @return the <i>i</i>th argument
 	 * @throws DataflowAnalysisException
 	 */
 	public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg,
-			int i, int numArguments, SignatureParser sigParser) throws DataflowAnalysisException {
-		if (i >= numArguments)
+			int i, SignatureParser sigParser) throws DataflowAnalysisException {
+		if (i >= sigParser.getNumParameters())
 			throw new IllegalArgumentException();
 		return getStackValue(sigParser.getSlotsFromTopOfStackForParameter(i));
 	}
@@ -466,11 +464,9 @@ public abstract class Frame<ValueType> {
 		BitSet chosenArgSet = new BitSet();
 		SignatureParser sigParser = new SignatureParser(invokeInstruction.getSignature(cpg));
 		
-		int numArguments = getNumArguments(invokeInstruction, cpg);
-
-		for (int i = 0; i < numArguments; ++i) {
+		for (int i = 0; i < sigParser.getNumParameters(); ++i) {
 			ValueType value = getArgument(invokeInstruction, cpg, i,
-					numArguments, sigParser);
+					sigParser);
 			if (chooser.choose(value))
 				chosenArgSet.set(i);
 		}
