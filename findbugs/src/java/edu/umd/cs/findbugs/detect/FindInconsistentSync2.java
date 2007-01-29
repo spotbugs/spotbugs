@@ -325,7 +325,7 @@ public class FindInconsistentSync2 implements Detector {
 			// At this point, we report the field as being inconsistently synchronized
 			int priority = propertySet.computePriority(NORMAL_PRIORITY);
 			if (!propertySet.isFalsePositive(priority)) {
-				BugInstance bugInstance = new BugInstance(guardedByThis? "IS_FIELD_NOT_GUARDED" : "IS2_INCONSISTENT_SYNC", priority)
+				BugInstance bugInstance = new BugInstance(this, guardedByThis? "IS_FIELD_NOT_GUARDED" : "IS2_INCONSISTENT_SYNC", priority)
 						.addClass(xfield.getClassName())
 						.addField(xfield)
 						.addInt(freq).describe(IntAnnotation.INT_SYNC_PERCENT);

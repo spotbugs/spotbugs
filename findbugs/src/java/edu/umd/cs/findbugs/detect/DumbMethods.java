@@ -716,7 +716,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 				return;
 			
 			if (Hierarchy.isSubtype((ReferenceType) receiver, CONDITION_TYPE)) {
-				bugReporter.reportBug(new BugInstance("DM_MONITOR_WAIT_ON_CONDITION", HIGH_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "DM_MONITOR_WAIT_ON_CONDITION", HIGH_PRIORITY)
 						.addClassAndMethod(this)
 						.addSourceLine(this));
 			}

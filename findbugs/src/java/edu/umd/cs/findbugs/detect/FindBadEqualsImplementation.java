@@ -72,7 +72,7 @@ public class FindBadEqualsImplementation implements Detector {
 				continue;
 
 			if (property.isNonNull(0)) {
-				BugInstance warning = new BugInstance("NP_DOES_NOT_HANDLE_NULL", NORMAL_PRIORITY)
+				BugInstance warning = new BugInstance(this, "NP_DOES_NOT_HANDLE_NULL", NORMAL_PRIORITY)
 						.addClassAndMethod(javaClass, method);
 				bugReporter.reportBug(warning);
 			}

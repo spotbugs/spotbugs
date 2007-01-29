@@ -316,7 +316,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 					continue; // should never happen
 		
 				Type parmType = operand.getParameterAt(argumentParameterIndex[ii]);
-				Type argType = frame.getArgument(inv, cpg, ii, numArguments, sigParser);
+				Type argType = frame.getArgument(inv, cpg, ii, sigParser);
 				matches[ii] = compareTypes(parmType, argType);
 
 				if (matches[ii] != IncompatibleTypes.SEEMS_OK) match = false;
@@ -336,7 +336,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				Type parmType = operand.getParameterAt(argumentParameterIndex[i]);
 				if (parmType instanceof GenericObjectType)
 					parmType = ((GenericObjectType)parmType).getUpperBound();
-				Type argType = frame.getArgument(inv, cpg, i, numArguments, sigParser);
+				Type argType = frame.getArgument(inv, cpg, i, sigParser);
 				
 				accumulator.accumulateBug(new BugInstance(this,
 						"GC_UNRELATED_TYPES", matches[i].getPriority())

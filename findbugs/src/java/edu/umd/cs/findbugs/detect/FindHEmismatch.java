@@ -405,7 +405,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
            
 	    if (type.isAbstract() || type.isInterface()) priority++;
 	    potentialBugs.put(type.getClassName(), 
-	            new BugInstance("HE_USE_OF_UNHASHABLE_CLASS",priority)
+	            new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",priority)
 	    .addClassAndMethod(this)
 	    .addTypeOfNamedClass(type.getClassName())
 	    .addTypeOfNamedClass(getClassConstantOperand())
