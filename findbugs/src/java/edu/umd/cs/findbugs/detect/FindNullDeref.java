@@ -817,9 +817,13 @@ public class FindNullDeref implements Detector,
         if (FindBugsAnalysisFeatures.isRelaxedMode()) {
             WarningPropertyUtil.addPropertiesForLocation(propertySet,
                     classContext, method, location);
-            propertySet.decorateBugInstance(bugInstance);
         }
-
+        if (isDoomed(location)) {
+            // Add a WarningProperty
+            propertySet.addProperty(DoomedCodeWarningProperty.DOOMED_CODE);
+        }
+        propertySet.decorateBugInstance(bugInstance);
+        
         bugReporter.reportBug(bugInstance);
     }
 
@@ -1220,42 +1224,52 @@ public class FindNullDeref implements Detector,
 
         for (SourceLineAnnotation sourceLineAnnotation : knownNullLocations)
             bugInstance.add(sourceLineAnnotation).describe(
-                    "SOURCE_LINE_KNOWN_NULL");
-        
-        if (MARK_DOOMED) {
-        	// If all deref locations are doomed
-        	// (i.e., locations where a normal return is not possible),
-        	// add a warning property indicating such.
-        	try {
-        		ReturnPathTypeDataflow rptDataflow = classContext.getReturnPathTypeDataflow(method);
+            "SOURCE_LINE_KNOWN_NULL");
 
-        		// Are all derefs at doomed locations?
-        		boolean allDerefsAtDoomedLocations = true;
-        		for (Location derefLoc : derefLocationSet) {
-            		ReturnPathType rpt = rptDataflow.getFactAtLocation(derefLoc);
 
-            		if (rpt.canReturnNormally()) {
-            			// This derefence does not occur at a doomed location
-            			allDerefsAtDoomedLocations = false;
-            			break;
-            		}
-        		}
-        		
-        		if (allDerefsAtDoomedLocations) {
-        			// Add a WarningProperty
-        			WarningPropertySet propertySet = new WarningPropertySet();
-        			propertySet.addProperty(DoomedCodeWarningProperty.DOOMED_CODE);
-        			propertySet.decorateBugInstance(bugInstance);
-        		}
-        		
-        	} catch (CheckedAnalysisException e) {
-        		// Should not happen
-        		bugReporter.logError("FindNullDeref: error checking doomed code analysis", e);
-        	}
+        // If all deref locations are doomed
+        // (i.e., locations where a normal return is not possible),
+        // add a warning property indicating such.
+
+        // Are all derefs at doomed locations?
+        boolean allDerefsAtDoomedLocations = true;
+        for (Location derefLoc : derefLocationSet) {
+            if (!isDoomed(derefLoc)) {
+                allDerefsAtDoomedLocations = false;
+                break;
+            }
         }
+
+        if (allDerefsAtDoomedLocations) {
+            // Add a WarningProperty
+            WarningPropertySet propertySet = new WarningPropertySet();
+            propertySet.addProperty(DoomedCodeWarningProperty.DOOMED_CODE);
+            propertySet.decorateBugInstance(bugInstance);
+        }
+
 
         // Report it
         bugReporter.reportBug(bugInstance);
+    }
+    
+    private boolean isDoomed(Location loc) {
+        if (!MARK_DOOMED) return false;
+        
+        ReturnPathTypeDataflow rptDataflow;
+        try {
+            rptDataflow = classContext.getReturnPathTypeDataflow(method);
+       
+
+        ReturnPathType rpt = rptDataflow.getFactAtLocation(loc);
+
+        return  !rpt.canReturnNormally();
+        } catch (CFGBuilderException e) {
+            AnalysisContext.logError("Error getting return path type", e);
+           return false;
+        } catch (DataflowAnalysisException e) {
+            AnalysisContext.logError("Error getting return path type", e);
+            return false;
+        }
     }
 
     String getDescription(Location loc, ValueNumber refValue) {
