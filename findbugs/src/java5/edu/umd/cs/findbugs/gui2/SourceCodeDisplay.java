@@ -156,7 +156,11 @@ public final class SourceCodeDisplay implements Runnable {
 					frame.sourceCodeTextPane.setEditorKit(src.getEditorKit());
 					StyledDocument document = src.getDocument();
 					frame.sourceCodeTextPane.setDocument(document);
-					frame.setSourceTabTitle(thisSource.getSourceFile() + " in " + thisSource.getPackageName());
+                    String sourceFile = thisSource.getSourceFile();
+                    if (sourceFile == null || sourceFile.equals("<Unknown>")) {
+                        sourceFile = thisSource.getSimpleClassName();
+                    }
+					frame.setSourceTabTitle(sourceFile + " in " + thisSource.getPackageName());
 					int startLine = thisSource.getStartLine();
 					int endLine = thisSource.getEndLine();
 					int originLine = (startLine + endLine) / 2;
