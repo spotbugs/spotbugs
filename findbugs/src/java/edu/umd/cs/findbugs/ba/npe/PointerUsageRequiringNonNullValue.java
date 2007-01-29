@@ -28,7 +28,9 @@ import edu.umd.cs.findbugs.ba.XMethodParameter;
 /**
  * @author pugh
  */
-public class PointerUsageRequiringNonNullValue {
+public abstract class PointerUsageRequiringNonNullValue {
+    
+    public abstract String getDescription();
 
     public boolean isDirect() {
         return false;
@@ -52,11 +54,21 @@ public class PointerUsageRequiringNonNullValue {
         public boolean isDirect() {
             return true;
         }
+
+        @Override
+        public String getDescription() {
+            return  "SOURCE_LINE_DEREF";
+        }
     };
 
     private static final PointerUsageRequiringNonNullValue nonNullReturnInstance = new PointerUsageRequiringNonNullValue() {
         public boolean getReturnFromNonNullMethod() {
             return true;
+        }
+
+        @Override
+        public String getDescription() {
+            return  "SOURCE_LINE_RETURNED";
         }
     };
 
@@ -75,6 +87,11 @@ public class PointerUsageRequiringNonNullValue {
                 return new XMethodParameter(m, param);
             }
 
+            @Override
+            public String getDescription() {
+                return  "SOURCE_LINE_PASSED";
+            }
+
         };
     }
 
@@ -83,6 +100,11 @@ public class PointerUsageRequiringNonNullValue {
             public @CheckForNull
             XField getNonNullField() {
                 return f;
+            }
+
+            @Override
+            public String getDescription() {
+                return  "SOURCE_LINE_STORED";
             }
 
         };

@@ -154,6 +154,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 			XMethod m = (XMethod) o;
 			if (m.getName().startsWith("access$")) return null;
 			if (m.getName().equals("clone") && m.getSignature().equals("()Ljava/lang/Object;")) return NullnessAnnotation.NONNULL;
+            if (m.getName().equals("toString") && m.getSignature().equals("()Ljava/lang/String;")) return NullnessAnnotation.NONNULL;
 		} else if (o instanceof XField) {
 			XField f = (XField) o;
 			if (f.getName().startsWith("this$")) return NullnessAnnotation.NONNULL;

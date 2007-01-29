@@ -71,11 +71,13 @@ public class UsagesRequiringNonNullValues {
 
     public @CheckForNull
     PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn) {
+        PointerUsageRequiringNonNullValue secondBest = null;
         for (Pair p : map.get(loc)) {
             if (p.vn.equals(vn))
                 return p.pu;
+            else secondBest = p.pu;
         }
-        return null;
+        return secondBest;
     }
 
     public Collection<? extends Pair> getPairs(Location loc) {

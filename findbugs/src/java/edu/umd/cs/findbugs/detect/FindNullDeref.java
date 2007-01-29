@@ -1216,8 +1216,7 @@ public class FindNullDeref implements Detector,
             bugInstance.addField(storedField);
         bugInstance.add(variableAnnotation);
         for (Location loc : derefLocationSet)
-            bugInstance.addSourceLine(classContext, method, loc).describe(
-                    "SOURCE_LINE_DEREF");
+            bugInstance.addSourceLine(classContext, method, loc).describe(getDescription(loc, refValue));
 
         for (SourceLineAnnotation sourceLineAnnotation : knownNullLocations)
             bugInstance.add(sourceLineAnnotation).describe(
@@ -1259,6 +1258,22 @@ public class FindNullDeref implements Detector,
         bugReporter.reportBug(bugInstance);
     }
 
+    String getDescription(Location loc, ValueNumber refValue) {
+        PointerUsageRequiringNonNullValue pu;
+        try {
+            UsagesRequiringNonNullValues usages = classContext.getUsagesRequiringNonNullValues(method);
+            pu = usages.get(loc, refValue);
+            if (pu == null)  return "SOURCE_LINE_DEREF";
+            return pu.getDescription();
+        } catch (DataflowAnalysisException e) {
+           AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
+           return "SOURCE_LINE_DEREF";
+        } catch (CFGBuilderException e) {
+            AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
+            return "SOURCE_LINE_DEREF";
+        }
+
+    }
     boolean inCatchNullBlock(Location loc) {
         int pc = loc.getHandle().getPosition();
         int catchSize = Util.getSizeOfSurroundingTryBlock(classContext
