@@ -119,7 +119,7 @@ public class FindNullDeref implements Detector,
             .getBoolean("fnd.debug.nullreturn");
     
     private static final boolean MARK_DOOMED = SystemProperties
-    		.getBoolean("fnd.markdoomed");
+    		.getBoolean("fnd.markdoomed", true);
 
     private static final boolean REPORT_SAFE_METHOD_TARGETS = true;
 
