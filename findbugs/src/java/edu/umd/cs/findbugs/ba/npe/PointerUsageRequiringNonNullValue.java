@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
@@ -28,17 +30,61 @@ import edu.umd.cs.findbugs.ba.XMethodParameter;
  */
 public class PointerUsageRequiringNonNullValue {
 
-	private static final PointerUsageRequiringNonNullValue instance = new PointerUsageRequiringNonNullValue();
-	public static PointerUsageRequiringNonNullValue getPointerDereference() {
-		return instance;
-	}
-	public static PointerUsageRequiringNonNullValue getReturnFromNonNullMethod(XMethod m) {
-		return instance;
-	}
-	public static PointerUsageRequiringNonNullValue getPassedAsNonNullParameter(XMethod m, int param) {
-		return instance;
-	}
-	public static PointerUsageRequiringNonNullValue getStoredIntoNonNullField(XField f) {
-		return instance;
-	}
+    public boolean isDirect() {
+        return false;
+    }
+
+    public boolean getReturnFromNonNullMethod() {
+        return false;
+    }
+
+    public @CheckForNull
+    XMethodParameter getNonNullParameter() {
+        return null;
+    }
+
+    public @CheckForNull
+    XField getNonNullField() {
+        return null;
+    }
+
+    private static final PointerUsageRequiringNonNullValue instance = new PointerUsageRequiringNonNullValue() {
+        public boolean isDirect() {
+            return true;
+        }
+    };
+
+    private static final PointerUsageRequiringNonNullValue nonNullReturnInstance = new PointerUsageRequiringNonNullValue() {
+        public boolean getReturnFromNonNullMethod() {
+            return true;
+        }
+    };
+
+    public static PointerUsageRequiringNonNullValue getPointerDereference() {
+        return instance;
+    }
+
+    public static PointerUsageRequiringNonNullValue getReturnFromNonNullMethod(XMethod m) {
+        return nonNullReturnInstance;
+    }
+
+    public static PointerUsageRequiringNonNullValue getPassedAsNonNullParameter(final XMethod m, final int param) {
+        return new PointerUsageRequiringNonNullValue() {
+            public @CheckForNull
+            XMethodParameter getNonNullParameter() {
+                return new XMethodParameter(m, param);
+            }
+
+        };
+    }
+
+    public static PointerUsageRequiringNonNullValue getStoredIntoNonNullField(final XField f) {
+        return new PointerUsageRequiringNonNullValue() {
+            public @CheckForNull
+            XField getNonNullField() {
+                return f;
+            }
+
+        };
+    }
 }

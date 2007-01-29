@@ -49,6 +49,17 @@ public class UsagesRequiringNonNullValues {
     }
 
     MultiMap<Location, Pair> map = new MultiMap<Location, Pair>(LinkedList.class);
+    
+    public String toString() {
+        StringBuffer buf = new StringBuffer();
+        for(Location loc : map.keySet()) {
+            buf.append(loc.getHandle().getPosition() + ":" + loc.getHandle().getInstruction() +"\n");
+            for(Pair p : getPairs(loc)) {
+                buf.append("  ").append(p.vn).append("\n");
+            }
+        }
+        return buf.toString();
+    }
 
     public void add(Location loc, ValueNumber vn, PointerUsageRequiringNonNullValue usage) {
         Pair p = new Pair(vn, usage);

@@ -395,7 +395,7 @@ public class UnconditionalValueDerefAnalysis extends
 			IsNullValue value = invFrame.getValue(slot);
 			if (reportDereference(invFrame, slot) && database.parameterMustBeNonNull(called, i)) {
 				// Get the corresponding value number
-				ValueNumber vn = vnaFrame.getArgument(inv, methodGen.getConstantPool(), i, numParams, sigParser);
+				ValueNumber vn = vnaFrame.getArgument(inv, methodGen.getConstantPool(), i, sigParser);
 				fact.addDeref(vn, location);
 			}
 		}

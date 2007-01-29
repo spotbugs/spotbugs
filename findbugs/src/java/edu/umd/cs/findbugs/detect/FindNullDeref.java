@@ -44,11 +44,12 @@ import org.apache.bcel.generic.ReturnInstruction;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugProperty;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.FindBugsAnalysisFeatures;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -67,9 +68,11 @@ import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.NullnessAnnotation;
 import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.XMethodParameter;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
@@ -78,6 +81,7 @@ import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.PointerUsageRequiringNonNullValue;
 import edu.umd.cs.findbugs.ba.npe.RedundantBranch;
 import edu.umd.cs.findbugs.ba.npe.ReturnPathType;
 import edu.umd.cs.findbugs.ba.npe.ReturnPathTypeDataflow;
@@ -89,7 +93,6 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.props.GeneralWarningProperty;
-import edu.umd.cs.findbugs.props.WarningProperty;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 import edu.umd.cs.findbugs.visitclass.Util;
@@ -210,6 +213,8 @@ public class FindNullDeref implements Detector,
         if (DEBUG || DEBUG_NULLARG)
             System.out.println("FND: "
                     + SignatureConverter.convertMethodSignature(methodGen));
+        
+       
 
         this.previouslyDeadBlocks = findPreviouslyDeadBlocks();
 
@@ -310,6 +315,7 @@ public class FindNullDeref implements Detector,
                     examineCallSite(location, cpg, typeDataflow);
                 } else if (methodAnnotation == NullnessAnnotation.NONNULL
                         && ins.getOpcode() == Constants.ARETURN) {
+                    
                     examineReturnInstruction(location);
                 } else if (ins instanceof PUTFIELD) {
                     examinePutfieldInstruction(location, (PUTFIELD) ins, cpg);
@@ -403,7 +409,7 @@ public class FindNullDeref implements Detector,
         if (!frame.isValid())
             return;
         IsNullValue tos = frame.getTopValue();
-        if (tos.mightBeNull()) {
+        if (tos.isDefinitelyNull()) {
             XField field = XFactory.createXField(ins, cpg);
             NullnessAnnotation annotation = AnalysisContext
                     .currentAnalysisContext().getNullnessAnnotationDatabase()
@@ -413,12 +419,24 @@ public class FindNullDeref implements Detector,
                 MethodGen methodGen = classContext.getMethodGen(method);
                 String sourceFile = classContext.getJavaClass()
                         .getSourceFileName();
-
-                BugInstance warning = new BugInstance(
+                BugAnnotation variableAnnotation = null;
+                try {
+                   ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
+                   ValueNumber valueNumber = vnaFrame.getTopValue();
+                   variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+                          location, valueNumber, vnaFrame);
+                
+               } catch (DataflowAnalysisException e) {
+                 AnalysisContext.logError("error", e);
+               } catch (CFGBuilderException e) {
+                   AnalysisContext.logError("error", e);
+               }
+           
+                BugInstance warning = new BugInstance(this,
                         "NP_STORE_INTO_NONNULL_FIELD",
                         tos.isDefinitelyNull() ? HIGH_PRIORITY
                                 : NORMAL_PRIORITY).addClassAndMethod(methodGen,
-                        sourceFile).addField(field).addSourceLine(classContext,
+                        sourceFile).addField(field).addOptionalAnnotation(variableAnnotation).addSourceLine(classContext,
                         methodGen, sourceFile, location.getHandle());
 
                 bugReporter.reportBug(warning);
@@ -435,12 +453,16 @@ public class FindNullDeref implements Detector,
         IsNullValueDataflow invDataflow = classContext
                 .getIsNullValueDataflow(method);
         IsNullValueFrame frame = invDataflow.getFactAtLocation(location);
+        ValueNumberFrame  vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
+        ValueNumber valueNumber = vnaFrame.getTopValue();
         if (!frame.isValid())
             return;
         IsNullValue tos = frame.getTopValue();
-        if (tos.mightBeNull()) {
+        if (tos.isDefinitelyNull()) {
             MethodGen methodGen = classContext.getMethodGen(method);
             String sourceFile = classContext.getJavaClass().getSourceFileName();
+            BugAnnotation variable = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+                    location, valueNumber, vnaFrame);
 
             String bugPattern = "NP_NONNULL_RETURN_VIOLATION";
             int priority = NORMAL_PRIORITY;
@@ -454,8 +476,8 @@ public class FindNullDeref implements Detector,
                 bugPattern = "NP_TOSTRING_COULD_RETURN_NULL";
                 priority = NORMAL_PRIORITY;
             }
-            BugInstance warning = new BugInstance(bugPattern, priority)
-                    .addClassAndMethod(methodGen, sourceFile).addSourceLine(
+            BugInstance warning = new BugInstance(this, bugPattern, priority)
+                    .addClassAndMethod(methodGen, sourceFile).addOptionalAnnotation(variable).addSourceLine(
                             classContext, methodGen, sourceFile,
                             location.getHandle());
 
@@ -565,7 +587,7 @@ public class FindNullDeref implements Detector,
             propertySet
                     .addProperty(NullArgumentWarningProperty.ACTUAL_PARAMETER_GUARANTEED_NULL);
 
-        BugInstance warning = new BugInstance(bugType, priority)
+        BugInstance warning = new BugInstance(this,bugType, priority)
                 .addClassAndMethod(methodGen, sourceFile).addMethod(
                         XFactory.createXMethod(invokeInstruction, cpg))
                 .describe("METHOD_CALLED").addSourceLine(classContext,
@@ -652,7 +674,8 @@ public class FindNullDeref implements Detector,
 
         NullnessAnnotationDatabase db = AnalysisContext
                 .currentAnalysisContext().getNullnessAnnotationDatabase();
-        for (int i = nullArgSet.nextSetBit(0); i >= 0; i = nullArgSet
+        SignatureParser sigParser = new SignatureParser(invokeInstruction.getSignature(cpg));
+       for (int i = nullArgSet.nextSetBit(0); i >= 0; i = nullArgSet
                 .nextSetBit(i + 1)) {
 
             if (db.parameterMustBeNonNull(m, i)) {
@@ -663,7 +686,18 @@ public class FindNullDeref implements Detector,
                     System.out.println("QQQ dnullArgSet: "
                             + definitelyNullArgSet);
                 }
-
+                BugAnnotation variableAnnotation = null;
+                 try {
+                    ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
+                    ValueNumber valueNumber = vnaFrame. getArgument(invokeInstruction, cpg, i, sigParser );
+                    variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+                           location, valueNumber, vnaFrame);
+                 
+                } catch (DataflowAnalysisException e) {
+                  AnalysisContext.logError("error", e);
+                } catch (CFGBuilderException e) {
+                    AnalysisContext.logError("error", e);
+                }
                 MethodGen methodGen = classContext.getMethodGen(method);
                 String sourceFile = classContext.getJavaClass()
                         .getSourceFileName();
@@ -671,11 +705,11 @@ public class FindNullDeref implements Detector,
                 int priority = definitelyNull ? HIGH_PRIORITY : NORMAL_PRIORITY;
                 if (caught)
                     priority++;
-                BugInstance warning = new BugInstance(
+                BugInstance warning = new BugInstance(this,
                         "NP_NONNULL_PARAM_VIOLATION", priority)
                         .addClassAndMethod(methodGen, sourceFile).addMethod(m)
                         .describe("METHOD_CALLED").addInt(i).describe(
-                                "INT_NONNULL_PARAM").addSourceLine(
+                                "INT_NONNULL_PARAM").addOptionalAnnotation(variableAnnotation).addSourceLine(
                                 classContext, methodGen, sourceFile,
                                 location.getHandle());
 
@@ -1000,6 +1034,33 @@ public class FindNullDeref implements Detector,
         bugReporter.reportBug(bugInstance);
     }
 
+    
+    // XXX
+    BugAnnotation getVariableAnnotation(Location location) {
+        BugAnnotation variableAnnotation = null;
+        try {
+            // Get the value number
+            ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(
+                    method).getFactAtLocation(location);
+            if (vnaFrame.isValid()) {
+                Instruction ins = location.getHandle().getInstruction();
+
+                ValueNumber valueNumber = vnaFrame.getInstance(ins,
+                        classContext.getConstantPoolGen());
+                if (valueNumber.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
+                    return null;
+                variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+                        location, valueNumber, vnaFrame);
+
+            }
+        } catch (DataflowAnalysisException e) {
+            // ignore
+        } catch (CFGBuilderException e) {
+            // ignore
+        }
+        return variableAnnotation;
+
+    }
     /**
      * Determine whether or not given instruction is a goto.
      * 
@@ -1103,16 +1164,56 @@ public class FindNullDeref implements Detector,
             }
         }
 
+        FieldAnnotation storedField = null;
+        MethodAnnotation invokedMethod = null;
+        int parameterNumber = -1;
         if (derefLocationSet.size() == 1) {
-            if (!alwaysOnExceptionPath)
+            Location loc = derefLocationSet.iterator().next();
+ 
+            PointerUsageRequiringNonNullValue pu = null;
+            try {
+                UsagesRequiringNonNullValues usages = classContext.getUsagesRequiringNonNullValues(method);
+                pu = usages.get(loc, refValue);
+            } catch (DataflowAnalysisException e) {
+               AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
+            } catch (CFGBuilderException e) {
+                AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
+            }
+            if (pu != null && pu.getReturnFromNonNullMethod()) {
+                bugType = "NP_NONNULL_RETURN_VIOLATION";
+                String methodName = method.getName();
+                String methodSig = method.getSignature();
+                if (methodName.equals("clone") && methodSig.equals("()Ljava/lang/Object;")) {
+                    bugType = "NP_CLONE_COULD_RETURN_NULL";
+                    priority = NORMAL_PRIORITY;
+                } else if (methodName.equals("toString") && methodSig.equals("()Ljava/lang/String;")) {
+                    bugType = "NP_TOSTRING_COULD_RETURN_NULL";
+                    priority = NORMAL_PRIORITY;
+                }
+            
+            } else if (pu != null && pu.getNonNullField() != null) {
+                storedField =  FieldAnnotation.fromXField( pu.getNonNullField() );
+                bugType = "NP_STORE_INTO_NONNULL_FIELD";
+            } else if (pu != null && pu.getNonNullParameter() != null) {
+                XMethodParameter mp = pu.getNonNullParameter() ;
+                invokedMethod =  MethodAnnotation.fromXMethod(mp.getMethod());
+                parameterNumber = mp.getParameterNumber();
+                bugType = "NP_NULL_PARAM_DEREF";
+            } else if (!alwaysOnExceptionPath)
                 bugType = "NP_NULL_ON_SOME_PATH";
             else
                 bugType = "NP_NULL_ON_SOME_PATH_EXCEPTION";
         }
 
+          
+
         BugInstance bugInstance = new BugInstance(this, bugType, priority)
                 .addClassAndMethod(classContext.getJavaClass(), method);
-
+        if (invokedMethod != null)
+            bugInstance.addMethod(invokedMethod).describe("METHOD_CALLED").addInt(parameterNumber).describe(
+            "INT_NONNULL_PARAM");
+        if (storedField!= null)
+            bugInstance.addField(storedField);
         bugInstance.add(variableAnnotation);
         for (Location loc : derefLocationSet)
             bugInstance.addSourceLine(classContext, method, loc).describe(

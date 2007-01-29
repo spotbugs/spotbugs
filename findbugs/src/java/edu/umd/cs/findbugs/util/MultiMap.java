@@ -40,6 +40,9 @@ public class MultiMap<K,  V> {
         }
     }
 	Map<K,  Collection<V>> map = new HashMap<K,  Collection<V>>();
+    public Collection<? extends K> keySet() {
+        return map.keySet();
+    }
 	public void add(K k, V v) {
         Collection<V> s = map.get(k);
 		if (s == null) {

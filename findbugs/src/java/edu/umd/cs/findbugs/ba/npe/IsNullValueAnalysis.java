@@ -108,7 +108,7 @@ public class IsNullValueAnalysis
 		this.numNonExceptionSuccessorMap = new int[cfg.getNumBasicBlocks()];
 		this.locationWhereValueBecomesNullSet = new HashSet<LocationWhereValueBecomesNull>();
 
-		// For each basic block, calculate the number of non-exception successors.
+       // For each basic block, calculate the number of non-exception successors.
 		Iterator<Edge> i = cfg.edgeIterator();
 		while (i.hasNext()) {
 			Edge edge = i.next();
