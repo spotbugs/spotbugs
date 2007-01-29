@@ -440,6 +440,15 @@ public class SourceLineAnnotation implements BugAnnotation {
 		this.sourceFile = sourceFile;
 	}
 
+
+    /**
+     * Get the simple class name (the part of the name after the dot)
+     */
+    public String getSimpleClassName() {
+        int lastDot = className.lastIndexOf('.');
+        return className.substring(lastDot+1);
+    }
+
 	/**
 	 * Get the package name.
 	 */
