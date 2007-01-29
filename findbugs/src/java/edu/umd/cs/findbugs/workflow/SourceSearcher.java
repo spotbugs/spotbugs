@@ -25,6 +25,7 @@ import java.util.HashSet;
 
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 
 /**
@@ -33,7 +34,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 public class SourceSearcher {
 	HashSet<String> sourceFound = new HashSet<String>();
 	HashSet<String> sourceNotFound = new HashSet<String>();
-	 SourceFinder sourceFinder = new SourceFinder();
+	SourceFinder sourceFinder = new SourceFinder();
 
 	public SourceSearcher(Project project) {
 		sourceFinder.setSourceBaseList(project.getSourceDirList());
@@ -41,23 +42,19 @@ public class SourceSearcher {
 	
 	public boolean findSource(SourceLineAnnotation srcLine) {
 		if (srcLine == null) return false;
-		String sourceFile = srcLine.getSourceFile();
-		if (sourceFile != null && !sourceFile.equals("<Unknown>")) {
-			
-			String cName = srcLine.getClassName();
-			if (sourceFound.contains(cName)) return true;
-			if (sourceNotFound.contains(cName)) return false;
-			try {
-				InputStream in = sourceFinder.openSource(srcLine.getPackageName(), sourceFile);
-				in.close();
-				sourceFound.add(cName);
-				return true;
-			} catch (IOException e) {
-				assert true; // ignore it -- couldn't find source file
-				sourceNotFound.add(cName);
-			}
-		}
-		return false;
-	}
+        String cName = srcLine.getClassName();
+        if (sourceFound.contains(cName)) return true;
+        if (sourceNotFound.contains(cName)) return false;
+    
+        try {
+            InputStream in = sourceFinder.openSource(srcLine);
+            in.close();
+            sourceFound.add(cName);
+            return true;
+        } catch (IOException e1) {
+            sourceNotFound.add(cName);
+            return false;
+        }
+    }
 
 }
