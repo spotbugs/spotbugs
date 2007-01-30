@@ -228,27 +228,26 @@ public class UnconditionalValueDerefAnalysis extends
 			Location location,
 			ValueNumberFrame vnaFrame,
 			UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
-		
+        InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
+        
+        SignatureParser sigParser = new SignatureParser(inv.getSignature(methodGen.getConstantPool()));
+        int numParams = sigParser.getNumParameters();
+        if (numParams == 0) return;
 		ParameterNullnessPropertyDatabase database =
 			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase();
 		if (database == null) {
-			if (DEBUG_CHECK_CALLS) {
+			if (DEBUG_CHECK_CALLS) 
 				System.out.println("no database!");
-			}
 			return;
 		}
 		
-		InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
 		TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
 		if (!typeFrame.isValid()) {
-			if (DEBUG_CHECK_CALLS) {
+			if (DEBUG_CHECK_CALLS) 
 				System.out.println("invalid type frame!");
-			}
 			return;
 		}
 		
-		SignatureParser sigParser = new SignatureParser(inv.getSignature(methodGen.getConstantPool()));
-		int numParams = sigParser.getNumParameters();
 		
 		try {
 			Set<JavaClassAndMethod> targetSet = Hierarchy.resolveMethodCallTargets(
@@ -256,25 +255,22 @@ public class UnconditionalValueDerefAnalysis extends
 					typeFrame,
 					methodGen.getConstantPool());
 			
-			if (targetSet.isEmpty()) {
-				return;
-			}
+			if (targetSet.isEmpty()) return;
+
 			
+            if (DEBUG_CHECK_CALLS) System.out.println("target set size: " + targetSet.size());
 			// Compute the intersection of all properties
 			ParameterNullnessProperty derefParamSet = null;
 			for (JavaClassAndMethod target : targetSet) {
-				if (DEBUG_CHECK_CALLS) {
-					System.out.print("Checking " + target + ": ");
-				}
+				if (DEBUG_CHECK_CALLS) 
+					System.out.print("Checking: " + target + ": ");
 				
 				ParameterNullnessProperty targetDerefParamSet = database.getProperty(target.toXMethod());
 				if (targetDerefParamSet == null) {
 					// Hmm...no information for this target.
 					// assume it doesn't dereference anything
-					if (DEBUG_CHECK_CALLS) {
+					if (DEBUG_CHECK_CALLS) 
 						System.out.println("==> no information, assume no guaranteed dereferences");
-					}
-			
 					return;
 				}
 				
@@ -290,44 +286,27 @@ public class UnconditionalValueDerefAnalysis extends
 			}
 			
 			if (derefParamSet == null || derefParamSet.isEmpty()) {
+                System.out.println("** Nothing");
 				return;
 			}
 			if (DEBUG_CHECK_CALLS) {
-				System.out.println("** Summary of call: " + derefParamSet);
+				System.out.println("** Summary of call @ " + location.getHandle().getPosition() 
+                        + ": " + derefParamSet);
 			}
 			
 			IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
 
 			if (invFrame != null && invFrame.isValid()) {
-			
-				
 				for (int i = 0; i < numParams; i++) {
 					if (!derefParamSet.isNonNull(i)) {
 						continue;
 					}
-					if (DEBUG_CHECK_CALLS)  System.out.println("  parameter must be non null");
-
-					int argSlot = vnaFrame.getStackLocation(sigParser.getSlotsFromTopOfStackForParameter(i));
+						int argSlot = vnaFrame.getStackLocation(sigParser.getSlotsFromTopOfStackForParameter(i));
 					if (!reportDereference(invFrame, argSlot)) continue;
+                    if (DEBUG_CHECK_CALLS)  System.out.println("  dereference @ " + location.getHandle().getPosition()  + " of parameter " + i);
 
+                    
 					fact.addDeref(vnaFrame.getValue(argSlot), location);
-					if (DEBUG_CHECK_CALLS ||VERBOSE_NULLARG_DEBUG) {
-						System.out.println("Adding deref of " + vnaFrame.getValue(argSlot) + " at location " + location);
-						for (JavaClassAndMethod target : targetSet) {
-
-							System.out.print("Checking " + target + ": ");
-							ParameterNullnessProperty targetDerefParamSet = database.getProperty(target.toXMethod());
-							if (targetDerefParamSet == null) {
-								System.out.println(" ==> unknown");
-								continue;
-							}
-
-
-							System.out.println("==> " + targetDerefParamSet);
-
-						}
-
-					}
 				}
 			}
 		} catch (ClassNotFoundException e) {
