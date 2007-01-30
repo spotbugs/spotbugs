@@ -1551,7 +1551,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 
   <BugPattern type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS">
     <ShortDescription>Fields of immutable classes should be final</ShortDescription>
-    <LongDescription>{1} should be final since {0} is marked as Immutable.  </LongDescription>
+    <LongDescription>{1.givenClass} should be final since {0} is marked as Immutable.  </LongDescription>
     <Details>
 <![CDATA[
   <p> The class is annotated with net.jcip.annotations.Immutable, and the rules for that annotation require
@@ -2243,7 +2243,7 @@ using the <code>equals(Object)</code> method instead.</p>
 
   <BugPattern type="IS_FIELD_NOT_GUARDED">
     <ShortDescription>Field not guarded against concurrent access</ShortDescription>
-    <LongDescription>{1} not guarded against concurrent access; locked {2}% of time</LongDescription>
+    <LongDescription>{1.givenClass} not guarded against concurrent access; locked {2}% of time</LongDescription>
     <Details>
 <![CDATA[
   <p> This field is annotated with net.jcip.annotations.GuardedBy, 
@@ -2376,7 +2376,7 @@ but can be accessed in a way that seems to violate the annotation.</p>
   </BugPattern>
   <BugPattern type="SP_SPIN_ON_FIELD">
     <ShortDescription>Method spins on field</ShortDescription>
-    <LongDescription>Spinning on {2} in {1}</LongDescription>
+    <LongDescription>Spinning on {2.givenClass} in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p> This method spins in a loop which reads a field.&nbsp; The compiler
@@ -2607,7 +2607,7 @@ than less contrived solutions.
 
   <BugPattern type="ML_SYNC_ON_UPDATED_FIELD">
     <ShortDescription>Method synchronizes on an updated field</ShortDescription>
-    <LongDescription>{1} synchronizes on updated field {2}</LongDescription>
+    <LongDescription>{1} synchronizes on updated field {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
   <p> This method synchronizes on an object
@@ -2905,7 +2905,7 @@ mechanism.
   </BugPattern>
   <BugPattern type="SE_TRANSIENT_FIELD_OF_NONSERIALIZABLE_CLASS">
     <ShortDescription>Transient field of class that isn't Serializable. </ShortDescription>
-    <LongDescription>{1} is transient but {0} isn't Serializable</LongDescription>
+    <LongDescription>{1.givenClass} is transient but {0} isn't Serializable</LongDescription>
     <Details>
 <![CDATA[
   <p> The field is marked as transient, but the class isn't Serializable, so marking it as transient
@@ -3140,7 +3140,7 @@ problem.
 
   <BugPattern type="SE_BAD_FIELD_STORE">
     <ShortDescription>Non-serializable value stored into instance field of a serializable class</ShortDescription>
-    <LongDescription>{2} stored into non-transient field {1}</LongDescription>
+    <LongDescription>{2} stored into non-transient field {1.givenClass}</LongDescription>
     <Details>
 <![CDATA[
 <p> A non-serializable value is stored into a non-transient field
@@ -3308,7 +3308,7 @@ but not necessarily wrong).
   </BugPattern>
   <BugPattern type="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR">
     <ShortDescription>Field not initialized in constructor</ShortDescription>
-    <LongDescription>Field not initialized in constructor: {1}</LongDescription>
+    <LongDescription>{1.givenClass} not initialized in constructor</LongDescription>
     <Details>
 <![CDATA[
   <p> This field is never initialized within any constructor, and is therefore could be null after
@@ -3569,7 +3569,7 @@ was return from a method which is known to return possibly-null values.</p>
 
   <BugPattern type="NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS">
    <ShortDescription>Method call passes null for unconditionally dereferenced parameter</ShortDescription>
-   <LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {2}</LongDescription>
+   <LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {2.givenClass}</LongDescription>
    <Details>
       <![CDATA[
       <p>
@@ -3583,7 +3583,7 @@ was return from a method which is known to return possibly-null values.</p>
 
   <BugPattern type="NP_NULL_PARAM_DEREF">
    <ShortDescription>Method call passes null for unconditionally dereferenced parameter</ShortDescription>
-   <LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {2}</LongDescription>
+   <LongDescription>Method call in {1} passes null for unconditionally dereferenced parameter of {2.givenClass}</LongDescription>
    <Details>
       <![CDATA[
       <p>
@@ -3596,7 +3596,7 @@ was return from a method which is known to return possibly-null values.</p>
 
   <BugPattern type="NP_NONNULL_PARAM_VIOLATION">
    <ShortDescription>Method call passes null to a parameter declared @NonNull</ShortDescription>
-   <LongDescription>Method call in {1} passes null to a parameter declared @NonNull of {2}</LongDescription>
+   <LongDescription>Method call in {1} passes null to a parameter declared @NonNull of {2.givenClass}</LongDescription>
    <Details>
       <![CDATA[
       <p>
@@ -4040,7 +4040,7 @@ Such assignments are useless, and may indicate a logic error or typo.
 
   <BugPattern type="SA_FIELD_SELF_ASSIGNMENT">
     <ShortDescription>Self assignment of field</ShortDescription>
-    <LongDescription>Self assignment of field {2} in {1}</LongDescription>
+    <LongDescription>Self assignment of field {2.givenClass} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains a self assignment of a field; e.g.
@@ -4058,7 +4058,7 @@ Such assignments are useless, and may indicate a logic error or typo.
 
   <BugPattern type="SA_FIELD_DOUBLE_ASSIGNMENT">
     <ShortDescription>Double assignment of field</ShortDescription>
-    <LongDescription>Double assignment of field {2} in {1}</LongDescription>
+    <LongDescription>Double assignment of field {2.givenClass} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method contains a double assignment of a field; e.g.
@@ -4093,7 +4093,7 @@ Such assignments are useless, and may indicate a logic error or typo.
 
   <BugPattern type="SA_FIELD_SELF_COMPUTATION">
     <ShortDescription>Nonsensical self computation involving a field (e.g., x &amp; x)</ShortDescription>
-    <LongDescription>Nonsensical self computation of {2} with itself {1}</LongDescription>
+    <LongDescription>Nonsensical self computation of {2.givenClass} with itself {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method performs a nonsensical computation of a field with another
@@ -4123,7 +4123,7 @@ a logic error.  Double check the computation.
 
   <BugPattern type="SA_FIELD_SELF_COMPARISON">
     <ShortDescription>Self comparison of field with itself</ShortDescription>
-    <LongDescription>Self comparison of {2} with itself {1}</LongDescription>
+    <LongDescription>Self comparison of {2.givenClass} with itself {1}</LongDescription>
     <Details>
 <![CDATA[
 <p> This method compares a field with itself, and may indicate a typo or
