@@ -304,8 +304,7 @@ public class FindBadCast2 implements Detector {
 						new BugInstance(this,
 						"BC_IMPOSSIBLE_CAST",  priority)
 						.addClassAndMethod(methodGen, sourceFile)
-						.addType(refSig).describe(TypeAnnotation.FOUND_ROLE)
-						.addType(castSig).describe(TypeAnnotation.EXPECTED_ROLE)
+						.addFoundAndExpectedType(refSig, castSig)
 						.addSourceLine(sourceLineAnnotation));
 				continue;
 			}
@@ -346,9 +345,7 @@ public class FindBadCast2 implements Detector {
 						accumulator.accumulateBug(new BugInstance(this,
 								"BC_VACUOUS_INSTANCEOF", NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
-							
-								.addType(refSig).describe(TypeAnnotation.FOUND_ROLE)
-								.addType(castSig).describe(TypeAnnotation.EXPECTED_ROLE)
+								.addFoundAndExpectedType(refSig, castSig)
 								,sourceLineAnnotation);
 				} else {
 					boolean downcast = Repository.instanceOf(castJavaClass,
@@ -408,8 +405,7 @@ public class FindBadCast2 implements Detector {
 								isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
 								
-								.addType(refSig).describe(TypeAnnotation.FOUND_ROLE)
-								.addType(castSig).describe(TypeAnnotation.EXPECTED_ROLE)
+								.addFoundAndExpectedType(refSig, castSig)
                                 .addOptionalAnnotation(variable)
 								.addSourceLine(sourceLineAnnotation));
 					else if (isCast && rank < 0.9 && variable instanceof LocalVariableAnnotation
@@ -470,8 +466,7 @@ public class FindBadCast2 implements Detector {
 
 							BugInstance bugInstance = new BugInstance(this, bug, priority)
 									.addClassAndMethod(methodGen, sourceFile)
-									.addType(refSig).describe(TypeAnnotation.FOUND_ROLE)
-									.addType(castSig).describe(TypeAnnotation.EXPECTED_ROLE)
+									.addFoundAndExpectedType(refSig, castSig)
                                      .addOptionalAnnotation(variable);
                             
                             accumulator.accumulateBug(bugInstance,

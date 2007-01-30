@@ -680,7 +680,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		BugInstance instance =
 			new BugInstance(this, bugPattern, BASE_ES_PRIORITY)
 		.addClassAndMethod(methodGen, sourceFile)
-		.addType("Ljava/lang/String;")
+		.addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE)
 		.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle());
 
 		WarningWithProperties warn = new WarningWithProperties(instance, propertySet, location);
@@ -696,7 +696,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		String sourceFile = jclass.getSourceFileName();
 		BugInstance instance = new BugInstance(this, "RC_REF_COMPARISON", lhs.equals("java.lang.Boolean") ? NORMAL_PRIORITY : HIGH_PRIORITY)
 		.addClassAndMethod(methodGen, sourceFile)
-		.addType("L" + lhs.replace('.', '/')+";")
+		.addType("L" + lhs.replace('.', '/')+";").describe(TypeAnnotation.FOUND_ROLE)
 		.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle());
 
 		refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet(), location));
@@ -765,16 +765,15 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType)
 			bugReporter.reportBug(new BugInstance(this, "EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addType(lhsType_.getSignature())
-			.addType(rhsType_.getSignature())
+            .addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
 			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 		IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_);
 				if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) 
 			bugReporter.reportBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority())
 			.addClassAndMethod(methodGen, sourceFile)
-			.addType(lhsType_.getSignature())
-			.addType(rhsType_.getSignature())
+         .addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
+        			
 			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 		else if (result == IncompatibleTypes.INCOMPATIBLE_CLASSES) {
@@ -787,24 +786,21 @@ public class FindRefComparison implements Detector, ExtendedTypes {
             }
 			if (!looksLikeTestCase) bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
-			.addType(lhsSig)
-			.addType(rhsSig)
-			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+    .addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
+        			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
         }
 		else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE) 
 			bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority())
 			.addClassAndMethod(methodGen, sourceFile)
-			.addType(lhsType_.getSignature())
-			.addType(rhsType_.getSignature())
-			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+      .addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
+        			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 		else if (result == IncompatibleTypes.UNRELATED_INTERFACES) 
 			bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority())
 			.addClassAndMethod(methodGen, sourceFile)
-			.addType(lhsType_.getSignature())
-			.addType(rhsType_.getSignature())
-			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+     .addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
+        			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 	}
 

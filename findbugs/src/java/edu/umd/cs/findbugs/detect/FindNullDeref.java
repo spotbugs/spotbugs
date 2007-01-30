@@ -575,8 +575,7 @@ public class FindNullDeref implements Detector,
             bugType = "NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS";
             priority = NORMAL_PRIORITY;
         } else {
-            bugType = "NP_NULL_PARAM_DEREF";
-            priority = LOW_PRIORITY;
+          return;
         }
 
         if (caught)
@@ -594,9 +593,10 @@ public class FindNullDeref implements Detector,
                         methodGen, sourceFile, location.getHandle());
 
         // Check which params might be null
-        addParamAnnotations(definitelyNullArgSet,
-                unconditionallyDereferencedNullArgSet, propertySet, warning);
+        addParamAnnotations(null,
+                definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
 
+        if (false) {
         // Add annotations for dangerous method call targets
         for (JavaClassAndMethod dangerousCallTarget : veryDangerousCallTargetList) {
             warning.addMethod(dangerousCallTarget).describe(
@@ -615,6 +615,7 @@ public class FindNullDeref implements Detector,
         for (JavaClassAndMethod safeMethod : safeCallTargetSet) {
             warning.addMethod(safeMethod).describe("METHOD_SAFE_TARGET");
         }
+        }
 
         decorateWarning(location, propertySet, warning);
         bugReporter.reportBug(warning);
@@ -629,23 +630,45 @@ public class FindNullDeref implements Detector,
         propertySet.decorateBugInstance(warning);
     }
 
-    private void addParamAnnotations(BitSet definitelyNullArgSet,
-            BitSet violatedParamSet, WarningPropertySet propertySet,
-            BugInstance warning) {
-        for (int i = 0; i < 32; ++i) {
-            if (violatedParamSet.get(i)) {
+    private void addParamAnnotations(Location location,
+            BitSet definitelyNullArgSet, BitSet violatedParamSet,
+            WarningPropertySet propertySet, BugInstance warning)   {
+        ValueNumberFrame vnaFrame = null;
+        try {
+            vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
+        } catch (DataflowAnalysisException e) {
+            AnalysisContext.logError("error", e);
+        } catch (CFGBuilderException e) {
+            AnalysisContext.logError("error",  e);
+        }
+        
+        InvokeInstruction instruction = (InvokeInstruction) location.getHandle().getInstruction();
+        SignatureParser sigParser = new SignatureParser(method.getSignature());
+       
+ 
+        for (int i = violatedParamSet.nextSetBit(0); i >= 0; i = violatedParamSet.nextSetBit(i + 1)) {
                 boolean definitelyNull = definitelyNullArgSet.get(i);
 
-                if (definitelyNull) {
+                if (definitelyNull) 
                     propertySet
                             .addProperty(NullArgumentWarningProperty.ARG_DEFINITELY_NULL);
+                ValueNumber valueNumber = null;
+                if (vnaFrame != null) 
+                    try {
+                    valueNumber = vnaFrame. getArgument(instruction, classContext.getConstantPoolGen(), i, sigParser );
+                    BugAnnotation variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+                            location, valueNumber, vnaFrame);
+                    warning.addOptionalAnnotation(variableAnnotation);
+                } catch (DataflowAnalysisException e) {
+                    AnalysisContext.logError("error", e);
                 }
-
+                
+               
                 // Note: we report params as being indexed starting from 1, not
                 // 0
                 warning.addInt(i + 1).describe(
                         definitelyNull ? "INT_NULL_ARG" : "INT_MAYBE_NULL_ARG");
-            }
+
         }
     }
 

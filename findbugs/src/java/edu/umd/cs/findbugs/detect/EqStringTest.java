@@ -21,6 +21,7 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+
 import org.apache.bcel.classfile.Method;
 
 public class EqStringTest extends BytecodeScanningDetector implements  StatelessDetector {
@@ -61,7 +62,7 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 			if (constantOnTOS && !callToInternSeen)
 				bugReporter.reportBug(new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
 				        .addClassAndMethod(this)
-				        .addType("Ljava/lang/String;")
+				        .addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE)
 				        .addSourceLine(this, getPC()));
 			break;
 		default:

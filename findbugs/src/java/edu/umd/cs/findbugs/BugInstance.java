@@ -829,6 +829,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return this;
 	}
 	
+    public BugInstance addFoundAndExpectedType(String foundType, String expectedType) {
+        add( new TypeAnnotation(foundType)).describe(TypeAnnotation.FOUND_ROLE);
+        add( new TypeAnnotation(expectedType)).describe(TypeAnnotation.FOUND_ROLE);
+        return this;
+    }
+
 	public BugInstance addTypeOfNamedClass(String typeName) {
 		TypeAnnotation typeAnnotation = new TypeAnnotation("L" + typeName.replace('.','/')+";");
 		add(typeAnnotation);

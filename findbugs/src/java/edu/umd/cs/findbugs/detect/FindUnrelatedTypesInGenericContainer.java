@@ -343,8 +343,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 						.addClassAndMethod(methodGen, sourceFile)					
 						//.addString(GenericUtilities.getString(parmType))
 						//.addString(GenericUtilities.getString(argType))
-						.addType(parmType.getSignature()).describe(TypeAnnotation.EXPECTED_ROLE) //XXX addType not handling 
-						.addType(argType.getSignature()).describe(TypeAnnotation.FOUND_ROLE)  //    generics properly
+                        .addFoundAndExpectedType(argType.getSignature(), parmType.getSignature())
 						.addCalledMethod(methodGen, (InvokeInstruction) ins)
 						,sourceLineAnnotation);
 			}
