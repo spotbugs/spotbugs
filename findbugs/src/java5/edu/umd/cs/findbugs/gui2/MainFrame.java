@@ -79,12 +79,15 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.JToolTip;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -166,7 +169,6 @@ public class MainFrame extends FBFrame implements LogSync
 	private JButton findPreviousButton = newButton("button.findPrev", "Find Previous");
 
 	public static final boolean DEBUG = SystemProperties.getBoolean("gui2.debug");
-	//public static final boolean DEBUG = true;
 	
 	private static final boolean MAC_OS_X = SystemProperties.getProperty("os.name").toLowerCase().startsWith("mac os x");
 	final static String WINDOW_MODIFIED = "windowModified";
@@ -1194,10 +1196,10 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		JPanel summaryTopOuter = new JPanel(new BorderLayout());
 		summaryTopOuter.add(summaryTopPanel, BorderLayout.NORTH);
-		
+
+		summaryHtmlArea.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.longer_description", "This gives a longer description of the detected bug pattern"));
 		summaryHtmlArea.setContentType("text/html");
 		summaryHtmlArea.setEditable(false);
-		summaryHtmlArea.setToolTipText(edu.umd.cs.findbugs.L10N.getLocalString("tooltip.longer_description", "This gives a longer description of the detected bug pattern"));
 		summaryHtmlArea.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
 	            public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
 	                AboutDialog.editorPaneHyperlinkUpdate(evt);
@@ -1315,6 +1317,9 @@ public class MainFrame extends FBFrame implements LogSync
 			setJMenuBar(createMainMenuBar());
 			setVisible(true);
 			
+			//Sets the size of the tooltip to match the rest of the GUI. - Kristin
+			JToolTip tempToolTip = tableheader.createToolTip();
+			UIManager.put( "ToolTip.font", new FontUIResource(tempToolTip.getFont().deriveFont(Driver.getFontSize())));
 			
 			if (MAC_OS_X)
 			{
@@ -1715,7 +1720,8 @@ public class MainFrame extends FBFrame implements LogSync
 			return false;
 		}
 		setProjectChanged(false);
-		MainFrame.this.setTitle("FindBugs: " + dir.getName());
+//		MainFrame.this.setTitle("FindBugs: " + dir.getName()); I think below is better - Kristin
+		MainFrame.this.setTitle("FindBugs: " + curProject.getProjectFileName());		
 		
 		return true;
 	}
@@ -1864,7 +1870,7 @@ public class MainFrame extends FBFrame implements LogSync
 					model.changeSet(bs);
 					curProject=project;
 					MainFrame.this.updateStatusBar();
-					MainFrame.this.setTitle(project.getProjectFileName());
+					MainFrame.this.setTitle("FindBugs: "+project.getProjectFileName());
 					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					setProjectChanged(false);
 				}
