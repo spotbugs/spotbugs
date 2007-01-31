@@ -286,7 +286,7 @@ public class UnconditionalValueDerefAnalysis extends
 			}
 			
 			if (derefParamSet == null || derefParamSet.isEmpty()) {
-                System.out.println("** Nothing");
+                if (DEBUG) System.out.println("** Nothing");
 				return;
 			}
 			if (DEBUG_CHECK_CALLS) {
