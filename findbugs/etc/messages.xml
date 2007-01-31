@@ -3556,7 +3556,7 @@ was return from a method which is known to return possibly-null values.</p>
 
   <BugPattern type="NP_NULL_PARAM_DEREF_NONVIRTUAL">
    <ShortDescription>Non-virtual method call passes null for unconditionally dereferenced parameter</ShortDescription>
-   <LongDescription>Non-virtual method call in {1} passes null for unconditionally dereferenced parameter of {2}</LongDescription>
+   <LongDescription>Non-virtual method call in {1} passes null for unconditionally dereferenced parameter of {2.givenClass}</LongDescription>
    <Details>
       <![CDATA[
       <p>
