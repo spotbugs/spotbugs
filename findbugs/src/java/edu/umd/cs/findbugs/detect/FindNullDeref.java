@@ -593,7 +593,7 @@ public class FindNullDeref implements Detector,
                         methodGen, sourceFile, location.getHandle());
 
         // Check which params might be null
-        addParamAnnotations(null,
+        addParamAnnotations(location,
                 definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
 
         if (false) {
