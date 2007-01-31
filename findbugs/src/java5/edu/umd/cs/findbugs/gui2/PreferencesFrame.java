@@ -196,10 +196,12 @@ public class PreferencesFrame extends FBDialog {
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		JPanel mainPanel = new JPanel();
 		
+		float currFS = Driver.getFontSize();
+		
 		JPanel temp = new JPanel();
 		temp.add(new JLabel("Tab Size"));
 		tabTextField = new JTextField(Integer.toString(GUISaveState.getInstance().getTabSize()));
-		tabTextField.setPreferredSize(new Dimension(40, 20));
+		tabTextField.setPreferredSize(new Dimension((int)(currFS*2), (int)(currFS*1.2)));
 		temp.add(tabTextField);
 		
 		mainPanel.add(temp);
@@ -208,7 +210,7 @@ public class PreferencesFrame extends FBDialog {
 		temp = new JPanel();
 		temp.add(new JLabel("Font Size"));
 		fontTextField = new JTextField(Float.toString(GUISaveState.getInstance().getFontSize()));
-		fontTextField.setPreferredSize(new Dimension(50, 20));
+		fontTextField.setPreferredSize(new Dimension((int)(currFS*3), (int)(currFS*1.2)));
 		temp.add(fontTextField);
 		
 		mainPanel.add(temp);
