@@ -311,6 +311,9 @@ public class FindNullDeref implements Detector,
             Location location = i.next();
             Instruction ins = location.getHandle().getInstruction();
             try {
+                ValueNumberFrame  vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
+                if (!vnaFrame.isValid()) continue;
+               
                 if (ins instanceof InvokeInstruction) {
                     examineCallSite(location, cpg, typeDataflow);
                 } else if (methodAnnotation == NullnessAnnotation.NONNULL
@@ -454,6 +457,7 @@ public class FindNullDeref implements Detector,
                 .getIsNullValueDataflow(method);
         IsNullValueFrame frame = invDataflow.getFactAtLocation(location);
         ValueNumberFrame  vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
+        if (!vnaFrame.isValid()) return;
         ValueNumber valueNumber = vnaFrame.getTopValue();
         if (!frame.isValid())
             return;
