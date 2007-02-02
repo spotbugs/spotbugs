@@ -255,6 +255,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			&& (obj.isPublic() 
 			    || obj.isProtected() ))
 			publicOrProtectedConstructor = true;
+        pendingGetField = null;
+        saState = 0;
 		super.visit(obj);
 		int flags = obj.getAccessFlags();
 		if ((flags & ACC_NATIVE) != 0)
@@ -263,9 +265,47 @@ public class UnreadFields extends BytecodeScanningDetector  {
 
 	boolean seenInvokeStatic;
 
+    XField pendingGetField;
+    int saState = 0;
 	@Override
          public void sawOpcode(int seen) {
-		
+        if (DEBUG) System.out.println(getPC() + ": " + OPCODE_NAMES[seen] + " " + saState);
+        switch(saState) {
+        case 0:
+            if (seen == ALOAD_0)
+                saState = 1;
+            break;
+        case 1:
+            if (seen == ALOAD_0)
+                saState = 2;
+            else
+                saState = 0;
+            break;
+        case 2:
+            if (seen == GETFIELD)
+                saState = 3;
+            else
+                saState = 0;
+            break;
+        case 3:
+            if (seen == PUTFIELD)
+                saState = 4;
+            else
+                saState = 0;
+            break;
+        }
+        boolean selfAssignment = false;
+        if (pendingGetField != null) {
+            if (seen != PUTFIELD && seen != PUTSTATIC) 
+            readFields.add(pendingGetField);
+            else if ( XFactory.createReferencedXField(this).equals(pendingGetField) && (saState == 4 || seen == PUTSTATIC) ) 
+                selfAssignment = true;
+            else 
+                readFields.add(pendingGetField);
+            pendingGetField = null;
+        }
+        if (saState == 4) saState = 0;
+        
 		opcodeStack.mergeJumps(this);
         if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicReferenceFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
            String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
@@ -440,11 +480,12 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			count_aload_1++;
 		} else if (seen == GETFIELD || seen == GETSTATIC) {
 			XField f = XFactory.createReferencedXField(this);
+            pendingGetField = f;
 			if (DEBUG) System.out.println("get: " + f);
-			readFields.add(f);
+			// readFields.add(f);
 			if (!fieldAccess.containsKey(f))
 				fieldAccess.put(f, SourceLineAnnotation.fromVisitedInstruction(this));
-		} else if (seen == PUTFIELD || seen == PUTSTATIC) {
+		} else if ((seen == PUTFIELD || seen == PUTSTATIC) && !selfAssignment) {
 			XField f = XFactory.createReferencedXField(this);
 			OpcodeStack.Item item = null;
 			if (opcodeStack.getStackDepth() > 0) {
