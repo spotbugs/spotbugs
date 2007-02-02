@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -41,13 +42,11 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.BasicBlock;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
-import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.constant.Constant;
@@ -185,7 +184,16 @@ public class FindSqlInjection implements Detector {
         return false;
     }
 
-    private StringAppendState updateStringAppendState(Location location, ConstantPoolGen cpg,
+    static final Pattern  openQuotePattern = Pattern.compile("((^')|[^\\p{Alnum}]')$");
+    public static boolean isOpenQuote(String s) {
+        return openQuotePattern.matcher(s).find();
+    }
+   
+    static final Pattern  closeQuotePattern = Pattern.compile("^'($|[^\\p{Alnum}])");
+    public static boolean isCloseQuote(String s) {
+        return closeQuotePattern.matcher(s).find();
+    }
+  private StringAppendState updateStringAppendState(Location location, ConstantPoolGen cpg,
             StringAppendState stringAppendState) throws CFGBuilderException {
         InstructionHandle handle = location.getHandle();
         Instruction ins = handle.getInstruction();
@@ -198,9 +206,9 @@ public class FindSqlInjection implements Detector {
         String stringValue = ((String) value).trim();
         if (stringValue.startsWith(",") || stringValue.endsWith(","))
             stringAppendState.setSawComma(handle);
-        if (stringValue.endsWith(" '") || stringValue.endsWith(",'") || stringValue.endsWith("='"))
+        if (isOpenQuote(stringValue))
             stringAppendState.setSawOpenQuote(handle);
-        if (stringValue.startsWith("' ") || stringValue.startsWith("',") || stringValue.equals("'"))
+        if (isCloseQuote(stringValue))
             stringAppendState.setSawCloseQuote(handle);
 
         return stringAppendState;
