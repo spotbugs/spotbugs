@@ -476,11 +476,18 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			}
 			}
 
+      
+               
 		if (seen == ALOAD_1) {
 			count_aload_1++;
 		} else if (seen == GETFIELD || seen == GETSTATIC) {
 			XField f = XFactory.createReferencedXField(this);
             pendingGetField = f;
+            if (getMethodName().equals("readResolve") 
+                    && seen == GETFIELD ) {
+                writtenFields.add(f);
+                writtenNonNullFields.add(f);
+            }
 			if (DEBUG) System.out.println("get: " + f);
 			// readFields.add(f);
 			if (!fieldAccess.containsKey(f))
