@@ -400,7 +400,7 @@ public abstract class Frame<ValueType> {
 	public ValueType getArgument(InvokeInstruction ins, ConstantPoolGen cpg,
 			int i, SignatureParser sigParser) throws DataflowAnalysisException {
 		if (i >= sigParser.getNumParameters())
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("requesting parameter # " + i + " of " + sigParser);
 		return getStackValue(sigParser.getSlotsFromTopOfStackForParameter(i));
 	}
 
