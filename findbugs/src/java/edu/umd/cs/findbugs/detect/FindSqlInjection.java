@@ -200,7 +200,7 @@ public class FindSqlInjection implements Detector {
             stringAppendState.setSawComma(handle);
         if (stringValue.endsWith(" '"))
             stringAppendState.setSawOpenQuote(handle);
-        if (stringValue.startsWith("' "))
+        if (stringValue.startsWith("' ") || stringValue.equals("'"))
             stringAppendState.setSawCloseQuote(handle);
 
         return stringAppendState;
