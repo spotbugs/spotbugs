@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.AALOAD;
 import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
@@ -34,6 +35,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NOP;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -51,6 +53,10 @@ import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.constant.Constant;
 import edu.umd.cs.findbugs.ba.constant.ConstantDataflow;
 import edu.umd.cs.findbugs.ba.constant.ConstantFrame;
+import edu.umd.cs.findbugs.ba.type.TopType;
+import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 
 /**
  * Find potential SQL injection vulnerabilities.
@@ -67,6 +73,7 @@ public class FindSqlInjection implements Detector {
         int sawComma = Integer.MAX_VALUE;
         int sawAppend = Integer.MAX_VALUE;
         int sawUnsafeAppend = Integer.MAX_VALUE;
+        int sawTaint = Integer.MAX_VALUE;
 
         public boolean getSawOpenQuote(InstructionHandle handle) {
             return sawOpenQuote <= handle.getPosition();
@@ -88,6 +95,10 @@ public class FindSqlInjection implements Detector {
             return sawUnsafeAppend <= handle.getPosition();
         }
 
+        public boolean getSawTaint(InstructionHandle handle) {
+            return sawTaint <= handle.getPosition();
+        }
+
         public void setSawOpenQuote(InstructionHandle handle) {
             sawOpenQuote = Math.min(sawOpenQuote, handle.getPosition());
         }
@@ -106,6 +117,13 @@ public class FindSqlInjection implements Detector {
 
         public void setSawUnsafeAppend(InstructionHandle handle) {
             sawUnsafeAppend = Math.min(sawUnsafeAppend, handle.getPosition());
+        }
+
+        public void setSawTaint(InstructionHandle handle) {
+            sawTaint = Math.min(sawTaint, handle.getPosition());
+        }
+        public void setSawInitialTaint() {
+            sawTaint = 0;
         }
 
     }
@@ -226,7 +244,11 @@ public class FindSqlInjection implements Detector {
 
     private StringAppendState getStringAppendState(CFG cfg, ConstantPoolGen cpg) throws CFGBuilderException {
         StringAppendState stringAppendState = new StringAppendState();
-
+        String sig = method.getSignature();
+        sig = sig.substring(0,sig.indexOf(')'));
+        
+        if (sig.indexOf("java/lang/String") >= 0)
+            stringAppendState.setSawInitialTaint();
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             InstructionHandle handle = location.getHandle();
@@ -240,6 +262,46 @@ public class FindSqlInjection implements Detector {
                 if (!isSafeValue(prevLocation, cpg))
                         stringAppendState.setSawUnsafeAppend(handle);
                 
+            } else if (ins instanceof InvokeInstruction) {
+                InvokeInstruction inv = (InvokeInstruction) ins;
+                String sig1 = inv.getSignature(cpg);
+                String sig2 = sig1.substring(sig1.indexOf(')'));
+                
+                if (sig2.indexOf("java/lang/String") >= 0) {
+                    String methodName = inv.getMethodName(cpg);
+                    String className = inv.getClassName(cpg);
+                    if (methodName.equals("valueOf") && className.equals("java.lang.String") && sig1.equals("(Ljava/lang/Object;)Ljava/lang/String;")) {
+                        try {
+                        TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+                        TypeFrame frame = typeDataflow.getFactAtLocation(location);
+                        if (!frame.isValid()) {
+                            // This basic block is probably dead
+                            continue;
+                        }
+                        Type operandType = frame.getTopValue();
+                        if (operandType.equals(TopType.instance())) {
+                            // unreachable
+                            continue;
+                        }
+                        String sig3 = operandType.getSignature();
+                        if (!sig3.equals("Ljava/lang/String;"))
+                            stringAppendState.setSawTaint(handle);
+                        } catch (CheckedAnalysisException e) {
+                            stringAppendState.setSawTaint(handle);
+                        }
+                    } else if (methodName.equals("toString") && className.startsWith("java.lang.String")) {
+                        // ignore it;
+                        assert true;
+                    } else if (methodName.startsWith("to") && methodName.endsWith("String") && methodName.length() > 8) {
+                        // ignore it
+                        assert true;
+                    } else  stringAppendState.setSawTaint(handle);
+                }
+            } else if (ins instanceof GETFIELD) {
+                GETFIELD getfield = (GETFIELD) ins;
+                String sig2 = getfield.getSignature(cpg);
+                if (sig2.indexOf("java/lang/String") >= 0)
+                    stringAppendState.setSawTaint(handle);
             }
         }
 
@@ -331,6 +393,9 @@ public class FindSqlInjection implements Detector {
 
             if (!stringAppendState.getSawUnsafeAppend(handle)) {
                 priority += 2;
+            }
+            else if (!stringAppendState.getSawTaint(handle)) {
+                priority ++;
             }
         }
 
