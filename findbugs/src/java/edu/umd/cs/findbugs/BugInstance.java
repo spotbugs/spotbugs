@@ -138,7 +138,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			this.priority = Detector.EXP_PRIORITY;
 	}
 	
-	//@Override
+
 	@Override
 	public Object clone() {
 		BugInstance dup;
