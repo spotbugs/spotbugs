@@ -198,7 +198,7 @@ public class FindSqlInjection implements Detector {
         String stringValue = ((String) value).trim();
         if (stringValue.startsWith(",") || stringValue.endsWith(","))
             stringAppendState.setSawComma(handle);
-        if (stringValue.endsWith(" '") || stringValue.endsWith(",'"))
+        if (stringValue.endsWith(" '") || stringValue.endsWith(",'") || stringValue.endsWith("='"))
             stringAppendState.setSawOpenQuote(handle);
         if (stringValue.startsWith("' ") || stringValue.startsWith("',") || stringValue.equals("'"))
             stringAppendState.setSawCloseQuote(handle);
