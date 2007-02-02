@@ -23,6 +23,7 @@ import java.util.Iterator;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.AALOAD;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.INVOKEINTERFACE;
@@ -152,7 +153,8 @@ public class FindSqlInjection implements Detector {
         return false;
     }
 
-    private boolean isConstantStringLoad(Instruction ins, ConstantPoolGen cpg) {
+    private boolean isConstantStringLoad(Location location, ConstantPoolGen cpg) throws CFGBuilderException {
+        Instruction ins = location.getHandle().getInstruction();
         if (ins instanceof LDC) {
             LDC load = (LDC) ins;
             Object value = load.getValue(cpg);
@@ -160,14 +162,16 @@ public class FindSqlInjection implements Detector {
                 return true;
             }
         }
+        
 
         return false;
     }
 
-    private StringAppendState updateStringAppendState(InstructionHandle handle, ConstantPoolGen cpg,
-            StringAppendState stringAppendState) {
+    private StringAppendState updateStringAppendState(Location location, ConstantPoolGen cpg,
+            StringAppendState stringAppendState) throws CFGBuilderException {
+        InstructionHandle handle = location.getHandle();
         Instruction ins = handle.getInstruction();
-        if (!isConstantStringLoad(ins, cpg)) {
+        if (!isConstantStringLoad(location, cpg)) {
             throw new IllegalArgumentException("instruction must be LDC");
         }
 
@@ -176,9 +180,9 @@ public class FindSqlInjection implements Detector {
         String stringValue = ((String) value).trim();
         if (stringValue.startsWith(",") || stringValue.endsWith(","))
             stringAppendState.setSawComma(handle);
-        if (stringValue.endsWith("'"))
+        if (stringValue.endsWith(" '"))
             stringAppendState.setSawOpenQuote(handle);
-        if (stringValue.startsWith("'"))
+        if (stringValue.startsWith("' "))
             stringAppendState.setSawCloseQuote(handle);
 
         return stringAppendState;
@@ -220,43 +224,49 @@ public class FindSqlInjection implements Detector {
         return isPreparedStatementDatabaseSink(ins, cpg) || isExecuteDatabaseSink(ins, cpg);
     }
 
-    private StringAppendState getStringAppendState(CFG cfg, ConstantPoolGen cpg) {
+    private StringAppendState getStringAppendState(CFG cfg, ConstantPoolGen cpg) throws CFGBuilderException {
         StringAppendState stringAppendState = new StringAppendState();
 
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
             Location location = i.next();
             InstructionHandle handle = location.getHandle();
             Instruction ins = handle.getInstruction();
-            if (isConstantStringLoad(ins, cpg)) {
-                stringAppendState = updateStringAppendState(handle, cpg, stringAppendState);
+            if (isConstantStringLoad(location, cpg)) {
+                stringAppendState = updateStringAppendState(location, cpg, stringAppendState);
             } else if (isStringAppend(ins, cpg)) {
                 stringAppendState.setSawAppend(handle);
 
-                InstructionHandle prev = getPreviousInstruction(cfg, location, true);
-                if (prev != null) {
-                    Instruction prevIns = prev.getInstruction();
-                    if (!isSafeValue(prevIns, cpg))
+                Location prevLocation = getPreviousLocation(cfg, location, true);
+                if (!isSafeValue(prevLocation, cpg))
                         stringAppendState.setSawUnsafeAppend(handle);
-                } else {
-                    // FIXME: when would prev legitimately be null, and why
-                    // would we report?
-                    AnalysisContext.logError("In FindSqlInjection, saw null previous in "
-                            + cfg.getMethodGen().getClassName() + "." + cfg.getMethodName());
-                    stringAppendState.setSawUnsafeAppend(handle);
-                }
+                
             }
         }
 
         return stringAppendState;
     }
 
-    private boolean isSafeValue(Instruction prevIns, ConstantPoolGen cpg) {
+    private boolean isSafeValue(Location location, ConstantPoolGen cpg) throws CFGBuilderException {
+        Instruction prevIns = location.getHandle().getInstruction();
         if (prevIns instanceof LDC || prevIns instanceof GETSTATIC)
             return true;
         if (prevIns instanceof InvokeInstruction) {
             String methodName = ((InvokeInstruction) prevIns).getMethodName(cpg);
             if (methodName.startsWith("to") && methodName.endsWith("String") && methodName.length() > 8)
                 return true;
+        }
+        if (prevIns instanceof AALOAD) {
+            CFG cfg = classContext.getCFG(method);
+
+            Location prev = getPreviousLocation(cfg, location, true);
+            if (prev != null) {
+                Location prev2 = getPreviousLocation(cfg, prev, true);
+                if (prev2 != null && prev2.getHandle().getInstruction() instanceof GETSTATIC) {
+                    GETSTATIC getStatic = (GETSTATIC) prev2.getHandle().getInstruction();
+                    if (getStatic.getSignature(cpg).equals("[Ljava/lang/String;"))
+                        return true;
+                }               
+            }          
         }
         return false;
     }
@@ -266,11 +276,28 @@ public class FindSqlInjection implements Detector {
         while (handle.getPrev() != null) {
             handle = handle.getPrev();
             Instruction prevIns = handle.getInstruction();
-            if (!skipNops && !(prevIns instanceof NOP)) {
+            if (!(prevIns instanceof NOP && skipNops)) {
                 return handle;
             }
         }
         return null;
+    }
+
+    private @CheckForNull
+    Location getPreviousLocation(CFG cfg, Location startLocation, boolean skipNops) {
+        Location loc = startLocation;
+        InstructionHandle prev = getPreviousInstruction(loc.getHandle(), skipNops);
+        if (prev != null)
+            return new Location(prev, loc.getBasicBlock());
+        BasicBlock block = loc.getBasicBlock();
+        while (true) {
+            block = cfg.getPredecessorWithEdgeType(block, EdgeTypes.FALL_THROUGH_EDGE);
+            if (block == null)
+                return null;
+            InstructionHandle lastInstruction = block.getLastInstruction();
+            if (lastInstruction != null)
+                return new Location(lastInstruction, block);
+        }
     }
 
     private @CheckForNull
@@ -320,9 +347,13 @@ public class FindSqlInjection implements Detector {
         return bug;
     }
 
+    Method method;
+    ClassContext classContext;
     private void analyzeMethod(ClassContext classContext, Method method) throws DataflowAnalysisException,
             CFGBuilderException {
         JavaClass javaClass = classContext.getJavaClass();
+        this.method = method;
+        this.classContext = classContext;
         MethodGen methodGen = classContext.getMethodGen(method);
         if (methodGen == null)
             return;
@@ -345,8 +376,8 @@ public class FindSqlInjection implements Detector {
                     // stringAppendState
                     // FIXME: will false positive on const/static strings
                     // returns by methods
-                    InstructionHandle prev = getPreviousInstruction(cfg, location, true);
-                    if (prev == null || !isSafeValue(prev.getInstruction(), cpg)) {
+                    Location prev = getPreviousLocation(cfg, location, true);
+                    if (prev == null || !isSafeValue(prev, cpg)) {
                         BugInstance bug = generateBugInstance(javaClass, methodGen, location.getHandle(),
                                 stringAppendState);
                         bug.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle());
