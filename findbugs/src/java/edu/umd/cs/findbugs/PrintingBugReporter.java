@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
 public class PrintingBugReporter extends TextUIBugReporter {
 	private String stylesheet = null;
 	private boolean annotationUploadFormat = false;
-	private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
+  	private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
 	public void observeClass(ClassDescriptor classDescriptor) {
 		// Don't need to do anything special, since we won't be
@@ -59,6 +59,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
 		public PrintingCommandLine() {
 			addSwitch("-longBugCodes", "use long bug codes when generating text");
+            addSwitch("-designations", "report user designations for each bug");
+            
 			addSwitch("-annotationUpload", "generate annotations in upload format");
 			addSwitchWithOptionalExtraPart("-html", "stylesheet",
 			"Generate HTML output (default stylesheet is default.xsl)");
@@ -70,9 +72,11 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		protected void handleOption(String option, String optionExtraPart) throws IOException {
 			if (option.equals("-longBugCodes"))
 				setUseLongBugCodes(true);
-			else if (option.equals("-annotationUpload"))
-				annotationUploadFormat = true;
-			else if (option.equals("-html")) {
+			else if (option.equals("-designations"))
+				setReportUserDesignations(true);
+            else if (option.equals("-annotationUpload"))
+                annotationUploadFormat = true;
+            else if (option.equals("-html")) {
 				if (!optionExtraPart.equals("")) {
 					stylesheet = optionExtraPart;
 				} else {
