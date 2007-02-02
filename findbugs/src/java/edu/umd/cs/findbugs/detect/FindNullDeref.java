@@ -647,7 +647,7 @@ public class FindNullDeref implements Detector,
         }
         
         InvokeInstruction instruction = (InvokeInstruction) location.getHandle().getInstruction();
-        SignatureParser sigParser = new SignatureParser(method.getSignature());
+        SignatureParser sigParser = new SignatureParser(instruction.getSignature(classContext.getConstantPoolGen()));
        
  
         for (int i = violatedParamSet.nextSetBit(0); i >= 0; i = violatedParamSet.nextSetBit(i + 1)) {
