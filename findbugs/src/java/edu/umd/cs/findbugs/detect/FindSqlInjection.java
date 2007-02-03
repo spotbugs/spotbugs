@@ -297,8 +297,10 @@ public class FindSqlInjection implements Detector {
                         } catch (CheckedAnalysisException e) {
                             stringAppendState.setSawTaint(handle);
                         }
-                    } else if (methodName.equals("toString") && className.startsWith("java.lang.String")) {
-                        // ignore it;
+                    } else if (className.startsWith("java.lang.String") || className.equals("java.lang.Long") 
+                            || className.equals("java.lang.Integer") || className.equals("java.lang.Float") || className.equals("java.lang.Double")
+                            || className.equals("java.lang.Short")  || className.equals("java.lang.Byte") || className.equals("java.lang.Character")) {
+                        // ignore it
                         assert true;
                     } else if (methodName.startsWith("to") && methodName.endsWith("String") && methodName.length() > 8) {
                         // ignore it
