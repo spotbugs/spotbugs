@@ -37,6 +37,7 @@ import java.util.Iterator;
 public abstract class TextUIBugReporter extends AbstractBugReporter {
 	private boolean reportStackTrace;
 	private boolean useLongBugCodes = false;
+    private boolean reportHistory = false;
     private boolean reportUserDesignations = false;
     
 	private static final String OTHER_CATEGORY_ABBREV = "X";
@@ -105,6 +106,15 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
             outputStream.print(bugInstance.getUserDesignationKey());
             outputStream.print(" ");
             }
+        
+        if (reportHistory) {
+            long first = bugInstance.getFirstVersion();
+            long last = bugInstance.getLastVersion();
+            outputStream.print(first);
+            outputStream.print(" ");
+            outputStream.print(last);
+            outputStream.print(" ");
+        }
 		SourceLineAnnotation line =
 		        bugInstance.getPrimarySourceLineAnnotation();
 		if (line == null)
@@ -170,7 +180,10 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 		return useLongBugCodes;
 	}
 
-
+    public void setReportHistory(boolean reportHistory) {
+        this.reportHistory = reportHistory;
+    }
+    
 	public void setUseLongBugCodes(boolean useLongBugCodes) {
 		this.useLongBugCodes = useLongBugCodes;
 	}

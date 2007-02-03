@@ -60,6 +60,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		public PrintingCommandLine() {
 			addSwitch("-longBugCodes", "use long bug codes when generating text");
             addSwitch("-designations", "report user designations for each bug");
+            addSwitch("-history", "report first and last versions for each bug");
             
 			addSwitch("-annotationUpload", "generate annotations in upload format");
 			addSwitchWithOptionalExtraPart("-html", "stylesheet",
@@ -74,7 +75,9 @@ public class PrintingBugReporter extends TextUIBugReporter {
 				setUseLongBugCodes(true);
 			else if (option.equals("-designations"))
 				setReportUserDesignations(true);
-            else if (option.equals("-annotationUpload"))
+            else if (option.equals("-history"))
+                setReportHistory(true);
+           else if (option.equals("-annotationUpload"))
                 annotationUploadFormat = true;
             else if (option.equals("-html")) {
 				if (!optionExtraPart.equals("")) {
