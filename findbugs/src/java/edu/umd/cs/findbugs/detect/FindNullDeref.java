@@ -1009,7 +1009,7 @@ public class FindNullDeref implements Detector,
             if (createdDeadCode)
                 System.out.println("createdDeadCode");
         }
-
+        if (priority > LOW_PRIORITY) return;
         BugAnnotation variableAnnotation = null;
         try {
             // Get the value number
