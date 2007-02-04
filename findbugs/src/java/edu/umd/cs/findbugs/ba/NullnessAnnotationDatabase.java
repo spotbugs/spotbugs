@@ -57,7 +57,8 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.LinkedBlockingQueue$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$WaitQueue", NullnessAnnotation.UNKNOWN_NULLNESS);
-		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ThreadPoolExecutor$Worker", NullnessAnnotation.UNKNOWN_NULLNESS);
+        addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.SynchronousQueue$Node", NullnessAnnotation.UNKNOWN_NULLNESS);
+        addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ThreadPoolExecutor$Worker", NullnessAnnotation.UNKNOWN_NULLNESS);
 		
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.AbstractExecutorService", NullnessAnnotation.UNKNOWN_NULLNESS);
 		addDefaultAnnotation(AnnotationDatabase.PARAMETER, "java.util.concurrent.ConcurrentSkipListMap$ConcurrentSkipListSubMap", NullnessAnnotation.UNKNOWN_NULLNESS);
