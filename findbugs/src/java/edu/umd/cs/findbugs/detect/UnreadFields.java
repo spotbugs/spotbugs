@@ -113,7 +113,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			String superClass = obj.getSuperclassName();
 			if (superClass != null) hasNonAbstractSubClass.add(superClass);
 		}
-			
+		classesScanned.add(getDottedClassName());	
 		if (getSuperclassName().indexOf("$") >= 0
 		        || getSuperclassName().indexOf("+") >= 0) {
 			// System.out.println("hicfsc: " + betterClassName);
