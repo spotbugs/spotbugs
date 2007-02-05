@@ -19,10 +19,18 @@
 
 package edu.umd.cs.findbugs.detect;
 
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.Instruction;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
@@ -33,6 +41,7 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -56,22 +65,60 @@ public class BuildUnconditionalParamDerefDatabase {
 		if (!fullAnalysis && !AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(classContext.getJavaClass()))
 				return;
 		if (VERBOSE_DEBUG) System.out.println("Visiting class " + classContext.getJavaClass().getClassName());
-		Method[] methodList = classContext.getJavaClass().getMethods();
-		for (Method method : methodList) {
-			boolean hasReferenceParameters = false;
-			for (Type argument : method.getArgumentTypes())
-				if (argument instanceof ReferenceType)
-					hasReferenceParameters = true;
-
-			if (!hasReferenceParameters) continue;
-
-			if (classContext.getMethodGen(method) == null)
-				continue; // no code
-
-			if (VERBOSE_DEBUG) System.out.println("Check " + method);
-			analyzeMethod(classContext, method);
-		}
+		List<Method> methodList = new LinkedList(Arrays.asList(classContext.getJavaClass().getMethods()));
+       
+      
+        for(Iterator<Method> i = methodList.iterator(); i.hasNext(); ) {
+            Method m = i.next();
+            if (!hasCallsToSameClass(classContext, m)) {
+                considerMethod(classContext, m);
+                i.remove();
+            }
+        }
+        for(Iterator<Method> i = methodList.iterator(); i.hasNext(); ) {
+            Method m = i.next();
+            String token = m.getName()+m.getSignature();
+            if (m.isPrivate()) {
+                considerMethod(classContext, m);
+                i.remove();
+            }
+        }
+        for(Iterator<Method> i = methodList.iterator(); i.hasNext(); ) {
+            Method m = i.next();
+            considerMethod(classContext, m);
+        }
 	}
+
+    private boolean hasCallsToSameClass(ClassContext classContext, Method method) {
+        String thisClassName = classContext.getJavaClass().getClassName();
+        ConstantPoolGen cpg = classContext.getConstantPoolGen();
+        try {
+        CFG cfg = classContext.getCFG(method);
+        for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+            Instruction ins = i.next().getHandle().getInstruction();
+            if (ins instanceof InvokeInstruction) {
+                InvokeInstruction inv = (InvokeInstruction) ins;
+                String className = inv.getClassName(cpg);
+                if (thisClassName.equals(className)) 
+                    return true;
+            }
+        }
+        } catch (CFGBuilderException e) {
+            assert true; // ignore it
+        }
+        return false;
+    }
+    private void considerMethod(ClassContext classContext, Method method) {
+        boolean hasReferenceParameters = false;
+        for (Type argument : method.getArgumentTypes())
+        	if (argument instanceof ReferenceType)
+        		hasReferenceParameters = true;
+
+        if (hasReferenceParameters && classContext.getMethodGen(method) != null) {
+            if (VERBOSE_DEBUG) System.out.println("Check " + method);
+            analyzeMethod(classContext, method);
+        }
+    }
 
 	private void analyzeMethod(ClassContext classContext, Method method) {
 		try {
