@@ -1,9 +1,11 @@
 public class TestFields {
 
     Object x;
+
     TestFields(Object x) {
         this.x = x;
     }
+
     int a(int level) {
         x = null;
         if (level > 0)
@@ -22,7 +24,17 @@ public class TestFields {
         return 0;
     }
 
-    int c(boolean b) {
+    int c1(boolean b) {
+        Object y = null;
+        if (x != null)
+            y = new Object();
+        if (y != null)
+            return x.hashCode() + y.hashCode();
+        else
+            return 0;
+    }
+
+    int c2(boolean b) {
         Object y = null;
         if (x != null)
             y = new Object();
@@ -50,13 +62,13 @@ public class TestFields {
         return helper2();
     }
 
-    int helper1(boolean b) {
+    private int helper1(boolean b) {
         if (b)
             return 0;
         return x.hashCode();
     }
 
-    int helper2() {
+    private int helper2() {
         return x.hashCode();
     }
 

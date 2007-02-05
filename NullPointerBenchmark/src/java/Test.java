@@ -18,7 +18,17 @@ public class Test {
         return 0;
     }
 
-    int c(Object x, boolean b) {
+    int c1(Object x, boolean b) {
+        Object y = null;
+        if (x != null)
+            y = new Object();
+        if (y != null)
+            return x.hashCode() + y.hashCode();
+        else
+            return 0;
+    }
+
+    int c2(Object x, boolean b) {
         Object y = null;
         if (x != null)
             y = new Object();
@@ -45,13 +55,13 @@ public class Test {
         return helper2(x);
     }
 
-    int helper1(Object x, boolean b) {
+    private int helper1(Object x, boolean b) {
         if (b)
             return 0;
         return x.hashCode();
     }
 
-    int helper2(Object x) {
+    private int helper2(Object x) {
         return x.hashCode();
     }
 
