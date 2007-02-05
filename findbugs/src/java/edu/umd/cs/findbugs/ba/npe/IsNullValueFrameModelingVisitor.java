@@ -54,6 +54,7 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 
@@ -241,7 +242,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		}
 		super.visitPUTFIELD(obj);
 		InstanceField field = (InstanceField) XFactory.createXField(obj, cpg);
-		if (nullValueStored != null)
+		if (nullValueStored != null && ValueNumberAnalysisFeatures.REDUNDANT_LOAD_ELIMINATION)
 			try {
 			ValueNumberFrame vnaFrameBefore = vnaDataflow.getFactAtLocation(getLocation());
 			ValueNumber refValue = vnaFrameBefore.getStackValue(1);

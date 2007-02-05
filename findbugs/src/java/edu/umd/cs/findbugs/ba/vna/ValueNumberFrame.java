@@ -337,7 +337,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	}
 
 	public boolean fuzzyMatch(ValueNumber v1, ValueNumber v2) {
-		return v1.equals(v2) || fromMatchingLoads(v1, v2) || haveMatchingFlags(v1, v2); 
+		if (REDUNDANT_LOAD_ELIMINATION)
+		  return v1.equals(v2) || fromMatchingLoads(v1, v2) || haveMatchingFlags(v1, v2); 
+		else
+		  return v1.equals(v2);
 	}
 		
 	public boolean fromMatchingLoads(ValueNumber v1, ValueNumber v2) {
