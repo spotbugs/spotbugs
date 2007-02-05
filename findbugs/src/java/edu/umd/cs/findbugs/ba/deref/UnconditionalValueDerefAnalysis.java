@@ -77,8 +77,8 @@ public class UnconditionalValueDerefAnalysis extends
 	
 	public static final boolean DEBUG = SystemProperties.getBoolean("fnd.derefs.debug");
 	public static final boolean ASSUME_NONZERO_TRIP_LOOPS = SystemProperties.getBoolean("fnd.derefs.nonzerotrip");
-	public static final boolean IGNORE_DEREF_OF_NONNCP = 
-		SystemProperties.getBoolean("fnd.derefs.ignorenonNCP", false);
+	  public static final boolean IGNORE_DEREF_OF_NCP = 
+        SystemProperties.getBoolean("fnd.derefs.ignoreNCP", false);
 
 	public static final boolean CHECK_ANNOTATIONS = 
 		SystemProperties.getBoolean("fnd.derefs.checkannotations", true);
@@ -437,7 +437,7 @@ public class UnconditionalValueDerefAnalysis extends
 			System.out.println("Value number frame: " + vnaFrame);
 			System.out.println("Dereferenced valueNumber: " + vn);
 			System.out.println("invDataflow: " + startFact);
-			System.out.println("IGNORE_DEREF_OF_NONNCP: " + IGNORE_DEREF_OF_NONNCP);
+			System.out.println("IGNORE_DEREF_OF_NCP: " + IGNORE_DEREF_OF_NCP);
 		}
 		// Mark the value number as being dereferenced at this location
 		fact.addDeref(vn, location);
@@ -449,8 +449,9 @@ public class UnconditionalValueDerefAnalysis extends
 		IsNullValue value = invFrameAtNullCheck.getValue(instance);
 		if (value.isDefinitelyNotNull()) return false;
 		if (value.isDefinitelyNull()) return false;
-		if (IGNORE_DEREF_OF_NONNCP
-				&& !value.isNullOnComplicatedPath()) return false;
+        if (IGNORE_DEREF_OF_NCP
+                && value.isNullOnComplicatedPath()) return false;
+
 		return true;
 	}
 	/**

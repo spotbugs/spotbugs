@@ -30,6 +30,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
+import edu.umd.cs.findbugs.ba.vna.ValueNumberAnalysisFeatures;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 import edu.umd.cs.findbugs.util.Strings;
 import edu.umd.cs.findbugs.util.Util;
@@ -49,6 +50,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	public void cleanStaleKnowledge(ValueNumberFrame vnaFrameAfter) {
 		if (vnaFrameAfter.isTop() && !isTop()) throw new IllegalArgumentException("VNA frame is top");
 		if (!trackValueNumbers) return;
+        if (!ValueNumberAnalysisFeatures.REDUNDANT_LOAD_ELIMINATION) return;
 		for(Iterator<ValueNumber> i = knownValueMap.keySet().iterator(); i.hasNext(); ) {
 			ValueNumber v = i.next();
 			if (vnaFrameAfter.getLoad(v) == null) {
