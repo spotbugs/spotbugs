@@ -67,31 +67,40 @@ public class BuildUnconditionalParamDerefDatabase {
 		if (VERBOSE_DEBUG) System.out.println("Visiting class " + classContext.getJavaClass().getClassName());
 		List<Method> methodList = new LinkedList(Arrays.asList(classContext.getJavaClass().getMethods()));
        
+        Set<String> calledMethods = new HashSet<String>();
       
         for(Iterator<Method> i = methodList.iterator(); i.hasNext(); ) {
             Method m = i.next();
-            if (!hasCallsToSameClass(classContext, m)) {
+            if (!hasCallsToSameClass(classContext, m, calledMethods)) {
                 considerMethod(classContext, m);
                 i.remove();
             }
         }
         for(Iterator<Method> i = methodList.iterator(); i.hasNext(); ) {
             Method m = i.next();
-            String token = m.getName()+m.getSignature();
-            if (m.isPrivate()) {
+            if (m.isPrivate() && calledMethods.contains(m.getName()+m.getSignature())) {
                 considerMethod(classContext, m);
                 i.remove();
             }
         }
+        for(Iterator<Method> i = methodList.iterator(); i.hasNext(); ) {
+            Method m = i.next();
+            if (calledMethods.contains(m.getName()+m.getSignature())) {
+                considerMethod(classContext, m);
+                i.remove();
+            }
+        }
+    
         for(Iterator<Method> i = methodList.iterator(); i.hasNext(); ) {
             Method m = i.next();
             considerMethod(classContext, m);
         }
 	}
 
-    private boolean hasCallsToSameClass(ClassContext classContext, Method method) {
+    private boolean hasCallsToSameClass(ClassContext classContext, Method method, Set<String> calledMethods) {
         String thisClassName = classContext.getJavaClass().getClassName();
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
+        boolean foundAny = false;
         try {
         CFG cfg = classContext.getCFG(method);
         for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
@@ -99,14 +108,16 @@ public class BuildUnconditionalParamDerefDatabase {
             if (ins instanceof InvokeInstruction) {
                 InvokeInstruction inv = (InvokeInstruction) ins;
                 String className = inv.getClassName(cpg);
-                if (thisClassName.equals(className)) 
-                    return true;
+                if (thisClassName.equals(className)) {
+                    foundAny = true;
+                    calledMethods.add(inv.getMethodName(cpg)+inv.getSignature(cpg));
+                }
             }
         }
         } catch (CFGBuilderException e) {
             assert true; // ignore it
         }
-        return false;
+        return foundAny;
     }
     private void considerMethod(ClassContext classContext, Method method) {
         boolean hasReferenceParameters = false;
