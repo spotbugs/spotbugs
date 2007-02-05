@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
@@ -81,6 +82,12 @@ public class Filter {
 		public boolean activeSpecified = false;
 		public boolean active = false;
 	
+        public boolean hasField = false;
+        public boolean hasFieldSpecified = false;
+        
+        public boolean hasLocal = false;
+        public boolean hasLocalSpecified = false;
+       
 		public boolean withSource = false;
 		public boolean withSourceSpecified = false;
 		public boolean introducedByChange = false;
@@ -135,7 +142,9 @@ public class Filter {
 			addOption("-fixed", "when", "allow only warnings that last occurred in the previous version (clobbers last)");
 			addOption("-present", "when", "allow only warnings present in this version");
 			addOption("-absent", "when", "allow only warnings absent in this version");
-			addSwitchWithOptionalExtraPart("-active", "truth", "allow only warnings alive in the last sequence number");
+            addSwitchWithOptionalExtraPart("-hasField", "truth", "allow only warnings that are annotated with a field");
+            addSwitchWithOptionalExtraPart("-hasLocal", "truth", "allow only warnings that are annotated with a local variable");
+            addSwitchWithOptionalExtraPart("-active", "truth", "allow only warnings alive in the last sequence number");
 			
 			addSwitchWithOptionalExtraPart("-introducedByChange", "truth",
 					"allow only warnings introduced by a change of an existing class");
@@ -247,6 +256,12 @@ public class Filter {
 			if (absentAsString != null && bugLiveAt(bug, absent))
 				return false;
 			
+            if (hasFieldSpecified && (hasField != (bug.getPrimaryField() != null)))
+                    return false;
+            if (hasLocalSpecified && (hasLocal != (bug.getPrimaryLocalVariableAnnotation() != null)))
+                    return false;
+             
+    
 			if (activeSpecified && active != (bug.getLastVersion() == -1))
 				return false;
 			if (removedByChangeSpecified
