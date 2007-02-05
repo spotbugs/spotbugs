@@ -1094,15 +1094,16 @@ public class ClassContext {
 				// XXX: hack to clear derefs on not-null branches
 				analysis.clearDerefsOnNonNullBranches(inv);
 				
-				// XXX: type analysis is needed to resolve method calls for
+				TypeDataflow typeDataflow = getTypeDataflow(method);
+                // XXX: type analysis is needed to resolve method calls for
 				// checking whether call targets unconditionally dereference parameters
-				analysis.setTypeDataflow(getTypeDataflow(method));
+				analysis.setTypeDataflow(typeDataflow);
 				
 				UnconditionalValueDerefDataflow dataflow =
 					new UnconditionalValueDerefDataflow(getCFG(method), analysis);
 				dataflow.execute();
 				 if (UnconditionalValueDerefAnalysis.DEBUG) {
-			        	dumpDataflowInformation(method, cfg, vnd, inv, dataflow, null);
+			        	dumpDataflowInformation(method, cfg, vnd, inv, dataflow, typeDataflow);
 			        }
 			 
 				return dataflow;
