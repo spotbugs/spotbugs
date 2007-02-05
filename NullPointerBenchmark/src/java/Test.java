@@ -1,6 +1,15 @@
 public class Test {
+    
+    /**
+     * Benchmark tests for null pointer defect detectors
+     * This benchmark tests local variable tracking tracking
+     * fp1, fp2, fp3 : false positives
+     * tp1 : true positive
+     * ifp1 : interprocedural false positives
+     * itp1, itp2, itp3 : interprocedural true positives
+     */
 
-    int a(int level) {
+    int fp1(int level) {
         Object x = null;
         if (level > 0)
             x = new Object();
@@ -9,7 +18,7 @@ public class Test {
         return 0;
     }
 
-    int b(boolean b) {
+    int fp2(boolean b) {
         Object x = null;
         if (b)
             x = new Object();
@@ -18,7 +27,7 @@ public class Test {
         return 0;
     }
 
-    int c1(Object x, boolean b) {
+    int fp3(Object x, boolean b) {
         Object y = null;
         if (x != null)
             y = new Object();
@@ -28,7 +37,7 @@ public class Test {
             return 0;
     }
 
-    int c2(Object x, boolean b) {
+    int tp1(Object x, boolean b) {
         Object y = null;
         if (x != null)
             y = new Object();
@@ -38,18 +47,24 @@ public class Test {
             return x.hashCode();
     }
 
-    int d(boolean b) {
+    int ifp1(boolean b) {
         Object x = null;
         if (b)
             x = new Object();
         return helper1(x, b);
     }
 
-    int e() {
+    int itp1(boolean b) {
+        Object x = null;
+        if (!b)
+            x = new Object();
+        return helper1(x, b);
+    }
+    int itp2() {
         return helper2(null);
     }
 
-    int f(Object x) {
+    int itp3(Object x) {
         if (x == null)
             System.out.println("x is null");
         return helper2(x);

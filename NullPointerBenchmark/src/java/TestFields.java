@@ -1,4 +1,12 @@
 public class TestFields {
+    /**
+     * Benchmark tests for null pointer defect detectors
+     * This benchmark tests field tracking
+     * fp1, fp2, fp3 : false positives
+     * tp1 : true positive
+     * ifp1 : interprocedural false positives
+     * itp1, itp2, itp3 : interprocedural true positives
+     */
 
     Object x;
 
@@ -6,7 +14,7 @@ public class TestFields {
         this.x = x;
     }
 
-    int a(int level) {
+    int fp1(int level) {
         x = null;
         if (level > 0)
             x = new Object();
@@ -15,7 +23,7 @@ public class TestFields {
         return 0;
     }
 
-    int b(boolean b) {
+    int fp2(boolean b) {
         x = null;
         if (b)
             x = new Object();
@@ -24,7 +32,7 @@ public class TestFields {
         return 0;
     }
 
-    int c1(boolean b) {
+    int fp3(boolean b) {
         Object y = null;
         if (x != null)
             y = new Object();
@@ -34,7 +42,7 @@ public class TestFields {
             return 0;
     }
 
-    int c2(boolean b) {
+    int tp1(boolean b) {
         Object y = null;
         if (x != null)
             y = new Object();
@@ -44,19 +52,25 @@ public class TestFields {
             return x.hashCode();
     }
 
-    int d(boolean b) {
+    int ifp1(boolean b) {
         x = null;
         if (b)
             x = new Object();
         return helper1(b);
     }
 
-    int e() {
+    int itp1(boolean b) {
+        x = null;
+        if (!b)
+            x = new Object();
+        return helper1(b);
+    }
+    int itp2() {
         x = null;
         return helper2();
     }
 
-    int f() {
+    int itp3() {
         if (x == null)
             System.out.println("x is null");
         return helper2();
