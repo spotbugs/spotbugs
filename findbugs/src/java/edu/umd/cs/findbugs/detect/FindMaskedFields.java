@@ -123,11 +123,12 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 									&& !fld.getSignature().startsWith("Ljava/lang/")
 									|| fld.getSignature().charAt(0) == '[')
 								priority--;
-							if (fld.getAccessFlags()
+                            if (!fld.getSignature().equals(maskingField.getSignature()))
+                                priority+=2;
+                            else if (fld.getAccessFlags()
 									!= maskingField.getAccessFlags())
 								priority++;
-							if (!fld.getSignature().equals(maskingField.getSignature()))
-								priority++;
+							
 
 							FieldAnnotation maskedFieldAnnotation
 									= FieldAnnotation.fromBCELField(superClassName, fld);
