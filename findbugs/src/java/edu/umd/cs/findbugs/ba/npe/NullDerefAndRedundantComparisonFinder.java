@@ -70,6 +70,8 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class NullDerefAndRedundantComparisonFinder {
 	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug");
+    private static final boolean PRUNE_GUARANTEED_DEREFERENCES = SystemProperties.getBoolean("fnd.prune");
+    
 	private static final boolean DEBUG_DEREFS = SystemProperties.getBoolean("fnd.derefs.debug");
 	
 	private ClassContext classContext;
@@ -362,13 +364,16 @@ public class NullDerefAndRedundantComparisonFinder {
             if (variableAnnotation == null) variableAnnotation = new LocalVariableAnnotation("?",-1,-1);
 
             
-            PostDominatorsAnalysis postDomAnalysis =
-                classContext.getNonExceptionPostDominatorsAnalysis(method);
+
+            if (PRUNE_GUARANTEED_DEREFERENCES) {
+                PostDominatorsAnalysis postDomAnalysis =
+                    classContext.getNonExceptionPostDominatorsAnalysis(method);
             removeStrictlyPostDominatedLocations(derefLocationSet, postDomAnalysis);
             
             removeStrictlyPostDominatedLocations(knownNullAndDoomedAt, postDomAnalysis);
             
             removeStrictlyPostDominatedLocations(assignedNullLocationSet, postDomAnalysis);
+            }
             
             
 			collector.foundGuaranteedNullDeref(
