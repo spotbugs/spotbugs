@@ -47,18 +47,18 @@ public class Test {
             return x.hashCode();
     }
 
-    int ifp1(boolean b) {
+    int itp1(boolean b) {
         Object x = null;
         if (b)
             x = new Object();
-        return helper1(x, b);
+        return helper1(x, b); // OK when x is null and b is false
     }
 
-    int itp1(boolean b) {
+    int ifp1(boolean b) {
         Object x = null;
         if (!b)
             x = new Object();
-        return helper1(x, b);
+        return helper1(x, b); // bug when x is null and b is true
     }
     int itp2() {
         return helper2(null);

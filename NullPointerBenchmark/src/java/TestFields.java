@@ -52,18 +52,18 @@ public class TestFields {
             return x.hashCode();
     }
 
-    int ifp1(boolean b) {
+    int itp1(boolean b) {
         x = null;
         if (b)
             x = new Object();
-        return helper1(b);
+        return helper1(b); // OK when x is null and b is false
     }
 
-    int itp1(boolean b) {
+    int ifp1(boolean b) {
         x = null;
         if (!b)
             x = new Object();
-        return helper1(b);
+        return helper1(b); // bug when x is null and b is true
     }
     int itp2() {
         x = null;
