@@ -70,7 +70,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class NullDerefAndRedundantComparisonFinder {
 	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug");
-    private static final boolean PRUNE_GUARANTEED_DEREFERENCES = SystemProperties.getBoolean("fnd.prune");
+    private static final boolean PRUNE_GUARANTEED_DEREFERENCES = SystemProperties.getBoolean("fnd.prune", true);
     
 	private static final boolean DEBUG_DEREFS = SystemProperties.getBoolean("fnd.derefs.debug");
 	
