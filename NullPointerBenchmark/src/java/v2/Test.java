@@ -45,7 +45,7 @@ public class Test {
         return 0;
     }
 
-    int fp3(Object x, boolean b) {
+    int fp3(Object x) {
         Object y = null;
         if (x != null)
             y = new Object();
@@ -54,7 +54,7 @@ public class Test {
         else
             return 0;
     }
-    int tp3(Object x, boolean b) {
+    int tp3(Object x) {
        	Object y = null;
         if (x != null)
             y = new Object();
@@ -63,21 +63,21 @@ public class Test {
         else
             return x.hashCode();
     }
-    int tp4(boolean a, boolean b) {
+    int tp4(boolean b) {
     	Object x = null;
         Object y = null;
-        if (a) x = "x";
-        if (b) y = "y";
+        if (b) x = "x";
+        if (x != null) y = "y";
         if (y != null)
             return x.hashCode() + y.hashCode();
         else
             return x.hashCode();
     }
-    int fp4(boolean a, boolean b) {
+    int fp4(boolean b) {
        	Object x = null;
         Object y = null;
-        if (a) x = "x";
-        if (b) y = "y";
+        if (b) x = "x";
+        if (x != null) y = "y";
         if (y != null)
             return x.hashCode() + y.hashCode();
         else

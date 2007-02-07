@@ -51,14 +51,14 @@ public class Test {
         Object x = null;
         if (b)
             x = new Object();
-        return helper1(x, b); // OK when x is null and b is false
+        return helper1(x, b); // bug when x is null and b is false
     }
 
     int ifp1(boolean b) {
         Object x = null;
         if (!b)
             x = new Object();
-        return helper1(x, b); // bug when x is null and b is true
+        return helper1(x, b); // OK when x is null and b is true
     }
     int itp2() {
         return helper2(null);
