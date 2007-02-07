@@ -126,7 +126,7 @@ public final class SourceCodeDisplay implements Runnable {
 				sourceToHighlight = null;
 				pendingUpdate = false;
 			}
-			if (myBug == null) {
+			if (myBug == null || mySourceLine == null) {
 				frame.clearSourcePane();
 				continue;
 			}
