@@ -209,7 +209,7 @@ public class SortedBugCollection implements BugCollection {
 
 			
 			XMLReader xr = null;
-            if (false) try { // try this in 1.1.4
+            if (false) try { // FIXME: try this in 1.1.4
                 xr = XMLReaderFactory.createXMLReader();
               } catch (SAXException e) {
                 System.err.println(e.getMessage());         
