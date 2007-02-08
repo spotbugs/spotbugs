@@ -20,6 +20,9 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.HashSet;
+import java.util.Iterator;
+
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -44,6 +47,7 @@ import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
 
 public class DumbMethods extends BytecodeScanningDetector  {
@@ -124,6 +128,25 @@ public class DumbMethods extends BytecodeScanningDetector  {
          public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		String opcodeName = OPCODE_NAMES[seen];
+        
+        if ((seen == INVOKESTATIC || seen == INVOKEVIRTUAL || seen == INVOKESPECIAL || seen == INVOKEINTERFACE)
+                && getSigConstantOperand().indexOf("Ljava/lang/Runnable;") >= 0) {
+            SignatureParser parser = new SignatureParser(getSigConstantOperand());
+            int count = 0;
+            for(Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext(); count++) {
+                String parameter = i.next();
+                if (parameter.equals("Ljava/lang/Runnable;")) {
+                    OpcodeStack.Item item = stack.getStackItem(parser.getSlotsFromTopOfStackForParameter(count));
+                    if ("Ljava/lang/Thread;".equals(item.getSignature()))
+                    bugReporter.reportBug(new BugInstance(this,
+                            "TESTING", HIGH_PRIORITY)
+                            .addClassAndMethod(this)
+                            .addCalledMethod(this)
+                            .addSourceLine(this));
+                }
+            }
+            
+        }
         
         if (prevOpcode == I2L && seen == INVOKESTATIC
             && getClassConstantOperand().equals("java/lang/Double") && getNameConstantOperand()
