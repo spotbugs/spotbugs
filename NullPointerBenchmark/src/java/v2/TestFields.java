@@ -5,11 +5,11 @@ public class TestFields {
     /**
      * Benchmark tests for null pointer defect detectors
      * This benchmark tests instance field  tracking
-     * fp1, fp2, fp3, fp4, fp5 : false positives
-     * tp1, tp2, tp3, tp4, tp5 : true positive versions of the above
+     * tp1, tp2, tp3, tp4, tp5, tp6 : true positive cases
+     * fp1, fp2, fp3, fp4 : false positives versions of the above
      * ifp1, ifp2, ifp3 : interprocedural false positives
      * itp1 : true versions of the ifp1
-     */
+  */
 	Object x;
 	TestFields(Object x) {
 		this.x = x;

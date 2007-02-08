@@ -5,8 +5,8 @@ public class Test {
     /**
      * Benchmark tests for null pointer defect detectors
      * This benchmark tests local variable tracking tracking
-     * fp1, fp2, fp3, fp4, fp5 : false positives
-     * tp1, tp2, tp3, tp4, tp5 : true positive versions of the above
+     * tp1, tp2, tp3, tp4, tp5, tp6 : true positive cases
+     * fp1, fp2, fp3, fp4 : false positives versions of the above
      * ifp1, ifp2, ifp3 : interprocedural false positives
      * itp1 : true versions of the ifp1
      */
