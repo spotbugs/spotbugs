@@ -432,6 +432,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		archiveExtensionSet.add(".zip");
 		archiveExtensionSet.add(".ear");
 		archiveExtensionSet.add(".war");
+		archiveExtensionSet.add(".sar");
 	}
 
 	/**
@@ -453,7 +454,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 
 		@Override
 		public String getDescription() {
-			return L10N.getLocalString("dlg.javaarchives_lbl", "Java archives (*.jar,*.zip,*.ear,*.war)");
+			return L10N.getLocalString("dlg.javaarchives_lbl", "Java archives (*.jar,*.zip,*.ear,*.war,*.sar)");
 		}
 	}
 

@@ -73,13 +73,13 @@ public class NewProjectWizard extends FBDialog
 		public boolean accept(File f)
 		{
 			String fileName = f.getName().toLowerCase(); 
-			return f.isDirectory() || fileName.endsWith(".jar") || fileName.endsWith(".ear") || fileName.endsWith(".war") || fileName.endsWith(".zip");
+			return f.isDirectory() || fileName.endsWith(".jar") || fileName.endsWith(".ear") || fileName.endsWith(".war") || fileName.endsWith(".zip") || fileName.endsWith(".sar");
 		}
 
 		@Override
 		public String getDescription()
 		{
-			return edu.umd.cs.findbugs.L10N.getLocalString("file.accepted_extensions", "Class archive files (*.jar, *.war, *.ear, *.zip)");
+			return edu.umd.cs.findbugs.L10N.getLocalString("file.accepted_extensions", "Class archive files (*.jar, *.war, *.ear, *.zip, *.sar)");
 		}
 	};
 	
@@ -274,10 +274,15 @@ public class NewProjectWizard extends FBDialog
 			public void actionPerformed(ActionEvent evt)
 			{
 				chooser.setFileSelectionMode(fileSelectionMode);
+				chooser.setMultiSelectionEnabled(true);
 				chooser.setFileFilter(filter);
 				if (chooser.showOpenDialog(NewProjectWizard.this) == JFileChooser.APPROVE_OPTION)
 				{
-					listModel.addElement(chooser.getSelectedFile().getAbsolutePath());
+					File[] selectedFiles = chooser.getSelectedFiles();
+					for(File selectedFile : selectedFiles)
+					{
+						listModel.addElement(selectedFile.getAbsolutePath());	
+					}
 					projectChanged = true;
 				}
 			}
