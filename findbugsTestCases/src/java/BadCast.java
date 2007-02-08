@@ -8,6 +8,14 @@ import java.util.Stack;
 import java.util.Vector;
 
 class BadCast {
+    
+    Object myField;
+    
+    int fieldCheck() {
+        if (myField instanceof String) 
+            return ((String)myField).length();
+        return myField.hashCode();
+    }
 	
 	public static <C extends Collection<?>> C smallest(Iterable<C> collections) {
 		return null;

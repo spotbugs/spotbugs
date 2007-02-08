@@ -2,9 +2,7 @@
  * test of MASK detector
  */
 public class IncompatMaskTest {
-	public static void foo() {
-		int i = 2;
-
+	public static void foo(int i) {
 		if ((i & 16) == 2)
 			System.out.println("warn");
 		if ((i & 16) != 2)
@@ -34,8 +32,8 @@ public class IncompatMaskTest {
 		// if ((i | 16L) != 2) System.out.println("warn");
 	}
 
-	public static void bar() {
-		int i = 2;
+	public static void bar(int i) {
+
 
 		if ((i & 16) == 2)
 			return; /* always unequal */
@@ -45,11 +43,18 @@ public class IncompatMaskTest {
 			return; /* always unequal */
 		if ((i | 16) != 0)
 			return; /* always unequal */
-		if ((i & 0) == 0)
+        if ((i & 0) == 1) // Eclipse optimizes this away so we can't catch it
+            return; /* never equal */
+        if ((i & 0) != 1) // Eclipse optimizes this away so we can't catch it
+            return; /* never equal */
+		if ((i & 0) == 0) // Eclipse optimizes this away so we can't catch it
 			return; /* always equal */
-		if ((i & 0) != 0)
+		if ((i & 0) != 0) // Eclipse optimizes this away so we can't catch it
 			return; /* always equal */
-
+        if ((i | 1) == 0)
+            return; /* never equal */
+        if ((i | 1) != 0)
+            return; /* never equal */
 		if ((i & 16L) == 2)
 			return; /* always unequal */
 		if ((i & 16L) != 2)
@@ -58,10 +63,15 @@ public class IncompatMaskTest {
 			return; /* always unequal */
 		if ((i | 16L) != 0)
 			return; /* always unequal */
-		if ((i & 0L) == 0)
+		if ((i & 0L) == 0) // Eclipse optimizes this away so we can't catch it
 			return; /* always equal */
-		if ((i & 0L) != 0)
+		if ((i & 0L) != 0) // Eclipse optimizes this away so we can't catch it
 			return; /* always equal */
+        if ((i | 1L) == 0)
+            return; /* never equal */
+        if ((i | 1L) != 0)
+            return; /* never equal */
+        System.out.println("foo");
 	}
 
 	public static void moreBars(short i) {
