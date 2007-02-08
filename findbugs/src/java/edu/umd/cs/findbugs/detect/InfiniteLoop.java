@@ -231,8 +231,10 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		case DRETURN:
 		case FRETURN:
 		case LRETURN:
+        case ATHROW:
 			addForwardJump(getPC(), Integer.MAX_VALUE);
 			break;
+
 		case LOOKUPSWITCH:
 		case TABLESWITCH: 
 		{
