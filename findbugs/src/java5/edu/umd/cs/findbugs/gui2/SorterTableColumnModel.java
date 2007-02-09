@@ -98,13 +98,18 @@ public class SorterTableColumnModel implements TableColumnModel{
 			for (TableColumnModelListener l: watchers)
 				l.columnRemoved(new TableColumnModelEvent(this,x,x));
 		}
+		
+		//First, empty showOrder
+		for(int x=0; x<showOrder.length;x++)
+			showOrder[x]=false; 
+		
 		for(int x = 0; x < other.order.size(); x++)
 		{
 			Sortables c=other.order.get(x);
 			for (int y=0; y<Sortables.values().length;y++)
 			{
 				if (c.equals(Sortables.values()[y])) 
-					showOrder[y]=true;
+					showOrder[y]=true;//Then refill it, this allows sorterDialog to keep track of whats open
 			}
 
 			TableColumn tc=new TableColumn(x);
