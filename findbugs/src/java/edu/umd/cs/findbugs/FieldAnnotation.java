@@ -194,7 +194,10 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
 		if (key.equals("") || key.equals("hash"))
 			return className + "." + fieldName;
-        else if (key.equals("givenClass")) return getNameInClass(primaryClass);
+        else if (key.equals("givenClass")) {
+            if (className.equals(primaryClass.getClassName())) return getNameInClass(primaryClass);
+            else return shorten(primaryClass.getPackageName(), className) + "." + getNameInClass(primaryClass);
+        }
 		else if (key.equals("name"))
 			return fieldName;
 		else if (key.equals("fullField")) {
