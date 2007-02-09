@@ -139,7 +139,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
                     OpcodeStack.Item item = stack.getStackItem(parser.getSlotsFromTopOfStackForParameter(count));
                     if ("Ljava/lang/Thread;".equals(item.getSignature()))
                     bugReporter.reportBug(new BugInstance(this,
-                            "TESTING", HIGH_PRIORITY)
+                            "DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED", NORMAL_PRIORITY)
                             .addClassAndMethod(this)
                             .addCalledMethod(this)
                             .addSourceLine(this));

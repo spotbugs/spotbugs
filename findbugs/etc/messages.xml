@@ -1465,7 +1465,7 @@ should be written to the JarFile between the calls to
 
   <BugPattern type="CN_IDIOM_NO_SUPER_CALL">
     <ShortDescription>clone method does not call super.clone()</ShortDescription>
-    <LongDescription>clone method {1} does not call super.clone()</LongDescription>
+    <LongDescription>{1} does not call super.clone()</LongDescription>
     <Details>
 <![CDATA[
 <p> This non-final class defines a clone() method that does not call super.clone().
@@ -1561,6 +1561,18 @@ that all fields are final.
     </Details>
   </BugPattern>
 
+  <BugPattern type="DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED">
+    <ShortDescription>Thread passed where Runnable expected</ShortDescription>
+    <LongDescription>Thread passed where Runnable expected in {1}</LongDescription>
+    <Details>
+<![CDATA[
+  <p> A Thread object is passed as a parameter to a method where 
+a Runnable is expected. This is rather unusual, and may indicate a logic error
+or cause unexpected behavior.
+   </p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DMI_COLLECTION_OF_URLS">
     <ShortDescription>Maps and sets of URLs can be performance hogs</ShortDescription>
     <LongDescription>{1} is or uses a map or set of URLs, which can be a performance hog</LongDescription>
