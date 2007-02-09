@@ -114,7 +114,6 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			BugSet.setAsRootAndCache(this.data);
 			root.setCount(data.size());
 			FilterMatcher.addFilterListener(this);
-			tree.addTreeExpansionListener(this);
 		}
 		
 		public BugTreeModel(BugTreeModel other)
@@ -144,14 +143,25 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			if (st.getOrderBeforeDivider().size()==0 && a.size()==0)//Root without any sortables
 				return data.get(index);
 
-			if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
+			try
 			{
-				BugAspects child=a.addToNew(enumsThatExist(a).get(index));
-				child.setCount(data.query(child).size());
-				return child;
-			}
+				if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
+				{
+					BugAspects child=a.addToNew(enumsThatExist(a).get(index));
+					child.setCount(data.query(child).size());
+					return child;
+				}	
 			else
 				return data.query(a).get(index);
+			}
+			catch (IndexOutOfBoundsException e)
+			{
+				Debug.println("IndexOutOfBounds caught: I am treemodel #" + this + "I am no longer the current treemodel," +
+						" my data is cached and I return bad values for getChild.  Something is wrong with rebuild," +
+						" since the tree is asking both of us for children");
+				return null;
+			}
+
 		}
 
 		public int getChildCount(Object o)
@@ -254,6 +264,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 				if (stringPairs==null)
 				{
 					//XXX-Threading difficulties-stringpairs is null somehow
+					Debug.println("Stringpairs is null on getIndexOfChild!  Error!");
 					assert(false);
 					return -1; 
 				}
@@ -420,7 +431,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 						Debug.println(Thread.currentThread() + " start");
 //						System.out.println(st.getOrder());
 						BugTreeModel newModel = new BugTreeModel(BugTreeModel.this);
-												
+						Debug.println("The new model is TreeModel # " +newModel);
 						newModel.listeners = listeners;
 						newModel.resetData();
 						newModel.data.sortList();
@@ -781,7 +792,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 				
 				pathToBug=pathToBug.pathByAddingChild(getChild(pathToBug.getLastPathComponent(),index));
 			}
-			//Using a hashlist to store bugs in BugSet will make getIndexOfChild Waaaaaay faster, thus making this O(1) (best case)
+			//Using a hashlist to store bugs in BugSet will make getIndexOfChild Waaaaaay faster, thus making this O(1) (avg case)
 			int index=getIndexOfChild(pathToBug.getLastPathComponent(),new BugLeafNode(b));
 			if(index == -1)
 				return null;
@@ -801,7 +812,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		{
 			super.finalize();
 			
-			//this will inform us when the garbage collector finds our old bug tree models and deletes them, thus preventing obnoxiously hard to find bugs from not remember to remove the model from our listeners
+			//this will inform us when the garbage collector finds our old bug tree models and deletes them, thus preventing obnoxiously hard to find bugs from not remembering to remove the model from our listeners
 			Debug.println("The BugTreeModel has been DELETED!  This means there are no more references to it, and its finally off all of the stupid listener lists");
 		}
 		
@@ -809,33 +820,6 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		public void columnSelectionChanged(ListSelectionEvent arg0) {}
 
 		public void treeExpanded(TreeExpansionEvent event) {
-			TreePath path=event.getPath();
-			
-			//If a node with only one child has been expanded, automatically expand its child as well (This will recursively expand out until it opens the next node with multiple children)
-			//Note, if a node below has been expanded in the past, new events will not be called, and thus it will NOT re-expand
-			//This means that if the user has expanded a long path down and then closed the second to last node in that path, and then closed the top, and then re opened the top the second to last node will not reopen.
-			//If the user chooses not to have something opened, it will NOT reopen, this is the behavior we want.
-			if (getChildCount((BugAspects)(path.getLastPathComponent()))==1)
-				tree.expandPath(path.pathByAddingChild(getChild(path.getLastPathComponent(),0)));
-			
-			//If a node has only one child and its last child is a leaf, select that leaf, this means that the first time you select a high up node with only a single bug instance in it, that bug instance will be selected,
-			//however, due to the fact that we do not receieve tree expansions on nodes that were previously expanded, this wont work the second time it was expanded.
-			if (((BugAspects)path.getLastPathComponent()).getCount()==1 && isLeaf(getChild(path.getLastPathComponent(),0)))
-			{
-				tree.setSelectionPath(path.pathByAddingChild(getChild(path.getLastPathComponent(),0)));
-			}
-			//Thus this if statement is required, if the the node below has been expanded, and theres only a single child, and it wasn't taken care of in the previous statement, 
-			//recursively travel down the tree and select the leaf, this way the final bug instance is selected both the first time and every other time.
-			//Note, this ignores the design of if statement #1, where if a node between the node being opened and the leaf has been collapsed, it does not open the full path,
-			//if we wish to add this functionality, it would be done in this third if statement.
-
-			else if (((BugAspects)path.getLastPathComponent()).getCount()==1 && tree.isExpanded(path.pathByAddingChild(getChild(path.getLastPathComponent(),0))))
-			{
-				TreePath fullPath=path;
-				while (!isLeaf(fullPath.getLastPathComponent()))
-					fullPath=fullPath.pathByAddingChild(getChild(fullPath.getLastPathComponent(),0));
-				tree.setSelectionPath(fullPath);
-			}
 		}
 		
 		public void treeCollapsed(TreeExpansionEvent event) {
@@ -849,6 +833,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					if (isLeaf(path.getLastPathComponent()))
 						selectedBugLeafNodes.add((BugLeafNode) path.getLastPathComponent());
 		}
+		
 		Vector<BugLeafNode> getOldSelectedBugs()
 		{
 			return selectedBugLeafNodes;
@@ -872,16 +857,24 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		
 		void checkSorter()
 		{
-			if (sortOrderChanged==true)
+			if (sortOrderChanged==true || sortsAddedOrRemoved==true)
 			{
 				sortOrderChanged=false;
-				rebuild();
-			}
-			if (sortsAddedOrRemoved==true)
-			{
 				sortsAddedOrRemoved=false;
 				rebuild();
 			}
+//			This old version isn't wrong... it just worries me, as it looks like we could rebuild twice, although
+//			we never do.  Above version should be safer.
+//			if (sortOrderChanged==true)
+//			{
+//				sortOrderChanged=false;
+//				rebuild();
+//			}
+//			if (sortsAddedOrRemoved==true)
+//			{
+//				sortsAddedOrRemoved=false;
+//				rebuild();
+//			}
 		}		
 		
 		static void pleaseWait()
@@ -1047,6 +1040,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		
 		void sendEvent(TreeModelEvent event, int whatToDo)
 		{
+			Debug.println("Sending An Event!");
 			final int REMOVE=0;
 			final int INSERT=1;
 			final int RESTRUCTURE=2;
@@ -1080,4 +1074,5 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 				changedPath=changedPath.getParentPath();
 			}
 		}
+
 	}
