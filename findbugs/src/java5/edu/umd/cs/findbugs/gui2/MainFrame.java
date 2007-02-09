@@ -939,11 +939,9 @@ public class MainFrame extends FBFrame implements LogSync
 				newModel.openPreviouslySelected(((BugTreeModel)(tree.getModel())).getOldSelectedBugs());
 				MainFrame.this.getSorter().addColumnModelListener(newModel);
 				FilterMatcher.addFilterListener(newModel);
-				newTree.addTreeExpansionListener(newModel);
 				MainFrame.this.setSorting(true);
 			}
 		});
-		
 	}
 	
 	boolean pleaseWait = false;
@@ -955,7 +953,7 @@ public class MainFrame extends FBFrame implements LogSync
 		tree.addTreeSelectionListener(new TreeSelectionListener(){
 			public void valueChanged(TreeSelectionEvent selectionEvent) {
 					
-				TreePath path = selectionEvent.getNewLeadSelectionPath();				
+				TreePath path = selectionEvent.getNewLeadSelectionPath();
 				if (path != null)
 				{
 					saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
