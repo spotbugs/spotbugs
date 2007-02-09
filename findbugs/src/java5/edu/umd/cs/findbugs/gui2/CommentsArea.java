@@ -459,8 +459,10 @@ public class CommentsArea {
 		String designationKey = convertDesignationNameToDesignationKey(designationName);
 		if (designationKey == null)
 			return;
-		if (changeDesignationOfBug(frame.currentSelectedBugLeaf, designationKey))
+		if (changeDesignationOfBug(frame.currentSelectedBugLeaf, designationKey)){
 			changed = true;
+			setProjectChanged(true);
+		}
 		setDesignationComboBox(designationKey);
 	}
 
@@ -472,7 +474,10 @@ public class CommentsArea {
 		BugSet filteredSet = frame.currentSelectedBugAspects
 				.getMatchingBugs(BugSet.getMainBugSet());
 		for (BugLeafNode nextNode : filteredSet)
-			if (changeDesignationOfBug(nextNode, designationKey)) changed = true;
+			if (changeDesignationOfBug(nextNode, designationKey)){
+				changed = true;
+				setProjectChanged(true);
+			}
 		setDesignationComboBox(designationKey);
 	}
 
