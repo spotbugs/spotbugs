@@ -284,9 +284,12 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
 		if (key.equals(""))
 			return UGLY_METHODS ? getUglyMethod() : getFullMethod(primaryClass);
-		else if (key.equals("givenClass")) return getNameInClass(primaryClass);
+		else if (key.equals("givenClass")) {
+            if (className.equals(primaryClass.getClassName())) return getNameInClass(primaryClass);
+            else return shorten(primaryClass.getPackageName(), className) + "." + getNameInClass(primaryClass);
+        }
 		else if (key.equals("shortMethod") )
-			return className + "." + methodName + "()";
+			return className + "." + methodName + "(...)";
 		else if (key.equals("hash")){
 				String tmp= getNameInClass(true, primaryClass, true);
 
@@ -302,7 +305,6 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			throw new IllegalArgumentException("unknown key " + key);
 	}
 
-	String nameInClass = null;
 	/**
 	 * Get the "full" method name.
 	 * This is a format which looks sort of like a method signature
@@ -310,10 +312,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param primaryClass TODO
 	 */
 	public String getNameInClass(ClassAnnotation primaryClass) {
-		if (nameInClass == null) {
-			nameInClass = getNameInClass(true, primaryClass, false);
-		}
-		return nameInClass;
+		return  getNameInClass(true, primaryClass, false);
 	}
 
 	/**
