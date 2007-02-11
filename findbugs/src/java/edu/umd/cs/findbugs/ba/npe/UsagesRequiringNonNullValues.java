@@ -84,29 +84,6 @@ public class UsagesRequiringNonNullValues {
         return map.get(loc);
     }
 
-    public Iterable<ValueNumber> getValueNumbers(final Location loc) {
-        return new Iterable<ValueNumber>() {
-            final Collection<Pair> values = map.get(loc);
-
-            public Iterator<ValueNumber> iterator() {
-                return new Iterator<ValueNumber>() {
-                    Iterator<Pair> i = values.iterator();
-
-                    public boolean hasNext() {
-                        return i.hasNext();
-                    }
-
-                    public ValueNumber next() {
-                        return i.next().vn;
-                    }
-
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-
-                    }
-                };
-            }
-        };
-    }
+   
 
 }
