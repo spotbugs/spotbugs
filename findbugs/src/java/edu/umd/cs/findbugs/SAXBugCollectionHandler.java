@@ -112,6 +112,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					String filename = attributes.getValue(Project.FILENAME_ATTRIBUTE_NAME);
 					if (filename != null)
 						project.setProjectFileName(filename);
+                    String projectName = attributes.getValue(Project.PROJECTNAME_ATTRIBUTE_NAME);
+                    if (projectName != null)
+                        project.setProjectName(projectName);
 				} else if (qName.equals("BugInstance")) {
 					// BugInstance element - get required type and priority attributes
 					String type = getRequiredAttribute(attributes, "type", qName);

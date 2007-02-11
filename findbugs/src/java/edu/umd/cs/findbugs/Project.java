@@ -71,6 +71,8 @@ public class Project implements XMLWriteable {
 	 * Project filename.
 	 */
 	private String projectFileName;
+    
+    private String projectName;
 
 	/**
 	 * Options.
@@ -671,11 +673,14 @@ public class Project implements XMLWriteable {
 	static final String AUX_CLASSPATH_ENTRY_ELEMENT_NAME = "AuxClasspathEntry";
 	static final String SRC_DIR_ELEMENT_NAME = "SrcDir";
 	static final String FILENAME_ATTRIBUTE_NAME = "filename";
+    static final String PROJECTNAME_ATTRIBUTE_NAME = "projectname";
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		xmlOutput.openTag(
 				BugCollection.PROJECT_ELEMENT_NAME,
-				new XMLAttributeList().addAttribute(FILENAME_ATTRIBUTE_NAME, getProjectFileName()));
+				new XMLAttributeList().addAttribute(FILENAME_ATTRIBUTE_NAME, getProjectFileName())
+                .addAttribute(PROJECTNAME_ATTRIBUTE_NAME, getProjectName())
+                );
 
 		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, fileList);
 		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
@@ -866,6 +871,20 @@ public class Project implements XMLWriteable {
 	public long getTimestamp() {
 		return timestamp;
 	}
+
+    /**
+     * @param projectName The projectName to set.
+     */
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    /**
+     * @return Returns the projectName.
+     */
+    public String getProjectName() {
+        return projectName;
+    }
 }
 
 // vim:ts=4
