@@ -39,6 +39,7 @@
 	<property name="jnlp.dir" value="jnlp"/>
 	<property name="pkg.base" value="edu/umd/cs/findbugs"/>
 	<property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
+	<property name="oneFourCompatibility.jar" value="${jar.dir}/oneFourCompatibility.jar"/>
 	<property name="annotations.jar" value="${jar.dir}/annotations.jar"/>
 	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
 	<property name="gui.jar" value="${jar.dir}/findbugsGUI.jar"/>
@@ -204,6 +205,31 @@
 	</target>
 	<target name="validatesampleoutput" depends="validatesamplexmloutput,validatesamplehtmloutput"/>
 	
+	<!-- Build jar files. -->
+	<target name="oneFourCompatibilityTest" depends="classes">
+		<!-- Main engine and command line jar file. -->
+		<jar destfile="${oneFourCompatibility.jar}" >
+			<!-- Compiled classes, properties files. -->
+			<fileset dir="${classes.dir}">
+				<exclude name="${pkg.base}/gui2/**"/>
+				<exclude name="${pkg.base}/sourceViewer/**"/>
+				<exclude name="${pkg.base}/annotations/**"/>
+				<exclude name="${pkg.base}/FootPrint$*.class"/>
+				<exclude name="**/*Test.class"/> <!-- Exclude JUnit tests. -->
+				<include name="**/*.class"/>
+			</fileset>
+		</jar>
+   </target>
+	<target name="CheckOneFourCompatibility">
+    <findbugs home="."
+              output="text"
+		      failonerror="true"
+			  visitors="ResolveAllReferences"
+			  jvmargs="-Xmx600m" >
+		<class destfile="${oneFourCompatibility.jar}" >
+		</findbugs>
+	</target>
+		
 	<!-- Build jar files. -->
 	<target name="jars" depends="classes, validate">
 		<!-- Main engine and command line jar file. -->
