@@ -234,25 +234,29 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	   if (seen == INVOKEVIRTUAL && stack.getStackDepth() > 1
                         && getClassConstantOperand().equals("java/util/Calendar")
                         && getNameConstantOperand().equals("set")
-                        && getSigConstantOperand().equals("(III)V")
+                        
 		||
 	   	seen == INVOKESPECIAL && stack.getStackDepth() > 1
                         && getClassConstantOperand().equals("java/util/GregorianCalendar")
                         && getNameConstantOperand().equals("<init>")
-                        && getSigConstantOperand().equals("(III)V")
+                     
 		) {
-			OpcodeStack.Item item = stack.getStackItem(1);
-			Object o = item.getConstant();
-			if (o != null && o instanceof Integer) {
-				int v = (Integer) o;
-				if (v < 0 || v > 11)
-				 bugReporter.reportBug(new BugInstance(this, "DMI_BAD_MONTH", NORMAL_PRIORITY)
-						.addClassAndMethod(this)
-						.addInt(v)
-						.addCalledMethod(this)
-						.addSourceLine(this)
-						);
-				}
+	       String sig = getSigConstantOperand();
+	       if (sig.startsWith("(III")) {
+	           int pos = sig.length() - 5;
+	           OpcodeStack.Item item = stack.getStackItem(pos);
+	           Object o = item.getConstant();
+	           if (o != null && o instanceof Integer) {
+	               int v = (Integer) o;
+	               if (v < 0 || v > 11)
+	                   bugReporter.reportBug(new BugInstance(this, "DMI_BAD_MONTH", NORMAL_PRIORITY)
+	                   .addClassAndMethod(this)
+	                   .addInt(v)
+	                   .addCalledMethod(this)
+	                   .addSourceLine(this)
+	                   );
+	           }
+	       }
 		}
 				
 
