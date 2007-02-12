@@ -676,10 +676,12 @@ public class Project implements XMLWriteable {
     static final String PROJECTNAME_ATTRIBUTE_NAME = "projectname";
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		xmlOutput.openTag(
+		XMLAttributeList attributeList = new XMLAttributeList().addAttribute(FILENAME_ATTRIBUTE_NAME, getProjectFileName());
+        if (getProjectName() != null)
+            attributeList = attributeList.addAttribute(PROJECTNAME_ATTRIBUTE_NAME, getProjectName());
+        xmlOutput.openTag(
 				BugCollection.PROJECT_ELEMENT_NAME,
-				new XMLAttributeList().addAttribute(FILENAME_ATTRIBUTE_NAME, getProjectFileName())
-                .addAttribute(PROJECTNAME_ATTRIBUTE_NAME, getProjectName())
+				attributeList
                 );
 
 		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, fileList);
