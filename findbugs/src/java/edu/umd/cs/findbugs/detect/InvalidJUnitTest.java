@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
@@ -59,15 +60,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 				return;
 			
 			if ((jClass.getAccessFlags() & ACC_ABSTRACT) == 0) {
-				Method[] methods = jClass.getMethods();
-				boolean foundTest = false;
-				for (Method m : methods) {
-					if (m.getName().startsWith("test")) {
-						foundTest = true;
-						break;
-					}
-				}
-				if (!foundTest && !hasSuite(methods)) {
+				if (!hasTestMethods(jClass)) {
 					bugReporter.reportBug( new BugInstance( this, "IJU_NO_TESTS", LOW_PRIORITY)
 							.addClass(jClass));
 				}
@@ -83,6 +76,24 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 
 	}
 
+    private boolean hasTestMethods(JavaClass jClass) {
+        boolean foundTest = false;
+        Method[] methods = jClass.getMethods();
+        for (Method m : methods) 
+            if (m.isPublic() && m.getName().startsWith("test") && m.getSignature().endsWith(")V")) 
+                return true;
+        if (hasSuite(methods)) return true;
+        
+        if (true) return false;
+        try {
+            JavaClass sClass = jClass.getSuperClass();
+            if (sClass != null) return hasTestMethods(sClass);
+        } catch (ClassNotFoundException e) {
+            AnalysisContext.reportMissingClass(e);
+        }
+
+        return false;
+    }
 	/** is there a JUnit3TestSuite */
 	private boolean hasSuite(Method[] methods) {
 		for (Method m : methods) {
@@ -97,6 +108,9 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 		return false;
 	}
 
+
+
+    
 	/**
 	 * Check whether or not this detector should be enabled.
 	 * The detector is disabled if the TestCase class cannot be found
@@ -105,6 +119,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 	 * @return true if it should be enabled, false if not
 	 */
 	private boolean enabled() {
+        if (true) return true;
 		if (!checkedTestCaseClass) {
 			checkedTestCaseClass = true;
 			try {
