@@ -270,7 +270,7 @@ public class BugResolutionLoader {
             Element attrElement = (Element) attrList.item(i);
             String name = attrElement.getAttribute(ATTR_NAME);
             String value = TigerSubstitutes.getTextContent(attrElement);
-            if (SystemProperties.ASSERTIONS_ENABLED)
+            if (false && SystemProperties.ASSERTIONS_ENABLED)
                 if (value.equals(attrElement.getTextContent())) {
                     System.out.println("Expected " + attrElement.getTextContent() + ", got " + value);
                 }
