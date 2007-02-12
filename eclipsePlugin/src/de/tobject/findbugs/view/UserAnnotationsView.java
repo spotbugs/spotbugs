@@ -78,10 +78,6 @@ public class UserAnnotationsView extends ViewPart {
 	
 	private Combo designationComboBox;
 
-	// HTML presentation classes that don't depend upon Browser
-	@CheckForNull private StyledText control;
-	
-	@CheckForNull private Browser browser;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -163,8 +159,6 @@ public class UserAnnotationsView extends ViewPart {
 	@Override
 	public void dispose() {
 		//annotationList.dispose();
-		if (browser != null) browser.dispose();
-		else if (control != null) control.dispose();
 	}
 
 	/**
