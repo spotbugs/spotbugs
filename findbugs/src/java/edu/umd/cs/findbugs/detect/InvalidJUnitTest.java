@@ -56,9 +56,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 		JavaClass jClass = classContext.getJavaClass();
 
 		try {
-			if (!Repository.instanceOf(jClass, "junit.framework.TestCase"))
-				return;
-			
+			if (!isJunit3TestCase(jClass)) return;
 			if ((jClass.getAccessFlags() & ACC_ABSTRACT) == 0) {
 				if (!hasTestMethods(jClass)) {
 					bugReporter.reportBug( new BugInstance( this, "IJU_NO_TESTS", LOW_PRIORITY)
@@ -76,6 +74,17 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 
 	}
 
+    private boolean isJunit3TestCase(JavaClass jClass) throws ClassNotFoundException {
+        String sName = jClass.getSuperclassName();
+        if (sName == null) return false;
+        if (sName.equals("junit.framework.TestCase")) return true;
+        if (sName.equals("java.lang.Object")) return false;
+
+
+        JavaClass sClass = jClass.getSuperClass();
+        return isJunit3TestCase(sClass);
+
+    }
     private boolean hasTestMethods(JavaClass jClass) {
         boolean foundTest = false;
         Method[] methods = jClass.getMethods();
