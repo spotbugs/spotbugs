@@ -63,10 +63,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 							.addClass(jClass));
 				}
 			}
-
-			JavaClass superClass = jClass.getSuperClass();
-			directChildOfTestCase = superClass.getClassName().equals(
-					"junit.framework.TestCase");
+			directChildOfTestCase = "junit.framework.TestCase".equals(jClass.getSuperclassName());
 			jClass.accept(this);
 		} catch (ClassNotFoundException cnfe) {
 			bugReporter.reportMissingClass(cnfe);
@@ -88,9 +85,12 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
     private boolean hasTestMethods(JavaClass jClass) {
         boolean foundTest = false;
         Method[] methods = jClass.getMethods();
-        for (Method m : methods) 
-            if (m.isPublic() && m.getName().startsWith("test") && m.getSignature().endsWith(")V")) 
+        for (Method m : methods) {
+            if (m.isPublic() && m.getName().startsWith("test") && m.getSignature().equals("()V")) 
                 return true;
+            if (m.getName().startsWith("runTest") && m.getSignature().endsWith("()V")) 
+                return true;
+        }
         if (hasSuite(methods)) return true;
         
         try {
@@ -143,10 +143,19 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void visit(Method obj) {
-		if (getMethodName().equals("suite") && !obj.isStatic())
-			bugReporter.reportBug(new BugInstance(this, "IJU_SUITE_NOT_STATIC",
-					NORMAL_PRIORITY).addClassAndMethod(this));
+	public void visit(Method obj) {
+	    if (getMethodName().equals("suite") && !obj.isStatic())
+	        bugReporter.reportBug(new BugInstance(this, "IJU_SUITE_NOT_STATIC",
+	                NORMAL_PRIORITY).addClassAndMethod(this));
+
+	    if (getMethodName().equals("suite") && obj.getSignature().startsWith("()") && obj.isStatic())  {
+	        if (!obj.getSignature().equals("()Ljunit/framework/Test;") || !obj.isPublic())
+	            bugReporter.reportBug( new BugInstance( this, "IJU_BAD_SUITE_METHOD", NORMAL_PRIORITY)
+	            .addClassAndMethod(this));
+
+	    }
+
+
 
 	}
 
