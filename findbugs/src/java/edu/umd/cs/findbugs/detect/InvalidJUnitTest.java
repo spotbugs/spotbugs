@@ -93,7 +93,6 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
                 return true;
         if (hasSuite(methods)) return true;
         
-        if (true) return false;
         try {
             JavaClass sClass = jClass.getSuperClass();
             if (sClass != null) return hasTestMethods(sClass);
