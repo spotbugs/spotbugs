@@ -624,9 +624,8 @@ public class FindBugs2 implements IFindBugsEngine {
 						logRecoverableException(classDescriptor, detector, e);
 					} catch (ClassCastException e) {
 						logRecoverableException(classDescriptor, detector, e);
-                    } catch (RuntimeException e) {
-                        logRecoverableException(classDescriptor, detector, e);
-                    
+				        } catch (RuntimeException e) {
+						logRecoverableException(classDescriptor, detector, e);
 					}
 				}
 				
