@@ -100,11 +100,11 @@ public class ClearMarkersAction implements IObjectActionDelegate {
 					try {
 						for (Iterator it = selection.iterator(); it.hasNext(); ) {
 							Object resource = ((IAdaptable)it.next()).getAdapter(IResource.class);
-							IProject proj = (resource instanceof IResource ?
-											((IResource)resource).getProject() : null);
-							if (proj != null) {
-								pm.subTask("Clearing FindBugs markers from "+proj.getName());
-								MarkerUtil.removeMarkers(proj);
+							IResource res = (resource instanceof IResource ?
+											(IResource)resource : null);
+							if (res != null) {
+								pm.subTask("Clearing FindBugs markers from "+res.getName());
+								MarkerUtil.removeMarkers(res);
 							}
 						}
 					} catch (CoreException ex) {

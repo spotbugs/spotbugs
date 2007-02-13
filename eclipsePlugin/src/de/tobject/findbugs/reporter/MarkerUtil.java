@@ -461,21 +461,21 @@ public abstract class MarkerUtil {
 		return -1;
 	}
 
-	/**
-	 * Remove all FindBugs problem markers for given project.
-	 *
-	 * @param project the project
-	 * @throws CoreException
-	 */
-	public static void removeMarkers(IProject project) throws CoreException {
-		// remove any markers added by our builder
-		project.deleteMarkers(
-			FindBugsMarker.NAME,
-			true,
-			IResource.DEPTH_INFINITE);
+    /**
+     * Remove all FindBugs problem markers for given resource.
+     *
+     * @param res the resource
+     * @throws CoreException
+     */
+    public static void removeMarkers(IResource res) throws CoreException {
+        // remove any markers added by our builder
+        res.deleteMarkers(
+            FindBugsMarker.NAME,
+            true,
+            IResource.DEPTH_INFINITE);
 		BugTreeView bugTreeView = BugTreeView.getBugTreeView();
-        if (bugTreeView != null)
-            bugTreeView.clearTree(project);
+        if (bugTreeView != null && res instanceof IProject)
+            bugTreeView.clearTree((IProject) res);
 	}
 
 	/**

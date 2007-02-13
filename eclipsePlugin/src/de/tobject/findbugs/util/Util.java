@@ -28,6 +28,21 @@ import org.eclipse.core.resources.IResource;
  * @author Peter Friese
  */
 public class Util{
+    /**
+     * Checks whether the given resource is a Java source file.
+     * 
+     * @param resource The resource to check.
+     * @return
+     *      <code>true</code> if the given resource is a Java source file,
+     *      <code>false</code> otherwise.
+     */
+    public static boolean isJavaFile(IResource resource) {
+        if (resource == null)
+            return false;
+        String ex = resource.getFileExtension();
+        return ex.equalsIgnoreCase("java"); //$NON-NLS-1$
+    }
+
 	/**
 	 * Checks whether the given resource is a Java class file.
 	 * 
