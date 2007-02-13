@@ -86,6 +86,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * <li>includeFilter      (filter filename)
  * <li>jvmargs            (any additional jvm arguments)
  * <li>omitVisitors       (collection - comma seperated)
+ * <li>onlyAnalyze        (restrict analysis to find bugs to given comma-separated list of classes and packages - See the textui argument description for details)
  * <li>output             (enum text|xml|xml:withMessages|html - default xml)
  * <li>outputFile         (name of output file to create)
  * <li>pluginList         (list of plugin Jar files to load)
@@ -109,7 +110,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  *
  * @author Mike Fagan <a href="mailto:mfagan@tde.com">mfagan@tde.com</a>
  * @author Michael Tamm <a href="mailto:mail@michaeltamm.de">mail@michaeltamm.de</a>
- *
+ * @author Scott Wolk
  * @version $Revision: 1.42 $
  *
  * @since Ant 1.5
@@ -152,7 +153,8 @@ public class FindBugsTask extends Task {
 	private long timeout = DEFAULT_TIMEOUT;
 	private Path classpath = null;
 	private Path pluginList = null;
-	private List<SystemProperty> systemPropertyList = new ArrayList<SystemProperty>();
+        private List<SystemProperty> systemPropertyList = new ArrayList<SystemProperty>();
+        private String onlyAnalyze = null;
 
 	private Java findbugsEngine = null;
 
@@ -477,6 +479,13 @@ public class FindBugsTask extends Task {
 		this.outputFileName = outputFileName;
 	}
 
+        /**
+         * Set the packages or classes to analyze
+         */
+        public void setOnlyAnalyze(String filter) {
+                this.onlyAnalyze = filter;
+        }
+
 	/**
 	 * Set timeout in milliseconds.
 	 * @param timeout the timeout
@@ -762,6 +771,10 @@ public class FindBugsTask extends Task {
 		if ( relaxed ) {
 			addArg("-relaxed");
 		}
+                if ( onlyAnalyze != null ) {
+                        addArg("-onlyAnalyze");
+                        addArg(onlyAnalyze);
+                }
         
 		addArg("-exitcode");
 		for (ClassLocation classLocation : classLocations) {
@@ -776,6 +789,11 @@ public class FindBugsTask extends Task {
 		}
 
 		log("Running FindBugs...");
+
+                if (debug) {
+                        log(findbugsEngine.getCommandLine().describeCommand());    
+                }
+
 
 		int rc = findbugsEngine.executeJava();
 
