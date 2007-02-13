@@ -56,6 +56,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
@@ -115,6 +117,7 @@ public class DetailsView extends ViewPart {
     public void createPartControl(Composite parent) {
         SashForm sash = new SashForm(parent, SWT.VERTICAL);
         annotationList = new List(sash, SWT.V_SCROLL);
+        annotationList.setToolTipText("Additional information about the selected bug");
         annotationList.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 if (theBug == null)
@@ -155,6 +158,7 @@ public class DetailsView extends ViewPart {
         });
         try {
             browser = new Browser(sash, SWT.NONE);
+            browser.setToolTipText("Description of the selected bug");
         } catch (SWTError e) {
             control = new StyledText(sash, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
             control.setEditable(false);
@@ -264,16 +268,17 @@ public class DetailsView extends ViewPart {
      *            the FindBugs marker containing the bug pattern to show details
      *            for
      * @param focus
-     *            True if you want to set the focus to this view
+     *            True if you want to set the focus to this view - but it won't if the user
+     *            annotations view is already selected
      */
     public static void showMarker(IMarker marker, boolean focus) {
         // Obtain the current workbench page, and show the details view
+    	System.out.println("Showing marker");
         IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
         if (pages.length > 0) {
             try {
-                if (focus)
-                    pages[0].showView("de.tobject.findbugs.view.detailsview");
-
+                if (focus && !(UserAnnotationsView.isVisible()))
+                	pages[0].showView("de.tobject.findbugs.view.detailsview");
                 String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
                 DetectorFactoryCollection.instance().ensureLoaded(); // fix
                 // bug#1530195

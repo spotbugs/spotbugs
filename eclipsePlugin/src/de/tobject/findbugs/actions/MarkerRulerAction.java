@@ -81,7 +81,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 		IAction callerAction,
 		IEditorPart targetEditor) {
 		Control control;
-
+		System.out.println("Setting active editor...");
 		// See if we're already listenting to an editor; if so, stop listening
 		if (editor != null) {
 			if (ruler != null) {
@@ -169,7 +169,7 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 			if (includesRulerLine(model.getMarkerPosition(allMarkers[i]),
 				document)) {
 				try {
-					if (allMarkers[i].getType().equals(FindBugsMarker.NAME)) {
+					if (allMarkers[i].isSubtypeOf(FindBugsMarker.NAME)) {
 						markers.add(allMarkers[i]);
 					}
 				}
@@ -186,8 +186,9 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 	 */
 	public void update() {
 		if (markers.size() > 0) {
+			System.out.println("Updating...");
 			IMarker marker = markers.get(0);
-			UserAnnotationsView.showMarker(marker, true);
+			UserAnnotationsView.showMarker(marker, false);
 			DetailsView.showMarker(marker, true);
 		}
 	}

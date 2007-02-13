@@ -29,6 +29,7 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.view.BugTreeView;
 import edu.umd.cs.findbugs.AppVersion;
@@ -56,21 +57,43 @@ public class MarkerReporter implements IWorkspaceRunnable {
 
 	public void run(IProgressMonitor monitor) throws CoreException {
 
-		IMarker marker = resource.createMarker(FindBugsMarker.NAME);
+		int priority = this.bug.getPriority();
+		String markerName = null;
+		switch(priority)
+		{
+			case Detector.HIGH_PRIORITY:
+				markerName = FindBugsMarker.NAME_HIGH;
+				break;
+			case Detector.NORMAL_PRIORITY:
+				markerName = FindBugsMarker.NAME_NORMAL;
+				break;
+			case Detector.LOW_PRIORITY:
+				markerName = FindBugsMarker.NAME_LOW;
+				break;
+			case Detector.EXP_PRIORITY:
+				markerName = FindBugsMarker.NAME_EXPERIMENTAL;
+				break;
+			case Detector.IGNORE_PRIORITY:
+				markerName = FindBugsMarker.NAME_IGNORE;
+				break;
+		}
+		IMarker marker = null;
+		try{marker = resource.createMarker(markerName);}
+		catch(NullPointerException e){FindbugsPlugin.getDefault().logException(e, "Failed to determine priority of bug");}
 		marker.setAttribute(IMarker.LINE_NUMBER, startLine);
 		marker.setAttribute(FindBugsMarker.BUG_LINE_NUMBER, startLine);
 		marker.setAttribute(FindBugsMarker.BUG_TYPE, bug.getType());
 		AppVersion theVersion;
 		long seqNum = bug.getFirstVersion();
 		if(seqNum == 0)
-			marker.setAttribute(FindBugsMarker.FIRST_VERSION, "First version analyzed");
+			marker.setAttribute(FindBugsMarker.FIRST_VERSION, Long.toString(-1));
 		else
 		{
 			theVersion = collection.getAppVersionFromSequenceNumber(seqNum);
 			if(theVersion == null)
 				marker.setAttribute(FindBugsMarker.FIRST_VERSION, "Cannot find AppVersion: seqnum=" + seqNum + "; collection seqnum=" + collection.getSequenceNumber());
 			else
-				marker.setAttribute(FindBugsMarker.FIRST_VERSION, new Timestamp(theVersion.getTimestamp()).toString());
+				marker.setAttribute(FindBugsMarker.FIRST_VERSION, Long.toString(theVersion.getTimestamp()));
 		}
 		marker.setAttribute(IMarker.MESSAGE, bug.getMessage());
 		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);

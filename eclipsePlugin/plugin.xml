@@ -78,8 +78,16 @@
       </runtime>
    </extension>
    <extension
-         id="findbugsMarker"
+         id="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"
          name="FindBugs Problem"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <persistent value="true"/>
+   </extension>
+   <extension
+         id="findbugsMarkerHigh"
+         name="FindBugs Problem (High Priority)"
          point="org.eclipse.core.resources.markers">
       <super
             type="org.eclipse.core.resources.problemmarker">
@@ -87,24 +95,102 @@
       <super
             type="org.eclipse.core.resources.textmarker">
       </super>
+      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
       <persistent
             value="true">
       </persistent>
+   </extension>
+   <extension
+         id="findbugsMarkerNormal"
+         name="FindBugs Problem (Low Priority)"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <persistent value="true"/>
+      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
+   </extension>
+   <extension
+         id="findbugsMarkerLow"
+         name="FindBugs Problem (Experimental)"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <persistent value="true"/>
+      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
+   </extension>
+   <extension
+         id="findbugsMarkerExperimental"
+         name="FindBugs Problem (Ignore)"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <persistent value="true"/>
+      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
+   </extension>
+   <extension
+         id="findbugsMarkerIgnore"
+         name="FindBugs Problem (Normal Priority)"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <persistent value="true"/>
+      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
    </extension>
 
    <!-- specify custom icon for findbugsMarker -->
    <extension point="org.eclipse.ui.editors.annotationTypes">
       <type
-         name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotation"
+         name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationHigh"
          super="org.eclipse.ui.workbench.texteditor.warning"
-         markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
+         markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerHigh"/>
+      <type
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerNormal"
+            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationNormal"
+            super="org.eclipse.ui.workbench.texteditor.warning"/>
+      <type
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow"
+            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationLow"
+            super="org.eclipse.ui.workbench.texteditor.warning"/>
+      <type
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental"
+            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationExperimental"
+            super="org.eclipse.ui.workbench.texteditor.warning"/>
+      <type
+            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerIgnore"
+            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationIgnore"
+            super="org.eclipse.ui.workbench.texteditor.warning"/>
   </extension> 
   <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
       <specification
-         annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotation"
-         label="fbWarning"
-         icon="icons/buggy-tiny.png"
-         quickFixIcon="icons/buggy-tiny.png"/>
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationHigh"
+            icon="icons/buggy-tiny.png"
+            includeOnPreferencePage="true"
+            label="fbWarningHigh"
+            quickFixIcon="icons/buggy-tiny.png"/>
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationHigh"
+            icon="icons/buggy-tiny-orange.png"
+            includeOnPreferencePage="true"
+            label="fbWarningLow"
+            quickFixIcon="icons/buggy-tiny-orange.png"/>
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationLow"
+            icon="icons/buggy-tiny-yellow.png"
+            includeOnPreferencePage="true"
+            label="fbWarningExperimental"
+            quickFixIcon="icons/buggy-tiny-yellow.png"/>
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationExperimental"
+            icon="icons/buggy-tiny-blue.png"
+            includeOnPreferencePage="true"
+            label="fbWarningIgnore"
+            quickFixIcon="icons/buggy-tiny-blue.png"/>
+      <specification
+            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationIgnore"
+            icon="icons/buggy-tiny-green.png"
+            includeOnPreferencePage="true"
+            label="fbWarningNormal"
+            quickFixIcon="icons/buggy-tiny-green.png"/>
    </extension>
 
    <extension

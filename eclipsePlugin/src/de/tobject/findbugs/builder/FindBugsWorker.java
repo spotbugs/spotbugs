@@ -247,15 +247,13 @@ public class FindBugsWorker {
 		}
 		catch (InterruptedException e) {
 			if (DEBUG) {
-				e.printStackTrace();
+				FindbugsPlugin.getDefault().logException(e, "Worker interrupted");
 			}
 			// @see IncrementalProjectBuilder.build
 			//throw new OperationCanceledException("FindBugs operation cancelled by user");
 		} catch (RuntimeException e) {
-			e.printStackTrace();
 			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
 			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs analysis");
 		}
 	}

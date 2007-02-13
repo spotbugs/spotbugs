@@ -6,6 +6,9 @@ import java.util.HashMap;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.TextPresentation;
@@ -64,9 +67,9 @@ public class BugTreeView extends ViewPart{
 	
 	public static BugTreeView bugTreeView;
 	
-	public HashMap<String, Tree> projectTrees;
+	public HashMap<String, Tree> projectTrees; //maps project names to corresponding trees
 	
-	private HashMap<String, HashMap<String, TreeItem>> patternMap; //maps strings describing patterns to TreeItems
+	private HashMap<String, HashMap<String, TreeItem>> patternMap; //maps project names to HashMaps that map strings describing patterns to root TreeItems
 	
 	private HashMap<TreeItem, IMarker> instanceMap; //maps TreeItems to the markers they represent
 	
@@ -118,6 +121,19 @@ public class BugTreeView extends ViewPart{
 		patternMap = new HashMap<String, HashMap<String, TreeItem>>();
 		instanceMap = new HashMap<TreeItem, IMarker>();
 		BugTreeView.bugTreeView = this;
+		// initialize views with marker data
+		IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		for(IProject proj : projectList)
+		{
+			try{
+				for(IMarker marker : proj.findMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE))
+					addMarker(proj, marker);
+			}
+			catch(CoreException e)
+			{
+				FindbugsPlugin.getDefault().logException(e, "Core exception on tree initialization");
+			}
+		}				
 	}
 	
 	public void clearTree(IProject currProject)
@@ -154,22 +170,22 @@ public class BugTreeView extends ViewPart{
 					Tree theTree = projectTrees.get(theProject.getName());
 					HashMap<String, TreeItem> theMap = patternMap.get(theProject.getName());
 					BugInstance bug = MarkerUtil.findBugInstanceForMarker(theMarker);
-                    if (bug == null)  {
-                        FindbugsPlugin.getDefault().logError("Could not find bug for " + theMarker);
-                        return;
-                    }
-                    
-					String pattern = bug.getBugPattern().getType();
-                    String bugPatternName = I18N.instance().getShortMessageWithoutCode(pattern);
-					if(!theMap.containsKey(bugPatternName))
+					String pattern = bug.getBugPattern().getShortDescription();
+					if(!theMap.containsKey(pattern))
 					{
-						TreeItem newItem = new TreeItem(theTree, SWT.LEFT);
-						newItem.setText(bugPatternName);
-						theMap.put(bugPatternName, newItem);
+						int i;
+						for(i=0; i<theTree.getItemCount(); i++)
+						{
+							if(theTree.getItem(i).getText().compareTo(pattern) > 0)
+								break;
+						}
+						TreeItem newItem = new TreeItem(theTree, SWT.LEFT, i);
+						newItem.setText(pattern);
+						theMap.put(pattern, newItem);
 					}
-					TreeItem instanceItem = new TreeItem(theMap.get(bugPatternName), SWT.LEFT);
+					TreeItem instanceItem = new TreeItem(theMap.get(pattern), SWT.LEFT);
 					instanceMap.put(instanceItem, theMarker);
-					instanceItem.setText(bug.getMessageWithoutPrefix());}
+					instanceItem.setText(bug.getMessage());}
 				catch(Exception e){e.printStackTrace();}
 			}
 		});

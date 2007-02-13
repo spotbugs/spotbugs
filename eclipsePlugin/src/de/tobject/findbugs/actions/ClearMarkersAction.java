@@ -116,9 +116,9 @@ public class ClearMarkersAction implements IObjectActionDelegate {
 			ProgressMonitorDialog progress = new ProgressMonitorDialog(FindbugsPlugin.getShell());
 			progress.run(true, true, r);
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			FindbugsPlugin.getDefault().logException(e, "InvocationTargetException on clear markers");
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			FindbugsPlugin.getDefault().logException(e, "InterruptedException on clear markers");
 		}
 	}
 

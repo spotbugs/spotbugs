@@ -64,6 +64,7 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
+import de.tobject.findbugs.view.BugTreeView;
 
 /**
  * Utility methods for converting FindBugs BugInstance objects
@@ -154,7 +155,7 @@ public abstract class MarkerUtil {
 					null); // progress monitor (null if progress reporting is not desired)
 			}
 			catch (CoreException e) {
-				e.printStackTrace();
+				FindbugsPlugin.getDefault().logException(e, "Core exception on add marker");
 			}
 		}
 
@@ -429,7 +430,7 @@ public abstract class MarkerUtil {
 		if (javaElement instanceof IParent) 	for(IJavaElement child : ((IParent) javaElement).getChildren()) 
 				dump(child, indentation+1);
 		} catch (Exception e) {
-			e.printStackTrace();
+			FindbugsPlugin.getDefault().logException(e, "Dump exception");
 		}
 
 	}
@@ -502,9 +503,7 @@ public abstract class MarkerUtil {
 	 * @param shell   Shell the progress dialog should be tied to
 	 */
 	public static void redisplayMarkers(final IProject project, Shell shell) {
-		System.out.println("In redisplay function");
 		ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(shell);
-		System.out.println("Progress monitor created");
 
 		try {
 			progressDialog.run(false, false, new IRunnableWithProgress() {
@@ -532,13 +531,9 @@ public abstract class MarkerUtil {
 						}
 
 					} catch (RuntimeException e) {
-						System.out.println(e.getMessage());
-						System.out.println(e.getStackTrace());
 						throw e;
 					} catch (Exception e) {
 						// Multiple checked exception types caught here
-						System.out.println(e.getMessage());
-						System.out.println(e.getStackTrace());
 						FindbugsPlugin.getDefault().logException(
 								e, "Error redisplaying FindBugs warning markers");
 					}
@@ -575,11 +570,9 @@ public abstract class MarkerUtil {
 				}
 			}
 		} catch (RuntimeException e) {
-			e.printStackTrace();
 			throw e;
 		} catch (Exception e) {
 			// Multiple checked exception types caught here
-			e.printStackTrace();
 			FindbugsPlugin.getDefault().logException(
 					e, "Error redisplaying FindBugs warning markers");
 		}
@@ -605,13 +598,10 @@ public abstract class MarkerUtil {
 			return null;
 		}
 		try {
-			String markerType = marker.getType();
-			System.out.println("Marker type is " + markerType);
-			System.out.println(FindBugsMarker.NAME);
-
-			if (!markerType.equals(FindBugsMarker.NAME)) {
-				System.out.println(markerType + " does not equal " + FindBugsMarker.NAME);
+			if (!marker.isSubtypeOf(FindBugsMarker.NAME)) {
 				FindbugsPlugin.getDefault().logError("Selected marker is not a FindBugs marker");
+				FindbugsPlugin.getDefault().logError(marker.getType());
+				FindbugsPlugin.getDefault().logError(FindBugsMarker.NAME);
 				return null;
 			}
 
@@ -637,7 +627,7 @@ public abstract class MarkerUtil {
 			}
  			*/
 			
-			 String bugId = (String) marker.getAttribute(FindBugsMarker.UNIQUE_ID);
+			String bugId = (String) marker.getAttribute(FindBugsMarker.UNIQUE_ID);
             String bugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
             Integer lineNumber = (Integer)marker.getAttribute(FindBugsMarker.BUG_LINE_NUMBER);
             if (bugId == null || bugType == null || lineNumber == null) {
@@ -648,7 +638,6 @@ public abstract class MarkerUtil {
 					bugId, 
 					bugType,
 					lineNumber);
-
 
 			return bug;
 		} catch (RuntimeException e) {
@@ -693,7 +682,7 @@ public abstract class MarkerUtil {
                 return null;
             }
 			IMarker[] markerList =
-				resource.findMarkers(FindBugsMarker.NAME, false, IResource.DEPTH_INFINITE);
+				resource.findMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);
 			for (int i = 0; i < markerList.length; ++i) {
 				IMarker marker = markerList[i];
 				String markerUID = marker.getAttribute(FindBugsMarker.UNIQUE_ID, "");

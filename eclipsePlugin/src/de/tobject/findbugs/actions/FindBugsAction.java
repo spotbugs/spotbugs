@@ -39,10 +39,13 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.builder.AbstractFilesCollector;
 import de.tobject.findbugs.builder.FilesCollectorFactory;
 import de.tobject.findbugs.builder.FindBugsWorker;
 import de.tobject.findbugs.util.Util;
+
+
 
 /**
  * Run FindBugs on the currently selected element(s) in the package explorer.
@@ -159,7 +162,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 						findbugsExecuteLock.acquire();
 						worker.work(files, resource);
 					} catch (CoreException e) {
-						e.printStackTrace();
+						FindbugsPlugin.getDefault().logException(e, "Analysis exception");
 						return Status.CANCEL_STATUS;
 					}
 					finally {

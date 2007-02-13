@@ -19,20 +19,38 @@
 
 package de.tobject.findbugs.view;
 
+import java.util.Iterator;
+import java.util.Calendar;
+import java.util.Date;
+
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
+import org.eclipse.jface.text.DefaultInformationControl;
+import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.custom.ViewForm;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.ISelectionListener;
@@ -45,6 +63,7 @@ import org.eclipse.ui.part.ViewPart;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
+import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -77,7 +96,15 @@ public class UserAnnotationsView extends ViewPart {
 	private Label firstVersionLabel;
 	
 	private Combo designationComboBox;
+	
+	private Composite visibilityTester;
 
+	// HTML presentation classes that don't depend upon Browser
+	@CheckForNull private StyledText control;
+	private DefaultInformationControl.IInformationPresenter presenter;
+	private TextPresentation presentation = new TextPresentation();
+
+	@CheckForNull private Browser browser;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -85,9 +112,11 @@ public class UserAnnotationsView extends ViewPart {
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
-		SashForm sash = new SashForm(parent, SWT.VERTICAL);
-		SashForm top = new SashForm(sash, SWT.HORIZONTAL);
-		designationComboBox = new Combo(top, SWT.LEFT|SWT.DROP_DOWN|SWT.READ_ONLY);
+		Composite main = new Composite(parent, SWT.VERTICAL);
+		main.setLayout(new GridLayout(2, false));
+		designationComboBox = new Combo(main, SWT.LEFT|SWT.DROP_DOWN|SWT.READ_ONLY);
+		designationComboBox.setToolTipText("User-specified bug designation");
+		designationComboBox.setLayoutData(new GridData());
 		for (String s : I18N.instance().getUserDesignationKeys(true)) {
 			designationComboBox.add(I18N.instance().getUserDesignation(s));
 		}
@@ -103,21 +132,20 @@ public class UserAnnotationsView extends ViewPart {
 			}}
 			);
 		designationComboBox.setSize(designationComboBox.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		Label versionLabel = new Label(top, SWT.LEFT);
-		versionLabel.setText("Bug present since:");
-		versionLabel.setSize(versionLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		firstVersionLabel = new Label(top, SWT.LEFT);
-		//firstVersionLabel.setSize(firstVersionLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		top.setSize(top.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		userAnnotationTextField = new Text(sash, SWT.LEFT);
+		firstVersionLabel = new Label(main, SWT.LEFT);
+		firstVersionLabel.setToolTipText("The earliest version in which the bug was present");
+		firstVersionLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		userAnnotationTextField = new Text(main, SWT.LEFT);
+		userAnnotationTextField.setToolTipText("Type comments about the selected bug here");
+		GridData uatfData = new GridData(GridData.FILL_BOTH);
+		uatfData.horizontalSpan = 2;
+		userAnnotationTextField.setLayoutData(uatfData);
 		userAnnotationTextField.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e)
 			{
 				theBug.getUserDesignation().setAnnotationText(userAnnotationTextField.getText());
 			}
 		});
-		sash.setWeights(new int[]{1, 5});
-		top.setWeights(new int[]{2, 3, 12});
 		//	Add selection listener to detect click in problems view or bug tree view
 		ISelectionService theService = this.getSite().getWorkbenchWindow().getSelectionService();
 		theService.addSelectionListener(new ISelectionListener(){
@@ -137,6 +165,7 @@ public class UserAnnotationsView extends ViewPart {
 				}
 			}
 		});
+		visibilityTester = main;
 		UserAnnotationsView.userAnnotationsView = this;
 
 	}
@@ -159,6 +188,8 @@ public class UserAnnotationsView extends ViewPart {
 	@Override
 	public void dispose() {
 		//annotationList.dispose();
+		if (browser != null) browser.dispose();
+		else if (control != null) control.dispose();
 	}
 
 	/**
@@ -208,10 +239,10 @@ public class UserAnnotationsView extends ViewPart {
 			try {
 				if(focus)
 					pages[0].showView("de.tobject.findbugs.view.userannotationsview");
-
 				String bugType =  marker.getAttribute(
 						FindBugsMarker.BUG_TYPE, "");
-				String firstVersionText = marker.getAttribute(FindBugsMarker.FIRST_VERSION, "");
+				Long theTimestamp = Long.parseLong(marker.getAttribute(FindBugsMarker.FIRST_VERSION, "-2"));
+				String firstVersionText = "Bug present since: " + convertTimestamp(theTimestamp);
 				DetectorFactoryCollection.instance().ensureLoaded(); // fix bug#1530195
 				BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
 				BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
@@ -230,6 +261,27 @@ public class UserAnnotationsView extends ViewPart {
 			}
 		}
 	}
+	
+	private static String convertTimestamp(long timestamp)
+	{
+		if(timestamp == -2)
+			return "ERROR - Timestamp not found";
+		if(timestamp == -1)
+			return "First version analyzed";
+		Calendar theCalendar = Calendar.getInstance();
+		theCalendar.setTimeInMillis(System.currentTimeMillis());
+		theCalendar.set(theCalendar.get(Calendar.YEAR),theCalendar.get(Calendar.MONTH),theCalendar.get(Calendar.DATE), 0, 0, 0);
+		long beginningOfToday = theCalendar.getTimeInMillis();
+		long beginningOfYesterday = beginningOfToday - 86400000;
+		theCalendar.setTimeInMillis(timestamp);
+		String timeString = theCalendar.getTime().toString();
+		if(timestamp >= beginningOfToday)
+			return "Today " + timeString.substring(timeString.indexOf(":")-2, timeString.indexOf(":")+3);
+		else if(timestamp >= beginningOfYesterday)
+			return "Yesterday " + timeString.substring(timeString.indexOf(":")-2, timeString.indexOf(":")+3);
+		else
+			return timeString.substring(0, timeString.indexOf(":")+3);
+	}
 
 	/**
 	 * Accessor for the details view associated with this plugin.
@@ -238,6 +290,11 @@ public class UserAnnotationsView extends ViewPart {
 	 */
 	public static UserAnnotationsView getuserAnnotationsView() {
 		return userAnnotationsView;
+	}
+	
+	public static boolean isVisible()
+	{
+		return userAnnotationsView.visibilityTester.isVisible();
 	}
 
 	/**

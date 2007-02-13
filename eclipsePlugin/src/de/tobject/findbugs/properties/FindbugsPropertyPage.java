@@ -917,7 +917,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 				}
 			}
 			catch (CoreException e) {
-				e.printStackTrace();
+				FindbugsPlugin.getDefault().logException(e, "Core exception on property page");
 				System.err.println("Exception: " + e); //$NON-NLS-1$
 			}
 		}

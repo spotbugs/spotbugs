@@ -291,9 +291,10 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			}
 			return pluginPath;
 		} catch(RuntimeException e) {
-			e.printStackTrace();
+			throw e;
+			//e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			FindbugsPlugin.getDefault().logException(e, "IO Exception locating engine plugin");
 		}
 		if (FindBugsBuilder.DEBUG) {
 			System.out.println("Could not find findbugs binaries."); //$NON-NLS-1$
