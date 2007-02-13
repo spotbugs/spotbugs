@@ -23,15 +23,22 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.util;
 
 import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.checkForNull;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.ParameterizedType;
@@ -43,12 +50,15 @@ import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.ASTNodeNotFoundException;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.FieldDeclarationNotFoundException;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.MethodDeclarationNotFoundException;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.StatementNotFoundException;
@@ -65,13 +75,19 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.TypeDeclarationNotF
  * @see ASTUtil#getMethodDeclaration(TypeDeclaration, MethodAnnotation)
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
+ * @author <a href="mailto:g1zgragg@hsr.ch">Guido Zgraggen</a>
  * @version 1.0
  */
 public class ASTUtil {
 
-    private static Map<String, Class<?>> primitiveTypes = new HashMap<String, Class<?>>();
+    private static Comparator<? super ImportDeclaration> defaultImportComparator;
+
+    private static Map<String, Class<?>> primitiveTypes;
 
     static {
+        defaultImportComparator = new ImportDeclarationComparator<ImportDeclaration>();
+
+        primitiveTypes = new HashMap<String, Class<?>>();
         primitiveTypes.put("B", byte.class);
         primitiveTypes.put("C", char.class);
         primitiveTypes.put("S", short.class);
@@ -79,6 +95,109 @@ public class ASTUtil {
         primitiveTypes.put("J", long.class);
         primitiveTypes.put("F", float.class);
         primitiveTypes.put("D", double.class);
+
+    }
+
+    public static void addImports(ASTRewrite rewrite, CompilationUnit compilationUnit, String... imports) {
+        addImports(rewrite, compilationUnit, false, imports);
+    }
+
+    public static void addStaticImports(ASTRewrite rewrite, CompilationUnit compilationUnit, String... imports) {
+        addImports(rewrite, compilationUnit, true, imports);
+    }
+
+    public static void addImports(ASTRewrite rewrite, CompilationUnit compilationUnit, boolean staticImports, String... imports) {
+        addImports(rewrite, compilationUnit, defaultImportComparator, staticImports, imports);
+    }
+
+    public static void addImports(ASTRewrite rewrite, CompilationUnit compilationUnit, Comparator<? super ImportDeclaration> comparator, boolean staticImports, String... imports) {
+        checkForNull(comparator, "import comparator");
+        checkForNull(imports, "imports");
+
+        final AST ast = rewrite.getAST();
+        SortedSet<ImportDeclaration> importDeclarations = new TreeSet<ImportDeclaration>(comparator);
+        for (String importName : imports) {
+            ImportDeclaration importDeclaration = ast.newImportDeclaration();
+            importDeclaration.setName(ast.newName(importName));
+            importDeclaration.setStatic(staticImports);
+            importDeclarations.add(importDeclaration);
+        }
+        addImports(rewrite, compilationUnit, importDeclarations);
+    }
+
+    /**
+     * Adds <CODE>ImportDeclaration</CODE>s to the list of imports in the
+     * specified <CODE>CompilationUnit</CODE>. If an import already exists,
+     * the import will not be inserted. The imports are inserted in an ordered
+     * way. The <CODE>Comparator</CODE> of the <CODE>SortedSet</CODE> is
+     * used to sort the imports.
+     * 
+     * @param rewrite
+     *            the <CODE>ASTRewrite</CODE>, that stores the edits.
+     * @param compilationUnit
+     *            the <CODE>CompilationUnit</CODE>.
+     * @param imports
+     *            the new <CODE>ImportDeclaration</CODE>s to add.
+     */
+    public static void addImports(ASTRewrite rewrite, CompilationUnit compilationUnit, SortedSet<ImportDeclaration> imports) {
+        checkForNull(rewrite, "ast-rewrite");
+        checkForNull(compilationUnit, "compilation-unit");
+        checkForNull(imports, "imports");
+        ListRewrite importRewrite = rewrite.getListRewrite(compilationUnit, CompilationUnit.IMPORTS_PROPERTY);
+        addImports(importRewrite, imports.comparator(), imports.iterator());
+    }
+
+    private static void addImports(ListRewrite importRewrite, Comparator<? super ImportDeclaration> comparator, Iterator<ImportDeclaration> newImports) {
+        try {
+            ImportDeclaration newImport = newImports.next();
+            List<ImportDeclaration> imports = importRewrite.getRewrittenList();
+            for (ImportDeclaration anImport : imports) {
+                int comp = comparator.compare(newImport, anImport);
+                if (comp > 0) {
+                    continue;
+                }
+                if (comp < 0) {
+                    importRewrite.insertBefore(newImport, anImport, null);
+                }
+                newImport = newImports.next();
+            }
+            importRewrite.insertLast(newImport, null);
+            while (newImports.hasNext()) {
+                importRewrite.insertLast(newImports.next(), null);
+            }
+        } catch (NoSuchElementException e) {
+            // do nothing
+        }
+    }
+
+    public static ASTNode getASTNode(CompilationUnit compilationUnit, SourceLineAnnotation sourceLineAnno) throws ASTNodeNotFoundException {
+        checkForNull(sourceLineAnno, "source line annotation");
+        return getASTNode(compilationUnit, sourceLineAnno.getStartLine(), sourceLineAnno.getEndLine());
+    }
+
+    /**
+     * Searchs the first <CODE>ASTNode</CODE> between the specified <CODE>startLine</CODE>
+     * and <CODE>endLine</CODE>. If the source line doesn't contain an <CODE>ASTNode</CODE>,
+     * a <CODE>ASTNodeNotFoundException</CODE> is thrown.
+     * 
+     * @param compilationUnit
+     *            the <CODE>CompilationUnit</CODE>, that contains the <CODE>ASTNode</CODE>.
+     * @param startLine
+     *            the starting source line number.
+     * @param endLine
+     *            the ending source line number.
+     * @throws ASTNodeNotFoundException
+     *             if no <CODE>ASTNode</CODE> found between the specifed start
+     *             and end line.
+     */
+    public static ASTNode getASTNode(CompilationUnit compilationUnit, int startLine, int endLine) throws ASTNodeNotFoundException {
+        checkForNull(compilationUnit, "compilation unit");
+
+        ASTNode node = searchASTNode(compilationUnit, startLine, endLine);
+        if (node == null) {
+            throw new ASTNodeNotFoundException("No ast node found between " + startLine + " and " + endLine + ".");
+        }
+        return node;
     }
 
     /**
@@ -97,7 +216,6 @@ public class ASTUtil {
      */
     public static TypeDeclaration getTypeDeclaration(CompilationUnit compilationUnit, ClassAnnotation classAnno) throws TypeDeclarationNotFoundException {
         checkForNull(classAnno, "class annotation");
-
         return getTypeDeclaration(compilationUnit, classAnno.getClassName());
     }
 
@@ -256,6 +374,16 @@ public class ASTUtil {
             throw new StatementNotFoundException(compilationUnit, startLine, endLine);
         }
         return statement;
+    }
+
+    @CheckForNull
+    protected static ASTNode searchASTNode(CompilationUnit compilationUnit, int startLine, int endLine) {
+        assert compilationUnit != null;
+        assert startLine <= endLine;
+
+        SourceLineVisitor visitor = new SourceLineVisitor(compilationUnit, startLine, endLine);
+        compilationUnit.accept(visitor);
+        return visitor.getASTNode();
     }
 
     @CheckForNull

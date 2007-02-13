@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2006, Institut for Software
+ * Copyright (C) 2007, Institut for Software
  * An Institut of the University of Applied Sciences Rapperswil
  * 
  * Author: Thierry Wyss, Marco Busarello
@@ -21,39 +21,45 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix.util;
 
+import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Integer.MIN_VALUE;
+
+import java.util.Comparator;
+
+import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.Name;
+
 /**
- * <CODE>ConditionCheck</CODE> provides some static methods to check pre- and
- * post-conditions.
+ * A <CODE>Comparator</CODE> used to add imports in a sorted order. The <CODE>ImportDeclaration</CODE>
+ * will be sorted according to static or not static import, and then in an
+ * alphabetically order.
  * 
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0
  */
-public class ConditionCheck {
+public class ImportDeclarationComparator<E extends ImportDeclaration> implements Comparator<E> {
 
-    /**
-     * Same as <CODE>checkForNull(obj, "object")</CODE>.
-     * 
-     * @see <CODE>ConditionCheck.checkForNull(Object, String)</CODE>
-     */
-    public static void checkForNull(Object obj) {
-        checkForNull(obj, "object");
+    public int compare(E o1, E o2) {
+        if (o1 == o2) {
+            return 0;
+        }
+        if (o1 == null) {
+            return MAX_VALUE;
+        }
+        if (o2 == null) {
+            return MIN_VALUE;
+        }
+
+        if (!(o1.isStatic() ^ o2.isStatic())) {
+            return compare(o1.getName(), o2.getName());
+        }
+
+        return o1.isStatic() ? MIN_VALUE : MAX_VALUE;
     }
 
-    /**
-     * Checks the specified <CODE>Object</CODE> for <CODE>null</CODE>
-     * 
-     * @param obj
-     *            the <CODE>Object</CODE>
-     * @param name
-     *            the name of the <CODE>Object</CODE>.
-     * @throws IllegalArgumentException
-     *             if the specified <CODE>Object</CODE> is null.
-     */
-    public static void checkForNull(Object obj, String name) {
-        if (obj == null) {
-            throw new IllegalArgumentException("Missing " + name + ".");
-        }
+    private int compare(Name o1, Name o2) {
+        return o1.getFullyQualifiedName().compareTo(o2.getFullyQualifiedName());
     }
 
 }

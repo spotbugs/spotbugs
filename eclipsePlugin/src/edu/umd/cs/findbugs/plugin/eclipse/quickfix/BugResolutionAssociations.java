@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  * @see BugResolutionAssociations#getBugResolutions(String)
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
+ * @author <a href="mailto:g1zgragg@hsr.ch">Guido Zgraggen</a>
  */
 public class BugResolutionAssociations {
 

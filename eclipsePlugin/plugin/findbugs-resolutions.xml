@@ -5,7 +5,7 @@
 			<attr name="label">Use valueOf(...) instead</attr>
 		</resolution>
 	</bug>
-		<bug type="DM_FP_NUMBER_CTOR">
+	<bug type="DM_FP_NUMBER_CTOR">
 		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseValueOfResolution">
 			<attr name="label">Use valueOf(...) instead</attr>
 		</resolution>
@@ -23,6 +23,16 @@
 	<bug type="EI_EXPOSE_REP">
 		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.CreateMutableCloneResolution">
 			<attr name="label">Clone the field (Think about performance first!)</attr>
+		</resolution>
+	</bug>
+	<bug type="ES_COMPARING_STRINGS_WITH_EQ">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.UseEqualsResolution">
+			<attr name="label">Use equals(...) instead</attr>
+		</resolution>
+	</bug>
+	<bug type="ESync_EMPTY_SYNC">
+		<resolution classname="edu.umd.cs.findbugs.plugin.eclipse.quickfix.RemoveUselessStatementResolution">
+			<attr name="label">Remove empty synchronized-Block</attr>
 		</resolution>
 	</bug>
 	<bug type="FI_EMPTY">

@@ -44,7 +44,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.ui.IMarkerResolution;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -55,7 +54,19 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 /**
- * Loades the <CODE>BugResolutions</CODE> form a xml document.
+ * Loades the <CODE>BugResolution</CODE>s form a xml document. The document
+ * specifies the supported <CODE>BugResolution</CODE>s for the bug-types. An
+ * entry has the form:<br><br>
+ * <CODE>
+ * &lt;bug type="BUG_TYPE"&gt;<br>
+ * &nbsp;&nbsp;&lt;resolution classname="bugResolutionClassName"&gt;<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&lt;attr name="property"&gt;value&lt;/attr&gt;<br>
+ * &nbsp;&nbsp;&lt;/resolution&gt;<br>
+ * &lt;/bug&gt;<br><br>
+ * </CODE>
+ * The attributes specified for a <CODE>BugResolution</CODE> supports all
+ * primitive types and strings. If an error occurs while loading a 
+ * <CODE>BugResolution</CODE>, the error will be reported to the error log. 
  * 
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
@@ -113,7 +124,7 @@ public class BugResolutionLoader {
      *             if the <CODE>fixesDoc</CODE> is <CODE>null</CODE>.
      */
     public BugResolutionAssociations loadBugResolutions(Document fixesDoc, BugResolutionAssociations associations) {
-        checkForNull(fixesDoc, "xml document with quick-fixes");
+        checkForNull(fixesDoc, "xml document with bug-resolutions");
 
         if (associations == null) {
             associations = new BugResolutionAssociations();
@@ -166,7 +177,7 @@ public class BugResolutionLoader {
             loadAttributes(resolution, attributes);
             return resolution;
         } catch (InstantiationException e) {
-            FindbugsPlugin.getDefault().logException(e, "Failed to instaniate Fixer '" + 
+            FindbugsPlugin.getDefault().logException(e, "Failed to instaniate BugResolution '" + 
                     TigerSubstitutes.getSimpleName(resolutionClass)+ "'.");
             return null;
         } catch (IllegalAccessException e) {
@@ -254,9 +265,9 @@ public class BugResolutionLoader {
                 return TigerSubstitutes.asSubclass(resolutionClass, IMarkerResolution.class);
             }
 
-            FindbugsPlugin.getDefault().logError("Fixer '" + className + "' not a IMarkerResolution");
+            FindbugsPlugin.getDefault().logError("BugResolution '" + className + "' not a IMarkerResolution");
         } catch (ClassNotFoundException e) {
-            FindbugsPlugin.getDefault().logException(e, "Fixer '" + className + "' not found.");
+            FindbugsPlugin.getDefault().logException(e, "BugResolution '" + className + "' not found.");
         }
         return null;
     }
@@ -264,18 +275,21 @@ public class BugResolutionLoader {
     private Map<String, String> parseAttributes(Element resolutionElement) {
         Map<String, String> attributes = new Hashtable<String, String>();
         try {
-        NodeList attrList = resolutionElement.getElementsByTagName(ATTR);
-        int length = attrList.getLength();
-        for (int i = 0; i < length; i++) {
-            Element attrElement = (Element) attrList.item(i);
-            String name = attrElement.getAttribute(ATTR_NAME);
-            String value = TigerSubstitutes.getTextContent(attrElement);
-            if (false && SystemProperties.ASSERTIONS_ENABLED)
-                if (value.equals(attrElement.getTextContent())) {
-                    System.out.println("Expected " + attrElement.getTextContent() + ", got " + value);
+            NodeList attrList = resolutionElement.getElementsByTagName(ATTR);
+            int length = attrList.getLength();
+            for (int i = 0; i < length; i++) {
+                Element attrElement = (Element) attrList.item(i);
+                String name = attrElement.getAttribute(ATTR_NAME);
+                String value = TigerSubstitutes.getTextContent(attrElement);
+                if (SystemProperties.ASSERTIONS_ENABLED) {
+                    if (value.equals(attrElement.getTextContent())) {
+                        System.out.println("Expected " + attrElement.getTextContent() + ", got " + value);
+                    }
                 }
-            if (name != null && value != null) attributes.put(name, value);
-        }
+                if (name != null && value != null) {
+                    attributes.put(name, value);
+                }
+            }
         } catch (RuntimeException e) {
             AnalysisContext.logError("Error parsing attributes", e);
         }

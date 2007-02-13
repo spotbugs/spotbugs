@@ -1,4 +1,3 @@
-
 /*
  * Contributions to FindBugs
  * Copyright (C) 2006, Institut for Software
@@ -36,23 +35,12 @@ public class FieldDeclarationNotFoundException extends BodyDeclarationNotFoundEx
 
     private static final long serialVersionUID = 6991240441738825723L;
 
-    private final TypeDeclaration typeDeclaration;
-
-    private final String fieldName;
+    public FieldDeclarationNotFoundException(String message) {
+        super(message);
+    }
 
     public FieldDeclarationNotFoundException(TypeDeclaration typeDeclaration, String fieldName) {
-        super("Field declaration '" + fieldName + "' not found in type declaration '" + typeDeclaration.getName() + "'.");
-        this.typeDeclaration = typeDeclaration;
-        this.fieldName = fieldName;
-    }
-
-    public TypeDeclaration getTypeDeclaration() {
-        return typeDeclaration;
-    }
-
-    public String getFieldName() {
-        return fieldName;
+        this("Field declaration '" + fieldName + "' not found in type declaration '" + typeDeclaration.getName() + "'.");
     }
 
 }
-

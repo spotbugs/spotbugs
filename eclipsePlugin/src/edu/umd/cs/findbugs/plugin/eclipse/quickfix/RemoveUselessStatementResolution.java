@@ -21,14 +21,11 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getMethodDeclaration;
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getStatement;
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDeclaration;
+import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getASTNode;
 
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -44,7 +41,6 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @version 1.0
  */
-
 public class RemoveUselessStatementResolution extends BugResolution {
 
     @Override
@@ -53,16 +49,20 @@ public class RemoveUselessStatementResolution extends BugResolution {
         assert workingUnit != null;
         assert bug != null;
 
-        TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
-        MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
-        Statement statement = getStatement(workingUnit, method, bug.getPrimarySourceLineAnnotation());
-
+        Statement statement = findUselessStatement(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
         rewrite.remove(statement, null);
+    }
+
+    private Statement findUselessStatement(ASTNode node) {
+        if (node instanceof Statement) {
+            return (Statement) node;
+        }
+        return null;
     }
 
     @Override
     protected boolean resolveBindings() {
-        return true;
+        return false;
     }
 
 }

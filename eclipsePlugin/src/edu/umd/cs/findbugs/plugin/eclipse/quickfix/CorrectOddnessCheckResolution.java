@@ -21,22 +21,22 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getMethodDeclaration;
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getStatement;
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDeclaration;
+import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getASTNode;
+import static java.lang.Integer.parseInt;
+import static org.eclipse.jdt.core.dom.InfixExpression.Operator.EQUALS;
+import static org.eclipse.jdt.core.dom.InfixExpression.Operator.REMAINDER;
 
-import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
+
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionException;
 
 /**
@@ -53,27 +53,40 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
 public abstract class CorrectOddnessCheckResolution extends BugResolution {
 
     @Override
+    protected boolean resolveBindings() {
+        return false;
+    }
+
+    @Override
     protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
         assert rewrite != null;
         assert workingUnit != null;
         assert bug != null;
 
-        TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
-        MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
-        Statement statement = getStatement(workingUnit, method, bug.getPrimarySourceLineAnnotation());
-        String originalFieldName = null;
-        if (statement instanceof IfStatement) {
-            originalFieldName = getOriginalFieldName((IfStatement) statement);
-        } else {
-            throw new BugResolutionException("Statement is not of type IfStatement");
+        InfixExpression oddnessCheck = findOddnessCheck(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
+        if (oddnessCheck == null) {
+            throw new BugResolutionException("No matching oddness check found at the specified source line.");
         }
+        Expression numberExpression = findNumberExpression(oddnessCheck);
+        if (numberExpression == null) {
+            throw new BugResolutionException();
+        }
+        InfixExpression correctOddnessCheck = createCorrectOddnessCheck(rewrite, numberExpression);
+        rewrite.replace(oddnessCheck, correctOddnessCheck, null);
+    }
 
-        AST ast = workingUnit.getAST();
-        SimpleName replaceField = ast.newSimpleName(originalFieldName);
+    @CheckForNull
+    protected InfixExpression findOddnessCheck(ASTNode node) {
+        OddnessCheckFinder finder = new OddnessCheckFinder();
+        node.accept(finder);
+        return finder.getOddnessCheck();
+    }
 
-        InfixExpression replaceExpression = createReplaceExpression(ast, replaceField);
-
-        rewrite.set(statement, IfStatement.EXPRESSION_PROPERTY, replaceExpression, null);
+    @CheckForNull
+    protected Expression findNumberExpression(InfixExpression oddnessCheck) {
+        NumberExpressionFinder finder = new NumberExpressionFinder();
+        oddnessCheck.accept(finder);
+        return finder.getNumberExpression();
     }
 
     /**
@@ -88,26 +101,75 @@ public abstract class CorrectOddnessCheckResolution extends BugResolution {
      *            the new <CODE>InfixExpression</CODE>.
      * @return the correct <CODE>InfixExpression</CODE>.
      */
-    protected abstract InfixExpression createReplaceExpression(AST ast, SimpleName replaceField);
+    protected abstract InfixExpression createCorrectOddnessCheck(ASTRewrite rewrite, Expression numberExpression);
 
-    protected String getOriginalFieldName(IfStatement originalStatement) {
-        assert originalStatement != null;
-        InfixExpression originalLeftOperand;
-        InfixExpression originalExpression = (InfixExpression) originalStatement.getExpression();
-        Expression leftOperand = originalExpression.getLeftOperand();
-        if (leftOperand.getClass().equals(ParenthesizedExpression.class)) {
-            ParenthesizedExpression parEx = (ParenthesizedExpression) originalExpression.getLeftOperand();
-            originalLeftOperand = (InfixExpression) parEx.getExpression();
-        } else {
-            originalLeftOperand = (InfixExpression) originalExpression.getLeftOperand();
+    protected static boolean isOddnessCheck(InfixExpression oddnessCheck) {
+        if (EQUALS.equals(oddnessCheck.getOperator())) {
+            if (isRemainderExp(oddnessCheck.getLeftOperand())) {
+                return isNumber(oddnessCheck.getRightOperand(), 1);
+            }
+            if (isRemainderExp(oddnessCheck.getRightOperand())) {
+                return isNumber(oddnessCheck.getLeftOperand(), 1);
+            }
         }
-        SimpleName originalField = (SimpleName) originalLeftOperand.getLeftOperand();
-        return originalField.getIdentifier();
+        return false;
     }
 
-    @Override
-    protected boolean resolveBindings() {
-        return true;
+    protected static boolean isRemainderExp(Expression remainderExp) {
+        while (remainderExp instanceof ParenthesizedExpression) {
+            remainderExp = ((ParenthesizedExpression) remainderExp).getExpression();
+        }
+        if (remainderExp instanceof InfixExpression) {
+            InfixExpression exp = ((InfixExpression) remainderExp);
+            return REMAINDER.equals(exp.getOperator()) && isNumber(exp.getRightOperand(), 2);
+        }
+        return false;
+    }
+
+    protected static boolean isNumber(Expression exp, int number) {
+        return exp instanceof NumberLiteral && parseInt(((NumberLiteral) exp).getToken()) == number;
+    }
+
+    protected static class OddnessCheckFinder extends ASTVisitor {
+
+        private InfixExpression oddnessCheck = null;
+
+        @Override
+        public boolean visit(InfixExpression node) {
+            if (oddnessCheck == null) {
+                if (!isOddnessCheck(node)) {
+                    return true;
+                }
+                oddnessCheck = node;
+            }
+            return false;
+        }
+
+        public InfixExpression getOddnessCheck() {
+            return oddnessCheck;
+        }
+
+    }
+
+    protected static class NumberExpressionFinder extends ASTVisitor {
+
+        private Expression numberExpression = null;
+
+        @Override
+        public boolean visit(InfixExpression node) {
+            if (numberExpression == null) {
+                if (!isRemainderExp(node)) {
+                    return true;
+                }
+                numberExpression = node.getLeftOperand();
+            }
+            return false;
+        }
+
+        public Expression getNumberExpression() {
+            return numberExpression;
+        }
+
     }
 
 }

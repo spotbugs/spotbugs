@@ -49,7 +49,6 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @version 1.0
  */
-
 public class ChangePublicToProtectedResolution extends BugResolution {
 
     @Override

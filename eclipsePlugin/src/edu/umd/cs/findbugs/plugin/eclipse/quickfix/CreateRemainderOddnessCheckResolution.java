@@ -21,42 +21,47 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
+import static org.eclipse.jdt.core.dom.InfixExpression.Operator.NOT_EQUALS;
+import static org.eclipse.jdt.core.dom.InfixExpression.Operator.REMAINDER;
+
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.InfixExpression;
-import org.eclipse.jdt.core.dom.NumberLiteral;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.InfixExpression.Operator;
+import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 
 /**
- * The <CODE>CreateAndOddnessCheckResolution</CODE> is a subclass of the abstract
- * class <CODE>CorrectOddnessCheckResolution</CODE> and creates the proper oddness
- * check <CODE>(x % 2) != 0</CODE>.
+ * The <CODE>CreateAndOddnessCheckResolution</CODE> is a subclass of the
+ * abstract class <CODE>CorrectOddnessCheckResolution</CODE> and creates the
+ * proper oddness check <CODE>(x % 2) != 0</CODE>.
  * 
  * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#IM_BAD_CHECK_FOR_ODD">IM_BAD_CHECK_FOR_ODD</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @version 1.0
  */
-
 public class CreateRemainderOddnessCheckResolution extends CorrectOddnessCheckResolution {
 
     /**
      * Creates the new <CODE>InfixExpression</CODE> <CODE>x % 2 != 0</CODE>
      */
     @Override
-    protected InfixExpression createReplaceExpression(AST ast, SimpleName replaceField) {
-        assert ast != null;
-        assert replaceField != null;
-        InfixExpression replaceExpression = ast.newInfixExpression();
-        InfixExpression replaceExLeftOperand = ast.newInfixExpression();
-        replaceExLeftOperand.setOperator(Operator.REMAINDER);
-        replaceExLeftOperand.setLeftOperand(replaceField);
-        NumberLiteral replaceExLeftOperandROP = ast.newNumberLiteral("2");
-        replaceExLeftOperand.setRightOperand(replaceExLeftOperandROP);
-        replaceExpression.setLeftOperand(replaceExLeftOperand);
-        replaceExpression.setOperator(Operator.NOT_EQUALS);
-        NumberLiteral replaceRightOperand = ast.newNumberLiteral("0");
-        replaceExpression.setRightOperand(replaceRightOperand);
-        return replaceExpression;
+    protected InfixExpression createCorrectOddnessCheck(ASTRewrite rewrite, Expression numberExpression) {
+        assert rewrite != null;
+        assert numberExpression != null;
+
+        final AST ast = rewrite.getAST();
+        InfixExpression correctOddnessCheck = ast.newInfixExpression();
+        InfixExpression remainderExp = ast.newInfixExpression();
+
+        correctOddnessCheck.setLeftOperand(remainderExp);
+        correctOddnessCheck.setOperator(NOT_EQUALS);
+        correctOddnessCheck.setRightOperand(ast.newNumberLiteral("0"));
+
+        remainderExp.setLeftOperand((Expression) rewrite.createMoveTarget(numberExpression));
+        remainderExp.setOperator(REMAINDER);
+        remainderExp.setRightOperand(ast.newNumberLiteral("2"));
+
+        return correctOddnessCheck;
     }
+
 }

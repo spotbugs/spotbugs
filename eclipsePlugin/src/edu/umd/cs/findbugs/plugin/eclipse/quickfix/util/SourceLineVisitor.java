@@ -1,6 +1,6 @@
 /*
  * Contributions to FindBugs
- * Copyright (C) 2006, Institut for Software
+ * Copyright (C) 2007, Institut for Software
  * An Institut of the University of Applied Sciences Rapperswil
  * 
  * Author: Thierry Wyss, Marco Busarello
@@ -21,39 +21,47 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix.util;
 
+import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ConditionCheck.checkForNull;
+
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+
 /**
- * <CODE>ConditionCheck</CODE> provides some static methods to check pre- and
- * post-conditions.
- * 
  * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0
  */
-public class ConditionCheck {
+public class SourceLineVisitor extends ASTVisitor {
 
-    /**
-     * Same as <CODE>checkForNull(obj, "object")</CODE>.
-     * 
-     * @see <CODE>ConditionCheck.checkForNull(Object, String)</CODE>
-     */
-    public static void checkForNull(Object obj) {
-        checkForNull(obj, "object");
+    private final CompilationUnit compilationUnit;
+
+    private final int startLine;
+
+    private final int endLine;
+
+    private ASTNode node = null;
+
+    public SourceLineVisitor(CompilationUnit compilationUnit, int startLine, int endLine) {
+        super();
+        checkForNull(compilationUnit, "compilation unit");
+        this.compilationUnit = compilationUnit;
+        this.startLine = startLine;
+        this.endLine = endLine;
     }
 
-    /**
-     * Checks the specified <CODE>Object</CODE> for <CODE>null</CODE>
-     * 
-     * @param obj
-     *            the <CODE>Object</CODE>
-     * @param name
-     *            the name of the <CODE>Object</CODE>.
-     * @throws IllegalArgumentException
-     *             if the specified <CODE>Object</CODE> is null.
-     */
-    public static void checkForNull(Object obj, String name) {
-        if (obj == null) {
-            throw new IllegalArgumentException("Missing " + name + ".");
+    @Override
+    public void preVisit(ASTNode node) {
+        if (this.node == null) {
+            int lineNumber = compilationUnit.getLineNumber(node.getStartPosition());
+            if (lineNumber >= startLine && lineNumber <= endLine) {
+                this.node = node;
+            }
         }
+    }
+
+    public ASTNode getASTNode() {
+        return node;
     }
 
 }

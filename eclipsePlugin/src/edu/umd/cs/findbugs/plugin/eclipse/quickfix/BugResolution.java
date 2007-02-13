@@ -37,10 +37,15 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  * changes.
  * 
  * @author cchristopher@ebay.com
+ * @author <a href="mailto:twyss@hsr.ch">Thierry Wyss</a>
+ * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
+ * @author <a href="mailto:g1zgragg@hsr.ch">Guido Zgraggen</a>
  */
 public abstract class BugResolution implements IMarkerResolution {
 
-    static private final String MISSING_BUG_INSTANCE = "This bug is no longer in the system. " + "The bugs somehow got out of sync with the memory representation. " + "Try running FindBugs again. If that does not work, check the error log and remove the *.fbwarnings files.";
+    static private final String MISSING_BUG_INSTANCE = "This bug is no longer in the system. " 
+        + "The bugs somehow got out of sync with the memory representation. " 
+        + "Try running FindBugs again. If that does not work, check the error log and remove the *.fbwarnings files.";
 
     private String label = TigerSubstitutes.getSimpleName(getClass());
 
@@ -65,46 +70,66 @@ public abstract class BugResolution implements IMarkerResolution {
         this.monitor = monitor;
     }
 
+    /**
+     * Runs the <CODE>BugResolution</CODE> on the given <CODE>IMarker</CODE>.
+     * The <CODE>IMarker</CODE> has to be a FindBugs marker. The <CODE>BugInstance</CODE>
+     * associated to the <CODE>IMarker</CODE> will be repaired. All exceptions
+     * are reported to the ErrorLog.
+     * 
+     * @param marker
+     *            The <CODE>IMarker</CODE> that specifies the bug.
+     */
     public void run(IMarker marker) {
         checkForNull(marker, "marker");
         try {
-            BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-            if (bug == null) {
-                MessageDialog.openError(FindbugsPlugin.getShell(), "Missing Bug", MISSING_BUG_INSTANCE);
-                return;
-            }
-
-            IProject project = marker.getResource().getProject();
-            ICompilationUnit originalUnit = getCompilationUnit(marker);
-            if (originalUnit == null) {
-                MessageDialog.openError(FindbugsPlugin.getShell(), "Can't find compilation unit", MISSING_BUG_INSTANCE);
-                return;
-            }
-            Document doc = new Document(originalUnit.getBuffer().getContents());
-            CompilationUnit workingUnit = createWorkingCopy(originalUnit);
-
-            ASTRewrite rewrite = ASTRewrite.create(workingUnit.getAST());
-
-            try {
-                repairBug(rewrite, workingUnit, bug);
-                rewriteCompilationUnit(rewrite, doc, originalUnit);
-
-                FindbugsPlugin.getBugCollection(project, monitor).remove(bug);
-
-                marker.delete();
-                MarkerUtil.redisplayMarkers(project, FindbugsPlugin.getShell());
-            } finally {
-                originalUnit.discardWorkingCopy();
-            }
-
+            // do NOT inline this method invocation
+            runInternal(marker);
         } catch (BugResolutionException e) {
-            FindbugsPlugin.getDefault().logException(e, e.getMessage());
+            reportException(e);
         } catch (JavaModelException e) {
-            FindbugsPlugin.getDefault().logException(e, e.getMessage());
+            reportException(e);
         } catch (BadLocationException e) {
-            FindbugsPlugin.getDefault().logException(e, e.getMessage());
+            reportException(e);
         } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, e.getMessage());
+            reportException(e);
+        }
+    }
+
+    /**
+     * This method is used by the test-framework, to catch the thrown exceptions
+     * and report it to the user.
+     * 
+     * @see run(IMarker)
+     */
+    private void runInternal(IMarker marker) throws BugResolutionException, BadLocationException, CoreException {
+        assert marker != null;
+
+        BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
+        if (bug == null) {
+            throw new BugResolutionException(MISSING_BUG_INSTANCE);
+        }
+
+        IProject project = marker.getResource().getProject();
+        ICompilationUnit originalUnit = getCompilationUnit(marker);
+        if (originalUnit == null) {
+            throw new BugResolutionException("No compilation unit found for marker " + marker.getType() + " (" + marker.getId() + ")");
+        }
+
+        Document doc = new Document(originalUnit.getBuffer().getContents());
+        CompilationUnit workingUnit = createWorkingCopy(originalUnit);
+
+        ASTRewrite rewrite = ASTRewrite.create(workingUnit.getAST());
+
+        try {
+            repairBug(rewrite, workingUnit, bug);
+            rewriteCompilationUnit(rewrite, doc, originalUnit);
+
+            FindbugsPlugin.getBugCollection(project, monitor).remove(bug);
+
+            marker.delete();
+            MarkerUtil.redisplayMarkers(project, FindbugsPlugin.getShell());
+        } finally {
+            originalUnit.discardWorkingCopy();
         }
     }
 
@@ -113,7 +138,7 @@ public abstract class BugResolution implements IMarkerResolution {
     protected abstract void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException;
 
     /**
-     * Get the compilation unit for the marker
+     * Get the compilation unit for the marker.
      * 
      * @param marker
      * @return The compilation unit for the marker, or null if the file was not
@@ -131,9 +156,21 @@ public abstract class BugResolution implements IMarkerResolution {
         return null;
     }
 
-    protected CompilationUnit createWorkingCopy(ICompilationUnit unit) throws JavaModelException {
-        assert unit != null;
+    /**
+     * Reports an exception to the user. This method could be overwritten by a
+     * subclass to handle some exceptions individual.
+     * 
+     * @param e
+     *            The <CODE>Exception</CODE> to by reported.
+     */
+    protected void reportException(Exception e) {
+        assert e != null;
 
+        FindbugsPlugin.getDefault().logException(e, e.getLocalizedMessage());
+        MessageDialog.openError(FindbugsPlugin.getShell(), "BugResolution failed.", e.getLocalizedMessage());
+    }
+
+    private CompilationUnit createWorkingCopy(ICompilationUnit unit) throws JavaModelException {
         unit.becomeWorkingCopy(null, monitor);
         ASTParser parser = ASTParser.newParser(AST.JLS3);
         parser.setSource(unit);
@@ -141,7 +178,7 @@ public abstract class BugResolution implements IMarkerResolution {
         return (CompilationUnit) parser.createAST(monitor);
     }
 
-    protected void rewriteCompilationUnit(ASTRewrite rewrite, IDocument doc, ICompilationUnit originalUnit) throws JavaModelException, BadLocationException {
+    private void rewriteCompilationUnit(ASTRewrite rewrite, IDocument doc, ICompilationUnit originalUnit) throws JavaModelException, BadLocationException {
         TextEdit edits = rewrite.rewriteAST(doc, originalUnit.getJavaProject().getOptions(true));
         edits.apply(doc);
 

@@ -21,24 +21,19 @@
  */
 package edu.umd.cs.findbugs.plugin.eclipse.quickfix;
 
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getMethodDeclaration;
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getStatement;
-import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getTypeDeclaration;
-import static org.eclipse.jdt.core.dom.ASTNode.VARIABLE_DECLARATION_STATEMENT;
+import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.addStaticImports;
+import static edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ASTUtil.getASTNode;
 
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -47,7 +42,7 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
 
 /**
  * The <CODE>UseValueOfResolution</CODE> replace the inefficient creation of
- * an instance, by the static <CODE>valueOf(...)</CODE> method. 
+ * an instance, by the static <CODE>valueOf(...)</CODE> method.
  * 
  * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_BOOLEAN_CTOR">DM_BOOLEAN_CTOR</a>
  * @see <a href="http://findbugs.sourceforge.net/bugDescriptions.html#DM_FP_NUMBER_CTOR">DM_FP_NUMBER_CTOR</a>
@@ -58,55 +53,63 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  */
 public class UseValueOfResolution extends BugResolution {
 
+    private static final String VALUE_OF_METHOD_NAME = "valueOf";
+
+    private boolean staticImport = false;
+
+    public UseValueOfResolution() {
+        super();
+    }
+
+    public UseValueOfResolution(boolean staticImport) {
+        this();
+        this.staticImport = staticImport;
+    }
+
+    public boolean isStaticImport() {
+        return staticImport;
+    }
+
+    public void setStaticImport(boolean staticImport) {
+        this.staticImport = staticImport;
+    }
+
     @Override
     protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
         assert rewrite != null;
         assert workingUnit != null;
 
-        TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
-        MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
-        Statement statement = getStatement(workingUnit, method, bug.getPrimarySourceLineAnnotation());
-
-        ClassInstanceCreation primitiveTypeCreation = findPrimitiveTypeCreation(statement);
+        ClassInstanceCreation primitiveTypeCreation = findPrimitiveTypeCreation(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
         if (primitiveTypeCreation == null) {
             throw new BugResolutionException("Primitive type creation not found.");
         }
-
-        MethodInvocation valueOfInvocation = createValueOfInvocation(rewrite, primitiveTypeCreation);
-
+        MethodInvocation valueOfInvocation = createValueOfInvocation(rewrite, workingUnit, primitiveTypeCreation);
         rewrite.replace(primitiveTypeCreation, valueOfInvocation, null);
     }
 
     @CheckForNull
-    protected ClassInstanceCreation findPrimitiveTypeCreation(Statement statement) {
-        switch (statement.getNodeType()) {
-            case VARIABLE_DECLARATION_STATEMENT:
-                return findPrimitiveTypeCreation(((VariableDeclarationStatement) statement).fragments());
-            default:
-                return null;
-        }
+    protected ClassInstanceCreation findPrimitiveTypeCreation(ASTNode node) {
+        PrimitiveTypeCreationFinder visitor = new PrimitiveTypeCreationFinder();
+        node.accept(visitor);
+        return visitor.getPrimitiveTypeCreation();
     }
 
-    @CheckForNull
-    protected ClassInstanceCreation findPrimitiveTypeCreation(List<VariableDeclarationFragment> variableDeclarations) {
-        for (VariableDeclarationFragment variableDeclaration : variableDeclarations) {
-            Expression initializer = variableDeclaration.getInitializer();
-            if (initializer != null && initializer instanceof ClassInstanceCreation) {
-                return (ClassInstanceCreation) initializer;
-            }
-        }
-        return null;
-    }
+    protected MethodInvocation createValueOfInvocation(ASTRewrite rewrite, CompilationUnit compilationUnit, ClassInstanceCreation primitiveTypeCreation) {
+        assert rewrite != null;
+        assert primitiveTypeCreation != null;
 
-    protected MethodInvocation createValueOfInvocation(ASTRewrite rewrite, ClassInstanceCreation primitiveTypeCreation) {
-        AST ast = rewrite.getAST();
-
+        final AST ast = rewrite.getAST();
         MethodInvocation valueOfInvocation = ast.newMethodInvocation();
-        List<Expression> arguments = primitiveTypeCreation.arguments();
-        SimpleName primitiveTypeName = ast.newSimpleName(primitiveTypeCreation.getType().resolveBinding().getName());
+        valueOfInvocation.setName(ast.newSimpleName(VALUE_OF_METHOD_NAME));
 
-        valueOfInvocation.setExpression(primitiveTypeName);
-        valueOfInvocation.setName(ast.newSimpleName("valueOf"));
+        ITypeBinding binding = primitiveTypeCreation.getType().resolveBinding();
+        if (isStaticImport()) {
+            addStaticImports(rewrite, compilationUnit, binding.getQualifiedName() + "." + VALUE_OF_METHOD_NAME);
+        } else {
+            valueOfInvocation.setExpression(ast.newSimpleName(binding.getName()));
+        }
+
+        List<Expression> arguments = primitiveTypeCreation.arguments();
         List<Expression> newArguments = valueOfInvocation.arguments();
         for (Expression argument : arguments) {
             Expression expression = (Expression) rewrite.createCopyTarget(argument);
@@ -119,6 +122,33 @@ public class UseValueOfResolution extends BugResolution {
     @Override
     protected boolean resolveBindings() {
         return true;
+    }
+
+    protected static class PrimitiveTypeCreationFinder extends ASTVisitor {
+
+        private ClassInstanceCreation primitiveTypeCreation = null;
+
+        @Override
+        public boolean visit(ClassInstanceCreation node) {
+            if (primitiveTypeCreation == null) {
+                if (!isPrimitiveTypeCreation(node)) {
+                    return true;
+                }
+                this.primitiveTypeCreation = node;
+            }
+            return false;
+        }
+
+        public ClassInstanceCreation getPrimitiveTypeCreation() {
+            return primitiveTypeCreation;
+        }
+
+        private boolean isPrimitiveTypeCreation(ClassInstanceCreation primitiveTypeCreation) {
+            // TODO check if the ClassInstanceCreation is a primitive type
+            // creation
+            return true;
+        }
+
     }
 
 }
