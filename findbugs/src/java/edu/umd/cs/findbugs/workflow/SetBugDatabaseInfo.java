@@ -57,6 +57,7 @@ public class SetBugDatabaseInfo {
 	
 	static class SetInfoCommandLine extends CommandLine {
 		String revisionName;
+     boolean withMessages = false;
 		
 		long revisionTimestamp = 0L;
 		public  List<String> sourcePaths = new LinkedList<String>();
@@ -67,12 +68,16 @@ public class SetBugDatabaseInfo {
 			addOption("-timestamp", "when", "set timestamp for (last) revision");
 			addOption("-source", "directory", "Add this directory to the source search path");
 			addOption("-findSource", "directory", "Find and add all relevant source directions contained within this directory");
+			addSwitch("-withMessages", "Add bug descriptions");
 		}
 
 		@Override
 		protected void handleOption(String option, String optionExtraPart)
 				throws IOException {
-			throw new IllegalArgumentException("no option " + option);
+			if (option.equals("-withMessages"))
+				withMessages = true;
+        else
+           throw new IllegalArgumentException("no option " + option);
 
 		}
 
@@ -116,6 +121,8 @@ public class SetBugDatabaseInfo {
 			origCollection.setReleaseName(commandLine.revisionName);
 		if (commandLine.revisionTimestamp != 0)
 			origCollection.setTimestamp(commandLine.revisionTimestamp);
+        origCollection.setWithMessages(commandLine.withMessages);
+
 		for(String source : commandLine.sourcePaths)
 			project.addSourceDir(source);
 

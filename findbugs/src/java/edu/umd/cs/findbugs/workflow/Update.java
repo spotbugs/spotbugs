@@ -69,6 +69,7 @@ public class Update {
 		boolean overrideRevisionNames = false;
 
 		String outputFilename;
+		boolean withMessages = false;
 
 		UpdateCommandLine() {
 			addSwitch("-overrideRevisionNames",
@@ -84,6 +85,8 @@ public class Update {
 					"explicit filename for merged results (standard out used if not specified)");
 			addSwitch("-quiet",
 					"don't generate any outout to standard out unless there is an error");
+			addSwitch("-withMessages",
+					"Add bug description");
 
 		}
 
@@ -110,6 +113,8 @@ public class Update {
 				precisePriorityMatch = true;
 			} else if (option.equals("-quiet"))
 				verbose = false;
+			else if (option.equals("-withMessages"))
+				withMessages = true;
 			else
 				throw new IllegalArgumentException("no option " + option);
 
@@ -383,6 +388,7 @@ public class Update {
 			}
 		}
 
+		origCollection.setWithMessages(commandLine.withMessages);
 		if (commandLine.outputFilename != null)
 			origCollection.writeXML(commandLine.outputFilename, project);
 		else
