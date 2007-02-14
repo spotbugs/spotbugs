@@ -1298,7 +1298,7 @@ factory pattern to create these objects.</p>
    -->
 
   <BugPattern type="SW_SWING_METHODS_INVOKED_IN_SWING_THREAD">
-    <ShortDescription>Certain swing methods should only be invoked from the Swing event thread</ShortDescription>
+    <ShortDescription>Certain swing methods needs to be invoked in Swing thread</ShortDescription>
     <LongDescription>Call to swing method in {1} needs to be performed in Swing event thread</LongDescription>
     <Details>
 <![CDATA[
@@ -1628,8 +1628,8 @@ of source-only retention, the annotation isn't retained in the classfile and can
 
 
   <BugPattern type="DM_RUN_FINALIZERS_ON_EXIT">
-    <ShortDescription>Method invokes runFinalizersOnExit, one of the most dangerous methods in the Java libraries.  </ShortDescription>
-    <LongDescription>{1} invokes runFinalizersOnExit, one of the most dangerous methods in the Java libraries.  </LongDescription>
+    <ShortDescription>Method invokes dangerous method runFinalizersOnExit  </ShortDescription>
+    <LongDescription>{1} invokes dangerous method runFinalizersOnExit</LongDescription>
     <Details>
 <![CDATA[
   <p> <em>Never call System.runFinalizersOnExit
@@ -1757,7 +1757,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
     </Details>
   </BugPattern>
   <BugPattern type="DM_CONVERT_CASE">
-    <ShortDescription>Method invokes dubious String.toUpperCase() or String.toLowerCase; use the Locale parameterized version instead</ShortDescription>
+    <ShortDescription>Consider using Locale parameterized version of invoked method</ShortDescription>
     <LongDescription>Method {1} invokes dubious String.toUpperCase() or String.toLowerCase; use the Locale parameterized version instead</LongDescription>
     <Details>
 <![CDATA[
@@ -2331,7 +2331,7 @@ but can be accessed in a way that seems to violate the annotation.</p>
     </Details>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_REP">
-    <ShortDescription>Method may expose internal representation by returning reference to mutable object</ShortDescription>
+    <ShortDescription>May expose internal representation by returning reference to mutable object</ShortDescription>
     <LongDescription>{1} may expose internal representation by returning {2}</LongDescription>
     <Details>
 <![CDATA[
@@ -2346,7 +2346,7 @@ but can be accessed in a way that seems to violate the annotation.</p>
     </Details>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_REP2">
-    <ShortDescription>Method may expose internal representation by incorporating reference to mutable object</ShortDescription>
+    <ShortDescription>May expose internal representation by incorporating reference to mutable object</ShortDescription>
     <LongDescription>{1} may expose internal representation by storing an externally mutable object into {2}</LongDescription>
     <Details>
 <![CDATA[
@@ -2361,7 +2361,7 @@ but can be accessed in a way that seems to violate the annotation.</p>
     </Details>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_STATIC_REP2">
-    <ShortDescription>Method may expose internal static state by storing a mutable object into a static field</ShortDescription>
+    <ShortDescription>May expose internal static state by storing a mutable object into a static field</ShortDescription>
     <LongDescription>{1} may expose internal static state by storing a mutable object into a static field {2}</LongDescription>
     <Details>
 <![CDATA[
@@ -3677,8 +3677,8 @@ was return from a method which is known to return possibly-null values.</p>
   </BugPattern>
   
   <BugPattern type="NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH">
-	  <ShortDescription>On an exception path, value is null and guaranteed to be dereferenced on exception path</ShortDescription>
-	  <LongDescription>On an exception path, {2.name} is null guaranteed to be dereferenced in {1} on exception path</LongDescription>
+	  <ShortDescription>Value is null and guaranteed to be dereferenced on exception path</ShortDescription>
+	  <LongDescription>{2.name} is null guaranteed to be dereferenced in {1} on exception path</LongDescription>
 	  <Details>
 		  <![CDATA[
 			  <p>
@@ -3693,7 +3693,7 @@ was return from a method which is known to return possibly-null values.</p>
   </BugPattern>
 
   <BugPattern type="SI_INSTANCE_BEFORE_FINALS_ASSIGNED">
-    <ShortDescription>Static initializer for class creates instance before all static final fields assigned</ShortDescription>
+    <ShortDescription>Static initializer creates instance before all static final fields assigned</ShortDescription>
     <LongDescription>Static initializer for {0} creates instance before all static final fields assigned</LongDescription>
     <Details>
 <![CDATA[
@@ -4556,12 +4556,27 @@ super.tearDown(), but doesn't.</p>
   </BugPattern>
 
   <BugPattern type="IJU_SUITE_NOT_STATIC">
-    <ShortDescription>TestCase implements a suite method, but this method is not static and should be</ShortDescription>
-    <LongDescription>TestCase {0} implements a suite method, but this method is not static and should be</LongDescription>
+    <ShortDescription>TestCase implements a non-static suite method </ShortDescription>
+    <LongDescription>TestCase {0} implements a non-static suite method</LongDescription>
     <Details>
 <![CDATA[
 <p> Class is a JUnit TestCase and implements the suite() method.
  The suite method should be declared as being static, but isn't.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="IJU_BAD_SUITE_METHOD">
+    <ShortDescription>TestCase declares a bad suite method </ShortDescription>
+    <LongDescription>Bad declaration for suite method in {0}</LongDescription>
+    <Details>
+<![CDATA[
+<p> Class is a JUnit TestCase and defines a suite() method.
+However, the suite method needs to be declared as either
+<pre>public static junit.framework.Test suite()</pre>
+or 
+<pre>public static junit.framework.TestSuite suite()</pre>
+</p>
 ]]>
     </Details>
   </BugPattern>
@@ -4710,8 +4725,8 @@ static method, is more simple and clear to use Thread.interrupted().
   </BugPattern>
 
   <BugPattern type="STI_INTERRUPTED_ON_UNKNOWNTHREAD">
-    <ShortDescription>Static Thread.interrupted() method is mistakenly attempted to be called on an arbitrary Thread object</ShortDescription>
-    <LongDescription>Method {1} makes a call to the static Thread.interrupted() method, mistakenly attempting to call it on an arbitrary Thread object</LongDescription>
+    <ShortDescription>Static Thread.interrupted() method invoked on thread instance</ShortDescription>
+    <LongDescription>{1} invokes static Thread.interrupted() method on thread instance</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -5490,7 +5505,7 @@ for oddness, consider using x & 1 == 1, or x % 2 != 0.
     </Details>
   </BugPattern>
   <BugPattern type="DMI_BAD_MONTH">
-    <ShortDescription>Passes a constant value for a month outside of the expected range of 0..11</ShortDescription>
+    <ShortDescription>Bad constant value for month</ShortDescription>
     <LongDescription>{1} passes a bad month value of {2} to {3}</LongDescription>
     <Details>
 <![CDATA[

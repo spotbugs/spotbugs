@@ -149,7 +149,9 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 	                NORMAL_PRIORITY).addClassAndMethod(this));
 
 	    if (getMethodName().equals("suite") && obj.getSignature().startsWith("()") && obj.isStatic())  {
-	        if (!obj.getSignature().equals("()Ljunit/framework/Test;") || !obj.isPublic())
+	        if ((!obj.getSignature().equals("()Ljunit/framework/Test;") 
+                    && !obj.getSignature().equals("()Ljunit/framework/TestSuite;"))
+                    || !obj.isPublic())
 	            bugReporter.reportBug( new BugInstance( this, "IJU_BAD_SUITE_METHOD", NORMAL_PRIORITY)
 	            .addClassAndMethod(this));
 

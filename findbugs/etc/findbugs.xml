@@ -433,7 +433,7 @@
             
    <Detector class="edu.umd.cs.findbugs.detect.InvalidJUnitTest" 
              speed="fast"
-             reports="IJU_SETUP_NO_SUPER,IJU_TEARDOWN_NO_SUPER,IJU_SUITE_NOT_STATIC,IJU_NO_TESTS" />
+             reports="IJU_SETUP_NO_SUPER,IJU_TEARDOWN_NO_SUPER,IJU_SUITE_NOT_STATIC,IJU_NO_TESTS,IJU_BAD_SUITE_METHOD" />
              
    <Detector class="edu.umd.cs.findbugs.detect.BadlyOverriddenAdapter" 
              speed="fast"
@@ -848,6 +848,7 @@
   <BugPattern abbrev="ODR" type="ODR_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH" category="BAD_PRACTICE" />
   <BugPattern abbrev="SBSC" type="SBSC_USE_STRINGBUFFER_CONCATENATION" category="PERFORMANCE" />
   <BugPattern abbrev="ITA" type="ITA_INEFFICIENT_TO_ARRAY" category="PERFORMANCE" />
+  <BugPattern abbrev="IJU" type="IJU_BAD_SUITE_METHOD" category="CORRECTNESS" />
   <BugPattern abbrev="IJU" type="IJU_SETUP_NO_SUPER" category="CORRECTNESS" />
   <BugPattern abbrev="IJU" type="IJU_TEARDOWN_NO_SUPER" category="CORRECTNESS" />
   <BugPattern abbrev="IJU" type="IJU_SUITE_NOT_STATIC" category="CORRECTNESS" />
