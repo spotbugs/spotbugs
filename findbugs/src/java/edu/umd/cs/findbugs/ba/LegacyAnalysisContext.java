@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.util.MapCache;
 
@@ -50,7 +51,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	// private MayReturnNullPropertyDatabase mayReturnNullDatabase;
 	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
 	private ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase;
-	
+    private ReturnValueNullnessPropertyDatabase  returnValueNullnessDatabase;
 	
 	private NullnessAnnotationDatabase nullnessAnnotationDatabase; //= new NullnessAnnotationDatabase();
 	
@@ -261,6 +262,9 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		return unconditionalDerefParamDatabase;
 	}
 	
+
+
+    
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getInnerClassAccessMap()
 	 */
@@ -271,6 +275,17 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		}
 		return innerClassAccessMap;
 	}
+
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.AnalysisContext#getReturnValueNullnessPropertyDatabase()
+     */
+    @Override
+    public ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase() {
+        if (returnValueNullnessDatabase  == null) {
+            returnValueNullnessDatabase = new ReturnValueNullnessPropertyDatabase();
+        }
+        return returnValueNullnessDatabase;
+    }
 
 			
 

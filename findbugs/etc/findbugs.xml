@@ -70,6 +70,10 @@
 		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
 	</WithinPass>
 	<WithinPass>
+		<Earlier class="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues"/>
+		<Later class="edu.umd.cs.findbugs.detect.FindNullDeref"/>
+	</WithinPass>
+	<WithinPass>
 		<Earlier class="edu.umd.cs.findbugs.detect.UnreadFields"/>
 		<Later class="edu.umd.cs.findbugs.detect.FindMaskedFields"/>
 	</WithinPass>
@@ -136,6 +140,11 @@
 			hidden="true"/>
 
   <Detector class="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs"
+	        speed="slow"
+	        reports=""
+	        hidden="true"/>
+
+  <Detector class="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues"
 	        speed="slow"
 	        reports=""
 	        hidden="true"/>

@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.IAnalysisCache;
@@ -461,6 +462,14 @@ public abstract class AnalysisContext {
 	 * @return the database, or null if there is no database available
 	 */
 	public abstract ParameterNullnessPropertyDatabase getUnconditionalDerefParamDatabase();
+
+    /**
+     * Get the property database recording which methods unconditionally
+     * dereference parameters.
+     * 
+     * @return the database, or null if there is no database available
+     */
+    public abstract ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase();
 
 	/**
 	 * Load an interprocedural property database.

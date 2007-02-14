@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.AnalysisCacheToRepositoryAdapter;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
+import edu.umd.cs.findbugs.ba.npe.ReturnValueNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.type.FieldStoreTypeDatabase;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
@@ -323,6 +324,15 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		}
 		
 	}
+
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.ba.AnalysisContext#getReturnValueNullnessPropertyDatabase()
+     */
+    @Override
+    public ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase() {
+            return getDatabase(ReturnValueNullnessPropertyDatabase.class);
+        
+    }
 
 	
 

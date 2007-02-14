@@ -197,6 +197,17 @@ by other detectors.</p>
    </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues">
+   <Details>
+      <![CDATA[
+      <p>
+      Analyze all methods in the application to determine which
+	methods always return nonnull values.
+      </p>
+      ]]>
+   </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.BadUseOfReturnValue">
     <Details>
 <![CDATA[
