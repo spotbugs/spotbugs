@@ -21,7 +21,7 @@ public class Bug1645869 extends Object{
 		return super.equals(obj);
 	}
 	
-	public final clone(){
+	public final Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 	
