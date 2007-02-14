@@ -59,7 +59,7 @@ public class TypeAnnotation implements BugAnnotation {
 		this.roleDescription = roleDescription;
 	}
 	
-	//@Override
+	
 	@Override
 	public Object clone() {
 		try {

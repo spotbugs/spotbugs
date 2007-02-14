@@ -59,7 +59,7 @@ public class WarningPropertySet implements Cloneable {
 		this.map = new HashMap<WarningProperty, Object>();
 	}
 
-	//@Override
+	
 	@Override
          public Object clone() {
 		try {

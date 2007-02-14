@@ -106,7 +106,7 @@ public class Constant {
 		return a;
 	}
 	
-	//@Override
+	
 	@Override
          public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
@@ -120,7 +120,7 @@ public class Constant {
 			return this.value.equals(other.value);
 	}
 	
-	//@Override
+	
 	@Override
          public int hashCode() {
 		return (value == null) ? 123 : value.hashCode();

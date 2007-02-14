@@ -127,7 +127,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	private boolean analysisErrors;
 	private boolean missingClasses;
 	
-	//@Override
+	
 	@Override
 	public void reportQueuedErrors() {
 		analysisErrors = missingClasses = false;

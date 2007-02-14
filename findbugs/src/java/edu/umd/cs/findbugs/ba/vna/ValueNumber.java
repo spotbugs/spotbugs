@@ -108,12 +108,12 @@ public class ValueNumber implements Comparable<ValueNumber> {
 		return number - other.number;
 	}
 /*
-	//@Override
+	
 	public int hashCode() {
 		return number;
 	}
 	
-	//@Override
+	
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;

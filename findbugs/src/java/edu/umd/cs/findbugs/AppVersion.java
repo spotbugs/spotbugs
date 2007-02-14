@@ -66,7 +66,7 @@ public class AppVersion implements XMLWriteable, Cloneable {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#clone()
 	 */
-	//@Override
+	
 	@Override
 	public Object clone() {
 		try {
@@ -128,7 +128,7 @@ public class AppVersion implements XMLWriteable, Cloneable {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	//@Override
+	
 	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();

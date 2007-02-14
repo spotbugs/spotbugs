@@ -77,7 +77,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 			return hashCode;
 		}
 		
-		//@Override
+		
 		@Override
 		public boolean equals(Object obj) {
 			if (obj == null || obj.getClass() != this.getClass())

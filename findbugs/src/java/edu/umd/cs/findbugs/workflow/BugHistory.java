@@ -102,7 +102,7 @@ public class BugHistory {
 		/* (non-Javadoc)
 		 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)
 		 */
-		//@Override
+		
 		@Override
 		protected boolean removeEldestEntry(Entry<String, BugCollectionAndProject> eldest) {
 			return size() > CACHE_SIZE;
@@ -377,7 +377,7 @@ public class BugHistory {
 		 /* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
 		 */
-		//@Override
+		
 		@Override
 		protected void handleOption(String option, String optionExtraPart) throws IOException {
 			if (option.equals("-fuzzy")) {
@@ -405,7 +405,7 @@ public class BugHistory {
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java.lang.String, java.lang.String)
 		 */
-		//@Override
+		
 		@Override
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			if (option.equals("-bulk")) {

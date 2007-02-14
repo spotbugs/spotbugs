@@ -33,7 +33,7 @@ public class FieldStoreTypeDatabase
 	
 	public static final String DEFAULT_FILENAME = "fieldStoreTypes.db";
 
-	//@Override
+	
 	@Override
          protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {
 		FieldStoreType property = new FieldStoreType();
@@ -45,7 +45,7 @@ public class FieldStoreTypeDatabase
 		return property;
 	}
 
-	//@Override
+	
 	@Override
          protected String encodeProperty(FieldStoreType property) {
 		StringBuffer buf = new StringBuffer();

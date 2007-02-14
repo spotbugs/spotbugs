@@ -39,7 +39,7 @@ public abstract class FieldPropertyDatabase<Property>
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#parseKey(java.lang.String)
 	 */
-	//@Override
+	
 	@Override
          protected XField parseKey(String s) throws PropertyDatabaseFormatException {
 		String[] tuple = s.split(",");
@@ -65,7 +65,7 @@ public abstract class FieldPropertyDatabase<Property>
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#writeKey(java.io.Writer, KeyType)
 	 */
-	//@Override
+	
 	@Override
          protected void writeKey(Writer writer, XField key) throws IOException {
 		writer.write(key.getClassName());

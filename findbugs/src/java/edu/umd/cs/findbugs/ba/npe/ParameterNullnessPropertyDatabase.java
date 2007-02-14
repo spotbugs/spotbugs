@@ -33,7 +33,7 @@ public class ParameterNullnessPropertyDatabase extends MethodPropertyDatabase<Pa
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#decodeProperty(java.lang.String)
 	 */
-	//@Override
+
 	@Override
          protected ParameterNullnessProperty decodeProperty(String propStr)
 			throws PropertyDatabaseFormatException {
@@ -50,7 +50,7 @@ public class ParameterNullnessPropertyDatabase extends MethodPropertyDatabase<Pa
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#encodeProperty(Property)
 	 */
-	//@Override
+
 	@Override
          protected String encodeProperty(ParameterNullnessProperty property) {
 		return String.valueOf(property.getNonNullParamSet());

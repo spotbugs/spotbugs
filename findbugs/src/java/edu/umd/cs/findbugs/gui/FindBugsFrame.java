@@ -3672,7 +3672,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			return bugsFilename;
 		}
 		
-		//@Override
+		
 		@Override
 		protected void handleOption(String option, String optionExtraPart) {
 			if (option.equals("-debug")) {
@@ -3709,7 +3709,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			}
 		}
 		
-		//@Override
+		
 		@Override
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			if (option.equals("-loadbugs")) {

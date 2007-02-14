@@ -50,7 +50,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 		this.description = description;
 	}
 	
-	//@Override
+	
 	@Override
 	public Object clone() {
 		try {

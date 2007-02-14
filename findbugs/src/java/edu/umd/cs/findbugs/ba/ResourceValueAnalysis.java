@@ -166,7 +166,7 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 		result.setStatus(Math.min(result.getStatus(), frame.getStatus()));
 	}
 	
-	//@Override
+	
 	@Override
          protected void mergeValues(ResourceValueFrame otherFrame, ResourceValueFrame resultFrame, int slot) throws DataflowAnalysisException {
 		ResourceValue value = ResourceValue.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));

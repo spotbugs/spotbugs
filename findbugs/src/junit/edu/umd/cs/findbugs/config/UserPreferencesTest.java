@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 public class UserPreferencesTest extends TestCase {
 	UserPreferences prefs;
 	
-	//@Override
+	
 	@Override
          protected void setUp() throws Exception {
 		prefs = UserPreferences.createDefaultUserPreferences();

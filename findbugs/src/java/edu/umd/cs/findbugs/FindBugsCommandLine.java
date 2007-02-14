@@ -68,7 +68,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
 		return project;
 	}
 
-	//@Override
+	
 	@Override
 	protected void handleOption(String option, String optionExtraPart) {
 		if (option.equals("-effort")) {

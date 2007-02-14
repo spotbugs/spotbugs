@@ -29,13 +29,13 @@ public class LoadAnalysis extends FieldSetAnalysis {
 		super(dfs, cpg);
 	}
 
-	//@Override
+	
 	@Override
          protected void sawLoad(FieldSet fact, XField field) {
 		fact.addField(field);
 	}
 
-	//@Override
+	
 	@Override
          protected void sawStore(FieldSet fact, XField field) {
 	}

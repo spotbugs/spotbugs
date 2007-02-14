@@ -240,7 +240,7 @@ public @Deprecated class BCPMethodReturnCheck extends ByteCodePatternDetector  {
 
 	}
 
-	//@Override
+	
 	@Override
          protected BugReporter getBugReporter() {
 		return bugReporter;

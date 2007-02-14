@@ -91,7 +91,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 		this.endBytecode = endBytecode;
 	}
 	
-	//@Override
+	
 	@Override
 	public Object clone() {
 		try {

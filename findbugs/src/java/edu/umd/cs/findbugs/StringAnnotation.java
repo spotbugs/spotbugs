@@ -48,7 +48,7 @@ public class StringAnnotation implements BugAnnotation {
 		this.description = DEFAULT_ROLE;
 	}
 	
-	//@Override
+	
 	@Override
 	public Object clone() {
 		try {

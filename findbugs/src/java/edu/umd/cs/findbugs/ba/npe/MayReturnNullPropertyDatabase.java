@@ -30,14 +30,14 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
  * @deprecated
  */
 public class MayReturnNullPropertyDatabase extends MethodPropertyDatabase<Boolean> {
-	//@Override
+	
 	@Override
          protected Boolean decodeProperty(String propStr)
 			throws PropertyDatabaseFormatException {
 		return Boolean.valueOf(propStr);
 	}
 
-	//@Override
+	
 	@Override
          protected String encodeProperty(Boolean property) {
 		return property.toString();

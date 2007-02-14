@@ -13,7 +13,7 @@ public class SplitCamelCaseIdentifierTest extends TestCase {
 	SplitCamelCaseIdentifier allUpper;
 	SplitCamelCaseIdentifier capitalized;
 	
-	//@Override
+	
 	@Override
 	protected void setUp() throws Exception {
 		splitter = new SplitCamelCaseIdentifier("displayGUIWindow");

@@ -88,7 +88,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 		}
 	}
 	
-	//@Override
+	
 	@Override
 	public void reportQueuedErrors() {
 		createDialog();
@@ -97,7 +97,7 @@ public class SwingGUIBugReporter extends TextUIBugReporter {
 		errorDialog.finish();
 	}
 	
-	//@Override
+	
 	@Override
 	protected void emitLine(String line) {
 		line = line.replaceAll("\t", "  ");
