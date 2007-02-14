@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ import org.apache.bcel.generic.INVOKESTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
 
 
@@ -1224,6 +1226,109 @@ public class ClassContext {
 			}
 		}
 		return null;
+	}
+
+	public List<Method> getMethodsInCallOrder() {
+	    List<Method> methodList = new LinkedList<Method>(Arrays.asList(getJavaClass().getMethods()));
+	    List<Method> result = new LinkedList<Method>();
+
+	    Set<String> calledMethods = new HashSet<String>();
+	    Set<String> processed = new HashSet<String>();
+
+	    for(Iterator<Method> i = methodList.iterator(); i.hasNext(); ) {
+	        Method m = i.next();
+	        if (!hasCallsToSameClass(m, calledMethods)) {
+	            result.add(m);
+	            processed.add(m.getName()+m.getSignature());
+	            i.remove();
+	        }
+	    }
+
+	    boolean tryAgain = true;
+	    while (tryAgain && !methodList.isEmpty()) {
+	        tryAgain = false;
+
+	        for(Iterator<Method> i = methodList.iterator(); i.hasNext(); ) {
+	            Method m = i.next();
+	            if (!hasUnsafeCallsToSameClass(m, processed)) {
+	                result.add(m);
+	                processed.add(m.getName()+m.getSignature());
+	                i.remove();
+	                tryAgain = true;
+	            }
+	        }
+	    }
+
+	    if ( !methodList.isEmpty()) {
+	        for(Iterator<Method> i = methodList.iterator(); i.hasNext(); ) {
+	            Method m = i.next();
+	            if (m.isPrivate() && calledMethods.contains(m.getName()+m.getSignature())) {
+	                result.add(m);
+	                i.remove();
+	            }
+	        }
+	        for(Iterator<Method> i = methodList.iterator(); i.hasNext(); ) {
+	            Method m = i.next();
+	            if (calledMethods.contains(m.getName()+m.getSignature())) {
+	                result.add(m);
+	                i.remove();
+	            }
+	        }
+
+	        for(Iterator<Method> i = methodList.iterator(); i.hasNext(); ) {
+	            Method m = i.next();
+	            result.add(m);
+	        }
+	    }
+        return result;
+	}
+
+
+
+	private boolean hasCallsToSameClass(Method method, Set<String> calledMethods) {
+	    String thisClassName = getJavaClass().getClassName();
+	    ConstantPoolGen cpg = getConstantPoolGen();
+	    boolean foundAny = false;
+	    try {
+	        CFG cfg = getCFG(method);
+	        for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+	            Instruction ins = i.next().getHandle().getInstruction();
+	            if (ins instanceof InvokeInstruction) {
+	                InvokeInstruction inv = (InvokeInstruction) ins;
+	                String className = inv.getClassName(cpg);
+	                if (thisClassName.equals(className)) {
+	                    foundAny = true;
+	                    String methodKey = inv.getMethodName(cpg)+inv.getSignature(cpg);
+	                    calledMethods.add(methodKey);
+	                }
+	            }
+	        }
+	    } catch (CFGBuilderException e) {
+	        return false;
+	    }
+	    return foundAny;
+	}
+	private boolean hasUnsafeCallsToSameClass(Method method, Set<String> processed) {
+	    String thisClassName = getJavaClass().getClassName();
+	    ConstantPoolGen cpg = getConstantPoolGen();
+	    boolean foundAny = false;
+	    try {
+	        CFG cfg = getCFG(method);
+	        for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+	            Instruction ins = i.next().getHandle().getInstruction();
+	            if (ins instanceof InvokeInstruction) {
+	                InvokeInstruction inv = (InvokeInstruction) ins;
+	                String className = inv.getClassName(cpg);
+	                if (thisClassName.equals(className)  && !processed.contains(inv.getMethodName(cpg)+inv.getSignature(cpg))) {
+	                    return true;
+
+	                }
+	            }
+	        }
+	    } catch (CFGBuilderException e) {
+	        return false;
+	    }
+	    return false;
 	}
 
 	/**
