@@ -132,6 +132,7 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
 	}
 
 	public void report() {
+        database.purgeBoringEntries();
 		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
 				database, FieldStoreTypeDatabase.DEFAULT_FILENAME, "store type database");
 	}

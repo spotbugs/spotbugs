@@ -19,9 +19,15 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
+import org.apache.bcel.generic.ReferenceType;
+import org.apache.bcel.generic.Type;
+
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.interproc.FieldPropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 
@@ -33,6 +39,21 @@ public class FieldStoreTypeDatabase
 	
 	public static final String DEFAULT_FILENAME = "fieldStoreTypes.db";
 
+    public void purgeBoringEntries() {
+        Collection<XField> keys = new ArrayList<XField>(getKeys());
+        for(XField f : keys) {
+            String s = f.getSignature();
+            FieldStoreType type = getProperty(f);
+            Type fieldType = Type.getType(f.getSignature());
+            if (!(fieldType instanceof ReferenceType)) {
+                removeProperty(f);
+                continue;
+            }
+            ReferenceType storeType = type.getLoadType((ReferenceType)fieldType);
+            if (storeType.equals(fieldType)) 
+                removeProperty(f);
+        }
+    }
 	
 	@Override
          protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {
