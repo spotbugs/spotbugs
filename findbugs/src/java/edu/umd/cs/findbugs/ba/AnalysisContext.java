@@ -71,10 +71,17 @@ public abstract class AnalysisContext {
 	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.analysiscontext.debug");
 	
 	public static final String DEFAULT_NONNULL_PARAM_DATABASE_FILENAME = "nonnullParam.db";
+  
+    
 	public static final String DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME = "checkForNullParam.db";
-	public static final String DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE = "nonnullReturn.db";
+	public static final String DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE = "nullReturn.db";
+    
 	public static final String UNCONDITIONAL_DEREF_DB_FILENAME = "unconditionalDeref.db";
+    public static final String NONNULL_RETURN_DB_FILENAME = "nonnullReturn.db";
+      
 	public static final String UNCONDITIONAL_DEREF_DB_RESOURCE = "jdkBaseUnconditionalDeref.db";
+    public static final String NONNULL_RETURN_DB_RESOURCE = "jdkBaseNonnullReturn.db";
+    
 	public static final String DEFAULT_NULL_RETURN_VALUE_DB_FILENAME = "mayReturnNull.db";
 
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
@@ -369,6 +376,10 @@ public abstract class AnalysisContext {
 				getUnconditionalDerefParamDatabase(),
 				UNCONDITIONAL_DEREF_DB_FILENAME,
 				"unconditional param deref database");
+        loadPropertyDatabase(
+                getReturnValueNullnessPropertyDatabase(),
+                NONNULL_RETURN_DB_FILENAME,
+                "nonnull return db database");
 	}
 	
 	/**
@@ -381,6 +392,10 @@ public abstract class AnalysisContext {
 				getUnconditionalDerefParamDatabase(),
 				UNCONDITIONAL_DEREF_DB_RESOURCE,
 				"unconditional param deref database");
+        loadPropertyDatabaseFromResource(
+                getReturnValueNullnessPropertyDatabase(),
+                NONNULL_RETURN_DB_RESOURCE,
+                "nonnull return db database");
 	}
 
 	/**
@@ -464,8 +479,7 @@ public abstract class AnalysisContext {
 	public abstract ParameterNullnessPropertyDatabase getUnconditionalDerefParamDatabase();
 
     /**
-     * Get the property database recording which methods unconditionally
-     * dereference parameters.
+     * Get the property database recording which methods always return nonnull values
      * 
      * @return the database, or null if there is no database available
      */

@@ -49,6 +49,10 @@ public class TrainUnconditionalDerefParams
 				AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase(),
 				AnalysisContext.UNCONDITIONAL_DEREF_DB_FILENAME,
 				"unconditional deref database");
+        AnalysisContext.currentAnalysisContext().storePropertyDatabase(
+                AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase(),
+                AnalysisContext.NONNULL_RETURN_DB_FILENAME,
+                "nonnull return database");
 	}
 
 }
