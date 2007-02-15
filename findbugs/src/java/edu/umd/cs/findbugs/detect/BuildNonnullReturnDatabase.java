@@ -96,6 +96,7 @@ public class BuildNonnullReturnDatabase {
 
                 if (!(ins instanceof ARETURN)) continue;
                 IsNullValueFrame frame = inv.getFactAtLocation(location);
+                if (!frame.isValid()) continue;
                 IsNullValue value = frame.getTopValue();
                 if (!value.isDefinitelyNotNull()) {
                     guaranteedNonNull = false;
