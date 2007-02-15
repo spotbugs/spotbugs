@@ -21,12 +21,15 @@ package edu.umd.cs.findbugs;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -36,6 +39,7 @@ import edu.umd.cs.findbugs.ba.AnalysisCacheToAnalysisContextAdapter;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisException;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
+import edu.umd.cs.findbugs.ba.ch.Subtypes;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
@@ -490,6 +494,44 @@ public class FindBugs2 implements IFindBugsEngine {
 		appClassList.removeAll(badAppClassSet);
 	}
 	
+     public List<ClassDescriptor> sortByCallGraph(Collection<ClassDescriptor> classList) {
+            List<ClassDescriptor> result = new ArrayList<ClassDescriptor>(classList.size());
+            TopologicalSort instance = new TopologicalSort(result);
+            instance.consider.addAll(classList);
+            for (ClassDescriptor name : classList)
+                instance.visit(name);
+            return result;
+        }
+
+        static class TopologicalSort {
+            TopologicalSort(List<ClassDescriptor> result) {
+                this.result = result;
+
+            }
+
+            Subtypes subtypes;
+
+            List<ClassDescriptor> result;
+
+            HashSet<ClassDescriptor> visited = new HashSet<ClassDescriptor>();
+            HashSet<ClassDescriptor> consider = new HashSet<ClassDescriptor>();
+
+            void visit(ClassDescriptor classDesc) {
+                if (!consider.contains(classDesc)) return;
+                if (!visited.add(classDesc))
+                    return;
+                try {
+                ClassInfo classInfo = Global.getAnalysisCache().getClassAnalysis(ClassInfo.class, classDesc);
+                for(ClassDescriptor c : classInfo.getReferencedClassDescriptorList())
+                    visit(c);
+                } catch (CheckedAnalysisException e) {
+                    AnalysisContext.logError("error while analyzing " + classDesc.getClassName(), e);
+                }
+                result.add(classDesc);
+            }
+        }
+
+        
 	/**
 	 * Create the AnalysisContext that will serve as the BCEL-compatibility
 	 * layer over the AnalysisCache.
@@ -574,6 +616,7 @@ public class FindBugs2 implements IFindBugsEngine {
 		for (Iterator<AnalysisPass> i = executionPlan.passIterator(); i.hasNext(); ) {
 			AnalysisPass pass = i.next();
 
+            
 			// Instantiate the detectors
 			Detector2[] detectorList = pass.instantiateDetector2sInPass(bugReporter);
 
@@ -583,14 +626,17 @@ public class FindBugs2 implements IFindBugsEngine {
 			Collection<ClassDescriptor> classCollection = (multiplePasses && passCount == 0)
 					? referencedClassSet 
 					: appClassList;
-			if (DEBUG) {
+			if (true || DEBUG) {
 				System.out.println("Pass " + (passCount) + ": " + classCollection.size() + " classes");
 			}
-			
+			if (passCount > 0) {
+                List<ClassDescriptor> result = sortByCallGraph(classCollection);
+                classCollection = result;
+                }
 			progress.startAnalysis(classCollection.size());
 			
 			for (ClassDescriptor classDescriptor : classCollection) {
-				if (DEBUG) {
+				if (true || DEBUG) {
 					System.out.println("Class " + classDescriptor);
 				}
 				
