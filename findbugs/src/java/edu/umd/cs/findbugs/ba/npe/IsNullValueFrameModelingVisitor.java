@@ -166,6 +166,8 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 						System.out.println("Null value returned from " + calledMethod);
 					}
 					pushValue = IsNullValue.nullOnSimplePathValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
+                } else  if (annotation == NullnessAnnotation.NULLABLE)  {
+                    pushValue = IsNullValue.nonReportingNotNullValue();
 				} else  if (annotation == NullnessAnnotation.NONNULL || alwaysNonNull != null && alwaysNonNull.booleanValue()) {
 					// Method is declared NOT to return null
 					if (IsNullValueAnalysis.DEBUG) {
