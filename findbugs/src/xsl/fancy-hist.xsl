@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 <!--
-  Copyright (C) 2005, 2007 Etienne Giraudy, InStranet Inc
+  Copyright (C) 2005, 2006 Etienne Giraudy, InStranet Inc
+  Copyright (C) 2005, 2007 Etienne Giraudy
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -191,6 +192,7 @@
          var menus            = new Array('summary','info','history','listByCategories','listByPackages');
          var selectedMenuId   = "summary";
          var selectedVersion  = -1;
+         var selectedPriority = 4;
          var lastVersion      = 0;
 
          var bPackageNamesPopulated = false;
@@ -235,10 +237,16 @@
          function loadFilter() {
             var versionsBox = document.findbugsForm.versions.options;
             for (x=0; x<versions.length; x++) {
-               versionsBox[x+1] = new Option(" Bugs introduced in release: "+versions[x][1], versions[x][0]);
+               versionsBox[x+1] = new Option(" Bugs at release: "+versions[x][1], versions[x][0]);
             }
-            versionsBox[0] = new Option(" -- All Bugs -- ","-1");
+            versionsBox[0] = new Option(" -- All Versions -- ","-1");
             versionsBox.selectedIndex = 0;
+            
+            var prioritiesBox = document.findbugsForm.priorities.options;
+            prioritiesBox[0] = new Option(" -- All priorities -- ", "4");
+            prioritiesBox[1] = new Option(" P1 bugs ", "1");
+            prioritiesBox[2] = new Option(" P1 and P2 bugs ", "2");
+            prioritiesBox[3] = new Option(" P1, P2 and P3 bugs ", "3");
          }
 
          // display a message
@@ -262,6 +270,10 @@
          function filter() {
             var versionsBox = document.findbugsForm.versions.options;
             selectedVersion = versionsBox[versionsBox.selectedIndex].value;
+
+            var prioritiesBox = document.findbugsForm.priorities.options;
+            selectedPriority = prioritiesBox[prioritiesBox.selectedIndex].value;
+            
             selectMenu(selectedMenuId);
          }
 
@@ -330,8 +342,7 @@
             container.innerHTML = "";
             container.style.display="block";
             displayMessage("Loading stats (categories)...");
-            //container.innerHTML = displayCategories(selectedVersion, "Stats by Bug Categories");
-            container.innerHTML = displayLevel1("lbc", selectedVersion, "Stats by Bug Categories");
+            container.innerHTML = displayLevel1("lbc", "Stats by Bug Categories");
             resetMessage();
          }
 
@@ -345,33 +356,33 @@
                populatePackageNames();
             }
             displayMessage("Loading stats (packages)...");
-            container.innerHTML = displayLevel1("lbp", selectedVersion, "Stats by Bug Package");
+            container.innerHTML = displayLevel1("lbp", "Stats by Bug Package");
             resetMessage();
          }
 
          // callback function for list item click
-         function toggleList(listType, containerId, version, id1, id2, id3) {
+         function toggleList(listType, containerId, id1, id2, id3) {
             var container = document.getElementById(containerId);
             if (container.style.display=="block") {
                container.style.display="none";
             } else {
                if (listType=="lbc") {
                   if (id1.length>0 && id2.length==0 && id3.length==0) {
-                     displayCategoriesCodes(containerId, version, id1);
+                     displayCategoriesCodes(containerId, id1);
                   } else if (id1.length>0 && id2.length>0 && id3.length==0) {
-                     displayCategoriesCodesPatterns(containerId, version, id1, id2);
+                     displayCategoriesCodesPatterns(containerId, id1, id2);
                   } else if (id1.length>0 && id2.length>0 && id3.length>0) {
-                     displayCategoriesCodesPatternsBugs(containerId, version, id1, id2, id3);
+                     displayCategoriesCodesPatternsBugs(containerId, id1, id2, id3);
                   } else {
                      // ???
                   }
                } else if (listType=="lbp") {
                   if (id1.length>0 && id2.length==0 && id3.length==0) {
-                     displayPackageCodes(containerId, version, id1);
+                     displayPackageCodes(containerId, id1);
                   } else if (id1.length>0 && id2.length>0 && id3.length==0) {
-                     displayPackageClassPatterns(containerId, version, id1, id2);
+                     displayPackageClassPatterns(containerId, id1, id2);
                   } else if (id1.length>0 && id2.length>0 && id3.length>0) {
-                     displayPackageClassPatternsBugs(containerId, version, id1, id2, id3);
+                     displayPackageClassPatternsBugs(containerId, id1, id2, id3);
                   } else {
                      // ???
                   }
@@ -382,69 +393,69 @@
          }
 
          // list by categories, display bug cat>codes
-         function displayCategoriesCodes(containerId, version, catId) {
+         function displayCategoriesCodes(containerId, catId) {
             displayMessage("Loading stats (codes)...");
             var container = document.getElementById(containerId);
             container.style.display="block";
             if (container.innerHTML=="Loading..." || container.innerHTML=="") {
-               container.innerHTML = displayLevel2("lbc", version, catId);
+               container.innerHTML = displayLevel2("lbc", catId);
             }
             resetMessage();
          }
 
          // list by categories, display bug package>codes
-         function displayPackageCodes(containerId, version, packageId) {
+         function displayPackageCodes(containerId, packageId) {
             displayMessage("Loading stats (codes)...");
             var container = document.getElementById(containerId);
             container.style.display="block";
             if (container.innerHTML=="Loading..." || container.innerHTML=="") {
-               container.innerHTML = displayLevel2("lbp", version, packageId);
+               container.innerHTML = displayLevel2("lbp", packageId);
             }
             resetMessage();
          }
 
          // list by categories, display bug cat>codes>patterns
-         function displayCategoriesCodesPatterns(containerId, version, catId, codeId) {
+         function displayCategoriesCodesPatterns(containerId, catId, codeId) {
             displayMessage("Loading stats (patterns)...");
             var container = document.getElementById(containerId);
             container.style.display="block";
             if (container.innerHTML=="Loading..." || container.innerHTML=="")
-               container.innerHTML = displayLevel3("lbc", version, catId, codeId);
+               container.innerHTML = displayLevel3("lbc", catId, codeId);
             resetMessage();
          }
 
          // list by package, display bug package>class>patterns
-         function displayPackageClassPatterns(containerId, version, packageId, classId) {
+         function displayPackageClassPatterns(containerId, packageId, classId) {
             displayMessage("Loading stats (patterns)...");
             var container = document.getElementById(containerId);
             container.style.display="block";
             if (container.innerHTML=="Loading..." || container.innerHTML=="")
-               container.innerHTML = displayLevel3("lbp", version, packageId, classId);
+               container.innerHTML = displayLevel3("lbp", packageId, classId);
             resetMessage();
          }
          
          // list by categories, display bug cat>codes>patterns>bugs
-         function displayCategoriesCodesPatternsBugs(containerId, version, catId, codeId, patternId) {
+         function displayCategoriesCodesPatternsBugs(containerId, catId, codeId, patternId) {
             displayMessage("Loading stats (bugs)...");
             var container = document.getElementById(containerId);
             container.style.display="block";
             if (container.innerHTML=="Loading..." || container.innerHTML=="")
-               container.innerHTML = displayLevel4("lbc", version, catId, codeId, patternId);
+               container.innerHTML = displayLevel4("lbc", catId, codeId, patternId);
             resetMessage();
          }
 
          // list by package, display bug package>class>patterns>bugs
-         function displayPackageClassPatternsBugs(containerId, version, packageId, classId, patternId) {
+         function displayPackageClassPatternsBugs(containerId, packageId, classId, patternId) {
             displayMessage("Loading stats (bugs)...");
             var container = document.getElementById(containerId);
             container.style.display="block";
             if (container.innerHTML=="Loading..." || container.innerHTML=="")
-               container.innerHTML = displayLevel4("lbp", version, packageId, classId, patternId);
+               container.innerHTML = displayLevel4("lbp",  packageId, classId, patternId);
             resetMessage();
          }
 
          // generate level 1 list
-         function displayLevel1(list, version, title) {
+         function displayLevel1(list, title) {
             var content = "";
             var content2 = "";
 
@@ -475,14 +486,14 @@
                   label = categories[x][idxCatDescr];
                   containerId = "categories-" + id;
                   subContainerId = "cat-"+id;
-                  p = countBugsCat(version, id, idxBugCat);
+                  p = countBugsCat(selectedVersion, selectedPriority, id, idxBugCat);
                }
                if (list=="lbp") {
                   id = packageStats[x][0];
                   label = packageStats[x][0];
                   containerId = "packages-" + id;
                   subContainerId = "package-"+id;
-                  p = countBugsPackage(version, id, idxBugPackage);
+                  p = countBugsPackage(selectedVersion, selectedPriority, id, idxBugPackage);
                }
 
                subContainerId = prefixSub+id;
@@ -490,22 +501,22 @@
                var total = p[1]+p[2]+p[3]+p[4];
                if (total > 0) {
                   content2 += addListItem( 1, containerId, label, total, p, subContainerId,
-                                          "toggleList('" + list + "', '" + subContainerId + "', '" + version + "', '"+ id + "', '', '')"
+                                          "toggleList('" + list + "', '" + subContainerId + "', '"+ id + "', '', '')"
                                           );
                }
                numberOfBugs += total;
             }
             content2 += "</div>";
             content += "<h4>Total number of bugs";
-            if (version!=-1) {
-               content += " (introduced in release " + versions[version][1] +")";
+            if (selectedVersion!=-1) {
+               content += " (introduced in release " + versions[selectedVersion][1] +")";
             }
             content += ": "+numberOfBugs+"</h4>";
             return content+content2;
          }
 
          // generate level 2 list
-        function displayLevel2(list, version, id1) {
+        function displayLevel2(list, id1) {
             var content = "";
             var code = "";
             var containerId = "";
@@ -527,20 +538,20 @@
                   label = codes[x][idxCodeDescr];
                   containerId = "codes-"+id1;
                   subContainerId = "cat-" + id1 + "-code-" + id2;
-                  p = countBugsCode(version, id1, idxBugCat, id2, idxBugCode);
+                  p = countBugsCode(selectedVersion, selectedPriority, id1, idxBugCat, id2, idxBugCode);
                }
                if (list=="lbp") {
                   id2 = classStats[x][0];
                   label = classStats[x][0];
                   containerId = "packages-"+id1;
                   subContainerId = "package-" + id1 + "-class-" + id2;
-                  p = countBugsClass(version, id1, idxBugPackage, id2, idxBugClass);
+                  p = countBugsClass(selectedVersion, selectedPriority, id1, idxBugPackage, id2, idxBugClass);
                }
 
                var total = p[1]+p[2]+p[3]+p[4];
                if (total > 0) {
                   content += addListItem( 2, containerId, label, total, p, subContainerId,
-                                          "toggleList('"+ list + "', '" + subContainerId + "', '" + version + "', '"+ id1 + "', '"+ id2 + "', '')"
+                                          "toggleList('"+ list + "', '" + subContainerId + "', '"+ id1 + "', '"+ id2 + "', '')"
                                           );
                }
             }
@@ -548,7 +559,7 @@
          }
 
          // generate level 3 list
-        function displayLevel3(list, version, id1, id2) {
+        function displayLevel3(list, id1, id2) {
             var content = "";
             var containerId = "";
             var subContainerId = "";
@@ -572,20 +583,20 @@
                   label = patterns[x][idxPatternDescr];
                   containerId = "patterns-"+id1;
                   subContainerId = "cat-" + id1 + "-code-" + id2 + "-pattern-" + id3;
-                  p = countBugsPattern(version, id1, idxBugCat, id2, idxBugCode, id3, idxBugPattern);
+                  p = countBugsPattern(selectedVersion, selectedPriority, id1, idxBugCat, id2, idxBugCode, id3, idxBugPattern);
                }
                if (list=="lbp") {
                   id3 = patterns[x][idxPatternKey];;
                   label = patterns[x][idxPatternDescr];
                   containerId = "classpatterns-"+id1;
                   subContainerId = "package-" + id1 + "-class-" + id2 + "-pattern-" + id3;
-                  p = countBugsClassPattern(version, id2, idxBugClass, id3, idxBugPattern);
+                  p = countBugsClassPattern(selectedVersion, selectedPriority, id2, idxBugClass, id3, idxBugPattern);
                }
 
                var total = p[1]+p[2]+p[3]+p[4];
                if (total > 0) {
                   content += addListItem( 3, containerId, label, total, p, subContainerId,
-                                          "toggleList('" + list + "', '" + subContainerId + "', '" + version + "', '"+ id1 + "', '"+ id2 + "', '"+ id3 + "')"
+                                          "toggleList('" + list + "', '" + subContainerId + "', '"+ id1 + "', '"+ id2 + "', '"+ id3 + "')"
                                           );
                }
             }
@@ -593,7 +604,7 @@
          }
 
          // generate level 4 list
-        function displayLevel4(list, version, id1, id2, id3) {
+        function displayLevel4(list, id1, id2, id3) {
             var content = "";
             var bug = "";
             var bugP = 0;
@@ -606,15 +617,19 @@
                bug = bugs[x];
                if (list=="lbc") {
                   if ( bug[1]!=id1 || bug[2]!=id2 || bug[3]!=id3 ) continue;
-                  if ( version!=-1
-                     && version!=bug[5]) continue;
+                  if ( selectedVersion!=-1
+                     && selectedVersion!=bug[5]) continue;
+                  if ( selectedPriority!=4
+                     && selectedPriority<bug[4]) continue;
                
                   subContainerId = "cat-" + id1 + "-code-" + id2 + "-pattern-" + id3 + "-bug-" + bug[0];
                }
                if (list=="lbp") {
                   if ( bug[7]!=id1 || bug[6]!=id2 || bug[3]!=id3 ) continue;
-                  if ( version!=-1
-                     && version!=bug[5]) continue;
+                  if ( selectedVersion!=-1
+                     && selectedVersion!=bug[5]) continue;
+                  if ( selectedPriority!=4
+                     && selectedPriority<bug[4]) continue;
                
                   subContainerId = "package-" + id1 + "-class-" + id2 + "-pattern-" + id3 + "-bug-" + bug[0];
                }
@@ -643,7 +658,16 @@
             content += ">";
             content += "<strong>"+label+"</strong>";
             content += " "+total+" bugs";
-            content += " <em>("+p[1]+"/"+p[2]+"/"+p[3]+"/"+p[4]+")</em>";
+            if (selectedPriority>1)
+               content += " <em>("+p[1];
+            if (selectedPriority>=2)
+               content += "/"+p[2];
+            if (selectedPriority>=3)
+               content += "/"+p[3];
+            if (selectedPriority>=4)
+               content += "/"+p[4];
+            if (selectedPriority>1)
+               content += ")</em>";
             content += "</a>";
             content += "</div>";
             content += "<div class='bugList-level"+level+"-inner' id='"+subId+"' style='display:none;'>Loading...</div>";
@@ -651,7 +675,7 @@
             return content;
          }
 
-         function addBug(level, id, label, p, version, subId, onclick) {
+         function addBug( level, id, label, p, version, subId, onclick) {
             var content = "";
 
             content += "<div class='bugList-level" + level + "' id='" + id + "'>";
@@ -674,35 +698,35 @@
             return content;
          }
 
-         function countBugsVersion(version) {
-            return countBugs(version, "", -1, "", -1, "", -1, "", -1, "", -1);
+         function countBugsVersion(version, priority) {
+            return countBugs(version, priority, "", -1, "", -1, "", -1, "", -1, "", -1);
          }
 
-         function countBugsCat(version, cat, idxCat) {
-            return countBugs(version, cat, idxCat, "", -1, "", -1, "", -1, "", -1);
+         function countBugsCat(version, priority, cat, idxCat) {
+            return countBugs(version, priority, cat, idxCat, "", -1, "", -1, "", -1, "", -1);
          }
 
-         function countBugsPackage(version, packageId, idxPackage) {
-            return countBugs(version, "", -1, "", -1, "", -1, packageId, idxPackage, "", -1);
+         function countBugsPackage(version, priority, packageId, idxPackage) {
+            return countBugs(version, priority, "", -1, "", -1, "", -1, packageId, idxPackage, "", -1);
          }
 
-         function countBugsCode(version, cat, idxCat, code, idxCode) {
-            return countBugs(version, cat, idxCat, code, idxCode, "", -1, "", -1, "", -1);
+         function countBugsCode(version, priority, cat, idxCat, code, idxCode) {
+            return countBugs(version, priority, cat, idxCat, code, idxCode, "", -1, "", -1, "", -1);
          }
 
-         function countBugsPattern(version, cat, idxCat, code, idxCode, packageId, idxPattern) {
-            return countBugs(version, cat, idxCat, code, idxCode, packageId, idxPattern, "", -1, "", -1);
+         function countBugsPattern(version, priority, cat, idxCat, code, idxCode, packageId, idxPattern) {
+            return countBugs(version, priority, cat, idxCat, code, idxCode, packageId, idxPattern, "", -1, "", -1);
          }
 
-         function countBugsClass(version, id1, idxBugPackage, id2, idxBugClass) {
-            return countBugs(version, "", -1, "", -1, "", -1, id1, idxBugPackage, id2, idxBugClass);
+         function countBugsClass(version, priority, id1, idxBugPackage, id2, idxBugClass) {
+            return countBugs(version, priority, "", -1, "", -1, "", -1, id1, idxBugPackage, id2, idxBugClass);
          }
 
-         function countBugsClassPattern(version, id2, idxBugClass, id3, idxBugPattern) {
-            return countBugs(version, "", -1, "", -1, id3, idxBugPattern, "", -1, id2, idxBugClass);
+         function countBugsClassPattern(version, priority, id2, idxBugClass, id3, idxBugPattern) {
+            return countBugs(version, priority, "", -1, "", -1, id3, idxBugPattern, "", -1, id2, idxBugClass);
          }
 
-         function countBugs(version, cat, idxCat, code, idxCode, pattern, idxPattern, packageId, idxPackage, classId, idxClass) {
+         function countBugs(version, priority, cat, idxCat, code, idxCode, pattern, idxPattern, packageId, idxPackage, classId, idxClass) {
             var count = [0,0,0,0,0];
             var last=1000000;
             for (var x=0; x<bugs.length-1; x++) {
@@ -714,6 +738,7 @@
                var bugPattern = bug[idxPattern];
 
                if (     (version==-1    || version==bug[5])
+                     && (priority==4    || priority>=bug[4])
                      && (idxCat==-1     || bug[idxCat]==cat)
                      && (idxCode==-1    || bug[idxCode]==code)
                      && (idxPattern==-1 || bug[idxPattern]==pattern)
@@ -938,6 +963,9 @@
                   <select name='versions' onchange='filter()'>
                      <option value="loading">Loading filter...</option>
                   </select>
+                  <select name='priorities' onchange='filter()'>
+                     <option value="loading">Loading filter...</option>
+                  </select>
                </div>
             </form>
          </div>
@@ -1057,4 +1085,6 @@
 </html>
 </xsl:template>
 
+
 </xsl:transform>
+
