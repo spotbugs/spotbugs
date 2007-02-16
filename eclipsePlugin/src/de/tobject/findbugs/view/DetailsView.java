@@ -273,7 +273,6 @@ public class DetailsView extends ViewPart {
      */
     public static void showMarker(IMarker marker, boolean focus) {
         // Obtain the current workbench page, and show the details view
-    	System.out.println("Showing marker");
         IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
         if (pages.length > 0) {
             try {

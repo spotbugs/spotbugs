@@ -81,7 +81,6 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 		IAction callerAction,
 		IEditorPart targetEditor) {
 		Control control;
-		System.out.println("Setting active editor...");
 		// See if we're already listenting to an editor; if so, stop listening
 		if (editor != null) {
 			if (ruler != null) {
@@ -186,7 +185,6 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 	 */
 	public void update() {
 		if (markers.size() > 0) {
-			System.out.println("Updating...");
 			IMarker marker = markers.get(0);
 			UserAnnotationsView.showMarker(marker, false);
 			DetailsView.showMarker(marker, true);

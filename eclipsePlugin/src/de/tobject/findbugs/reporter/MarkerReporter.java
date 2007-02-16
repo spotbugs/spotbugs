@@ -110,9 +110,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 			marker.setAttribute(FindBugsMarker.UNIQUE_ID, uniqueId);
 		}
 		BugTreeView theView = BugTreeView.getBugTreeView();
-		if(theView == null)
-			System.out.println("BTV null");
-		else
+		if(theView != null)
 			theView.addMarker(project, marker);
 	}
 }
