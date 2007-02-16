@@ -1252,11 +1252,12 @@ public class ClassContext {
                         if (ins instanceof InvokeInstruction) {
                             InvokeInstruction inv = (InvokeInstruction) ins;
                             String className = inv.getClassName(cpg);
-                            if (thisClassName.equals(className)) {
-                                String methodKey = inv.getMethodName(cpg) + inv.getSignature(cpg);
-                                Method method2 = map.get(methodKey);
-                                if (method2 != null) result.add(method2);
-                            }
+                            if (!thisClassName.equals(className)) continue;
+                            String signature = inv.getSignature(cpg);
+                            if (signature.indexOf('L') < 0 && signature.indexOf('[') < 0) continue;
+                            String methodKey = inv.getMethodName(cpg) + signature;
+                            Method method2 = map.get(methodKey);
+                            if (method2 != null) result.add(method2);
                         }
                     }
                 } catch (CFGBuilderException e) {
