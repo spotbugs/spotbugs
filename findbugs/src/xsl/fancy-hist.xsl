@@ -236,11 +236,13 @@
          // display filter
          function loadFilter() {
             var versionsBox = document.findbugsForm.versions.options;
-            for (x=0; x<versions.length; x++) {
-               versionsBox[x+1] = new Option(" Bugs at release: "+versions[x][1], versions[x][0]);
-            }
             versionsBox[0] = new Option(" -- All Versions -- ","-1");
             versionsBox.selectedIndex = 0;
+            if (versions.length>=1) {
+               for (x=0; versions.length>1 && x<versions.length; x++) {
+                  versionsBox[x+1] = new Option(" Bugs at release: "+versions[x][1], versions[x][0]);
+               }
+            }
             
             var prioritiesBox = document.findbugsForm.priorities.options;
             prioritiesBox[0] = new Option(" -- All priorities -- ", "4");
