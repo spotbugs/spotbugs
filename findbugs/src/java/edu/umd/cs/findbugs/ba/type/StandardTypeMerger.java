@@ -26,6 +26,7 @@ import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.MissingClassException;
+import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 
 /**
@@ -39,6 +40,7 @@ import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes {
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private ExceptionSetFactory exceptionSetFactory;
+    private static final ObjectType OBJECT_TYPE = ObjectTypeFactory.getInstance("java.lang.Object");
 
 	/**
 	 * Constructor.
@@ -133,24 +135,30 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 		// the result of merging types is the "first common superclass".
 		// Interfaces are NOT considered!
 		// This will use the Repository to look up classes.
-		try {
+        if (aRef.equals(bRef)) return aRef;
+        byte aType = aRef.getType();
+        byte bType = bRef.getType();
+        try {
 			// Special case: ExceptionObjectTypes.
 			// We want to preserve the ExceptionSets associated,
 			// in order to track the exact set of exceptions
-			if (isObjectType(aRef.getType()) && isObjectType(bRef.getType()) &&
-			        (aRef.getType() == T_EXCEPTION || bRef.getType() == T_EXCEPTION)) {
+			if (isObjectType(aType) && isObjectType(bType) &&
+			        (aType == T_EXCEPTION || bType == T_EXCEPTION || aRef.isAssignmentCompatibleWith(ObjectType.THROWABLE) && bRef.isAssignmentCompatibleWith(ObjectType.THROWABLE) )
+                    ) {
 				ExceptionSet union = exceptionSetFactory.createExceptionSet();
-
+				if (aType == T_OBJECT && aRef.getSignature().equals("Ljava/lang/Throwable;")) return aRef;
+                if (bType == T_OBJECT && bRef.getSignature().equals("Ljava/lang/Throwable;")) return bRef;
+                
 				updateExceptionSet(union, (ObjectType) aRef);
 				updateExceptionSet(union, (ObjectType) bRef);
 
 				return ExceptionObjectType.fromExceptionSet(union);
 			}
-
+            
 			return aRef.getFirstCommonSuperclass(bRef);
 		} catch (ClassNotFoundException e) {
 			lookupFailureCallback.reportMissingClass(e);
-			throw new MissingClassException(e);
+			return ObjectType.OBJECT;
 		}
 	}
 
