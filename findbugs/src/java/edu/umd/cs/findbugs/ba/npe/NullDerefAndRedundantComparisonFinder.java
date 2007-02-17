@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.TigerSubstitutes;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.AssertionMethods;
 import edu.umd.cs.findbugs.ba.BasicBlock;
@@ -60,6 +61,7 @@ import edu.umd.cs.findbugs.ba.vna.AvailableLoad;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 
 /**
  * A user-friendly front end for finding null pointer dereferences
@@ -120,7 +122,8 @@ public class NullDerefAndRedundantComparisonFinder {
 		this.assertionMethods = classContext.getAssertionMethods();
 	}
 	
-	public void execute() throws DataflowAnalysisException, CFGBuilderException {
+	public void execute() {
+        try {
 		// Do the null-value analysis
 		this.invDataflow = classContext.getIsNullValueDataflow(method);
 		this.vnaDataflow = classContext.getValueNumberDataflow(method);
@@ -128,7 +131,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			if (DEBUG_DEREFS) {
 				System.out.println(
 						"Checking for guaranteed derefs in " +
-						classContext.getCFG(method).getMethodName());
+						method.getName());
 			}
 			this.uvdDataflow = classContext.getUnconditionalValueDerefDataflow(method);
 		}
@@ -140,6 +143,10 @@ public class NullDerefAndRedundantComparisonFinder {
 			examineNullValues();
 		}
 		examineRedundantBranches();
+        }  catch (CheckedAnalysisException e) {
+            AnalysisContext.logError("Error while for guaranteed derefs in " +
+                    method.getName(), e);
+        }
 
 	}
 
