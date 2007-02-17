@@ -736,11 +736,12 @@ public class FindNullDeref implements Detector,
                 int priority = definitelyNull ? HIGH_PRIORITY : NORMAL_PRIORITY;
                 if (caught)
                     priority++;
+                String description = definitelyNull ? "INT_NULL_ARG" : "INT_MAYBE_NULL_ARG";
                 BugInstance warning = new BugInstance(this,
                         "NP_NONNULL_PARAM_VIOLATION", priority)
                         .addClassAndMethod(methodGen, sourceFile).addMethod(m)
                         .describe("METHOD_CALLED").addInt(i).describe(
-                                "INT_NONNULL_PARAM").addOptionalAnnotation(variableAnnotation).addSourceLine(
+                                description).addOptionalAnnotation(variableAnnotation).addSourceLine(
                                 classContext, methodGen, sourceFile,
                                 location.getHandle());
 
@@ -1248,7 +1249,7 @@ public class FindNullDeref implements Detector,
             bugInstance.addMethod(invokedMethod).describe("METHOD_CALLED").addInt(parameterNumber).describe(
             "INT_NONNULL_PARAM");
         if (storedField!= null)
-            bugInstance.addField(storedField);
+            bugInstance.addField(storedField).describe("FIELD_STORED");
         bugInstance.add(variableAnnotation);
         for (Location loc : derefLocationSet)
             bugInstance.addSourceLine(classContext, method, loc).describe(getDescription(loc, refValue));
