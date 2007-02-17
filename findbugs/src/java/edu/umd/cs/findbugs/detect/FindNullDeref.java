@@ -192,8 +192,9 @@ public class FindNullDeref implements Detector,
         }
     }
 
-    private void analyzeMethod(ClassContext classContext, Method method)
-            throws CFGBuilderException, DataflowAnalysisException {
+    private void analyzeMethod(ClassContext classContext, Method method) throws DataflowAnalysisException, CFGBuilderException
+
+            {
         if (DEBUG || DEBUG_NULLARG)
             System.out.println("Pre FND ");
 
@@ -301,8 +302,8 @@ public class FindNullDeref implements Detector,
         return NullnessAnnotation.UNKNOWN_NULLNESS;
     }
 
-    private void checkCallSitesAndReturnInstructions()
-            throws CFGBuilderException, DataflowAnalysisException {
+    private void checkCallSitesAndReturnInstructions() {
+        try {
         ConstantPoolGen cpg = classContext.getConstantPoolGen();
         TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 
@@ -327,6 +328,9 @@ public class FindNullDeref implements Detector,
                 bugReporter.reportMissingClass(e);
             }
         }
+        } catch (CheckedAnalysisException e) {
+           AnalysisContext.logError("error:", e);
+        } 
     }
 
     private void examineCallSite(Location location, ConstantPoolGen cpg,

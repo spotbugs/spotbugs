@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.ba.deref.UnconditionalValueDerefSet;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 import edu.umd.cs.findbugs.ba.vna.ValueNumberDataflow;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 
 /**
  * Build database of unconditionally dereferenced parameters.
@@ -131,12 +132,7 @@ public class BuildUnconditionalParamDerefDatabase {
 			if (DEBUG) {
 				System.out.println("Unconditional deref: " + xmethod + "=" + property);
 			}
-		} catch (CFGBuilderException e) {
-            XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-            
-			AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
-					"Error analyzing " + xmethod + " for unconditional deref training", e);
-		} catch (DataflowAnalysisException e) {
+		} catch (CheckedAnalysisException e) {
             XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
                AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
 					"Error analyzing " + xmethod + " for unconditional deref training", e);
