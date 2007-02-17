@@ -476,7 +476,8 @@ public class FindBugsTask extends Task {
 	 * Set name of output file.
 	 */
 	public void setOutputFile(String outputFileName) {
-		this.outputFileName = outputFileName;
+		if (outputFileName != null && outputFileName.length() > 0)
+            this.outputFileName = outputFileName;
 	}
 
         /**
