@@ -431,11 +431,12 @@ These options are only accepted by the Text User Interface.
     <ulink url="http://www.w3.org/TR/xslt">XSLT</ulink>
     stylesheet to generate the HTML: you can find this file in <filename>findbugs.jar</filename>,
     or in the &FindBugs; source or binary distributions.  Variants of this option include
-	<command>-html:plain.xsl</command> and <command>-html:fancy.xsl</command>.
+	<command>-html:plain.xsl</command>, <command>-html:fancy.xsl</command> and <command>-html:fancy-hist.xsl</command>.
 	The <filename>plain.xsl</filename> stylesheet does not use Javascript or DOM,
 	and may work better with older web browsers, or for printing.  The <filename>fancy.xsl</filename>
-	stylesheet makes extensive use of DOM and Javascript for navigation and CSS for
-	visual presentation.
+	stylesheet uses DOM and Javascript for navigation and CSS for
+	visual presentation. The <command>fancy-hist.xsl</command> an evolution of <command>fancy.xsl</command> stylesheet.
+	It makes an extensive use of DOM and Javascript for dynamically filtering the lists of bugs.
 	</para>		
 		
 	<para>
@@ -1140,9 +1141,8 @@ using the &FindBugs; task.
        <para>
        Optional attribute.
       It specifies the stylesheet to use to generate html output when the output is set to html.
-      Stylesheets included in the FindBugs distribution include default.xsl,     fancy.xsl,      plain.xsl, and      summary.xsl.
-       The default value, if no stylesheet attribute
-      is provided, is default.xsl.
+      Stylesheets included in the FindBugs distribution include default.xsl, fancy.xsl, fancy-hist.xsl, plain.xsl, and summary.xsl.
+       The default value, if no stylesheet attribute is provided, is default.xsl.
       
        </para>
     </listitem>
@@ -2773,7 +2773,7 @@ row for the entire project, and one row for each package or class that contains 
 							or default.xsl if no stylesheet is specified.
 						</para>
 						<para>
-							You may specify plain.xsl, default.xsl, fancy.xsl,
+							You may specify plain.xsl, default.xsl, fancy.xsl, fancy-hist.xsl,
 							or your own XSL stylesheet.
 							Despite the name of this option, you may specify
 							a stylesheet that emits something other than html.
@@ -2858,6 +2858,8 @@ a table header.</para>
 	
 	<sect1 id="examples">
 		<title>Examples</title>
+<sect2 id="unixscriptsexemples">
+   <title>Mining history using proveded shell scrips</title>
 <para>In all of the following, the commands are given in a directory that contains
 directories jdk1.6.0-b12, jdk1.6.0-b13, ..., jdk1.6.0-b60.</para>
 
@@ -2997,6 +2999,7 @@ seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active
 43	jdk1.6.0-b60	"Thu Nov 10 01:54:18 EST 2005"	16235	972346	0	0	0	0	1398	285	1398
 44	jdk1.6.0-b61	"Thu Nov 17 01:58:42 EST 2005"	16202	971134	2	0	4	0	1394	285	1396
 </screen>
+</sect2>
 
 <sect2 id="incrementalhistory">
 	<title>Incremental history maintenance</title>
@@ -3011,6 +3014,153 @@ computeBugHistory -output db.xml db.xml jdk1.6.0-b61/jre/lib/rt.xml
 		
 			</sect1>
 	
+         <sect1 id="antexemple">
+            <title>Ant exemple</title>
+<para>
+Here is a complete ant script exemple for both running findbugs and generating an HTML report of bugs history using fancy-hist.xsl.
+</para>
+<screen>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project basedir="." default="findbugs" name="findbugs"&gt;
+
+   &lt;property name="findbugs.home" value="d:/dev/findbugs" /&gt;
+   &lt;property name="jvmargs" value="-server -Xss1m -Xmx800m -Duser.language=en -Duser.region=EN -Dfindbugs.home=${findbugs.home}" /&gt;
+
+
+   &lt;!-- findbugs task definition --&gt;
+   &lt;path id="findbugs.lib"&gt;
+      &lt;fileset dir="${findbugs.home}/lib"&gt;
+         &lt;include name="findbugs-ant.jar"/&gt;
+      &lt;/fileset&gt;
+   &lt;/path&gt;
+   &lt;taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"&gt;
+      &lt;classpath refid="findbugs.lib" /&gt;
+   &lt;/taskdef&gt;
+
+   &lt;!-- run findbugs against --&gt;
+   &lt;target name="findbugs"&gt;
+
+      &lt;!-- use current date &amp; time as release name --&gt;
+      &lt;tstamp&gt;
+         &lt;format property="release" pattern="yyyy-MM-dd_HH.mm.ss"/&gt;
+      &lt;/tstamp&gt;
+
+      &lt;mkdir dir="temp" /&gt;
+
+      &lt;antcall target="analyze" /&gt;
+      &lt;antcall target="mine" /&gt;
+   &lt;/target&gt;
+
+
+   &lt;!-- analyze task --&gt;
+   &lt;target name="analyze"&gt;
+      &lt;!-- run findbugs against itself --&gt;
+      &lt;findbugs home="${findbugs.home}"
+                output="xml:withMessages"
+                timeout="90000000"
+                reportLevel="experimental"
+                workHard="true"
+                effort="max"
+                adjustExperimental="true"
+                jvmargs="${jvmargs}"
+                failOnError="true"
+                outputFile="temp/findbugs-${release}.xml"
+                debug="false"
+                &gt;
+         &lt;class location="${findbugs.home}/lib/findbugs-ant.jar" /&gt;
+         &lt;class location="${findbugs.home}/lib/findbugs.jar" /&gt;
+         &lt;class location="${findbugs.home}/lib/findbugsGUI.jar" /&gt;
+         &lt;class location="${findbugs.home}/plugin/coreplugin.jar" /&gt;
+         &lt;auxClasspath&gt;
+            &lt;fileset file="${findbugs.home}/lib/AppleJavaExtensions.jar"/&gt;
+            &lt;fileset file="${findbugs.home}/lib/bcel.jar"/&gt;
+            &lt;fileset file="${findbugs.home}/lib/dom4j-full.jar"/&gt;
+            &lt;fileset file="${findbugs.home}/lib/junit.jar"/&gt;
+            &lt;fileset file="${ant.home}/lib/ant.jar"/&gt;
+         &lt;/auxClasspath&gt;
+      &lt;/findbugs&gt;
+
+      &lt;!-- generate a non historized report --&gt;
+      &lt;xslt destdir="."
+         in="temp/findbugs-${release}.xml"
+         out="findbugs-${release}.html"
+         style="./fancy.xsl"
+         /&gt;
+   &lt;/target&gt;
+
+   &lt;target name="mine"&gt;
+
+      &lt;!-- Set release info to the latest analysis --&gt;
+      &lt;java classname="edu.umd.cs.findbugs.workflow.SetBugDatabaseInfo" fork="true"&gt;
+         &lt;jvmarg line="${jvmargs}"/&gt;
+         &lt;arg line="-withMessages -name ${release} temp/findbugs-${release}.xml temp/findbugs-${release}-rel.xml"/&gt;
+         &lt;classpath&gt;
+            &lt;pathelement path="${findbugs.home}/lib/findbugs.jar"/&gt;
+         &lt;/classpath&gt;
+      &lt;/java&gt;
+
+      &lt;!-- Checking if history file already exists (findbugs-hist.xml) --&gt;
+      &lt;condition property="mining.historyfile.available"&gt;
+         &lt;available file="findbugs-hist.xml"/&gt;
+      &lt;/condition&gt;
+      &lt;condition property="mining.historyfile.notavailable"&gt;
+         &lt;not&gt;
+            &lt;available file="findbugs-hist.xml"/&gt;
+         &lt;/not&gt;
+      &lt;/condition&gt;
+
+      &lt;!-- this target is executed if the history file do not exist (first run) --&gt;
+      &lt;antcall target="history-init"&gt;
+        &lt;param name="data.file"           value="temp/findbugs-${release}-rel.xml" /&gt;
+        &lt;param name="hist.file"           value="findbugs-hist.xml" /&gt;
+      &lt;/antcall&gt;
+      &lt;!-- else this one is executed --&gt;
+      &lt;antcall target="history"&gt;
+        &lt;param name="data.file"           value="temp/findbugs-${release}-rel.xml" /&gt;
+        &lt;param name="hist.file"           value="findbugs-hist.xml" /&gt;
+        &lt;param name="hist.summary.file"   value="findbugs-hist.txt" /&gt;
+      &lt;/antcall&gt;
+   &lt;/target&gt;
+
+   &lt;!-- Initializing history file --&gt;
+   &lt;target name="history-init" if="mining.historyfile.notavailable"&gt;
+      &lt;copy file="${data.file}" tofile="${hist.file}" /&gt;
+   &lt;/target&gt;
+
+   &lt;!-- Computing bug history --&gt;
+   &lt;target name="history" if="mining.historyfile.available"&gt;
+      &lt;!-- Merging ${data.file} into ${hist.file} --&gt;
+      &lt;java classname="edu.umd.cs.findbugs.workflow.Update" fork="true"&gt;
+         &lt;jvmarg line="${jvmargs}"/&gt;
+         &lt;arg line="-withMessages -output ${hist.file} ${hist.file} ${data.file}"/&gt;
+         &lt;classpath&gt;
+            &lt;pathelement path="${findbugs.home}/lib/findbugs.jar"/&gt;
+         &lt;/classpath&gt;
+      &lt;/java&gt;
+
+      &lt;!-- Compute history into ${hist.summary.file} --&gt;
+      &lt;java classname="edu.umd.cs.findbugs.workflow.MineBugHistory" fork="true"&gt;
+         &lt;jvmarg line="${jvmargs}"/&gt;
+         &lt;arg line="-formatDates -noTabs ${hist.file} ${hist.summary.file}"/&gt;
+         &lt;classpath&gt;
+            &lt;pathelement path="${findbugs.home}/lib/findbugs.jar"/&gt;
+         &lt;/classpath&gt;
+      &lt;/java&gt;
+
+      &lt;!-- Generate HTML report --&gt;
+      &lt;xslt destdir="."
+         in="${hist.file}"
+         out="${hist.file}.html"
+         &gt;
+         &lt;style&gt;
+            &lt;zipentry zipfile='d:/dev/findbugs/lib/findbugs.jar' name='fancy-hist.xsl' /&gt;
+         &lt;/style&gt;
+      &lt;/xslt&gt;
+   &lt;/target&gt;
+
+&lt;/project&gt;
+</screen>
+         </sect1>
 </chapter>
 
 
@@ -3150,8 +3300,8 @@ in the Ant task.</para>
 </para>
 
 <para>
-	Etienne Giraudy contributed the <filename>fancy.xsl</filename>
-	stylesheet, and made improvements to the <command>-xml:withMessages</command>
+	Etienne Giraudy contributed the <filename>fancy.xsl</filename> and  <filename>fancy-hist.xsl</filename>
+	stylesheets, and made improvements to the <command>-xml:withMessages</command>
 	option.
 </para>
 	
