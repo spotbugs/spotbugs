@@ -1267,6 +1267,7 @@ public class ClassContext {
                 return result;
             }
         });
+        assert methodList.size() == methodsInCallOrder.size();
         return methodsInCallOrder;
     }
 
