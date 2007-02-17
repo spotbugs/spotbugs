@@ -230,7 +230,7 @@ public  class XFactory {
 		return f;
 	}
 	
-    public static boolean DEBUG_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
+    public final static boolean DEBUG_CIRCULARITY = SystemProperties.getBoolean("circularity.debug");
 	/**
 	 * @param f
 	 * @return
