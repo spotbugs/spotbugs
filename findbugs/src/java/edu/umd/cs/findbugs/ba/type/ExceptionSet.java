@@ -326,6 +326,9 @@ public class ExceptionSet implements Serializable {
 		buf.append('}');
 		return buf.toString();
 	}
+    public int size() {
+        return size;
+    }
 }
 
 // vim:ts=4
