@@ -39,6 +39,7 @@ import org.apache.bcel.generic.MethodGen;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
@@ -269,7 +270,7 @@ public  class XFactory {
         }
     }
 
-    private static void fail(String s, JavaClass jClass, JavaClass superClass) {
+    private static void fail(String s, @CheckForNull JavaClass jClass, @CheckForNull JavaClass superClass) {
     	 AnalysisContext.logError(s);
         if (DEBUG_CIRCULARITY) {
             System.out.println(s);
