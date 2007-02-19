@@ -428,7 +428,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 									fieldWarningList.add(new BugInstance(this,
 											"SE_BAD_FIELD_STORE", priority).addClass(
 													getThisClass().getClassName()).addField(f)
-													.addClass(classStored).addSourceLine(this));
+													.addType(genSig).describe("TYPE_FOUND").addSourceLine(this));
 								}
 							}
 						} catch (Exception e) {
