@@ -61,7 +61,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisitor<IsNullValue, IsNullValueFrame> {
 
 	private static final boolean NO_ASSERT_HACK = SystemProperties.getBoolean("inva.noAssertHack");
-
+    private static final boolean MODEL_NONNULL_RETURN = SystemProperties.getBoolean("fnd.modelNonnullReturn",true);
 	private AssertionMethods assertionMethods;
 	private ValueNumberDataflow vnaDataflow;
 	private final boolean trackValueNumbers;
@@ -141,7 +141,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 
 		boolean isReadLine =  methodName.equals("readLine");
 		// Determine if we are going to model the return value of this call.
-		boolean modelCallReturnValue = returnType instanceof ReferenceType;
+		boolean modelCallReturnValue = MODEL_NONNULL_RETURN && returnType instanceof ReferenceType;
 
 			
 		if( !modelCallReturnValue) {
