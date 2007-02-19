@@ -43,7 +43,7 @@ public class DefectDensity {
 
 	public static double density(int bugs, int ncss) {
 		if (ncss == 0) return Double.NaN;
-		int bugsPer10KNCSS = 10000*bugs/ncss;
+		long bugsPer10KNCSS = Math.round(10000.0*bugs/ncss);
 		return bugsPer10KNCSS/10.0;
 	}
 	public static void main(String args[]) throws Exception {
