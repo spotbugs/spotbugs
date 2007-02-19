@@ -19,16 +19,17 @@
 
 package de.tobject.findbugs.view;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.HashMap;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.TextPresentation;
+import org.eclipse.jface.text.DefaultInformationControl.IInformationPresenter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
@@ -171,7 +172,17 @@ public class DetailsView extends ViewPart {
                     updateDisplay();
                 }
             });
-            presenter = new HTMLTextPresenter(false);
+         
+            try {
+                Class presenterClass = Class.forName("org.eclipse.jdt.internal.ui.text.HTMLTextPresenter.HTMLTextPresenter");
+                presenter = (IInformationPresenter) presenterClass.getConstructor(Boolean.TYPE).newInstance(false);
+   
+
+            } catch (Exception e2) {
+                FindbugsPlugin.getDefault().logException(
+                        e2, "Could not create HTMLTextPresenter");
+            }
+           
         }
         sash.setWeights(new int[] { 1, 2 });
         // Add selection listener to detect click in problems view or in tree

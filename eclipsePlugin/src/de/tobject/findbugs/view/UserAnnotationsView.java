@@ -24,7 +24,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.viewers.ISelection;
