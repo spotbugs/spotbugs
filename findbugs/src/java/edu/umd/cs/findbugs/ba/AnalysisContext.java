@@ -69,7 +69,8 @@ import edu.umd.cs.findbugs.util.MapCache;
 @NotThreadSafe
 public abstract class AnalysisContext {
 	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.analysiscontext.debug");
-	
+    public static final boolean IGNORE_BUILTIN_MODELS = SystemProperties.getBoolean("findbugs.ignoreBuiltinModels");
+    
 	public static final String DEFAULT_NONNULL_PARAM_DATABASE_FILENAME = "nonnullParam.db";
   
     
@@ -388,6 +389,7 @@ public abstract class AnalysisContext {
 	 * unconditional dereference parameters.
 	 */
 	public final void loadDefaultInterproceduralDatabases() {
+        if (IGNORE_BUILTIN_MODELS) return;
 		loadPropertyDatabaseFromResource(
 				getUnconditionalDerefParamDatabase(),
 				UNCONDITIONAL_DEREF_DB_RESOURCE,
