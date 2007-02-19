@@ -1251,6 +1251,8 @@ public class FindNullDeref implements Detector,
         if (storedField!= null)
             bugInstance.addField(storedField).describe("FIELD_STORED");
         bugInstance.add(variableAnnotation);
+        if (variableAnnotation instanceof FieldAnnotation)
+            bugInstance.describe("FIELD_CONTAINS_VALUE");
         for (Location loc : derefLocationSet)
             bugInstance.addSourceLine(classContext, method, loc).describe(getDescription(loc, refValue));
 
