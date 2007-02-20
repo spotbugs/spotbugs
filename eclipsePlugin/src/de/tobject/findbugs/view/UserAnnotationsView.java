@@ -98,12 +98,6 @@ public class UserAnnotationsView extends ViewPart {
 	
 	private Composite visibilityTester;
 
-	// HTML presentation classes that don't depend upon Browser
-	@CheckForNull private StyledText control;
-	private DefaultInformationControl.IInformationPresenter presenter;
-	private TextPresentation presentation = new TextPresentation();
-
-	@CheckForNull private Browser browser;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -169,27 +163,7 @@ public class UserAnnotationsView extends ViewPart {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IWorkbenchPart#setFocus()
-	 */
-	@Override
-	public void setFocus() {
-		//annotationList.setFocus();
-	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IWorkbenchPart#dispose()
-	 */
-	@Override
-	public void dispose() {
-		//annotationList.dispose();
-		if (browser != null) browser.dispose();
-		else if (control != null) control.dispose();
-	}
 
 	/**
 	 * Updates the control using the current window size and the contents of the
@@ -306,5 +280,13 @@ public class UserAnnotationsView extends ViewPart {
 	public static void setuserAnnotationsView(UserAnnotationsView view) {
 		userAnnotationsView = view;
 	}
+
+
+
+    @Override
+    public void setFocus() {
+        designationComboBox.setFocus();
+        
+    }
 
 }

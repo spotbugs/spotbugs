@@ -58,7 +58,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 	public void run(IProgressMonitor monitor) throws CoreException {
 
 		int priority = this.bug.getPriority();
-		String markerName = null;
+		String markerName;
 		switch(priority)
 		{
 			case Detector.HIGH_PRIORITY:
@@ -76,10 +76,12 @@ public class MarkerReporter implements IWorkspaceRunnable {
 			case Detector.IGNORE_PRIORITY:
 				markerName = FindBugsMarker.NAME_IGNORE;
 				break;
+			default:
+			    FindbugsPlugin.getDefault().logError("Bug with unknown priority " + priority);
+            return;
+
 		}
-		IMarker marker = null;
-		try{marker = resource.createMarker(markerName);}
-		catch(NullPointerException e){FindbugsPlugin.getDefault().logException(e, "Failed to determine priority of bug");}
+		IMarker marker = resource.createMarker(markerName);
 		marker.setAttribute(IMarker.LINE_NUMBER, startLine);
 		marker.setAttribute(FindBugsMarker.BUG_LINE_NUMBER, startLine);
 		marker.setAttribute(FindBugsMarker.BUG_TYPE, bug.getType());
