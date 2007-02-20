@@ -36,7 +36,7 @@ public class CheckReturnAnnotationDatabase extends AnnotationDatabase<CheckRetur
 
 	@Override
 	public void loadAuxiliaryAnnotations() {
-        if (AnalysisContext.IGNORE_BUILTIN_MODELS) return;
+        if (IGNORE_BUILTIN_ANNOTATIONS) return;
 		boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 		
 		addMethodAnnotation("java.util.Iterator","hasNext", "()Z", false, CheckReturnValueAnnotation.CHECK_RETURN_VALUE_MEDIUM);

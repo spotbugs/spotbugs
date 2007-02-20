@@ -38,7 +38,8 @@ import edu.umd.cs.findbugs.util.MapCache;
  * @author William Pugh
  */
 public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<AnnotationEnum>> {
-	static final boolean DEBUG = SystemProperties.getBoolean("annotations.debug");;
+	static final boolean DEBUG = SystemProperties.getBoolean("annotations.debug");
+    public static final boolean IGNORE_BUILTIN_ANNOTATIONS = SystemProperties.getBoolean("findbugs.ignoreBuiltinAnnotations");
 
 	/**
 	 * 
