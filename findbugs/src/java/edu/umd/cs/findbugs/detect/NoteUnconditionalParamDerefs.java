@@ -40,7 +40,7 @@ public class NoteUnconditionalParamDerefs extends
 	 * @see edu.umd.cs.findbugs.Detector#report()
 	 */
 	public void report() {
-        if (SystemProperties.getBoolean("findbugs.statistics")) System.out.println(referenceParameters + "/" + nonnullReferenceParameters + " method parameters must be nonnull");
+        if (SystemProperties.getBoolean("findbugs.statistics")) System.err.println(nonnullReferenceParameters  + "/" + referenceParameters + " method parameters must be nonnull");
 	}
 
 }

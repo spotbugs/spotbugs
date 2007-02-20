@@ -40,7 +40,7 @@ public class NoteNonnullReturnValues extends
 	 * @see edu.umd.cs.findbugs.Detector#report()
 	 */
 	public void report() {
-        if (SystemProperties.getBoolean("findbugs.statistics")) System.out.println(returnsNonNull + "/" + returnsReference + " methods return nonnull values");
+        if (SystemProperties.getBoolean("findbugs.statistics")) System.err.println(returnsNonNull + "/" + returnsReference + " methods return nonnull values");
 	}
 
 }
