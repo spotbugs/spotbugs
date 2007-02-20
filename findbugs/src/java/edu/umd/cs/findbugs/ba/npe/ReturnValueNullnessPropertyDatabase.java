@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.npe;
 
+import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase;
 import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
 
@@ -34,11 +35,12 @@ public class ReturnValueNullnessPropertyDatabase extends MethodPropertyDatabase<
 	 */
 
 	@Override
-         protected Boolean decodeProperty(String propStr)
-			throws PropertyDatabaseFormatException {
-			return Boolean.parseBoolean(propStr);
+         protected Boolean decodeProperty(String propStr) {
+			return TigerSubstitutes.parseBoolean(propStr);
 		
 	}
+
+  
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#encodeProperty(Property)
