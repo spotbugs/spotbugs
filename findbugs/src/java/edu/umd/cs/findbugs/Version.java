@@ -34,12 +34,12 @@ public class Version {
 	/**
 	 * Minor version number.
 	 */
-	public static final int MINOR = 1;
+	public static final int MINOR = 2;
 
 	/**
 	 * Patch level.
 	 */
-	public static final int PATCHLEVEL = 4;
+	public static final int PATCHLEVEL = 0;
 
 	/**
 	 * Development version or release candidate?

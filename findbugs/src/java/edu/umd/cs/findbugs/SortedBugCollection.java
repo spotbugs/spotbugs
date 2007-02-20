@@ -60,6 +60,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
@@ -209,10 +210,10 @@ public class SortedBugCollection implements BugCollection {
 
 			
 			XMLReader xr = null;
-            if (false) try { // FIXME: try this in 1.1.4
+            if (true) try { // FIXME: try this in 1.1.4
                 xr = XMLReaderFactory.createXMLReader();
               } catch (SAXException e) {
-                System.err.println(e.getMessage());         
+                AnalysisContext.logError("Couldn't create XMLReaderFactory", e);   
               }
             
             if (xr == null) {
