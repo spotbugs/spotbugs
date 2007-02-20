@@ -101,6 +101,7 @@ public class NewProjectWizard extends FBDialog
 	public NewProjectWizard()
 	{
 		this(null);
+		finishButton.setEnabled(false);
 	}
 	
 	/**
@@ -206,10 +207,18 @@ public class NewProjectWizard extends FBDialog
 		{
 			for (String i : curProject.getFileList()) 
 				analyzeModel.addElement(i);
+			//If the project had no classes in it, disable the finish button until classes are added.
+			if (curProject.getFileList().size()==0)
+				this.finishButton.setEnabled(false);
 			for (String i : curProject.getAuxClasspathEntryList())
 				auxModel.addElement(i);
 			for (String i : curProject.getSourceDirList())
 				sourceModel.addElement(i);
+		}
+		else
+		{
+			//If project is null, disable finish button until classes are added
+			finishButton.setEnabled(false);
 		}
 		
 		//loadPanel(0);
@@ -229,7 +238,7 @@ public class NewProjectWizard extends FBDialog
 	 * @param label TODO
 	 * 
 	 */
-	private JPanel createFilePanel(String label, final JList list, 
+	private JPanel createFilePanel(final String label, final JList list, 
 			final DefaultListModel listModel, final int fileSelectionMode, final FileFilter filter) {
 		JPanel myPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -284,6 +293,9 @@ public class NewProjectWizard extends FBDialog
 						listModel.addElement(selectedFile.getAbsolutePath());	
 					}
 					projectChanged = true;
+					// If this is the primary class directories add button, set it to enable the finish button of the main dialog
+					if (label.equals(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl", "Class archives and directories to analyze:")))
+						finishButton.setEnabled(true);
 				}
 			}
 		});
@@ -295,6 +307,9 @@ public class NewProjectWizard extends FBDialog
 					projectChanged = true;
 				for (Object i : list.getSelectedValues())
 					listModel.removeElement(i);
+				//If this is the primary class directories remove button, set it to disable finish when there are no class files being analyzed
+				if (listModel.size()==0 && label.equals(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl", "Class archives and directories to analyze:")))
+					finishButton.setEnabled(false);
 			}
 		});
 		return myPanel;

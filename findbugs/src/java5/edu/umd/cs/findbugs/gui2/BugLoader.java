@@ -374,7 +374,7 @@ public class BugLoader {
 		new AnalyzingDialog(p,ac,true);
 		
 		if (ac.finished)
-			return loadBugsHelper(update.mergeCollections(current, justAnalyzed, false));
+			return loadBugsHelper(update.mergeCollections(current, justAnalyzed, true));
 		else
 			return null;
 		

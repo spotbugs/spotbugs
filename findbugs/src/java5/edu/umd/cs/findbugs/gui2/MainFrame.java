@@ -778,7 +778,7 @@ public class MainFrame extends FBFrame implements LogSync
 	
 	/**
 	 * Called when use has not previous saved project. Uses save() after finds
-	 * where user want to save file.
+	 * where user want to save file.  Also changes Mainframe title to reflect the name change.
 	 * @return True if successful.
 	 */
 	private boolean projectSaveAs(){
@@ -839,6 +839,9 @@ public class MainFrame extends FBFrame implements LogSync
 		}
 
 		MainFrame.this.addRecentProjectToMenu(xmlFile);
+
+		MainFrame.this.setTitle("FindBugs: " + dir.getName());// I think below is better - Kristin
+//		MainFrame.this.setTitle("FindBugs: " + curProject.getProjectFileName());//This one doesn't work yet- Dan
 
 		return true;
 	}
@@ -1379,6 +1382,7 @@ public class MainFrame extends FBFrame implements LogSync
 					callOnClose();
 				}				
 			});
+			
 			Driver.removeSplashScreen();
 		}
 	}
@@ -1718,9 +1722,8 @@ public class MainFrame extends FBFrame implements LogSync
 			return false;
 		}
 		setProjectChanged(false);
-//		MainFrame.this.setTitle("FindBugs: " + dir.getName()); I think below is better - Kristin
-		MainFrame.this.setTitle("FindBugs: " + curProject.getProjectFileName());		
-		
+		//Moving the title change out of save and into save as only.  It makes no sense to change the title
+		//when we do a regular save, especially since we keep saving as <<untitled>> --Dan
 		return true;
 	}
 	
@@ -1877,7 +1880,7 @@ public class MainFrame extends FBFrame implements LogSync
 		return;
 	}
 	/**
-	 * 
+	 * Redo the analysis
 	 */
 	private void redoAnalysis() {
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);

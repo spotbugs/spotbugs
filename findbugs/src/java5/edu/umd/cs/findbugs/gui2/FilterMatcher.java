@@ -39,6 +39,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 	public static final int FILTER_EXACTLY = 0;
 	public static final int FILTER_AT_OR_AFTER = 1;
 	public static final int FILTER_AT_OR_BEFORE = 2;
+	public static final int FILTER_ALL_BUT = 3;
 	private Sortables filterBy;
 	private String value;
 	private int mode;
@@ -60,7 +61,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		return value;
 	}
 	
-	public FilterMatcher(Sortables filterBy, String value, int mode) //0 = exactly; 1 = at or after; 2 = at or before
+	public FilterMatcher(Sortables filterBy, String value, int mode) //0 = exactly; 1 = at or after; 2 = at or before; 3 = not at
 	{
 		this.filterBy = filterBy;
 		this.value = value;
@@ -103,6 +104,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		case FILTER_EXACTLY: return (ssc.compare(filterBy.getFrom(bugInstance), value) != 0);
 		case FILTER_AT_OR_AFTER: return (ssc.compare(filterBy.getFrom(bugInstance), value) == -1);
 		case FILTER_AT_OR_BEFORE: return (ssc.compare(filterBy.getFrom(bugInstance), value) == 1);
+		case FILTER_ALL_BUT: return (ssc.compare(filterBy.getFrom(bugInstance), value) == 0);
 		default: return true;
 		}
 	}
@@ -115,6 +117,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		case FILTER_EXACTLY: return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " " + edu.umd.cs.findbugs.L10N.getLocalString("mode.equal_to", "equal to") + " " + filterBy.formatValue(value);
 		case FILTER_AT_OR_AFTER: return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " " + edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_after", "at or after") + " " + filterBy.formatValue(value);
 		case FILTER_AT_OR_BEFORE: return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " " + edu.umd.cs.findbugs.L10N.getLocalString("mode.at_or_before", "at or before") + " " + filterBy.formatValue(value);
+		case FILTER_ALL_BUT: return filterBy.toString() + " " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.is", "is") + " " + edu.umd.cs.findbugs.L10N.getLocalString("mode.not_equal_to", "not equal to") + " " + filterBy.formatValue(value);
 		default: throw new RuntimeException();
 		}
 	}

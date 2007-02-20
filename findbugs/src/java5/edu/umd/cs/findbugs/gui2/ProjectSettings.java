@@ -54,6 +54,7 @@ public class ProjectSettings implements Serializable
 	public static ProjectSettings newInstance()
 	{
 		instance = new ProjectSettings();
+		instance.addFilter(new FilterMatcher(Sortables.LASTVERSION, "-1", 3));
 		PreferencesFrame.getInstance().updateFilterPanel();
 		PreferencesFrame.getInstance().clearSuppressions();
 		return instance;
@@ -61,7 +62,7 @@ public class ProjectSettings implements Serializable
 	public static ProjectSettings getInstance()
 	{
 		if (instance == null)
-			instance = new ProjectSettings();
+			instance= new ProjectSettings();
 		return instance;
 	}
 	

@@ -125,7 +125,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 				setSize(300, getHeight());
 				setLocationRelativeTo(MainFrame.getInstance());
 				setResizable(false);
-				setModal(false);
+				setModal(true);//Why was this set to false before?
 				setVisible(true);
 			}
 		});		
