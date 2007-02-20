@@ -75,8 +75,10 @@ public class BuildUnconditionalParamDerefDatabase {
     private void considerMethod(ClassContext classContext, Method method) {
         boolean hasReferenceParameters = false;
         for (Type argument : method.getArgumentTypes())
-        	if (argument instanceof ReferenceType)
+        	if (argument instanceof ReferenceType) {
         		hasReferenceParameters = true;
+                referenceParameters++;
+            }
 
         if (hasReferenceParameters && classContext.getMethodGen(method) != null) {
             if (VERBOSE_DEBUG) System.out.println("Check " + method);
@@ -84,6 +86,9 @@ public class BuildUnconditionalParamDerefDatabase {
         }
     }
 
+    protected int referenceParameters;
+    protected int nonnullReferenceParameters;
+    
 	private void analyzeMethod(ClassContext classContext, Method method) {
 		try {
 			CFG cfg = classContext.getCFG(method);
@@ -125,6 +130,7 @@ public class BuildUnconditionalParamDerefDatabase {
 				ClassContext.dumpDataflowInformation(method, cfg, vnaDataflow, classContext.getIsNullValueDataflow(method), dataflow,  classContext.getTypeDataflow(method));
 			}
 			ParameterNullnessProperty property = new ParameterNullnessProperty();
+            nonnullReferenceParameters += unconditionalDerefSet.cardinality();
 			property.setNonNullParamSet(unconditionalDerefSet);
 			
 			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);

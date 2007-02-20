@@ -82,8 +82,11 @@ public class BuildNonnullReturnDatabase {
             analyzeMethod(classContext, method);
         }
     }
-
+    protected int returnsReference;
+    protected int returnsNonNull;
+    
 	private void analyzeMethod(ClassContext classContext, Method method) {
+        returnsReference++;
 		try {
 			CFG cfg = classContext.getCFG(method);
 
@@ -107,6 +110,7 @@ public class BuildNonnullReturnDatabase {
 				
 			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 			if (guaranteedNonNull) {
+                returnsNonNull++;
                 AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase().setProperty(xmethod, guaranteedNonNull);
                 if (DEBUG) 
                     System.out.println("Unconditional deref: " + xmethod + "=" + guaranteedNonNull);

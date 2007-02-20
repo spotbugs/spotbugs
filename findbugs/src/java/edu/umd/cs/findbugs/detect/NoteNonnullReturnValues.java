@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.InterproceduralFirstPassDetector;
+import edu.umd.cs.findbugs.SystemProperties;
 
 /**
  * As a first scanning pass, make a note of unconditionally dereferenced
@@ -39,6 +40,7 @@ public class NoteNonnullReturnValues extends
 	 * @see edu.umd.cs.findbugs.Detector#report()
 	 */
 	public void report() {
+        if (SystemProperties.getBoolean("findbugs.statistics")) System.out.println(returnsNonNull + "/" + returnsReference + " methods return nonnull values");
 	}
 
 }
