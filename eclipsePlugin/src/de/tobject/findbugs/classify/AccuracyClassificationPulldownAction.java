@@ -122,7 +122,7 @@ public class AccuracyClassificationPulldownAction
 	}
 	
 	private void classifyWarning(BugInstance warning, boolean isBug) {
-		System.out.println("Classifying warning " + warning.getUniqueId());
+		
 		
 		BugProperty isBugProp = warning.lookupProperty(BugProperty.IS_BUG);
 		if (isBugProp != null) {
