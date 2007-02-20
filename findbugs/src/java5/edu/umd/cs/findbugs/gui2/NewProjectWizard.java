@@ -170,6 +170,21 @@ public class NewProjectWizard extends FBDialog
                 }
 
                 Project p = (project == null ? new Project() : project);
+                //First clear p's old files, otherwise we can't remove a file once an analysis has been performed on it	
+
+                int numOldFiles= p.getFileCount();
+                for (int x=0; x< numOldFiles;x++)
+                	p.removeFile(0);	
+                
+                int numOldAuxFiles=p.getNumAuxClasspathEntries();
+                for (int x=0; x< numOldAuxFiles;x++)
+                	p.removeAuxClasspathEntry(0);
+                
+                int numOldSrc=p.getNumSourceDirs();
+                for (int x=0; x< numOldSrc;x++)
+                	p.removeSourceDir(0);
+                
+                //Now that p is cleared, we can add in all the correct files.
                 for (int i = 0; i < analyzeModel.getSize(); i++)
                     p.addFile((String) analyzeModel.get(i));
                 for (int i = 0; i < auxModel.getSize(); i++)
