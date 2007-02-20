@@ -37,6 +37,9 @@ import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -51,8 +54,8 @@ import org.eclipse.jdt.launching.JavaRuntime;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
-import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.reporter.MarkerUtil;
+import de.tobject.findbugs.reporter.Reporter;
 import de.tobject.findbugs.util.Util;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
@@ -305,18 +308,18 @@ public class FindBugsWorker {
      * @throws JavaModelException if the default location is not specified. 
      */
     private IPath getAbsoluteOutputLocation(IPackageFragmentRoot pkgRoot, IClasspathEntry cpe) throws JavaModelException {
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IWorkspaceRoot root = workspace.getRoot();
+       
+      
         IPath outLocation = cpe.getOutputLocation();
         // check if it uses the default location
         IJavaProject proj = pkgRoot.getJavaProject();
         if (outLocation == null) {
             outLocation = proj.getOutputLocation();
         }
-        // remove the project name from the workspace location path
-        outLocation = outLocation.removeFirstSegments(1);
-        // make the outLocation absolute
-        IResource projRes = proj.getResource();
-        outLocation = projRes.getLocation().append(outLocation);
-        return outLocation;
+        IResource resource = root.findMember(outLocation);
+        return resource.getLocation();
     }
 
 	/**
@@ -475,41 +478,38 @@ public class FindBugsWorker {
 	 * @throws CoreException
 	 */
 	private Set<IPath> createOutputLocations() throws CoreException {
-		Set<IPath> set = new HashSet<IPath>();
-		IJavaProject javaProject = JavaCore.create(this.project);
-        // path to the project without project name itself
-		IPath projectLocation = javaProject.getProject().getLocation();
+	    Set<IPath> set = new HashSet<IPath>();
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IWorkspaceRoot root = workspace.getRoot();
+       
+	    IJavaProject javaProject = JavaCore.create(this.project);
+	    // path to the project without project name itself
 
-		if (javaProject.exists() && javaProject.getProject().isOpen()) {
-			IClasspathEntry entries[] = javaProject.getRawClasspath();
-			for (int i = 0; i < entries.length; i++) {
-				IClasspathEntry classpathEntry = entries[i];
-				if (classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
-                    // this location is workspace relative and starts with project dir
-					IPath path = classpathEntry.getOutputLocation();
-					if (path != null) {
-                        if(path.segmentCount() > 0) {
-                            // remove project name, which may differ from project folder
-                            path = path.removeFirstSegments(1);
-                        }
-                        set.add(projectLocation.append(path));
-					}
-				}
-			}
-		}
-		if (true) {
-			// add the default location if not already included
-			IPath def = javaProject.getOutputLocation();
-            if(def.segmentCount() > 0) {
-                // remove project name, which may differ from project folder
-                def = def.removeFirstSegments(1);
-            }
-            def = projectLocation.append(def);
-			if (!set.contains(def)) {
-				set.add(def);
-			}
-		}
-		return set;
+	    if (javaProject.exists() && javaProject.getProject().isOpen()) {
+	        IClasspathEntry entries[] = javaProject.getRawClasspath();
+	        for (int i = 0; i < entries.length; i++) {
+	            IClasspathEntry classpathEntry = entries[i];
+	            IPath path = classpathEntry.getOutputLocation();
+	            if (path != null && classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
+	                // this location is workspace relative and starts with project dir
+	                IResource resource = root.findMember(path);
+	                if (resource != null) {
+	                    set.add(resource.getLocation());
+	                }
+	            }
+	        }
+	    }
+
+	    // add the default location
+	    IPath def = javaProject.getOutputLocation();
+
+	    IResource resource = root.findMember(def);
+	    if (resource != null) {
+	        IPath location = resource.getLocation();
+	        set.add(location);
+	    }
+
+	    return set;
 	}
 
 	/**
