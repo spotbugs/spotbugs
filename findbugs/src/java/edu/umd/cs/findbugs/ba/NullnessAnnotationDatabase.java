@@ -33,6 +33,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 	}
 	@Override
 	public void loadAuxiliaryAnnotations() {
+        if (AnalysisContext.IGNORE_BUILTIN_MODELS) return;
 		boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
 		addDefaultAnnotation(AnnotationDatabase.METHOD, "java.lang.String", NullnessAnnotation.NONNULL);
 		addFieldAnnotation("java.lang.System", "out", "Ljava/io/PrintStream;", true, NullnessAnnotation.NONNULL);
