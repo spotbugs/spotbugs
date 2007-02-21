@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.w3c.dom.Node;
@@ -33,6 +34,10 @@ import org.w3c.dom.NodeList;
  */
 public class TigerSubstitutes {
     
+    @SuppressWarnings("unchecked")
+    public static final <T> List<T> emptyList() {
+         return (List<T>) Collections.EMPTY_LIST;
+     }
    @SuppressWarnings("unchecked")
    public static final <T> Set<T> emptySet() {
         return (Set<T>) Collections.EMPTY_SET;
@@ -95,4 +100,6 @@ public class TigerSubstitutes {
           }
           return buf.toString();
       }
+
+
 }

@@ -504,7 +504,7 @@ public class FindBugs2 implements IFindBugsEngine {
                 return Arrays.asList( classInfo.getReferencedClassDescriptorList());
                 } catch  (CheckedAnalysisException e2) {
                     AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
-                    return Collections.emptyList();
+                    return TigerSubstitutes.emptyList();
                     
                 }
             }});
