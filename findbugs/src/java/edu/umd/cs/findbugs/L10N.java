@@ -69,7 +69,7 @@ public class L10N {
 	private L10N() {
 	}
 
-	private static  String lookup(ResourceBundle b, String key) {
+	private static String lookup(ResourceBundle b, String key) {
 		if (b == null || key == null ) throw new MissingResourceException(null,null,null);
 		
 		return b.getString(key);
@@ -88,7 +88,8 @@ public class L10N {
 					extraProperties.println(key+"="+defaultString);
 					extraProperties.flush();
 				}
-				String en = "Default("+defaultString+")";
+				//String en = "Default("+defaultString+")";
+				String en = defaultString;
 				if (DEBUG) return "TRANSLATE("+en+")";
 				else return en;
 		}

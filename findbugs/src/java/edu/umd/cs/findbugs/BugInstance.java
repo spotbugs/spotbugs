@@ -138,7 +138,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			this.priority = Detector.EXP_PRIORITY;
 	}
 	
-
+	//@Override
 	@Override
 	public Object clone() {
 		BugInstance dup;
@@ -216,6 +216,32 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return priority;
 	}
 
+	/**
+	 * Get a string describing the bug priority and type.
+	 * e.g. "High Priority Correctness"
+	 * @return a string describing the bug priority and type
+	 */
+	public String getPriorityTypeString()
+	{
+		//first, get the priority
+		int value = this.getPriority();
+		String priorityString;
+		if (value == Detector.HIGH_PRIORITY)
+			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_high", "High");
+		else if (value == Detector.NORMAL_PRIORITY)
+			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_normal", "Normal");
+		else if (value == Detector.LOW_PRIORITY)
+			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_low", "Low");
+		else if (value == Detector.EXP_PRIORITY)
+			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_experimental", "Experimental");
+		else
+			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This probably shouldn't ever happen, but what the hell, let's be complete
+		//then get the category and put everything together
+		String categoryString = I18N.instance().getBugCategoryDescription(this.getBugPattern().getCategory());
+		return priorityString + " Priority " + categoryString;
+		//TODO: internationalize the word "Priority"
+	}
+	
 	/**
 	 * Set the bug priority.
 	 */
@@ -1345,6 +1371,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 				return "Error: missing bug pattern for key " + type;
 			return bugPattern.getShortDescription() + " [Error generating customized description]";
 		}
+	}
+	
+	/**
+	 * Format a string describing this bug pattern, with the priority and type at the beginning.
+	 * e.g. "(High Priority Correctness) Guaranteed null pointer dereference..."
+	 */
+	public String getMessageWithPriorityType() {
+		return "(" + this.getPriorityTypeString() + ") " + this.getMessage();
 	}
 
 	/**
