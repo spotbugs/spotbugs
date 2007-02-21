@@ -240,10 +240,10 @@
             versionsBox.selectedIndex = 0;
             if (versions.length>=1) {
                for (x=0; versions.length>1 && x<versions.length; x++) {
-                  versionsBox[x+1] = new Option(" Bugs at release: "+versions[x][1], versions[x][0]);
+                  versionsBox[x+1] = new Option(" Bugs at release: "+versions[versions.length-x-1][1], versions[versions.length-x-1][0]);
                }
             }
-            
+
             var prioritiesBox = document.findbugsForm.priorities.options;
             prioritiesBox[0] = new Option(" -- All priorities -- ", "4");
             prioritiesBox[1] = new Option(" P1 bugs ", "1");
@@ -275,7 +275,7 @@
 
             var prioritiesBox = document.findbugsForm.priorities.options;
             selectedPriority = prioritiesBox[prioritiesBox.selectedIndex].value;
-            
+
             selectMenu(selectedMenuId);
          }
 
@@ -435,7 +435,7 @@
                container.innerHTML = displayLevel3("lbp", packageId, classId);
             resetMessage();
          }
-         
+
          // list by categories, display bug cat>codes>patterns>bugs
          function displayCategoriesCodesPatternsBugs(containerId, catId, codeId, patternId) {
             displayMessage("Loading stats (bugs)...");
@@ -569,13 +569,13 @@
             var max = 0;
             var label = "";
             var id3 = "";
-            
+
             if (list=="lbc") {
                max = patterns.length;
             } else if (list=="lbp") {
                max = patterns.length;
             }
-           
+
             for (var x=0; x<max -1; x++) {
                //if (list=="lbp" && (patterns[x][0]!=id1 || patterns[x][1]!=id2)) continue;
                //if (list=="lbp" && classStats[x][3]=="0") continue;
@@ -623,7 +623,7 @@
                      && selectedVersion!=bug[5]) continue;
                   if ( selectedPriority!=4
                      && selectedPriority<bug[4]) continue;
-               
+
                   subContainerId = "cat-" + id1 + "-code-" + id2 + "-pattern-" + id3 + "-bug-" + bug[0];
                }
                if (list=="lbp") {
@@ -632,10 +632,10 @@
                      && selectedVersion!=bug[5]) continue;
                   if ( selectedPriority!=4
                      && selectedPriority<bug[4]) continue;
-               
+
                   subContainerId = "package-" + id1 + "-class-" + id2 + "-pattern-" + id3 + "-bug-" + bug[0];
                }
-                  
+
                bugId = "b-uid-" + bug[0];
                label = bug[idxBugDescr];
                containerId = "bugs-"+bugId;
