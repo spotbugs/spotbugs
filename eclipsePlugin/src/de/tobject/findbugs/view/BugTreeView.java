@@ -184,7 +184,7 @@ public class BugTreeView extends ViewPart{
 					}
 					TreeItem instanceItem = new TreeItem(theMap.get(pattern), SWT.LEFT);
 					instanceMap.put(instanceItem, theMarker);
-					instanceItem.setText(bug.getMessage());}
+					instanceItem.setText(theMarker.getAttribute(IMarker.MESSAGE, "Error retrieving message"));}
 				catch(Exception e){e.printStackTrace();}
 			}
 		});

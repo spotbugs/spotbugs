@@ -95,6 +95,10 @@ public class DetailsView extends ViewPart {
     private String title = "";
 
     private List annotationList;
+    
+    private Text priorityTypeArea;
+    
+    private String priorityTypeString = "";
 
     private BugInstance theBug = null;
 
@@ -117,6 +121,7 @@ public class DetailsView extends ViewPart {
     @Override
     public void createPartControl(Composite parent) {
         SashForm sash = new SashForm(parent, SWT.VERTICAL);
+        priorityTypeArea = new Text(sash, SWT.VERTICAL);
         annotationList = new List(sash, SWT.V_SCROLL);
         annotationList.setToolTipText("Additional information about the selected bug");
         annotationList.addSelectionListener(new SelectionAdapter() {
@@ -184,7 +189,7 @@ public class DetailsView extends ViewPart {
             }
            
         }
-        sash.setWeights(new int[] { 1, 2 });
+        sash.setWeights(new int[] { 1, 4, 8 });
         // Add selection listener to detect click in problems view or in tree
         // view
         ISelectionService theService = this.getSite().getWorkbenchWindow().getSelectionService();
@@ -237,6 +242,7 @@ public class DetailsView extends ViewPart {
     private void updateDisplay() {
         String html = ("<b>" + title + "</b><br/>" + description);
         setHTMLText(html);
+        priorityTypeArea.setText(this.priorityTypeString);
     }
 
     @SuppressWarnings("deprecation")
@@ -263,11 +269,16 @@ public class DetailsView extends ViewPart {
      *            the title of the bug
      * @param description
      *            the description of the bug
+     * @param theBug
+     * 			  the BugInstance
+     * @param priorityTypeString
+     * 			  A string describing the priority and ategory (e.g. "High Priority Correctness"
      */
-    public void setContent(String title, String description, BugInstance theBug) {
+    public void setContent(String title, String description, BugInstance theBug, String priorityTypeString) {
         this.title = (title == null) ? "" : title.trim();
         this.description = (description == null) ? "" : description.trim();
         this.theBug = theBug;
+        this.priorityTypeString = priorityTypeString;
         updateDisplay();
     }
 
@@ -290,6 +301,7 @@ public class DetailsView extends ViewPart {
                 if (focus && !(UserAnnotationsView.isVisible()))
                 	pages[0].showView("de.tobject.findbugs.view.detailsview");
                 String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
+                String priorityTypeString = marker.getAttribute(FindBugsMarker.PRIORITY_TYPE, "");
                 DetectorFactoryCollection.instance().ensureLoaded(); // fix
                 // bug#1530195
                 BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
@@ -297,7 +309,7 @@ public class DetailsView extends ViewPart {
                 if (pattern != null) {
                     String shortDescription = pattern.getShortDescription();
                     String detailText = pattern.getDetailText();
-                    DetailsView.getDetailsView().setContent(shortDescription, detailText, bug);
+                    DetailsView.getDetailsView().setContent(shortDescription, detailText, bug, priorityTypeString);
                 }
 
                 List anList = DetailsView.getDetailsView().annotationList;

@@ -63,4 +63,9 @@ public class FindBugsMarker {
 	 * Marker attribute recording the name and timestamp of the first version.
 	 */
 	public static final String FIRST_VERSION = "FIRST_VERSION";
+	
+	/**
+	 * Marker attribute recording the priority and type of the bug (e.g. "High Priority Correctness")
+	 */
+	public static final String PRIORITY_TYPE = "PRIORITY_TYPE";
 }
