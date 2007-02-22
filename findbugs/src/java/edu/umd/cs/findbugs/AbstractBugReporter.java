@@ -166,6 +166,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 			return;
 		}
 
+        assert message.indexOf('<') == -1 : "message is " + message;
 		logMissingClass(message);
 	}
 	
