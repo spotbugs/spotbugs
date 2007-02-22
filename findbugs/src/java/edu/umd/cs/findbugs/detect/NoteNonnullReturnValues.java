@@ -42,7 +42,6 @@ public class NoteNonnullReturnValues extends
 	 */
 	public void report() {
         if (SystemProperties.getBoolean("findbugs.statistics")) System.err.println(returnsNonNull + "/" + returnsReference + " methods return nonnull values");
-        AnalysisContext.reportMissingClass(null);
 	}
 
 }
