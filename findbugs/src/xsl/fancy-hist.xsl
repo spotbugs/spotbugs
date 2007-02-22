@@ -308,27 +308,28 @@
             content += "<table><tr><th>Release</th><th>Bugs</th><th>Bugs p1</th><th>Bugs p2</th><th>Bugs p3</th><th>Bugs Exp.</th></tr>";
 
             for (i=(versions.length-1); i>0; i--) {
-               p = countBugsVersion(i);
+               v = countBugsVersion(i, 4);
                t = countTotalBugsVersion(i);
-               f = countFixedBugsVersion(i);
+               o = countFixedButActiveBugsVersion(i);
+               f = countFixedBugsInVersion(i);
                content += "<tr>";
                content += "<td class='summary-name'>" + versions[i][1] + "</td>";
-               content += "<td class='summary-priority-all'> " + t[0] + " (+" +(p[0]+f[0]) + " / -" + f[0] + ") </td>";
-               content += "<td class='summary-priority-1'> " + t[1] + " (+" + (p[1]+f[1]) + " / -" + f[1] + ") </td>";
-               content += "<td class='summary-priority-2'> " + t[2] + " (+" + (p[2]+f[2]) + " / -" + f[2] + ") </td>";
-               content += "<td class='summary-priority-3'> " + t[3] + " (+" + (p[3]+f[3]) + " / -" + f[3] + ") </td>";
-               content += "<td class='summary-priority-4'> " + t[4] + " (+" + (p[4]+f[4]) + " / -" + f[4] + ") </td>";
+               content += "<td class='summary-priority-all'> " + (t[0] + o[0]) + " (+" + v[0] + " / -" + f[0] + ") </td>";
+               content += "<td class='summary-priority-1'  > " + (t[1] + o[1]) + " (+" + v[1] + " / -" + f[1] + ") </td>";
+               content += "<td class='summary-priority-2'  > " + (t[2] + o[2]) + " (+" + v[2] + " / -" + f[2] + ") </td>";
+               content += "<td class='summary-priority-3'  > " + (t[3] + o[3]) + " (+" + v[3] + " / -" + f[3] + ") </td>";
+               content += "<td class='summary-priority-4'  > " + (t[4] + o[4]) + " (+" + v[4] + " / -" + f[4] + ") </td>";
                content += "</tr>";
             }
 
             t = countTotalBugsVersion(0);
             content += "<tr>";
             content += "<td class='summary-name'>" + versions[0][1] + "</td>";
-            content += "<td class='summary-priority-all'> " + t[0] + " </td>";
-            content += "<td class='summary-priority-1'> " + t[1] + " </td>";
-            content += "<td class='summary-priority-2'> " + t[2] + " </td>";
-            content += "<td class='summary-priority-3'> " + t[3] + " </td>";
-            content += "<td class='summary-priority-4'> " + t[4] + " </td>";
+            content += "<td class='summary-priority-all'> " + (t[0] + o[0]) + " </td>";
+            content += "<td class='summary-priority-1'  > " + (t[1] + o[1]) + " </td>";
+            content += "<td class='summary-priority-2'  > " + (t[2] + o[2]) + " </td>";
+            content += "<td class='summary-priority-3'  > " + (t[3] + o[3]) + " </td>";
+            content += "<td class='summary-priority-4'  > " + (t[4] + o[4]) + " </td>";
             content += "</tr>";
 
             content += "</table>";
@@ -754,7 +755,7 @@
             return count;
          }
 
-         function countFixedBugsVersion(version) {
+         function countFixedBugsInVersion(version) {
             var count = [0,0,0,0,0];
             var last=1000000;
             for (var x=0; x<fixedBugs.length-1; x++) {
@@ -762,7 +763,23 @@
 
                var bugP = bug[4];
 
-               if ( version==-1 || version==bug[5]) {
+               if ( version==-1 || version==(bug[6]+1)) {
+                  count[bug[4]]++;
+               }
+            }
+            count[0] = count[1] + count[2] + count[3] + count[4];
+            return count;
+         }
+
+         function countFixedButActiveBugsVersion(version) {
+            var count = [0,0,0,0,0];
+            var last=1000000;
+            for (var x=0; x<fixedBugs.length-1; x++) {
+               var bug = fixedBugs[x];
+
+               var bugP = bug[4];
+
+               if ( version==-1 || (version >=bug[5] && version<=bug[6]) ) {
                   count[bug[4]]++;
                }
             }
@@ -921,7 +938,7 @@
                [ "", "", "", "", 0, 0, "", "" ]
             );
 
-         // bugs fields: bug id, category id, code id, pattern id, priority, fixed release id, class name
+         // bugs fields: bug id, category id, code id, pattern id, priority, first release id, fixed release id, class name
          var fixedBugs = new Array(
             <xsl:for-each select="/BugCollection/BugInstance[string-length(@last)>0]">
 
@@ -930,10 +947,11 @@
                  "<xsl:value-of select="@abbrev" />",
                  "<xsl:value-of select="@type" />",
                  <xsl:value-of select="@priority" />,
-                 <xsl:choose><xsl:when test='string-length(@first)>0'><xsl:value-of select="@last" /></xsl:when><xsl:otherwise>-42</xsl:otherwise></xsl:choose>,
+                 <xsl:choose><xsl:when test='string-length(@first)=0'>0</xsl:when><xsl:otherwise><xsl:value-of select="@first" /></xsl:otherwise></xsl:choose>,
+                 <xsl:choose><xsl:when test='string-length(@last)>0'><xsl:value-of select="@last" /></xsl:when><xsl:otherwise>-42</xsl:otherwise></xsl:choose>,
                  "<xsl:value-of select="Class/@classname" />" ],
             </xsl:for-each>
-               [ "", "", "", "", 0, 0, "" ]
+               [ "", "", "", "", 0, 0, 0, "" ]
             );
 
       </script>
