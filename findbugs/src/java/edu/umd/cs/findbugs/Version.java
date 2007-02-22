@@ -44,7 +44,7 @@ public class Version {
 	/**
 	 * Development version or release candidate?
 	 */
-	public static final boolean IS_DEVELOPMENT = false;
+	public static final boolean IS_DEVELOPMENT = true;
 
 	/**
 	 * Release candidate number.
@@ -104,7 +104,9 @@ public class Version {
 			usage();
 
 		String arg = argv[0];
-
+		if (!IS_DEVELOPMENT && RELEASE_CANDIDATE != 0) {
+            throw new IllegalStateException("Non developmental version, but is release candidate " + RELEASE_CANDIDATE);
+        }
 		if (arg.equals("-release"))
 			System.out.println(RELEASE);
 		else if (arg.equals("-date"))
