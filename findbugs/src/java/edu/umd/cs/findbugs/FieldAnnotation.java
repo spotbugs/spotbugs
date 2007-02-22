@@ -225,7 +225,8 @@ public class FieldAnnotation extends PackageMemberAnnotation {
         String givenPackageName = primaryClass.getPackageName();
         String thisPackageName = this.getPackageName();
         if (thisPackageName.equals(givenPackageName))
-            return className.substring(thisPackageName.length() + 1) +"." + fieldName;
+            if (thisPackageName.length() == 0) return fieldName;
+            else return className.substring(thisPackageName.length() + 1) +"." + fieldName;
         return   className + "." + fieldName;
     }
 
