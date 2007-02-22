@@ -174,6 +174,7 @@ public abstract class AnalysisContext {
 	 * @see #getLookupFailureCallback()
 	 */
 	static public void reportMissingClass(ClassNotFoundException e) {
+        if (e == null) throw new NullPointerException("argument is null");
 		AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
 		if (currentAnalysisContext2 == null) return;
 		if (currentAnalysisContext2.missingClassWarningsSuppressed) return;
