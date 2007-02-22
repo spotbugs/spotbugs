@@ -163,6 +163,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	}
 
 	protected MethodGen methodGen;
+    private final Method method;
 	protected CFG cfg;
 	private TypeMerger typeMerger;
 	private TypeFrameModelingVisitor visitor;
@@ -174,7 +175,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 
 	/**
 	 * Constructor.
-	 *
+	 * @param method TODO
 	 * @param methodGen             the MethodGen whose CFG we'll be analyzing
 	 * @param cfg                   the control flow graph
 	 * @param dfs                   DepthFirstSearch of the method
@@ -184,11 +185,12 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	 * @param lookupFailureCallback lookup failure callback
 	 * @param exceptionSetFactory   factory for creating ExceptionSet objects
 	 */
-	public TypeAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs,
-	                    TypeMerger typeMerger, TypeFrameModelingVisitor visitor,
-	                    RepositoryLookupFailureCallback lookupFailureCallback,
-	                    ExceptionSetFactory exceptionSetFactory) {
+	public TypeAnalysis(Method method, MethodGen methodGen, CFG cfg,
+	                    DepthFirstSearch dfs, TypeMerger typeMerger,
+	                    TypeFrameModelingVisitor visitor,
+	                    RepositoryLookupFailureCallback lookupFailureCallback, ExceptionSetFactory exceptionSetFactory) {
 		super(dfs);
+        this.method = method;
 		this.methodGen = methodGen;
 		this.cfg = cfg;
 		this.typeMerger = typeMerger;
@@ -204,7 +206,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 
 	/**
 	 * Constructor.
-	 *
+	 * @param method TODO
 	 * @param methodGen             the MethodGen whose CFG we'll be analyzing
 	 * @param cfg                   the control flow graph
 	 * @param dfs                   DepthFirstSearch of the method
@@ -212,27 +214,27 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	 * @param lookupFailureCallback lookup failure callback
 	 * @param exceptionSetFactory   factory for creating ExceptionSet objects
 	 */
-	public TypeAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs,
-	                    TypeMerger typeMerger, RepositoryLookupFailureCallback lookupFailureCallback,
-	                    ExceptionSetFactory exceptionSetFactory) {
-		this(methodGen, cfg, dfs, typeMerger,
-		        new TypeFrameModelingVisitor(methodGen.getConstantPool()), lookupFailureCallback,
-		        exceptionSetFactory);
+	public TypeAnalysis(Method method, MethodGen methodGen, CFG cfg,
+	                    DepthFirstSearch dfs, TypeMerger typeMerger,
+	                    RepositoryLookupFailureCallback lookupFailureCallback, ExceptionSetFactory exceptionSetFactory) {
+		this(method, methodGen, cfg, dfs,
+		        typeMerger, new TypeFrameModelingVisitor(methodGen.getConstantPool()),
+		        lookupFailureCallback, exceptionSetFactory);
 	}
 
 	/**
 	 * Constructor which uses StandardTypeMerger.
-	 *
+	 * @param method TODO
 	 * @param methodGen             the MethodGen whose CFG we'll be analyzing
 	 * @param cfg                   the control flow graph
 	 * @param dfs                   DepthFirstSearch of the method
 	 * @param lookupFailureCallback callback for Repository lookup failures
 	 * @param exceptionSetFactory   factory for creating ExceptionSet objects
 	 */
-	public TypeAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs,
-	                    RepositoryLookupFailureCallback lookupFailureCallback,
-	                    ExceptionSetFactory exceptionSetFactory) {
-		this(methodGen, cfg, dfs,
+	public TypeAnalysis(Method method, MethodGen methodGen, CFG cfg,
+	                    DepthFirstSearch dfs,
+	                    RepositoryLookupFailureCallback lookupFailureCallback, ExceptionSetFactory exceptionSetFactory) {
+		this(method, methodGen, cfg, dfs,
 		        new StandardTypeMerger(lookupFailureCallback, exceptionSetFactory),
 		        lookupFailureCallback, exceptionSetFactory);
 	}
@@ -294,7 +296,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		// can be used to get the correct GenericObjectType if an argument
 		// has a class type
 		Iterator<String> iter = 
-			GenericSignatureParser.getGenericSignatureIterator(methodGen.getMethod());
+			GenericSignatureParser.getGenericSignatureIterator(method);
 		
 		// Add locals for parameters.
 		// Note that long and double parameters need to be handled

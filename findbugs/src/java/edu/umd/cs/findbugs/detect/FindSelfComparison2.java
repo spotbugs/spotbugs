@@ -92,7 +92,7 @@ public class FindSelfComparison2 implements Detector {
                if (parser.getNumParameters() == 1 && 
                        (invoking.equals("equals") && sig.endsWith(";)Z")
                        || invoking.equals("compareTo")  && sig.endsWith(";)I")))
-                   checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPARISON", methodGen, sourceFile);
+                   checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPARISON", method, methodGen, sourceFile);
 
        
                 }
@@ -106,7 +106,7 @@ public class FindSelfComparison2 implements Detector {
             case IAND:
             case IXOR:
             case ISUB:
-                checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPUTATION", methodGen, sourceFile);
+                checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPUTATION", method, methodGen, sourceFile);
                 break;
             case FCMPG:
             case DCMPG:
@@ -122,7 +122,7 @@ public class FindSelfComparison2 implements Detector {
             case IF_ICMPLE:
             case IF_ICMPLT:
             case IF_ICMPGE: 
-                checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPARISON", methodGen, sourceFile);
+                checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPARISON", method, methodGen, sourceFile);
 
             }
 
@@ -133,12 +133,13 @@ public class FindSelfComparison2 implements Detector {
 	/**
      * @param classContext TODO
 	 * @param location
+	 * @param method TODO
 	 * @param methodGen TODO
 	 * @param sourceFile TODO
 	 * @param string
 	 * @throws DataflowAnalysisException 
      */
-    private void checkForSelfOperation(ClassContext classContext, Location location, ValueNumberDataflow valueNumberDataflow, String op, MethodGen methodGen, String sourceFile) throws DataflowAnalysisException {
+    private void checkForSelfOperation(ClassContext classContext, Location location, ValueNumberDataflow valueNumberDataflow, String op, Method method, MethodGen methodGen, String sourceFile) throws DataflowAnalysisException {
         ValueNumberFrame frame = valueNumberDataflow.getFactAtLocation(location);
         if (!frame.isValid())  return;
         Instruction ins = location.getHandle().getInstruction();
@@ -153,23 +154,23 @@ public class FindSelfComparison2 implements Detector {
         int priority = HIGH_PRIORITY;
         if (opcode == ISUB || opcode == LSUB || opcode == INVOKEINTERFACE || opcode == INVOKEVIRTUAL)
             priority = NORMAL_PRIORITY;
-        XField field = NullDerefAndRedundantComparisonFinder.findXFieldFromValueNumber(methodGen.getMethod(), location, v0, frame);
+        XField field = NullDerefAndRedundantComparisonFinder.findXFieldFromValueNumber(method, location, v0, frame);
         BugAnnotation annotation;
         String prefix;
         if (field != null) {
             if (field.isVolatile()) return;
+            if (true) return; // don't report these; too many false positives
             annotation = FieldAnnotation.fromXField(field);
             prefix = "SA_FIELD_SELF_";
-            if (true) return; // don't report these; too many false positives
         } else {
-            annotation  = NullDerefAndRedundantComparisonFinder.findLocalAnnotationFromValueNumber(methodGen.getMethod(), location, v0, frame);
+            annotation  = NullDerefAndRedundantComparisonFinder.findLocalAnnotationFromValueNumber(method, location, v0, frame);
             prefix = "SA_LOCAL_SELF_" ;
             if (opcode == ISUB) return; // only report this if simple detector reports it
         }
         if (annotation == null) return;
         SourceLineAnnotation sourceLine = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle());
         int line = sourceLine.getStartLine();
-        BitSet occursMultipleTimes = ClassContext.linesMentionedMultipleTimes(methodGen.getMethod());
+        BitSet occursMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
         if (line > 0 && occursMultipleTimes.get(line)) return;
         BugInstance bug = new BugInstance(this, prefix + op, priority).addClassAndMethod(methodGen, sourceFile)
         .add(annotation).addSourceLine(classContext, methodGen, sourceFile, location.getHandle());

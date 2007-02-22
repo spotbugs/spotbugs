@@ -480,7 +480,7 @@ public class ClassContext {
 			if (PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES && !cfg.isFlagSet(PRUNED_UNCONDITIONAL_THROWERS)) {
 				try {
 					PruneUnconditionalExceptionThrowerEdges pruner =
-						new PruneUnconditionalExceptionThrowerEdges(ClassContext.this, jclass, methodGen, cfg, getConstantPoolGen(), analysisContext);
+						new PruneUnconditionalExceptionThrowerEdges(ClassContext.this, jclass, method, methodGen, cfg, getConstantPoolGen(), analysisContext);
 					pruner.execute();
 					changed = changed || pruner.wasCFGModified();
 				} catch (DataflowAnalysisException e) {
@@ -670,7 +670,7 @@ public class ClassContext {
 			        ExceptionSetFactory exceptionSetFactory = getExceptionSetFactory(method);
 
 			        TypeAnalysis typeAnalysis =
-			                new TypeAnalysis(methodGen, cfg, dfs, getLookupFailureCallback(), exceptionSetFactory);
+			                new TypeAnalysis(method, methodGen, cfg, dfs, getLookupFailureCallback(), exceptionSetFactory);
 			        
 					if (analysisContext.getBoolProperty(AnalysisFeatures.MODEL_INSTANCEOF)) {
 						typeAnalysis.setValueNumberDataflow(getValueNumberDataflow(method));
@@ -1091,8 +1091,8 @@ public class ClassContext {
 						getReverseDepthFirstSearch(method),
 						getDepthFirstSearch(method),
 						cfg,
-						getMethodGen(method),
-						vnd, getAssertionMethods()
+						method,
+						getMethodGen(method), vnd, getAssertionMethods()
 						);
 				
 				IsNullValueDataflow inv = getIsNullValueDataflow(method);
@@ -1465,13 +1465,13 @@ public class ClassContext {
 		        return result;
 	}
 	
-	@CheckForNull static public Set<Integer> getLoopExitBranches(MethodGen methodGen) {
+	@CheckForNull static public Set<Integer> getLoopExitBranches(Method method, MethodGen methodGen) {
 
 		XMethod xmethod = XFactory.createXMethod(methodGen);
 		if (cachedLoopExits.containsKey(xmethod)) {
 			return cachedLoopExits.get(xmethod);
 		}
-        Code code = methodGen.getMethod().getCode();
+        Code code = method.getCode();
         if (code == null)
 	        return null;
 

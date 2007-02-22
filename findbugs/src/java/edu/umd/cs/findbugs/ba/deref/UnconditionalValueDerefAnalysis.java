@@ -88,6 +88,7 @@ public class UnconditionalValueDerefAnalysis extends
 		SystemProperties.getBoolean("fnd.derefs.checkcalls.debug");
 	
 	private CFG cfg;
+    private final Method method;
 	private MethodGen methodGen;
 	private ValueNumberDataflow vnaDataflow;
 	private AssertionMethods assertionMethods;
@@ -101,6 +102,7 @@ public class UnconditionalValueDerefAnalysis extends
 	 * @param rdfs               the reverse depth-first-search (for the block order)
 	 * @param dfs TODO
 	 * @param cfg                the CFG for the method
+	 * @param method TODO
 	 * @param methodGen          the MethodGen for the method
 	 * @param vnaDataflow
 	 * @param assertionMethods   AssertionMethods for the analyzed class
@@ -109,13 +111,14 @@ public class UnconditionalValueDerefAnalysis extends
 			ReverseDepthFirstSearch rdfs,
 			DepthFirstSearch dfs,
 			CFG cfg,
+			Method method,
 			MethodGen methodGen,
-			ValueNumberDataflow vnaDataflow,
-			AssertionMethods assertionMethods
+			ValueNumberDataflow vnaDataflow, AssertionMethods assertionMethods
 			) {
 		super(rdfs, dfs);
 		this.cfg = cfg;
 		this.methodGen = methodGen;
+        this.method = method;
 		this.vnaDataflow = vnaDataflow;
 		this.assertionMethods = assertionMethods;
 		if (DEBUG) {
@@ -537,7 +540,7 @@ public class UnconditionalValueDerefAnalysis extends
 			}
 		}
 		boolean isBackEdge = edge.isBackwardInBytecode();
-		boolean sourceIsTopOfLoop = edge.sourceIsTopOfLoop(ClassContext.getLoopExitBranches(methodGen));
+		boolean sourceIsTopOfLoop = edge.sourceIsTopOfLoop(ClassContext.getLoopExitBranches(method, methodGen));
 		if (sourceIsTopOfLoop && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)
 			isBackEdge = true;
 		if (false && (edge.getType() == EdgeTypes.IFCMP_EDGE || sourceIsTopOfLoop)) {

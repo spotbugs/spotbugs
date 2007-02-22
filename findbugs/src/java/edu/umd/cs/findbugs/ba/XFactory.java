@@ -119,12 +119,19 @@ public  class XFactory {
 	 * @return an XMethod representing the Method
 	 */
 	public static XMethod createXMethod(String className, Method method) {
-		XFactory xFactory = AnalysisContext.currentXFactory();
 		String methodName = method.getName();
 		String methodSig = method.getSignature();
 		int accessFlags = method.getAccessFlags();
-		boolean isStatic = method.isStatic();
+        
+        
+		return createXMethod(className, methodName, methodSig, accessFlags);
+	}
+
+    private static XMethod createXMethod(String className, String methodName, String methodSig, int accessFlags) {
+        boolean isStatic = (accessFlags & Constants.ACC_STATIC) != 0;
 		XMethod m;
+        XFactory xFactory = AnalysisContext.currentXFactory();
+        
 		if (isStatic)
 			m = new StaticMethod(className, methodName, methodSig, accessFlags);
 		else 
@@ -135,7 +142,7 @@ public  class XFactory {
 		// assert m2.getAccessFlags() == m.getAccessFlags();
 		((AbstractMethod) m2).markAsResolved();
 		return m2;
-	}
+    }
 
 	/**
 	 * Create an XMethod object from a BCEL Method.
@@ -434,7 +441,12 @@ public  class XFactory {
 	}
 	
 	public static XMethod createXMethod(MethodGen methodGen) {
-		return createXMethod(methodGen.getClassName(), methodGen.getMethod());
+		String className = methodGen.getClassName();
+        String methodName = methodGen.getName();
+        String methodSig = methodGen.getSignature();
+        int accessFlags = methodGen.getAccessFlags();
+        return createXMethod(className, methodName, methodSig, accessFlags);
+       
 		
 	}
 

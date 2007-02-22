@@ -47,6 +47,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
     private static final boolean DEBUG_DIFFERENCES = SystemProperties.getBoolean("cfg.prune.throwers.differences.debug");
     
     private MethodGen methodGen;
+    private Method method;
     private CFG cfg;
     private ConstantPoolGen cpg;
     private AnalysisContext analysisContext;
@@ -64,11 +65,12 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
         RETURN_OPCODE_SET.set(Constants.RETURN);
     }
 
-    public PruneUnconditionalExceptionThrowerEdges(ClassContext classContext, JavaClass javaClass, MethodGen methodGen,
-            CFG cfg, ConstantPoolGen cpg, AnalysisContext analysisContext) {
+    public PruneUnconditionalExceptionThrowerEdges(ClassContext classContext, JavaClass javaClass, Method method,
+            MethodGen methodGen, CFG cfg, ConstantPoolGen cpg, AnalysisContext analysisContext) {
         this.classContext = classContext;
         this.javaClass = javaClass;
         this.methodGen = methodGen;
+        this.method = method;
         this.cfg = cfg;
         this.cpg = cpg;
         this.analysisContext = analysisContext;
@@ -87,7 +89,7 @@ public class PruneUnconditionalExceptionThrowerEdges implements EdgeTypes {
             throw new IllegalStateException("This should not happen");
 
         Set<Edge> deletedEdgeSet = new HashSet<Edge>();
-        TypeDataflow typeDataflow = classContext.getTypeDataflow(methodGen.getMethod());
+        TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 
         if (DEBUG)
             System.out.println("PruneUnconditionalExceptionThrowerEdges: examining " +

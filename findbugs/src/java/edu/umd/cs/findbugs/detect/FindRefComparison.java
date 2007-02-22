@@ -465,7 +465,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		RefComparisonTypeFrameModelingVisitor visitor =
 			new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), bugReporter);
 		TypeAnalysis typeAnalysis =
-			new TypeAnalysis(methodGen, cfg, dfs, typeMerger, visitor, bugReporter, exceptionSetFactory) {
+			new TypeAnalysis(method, methodGen, cfg, dfs, typeMerger, visitor, bugReporter, exceptionSetFactory) {
 			@Override public void initEntryFact(TypeFrame result) {
 				super.initEntryFact(result);
 				for(int i = 0; i < methodGen.getMaxLocals(); i++) {
@@ -486,12 +486,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 					sawCallToEquals,
 					jclass,
 					cpg,
+					method,
 					methodGen,
 					refComparisonList,
 					stringComparisonList,
 					visitor,
-					typeDataflow,
-					location);
+					typeDataflow, location);
 		}
 
 		// Add method-wide properties to BugInstances
@@ -525,12 +525,12 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			boolean sawCallToEquals,
 			JavaClass jclass,
 			ConstantPoolGen cpg,
+			Method method,
 			MethodGen methodGen,
 			LinkedList<WarningWithProperties> refComparisonList,
 			LinkedList<WarningWithProperties> stringComparisonList,
 			RefComparisonTypeFrameModelingVisitor visitor,
-			TypeDataflow typeDataflow,
-			Location location) throws DataflowAnalysisException {
+			TypeDataflow typeDataflow, Location location) throws DataflowAnalysisException {
 		Instruction ins = location.getHandle().getInstruction();
 		short opcode = ins.getOpcode();
 		if (opcode == Constants.IF_ACMPEQ || opcode == Constants.IF_ACMPNE) {
@@ -548,7 +548,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			String methodSig = inv.getSignature(cpg);
 			if (isEqualsMethod(methodName, methodSig)) {
 				sawCallToEquals = true;
-				checkEqualsComparison(location, jclass, methodGen, typeDataflow);
+				checkEqualsComparison(location, jclass, method, methodGen, typeDataflow);
 			}
 		}
 		return sawCallToEquals;
@@ -708,8 +708,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 	private void checkEqualsComparison(
 			Location location,
 			JavaClass jclass,
-			MethodGen methodGen,
-			TypeDataflow typeDataflow) throws DataflowAnalysisException {
+			Method method,
+			MethodGen methodGen, TypeDataflow typeDataflow) throws DataflowAnalysisException {
 
 		InstructionHandle handle = location.getHandle();
 		String sourceFile = jclass.getSourceFileName();
@@ -728,7 +728,6 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				|| rhsType_.getType() == T_TOP || rhsType_.getType() == T_BOTTOM)
 			return;
 
-        Method method = methodGen.getMethod();
         boolean looksLikeTestCase = method.getName().startsWith("test") && method.isPublic() && method.getSignature().equals("()V")
                 || testLikeName(jclass.getClassName())|| testLikeName(jclass.getSuperclassName());
         int priorityModifier = 0;
@@ -829,8 +828,8 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 					new RefComparisonTypeMerger(lookupFailureCallback, exceptionSetFactory);
 				TypeFrameModelingVisitor visitor =
 					new RefComparisonTypeFrameModelingVisitor(methodGen.getConstantPool(), lookupFailureCallback);
-				TypeAnalysis analysis = new TypeAnalysis(methodGen, cfg, dfs, typeMerger, visitor,
-						lookupFailureCallback, exceptionSetFactory);
+				TypeAnalysis analysis = new TypeAnalysis(method, methodGen, cfg, dfs, typeMerger,
+						visitor, lookupFailureCallback, exceptionSetFactory);
 				Dataflow<TypeFrame, TypeAnalysis> dataflow =
 					new Dataflow<TypeFrame, TypeAnalysis>(cfg, analysis);
 				dataflow.execute();
