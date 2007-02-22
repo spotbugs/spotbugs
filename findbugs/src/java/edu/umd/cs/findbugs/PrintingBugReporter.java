@@ -174,7 +174,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
 		if (argCount < args.length) {
 			proj.setProjectFileName(args[argCount]);
-			bugCollection.readXML(args[argCount++], new Project());
+			bugCollection.readXML(args[argCount++], proj);
 		} else
 			bugCollection.readXML(System.in, new Project());
 
