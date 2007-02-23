@@ -40,6 +40,7 @@ import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ClassGen;
+import org.apache.bcel.generic.ClassGenException;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.GETSTATIC;
@@ -555,6 +556,7 @@ public class ClassContext {
 		protected MethodGen analyze(Method method) {
 			if (method.getCode() == null)
 				return null;
+            try {
 			String methodName = method.getName();
 			if (analysisContext.getBoolProperty(AnalysisFeatures.SKIP_HUGE_METHODS)) {
 				int codeLength = method.getCode().getLength();
@@ -565,6 +567,10 @@ public class ClassContext {
 				}
 			}
 			return  new MethodGen(method, jclass.getClassName(), getConstantPoolGen());
+            } catch (ClassGenException e) {
+                AnalysisContext.logError("Error constructing methodGen", e);
+                return null;
+            }
 
 		}
 	};
