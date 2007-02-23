@@ -567,7 +567,7 @@ public class ClassContext {
 				}
 			}
 			return  new MethodGen(method, jclass.getClassName(), getConstantPoolGen());
-            } catch (ClassGenException e) {
+            } catch (Exception e) {
                 AnalysisContext.logError("Error constructing methodGen", e);
                 return null;
             }
