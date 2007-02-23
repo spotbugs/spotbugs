@@ -21,6 +21,9 @@ package edu.umd.cs.findbugs.visitclass;
 
 import java.io.PrintStream;
 
+import org.apache.bcel.classfile.AnnotationDefault;
+import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Annotations;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -39,6 +42,7 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.ConstantValue;
+import org.apache.bcel.classfile.EnclosingMethod;
 import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.InnerClass;
@@ -48,7 +52,9 @@ import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
+import org.apache.bcel.classfile.LocalVariableTypeTable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.ParameterAnnotations;
 import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.classfile.SourceFile;
 import org.apache.bcel.classfile.StackMap;
@@ -342,5 +348,60 @@ public abstract class BetterVisitor implements Visitor {
 
 	public void report(PrintStream out) {
 	}
+
+
+    /* (non-Javadoc)
+     * @see org.apache.bcel.classfile.Visitor#visitAnnotation(org.apache.bcel.classfile.Annotations)
+     */
+    public void visitAnnotation(Annotations obj) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.apache.bcel.classfile.Visitor#visitAnnotationDefault(org.apache.bcel.classfile.AnnotationDefault)
+     */
+    public void visitAnnotationDefault(AnnotationDefault obj) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.apache.bcel.classfile.Visitor#visitAnnotationEntry(org.apache.bcel.classfile.AnnotationEntry)
+     */
+    public void visitAnnotationEntry(AnnotationEntry obj) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.apache.bcel.classfile.Visitor#visitEnclosingMethod(org.apache.bcel.classfile.EnclosingMethod)
+     */
+    public void visitEnclosingMethod(EnclosingMethod obj) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.apache.bcel.classfile.Visitor#visitLocalVariableTypeTable(org.apache.bcel.classfile.LocalVariableTypeTable)
+     */
+    public void visitLocalVariableTypeTable(LocalVariableTypeTable obj) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.apache.bcel.classfile.Visitor#visitParameterAnnotation(org.apache.bcel.classfile.ParameterAnnotations)
+     */
+    public void visitParameterAnnotation(ParameterAnnotations obj) {
+        // TODO Auto-generated method stub
+        
+    }
+
 
 }
