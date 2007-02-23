@@ -98,6 +98,7 @@ public class OpcodeStack implements Constants2
 		public static final int RANDOM_INT_REMAINDER = 8;
 		public static final int HASHCODE_INT_REMAINDER = 9;
 		public static final int FILE_SEPARATOR_STRING = 10;
+        public static final int MATH_ABS = 11;
 		
 		private static final int IS_INITIAL_PARAMETER_FLAG=1;
 		private static final int COULD_BE_ZERO_FLAG = 2;
@@ -197,6 +198,9 @@ public class OpcodeStack implements Constants2
 			case  FILE_SEPARATOR_STRING:
 				buf.append(", file_separator_string");
 				break;
+            case  MATH_ABS:
+                buf.append(", Math.abs");
+                break;
 			case 0 :
 				break;
 			default:
@@ -1504,6 +1508,11 @@ public class OpcodeStack implements Constants2
 			i.setSpecialKind(Item.RANDOM_INT);
 			push(i);
 		}
+        if (clsName.equals("java/lang/Math") && methodName.equals("abs")) {
+            Item i = pop();
+            i.setSpecialKind(Item.MATH_ABS);
+            push(i);
+        }
 		else if (seen == INVOKEVIRTUAL && methodName.equals("hashCode") && signature.equals("()I")
 				|| seen == INVOKESTATIC && clsName.equals("java/lang/System") && methodName.equals("identityHashCode") && signature.equals("(Ljava/lang/Object;)I")) {
 			Item i = pop();

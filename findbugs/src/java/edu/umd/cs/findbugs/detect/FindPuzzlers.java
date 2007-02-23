@@ -287,7 +287,12 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 			if (seen == ICONST_2) badlyComputingOddState++;
 			break;
 		case 1:
-			if (seen == IREM) badlyComputingOddState++;
+			if (seen == IREM) {
+                OpcodeStack.Item item = stack.getStackItem(1);
+                if (item.getSpecialKind() != OpcodeStack.Item.MATH_ABS)
+                    badlyComputingOddState++;
+                else  badlyComputingOddState = 0;
+            }
 			else badlyComputingOddState = 0;
 			break;
 		case 2:
@@ -295,10 +300,11 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 			else badlyComputingOddState = 0;
 			break;
 		case 3:
-			if (seen == IF_ICMPEQ || seen == IF_ICMPNE) 
-				 bugReporter.reportBug(new BugInstance(this, "IM_BAD_CHECK_FOR_ODD", NORMAL_PRIORITY)
+			if (seen == IF_ICMPEQ || seen == IF_ICMPNE)  {
+              	 bugReporter.reportBug(new BugInstance(this, "IM_BAD_CHECK_FOR_ODD", NORMAL_PRIORITY)
                          .addClassAndMethod(this)
                          .addSourceLine(this));
+            }
 				badlyComputingOddState = 0;
 			break;
 		}
