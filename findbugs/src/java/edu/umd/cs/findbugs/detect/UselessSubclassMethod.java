@@ -196,7 +196,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 					state = SEEN_RETURN;
 				else if ((retSigChar0 == 'F') && (seen == FRETURN))
 					state = SEEN_RETURN;
-				else if ((retSigChar0 == 'I') && (seen == IRETURN))
+				else if ((retSigChar0 == 'I' || retSigChar0 == 'S'  || retSigChar0 == 'C'  || retSigChar0 == 'B'  || retSigChar0 == 'Z' ) && (seen == IRETURN))
 					state = SEEN_RETURN;
 				else if ((retSigChar0 == 'J') && (seen == LRETURN))
 					state = SEEN_RETURN;
@@ -261,8 +261,8 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 	}
 	
 	private boolean accessModifiersAreDifferent(Method m1, Method m2) {
-		int access1 = m1.getAccessFlags() & (Constants.ACC_PRIVATE|Constants.ACC_PROTECTED|Constants.ACC_PUBLIC);
-		int access2 = m2.getAccessFlags() & (Constants.ACC_PRIVATE|Constants.ACC_PROTECTED|Constants.ACC_PUBLIC);
+		int access1 = m1.getAccessFlags() & (Constants.ACC_PRIVATE|Constants.ACC_PROTECTED|Constants.ACC_PUBLIC|Constants.ACC_FINAL);
+		int access2 = m2.getAccessFlags() & (Constants.ACC_PRIVATE|Constants.ACC_PROTECTED|Constants.ACC_PUBLIC|Constants.ACC_FINAL);
 
 		return access1 != access2;
 	}
