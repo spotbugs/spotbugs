@@ -163,7 +163,9 @@ public class UserAnnotationsView extends ViewPart {
 
 	}
 
-
+	public void dispose() {
+		userAnnotationsView = null;
+	}
 
 	/**
 	 * Updates the control using the current window size and the contents of the
@@ -205,6 +207,8 @@ public class UserAnnotationsView extends ViewPart {
 	 * 			  True if you want to set the focus to this view
 	 */
 	public static void showMarker(IMarker marker, boolean focus) {
+		if(userAnnotationsView == null)
+			return;
 		// Obtain the current workbench page, and show the details view
 		IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow()
 				.getPages();
@@ -225,7 +229,7 @@ public class UserAnnotationsView extends ViewPart {
 				else
 					userAnnotation = bug.getNonnullUserDesignation().getAnnotationText();
 				
-				if (pattern != null)
+				if (pattern != null && UserAnnotationsView.getuserAnnotationsView() != null)
 					UserAnnotationsView.getuserAnnotationsView().setContent(userAnnotation, bug, firstVersionText);
 
 			} catch (PartInitException e) {
@@ -267,6 +271,8 @@ public class UserAnnotationsView extends ViewPart {
 	
 	public static boolean isVisible()
 	{
+		if(userAnnotationsView == null)
+			return false;
 		return userAnnotationsView.visibilityTester.isVisible();
 	}
 

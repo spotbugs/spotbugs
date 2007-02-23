@@ -125,8 +125,9 @@ public class BugTreeView extends ViewPart{
 		for(IProject proj : projectList)
 		{
 			try{
-				for(IMarker marker : proj.findMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE))
-					addMarker(proj, marker);
+				if(proj.isOpen())
+					for(IMarker marker : proj.findMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE))
+						addMarker(proj, marker);
 			}
 			catch(CoreException e)
 			{

@@ -186,8 +186,10 @@ public class MarkerRulerAction implements IEditorActionDelegate, IUpdate, MouseL
 	public void update() {
 		if (markers.size() > 0) {
 			IMarker marker = markers.get(0);
-			UserAnnotationsView.showMarker(marker, false);
-			DetailsView.showMarker(marker, true);
+			try{UserAnnotationsView.showMarker(marker, false);}
+			catch(Exception e){FindbugsPlugin.getDefault().logException(e, "Exception on marker user annotations view");}
+			try{DetailsView.showMarker(marker, true);}
+			catch(Exception e){FindbugsPlugin.getDefault().logException(e, "Exception on marker details view");}
 		}
 	}
 

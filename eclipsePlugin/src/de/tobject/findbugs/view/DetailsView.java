@@ -210,7 +210,7 @@ public class DetailsView extends ViewPart {
         DetailsView.detailsView = this;
 
     }
-
+    
     /*
      * (non-Javadoc)
      * 
@@ -233,6 +233,7 @@ public class DetailsView extends ViewPart {
             browser.dispose();
         else if (control != null)
             control.dispose();
+    	detailsView = null;
     }
 
     /**
@@ -294,6 +295,8 @@ public class DetailsView extends ViewPart {
      *            annotations view is already selected
      */
     public static void showMarker(IMarker marker, boolean focus) {
+    	if(detailsView == null)
+    		return;
         // Obtain the current workbench page, and show the details view
         IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
         if (pages.length > 0) {
@@ -309,7 +312,8 @@ public class DetailsView extends ViewPart {
                 if (pattern != null) {
                     String shortDescription = pattern.getShortDescription();
                     String detailText = pattern.getDetailText();
-                    DetailsView.getDetailsView().setContent(shortDescription, detailText, bug, priorityTypeString);
+                    if(DetailsView.getDetailsView() != null)
+                    	DetailsView.getDetailsView().setContent(shortDescription, detailText, bug, priorityTypeString);
                 }
 
                 List anList = DetailsView.getDetailsView().annotationList;
