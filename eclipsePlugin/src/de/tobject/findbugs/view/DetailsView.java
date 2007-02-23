@@ -122,6 +122,7 @@ public class DetailsView extends ViewPart {
     public void createPartControl(Composite parent) {
         SashForm sash = new SashForm(parent, SWT.VERTICAL);
         priorityTypeArea = new Text(sash, SWT.VERTICAL);
+        priorityTypeArea.setEditable(false);
         annotationList = new List(sash, SWT.V_SCROLL);
         annotationList.setToolTipText("Additional information about the selected bug");
         annotationList.addSelectionListener(new SelectionAdapter() {

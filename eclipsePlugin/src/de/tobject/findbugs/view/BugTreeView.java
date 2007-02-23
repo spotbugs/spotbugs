@@ -87,16 +87,23 @@ public class BugTreeView extends ViewPart{
 			if(myMarker == null) return;
 			DetailsView.showMarker(myMarker, false);
 			UserAnnotationsView.showMarker(myMarker, false);
+			try{IDE.openEditor(getSite().getPage(), myMarker, false);}
+			catch(PartInitException ex){ex.printStackTrace();}
 		}
 		
 		public void widgetDefaultSelected(SelectionEvent e)
 		{
-			IMarker myMarker = instanceMap.get(theTree.getSelection()[0]);
-			if(myMarker == null) return;
-			DetailsView.showMarker(myMarker, false);
-			UserAnnotationsView.showMarker(myMarker, false);
-			try{IDE.openEditor(getSite().getPage(), myMarker);}
-			catch(PartInitException ex){ex.printStackTrace();}
+			TreeItem theItem = theTree.getSelection()[0];
+			IMarker myMarker = instanceMap.get(theItem);
+			if(myMarker == null)
+				theItem.setExpanded(!theItem.getExpanded());
+			else
+			{
+				DetailsView.showMarker(myMarker, false);
+				UserAnnotationsView.showMarker(myMarker, false);
+				try{IDE.openEditor(getSite().getPage(), myMarker, false);}
+				catch(PartInitException ex){ex.printStackTrace();}
+			}
 		}
 	}
 	
