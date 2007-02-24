@@ -25,6 +25,7 @@ import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.ba.InstanceMethod;
 import edu.umd.cs.findbugs.ba.StaticMethod;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
@@ -43,12 +44,9 @@ public abstract class MethodPropertyDatabase<Property>
 			throw new PropertyDatabaseFormatException("Invalid method tuple: " + methodStr);
 		
 		try {
-			int accessFlags = Integer.parseInt(tuple[3]);
-			boolean isStatic = (accessFlags & Constants.ACC_STATIC) != 0;
-			
-			return isStatic
-				? new StaticMethod(tuple[0], tuple[1], tuple[2], accessFlags)
-				: new InstanceMethod(tuple[0], tuple[1], tuple[2], accessFlags);
+            int accessFlags = Integer.parseInt(tuple[3]);
+            return XFactory.createXMethod(tuple[0], tuple[1], tuple[2], accessFlags);
+
 		} catch (NumberFormatException e) {
 			return null;
 		}

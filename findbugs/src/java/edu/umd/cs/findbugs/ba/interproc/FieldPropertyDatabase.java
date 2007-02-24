@@ -26,6 +26,7 @@ import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.ba.InstanceField;
 import edu.umd.cs.findbugs.ba.StaticField;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
@@ -56,10 +57,8 @@ public abstract class FieldPropertyDatabase<Property>
 		} catch (NumberFormatException e) {
 			throw new PropertyDatabaseFormatException("Invalid field access flags: " + tuple[3]);
 		}
+        return XFactory.createXField(className, fieldName, signature, accessFlags);
 
-		return (accessFlags & Constants.ACC_STATIC) != 0
-			? new StaticField(className, fieldName, signature, accessFlags)
-			: new InstanceField(className, fieldName, signature, accessFlags);
 	}
 
 	/* (non-Javadoc)

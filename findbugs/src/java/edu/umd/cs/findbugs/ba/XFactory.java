@@ -127,7 +127,7 @@ public  class XFactory {
 		return createXMethod(className, methodName, methodSig, accessFlags);
 	}
 
-    private static XMethod createXMethod(String className, String methodName, String methodSig, int accessFlags) {
+    public static XMethod createXMethod(String className, String methodName, String methodSig, int accessFlags) {
         boolean isStatic = (accessFlags & Constants.ACC_STATIC) != 0;
 		XMethod m;
         XFactory xFactory = AnalysisContext.currentXFactory();
@@ -385,9 +385,13 @@ public  class XFactory {
 		String fieldName = field.getName();
 		String fieldSig = field.getSignature();
 		int accessFlags = field.getAccessFlags();
-		XFactory xFactory = AnalysisContext.currentXFactory();
+		return createXField(className, fieldName, fieldSig, accessFlags);
+	}
+
+    public static XField createXField(String className, String fieldName, String fieldSig, int accessFlags) {
+        XFactory xFactory = AnalysisContext.currentXFactory();
 		XField f;
-		if (field.isStatic())
+		if ((accessFlags & Constants.ACC_STATIC) != 0)
 			f = new StaticField(className, fieldName, fieldSig, accessFlags);
 		else
 			f = new InstanceField(className, fieldName, fieldSig, accessFlags);
@@ -396,7 +400,7 @@ public  class XFactory {
 		// assert f.getAccessFlags() == f2.getAccessFlags();
 		((AbstractField) f2).markAsResolved();
 		return f2;
-	}
+    }
 	/**
 	 * Create an XMethod object from an InvokeInstruction.
 	 * 
