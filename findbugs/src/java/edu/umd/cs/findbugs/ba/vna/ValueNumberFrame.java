@@ -259,7 +259,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		mergedValueList.set(slot, value);
 	}
 
-	@Override
+  	@Override
 	public void copyFrom(Frame<ValueNumber> other) {
 		// If merged value list hasn't been created yet, create it.
 		if (mergedValueList == null && other.isValid()) {
@@ -281,11 +281,11 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 				getUpdateableAvailableLoadMap().putAll(availableLoadMapOther);
 			}
 			Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = ((ValueNumberFrame) other).getPreviouslyKnownAs();
-			if (previouslyKnownAsOther.size() == 0) 
+			int size = previouslyKnownAsOther.size();
+               if (size == 0) 
 				setPreviouslyKnownAs(Collections.EMPTY_MAP);
 			else {
-				getUpdateablePreviouslyKnownAs().clear();
-				getUpdateablePreviouslyKnownAs().putAll(previouslyKnownAsOther);
+				assignPreviouslyKnownAs(previouslyKnownAsOther);  // HUGE AMOUNT OF ALLOCATIONS HAPPEN HERE
 			}
 		
 		}
@@ -429,12 +429,14 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	}
 	private Map<ValueNumber, AvailableLoad> getUpdateablePreviouslyKnownAs() {
 		if (!(previouslyKnownAs instanceof HashMap))
-			previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>();
+			previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(4);
 		
 		
 		return previouslyKnownAs;
 	}
-	
+    private  void assignPreviouslyKnownAs(Map<ValueNumber, AvailableLoad> newValue) {
+        previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(newValue);
+    }
 	
 }
 
