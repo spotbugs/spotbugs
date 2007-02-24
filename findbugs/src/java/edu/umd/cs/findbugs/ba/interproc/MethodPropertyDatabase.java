@@ -45,7 +45,8 @@ public abstract class MethodPropertyDatabase<Property>
 		
 		try {
             int accessFlags = Integer.parseInt(tuple[3]);
-            return XFactory.createXMethod(tuple[0], tuple[1], tuple[2], accessFlags);
+            return XFactory.createXMethod(XFactory.canonicalizeString(tuple[0]),
+                    XFactory.canonicalizeString( tuple[1]), XFactory.canonicalizeString(tuple[2]), accessFlags);
 
 		} catch (NumberFormatException e) {
 			return null;
