@@ -819,7 +819,7 @@ public class MainFrame extends FBFrame implements LogSync
 					continue;
 				}
 			}
-
+            curProject.setProjectFileName(dir.toString());
 			boolean good=save(dir);
 			if (good==false)
 			{
@@ -829,7 +829,7 @@ public class MainFrame extends FBFrame implements LogSync
 			projectDirectory=dir;				
 
 		} while (retry);
-		curProject.setProjectFileName(projectDirectory.getName());
+		
 		File xmlFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");
 
 		//If the file already existed, its already in the preferences, as well as the recent projects menu items, only add it if they change the name, otherwise everything we're storing is still accurate since all we're storing is the location of the file.
