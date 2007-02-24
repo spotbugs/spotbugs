@@ -78,7 +78,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 	 */
 	public AnalyzingDialog(@NonNull Project project, AnalysisCallback callback, boolean joinThread)
 	{
-		assert project != null;
+		if (project == null) throw new NullPointerException("null project");
 		this.project = project;
 		this.callback = callback;
 		initComponents();
@@ -211,7 +211,8 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		@Override
         public void run()
 		{
-			assert project != null;
+            if (project == null) throw new NullPointerException("null project");
+
 			BugSet data = BugLoader.doAnalysis(project, AnalyzingDialog.this);
 			if (data == null) // We were interrupted
 			{

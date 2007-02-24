@@ -358,6 +358,8 @@ public class BugLoader {
 	 */
 	public static BugSet redoAnalysisKeepComments(@NonNull Project p)
 	{
+        if (p == null) throw new NullPointerException("null project");
+
 		BugSet oldSet=BugSet.getMainBugSet();
 		SortedBugCollection current=new SortedBugCollection();
 		
