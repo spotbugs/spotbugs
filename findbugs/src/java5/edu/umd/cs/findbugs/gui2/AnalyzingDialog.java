@@ -28,7 +28,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.tree.TreeModel;
 
 import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.Project;
@@ -60,8 +62,11 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 			public void analysisFinished(BugSet results)
 				{
 					ProjectSettings.newInstance();
-					((BugTreeModel)MainFrame.getInstance().getTree().getModel()).getOffListenerList();
-					MainFrame.getInstance().getTree().setModel(new BugTreeModel(MainFrame.getInstance().getTree(), MainFrame.getInstance().getSorter(), results));
+                    JTree tree = MainFrame.getInstance().getTree();
+                    TreeModel treeModel = tree.getModel();
+                    if (treeModel instanceof BugTreeModel)
+                           ((BugTreeModel)treeModel).getOffListenerList();
+					MainFrame.getInstance().getTree().setModel(new BugTreeModel(tree, MainFrame.getInstance().getSorter(), results));
 					MainFrame.getInstance().setProject(project);
 				}
 			
