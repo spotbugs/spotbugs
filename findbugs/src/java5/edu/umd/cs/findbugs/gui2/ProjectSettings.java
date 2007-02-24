@@ -96,6 +96,7 @@ public class ProjectSettings implements Serializable
 			{
 				PreferencesFrame.getInstance().suppressionsChanged(new BugLeafNode(bug));
 			}
+            in.close();
 		}
 		catch (ClassNotFoundException e)
 		{
