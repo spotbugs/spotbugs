@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.Frame;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.util.Strings;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * A dataflow value representing a Java stack frame with value number
@@ -238,8 +239,12 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 				}	
 			}
 			Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = other.getPreviouslyKnownAs();
-			if (previouslyKnownAsOther.size() != 0)
-				getUpdateablePreviouslyKnownAs().putAll(previouslyKnownAsOther);
+			if (getPreviouslyKnownAs() != previouslyKnownAsOther 
+                    && previouslyKnownAsOther.size() != 0) {
+                if (getPreviouslyKnownAs().size() == 0) 
+                    assignPreviouslyKnownAs(other);
+                else getUpdateablePreviouslyKnownAs().putAll(previouslyKnownAsOther);
+            }
 			if (changed)
 				this.phiNodeForLoads = true;
 			if (changed && RLE_DEBUG) {
@@ -280,20 +285,29 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 				getUpdateableAvailableLoadMap().clear();
 				getUpdateableAvailableLoadMap().putAll(availableLoadMapOther);
 			}
-			Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = ((ValueNumberFrame) other).getPreviouslyKnownAs();
-            if (previouslyKnownAsOther instanceof HashMap) {
-                previouslyKnownAsOther = Collections.unmodifiableMap(previouslyKnownAsOther);
-                ((ValueNumberFrame) other).setPreviouslyKnownAs(previouslyKnownAsOther);
-                setPreviouslyKnownAs(previouslyKnownAsOther);       
-            } else {
-                setPreviouslyKnownAs(previouslyKnownAsOther);
-            }
-		
+			assignPreviouslyKnownAs(other);
 		}
 
 		super.copyFrom(other);
 	}
 
+    private void assignPreviouslyKnownAs(Frame<ValueNumber> other) {
+        Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = ((ValueNumberFrame) other).getPreviouslyKnownAs();
+        if (previouslyKnownAsOther instanceof HashMap) {
+            previouslyKnownAsOther = Collections.unmodifiableMap(previouslyKnownAsOther);
+            ((ValueNumberFrame) other).setPreviouslyKnownAs(previouslyKnownAsOther);
+            setPreviouslyKnownAs(previouslyKnownAsOther);   
+            constructedUnmodifiableMap++;
+        } else {
+            setPreviouslyKnownAs(previouslyKnownAsOther);
+            reusedMap++;
+        }
+    }
+    
+    
+
+    static int constructedUnmodifiableMap;
+    static int reusedMap;
 	@Override
 	public String toString() {
 		String frameValues = super.toString();
@@ -428,11 +442,34 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	private Map<ValueNumber, AvailableLoad> getPreviouslyKnownAs() {
 		return previouslyKnownAs;
 	}
+    static int createdEmptyMap;
+    static int madeImmutableMutable;
+    static int reusedMutableMap;
+    static {
+        Util.runLogAtShutdown(new Runnable() {
+
+            public void run() {
+               System.err.println("Getting updatable previously known as:");
+               System.err.println("  " + createdEmptyMap + " created empty map");
+               System.err.println("  " + madeImmutableMutable + " made immutable map mutable");
+               System.err.println("  " + reusedMutableMap + " reused mutable map");
+               System.err.println("Copying map:");
+               System.err.println("  " + constructedUnmodifiableMap + " made mutable map unmodifiable");
+               System.err.println("  " + reusedMap + " reused immutable map");
+               System.err.println();
+                
+            }});
+    }
 	private Map<ValueNumber, AvailableLoad> getUpdateablePreviouslyKnownAs() {
-        if (previouslyKnownAs.size() == 0)
+        if (previouslyKnownAs.size() == 0) {
             previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(4);
-        else if (!(previouslyKnownAs instanceof HashMap))
+            createdEmptyMap++;
+        }
+        else if (!(previouslyKnownAs instanceof HashMap)) {
 			previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(previouslyKnownAs);
+            madeImmutableMutable++;
+        } else
+            reusedMutableMap++;
 		
 		return previouslyKnownAs;
 	}

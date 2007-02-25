@@ -516,7 +516,9 @@ public class OpcodeStack implements Constants2
  		}
         
 		
-		List<Item> jumpEntry = jumpEntries.get(dbc.getPC());
+		List<Item> jumpEntry = null;
+         if (jumpEntryLocations.get(dbc.getPC())) 
+             jumpEntry = jumpEntries.get(dbc.getPC());
 		if (jumpEntry != null) {
 		    if (DEBUG) {
 		        System.out.println("XXXXXXX " + reachOnlyByBranch);
@@ -1554,6 +1556,7 @@ public class OpcodeStack implements Constants2
  	BitSet exceptionHandlers = new BitSet();
  	private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
  	private Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
+    private BitSet jumpEntryLocations = new BitSet();
  	
  	private void addJumpValue(int target) {
  		if (DEBUG)
@@ -1565,14 +1568,11 @@ public class OpcodeStack implements Constants2
  	 			System.out.println("Was null");
  	 		
  			jumpEntries.put(target, new ArrayList<Item>(lvValues));
- 			if (false) {
- 			System.out.println("jump entires are now...");
- 			for (Integer pc : jumpEntries.keySet()) {
-				List<Item> list = jumpEntries.get(pc);
-				System.out.println(pc + "pc -> " + Integer.toString(System.identityHashCode(list),16) + " " + list);
- 			}}
- 			if (stack.size() > 0)
- 				jumpStackEntries.put(target, new ArrayList<Item>(stack));
+            jumpEntryLocations.set(target);
+                
+ 			if (stack.size() > 0) {
+               jumpStackEntries.put(target, new ArrayList<Item>(stack));
+            }
  			return;
  		}
  		mergeLists(atTarget, lvValues, false);
@@ -1587,6 +1587,7 @@ public class OpcodeStack implements Constants2
  		methodName = v.getMethodName();
 		jumpEntries.clear();
 		jumpStackEntries.clear();
+        jumpEntryLocations.clear();
 		lastUpdate.clear();
 		convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
 		reachOnlyByBranch = false;

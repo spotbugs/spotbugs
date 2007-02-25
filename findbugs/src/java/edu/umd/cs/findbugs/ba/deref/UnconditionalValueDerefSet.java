@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba.deref;
 
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -123,9 +124,10 @@ public class UnconditionalValueDerefSet {
 		// Copy value numbers
 		valueNumbersUnconditionallyDereferenced.clear();
 		valueNumbersUnconditionallyDereferenced.or(source.valueNumbersUnconditionallyDereferenced);
-       lastUpdateTimestamp = source.lastUpdateTimestamp;
+        lastUpdateTimestamp = source.lastUpdateTimestamp;
 		// Copy dereference locations for each value number
 		derefLocationSetMap.clear();
+        if (source.derefLocationSetMap.size() > 0)
 		for (Map.Entry<ValueNumber, Set<Location>> sourceEntry : source.derefLocationSetMap.entrySet()) {
 			Set<Location> derefLocationSet = new HashSet<Location>();
 			derefLocationSet.addAll(sourceEntry.getValue());
@@ -305,7 +307,7 @@ public class UnconditionalValueDerefSet {
 		return result;
 	}
 	
-	public void retainOnlyTheseValueNumbers(Set<ValueNumber> valueNumbers) {
+	public void retainOnlyTheseValueNumbers(Collection<ValueNumber> valueNumbers) {
 		for(Iterator<ValueNumber> i = derefLocationSetMap.keySet().iterator(); i.hasNext(); ) {
 			ValueNumber v = i.next();
 			if (!valueNumbers.contains(v)) {
@@ -399,22 +401,19 @@ public class UnconditionalValueDerefSet {
 	 */
 	public  void cleanDerefSet(@CheckForNull Location location, ValueNumberFrame vnaFrame) {
 
-		Set<ValueNumber> valueNumbers = new HashSet<ValueNumber>(vnaFrame.allSlots());
+		Collection<ValueNumber> valueNumbers = vnaFrame.allSlots();
 		
-		valueNumbers.addAll(vnaFrame.valueNumbersForLoads());
-	
 		if (UnconditionalValueDerefAnalysis.DEBUG) {
-		for(ValueNumber v : getValueNumbersThatAreUnconditionallyDereferenced())
-			if (!valueNumbers.contains(v)) {
-				System.out.println("\nWhy is " + v + " unconditionally dereferenced in #" + System.identityHashCode(this));
-				System.out.println("VN: " + vnaFrame);
-				System.out.println("UD: " + this);
-				System.out.println("Location: " + location);
-				System.out.println();
-			}
-		
+		    for(ValueNumber v : getValueNumbersThatAreUnconditionallyDereferenced())
+		        if (!valueNumbers.contains(v)) {
+		            System.out.println("\nWhy is " + v + " unconditionally dereferenced in #" + System.identityHashCode(this));
+		            System.out.println("VN: " + vnaFrame);
+		            System.out.println("UD: " + this);
+		            System.out.println("Location: " + location);
+		            System.out.println();
+		        }
+
 		}
-		if (false) return;
 		retainOnlyTheseValueNumbers(valueNumbers);
 	}
 

@@ -19,12 +19,19 @@
 
 package edu.umd.cs.findbugs.util;
 
+import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * @author pugh
  */
 public class Util {
+    public static final boolean LOGGING = SystemProperties.getBoolean("findbugs.shutdownLogging");
+    
+    public static void runLogAtShutdown(Runnable r) {
+        if (LOGGING) Runtime.getRuntime().addShutdownHook(new Thread(r));
+        
+    }
 	
 	public static int  nullSafeHashcode(@CheckForNull Object o) {
 		if (o == null) return 0;
