@@ -281,12 +281,13 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 				getUpdateableAvailableLoadMap().putAll(availableLoadMapOther);
 			}
 			Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = ((ValueNumberFrame) other).getPreviouslyKnownAs();
-			int size = previouslyKnownAsOther.size();
-               if (size == 0) 
-				setPreviouslyKnownAs(Collections.EMPTY_MAP);
-			else {
-				assignPreviouslyKnownAs(previouslyKnownAsOther);  // HUGE AMOUNT OF ALLOCATIONS HAPPEN HERE
-			}
+            if (previouslyKnownAsOther instanceof HashMap) {
+                previouslyKnownAsOther = Collections.unmodifiableMap(previouslyKnownAsOther);
+                ((ValueNumberFrame) other).setPreviouslyKnownAs(previouslyKnownAsOther);
+                setPreviouslyKnownAs(previouslyKnownAsOther);       
+            } else {
+                setPreviouslyKnownAs(previouslyKnownAsOther);
+            }
 		
 		}
 
@@ -428,9 +429,10 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		return previouslyKnownAs;
 	}
 	private Map<ValueNumber, AvailableLoad> getUpdateablePreviouslyKnownAs() {
-		if (!(previouslyKnownAs instanceof HashMap))
-			previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(4);
-		
+        if (previouslyKnownAs.size() == 0)
+            previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(4);
+        else if (!(previouslyKnownAs instanceof HashMap))
+			previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(previouslyKnownAs);
 		
 		return previouslyKnownAs;
 	}
