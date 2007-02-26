@@ -419,16 +419,15 @@ public class Hierarchy {
 			System.out.println("Check " + javaClass.getClassName());
 		}
 		Method[] methodList = javaClass.getMethods();
-		for (Method method : methodList) {
-			JavaClassAndMethod javaClassAndMethod = new JavaClassAndMethod(javaClass, method);
-			if (method.getName().equals(methodName)
-					&& method.getSignature().equals(methodSig)
-					&& chooser.choose(javaClassAndMethod)) {
-				if (DEBUG_METHOD_LOOKUP) {
-					System.out.println("\t==> FOUND: " + method);
-				}
-				return new JavaClassAndMethod(javaClass, method);
-			}
+		for (Method method : methodList)  if (method.getName().equals(methodName)
+		        && method.getSignature().equals(methodSig)) {
+		    JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
+		    if (chooser.choose(m)) {
+		        if (DEBUG_METHOD_LOOKUP) {
+		            System.out.println("\t==> FOUND: " + method);
+		        }
+		        return m;
+		    }
 		}
 		if (DEBUG_METHOD_LOOKUP) {
 			System.out.println("\t==> NOT FOUND");
@@ -436,6 +435,37 @@ public class Hierarchy {
 		return null;
 	}
 	
+    /**
+     * Find a method in given class.
+     *
+     * @param javaClass  the class
+     * @param methodName the name of the method
+     * @param methodSig  the signature of the method
+     * @return the JavaClassAndMethod, or null if no such method exists in the class
+     */
+    public static JavaClassAndMethod findConcreteMethod(
+            JavaClass javaClass,
+            String methodName,
+            String methodSig) {
+        
+        JavaClassAndMethodChooser chooser = CONCRETE_METHOD;
+        if (DEBUG_METHOD_LOOKUP) {
+            System.out.println("Check " + javaClass.getClassName());
+        }
+        Method[] methodList = javaClass.getMethods();
+        for (Method method : methodList)  if (method.getName().equals(methodName)
+                && method.getSignature().equals(methodSig)
+                && accessFlagsAreConcrete(method.getAccessFlags())) {
+            JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
+ 
+            return m;
+            
+        }
+        if (DEBUG_METHOD_LOOKUP) {
+            System.out.println("\t==> NOT FOUND");
+        }
+        return null;
+    }
 	/**
 	 * Find a method in given class.
 	 *
@@ -460,16 +490,21 @@ public class Hierarchy {
 		}
 	};
 	
+    
+    // FIXME: perhaps native methods should be concrete.
+    public static boolean accessFlagsAreConcrete(int accessFlags) {
+        return (accessFlags & Constants.ACC_ABSTRACT) == 0
+            && (accessFlags & Constants.ACC_NATIVE) == 0;
+    }
+
 	/**
 	 * JavaClassAndMethodChooser which accepts only concrete (not abstract or native) methods.
-	 * FIXME: perhaps native methods should be concrete.
 	 */
 	public static final JavaClassAndMethodChooser CONCRETE_METHOD = new JavaClassAndMethodChooser() {
 		public boolean choose(JavaClassAndMethod javaClassAndMethod) {
 			Method method = javaClassAndMethod.getMethod();
 			int accessFlags = method.getAccessFlags();
-			return (accessFlags & Constants.ACC_ABSTRACT) == 0
-				&& (accessFlags & Constants.ACC_NATIVE) == 0;
+			return accessFlagsAreConcrete(accessFlags);
 		}
 	};
 	
@@ -875,6 +910,8 @@ public class Hierarchy {
 			? access
 			: null;
 	}
+
+ 
 }
 
 // vim:ts=4
