@@ -288,6 +288,7 @@ public class BugLoader {
 				MainFrame.getInstance().setSourceFinder(new SourceFinder());
 				MainFrame.getInstance().getSourceFinder().setSourceBaseList(possibleDirectories);
 
+				MainFrame.getInstance().newProject();
 				return loadBugsHelper(col);
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(null,"This file contains no bug data");
