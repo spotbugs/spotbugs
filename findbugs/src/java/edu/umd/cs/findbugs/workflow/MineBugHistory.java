@@ -88,6 +88,7 @@ public class MineBugHistory {
 	boolean formatDates = false;
 	boolean noTabs = false;
 	boolean summary = false;
+	boolean xml = false;
 	
 	public MineBugHistory() {
 	}
@@ -104,10 +105,17 @@ public class MineBugHistory {
 	}
 
 	public void setNoTabs() {
+		this.xml = false;
 		this.noTabs = true;
 		this.summary = false;
 	}
+    public void setXml() {
+		this.xml = true;
+		this.noTabs = false;
+		this.summary = false;
+    }
 	public void setSummary() {
+		this.xml = false;
 		this.summary = true;
 		this.noTabs = false;
 	}
@@ -156,7 +164,8 @@ public class MineBugHistory {
 	
 
 	public void dump(PrintStream out) {
-		if (noTabs) dumpNoTabs(out);
+		if (xml) dumpXml(out);
+		else if (noTabs) dumpNoTabs(out);
 		else if (summary) dumpSummary(out);
 		else dumpOriginal(out);
 	}
@@ -283,6 +292,53 @@ public class MineBugHistory {
 		}
 	}
 
+	/** This is how dump() was implemented up to and including version 0.9.5. */
+	public void dumpXml(PrintStream out) {
+		out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		out.println("<history>");
+		String startData = "    <data ";
+		String stop = "/>";
+		for (int i = 0; i < versionList.length; ++i) {
+			Version version = versionList[i];
+			AppVersion appVersion = sequenceToAppVersionMap.get(version.getSequence());
+			out.print("  <historyItem ");
+			out.print("seq=\"");
+			out.print(i);
+			out.print("\" ");
+			out.print("version=\"");
+			out.print(appVersion != null ? appVersion.getReleaseName() : "");
+			out.print("\" ");
+			out.print("time=\"");
+			if (formatDates)
+				out.print((appVersion != null ?  new Date(appVersion.getTimestamp()).toString() : ""));
+			else out.print(appVersion != null ? appVersion.getTimestamp() : 0L);
+			out.print("\"");
+			out.println(">");
+			
+			String attributeName[] = new String[TUPLE_SIZE];
+			attributeName[0] = "added";
+			attributeName[1] = "newCode";
+			attributeName[2] = "fixed";
+			attributeName[3] = "removed";
+			attributeName[4] = "retained";
+			attributeName[5] = "dead";
+			attributeName[6] = "active";
+			for (int j = 0; j < TUPLE_SIZE; ++j) {
+				// newCode and retained are already comprised within active
+				// so we skip tehm
+				if (j==1 || j==4) {
+			   	continue;
+				}
+				out.print(startData + " name=\"" + attributeName[j] + "\" value=\"");
+				out.print(version.get(j));
+				out.print("\"");
+				out.println(stop);
+			}
+			out.println("  </historyItem>");
+		}
+		out.print("</history>");
+	}
+    
 	/**
 	 * Get key used to classify the presence and/or abscence of a BugInstance
 	 * in successive versions in the history.
@@ -303,6 +359,7 @@ public class MineBugHistory {
 		MineBugHistoryCommandLine() {
 			addSwitch("-formatDates", "render dates in textual form");
 			addSwitch("-noTabs", "delimit columns with groups of spaces for better alignment");
+			addSwitch("-xml", "output in XML format");
 			addSwitch("-summary", "just summarize changes over the last ten entries");
 		}
 
@@ -311,6 +368,7 @@ public class MineBugHistory {
 			if  (option.equals("-formatDates")) 
 				setFormatDates(true);
 			else if (option.equals("-noTabs")) setNoTabs();
+			else if (option.equals("-xml")) setXml();
 			else if (option.equals("-summary")) setSummary();
 			else 
 				throw new IllegalArgumentException("unknown option: " + option);
