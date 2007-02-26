@@ -449,7 +449,7 @@ public class CommentsArea {
 					setDesignation(menuName);
 			}
 		});
-		MainFrame.attachAccelaratorKey(toggleItem, keyEvent);
+		MainFrame.attachAcceleratorKey(toggleItem, keyEvent);
 		menu.add(toggleItem);
 	}
 
