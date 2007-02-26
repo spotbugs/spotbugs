@@ -881,7 +881,7 @@ public class MainFrame extends FBFrame implements LogSync
 				
 				if (!xmlFile.exists())
 				{
-					JOptionPane.showMessageDialog(null, edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_xml_data_lbl", "This directory does not contain saved bug XML data, please choose a different directory."));
+					JOptionPane.showMessageDialog(saveOpenFileChooser, edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_xml_data_lbl", "This directory does not contain saved bug XML data, please choose a different directory."));
 					loading=true;
 					continue;
 				}
@@ -889,9 +889,17 @@ public class MainFrame extends FBFrame implements LogSync
 				openProject(f);
 			}
 			else if(fileType == SaveType.XML_ANALYSIS){
+				if(!f.getName().endsWith(".xml")){
+					JOptionPane.showMessageDialog(saveOpenFileChooser, edu.umd.cs.findbugs.L10N.getLocalString("dlg.not_xml_data_lbl", "This is not a saved bug XML data file."));
+					loading=true;
+					continue;
+				}
+				
 				if(!openAnalysis(f)){
 					//TODO: Deal if something happens when loading analysis
-					JOptionPane.showMessageDialog(saveOpenFileChooser, "Warning", "openAnalysis returned False!", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(saveOpenFileChooser, "An error occurred while trying to load the analysis.");
+					loading=true;
+					continue;
 				}
 				else
 					saveFile = f;
@@ -2168,6 +2176,7 @@ public class MainFrame extends FBFrame implements LogSync
 			loadAnalysisFromInputStream(in);
 			clearSourcePane();
 			clearSummaryTab();
+			reconfigMenuItem.setEnabled(true);
 			setProjectChanged(false);
 			return true;
 		} catch (IOException e) {

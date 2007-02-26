@@ -114,7 +114,7 @@ public class NewProjectWizard extends FBDialog
 		if(curProject == null)
 			setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.new_item", "New Project"));
 		else
-			setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.reconfig", "Reconfigure Project"));
+			setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.reconfig", "Reconfigure"));
 		
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new GridLayout(3,1));
