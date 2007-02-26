@@ -30,11 +30,12 @@ public final class FindBugsProjectFileFilter extends FileFilter {
 	
 	@Override
 	public boolean accept(File arg0) {
-		return arg0.getName().endsWith(".fb") || arg0.isDirectory();
+		//return arg0.getName().endsWith(".fb") || arg0.isDirectory();
+		return arg0.isDirectory(); //In GUI2 project seen as directory .fb is a GUI1 project.
 	}
 
 	@Override
 	public String getDescription() {
-		return "FindBugs project files";
+		return "FindBugs project directory";
 	}
 }

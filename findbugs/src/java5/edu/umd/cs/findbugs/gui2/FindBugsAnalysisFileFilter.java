@@ -33,6 +33,6 @@ public final class FindBugsAnalysisFileFilter extends FileFilter {
 
 	@Override
 	public String getDescription() {
-		return "FindBugs analysis results";
+		return "FindBugs analysis results (.xml)";
 	}
 }

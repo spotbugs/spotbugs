@@ -88,12 +88,12 @@ public class CommentsArea {
 				new DocumentListener() {
 
 					public void insertUpdate(DocumentEvent e) {
-						frame.setProjectChanged(true);
+						setProjectChanged(true);
 						changed = true;
 					}
 
 					public void removeUpdate(DocumentEvent e) {
-						frame.setProjectChanged(true);
+						setProjectChanged(true);
 						changed = true;
 					}
 
@@ -203,11 +203,14 @@ public class CommentsArea {
 	void setUserCommentInputEnableFromSwingThread(final boolean isEnabled) {
 		frame.userInputEnabled = isEnabled;
 		if (!isEnabled) {
+//			This so if already saved doesn't make it seem project changed
+			boolean b = frame.getProjectChanged();
 			userCommentsText.setText("");
 			// WARNING: this is hard coded in here, but needed
 			// so when not enabled shows default setting of designation
 			setUnknownDesignation();
 			userCommentsText.setBackground(userCommentsTextUnenabledColor);
+			setProjectChanged(b);
 		} else
 			userCommentsText.setBackground(Color.WHITE);
 		userCommentsText.setEnabled(isEnabled);
@@ -224,6 +227,8 @@ public class CommentsArea {
 	void updateCommentsFromLeafInformation(final BugLeafNode node) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				//This so if already saved doesn't make it seem project changed
+				boolean b = frame.getProjectChanged();
 				BugInstance bug = node.getBug();
 				setCurrentUserCommentsText(bug.getAnnotationText());
 				designationComboBox.setSelectedIndex(designationKeys
@@ -231,6 +236,7 @@ public class CommentsArea {
 								.getDesignationKey()));
 				setUserCommentInputEnableFromSwingThread(true);
 				changed = false;
+				setProjectChanged(b);
 			}
 		});
 	}
@@ -238,9 +244,12 @@ public class CommentsArea {
 	void updateCommentsFromNonLeafInformation(final BugAspects theAspects) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				//This so if already saved doesn't make it seem project changed
+				boolean b = frame.getProjectChanged();
 				updateCommentsFromNonLeafInformationFromSwingThread(theAspects);
 				setUserCommentInputEnableFromSwingThread(true);
 				changed = false;
+				setProjectChanged(b);
 			}
 		});
 	}

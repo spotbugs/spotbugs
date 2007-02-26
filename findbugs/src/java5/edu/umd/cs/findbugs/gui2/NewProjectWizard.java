@@ -111,6 +111,11 @@ public class NewProjectWizard extends FBDialog
 	{
 		project = curProject;
 		
+		if(curProject == null)
+			setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.new_item", "New Project"));
+		else
+			setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.reconfig", "Reconfigure Project"));
+		
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new GridLayout(3,1));
 		
@@ -244,7 +249,6 @@ public class NewProjectWizard extends FBDialog
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 //		pack();
-		setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.new_item", "New Project"));
 		setModal(true);
 		setVisible(true);
 	}
