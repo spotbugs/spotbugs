@@ -401,8 +401,10 @@ public class UnconditionalValueDerefSet {
 	 */
 	public  void cleanDerefSet(@CheckForNull Location location, ValueNumberFrame vnaFrame) {
 
-		Collection<ValueNumber> valueNumbers = vnaFrame.allSlots();
+		Set<ValueNumber> valueNumbers = new HashSet<ValueNumber>(vnaFrame.allSlots());
 		
+		valueNumbers.addAll(vnaFrame.valueNumbersForLoads());
+	
 		if (UnconditionalValueDerefAnalysis.DEBUG) {
 		    for(ValueNumber v : getValueNumbersThatAreUnconditionallyDereferenced())
 		        if (!valueNumbers.contains(v)) {
