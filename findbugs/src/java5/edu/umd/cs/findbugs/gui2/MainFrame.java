@@ -197,6 +197,7 @@ public class MainFrame extends FBFrame implements LogSync
 	boolean projectChanged = false;
 	final private JMenuItem editProjectMenuItem = newJMenuItem("menu.addRemoveFiles", "Add/Remove Files...", KeyEvent.VK_F);
 	final private JMenuItem saveProjectMenuItem = newJMenuItem("menu.save_item", "Save Project", KeyEvent.VK_S);
+	private JMenuItem redoAnalysis;
 	BugLeafNode currentSelectedBugLeaf;
 	BugAspects currentSelectedBugAspects;
 	private JPopupMenu bugPopupMenu;
@@ -326,6 +327,27 @@ public class MainFrame extends FBFrame implements LogSync
 					if (!exists)
 						throw new IllegalStateException ("User used a recent projects menu item that didn't exist.");
 					
+					//Moved this outside of the thread, and above the line projectDirectory=f.getParentFile()
+					//Since if this save goes on in the thread below, there is no way to stop the save from
+					//overwriting the files we are about to load.
+					if (curProject != null && projectChanged)
+					{
+						int response = JOptionPane.showConfirmDialog(MainFrame.this, 
+								edu.umd.cs.findbugs.L10N.getLocalString("dlg.save_current_changes", "The current project has been changed, Save current changes?")
+								,edu.umd.cs.findbugs.L10N.getLocalString("dlg.save_changes", "Save Changes?"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+
+						if (response == JOptionPane.YES_OPTION)
+						{
+							if (projectDirectory!=null)
+								save(projectDirectory);
+							else
+								projectSaveAs();
+						}
+						else if (response == JOptionPane.CANCEL_OPTION)
+							return;
+						//IF no, do nothing.
+					}
+					
 					projectDirectory=f.getParentFile();
 					File fasFile=new File(projectDirectory.getAbsolutePath() + File.separator + projectDirectory.getName() + ".fas");
 					try 
@@ -342,23 +364,7 @@ public class MainFrame extends FBFrame implements LogSync
 						public void run()
 						{
 							updateDesignationDisplay();
-							if (curProject != null && projectChanged)
-							{
-								int response = JOptionPane.showConfirmDialog(MainFrame.this, 
-										edu.umd.cs.findbugs.L10N.getLocalString("dlg.save_current_changes", "The current project has been changed, Save current changes?")
-										,edu.umd.cs.findbugs.L10N.getLocalString("dlg.save_changes", "Save Changes?"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 
-								if (response == JOptionPane.YES_OPTION)
-								{
-									if (projectDirectory!=null)
-										save(projectDirectory);
-									else
-										projectSaveAs();
-								}
-								else if (response == JOptionPane.CANCEL_OPTION)
-									return;
-								//IF no, do nothing.
-							}							
 							BugTreeModel model=(BugTreeModel)tree.getModel();
 //							Debug.println("please wait called by open menu item");
 							BugTreeModel.pleaseWait();
@@ -373,11 +379,14 @@ public class MainFrame extends FBFrame implements LogSync
 								model.changeSet(bs);
 								curProject=newProject;
 								MainFrame.getInstance().updateStatusBar();
+								MainFrame.getInstance().newProject();
 								//MainFrame.this.setTitle("FindBugs: " + curProject.getProjectFileName());
 								MainFrame.this.setTitle("FindBugs: " + item.getText());
+							} 
+							else	
+							{
+								tree.setModel(model);//Dont let it stay a please wait tree if the xml was corrupt
 							}
-							
-							
 							
 							setProjectChanged(false);
 							editProjectMenuItem.setEnabled(true);
@@ -525,7 +534,7 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenuItem saveAsProjectMenuItem = newJMenuItem("menu.saveas_item", "Save Project As...", KeyEvent.VK_A);
 		JMenuItem importBugsMenuItem = newJMenuItem("menu.loadbugs_item", "Load Analysis...", KeyEvent.VK_L);
 		JMenuItem exportBugsMenuItem = newJMenuItem("menu.savebugs_item", "Save Analysis...", KeyEvent.VK_B);
-		JMenuItem redoAnalysis = newJMenuItem("menu.rerunAnalysis", "Redo Analysis", KeyEvent.VK_R);
+		redoAnalysis = newJMenuItem("menu.rerunAnalysis", "Redo Analysis", KeyEvent.VK_R);
 		JMenuItem mergeMenuItem = newJMenuItem("menu.mergeAnalysis", "Merge Analysis...");
 		
 		JMenuItem exitMenuItem = null;
@@ -540,7 +549,7 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenu windowMenu = guiLayout.createWindowMenu();
 
 		
-		attachAccelaratorKey(newProjectMenuItem, KeyEvent.VK_N);
+		attachAcceleratorKey(newProjectMenuItem, KeyEvent.VK_N);
 		
 		newProjectMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
@@ -548,7 +557,7 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 		});
 		
-		attachAccelaratorKey(editProjectMenuItem, KeyEvent.VK_F);
+		attachAcceleratorKey(editProjectMenuItem, KeyEvent.VK_F);
 		editProjectMenuItem.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
@@ -559,7 +568,7 @@ public class MainFrame extends FBFrame implements LogSync
 		});
 		
 		openProjectMenuItem.setEnabled(true);
-		attachAccelaratorKey(openProjectMenuItem, KeyEvent.VK_O);
+		attachAcceleratorKey(openProjectMenuItem, KeyEvent.VK_O);
 		openProjectMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
 				openProject();
@@ -573,8 +582,8 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 		});
 		
-		redoAnalysis.setEnabled(true);
-		attachAccelaratorKey(redoAnalysis, KeyEvent.VK_R);
+		redoAnalysis.setEnabled(false);
+		attachAcceleratorKey(redoAnalysis, KeyEvent.VK_R);
 		redoAnalysis.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
 				redoAnalysis();
@@ -582,7 +591,7 @@ public class MainFrame extends FBFrame implements LogSync
 		});
 		
 		saveProjectMenuItem.setEnabled(false);
-		attachAccelaratorKey(saveProjectMenuItem, KeyEvent.VK_S);
+		attachAcceleratorKey(saveProjectMenuItem, KeyEvent.VK_S);
 		saveProjectMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
 				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
@@ -648,9 +657,9 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenuItem sortMenuItem = newJMenuItem("menu.sortConfiguration", "Sort Configuration...");
 		JMenuItem goToLineMenuItem = newJMenuItem("menu.gotoLine", "Go to line...");
 		
-		attachAccelaratorKey(cutMenuItem, KeyEvent.VK_X);
-		attachAccelaratorKey(copyMenuItem, KeyEvent.VK_C);
-		attachAccelaratorKey(pasteMenuItem, KeyEvent.VK_V);
+		attachAcceleratorKey(cutMenuItem, KeyEvent.VK_X);
+		attachAcceleratorKey(copyMenuItem, KeyEvent.VK_C);
+		attachAcceleratorKey(pasteMenuItem, KeyEvent.VK_V);
 		
 		preferencesMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
@@ -668,7 +677,7 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 		});
 		
-		attachAccelaratorKey(goToLineMenuItem, KeyEvent.VK_L);
+		attachAcceleratorKey(goToLineMenuItem, KeyEvent.VK_L);
 		goToLineMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){				
 				guiLayout.makeSourceVisible();
@@ -737,7 +746,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private void addNavItem(final ActionMap map, JMenu navMenu, String menuNameKey, String menuNameDefault, String actionName, int keyEvent) {
 		JMenuItem toggleItem = newJMenuItem(menuNameKey, menuNameDefault);
 		toggleItem.addActionListener(treeActionAdapter(map, actionName));	
-		attachAccelaratorKey(toggleItem, keyEvent);
+		attachAcceleratorKey(toggleItem, keyEvent);
 		navMenu.add(toggleItem);
 	}
 	ActionListener treeActionAdapter(ActionMap map, String actionName) {
@@ -748,7 +757,7 @@ public class MainFrame extends FBFrame implements LogSync
 				selectPrevious.actionPerformed(e);	
 			}};
 	}
-	static void attachAccelaratorKey(JMenuItem item, int keystroke) {
+	static void attachAcceleratorKey(JMenuItem item, int keystroke) {
 		attachAccelaratorKey(item, keystroke, 0);
 	}
 	static void attachAccelaratorKey(JMenuItem item, int keystroke,
@@ -766,6 +775,7 @@ public class MainFrame extends FBFrame implements LogSync
 	void newProject(){
 		setProjectChanged(true);		
 		clearSourcePane();
+		redoAnalysis.setEnabled(true);
 		
 		if(newProject){
 			setTitle("FindBugs: " + Project.UNNAMED_PROJECT);
@@ -1875,6 +1885,10 @@ public class MainFrame extends FBFrame implements LogSync
 					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					setProjectChanged(false);
 				}
+				else
+				{
+					tree.setModel(model);//Dont let it stay as a please wait tree forever.
+				}
 			}
 		}).start();
 		return;
@@ -2028,6 +2042,10 @@ public class MainFrame extends FBFrame implements LogSync
 								curProject.setProjectFileName(projectDirectory.getName());
 								MainFrame.this.setTitle("FindBugs: " + project.getProjectFileName());
 								MainFrame.getInstance().updateStatusBar();
+							}
+							else
+							{
+								tree.setModel(model);//Dont let it stay a please wait tree forever if the file was corrupt or empty
 							}
 						}
 					}).start();
