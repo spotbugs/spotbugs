@@ -70,6 +70,7 @@ public class Project implements XMLWriteable {
 	/**
 	 * Project filename.
 	 */
+    @Deprecated
 	private String projectFileName;
     
     private String projectName;
@@ -156,6 +157,7 @@ public class Project implements XMLWriteable {
 	/**
 	 * Get the project filename.
 	 */
+    @Deprecated
 	public String getProjectFileName() {
 		return projectFileName;
 	}
@@ -165,6 +167,7 @@ public class Project implements XMLWriteable {
 	 *
 	 * @param projectFileName the new filename
 	 */
+    @Deprecated
 	public void setProjectFileName(String projectFileName) {
 		this.projectFileName = projectFileName;
 	}
@@ -642,6 +645,18 @@ public class Project implements XMLWriteable {
 		return line;
 	}
 
+    
+    public String projectNameFromProjectFileName() {
+        String name = projectFileName;
+        int lastSep = name.lastIndexOf(File.separatorChar);
+        if (lastSep >= 0)
+            name = name.substring(lastSep + 1);
+        int dot = name.lastIndexOf('.');
+        if (dot >= 0)
+            name = name.substring(0, dot);
+        return name;
+
+    }
 	/**
 	 * Convert to a string in a nice (displayable) format.
 	 */
