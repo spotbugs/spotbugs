@@ -142,6 +142,9 @@
 	<h2>Project Information</h2>	
 	<xsl:apply-templates select="/BugCollection/Project"/>
 
+	<h2>Metrics</h2>
+	<xsl:apply-templates select="/BugCollection/FindBugsSummary"/>
+
 	<h2>Contents</h2>
 	<ul>
 		<xsl:for-each select="$unique-catkey">
@@ -226,6 +229,7 @@
 			<li><xsl:value-of select="text()"/></li>
 		</xsl:for-each>
 	</ul>
+	<p><br/><br/></p>
 </xsl:template>
 
 <xsl:template match="BugInstance">
@@ -277,6 +281,55 @@
 			<xsl:sort select="Class/@classname"/>
 		</xsl:apply-templates>
 	</table>
+</xsl:template>
+
+<xsl:template match="FindBugsSummary">
+    <xsl:variable name="kloc" select="@total_size div 1000.0"/>
+    <xsl:variable name="format" select="'#######0.00'"/>
+
+	<p><xsl:value-of select="@total_size"/> lines of code analysed,
+	in <xsl:value-of select="@total_classes"/> classes, 
+	in <xsl:value-of select="@num_packages"/> packages.</p>
+	<table width="500" cellpadding="5" cellspacing="2">
+	    <tr class="tableheader">
+			<th align="left">Metric</th>
+			<th align="right">Total</th>
+			<th align="right">Density*</th>
+		</tr>
+		<tr class="tablerow0">
+			<td>High Priority Warnings</td>
+			<td align="right"><xsl:value-of select="@priority_1"/></td>
+			<td align="right"><xsl:value-of select="format-number(@priority_1 div $kloc, $format)"/></td>
+		</tr>
+		<tr class="tablerow1">
+			<td>Medium Priority Warnings</td>
+			<td align="right"><xsl:value-of select="@priority_2"/></td>
+			<td align="right"><xsl:value-of select="format-number(@priority_2 div $kloc, $format)"/></td>
+		</tr>
+
+    <xsl:choose>
+		<xsl:when test="@priority_3">
+			<tr class="tablerow1">
+				<td>Low Priority Warnings</td>
+				<td align="right"><xsl:value-of select="@priority_3"/></td>
+				<td align="right"><xsl:value-of select="format-number(@priority_3 div $kloc, $format)"/></td>
+			</tr>
+			<xsl:variable name="totalClass" select="tablerow0"/>
+		</xsl:when>
+		<xsl:otherwise>
+		    <xsl:variable name="totalClass" select="tablerow1"/>
+		</xsl:otherwise>
+	</xsl:choose>
+
+		<tr class="$totalClass">
+			<td><b>Total Warnings</b></td>
+			<td align="right"><b><xsl:value-of select="@total_bugs"/></b></td>
+			<td align="right"><b><xsl:value-of select="format-number(@total_bugs div $kloc, $format)"/></b></td>
+		</tr>
+	</table>
+	<p><i>(* Defects per Thousand lines of non-commenting source statetements)</i></p>
+	<p><br/><br/></p>
+
 </xsl:template>
 
 </xsl:stylesheet>
