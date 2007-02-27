@@ -171,7 +171,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 		    seen == I2B && getPrevOpcode(1) == IUSHR
 				&& (!constantArgumentToShift || valueOfConstantArgumentToShift % 8 != 0)
 			 )
-			 bugReporter.reportBug(new BugInstance(this, "ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT", LOW_PRIORITY)
+			 bugReporter.reportBug(new BugInstance(this, "ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT", NORMAL_PRIORITY)
                                         .addClassAndMethod(this)
                                         .addSourceLine(this));
 
