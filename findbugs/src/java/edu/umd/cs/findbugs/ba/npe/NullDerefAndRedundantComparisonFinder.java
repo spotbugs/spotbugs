@@ -292,9 +292,20 @@ public class NullDerefAndRedundantComparisonFinder {
 			
 			ValueNumberFrame vnaFact = vnaDataflow.getResultFact(edge.getSource());
 			IsNullValueFrame invFact = invDataflow.getFactOnEdge(edge);
-			UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
+			//UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
+            UnconditionalValueDerefSet uvdFact = uvdDataflow.getStartFact(edge.getTarget());
+               
+            
+            if (uvdFact.isEmpty()) continue;
 			Location location = Location.getLastLocation(edge.getSource());
 			if (location != null) {
+                if (false) {
+                IsNullValueFrame invSourceFact = invDataflow.getResultFact(edge.getSource());
+                IsNullValueFrame invTargetFact = invDataflow.getStartFact(edge.getTarget());
+                UnconditionalValueDerefSet uvdSourceFact = uvdDataflow.getResultFact(edge.getSource());
+                UnconditionalValueDerefSet uvdTargetFact = uvdDataflow.getStartFact(edge.getTarget());
+                }
+                
 				Instruction in = location.getHandle().getInstruction();
 				if (assertionMethods.isAssertionInstruction(in, classContext.getConstantPoolGen())) {
 					if (DEBUG_DEREFS) 
@@ -443,7 +454,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		if (!vnaFrame.isValid() || !invFrame.isValid() || vnaFrame.getNumSlots() != invFrame.getNumSlots())  {
 			return;
 		}
-
+		if (derefSet.isEmpty()) return;
 		// See if there are any definitely-null values in the frame
 		for (int j = 0; j < invFrame.getNumSlots(); j++) {
 		    IsNullValue isNullValue = invFrame.getValue(j); 
