@@ -292,8 +292,8 @@ public class NullDerefAndRedundantComparisonFinder {
 			
 			ValueNumberFrame vnaFact = vnaDataflow.getResultFact(edge.getSource());
 			IsNullValueFrame invFact = invDataflow.getFactOnEdge(edge);
-			//UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
-            UnconditionalValueDerefSet uvdFact = uvdDataflow.getStartFact(edge.getTarget());
+			UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
+            // UnconditionalValueDerefSet uvdFact = uvdDataflow.getStartFact(edge.getTarget());
                
             
             if (uvdFact.isEmpty()) continue;
