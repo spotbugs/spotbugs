@@ -34,7 +34,14 @@
 <html>
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-      <title>FindBugs (<xsl:value-of select="/BugCollection/@version" />) Analysis for <xsl:value-of select="/BugCollection/Project/@filename" /></title>
+      <title>
+         FindBugs (<xsl:value-of select="/BugCollection/@version" />) 
+         Analysis for 
+         <xsl:choose>
+            <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
+            <xsl:otherwise><xsl:value-of select="/BugCollection/Project/@filename" /></xsl:otherwise>
+         </xsl:choose>
+      </title>
       <script type="text/javascript">
          function show(foo) {
             document.getElementById(foo).style.display="block";
@@ -288,7 +295,14 @@
    </head>
    <body>
    <div id='content'>
-      <h1>FindBugs (<xsl:value-of select="/BugCollection/@version" />) Analysis for <xsl:value-of select="/BugCollection/Project/@filename" /></h1>
+      <h1>
+         FindBugs (<xsl:value-of select="/BugCollection/@version" />) 
+         Analysis for 
+         <xsl:choose>
+            <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
+            <xsl:otherwise><xsl:value-of select="/BugCollection/Project/@filename" /></xsl:otherwise>
+         </xsl:choose>
+      </h1>
       <div id="menu">
          <ul>
             <li id='bug-summary-tab' class='menu-tab-selected'>

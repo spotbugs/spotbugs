@@ -34,7 +34,14 @@
 <html>
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-      <title>FindBugs (<xsl:value-of select="/BugCollection/@version" />) Analysis for <xsl:value-of select="/BugCollection/Project/@filename" /></title>
+      <title>
+         FindBugs (<xsl:value-of select="/BugCollection/@version" />) 
+         Analysis for 
+         <xsl:choose>
+            <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
+            <xsl:otherwise><xsl:value-of select="/BugCollection/Project/@filename" /></xsl:otherwise>
+         </xsl:choose>
+      </title>
       <style type="text/css">
          html, body, div, form {
             margin:0px;
@@ -957,7 +964,14 @@
       </script>
    </head>
    <body>
-      <h3>FindBugs (<xsl:value-of select="/BugCollection/@version" />) Analysis for <xsl:value-of select="/BugCollection/Project/@filename" /></h3>
+      <h3>
+         FindBugs (<xsl:value-of select="/BugCollection/@version" />) 
+         Analysis for 
+         <xsl:choose>
+            <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
+            <xsl:otherwise><xsl:value-of select="/BugCollection/Project/@filename" /></xsl:otherwise>
+         </xsl:choose>
+      </h3>
 
       <div id='menuWrapper' style=''>
          <div id="navcontainer">
