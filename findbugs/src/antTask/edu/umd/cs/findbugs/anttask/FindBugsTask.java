@@ -132,6 +132,7 @@ public class FindBugsTask extends Task {
 	private boolean failOnError = false;
 	private String errorProperty = null;
 	private String warningsProperty = null;
+    private String projectName = null;
 	private boolean workHard = false;
 	private boolean relaxed = false;
 	private boolean adjustExperimental = false;
@@ -326,6 +327,15 @@ public class FindBugsTask extends Task {
 	public void setEffort(String effort) {
 		this.effort = effort;
 	}
+
+    /**
+     * Set project name
+     * 
+     * @param projectName the project name
+     */
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
 
 	/**
 	 * Set the conserveSpace flag.
@@ -701,6 +711,10 @@ public class FindBugsTask extends Task {
 			addArg(pluginList.toString());
 		}
 		
+        if (projectName != null) {
+            addArg("-projectName");
+            addArg(projectName);
+        }
 		if (adjustExperimental) {
 			addArg("-adjustExperimental");
 		}

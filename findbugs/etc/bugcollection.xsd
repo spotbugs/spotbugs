@@ -13,7 +13,8 @@
 							<xs:element name="AuxClasspathEntry" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 							<xs:element name="SrcDir" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 						</xs:sequence>
-						<xs:attribute name="filename" type="xs:string" use="required" />
+						<xs:attribute name="filename" type="xs:string" use="optional" />
+						<xs:attribute name="projectName" type="xs:string" use="optional" />
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="BugInstance" maxOccurs="unbounded">

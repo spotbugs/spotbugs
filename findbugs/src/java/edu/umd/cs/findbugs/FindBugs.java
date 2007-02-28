@@ -492,6 +492,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	private String trainingOutputDir;
 	private AnalysisFeatureSetting[] settingList = DEFAULT_EFFORT;
 	private String releaseName;
+    private String projectName;
 	
 	private int passCount;
 	private String sourceInfoFile;
@@ -641,6 +642,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			this.settingList  = settingList;
 	}
 	
+    
+    
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getReleaseName()
 	 */
@@ -1582,6 +1585,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			
 			Project project = findBugs.getProject();
 			
+            project.setProjectName(findBugs.getProjectName());
 			if (project.getTimestamp() != 0) {
 				bugCollectionBugReporter.getBugCollection().setTimestamp(project.getTimestamp());
 				bugCollectionBugReporter.getBugCollection().getProjectStats().setTimestamp(project.getTimestamp());
@@ -1589,6 +1593,21 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 
 		}
 	}
+
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IFindBugsEngine#getProjectName()
+     */
+    public String getProjectName() {
+        return projectName;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IFindBugsEngine#setProjectName(java.lang.String)
+     */
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+        
+    }
 }
 
 // vim:ts=4

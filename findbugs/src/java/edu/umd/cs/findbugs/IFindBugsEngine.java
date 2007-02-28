@@ -149,6 +149,18 @@ public interface IFindBugsEngine {
 	 */
 	public void setReleaseName(String releaseName);
 
+    
+    /**
+     * @return Returns the projectName.
+     */
+    public String getProjectName();
+
+    /**
+     * @param projectName The project name to set.
+     */
+    public void setProjectName(String projectName);
+
+
 	/**
 	 * Set the filename of the source info file containing line numbers for fields
 	 * and classes.

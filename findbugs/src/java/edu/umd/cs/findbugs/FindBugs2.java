@@ -88,6 +88,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private UserPreferences userPreferences;
 	private String currentClassName;
 	private String releaseName;
+    private String projectName;
 	private String sourceInfoFileName;
 	private AnalysisFeatureSetting[] analysisFeatureSettingList;
 	private boolean relaxedReportingMode;
@@ -263,9 +264,17 @@ public class FindBugs2 implements IFindBugsEngine {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getReleaseName()
 	 */
+    
 	public String getReleaseName() {
 		return releaseName;
 	}
+    
+    public String getProjectName() {
+        return projectName;
+    }
+    public void setProjectName(String name) {
+        projectName = name;
+    }
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setAnalysisFeatureSettings(edu.umd.cs.findbugs.config.AnalysisFeatureSetting[])
@@ -316,6 +325,8 @@ public class FindBugs2 implements IFindBugsEngine {
 	public void setReleaseName(String releaseName) {
 		this.releaseName = releaseName;
 	}
+    
+    
 	
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setSourceInfoFile(java.lang.String)

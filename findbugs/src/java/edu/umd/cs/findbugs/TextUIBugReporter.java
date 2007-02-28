@@ -40,7 +40,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
     private boolean reportHistory = false;
     private boolean reportUserDesignations = false;
     
-	private static final String OTHER_CATEGORY_ABBREV = "X";
+	static final String OTHER_CATEGORY_ABBREV = "X";
 
 	protected PrintStream outputStream = System.out;
 	

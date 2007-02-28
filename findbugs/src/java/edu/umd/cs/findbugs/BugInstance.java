@@ -223,7 +223,22 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public String getPriorityTypeString()
 	{
-		//first, get the priority
+		String priorityString = getPriorityString();
+		//then get the category and put everything together
+		String categoryString = I18N.instance().getBugCategoryDescription(this.getBugPattern().getCategory());
+		return priorityString + " Priority " + categoryString;
+		//TODO: internationalize the word "Priority"
+	}
+
+    public String getPriorityTypeAbbreviation()
+    {
+        String priorityString = getPriorityAbbreviation();
+         return priorityString + " " + getBugPattern().getCategoryAbbrev();
+       
+    }
+
+    public String getPriorityString() {
+        //first, get the priority
 		int value = this.getPriority();
 		String priorityString;
 		if (value == Detector.HIGH_PRIORITY)
@@ -236,12 +251,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_experimental", "Experimental");
 		else
 			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This probably shouldn't ever happen, but what the hell, let's be complete
-		//then get the category and put everything together
-		String categoryString = I18N.instance().getBugCategoryDescription(this.getBugPattern().getCategory());
-		return priorityString + " Priority " + categoryString;
-		//TODO: internationalize the word "Priority"
-	}
+        return priorityString;
+    }
 	
+    public String getPriorityAbbreviation() {
+        return getPriorityString().substring(0,1);
+    }
 	/**
 	 * Set the bug priority.
 	 */
@@ -1380,6 +1395,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public String getMessageWithPriorityType() {
 		return "(" + this.getPriorityTypeString() + ") " + this.getMessage();
 	}
+
+    public String getMessageWithPriorityTypeAbbreviation() {
+        return this.getPriorityTypeAbbreviation() + " "+ this.getMessage();
+    }
 
 	/**
 	 * Add a description to the most recently added bug annotation.

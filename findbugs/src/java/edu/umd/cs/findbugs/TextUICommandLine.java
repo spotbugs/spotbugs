@@ -79,6 +79,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private String trainingOutputDir;
 	private String trainingInputDir;
 	private String releaseName = "";
+    private String projectName="";
 	private String sourceInfoFile = null;
 	private boolean xargs = false;
 	private boolean scanNestedArchives = false;
@@ -112,6 +113,8 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				"Use training data (experimental); input dir defaults to '.'");
 		addOption("-sourceInfo", "filename",
 				"Specify source info file (line numbers for fields/classes)");
+        addOption("-projectName", "project name", "Descriptive name of project");
+        
 		addOption("-outputFile", "filename", "Save output in named file");
 		addOption("-visitors", "v1[,v2...]", "run only named visitors");
 		addOption("-omitVisitors", "v1[,v2...]", "omit named visitors");
@@ -233,7 +236,9 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				System.err.println("Couldn't open " + outputFile + " for output: " + e.toString());
 				System.exit(1);
 			}
-		} else if (option.equals("-release")) {
+		} else if (option.equals("-projectName")) {
+            this.projectName = argument;
+        } else if (option.equals("-release")) {
 			this.releaseName = argument;
 		} else if (option.equals("-sourceInfo")) {
 			sourceInfoFile = argument;
@@ -444,6 +449,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		findBugs.setAnalysisFeatureSettings(settingList);
 
 		findBugs.setReleaseName(releaseName);
+        findBugs.setProjectName(projectName);
 		
 		findBugs.setScanNestedArchives(scanNestedArchives);
 	}
