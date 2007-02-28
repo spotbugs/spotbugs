@@ -25,6 +25,34 @@ public class Bug1629176 {
     }
     }
 
+    void f2() throws SQLException {
+        PreparedStatement insertFieldAudit  = null;
+      try{
+           insertFieldAudit = getConnection().prepareStatement(INSERT_FIELD_AUDIT );
+            insertFieldAudit.executeUpdate();
+            insertFieldAudit = getConnection().prepareStatement(INSERT_FIELD_AUDIT );
+        insertFieldAudit.executeUpdate();
+
+        
+        } finally {
+            insertFieldAudit.close();
+        // closeStatement( insertFieldAudit );
+        }
+        }
+
+    void f3() throws SQLException {
+        PreparedStatement insertFieldAudit  = null;
+           insertFieldAudit = getConnection().prepareStatement(INSERT_FIELD_AUDIT );
+            insertFieldAudit.executeUpdate();
+            insertFieldAudit = getConnection().prepareStatement(INSERT_FIELD_AUDIT );
+        insertFieldAudit.executeUpdate();
+
+          }
+
+        
+    
+    
+    
     private void closeStatement(PreparedStatement insertFieldAudit) {
         // TODO Auto-generated method stub
         
