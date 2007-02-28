@@ -59,6 +59,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	int valueOfConstantArgumentToShift;
 	int best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG ;
 	boolean constantArgumentToShift;
+    boolean shiftOfNonnegativeValue;
 	
 	int badlyComputingOddState;
 	int prevOpCode;
@@ -165,17 +166,19 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 			 bugReporter.reportBug(new BugInstance(this, "IM_MULTIPLYING_RESULT_OF_IREM", LOW_PRIORITY)
                                         .addClassAndMethod(this)
                                         .addSourceLine(this));
-		if (seen == I2S && getPrevOpcode(1) == IUSHR
-				&& (!constantArgumentToShift || valueOfConstantArgumentToShift % 16 != 0)
-			||
-		    seen == I2B && getPrevOpcode(1) == IUSHR
-				&& (!constantArgumentToShift || valueOfConstantArgumentToShift % 8 != 0)
-			 )
-			 bugReporter.reportBug(new BugInstance(this, "ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT", NORMAL_PRIORITY)
-                                        .addClassAndMethod(this)
-                                        .addSourceLine(this));
+        
+
+		if (seen == I2S && getPrevOpcode(1) == IUSHR && !shiftOfNonnegativeValue && 
+                (!constantArgumentToShift || valueOfConstantArgumentToShift % 16 != 0)
+                || seen == I2B && getPrevOpcode(1) == IUSHR && !shiftOfNonnegativeValue
+                && (!constantArgumentToShift || valueOfConstantArgumentToShift % 8 != 0)) 
+            
+                bugReporter.reportBug(new BugInstance(this, "ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT", NORMAL_PRIORITY)
+                        .addClassAndMethod(this).addSourceLine(this));
+        
 
 		constantArgumentToShift = false;
+        shiftOfNonnegativeValue = false;
 		if ( (seen == IUSHR 
 				|| seen == ISHR 
 				|| seen == ISHL )) {
@@ -187,8 +190,10 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 			else {
 			Object rightHandSide
 				 = stack.getStackItem(0).getConstant();
+           
 			Object leftHandSide 
 				=  stack.getStackItem(1).getConstant();
+             shiftOfNonnegativeValue = stack.getStackItem(1).isNonNegative();
 			if (rightHandSide instanceof Integer) {
 				constantArgumentToShift = true;
 				valueOfConstantArgumentToShift = ((Integer) rightHandSide);
