@@ -432,4 +432,11 @@ public class UnconditionalValueDerefSet {
 	public int getLastUpdateTimestamp() {
 		return lastUpdateTimestamp;
 	}
+
+    /**
+     * @return
+     */
+    public boolean isEmpty() {
+        return valueNumbersUnconditionallyDereferenced.isEmpty();
+    }
 }
