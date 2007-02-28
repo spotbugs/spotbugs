@@ -99,6 +99,7 @@ public class OpcodeStack implements Constants2
 		public static final int HASHCODE_INT_REMAINDER = 9;
 		public static final int FILE_SEPARATOR_STRING = 10;
         public static final int MATH_ABS = 11;
+        public static final int MASKED_NON_NEGATIVE = 12;
 		
 		private static final int IS_INITIAL_PARAMETER_FLAG=1;
 		private static final int COULD_BE_ZERO_FLAG = 2;
@@ -200,6 +201,9 @@ public class OpcodeStack implements Constants2
 				break;
             case  MATH_ABS:
                 buf.append(", Math.abs");
+                break;
+            case  MASKED_NON_NEGATIVE:
+                buf.append(", masked_non_negative");
                 break;
 			case 0 :
 				break;
@@ -361,6 +365,14 @@ public class OpcodeStack implements Constants2
  			}
  		}
  		
+        public boolean isNonNegative() {
+            if (specialKind == MASKED_NON_NEGATIVE) return true;
+            if (constValue instanceof Number) {
+                double value = ((Number) constValue).doubleValue();
+                return value >= 0;
+            }
+            return false;
+        }
  		public boolean isPrimitive() {
  			return !signature.startsWith("L");
  		}
@@ -1777,13 +1789,26 @@ public class OpcodeStack implements Constants2
 				newValue = new Item("I", lhsValue % rhsValue);
 			else if (seen == IUSHR)
 				newValue = new Item("I", lhsValue >>> rhsValue);
-		} else if (rhs.getConstant() != null && seen == ISHL  && (Integer) rhs.getConstant() >= 8)
-			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
- 		else if (lhs.getConstant() != null && seen == IAND  && ((Integer) lhs.getConstant() & 0xff) == 0)
-			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
- 		else if (rhs.getConstant() != null && seen == IAND  && ((Integer) rhs.getConstant() & 0xff) == 0)
-			newValue.specialKind = Item.LOW_8_BITS_CLEAR;
-		} catch (RuntimeException e) {
+            } else if (rhs.getConstant() != null && seen == ISHL && (Integer) rhs.getConstant() >= 8)
+                newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+            else if (lhs.getConstant() != null && seen == IAND) {
+                int value = (Integer) lhs.getConstant();
+                if (value == 0)
+                    newValue = new Item("I", 0);
+                else if ((value & 0xff) == 0)
+                    newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+                else if (value >= 0)
+                    newValue.specialKind = Item.MASKED_NON_NEGATIVE;
+            } else if (rhs.getConstant() != null && seen == IAND) {
+                int value = (Integer) rhs.getConstant();
+                if (value == 0)
+                    newValue = new Item("I", 0);
+                else if ((value & 0xff) == 0)
+                    newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+                else if (value >= 0)
+                    newValue.specialKind = Item.MASKED_NON_NEGATIVE;
+            }
+        } catch (RuntimeException e) {
  			// ignore it
  		}
 		if (lhs.specialKind == Item.INTEGER_SUM && rhs.getConstant() != null ) {
