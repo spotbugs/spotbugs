@@ -48,7 +48,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 	@Override
 	public void visit(JavaClass obj) {
 		String superclassName2 = getSuperclassName();
-        isAnonymousInnerClass = ClassName.isAnonymous(getClassName()) && !superclassName2.equals("java.lang.Object");
+        isAnonymousInnerClass = ClassName.isAnonymous(getClassName()) && 
+        !(superclassName2.equals("java.lang.Object") && obj.getInterfaceIndices().length == 0);
 	}
 
 	boolean definedInThisClassOrSuper(JavaClass clazz, String method)
