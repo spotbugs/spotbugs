@@ -89,7 +89,7 @@ public abstract class PointerUsageRequiringNonNullValue {
 
             @Override
             public String getDescription() {
-                return  "SOURCE_LINE_PASSED";
+                return  "SOURCE_LINE_INVOKED";
             }
 
         };
