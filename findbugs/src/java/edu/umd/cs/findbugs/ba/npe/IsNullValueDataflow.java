@@ -22,6 +22,7 @@ package edu.umd.cs.findbugs.ba.npe;
 import edu.umd.cs.findbugs.ba.AbstractDataflow;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
+import edu.umd.cs.findbugs.ba.Edge;
 import edu.umd.cs.findbugs.ba.Location;
 
 public class IsNullValueDataflow extends AbstractDataflow<IsNullValueFrame, IsNullValueAnalysis> {
@@ -33,6 +34,11 @@ public class IsNullValueDataflow extends AbstractDataflow<IsNullValueFrame, IsNu
 	public IsNullValueFrame getFactAtLocation(Location loc) throws DataflowAnalysisException {
 		return getAnalysis().getFactAtLocation(loc);
 	}
+   
+    public IsNullValueFrame getFactAtMidEdge(Edge edge) throws DataflowAnalysisException {
+        return getAnalysis().getFactAtMidEdge(edge);
+    }
+    
 }
 
 // vim:ts=4

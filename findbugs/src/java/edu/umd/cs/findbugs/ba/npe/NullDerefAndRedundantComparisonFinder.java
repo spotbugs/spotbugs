@@ -291,20 +291,24 @@ public class NullDerefAndRedundantComparisonFinder {
 			}
 			
 			ValueNumberFrame vnaFact = vnaDataflow.getResultFact(edge.getSource());
-			IsNullValueFrame invFact = invDataflow.getFactOnEdge(edge);
+            ValueNumberFrame vnaEdgeFact = vnaDataflow.getFactOnEdge(edge);
+            ValueNumberFrame vnaTargetFact = vnaDataflow.getStartFact(edge.getTarget());
+            
+			IsNullValueFrame invFact = invDataflow.getFactAtMidEdge(edge);
+            
+                IsNullValueFrame invSourceFact = invDataflow.getResultFact(edge.getSource());
+                IsNullValueFrame invTargetFact = invDataflow.getStartFact(edge.getTarget());
+                UnconditionalValueDerefSet uvdSourceFact = uvdDataflow.getStartFact(edge.getSource());
+                UnconditionalValueDerefSet uvdTargetFact = uvdDataflow.getResultFact(edge.getTarget());
+                Location location = Location.getLastLocation(edge.getSource());
+                
 			UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
             // UnconditionalValueDerefSet uvdFact = uvdDataflow.getStartFact(edge.getTarget());
                
             
             if (uvdFact.isEmpty()) continue;
-			Location location = Location.getLastLocation(edge.getSource());
 			if (location != null) {
-                if (false) {
-                IsNullValueFrame invSourceFact = invDataflow.getResultFact(edge.getSource());
-                IsNullValueFrame invTargetFact = invDataflow.getStartFact(edge.getTarget());
-                UnconditionalValueDerefSet uvdSourceFact = uvdDataflow.getResultFact(edge.getSource());
-                UnconditionalValueDerefSet uvdTargetFact = uvdDataflow.getStartFact(edge.getTarget());
-                }
+                
                 
 				Instruction in = location.getHandle().getInstruction();
 				if (assertionMethods.isAssertionInstruction(in, classContext.getConstantPoolGen())) {

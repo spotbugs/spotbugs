@@ -284,7 +284,11 @@ public class IsNullValueAnalysis
 		nullComparisonInstructionSet.set(Constants.IF_ACMPNE);
 	}
 
-	public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result)
+    public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result)
+    throws DataflowAnalysisException {
+        meetInto(fact,edge,result,true);
+    }
+	public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result, boolean propagatePhiNodeInformation)
 	        throws DataflowAnalysisException {
 
 		if (fact.isValid()) {
@@ -433,7 +437,7 @@ public class IsNullValueAnalysis
 					}
 				} // if (sourceBlock.isNullCheck() && edgeType == FALL_THROUGH_EDGE)
 
-				if (targetVnaFrame.phiNodeForLoads) {
+				if (propagatePhiNodeInformation && targetVnaFrame.phiNodeForLoads) {
 					if (DEBUG) 
 						System.out.println("Is phi node for loads");
 					for(ValueNumber v : fact.getKnownValues()) {
@@ -734,6 +738,21 @@ public class IsNullValueAnalysis
 		return frame;
 
 	}
+    
+    public IsNullValueFrame getFactAtMidEdge(Edge edge) throws DataflowAnalysisException {
+        BasicBlock block = isForwards() ? edge.getSource() : edge.getTarget();
+        
+        IsNullValueFrame predFact = createFact();
+        copy(getResultFact(block), predFact);
+        
+        edgeTransfer(edge, predFact);
+        
+        IsNullValueFrame result = createFact();
+        makeFactTop(result);
+        meetInto(predFact, edge, result, false);
+
+        return result;
+    }
 
 	/**
 	 * Test driver.

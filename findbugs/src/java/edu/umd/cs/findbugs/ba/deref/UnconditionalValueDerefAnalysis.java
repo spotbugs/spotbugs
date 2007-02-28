@@ -161,7 +161,7 @@ public class UnconditionalValueDerefAnalysis extends
 			BasicBlock basicBlock, UnconditionalValueDerefSet fact)
 			throws DataflowAnalysisException {
 		
-        if (DEBUG) {
+        if (false && DEBUG) {
             System.out.println("XXX: " + handle.getPosition() + " " + handle.getInstruction());
         }
        	if (fact.isTop()) return;
@@ -648,9 +648,9 @@ public class UnconditionalValueDerefAnalysis extends
 								System.out.println("** Copy vn derefs for " + load +" from " + targetVN + 
 										" --> " + blockVN);
 								System.out.println("** block phi for " +  System.identityHashCode(blockValueNumberFrame)
-										+ "is " + blockValueNumberFrame.phiNodeForLoads);
+										+ " is " + blockValueNumberFrame.phiNodeForLoads);
 								System.out.println("** target phi for " +  System.identityHashCode(targetValueNumberFrame)
-										+ "is " + targetValueNumberFrame.phiNodeForLoads);
+										+ " is " + targetValueNumberFrame.phiNodeForLoads);
 							}
 							fact.setDerefSet(blockVN, fact.getUnconditionalDerefLocationSet(targetVN));
 
