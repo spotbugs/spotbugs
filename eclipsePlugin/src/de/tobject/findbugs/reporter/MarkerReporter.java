@@ -97,7 +97,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 			else
 				marker.setAttribute(FindBugsMarker.FIRST_VERSION, Long.toString(theVersion.getTimestamp()));
 		}
-		marker.setAttribute(IMarker.MESSAGE, bug.getMessageWithPriorityType());
+		marker.setAttribute(IMarker.MESSAGE, bug.getMessageWithPriorityTypeAbbreviation());
 		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
 		marker.setAttribute(FindBugsMarker.PRIORITY_TYPE, bug.getPriorityTypeString());
 		if (bug.getPriority() == Detector.HIGH_PRIORITY)
