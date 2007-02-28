@@ -872,7 +872,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	
     public BugInstance addFoundAndExpectedType(String foundType, String expectedType) {
         add( new TypeAnnotation(foundType)).describe(TypeAnnotation.FOUND_ROLE);
-        add( new TypeAnnotation(expectedType)).describe(TypeAnnotation.FOUND_ROLE);
+        add( new TypeAnnotation(expectedType)).describe(TypeAnnotation.EXPECTED_ROLE);
         return this;
     }
 
