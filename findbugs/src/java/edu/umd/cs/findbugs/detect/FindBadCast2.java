@@ -63,9 +63,7 @@ public class FindBadCast2 implements Detector {
 	private Set<String> abstractCollectionClasses = new HashSet<String>();
 	private Set<String> veryAbstractCollectionClasses = new HashSet<String>();
 
-	private static final boolean DEBUG = SystemProperties.getBoolean("bc.debug");
-    private JavaClass javaLangClass,javaLangReflectType;
-    
+	private static final boolean DEBUG = SystemProperties.getBoolean("bc.debug");  
 
 	public FindBadCast2(BugReporter bugReporter) {		
 		this.bugReporter = bugReporter;
@@ -87,16 +85,7 @@ public class FindBadCast2 implements Detector {
 		concreteCollectionClasses.add("java.util.LinkedList");
 		concreteCollectionClasses.add("java.util.Hashtable");
 		concreteCollectionClasses.add("java.util.Vector");
-        try {
-            javaLangClass = Repository.lookupClass("java.lang.Class");
-        } catch (ClassNotFoundException e) {
-           assert true;
-        }
-        try {
-            javaLangReflectType = Repository.lookupClass("java.lang.reflect.Type");
-        } catch (ClassNotFoundException e) {
-           assert true;
-        }
+
 	}
 
 	public void visitClassContext(ClassContext classContext) {
