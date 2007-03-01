@@ -244,7 +244,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		if (value == Detector.HIGH_PRIORITY)
 			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_high", "High");
 		else if (value == Detector.NORMAL_PRIORITY)
-			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_normal", "Normal");
+			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_normal", "Medium");
 		else if (value == Detector.LOW_PRIORITY)
 			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_low", "Low");
 		else if (value == Detector.EXP_PRIORITY)
