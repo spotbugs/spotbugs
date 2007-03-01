@@ -20,22 +20,21 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -46,8 +45,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
 import edu.umd.cs.findbugs.Project;
@@ -86,6 +83,7 @@ public class NewProjectWizard extends FBDialog
 	private JList analyzeList = new JList();
 	private DefaultListModel analyzeModel = new DefaultListModel();
 
+    private JTextField projectName = new JTextField();
 	private JList auxList = new JList();
 	private DefaultListModel auxModel = new DefaultListModel();
 	
@@ -95,7 +93,7 @@ public class NewProjectWizard extends FBDialog
 	private JButton finishButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.finish_btn", "Finish"));
 	private JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
 	
-	private JPanel[] wizardPanels = new JPanel[3];
+	private JComponent[] wizardComponents = new JComponent[3];
 	private int currentPanel;
 	
 	public NewProjectWizard()
@@ -120,13 +118,13 @@ public class NewProjectWizard extends FBDialog
 		mainPanel.setLayout(new GridLayout(3,1));
 		
 		
-		wizardPanels[0] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl", "Class archives and directories to analyze:"), 
+       wizardComponents[0] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl", "Class archives and directories to analyze:"), 
 				analyzeList, analyzeModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive);
 		
-		wizardPanels[1] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.aux_class_lbl", "Auxiliary class locations:"), 
+		wizardComponents[1] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.aux_class_lbl", "Auxiliary class locations:"), 
 				auxList, auxModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive);
 		
-		wizardPanels[2] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.source_dirs_lbl", "Source directories:"), sourceList, sourceModel, JFileChooser.FILES_AND_DIRECTORIES, null);
+		wizardComponents[2] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.source_dirs_lbl", "Source directories:"), sourceList, sourceModel, JFileChooser.FILES_AND_DIRECTORIES, null);
 				
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
@@ -196,6 +194,7 @@ public class NewProjectWizard extends FBDialog
                     p.addAuxClasspathEntry((String) auxModel.get(i));
                 for (int i = 0; i < sourceModel.getSize(); i++)
                     p.addSourceDir((String) sourceModel.get(i));
+                p.setProjectName(projectName.getText());
 
                 if (keepGoing) {
                     MainFrame.getInstance().setProject(p);
@@ -234,6 +233,7 @@ public class NewProjectWizard extends FBDialog
 				auxModel.addElement(i);
 			for (String i : curProject.getSourceDirList())
 				sourceModel.addElement(i);
+            projectName.setText(curProject.getProjectName());
 		}
 		else
 		{
@@ -245,7 +245,9 @@ public class NewProjectWizard extends FBDialog
 		loadAllPanels(mainPanel);
 		add(mainPanel, BorderLayout.CENTER);
 		add(south, BorderLayout.SOUTH);
-		
+        add(createTextFieldPanel("Project name (i.e., description)", projectName), 
+               BorderLayout.NORTH);
+            
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 //		pack();
@@ -253,6 +255,14 @@ public class NewProjectWizard extends FBDialog
 		setVisible(true);
 	}
 
+    private JComponent createTextFieldPanel(String label, JTextField textField) {
+        JPanel myPanel = new JPanel(new BorderLayout());
+        
+        myPanel.add(new JLabel(label), BorderLayout.NORTH);
+        myPanel.add(textField, BorderLayout.CENTER);
+        
+        return myPanel;
+    }
 	/**
 	 * @param label TODO
 	 * 
@@ -357,11 +367,11 @@ public class NewProjectWizard extends FBDialog
 		{
 			public void run()
 			{
-				int numPanels = wizardPanels.length;
+				int numPanels = wizardComponents.length;
 				for(int i=0; i<numPanels; i++)
-					mainPanel.remove(wizardPanels[i]);
+					mainPanel.remove(wizardComponents[i]);
 				for(int i=0; i<numPanels; i++)
-					mainPanel.add(wizardPanels[i]);
+					mainPanel.add(wizardComponents[i]);
 				validate();
 				repaint();
 			}
@@ -372,8 +382,8 @@ public class NewProjectWizard extends FBDialog
     public void addNotify(){
 		super.addNotify();
 		
-		for(JPanel panel : wizardPanels){
-			setFontSizeHelper(panel.getComponents(), Driver.getFontSize());
+		for(JComponent component : wizardComponents){
+			setFontSizeHelper(component.getComponents(), Driver.getFontSize());
 		}
 		
 		pack();
