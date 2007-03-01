@@ -15,9 +15,25 @@
 				<td align="left" valign="top">
 
 					<h1>
-						FindBugs Change Log
+						FindBugs Change Log, Version 1.2.0
 					</h1>
 
+					<p> Changes since version 1.1.3</p>
+					<ul>
+					<li>Interprocedural analysis of which methods return nonnull values
+					<li>Use method calls to select order in which classes are analyzed, and order in which methods
+					are analyzed, to improve interprocedural analysis results.
+					<li>Significant improvements in memory footprint, memory allocation and CPU utilization 
+					    (20-30% reduction in all three) 
+					<li>Added a project name, to provide better descriptions in the HTML output.
+					<li>Eclipse plugin changes:
+					<ul>
+					<li>Created Bug User Annotations and Bug Tree Views
+					<li>Use different icons for different bug priorities
+					<li>Provide more information in Bug Details view
+					</ul>
+					</ul>
+					
 					<p>
 						Changes since version 1.1.2:
 					</p>
