@@ -317,7 +317,7 @@ public class UserPreferences implements Cloneable {
 	 *                false if it should be Disabled
 	 */
 	public void enableDetector(DetectorFactory factory, boolean enable) {
-		detectorEnablementMap.put(factory.getShortName(), enable ? Boolean.TRUE : Boolean.FALSE);
+		detectorEnablementMap.put(factory.getShortName(), enable );
 	}
 	
 	/**
@@ -333,10 +333,10 @@ public class UserPreferences implements Cloneable {
 			// No explicit preference has been specified for this detector,
 			// so use the default enablement specified by the
 			// DetectorFactory.
-			enabled = factory.isDefaultEnabled() ? Boolean.TRUE : Boolean.FALSE;
+			enabled = factory.isDefaultEnabled() ;
 			detectorEnablementMap.put(detectorName, enabled);
 		}
-		return enabled.booleanValue();
+		return enabled;
 	}
 
 	/**
@@ -352,7 +352,7 @@ public class UserPreferences implements Cloneable {
 		for (Iterator<DetectorFactory> i = factoryCollection.factoryIterator(); i.hasNext();) {
 			DetectorFactory factory = i.next();
 			detectorEnablementMap.put(
-					factory.getShortName(), enable ? Boolean.TRUE : Boolean.FALSE);
+					factory.getShortName(), enable );
 		}
 	}
 	
