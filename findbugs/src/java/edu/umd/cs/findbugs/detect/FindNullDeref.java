@@ -1215,7 +1215,10 @@ public class FindNullDeref implements Detector,
             } catch (CFGBuilderException e) {
                 AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
             }
-            if (pu != null && pu.getReturnFromNonNullMethod()) {
+            if (pu != null) {
+                
+
+            if (pu.getReturnFromNonNullMethod()) {
                 bugType = "NP_NONNULL_RETURN_VIOLATION";
                 String methodName = method.getName();
                 String methodSig = method.getSignature();
@@ -1227,15 +1230,22 @@ public class FindNullDeref implements Detector,
                     priority = NORMAL_PRIORITY;
                 }
             
-            } else if (pu != null && pu.getNonNullField() != null) {
-                storedField =  FieldAnnotation.fromXField( pu.getNonNullField() );
-                bugType = "NP_STORE_INTO_NONNULL_FIELD";
-            } else if (pu != null && pu.getNonNullParameter() != null) {
-                XMethodParameter mp = pu.getNonNullParameter() ;
-                invokedMethod =  MethodAnnotation.fromXMethod(mp.getMethod());
-                parameterNumber = mp.getParameterNumber();
-                bugType = "NP_NULL_PARAM_DEREF";
-            } else if (!alwaysOnExceptionPath)
+            } else {
+                XField nonNullField = pu.getNonNullField();
+                if (nonNullField != null) {
+                    storedField =  FieldAnnotation.fromXField( nonNullField );
+                    bugType = "NP_STORE_INTO_NONNULL_FIELD";
+                } else {
+                    XMethodParameter nonNullParameter = pu.getNonNullParameter();
+                    if (nonNullParameter != null) {
+                        XMethodParameter mp = nonNullParameter ;
+                        invokedMethod =  MethodAnnotation.fromXMethod(mp.getMethod());
+                        parameterNumber = mp.getParameterNumber();
+                        bugType = "NP_NULL_PARAM_DEREF";
+                    }
+                }
+            }
+            }else if (!alwaysOnExceptionPath)
                 bugType = "NP_NULL_ON_SOME_PATH";
             else
                 bugType = "NP_NULL_ON_SOME_PATH_EXCEPTION";
