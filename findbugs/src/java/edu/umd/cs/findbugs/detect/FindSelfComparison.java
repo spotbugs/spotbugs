@@ -68,8 +68,8 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 		
         switch (state) {
         case 0:
-            if (seen == DUP_X1)
-            state = 4;
+            if (seen == DUP_X1) state = 4;
+            break;
        
         case 4:
             if (seen == PUTFIELD) {
