@@ -3065,6 +3065,7 @@ Here is a complete ant script exemple for both running findbugs and generating a
                 jvmargs="${jvmargs}"
                 failOnError="true"
                 outputFile="temp/findbugs-${release}.xml"
+                projectName="Findbugs"
                 debug="false"
                 &gt;
          &lt;class location="${findbugs.home}/lib/findbugs-ant.jar" /&gt;
