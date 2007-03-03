@@ -76,7 +76,12 @@
 
 	<h1>FindBugs Report</h1>
 	<p>Produced using FindBugs <xsl:value-of select="/BugCollection/@version"/>.</p>
-
+		<p>Project: 
+			<xsl:choose>
+				<xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>
+				<xsl:otherwise><xsl:value-of select="/BugCollection/Project/@filename" /></xsl:otherwise>
+			</xsl:choose>
+		</p>
 	<h2>Metrics</h2>
 	<xsl:apply-templates select="/BugCollection/FindBugsSummary"/>
 
