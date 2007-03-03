@@ -266,6 +266,8 @@ public class Naming extends PreorderVisitor implements Detector {
          public void visit(Method obj) {
 		String mName = getMethodName();
 		if (mName.length() == 1) return;
+        if (mName.equals("isRequestedSessionIdFromURL")
+                || mName.equals("isRequestedSessionIdFromUrl")) return;
 		if (Character.isLetter(mName.charAt(0))
 			&& !Character.isLowerCase(mName.charAt(0))
 			&& Character.isLetter(mName.charAt(1))
