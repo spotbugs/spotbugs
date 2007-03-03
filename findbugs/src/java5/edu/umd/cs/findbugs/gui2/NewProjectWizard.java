@@ -171,10 +171,19 @@ public class NewProjectWizard extends FBDialog
                                 edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file"))) return;
                     }
                 }
-
-                Project p = (project == null ? new Project() : project);
-                //First clear p's old files, otherwise we can't remove a file once an analysis has been performed on it	
-
+                Project p;
+                boolean resetSettings;
+                if (project==null)
+                {
+                	p=new Project();
+                	resetSettings=true;
+                }
+                else
+                {
+                	p=project;
+                	resetSettings=false;
+                }
+               	//First clear p's old files, otherwise we can't remove a file once an analysis has been performed on it	
                 int numOldFiles= p.getFileCount();
                 for (int x=0; x< numOldFiles;x++)
                 	p.removeFile(0);	
@@ -204,7 +213,7 @@ public class NewProjectWizard extends FBDialog
 
                 }
                 else if (project == null || (projectChanged && JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.project_settings_changed_lbl", "Project settings have been changed.  Perform a new analysis with the changed files?"), edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION))
-                    new AnalyzingDialog(p);
+                    new AnalyzingDialog(p,resetSettings);
 
                 dispose();
             }

@@ -41,6 +41,7 @@ import java.util.prefs.Preferences;
 
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.gui2.MainFrame.SaveType;
 
 /**
  * Saves all the stuff that should be saved for each run,
@@ -64,15 +65,18 @@ public class GUISaveState{
 	private static final String FRAME_BOUNDS="Frame Bounds";
 
 	private static final int MAXNUMRECENTPROJECTS= 5;
+	private static final int MAXNUMRECENTANALYSES= MAXNUMRECENTPROJECTS;
 	private static final Sortables[] DEFAULT_COLUMN_HEADERS = new Sortables[] {
 		Sortables.CATEGORY, Sortables.BUGCODE, Sortables.TYPE, Sortables.DIVIDER, Sortables.PRIORITY };
 
 	private static final String[] RECENTPROJECTKEYS=new String[MAXNUMRECENTPROJECTS];//{"Project1","Project2","Project3","Project4","Project5"};//Make MAXNUMRECENTPROJECTS of these
+	private static final String[] RECENTANALYSISKEYS=new String[MAXNUMRECENTPROJECTS];
 	static
 	{
 		for (int x=0; x<RECENTPROJECTKEYS.length;x++)
 		{
 			RECENTPROJECTKEYS[x]="Project"+x;
+			RECENTANALYSISKEYS[x]="Analysis"+x;
 		}
 	}
 	private static final int MAXNUMPREVCOMMENTS= 10;
@@ -85,6 +89,7 @@ public class GUISaveState{
 		}
 	}
 	private static final String NUMPROJECTS= "NumberOfProjectsToLoad";
+	private static final String NUMANALYSES= "NumberOfAnalysesToLoad";
 	private static final String STARTERDIRECTORY= "Starter Directory";
 	private File starterDirectoryForLoadBugs;
 	/**
@@ -94,6 +99,7 @@ public class GUISaveState{
 	private boolean useDefault=false;
 	private SorterTableColumnModel starterTable;
 	private ArrayList<File> recentProjects;
+	private ArrayList<File> recentAnalyses;
 	private byte[] dockingLayout;
 	private Rectangle frameBounds;
 	
@@ -141,6 +147,7 @@ public class GUISaveState{
 	private GUISaveState()
 	{
 		recentProjects=new ArrayList<File>();
+		recentAnalyses=new ArrayList<File>();
 //		projectsToLocations=new HashMap<String,String>();
 		previousComments=new LinkedList<String>();
 	}
@@ -152,38 +159,97 @@ public class GUISaveState{
 		return instance;
 	}
 	
+	public ArrayList<File> getRecent(SaveType s)
+	{
+		if (s==SaveType.PROJECT)
+			return getRecentProjects();
+		if (s==SaveType.XML_ANALYSIS)
+			return getRecentAnalyses();
+		else
+			throw new IllegalStateException("Your file is not of any valid save type--GetRecent");
+	}
 	public ArrayList<File> getRecentProjects()
 	{
 		return recentProjects;
 	}
-		
+	
+	public ArrayList<File> getRecentAnalyses()
+	{
+		return recentAnalyses;
+	}
+
 	public void addRecentProject(File f)
 	{
-		recentProjects.add(f);
+		addRecentProject(f, SaveType.PROJECT);
+	}
+	
+	public void addRecentProject(File f, SaveType s)
+	{
+		if (s==SaveType.PROJECT)
+			recentProjects.add(f);
+		else if (s==SaveType.XML_ANALYSIS)
+			recentAnalyses.add(f);
 	}
 	
 	public void projectReused(File f)
 	{
-		if (!recentProjects.contains(f))
+		projectReused(f, SaveType.PROJECT);
+	}
+	
+	public void projectReused(File f, SaveType s)
+	{
+		if (s==SaveType.PROJECT)
 		{
-			throw new IllegalStateException("Selected a recent project that doesn't exist?");
+			if (!recentProjects.contains(f))
+			{
+				throw new IllegalStateException("Selected a recent project that doesn't exist?");
+			}
+			else
+			{
+				recentProjects.remove(f);
+				recentProjects.add(f);
+			}
 		}
-		else
+		else if (s==SaveType.XML_ANALYSIS)
 		{
-			recentProjects.remove(f);
-			recentProjects.add(f);
-		}
+			if (!recentAnalyses.contains(f))
+			{
+				throw new IllegalStateException("Selected a recent project that doesn't exist?");
+			}
+			else
+			{
+				recentAnalyses.remove(f);
+				recentAnalyses.add(f);
+			}					}
 	}
 	
 	public void projectNotFound(File f)
 	{
-		if (!recentProjects.contains(f))
-		{
-			throw new IllegalStateException("Well no wonder it wasn't found, its not in the list.");
-		}
-		else
-			recentProjects.remove(f);
+		projectNotFound(f, SaveType.PROJECT);
 	}
+	
+	public void projectNotFound(File f, SaveType s)
+	{
+		if (s==SaveType.PROJECT)
+		{
+			if (!recentProjects.contains(f))
+			{
+				throw new IllegalStateException("Well no wonder it wasn't found, its not in the list.");
+			}
+			else
+				recentProjects.remove(f);
+		}
+		else if (s==SaveType.XML_ANALYSIS)
+		{
+			if (!recentAnalyses.contains(f))
+			{
+				throw new IllegalStateException("Well no wonder it wasn't found, its not in the list.");
+			}
+			else
+				recentAnalyses.remove(f);				
+		}
+	}
+
 	/**
 	 * The file to start the loading of Bugs from.
 	 * @return Returns the starterDirectoryForLoadBugs.
@@ -204,6 +270,7 @@ public class GUISaveState{
 	{
 		GUISaveState newInstance=new GUISaveState();
 		newInstance.recentProjects=new ArrayList<File>();
+		newInstance.recentAnalyses=new ArrayList<File>();
 		Preferences p=Preferences.userNodeForPackage(GUISaveState.class);
 		
 		newInstance.tabSize = p.getInt(TAB_SIZE, 4);
@@ -224,6 +291,12 @@ public class GUISaveState{
 		for (int x=0;x<size;x++)
 		{
 			newInstance.recentProjects.add(new File(p.get(GUISaveState.RECENTPROJECTKEYS[x],"")));
+		}
+
+		int size2=Math.min(MAXNUMRECENTANALYSES,p.getInt(GUISaveState.NUMANALYSES,0));
+		for (int x=0;x<size2;x++)
+		{
+			newInstance.recentAnalyses.add(new File(p.get(GUISaveState.RECENTANALYSISKEYS[x],"")));
 		}
 
 		int sorterSize=p.getInt(GUISaveState.SORTERTABLELENGTH,-1);
@@ -297,15 +370,27 @@ public class GUISaveState{
 		}
 		
 		int size=recentProjects.size();
+		int size2=recentAnalyses.size();
 		while (recentProjects.size()>MAXNUMRECENTPROJECTS)
 		{
 			recentProjects.remove(0);
 		}
+		while (recentAnalyses.size()>MAXNUMRECENTANALYSES)
+		{
+			recentAnalyses.remove(0);
+		}
+		
 		p.putInt(GUISaveState.NUMPROJECTS,Math.min(size,MAXNUMRECENTPROJECTS));
+		p.putInt(GUISaveState.NUMANALYSES,Math.min(size2,MAXNUMRECENTANALYSES));
 		for (int x=0; x<Math.min(size,MAXNUMRECENTPROJECTS);x++)
 		{
 			File file=recentProjects.get(x);
 			p.put(GUISaveState.RECENTPROJECTKEYS[x],file.getAbsolutePath());
+		}
+		for (int x=0; x<Math.min(size2,MAXNUMRECENTANALYSES);x++)
+		{
+			File file=recentAnalyses.get(x);
+			p.put(GUISaveState.RECENTANALYSISKEYS[x],file.getAbsolutePath());			
 		}
 		
 		p.putByteArray(DOCKINGLAYOUT, dockingLayout);

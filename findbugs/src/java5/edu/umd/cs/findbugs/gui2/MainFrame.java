@@ -204,7 +204,9 @@ public class MainFrame extends FBFrame implements LogSync
 	private JPopupMenu bugPopupMenu;
 	private JPopupMenu branchPopupMenu;
 	private static MainFrame instance;
+	private JMenu recentMenu;
 	private JMenu recentProjectsMenu;
+	private JMenu recentAnalysesMenu;
 	private JMenuItem preferencesMenuItem;
 	//private File projectDirectory;
 	private Project curProject;
@@ -303,14 +305,24 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 
 	private void createRecentProjectsMenu(){
-		for (File p: GUISaveState.getInstance().getRecentProjects())
+		for (File f: GUISaveState.getInstance().getRecentProjects())
 		{
-			addRecentProjectToMenu(p);
+			addRecentProjectToMenu(f);
+		}
+		for (File f: GUISaveState.getInstance().getRecentAnalyses())
+		{
+			addRecentProjectToMenu(f,SaveType.XML_ANALYSIS);
 		}
 	}
 	
 	private void addRecentProjectToMenu(final File f)
 	{
+		addRecentProjectToMenu(f,SaveType.PROJECT);
+	}
+	
+	private void addRecentProjectToMenu(final File f, final SaveType saveType)
+	{
+		Debug.println(f);
 		if (!f.exists())
 		{
 			if (MainFrame.DEBUG) System.err.println("a recent project was not found, removing it from menu");
@@ -327,26 +339,38 @@ public class MainFrame extends FBFrame implements LogSync
 					if (!f.exists())
 					{
 						JOptionPane.showMessageDialog(null,edu.umd.cs.findbugs.L10N.getLocalString("msg.proj_not_found", "This project can no longer be found"));
-						GUISaveState.getInstance().projectNotFound(f);
+						GUISaveState.getInstance().projectNotFound(f,saveType);
 						return;
 					}
-					GUISaveState.getInstance().projectReused(f);//Move to front in GUISaveState, so it will be last thing to be removed from the list
+					GUISaveState.getInstance().projectReused(f,saveType);//Move to front in GUISaveState, so it will be last thing to be removed from the list
 					
 					//Move to front of recent projects menu, so GUISaveState matches with the project menu seen by the user
 					boolean exists=false;
-					for (int x=0; x< recentProjectsMenu.getItemCount(); x++)
-					{
-						if (item.getText().equalsIgnoreCase(recentProjectsMenu.getItem(x).getText()))
+					if (saveType==SaveType.PROJECT)
+						for (int x=0; x< recentProjectsMenu.getItemCount(); x++)
 						{
-							exists=true;
-							recentProjectsMenu.remove(x);
-							recentProjectsMenu.insert(item, 0);//Move to front
+							if (item.getText().equalsIgnoreCase(recentProjectsMenu.getItem(x).getText()))
+							{
+								exists=true;
+								recentProjectsMenu.remove(x);
+								recentProjectsMenu.insert(item, 0);//Move to front
+							}
 						}
-					}
+					else if (saveType==SaveType.XML_ANALYSIS)
+						for (int x=0; x< recentAnalysesMenu.getItemCount(); x++)
+						{
+							if (item.getText().equalsIgnoreCase(recentAnalysesMenu.getItem(x).getText()))
+							{
+								exists=true;
+								recentAnalysesMenu.remove(x);
+								recentAnalysesMenu.insert(item, 0);
+							}
+						}
+					
 					if (!exists)
 						throw new IllegalStateException ("User used a recent projects menu item that didn't exist.");
 					
-					//Moved this outside of the thread, and above the line projectDirectory=f.getParentFile()
+					//Moved this outside of the thread, and above the line saveFile=f.getParentFile()
 					//Since if this save goes on in the thread below, there is no way to stop the save from
 					//overwriting the files we are about to load.
 					if (curProject != null && projectChanged)
@@ -371,17 +395,25 @@ public class MainFrame extends FBFrame implements LogSync
 						//IF no, do nothing.
 					}
 					
-					saveFile=f.getParentFile();
-					File fasFile=new File(saveFile.getAbsolutePath() + File.separator + saveFile.getName() + ".fas");
-					try 
+					if (saveType==SaveType.PROJECT)
 					{
-						ProjectSettings.loadInstance(new FileInputStream(fasFile));
-					} catch (FileNotFoundException exception) 
-					{
-						//Silently make a new instance
-						ProjectSettings.newInstance();
-					}
+						saveFile=f.getParentFile();
 					
+						File fasFile=new File(saveFile.getAbsolutePath() + File.separator + saveFile.getName() + ".fas");
+						try 
+						{
+							ProjectSettings.loadInstance(new FileInputStream(fasFile));
+						} catch (FileNotFoundException exception) 
+						{
+							//Silently make a new instance
+							ProjectSettings.newInstance();
+						}
+					}
+					else if (saveType==SaveType.XML_ANALYSIS)
+					{
+						saveFile=f;
+						ProjectSettings.newInstance();//Just make up new filters and suppressions, cuz he doesn't have any
+					}
 					final File extraFinalReferenceToXmlFile=f;
 					new Thread(new Runnable(){
 						public void run()
@@ -427,17 +459,35 @@ public class MainFrame extends FBFrame implements LogSync
 		item.setFont(item.getFont().deriveFont(Driver.getFontSize()));
 		
 		boolean exists=false;
-		for (int x=0; x< recentProjectsMenu.getItemCount(); x++)
-		{
-			if (item.getText().equalsIgnoreCase(recentProjectsMenu.getItem(x).getText()))
+		if (saveType==SaveType.PROJECT)
+			for (int x=0; x< recentProjectsMenu.getItemCount(); x++)
 			{
-				exists=true;
-				recentProjectsMenu.remove(x);
-				recentProjectsMenu.insert(item, 0);//Move to front
+				if (item.getText().equalsIgnoreCase(recentProjectsMenu.getItem(x).getText()))
+				{
+					exists=true;
+					recentProjectsMenu.remove(x);
+					recentProjectsMenu.insert(item, 0);//Move to front
+				}
+			}
+		else if (saveType==SaveType.XML_ANALYSIS)
+		{
+			for (int x=0; x< recentAnalysesMenu.getItemCount(); x++)
+			{
+				if (item.getText().equalsIgnoreCase(recentAnalysesMenu.getItem(x).getText()))
+				{
+					exists=true;
+					recentAnalysesMenu.remove(x);
+					recentAnalysesMenu.insert(item, 0);//Move to front
+				}
 			}
 		}
 		if (!exists)
-			recentProjectsMenu.insert(item,0);		
+		{
+			if (saveType==SaveType.PROJECT)
+				recentProjectsMenu.insert(item,0);
+			if (saveType==SaveType.XML_ANALYSIS)
+				recentAnalysesMenu.insert(item,0);
+		}
 	}
 
 	/**
@@ -552,8 +602,11 @@ public class MainFrame extends FBFrame implements LogSync
 		JMenuItem newProjectMenuItem = newJMenuItem("menu.new_item", "New Project", KeyEvent.VK_N);
 		//JMenuItem openProjectMenuItem = newJMenuItem("menu.open_item", "Open Project...", KeyEvent.VK_O);
 		JMenuItem openMenuItem = newJMenuItem("menu.open_item", "Open...", KeyEvent.VK_O);
-		recentProjectsMenu = newJMenu("menu.recent_menu", "menu.recent_menu");
+		recentMenu = newJMenu("menu.recent", "Recent");
+		recentProjectsMenu = newJMenu("menu.recent_menu", "Recent Projects");
 		recentProjectsMenu.setMnemonic(KeyEvent.VK_E);
+		recentAnalysesMenu = newJMenu("menu.recent_analysis_menu", "Recent Analyses");
+//		recentAnalysesMenu.setMnemonic(KeyEvent.VK_E);//TODO choose a key for this
 		createRecentProjectsMenu();
 		//JMenuItem saveAsProjectMenuItem = newJMenuItem("menu.saveas_item", "Save Project As...", KeyEvent.VK_A);
 		JMenuItem saveAsMenuItem = newJMenuItem("menu.saveas_item", "Save As...", KeyEvent.VK_A);;
@@ -681,7 +734,9 @@ public class MainFrame extends FBFrame implements LogSync
 		fileMenu.addSeparator();
 		//fileMenu.add(openProjectMenuItem);
 		fileMenu.add(openMenuItem);
-		fileMenu.add(recentProjectsMenu);
+		recentMenu.add(recentProjectsMenu);
+		recentMenu.add(recentAnalysesMenu);
+		fileMenu.add(recentMenu);
 		fileMenu.addSeparator();
 		fileMenu.add(saveAsMenuItem);
 		fileMenu.add(saveMenuItem);
@@ -812,9 +867,9 @@ public class MainFrame extends FBFrame implements LogSync
 			}};
 	}
 	static void attachAcceleratorKey(JMenuItem item, int keystroke) {
-		attachAccelaratorKey(item, keystroke, 0);
+		attachAcceleratorKey(item, keystroke, 0);
 	}
-	static void attachAccelaratorKey(JMenuItem item, int keystroke,
+	static void attachAcceleratorKey(JMenuItem item, int keystroke,
 																	 int additionalMask) {
 		// As far as I know, Mac is the only platform on which it is normal
 		// practice to use accelerator masks such as Shift and Alt, so
@@ -985,8 +1040,11 @@ public class MainFrame extends FBFrame implements LogSync
 		saveFile = f;
 		//TODO: .setProjectFileName() once deprecated need to change this.
 		curProject.setProjectFileName(f.getName());
-		File xmlFile=new File(f.getAbsolutePath() + File.separator + f.getName() + ".xml");
-
+		File xmlFile;
+		if (saveType==SaveType.PROJECT)
+			xmlFile=new File(f.getAbsolutePath() + File.separator + f.getName() + ".xml");
+		else
+			xmlFile=f;
 		/*
 		 * If the file already existed, its already in the preferences, as well as 
 		 * the recent projects menu items, only add it if they change the name, 
@@ -994,12 +1052,14 @@ public class MainFrame extends FBFrame implements LogSync
 		 * storing is the location of the file.
 		 */
 		//TODO: Need to change this once recent projects includes analyses.
-		if (!alreadyExists && saveType == SaveType.PROJECT)
+		ArrayList<File> xmlFiles=GUISaveState.getInstance().getRecent(saveType);
+		//
+		if (!xmlFiles.contains(f))
 		{
-			GUISaveState.getInstance().addRecentProject(xmlFile);
+			GUISaveState.getInstance().addRecentProject(f,saveType);
 		}
-
-		MainFrame.this.addRecentProjectToMenu(xmlFile);
+		
+		MainFrame.this.addRecentProjectToMenu(xmlFile,saveType);
 
 		MainFrame.this.setTitle("FindBugs: " + f.getName());
 		
@@ -1966,7 +2026,7 @@ public class MainFrame extends FBFrame implements LogSync
 			SorterDialog.getInstance().freeze();
 		else
 			SorterDialog.getInstance().thaw();
-		recentProjectsMenu.setEnabled(!b);
+		recentMenu.setEnabled(!b);
 	}
 	
 	public void setSorting(boolean b) {
@@ -2178,6 +2238,16 @@ public class MainFrame extends FBFrame implements LogSync
 			clearSummaryTab();
 			reconfigMenuItem.setEnabled(true);
 			setProjectChanged(false);
+			
+			ArrayList<File> xmlFiles=GUISaveState.getInstance().getRecentAnalyses();
+			//
+					if (!xmlFiles.contains(f))
+					{
+						GUISaveState.getInstance().addRecentProject(f,SaveType.XML_ANALYSIS);
+					}
+					//This check should be unnecessary if the project already exists, if it already exists, 
+					//it should be placed back at the top, hope it works...
+					MainFrame.this.addRecentProjectToMenu(f,SaveType.XML_ANALYSIS);			
 			return true;
 		} catch (IOException e) {
 			return false;
@@ -2365,13 +2435,15 @@ public class MainFrame extends FBFrame implements LogSync
 		
 //		List<String> projectPaths=new ArrayList<String>();
 		ArrayList<File> xmlFiles=GUISaveState.getInstance().getRecentProjects();
-
+//
 		if (!xmlFiles.contains(xmlFile))
 		{
-			GUISaveState.getInstance().addRecentProject(xmlFile);
-			MainFrame.this.addRecentProjectToMenu(xmlFile);
+		GUISaveState.getInstance().addRecentProject(xmlFile);
 		}
-		
+		//This check should be unnecessary if the project already exists, if it already exists, 
+		//it should be placed back at the top, hope it works...
+		MainFrame.this.addRecentProjectToMenu(xmlFile);
+	
 		//Clears the bottom tabs so they are blank. And makes comments
 		//tab not enabled.				
 		clearSourcePane();

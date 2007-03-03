@@ -55,13 +55,14 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 	private JProgressBar progressBar;
 	private JButton cancelButton;
 	
-	public AnalyzingDialog(@NonNull final Project project)
+	public AnalyzingDialog(@NonNull final Project project, final boolean changeSettings)
 	{
 		this(project, new AnalysisCallback()
 		{
 			public void analysisFinished(BugSet results)
 				{
-					ProjectSettings.newInstance();
+					if (changeSettings)
+						ProjectSettings.newInstance();
                     JTree tree = MainFrame.getInstance().getTree();
                     TreeModel treeModel = tree.getModel();
                     if (treeModel instanceof BugTreeModel)
