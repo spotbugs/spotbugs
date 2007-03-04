@@ -7,9 +7,19 @@ class NonShortCircuit {
 	boolean bothBitsFalsePositive(int i) {
 		return and((i & 0x1) != 0, (i & 0x2) != 0);
 	}
+    boolean bothBitsFalsePositive2(int i) {
+        return combine((i & 0x1) != 0, (i & 0x2) != 0,  (i & 0x4) != 0) != 0;
+    }
 	boolean and(boolean x, boolean y) {
 		return x & y;
 	}
+    int combine(boolean x, boolean y, boolean z) {
+        int result = 0;
+        if (x) result +=1;
+        if (y) result += 10;
+        if (z) result += 100;
+        return result;
+    }
 
 	void orIt(boolean x, boolean y) {
 		x |= y;

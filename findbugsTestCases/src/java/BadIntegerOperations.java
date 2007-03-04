@@ -154,7 +154,7 @@ class BadIntegerOperations {
 	public static int getHashBucketFalsePositive(Object x, int n) {
 		return Math.abs(x.hashCode() % n);
 	}
-	
+
 	/** This method is OK */
 	public int getRandomIntFalsePositive2(int n) {
 		int i = r.nextInt() % n;
