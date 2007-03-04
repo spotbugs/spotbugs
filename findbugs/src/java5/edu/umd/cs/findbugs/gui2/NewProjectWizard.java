@@ -128,10 +128,17 @@ public class NewProjectWizard extends FBDialog
 				
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-		buttons.add(Box.createHorizontalStrut(5));
-		buttons.add(finishButton);
-		buttons.add(Box.createHorizontalStrut(5));
-		buttons.add(cancelButton);
+		if (MainFrame.isMacLookAndFeel()) {
+		    buttons.add(Box.createHorizontalStrut(5));
+		    buttons.add(cancelButton);
+		    buttons.add(Box.createHorizontalStrut(5));
+		    buttons.add(finishButton);
+		} else {
+		    buttons.add(Box.createHorizontalStrut(5));
+		    buttons.add(finishButton);
+		    buttons.add(Box.createHorizontalStrut(5));
+		    buttons.add(cancelButton);
+		}
 		finishButton.addActionListener(new ActionListener()
 		{
             boolean keepGoing = false;

@@ -158,6 +158,10 @@ public class MainFrame extends FBFrame implements LogSync
 	private BasicTreeUI treeUI;
 	boolean userInputEnabled;
 		
+    static boolean isMacLookAndFeel() {
+        return UIManager.getLookAndFeel().getClass().getName().startsWith("apple");
+    }
+
 	static final String DEFAULT_SOURCE_CODE_MSG = edu.umd.cs.findbugs.L10N.getLocalString("msg.nosource_txt", "No available source");
 	
 	static final int COMMENTS_TAB_STRUT_SIZE = 5;
