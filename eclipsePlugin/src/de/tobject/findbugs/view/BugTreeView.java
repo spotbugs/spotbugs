@@ -177,7 +177,10 @@ public class BugTreeView extends ViewPart{
 					Tree theTree = projectTrees.get(theProject.getName());
 					HashMap<String, TreeItem> theMap = patternMap.get(theProject.getName());
 					BugInstance bug = MarkerUtil.findBugInstanceForMarker(theMarker);
-                    FindbugsPlugin.getDefault().logWarning("Couldn't find bug for " + theMarker);          
+                    if (bug == null) {
+                        FindbugsPlugin.getDefault().logWarning("Couldn't find bug for " + theMarker);
+                        return;
+                    }
 					String pattern = bug.getBugPattern().getShortDescription();
 					if(!theMap.containsKey(pattern))
 					{

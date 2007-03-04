@@ -79,8 +79,6 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	
 	private boolean workStarted;
 	int filesNumber;
-	int observed = 0;
-	int [] classesPerPass;
 	int expectedWork;
 	int pass = -1;
 	int filteredBugCount = 0;
@@ -285,7 +283,6 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	}
 
 	public void predictPassCount(int[] classesPerPass) {
-		this.classesPerPass = classesPerPass;
 		for(int count : classesPerPass) expectedWork += 2*count;
 		expectedWork -= classesPerPass[0];
 		
