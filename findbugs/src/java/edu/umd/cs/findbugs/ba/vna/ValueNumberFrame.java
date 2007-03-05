@@ -230,7 +230,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 						} else {
 							if (RLE_DEBUG)
 									System.out.println("Reusing phi node : " + phi + " for " + load + " from "+ Strings.toString(myVN) + " x " +  Strings.toString(otherVN)+ " in " + System.identityHashCode(this));
-							if (myVN.length != 0 || !myVN[0].equals(phi))
+							if (myVN.length != 1 || !myVN[0].equals(phi))
 								e.setValue(new ValueNumber[] { phi });
 						}
 
