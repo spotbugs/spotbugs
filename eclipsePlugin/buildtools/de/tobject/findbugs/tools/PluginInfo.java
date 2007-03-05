@@ -44,6 +44,7 @@ public class PluginInfo {
 		   XMLWriter writer = new XMLWriter(out, outformat);
 		   writer.write(doc);
 		   writer.close();
+		   out.close();
 		 }
 	
 	private static void emitProperty(Document document, String propName, String xpath) {
