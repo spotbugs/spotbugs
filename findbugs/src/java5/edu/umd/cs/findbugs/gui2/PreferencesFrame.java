@@ -111,6 +111,10 @@ public class PreferencesFrame extends FBDialog {
 	//Variables for Properties tab.
 	private JTextField tabTextField;
 	private JTextField fontTextField;
+	private static int TAB_MIN = 1;
+	private static int TAB_MAX = 20;
+	private static int FONT_MIN = 10;
+	private static int FONT_MAX = 99;
 	
 	public static PreferencesFrame getInstance()
 	{
@@ -201,7 +205,7 @@ public class PreferencesFrame extends FBDialog {
 		JPanel temp = new JPanel();
 		temp.add(new JLabel("Tab Size"));
 		tabTextField = new JTextField(Integer.toString(GUISaveState.getInstance().getTabSize()));
-		tabTextField.setPreferredSize(new Dimension((int)(currFS*2), (int)(currFS*1.2)));
+		tabTextField.setPreferredSize(new Dimension((int)(currFS*2), (int)(currFS*1.3)));
 		temp.add(tabTextField);
 		
 		mainPanel.add(temp);
@@ -210,7 +214,7 @@ public class PreferencesFrame extends FBDialog {
 		temp = new JPanel();
 		temp.add(new JLabel("Font Size"));
 		fontTextField = new JTextField(Float.toString(GUISaveState.getInstance().getFontSize()));
-		fontTextField.setPreferredSize(new Dimension((int)(currFS*3), (int)(currFS*1.2)));
+		fontTextField.setPreferredSize(new Dimension((int)(currFS*3), (int)(currFS*1.3)));
 		temp.add(fontTextField);
 		
 		mainPanel.add(temp);
@@ -223,17 +227,8 @@ public class PreferencesFrame extends FBDialog {
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				if(Integer.decode(tabTextField.getText()).intValue() != GUISaveState.getInstance().getTabSize()){
-					GUISaveState.getInstance().setTabSize(Integer.decode(tabTextField.getText()).intValue());
-					MainFrame.getInstance().displayer.clearCache();
-					MainFrame.getInstance().syncBugInformation(); //This causes the GUI to redisplay the current code
-				}
-				
-				if(Float.parseFloat(fontTextField.getText()) != GUISaveState.getInstance().getFontSize()){
-					GUISaveState.getInstance().setFontSize(Float.parseFloat(fontTextField.getText()));
-					JOptionPane.showMessageDialog(instance,	"To implement the new fontsize. Please restart FindBugs.",
-							"Changing Font", JOptionPane.INFORMATION_MESSAGE);
-				}
+				changeTabSize();
+				changeFontSize();
 			}
 		}));
 		
@@ -255,6 +250,57 @@ public class PreferencesFrame extends FBDialog {
 		});
 		
 		return contentPanel;
+	}
+	
+	private void changeTabSize(){
+		int tabSize = 0;
+		
+		try{
+			tabSize = Integer.decode(tabTextField.getText()).intValue();					
+		}
+		catch(NumberFormatException exc){
+			JOptionPane.showMessageDialog(instance,	"Error in tab size field.",
+					"Tab Size Error", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		
+		if(tabSize < TAB_MIN || tabSize > TAB_MAX){
+			JOptionPane.showMessageDialog(instance,	"Tab size excedes range ("+TAB_MIN+" - "+TAB_MAX+").",
+					"Tab Size Excedes Range", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+				
+		if(tabSize != GUISaveState.getInstance().getTabSize()){
+			GUISaveState.getInstance().setTabSize(tabSize);
+			MainFrame.getInstance().displayer.clearCache();
+			//This causes the GUI to redisplay the current code
+			MainFrame.getInstance().syncBugInformation();
+		}
+	}
+	
+	private void changeFontSize(){
+		float fontSize = 0;
+		
+		try{
+			fontSize = Float.parseFloat(fontTextField.getText());				
+		}
+		catch(NumberFormatException exc){
+			JOptionPane.showMessageDialog(instance,	"Error in font size field.",
+					"Font Size Error", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+				
+		if(fontSize < FONT_MIN || fontSize > FONT_MAX){
+			JOptionPane.showMessageDialog(instance,	"Font size excedes range ("+FONT_MIN+" - "+FONT_MAX+").",
+					"Font Size Excedes Range", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		
+		if(fontSize != GUISaveState.getInstance().getFontSize()){
+			GUISaveState.getInstance().setFontSize(fontSize);
+			JOptionPane.showMessageDialog(instance,	"To implement the new font size please restart FindBugs.",
+					"Changing Font", JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 	
 	private void resetPropertiesPane()
