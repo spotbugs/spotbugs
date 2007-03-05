@@ -50,7 +50,17 @@ public class Version {
 	 * Release candidate number.
 	 * "0" indicates that the version is not a release candidate.
 	 */
-	public static final int RELEASE_CANDIDATE = 2;
+	public static final int RELEASE_CANDIDATE = 0;
+	
+	static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy");
+	static final SimpleDateFormat eclipseDateFormat = new SimpleDateFormat("yyyyMMdd");
+	/**
+	 * Release date.
+	 */
+	public static final String DATE = dateFormat.format(new Date());
+
+	public static final String ECLIPSE_DATE = eclipseDateFormat.format(new Date()) ;
+
 	
 	/**
 	 * Preview release number.
@@ -61,7 +71,7 @@ public class Version {
 	private static final String RELEASE_SUFFIX_WORD =
 		(RELEASE_CANDIDATE > 0
 				? "rc" + RELEASE_CANDIDATE
-				: (PREVIEW > 0 ? "preview" + PREVIEW : "dev"));
+				: (PREVIEW > 0 ? "preview" + PREVIEW : "dev-" + ECLIPSE_DATE));
 
 	/**
 	 * Release version string.
@@ -69,16 +79,7 @@ public class Version {
 	public static final String RELEASE =
 		MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "-" + RELEASE_SUFFIX_WORD : "");
 
-	static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy");
-	static final SimpleDateFormat eclipseDateFormat = new SimpleDateFormat("yyyyMMdd");
-	/**
-	 * Release date.
-	 */
-	public static final String DATE = dateFormat.format(new Date());
-
-	public static final String ECLIPSE_DATE = eclipseDateFormat.format(new Date()) ;
-
-	/**
+		/**
 	 * Version of Eclipse plugin.
 	 */
 	public static final String ECLIPSE_UI_VERSION = // same as RELEASE except .vYYYYMMDD before optional -suffix
