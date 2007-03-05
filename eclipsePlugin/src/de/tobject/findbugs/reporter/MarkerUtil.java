@@ -422,7 +422,7 @@ public abstract class MarkerUtil {
 		try {
 		for(int i = 0; i < indentation; i++) System.out.print(" ");
 		System.out.println(javaElement.getElementName() + " " + javaElement.getClass().getName());
-		if (javaElement instanceof SourceType) {
+		if (javaElement instanceof NamedMember) {
 			for(int i = 0; i < indentation; i++) System.out.print(" ");
 			System.out.println("--> " + ((NamedMember)javaElement).getFullyQualifiedName('.', false));
 			
