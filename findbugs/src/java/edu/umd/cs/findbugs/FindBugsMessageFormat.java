@@ -94,7 +94,7 @@ public class FindBugsMessageFormat {
 			// System.out.println("fn: " + fieldNum);
 			if (fieldNum < 0) {
 				result.append("?<?" + fieldNum +  "/" + args.length + "???");
-			} else if (fieldNum > args.length) {
+			} else if (fieldNum >= args.length) {
 					result.append("?>?" + fieldNum +  "/" + args.length + "???");
 			} else {
 				BugAnnotation field = args[fieldNum];
