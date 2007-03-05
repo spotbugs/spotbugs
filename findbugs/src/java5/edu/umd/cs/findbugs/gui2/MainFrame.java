@@ -896,7 +896,7 @@ public class MainFrame extends FBFrame implements LogSync
 			saveMenuItem.setEnabled(false);
 //			saveProjectMenuItem.setEnabled(false);
 			reconfigMenuItem.setEnabled(true);
-		}		
+		}
 	}
 	
 	/**
@@ -964,8 +964,6 @@ public class MainFrame extends FBFrame implements LogSync
 					saveFile = f;
 			}
 		}
-		
-		saveType = fileType;
 	}
 
 	private boolean saveAs(){
@@ -1412,7 +1410,7 @@ public class MainFrame extends FBFrame implements LogSync
 				setSourceTabTitle("Source");				
 				sourceCodeTextPane.setDocument(SourceCodeDisplay.SOURCE_NOT_RELEVANT);
 			}
-		});		
+		});
 	}
 	
 
@@ -1685,7 +1683,7 @@ public class MainFrame extends FBFrame implements LogSync
 			
 			//Sets the size of the tooltip to match the rest of the GUI. - Kristin
 			JToolTip tempToolTip = tableheader.createToolTip();
-			UIManager.put( "ToolTip.font", new FontUIResource(tempToolTip.getFont().deriveFont(Driver.getFontSize())));
+			UIManager.put("ToolTip.font", new FontUIResource(tempToolTip.getFont().deriveFont(Driver.getFontSize())));
 			
 			if (MAC_OS_X)
 			{
@@ -2242,7 +2240,8 @@ public class MainFrame extends FBFrame implements LogSync
 			clearSummaryTab();
 			reconfigMenuItem.setEnabled(true);
 			setProjectChanged(false);
-			
+			saveType = SaveType.XML_ANALYSIS;
+
 			ArrayList<File> xmlFiles=GUISaveState.getInstance().getRecentAnalyses();
 			//
 					if (!xmlFiles.contains(f))
@@ -2251,7 +2250,7 @@ public class MainFrame extends FBFrame implements LogSync
 					}
 					//This check should be unnecessary if the project already exists, if it already exists, 
 					//it should be placed back at the top, hope it works...
-					MainFrame.this.addRecentProjectToMenu(f,SaveType.XML_ANALYSIS);			
+					MainFrame.this.addRecentProjectToMenu(f,SaveType.XML_ANALYSIS);		
 			return true;
 		} catch (IOException e) {
 			return false;
@@ -2431,12 +2430,12 @@ public class MainFrame extends FBFrame implements LogSync
 					MainFrame.getInstance().updateStatusBar();
 				}
 				else
-							{
-								tree.setModel(model);//Dont let it stay a please wait tree forever if the file was corrupt or empty
-							}
+				{
+					tree.setModel(model);//Dont let it stay a please wait tree forever if the file was corrupt or empty
+				}
 			}
 		}).start();
-		
+
 //		List<String> projectPaths=new ArrayList<String>();
 		ArrayList<File> xmlFiles=GUISaveState.getInstance().getRecentProjects();
 //
@@ -2451,6 +2450,8 @@ public class MainFrame extends FBFrame implements LogSync
 		//Clears the bottom tabs so they are blank. And makes comments
 		//tab not enabled.				
 		clearSourcePane();
+		comments.setUserCommentInputEnable(false);
+		saveType = SaveType.PROJECT;
 
 		setProjectChanged(false);
 	}
