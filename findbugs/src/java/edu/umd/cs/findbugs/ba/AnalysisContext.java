@@ -547,6 +547,7 @@ public abstract class AnalysisContext {
 			 + PropertyDatabase.class.getResource(resourceName) + " ... ");
 			InputStream in = PropertyDatabase.class.getResourceAsStream(resourceName);
 			database.read(in);
+			in.close();
 			return database;
 		} catch (IOException e) {
 			getLookupFailureCallback().logError("Error loading " + description, e);
