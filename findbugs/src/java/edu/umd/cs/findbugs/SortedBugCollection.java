@@ -233,6 +233,9 @@ public class SortedBugCollection implements BugCollection {
 			// FIXME: throw SAXException from method?
 			throw new DocumentException("Sax error ", e);
 		}
+		finally {
+			in.close();
+		}
 
 		// Presumably, project is now up-to-date
 		project.setModified(false);
