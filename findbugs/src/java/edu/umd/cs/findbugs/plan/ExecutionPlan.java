@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.plan;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -33,6 +34,7 @@ import java.util.Set;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryChooser;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
+import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.Plugin;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.graph.DepthFirstSearch;
@@ -67,6 +69,10 @@ public class ExecutionPlan {
 			public boolean choose(DetectorFactory factory) {
 				return true;
 			}
+
+            public void enable(DetectorFactory factory) {
+               // OK...
+            }
 		};
 		this.passList = new LinkedList<AnalysisPass>();
 		this.factoryMap = new HashMap<String, DetectorFactory>();
@@ -97,8 +103,6 @@ public class ExecutionPlan {
 		// Add detector factories
 		for (Iterator<DetectorFactory> i = plugin.detectorFactoryIterator(); i.hasNext(); ) {
 			DetectorFactory factory = i.next();
-			if (!factoryChooser.choose(factory))
-				continue;
 			if (factoryMap.put(factory.getFullName(), factory) != null) {
 				throw new OrderingConstraintException("Detector " + factory.getFullName() +
 						" is defined by more than one plugin");
@@ -113,6 +117,45 @@ public class ExecutionPlan {
 	 * and orders the Detectors within those passes.
 	 */
 	public void build() throws OrderingConstraintException {
+        
+
+        ArrayList<DetectorOrderingConstraint> allConstraints = new ArrayList<DetectorOrderingConstraint>(interPassConstraintList.size() + intraPassConstraintList.size());
+        allConstraints.addAll(interPassConstraintList);
+        allConstraints.addAll(intraPassConstraintList);
+        
+        Map<String, DetectorNode> nodeMapAll = new HashMap<String, DetectorNode>();
+        ConstraintGraph allPassConstraintGraph = buildConstraintGraph(
+            nodeMapAll,
+            new HashSet<DetectorFactory>(factoryMap.values()),
+            allConstraints);
+        boolean change;
+        do {
+            change = false;
+            for(Iterator<DetectorNode> i = allPassConstraintGraph.vertexIterator(); i.hasNext(); ) {
+                DetectorNode end = i.next();
+                if (factoryChooser.choose(end.getFactory())) {
+                    for(Iterator<ConstraintEdge> j = allPassConstraintGraph.incomingEdgeIterator(end); j.hasNext(); ) {
+                        DetectorNode start = j.next().getSource();
+                        DetectorFactory startFactory = start.getFactory();
+                        if (!factoryChooser.choose(startFactory)) {
+                            factoryChooser.enable(startFactory);
+                            change = true;
+                            if (DEBUG || FindBugs2.DEBUG)
+                                System.out.println("Dependences force enabling of " + startFactory.getFullName());
+                        }
+
+                    }
+                }
+
+            }
+        } while (change);
+        
+        for(Iterator<Map.Entry<String,DetectorFactory>> i = factoryMap.entrySet().iterator(); i.hasNext(); ) {
+            Map.Entry<String,DetectorFactory> e = i.next();
+            if (!factoryChooser.choose(e.getValue()))
+                    i.remove();
+        }
+        
 		// Build inter-pass constraint graph
 		Map<String, DetectorNode> nodeMap = new HashMap<String, DetectorNode>();
 		ConstraintGraph interPassConstraintGraph = buildConstraintGraph(

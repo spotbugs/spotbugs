@@ -73,7 +73,7 @@ import edu.umd.cs.findbugs.util.TopologicalSort.OutEdges;
  */
 public class FindBugs2 implements IFindBugsEngine {
 	private static final boolean VERBOSE = SystemProperties.getBoolean("findbugs.verbose");
-	private static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs.debug");
+	public static final boolean DEBUG = VERBOSE || SystemProperties.getBoolean("findbugs.debug");
 	
 	private List<IClassObserver> classObserverList;
 	private ErrorCountingBugReporter bugReporter;
@@ -566,12 +566,18 @@ public class FindBugs2 implements IFindBugsEngine {
 		
 		// Use user preferences to decide which detectors are enabled.
 		DetectorFactoryChooser detectorFactoryChooser = new DetectorFactoryChooser() {
+            HashSet<DetectorFactory> forcedEnabled = new HashSet<DetectorFactory>();
 			/* (non-Javadoc)
 			 * @see edu.umd.cs.findbugs.DetectorFactoryChooser#choose(edu.umd.cs.findbugs.DetectorFactory)
 			 */
 			public boolean choose(DetectorFactory factory) {
-				return FindBugs.isDetectorEnabled(FindBugs2.this, factory);
+				return FindBugs.isDetectorEnabled(FindBugs2.this, factory) || forcedEnabled.contains(factory);
 			}
+            public void enable(DetectorFactory factory) {
+                forcedEnabled.add(factory);
+                factory.setPriorityAdjustment(100);        
+            }
+            
 		};
 		executionPlan.setDetectorFactoryChooser(detectorFactoryChooser);
 		

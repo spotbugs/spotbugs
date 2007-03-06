@@ -930,13 +930,15 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		
 		// Only enabled detectors should be part of the execution plan
 		executionPlan.setDetectorFactoryChooser(new DetectorFactoryChooser() {
-			public boolean choose(DetectorFactory factory) {
-				boolean enabled = isDetectorEnabled(FindBugs.this, factory);
-//				if (ExecutionPlan.DEBUG) {
-//					System.out.println(factory.getShortName() + ": enabled=" + enabled);
-//				}
-				return enabled;
-			}
+            HashSet<DetectorFactory> forcedEnabled = new HashSet<DetectorFactory>();
+
+            public boolean choose(DetectorFactory factory) {
+                return FindBugs.isDetectorEnabled(FindBugs.this, factory) || forcedEnabled.contains(factory);
+            }
+            public void enable(DetectorFactory factory) {
+                forcedEnabled.add(factory);
+                factory.setPriorityAdjustment(100);        
+            }
 		});
 
 		// Add plugins
