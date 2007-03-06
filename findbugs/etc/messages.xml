@@ -2945,7 +2945,7 @@ it may indicate a misunderstanding of how serialization works.
     <LongDescription>The field {1} is transient but isn't set by deserialization</LongDescription>
     <Details>
 <![CDATA[
-  <p> This class contains a field that is updated at multiple places in the class, thus it seems to be part of the start of the class. However, since the field is marked as transient and not set in readObject or readResolve, it will contain the default value in any 
+  <p> This class contains a field that is updated at multiple places in the class, thus it seems to be part of the state of the class. However, since the field is marked as transient and not set in readObject or readResolve, it will contain the default value in any 
 deserialized instance of the class.
 </p>
 ]]>
