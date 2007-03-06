@@ -141,7 +141,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
     private void boundPriority() {
         priority = boundedPriority(priority);
     }
-	//@Override
+
 	@Override
 	public Object clone() {
 		BugInstance dup;
