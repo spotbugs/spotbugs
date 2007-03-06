@@ -19,12 +19,10 @@
 
 package edu.umd.cs.findbugs.gui2;
 
-import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -165,11 +163,15 @@ public class HashList<E> extends ArrayList<E>
 	public boolean retainAll(Collection<?> c)
 	{
 		boolean result = false;
-		for (E i : this)
-			if (!c.contains(i))
-			{
-				result |= remove(i);
-			}
+        for(Iterator<E> iterator = this.iterator(); iterator.hasNext(); ) {
+            E i = iterator.next();
+            if (!c.contains(i))
+            {
+                iterator.remove();
+                result = true;
+              
+            }
+        }
 		
 		return result;
 	}
@@ -207,6 +209,7 @@ public class HashList<E> extends ArrayList<E>
 				for (Integer j : i.getValue())
 					if (j >= index)
 						newSet.add(j + 1);
+                    else newSet.add(j);
 				i.setValue(newSet);
 			}
 				
