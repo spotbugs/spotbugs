@@ -129,15 +129,18 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance(String type, int priority) {
 		this.type = type;
-		this.priority = priority < Detector.HIGH_PRIORITY 
-			? Detector.HIGH_PRIORITY : priority;
+        this.priority = priority;
 		annotationList = new ArrayList<BugAnnotation>(4);
 		cachedHashCode = INVALID_HASH_CODE;
 		
 		if (adjustExperimental && isExperimental())
 			this.priority = Detector.EXP_PRIORITY;
+        boundPriority();
 	}
 	
+    private void boundPriority() {
+        priority = boundedPriority(priority);
+    }
 	//@Override
 	@Override
 	public Object clone() {
@@ -178,13 +181,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 				DetectorFactoryCollection.instance().getFactoryByClassName(detector.getClass().getName());
 			if (factory != null) {
 				this.priority += factory.getPriorityAdjustment();
-				if (this.priority < 0)
-					this.priority = 0;
+                boundPriority();
 			}
 		}
 		
-		if (adjustExperimental && isExperimental())
-			this.priority = Detector.EXP_PRIORITY;
 	}
 		
 	public static void setAdjustExperimental(boolean adjust) {
@@ -261,17 +261,22 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * Set the bug priority.
 	 */
 	public void setPriority(int p) {
-		priority = Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, p));
+		priority = boundedPriority(p);
 	}
+
+    private int boundedPriority(int p) {
+        return Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, p));
+    }
     public void raisePriority() {
-        priority = Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, priority-1));
+        priority = boundedPriority(priority-1);
+        
     }
     public void lowerPriority() {
-        priority = Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, priority+1));
+        priority = boundedPriority(priority+1);
     }
 
     public void lowerPriorityALot() {
-        priority = Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, priority+2));
+        priority = boundedPriority(priority+2);
     }
 
 	/**
@@ -306,10 +311,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public BugInstance lowerPriorityIfDeprecated() {
 		MethodAnnotation m = getPrimaryMethod();
 		if (m != null && AnalysisContext.currentXFactory().getDeprecated().contains(XFactory.createXMethod(m)))
-				priority++;
+				lowerPriority();
 		FieldAnnotation f = getPrimaryField();
 		if (f != null && AnalysisContext.currentXFactory().getDeprecated().contains(XFactory.createXField(f)))
-			priority++;
+            lowerPriority();
 		return this;
 	}
 	/**
