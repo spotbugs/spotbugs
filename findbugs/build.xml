@@ -195,16 +195,16 @@
 			<fileset dir="${sampleoutput.dir}" includes="*.xml"/>
 		</schemavalidate>
 	</target>
-	<target name="validatesamplehtmloutput" depends="applystylesheets">
 
+	<target name="validatesamplehtmloutput" depends="applystylesheets">
 		<xmlvalidate failonerror="no">
 			<attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
 			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
 			<fileset dir="${sampleoutput.dir}" includes="*.html"/>
 		</xmlvalidate>
 	</target>
+
 	<target name="validatesampleoutput" depends="validatesamplexmloutput,validatesamplehtmloutput"/>
-	
 	<!-- Build jar files. -->
 	<target name="PrepareOneFourCompatibilityTest" depends="anttask,classes,jars">
 		<!-- Main engine and command line jar file. -->
@@ -431,6 +431,7 @@
     <findbugs home="."
               output="xml:withMessages"
 			  jvmargs="-Xmx600m"
+			  projectName="Byte code Engineering Library (BCEL)"
               outputFile="${sampleoutput.dir}/bcel.xml" >
       <class location="${jar.dir}/bcel.jar" />
     </findbugs>
