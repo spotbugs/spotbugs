@@ -130,9 +130,8 @@ public class BugTreeView extends ViewPart{
 		// initialize views with marker data
 		IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		for(IProject proj : projectList)
-		{
+            if(proj.isAccessible() && FindbugsPlugin.isJavaProject(proj)) {
 			try{
-				if(proj.isOpen())
 					for(IMarker marker : proj.findMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE))
 						addMarker(proj, marker);
 			}

@@ -91,7 +91,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	 * @param findBugsProject the FindBugs Project object
 	 */
 	public Reporter(IProject project, IProgressMonitor monitor, Project findBugsProject) {
-		super();
+        if (!FindbugsPlugin.isJavaProject(project)) throw new IllegalArgumentException("Not a Java project");
 		this.monitor = monitor;
 		this.project = project;
 		this.findBugsProject = findBugsProject;

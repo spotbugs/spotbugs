@@ -45,6 +45,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -771,6 +772,18 @@ public class FindbugsPlugin extends AbstractUIPlugin {
         BugResolutionLoader loader = new BugResolutionLoader();
         File xmlFile = new File(FindBugs.getHome() + File.separator + "plugin" + File.separator + "findbugs-resolutions.xml");
         return loader.loadBugResolutions(xmlFile);
+    }
+    
+    public static boolean isJavaProject(IProject project) {
+        try {
+            return project.hasNature(JavaCore.NATURE_ID);
+            
+        } catch (CoreException e) {
+            FindbugsPlugin.getDefault().logException(e, "couldn't determine project nature");
+            return false;
+        }
+
+
     }
 
 }

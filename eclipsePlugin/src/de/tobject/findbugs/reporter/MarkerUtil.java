@@ -38,6 +38,7 @@ import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.IParent;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.compiler.IScanner;
@@ -65,7 +66,6 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.config.ProjectFilterSettings;
 import edu.umd.cs.findbugs.config.UserPreferences;
-import de.tobject.findbugs.view.BugTreeView;
 
 /**
  * Utility methods for converting FindBugs BugInstance objects
@@ -82,12 +82,24 @@ public abstract class MarkerUtil {
 	 * @param bug     the BugInstance
 	 * @param project the project
 	 */
-	public static void createMarker(BugInstance bug, IProject project, BugCollection theCollection) {
-        if (bug == null)
+    public static void createMarker(BugInstance bug, IProject project, BugCollection theCollection) {
+        if (bug == null) {
             FindbugsPlugin.getDefault().logException(new NullPointerException(), "bug is null");
-        if (project == null)
+            return;
+        }
+        if (project == null) {
             FindbugsPlugin.getDefault().logException(new NullPointerException(), "project is null");
-		String className = null;
+            return;
+        }
+        try {
+            if (!project.hasNature(JavaCore.NATURE_ID)) {
+                FindbugsPlugin.getDefault().logException(new IllegalArgumentException(), "project isn't Java");
+                return;
+            }
+        } catch (CoreException e) {
+            FindbugsPlugin.getDefault().logException(e, "couldn't determine project nature");
+        }
+        String className = null;
 		String packageName = null;
 		if (bug.getPrimaryClass() != null) {
 			className = bug.getPrimaryClass().getClassName();
@@ -173,10 +185,12 @@ public abstract class MarkerUtil {
 	 * @param project the project
 	 * @param sla     the SourceLineAnnotation to get the resource for. If null, use the primary source line annotation.
 	 * @return the IResource representing the Java class
-	 * @throws JavaModelException
+	 * @throws JavaModelException  
 	 */
-	public static IResource getUnderlyingResource(BugInstance bug, IProject project, SourceLineAnnotation sla)
-		throws JavaModelException {
+	public static @CheckForNull IResource getUnderlyingResource(BugInstance bug, IProject project, SourceLineAnnotation sla) throws JavaModelException
+		 {
+        
+        if (!FindbugsPlugin.isJavaProject(project)) return null;
         
 		SourceLineAnnotation primarySourceLineAnnotation;
 		if(sla == null)
@@ -510,6 +524,8 @@ public abstract class MarkerUtil {
 	 * @param shell   Shell the progress dialog should be tied to
 	 */
 	public static void redisplayMarkers(final IProject project, Shell shell) {
+        if (!FindbugsPlugin.isJavaProject(project)) throw new IllegalArgumentException("Not a Java project");
+        
 		ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(shell);
 
 		try {
@@ -559,6 +575,8 @@ public abstract class MarkerUtil {
 
 	public static void redisplayMarkersWithoutProgressDialog(final IProject project) {
 		try {
+            if (!FindbugsPlugin.isJavaProject(project)) throw new IllegalArgumentException("Not a Java project");
+            
 			// Get user preferences for project,
 			// so we know what to diplay
 			UserPreferences userPrefs = FindbugsPlugin.getUserPreferences(project);
@@ -662,7 +680,7 @@ public abstract class MarkerUtil {
 		IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		for(IProject proj : projectList)
 		{
-			if(proj.isAccessible() && findMarkerForWarning(proj, warning) != null)
+			if(proj.isAccessible() && FindbugsPlugin.isJavaProject(proj) && findMarkerForWarning(proj, warning) != null)
 				return proj;
 		}
 		return null;
