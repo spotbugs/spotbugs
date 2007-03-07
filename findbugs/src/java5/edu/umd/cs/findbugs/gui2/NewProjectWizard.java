@@ -76,7 +76,7 @@ public class NewProjectWizard extends FBDialog
 		@Override
 		public String getDescription()
 		{
-			return edu.umd.cs.findbugs.L10N.getLocalString("file.accepted_extensions", "Class archive files (*.jar, *.war, *.ear, *.zip, *.sar)");
+			return edu.umd.cs.findbugs.L10N.getLocalString("file.accepted_extensions", "Class archive files (*.[jwes]ar, *.zip)");
 		}
 	};
 	
