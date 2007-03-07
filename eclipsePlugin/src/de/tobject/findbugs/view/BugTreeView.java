@@ -165,17 +165,18 @@ public class BugTreeView extends ViewPart{
 		Display.getDefault().syncExec(new Runnable(){
 			public void run(){
 				try{
-					if(!projectTrees.containsKey(theProject.getName()))
-					{
+                    Tree theTree = projectTrees.get(theProject.getName()); 
+                    if (theTree == null || theTree.isDisposed()) {
+  
 						TabItem newTab = new TabItem(theFolder, SWT.LEFT);
-						Tree newTree = new Tree(theFolder, SWT.LEFT);
-						newTree.addSelectionListener(new BugTreeSelectionListener(newTree));
-						newTab.setControl(newTree);
+						theTree = new Tree(theFolder, SWT.LEFT);
+                        theTree.addSelectionListener(new BugTreeSelectionListener(theTree));
+						newTab.setControl(theTree);
 						newTab.setText(theProject.getName());
-						projectTrees.put(theProject.getName(), newTree);
+						projectTrees.put(theProject.getName(), theTree);
 						patternMap.put(theProject.getName(), new HashMap<String, TreeItem>());
 					}
-					Tree theTree = projectTrees.get(theProject.getName());
+					
 					HashMap<String, TreeItem> theMap = patternMap.get(theProject.getName());
 					BugInstance bug = MarkerUtil.findBugInstanceForMarker(theMarker);
                     if (bug == null) {
