@@ -57,9 +57,6 @@ public enum Sortables implements Comparator<StringPair>
 		@Override
 		public String formatValue(String value)
 		{	
-			//System.out.println("Formatting first version value");
-			if(value.equals("0"))
-				return edu.umd.cs.findbugs.L10N.getLocalString("sort.first_version_not_defined", "First version not defined");
 			int seqNum = Integer.parseInt(value);
 			AppVersion appVersion = BugLoader.mainBugCollection.getAppVersionFromSequenceNumber(seqNum);
 			String appendItem = "";
