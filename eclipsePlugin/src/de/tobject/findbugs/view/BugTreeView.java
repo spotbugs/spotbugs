@@ -150,6 +150,7 @@ public class BugTreeView extends ViewPart{
 			public void run(){
 				Tree treeToRemove = projectTrees.get(theProject.getName());
 				if(treeToRemove == null) return;
+                if (treeToRemove.isDisposed()) return;
 				for(TreeItem x : treeToRemove.getItems())
 					instanceMap.remove(x);
 				patternMap.get(theProject.getName()).clear();
