@@ -662,7 +662,7 @@ public abstract class MarkerUtil {
 		IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		for(IProject proj : projectList)
 		{
-			if(findMarkerForWarning(proj, warning) != null)
+			if(proj.isAccessible() && findMarkerForWarning(proj, warning) != null)
 				return proj;
 		}
 		return null;
