@@ -43,6 +43,8 @@ import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+import edu.umd.cs.findbugs.util.Util;
+
 /**
  * Starting from an Eclipse plugin, finds all required plugins
  * (in an Eclipse installation) and recursively finds the classpath
@@ -156,7 +158,7 @@ public class EclipseClasspath {
 			File pluginDescriptorFile = new File(directory + File.separator + "plugin.xml");
 			if (pluginDescriptorFile.isFile()) {
 				SAXReader reader = new SAXReader();
-				document = reader.read(new EclipseXMLReader(new FileReader(pluginDescriptorFile)));
+				document = reader.read(new EclipseXMLReader(Util.getFileReader(pluginDescriptorFile)));
 
 				Node plugin = document.selectSingleNode("/plugin");
 				if (plugin == null)

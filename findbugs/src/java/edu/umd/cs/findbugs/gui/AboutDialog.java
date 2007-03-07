@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.L10N;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.Version;
 import edu.umd.cs.findbugs.util.LaunchBrowser;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * The Help:About dialog.
@@ -87,7 +88,7 @@ public class AboutDialog extends javax.swing.JDialog {
 			in = getClass().getClassLoader().getResourceAsStream(fileName);
 			if (in == null)
 				throw new IOException(MessageFormat.format(L10N.getLocalString("msg.couldntload_txt", "Couldn't load {0}"), new Object[]{fileName}));
-			 reader = new BufferedReader(new InputStreamReader(in));
+			 reader = new BufferedReader(Util.getReader(in));
 
 			// Replace instances of @VERSION@ with actual version number
 	

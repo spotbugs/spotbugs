@@ -19,6 +19,18 @@
 
 package edu.umd.cs.findbugs.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
@@ -41,7 +53,24 @@ public class Util {
 		if (o1 == o2) return true;
 		if (o1 == null || o2 == null) return false;
 		return o1.equals(o2);
-		
 	}
+    
+    public static Reader getReader(InputStream in) throws UnsupportedEncodingException {
+        return new InputStreamReader(in, "UTF-8");
+    }
+    public static Reader getFileReader(String filename) throws UnsupportedEncodingException, FileNotFoundException {
+        return getReader(new FileInputStream(filename));
+    }
+    public static Reader getFileReader(File filename) throws UnsupportedEncodingException, FileNotFoundException {
+        return getReader(new FileInputStream(filename));
+    }
+    public static Writer getWriter(OutputStream out) throws UnsupportedEncodingException, FileNotFoundException {
+        return new OutputStreamWriter(out, "UTF-8");
+    }
+
+    public static Writer getFileWriter(String filename) throws UnsupportedEncodingException, FileNotFoundException {
+        return  getWriter(new FileOutputStream(filename));
+    }
+
 
 }

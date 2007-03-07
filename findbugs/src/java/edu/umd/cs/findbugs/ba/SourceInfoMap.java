@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Global information about the source code for an application.
@@ -278,7 +279,7 @@ public class SourceInfoMap {
 	 * @throws IOException if an I/O error occurs, or if the format is invalid
 	 */
 	public void read(InputStream inputStream) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+		BufferedReader reader = new BufferedReader(Util.getReader(inputStream));
 		
 		int lineNumber = 0;
 		try {

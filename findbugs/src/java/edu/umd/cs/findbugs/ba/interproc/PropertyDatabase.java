@@ -25,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -40,6 +39,7 @@ import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.util.Util;
 
 /**
  * Property database for interprocedural analysis.
@@ -126,7 +126,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 		
 		try {
 			reader = new BufferedReader(
-				new InputStreamReader(in, Charset.forName("UTF-8")));
+				Util.getReader(in));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();

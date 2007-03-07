@@ -63,6 +63,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
+import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
@@ -223,7 +224,7 @@ public class SortedBugCollection implements BugCollection {
 			xr.setContentHandler(handler);
 			xr.setErrorHandler(handler);
 
-			Reader reader = new InputStreamReader(in);
+			Reader reader = Util.getReader(in);
 
 			xr.parse(new InputSource(reader));
 		} catch (SAXParseException e) {
@@ -593,7 +594,7 @@ public class SortedBugCollection implements BugCollection {
 
 			in.reset();
 
-			BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(buf)));
+			BufferedReader reader = new BufferedReader(Util.getReader(new ByteArrayInputStream(buf)));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				if (line.startsWith("<BugCollection"))

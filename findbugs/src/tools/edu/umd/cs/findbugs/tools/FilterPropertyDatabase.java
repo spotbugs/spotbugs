@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 import org.apache.bcel.Constants;
 
+import edu.umd.cs.findbugs.util.Util;
+
 /*
  * FindBugs - Find Bugs in Java programs
  * Copyright (C) 2006, University of Maryland
@@ -42,7 +44,7 @@ public class FilterPropertyDatabase {
        InputStream inSource = System.in;
        if (args.length > 0)
            inSource = new FileInputStream(args[0]);
-       BufferedReader in = new BufferedReader(new InputStreamReader(inSource));
+       BufferedReader in = new BufferedReader(Util.getReader(inSource));
        Pattern p = Pattern.compile(",([0-9]+)\\|");
        while (true) {
            String s = in.readLine();

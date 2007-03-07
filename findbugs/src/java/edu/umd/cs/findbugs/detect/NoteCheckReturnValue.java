@@ -23,6 +23,7 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.ba.bcp.Invoke;
+import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.visitclass.AnnotationVisitor;
 import java.io.*;
 import java.util.*;
@@ -86,7 +87,7 @@ public class NoteCheckReturnValue extends AnnotationVisitor
 	private void loadTraining() {
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new FileReader(LOAD_TRAINING));
+			reader = new BufferedReader(Util.getFileReader(LOAD_TRAINING));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String[] tuple = line.split(",");

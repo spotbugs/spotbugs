@@ -28,7 +28,6 @@ package edu.umd.cs.findbugs;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +43,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import edu.umd.cs.findbugs.ba.URLClassPath;
+import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 import edu.umd.cs.findbugs.xml.XMLOutputUtil;
@@ -582,7 +582,7 @@ public class Project implements XMLWriteable {
 		BufferedReader reader = null;
 
 		try {
-			reader = new BufferedReader(new FileReader(inputFile));
+			reader = new BufferedReader(Util.getFileReader(inputFile));
 			String line;
 			line = getLine(reader);
 
