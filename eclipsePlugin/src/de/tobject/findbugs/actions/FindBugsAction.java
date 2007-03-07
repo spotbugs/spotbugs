@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -160,7 +161,7 @@ public class FindBugsAction implements IObjectActionDelegate {
 						new FindBugsWorker(resource.getProject(), monitor);
 					try {
 						findbugsExecuteLock.acquire();
-						worker.work(files, resource);
+						worker.work(files, !(resource instanceof IProject));
 					} catch (CoreException e) {
 						FindbugsPlugin.getDefault().logException(e, "Analysis exception");
 						return Status.CANCEL_STATUS;

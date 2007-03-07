@@ -338,7 +338,7 @@ public class BugLoader {
 				Project p=new Project();
 				SortedBugCollection col=new SortedBugCollection();
 				col.readXML(f,p);
-				conglomeration=(SortedBugCollection) update.mergeCollections(conglomeration, col, false);//False means dont show dead bugs
+				conglomeration=(SortedBugCollection) update.mergeCollections(conglomeration, col, false, false);//False means dont show dead bugs
 			}
 			
 			return loadBugsHelper(conglomeration);
@@ -377,7 +377,7 @@ public class BugLoader {
 		new AnalyzingDialog(p,ac,true);
 		
 		if (ac.finished)
-			return loadBugsHelper(update.mergeCollections(current, justAnalyzed, true));
+			return loadBugsHelper(update.mergeCollections(current, justAnalyzed, true, false));
 		else
 			return null;
 		

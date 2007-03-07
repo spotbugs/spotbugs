@@ -141,7 +141,7 @@ public class Update {
 	}
 
 	public BugCollection mergeCollections(BugCollection origCollection,
-			BugCollection newCollection, boolean copyDeadBugs) {
+			BugCollection newCollection, boolean copyDeadBugs, boolean incrementalAnalysis) {
 
 		mapFromNewToOldBug.clear();
 
@@ -219,33 +219,31 @@ public class Update {
 		int deadBugInDeadCode = 0;
 
 		// Copy unmatched bugs
-		if (copyDeadBugs)
-			for (BugInstance bug : origCollection.getCollection())
-				if (!matchedOldBugs.contains(bug)) {
-					if (bug.getLastVersion() == -1)
-						newlyDeadBugs++;
-					else
-						oldBugs++;
-					BugInstance newBug = (BugInstance) bug.clone();
+		if (copyDeadBugs || incrementalAnalysis)
+            for (BugInstance bug : origCollection.getCollection())
+                if (!matchedOldBugs.contains(bug) && bug.getLastVersion() == -1) {
+                    newlyDeadBugs++;
 
-					if (newBug.getLastVersion() == -1) {
-						newBug.setLastVersion(lastSequence);
-						ClassAnnotation classBugFoundIn = bug.getPrimaryClass();
-						String className = classBugFoundIn.getClassName();
-						if (newCollection.getProjectStats().getClassStats(
-								className) != null)
-							newBug.setRemovedByChangeOfPersistingClass(true);
-						else
-							deadBugInDeadCode++;
-					}
+                    BugInstance newBug = (BugInstance) bug.clone();
 
-					if (newBug.getFirstVersion() > newBug.getLastVersion())
-						throw new IllegalStateException(
-								"Illegal Version range: "
-										+ newBug.getFirstVersion() + ".."
-										+ newBug.getLastVersion());
-					resultCollection.add(newBug, false);
-				}
+                    ClassAnnotation classBugFoundIn = bug.getPrimaryClass();
+                    String className = classBugFoundIn.getClassName();
+                    if (newCollection.getProjectStats().getClassStats(className) != null) {
+                        if (!copyDeadBugs)
+                            continue;
+                        newBug.setRemovedByChangeOfPersistingClass(true);
+                        newBug.setLastVersion(lastSequence);
+                    } else {
+                        deadBugInDeadCode++;
+                        if (!incrementalAnalysis)
+                            newBug.setLastVersion(lastSequence);
+                    }
+
+                    if (newBug.getLastVersion() != -1 && newBug.getFirstVersion() > newBug.getLastVersion())
+                        throw new IllegalStateException("Illegal Version range: " + newBug.getFirstVersion() + ".."
+                                + newBug.getLastVersion());
+                    resultCollection.add(newBug, false);
+                }
 		// Copy matched bugs
 		for (BugInstance bug : newCollection.getCollection()) {
 			BugInstance newBug = (BugInstance) bug.clone();
@@ -379,7 +377,7 @@ public class Update {
 							.setReleaseName(getFilePathParts(newFilename)[commonPrefix]);
 
 				origCollection = mergeCollections(origCollection,
-						newCollection, true);
+						newCollection, true, false);
 			} catch (IOException e) {
 				if (verbose)
 					System.out.println(e);

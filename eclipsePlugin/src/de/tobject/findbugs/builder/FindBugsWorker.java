@@ -113,11 +113,10 @@ public class FindBugsWorker {
 	 * Run FindBugs on the given collection of files. (note: This is not thread-safe.)
 	 *
 	 * @param files A collection of {@link IResource}s.
-	 * @param resource The main resource, used to determine the AppVersion name and timestamp. This
-	 * may be set as "null", which produces a timestamp of 0 and a name equal to the empty string.
+	 * @param incremental TODO
 	 * @throws CoreException
 	 */
-	public void work(Collection files, IResource resource) throws CoreException {
+	public void work(Collection files, boolean incremental) throws CoreException {
 		if (files == null) {
 			FindbugsPlugin.getDefault().logError("No files to build");
 			return;
@@ -239,7 +238,7 @@ public class FindBugsWorker {
 			findBugs.execute();
 
 			// Merge new results into existing results.
-			updateBugCollection(findBugsProject, bugReporter, resource);
+			updateBugCollection(findBugsProject, bugReporter, incremental);
 			
 			// Redisplay markers (this makes sure version information can get in)
 			Iterator it = files.iterator();
@@ -327,38 +326,26 @@ public class FindBugsWorker {
 	 *
 	 * @param findBugsProject FindBugs project representing analyzed classes
 	 * @param bugReporter     Reporter used to collect the new warnings
-	 * @param resource		  Resource used to determine timestamp and project name for new BugCollection
+	 * @param incremental TODO
 	 * @throws CoreException
 	 * @throws IOException
 	 * @throws DocumentException
 	 */
-	private void updateBugCollection(Project findBugsProject, Reporter bugReporter, IResource resource)
+	private void updateBugCollection(Project findBugsProject, Reporter bugReporter, boolean incremental)
 			throws CoreException, IOException, DocumentException {
 		SortedBugCollection oldBugCollection = FindbugsPlugin.getBugCollection(project, monitor);
 		SortedBugCollection newBugCollection = bugReporter.getBugCollection();
-		/*
-		if (INCREMENTAL_UPDATE) {
-			updateBugCollectionIncrementally(bugReporter, oldBugCollection, newBugCollection);
-		} else {
-			updateBugCollectionDestructively(bugReporter, oldBugCollection, newBugCollection);
-		}
 
-		// Store updated BugCollection
-		FindbugsPlugin.storeBugCollection(project, oldBugCollection, findBugsProject, monitor);
- 		*/
-		SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection, newBugCollection);
+		SortedBugCollection resultCollection = mergeBugCollections(oldBugCollection, newBugCollection, incremental);
 		resultCollection.setTimestamp(System.currentTimeMillis());
-		if(resource==null)
-			resultCollection.setReleaseName(findBugsProject.getProjectFileName());
-		else
-			resultCollection.setReleaseName(resource.getName());
+
 		FindbugsPlugin.storeBugCollection(project, resultCollection, findBugsProject, monitor);
 	}
 
-	private SortedBugCollection mergeBugCollections(SortedBugCollection firstCollection, SortedBugCollection secondCollection)
+	private SortedBugCollection mergeBugCollections(SortedBugCollection firstCollection, SortedBugCollection secondCollection, boolean incremental)
 	{
 		Update update = new Update();
-		return (SortedBugCollection)(update.mergeCollections(firstCollection, secondCollection, false));
+		return (SortedBugCollection)(update.mergeCollections(firstCollection, secondCollection, false, incremental));
 	}
 	
 	/**
