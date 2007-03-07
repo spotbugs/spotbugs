@@ -332,7 +332,7 @@
 			<td align="right"><b><xsl:value-of select="format-number(@total_bugs div $kloc, $format)"/></b></td>
 		</tr>
 	</table>
-	<p><i>(* Defects per Thousand lines of non-commenting source statetements)</i></p>
+	<p><i>(* Defects per Thousand lines of non-commenting source statements)</i></p>
 	<p><br/><br/></p>
 
 </xsl:template>
