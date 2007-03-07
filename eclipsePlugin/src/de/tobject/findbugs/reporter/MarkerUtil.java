@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.IParent;
 import org.eclipse.jdt.core.ISourceRange;
@@ -82,6 +83,10 @@ public abstract class MarkerUtil {
 	 * @param project the project
 	 */
 	public static void createMarker(BugInstance bug, IProject project, BugCollection theCollection) {
+        if (bug == null)
+            FindbugsPlugin.getDefault().logException(new NullPointerException(), "bug is null");
+        if (project == null)
+            FindbugsPlugin.getDefault().logException(new NullPointerException(), "project is null");
 		String className = null;
 		String packageName = null;
 		if (bug.getPrimaryClass() != null) {
@@ -172,6 +177,7 @@ public abstract class MarkerUtil {
 	 */
 	public static IResource getUnderlyingResource(BugInstance bug, IProject project, SourceLineAnnotation sla)
 		throws JavaModelException {
+        
 		SourceLineAnnotation primarySourceLineAnnotation;
 		if(sla == null)
 			primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
@@ -205,10 +211,11 @@ public abstract class MarkerUtil {
 		Matcher m = fullName.matcher(qualifiedClassName);
 		IType type;
 		String innerName = null;
-		if (m.matches() && m.group(2).length() > 0) {
+		IJavaProject javaProject = Reporter.getJavaProject(project);
+        if (m.matches() && m.group(2).length() > 0) {
 			String outerQualifiedClassName = m.group(1).replace('$','.');
 			innerName  = m.group(2).substring(1);
-			type = Reporter.getJavaProject(project).findType(outerQualifiedClassName);
+			type = javaProject.findType(outerQualifiedClassName);
 			// dump(type, 0);
 			
 			/*
@@ -217,7 +224,7 @@ public abstract class MarkerUtil {
 			 */
 			completeInnerClassInfo(qualifiedClassName, innerName, type, bug);
 		} else {
-			type =  Reporter.getJavaProject(project).findType(qualifiedClassName.replace('$','.'));
+			type =  javaProject.findType(qualifiedClassName.replace('$','.'));
 		}
 
 		// reassign it as it may be changed for inner classes
@@ -650,7 +657,7 @@ public abstract class MarkerUtil {
 		}
 	}
 	
-	public static IProject findProjectForWarning(BugInstance warning)
+	public static @CheckForNull IProject findProjectForWarning(BugInstance warning)
 	{
 		IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		for(IProject proj : projectList)

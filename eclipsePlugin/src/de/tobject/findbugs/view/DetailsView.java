@@ -25,6 +25,7 @@ import java.util.HashMap;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -138,7 +139,9 @@ public class DetailsView extends ViewPart {
                     SourceLineAnnotation sla = (SourceLineAnnotation) theAnnotation;
                     IFile file = null;
                     try {
-                        file = (IFile) MarkerUtil.getUnderlyingResource(theBug, MarkerUtil.findProjectForWarning(theBug), sla);
+                        IProject project = MarkerUtil.findProjectForWarning(theBug);
+                        if (project == null) return;
+                        file = (IFile) MarkerUtil.getUnderlyingResource(theBug, project, sla);
                     } catch (JavaModelException ex) {
                         FindbugsPlugin.getDefault().logException(
                                 ex, "Could not find file for " + theBug.getMessage());
