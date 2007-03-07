@@ -96,22 +96,27 @@ public class ClearMarkersAction implements IObjectActionDelegate {
 		try {
 
 			IRunnableWithProgress r = new IRunnableWithProgress() {
-				public void run(IProgressMonitor pm) throws InvocationTargetException {
-					try {
-						for (Iterator it = selection.iterator(); it.hasNext(); ) {
-							Object resource = ((IAdaptable)it.next()).getAdapter(IResource.class);
-							IResource res = (resource instanceof IResource ?
-											(IResource)resource : null);
-							if (res != null) {
-								pm.subTask("Clearing FindBugs markers from "+res.getName());
-								MarkerUtil.removeMarkers(res);
-							}
-						}
-					} catch (CoreException ex) {
-						throw new InvocationTargetException(ex);
-					}
-				}
-			};
+                public void run(IProgressMonitor pm) throws InvocationTargetException {
+                    try {
+                        for (Iterator it = selection.iterator(); it.hasNext();) {
+                            Object resource = ((IAdaptable) it.next()).getAdapter(IResource.class);
+                            IResource res = (resource instanceof IResource ? (IResource) resource : null);
+                            if (res != null) {
+                                pm.subTask("Clearing FindBugs markers from " + res.getName());
+                                MarkerUtil.removeMarkers(res);
+                            }
+                        }
+
+                    } catch (CoreException ex) {
+                        FindbugsPlugin.getDefault().logException(ex, "CoreException on clear markers");
+                        throw new InvocationTargetException(ex);
+
+                    } catch (RuntimeException ex) {
+                        FindbugsPlugin.getDefault().logException(ex, "RuntimeException on clear markers");
+                        throw ex;
+                    }
+                }
+            };
 
 			ProgressMonitorDialog progress = new ProgressMonitorDialog(FindbugsPlugin.getShell());
 			progress.run(true, true, r);
