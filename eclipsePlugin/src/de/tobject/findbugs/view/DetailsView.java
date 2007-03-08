@@ -150,7 +150,7 @@ public class DetailsView extends ViewPart {
                     }
                     HashMap map = new HashMap();
                     map.put(IMarker.LINE_NUMBER, sla.getStartLine());
-                    map.put(IDE.EDITOR_ID_ATTR, "org.eclipse.ui.DefaultTextEditor");
+                   //  map.put(IDE.EDITOR_ID_ATTR,  org.eclipse.jdt.core.JavaCore;
                     try {
                         IMarker marker = file.createMarker(IMarker.TEXT);
                         marker.setAttributes(map);
