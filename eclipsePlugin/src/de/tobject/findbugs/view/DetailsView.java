@@ -146,9 +146,12 @@ public class DetailsView extends ViewPart {
                         FindbugsPlugin.getDefault().logException(
                                 ex, "Could not find file for " + theBug.getMessage());
                         return;
-                    
                     }
-                    HashMap map = new HashMap();
+                    if (file == null){
+                        FindbugsPlugin.getDefault().logError("Could not find file for " + theBug.getMessage());
+                        return;
+                    }
+                    HashMap<Object, Object> map = new HashMap<Object, Object>();
                     map.put(IMarker.LINE_NUMBER, sla.getStartLine());
                    //  map.put(IDE.EDITOR_ID_ATTR,  org.eclipse.jdt.core.JavaCore;
                     try {
@@ -287,16 +290,6 @@ public class DetailsView extends ViewPart {
         updateDisplay();
     }
 
-    public  static void showDetailsView() {
-        if (UserAnnotationsView.isVisible()) return;
-        IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
-        if (pages.length > 0)
-            try {
-                pages[0].showView("de.tobject.findbugs.view.detailsview");
-            } catch (PartInitException e) {
-                FindbugsPlugin.getDefault().logException(e, "Could not show bug details view");
-            }  
-    }
     
     /**
      * Show the details of a FindBugs marker in the details view. Brings the

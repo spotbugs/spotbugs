@@ -80,8 +80,7 @@ public class MarkerShowDetailsAction implements IObjectActionDelegate {
 						IMarker marker = (IMarker) iter.next();
 						if (!marker.getType().equals(FindBugsMarker.NAME))
 							continue;
-						UserAnnotationsView.showMarker(marker, false);
-						DetailsView.showMarker(marker, true);
+                        FindbugsPlugin.showMarker(marker, false, true);
 					}
 				}
 			}

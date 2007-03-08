@@ -85,8 +85,7 @@ public class BugTreeView extends ViewPart{
 		{
 			IMarker myMarker = instanceMap.get(theTree.getSelection()[0]);
 			if(myMarker == null) return;
-			DetailsView.showMarker(myMarker, false);
-			UserAnnotationsView.showMarker(myMarker, false);
+            FindbugsPlugin.showMarker(myMarker, false, false);
 			try{IDE.openEditor(getSite().getPage(), myMarker, false);}
 			catch(PartInitException ex){ex.printStackTrace();}
 		}
@@ -99,8 +98,8 @@ public class BugTreeView extends ViewPart{
 				theItem.setExpanded(!theItem.getExpanded());
 			else
 			{
-				DetailsView.showMarker(myMarker, false);
-				UserAnnotationsView.showMarker(myMarker, false);
+                FindbugsPlugin.showMarker(myMarker, false, false);
+
 				try{IDE.openEditor(getSite().getPage(), myMarker, false);}
 				catch(PartInitException ex){ex.printStackTrace();}
 			}

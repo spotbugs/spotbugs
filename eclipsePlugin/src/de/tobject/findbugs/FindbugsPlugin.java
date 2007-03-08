@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 
 import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
@@ -48,7 +49,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -60,6 +63,8 @@ import de.tobject.findbugs.io.FileOutput;
 import de.tobject.findbugs.io.IO;
 import de.tobject.findbugs.nature.FindBugsNature;
 import de.tobject.findbugs.reporter.Reporter;
+import de.tobject.findbugs.view.DetailsView;
+import de.tobject.findbugs.view.UserAnnotationsView;
 import edu.umd.cs.findbugs.DetectorFactory;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
@@ -786,5 +791,55 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
     }
 
+    public static void showDetailsAndUserAnnotationView() {
+
+        boolean showUserLast = UserAnnotationsView.isVisible();
+        
+        if (!showUserLast)
+            showUserAnnotationView();
+        showDetailsView();
+        if (showUserLast)
+            showUserAnnotationView();
+    }
+
+    public static void showMarker(IMarker marker, boolean preferAnnotationView, boolean focus) {
+        if (preferAnnotationView) {
+            showDetailsView();
+            DetailsView.showMarker(marker, false);
+            showUserAnnotationView();
+            UserAnnotationsView.showMarker(marker, focus);
+        } else {
+            showUserAnnotationView();
+            UserAnnotationsView.showMarker(marker, false);
+            showDetailsView();
+            DetailsView.showMarker(marker, focus);
+        }
+    }
+
+    public static void showDetailsView() {
+
+        if (UserAnnotationsView.isVisible())
+            return;
+        IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
+        if (pages.length > 0)
+            try {
+                pages[0].showView("de.tobject.findbugs.view.Detailsview");
+            } catch (PartInitException e) {
+                FindbugsPlugin.getDefault().logException(e, "Could not show bug details view");
+            }
+    }
+
+    public static void showUserAnnotationView() {
+
+        if (UserAnnotationsView.isVisible())
+            return;
+        IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
+        if (pages.length > 0)
+            try {
+                pages[0].showView("de.tobject.findbugs.view.UserAnnotationsView");
+            } catch (PartInitException e) {
+                FindbugsPlugin.getDefault().logException(e, "Could not show bug details view");
+            }
+    }
 }
 
