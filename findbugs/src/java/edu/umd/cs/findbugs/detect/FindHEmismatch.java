@@ -40,6 +40,7 @@ import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.StatelessDetector;
+import edu.umd.cs.findbugs.TypeAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
@@ -407,7 +408,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 	    potentialBugs.put(type.getClassName(), 
 	            new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",priority)
 	    .addClassAndMethod(this)
-	    .addTypeOfNamedClass(type.getClassName())
+	    .addTypeOfNamedClass(type.getClassName()).describe(TypeAnnotation.UNHASHABLE_ROLE)
 	    .addTypeOfNamedClass(getClassConstantOperand())
 	    .addSourceLine(this));
 	}
@@ -454,13 +455,13 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
         if (visitingField())
             bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
                     priority).addClass(this).addVisitedField(
-                            this).addTypeOfNamedClass(className);
+                            this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
         else if (visitingMethod())
             bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
-                    priority).addClassAndMethod(this).addTypeOfNamedClass(className);
+                    priority).addClassAndMethod(this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
         else
             bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
-                    priority).addClass(this).addClass(this).addTypeOfNamedClass(className);
+                    priority).addClass(this).addClass(this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
         potentialBugs.put(className, bug);
     }
 

@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.JavaVersion;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
@@ -309,7 +310,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 						bugReporter.reportBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE", 
 								HIGH_PRIORITY)
 									.addClassAndMethod(this)
-									.addInt(v)
+									.addInt(v).describe(IntAnnotation.INT_VALUE)
 									.addSourceLine(this, getPC() + switchOffsets[i]));
 
 				}
@@ -350,7 +351,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 					
 					bugReporter.reportBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE", priority)
 								.addClassAndMethod(this)
-								.addInt(v1)
+								.addInt(v1).describe(IntAnnotation.INT_VALUE)
 								.addSourceLine(this));
 				}
 			}	

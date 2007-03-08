@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.JavaClass;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 
@@ -201,7 +202,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 				 bugReporter.reportBug(new BugInstance(this, "ICAST_BAD_SHIFT_AMOUNT", 
 						 	valueOfConstantArgumentToShift < 0 ? LOW_PRIORITY : HIGH_PRIORITY)
 						.addClassAndMethod(this)
-						.addInt(valueOfConstantArgumentToShift)
+						.addInt(valueOfConstantArgumentToShift).describe(IntAnnotation.INT_SHIFT)
 						.addSourceLine(this)
 						);
 				}
@@ -229,7 +230,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 				if (v < 0 || v > 11)
 				 bugReporter.reportBug(new BugInstance(this, "DMI_BAD_MONTH", NORMAL_PRIORITY)
 						.addClassAndMethod(this)
-						.addInt(v)
+						.addInt(v).describe(IntAnnotation.INT_VALUE)
 						.addCalledMethod(this)
 						.addSourceLine(this)
 					);
@@ -256,7 +257,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	               if (v < 0 || v > 11)
 	                   bugReporter.reportBug(new BugInstance(this, "DMI_BAD_MONTH", NORMAL_PRIORITY)
 	                   .addClassAndMethod(this)
-	                   .addInt(v)
+	                   .addInt(v).describe(IntAnnotation.INT_VALUE)
 	                   .addCalledMethod(this)
 	                   .addSourceLine(this)
 	                   );

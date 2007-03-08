@@ -37,7 +37,10 @@ public class TypeAnnotation implements BugAnnotation {
 	public static final String DEFAULT_ROLE = "TYPE_DEFAULT";
     public static final String EXPECTED_ROLE = "TYPE_EXPECTED";
     public static final String FOUND_ROLE = "TYPE_FOUND";
-
+    public static final String CLOSEIT_ROLE = "TYPE_CLOSEIT";
+    public static final String UNHASHABLE_ROLE = "TYPE_UNHASHABLE";
+    
+    
 	final private String descriptor; // jvm type descriptor, such as "[I"
 	private String roleDescription;
 	

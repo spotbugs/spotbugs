@@ -43,6 +43,8 @@ public class IntAnnotation implements BugAnnotation {
 	 */
 	public static final String INT_SYNC_PERCENT = "INT_SYNC_PERCENT";
 	public static final String INT_OCCURRENCES = "INT_OCCURRENCES";
+    public static final String INT_VALUE = "INT_VALUE";
+    public static final String INT_SHIFT= "INT_SHIFT";
 
 	/**
 	 * Constructor.

@@ -1256,8 +1256,8 @@ public class FindNullDeref implements Detector,
         BugInstance bugInstance = new BugInstance(this, bugType, priority)
                 .addClassAndMethod(classContext.getJavaClass(), method);
         if (invokedMethod != null)
-            bugInstance.addMethod(invokedMethod).describe("METHOD_CALLED").addInt(parameterNumber).describe(
-            "INT_NONNULL_PARAM");
+            bugInstance.addMethod(invokedMethod).describe("METHOD_CALLED")
+            .addInt(parameterNumber).describe("INT_NONNULL_PARAM");
         if (storedField!= null)
             bugInstance.addField(storedField).describe("FIELD_STORED");
         bugInstance.add(variableAnnotation);

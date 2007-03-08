@@ -182,6 +182,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 			reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));
 
 		reporter.finish();
+        Exception e = reporter.getFatalException();
+        if (e != null) throw e;
 	}
 }
 

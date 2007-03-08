@@ -38,7 +38,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	boolean sawDangerOld;
 	boolean sawNumericTest, sawNumericTestOld, sawNumericTestVeryOld;
 	boolean sawArrayDanger, sawArrayDangerOld;
-    boolean sawMethodCall, sawMethodCallOld, sawMethodCallVeryOld;
+    boolean sawMethodCall, sawMethodCallOld;
 
 	private BugReporter bugReporter;
 
@@ -61,7 +61,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
         distance = 1000000;
         sawArrayDanger = sawArrayDangerOld = false;
         sawDanger = sawDangerOld = false;
-        sawMethodCall = sawMethodCallOld = sawMethodCallVeryOld = false;
+        sawMethodCall = sawMethodCallOld = false;
         sawNullTest = sawNullTestOld = sawNullTestVeryOld = false;
         sawNumericTest = sawNumericTestOld = sawNumericTestVeryOld = false;
     }
@@ -238,7 +238,6 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	}
 
 	private void sawBooleanValue() {
-        sawMethodCallVeryOld = sawMethodCallOld;
         sawMethodCallOld = sawMethodCall;
 		sawDangerOld = sawDanger;
 		sawArrayDangerOld = sawArrayDanger;
