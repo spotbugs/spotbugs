@@ -24,6 +24,7 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.util;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.MIN_VALUE;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.eclipse.jdt.core.dom.ImportDeclaration;
@@ -38,7 +39,7 @@ import org.eclipse.jdt.core.dom.Name;
  * @author <a href="mailto:mbusarel@hsr.ch">Marco Busarello</a>
  * @version 1.0
  */
-public class ImportDeclarationComparator<E extends ImportDeclaration> implements Comparator<E> {
+public class ImportDeclarationComparator<E extends ImportDeclaration> implements Comparator<E>, Serializable {
 
     public int compare(E o1, E o2) {
         if (o1 == o2) {

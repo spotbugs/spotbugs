@@ -33,8 +33,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
  */
 public class TypeDeclarationNotFoundException extends BodyDeclarationNotFoundException {
 
-    private static final long serialVersionUID = -3341272779394076439L;
-
     private final CompilationUnit compilationUnit;
 
     private final String className;
