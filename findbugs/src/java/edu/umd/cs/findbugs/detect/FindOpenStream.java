@@ -53,6 +53,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 	         ObjectTypeFactory.getInstance("java.io.Reader"),
 	         ObjectTypeFactory.getInstance("java.io.Writer"),
 	         ObjectTypeFactory.getInstance("java.sql.Connection"),
+             ObjectTypeFactory.getInstance("java.sql.PreparedStatement"),
 	         ObjectTypeFactory.getInstance("java.sql.Statement"),
 	         ObjectTypeFactory.getInstance("java.sql.ResultSet")};
 
@@ -233,7 +234,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 	// class containing one of these words, then we don't run the
 	// detector on the class.
 	private static final String[] PRESCREEN_CLASS_LIST =
-		{ "Stream", "Reader", "Writer", "DriverManager", "Connection" }; 
+		{ "Stream", "Reader", "Writer", "DriverManager", "Connection", "Statement" }; 
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
@@ -249,25 +250,32 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 		boolean sawResourceClass = false;
 		for (int i = 0; i < jclass.getConstantPool().getLength(); ++i) {
 			Constant constant = jclass.getConstantPool().getConstant(i);
-			
+            String className = null;
 			if (constant instanceof ConstantMethodref) {
 				ConstantMethodref cmr = (ConstantMethodref) constant;
 				
 				int classIndex = cmr.getClassIndex();
-				String className = jclass.getConstantPool().getConstantString(
+				className = jclass.getConstantPool().getConstantString(
 						classIndex, Constants.CONSTANT_Class);
+            } else if (constant instanceof ConstantInterfaceMethodref) {
+                ConstantInterfaceMethodref cmr = (ConstantInterfaceMethodref) constant;
+                
+                int classIndex = cmr.getClassIndex();
+                className = jclass.getConstantPool().getConstantString(
+                        classIndex, Constants.CONSTANT_Class);
+            }
 				
-				if (DEBUG) System.out.println("FindOpenStream: saw class " + className);
-				
-				if (className != null) {
-					for (String aPRESCREEN_CLASS_LIST : PRESCREEN_CLASS_LIST) {
-						if (className.indexOf(aPRESCREEN_CLASS_LIST) >= 0) {
-							sawResourceClass = true;
-							break;
-						}
-					}
-				}
+			if (className != null) {
+			    if (DEBUG) System.out.println("FindOpenStream: saw class " + className);
+
+			    for (String aPRESCREEN_CLASS_LIST : PRESCREEN_CLASS_LIST) {
+			        if (className.indexOf(aPRESCREEN_CLASS_LIST) >= 0) {
+			            sawResourceClass = true;
+			            break;
+			        }
+			    }
 			}
+		
 		}
 		
 		if (sawResourceClass) {
@@ -406,8 +414,9 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 				continue;
 
 			String sourceFile = javaClass.getSourceFileName();
-			bugReporter.reportBug(new BugInstance(this, pos.bugType, pos.priority)
+            bugReporter.reportBug(new BugInstance(this, pos.bugType, pos.priority)
 					.addClassAndMethod(methodGen, sourceFile)
+                    .addTypeOfNamedClass(stream.getStreamBase()).describe(TypeAnnotation.CLOSEIT_ROLE)
 					.addSourceLine(classContext, methodGen, sourceFile, stream.getLocation().getHandle()));
 		}
 	}
