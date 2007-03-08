@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -35,6 +36,7 @@ import org.dom4j.io.DocumentSource;
 
 public class HTMLBugReporter extends BugCollectionBugReporter {
 	private String stylesheet;
+    private Exception fatalException;
 
 	public HTMLBugReporter(Project project, String stylesheet) {
 		super(project);
@@ -52,15 +54,7 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
 			// Get the stylesheet as a StreamSource.
 			// First, try to load the stylesheet from the filesystem.
 			// If that fails, try loading it as a resource.
-			InputStream xslInputStream;
-			if (FindBugs.DEBUG) System.out.println("Attempting to load stylesheet " + stylesheet);
-			try {
-				xslInputStream = new BufferedInputStream(new FileInputStream(stylesheet));
-			} catch (FileNotFoundException fnfe) {
-				xslInputStream = this.getClass().getClassLoader().getResourceAsStream(stylesheet);
-				if (xslInputStream == null)
-					throw new IOException("Could not load HTML generation stylesheet " + stylesheet);
-			}
+			InputStream xslInputStream = getStylesheetStream(stylesheet);
 			StreamSource xsl = new StreamSource(xslInputStream);
 			xsl.setSystemId(stylesheet);
 
@@ -78,9 +72,33 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
 			transformer.transform(source, result);
 		} catch (Exception e) {
 			logError("Could not generate HTML output", e);
+            fatalException = e;
 			if (FindBugs.DEBUG) e.printStackTrace();
 		}
 	}
+
+    public Exception getFatalException() {
+        return fatalException;
+    }
+    private static InputStream getStylesheetStream(String stylesheet) throws IOException {
+        if (FindBugs.DEBUG) System.out.println("Attempting to load stylesheet " + stylesheet);
+        try {
+            URL u = new URL(stylesheet);
+            return u.openStream();
+        } catch (Exception e) {
+            assert true; // ignore it
+        }
+        try {
+        	return  new BufferedInputStream(new FileInputStream(stylesheet));
+        } catch (Exception fnfe) {
+            assert true; // ignore it
+        }
+        InputStream xslInputStream = HTMLBugReporter.class.getResourceAsStream("/"+stylesheet);
+        if (xslInputStream == null) {
+            throw new IOException("Could not load HTML generation stylesheet " +  stylesheet);
+        }
+        return xslInputStream;
+    }
 }
 
 // vim:ts=4
