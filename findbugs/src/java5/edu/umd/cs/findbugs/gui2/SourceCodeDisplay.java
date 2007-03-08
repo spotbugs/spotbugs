@@ -210,9 +210,13 @@ public final class SourceCodeDisplay implements Runnable {
 	
 	private int search(JavaSourceDocument document, String target, int start, Boolean backwards)
 	{
+        if (document == null) return -1;
+        
 		String docContent = null;
 		try{
-		docContent = document.getDocument().getText(0, document.getDocument().getLength());
+		StyledDocument document2 = document.getDocument();
+        if (document2 == null) return -1;
+        docContent = document2.getText(0, document2.getLength());
 		}
 		catch(BadLocationException ble){System.out.println("Bad location exception");}
 		catch(NullPointerException npe){return -1;}
