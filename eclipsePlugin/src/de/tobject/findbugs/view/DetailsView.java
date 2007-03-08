@@ -287,6 +287,17 @@ public class DetailsView extends ViewPart {
         updateDisplay();
     }
 
+    public  static void showDetailsView() {
+        if (UserAnnotationsView.isVisible()) return;
+        IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
+        if (pages.length > 0)
+            try {
+                pages[0].showView("de.tobject.findbugs.view.detailsview");
+            } catch (PartInitException e) {
+                FindbugsPlugin.getDefault().logException(e, "Could not show bug details view");
+            }  
+    }
+    
     /**
      * Show the details of a FindBugs marker in the details view. Brings the
      * view to the foreground.
@@ -299,14 +310,15 @@ public class DetailsView extends ViewPart {
      *            annotations view is already selected
      */
     public static void showMarker(IMarker marker, boolean focus) {
-    	if(detailsView == null)
-    		return;
+
         // Obtain the current workbench page, and show the details view
         IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
         if (pages.length > 0) {
             try {
                 if (focus && !(UserAnnotationsView.isVisible()))
                 	pages[0].showView("de.tobject.findbugs.view.detailsview");
+                if(detailsView == null)
+                    return;
                 String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
                 String priorityTypeString = marker.getAttribute(FindBugsMarker.PRIORITY_TYPE, "");
                 DetectorFactoryCollection.instance().ensureLoaded(); // fix
