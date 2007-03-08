@@ -2238,7 +2238,7 @@ This is same as the DefaultAnnotation except it only applys to method parameters
   <varlistentry>
     <term><command>edu.umd.cs.findbugs.annotations.NonNull</command></term>
     <listitem>
-      <command>[Target]</command> Field, Method, Package, Local variable
+      <command>[Target]</command> Field, Method, Parameter, Local variable
     </listitem>
     <listitem>
       <para>
