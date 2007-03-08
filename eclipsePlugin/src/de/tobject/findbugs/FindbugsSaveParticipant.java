@@ -61,7 +61,7 @@ public class FindbugsSaveParticipant implements ISaveParticipant {
 
 	private void fullSave() {
 		IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		for(IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) 
+		for(IProject project : projectList) 
             if(project.isAccessible() && FindbugsPlugin.isJavaProject(project)) {
 			saveBugCollection(project);
 		}
