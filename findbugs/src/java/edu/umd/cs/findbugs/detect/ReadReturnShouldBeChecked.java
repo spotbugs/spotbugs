@@ -44,7 +44,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
     BugAccumulator accumulator;
     
 
-	private int readPC, skipPC;
+	private int readPC;
 
 	private String lastCallClass = null, lastCallMethod = null,
 			lastCallSig = null;
@@ -134,7 +134,6 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 			wasBufferedInputStream = isBufferedInputStream();
 			sawSkip = true;
 			recentCallToAvailable = sawAvailable > 0 && !wasBufferedInputStream;
-			skipPC = getPC();
 			return;
 
 		}
