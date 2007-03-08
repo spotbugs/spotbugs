@@ -431,7 +431,7 @@ public class NullDerefAndRedundantComparisonFinder {
         }
     }
 
-    private final boolean MY_DEBUG = false;
+    private static final boolean MY_DEBUG = false;
 	/**
 	 * Check for unconditionally dereferenced null values
 	 * at a particular location in the CFG.
