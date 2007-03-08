@@ -88,7 +88,7 @@ public class UserAnnotationsView extends ViewPart {
 	
 	private String firstVersionText = "";
 	
-	private BugInstance theBug;
+	private @CheckForNull BugInstance theBug;
 	
 	private Text userAnnotationTextField;
 	
@@ -136,6 +136,7 @@ public class UserAnnotationsView extends ViewPart {
 		userAnnotationTextField.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e)
 			{
+                if(theBug != null)
 				theBug.getUserDesignation().setAnnotationText(userAnnotationTextField.getText());
 			}
 		});
