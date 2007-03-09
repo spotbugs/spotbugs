@@ -98,7 +98,7 @@ public enum Sortables implements Comparator<StringPair>
 			if(appVersion != null)
 			{
 				String timestamp = new Timestamp(appVersion.getTimestamp()).toString();
-				appendItem = appVersion.getReleaseName().toString() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
+				appendItem = appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
 			}
 			if(appendItem == "")
 				appendItem = "AppVersion not found, sequence number=" + seqNum;
