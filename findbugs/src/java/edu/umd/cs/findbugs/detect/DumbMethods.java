@@ -24,6 +24,7 @@ import java.util.Iterator;
 
 import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
 
+import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Constant;
@@ -31,6 +32,7 @@ import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Synthetic;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
@@ -89,6 +91,16 @@ public class DumbMethods extends BytecodeScanningDetector  {
 	
 	OpcodeStack stack = new OpcodeStack();
 	
+    boolean isSynthetic;
+    @Override
+    public void visit(JavaClass obj) {
+        String superclassName = obj.getSuperclassName();
+        isSynthetic = superclassName.equals("java.rmi.server.RemoteStub");
+        for(Attribute a : obj.getAttributes()) 
+            if (a instanceof Synthetic)
+                isSynthetic = true;
+  
+    }
 	@Override
 	public void visitAfter(JavaClass obj) {
 		accumulator.reportAccumulatedBugs();
@@ -570,7 +582,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 				gcInvocationPC = getPC();
 				//System.out.println("GC invocation at pc " + PC);
 			}
-		if ((seen == INVOKESPECIAL)
+		if (!isSynthetic && (seen == INVOKESPECIAL)
 		        && getClassConstantOperand().equals("java/lang/Boolean")
 		        && getNameConstantOperand().equals("<init>")
 		        && !getClassName().equals("java/lang/Boolean")
