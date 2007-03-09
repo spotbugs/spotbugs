@@ -80,7 +80,7 @@ public class IntAnnotation implements BugAnnotation {
 	}
 
 	public String format(String key, ClassAnnotation primaryClass) {
-		// if (!isSignificant()) return "";
+		if (key.equals("hash") && !isSignificant()) return "";
 		return String.valueOf(value);
 	}
 
