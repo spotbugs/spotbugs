@@ -40,6 +40,7 @@ import org.dom4j.io.XMLWriter;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
 
 /**
@@ -52,7 +53,7 @@ import edu.umd.cs.findbugs.xml.Dom4JXMLOutput;
  */
 public class GenerateUIDs {
 	private BugCollection bugCollection;
-	private Project project;
+	@NonNull private Project project;
 	private String inputFilename;
 	private String outputFilename;
 	
