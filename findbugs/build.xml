@@ -77,13 +77,13 @@
 		<include name="**/*.html"/>
 		<include name="**/*.xml"/>
 		<include name="**/*.xsl"/>
-		<include name="**/*.pdf"/>
 	</patternset>
 	
 	<patternset id="doc.img.pats">
 		<include name="**/*.png"/>
 		<include name="**/*.css"/>
 		<include name="**/*.txt"/>
+		<include name="**/*.pdf"/>
 	</patternset>
 
 	<!-- Default target builds scripts and jars, allowing execution using
