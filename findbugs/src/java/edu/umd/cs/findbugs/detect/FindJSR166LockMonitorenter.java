@@ -23,6 +23,8 @@ package edu.umd.cs.findbugs.detect;
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.*;
 import edu.umd.cs.findbugs.ba.type.*;
+import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
+
 import java.util.*;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.*;
@@ -66,21 +68,29 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 			if (!bytecodeSet.get(Constants.MONITORENTER))
 				continue;
 
-			try {
-				analyzeMethod(classContext, method);
-			} catch (CFGBuilderException e) {
-				bugReporter.logError("FindJSR166LockMonitorEnter caught exception", e);
-			} catch (DataflowAnalysisException e) {
-				bugReporter.logError("FindJSR166LockMonitorEnter caught exception", e);
-			}
+			
+			analyzeMethod(classContext, method);
+			
 		}
 	}
 
-	private void analyzeMethod(ClassContext classContext, Method method)
-			throws CFGBuilderException, DataflowAnalysisException {
+	private void analyzeMethod(ClassContext classContext, Method method) 
+			 {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
-		CFG cfg = classContext.getCFG(method);
-		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+		CFG cfg;
+        try {
+            cfg = classContext.getCFG(method);
+        } catch (CFGBuilderException e1) {
+            AnalysisContext.logError("Coult not get CFG", e1);
+            return;
+        }
+		TypeDataflow typeDataflow;
+        try {
+            typeDataflow = classContext.getTypeDataflow(method);
+        } catch (CheckedAnalysisException e1) {
+            AnalysisContext.logError("Coult not get Type dataflow", e1);
+            return;
+        }
 
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
@@ -90,11 +100,16 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 			
 			if (ins.getOpcode() != Constants.MONITORENTER)
 				continue;
-			
+            Type type;
+            try {
 			TypeFrame frame = typeDataflow.getFactAtLocation(location);
 			if (!frame.isValid())
 				continue;
-			Type type = frame.getInstance(ins, cpg);
+			 type = frame.getInstance(ins, cpg);
+            } catch (CheckedAnalysisException e) {
+                AnalysisContext.logError("Coult not get Type dataflow", e);
+                continue;
+            }
 			
 			if (!(type instanceof ReferenceType)) {
 				// Something is deeply wrong if a non-reference type
