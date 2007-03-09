@@ -48,7 +48,9 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 
 	public void finish() {
 		try {
-		getBugCollection().writeXML(new OutputStreamXMLOutput(outputStream), getProject());
+		Project project = getProject();
+        if (project == null) throw new NullPointerException("No project");
+        getBugCollection().writeXML(new OutputStreamXMLOutput(outputStream), project);
 		} catch (IOException e) {
 			throw new FatalException("Error writing XML output", e);
 		}

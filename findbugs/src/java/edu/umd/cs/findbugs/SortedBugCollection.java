@@ -28,7 +28,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -60,6 +59,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
@@ -271,6 +271,7 @@ public class SortedBugCollection implements BugCollection {
 	 * @return the Document representing the BugCollection as a dom4j tree
 	 */
 	public Document toDocument(Project project) {
+        if (project == null) throw new NullPointerException("No project");
 		DocumentFactory docFactory = new DocumentFactory();
 		Document document = docFactory.createDocument();
 		Dom4JXMLOutput treeBuilder = new Dom4JXMLOutput(document);
@@ -293,6 +294,7 @@ public class SortedBugCollection implements BugCollection {
 	 */
 	public void writeXML(OutputStream out, Project project) throws IOException {
 		XMLOutput xmlOutput;
+        if (project == null) throw new NullPointerException("No project");
 		if (withMessages) xmlOutput= new OutputStreamXMLOutput(out, "http://findbugs.sourceforge.net/xsl/default.xsl");
 		else xmlOutput= new OutputStreamXMLOutput(out);
 
@@ -383,7 +385,8 @@ public class SortedBugCollection implements BugCollection {
 	 * @param xmlOutput the XMLOutput object
 	 * @param project   the Project from which the BugCollection was generated
 	 */
-	public void writeXML(XMLOutput xmlOutput, Project project) throws IOException {
+	public void writeXML(XMLOutput xmlOutput, @NonNull Project project) throws IOException {
+        if (project == null) throw new NullPointerException("No project");
 		try {
 			writePrologue(xmlOutput, project);
 			if (withMessages) computeBugHashes();
