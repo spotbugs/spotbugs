@@ -189,7 +189,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 			if (last == null) {
 				// should be default case -- leave endPos as is
 			} else if (last.getInstruction() instanceof GotoInstruction) {
-				endPos = last.getPosition(); // don't store the goto
+				// endPos = last.getPosition(); // don't store the goto
 			} else if (last.getInstruction() instanceof ReturnInstruction) {
 				// leave endPos as is (store the return instruction)
 		//	} else if (last.getInstruction() instanceof ATHROW) {
