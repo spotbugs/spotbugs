@@ -91,6 +91,17 @@ public class GUISaveState{
 	private static final String NUMPROJECTS= "NumberOfProjectsToLoad";
 	private static final String NUMANALYSES= "NumberOfAnalysesToLoad";
 	private static final String STARTERDIRECTORY= "Starter Directory";
+	
+	private static final String SPLIT_MAIN = "MainSplit";
+	private static final String SPLIT_TREE_COMMENTS = "TreeCommentsSplit";
+	private static final String SPLIT_TOP = "TopSplit";
+	private static final String SPLIT_SUMMARY = "SummarySplit";
+	
+	private int splitMain;
+	private int splitTreeComments;
+	private int splitTop;
+	private int splitSummary;
+	
 	private File starterDirectoryForLoadBugs;
 	/**
 	 * List of previous comments by the user.
@@ -340,6 +351,11 @@ public class GUISaveState{
 		}
 		newInstance.frameBounds = r;
 		
+		newInstance.splitMain = p.getInt(SPLIT_MAIN, 400);
+		newInstance.splitSummary = p.getInt(SPLIT_SUMMARY, 85);
+		newInstance.splitTop = p.getInt(SPLIT_TOP, -1);
+		newInstance.splitTreeComments = p.getInt(SPLIT_TREE_COMMENTS, 250);
+		
 		instance=newInstance;
 	}
 	
@@ -396,6 +412,11 @@ public class GUISaveState{
 		p.putByteArray(DOCKINGLAYOUT, dockingLayout);
 		
 		p.put(FRAME_BOUNDS, frameBounds.x+","+frameBounds.y+","+frameBounds.width+","+frameBounds.height);
+	
+		p.putInt(SPLIT_MAIN, splitMain);
+		p.putInt(SPLIT_SUMMARY, splitSummary);
+		p.putInt(SPLIT_TOP, splitTop);
+		p.putInt(SPLIT_TREE_COMMENTS, splitTreeComments);
 	}
 		
 	static void clear()
@@ -449,5 +470,61 @@ public class GUISaveState{
 	 */
 	public void setFontSize(float fontSize) {
 		this.fontSize = fontSize;
+	}
+
+	/**
+	 * @return Returns the location of the main divider.
+	 */
+	public int getSplitMain() {
+		return splitMain;
+	}
+
+	/**
+	 * @param splitMain The location of the main divider to set.
+	 */
+	public void setSplitMain(int splitMain) {
+		this.splitMain = splitMain;
+	}
+
+	/**
+	 * @return Returns the location of the summary divider.
+	 */
+	public int getSplitSummary() {
+		return splitSummary;
+	}
+
+	/**
+	 * @param splitSummary The location of the summar divider to set.
+	 */
+	public void setSplitSummary(int splitSummary) {
+		this.splitSummary = splitSummary;
+	}
+
+	/**
+	 * @return Returns the location of the top divider.
+	 */
+	public int getSplitTop() {
+		return splitTop;
+	}
+
+	/**
+	 * @param splitTop The location of the top divider to set.
+	 */
+	public void setSplitTop(int splitTop) {
+		this.splitTop = splitTop;
+	}
+
+	/**
+	 * @return Returns the location of the tree-comments divider.
+	 */
+	public int getSplitTreeComments() {
+		return splitTreeComments;
+	}
+
+	/**
+	 * @param splitTreeComments The location of the tree-comments divider to set.
+	 */
+	public void setSplitTreeComments(int splitTreeComments) {
+		this.splitTreeComments = splitTreeComments;
 	}
 }

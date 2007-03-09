@@ -333,6 +333,7 @@ public class MainFrame extends FBFrame implements LogSync
 			return;
 		}
 		final JMenuItem item=new JMenuItem(f.getName().substring(0,f.getName().length()-4));
+		item.setFont(item.getFont().deriveFont(Driver.getFontSize()));
 		item.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e)
 			{
@@ -460,7 +461,6 @@ public class MainFrame extends FBFrame implements LogSync
 				}
 			}
 		});
-		item.setFont(item.getFont().deriveFont(Driver.getFontSize()));
 		
 		boolean exists=false;
 		if (saveType==SaveType.PROJECT)
@@ -752,9 +752,7 @@ public class MainFrame extends FBFrame implements LogSync
 		fileMenu.addSeparator();
 		fileMenu.add(redoAnalysis);
 		fileMenu.add(mergeMenuItem);
-		
-		
-		
+
 		if (exitMenuItem != null) {
 			fileMenu.addSeparator();
 			fileMenu.add(exitMenuItem);
@@ -1040,8 +1038,6 @@ public class MainFrame extends FBFrame implements LogSync
 		saveMenuItem.setEnabled(false);
 		saveType = fileType;
 		saveFile = f;
-		//TODO: .setProjectFileName() once deprecated need to change this.
-		curProject.setProjectFileName(f.getName());
 		File xmlFile;
 		if (saveType==SaveType.PROJECT)
 			xmlFile=new File(f.getAbsolutePath() + File.separator + f.getName() + ".xml");
@@ -1542,7 +1538,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * Creates initial summary tab and sets everything up.
 	 * @return
 	 */
-	Component summaryTab()
+	JSplitPane summaryTab()
 	{
 		int fontSize = (int) Driver.getFontSize();
 		summaryTopPanel = new JPanel();
@@ -1569,7 +1565,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 		JSplitPane splitP = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, 
 				summaryScrollPane, summaryHtmlScrollPane);
-		splitP.setDividerLocation(85);
+		splitP.setDividerLocation(GUISaveState.getInstance().getSplitSummary());
 		splitP.setOneTouchExpandable(true);
 		return splitP;
 	}

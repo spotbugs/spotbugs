@@ -36,6 +36,10 @@ public class SplitLayout implements FindBugsLayoutManager {
 
 	final MainFrame frame;
 	JLabel sourceTitle;
+	JSplitPane topLeftSPane;
+	JSplitPane topSPane;
+	JSplitPane summarySPane;
+	JSplitPane mainSPane;
 	
 	/**
 	 * @param frame
@@ -56,10 +60,10 @@ public class SplitLayout implements FindBugsLayoutManager {
 	 */
 	public void initialize() {
 
-		JSplitPane topLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 
+		topLeftSPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 
 				frame.bugListPanel(), frame.createCommentsInputPanel());
-		topLeft.setOneTouchExpandable(true);
-		topLeft.setDividerLocation(250);
+		topLeftSPane.setOneTouchExpandable(true);
+		topLeftSPane.setDividerLocation(GUISaveState.getInstance().getSplitTreeComments());
 		
 		JPanel sourcePanel = new JPanel();
 		sourcePanel.setLayout(new BorderLayout());
@@ -68,19 +72,19 @@ public class SplitLayout implements FindBugsLayoutManager {
 		sourcePanel.add(sourceTitle, BorderLayout.NORTH);
 		sourcePanel.add(frame.createSourceCodePanel(), BorderLayout.CENTER);
 		sourcePanel.add(frame.createSourceSearchPanel(), BorderLayout.SOUTH);
-		JSplitPane top = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, 
-				topLeft, sourcePanel
-				);
-		top.setOneTouchExpandable(true);
-		//topLeft.setDividerLocation(); //default behaviour seems ok
-
-		JSplitPane main = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 
-				top,  frame.summaryTab());
-		main.setOneTouchExpandable(true);
-		main.setDividerLocation(400);
+		topSPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, 
+				topLeftSPane, sourcePanel);
+		topSPane.setOneTouchExpandable(true);
+		topSPane.setDividerLocation(GUISaveState.getInstance().getSplitTop());
+		
+		summarySPane = frame.summaryTab();
+		mainSPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 
+				topSPane, summarySPane);
+		mainSPane.setOneTouchExpandable(true);
+		mainSPane.setDividerLocation(GUISaveState.getInstance().getSplitMain());
 
 		frame.setLayout(new BorderLayout());
-		frame.add(main, BorderLayout.CENTER);
+		frame.add(mainSPane, BorderLayout.CENTER);
 		frame.add(frame.statusBar(), BorderLayout.SOUTH);
 
 	}
@@ -103,8 +107,10 @@ public class SplitLayout implements FindBugsLayoutManager {
 	 * @see edu.umd.cs.findbugs.gui2.FindBugsLayoutManager#saveState()
 	 */
 	public void saveState() {
-		// TODO Auto-generated method stub
-
+		GUISaveState.getInstance().setSplitTreeComments(topLeftSPane.getDividerLocation());
+		GUISaveState.getInstance().setSplitTop(topSPane.getDividerLocation());
+		GUISaveState.getInstance().setSplitSummary(summarySPane.getDividerLocation());
+		GUISaveState.getInstance().setSplitMain(mainSPane.getDividerLocation());
 	}
 
 	/* (non-Javadoc)
