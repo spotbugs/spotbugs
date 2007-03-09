@@ -20,7 +20,6 @@
 package edu.umd.cs.findbugs.ba.npe;
 
 import java.util.BitSet;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,6 +33,8 @@ import java.util.TreeSet;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.GETFIELD;
+import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -260,6 +261,28 @@ public class NullDerefAndRedundantComparisonFinder {
 			}
 			{
 				Instruction in = location.getHandle().getInstruction();
+                
+               if (in instanceof InvokeInstruction && in.produceStack(classContext.getConstantPoolGen()) == 1 || in instanceof GETFIELD || in instanceof GETSTATIC) {
+                    IsNullValueFrame invFrame = invDataflow.getFactAfterLocation(location);
+                    if (invFrame.getStackDepth() > 0) {
+                    IsNullValue isNullValue = invFrame.getTopValue();
+                    if (isNullValue.isNullOnSomePath()) {
+                        // OK, must be from return value
+                        ValueNumber vn = vnaDataflow.getFactAfterLocation(location).getTopValue();
+                        UnconditionalValueDerefSet uvd = uvdDataflow.getFactAfterLocation(location);
+                        if (uvd.isUnconditionallyDereferenced(vn)) {
+                            // System.out.println("Found it");
+                            SortedSet<Location> knownNullAndDoomedAt = bugStatementLocationMap.get(vn);
+                            noteUnconditionallyDereferencedNullValue(  location,
+                                    bugStatementLocationMap,
+                                    nullValueGuaranteedDerefMap,
+                                    uvd, isNullValue, vn);
+                        }
+                    }
+                    }
+                }
+                
+                
 				if (assertionMethods.isAssertionInstruction (in, classContext.getConstantPoolGen()) ) {
 					if (DEBUG_DEREFS) 
 						System.out.println("Skipping because it is an assertion method ");
@@ -508,7 +531,13 @@ public class NullDerefAndRedundantComparisonFinder {
 	 * @param isNullValue                 the null value
 	 * @param valueNumber                 the value number of the null value
 	 */
-	private void noteUnconditionallyDereferencedNullValue(Location thisLocation, Map<ValueNumber, SortedSet<Location>> bugLocations, Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap, UnconditionalValueDerefSet derefSet, IsNullValue isNullValue, ValueNumber valueNumber) {
+	private void noteUnconditionallyDereferencedNullValue(
+            Location thisLocation, 
+            Map<ValueNumber, SortedSet<Location>> bugLocations, 
+            Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap, 
+            UnconditionalValueDerefSet derefSet, 
+            IsNullValue isNullValue, 
+            ValueNumber valueNumber) {
 		if (DEBUG) {
 			System.out.println("%%% HIT for value number " + valueNumber + " @ " + thisLocation);
 		}
