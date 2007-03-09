@@ -66,6 +66,8 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
 		if (key.equals("") || key.equals("hash"))
 			return className;
+        else if (key.equals("givenClass"))
+            return shorten(primaryClass.getPackageName(), className);
 		else
 			throw new IllegalArgumentException("unknown key " + key);
 	}

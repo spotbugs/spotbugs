@@ -159,22 +159,30 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 					priority++;
 				if (!visibleOutsidePackage)
 					priority++;
-				BugInstance bug = new BugInstance(this, "EQ_SELF_USE_OBJECT",
+				String bugPattern = "EQ_SELF_USE_OBJECT";
+               
+                BugInstance bug = new BugInstance(this, bugPattern,
 						priority).addClass(getDottedClassName());
-				if (equalsMethod != null)
-					bug.addMethod(equalsMethod);
-				bugReporter.reportBug(bug);
+                if (equalsMethod != null)
+                    bug.addMethod(equalsMethod);
+                bugReporter.reportBug(bug);
 			} else {
-				int priority = NORMAL_PRIORITY;
-				if (hasFields)
-					priority--;
-				if (obj.isAbstract())
-					priority++;
-				BugInstance bug = new BugInstance(this, "EQ_SELF_NO_OBJECT",
-						priority).addClass(getDottedClassName());
-				if (equalsMethod != null)
-					bug.addMethod(equalsMethod);
-				bugReporter.reportBug(bug);
+			    int priority = NORMAL_PRIORITY;
+			    if (hasFields)
+			        priority--;
+			    if (obj.isAbstract())
+			        priority++;
+			    String bugPattern = "EQ_SELF_NO_OBJECT";
+			    String superclassName = obj.getSuperclassName();
+			    if (superclassName.equals("java.lang.Enum")) {
+			        bugPattern = "EQ_DONT_DEFINE_EQUALS_FOR_ENUM";
+			        priority = HIGH_PRIORITY;
+			    }
+			    BugInstance bug = new BugInstance(this, bugPattern,
+			            priority).addClass(getDottedClassName());
+			    if (equalsMethod != null)
+			        bug.addMethod(equalsMethod);
+			    bugReporter.reportBug(bug);
 			}
 		}
 		
