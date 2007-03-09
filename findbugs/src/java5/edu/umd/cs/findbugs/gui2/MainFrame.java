@@ -283,13 +283,6 @@ public class MainFrame extends FBFrame implements LogSync
 			if(value == JOptionPane.CANCEL_OPTION || value == JOptionPane.CLOSED_OPTION)
 				return ;
 			else if(value == JOptionPane.YES_OPTION){
-				/*if(projectDirectory == null){
-					if(!projectSaveAs())
-						return ;
-				}
-				else
-					save(projectDirectory);
-				 */
 				
 				if(saveFile == null){
 					if(!saveAs())
@@ -650,14 +643,6 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 		});
 		
-		/*openProjectMenuItem.setEnabled(true);
-		attachAcceleratorKey(openProjectMenuItem, KeyEvent.VK_O);
-		openProjectMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				openProject();
-			}
-		});*/
-
 		mergeMenuItem.setEnabled(true);
 		mergeMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
@@ -694,49 +679,10 @@ public class MainFrame extends FBFrame implements LogSync
 				save();
 			}
 		});
-		
-		/*saveProjectMenuItem.setEnabled(false);
-		attachAccelaratorKey(saveProjectMenuItem, KeyEvent.VK_S);
-		saveProjectMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-				
-				save(projectDirectory);
-			}
-		});*/
-		
-		/*saveAsProjectMenuItem.setEnabled(true);
-		attachAccelaratorKey(saveAsProjectMenuItem, KeyEvent.VK_S, Event.SHIFT_MASK);
-		saveAsProjectMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-				
-				if(projectSaveAs())
-					saveProjectMenuItem.setEnabled(false);
-			}
-		});*/
-		
-		/*attachAccelaratorKey(importBugsMenuItem, KeyEvent.VK_O, Event.ALT_MASK);
-		importBugsMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				loadAnalysis();
-			}
-		});*/
-	
-		/*exportBugsMenuItem.setEnabled(true);
-		attachAccelaratorKey(exportBugsMenuItem, KeyEvent.VK_S, Event.ALT_MASK);
-		exportBugsMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				saveAnalysis();
-			}
-		});*/
-		
-		
-				
+
 		fileMenu.add(newProjectMenuItem);
 		fileMenu.add(reconfigMenuItem);
 		fileMenu.addSeparator();
-		//fileMenu.add(openProjectMenuItem);
 		fileMenu.add(openMenuItem);
 		recentMenu.add(recentProjectsMenu);
 		recentMenu.add(recentAnalysesMenu);
@@ -744,11 +690,6 @@ public class MainFrame extends FBFrame implements LogSync
 		fileMenu.addSeparator();
 		fileMenu.add(saveAsMenuItem);
 		fileMenu.add(saveMenuItem);
-//		fileMenu.add(saveProjectMenuItem);
-//		fileMenu.add(saveAsProjectMenuItem);
-		//fileMenu.addSeparator();
-		//fileMenu.add(importBugsMenuItem);
-		//fileMenu.add(exportBugsMenuItem);
 		fileMenu.addSeparator();
 		fileMenu.add(redoAnalysis);
 		fileMenu.add(mergeMenuItem);
@@ -1123,76 +1064,6 @@ public class MainFrame extends FBFrame implements LogSync
 			JOptionPane.showMessageDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
 		}
 	}
-	
-	/**
-	 * Called when use has not previous saved project. Uses save() after finds
-	 * where user want to save file.  Also changes Mainframe title to reflect the name change.
-	 * @return True if successful.
-	 */
-	/*private boolean projectSaveAs(){
-		if (curProject==null)
-		{
-			JOptionPane.showMessageDialog(MainFrame.this,edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_proj_save_lbl", "There is no project to save"));
-			return false;
-		}
-		
-		FBFileChooser jfc=new FBFileChooser();
-		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		jfc.setFileFilter(new FindBugsProjectFileFilter());
-		jfc.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.saveas_ttl", "Save as..."));
-
-		boolean exists = false;
-		File dir=null;
-		boolean retry;
-		do  
-		{
-			retry = false;
-			int value=jfc.showSaveDialog(MainFrame.this);
-			if (value!=JFileChooser.APPROVE_OPTION) return false;
-
-			dir = jfc.getSelectedFile();
-			File xmlFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");
-			File fasFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
-			exists=xmlFile.exists() && fasFile.exists();
-
-			if(exists){
-				int response = JOptionPane.showConfirmDialog(jfc, 
-						edu.umd.cs.findbugs.L10N.getLocalString("dlg.proj_already_exists_lbl", "This project already exists.\nDo you want to replace it?"),
-						edu.umd.cs.findbugs.L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-
-				if(response == JOptionPane.OK_OPTION)
-					retry = false;
-				if(response == JOptionPane.CANCEL_OPTION){
-					retry = true;
-					continue;
-				}
-			}
-            curProject.setProjectFileName(dir.toString());
-			boolean good=save(dir);
-			if (good==false)
-			{
-				JOptionPane.showMessageDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
-				return false;
-			}
-			projectDirectory=dir;				
-
-		} while (retry);
-		
-		File xmlFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");
-
-		//If the file already existed, its already in the preferences, as well as the recent projects menu items, only add it if they change the name, otherwise everything we're storing is still accurate since all we're storing is the location of the file.
-		if (!exists)
-		{
-			GUISaveState.getInstance().addRecentProject(xmlFile);
-		}
-
-		MainFrame.this.addRecentProjectToMenu(xmlFile);
-
-		MainFrame.this.setTitle("FindBugs: " + dir.getName());// I think below is better - Kristin
-//		MainFrame.this.setTitle("FindBugs: " + curProject.getProjectFileName());//This one doesn't work yet- Dan
-
-		return true;
-	}*/
 	
 	/**
 	 * 
@@ -2089,42 +1960,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		return SAVE_SUCCESSFUL;
 	}
-	
-	/*
-	 * DO NOT use the projectDirectory variable to figure out the current project directory in this function
-	 * use the passed in value, as that variable may or may not have been set to the passed in value at this point.
-	 */
-	/*private boolean save(File dir)
-	{
-		if (curProject == null) {
-			curProject = new Project(); 
-			JOptionPane.showMessageDialog(MainFrame.this, "Null project; this is unexpected. "
-					+" Creating a new Project so the bugs can be saved, but please report this error.");
-
-		}
-		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
-		dir.mkdir();
-		updateDesignationDisplay();
-		
-		File f = new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");	
-		File filtersAndSuppressions=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
-		//Saves current comment to current bug.
-		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-
-		BugSaver.saveBugs(f,BugSet.getMainBugSet(),curProject);
-		try {
-			filtersAndSuppressions.createNewFile();
-			ProjectSettings.getInstance().save(new FileOutputStream(filtersAndSuppressions));
-		} catch (IOException e) {
-			Debug.println(e);
-			return false;
-		}
-		setProjectChanged(false);
-		
-		return true;
-	}*/
-	
 	/**
 	 * @param currentSelectedBugLeaf2
 	 * @param currentSelectedBugAspects2
@@ -2205,7 +2041,8 @@ public class MainFrame extends FBFrame implements LogSync
 			return false;
 		}
 	}
-		/**
+	
+	/**
 	 * @param file
 	 * @return
 	 */
@@ -2242,6 +2079,7 @@ public class MainFrame extends FBFrame implements LogSync
 		}).start();
 		return;
 	}
+	
 	/**
 	 * Redo the analysis
 	 */
