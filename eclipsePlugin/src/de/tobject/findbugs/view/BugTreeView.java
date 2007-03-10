@@ -6,6 +6,10 @@ import java.util.HashMap;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.ui.JavaUI;
@@ -84,6 +88,11 @@ public class BugTreeView extends ViewPart{
 		public void widgetSelected(SelectionEvent e)
 		{
 			IMarker myMarker = instanceMap.get(theTree.getSelection()[0]);
+			if(!(myMarker.getResource().getProject().isOpen()))
+			{
+				System.out.println("Project not open");
+				return;
+			}
 			if(myMarker == null) return;
             FindbugsPlugin.showMarker(myMarker, false, false);
 			try{IDE.openEditor(getSite().getPage(), myMarker, false);}
@@ -94,6 +103,11 @@ public class BugTreeView extends ViewPart{
 		{
 			TreeItem theItem = theTree.getSelection()[0];
 			IMarker myMarker = instanceMap.get(theItem);
+			if(!(myMarker.getResource().getProject().isOpen()))
+			{
+				System.out.println("Project not open");
+				return;
+			}
 			if(myMarker == null)
 				theItem.setExpanded(!theItem.getExpanded());
 			else
@@ -138,7 +152,30 @@ public class BugTreeView extends ViewPart{
 			{
 				FindbugsPlugin.getDefault().logException(e, "Core exception on tree initialization");
 			}
-		}				
+		}
+		//add resource change listener to check for project cloure (bug 1674457)
+		/*
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			IResourceChangeListener listener = new IResourceChangeListener() {
+				public void resourceChanged(IResourceChangeEvent event) {
+					if(event.getDelta().getKind() == IResourceDelta.OPEN)
+						if(event.getResource() instanceof IProject)
+						{
+							String projectName = event.getResource().getName();
+							Tree theTree = projectTrees.get(projectName);
+							TabItem theTabItem = projectTabItems.get(projectName);
+							if(theTabItem.getControl() == theTree)
+							{
+								Label theLabel = new Label(theFolder, SWT.VERTICAL);
+								theLabel.setText("This project is currently closed. Bug information is unavailable.");
+								theTabItem.setControl(theLabel);
+							}
+							else
+								theTabItem.setControl(theTree);
+						}
+				}
+			};
+		workspace.addResourceChangeListener(listener);*/
 	}
 	
 	public void clearTree(IProject currProject)

@@ -125,11 +125,13 @@ public class UserAnnotationsView extends ViewPart {
 			}}
 			);
 		designationComboBox.setSize(designationComboBox.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		designationComboBox.setEnabled(false);
 		firstVersionLabel = new Label(main, SWT.LEFT);
 		firstVersionLabel.setToolTipText("The earliest version in which the bug was present");
 		firstVersionLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		userAnnotationTextField = new Text(main, SWT.LEFT);
 		userAnnotationTextField.setToolTipText("Type comments about the selected bug here");
+		userAnnotationTextField.setEnabled(false);
 		GridData uatfData = new GridData(GridData.FILL_BOTH);
 		uatfData.horizontalSpan = 2;
 		userAnnotationTextField.setLayoutData(uatfData);
@@ -194,6 +196,8 @@ public class UserAnnotationsView extends ViewPart {
 		this.userAnnotation = (userAnnotation == null) ? "" : userAnnotation.trim();
 		this.firstVersionText = (firstVersionText == null) ? "" : firstVersionText.trim();
 		this.theBug = bug;
+		this.userAnnotationTextField.setEnabled(theBug != null);
+		this.designationComboBox.setEnabled(theBug != null);
 		updateDisplay();
 	}
 
