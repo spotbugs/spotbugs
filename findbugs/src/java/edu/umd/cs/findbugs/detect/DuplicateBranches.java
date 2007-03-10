@@ -185,11 +185,12 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 			if (switchPos[i]+1 >= switchPos[i+1]) continue; // why the +1 on lhs?
 			
 			int endPos = switchPos[i+1];
+            int endPos2 = endPos;
 			InstructionHandle last = prevHandle.get((Integer)switchPos[i+1]);
 			if (last == null) {
 				// should be default case -- leave endPos as is
 			} else if (last.getInstruction() instanceof GotoInstruction) {
-				// endPos = last.getPosition(); // don't store the goto
+				endPos2 = last.getPosition(); // don't store the goto
 			} else if (last.getInstruction() instanceof ReturnInstruction) {
 				// leave endPos as is (store the return instruction)
 		//	} else if (last.getInstruction() instanceof ATHROW) {
@@ -200,19 +201,13 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 				if (i+1 < idx && switchPos[idx]!=switchPos[idx-1]) continue; // also falls through unless switch has no default case
 			}
 			
-			byte[] clause = getCodeBytes(method, switchPos[i], endPos);
-			
-			BigInteger clauseAsInt;
-			if (clause.length == 0) clauseAsInt = BigInteger.ZERO;
-			else clauseAsInt = new BigInteger(clause);
-			
-			Collection<Integer> values = map.get(clauseAsInt);
-			
-			if (values == null) {
-				values = new LinkedList<Integer>();
-				map.put(clauseAsInt,values);
-			}
-			values.add((Integer)i); // index into the sorted array
+			BigInteger clauseAsInt = getCodeBytesAsBigInt(method, switchPos, i, endPos);
+			updateMap(map, i, clauseAsInt);
+            
+            if (endPos2 != endPos) {
+                clauseAsInt = getCodeBytesAsBigInt(method, switchPos, i, endPos2);
+                updateMap(map, i, clauseAsInt);
+            }
 		}
 		for(Collection<Integer> clauses : map.values()) {
 			if (clauses.size() > 1) {
@@ -227,6 +222,27 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 			}
 		}
 	}
+
+
+    private void updateMap(HashMap<BigInteger, Collection<Integer>> map, int i, BigInteger clauseAsInt) {
+        Collection<Integer> values = map.get(clauseAsInt);
+        
+        if (values == null) {
+        	values = new LinkedList<Integer>();
+        	map.put(clauseAsInt,values);
+        }
+        values.add((Integer)i); // index into the sorted array
+    }
+
+
+    private BigInteger getCodeBytesAsBigInt(Method method, int[] switchPos, int i, int endPos) {
+        byte[] clause = getCodeBytes(method, switchPos[i], endPos);
+        
+        BigInteger clauseAsInt;
+        if (clause.length == 0) clauseAsInt = BigInteger.ZERO;
+        else clauseAsInt = new BigInteger(clause);
+        return clauseAsInt;
+    }
 	
 	/** determine the end position (exclusive) of the final case
 	 *  by looking at the gotos at the ends of the other cases */
