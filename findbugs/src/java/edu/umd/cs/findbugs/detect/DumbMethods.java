@@ -96,7 +96,9 @@ public class DumbMethods extends BytecodeScanningDetector  {
     public void visit(JavaClass obj) {
         String superclassName = obj.getSuperclassName();
         isSynthetic = superclassName.equals("java.rmi.server.RemoteStub");
-        for(Attribute a : obj.getAttributes()) 
+        Attribute[] attributes = obj.getAttributes();
+        if (attributes != null)
+            for(Attribute a : attributes) 
             if (a instanceof Synthetic)
                 isSynthetic = true;
   
