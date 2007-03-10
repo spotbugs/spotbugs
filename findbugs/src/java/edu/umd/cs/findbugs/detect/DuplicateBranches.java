@@ -185,12 +185,11 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 			if (switchPos[i]+1 >= switchPos[i+1]) continue; // why the +1 on lhs?
 			
 			int endPos = switchPos[i+1];
-            int endPos2 = endPos;
-			InstructionHandle last = prevHandle.get((Integer)switchPos[i+1]);
+           InstructionHandle last = prevHandle.get((Integer)switchPos[i+1]);
 			if (last == null) {
 				// should be default case -- leave endPos as is
 			} else if (last.getInstruction() instanceof GotoInstruction) {
-				endPos2 = last.getPosition(); // don't store the goto
+				endPos = last.getPosition(); // don't store the goto
 			} else if (last.getInstruction() instanceof ReturnInstruction) {
 				// leave endPos as is (store the return instruction)
 		//	} else if (last.getInstruction() instanceof ATHROW) {
@@ -204,10 +203,7 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 			BigInteger clauseAsInt = getCodeBytesAsBigInt(method, switchPos, i, endPos);
 			updateMap(map, i, clauseAsInt);
             
-            if (endPos2 != endPos) {
-                clauseAsInt = getCodeBytesAsBigInt(method, switchPos, i, endPos2);
-                updateMap(map, i, clauseAsInt);
-            }
+           
 		}
 		for(Collection<Integer> clauses : map.values()) {
 			if (clauses.size() > 1) {
