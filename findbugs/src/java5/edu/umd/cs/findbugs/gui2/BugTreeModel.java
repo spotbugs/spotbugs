@@ -99,6 +99,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		private JTree tree;
 		static Vector<BugLeafNode> selectedBugLeafNodes = new Vector<BugLeafNode>();
 
+		private static final boolean DEBUG = false;
 		
 		private volatile Thread rebuildingThread;
 		private boolean sortOrderChanged;
@@ -114,6 +115,32 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			BugSet.setAsRootAndCache(this.data);
 			root.setCount(data.size());
 			FilterMatcher.addFilterListener(this);
+			if (DEBUG) 
+				this.addTreeModelListener(new TreeModelListener() {
+
+					public void treeNodesChanged(TreeModelEvent arg0) {
+						System.out.println("Tree nodes changed");
+						System.out.println("  " + arg0.getTreePath());
+						
+					}
+
+					public void treeNodesInserted(TreeModelEvent arg0) {
+						System.out.println("Tree nodes inserted");
+						System.out.println("  " + arg0.getTreePath());
+						
+					}
+
+					public void treeNodesRemoved(TreeModelEvent arg0) {
+						System.out.println("Tree nodes removed");
+						System.out.println("  " + arg0.getTreePath());
+						
+					}
+
+					public void treeStructureChanged(TreeModelEvent arg0) {
+						System.out.println("Tree structure changed");
+						System.out.println("  " + arg0.getTreePath());
+						
+					}});
 		}
 		
 		public BugTreeModel(BugTreeModel other)
@@ -900,19 +927,19 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		public TreeModelEvent restructureBranch(ArrayList<String> stringsToBranch, boolean removing) throws BranchOperationException
 		{
 			if (removing)
-				return branchOperations(stringsToBranch, 2);
+				return branchOperations(stringsToBranch, TreeModification.REMOVERESTRUCTURE);
 			else
-				return branchOperations(stringsToBranch, 3);
+				return branchOperations(stringsToBranch, TreeModification.INSERTRESTRUCTURE);
 		}
 		
 		public TreeModelEvent insertBranch(ArrayList<String> stringsToBranch) throws BranchOperationException
 		{
-			return branchOperations(stringsToBranch, 1);
+			return branchOperations(stringsToBranch, TreeModification.INSERT);
 		}
 		
 		public TreeModelEvent removeBranch(ArrayList<String> stringsToBranch) throws BranchOperationException
 		{
-			return branchOperations(stringsToBranch, 0);
+			return branchOperations(stringsToBranch, TreeModification.REMOVE);
 		}
 		
 		public void sortBranch(TreePath pathToBranch)
@@ -948,27 +975,22 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 				super(s);
 			}
 		}
-		
-		private TreeModelEvent branchOperations(ArrayList<String> stringsToBranch, int whatToDo) throws BranchOperationException
+		enum TreeModification {REMOVE, INSERT, REMOVERESTRUCTURE, INSERTRESTRUCTURE};
+		private TreeModelEvent branchOperations(ArrayList<String> stringsToBranch, TreeModification whatToDo) throws BranchOperationException
 		{
 			TreeModelEvent event=null;
-			final int REMOVE=0;
-			final int INSERT=1;
-			final int REMOVERESTRUCTURE=2;
-			final int INSERTRESTRUCTURE=3;
-			if (whatToDo==REMOVE)
+
+			if (whatToDo==TreeModification.REMOVE)
 				Debug.println("Removing a branch......");
-			else if (whatToDo==INSERT)
+			else if (whatToDo==TreeModification.INSERT)
 				Debug.println("Inserting a branch......");
-			else if (whatToDo==REMOVERESTRUCTURE)
+			else if (whatToDo==TreeModification.REMOVERESTRUCTURE)
 				Debug.println("Restructuring from branch to remove......");
-			else if (whatToDo==INSERTRESTRUCTURE)
+			else if (whatToDo==TreeModification.INSERTRESTRUCTURE)
 				Debug.println("Restructuring from branch to insert......");
-			else
-				throw new UnsupportedOperationException("BranchOperations can only take 0 to remove, 1 to insert, or 2 or 3 to restructure... It spits on your integer, the pathetic little " + whatToDo);
 			Debug.println(stringsToBranch);
 			
-			if (whatToDo==INSERT || whatToDo==INSERTRESTRUCTURE)
+			if (whatToDo==TreeModification.INSERT || whatToDo==TreeModification.INSERTRESTRUCTURE)
 			{
 				resetData();
 			}
@@ -1013,37 +1035,34 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			Debug.println(pathToBranch);
 
 			
-			if (whatToDo==INSERT)
+			if (whatToDo==TreeModification.INSERT)
 			{
 				event=new TreeModelEvent(this,pathToBranch.getParentPath(),new int[]{getIndexOfChild(pathToBranch.getParentPath().getLastPathComponent(),pathToBranch.getLastPathComponent())}, new Object[]{pathToBranch.getLastPathComponent()});				
 			}
-			else if (whatToDo==INSERTRESTRUCTURE)
+			else if (whatToDo==TreeModification.INSERTRESTRUCTURE)
 			{
 				event=new TreeModelEvent(this,pathToBranch);
 			}
 			
-			if (whatToDo==REMOVE)
+			if (whatToDo==TreeModification.REMOVE)
 			{
 				event=new TreeModelEvent(this,pathToBranch.getParentPath(),new int[]{getIndexOfChild(pathToBranch.getParentPath().getLastPathComponent(),pathToBranch.getLastPathComponent())}, new Object[]{pathToBranch.getLastPathComponent()});
 			
 			}
-			else if (whatToDo==REMOVERESTRUCTURE)
+			else if (whatToDo==TreeModification.REMOVERESTRUCTURE)
 			{
 				event=new TreeModelEvent(this,pathToBranch);
 			}
 
-			if (whatToDo==REMOVE || whatToDo==REMOVERESTRUCTURE)
+			if (whatToDo==TreeModification.REMOVE || whatToDo==TreeModification.REMOVERESTRUCTURE)
 				resetData();
 			
 			return event;
 		}		
 		
-		void sendEvent(TreeModelEvent event, int whatToDo)
+		void sendEvent(TreeModelEvent event, TreeModification whatToDo)
 		{
 			Debug.println("Sending An Event!");
-			final int REMOVE=0;
-			final int INSERT=1;
-			final int RESTRUCTURE=2;
 			if (event==null)
 			{
 				throw new IllegalStateException("Dont throw null events.");
@@ -1051,14 +1070,14 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			resetData();
 			for (TreeModelListener l: listeners)
 			{
-				if (whatToDo==REMOVE)
+				if (whatToDo==TreeModification.REMOVE)
 					l.treeNodesRemoved(event);
-				else if (whatToDo==INSERT)
+				else if (whatToDo==TreeModification.INSERT)
 				{
 					l.treeNodesInserted(event);
 					l.treeStructureChanged(new TreeModelEvent(this,new TreePath(event.getPath()).pathByAddingChild(event.getChildren()[0])));
 				}
-				else if (whatToDo==RESTRUCTURE)
+				else if (whatToDo==TreeModification.INSERTRESTRUCTURE || whatToDo==TreeModification.REMOVERESTRUCTURE)
 				{
 					l.treeStructureChanged(event);
 				}

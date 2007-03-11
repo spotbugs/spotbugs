@@ -163,7 +163,7 @@ public class NewFilterFrame extends FBDialog
 //				}
 				FilterMatcher[] newFilters = new FilterMatcher[list.getSelectedIndices().length];
 				for (int i = 0; i < newFilters.length; i++)
-					newFilters[i] = new FilterMatcher(key, values[list.getSelectedIndices()[i]], filterModeComboBox.getSelectedIndex());
+					newFilters[i] = new FilterMatcher(key, values[list.getSelectedIndices()[i]], FilterMatcher.FilterWhere.values()[filterModeComboBox.getSelectedIndex()]);
 				ProjectSettings.getInstance().addFilters(newFilters);
 				PreferencesFrame.getInstance().updateFilterPanel();
 				MainFrame.getInstance().setProjectChanged(newFilters.length > 0);

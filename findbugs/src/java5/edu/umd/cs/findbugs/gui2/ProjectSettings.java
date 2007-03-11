@@ -54,7 +54,7 @@ public class ProjectSettings implements Serializable
 	public static ProjectSettings newInstance()
 	{
 		instance = new ProjectSettings();
-		instance.addFilter(new DeadBugFilter(Sortables.LASTVERSION, "-1", 3));
+		instance.addFilter(new DeadBugFilter(Sortables.LASTVERSION, "-1", FilterMatcher.FilterWhere.FILTER_ALL_BUT));
 		PreferencesFrame.getInstance().updateFilterPanel();
 		PreferencesFrame.getInstance().clearSuppressions();
 		return instance;
@@ -144,7 +144,7 @@ public class ProjectSettings implements Serializable
 		filters.add(filter);
 		allMatchers.add(filter);
 		if (!(filter instanceof StackedFilterMatcher))
-			FilterMatcher.notifyListeners(FilterListener.FILTERING,null);
+			FilterMatcher.notifyListeners(FilterListener.Action.FILTERING,null);
 		else 
 		{
 			StackedFilterMatcher theSame= (StackedFilterMatcher) filter;
@@ -179,7 +179,7 @@ public class ProjectSettings implements Serializable
 				}
 				BugTreeModel model=((BugTreeModel)(MainFrame.getInstance().getTree().getModel()));
 				try {
-					model.sendEvent(model.removeBranch(finalPath), 0);//0 is for remove
+					model.sendEvent(model.removeBranch(finalPath), BugTreeModel.TreeModification.REMOVE);
 				}
 				catch (BranchOperationException e)
 				{
@@ -188,7 +188,7 @@ public class ProjectSettings implements Serializable
 			}
 			else
 			{
-				FilterMatcher.notifyListeners(FilterListener.FILTERING,null);
+				FilterMatcher.notifyListeners(FilterListener.Action.FILTERING,null);
 				throw new IllegalStateException("What huh?  How'd they add a stacked filter matcher bigger than the number of branches in the tree?!");
 			}
 		}
@@ -209,7 +209,7 @@ public class ProjectSettings implements Serializable
 				filters.get(filters.indexOf(i)).setActive(true);
 				//FIXME Do I need to do this for allMatchers too?  Or are the filters all the same, with both just holding references?
 			}
-		FilterMatcher.notifyListeners(FilterListener.FILTERING, null);
+		FilterMatcher.notifyListeners(FilterListener.Action.FILTERING, null);
 		PreferencesFrame.getInstance().updateFilterPanel();
 		MainFrame.getInstance().updateStatusBar();
 	}
@@ -217,7 +217,7 @@ public class ProjectSettings implements Serializable
 	public boolean removeFilter(FilterMatcher filter)
 	{
 		boolean result = filters.remove(filter) && allMatchers.remove(filter);
-		FilterMatcher.notifyListeners(FilterListener.UNFILTERING,null);
+		FilterMatcher.notifyListeners(FilterListener.Action.UNFILTERING,null);
 		PreferencesFrame.getInstance().updateFilterPanel();
 		MainFrame.getInstance().updateStatusBar();
 		return result;

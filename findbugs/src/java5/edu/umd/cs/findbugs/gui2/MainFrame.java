@@ -435,7 +435,7 @@ public class MainFrame extends FBFrame implements LogSync
 				//This MUST be done in this order:
 				//getIndexOfChild relies on the fact that things have not yet been removed from the tree!
 				TreePath path=tree.getSelectionPath();
-				FilterMatcher.notifyListeners(FilterListener.SUPPRESSING, path);
+				FilterMatcher.notifyListeners(FilterListener.Action.SUPPRESSING, path);
 				ProjectSettings.getInstance().getSuppressionMatcher().add(currentSelectedBugLeaf.getBug());						
 				PreferencesFrame.getInstance().suppressionsChanged(currentSelectedBugLeaf);
 				((BugTreeModel)(tree.getModel())).resetData();//Necessary to keep suppressions from getting out of sync with tree.  

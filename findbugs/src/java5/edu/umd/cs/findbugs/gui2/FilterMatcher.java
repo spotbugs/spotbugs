@@ -35,14 +35,12 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
  */
 public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMatcher>
 {
+	enum FilterWhere {FILTER_EXACTLY, FILTER_AT_OR_AFTER, FILTER_AT_OR_BEFORE, FILTER_ALL_BUT};
 	private static final long serialVersionUID = -4859486064351510016L;
-	public static final int FILTER_EXACTLY = 0;
-	public static final int FILTER_AT_OR_AFTER = 1;
-	public static final int FILTER_AT_OR_BEFORE = 2;
-	public static final int FILTER_ALL_BUT = 3;
+
 	private Sortables filterBy;
 	private String value;
-	private int mode;
+	private FilterWhere mode;
 	protected boolean active;
 	private static HashSet<FilterListener> listeners = new HashSet<FilterListener>();
 	
@@ -61,7 +59,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		return value;
 	}
 	
-	public FilterMatcher(Sortables filterBy, String value, int mode) //0 = exactly; 1 = at or after; 2 = at or before; 3 = not at
+	public FilterMatcher(Sortables filterBy, String value, FilterWhere mode) //0 = exactly; 1 = at or after; 2 = at or before; 3 = not at
 	{
 		this.filterBy = filterBy;
 		this.value = value;
@@ -73,7 +71,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 	{
 		this.filterBy = filterBy;
 		this.value = value;
-		this.mode = FILTER_EXACTLY;
+		this.mode = FilterWhere.FILTER_EXACTLY;
 		this.active = true;
 	}
 	public void setActive(boolean active)
@@ -82,9 +80,9 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		{
 			this.active = active;
 			if (active==true)
-				notifyListeners(FilterListener.FILTERING, null);
+				notifyListeners(FilterListener.Action.FILTERING, null);
 			else
-				notifyListeners(FilterListener.UNFILTERING, null);
+				notifyListeners(FilterListener.Action.UNFILTERING, null);
 		}
 	}
 	
@@ -132,18 +130,25 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		listeners.remove(toRemove);
 	}
 	
-	public static void notifyListeners(int whatsGoingOnCode, TreePath optionalPath)
-	{
-		HashSet<FilterListener> listeners = (HashSet<FilterListener>)FilterMatcher.listeners.clone();
-		if (whatsGoingOnCode==FilterListener.FILTERING || whatsGoingOnCode== FilterListener.UNFILTERING)
+	public static void notifyListeners(FilterListener.Action whatsGoingOnCode,
+			TreePath optionalPath) {
+		HashSet<FilterListener> listeners = (HashSet<FilterListener>) FilterMatcher.listeners
+				.clone();
+		switch (whatsGoingOnCode) {
+		case FILTERING:
+		case UNFILTERING:
 			for (FilterListener i : listeners)
 				i.clearCache();
-		else if (whatsGoingOnCode==FilterListener.SUPPRESSING && optionalPath!=null)
+			break;
+		case SUPPRESSING:
 			for (FilterListener i : listeners)
 				i.suppressBug(optionalPath);
-		else if (whatsGoingOnCode==FilterListener.UNSUPPRESSING && optionalPath!=null)
+			break;
+		case UNSUPPRESSING:
 			for (FilterListener i : listeners)
 				i.unsuppressBug(optionalPath);
+			break;
+		}
 	}
 	
 	@Override

@@ -63,10 +63,8 @@ public class StackedFilterMatcher extends FilterMatcher
     public void setActive(boolean active)
 	{
 		TreeModelEvent event=null;
-		int whatToDo=-1;
-		final int REMOVE=0;
-		final int INSERT=1;
-		final int RESTRUCTURE=2;
+		BugTreeModel.TreeModification whatToDo;
+
 
 		if (active != this.active)
 		{
@@ -112,18 +110,19 @@ public class StackedFilterMatcher extends FilterMatcher
 					if (active==true)
 					{
 						event=((BugTreeModel)(MainFrame.getInstance().getTree().getModel())).removeBranch(finalPath);
-						whatToDo=REMOVE;
+						whatToDo=BugTreeModel.TreeModification.REMOVE;
 					}
 					else
 					{
 						event=((BugTreeModel)(MainFrame.getInstance().getTree().getModel())).insertBranch(finalPath);
-						whatToDo=INSERT;
+						whatToDo=BugTreeModel.TreeModification.INSERT;
 					}
 				}
 				else 
 				{
 					event=((BugTreeModel)(MainFrame.getInstance().getTree().getModel())).restructureBranch(finalPath,active);//if active is true, this removes, if active if false, it inserts
-					whatToDo=RESTRUCTURE;
+					if (active) whatToDo=BugTreeModel.TreeModification.REMOVERESTRUCTURE;
+					else whatToDo=BugTreeModel.TreeModification.INSERTRESTRUCTURE;
 				}
 			
 			if (active==true)

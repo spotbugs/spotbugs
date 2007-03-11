@@ -29,7 +29,7 @@ public class DeadBugFilter extends FilterMatcher {
 	 * @param value
 	 * @param mode
 	 */
-	public DeadBugFilter(Sortables filterBy, String value, int mode) {
+	public DeadBugFilter(Sortables filterBy, String value, FilterWhere mode) {
 		super(filterBy, value, mode);
 	}
 

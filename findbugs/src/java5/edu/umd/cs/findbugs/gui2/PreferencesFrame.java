@@ -347,7 +347,7 @@ public class PreferencesFrame extends FBDialog {
 					if (ProjectSettings.getInstance().getAllMatchers().match(b))
 					{
 						TreePath fullPathToBug=((BugTreeModel)(MainFrame.getInstance().getTree().getModel())).getPathToNewlyUnsuppressedBug(b);
-						FilterMatcher.notifyListeners(FilterListener.UNSUPPRESSING,fullPathToBug);				
+						FilterMatcher.notifyListeners(FilterListener.Action.UNSUPPRESSING,fullPathToBug);				
 					}
 				}
 				

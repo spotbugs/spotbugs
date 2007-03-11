@@ -27,10 +27,8 @@ import javax.swing.tree.TreePath;
  */
 public interface FilterListener
 {
-	public static final int FILTERING=100;
-	public static final int UNFILTERING=101;
-	public static final int SUPPRESSING=102;
-	public static final int UNSUPPRESSING=103;
+	enum Action {FILTERING, UNFILTERING, SUPPRESSING, UNSUPPRESSING};
+	
 	
 	public void clearCache();
 	public void suppressBug(TreePath path);
