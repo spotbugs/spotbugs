@@ -1329,8 +1329,8 @@ visible), they could trigger listener notification on the event dispatch thread.
 
 
   <BugPattern type="IL_INFINITE_LOOP">
-    <ShortDescription>An apparent infinite loop.</ShortDescription>
-    <LongDescription>There is an apparent infinite loop in {1}.</LongDescription>
+    <ShortDescription>An apparent infinite loop</ShortDescription>
+    <LongDescription>There is an apparent infinite loop in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>This loop doesn't seem to have a way to terminate (other than by perhaps
@@ -1340,8 +1340,8 @@ throwing an exception).</p>
   </BugPattern>
 
   <BugPattern type="IL_INFINITE_RECURSIVE_LOOP">
-    <ShortDescription>An apparent infinite recursive loop.</ShortDescription>
-    <LongDescription>There is an apparent infinite recursive loop in {1}.</LongDescription>
+    <ShortDescription>An apparent infinite recursive loop</ShortDescription>
+    <LongDescription>There is an apparent infinite recursive loop in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>This method unconditionally invokes itself. This would seem to indicate
@@ -1352,8 +1352,8 @@ an infinite recursive loop that will result in a stack overflow.</p>
 
 
   <BugPattern type="IL_CONTAINER_ADDED_TO_ITSELF">
-    <ShortDescription>A container is added to itself.</ShortDescription>
-    <LongDescription>A container is added to itself in {1}.</LongDescription>
+    <ShortDescription>A container is added to itself</ShortDescription>
+    <LongDescription>A container is added to itself in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>A container is added to itself. As a result, computing the hashCode of this
@@ -1368,7 +1368,7 @@ set will throw a StackOverflowException.
 
   <BugPattern type="VO_VOLATILE_REFERENCE_TO_ARRAY">
     <ShortDescription>A volatile reference to an array doesn't treat the array elements as volatile</ShortDescription>
-    <LongDescription>{1} is a volatile reference to an array; the array elements are non-volatile.</LongDescription>
+    <LongDescription>{1} is a volatile reference to an array; the array elements are non-volatile</LongDescription>
     <Details>
 <![CDATA[
 <p>This declares a volatile reference to an array, which might not be what
@@ -1769,7 +1769,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   </BugPattern>
   <BugPattern type="DM_CONVERT_CASE">
     <ShortDescription>Consider using Locale parameterized version of invoked method</ShortDescription>
-    <LongDescription>Method {1} invokes dubious String.toUpperCase() or String.toLowerCase; use the Locale parameterized version instead</LongDescription>
+    <LongDescription>Use of non-localized String.toUpperCase() or String.toLowerCase; consider using the Locale parameterized version instead</LongDescription>
     <Details>
 <![CDATA[
   <p> A String is being converted to upper or lowercase, using the platform's default encoding. This may
@@ -1983,9 +1983,24 @@ on objects referenced by X, because they may already be getting finalized in a s
     </Details>
   </BugPattern>
 
+  <BugPattern type="EQ_DONT_DEFINE_EQUALS_FOR_ENUM">
+    <ShortDescription>Covariant equals() method defined for enum</ShortDescription>
+    <LongDescription>enum {0} defines equals({0.givenClass})</LongDescription>
+    <Details>
+<![CDATA[
+  <p> This class defines an enumeration, and equality on enumerations are defined
+using object identity. Definine a covariant equals method for an enumeration
+value is exceptionally bad practice, since it would likely result
+in having two different enumeration values that compare as equals using
+the covariant enum method, and as not equal when compared normally.
+Don't do it.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="EQ_SELF_USE_OBJECT">
     <ShortDescription>Covariant equals() method defined, Object.equals(Object) inherited</ShortDescription>
-    <LongDescription>{0} defines equals({0}) method and uses Object.equals(Object)</LongDescription>
+    <LongDescription>{0} defines equals({0.givenClass}) method and uses Object.equals(Object)</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a covariant version of the <code>equals()</code>
@@ -1998,7 +2013,7 @@ on objects referenced by X, because they may already be getting finalized in a s
   </BugPattern>
   <BugPattern type="EQ_SELF_NO_OBJECT">
     <ShortDescription>Covariant equals() method defined</ShortDescription>
-    <LongDescription>{0} defines equals({0}) method but not equals(Object)</LongDescription>
+    <LongDescription>{0} defines equals({0.givenClass}) method but not equals(Object)</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a covariant version of <code>equals()</code>.&nbsp;
@@ -3720,7 +3735,8 @@ before all of the static final fields are assigned.</p>
     <Details>
 <![CDATA[
 <p> The method creates an IO stream object, does not assign it to any
-fields, pass it to other methods, or return it, and does not appear to close
+fields, pass it to other methods that might close it, 
+or return it, and does not appear to close
 the stream on all paths out of the method.&nbsp; This may result in
 a file descriptor leak.&nbsp; It is generally a good
 idea to use a <code>finally</code> block to ensure that streams are
@@ -4862,8 +4878,8 @@ does not need to be created, just access the static methods directly using the c
    </BugPattern>
 
     <BugPattern type="FE_TEST_IF_EQUAL_TO_NOT_A_NUMBER">
-     <ShortDescription>Doomed test for equality to NaN.</ShortDescription>
-     <LongDescription>Doomed test for equality to NaN in {1}.</LongDescription>
+     <ShortDescription>Doomed test for equality to NaN</ShortDescription>
+     <LongDescription>Doomed test for equality to NaN in {1}</LongDescription>
      <Details>
    <![CDATA[
     <p>
@@ -4882,8 +4898,8 @@ does not need to be created, just access the static methods directly using the c
      </Details>
    </BugPattern>
     <BugPattern type="FE_FLOATING_POINT_EQUALITY">
-     <ShortDescription>Test for floating point equality.</ShortDescription>
-     <LongDescription>Test for floating point equality in {1}.</LongDescription>
+     <ShortDescription>Test for floating point equality</ShortDescription>
+     <LongDescription>Test for floating point equality in {1}</LongDescription>
      <Details>
    <![CDATA[
     <p>
@@ -4989,8 +5005,8 @@ just use the constant. Methods detected are:
   </BugPattern>
 
     <BugPattern type="CD_CIRCULAR_DEPENDENCY">
-     <ShortDescription>Test for circular dependencies among classes.</ShortDescription>
-     <LongDescription>Class {0} has a circular dependency with other classes.</LongDescription>
+     <ShortDescription>Test for circular dependencies among classes</ShortDescription>
+     <LongDescription>Class {0} has a circular dependency with other classes</LongDescription>
      <Details>
    <![CDATA[
     <p>
@@ -5003,8 +5019,8 @@ just use the constant. Methods detected are:
     </BugPattern>
 
     <BugPattern type="RI_REDUNDANT_INTERFACES">
-     <ShortDescription>Class implements same interface as superclass.</ShortDescription>
-     <LongDescription>Class {0} implements same interface as superclass.</LongDescription>
+     <ShortDescription>Class implements same interface as superclass</ShortDescription>
+     <LongDescription>Class {0} implements same interface as superclass</LongDescription>
      <Details>
    <![CDATA[
     <p>
@@ -5019,8 +5035,8 @@ just use the constant. Methods detected are:
     </BugPattern>
 
     <BugPattern type="MTIA_SUSPECT_STRUTS_INSTANCE_FIELD">
-     <ShortDescription>Class extends Struts Action class and uses instance variables.</ShortDescription>
-     <LongDescription>Class {0} extends Struts Action class and uses instance variables.</LongDescription>
+     <ShortDescription>Class extends Struts Action class and uses instance variables</ShortDescription>
+     <LongDescription>Class {0} extends Struts Action class and uses instance variables</LongDescription>
      <Details>
    <![CDATA[
     <p>
@@ -5034,8 +5050,8 @@ just use the constant. Methods detected are:
     </BugPattern>
 
     <BugPattern type="MTIA_SUSPECT_SERVLET_INSTANCE_FIELD">
-     <ShortDescription>Class extends Servlet class and uses instance variables.</ShortDescription>
-     <LongDescription>Class {0} extends Servlet class and uses instance variables.</LongDescription>
+     <ShortDescription>Class extends Servlet class and uses instance variables</ShortDescription>
+     <LongDescription>Class {0} extends Servlet class and uses instance variables</LongDescription>
      <Details>
    <![CDATA[
     <p>
@@ -5049,8 +5065,8 @@ just use the constant. Methods detected are:
     </BugPattern>
 
     <BugPattern type="PS_PUBLIC_SEMAPHORES">
-     <ShortDescription>Class exposes synchronization and semaphores in its public interface.</ShortDescription>
-     <LongDescription>Class {0} exposes synchronization and semaphores in its public interface.</LongDescription>
+     <ShortDescription>Class exposes synchronization and semaphores in its public interface</ShortDescription>
+     <LongDescription>Class {0} exposes synchronization and semaphores in its public interface</LongDescription>
      <Details>
    <![CDATA[
     <p>
