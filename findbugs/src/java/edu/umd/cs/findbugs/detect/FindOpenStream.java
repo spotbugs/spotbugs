@@ -170,7 +170,10 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 		        "createStatement", "(III)Ljava/sql/Statement;",
 		        "ODR_OPEN_DATABASE_RESOURCE"));
-		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
+                "createStatement", "(Ljava/lang/String;)Ljava/sql/PreparedStatement;",
+                "ODR_OPEN_DATABASE_RESOURCE"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 		        "createStatement", "(Ljava/lang/String;I)Ljava/sql/PreparedStatement;",
 		        "ODR_OPEN_DATABASE_RESOURCE"));
 		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
