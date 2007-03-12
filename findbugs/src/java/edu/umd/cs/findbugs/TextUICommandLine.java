@@ -66,6 +66,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	private boolean relaxedReportingMode = false;
 	private boolean useLongBugCodes = false;
 	private boolean xmlWithMessages = false;
+    private boolean xmlWithAbridgedMessages = false;
 	private String stylesheet = null;
 	private boolean quiet = false;
 	private ClassScreener classScreener = new ClassScreener();
@@ -190,7 +191,10 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			if (!optionExtraPart.equals("")) {
 				if (optionExtraPart.equals("withMessages"))
 					xmlWithMessages = true;
-				else
+                else if (optionExtraPart.equals("withAbridgedMessages")) {
+                    xmlWithMessages = true;
+                    xmlWithAbridgedMessages = true;
+                } else
 					throw new IllegalArgumentException("Unknown option: -xml:" + optionExtraPart);
 			}
 		} else if (option.equals("-emacs")) {
@@ -390,6 +394,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			{
 				XMLBugReporter xmlBugReporter = new XMLBugReporter(project);
 				xmlBugReporter.setAddMessages(xmlWithMessages);
+                xmlBugReporter.setAbridgedMessages(xmlWithAbridgedMessages);
 				textuiBugReporter = xmlBugReporter;
 			}
 			break;

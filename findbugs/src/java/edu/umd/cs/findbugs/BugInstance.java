@@ -1373,6 +1373,23 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			return shortPattern + " [Error generating customized description]";
 		}
 	}
+    public String getAbridgedMessage() {
+        BugPattern bugPattern = I18N.instance().lookupBugPattern(type);
+        String pattern, shortPattern;
+        if (bugPattern == null) 
+            shortPattern = pattern = "Error: missing bug pattern for key " + type;
+        else {
+            pattern = bugPattern.getLongDescription().replace(" in {1}", "");
+            shortPattern = bugPattern.getShortDescription();
+        }
+        try {
+            FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
+            return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
+        } catch (RuntimeException e) {
+            AnalysisContext.logError("Error generating bug msg ", e);
+            return shortPattern + " [Error generating customized description]";
+        }
+    }
 	/**
 	 * Format a string describing this bug instance.
 	 *
@@ -1436,8 +1453,10 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		writeXML(xmlOutput, false);
 	}
 	
-
-	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
+    public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
+        writeXML(xmlOutput, addMessages, false);
+    }
+	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean abridgedMessages) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("type", type)
 			.addAttribute("priority", String.valueOf(priority));
@@ -1485,7 +1504,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			xmlOutput.closeTag("ShortMessage");
 			
 			xmlOutput.openTag("LongMessage");
-			xmlOutput.writeText(this.getMessageWithoutPrefix());
+            if (abridgedMessages) xmlOutput.writeText(this.getAbridgedMessage());
+            else xmlOutput.writeText(this.getMessageWithoutPrefix());
 			xmlOutput.closeTag("LongMessage");
 		}
 

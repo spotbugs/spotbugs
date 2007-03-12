@@ -81,6 +81,8 @@ import edu.umd.cs.findbugs.xml.XMLOutputUtil;
 public class SortedBugCollection implements BugCollection {
 	long analysisTimestamp = System.currentTimeMillis();
 	private boolean withMessages = false;
+    private boolean withAbridgedMessages = false;
+    
 	private static final boolean REPORT_SUMMARY_HTML =
 		SystemProperties.getBoolean("findbugs.report.SummaryHTML");
 
@@ -393,7 +395,7 @@ public class SortedBugCollection implements BugCollection {
 			
 			// Write BugInstances
 			for(BugInstance bugInstance : getCollection())
-				bugInstance.writeXML(xmlOutput, withMessages);
+				bugInstance.writeXML(xmlOutput, withMessages, withAbridgedMessages);
 
 			writeEpilogue(xmlOutput);
 		} finally {
@@ -973,6 +975,20 @@ public class SortedBugCollection implements BugCollection {
 	public void clearClassFeatures() {
 		classFeatureSetMap.clear();
 	}
+
+    /**
+     * @param withMessages The withMessages to set.
+     */
+    public void setWithAbridgedMessages(boolean withAbridgedMessages) {
+        this.withAbridgedMessages = withMessages;
+    }
+
+    /**
+     * @return Returns the withMessages.
+     */
+    public boolean getWithAbridgedMessages() {
+        return withAbridgedMessages;
+    }
 
 	/**
 	 * @param withMessages The withMessages to set.
