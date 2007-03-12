@@ -53,8 +53,13 @@ public class BugAccumulator {
 	public void reportAccumulatedBugs() {
 		for(Map.Entry<BugInstance,LinkedList<SourceLineAnnotation>> e : map.entrySet()) {
 			BugInstance bug = e.getKey();
+            boolean first = true;
 			for(SourceLineAnnotation source : e.getValue())
-				if (source != null) bug.addSourceLine(source);
+				if (source != null) {
+                    bug.addSourceLine(source);
+                    if (first) first = false;
+                    else bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
+                }
 			reporter.reportBug(bug);
 		}
 		map.clear();
