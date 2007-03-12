@@ -154,38 +154,33 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 */
 	public static SourceLineAnnotation fromVisitedMethod(PreorderVisitor visitor) {
 		LineNumberTable lineNumberTable = getLineNumberTable(visitor);
-		String className = visitor.getDottedClassName();
-		String sourceFile = visitor.getSourceFile();
-		Code code = visitor.getMethod().getCode();
-		int codeSize = (code != null) ? code.getCode().length : 0;
-		if (lineNumberTable == null) {
-			// Try SourceInfoMap
-			SourceInfoMap.SourceLineRange range = AnalysisContext.currentAnalysisContext()
-				.getSourceInfoMap()
-				.getMethodLine(className, visitor.getMethodName(), visitor.getMethodSig());
-			if (range != null) {
-				return new SourceLineAnnotation(
-						className,
-						visitor.getSourceFile(),
-						range.getStart().intValue(),
-						range.getEnd().intValue(),
-						0,
-						codeSize - 1);
-			} else {
-				return createUnknown(className, sourceFile, 0, codeSize - 1);
-			}
-		}
-		return forEntireMethod(className, sourceFile, lineNumberTable, codeSize);
-	}
+        String className = visitor.getDottedClassName();
+        String sourceFile = visitor.getSourceFile();
+        Code code = visitor.getMethod().getCode();
+        int codeSize = (code != null) ? code.getCode().length : 0;
+
+        SourceInfoMap.SourceLineRange range = AnalysisContext.currentAnalysisContext().getSourceInfoMap()
+                .getMethodLine(className, visitor.getMethodName(), visitor.getMethodSig());
+        if (range != null)
+            return new SourceLineAnnotation(className, visitor.getSourceFile(), range.getStart().intValue(), range
+                    .getEnd().intValue(), 0, codeSize - 1);
+
+        if (lineNumberTable == null)
+
+            return createUnknown(className, sourceFile, 0, codeSize - 1);
+
+        return forEntireMethod(className, sourceFile, lineNumberTable, codeSize);
+    }
 
 	/**
-	 * Factory method for creating a source line annotation describing
-	 * an entire method.
-	 *
-	 * @param methodGen the method being visited
-	 * @return the SourceLineAnnotation, or null if we do not have line number information
-	 *         for the method
-	 */
+     * Factory method for creating a source line annotation describing an entire
+     * method.
+     * 
+     * @param methodGen
+     *            the method being visited
+     * @return the SourceLineAnnotation, or null if we do not have line number
+     *         information for the method
+     */
 	public static SourceLineAnnotation fromVisitedMethod(MethodGen methodGen, String sourceFile) {
 		LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
 		String className = methodGen.getClassName();
