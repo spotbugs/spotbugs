@@ -30,8 +30,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
+import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
@@ -85,14 +87,20 @@ public class BugSet implements Iterable<BugLeafNode>{
 	 * After that BugSet will create new smaller filtered sets and store them using this method.
 	 * @param filteredSet
 	 */
-	BugSet(ArrayList<BugLeafNode> filteredSet)
+	BugSet(Collection<? extends BugLeafNode> filteredSet)
 	{
-		this.mainList=new HashList<BugLeafNode>((ArrayList<BugLeafNode>)filteredSet.clone());
+		this.mainList=new HashList<BugLeafNode>(filteredSet);
 		doneMap=new HashMap<StringPair,BugSet>();
 		doneContainsMap=new HashMap<StringPair,Boolean>();
 		cacheSortables();
 	}
 	
+	BugSet(BugCollection bugCollection) {
+		this(Collections.EMPTY_LIST);
+		for(Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); )
+			mainList.add(new BugLeafNode(i.next()));
+		
+	}
 	/**
 	 * Sets the BugSet passed in to be the mainBugSet, this should always match up with the data set in the BugTreeModel
 	 * @param bs

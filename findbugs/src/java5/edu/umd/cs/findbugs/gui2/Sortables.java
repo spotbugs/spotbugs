@@ -58,7 +58,7 @@ public enum Sortables implements Comparator<StringPair>
 		public String formatValue(String value)
 		{	
 			int seqNum = Integer.parseInt(value);
-			BugCollection bugCollection = BugLoader.mainBugCollection;
+			BugCollection bugCollection = MainFrame.getInstance().bugCollection;
             if (bugCollection == null) return "--";
             AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
 			String appendItem = "";
@@ -95,7 +95,7 @@ public enum Sortables implements Comparator<StringPair>
 			if(value.equals("-1"))
 				return edu.umd.cs.findbugs.L10N.getLocalString("sort.last_version_not_defined", "Last version not defined");
 			int seqNum = Integer.parseInt(value);
-            BugCollection bugCollection = BugLoader.mainBugCollection;
+            BugCollection bugCollection = MainFrame.getInstance().bugCollection;
             if (bugCollection == null) return "--";
 			AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
 			String appendItem = "";

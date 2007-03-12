@@ -20,13 +20,11 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
-import java.awt.Button;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -62,10 +60,8 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -76,9 +72,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.JToolTip;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
@@ -92,7 +86,6 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
 import javax.swing.text.html.HTMLEditorKit;
@@ -101,6 +94,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import edu.umd.cs.findbugs.BugAnnotation;
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
@@ -108,6 +102,7 @@ import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
 import edu.umd.cs.findbugs.Project;
+import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -115,7 +110,6 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.gui.ConsoleLogger;
 import edu.umd.cs.findbugs.gui.LogSync;
 import edu.umd.cs.findbugs.gui.Logger;
-import edu.umd.cs.findbugs.gui2.BugTreeModel.PleaseWaitTreeModel;
 import edu.umd.cs.findbugs.sourceViewer.NavigableTextPane;
 
 @SuppressWarnings("serial")
@@ -302,7 +296,8 @@ public class MainFrame extends FBFrame implements LogSync
 	
 	JMenuItem createRecentItem(final File f, final SaveType localSaveType)
 	{
-		final JMenuItem item=new JMenuItem(f.getName().substring(0,f.getName().length()-4));
+		String name = f.getName();
+		final JMenuItem item=new JMenuItem(name);
 		item.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e)
 			{
@@ -378,32 +373,8 @@ public class MainFrame extends FBFrame implements LogSync
 							BugTreeModel.pleaseWait();
 							MainFrame.this.setRebuilding(true);
 							Project newProject = new Project();
-							BugSet bs=BugLoader.loadBugs(newProject, extraFinalReferenceToXmlFile);
-							MainFrame.this.setRebuilding(false);
-							if (bs!=null)
-							{
-								displayer.clearCache();
-								model.getOffListenerList();
-								model.changeSet(bs);
-								if (bs.size()==0 && bs.sizeUnfiltered()>0)
-								{
-									warnUserOfFilters();
-								}
-								curProject=newProject;
-								MainFrame.getInstance().updateStatusBar();
-								//MainFrame.this.setTitle("FindBugs: " + curProject.getProjectFileName());
-								MainFrame.this.setTitle("FindBugs: " + item.getText());
-							}
-							else
-							{
-								tree.setModel(model);//Dont let it stay as a please wait tree forever.
-								setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-							}
-							
-							setProjectChanged(false);
-							reconfigMenuItem.setEnabled(true);
-							clearSourcePane();
-							clearSummaryTab();
+							SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, newProject, extraFinalReferenceToXmlFile);
+							setProjectAndBugCollection(newProject, bc, model);
 						}
 					}).start();
 				}
@@ -418,8 +389,53 @@ public class MainFrame extends FBFrame implements LogSync
 		return item;
 	}
 	
+	BugCollection bugCollection;
+	void setProjectAndBugCollection(Project project, BugCollection bugCollection, BugTreeModel previousModel) {
+		setRebuilding(false);
+		if (bugCollection == null) {
+			tree.setModel(previousModel);// Dont let it stay as a please wait
+											// tree forever.
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		} else {
+			curProject = project;
+			this.bugCollection = bugCollection;
+			displayer.clearCache();
+			
+			BugTreeModel model = previousModel;
+			setSourceFinder(new SourceFinder());
+			getSourceFinder().setSourceBaseList(project.getSourceDirList());
+			BugSet bs = new BugSet(bugCollection);
+			model.getOffListenerList();
+			model.changeSet(bs);
+			if (bs.size() == 0 && bs.sizeUnfiltered() > 0) {
+				warnUserOfFilters();
+			}
+			tree.setModel(previousModel);
+			updateStatusBar();
+			setTitle("FindBugs: " + project.getProjectName());
+		}
+		setProjectChanged(false);
+		reconfigMenuItem.setEnabled(true);
+		clearSourcePane();
+		clearSummaryTab();
+	}
 
+	void updateProjectAndBugCollection(Project project, BugCollection bugCollection, BugTreeModel previousModel) {
+		setRebuilding(false);
+		if (bugCollection != null)
+		{
+			displayer.clearCache();
+			BugSet bs = new BugSet(bugCollection);
+			//Dont clear data, the data's correct, just get the tree off the listener lists.
+			((BugTreeModel) tree.getModel()).getOffListenerList();
+			((BugTreeModel)tree.getModel()).changeSet(bs);
+			//curProject=BugLoader.getLoadedProject();
+			setProjectChanged(true);
+		}
+		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	}
 
+	
 	/**
 	 * Creates popup menu for bugs on tree.
 	 * @return
@@ -540,7 +556,6 @@ public class MainFrame extends FBFrame implements LogSync
 		//JMenuItem importBugsMenuItem = newJMenuItem("menu.loadbugs_item", "Load Analysis...", KeyEvent.VK_L);
 		//JMenuItem exportBugsMenuItem = newJMenuItem("menu.savebugs_item", "Save Analysis...", KeyEvent.VK_B);
 		redoAnalysis = newJMenuItem("menu.rerunAnalysis", "Redo Analysis", KeyEvent.VK_R);
-		JMenuItem mergeMenuItem = newJMenuItem("menu.mergeAnalysis", "Merge Analysis...");
 		
 		JMenuItem exitMenuItem = null;
 		if (!MAC_OS_X) {
@@ -572,15 +587,9 @@ public class MainFrame extends FBFrame implements LogSync
 				new NewProjectWizard(curProject);
 			}
 		});
-		
-		/*openProjectMenuItem.setEnabled(true);
-		attachAcceleratorKey(openProjectMenuItem, KeyEvent.VK_O);
-		openProjectMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				openProject();
-			}
-		});*/
 
+		JMenuItem mergeMenuItem = newJMenuItem("menu.mergeAnalysis", "Merge Analysis...");
+		
 		mergeMenuItem.setEnabled(true);
 		mergeMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
@@ -618,61 +627,21 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 		});
 		
-		/*saveProjectMenuItem.setEnabled(false);
-		attachAccelaratorKey(saveProjectMenuItem, KeyEvent.VK_S);
-		saveProjectMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-				
-				save(projectDirectory);
-			}
-		});*/
-		
-		/*saveAsProjectMenuItem.setEnabled(true);
-		attachAccelaratorKey(saveAsProjectMenuItem, KeyEvent.VK_S, Event.SHIFT_MASK);
-		saveAsProjectMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-				
-				if(projectSaveAs())
-					saveProjectMenuItem.setEnabled(false);
-			}
-		});*/
-		
-		/*attachAccelaratorKey(importBugsMenuItem, KeyEvent.VK_O, Event.ALT_MASK);
-		importBugsMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				loadAnalysis();
-			}
-		});*/
-	
-		/*exportBugsMenuItem.setEnabled(true);
-		attachAccelaratorKey(exportBugsMenuItem, KeyEvent.VK_S, Event.ALT_MASK);
-		exportBugsMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt){
-				saveAnalysis();
-			}
-		});*/
-		
-		
+
 				
 		fileMenu.add(newProjectMenuItem);
 		fileMenu.add(reconfigMenuItem);
 		fileMenu.addSeparator();
-		//fileMenu.add(openProjectMenuItem);
+
 		fileMenu.add(openMenuItem);
 		fileMenu.add(recentMenu);
 		fileMenu.addSeparator();
 		fileMenu.add(saveAsMenuItem);
 		fileMenu.add(saveMenuItem);
-//		fileMenu.add(saveProjectMenuItem);
-//		fileMenu.add(saveAsProjectMenuItem);
-		//fileMenu.addSeparator();
-		//fileMenu.add(importBugsMenuItem);
-		//fileMenu.add(exportBugsMenuItem);
+
 		fileMenu.addSeparator();
 		fileMenu.add(redoAnalysis);
-		fileMenu.add(mergeMenuItem);
+		// fileMenu.add(mergeMenuItem);
 		
 		
 		
@@ -1047,77 +1016,7 @@ public class MainFrame extends FBFrame implements LogSync
 			JOptionPane.showMessageDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
 		}
 	}
-	
-	/**
-	 * Called when use has not previous saved project. Uses save() after finds
-	 * where user want to save file.  Also changes Mainframe title to reflect the name change.
-	 * @return True if successful.
-	 */
-	/*private boolean projectSaveAs(){
-		if (curProject==null)
-		{
-			JOptionPane.showMessageDialog(MainFrame.this,edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_proj_save_lbl", "There is no project to save"));
-			return false;
-		}
-		
-		FBFileChooser jfc=new FBFileChooser();
-		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		jfc.setFileFilter(new FindBugsProjectFileFilter());
-		jfc.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.saveas_ttl", "Save as..."));
 
-		boolean exists = false;
-		File dir=null;
-		boolean retry;
-		do  
-		{
-			retry = false;
-			int value=jfc.showSaveDialog(MainFrame.this);
-			if (value!=JFileChooser.APPROVE_OPTION) return false;
-
-			dir = jfc.getSelectedFile();
-			File xmlFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");
-			File fasFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
-			exists=xmlFile.exists() && fasFile.exists();
-
-			if(exists){
-				int response = JOptionPane.showConfirmDialog(jfc, 
-						edu.umd.cs.findbugs.L10N.getLocalString("dlg.proj_already_exists_lbl", "This project already exists.\nDo you want to replace it?"),
-						edu.umd.cs.findbugs.L10N.getLocalString("dlg.warning_ttl", "Warning!"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-
-				if(response == JOptionPane.OK_OPTION)
-					retry = false;
-				if(response == JOptionPane.CANCEL_OPTION){
-					retry = true;
-					continue;
-				}
-			}
-            curProject.setProjectFileName(dir.toString());
-			boolean good=save(dir);
-			if (good==false)
-			{
-				JOptionPane.showMessageDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.saving_error_lbl", "An error occurred in saving."));
-				return false;
-			}
-			projectDirectory=dir;				
-
-		} while (retry);
-		
-		File xmlFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");
-
-		//If the file already existed, its already in the preferences, as well as the recent projects menu items, only add it if they change the name, otherwise everything we're storing is still accurate since all we're storing is the location of the file.
-		if (!exists)
-		{
-			GUISaveState.getInstance().addRecentProject(xmlFile);
-		}
-
-		MainFrame.this.addRecentProjectToMenu(xmlFile);
-
-		MainFrame.this.setTitle("FindBugs: " + dir.getName());// I think below is better - Kristin
-//		MainFrame.this.setTitle("FindBugs: " + curProject.getProjectFileName());//This one doesn't work yet- Dan
-
-		return true;
-	}*/
-	
 	/**
 	 * 
 	 * @return
@@ -2000,7 +1899,7 @@ public class MainFrame extends FBFrame implements LogSync
 		File f = new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");	
 		File filtersAndSuppressions=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
 		
-		BugSaver.saveBugs(f,BugSet.getMainBugSet(),curProject);
+		BugSaver.saveBugs(f,bugCollection,curProject);
 		try {
 			filtersAndSuppressions.createNewFile();
 			ProjectSettings.getInstance().save(new FileOutputStream(filtersAndSuppressions));
@@ -2012,42 +1911,7 @@ public class MainFrame extends FBFrame implements LogSync
 		
 		return SAVE_SUCCESSFUL;
 	}
-	
-	/*
-	 * DO NOT use the projectDirectory variable to figure out the current project directory in this function
-	 * use the passed in value, as that variable may or may not have been set to the passed in value at this point.
-	 */
-	/*private boolean save(File dir)
-	{
-		if (curProject == null) {
-			curProject = new Project(); 
-			JOptionPane.showMessageDialog(MainFrame.this, "Null project; this is unexpected. "
-					+" Creating a new Project so the bugs can be saved, but please report this error.");
-
-		}
-		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
-		dir.mkdir();
-		updateDesignationDisplay();
-		
-		File f = new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");	
-		File filtersAndSuppressions=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
-		//Saves current comment to current bug.
-		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-
-		BugSaver.saveBugs(f,BugSet.getMainBugSet(),curProject);
-		try {
-			filtersAndSuppressions.createNewFile();
-			ProjectSettings.getInstance().save(new FileOutputStream(filtersAndSuppressions));
-		} catch (IOException e) {
-			Debug.println(e);
-			return false;
-		}
-		setProjectChanged(false);
-		
-		return true;
-	}*/
-	
 	/**
 	 * @param currentSelectedBugLeaf2
 	 * @param currentSelectedBugAspects2
@@ -2098,7 +1962,7 @@ public class MainFrame extends FBFrame implements LogSync
 	private int saveAnalysis(File f){
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
-		BugSaver.saveBugs(f, BugSet.getMainBugSet(), MainFrame.this.curProject);
+		BugSaver.saveBugs(f, bugCollection, curProject);
 		
 		setProjectChanged(false);
 		
@@ -2128,42 +1992,7 @@ public class MainFrame extends FBFrame implements LogSync
 			return false;
 		}
 	}
-	/**
-	 * 
-	 */
-	/*private void loadAnalysis() {
-		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-
-		FBFileChooser jfc = new FBFileChooser();
-		jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		jfc.setFileFilter(new FindBugsAnalysisFileFilter());
-
-		// jfc.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs());
-		// this is done by FBFileChooser now.
-
-		while (true) {
-			int returnValue = jfc.showOpenDialog(new JFrame());
-
-			if (returnValue != JFileChooser.APPROVE_OPTION)
-				return;
-
-			File file = jfc.getSelectedFile();
-
-			if (!file.exists()) {
-				JOptionPane.showMessageDialog(jfc, edu.umd.cs.findbugs.L10N.getLocalString("dlg.file_does_not_exist_lbl", "That file does not exist"));
-				continue;
-			} 
-			try {
-				FileInputStream in = new FileInputStream(file);
-				loadAnalysisFromInputStream(in);
-				clearSourcePane();
-				clearSummaryTab();
-				return;
-			} catch (IOException e) {
-				JOptionPane.showMessageDialog(jfc, e.getMessage());
-			}
-		}
-	}*/
+	
 	/**
 	 * @param file
 	 * @return
@@ -2178,29 +2007,7 @@ public class MainFrame extends FBFrame implements LogSync
 //								BugTreeModel.pleaseWait();
 				MainFrame.this.setRebuilding(true);
 				Project project = new Project();
-				BugSet bs=BugLoader.loadBugs(project, in);
-				MainFrame.this.setRebuilding(false);
-				if (bs!=null)
-				{
-					ProjectSettings.newInstance();
-					model.getOffListenerList();
-					updateDesignationDisplay();
-					model.changeSet(bs);
-					if (bs.size()==0 && bs.sizeUnfiltered()>0)
-					{
-						warnUserOfFilters();
-					}
-					curProject=project;
-					MainFrame.this.updateStatusBar();
-					MainFrame.this.setTitle("FindBugs: "+project.getProjectName());
-					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					setProjectChanged(false);
-				}
-				else
-				{
-					tree.setModel(model);//Dont let it stay as a please wait tree forever.
-					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				}
+				SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, in);
 			}
 		}).start();
 		return;
@@ -2218,18 +2025,8 @@ public class MainFrame extends FBFrame implements LogSync
             public void run()
 			{
 				updateDesignationDisplay();
-				BugSet bs=BugLoader.redoAnalysisKeepComments(curProject);
-				
-				if (bs!=null)
-				{
-					displayer.clearCache();
-					//Dont clear data, the data's correct, just get the tree off the listener lists.
-					((BugTreeModel) tree.getModel()).getOffListenerList();
-					((BugTreeModel)tree.getModel()).changeSet(bs);
-					//curProject=BugLoader.getLoadedProject();
-				}
-				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				setProjectChanged(true);
+				BugCollection  bc=BugLoader.redoAnalysisKeepComments(curProject);
+				updateProjectAndBugCollection(curProject, bc, null);
 			}
 		}.start();
 	}
@@ -2240,18 +2037,10 @@ public class MainFrame extends FBFrame implements LogSync
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
 		setCursor(new Cursor(Cursor.WAIT_CURSOR));
-		BugSet bs=BugLoader.combineBugHistories();
-		if (bs!=null)
-		{
-			displayer.clearCache();
-			((BugTreeModel)tree.getModel()).getOffListenerList();
-			updateDesignationDisplay();
-			((BugTreeModel)tree.getModel()).changeSet(bs);
-			curProject=BugLoader.getLoadedProject();
-		}
-		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		
-		setProjectChanged(true);
+		Project p  = new Project();
+		BugCollection bc=BugLoader.combineBugHistories(p);
+		setProjectAndBugCollection(p, bc, null);
+
 	}
 	
 	private void openProject(final File dir){
@@ -2290,29 +2079,7 @@ public class MainFrame extends FBFrame implements LogSync
 				BugTreeModel.pleaseWait();
 				MainFrame.this.setRebuilding(true);
 				Project project = new Project();
-				BugSet bs=BugLoader.loadBugs(project, extraFinalReferenceToXmlFile);
-				MainFrame.this.setRebuilding(false);
-				if (bs!=null)
-				{
-					reconfigMenuItem.setEnabled(true);
-					displayer.clearCache();
-					model.getOffListenerList();
-					updateDesignationDisplay();
-					model.changeSet(bs);
-					if (bs.size()==0 && bs.sizeUnfiltered()>0)
-					{
-						warnUserOfFilters();
-					}
-					curProject=project;
-					saveFile = dir;
-					curProject.setProjectFileName(saveFile.getName());
-					MainFrame.this.setTitle("FindBugs: " + project.getProjectFileName());
-					MainFrame.getInstance().updateStatusBar();
-				}
-				else
-				{
-					tree.setModel(model);//Dont let it stay a please wait tree forever if the file was corrupt or empty
-				}
+				SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, extraFinalReferenceToXmlFile);
 			}
 		}).start();
 		
@@ -2333,137 +2100,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 		setProjectChanged(false);
 	}
-	/**
-	 * 
-	 */
-/*	private void openProject() {
-		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-		
-		FBFileChooser jfc=new FBFileChooser();
-		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		jfc.setFileFilter(FindBugsProjectFileFilter.INSTANCE);
-		File xmlFile=null;
-		if (projectChanged)
-		{
-			int response = JOptionPane.showConfirmDialog(MainFrame.this, 
-					edu.umd.cs.findbugs.L10N.getLocalString("dlg.save_current_changes", "The current project has been changed, Save current changes?")
-					,edu.umd.cs.findbugs.L10N.getLocalString("dlg.save_changes", "Save Changes?"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-
-			if (response == JOptionPane.YES_OPTION)
-			{
-				if (projectDirectory!=null)
-					save(projectDirectory);
-				else
-					projectSaveAs();
-			}
-			else if (response == JOptionPane.CANCEL_OPTION)
-				return;
-			//IF no, do nothing.
-		}
-		
-		boolean loading = true;
-		while (loading)
-		{
-			int value=jfc.showOpenDialog(MainFrame.this);
-			if(value==JFileChooser.APPROVE_OPTION){
-				loading = false;
-				final File dir = jfc.getSelectedFile();						
-				
-				if(!dir.exists() || !dir.isDirectory())
-				{
-					JOptionPane.showMessageDialog(null, edu.umd.cs.findbugs.L10N.getLocalString("dlg.proj_not_dir_warning_lbl", "Warning! This project is not a directory."));
-					loading = true;
-					continue;
-				}
-				else
-				{
-					xmlFile= new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".xml");		
-					File fasFile=new File(dir.getAbsolutePath() + File.separator + dir.getName() + ".fas");
-
-					if (!xmlFile.exists())
-					{
-						JOptionPane.showMessageDialog(null, edu.umd.cs.findbugs.L10N.getLocalString("dlg.no_xml_data_lbl", "This directory does not contain saved bug XML data, please choose a different directory."));
-						loading=true;
-						continue;
-					}
-					
-					if (!fasFile.exists())
-					{
-						JOptionPane.showMessageDialog(MainFrame.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.filter_settings_not_found_lbl", "Filter settings not found, using default settings."));
-						try {
-							fasFile.createNewFile();
-							ProjectSettings.newInstance().save(new FileOutputStream(fasFile));
-						} catch (IOException e) {
-							if (MainFrame.DEBUG) System.err.println("Error saving new filter settings file, using default settings without saving these settings to the project.");
-							ProjectSettings.newInstance();
-						}
-					} 
-					else
-					{
-						try 
-						{
-							ProjectSettings.loadInstance(new FileInputStream(fasFile));
-						} catch (FileNotFoundException e) 
-						{
-							//Impossible.
-							if (MainFrame.DEBUG) System.err.println(".fas file not found, using default settings");
-							ProjectSettings.newInstance();
-						}
-					}
-					
-					final File extraFinalReferenceToXmlFile=xmlFile;
-					new Thread(new Runnable(){
-						public void run()
-						{
-							BugTreeModel model=(BugTreeModel)tree.getModel();
-//									Debug.println("please wait called by open menu item");
-							BugTreeModel.pleaseWait();
-							MainFrame.this.setRebuilding(true);
-							Project project = new Project();
-							BugSet bs=BugLoader.loadBugs(project, extraFinalReferenceToXmlFile);
-							MainFrame.this.setRebuilding(false);
-							if (bs!=null)
-							{
-								reconfigMenuItem.setEnabled(true);
-								displayer.clearCache();
-								model.getOffListenerList();
-								updateDesignationDisplay();
-								model.changeSet(bs);
-								curProject=project;
-								projectDirectory=dir;
-								curProject.setProjectFileName(projectDirectory.getName());
-								MainFrame.this.setTitle("FindBugs: " + project.getProjectFileName());
-								MainFrame.getInstance().updateStatusBar();
-							}
-						}
-					}).start();
-				}
-			}
-			else if (value==JFileChooser.CANCEL_OPTION)
-			{
-				return;
-			}
-			else
-				loading = false;
-		}
-//				List<String> projectPaths=new ArrayList<String>();
-		ArrayList<File> xmlFiles=GUISaveState.getInstance().getRecentProjects();
-
-		if (!xmlFiles.contains(xmlFile))
-		{
-			GUISaveState.getInstance().addRecentProject(xmlFile);
-			MainFrame.this.addRecentProjectToMenu(xmlFile);
-		}
-		
-		//Clears the bottom tabs so they are blank. And makes comments
-		//tab not enabled.				
-		clearSourcePane();
-
-		setProjectChanged(false);
-	}*/
-	/**
-	 * 
-	 */
+	
 	private void newProjectMenu() {
 		comments.saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		new NewProjectWizard();

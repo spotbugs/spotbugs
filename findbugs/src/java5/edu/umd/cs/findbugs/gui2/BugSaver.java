@@ -28,6 +28,7 @@ import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 
@@ -39,24 +40,18 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 public class BugSaver {
 	
 	private static String lastPlaceSaved;
-	public static void saveBugs(OutputStream out, BugSet data, Project p)
+	public static void saveBugs(OutputStream out, BugCollection data, Project p)
 	{
-		SortedBugCollection col=new SortedBugCollection();
-		Iterator<BugLeafNode> iter = data.iterator();
 		
-		while (iter.hasNext())
-		{
-			col.add(iter.next().getBug());
-		}
 		
 		try {
-			col.writeXML(out,p);
+			data.writeXML(out,p);
 		} catch (IOException e) {
 			Debug.println(e);
 		}
 	}
 
-	public static void saveBugs(File out, BugSet data, Project p)
+	public static void saveBugs(File out, BugCollection data, Project p)
 	{
 		try {
 			out.createNewFile();

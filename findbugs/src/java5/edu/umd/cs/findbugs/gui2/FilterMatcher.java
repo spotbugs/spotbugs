@@ -100,8 +100,8 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		switch(mode)
 		{
 		case FILTER_EXACTLY: return (ssc.compare(filterBy.getFrom(bugInstance), value) != 0);
-		case FILTER_AT_OR_AFTER: return (ssc.compare(filterBy.getFrom(bugInstance), value) == -1);
-		case FILTER_AT_OR_BEFORE: return (ssc.compare(filterBy.getFrom(bugInstance), value) == 1);
+		case FILTER_AT_OR_AFTER: return (ssc.compare(filterBy.getFrom(bugInstance), value) < 0);
+		case FILTER_AT_OR_BEFORE: return (ssc.compare(filterBy.getFrom(bugInstance), value) > 0);
 		case FILTER_ALL_BUT: return (ssc.compare(filterBy.getFrom(bugInstance), value) == 0);
 		default: return true;
 		}

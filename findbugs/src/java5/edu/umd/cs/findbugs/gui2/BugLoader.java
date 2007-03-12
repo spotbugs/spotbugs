@@ -64,8 +64,6 @@ import edu.umd.cs.findbugs.workflow.Update;
  */
 public class BugLoader {
 	
-	public static BugCollection mainBugCollection = null; //this is so the Sortables can look up AppVersions; this probably isn't the right place to put it
-
 	private static Project loadedProject;
 	
 	/**
@@ -250,7 +248,6 @@ public class BugLoader {
 	
 	public static BugSet loadBugsHelper(BugCollection collection)
 	{
-		mainBugCollection = collection;
 		ArrayList<BugLeafNode> bugList=new ArrayList<BugLeafNode>();
 		Iterator<BugInstance> i=collection.iterator();
 		while (i.hasNext())
@@ -262,38 +259,33 @@ public class BugLoader {
 		
 	}
 	
-	public static BugSet loadBugs(Project project, URL url){
+	public static SortedBugCollection loadBugs(MainFrame mainFrame, Project project, URL url){
 		try {
-			return loadBugs(project, url.openConnection().getInputStream());
+			return loadBugs(mainFrame, project, url.openConnection().getInputStream());
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null,"This file contains no bug data");
 		}	
 		return null;
 	}
-	public static BugSet loadBugs(Project project, File file){
+	public static SortedBugCollection loadBugs(MainFrame mainFrame, Project project, File file){
 		try {
-			return loadBugs(project, new FileInputStream(file));
+			return loadBugs(mainFrame, project, new FileInputStream(file));
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null,"This file contains no bug data");
 		}	
 		return null;
 	}
-	public static BugSet loadBugs(Project project, InputStream in)
+	public static SortedBugCollection loadBugs(MainFrame mainFrame, Project project, InputStream in)
 	{
 			try 
 			{
 				SortedBugCollection col=new SortedBugCollection();
 				col.readXML(in, project);
-				List<String> possibleDirectories=project.getSourceDirList();
-				MainFrame.getInstance().setSourceFinder(new SourceFinder());
-				MainFrame.getInstance().getSourceFinder().setSourceBaseList(possibleDirectories);
-
-				MainFrame.getInstance().newProject();
-				return loadBugsHelper(col);
+				return col;
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null,"This file contains no bug data");
+				JOptionPane.showMessageDialog(mainFrame,"This file contains no bug data");
 			} catch (DocumentException e) {
-				JOptionPane.showMessageDialog(null,"This file does not have the correct format; it may be corrupt.");
+				JOptionPane.showMessageDialog(mainFrame,"This file does not have the correct format; it may be corrupt.");
 			}
 			return null;
 	}
@@ -314,9 +306,10 @@ public class BugLoader {
 	 * 
 	 * Merges bug collection histories from xmls selected by the user.  Right now all xmls must be in the same folder and he must select all of them at once
 	 * Makes use of FindBugs's mergeCollection method in the Update class of the workflow package
+	 * @param project TODO
 	 * @return the merged collecction of bugs
 	 */
-	public static BugSet combineBugHistories()
+	public static BugCollection combineBugHistories(Project project)
 	{
 		try
 		{
@@ -328,9 +321,8 @@ public class BugLoader {
 			if (chooser.showOpenDialog(MainFrame.getInstance())==JFileChooser.CANCEL_OPTION)
 				return null;
 			
-			loadedProject=new Project();
 			SortedBugCollection conglomeration=new SortedBugCollection();
-			conglomeration.readXML(chooser.getSelectedFiles()[0],loadedProject);
+			conglomeration.readXML(chooser.getSelectedFiles()[0],project);
 			Update update = new Update();
 			for (int x=1; x<chooser.getSelectedFiles().length;x++)
 			{
@@ -341,7 +333,7 @@ public class BugLoader {
 				conglomeration=(SortedBugCollection) update.mergeCollections(conglomeration, col, false, false);//False means dont show dead bugs
 			}
 			
-			return loadBugsHelper(conglomeration);
+			return conglomeration;
 		} catch (IOException e) {
 			Debug.println(e);
 			return null;
@@ -357,7 +349,7 @@ public class BugLoader {
 	 * @param p
 	 * @return the bugs from the reanalysis, or null if cancelled
 	 */
-	public static BugSet redoAnalysisKeepComments(@NonNull Project p)
+	public static BugCollection redoAnalysisKeepComments(@NonNull Project p)
 	{
         if (p == null) throw new NullPointerException("null project");
 
@@ -377,7 +369,7 @@ public class BugLoader {
 		new AnalyzingDialog(p,ac,true);
 		
 		if (ac.finished)
-			return loadBugsHelper(update.mergeCollections(current, justAnalyzed, true, false));
+			return update.mergeCollections(current, justAnalyzed, true, false);
 		else
 			return null;
 		

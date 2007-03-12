@@ -93,6 +93,7 @@ public class NewFilterFromBug extends FBDialog
 					{
 						filters.get(filters.indexOf(newFilter)).setActive(true);
 					}
+					
 					PreferencesFrame.getInstance().updateFilterPanel();
 					NewFilterFromBug.this.dispose();
 				}
