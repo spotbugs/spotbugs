@@ -513,16 +513,16 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					}
 //This horrible code here should no longer be necessary, if the rebuilding thread is never interrupted 
 //and we dont mess with the tree while its running, what could possibly go wrong?  
-//					catch(Exception e)
-//					{
-//						if (rebuildingThread==this)
-//						{
-//							System.err.println("We're toast.");
-//							e.printStackTrace();
-//						}
-//						else
-//						{/*burrp*/}
-//					}
+					catch(Exception e)
+					{
+						if (rebuildingThread==this)
+						{
+							Debug.println("We're toast.");
+							Debug.println(e);
+						}
+						else
+						{/*burrp*/}
+					}
 					finally
 					{
 						getOffListenerList();
