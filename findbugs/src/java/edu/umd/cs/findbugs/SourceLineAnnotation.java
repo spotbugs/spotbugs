@@ -50,8 +50,10 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
 public class SourceLineAnnotation implements BugAnnotation {
 	private static final long serialVersionUID = 1L;
 
-	private static final String DEFAULT_ROLE = "SOURCE_LINE_DEFAULT";
-	private static final String DEFAULT_ROLE_UNKNOWN_LINE = "SOURCE_LINE_DEFAULT_UNKNOWN_LINE";
+	public static final String DEFAULT_ROLE = "SOURCE_LINE_DEFAULT";
+    public static final String DEFAULT_ROLE_UNKNOWN_LINE = "SOURCE_LINE_DEFAULT_UNKNOWN_LINE";
+    public static final String ROLE_ANOTHER_INSTANCE = "SOURCE_LINE_ANOTHER_INSTANCE";
+    
 
 	/**
 	 * String returned if the source file is unknown.
