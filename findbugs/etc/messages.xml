@@ -1651,8 +1651,8 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   </BugPattern>
 
   <BugPattern type="DM_STRING_CTOR">
-    <ShortDescription>Method invokes inefficient new String(String) constructor; just use the argument</ShortDescription>
-    <LongDescription>{1} invokes inefficient new String(String) constructor; just use the argument</LongDescription>
+    <ShortDescription>Method invokes inefficient new String(String) constructor</ShortDescription>
+    <LongDescription>{1} invokes inefficient new String(String) constructor</LongDescription>
     <Details>
 <![CDATA[
   <p> Using the <code>java.lang.String(String)</code> constructor wastes memory
@@ -1665,8 +1665,8 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
 
 
   <BugPattern type="DM_STRING_VOID_CTOR">
-    <ShortDescription>Method invokes inefficient new String() constructor; just use ""</ShortDescription>
-    <LongDescription>{1} invokes inefficient new String() constructor; just use ""</LongDescription>
+    <ShortDescription>Method invokes inefficient new String() constructor; ShortDescription>
+    <LongDescription>{1} invokes inefficient new String() constructorLongDescription>
     <Details>
 <![CDATA[
   <p> Creating a new <code>java.lang.String</code> object using the
@@ -1679,8 +1679,8 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
     </Details>
   </BugPattern>
   <BugPattern type="DM_STRING_TOSTRING">
-    <ShortDescription>Method invokes toString() method on a String; just use the String</ShortDescription>
-    <LongDescription>Method {1} invokes toString() method on a String; just use the String</LongDescription>
+    <ShortDescription>Method invokes toString() method on a String</ShortDescription>
+    <LongDescription>Method {1} invokes toString() method on a String</LongDescription>
     <Details>
 <![CDATA[
   <p> Calling <code>String.toString()</code> is just a redundant operation.
@@ -2085,7 +2085,7 @@ that classfile. See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=
 
   <BugPattern type="CO_SELF_NO_OBJECT">
     <ShortDescription>Covariant compareTo() method defined</ShortDescription>
-    <LongDescription>{0} defines compareTo({0}) method but not compareTo(Object)</LongDescription>
+    <LongDescription>{0} defines compareTo({0.givenClass}) method but not compareTo(Object)</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a covariant version of <code>compareTo()</code>.&nbsp;
@@ -2226,7 +2226,7 @@ the recommended <code>hashCode</code> implementation to use is:</p>
   </BugPattern>
   <BugPattern type="EQ_ABSTRACT_SELF">
     <ShortDescription>Abstract class defines covariant equals() method</ShortDescription>
-    <LongDescription>Abstract {0} defines equals({0}) method</LongDescription>
+    <LongDescription>Abstract {0} defines equals({0.givenClass}) method</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a covariant version of <code>equals()</code>.&nbsp;
@@ -2267,7 +2267,7 @@ using the <code>equals(Object)</code> method instead.</p>
 
   <BugPattern type="CO_ABSTRACT_SELF">
     <ShortDescription>Abstract class defines covariant compareTo() method</ShortDescription>
-    <LongDescription>Abstract {0} defines compareTo({0}) method</LongDescription>
+    <LongDescription>Abstract {0} defines compareTo({0.givenClass}) method</LongDescription>
     <Details>
 <![CDATA[
   <p> This class defines a covariant version of <code>compareTo()</code>.&nbsp;
@@ -2345,7 +2345,7 @@ but can be accessed in a way that seems to violate the annotation.</p>
   </BugPattern>
   <BugPattern type="MS_EXPOSE_REP">
     <ShortDescription>Public static method may expose internal representation by returning array</ShortDescription>
-    <LongDescription>public static {1} may expose internal representation by returning {2}</LongDescription>
+    <LongDescription>public static {1} may expose internal representation by returning {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
   <p> A public static method returns a reference to
@@ -2358,7 +2358,7 @@ but can be accessed in a way that seems to violate the annotation.</p>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_REP">
     <ShortDescription>May expose internal representation by returning reference to mutable object</ShortDescription>
-    <LongDescription>{1} may expose internal representation by returning {2}</LongDescription>
+    <LongDescription>{1} may expose internal representation by returning {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
   <p> Returning a reference to a mutable object value stored in one of the object's fields
@@ -2373,7 +2373,7 @@ but can be accessed in a way that seems to violate the annotation.</p>
   </BugPattern>
   <BugPattern type="EI_EXPOSE_REP2">
     <ShortDescription>May expose internal representation by incorporating reference to mutable object</ShortDescription>
-    <LongDescription>{1} may expose internal representation by storing an externally mutable object into {2}</LongDescription>
+    <LongDescription>{1} may expose internal representation by storing an externally mutable object into {2.givenClass}</LongDescription>
     <Details>
 <![CDATA[
   <p> This code stores a reference to an externally mutable object into the
@@ -4438,7 +4438,7 @@ For more information, see the
 
   <BugPattern type="JLM_JSR166_LOCK_MONITORENTER">
     <ShortDescription>Synchronization performed on java.util.concurrent Lock</ShortDescription>
-    <LongDescription>Synchronization performed on java.util.concurrent Lock in method {1}</LongDescription>
+    <LongDescription>Synchronization performed on java.util.concurrent Lock in {1}</LongDescription>
 <Details>
 <![CDATA[
 <p> This method performs synchronization on an implementation of
@@ -4781,7 +4781,7 @@ the caller.
   </BugPattern>
   <BugPattern type="DLS_DEAD_LOCAL_STORE">
     <ShortDescription>Dead store to local variable</ShortDescription>
-    <LongDescription>Dead store to {2} in method {1}</LongDescription>
+    <LongDescription>Dead store to {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>
@@ -4801,7 +4801,7 @@ there is no easy way to eliminate these false positives.
 
   <BugPattern type="DLS_DEAD_LOCAL_STORE_OF_NULL">
     <ShortDescription>Dead store of null to local variable</ShortDescription>
-    <LongDescription>Dead store of null to {2} in method {1}</LongDescription>
+    <LongDescription>Dead store of null to {2} in {1}</LongDescription>
     <Details>
 <![CDATA[
 <p>The code stores null into a local variable, and stored value is not
@@ -4862,8 +4862,8 @@ does not need to be created, just access the static methods directly using the c
     </BugPattern>
 
    <BugPattern type="REC_CATCH_EXCEPTION">
-     <ShortDescription>java.lang.Exception is caught when Exception is not thrown</ShortDescription>
-     <LongDescription>Method {1} catches Exception, but Exception is not thrown in the try block and RuntimeException is not explicitly caught</LongDescription>
+     <ShortDescription>Exception is caught when Exception is not thrown</ShortDescription>
+     <LongDescription>Exception is caught when Exception is not thrown in {1}</LongDescription>
      <Details>
   <![CDATA[
   <p>
@@ -5220,7 +5220,7 @@ This creates an array of length one to hold the primitive array and passes it to
   </BugPattern>
   <BugPattern type="BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS">
     <ShortDescription>Equals method should not assume anything about the type of its argument</ShortDescription>
-    <LongDescription>Equals method for {0} assumes the argument is of type {0}</LongDescription>
+    <LongDescription>Equals method for {0} assumes the argument is of type {0.givenClass}</LongDescription>
     <Details>
 <![CDATA[
 <p>
