@@ -25,6 +25,7 @@
          doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
          encoding="UTF-8"/>
 
+   <xsl:variable name="apos" select="&quot;'&quot;"/>
    <xsl:key name="lbc-code-key"        match="/BugCollection/BugInstance" use="concat(@category,@abbrev)" />
    <xsl:key name="lbc-bug-key"         match="/BugCollection/BugInstance" use="concat(@category,@abbrev,@type)" />
    <xsl:key name="lbp-class-b-t"  match="/BugCollection/BugInstance" use="concat(Class/@classname,@type)" />
@@ -905,7 +906,8 @@
          var patterns = new Array(
             <xsl:for-each select="/BugCollection/BugPattern">
                <xsl:sort select="@type" order="ascending" />
-               [ "<xsl:value-of select="@category" />", "<xsl:value-of select="@abbrev" />", "<xsl:value-of select="@type" />", "<xsl:value-of select="ShortDescription" />" ],
+               [ "<xsl:value-of select="@category" />", "<xsl:value-of select="@abbrev" />", "<xsl:value-of select="@type" />", "<xsl:value-of select="translate(ShortDescription, '&quot;', $apos)" />" ],
+
             </xsl:for-each>
                [ "", "", "", "" ]
             );
