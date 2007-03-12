@@ -276,6 +276,18 @@ public class SourceLineAnnotation implements BugAnnotation {
 		return fromVisitedInstructionRange(classContext, visitor, pc, pc);
 	}
 
+	public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, Method method, int pc) {
+		LineNumberTable lineNumberTable = method.getCode().getLineNumberTable();
+		String className = classContext.getJavaClass().getClassName();
+		String sourceFile = classContext.getJavaClass().getSourceFileName();
+		if (lineNumberTable == null)
+			return createUnknown(className, sourceFile, pc, pc);
+
+		int startLine = lineNumberTable.getSourceLine(pc);
+		return new SourceLineAnnotation(className, sourceFile, startLine, startLine, pc, pc).addInstructionContext(classContext, method);
+	}
+	
+	
 	/**
 	 * Factory method for creating a source line annotation describing the
 	 * source line numbers for a range of instructions in the method being

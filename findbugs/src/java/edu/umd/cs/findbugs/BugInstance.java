@@ -1267,12 +1267,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this BugInstance
 	 */
 	public BugInstance addSourceLine(ClassContext classContext, Method method, Location location) {
-		MethodGen methodGen = classContext.getMethodGen(method);
-		return addSourceLine(
-				classContext,
-				methodGen,
-				classContext.getJavaClass().getSourceFileName(),
-				location.getHandle());
+		SourceLineAnnotation sourceLineAnnotation =
+			SourceLineAnnotation.fromVisitedInstruction(classContext, method, location.getHandle().getPosition());
+		if (sourceLineAnnotation != null)
+			add(sourceLineAnnotation);
+		return this;
 	}
 
 	/**

@@ -540,7 +540,9 @@ public class UnconditionalValueDerefAnalysis extends
 			}
 		}
 		boolean isBackEdge = edge.isBackwardInBytecode();
-		boolean sourceIsTopOfLoop = edge.sourceIsTopOfLoop(ClassContext.getLoopExitBranches(method, methodGen));
+		Set<Integer> loopExitBranches = ClassContext.getLoopExitBranches(method, methodGen);
+		assert loopExitBranches != null;
+		boolean sourceIsTopOfLoop = edge.sourceIsTopOfLoop(loopExitBranches);
 		if (sourceIsTopOfLoop && edge.getType() == EdgeTypes.FALL_THROUGH_EDGE)
 			isBackEdge = true;
 		if (false && (edge.getType() == EdgeTypes.IFCMP_EDGE || sourceIsTopOfLoop)) {
