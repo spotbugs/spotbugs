@@ -57,7 +57,6 @@ package edu.umd.cs.findbugs.anttask;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
@@ -84,6 +83,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * <li>failOnError        (boolean - default false)
  * <li>home               (findbugs install dir)
  * <li>includeFilter      (filter filename)
+ * <li>jvm                (Set the command used to start the VM)
  * <li>jvmargs            (any additional jvm arguments)
  * <li>omitVisitors       (collection - comma seperated)
  * <li>onlyAnalyze        (restrict analysis to find bugs to given comma-separated list of classes and packages - See the textui argument description for details)
@@ -145,6 +145,7 @@ public class FindBugsTask extends Task {
 	private Path sourcePath = null;
 	private String outputFormat = "xml";
 	private String reportLevel = null;
+	private String jvm = "";
 	private String jvmargs = "";
 	private String visitors = null;
 	private String omitVisitors = null;
@@ -198,6 +199,13 @@ public class FindBugsTask extends Task {
 	 */
 	public void setJvmargs(String args) {
 		this.jvmargs = args;
+	}
+
+	/**
+	 *  Set the command used to start the VM 
+	 */
+	public void setJvm(String jvm) {
+		this.jvm = jvm;
 	}
 
 	/**
@@ -677,6 +685,8 @@ public class FindBugsTask extends Task {
 
 		findbugsEngine.setTaskName( getTaskName() );
 		findbugsEngine.setFork( true );
+		if (jvm.length()>0)
+			findbugsEngine.setJvm( jvm );
 		findbugsEngine.setTimeout( timeout  );
 
 		if ( debug )
