@@ -1665,8 +1665,8 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
 
 
   <BugPattern type="DM_STRING_VOID_CTOR">
-    <ShortDescription>Method invokes inefficient new String() constructor; ShortDescription>
-    <LongDescription>{1} invokes inefficient new String() constructorLongDescription>
+    <ShortDescription>Method invokes inefficient new String() constructor</ShortDescription>
+    <LongDescription>{1} invokes inefficient new String() constructor</LongDescription>
     <Details>
 <![CDATA[
   <p> Creating a new <code>java.lang.String</code> object using the
