@@ -79,6 +79,7 @@ import edu.umd.cs.findbugs.ba.npe.IsNullValueDataflow;
 import edu.umd.cs.findbugs.ba.npe.IsNullValueFrame;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonCollector;
 import edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder;
+import edu.umd.cs.findbugs.ba.npe.NullValueUnconditionalDeref;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessProperty;
 import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
 import edu.umd.cs.findbugs.ba.npe.PointerUsageRequiringNonNullValue;
@@ -785,37 +786,28 @@ public class FindNullDeref implements Detector,
                 priority++;
             reportNullDeref(propertySet, classContext, method, location, type,
                     priority, variable);
-        } else if (refValue.isNullOnSomePath() || duplicated
-                && refValue.isDefinitelyNull()) {
+        } else if (refValue.mightBeNull() && refValue.isParamValue()) {
 
-            String type = "NP_NULL_ON_SOME_PATH";
-            int priority = NORMAL_PRIORITY;
-            if (caught)
-                priority++;
-            if (onExceptionPath)
-                type = "NP_NULL_ON_SOME_PATH_EXCEPTION";
-            else if (refValue.isReturnValue())
-                type = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE";
-            else if (refValue.isParamValue()) {
-                if (method.getName().equals("equals")
-                        && method.getSignature()
-                                .equals("(Ljava/lang/Object;)Z")) {
-                    if (caught)
-                        return;
-                    type = "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT";
+        	String type;
+        	int priority = NORMAL_PRIORITY;
+        	if (caught)
+        		priority++;
 
-                } else
-                    type = "NP_ARGUMENT_MIGHT_BE_NULL";
-            }
+        	if (method.getName().equals("equals")
+        			&& method.getSignature()
+        			.equals("(Ljava/lang/Object;)Z")) {
+        		if (caught)
+        			return;
+        		type = "NP_EQUALS_SHOULD_HANDLE_NULL_ARGUMENT";
 
-            if (DEBUG)
-                System.out.println("Reporting null on some path: value="
-                        + refValue);
-            if (type.equals("NP_NULL_ON_SOME_PATH"))
-                return;
-            
-            if (type.equals("NP_NULL_ON_SOME_PATH_EXCEPTION"))
-                return;
+        	} else
+        		type = "NP_ARGUMENT_MIGHT_BE_NULL";
+
+
+        	if (DEBUG)
+        		System.out.println("Reporting null on some path: value="
+        				+ refValue);
+
             reportNullDeref(propertySet, classContext, method, location, type,
                     priority, variable);
         }
@@ -1105,7 +1097,7 @@ public class FindNullDeref implements Detector,
     Set<Location> assignedNullLocationSet, @NonNull
     Set<Location> derefLocationSet, SortedSet<Location> doomedLocations,
             ValueNumberDataflow vna, ValueNumber refValue,
-            BugAnnotation variableAnnotation, boolean alwaysOnExceptionPath,
+            BugAnnotation variableAnnotation, NullValueUnconditionalDeref deref,
             boolean npeIfStatementCovered) {
         if (refValue.hasFlag(ValueNumber.CONSTANT_CLASS_OBJECT))
             return;
@@ -1118,13 +1110,18 @@ public class FindNullDeref implements Detector,
         }
 
         String bugType = "NP_GUARANTEED_DEREF";
+        int priority = NORMAL_PRIORITY;
 
-        if (alwaysOnExceptionPath)
-            bugType += "_ON_EXCEPTION_PATH";
-        int priority = alwaysOnExceptionPath ? NORMAL_PRIORITY : HIGH_PRIORITY;
-        if (!npeIfStatementCovered)
-            priority++;
-
+        if (deref.isMethodReturnValue())
+        	bugType = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE";
+        else {
+        	if (deref.isAlwaysOnExceptionPath())
+        		bugType += "_ON_EXCEPTION_PATH";
+        	else priority = HIGH_PRIORITY;
+        	if (!npeIfStatementCovered)
+        		priority++;
+        }
+        
         // Add Locations in the set of locations at least one of which
         // is guaranteed to be dereferenced
 
@@ -1199,6 +1196,8 @@ public class FindNullDeref implements Detector,
             } catch (CFGBuilderException e) {
                 AnalysisContext.logError("Error getting UsagesRequiringNonNullValues for " + method, e);
             }
+            
+            
             if (pu != null) {
                 
 
@@ -1229,10 +1228,14 @@ public class FindNullDeref implements Detector,
                     }
                 }
             }
-            }else if (!alwaysOnExceptionPath)
+            } else  if (!deref.isAlwaysOnExceptionPath())
                 bugType = "NP_NULL_ON_SOME_PATH";
             else
                 bugType = "NP_NULL_ON_SOME_PATH_EXCEPTION";
+            
+            if (deref.isMethodReturnValue())
+                bugType = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE";
+            
         }
 
           

@@ -69,9 +69,7 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 * @param vna ValueNumberDataflow
 	 * @param refValue             the null value
 	 * @param variableAnnotation TODO
-	 * @param alwaysOnExceptionPath true if the location(s) where the value was observed
-	 *                               to be null and unconditionally dereferenced were
-	 *                               all on exception paths
+	 * @param deref TODO
 	 * @param npeIfStatementCovered true if doom location is a statement
 	 */
 	public void foundGuaranteedNullDeref(
@@ -81,5 +79,5 @@ public interface NullDerefAndRedundantComparisonCollector {
 			ValueNumberDataflow vna,
 			ValueNumber refValue,
 			BugAnnotation variableAnnotation,
-			boolean alwaysOnExceptionPath, boolean npeIfStatementCovered);
+			NullValueUnconditionalDeref deref, boolean npeIfStatementCovered);
 }

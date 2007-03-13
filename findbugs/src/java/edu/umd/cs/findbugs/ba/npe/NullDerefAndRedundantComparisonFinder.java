@@ -191,46 +191,6 @@ public class NullDerefAndRedundantComparisonFinder {
 	}
 	
 	/**
-	 * Collected information about a single value number
-	 * observed at one or more locations to be both
-	 * definitely-null and unconditionally dereferenced.
-	 */
-	static class NullValueUnconditionalDeref {
-		private boolean alwaysOnExceptionPath;
-		private Set<Location> derefLocationSet;
-		
-		public NullValueUnconditionalDeref() {
-			this.alwaysOnExceptionPath = true;
-			this.derefLocationSet = new HashSet<Location>();
-		}
-
-		/**
-		 * @param isNullValue
-		 * @param unconditionalDerefLocationSet
-		 */
-		public void add(IsNullValue isNullValue, Set<Location> unconditionalDerefLocationSet) {
-			if (!isNullValue.isException()) { 
-				alwaysOnExceptionPath = false;
-			}
-			derefLocationSet.addAll(unconditionalDerefLocationSet);
-		}
-		
-		/**
-		 * @return Returns the derefLocationSet.
-		 */
-		public Set<Location> getDerefLocationSet() {
-			return derefLocationSet;
-		}
-		
-		/**
-		 * @return Returns the alwaysOnExceptionPath.
-		 */
-		public boolean isAlwaysOnExceptionPath() {
-			return alwaysOnExceptionPath;
-		}
-	}
-	
-	/**
 	 * Examine null values.
 	 * Report any that are guaranteed to be dereferenced on
 	 * non-implicit-exception paths.
@@ -426,7 +386,7 @@ public class NullDerefAndRedundantComparisonFinder {
 					derefLocationSet,
 					knownNullAndDoomedAt,
 					vnaDataflow, valueNumber, 
-                    variableAnnotation, e.getValue().isAlwaysOnExceptionPath(),  npeIfStatementCovered.contains(valueNumber));
+                    variableAnnotation, e.getValue(),  npeIfStatementCovered.contains(valueNumber));
 		}
 	}
 
@@ -725,6 +685,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		if (!refValue.mightBeNull())
 			return;
 		
+		// if (!refValue.isDefinitelyNull()) return;
 		// Get the value number
 		ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getStartFact(basicBlock);
 		if (!vnaFrame.isValid())

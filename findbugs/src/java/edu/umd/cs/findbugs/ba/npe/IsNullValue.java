@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.ba.XMethodParameter;
  * @see IsNullValueAnalysis
  */
 public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
-	private static final boolean DEBUG_EXCEPTION = SystemProperties.getBoolean("inv.debugException");
+	private static final boolean DEBUG_EXCEPTION = true || SystemProperties.getBoolean("inv.debugException");
 	private static final boolean DEBUG_KABOOM = SystemProperties.getBoolean("inv.debugKaboom");
 
 	/** Definitely null. */
