@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
+import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -273,6 +274,13 @@ public class SourceLineAnnotation implements BugAnnotation {
 		return fromVisitedInstructionRange(classContext, visitor, pc, pc);
 	}
 
+	public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, Method method, Location loc) {
+		return fromVisitedInstruction(classContext, method, loc.getHandle());
+	}
+
+	public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, Method method, InstructionHandle handle) {
+		return fromVisitedInstruction(classContext, method, handle.getPosition());
+	}
 	public static SourceLineAnnotation fromVisitedInstruction(ClassContext classContext, Method method, int pc) {
 		LineNumberTable lineNumberTable = method.getCode().getLineNumberTable();
 		String className = classContext.getJavaClass().getClassName();

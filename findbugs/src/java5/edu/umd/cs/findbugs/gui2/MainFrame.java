@@ -99,6 +99,7 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.FindBugsDisplayFeatures;
 import edu.umd.cs.findbugs.I18N;
 import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.PackageMemberAnnotation;
@@ -245,6 +246,7 @@ public class MainFrame extends FBFrame implements LogSync
 		this.findBugsLayoutManagerFactory = factory;
 		this.guiLayout = factory.getInstance(this);
 		this.comments = new CommentsArea(this);
+		FindBugsDisplayFeatures.setAbridgedMessages(true);
 	}
 	
 	/**

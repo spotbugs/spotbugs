@@ -345,15 +345,12 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			throw new IllegalStateException("bad method signature " + methodSig);
 		converter.skip();
 
-		String pkgName = null;
-		if (shortenPackages)
-			pkgName = primaryClass.getPackageName();
 		boolean needsComma = false;
 		while (converter.getFirst() != ')') {
 			if (needsComma)
-				result.append(',');
+				result.append(", ");
 			if (shortenPackages)
-				result.append(shorten(pkgName, converter.parseNext()));
+				result.append(removePackageName(converter.parseNext()));
 			else
 				result.append(converter.parseNext());
 			needsComma = true;

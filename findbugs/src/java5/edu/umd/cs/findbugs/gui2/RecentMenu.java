@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.gui2.MainFrame.SaveType;
 
 public class RecentMenu{
 
-	private class LimitedArrayList<T> extends ArrayList<T>
+	private static class LimitedArrayList<T> extends ArrayList<T>
 	{
 		public static final int MAX_ENTRIES=5;
 

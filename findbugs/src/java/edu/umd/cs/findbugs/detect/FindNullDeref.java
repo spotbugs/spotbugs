@@ -423,9 +423,6 @@ public class FindNullDeref implements Detector,
                     .getResolvedAnnotation(field, false);
             if (annotation == NullnessAnnotation.NONNULL) {
 
-                MethodGen methodGen = classContext.getMethodGen(method);
-                String sourceFile = classContext.getJavaClass()
-                        .getSourceFileName();
                 BugAnnotation variableAnnotation = null;
                 try {
                    ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getFactAtLocation(location);
@@ -442,9 +439,9 @@ public class FindNullDeref implements Detector,
                 BugInstance warning = new BugInstance(this,
                         "NP_STORE_INTO_NONNULL_FIELD",
                         tos.isDefinitelyNull() ? HIGH_PRIORITY
-                                : NORMAL_PRIORITY).addClassAndMethod(methodGen,
-                        sourceFile).addField(field).addOptionalAnnotation(variableAnnotation).addSourceLine(classContext,
-                        methodGen, sourceFile, location.getHandle());
+                                : NORMAL_PRIORITY).addClassAndMethod(classContext.getJavaClass(),method)
+                        .addField(field).addOptionalAnnotation(variableAnnotation).addSourceLine(classContext,
+                        method, location);
 
                 bugReporter.reportBug(warning);
             }
@@ -467,8 +464,6 @@ public class FindNullDeref implements Detector,
             return;
         IsNullValue tos = frame.getTopValue();
         if (tos.isDefinitelyNull()) {
-            MethodGen methodGen = classContext.getMethodGen(method);
-            String sourceFile = classContext.getJavaClass().getSourceFileName();
             BugAnnotation variable = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
                     location, valueNumber, vnaFrame);
 
@@ -485,9 +480,9 @@ public class FindNullDeref implements Detector,
                 priority = NORMAL_PRIORITY;
             }
             BugInstance warning = new BugInstance(this, bugPattern, priority)
-                    .addClassAndMethod(methodGen, sourceFile).addOptionalAnnotation(variable).addSourceLine(
-                            classContext, methodGen, sourceFile,
-                            location.getHandle());
+                    .addClassAndMethod(classContext.getJavaClass(), method).addOptionalAnnotation(variable).addSourceLine(
+                            classContext, method,
+                            location);
 
             bugReporter.reportBug(warning);
         }
@@ -569,9 +564,7 @@ public class FindNullDeref implements Detector,
                 && dangerousCallTargetList.size() == 1
                 && dangerousCallTargetList.get(0).getMethod().isPrivate();
 
-        MethodGen methodGen = classContext.getMethodGen(method);
-        String sourceFile = classContext.getJavaClass().getSourceFileName();
-
+       
         String bugType;
         int priority;
         if (privateCall
@@ -595,10 +588,10 @@ public class FindNullDeref implements Detector,
                     .addProperty(NullArgumentWarningProperty.ACTUAL_PARAMETER_GUARANTEED_NULL);
 
         BugInstance warning = new BugInstance(this,bugType, priority)
-                .addClassAndMethod(methodGen, sourceFile).addMethod(
+                .addClassAndMethod(classContext.getJavaClass(), method).addMethod(
                         XFactory.createXMethod(invokeInstruction, cpg))
                 .describe("METHOD_CALLED").addSourceLine(classContext,
-                        methodGen, sourceFile, location.getHandle());
+                        method,  location);
 
         // Check which params might be null
         addParamAnnotations(location,
@@ -729,9 +722,6 @@ public class FindNullDeref implements Detector,
                 } catch (CFGBuilderException e) {
                     AnalysisContext.logError("error", e);
                 }
-                MethodGen methodGen = classContext.getMethodGen(method);
-                String sourceFile = classContext.getJavaClass()
-                        .getSourceFileName();
 
                 int priority = definitelyNull ? HIGH_PRIORITY : NORMAL_PRIORITY;
                 if (caught)
@@ -739,11 +729,11 @@ public class FindNullDeref implements Detector,
                 String description = definitelyNull ? "INT_NULL_ARG" : "INT_MAYBE_NULL_ARG";
                 BugInstance warning = new BugInstance(this,
                         "NP_NONNULL_PARAM_VIOLATION", priority)
-                        .addClassAndMethod(methodGen, sourceFile).addMethod(m)
+                        .addClassAndMethod(classContext.getJavaClass(), method).addMethod(m)
                         .describe("METHOD_CALLED").addInt(i).describe(
                                 description).addOptionalAnnotation(variableAnnotation).addSourceLine(
-                                classContext, methodGen, sourceFile,
-                                location.getHandle());
+                                classContext, method,
+                                location);
 
                 bugReporter.reportBug(warning);
             }
@@ -834,17 +824,15 @@ public class FindNullDeref implements Detector,
     private void reportNullDeref(WarningPropertySet propertySet,
             ClassContext classContext, Method method, Location location,
             String type, int priority, BugAnnotation variable) {
-        MethodGen methodGen = classContext.getMethodGen(method);
-        String sourceFile = classContext.getJavaClass().getSourceFileName();
-
+        
         BugInstance bugInstance = new BugInstance(this, type, priority)
-                .addClassAndMethod(methodGen, sourceFile);
+                .addClassAndMethod(classContext.getJavaClass(), method);
         if (variable != null)
             bugInstance.add(variable);
         else
             bugInstance.add(new LocalVariableAnnotation("?", -1, -1));
-        bugInstance.addSourceLine(classContext, methodGen, sourceFile,
-                location.getHandle()).describe("SOURCE_LINE_DEREF");
+        bugInstance.addSourceLine(classContext, method, 
+                location).describe("SOURCE_LINE_DEREF");
 
         if (FindBugsAnalysisFeatures.isRelaxedMode()) {
             WarningPropertyUtil.addPropertiesForLocation(propertySet,
@@ -879,8 +867,6 @@ public class FindNullDeref implements Detector,
 
     public void foundRedundantNullCheck(Location location,
             RedundantBranch redundantBranch) {
-        String sourceFile = classContext.getJavaClass().getSourceFileName();
-        MethodGen methodGen = classContext.getMethodGen(method);
 
         boolean isChecked = redundantBranch.firstValue.isChecked();
         boolean wouldHaveBeenAKaboom = redundantBranch.firstValue
@@ -1038,16 +1024,16 @@ public class FindNullDeref implements Detector,
         }
 
         BugInstance bugInstance = new BugInstance(this, warning, priority)
-                .addClassAndMethod(methodGen, sourceFile);
+                .addClassAndMethod(classContext.getJavaClass(), method);
         if (variableAnnotation != null)
             bugInstance.add(variableAnnotation);
         else
             bugInstance.add(new LocalVariableAnnotation("?", -1, -1));
         if (wouldHaveBeenAKaboom)
-            bugInstance.addSourceLine(classContext, methodGen, sourceFile,
-                    locationOfKaBoom.getHandle());
-        bugInstance.addSourceLine(classContext, methodGen, sourceFile,
-                location.getHandle()).describe("SOURCE_REDUNDANT_NULL_CHECK");
+            bugInstance.addSourceLine(classContext, method,
+                    locationOfKaBoom);
+        bugInstance.addSourceLine(classContext, method,
+                location).describe("SOURCE_REDUNDANT_NULL_CHECK");
 
         if (FindBugsAnalysisFeatures.isRelaxedMode()) {
             WarningPropertySet propertySet = new WarningPropertySet();
@@ -1186,9 +1172,7 @@ public class FindNullDeref implements Detector,
         SortedSet<SourceLineAnnotation> knownNullLocations = new TreeSet<SourceLineAnnotation>();
         for (Location loc : sourceLocations) {
             SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
-                    .fromVisitedInstruction(classContext, classContext
-                            .getMethodGen(method), classContext.getJavaClass()
-                            .getSourceFileName(), loc.getHandle());
+                    .fromVisitedInstruction(classContext, method, loc);
             if (sourceLineAnnotation == null)
                 continue;
             int startLine = sourceLineAnnotation.getStartLine();

@@ -170,7 +170,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
 			// Enable/disabled relaxed reporting mode
 			FindBugsAnalysisFeatures.setRelaxedMode(relaxedReportingMode);
-            FindBugsAnalysisFeatures.setAbridgedMessages(abridgedMessages);
+            FindBugsDisplayFeatures.setAbridgedMessages(abridgedMessages);
 			
 			// Configure training databases
 			FindBugs.configureTrainingDatabases(this);

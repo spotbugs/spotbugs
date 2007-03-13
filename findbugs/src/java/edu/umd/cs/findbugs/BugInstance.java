@@ -1267,13 +1267,23 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @return this BugInstance
 	 */
 	public BugInstance addSourceLine(ClassContext classContext, Method method, Location location) {
+		return addSourceLine(classContext, method, location.getHandle());
+	}
+	/**
+	 * Add source line annotation for given Location in a method. 
+	 * 
+	 * @param classContext the ClassContext
+	 * @param method       the Method
+	 * @param location     the Location in the method
+	 * @return this BugInstance
+	 */
+	public BugInstance addSourceLine(ClassContext classContext, Method method, InstructionHandle handle) {
 		SourceLineAnnotation sourceLineAnnotation =
-			SourceLineAnnotation.fromVisitedInstruction(classContext, method, location.getHandle().getPosition());
+			SourceLineAnnotation.fromVisitedInstruction(classContext, method, handle.getPosition());
 		if (sourceLineAnnotation != null)
 			add(sourceLineAnnotation);
 		return this;
 	}
-
 	/**
 	 * Add a source line annotation describing the
 	 * source line numbers for a range of instructions in the method being
@@ -1501,7 +1511,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			xmlOutput.closeTag("ShortMessage");
 			
 			xmlOutput.openTag("LongMessage");
-            if (FindBugsAnalysisFeatures.isAbridgedMessages()) xmlOutput.writeText(this.getAbridgedMessage());
+            if (FindBugsDisplayFeatures.isAbridgedMessages()) xmlOutput.writeText(this.getAbridgedMessage());
             else xmlOutput.writeText(this.getMessageWithoutPrefix());
 			xmlOutput.closeTag("LongMessage");
 		}

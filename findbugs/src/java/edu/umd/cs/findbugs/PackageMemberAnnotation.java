@@ -99,7 +99,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 			return className;
 		else if (key.equals("package"))
 			return getPackageName();
-		else if (key.equals("") && FindBugsAnalysisFeatures.isAbridgedMessages())
+		else if (key.equals("") && FindBugsDisplayFeatures.isAbridgedMessages())
             return formatPackageMember("givenClass", primaryClass);
         else return formatPackageMember(key, primaryClass);
 	}
@@ -126,7 +126,16 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 		}
 		return typeName;
 	}
-
+	/**
+	 * Shorten a type name by removing the package name
+	 */
+	protected static String removePackageName(String typeName) {
+		int index = typeName.lastIndexOf('.');
+		if (index >= 0) {
+			typeName = typeName.substring(index + 1);
+		}
+		return typeName;
+	}
 	/**
 	 * Do default and subclass-specific formatting.
 	 *

@@ -60,9 +60,6 @@ public class AssignedFieldMap implements Constants {
 
 		Method[] methodList = jclass.getMethods();
 		for (Method method : methodList) {
-			MethodGen methodGen = classContext.getMethodGen(method);
-			if (methodGen == null)
-				continue;
 
 			scanMethod(method, assignableFieldSet);
 		}
