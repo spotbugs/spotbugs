@@ -351,7 +351,7 @@ public class MainFrame extends FBFrame implements LogSync
 						try 
 						{
 							ProjectSettings.loadInstance(new FileInputStream(fasFile));
-						} catch (FileNotFoundException exception) 
+						} catch (Exception exception) 
 						{
 							Debug.println("We are in the recent menuitem FileNotFoundException.");
 							//Silently make a new instance
@@ -1875,12 +1875,16 @@ public class MainFrame extends FBFrame implements LogSync
 	{
 		tableheader.setReorderingAllowed(!b);
 		preferencesMenuItem.setEnabled(!b);
-		if (b)
+		if (b) {
 			SorterDialog.getInstance().freeze();
-		else
+            showWaitCard();
+        }
+		else {
 			SorterDialog.getInstance().thaw();
+            showTreeCard();
+        }
 		recentMenu.setEnabled(!b);
-        showTreeCard();
+
 	}
 	
 	public void setSorting(boolean b) {
@@ -2035,18 +2039,16 @@ public class MainFrame extends FBFrame implements LogSync
 	 * @return
 	 */
 	private void loadAnalysisFromInputStream(final InputStream in) {
-		setCursor(new Cursor(Cursor.WAIT_CURSOR));
+		showWaitCard();
 		
 		new Thread(new Runnable(){
 			public void run()
 			{
-				BugTreeModel model=(BugTreeModel)tree.getModel();
-//								BugTreeModel.pleaseWait();
 				MainFrame.this.setRebuilding(true);
 				Project project = new Project();
 				SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, in);
 				setProjectAndBugCollection(project, bc);
-				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
 			}
 		}).start();
 		return;
