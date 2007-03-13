@@ -103,8 +103,10 @@ public class XMLAttributeList {
 	 * @return this object (so calls to addAttribute() can be chained)
 	 */
 	public XMLAttributeList addAttribute(@NonNull String name, @NonNull String value) {
-		if (name == null) throw new NullPointerException("name must be nonnull");
-		if (value == null) throw new NullPointerException("value must be nonnull");
+		if (name == null) 
+            throw new NullPointerException("name must be nonnull");
+		if (value == null) 
+            throw new NullPointerException("value must be nonnull");
 		nameValuePairList.add(new NameValuePair(name, value));
 		return this;
 	}
