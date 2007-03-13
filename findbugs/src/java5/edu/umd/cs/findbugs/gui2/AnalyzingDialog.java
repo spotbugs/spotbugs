@@ -32,6 +32,7 @@ import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeModel;
 
+import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -59,16 +60,12 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 	{
 		this(project, new AnalysisCallback()
 		{
-			public void analysisFinished(BugSet results)
+			public void analysisFinished(BugCollection results)
 				{
 					if (changeSettings)
 						ProjectSettings.newInstance();
-                    JTree tree = MainFrame.getInstance().getTree();
-                    TreeModel treeModel = tree.getModel();
-                    if (treeModel instanceof BugTreeModel)
-                           ((BugTreeModel)treeModel).getOffListenerList();
-					MainFrame.getInstance().getTree().setModel(new BugTreeModel(tree, MainFrame.getInstance().getSorter(), results));
-					MainFrame.getInstance().setProject(project);
+                    MainFrame instance = MainFrame.getInstance();
+                    instance.setProjectAndBugCollection(project, results);
 				}
 			
 			public void analysisInterrupted() {}
@@ -88,6 +85,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		this.project = project;
 		this.callback = callback;
 		initComponents();
+        MainFrame.getInstance().showWaitCard();
 		analysisThread.start();
 		if (joinThread)
 			try {analysisThread.join();} catch (InterruptedException e) {}
@@ -219,7 +217,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		{
             if (project == null) throw new NullPointerException("null project");
 
-			BugSet data = BugLoader.doAnalysis(project, AnalyzingDialog.this);
+			BugCollection data = BugLoader.doAnalysis(project, AnalyzingDialog.this);
 			if (data == null) // We were interrupted
 			{
 				callback.analysisInterrupted();

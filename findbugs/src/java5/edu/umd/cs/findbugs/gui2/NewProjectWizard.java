@@ -152,8 +152,7 @@ public class NewProjectWizard extends FBDialog
             public void actionPerformed(ActionEvent evt)
             {
                 
-                System.out.println("analyzeModel size : " + analyzeModel.getSize());
-                for (int i = 0; i < analyzeModel.getSize(); i++){
+                 for (int i = 0; i < analyzeModel.getSize(); i++){
                     File temp = new File((String)analyzeModel.get(i));
                     if(!temp.exists() && directoryOrArchive.accept(temp)) { 
                         if (!displayWarningAndAskIfWeShouldContinue(temp.getName()+" " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), 
@@ -162,15 +161,13 @@ public class NewProjectWizard extends FBDialog
                     }
                 }
 
-                System.out.println("sourceModel size : " + sourceModel.getSize());
-                for (int i = 0; i < sourceModel.getSize(); i++){
+                 for (int i = 0; i < sourceModel.getSize(); i++){
                     File temp = new File((String)sourceModel.get(i));
                     if(!temp.exists() && directoryOrArchive.accept(temp)) { 
                         if (!displayWarningAndAskIfWeShouldContinue(temp.getName()+" " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), 
                                 edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file"))) return;
                     }
                 }
-                System.out.println("auxModel size : " + auxModel.getSize());
                 for (int i = 0; i < auxModel.getSize(); i++){
                     File temp = new File((String)auxModel.get(i));
                     if(!temp.exists() && directoryOrArchive.accept(temp)) { 

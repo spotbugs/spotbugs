@@ -317,32 +317,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			listeners.remove(listener);
 		}
 
-		/*private static <T extends Enum> T[]  getValues(Class<T> c) {
-			try
-			{
-				Method getValues = c.getMethod("values");
-				return (T[]) getValues.invoke(null);
-			}
-			catch (SecurityException e)
-			{
-				assert false;
-				return null;
-			}
-			catch (IllegalAccessException e)
-			{
-				assert false;
-				return null;
-			}
-			catch (NoSuchMethodException e)
-			{
-				assert false;
-				return null;
-			}
-			catch (InvocationTargetException e)
-			{
-				throw new RuntimeException(e.getCause());
-			}
-		}*/
+
 		private static StringPair[] getValues(Sortables key)
 		{
 			String[] values= key.getAllSorted();
@@ -352,34 +327,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 				result[i] = new StringPair(key, values[i]);
 			}
 			return result;
-			
-/*			try
-			{
-				Method m = BugSet.class.getMethod("getAll" + key, new Class[0]);
-				String[] values = (String[]) m.invoke(null, new Object[0]);
-				StringPair[] result = new StringPair[values.length];
-				for (int i = 0; i < values.length; i++)
-				{
-					result[i] = new StringPair(key, values[i]);
-				}
-				return result;
-			}
-			catch(SecurityException e)
-			{
-				System.err.println("NoOoOOOooOoOo000!!!1!!!1one!");
-			} catch (NoSuchMethodException e) {
-				throw new IllegalArgumentException("getAll" + key + " does not exist");
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				System.err.println("Make the method getAll" + key + " public or package or ... something.  ..  Now.");
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			}
-			
-			return null;	*/
-			
+						
 		}
 		
 		public void columnAdded(TableColumnModelEvent e)
@@ -430,19 +378,6 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			if (rebuildingThread==null)
 				setOldSelectedBugs();
 			
-//			if (rebuildingThread != null)
-//			{
-//				System.out.println(rebuildingThread + " interrupted");
-//				System.out.println("Paths to open: " + getOldPaths());
-//				try
-//				{
-//					rebuildingThread.interrupt();  
-//				}
-//				catch(NullPointerException e)
-//				{
-//					//Consume- The rebuilding thread was set to null as it finished just before we could interrupt it
-//				}
-//			}
 			Debug.println("Please Wait called right before starting rebuild thread");
 			pleaseWait();
 			rebuildingThread = new Thread()
@@ -463,65 +398,17 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 						newModel.resetData();
 						newModel.data.sortList();
 						
-//						if (rebuildingThread != this)
-//						{
-//							System.out.println(this + " quitting before new JTree()");
-//							return;
-//						}
+
 						JTree newTree = new JTree(newModel);
 						
-						//						if (rebuildingThread != this)						
-//						{
-//							System.out.println(this + " quitting after new JTree()");
-//							return;
-//						}
+
 						newModel.tree = newTree;
 						Debug.println("Making new tree from Rebuild, this happens in swing thread");
 						MainFrame.getInstance().newTree(newTree,newModel);
+                        
 						
 						rebuildingThread = null;
 //						System.out.println(Thread.currentThread() + " finish");
-					}
-					catch(NullPointerException e)
-					{
-						if (rebuildingThread==this)
-						{
-//							Our design has been changed such that the rebuilding thread is never interrupted, if this happens, its a Major error.
-//							However, I dont think it happens anymore
-//							System.err.println("We got hosed tommy, we got hosed");
-							Debug.println(e);
-						}
-						else
-						{
-							//This should also never happen
-							Debug.println("Interrupted Thread " + this + " encountered exception, exception was consumed.  However, this thread should never have been interrupted");
-						}
-					}
-					catch(ArrayIndexOutOfBoundsException e)
-					{
-						if (rebuildingThread==this)
-						{
-//							This no longer happens since the rebuilding thread is never interrupted... I hope.
-//							System.err.println("We got hosed timmy, we got hosed");
-							Debug.println(e);
-						}
-						else
-						{
-							//This should also never happen
-							Debug.println("Interrupted Thread " + this + " encountered exception, exception was consumed.  However, this thread should never have been interrupted");
-						}
-					}
-//This horrible code here should no longer be necessary, if the rebuilding thread is never interrupted 
-//and we dont mess with the tree while its running, what could possibly go wrong?  
-					catch(Exception e)
-					{
-						if (rebuildingThread==this)
-						{
-							Debug.println("We're toast.");
-							Debug.println(e);
-						}
-						else
-						{/*burrp*/}
 					}
 					finally
 					{
@@ -866,22 +753,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			return selectedBugLeafNodes;
 		}
 		
-		public static class PleaseWaitTreeModel implements TreeModel
-		{
-			private String root = "Please wait...";
-			public PleaseWaitTreeModel() {}
-			public PleaseWaitTreeModel(String message) {if (message!=null) root=message;}
-			
-			public void addTreeModelListener(TreeModelListener l) {}
-			public Object getChild(Object parent, int index) {return null;}
-			public int getChildCount(Object parent) {return 0;}
-			public int getIndexOfChild(Object parent, Object child) {return -1;}
-			public Object getRoot() {return root;}
-			public boolean isLeaf(Object node) {return true;}
-			public void removeTreeModelListener(TreeModelListener l) {}
-			public void valueForPathChanged(TreePath path, Object newValue) {}
-		}
-		
+				
 		void checkSorter()
 		{
 			if (sortOrderChanged==true || sortsAddedOrRemoved==true)
@@ -910,18 +782,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		}
 		static void pleaseWait(final String message)
 		{
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
-				{
-					MainFrame.getInstance().pleaseWait = true;
-					Debug.println("Please Wait! " + (message==null?"":message));
-					MainFrame.getInstance().getTree().setModel(new PleaseWaitTreeModel(message));
-					MainFrame.getInstance().pleaseWait = false;
-					//MainFrame.getInstance().setSorting(false);
-					Debug.println("Please Stop Waiting");
-				}
-			});	
+            MainFrame.getInstance().showWaitCard();
 		}
 		
 		public TreeModelEvent restructureBranch(ArrayList<String> stringsToBranch, boolean removing) throws BranchOperationException

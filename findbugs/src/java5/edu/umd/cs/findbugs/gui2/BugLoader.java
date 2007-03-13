@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,11 +33,10 @@ import javax.swing.JOptionPane;
 
 import org.dom4j.DocumentException;
 
-import edu.umd.cs.findbugs.AbstractBugReporter;
 import edu.umd.cs.findbugs.BugCollection;
+import edu.umd.cs.findbugs.BugCollectionBugReporter;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BugReporterObserver;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
@@ -46,14 +44,10 @@ import edu.umd.cs.findbugs.FindBugsProgress;
 import edu.umd.cs.findbugs.IFindBugsEngine;
 import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
-import edu.umd.cs.findbugs.ProjectStats;
 import edu.umd.cs.findbugs.SortedBugCollection;
+import edu.umd.cs.findbugs.XMLBugReporter;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
-import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.SourceFinder;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 import edu.umd.cs.findbugs.config.UserPreferences;
 import edu.umd.cs.findbugs.workflow.Update;
 
@@ -63,133 +57,7 @@ import edu.umd.cs.findbugs.workflow.Update;
  *
  */
 public class BugLoader {
-	
-	private static Project loadedProject;
-	
-	/**
-	 * This is how we attach to a FindBugs analysis, the PrintCallBack ignores most things FindBugs returns to us, implementing things like showing what classes were missing might be done here.
-	 * This just adds all the bugs FindBugs finds to our BugSet.  
-	 * @author Dan
-	 *
-	 */
-	private static class PrintCallBack implements edu.umd.cs.findbugs.BugReporter
-	{
-		FindBugs fb;
-		ArrayList<BugLeafNode> bugs; 
-		ArrayList<BugReporterObserver> bros;
-		ArrayList<String> errorLog;
-		boolean done;
-		int priorityThreadhold = Priorities.LOW_PRIORITY;
 		
-		PrintCallBack()
-		{
-			bros=new ArrayList<BugReporterObserver>();
-			errorLog=new ArrayList<String>();
-			bugs=new ArrayList<BugLeafNode>();
-			done=false;
-		}
-		
-		public void setEngine(FindBugs engine) {
-			if (done==true)
-			{
-				throw new IllegalStateException("This PrintCallBack has already finished its analysis, create a new callback if you want another analysis done");
-			}
-			if (fb!=null)
-			{
-				throw new IllegalStateException("The engine has already been set, but the analysis was not finished, create a new callback instead of running multiple analyses from this one");
-			}
-			fb=engine;
-//			System.out.println("Engine Set!");
-		}
-
-		public void setErrorVerbosity(int level) {
-//			System.out.println("Error Verbosity set at " + level);
-		}
-
-		public void setPriorityThreshold(int threshold) {
-			priorityThreadhold = Math.min(Priorities.EXP_PRIORITY, threshold);
-		}
-
-		public void reportBug(BugInstance bugInstance) {
-			if (bugInstance.getPriority() > priorityThreadhold) return;
-			BugLeafNode b = new BugLeafNode(bugInstance);
-			bugs.add(b);
-		}
-
-		public void finish() {
-//			System.out.println("All Done!");
-			for (String s: errorLog)
-			{
-				System.err.println(s);
-			}
-			done=true;
-		}
-
-		public void reportQueuedErrors() {
-//			System.out.println("We are supposed to report queued errors, whatever that means.");
-//			System.out.println(errorLog);
-		}
-
-		public void addObserver(BugReporterObserver observer) {
-			bros.add(observer);
-		}
-
-		public ProjectStats getProjectStats() {
-//			System.out.println("Oh noes, look out for null pointers!");
-			return null;
-		}
-
-		public BugReporter getRealBugReporter() {
-			return this;
-		}
-
-		public void reportMissingClass(ClassNotFoundException ex) {
-			Debug.println(ex);
-		}
-
-		public void reportSkippedAnalysis(JavaClassAndMethod method) {
-//			System.out.println("we skipped something" + method);
-		}
-
-		public void logError(String message) {
-//			System.out.println("logging an error");
-			errorLog.add(message);
-		}
-
-		public void logError(String message, Throwable e) {
-			if (e instanceof MissingClassException) {
-				reportMissingClass(((MissingClassException)e).getClassNotFoundException());
-				return;
-			}
-//			System.out.println("logging an error with stack trace");
-//			e.printStackTrace();
-			errorLog.add(message);
-		}
-
-		public void observeClass(ClassDescriptor classDescriptor) {
-//			System.out.println("I am now observing ClassDescriptor " + classDescriptor);
-		}
-
-		public BugSet getBugs()
-		{
-			return new BugSet(bugs);
-		}
-
-		public void reportSkippedAnalysis(MethodDescriptor method) {
-//			System.out.println("method " + method.getMethodName() + " of class " + method.getClassName() + " was skipped");
-		}
-
-		/* (non-Javadoc)
-		 * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
-		 */
-		public void reportMissingClass(ClassDescriptor classDescriptor) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		
-	}
-	
 	/**
 	 * Performs an analysis and returns the BugSet created
 	 * 
@@ -197,20 +65,23 @@ public class BugLoader {
 	 * @param progressCallback the progressCallBack is supposed to be supplied by analyzing dialog, FindBugs supplies progress information while it runs the analysis
 	 * @return the bugs found 
 	 */
-	public static BugSet doAnalysis(@NonNull Project p, FindBugsProgress progressCallback)
+	public static BugCollection doAnalysis(@NonNull Project p, FindBugsProgress progressCallback)
 	{
-		PrintCallBack pcb=new PrintCallBack();
+		BugCollectionBugReporter  pcb=new BugCollectionBugReporter(p);
+        pcb.setPriorityThreshold(Priorities.NORMAL_PRIORITY);
 		IFindBugsEngine fb=createEngine(p, pcb);
 		fb.setUserPreferences(UserPreferences.getUserPreferences());
 		fb.setProgressCallback(progressCallback);
 		try {
 			fb.execute();
 			List<String> possibleDirectories=p.getSourceDirList();
-//			System.out.println("List of directories: "+p.getSourceDirList());
-			MainFrame.getInstance().setSourceFinder(new SourceFinder());
-			MainFrame.getInstance().getSourceFinder().setSourceBaseList(possibleDirectories);
+			MainFrame instance = MainFrame.getInstance();
+            
+            //			System.out.println("List of directories: "+p.getSourceDirList());
+			instance.setSourceFinder(new SourceFinder());
+			instance.getSourceFinder().setSourceBaseList(possibleDirectories);
 
-			return pcb.getBugs();
+			return pcb.getBugCollection();
 		} catch (IOException e) {
 			Debug.println(e);
 		} catch (InterruptedException e) {
@@ -230,7 +101,7 @@ public class BugLoader {
 	 * @param pcb the PrintCallBack
 	 * @return the IFindBugsEngine
 	 */
-	private static IFindBugsEngine createEngine(@NonNull Project p, PrintCallBack pcb)
+	private static IFindBugsEngine createEngine(@NonNull Project p, BugReporter pcb)
 	{
 		if (false) {
 			// Old driver - don't use
@@ -290,15 +161,10 @@ public class BugLoader {
 			return null;
 	}
 
-
-	public static Project getLoadedProject()
-	{
-		return loadedProject;
-	}
 	
 	private BugLoader()
 	{
-		//NO.
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -362,14 +228,13 @@ public class BugLoader {
 			current.add(bug);
 		}
 		Update update = new Update();
-		final SortedBugCollection justAnalyzed=new SortedBugCollection();
 		
-		RedoAnalysisCallback ac= new RedoAnalysisCallback(justAnalyzed);
+		RedoAnalysisCallback ac= new RedoAnalysisCallback();
 		
 		new AnalyzingDialog(p,ac,true);
-		
+        
 		if (ac.finished)
-			return update.mergeCollections(current, justAnalyzed, true, false);
+			return update.mergeCollections(current, ac.getBugCollection(), true, false);
 		else
 			return null;
 		
@@ -378,21 +243,16 @@ public class BugLoader {
 	/** just used to know how the new analysis went*/
 	private static class RedoAnalysisCallback implements AnalysisCallback
 	{
-		public RedoAnalysisCallback(SortedBugCollection collection)
+
+		BugCollection getBugCollection() {
+		    return justAnalyzed;      
+        }
+		BugCollection justAnalyzed;
+		volatile boolean finished;
+		public void analysisFinished(BugCollection b)
 		{
-			justAnalyzed=collection;
-		}
-		
-		SortedBugCollection justAnalyzed;
-		boolean finished;
-		public void analysisFinished(BugSet b)
-		{
-			for(BugLeafNode node: b)
-			{
-				BugInstance bug=node.getBug();
-				justAnalyzed.add(bug);
-			}
-			finished=true;
+			justAnalyzed = b;
+			finished = true;
 		}
 
 		public void analysisInterrupted() 

@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -374,7 +375,7 @@ public class MainFrame extends FBFrame implements LogSync
 							MainFrame.this.setRebuilding(true);
 							Project newProject = new Project();
 							SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, newProject, extraFinalReferenceToXmlFile);
-							setProjectAndBugCollection(newProject, bc, model);
+							setProjectAndBugCollection(newProject, bc);
 						}
 					}).start();
 				}
@@ -390,18 +391,16 @@ public class MainFrame extends FBFrame implements LogSync
 	}
 	
 	BugCollection bugCollection;
-	void setProjectAndBugCollection(Project project, BugCollection bugCollection, BugTreeModel previousModel) {
+	void setProjectAndBugCollection(Project project, BugCollection bugCollection) {
 		setRebuilding(false);
 		if (bugCollection == null) {
-			tree.setModel(previousModel);// Dont let it stay as a please wait
-											// tree forever.
-			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            showTreeCard();
 		} else {
 			curProject = project;
 			this.bugCollection = bugCollection;
 			displayer.clearCache();
 			
-			BugTreeModel model = previousModel;
+            BugTreeModel model = (BugTreeModel) getTree().getModel();     
 			setSourceFinder(new SourceFinder());
 			getSourceFinder().setSourceBaseList(project.getSourceDirList());
 			BugSet bs = new BugSet(bugCollection);
@@ -410,7 +409,6 @@ public class MainFrame extends FBFrame implements LogSync
 			if (bs.size() == 0 && bs.sizeUnfiltered() > 0) {
 				warnUserOfFilters();
 			}
-			tree.setModel(previousModel);
 			updateStatusBar();
 			String name = project.getProjectName();
 			if(name == null)
@@ -1020,14 +1018,48 @@ public class MainFrame extends FBFrame implements LogSync
 		}
 	}
 
+    static final String TREECARD = "Tree";
+    static final String WAITCARD = "Wait";
+    
+
+    public void showWaitCard() {
+        showCard(WAITCARD, new Cursor(Cursor.WAIT_CURSOR));
+    }
+
+    public void showTreeCard() {
+        showCard(TREECARD, new Cursor(Cursor.DEFAULT_CURSOR));
+    }
+    private void showCard(final String c, final Cursor cursor) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            setCursor(cursor);
+            CardLayout layout = (CardLayout) cardPanel.getLayout();
+            layout.show(cardPanel, c);
+        } else
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    setCursor(cursor);
+                    CardLayout layout = (CardLayout) cardPanel.getLayout();
+                    layout.show(cardPanel, c);
+                }
+            });
+    }
+    
+    JPanel waitPanel, cardPanel;
 	/**
 	 * 
 	 * @return
 	 */
 	JPanel bugListPanel()
 	{
+        cardPanel = new JPanel(new CardLayout());
+
 		JPanel topPanel = new JPanel();
-		topPanel.setMinimumSize(new Dimension(200,200));
+        waitPanel = new JPanel();
+        waitPanel.add(new JLabel("Please wait..."));
+        cardPanel.add(topPanel, TREECARD);
+        cardPanel.add(waitPanel, WAITCARD);
+        
+        topPanel.setMinimumSize(new Dimension(200,200));
 		tableheader = new JTableHeader();
 		//Listener put here for when user double clicks on sorting
 		//column header SorterDialog appears.
@@ -1069,7 +1101,7 @@ public class MainFrame extends FBFrame implements LogSync
 		}
 		tree.setModel(new BugTreeModel(tree, sorter, new BugSet(new ArrayList<BugLeafNode>())));
 		setupTreeListeners();
-		curProject=BugLoader.getLoadedProject();
+		curProject= new Project();
 		
 		
 		treeScrollPane = new JScrollPane(tree);
@@ -1089,7 +1121,7 @@ public class MainFrame extends FBFrame implements LogSync
 		//End of changed code.
 		topPanel.add(treeScrollPane, BorderLayout.CENTER);
 		
-		return topPanel;
+		return cardPanel;
 	}
 	
 	public void newTree(final JTree newTree, final BugTreeModel newModel)
@@ -1102,6 +1134,7 @@ public class MainFrame extends FBFrame implements LogSync
 				tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 				tree.setLargeModel(true);
 				tree.setCellRenderer(new BugRenderer());
+                showTreeCard();
 				Container container = treeScrollPane.getParent();
 				
 				container.remove(treeScrollPane);
@@ -1117,14 +1150,11 @@ public class MainFrame extends FBFrame implements LogSync
 				MainFrame.this.getSorter().addColumnModelListener(newModel);
 				FilterMatcher.addFilterListener(newModel);
 				MainFrame.this.setSorting(true);
+
 			}
 		});
 	}
 	
-	boolean pleaseWait = false;
-	private boolean isPleaseWaitTree() {
-		return MainFrame.getInstance().getTree().getModel() instanceof BugTreeModel.PleaseWaitTreeModel;
-	}
 	private void setupTreeListeners()
 	{
 		tree.addTreeSelectionListener(new TreeSelectionListener(){
@@ -1154,9 +1184,7 @@ public class MainFrame extends FBFrame implements LogSync
 						setProjectChanged(beforeProjectChanged);
 					}
 				}
-				if (isPleaseWaitTree() || pleaseWait) {
-					return;
-				}
+
 
 //				Debug.println("Tree selection count:" + tree.getSelectionCount());
 				if (tree.getSelectionCount() !=1)
@@ -1852,6 +1880,7 @@ public class MainFrame extends FBFrame implements LogSync
 		else
 			SorterDialog.getInstance().thaw();
 		recentMenu.setEnabled(!b);
+        showTreeCard();
 	}
 	
 	public void setSorting(boolean b) {
@@ -2016,7 +2045,7 @@ public class MainFrame extends FBFrame implements LogSync
 				MainFrame.this.setRebuilding(true);
 				Project project = new Project();
 				SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, in);
-				setProjectAndBugCollection(project, bc, model);
+				setProjectAndBugCollection(project, bc);
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		}).start();
@@ -2029,8 +2058,8 @@ public class MainFrame extends FBFrame implements LogSync
 	private void redoAnalysis() {
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
-		setCursor(new Cursor(Cursor.WAIT_CURSOR));
-		new Thread()
+		showWaitCard();
+        new Thread()
 		{
 			@Override
             public void run()
@@ -2047,10 +2076,10 @@ public class MainFrame extends FBFrame implements LogSync
 	private void mergeAnalysis() {
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
-		setCursor(new Cursor(Cursor.WAIT_CURSOR));
+		showWaitCard();
 		Project p  = new Project();
 		BugCollection bc=BugLoader.combineBugHistories(p);
-		setProjectAndBugCollection(p, bc, null);
+		setProjectAndBugCollection(p, bc);
 
 	}
 	
@@ -2086,13 +2115,11 @@ public class MainFrame extends FBFrame implements LogSync
 		new Thread(new Runnable(){
 			public void run()
 			{
-				BugTreeModel model=(BugTreeModel)tree.getModel();
-//						Debug.println("please wait called by open menu item");
 				BugTreeModel.pleaseWait();
 				MainFrame.this.setRebuilding(true);
 				Project project = new Project();
 				SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, extraFinalReferenceToXmlFile);
-				setProjectAndBugCollection(project, bc, model);
+				setProjectAndBugCollection(project, bc);
 			}
 		}).start();
 		

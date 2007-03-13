@@ -93,7 +93,7 @@ public enum Sortables implements Comparator<StringPair>
 		{
 			//System.out.println("Formatting last version value");
 			if(value.equals("-1"))
-				return edu.umd.cs.findbugs.L10N.getLocalString("sort.last_version_not_defined", "Last version not defined");
+				return "";
 			int seqNum = Integer.parseInt(value);
             BugCollection bugCollection = MainFrame.getInstance().bugCollection;
             if (bugCollection == null) return "--";
