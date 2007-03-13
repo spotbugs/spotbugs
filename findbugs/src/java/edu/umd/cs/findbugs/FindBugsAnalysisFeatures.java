@@ -49,6 +49,7 @@ public abstract class FindBugsAnalysisFeatures {
 	 */
 	public static final int INTERPROCEDURAL_ANALYSIS = START + 1;
 	public static final int INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES = START + 2;
+    public static final int ABRIDGED_MESSAGES = START + 3;
 
 	private static void setProperty(int property, boolean value) {
 		AnalysisContext.currentAnalysisContext().setBoolProperty(property, value);
@@ -67,6 +68,9 @@ public abstract class FindBugsAnalysisFeatures {
 		setProperty(RELAXED_REPORTING_MODE, relaxedMode);
 	}
 	
+    public static void setAbridgedMessages(boolean b) {
+        setProperty(ABRIDGED_MESSAGES, b);
+    }
 	/**
 	 * Get relaxed reporting mode.
 	 * 
@@ -75,4 +79,8 @@ public abstract class FindBugsAnalysisFeatures {
 	public static boolean isRelaxedMode() {
 		return getProperty(RELAXED_REPORTING_MODE);
 	}
+    
+    public static boolean isAbridgedMessages() {
+        return getProperty(ABRIDGED_MESSAGES);
+    }
 }

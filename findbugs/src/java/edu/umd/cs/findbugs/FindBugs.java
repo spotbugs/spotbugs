@@ -1610,6 +1610,14 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
         this.projectName = projectName;
         
     }
+
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IFindBugsEngine#setAbridgedMessages(boolean)
+     */
+    public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
+        // TODO Auto-generated method stub
+        
+    }
 }
 
 // vim:ts=4

@@ -1454,10 +1454,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	}
 	
     public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
-        writeXML(xmlOutput, addMessages, false);
-    }
-	public void writeXML(XMLOutput xmlOutput, boolean addMessages, boolean abridgedMessages) throws IOException {
-		XMLAttributeList attributeList = new XMLAttributeList()
+  		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("type", type)
 			.addAttribute("priority", String.valueOf(priority));
 
@@ -1504,7 +1501,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			xmlOutput.closeTag("ShortMessage");
 			
 			xmlOutput.openTag("LongMessage");
-            if (abridgedMessages) xmlOutput.writeText(this.getAbridgedMessage());
+            if (FindBugsAnalysisFeatures.isAbridgedMessages()) xmlOutput.writeText(this.getAbridgedMessage());
             else xmlOutput.writeText(this.getMessageWithoutPrefix());
 			xmlOutput.closeTag("LongMessage");
 		}

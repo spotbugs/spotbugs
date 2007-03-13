@@ -394,8 +394,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 			{
 				XMLBugReporter xmlBugReporter = new XMLBugReporter(project);
 				xmlBugReporter.setAddMessages(xmlWithMessages);
-                xmlBugReporter.setAbridgedMessages(xmlWithAbridgedMessages);
-				textuiBugReporter = xmlBugReporter;
+                textuiBugReporter = xmlBugReporter;
 			}
 			break;
 		case EMACS_REPORTER:
@@ -439,6 +438,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 		findBugs.setClassScreener(classScreener);
 
 		findBugs.setRelaxedReportingMode(relaxedReportingMode);
+        findBugs.setAbridgedMessages(xmlWithAbridgedMessages);
 
 		if (trainingOutputDir != null) {
 			findBugs.enableTrainingOutput(trainingOutputDir);

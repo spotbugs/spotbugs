@@ -99,8 +99,9 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 			return className;
 		else if (key.equals("package"))
 			return getPackageName();
-		else
-			return formatPackageMember(key, primaryClass);
+		else if (key.equals("") && FindBugsAnalysisFeatures.isAbridgedMessages())
+            return formatPackageMember("givenClass", primaryClass);
+        else return formatPackageMember(key, primaryClass);
 	}
 
 	public void setDescription(String description) {

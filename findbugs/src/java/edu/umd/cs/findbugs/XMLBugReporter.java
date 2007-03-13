@@ -45,9 +45,6 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 	public void setAddMessages(boolean enable) {
 		getBugCollection().setWithMessages(enable);
 	}
-    public void setAbridgedMessages(boolean enable) {
-        getBugCollection().setWithAbridgedMessages(enable);
-    }
 	public void finish() {
 		try {
 		Project project = getProject();

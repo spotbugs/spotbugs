@@ -286,11 +286,6 @@ public interface BugCollection
 	 */
 	public void setWithMessages(boolean withMessages);
 
-    /**
-     * set whether <LongDescription> messages in XML should be abridged, leaving out the location of the error
-     */
-    public void setWithAbridgedMessages(boolean withAbridgedMessages);
-
 	/**
 	 * Return whether textual messages will be added to any generated XML
 	 */

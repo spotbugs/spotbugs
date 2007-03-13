@@ -253,4 +253,9 @@ public interface IFindBugsEngine {
 	 * @param detectorFactoryCollection the DetectorFactoryCollection
 	 */
 	public void setDetectorFactoryCollection(DetectorFactoryCollection detectorFactoryCollection);
+
+    /**
+     * @param xmlWithAbridgedMessages
+     */
+    public void setAbridgedMessages(boolean xmlWithAbridgedMessages);
 }

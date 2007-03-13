@@ -92,6 +92,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	private String sourceInfoFileName;
 	private AnalysisFeatureSetting[] analysisFeatureSettingList;
 	private boolean relaxedReportingMode;
+    private boolean abridgedMessages;
 	private String trainingInputDir;
 	private String trainingOutputDir;
 	private FindBugsProgress progress;
@@ -169,6 +170,7 @@ public class FindBugs2 implements IFindBugsEngine {
 
 			// Enable/disabled relaxed reporting mode
 			FindBugsAnalysisFeatures.setRelaxedMode(relaxedReportingMode);
+            FindBugsAnalysisFeatures.setAbridgedMessages(abridgedMessages);
 			
 			// Configure training databases
 			FindBugs.configureTrainingDatabases(this);
@@ -728,4 +730,12 @@ public class FindBugs2 implements IFindBugsEngine {
 		// Away we go!
 		FindBugs.runMain(findBugs, commandLine);
 	}
+
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.IFindBugsEngine#setAbridgedMessages(boolean)
+     */
+    public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
+        abridgedMessages = xmlWithAbridgedMessages;
+        
+    }
 }
