@@ -259,7 +259,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			if (DEBUG_DEREFS) {
 				System.out.println("At location " + location);
 			}
-			{
+			if (false) {
 				Instruction in = location.getHandle().getInstruction();
                 
                if (in instanceof InvokeInstruction && in.produceStack(classContext.getConstantPoolGen()) == 1 || in instanceof GETFIELD || in instanceof GETSTATIC) {
@@ -486,7 +486,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		for (int j = 0; j < invFrame.getNumSlots(); j++) {
 		    IsNullValue isNullValue = invFrame.getValue(j); 
 		    ValueNumber valueNumber = vnaFrame.getValue(j);
-		    if (isNullValue.isDefinitelyNull() && (derefSet.isUnconditionallyDereferenced(valueNumber) 
+		    if ((isNullValue.isDefinitelyNull() || isNullValue.isNullOnSomePath() && isNullValue.isReturnValue()) && (derefSet.isUnconditionallyDereferenced(valueNumber) 
                   )) {
                 if (MY_DEBUG) {
                     System.out.println("Found NP bug");
@@ -511,7 +511,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		for (Map.Entry<ValueNumber, IsNullValue> entry : invFrame.getKnownValueMapEntrySet()) {
 		    ValueNumber valueNumber = entry.getKey();
 		    IsNullValue isNullValue = entry.getValue();
-		    if (isNullValue.isDefinitelyNull() && derefSet.isUnconditionallyDereferenced(valueNumber) ) {
+		    if ((isNullValue.isDefinitelyNull() || isNullValue.isNullOnSomePath() && isNullValue.isReturnValue()) && derefSet.isUnconditionallyDereferenced(valueNumber) ) {
                noteUnconditionallyDereferencedNullValue(
 		                thisLocation,
 		                knownNullAndDoomedAt,
