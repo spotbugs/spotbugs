@@ -68,8 +68,8 @@ public enum Sortables implements Comparator<StringPair>
 				appendItem = appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
 			}
 			if(appendItem == "")
-				appendItem = "AppVersion not found, sequence number=" + seqNum;
-			return (edu.umd.cs.findbugs.L10N.getLocalString("sort.first_version", "First Version") + ": " + appendItem);
+				appendItem = "#" +seqNum;
+			return  appendItem;
 		}
 		
 		@Override
@@ -105,8 +105,8 @@ public enum Sortables implements Comparator<StringPair>
 				appendItem = appVersion.getReleaseName() + " (" + timestamp.substring(0, timestamp.indexOf(' ')) + ")";
 			}
 			if(appendItem == "")
-				appendItem = "AppVersion not found, sequence number=" + seqNum;
-			return (edu.umd.cs.findbugs.L10N.getLocalString("sort.last_version", "Last Version") + ": " + appendItem);		
+				appendItem = "#" + seqNum;
+			return appendItem;		
 			}
 		
 		@Override
