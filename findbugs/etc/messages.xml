@@ -4480,7 +4480,7 @@ in fact, override the method it is intended to.
 
   <BugPattern type="ODR_OPEN_DATABASE_RESOURCE">
     <ShortDescription>Method may fail to close database resource</ShortDescription>
-    <LongDescription>{1} may fail to close database resource</LongDescription>
+    <LongDescription>{1} may fail to close {2.excludingPackage}</LongDescription>
     <Details>
 <![CDATA[
 <p> The method creates a database resource (such as a database connection
@@ -5770,8 +5770,8 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="SC" >Constructor invokes Thread.start()</BugCode>
   <BugCode abbrev="MS" >Mutable static field</BugCode>
   <BugCode abbrev="EI" >Method returning array may expose internal representation</BugCode>
-  <BugCode abbrev="Nm" >Confusing method name(s)</BugCode>
-  <BugCode abbrev="SS" >Unread field should be static?</BugCode>
+  <BugCode abbrev="Nm" >Confusing method name</BugCode>
+  <BugCode abbrev="SS" >Unread field should be static</BugCode>
   <BugCode abbrev="UuF" >Unused field</BugCode>
   <BugCode abbrev="UrF" >Unread field</BugCode>
   <BugCode abbrev="UwF" >Unwritten field</BugCode>
@@ -5832,7 +5832,7 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="ST">Misuse of static fields</BugCode>
   <BugCode abbrev="JCIP">Violation of net.jcip annotations</BugCode>
   <BugCode abbrev="DMI">Dubious method invocation</BugCode>
-  <BugCode abbrev="PZ">Bug inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
+  <BugCode abbrev="PZ">Warning inspired by Josh Bloch's and Neal Gafter's Programming Puzzlers</BugCode>
   <BugCode abbrev="SWL">Sleep with lock held</BugCode>
   <BugCode abbrev="J2EE">J2EE error</BugCode>
   <BugCode abbrev="DB">Duplicate Branches</BugCode>

@@ -68,7 +68,9 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 			return className;
         else if (key.equals("givenClass"))
             return shorten(primaryClass.getPackageName(), className);
-		else
+        else if (key.equals("excludingPackage"))
+            return shorten(getPackageName(), className);
+        else
 			throw new IllegalArgumentException("unknown key " + key);
 	}
 
