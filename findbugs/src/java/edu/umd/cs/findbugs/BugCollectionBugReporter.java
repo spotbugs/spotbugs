@@ -24,7 +24,7 @@ import edu.umd.cs.findbugs.ba.MethodUnprofitableException;
 import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
-public abstract class BugCollectionBugReporter extends TextUIBugReporter implements Debug {
+public class BugCollectionBugReporter extends TextUIBugReporter implements Debug {
 	private SortedBugCollection bugCollection;
 	private Project project;
 
@@ -87,6 +87,13 @@ public abstract class BugCollectionBugReporter extends TextUIBugReporter impleme
 	public BugReporter getRealBugReporter() {
 		return this;
 	}
+
+    /* (non-Javadoc)
+     * @see edu.umd.cs.findbugs.BugReporter#finish()
+     */
+    public void finish() {
+        assert true; // nothing to do.
+    }
 }
 
 // vim:ts=4

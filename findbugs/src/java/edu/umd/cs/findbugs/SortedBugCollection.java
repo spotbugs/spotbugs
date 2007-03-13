@@ -874,6 +874,7 @@ public class SortedBugCollection implements BugCollection {
 	     */
 
 	public String getReleaseName() {
+        if (releaseName == null) return "";
 		return releaseName;
 	}
 

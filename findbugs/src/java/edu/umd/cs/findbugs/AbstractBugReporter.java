@@ -113,6 +113,8 @@ public abstract class AbstractBugReporter implements BugReporter {
 
 	// Subclasses must override doReportBug(), not this method.
 	public final void reportBug(BugInstance bugInstance) {
+        if (priorityThreshold == 0)
+            throw new IllegalStateException("Priority threshold not set");
 		if (!analysisUnderway) {
 			if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 				relaxed = true;
