@@ -29,7 +29,7 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 	private static final int SAW_NOTHING = 0;
 	private static final int SAW_COMP = 1;
 	private int priority;
-	private BugReporter bugReporter;
+    private BugReporter bugReporter;
 	private OpcodeStack opStack = new OpcodeStack();
 	private int state;
 
@@ -54,8 +54,13 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 				BugInstance bug = new BugInstance(this, "FE_FLOATING_POINT_EQUALITY", priority)
 				        .addClassAndMethod(this);
 
-				for(SourceLineAnnotation s : found)
+                boolean first = true;
+				for(SourceLineAnnotation s : found) {
 					bug.add(s);
+                    if (first) first = false;
+                    else bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
+                }
+                
 				bugReporter.reportBug(bug);
 				
 				found.clear();
@@ -93,7 +98,9 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 							state = SAW_NOTHING;
 							break;
 						}
-						if (first.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH && !okValueToCompareAgainst(n2)
+						if (first.getSpecialKind() == OpcodeStack.Item.NASTY_FLOAT_MATH || 
+                                second.getSpecialKind() == OpcodeStack.Item.NASTY_FLOAT_MATH || 
+                                first.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH && !okValueToCompareAgainst(n2)
 								|| second.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH && !okValueToCompareAgainst(n1)) {
 							if (priority != HIGH_PRIORITY) found.clear();
 							priority = HIGH_PRIORITY;

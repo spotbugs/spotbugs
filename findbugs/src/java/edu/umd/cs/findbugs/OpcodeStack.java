@@ -100,6 +100,7 @@ public class OpcodeStack implements Constants2
 		public static final int FILE_SEPARATOR_STRING = 10;
         public static final int MATH_ABS = 11;
         public static final int MASKED_NON_NEGATIVE = 12;
+        public static final int NASTY_FLOAT_MATH = 13;
 		
 		private static final int IS_INITIAL_PARAMETER_FLAG=1;
 		private static final int COULD_BE_ZERO_FLAG = 2;
@@ -190,6 +191,9 @@ public class OpcodeStack implements Constants2
 			case FLOAT_MATH:
 				buf.append(", floatMath");
 				break;
+            case NASTY_FLOAT_MATH:
+                buf.append(", nastyFloatMath");
+                break;
 			case HASHCODE_INT_REMAINDER:
 				buf.append(", hashcode_int_rem");
 				break;
@@ -260,7 +264,9 @@ public class OpcodeStack implements Constants2
 		
 			if (i1.specialKind == i2.specialKind)
 				m.specialKind = i1.specialKind;
-			else if (i1.specialKind == FLOAT_MATH || i2.specialKind == FLOAT_MATH)
+            else if (i1.specialKind == NASTY_FLOAT_MATH || i2.specialKind == NASTY_FLOAT_MATH)
+                m.specialKind = NASTY_FLOAT_MATH;
+            else if (i1.specialKind == FLOAT_MATH || i2.specialKind == FLOAT_MATH)
 				m.specialKind = FLOAT_MATH;
 			if (DEBUG) System.out.println("Merge " + i1 + " and " + i2 + " gives " + m);
 			return m;
@@ -1879,6 +1885,7 @@ public class OpcodeStack implements Constants2
 	
 	private void pushByFloatMath(int seen, Item it, Item it2) {
 		Item result;
+        int specialKind = Item.FLOAT_MATH;
 		if ((it.getConstant() != null) && it2.getConstant() != null) {
 			if (seen == FADD)
 				result =new Item("F", ((Float) it2.getConstant()) + ((Float) it.getConstant()));
@@ -1891,13 +1898,16 @@ public class OpcodeStack implements Constants2
 				else result =new Item("F");
 		} else {
 			result =new Item("F");
+            if (seen == DDIV)
+                specialKind = Item.NASTY_FLOAT_MATH;
 		}
-		result.setSpecialKind(Item.FLOAT_MATH);
+		result.setSpecialKind(specialKind);
 		push(result);
 	}
 	
 	private void pushByDoubleMath(int seen, Item it, Item it2) {
 		Item result;
+        int specialKind = Item.FLOAT_MATH;
 		if ((it.getConstant() != null) && it2.getConstant() != null) {
 			if (seen == DADD)
 				result = new Item("D", ((Double) it2.getConstant()) + ((Double) it.getConstant()));
@@ -1911,8 +1921,10 @@ public class OpcodeStack implements Constants2
 				result = new Item("D");	//?	
 			} else {
 			result = new Item("D");
+            if (seen == DDIV)
+                specialKind = Item.NASTY_FLOAT_MATH;
 		}
-		result.setSpecialKind(Item.FLOAT_MATH);
+		result.setSpecialKind(specialKind);
 		push(result);
 	}
 	
