@@ -19,16 +19,17 @@
 
 package edu.umd.cs.findbugs.ba.deref;
 
-import java.util.Iterator;
 import java.util.Set;
-import java.util.Stack;
 
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ARETURN;
-import org.apache.bcel.generic.ATHROW;
+import org.apache.bcel.generic.FieldInstruction;
+import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.PUTFIELD;
+import org.apache.bcel.generic.PUTSTATIC;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -53,6 +54,7 @@ import edu.umd.cs.findbugs.ba.NullnessAnnotationDatabase;
 import edu.umd.cs.findbugs.ba.ReverseDepthFirstSearch;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.npe.IsNullConditionDecision;
 import edu.umd.cs.findbugs.ba.npe.IsNullValue;
@@ -161,8 +163,9 @@ public class UnconditionalValueDerefAnalysis extends
 			BasicBlock basicBlock, UnconditionalValueDerefSet fact)
 			throws DataflowAnalysisException {
 		
+        Instruction instruction = handle.getInstruction();
         if (false && DEBUG) {
-            System.out.println("XXX: " + handle.getPosition() + " " + handle.getInstruction());
+            System.out.println("XXX: " + handle.getPosition() + " " + instruction);
         }
        	if (fact.isTop()) return;
 		Location location = new Location(handle, basicBlock);
@@ -193,21 +196,27 @@ public class UnconditionalValueDerefAnalysis extends
 
 		// Check for calls to a method that unconditionally dereferences
 		// a parameter.  Mark any such arguments as derefs.
-		if (CHECK_CALLS && handle.getInstruction() instanceof InvokeInstruction) {
+		if (CHECK_CALLS && instruction instanceof InvokeInstruction) {
 			checkUnconditionalDerefDatabase(location, vnaFrame, fact);
 		}
 		
 		// If this is a method call instruction,
 		// check to see if any of the parameters are @NonNull,
 		// and treat them as dereferences.
-		if (CHECK_ANNOTATIONS && handle.getInstruction() instanceof InvokeInstruction) {
+		if (CHECK_ANNOTATIONS && instruction instanceof InvokeInstruction) {
 			checkNonNullParams(location, vnaFrame, fact);
 		}
 
-        if (CHECK_ANNOTATIONS && handle.getInstruction() instanceof ARETURN) {
+        if (CHECK_ANNOTATIONS && instruction instanceof ARETURN) {
             XMethod thisMethod = XFactory.createXMethod(methodGen);
             checkNonNullReturnValue(thisMethod, location, vnaFrame, fact);
         }
+        
+
+        if (CHECK_ANNOTATIONS && (instruction instanceof PUTFIELD || instruction instanceof PUTSTATIC)) {
+            checkNonNullPutField(location, vnaFrame, fact);
+        }
+
 
 		// Check to see if an instance value is dereferenced here
 		checkInstance(location, vnaFrame, fact);
@@ -347,6 +356,40 @@ public class UnconditionalValueDerefAnalysis extends
     }
 
     
+    /**
+     * If this is a putfield or putstatic instruction,
+     * check to see if the field is @NonNull,
+     * and treat it as dereferences.
+     * 
+     * @param location  the Location of the instruction
+     * @param vnaFrame  the ValueNumberFrame at the Location of the instruction
+     * @param fact      the dataflow value to modify
+     * @throws DataflowAnalysisException
+     */
+    private void checkNonNullPutField(Location location, ValueNumberFrame vnaFrame, UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
+        NullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
+        if (database == null) {
+            return;
+        }
+        
+        FieldInstruction fieldIns = (FieldInstruction) location.getHandle().getInstruction(); 
+
+        XField field = XFactory.createXField(fieldIns, methodGen.getConstantPool());
+        char firstChar = field.getSignature().charAt(0);
+        if (firstChar != 'L' && firstChar != '[') return;
+        NullnessAnnotation resolvedAnnotation = database.getResolvedAnnotation(field, true);
+        if (resolvedAnnotation == NullnessAnnotation.NONNULL) {
+            IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
+            
+            IsNullValue value = invFrame.getTopValue();
+            if (reportDereference(value) ) {
+                ValueNumber vn = vnaFrame.getTopValue();
+                fact.addDeref(vn, location);
+            }      
+        }
+    }
+
+    
 	/**
 	 * If this is a method call instruction,
 	 * check to see if any of the parameters are @NonNull,
@@ -449,14 +492,17 @@ public class UnconditionalValueDerefAnalysis extends
 	
 	
 	private boolean reportDereference(IsNullValueFrame invFrameAtNullCheck, int instance) {
-		IsNullValue value = invFrameAtNullCheck.getValue(instance);
-		if (value.isDefinitelyNotNull()) return false;
-		if (value.isDefinitelyNull()) return false;
+        return reportDereference( invFrameAtNullCheck.getValue(instance));
+	}
+    
+    private boolean reportDereference(IsNullValue value) {
+        if (value.isDefinitelyNotNull()) return false;
+        if (value.isDefinitelyNull()) return false;
         if (IGNORE_DEREF_OF_NCP
                 && value.isNullOnComplicatedPath()) return false;
+        return true;
+    }
 
-		return true;
-	}
 	/**
 	 * Return whether or not given instruction is an assertion.
 	 * 
