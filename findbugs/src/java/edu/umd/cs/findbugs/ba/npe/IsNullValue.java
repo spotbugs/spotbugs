@@ -23,6 +23,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.Debug;
 import edu.umd.cs.findbugs.ba.Location;
+import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.ba.XMethodParameter;
 
@@ -36,7 +37,7 @@ import edu.umd.cs.findbugs.ba.XMethodParameter;
  * @see IsNullValueAnalysis
  */
 public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
-	private static final boolean DEBUG_EXCEPTION = true || SystemProperties.getBoolean("inv.debugException");
+	private static final boolean DEBUG_EXCEPTION = SystemProperties.getBoolean("inv.debugException");
 	private static final boolean DEBUG_KABOOM = SystemProperties.getBoolean("inv.debugKaboom");
 
 	/** Definitely null. */
@@ -69,8 +70,9 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	private static final int PARAM = 2 << FLAG_SHIFT;
 	/** Value is (potentially) null because of a value returned from a called method. */
 	private static final int RETURN_VAL = 4 << FLAG_SHIFT;
+    private static final int FIELD_VAL = 8 << FLAG_SHIFT;
 
-	private static final int FLAG_MASK = EXCEPTION | PARAM | RETURN_VAL; 
+	private static final int FLAG_MASK = EXCEPTION | PARAM | RETURN_VAL | FIELD_VAL; 
 
 	private static final int[][] mergeMatrix = {
 		// NULL, CHECKED_NULL, NN,         CHECKED_NN, NO_KABOOM_NN, NSP,  NN_UNKNOWN, NCP2, NCP3
@@ -169,6 +171,10 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	public boolean isReturnValue() {
 		return (kind & RETURN_VAL) != 0;
 	}
+   
+        public boolean isFieldValue() {
+            return (kind & FIELD_VAL) != 0;
+        }
 	/**
 	 * Was this value marked as a possibly null parameter?
 	 */
@@ -211,7 +217,15 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		if (getBaseKind() == NO_KABOOM_NN) return new IsNullValue(kind | RETURN_VAL, locationOfKaBoom);
 		return instanceByFlagsList[(getFlags() | RETURN_VAL) >> FLAG_SHIFT][getBaseKind()];
 	}
-
+    /**
+     * Convert to a value known because it was returned from a method
+     * in a method property database.
+     * @param methodInvoked TODO
+     */
+    public IsNullValue markInformationAsComingFromFieldValue(XField field) {
+        if (getBaseKind() == NO_KABOOM_NN) return new IsNullValue(kind | FIELD_VAL, locationOfKaBoom);
+        return instanceByFlagsList[(getFlags() | FIELD_VAL) >> FLAG_SHIFT][getBaseKind()];
+    }
 	
 	/**
 	 * Get the instance representing values that are definitely null.
@@ -410,6 +424,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 				if ((flags & EXCEPTION) != 0) pfx += "e";
 				if ((flags & PARAM) != 0) pfx += "p";
 				if ((flags & RETURN_VAL) != 0) pfx += "r";
+                if ((flags & FIELD_VAL) != 0) pfx += "f";
 			}
 		}
 		if (DEBUG_KABOOM && locationOfKaBoom == null) {

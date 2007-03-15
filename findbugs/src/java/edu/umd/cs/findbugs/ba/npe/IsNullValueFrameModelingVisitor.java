@@ -280,7 +280,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		}
 		else if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
 				modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
-				produce(IsNullValue.nullOnSimplePathValue());
+				produce(IsNullValue.nullOnSimplePathValue().markInformationAsComingFromFieldValue(field));
 		} else {
 			
 			super.visitGETFIELD(obj);
@@ -320,7 +320,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			produce(IsNullValue.nonNullValue());
 		} else if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
 			modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
-			produce(IsNullValue.nullOnSimplePathValue());
+			produce(IsNullValue.nullOnSimplePathValue().markInformationAsComingFromFieldValue(field));
 		} else {
 
 			super.visitGETSTATIC(obj);
