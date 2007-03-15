@@ -731,7 +731,7 @@ public class FindNullDeref implements Detector,
                 BugInstance warning = new BugInstance(this,
                         "NP_NONNULL_PARAM_VIOLATION", priority)
                         .addClassAndMethod(classContext.getJavaClass(), method).addMethod(m)
-                        .describe("METHOD_CALLED").addInt(i).describe(
+                        .describe("METHOD_CALLED").addInt(i+1).describe(
                                 description).addOptionalAnnotation(variableAnnotation).addSourceLine(
                                 classContext, method,
                                 location);
@@ -1244,7 +1244,7 @@ public class FindNullDeref implements Detector,
                 .addClassAndMethod(classContext.getJavaClass(), method);
         if (invokedMethod != null)
             bugInstance.addMethod(invokedMethod).describe("METHOD_CALLED")
-            .addInt(parameterNumber).describe("INT_NONNULL_PARAM");
+            .addInt(parameterNumber+1).describe("INT_MAYBE_NULL_ARG");
         if (storedField!= null)
             bugInstance.addField(storedField).describe("FIELD_STORED");
         bugInstance.add(variableAnnotation);
