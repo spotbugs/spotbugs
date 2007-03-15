@@ -67,6 +67,12 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 		}
 	}
 	
+    public boolean isZero(Number n) {
+        if (n == null) return false;
+        double v = n.doubleValue();
+        return v == 0.0;
+    }
+
 	public boolean okValueToCompareAgainst(Number n) {
 		if (n == null) return false;
 		double v = n.doubleValue();
@@ -98,8 +104,8 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 							state = SAW_NOTHING;
 							break;
 						}
-						if (first.getSpecialKind() == OpcodeStack.Item.NASTY_FLOAT_MATH || 
-                                second.getSpecialKind() == OpcodeStack.Item.NASTY_FLOAT_MATH || 
+						if (first.getSpecialKind() == OpcodeStack.Item.NASTY_FLOAT_MATH && !isZero(n2)|| 
+                                second.getSpecialKind() == OpcodeStack.Item.NASTY_FLOAT_MATH  && !isZero(n1) || 
                                 first.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH && !okValueToCompareAgainst(n2)
 								|| second.getSpecialKind() == OpcodeStack.Item.FLOAT_MATH && !okValueToCompareAgainst(n1)) {
 							if (priority != HIGH_PRIORITY) found.clear();
