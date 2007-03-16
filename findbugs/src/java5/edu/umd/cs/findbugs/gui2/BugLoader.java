@@ -220,8 +220,7 @@ public class BugLoader {
         if (p == null) throw new NullPointerException("null project");
 
 		BugSet oldSet=BugSet.getMainBugSet();
-		SortedBugCollection current=new SortedBugCollection();
-		
+		BugCollection current=MainFrame.getInstance().bugCollection;//Now we should no longer get this December 31st 1969 business.
 		for (BugLeafNode node: oldSet)
 		{
 			BugInstance bug=node.getBug();

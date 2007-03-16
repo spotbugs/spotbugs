@@ -454,8 +454,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					{
 						bug=b.getBug();
 						path=getPathToBug(bug);
-						tree.expandPath(path.getParentPath());
-						tree.addSelectionPath(path);
+						MainFrame.getInstance().tree.expandPath(path.getParentPath());
+						MainFrame.getInstance().tree.addSelectionPath(path);
 					}
 					catch(NullPointerException e)
 					{

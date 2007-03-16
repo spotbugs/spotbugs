@@ -54,7 +54,11 @@ public class ProjectSettings implements Serializable
 	public static ProjectSettings newInstance()
 	{
 		instance = new ProjectSettings();
-		instance.addFilter(new DeadBugFilter(Sortables.LASTVERSION, "-1", FilterMatcher.FilterWhere.FILTER_ALL_BUT));
+		DeadBugFilter dbf=new DeadBugFilter(Sortables.LASTVERSION, "-1", FilterMatcher.FilterWhere.FILTER_ALL_BUT);
+		//Important: add the deadbug filter directly to filters and allmatchers, dont go through addFilter, otherwise it causes a
+		//tree to rebuild.
+		instance.filters.add(dbf);
+		instance.allMatchers.add(dbf);
 		PreferencesFrame.getInstance().updateFilterPanel();
 		PreferencesFrame.getInstance().clearSuppressions();
 		return instance;

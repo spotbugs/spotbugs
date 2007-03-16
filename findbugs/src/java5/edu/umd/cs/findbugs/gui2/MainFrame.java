@@ -419,6 +419,7 @@ public class MainFrame extends FBFrame implements LogSync
 		}
 		setProjectChanged(false);
 		reconfigMenuItem.setEnabled(true);
+		newProject();
 		clearSourcePane();
 		clearSummaryTab();
 	}

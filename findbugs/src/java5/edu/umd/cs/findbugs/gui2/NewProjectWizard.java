@@ -208,7 +208,7 @@ public class NewProjectWizard extends FBDialog
                 for (int i = 0; i < sourceModel.getSize(); i++)
                     p.addSourceDir((String) sourceModel.get(i));
                 p.setProjectName(projectName.getText());
-
+                MainFrame.getInstance().setTitle(projectName.getText());
                 if (keepGoing) {
                     MainFrame.getInstance().setProject(p);
                     List<String> possibleDirectories=p.getSourceDirList();
