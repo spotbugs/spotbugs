@@ -20,6 +20,7 @@
 package edu.umd.cs.findbugs.ba;
 
 import org.apache.bcel.generic.ARETURN;
+import org.apache.bcel.generic.CHECKCAST;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.INVOKEINTERFACE;
@@ -111,6 +112,20 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 		handleNormalInstruction(inv);
 	}
 
+    @Override
+    public void visitCHECKCAST(CHECKCAST obj) {
+        try {
+            ResourceValueFrame frame = getFrame();
+            ResourceValue topValue;
+
+            topValue = frame.getTopValue();
+
+            if (topValue.equals(ResourceValue.instance()))
+                frame.setStatus(ResourceValueFrame.ESCAPED);
+        } catch (DataflowAnalysisException e) {
+            AnalysisContext.logError("Analysis error", e);
+        }
+    }
 	@Override
          public void visitINVOKEVIRTUAL(INVOKEVIRTUAL inv) {
 		handleInvoke(inv);
