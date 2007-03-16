@@ -1110,10 +1110,12 @@ public class OpcodeStack implements Constants2
 	 			case I2C:
 	 				it = pop();
 	 				if (it.getConstant() != null) {
-	 					push(new Item("I", (char)constantToInt(it)));
+                        it = new Item("I", (char)constantToInt(it));
 	 				} else {
-	 					push(new Item("I"));
+                        it = new Item("I");
 	 				}
+                    it.setSpecialKind(Item.MASKED_NON_NEGATIVE);
+                    push(it);
 	 			break;
 	 			
 	 			case I2L:

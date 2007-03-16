@@ -4289,6 +4289,17 @@ value of the result of the remainder operation (i.e., use
   </BugPattern>
 
 
+  <BugPattern type="INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE">
+    <ShortDescription>Bad comparison of nonnegative value with negative constant</ShortDescription>
+    <LongDescription>Bad comparison of nonnegative value with {2} in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> This code compares a value that is guaranteed to be non-negative with a negative constant.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+
 
   <BugPattern type="INT_BAD_COMPARISON_WITH_SIGNED_BYTE">
     <ShortDescription>Bad comparison of signed byte</ShortDescription>
@@ -4303,6 +4314,9 @@ use <code>0xff & b</code>
 ]]>
     </Details>
   </BugPattern>
+
+
+
   <BugPattern type="INT_VACUOUS_COMPARISON">
     <ShortDescription>Vacuous comparison of integer value</ShortDescription>
     <LongDescription>Vacuous comparison of integer value {1} </LongDescription>

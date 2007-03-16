@@ -341,7 +341,7 @@ public class DumbMethods extends BytecodeScanningDetector  {
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			OpcodeStack.Item item1 = stack.getStackItem(1);
 			int seen2 = seen;
-			if (item1.getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE) {
+			if (item0.getConstant() != null) {
 				OpcodeStack.Item tmp = item0;
 				item0 = item1;
 				item1 = tmp;
@@ -368,7 +368,16 @@ public class DumbMethods extends BytecodeScanningDetector  {
 								.addInt(v1).describe(IntAnnotation.INT_VALUE)
 								.addSourceLine(this));
 				}
-			}	
+			}	else       if (item0.getSpecialKind() == OpcodeStack.Item.MASKED_NON_NEGATIVE
+                    && constant1 instanceof Number) {
+                int v1 = ((Number)constant1).intValue();
+                if (v1 < 0)  bugReporter.reportBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_NONNEGATIVE_VALUE", HIGH_PRIORITY)
+                                .addClassAndMethod(this)
+                                .addInt(v1).describe(IntAnnotation.INT_VALUE)
+                                .addSourceLine(this));
+               
+            }   
+
 		}
 		if (checkForBitIorofSignedByte && seen != I2B) {
 			  bugReporter.reportBug(new BugInstance(this, "BIT_IOR_OF_SIGNED_BYTE", 
