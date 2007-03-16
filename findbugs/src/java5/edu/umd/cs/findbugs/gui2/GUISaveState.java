@@ -191,10 +191,10 @@ public class GUISaveState{
 
 	public void addRecentProject(File f)
 	{
-		addRecentProject(f, SaveType.PROJECT);
+		addRecentFile(f, SaveType.PROJECT);
 	}
 	
-	public void addRecentProject(File f, SaveType s)
+	public void addRecentFile(File f, SaveType s)
 	{
 		if (s==SaveType.PROJECT)
 			recentProjects.add(f);
