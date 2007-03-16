@@ -208,7 +208,10 @@ public class UnreadFields extends BytecodeScanningDetector  {
      * @return
      */
     private boolean isInjectionAttribute(String annotationClass) {
-        if ( annotationClass.startsWith("javax.annotation.") || annotationClass.startsWith("javax.ejb")|| annotationClass.equals("org.jboss.seam.annotations.In")  || annotationClass.startsWith("javax.persistence"))
+        if ( annotationClass.startsWith("javax.annotation.") 
+                || annotationClass.startsWith("javax.ejb")|| annotationClass.equals("org.jboss.seam.annotations.In")  
+                || annotationClass.startsWith("javax.persistence")
+                || annotationClass.endsWith("SpringBean"))
             return true;
         int lastDot = annotationClass.lastIndexOf('.');
         String lastPart = annotationClass.substring(lastDot+1);
