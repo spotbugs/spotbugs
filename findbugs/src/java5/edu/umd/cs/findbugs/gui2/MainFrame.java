@@ -783,8 +783,8 @@ public class MainFrame extends FBFrame implements LogSync
 		redoAnalysis.setEnabled(true);
 		
 		if(newProject){
-			setProjectChanged(true);		
-			setTitle("FindBugs: " + Project.UNNAMED_PROJECT);
+			setProjectChanged(true);
+//			setTitle("FindBugs: " + Project.UNNAMED_PROJECT);
 			saveFile = null;
 			saveMenuItem.setEnabled(false);
 			reconfigMenuItem.setEnabled(true);
