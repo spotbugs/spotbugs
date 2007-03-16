@@ -400,17 +400,6 @@ public class MainFrame extends FBFrame implements LogSync
 					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					saveType=localSaveType;
 				}
-
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						String name = curProject.getProjectName();
-						if(name == null)
-							name = saveFile.getAbsolutePath();
-						if(name == null)
-							name = Project.UNNAMED_PROJECT;
-						MainFrame.this.setTitle(TITLE_START_TXT + name);
-					}
-				});
 			}
 		});
 		item.setFont(item.getFont().deriveFont(Driver.getFontSize()));
@@ -443,6 +432,11 @@ public class MainFrame extends FBFrame implements LogSync
 		newProject();
 		clearSourcePane();
 		clearSummaryTab();
+		
+		/* This is here due to a threading issue. It can only be called after
+		 * curProject has been changed. Since this method is called by both open methods
+		 * it is put here.*/
+		changeTitle();
 	}
 
 	void updateProjectAndBugCollection(Project project, BugCollection bugCollection, BugTreeModel previousModel) {
@@ -460,6 +454,18 @@ public class MainFrame extends FBFrame implements LogSync
 		setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	}
 
+	/**
+	 * Changes the title based on curProject and saveFile.
+	 *
+	 */	
+	public void changeTitle(){
+		String name = curProject.getProjectName();
+		if(name == null)
+			name = saveFile.getAbsolutePath();
+		if(name == null)
+			name = Project.UNNAMED_PROJECT;
+		MainFrame.this.setTitle(TITLE_START_TXT + name);
+	}
 	
 	/**
 	 * Creates popup menu for bugs on tree.
@@ -880,13 +886,6 @@ public class MainFrame extends FBFrame implements LogSync
 				}
 			}
 		}
-		
-		String name = curProject.getProjectName();
-		if(name == null)
-			name = saveFile.getAbsolutePath();
-		if(name == null)
-			name = Project.UNNAMED_PROJECT;
-		MainFrame.this.setTitle(TITLE_START_TXT + name);
 	}
 
 	private boolean saveAs(){
@@ -2042,6 +2041,7 @@ public class MainFrame extends FBFrame implements LogSync
 			setProjectChanged(false);
 			saveType = SaveType.XML_ANALYSIS;
 			saveFile = f;
+			changeTitle();
  
 			addFileToRecent(f, SaveType.XML_ANALYSIS);
 			
@@ -2065,7 +2065,6 @@ public class MainFrame extends FBFrame implements LogSync
 				Project project = new Project();
 				SortedBugCollection bc=BugLoader.loadBugs(MainFrame.this, project, in);
 				setProjectAndBugCollection(project, bc);
-
 			}
 		}).start();
 		return;
@@ -2151,6 +2150,7 @@ public class MainFrame extends FBFrame implements LogSync
 		setProjectChanged(false);
 		saveType = SaveType.PROJECT;
 		saveFile = dir;
+		changeTitle();
 	}
 	
 	/**
