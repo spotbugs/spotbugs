@@ -1389,7 +1389,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
         if (bugPattern == null) 
             shortPattern = pattern = "Error: missing bug pattern for key " + type;
         else {
-            pattern = bugPattern.getLongDescription().replace(" in {1}", "");
+            pattern = bugPattern.getLongDescription().replaceAll(" in \\{1\\}", "");
             shortPattern = bugPattern.getShortDescription();
         }
         try {
