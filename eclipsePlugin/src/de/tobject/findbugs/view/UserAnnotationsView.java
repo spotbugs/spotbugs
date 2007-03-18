@@ -177,9 +177,10 @@ public class UserAnnotationsView extends ViewPart {
 	private void updateDisplay() {
 		userAnnotationTextField.setText(userAnnotation);
 		firstVersionLabel.setText(firstVersionText);
+        if (theBug == null) return;
 		int comboIndex = I18N.instance().getUserDesignationKeys(true).indexOf(theBug.getNonnullUserDesignation().getDesignationKey());
 		if(comboIndex == -1)
-			System.out.println("Cannot find user designation");
+            FindbugsPlugin.getDefault().logError("Cannot find user designation");
 		else
 			designationComboBox.select(comboIndex);
 	}

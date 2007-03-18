@@ -88,12 +88,13 @@ public class BugTreeView extends ViewPart{
 		public void widgetSelected(SelectionEvent e)
 		{
 			IMarker myMarker = instanceMap.get(theTree.getSelection()[0]);
+            if(myMarker == null) return;
 			if(!(myMarker.getResource().getProject().isOpen()))
 			{
 				System.out.println("Project not open");
 				return;
 			}
-			if(myMarker == null) return;
+			
             FindbugsPlugin.showMarker(myMarker, false, false);
 			try{IDE.openEditor(getSite().getPage(), myMarker, false);}
 			catch(PartInitException ex){ex.printStackTrace();}
@@ -103,14 +104,13 @@ public class BugTreeView extends ViewPart{
 		{
 			TreeItem theItem = theTree.getSelection()[0];
 			IMarker myMarker = instanceMap.get(theItem);
-			if(!(myMarker.getResource().getProject().isOpen()))
+            if(myMarker == null)
+                theItem.setExpanded(!theItem.getExpanded());
+            else if(!(myMarker.getResource().getProject().isOpen()))
 			{
 				System.out.println("Project not open");
 				return;
-			}
-			if(myMarker == null)
-				theItem.setExpanded(!theItem.getExpanded());
-			else
+			} else
 			{
                 FindbugsPlugin.showMarker(myMarker, false, false);
 
