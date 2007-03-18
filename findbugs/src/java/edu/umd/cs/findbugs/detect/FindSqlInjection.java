@@ -267,7 +267,7 @@ public class FindSqlInjection implements Detector {
                 stringAppendState.setSawAppend(handle);
 
                 Location prevLocation = getPreviousLocation(cfg, location, true);
-                if (!isSafeValue(prevLocation, cpg))
+                if (prevLocation != null && !isSafeValue(prevLocation, cpg))
                         stringAppendState.setSawUnsafeAppend(handle);
                 
             } else if (ins instanceof InvokeInstruction) {

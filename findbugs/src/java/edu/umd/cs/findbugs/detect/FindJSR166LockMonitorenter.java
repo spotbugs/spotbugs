@@ -126,13 +126,11 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 				return;
 			}
 			
-			if (isSubtype) {
-				MethodGen mg = classContext.getMethodGen(method);
-				String sourceFile = classContext.getJavaClass().getSourceFileName();
-				
+			if (isSubtype) {				
 				bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", NORMAL_PRIORITY)
-						.addClassAndMethod(mg, sourceFile)
-						.addSourceLine(classContext, mg, sourceFile, handle));
+						.addClassAndMethod(classContext.getJavaClass(), method)
+						.addSourceLine(classContext,method, location)
+                        );
 			}
 		}
 	}
