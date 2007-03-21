@@ -18,11 +18,17 @@
  */
 package edu.umd.cs.findbugs.detect;
 
-import edu.umd.cs.findbugs.*;
-import edu.umd.cs.findbugs.ba.*;
-import java.util.BitSet;
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
+import java.util.regex.Pattern;
+
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Signature;
+
+import edu.umd.cs.findbugs.BugAccumulator;
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
 
 /**
  * equals and hashCode are blocking methods on URL's. Warn about invoking equals or hashCode on them,
@@ -35,11 +41,17 @@ public class URLProblems extends BytecodeScanningDetector {
 			"Set<Ljava/net/URL" };
 
 	final private BugReporter bugReporter;
+    final private BugAccumulator accumulator;
 
 	public URLProblems(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+        this.accumulator = new BugAccumulator(bugReporter);
 	}
 
+    @Override
+    public void visitAfter(JavaClass obj) {
+        accumulator.reportAccumulatedBugs();
+    }
 	@Override
 	public void visit(Signature obj) {
 		String sig = obj.getSignature();
@@ -57,19 +69,48 @@ public class URLProblems extends BytecodeScanningDetector {
 							HIGH_PRIORITY).addClass(this).addClass(this));
 			}
 	}
-
+    OpcodeStack stack = new OpcodeStack();
+    @Override
+    public void visit(Method method) {
+     stack.resetForMethodEntry(this);
+    }
+    
+    
+    void check(String className, Pattern name, int target, int url) {
+        if ( !name.matcher(getNameConstantOperand()).matches() ) return;
+        if (stack.getStackDepth() <= target) return;
+        OpcodeStack.Item targetItem = stack.getStackItem(target);
+        OpcodeStack.Item urlItem = stack.getStackItem(url);
+        if (!urlItem.getSignature().equals("Ljava/net/URL;")) return;
+        if (!targetItem.getSignature().equals(className)) return;
+        accumulator.accumulateBug(new BugInstance(this, "DMI_COLLECTION_OF_URLS",
+                HIGH_PRIORITY).addClassAndMethod(this)
+                .addCalledMethod(this), this);
+    }
 	@Override
 	public void sawOpcode(int seen) {
+        stack.mergeJumps(this);
+
+        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stack);
+        if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
+            check("Ljava/util/HashSet;", Pattern.compile("add|remove|contains"), 1, 0);
+            check("Ljava/util/HashMap;", Pattern.compile("remove|containsKey|get"), 1, 0);
+            check("Ljava/util/HashMap;", Pattern.compile("put"), 2, 1);
+             
+        }
+
+    
 		if (seen == INVOKEVIRTUAL
 				&& getClassConstantOperand().equals("java/net/URL")) {
 			if (getNameConstantOperand().equals("equals")
 					&& getSigConstantOperand().equals("(Ljava/lang/Object;)Z")
 					|| getNameConstantOperand().equals("hashCode")
 					&& getSigConstantOperand().equals("()I")) {
-				bugReporter.reportBug(new BugInstance(this, "DMI_BLOCKING_METHODS_ON_URL",
+                accumulator.accumulateBug(new BugInstance(this, "DMI_BLOCKING_METHODS_ON_URL",
 						HIGH_PRIORITY).addClassAndMethod(this)
-						.addCalledMethod(this).addSourceLine(this));
+						.addCalledMethod(this), this);
 			}
 		}
+        stack.sawOpcode(this,seen);
 	}
 }
