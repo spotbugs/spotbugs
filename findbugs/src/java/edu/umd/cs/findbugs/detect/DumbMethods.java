@@ -345,10 +345,17 @@ public class DumbMethods extends BytecodeScanningDetector  {
 				OpcodeStack.Item tmp = item0;
 				item0 = item1;
 				item1 = tmp;
-				if (seen >= IF_ICMPLT && seen <= IF_ICMPGE) 
-					seen2 += 2;
-				else if  (seen >= IF_ICMPGT && seen <= IF_ICMPLE) 
-					seen2 -= 2;
+                switch(seen) {
+                case IF_ICMPLT: 
+                    seen2 = IF_ICMPGT; break;
+                case IF_ICMPGE:
+                    seen2 = IF_ICMPLE; break;
+                case IF_ICMPGT: 
+                    seen2 = IF_ICMPLT; break;
+                case IF_ICMPLE: 
+                    seen2 = IF_ICMPGE; break;
+                    
+                }
 			}
 			Object constant1 = item1.getConstant();
 			if (item0.getSpecialKind() == OpcodeStack.Item.SIGNED_BYTE
@@ -358,9 +365,29 @@ public class DumbMethods extends BytecodeScanningDetector  {
 						
 						)) {
 					int priority = HIGH_PRIORITY;
-					if (v1 == 127 && seen2 == IF_ICMPLE ) priority  = NORMAL_PRIORITY;
-					if (v1 == 128 && seen2 == IF_ICMPLE) priority = NORMAL_PRIORITY;
-					if (v1 <= -129) priority = NORMAL_PRIORITY;
+                    if (v1 == 127) {
+                        switch(seen2) {
+                        case IF_ICMPGT: // 127 > x
+                            priority = LOW_PRIORITY; break;
+                        case IF_ICMPGE: // 127 >= x : always true
+                            priority = HIGH_PRIORITY; break;
+                        case IF_ICMPLT: // 127 < x : never true
+                            priority = HIGH_PRIORITY; break;
+                        case IF_ICMPLE: // 127 <= x 
+                            priority = LOW_PRIORITY; break;
+                        }
+                    } else if (v1 == 128) {
+                        switch(seen2) {
+                        case IF_ICMPGT: // 128 > x
+                            priority = NORMAL_PRIORITY; break;
+                        case IF_ICMPGE: // 128 >= x 
+                            priority = HIGH_PRIORITY; break;
+                        case IF_ICMPLT: // 128 < x
+                            priority = HIGH_PRIORITY; break;
+                        case IF_ICMPLE: // 128 <= x 
+                            priority = HIGH_PRIORITY; break;
+                        }
+                    } else if (v1 <= -129) priority = NORMAL_PRIORITY;
 					
 					
 					bugReporter.reportBug(new BugInstance(this, "INT_BAD_COMPARISON_WITH_SIGNED_BYTE", priority)
