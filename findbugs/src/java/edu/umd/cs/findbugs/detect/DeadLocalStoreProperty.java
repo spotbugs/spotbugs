@@ -18,7 +18,7 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
 		new DeadLocalStoreProperty("KILLED_BY_SUBSEQUENT_STORE",PriorityAdjustment.LOWER_PRIORITY);
 	/** Dead store is of a defense programming constant value. */
 	public static final DeadLocalStoreProperty DEFENSIVE_CONSTANT_OPCODE =
-		new DeadLocalStoreProperty("DEFENSIVE_CONSTANT_OPCODE",PriorityAdjustment.FALSE_POSITIVE);
+		new DeadLocalStoreProperty("DEFENSIVE_CONSTANT_OPCODE",PriorityAdjustment.NO_ADJUSTMENT);
 	/** Dead store is likely to be the exception object in an exception handler. */
 	public static final DeadLocalStoreProperty EXCEPTION_HANDLER =
 		new DeadLocalStoreProperty("EXCEPTION_HANDLER",PriorityAdjustment.FALSE_POSITIVE);
@@ -58,5 +58,9 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
 	
 	public static final DeadLocalStoreProperty STORE_OF_NULL =
 		new DeadLocalStoreProperty("STORE_OF_NULL", PriorityAdjustment.LOWER_PRIORITY);
+    public static final DeadLocalStoreProperty STORE_OF_CONSTANT =
+        new DeadLocalStoreProperty("STORE_OF_CONSTANT", PriorityAdjustment.NO_ADJUSTMENT);
+    public static final DeadLocalStoreProperty IS_PARAMETER =
+        new DeadLocalStoreProperty("IS_PARAMETER", PriorityAdjustment.RAISE_PRIORITY);
 
 }

@@ -208,8 +208,11 @@ public class FindDeadLocalStores implements Detector {
 			propertySet.setProperty(DeadLocalStoreProperty.LOCAL_NAME, name);
 			
 			int local = ins.getIndex();
+            boolean isParameter = local < localsThatAreParameters;
+            if (isParameter)
+                propertySet.addProperty(DeadLocalStoreProperty.IS_PARAMETER);
 			// Is this a store to a parameter which was dead on entry to the method?
-			boolean parameterThatIsDeadAtEntry = local < localsThatAreParameters
+			boolean parameterThatIsDeadAtEntry = isParameter
 				&& !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
 			if (parameterThatIsDeadAtEntry && !complainedAbout.get(local)) {
 				
@@ -222,29 +225,29 @@ public class FindDeadLocalStores implements Detector {
 					.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle());
 				complainedAbout.set(local);
 			}
-			
+            // Get live stores at this instruction.
+            // Note that the analysis also computes which stores were
+            // killed by a subsequent unconditional store.
+            BitSet liveStoreSet = llsaDataflow.getAnalysis().getFactAtLocation(location);
+            
+            // Is store alive?
+            if (llsaDataflow.getAnalysis().isStoreAlive(liveStoreSet, local))
+                continue;
+            // Store is dead
+
 			boolean storeOfNull = false;
 			InstructionHandle prevInsHandle = location.getHandle().getPrev();
 			if (prevInsHandle != null) {
 				Instruction prevIns = prevInsHandle.getInstruction();
 				if (prevIns instanceof LDC || prevIns instanceof ConstantPushInstruction)
-					continue;
-				if ( prevIns instanceof ACONST_NULL) {
+                    propertySet.addProperty(DeadLocalStoreProperty.STORE_OF_CONSTANT);
+                else if ( prevIns instanceof ACONST_NULL) {
 					storeOfNull = true;
 					propertySet.addProperty(DeadLocalStoreProperty.STORE_OF_NULL);
 				}
 				
 			}
 
-			// Get live stores at this instruction.
-			// Note that the analysis also computes which stores were
-			// killed by a subsequent unconditional store.
-			BitSet liveStoreSet = llsaDataflow.getAnalysis().getFactAtLocation(location);
-			
-			// Is store alive?
-			if (llsaDataflow.getAnalysis().isStoreAlive(liveStoreSet, local))
-				continue;
-			// Store is dead
 			
 			// Ignore assignments that were killed by a subsequent assignment.
 			boolean killedBySubsequentStore = llsaDataflow.getAnalysis().killedByStore(liveStoreSet, local);
@@ -300,7 +303,7 @@ public class FindDeadLocalStores implements Detector {
 			} else if (!parameterThatIsDeadAtEntry && localStoreCount[local] == 1) {
 				// TODO: why is this significant?
 				
-				propertySet.addProperty(DeadLocalStoreProperty.SINGLE_STORE);
+				if (!isParameter) propertySet.addProperty(DeadLocalStoreProperty.SINGLE_STORE);
 				
 			} else if (!parameterThatIsDeadAtEntry && localLoadCount[local] == 0) {
 				// TODO: why is this significant?
