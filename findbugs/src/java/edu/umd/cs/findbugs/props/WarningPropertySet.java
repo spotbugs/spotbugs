@@ -82,6 +82,17 @@ public class WarningPropertySet implements Cloneable {
 		return this;
 	}
 
+    /**
+     * Remove a warning property from the set.
+     * 
+     * @param prop the WarningProperty
+     * @return this object
+     */
+    public WarningPropertySet removeProperty(WarningProperty prop) {
+        map.remove(prop);
+        return this;
+    }
+
 	/**
 	 * Add a warning property and its attribute value.
 	 * 
