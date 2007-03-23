@@ -177,7 +177,8 @@ public class FindDeadLocalStores implements Detector {
 		// of local variables.
 		countLocalStoresLoadsAndIncrements(
 				localStoreCount, localLoadCount, localIncrementCount, cfg);
-		
+		for(int i = 0; i < localsThatAreParameters; i++)
+            localStoreCount[i]++;
 		// Scan method for
 		// - dead stores
 		// - stores to parameters that are dead upon entry to the method
@@ -280,7 +281,8 @@ public class FindDeadLocalStores implements Detector {
 				propertySet.addProperty(DeadLocalStoreProperty.DEAD_INCREMENT);
 				if (localIncrementCount[local] == 1) {
 					propertySet.addProperty(DeadLocalStoreProperty.SINGLE_DEAD_INCREMENT);
-				}
+				} else
+                    propertySet.removeProperty(DeadLocalStoreProperty.IS_PARAMETER);
 				
 			} else if (ins instanceof ASTORE && prev != null) { 
 				// Look for objects created but never used
@@ -301,9 +303,9 @@ public class FindDeadLocalStores implements Detector {
 				propertySet.addProperty(DeadLocalStoreProperty.TWO_STORES_MULTIPLE_LOADS);
 				
 			} else if (!parameterThatIsDeadAtEntry && localStoreCount[local] == 1) {
-				// TODO: why is this significant?
+				// might be final local constant
 				
-				if (!isParameter) propertySet.addProperty(DeadLocalStoreProperty.SINGLE_STORE);
+				propertySet.addProperty(DeadLocalStoreProperty.SINGLE_STORE);
 				
 			} else if (!parameterThatIsDeadAtEntry && localLoadCount[local] == 0) {
 				// TODO: why is this significant?

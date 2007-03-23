@@ -36,7 +36,7 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
 		new DeadLocalStoreProperty("TWO_STORES_MULTIPLE_LOADS",PriorityAdjustment.NO_ADJUSTMENT);
 	/** There is only one store of this local. (Maybe it's final?) */
 	public static final DeadLocalStoreProperty SINGLE_STORE =
-		new DeadLocalStoreProperty("SINGLE_STORE",PriorityAdjustment.LOWER_PRIORITY);
+		new DeadLocalStoreProperty("SINGLE_STORE",PriorityAdjustment.FALSE_POSITIVE);
 	/** There are no loads of this local. (Maybe it's final?). */
 	public static final DeadLocalStoreProperty NO_LOADS =
 		new DeadLocalStoreProperty("NO_LOADS",PriorityAdjustment.LOWER_PRIORITY);
