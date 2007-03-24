@@ -140,6 +140,7 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 				arg1 = 0;
 				state = 3;
 			}
+            
 			/* fallthrough */
 
 		case IF_ICMPEQ:

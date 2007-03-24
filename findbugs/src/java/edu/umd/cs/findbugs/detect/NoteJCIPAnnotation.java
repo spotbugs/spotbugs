@@ -39,10 +39,8 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements
 		Detector, NonReportingDetector {
 
 	private static final String NET_JCIP_ANNOTATIONS = "net.jcip.annotations.";
-	BugReporter bugReporter;
 
 	public NoteJCIPAnnotation(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
 	}
 
 	

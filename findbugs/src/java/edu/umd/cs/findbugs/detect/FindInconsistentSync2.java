@@ -138,9 +138,6 @@ public class FindInconsistentSync2 implements Detector {
 			if (!SYNC_ACCESS && isLocked)
 				return;
 
-			JavaClass javaClass = classContext.getJavaClass();
-			String sourceFile = javaClass.getSourceFileName();
-			MethodGen methodGen = classContext.getMethodGen(method);
 			SourceLineAnnotation accessSourceLine = SourceLineAnnotation.fromVisitedInstruction(classContext, method, handle.getPosition());
 			if (accessSourceLine != null)
 				(isLocked ? syncAccessList : unsyncAccessList).add(accessSourceLine);

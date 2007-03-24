@@ -298,7 +298,7 @@ public class FindBadCast2 implements Detector {
 				continue;
 			}
 
-			if (refSig2.equals("Ljava/lang/Object;")  &!operandTypeIsExact) {
+			if (!operandTypeIsExact && refSig2.equals("Ljava/lang/Object;")) {
 				continue;
 			}
 			if (false && isCast && haveMultipleCast.contains(sourceLineAnnotation)
@@ -340,7 +340,7 @@ public class FindBadCast2 implements Detector {
 					boolean downcast = Repository.instanceOf(castJavaClass,
 							refJavaClass);
 					
-					if (refName.equals("java.lang.Object")  &!operandTypeIsExact) continue;
+					if (!operandTypeIsExact && refName.equals("java.lang.Object")  ) continue;
 					double rank = 0.0;
 					boolean castToConcreteCollection = concreteCollectionClasses.contains(castName)
 							&& abstractCollectionClasses.contains(refName);

@@ -36,10 +36,8 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements
 
 		private boolean classfileRetention;
 
-	BugReporter bugReporter;
 
 	public NoteAnnotationRetention(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
 	}
 
 	@Override

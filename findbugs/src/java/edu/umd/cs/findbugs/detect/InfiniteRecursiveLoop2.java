@@ -327,7 +327,6 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 			}
 			if (top.equals(next)) {
 				JavaClass javaClass = classContext.getJavaClass();
-				String sourceFile = javaClass.getSourceFileName();
 				BugInstance warning = new BugInstance("IL_CONTAINER_ADDED_TO_ITSELF", NORMAL_PRIORITY)
 					.addClassAndMethod(javaClass, method)
 					.addSourceLine(classContext, method, thrower);
