@@ -35,8 +35,6 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 	private static final int SEEN_ALOAD_0 = 1;
 
 	private BugReporter bugReporter;
-	private boolean checkedTestCaseClass;
-	private boolean haveTestCaseClass;
 
 	private int state;
 
@@ -127,20 +125,8 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 	 * @return true if it should be enabled, false if not
 	 */
 	private boolean enabled() {
-        if (true) return true;
-		if (!checkedTestCaseClass) {
-			checkedTestCaseClass = true;
-			try {
-				Repository.lookupClass("junit.framework.TestCase");
-				haveTestCaseClass = true;
-			} catch (ClassNotFoundException e) {
-				// No TestCase class, so don't bother running
-				// the detector.
-			}
-		}
-		
-		return haveTestCaseClass;
-	}
+        return true;
+        }
 
 	@Override
 	public void visit(Method obj) {

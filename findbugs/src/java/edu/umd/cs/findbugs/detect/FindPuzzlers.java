@@ -30,6 +30,9 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 public class FindPuzzlers extends BytecodeScanningDetector {
 
@@ -46,6 +49,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 		prevOpcodeIncrementedRegister = -1;
 		best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG = LOW_PRIORITY+1;
 		prevOpCode = NOP;
+        previousMethodInvocation = null;
 		stack.resetForMethodEntry(this);
 		badlyComputingOddState = 0;
 		resetIMulCastLong();
@@ -64,6 +68,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	
 	int badlyComputingOddState;
 	int prevOpCode;
+    XMethod previousMethodInvocation;
 	OpcodeStack stack = new OpcodeStack();
 	
 	private void resetIMulCastLong() {
@@ -333,11 +338,53 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	                         .addClassAndMethod(this)
 	                         .addSourceLine(this));
 		  }
-
 	
+          if (previousMethodInvocation != null && prevOpCode == INVOKESPECIAL && seen == INVOKEVIRTUAL) {
+            String classNameForPreviousMethod = previousMethodInvocation.getClassName();
+            String classNameForThisMethod = getClassConstantOperand();
+            if (classNameForPreviousMethod.startsWith("java.lang.") 
+                      && classNameForPreviousMethod.equals(classNameForThisMethod.replace('/','.'))
+                      && getNameConstantOperand().endsWith("Value")
+                      && getSigConstantOperand().startsWith("()"))
+                 bugReporter.reportBug(new BugInstance(this, "DM_BOXING_IMMEDIATELY_UNBOXED", NORMAL_PRIORITY)
+                 .addClassAndMethod(this)
+                 .addSourceLine(this));
+            
+          }
 	
+          if (seen == INVOKESTATIC)
+              if ((getNameConstantOperand().startsWith("assert") || getNameConstantOperand().startsWith("fail"))& getMethodName().equals("run")
+                  && implementsRunnable(getThisClass())) {
+              try {
+                  JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(getClassConstantOperand().replace('/', '.'));
+                  if (targetClass.getSuperclassName().startsWith("junit")) {
+                      bugReporter.reportBug(new BugInstance(this, "IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD", NORMAL_PRIORITY)
+                      .addClassAndMethod(this)
+                      .addSourceLine(this));
+                     
+                  }
+              } catch (ClassNotFoundException e) {
+                 AnalysisContext.reportMissingClass(e);
+              }
+              
+          }
 		stack.sawOpcode(this,seen);
+        if (seen == INVOKESPECIAL && getClassConstantOperand().startsWith("java/lang/")  && getNameConstantOperand().equals("<init>")
+                && getSigConstantOperand().length() == 4) 
+            
+            previousMethodInvocation = XFactory.createReferencedXMethod(this);
+        else if (seen == INVOKESTATIC && getClassConstantOperand().startsWith("java/lang/")  
+                && getNameConstantOperand().equals("valueOf")
+                && getSigConstantOperand().length() == 4) 
+                previousMethodInvocation = XFactory.createReferencedXMethod(this);
+        else previousMethodInvocation = null;
 		prevOpCode = seen;
 	}
+       boolean implementsRunnable(JavaClass obj) {
+           if (obj.getSuperclassName().equals("java.lang.Thread")) return true;
+            for(String s : obj.getInterfaceNames())
+                if (s.equals("java.lang.Runnable")) return true;
+            return false;
+        }
 
 }

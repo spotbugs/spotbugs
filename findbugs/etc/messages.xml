@@ -1780,9 +1780,20 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
     </Details>
   </BugPattern>
 
+  <BugPattern type="DM_BOXING_IMMEDIATELY_UNBOXED">
+    <ShortDescription>Primitive value is boxed and then immediately unboxed</ShortDescription>
+    <LongDescription>Primitive value is boxed and then immediately unboxed</LongDescription>
+    <Details>
+<![CDATA[
+  <p>A primitive is boxed, and then immediately unboxed. This probably is due to a manual
+	boxing in a place where  an unboxed value is required, thus forcing the compiler
+to immediately undue the work of the boxing.
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="DM_BOXED_PRIMITIVE_TOSTRING">
     <ShortDescription>Method allocates a boxed primitive just to call toString</ShortDescription>
-    <LongDescription>Method {1} allocates a boxed primitive just to call toString</LongDescription>
+    <LongDescription>Primitive boxed just to call toString in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p>A boxed primitive is allocated just to call toString(). It is more effective to just use the static
@@ -4574,6 +4585,20 @@ directly. This avoids the need to create a second array
     </Details>
   </BugPattern>
 
+  <BugPattern type="IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD">
+    <ShortDescription>JUnit assertion in run method</ShortDescription>
+    <LongDescription>JUnit assertion in {1}</LongDescription>
+    <Details>
+<![CDATA[
+<p> A JUnit assertion is performed in a run method. Failed JUnit assertions
+just result in exceptions being thrown.
+Thus, if this exception occurs in a thread other than the thread that invokes
+the test method, the exception will terminate the thread but not result
+in the test failing.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="IJU_SETUP_NO_SUPER">
     <ShortDescription>TestCase implements setUp but doesn't call super.setUp()</ShortDescription>
     <LongDescription>TestCase {0} implements setUp but doesn't call super.setUp()</LongDescription>
