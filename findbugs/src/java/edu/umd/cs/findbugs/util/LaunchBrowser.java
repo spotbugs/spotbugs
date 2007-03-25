@@ -88,7 +88,7 @@ public class LaunchBrowser {
 	 */
     public static boolean showDocument(String url) {
        
-        if (jnlpShowMethod != null)
+        if (jnlpShowMethod != null) {
             try {
                 new URL(url);
             } catch (MalformedURLException mue) {
@@ -103,7 +103,7 @@ public class LaunchBrowser {
             } catch (IllegalAccessException iae) {
                 assert true; // do nothing
             }
-
+        }
 	    // fallback to exec()
 		return showViaExec(url);
 	}
