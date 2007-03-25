@@ -211,7 +211,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
         if ( annotationClass.startsWith("javax.annotation.") 
                 || annotationClass.startsWith("javax.ejb")|| annotationClass.equals("org.jboss.seam.annotations.In")  
                 || annotationClass.startsWith("javax.persistence")
-                || annotationClass.endsWith("SpringBean"))
+                || annotationClass.endsWith("SpringBean")
+                || annotationClass.equals("com.google.inject.Inject"))
             return true;
         int lastDot = annotationClass.lastIndexOf('.');
         String lastPart = annotationClass.substring(lastDot+1);
