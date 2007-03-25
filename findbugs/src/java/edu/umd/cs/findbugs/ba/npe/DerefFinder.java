@@ -132,9 +132,7 @@ public class DerefFinder {
                         Set<JavaClassAndMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(inv, typeFrame,
                                 cpg);
                         BitSet unconditionallyDereferencedNullArgSet = null;
-                        List<JavaClassAndMethod> dangerousCallTargetList = new LinkedList<JavaClassAndMethod>();
-                        List<JavaClassAndMethod> veryDangerousCallTargetList = new LinkedList<JavaClassAndMethod>();
-                        for (JavaClassAndMethod targetMethod : targetMethodSet) {
+                         for (JavaClassAndMethod targetMethod : targetMethodSet) {
 
                             ParameterNullnessProperty property = unconditionalDerefParamDatabase
                                     .getProperty(targetMethod.toXMethod());

@@ -75,6 +75,8 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 	 * @param vnaDataflow              value number dataflow for the method
 	 * @param compactLocationNumbering CompactLocationNumbering for the method
 	 */
+    
+     //TODO: compactLocationNumbering is ignored. Why?
 	public DefinitelyNullSetAnalysis(
 			DepthFirstSearch dfs,
 			ValueNumberDataflow vnaDataflow,

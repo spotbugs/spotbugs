@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @author David Hovemeyer
  */
 public class AcmpCondition extends Condition {
+    //TODO: these fields are ignored. Why?
 	private Decision ifcmpDecision;
 	private Decision fallThroughDecision;
 	

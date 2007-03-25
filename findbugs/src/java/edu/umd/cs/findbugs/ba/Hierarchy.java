@@ -448,7 +448,6 @@ public class Hierarchy {
             String methodName,
             String methodSig) {
         
-        JavaClassAndMethodChooser chooser = CONCRETE_METHOD;
         if (DEBUG_METHOD_LOOKUP) {
             System.out.println("Check " + javaClass.getClassName());
         }

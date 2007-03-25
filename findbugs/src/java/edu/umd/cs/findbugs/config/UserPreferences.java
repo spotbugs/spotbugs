@@ -141,14 +141,14 @@ public class UserPreferences implements Cloneable {
 				recentProjectsList.add(projectName);
 		}
 
-        Iterator propKeysIter = props.keySet().iterator();
-        while(propKeysIter.hasNext()){
-            String key = (String) propKeysIter.next();
+        for(Map.Entry<?,?> e :  props.entrySet()) {
+
+            String key = (String) e.getKey();
             if(!key.startsWith("detector") || key.startsWith("detector_")){
                 // it is not a detector enablement property
                 continue;
             }
-            String detectorState = (String) props.get(key);
+            String detectorState = (String) e.getValue();
             int pipePos = detectorState.indexOf("|");
             if (pipePos >= 0) {
                 String name = detectorState.substring(0, pipePos);
