@@ -50,8 +50,6 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 
 	private BugReporter bugReporter;
 
-	private ClassContext classContext;
-
 	private CheckReturnAnnotationDatabase checkReturnAnnotationDatabase;
 
 	private Method method;
@@ -70,11 +68,9 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 
 	@Override
 	public void visitClassContext(ClassContext classContext) {
-		this.classContext = classContext;
 		checkReturnAnnotationDatabase = AnalysisContext
 				.currentAnalysisContext().getCheckReturnAnnotationDatabase();
 		super.visitClassContext(classContext);
-		this.classContext = null;
 	}
 
 	@Override

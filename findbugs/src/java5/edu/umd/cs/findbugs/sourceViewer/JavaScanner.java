@@ -63,7 +63,6 @@ public class JavaScanner {
 
 	private final StringBuffer buf = new StringBuffer();
 
-	private int endPosition;
 
 	private final CharacterIterator iterator;
 

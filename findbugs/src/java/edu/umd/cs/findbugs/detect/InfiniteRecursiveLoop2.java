@@ -191,7 +191,6 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 		
 		if (report) {
 			JavaClass javaClass = classContext.getJavaClass();
-			String sourceFile = javaClass.getSourceFileName();
 			BugInstance warning = new BugInstance("IL_INFINITE_RECURSIVE_LOOP", HIGH_PRIORITY)
 					.addClassAndMethod(javaClass, method)
 					.addSourceLine(classContext, method, thrower);

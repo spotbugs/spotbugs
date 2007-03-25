@@ -90,8 +90,11 @@ public class LaunchBrowser {
        
         if (jnlpShowMethod != null)
             try {
-                URL wrapper = new URL(url);
-
+                new URL(url);
+            } catch (MalformedURLException mue) {
+                return false;
+            }
+            try {
                 Object result = jnlpShowMethod.invoke(jnlpShowObject, new Object[] { url });
                 System.out.println("jnlp result is " + result);
                 return (Boolean.TRUE.equals(result));
@@ -99,8 +102,6 @@ public class LaunchBrowser {
                 assert true; // do nothing
             } catch (IllegalAccessException iae) {
                 assert true; // do nothing
-            } catch (MalformedURLException mue) {
-                return false;
             }
 
 	    // fallback to exec()
