@@ -345,10 +345,15 @@ public class FindPuzzlers extends BytecodeScanningDetector {
             if (classNameForPreviousMethod.startsWith("java.lang.") 
                       && classNameForPreviousMethod.equals(classNameForThisMethod.replace('/','.'))
                       && getNameConstantOperand().endsWith("Value")
-                      && getSigConstantOperand().startsWith("()"))
+                      && getSigConstantOperand().length() == 4)
+                if (getSigConstantOperand().charAt(3) == previousMethodInvocation.getSignature().charAt(1))
                  bugReporter.reportBug(new BugInstance(this, "DM_BOXING_IMMEDIATELY_UNBOXED", NORMAL_PRIORITY)
                  .addClassAndMethod(this)
                  .addSourceLine(this));
+                else 
+                bugReporter.reportBug(new BugInstance(this, "DM_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION", NORMAL_PRIORITY)
+                .addClassAndMethod(this)
+                .addSourceLine(this));
             
           }
 	

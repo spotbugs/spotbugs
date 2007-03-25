@@ -1769,7 +1769,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   </BugPattern>
   <BugPattern type="DM_CONVERT_CASE">
     <ShortDescription>Consider using Locale parameterized version of invoked method</ShortDescription>
-    <LongDescription>Use of non-localized String.toUpperCase() or String.toLowerCase; consider using the Locale parameterized version instead</LongDescription>
+    <LongDescription>Use of non-localized String.toUpperCase() or String.toLowerCase</LongDescription>
     <Details>
 <![CDATA[
   <p> A String is being converted to upper or lowercase, using the platform's default encoding. This may
@@ -1780,6 +1780,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
     </Details>
   </BugPattern>
 
+
   <BugPattern type="DM_BOXING_IMMEDIATELY_UNBOXED">
     <ShortDescription>Primitive value is boxed and then immediately unboxed</ShortDescription>
     <LongDescription>Primitive value is boxed and then immediately unboxed</LongDescription>
@@ -1788,6 +1789,17 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   <p>A primitive is boxed, and then immediately unboxed. This probably is due to a manual
 	boxing in a place where  an unboxed value is required, thus forcing the compiler
 to immediately undue the work of the boxing.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  <BugPattern type="DM_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION">
+    <ShortDescription>Primitive value is boxed then unboxed to perform primative coercion</ShortDescription>
+    <LongDescription>Primitive value is boxed then unboxed to perform primative coercion</LongDescription>
+    <Details>
+<![CDATA[
+  <p>A primitive boxed value constructed and  then immediately converted into a different primitive type
+(e.g., <code>new Double(d).intValue()</code>). Just perform direct primitive coercion (e.g., <code>(int) d</code>).</p>
 ]]>
     </Details>
   </BugPattern>
@@ -5791,6 +5803,7 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="HE" >Equal objects must have equal hashcodes</BugCode>
   <BugCode abbrev="AM" >API misuse</BugCode>
   <BugCode abbrev="Dm" >Dubious method used</BugCode>
+  <BugCode abbrev="Bx" >Questionable Boxing of primitive value</BugCode>
   <BugCode abbrev="UR" >Uninitialized read of field in constructor</BugCode>
   <BugCode abbrev="RR" >Method ignores results of InputStream.read()</BugCode>
   <BugCode abbrev="NN" >Naked notify</BugCode>
