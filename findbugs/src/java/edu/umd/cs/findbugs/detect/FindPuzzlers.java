@@ -345,8 +345,8 @@ public class FindPuzzlers extends BytecodeScanningDetector {
             if (classNameForPreviousMethod.startsWith("java.lang.") 
                       && classNameForPreviousMethod.equals(classNameForThisMethod.replace('/','.'))
                       && getNameConstantOperand().endsWith("Value")
-                      && getSigConstantOperand().length() == 4)
-                if (getSigConstantOperand().charAt(3) == previousMethodInvocation.getSignature().charAt(1))
+                      && getSigConstantOperand().length() == 3) {
+                if (getSigConstantOperand().charAt(2) == previousMethodInvocation.getSignature().charAt(1))
                  bugReporter.reportBug(new BugInstance(this, "DM_BOXING_IMMEDIATELY_UNBOXED", NORMAL_PRIORITY)
                  .addClassAndMethod(this)
                  .addSourceLine(this));
@@ -354,11 +354,12 @@ public class FindPuzzlers extends BytecodeScanningDetector {
                 bugReporter.reportBug(new BugInstance(this, "DM_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION", NORMAL_PRIORITY)
                 .addClassAndMethod(this)
                 .addSourceLine(this));
+                    }
             
           }
 	
           if (seen == INVOKESTATIC)
-              if ((getNameConstantOperand().startsWith("assert") || getNameConstantOperand().startsWith("fail"))& getMethodName().equals("run")
+              if ((getNameConstantOperand().startsWith("assert") || getNameConstantOperand().startsWith("fail"))&& getMethodName().equals("run")
                   && implementsRunnable(getThisClass())) {
               try {
                   JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(getClassConstantOperand().replace('/', '.'));
@@ -375,7 +376,8 @@ public class FindPuzzlers extends BytecodeScanningDetector {
           }
 		stack.sawOpcode(this,seen);
         if (seen == INVOKESPECIAL && getClassConstantOperand().startsWith("java/lang/")  && getNameConstantOperand().equals("<init>")
-                && getSigConstantOperand().length() == 4) 
+                && getSigConstantOperand().length() == 4
+                ) 
             
             previousMethodInvocation = XFactory.createReferencedXMethod(this);
         else if (seen == INVOKESTATIC && getClassConstantOperand().startsWith("java/lang/")  
