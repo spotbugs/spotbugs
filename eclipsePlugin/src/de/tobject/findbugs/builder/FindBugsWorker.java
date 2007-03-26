@@ -64,6 +64,7 @@ import edu.umd.cs.findbugs.DetectorFactoryCollection;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.FindBugs2;
 import edu.umd.cs.findbugs.IFindBugsEngine;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.config.UserPreferences;
@@ -209,7 +210,7 @@ public class FindBugsWorker {
 		outputFiles.clear();
 
 		Reporter bugReporter = new Reporter(this.project, this.monitor, findBugsProject);
-		bugReporter.setPriorityThreshold(Detector.LOW_PRIORITY);
+		bugReporter.setPriorityThreshold(Priorities.LOW_PRIORITY);
 
 		String[] classPathEntries = createClassPathEntries();
 		// add to findbugs classpath

@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.AppVersion;
 import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.Priorities;
 
 /**
  * Creates a FindBugs marker in a runnable window.
@@ -61,19 +62,19 @@ public class MarkerReporter implements IWorkspaceRunnable {
 		String markerName;
 		switch(priority)
 		{
-			case Detector.HIGH_PRIORITY:
+			case Priorities.HIGH_PRIORITY:
 				markerName = FindBugsMarker.NAME_HIGH;
 				break;
-			case Detector.NORMAL_PRIORITY:
+			case Priorities.NORMAL_PRIORITY:
 				markerName = FindBugsMarker.NAME_NORMAL;
 				break;
-			case Detector.LOW_PRIORITY:
+			case Priorities.LOW_PRIORITY:
 				markerName = FindBugsMarker.NAME_LOW;
 				break;
-			case Detector.EXP_PRIORITY:
+			case Priorities.EXP_PRIORITY:
 				markerName = FindBugsMarker.NAME_EXPERIMENTAL;
 				break;
-			case Detector.IGNORE_PRIORITY:
+			case Priorities.IGNORE_PRIORITY:
 				markerName = FindBugsMarker.NAME_IGNORE;
 				break;
 			default:
