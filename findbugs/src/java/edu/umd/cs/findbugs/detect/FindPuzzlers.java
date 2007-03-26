@@ -347,11 +347,11 @@ public class FindPuzzlers extends BytecodeScanningDetector {
                       && getNameConstantOperand().endsWith("Value")
                       && getSigConstantOperand().length() == 3) {
                 if (getSigConstantOperand().charAt(2) == previousMethodInvocation.getSignature().charAt(1))
-                 bugReporter.reportBug(new BugInstance(this, "DM_BOXING_IMMEDIATELY_UNBOXED", NORMAL_PRIORITY)
+                 bugReporter.reportBug(new BugInstance(this, "BX_BOXING_IMMEDIATELY_UNBOXED", NORMAL_PRIORITY)
                  .addClassAndMethod(this)
                  .addSourceLine(this));
                 else 
-                bugReporter.reportBug(new BugInstance(this, "DM_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION", NORMAL_PRIORITY)
+                bugReporter.reportBug(new BugInstance(this, "BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION", NORMAL_PRIORITY)
                 .addClassAndMethod(this)
                 .addSourceLine(this));
                     }

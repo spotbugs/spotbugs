@@ -1781,7 +1781,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   </BugPattern>
 
 
-  <BugPattern type="DM_BOXING_IMMEDIATELY_UNBOXED">
+  <BugPattern type="BX_BOXING_IMMEDIATELY_UNBOXED">
     <ShortDescription>Primitive value is boxed and then immediately unboxed</ShortDescription>
     <LongDescription>Primitive value is boxed and then immediately unboxed</LongDescription>
     <Details>
@@ -1793,7 +1793,7 @@ to immediately undue the work of the boxing.
 ]]>
     </Details>
   </BugPattern>
-  <BugPattern type="DM_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION">
+  <BugPattern type="BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION">
     <ShortDescription>Primitive value is boxed then unboxed to perform primative coercion</ShortDescription>
     <LongDescription>Primitive value is boxed then unboxed to perform primative coercion</LongDescription>
     <Details>
