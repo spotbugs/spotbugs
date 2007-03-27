@@ -64,7 +64,8 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector {
 		if (seen == INVOKEVIRTUAL && 
                 getNameConstantOperand().equals("readLine")
 			&& getSigConstantOperand().equals("()Ljava/lang/String;")
-            &&  !getClassConstantOperand().equals("java/io/LineNumberReader")
+            && getClassConstantOperand().startsWith("java/io") 
+            && !getClassConstantOperand().equals("java/io/LineNumberReader")
             )
 		  readLineOnTOS = true;
 		else if (readLineOnTOS) {
