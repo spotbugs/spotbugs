@@ -160,13 +160,14 @@ public class SourceLineAnnotation implements BugAnnotation {
         Code code = visitor.getMethod().getCode();
         int codeSize = (code != null) ? code.getCode().length : 0;
 
-        SourceInfoMap.SourceLineRange range = AnalysisContext.currentAnalysisContext().getSourceInfoMap()
+        SourceInfoMap sourceInfoMap = AnalysisContext.currentAnalysisContext().getSourceInfoMap();
+        SourceInfoMap.SourceLineRange range = sourceInfoMap
                 .getMethodLine(className, visitor.getMethodName(), visitor.getMethodSig());
         if (range != null)
             return new SourceLineAnnotation(className, visitor.getSourceFile(), range.getStart().intValue(), range
                     .getEnd().intValue(), 0, codeSize - 1);
 
-        if (lineNumberTable == null)
+        if (lineNumberTable == null || !sourceInfoMap.fallBackToClassfile())
 
             return createUnknown(className, sourceFile, 0, codeSize - 1);
 

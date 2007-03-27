@@ -142,36 +142,36 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		MethodAnnotation methodAnnotation =
 			new MethodAnnotation(className, methodName, methodSig, isStatic);
 		
-		// Try to find source lines by looking up the exact class and method.
 		SourceLineAnnotation sourceLines = null;
-		try {
-			JavaClass targetClass = AnalysisContext.currentAnalysisContext()
-				.lookupClass(className);
-			JavaClassAndMethod targetMethod = Hierarchy.findMethod(targetClass, methodName, methodSig);
-			if (targetMethod != null) {
-				sourceLines = SourceLineAnnotation.forEntireMethod(
-						targetMethod.getJavaClass(), targetMethod.getMethod());
-			}
-		} catch (ClassNotFoundException e) {
-			// Can't find the class
-		}
-		
-		// Try consulting the SourceInfoMap
-		if (sourceLines == null) {
-			SourceInfoMap.SourceLineRange range = AnalysisContext.currentAnalysisContext()
-				.getSourceInfoMap()
-				.getMethodLine(className, methodName, methodSig);
-			if (range != null) {
-				sourceLines = new SourceLineAnnotation(
-						className,
-						AnalysisContext.currentAnalysisContext().lookupSourceFile(className),
-						range.getStart(),
-						range.getEnd(),
-						-1,
-						-1);
-			}
-		}
-		
+		SourceInfoMap sourceInfoMap = AnalysisContext.currentAnalysisContext().getSourceInfoMap();
+        SourceInfoMap.SourceLineRange range = sourceInfoMap.getMethodLine(className, methodName, methodSig);
+		if (range != null) 
+		    sourceLines = new SourceLineAnnotation(
+		            className,
+		            AnalysisContext.currentAnalysisContext().lookupSourceFile(className),
+		            range.getStart(),
+		            range.getEnd(),
+		            -1,
+		            -1);
+
+		if (sourceLines == null && sourceInfoMap.fallBackToClassfile()) {
+		    // Try to find source lines by looking up the exact class and method.
+
+
+		    try {
+		        JavaClass targetClass = AnalysisContext.currentAnalysisContext()
+		        .lookupClass(className);
+		        JavaClassAndMethod targetMethod = Hierarchy.findMethod(targetClass, methodName, methodSig);
+		        if (targetMethod != null) {
+		            sourceLines = SourceLineAnnotation.forEntireMethod(
+		                    targetMethod.getJavaClass(), targetMethod.getMethod());
+		        }
+		    } catch (ClassNotFoundException e) {
+		        // Can't find the class
+		    }
+
+        }
+
 		// If we couldn't find the source lines,
 		// create an unknown source line annotation referencing
 		// the class and source file.
