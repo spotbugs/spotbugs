@@ -192,6 +192,12 @@ public class SourceInfoMap {
 	private Map<MethodDescriptor, SourceLineRange> methodLineMap;
 	private Map<String, SourceLineRange> classLineMap;
 	
+    public boolean fallBackToClassfile() {
+        return isEmpty();
+    }
+    public boolean isEmpty() {
+        return fieldLineMap.isEmpty() && methodLineMap.isEmpty() && classLineMap.isEmpty();
+    }
 	/**
 	 * Constructor.
 	 * Creates an empty object.
