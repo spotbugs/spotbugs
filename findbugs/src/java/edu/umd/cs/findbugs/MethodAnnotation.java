@@ -291,7 +291,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		else if (key.equals("shortMethod") )
 			return className + "." + methodName + "(...)";
 		else if (key.equals("hash")){
-				String tmp= getNameInClass(false, true);
+				String tmp= getNameInClass(false, true, true);
 
 				return className + "." + tmp;
 		}
@@ -312,7 +312,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param primaryClass TODO
 	 */
 	public String getNameInClass(ClassAnnotation primaryClass) {
-		return  getNameInClass(true, false);
+		return  getNameInClass(true, false, false);
 	}
 
 	/**
@@ -327,8 +327,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @param shortenPackages whether to shorten package names
 	 * if they are in java or in the same package as this method.
 	 * @param useJVMMethodName TODO
+	 * @param hash TODO
 	 */
-	public String getNameInClass(boolean shortenPackages, boolean useJVMMethodName) {
+	public String getNameInClass(boolean shortenPackages, boolean useJVMMethodName, boolean hash) {
 		// Convert to "nice" representation
 		StringBuffer result = new StringBuffer();
 		if (useJVMMethodName)
@@ -345,7 +346,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
 		boolean needsComma = false;
 		while (converter.getFirst() != ')') {
-			if (needsComma)
+			if (needsComma && !hash)
 				result.append(", ");
 			if (shortenPackages)
 				result.append(removePackageName(converter.parseNext()));
