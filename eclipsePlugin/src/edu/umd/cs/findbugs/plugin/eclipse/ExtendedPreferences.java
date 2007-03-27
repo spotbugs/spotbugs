@@ -30,6 +30,7 @@ import java.util.Properties;
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.TigerSubstitutes;
 import edu.umd.cs.findbugs.config.AnalysisFeatureSetting;
+import edu.umd.cs.findbugs.config.SortedProperties;
 
 /**
  * Extended preferences on top of the default FindBugs UserPreferences to hold
@@ -204,7 +205,7 @@ public class ExtendedPreferences implements Cloneable {
 					+ file.getAbsolutePath()
 					+ "\" should exist and must be a file.");
 		}
-		Properties props = new Properties();
+		Properties props = new SortedProperties();
 		FileInputStream inputStream = new FileInputStream(file);
 		try {
 			props.load(inputStream);
