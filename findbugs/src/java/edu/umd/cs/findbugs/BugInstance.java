@@ -1710,6 +1710,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public void setOldInstanceHash(String oldInstanceHash) {
 		this.oldInstanceHash = oldInstanceHash;
 	}
+    private static final boolean DONT_HASH =  SystemProperties.getBoolean("findbugs.dontHash");
 	/**
 	 * @return Returns the instanceHash.
 	 */
@@ -1721,7 +1722,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 				// OK, we won't digest
 			}
 			instanceHash = getInstanceKey();
-			if (digest != null) {
+			if (digest != null && !DONT_HASH) {
 				byte [] data = digest.digest(instanceHash.getBytes());
 				String tmp = new BigInteger(1,data).toString(16);
 				instanceHash = tmp;

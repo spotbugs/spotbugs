@@ -291,7 +291,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		else if (key.equals("shortMethod") )
 			return className + "." + methodName + "(...)";
 		else if (key.equals("hash")){
-				String tmp= getNameInClass(true, true);
+				String tmp= getNameInClass(false, true);
 
 				return className + "." + tmp;
 		}
