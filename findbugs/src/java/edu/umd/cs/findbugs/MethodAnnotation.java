@@ -346,8 +346,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
 		boolean needsComma = false;
 		while (converter.getFirst() != ')') {
-			if (needsComma && !hash)
-				result.append(", ");
+			if (needsComma)
+                if (hash) result.append(",");
+                else result.append(", ");
 			if (shortenPackages)
 				result.append(removePackageName(converter.parseNext()));
 			else
