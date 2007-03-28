@@ -44,7 +44,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
     BugAccumulator accumulator;
     
 
-	private int readPC;
+	private int locationOfCall;
 
 	private String lastCallClass = null, lastCallMethod = null,
 			lastCallSig = null;
@@ -117,7 +117,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 						.equals("([CII)I")) && isInputStream()) {
 			sawRead = true;
 			recentCallToAvailable = sawAvailable > 0;
-			readPC = getPC();
+			locationOfCall = getPC();
 			return;
 		}
 		if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) 
@@ -133,6 +133,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 
 			wasBufferedInputStream = isBufferedInputStream();
 			sawSkip = true;
+            locationOfCall = getPC();
 			recentCallToAvailable = sawAvailable > 0 && !wasBufferedInputStream;
 			return;
 
@@ -145,7 +146,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 						recentCallToAvailable ? LOW_PRIORITY : NORMAL_PRIORITY)
 						.addClassAndMethod(this).addCalledMethod(lastCallClass,
 								lastCallMethod, lastCallSig, false),
-                               SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, readPC));
+                               SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, locationOfCall));
 
 
 			} else if (sawSkip) {
@@ -156,7 +157,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 										: NORMAL_PRIORITY)).addClassAndMethod(
 						this).addCalledMethod(lastCallClass, lastCallMethod,
 						lastCallSig, false),
-                        SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, readPC));
+                        SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, locationOfCall));
 			}
 		}
 		sawRead = false;
