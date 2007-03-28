@@ -71,7 +71,7 @@ public class InitializationChain extends BytecodeScanningDetector {
 			// positives. We need to do a more detailed check
 			// of which variables could be seen.
 			if (REPORT_CREATE_INSTANCE_BEFORE_FIELDS_ASSIGNED &&
-			        instanceCreated && !instanceCreatedWarningGiven) {
+			        instanceCreated && !instanceCreatedWarningGiven && !getSuperclassName().equals("java.lang.Enum")) {
 				String okSig = "L" + getClassName() + ";";
 				if (!okSig.equals(getSigConstantOperand())) {
 					bugReporter.reportBug(new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY)
