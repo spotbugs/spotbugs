@@ -273,7 +273,7 @@ public class FindDeadLocalStores implements Detector {
 					propertySet.addProperty(DeadLocalStoreProperty.CACHING_VALUE);
 			}
 
-			
+			boolean deadObjectStore = false;
 			if (ins instanceof IINC) {
 				// special handling of IINC
 				
@@ -292,11 +292,14 @@ public class FindDeadLocalStores implements Detector {
 						|| prevIns instanceof ANEWARRAY
 						|| prevIns instanceof NEWARRAY
 						|| prevIns instanceof MULTIANEWARRAY) {
-					propertySet.addProperty(DeadLocalStoreProperty.DEAD_OBJECT_STORE);
+                    deadObjectStore = true;
+					
 				}
 				
 			}
-            if (!killedBySubsequentStore
+            if (deadObjectStore) 
+                propertySet.addProperty(DeadLocalStoreProperty.DEAD_OBJECT_STORE);
+            else if (!killedBySubsequentStore
 				    && localStoreCount[local] == 2 && localLoadCount[local] > 0) {
 				// TODO: why is this significant?
 				
@@ -304,12 +307,10 @@ public class FindDeadLocalStores implements Detector {
 				
 			} else if (!parameterThatIsDeadAtEntry && localStoreCount[local] == 1) {
 				// might be final local constant
-				
 				propertySet.addProperty(DeadLocalStoreProperty.SINGLE_STORE);
 				
 			} else if (!parameterThatIsDeadAtEntry && localLoadCount[local] == 0) {
 				// TODO: why is this significant?
-				
 				propertySet.addProperty(DeadLocalStoreProperty.NO_LOADS);
 				
 			}
