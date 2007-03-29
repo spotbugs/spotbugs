@@ -103,13 +103,13 @@ public class Filter extends OrMatcher {
 				matchMatcher.addChild(matcher);
 			}
 			if (matchMatcher.numberChildren() == 0)
-                throw new IllegalArgumentException("Match element #" + count + " (starting at 1) is invalid in filter file " + fileName);
+                throw new FilterException("Match element #" + count + " (starting at 1) is invalid in filter file " + fileName);
 			// Add the Match matcher to the overall Filter
 			this.addChild(matchMatcher);
             count++;
 		}
         if (this.numberChildren() == 0)
-           throw new  IllegalArgumentException("Could not find any /FindBugsFilter/Match nodes in filter file " + fileName);
+           throw new  FilterException("Could not find any /FindBugsFilter/Match nodes in filter file " + fileName);
 
 	}
 
