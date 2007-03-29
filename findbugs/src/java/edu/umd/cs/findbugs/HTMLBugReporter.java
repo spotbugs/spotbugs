@@ -43,7 +43,8 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
 		this.stylesheet = stylesheet;
 	}
 
-	public void finish() {
+	@Override
+    public void finish() {
 		try {
 			BugCollection bugCollection = getBugCollection();
 			bugCollection.setWithMessages(true);

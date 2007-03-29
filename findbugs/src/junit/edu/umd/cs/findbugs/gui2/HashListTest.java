@@ -64,12 +64,15 @@ public class HashListTest extends TestCase {
         public BadHasher(int value) {
             this.value = value;
         }
+        @Override
         public String toString() {
             return Integer.toString(value);
         }
+        @Override
         public int hashCode() {
             return 42;
         }
+        @Override
         public boolean equals(Object v) {
             if (!(v instanceof BadHasher)) return false;
             return value == ((BadHasher)v).value;

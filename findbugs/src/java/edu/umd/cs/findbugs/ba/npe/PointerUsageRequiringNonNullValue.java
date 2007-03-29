@@ -51,6 +51,7 @@ public abstract class PointerUsageRequiringNonNullValue {
     }
 
     private static final PointerUsageRequiringNonNullValue instance = new PointerUsageRequiringNonNullValue() {
+        @Override
         public boolean isDirect() {
             return true;
         }
@@ -62,6 +63,7 @@ public abstract class PointerUsageRequiringNonNullValue {
     };
 
     private static final PointerUsageRequiringNonNullValue nonNullReturnInstance = new PointerUsageRequiringNonNullValue() {
+        @Override
         public boolean getReturnFromNonNullMethod() {
             return true;
         }
@@ -82,6 +84,7 @@ public abstract class PointerUsageRequiringNonNullValue {
 
     public static PointerUsageRequiringNonNullValue getPassedAsNonNullParameter(final XMethod m, final int param) {
         return new PointerUsageRequiringNonNullValue() {
+            @Override
             public @CheckForNull
             XMethodParameter getNonNullParameter() {
                 return new XMethodParameter(m, param);
@@ -97,6 +100,7 @@ public abstract class PointerUsageRequiringNonNullValue {
 
     public static PointerUsageRequiringNonNullValue getStoredIntoNonNullField(final XField f) {
         return new PointerUsageRequiringNonNullValue() {
+            @Override
             public @CheckForNull
             XField getNonNullField() {
                 return f;

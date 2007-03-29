@@ -50,6 +50,7 @@ public class UsagesRequiringNonNullValues {
 
     MultiMap<Location, Pair> map = new MultiMap<Location, Pair>(LinkedList.class);
     
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         for(Location loc : map.keySet()) {

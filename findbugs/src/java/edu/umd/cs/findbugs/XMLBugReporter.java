@@ -45,7 +45,8 @@ public class XMLBugReporter extends BugCollectionBugReporter {
 	public void setAddMessages(boolean enable) {
 		getBugCollection().setWithMessages(enable);
 	}
-	public void finish() {
+	@Override
+    public void finish() {
 		try {
 		Project project = getProject();
         if (project == null) throw new NullPointerException("No project");
