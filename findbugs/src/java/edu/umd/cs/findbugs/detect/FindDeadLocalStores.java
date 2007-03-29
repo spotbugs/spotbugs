@@ -305,11 +305,13 @@ public class FindDeadLocalStores implements Detector {
 				
 				propertySet.addProperty(DeadLocalStoreProperty.TWO_STORES_MULTIPLE_LOADS);
 				
-			} else if (!parameterThatIsDeadAtEntry && localStoreCount[local] == 1) {
+			} else if (!parameterThatIsDeadAtEntry && localStoreCount[local] == 1 && 
+                    && localLoadCount[local] == 0 
+                    && !propertySet.containsProperty(DeadLocalStoreProperty.DEFENSIVE_CONSTANT_OPCODE)) {
 				// might be final local constant
 				propertySet.addProperty(DeadLocalStoreProperty.SINGLE_STORE);
 				
-			} else if (!parameterThatIsDeadAtEntry && localLoadCount[local] == 0) {
+			} else if (false && !parameterThatIsDeadAtEntry &&  localLoadCount[local] == 0) {
 				// TODO: why is this significant?
 				propertySet.addProperty(DeadLocalStoreProperty.NO_LOADS);
 				
