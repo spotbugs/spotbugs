@@ -414,9 +414,9 @@ public class FindBugsWorker {
 	private void configureExtended(IFindBugsEngine findBugs) {
 		// configure extended preferences
 		findBugs.setAnalysisFeatureSettings(extendedPrefs.getAnalysisFeatureSettings());
-		String[] includeFilterFiles = extendedPrefs.getIncludeFilterFiles();
-		for (int i = 0; i < includeFilterFiles.length; i++) {
-			IFile file = project.getFile(includeFilterFiles[i]);
+
+         for(String fileName : extendedPrefs.getIncludeFilterFiles()) {
+			IFile file = project.getFile(fileName);
 			// TODO: some error reporting here to indicate that a filter no longer exists
 			if (file.exists()) {
 				String filterName = file.getLocation().toOSString();
@@ -432,9 +432,8 @@ public class FindBugsWorker {
 			}
 		}
 
-		String[] excludeFilterFiles = extendedPrefs.getExcludeFilterFiles();
-		for (int i = 0; i < excludeFilterFiles.length; i++) {
-			IFile file = project.getFile(excludeFilterFiles[i]);
+		for(String fileName : extendedPrefs.getExcludeFilterFiles()) {
+			IFile file = project.getFile(fileName);
 			// TODO: some error reporting here to indicate that a filter no longer exists
 			if (file.exists()) {
 				String filterName = file.getLocation().toOSString();

@@ -31,6 +31,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -316,7 +318,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 		viewer.setLabelProvider(new WorkbenchLabelProvider());
 		viewer.getControl().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
-		String[] filterFiles;
+		Collection<String> filterFiles;
 		if (includeFilter) {
 			filterFiles = currentExtendedPreferences.getIncludeFilterFiles();
 		} else {
@@ -325,8 +327,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 
 		final List<FilePlaceHolder> filters = new ArrayList<FilePlaceHolder>();
 		if (filterFiles != null) {
-			for (int i = 0; i < filterFiles.length; i++) {
-				filters.add(new FilePlaceHolder(project.getFile(filterFiles[i])));
+			for (String s : filterFiles) {
+				filters.add(new FilePlaceHolder(project.getFile(s)));
 			}
 		}
 		viewer.add(filters.toArray());
@@ -405,12 +407,11 @@ public class FindbugsPropertyPage extends PropertyPage {
 		});
 	}
 
-	private String[] filesToStrings(List filters) {
-		String[] result = new String[filters.size()];
-		for (int i = 0; i < filters.size(); i++) {
-			FilePlaceHolder holder = (FilePlaceHolder) filters.get(i);
-			result[i] = holder.getFile().getProjectRelativePath().toString();
-		}
+	private SortedSet<String> filesToStrings(List<FilePlaceHolder> filters) {
+        SortedSet<String>result = new TreeSet<String>();
+		for (FilePlaceHolder holder : filters) 
+            result.add(holder.getFile().getProjectRelativePath().toString());
+		
 		return result;
 	}
 

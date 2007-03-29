@@ -22,10 +22,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.Properties;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.TigerSubstitutes;
@@ -58,9 +58,9 @@ public class ExtendedPreferences implements Cloneable {
 
 	private String effort = EFFORT_DEFAULT;
 
-	private String[] includeFilterFiles = new String[0];
+	private Collection<String> includeFilterFiles = TigerSubstitutes.emptySet();
 
-	private String[] excludeFilterFiles = new String[0];
+	private Collection<String> excludeFilterFiles = TigerSubstitutes.emptySet();
 
 	public String getEffort() {
 		return effort;
@@ -76,11 +76,11 @@ public class ExtendedPreferences implements Cloneable {
 
 	}
 
-	public String[] getIncludeFilterFiles() {
+	public Collection<String> getIncludeFilterFiles() {
 		return includeFilterFiles;
 	}
 
-	public void setIncludeFilterFiles(String[] includeFilterFiles) {
+	public void setIncludeFilterFiles(Collection<String> includeFilterFiles) {
 		if (includeFilterFiles == null) {
 			throw new IllegalArgumentException(
 					"includeFilterFiles may not be null.");
@@ -88,7 +88,7 @@ public class ExtendedPreferences implements Cloneable {
 		this.includeFilterFiles = includeFilterFiles;
 	}
 
-	public void setExcludeFilterFiles(String[] excludeFilterFiles) {
+	public void setExcludeFilterFiles(Collection<String>excludeFilterFiles) {
 		if (excludeFilterFiles == null) {
 			throw new IllegalArgumentException(
 					"excludeFilterFiles may not be null.");
@@ -96,7 +96,7 @@ public class ExtendedPreferences implements Cloneable {
 		this.excludeFilterFiles = excludeFilterFiles;
 	}
 
-	public String[] getExcludeFilterFiles() {
+	public Collection<String> getExcludeFilterFiles() {
 		return excludeFilterFiles;
 	}
 
@@ -140,8 +140,8 @@ public class ExtendedPreferences implements Cloneable {
 	 *            The key prefix of the array.
 	 * @return The array of Strings, or an empty array if no values exist.
 	 */
-	private String[] readFilters(Properties props, String keyPrefix) {
-		List<String> filters = new ArrayList<String>();
+	private SortedSet<String>readFilters(Properties props, String keyPrefix) {
+		SortedSet<String> filters = new TreeSet<String>();
 		int counter = 0;
 		boolean keyFound = true;
 		while (keyFound) {
@@ -154,7 +154,7 @@ public class ExtendedPreferences implements Cloneable {
 			}
 		}
 
-		return (String[]) filters.toArray(new String[filters.size()]);
+        return filters;
 	}
 
 	/**
@@ -169,10 +169,11 @@ public class ExtendedPreferences implements Cloneable {
 	 *            The filters array to write to the properties.
 	 */
 	private void writeFilters(Properties props, String keyPrefix,
-			String[] filters) {
+			Collection<String> filters) {
 		int counter = 0;
-		for (; counter < filters.length; counter++) {
-			props.setProperty(keyPrefix + counter, filters[counter]);
+        for(String s : filters) {
+			props.setProperty(keyPrefix + counter, s);
+            counter++;
 		}
 		// remove obsolete keys from the properties file
 		boolean keyFound = true;
@@ -235,8 +236,8 @@ public class ExtendedPreferences implements Cloneable {
 
 	@Override
 	public int hashCode() {
-		return effort.hashCode() + TigerSubstitutes.hashCode(includeFilterFiles) 
-        + TigerSubstitutes.hashCode(excludeFilterFiles);
+		return effort.hashCode() + includeFilterFiles.hashCode()
+        + excludeFilterFiles.hashCode();
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -249,9 +250,9 @@ public class ExtendedPreferences implements Cloneable {
 		if (obj instanceof ExtendedPreferences) {
 			ExtendedPreferences other = (ExtendedPreferences) obj;
 			return effort.equals(other.effort)
-					&& Arrays.equals(includeFilterFiles,
+					&& includeFilterFiles.equals(
 							other.includeFilterFiles)
-					&& Arrays.equals(excludeFilterFiles,
+					&& excludeFilterFiles.equals(
 							other.excludeFilterFiles);
 		}
 		return false;
