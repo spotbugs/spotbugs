@@ -662,6 +662,8 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		
 		IFile userPrefsFile = getUserPreferencesFile(project);
 		
+        ensureReadWrite(userPrefsFile);
+        
 		FileOutput userPrefsOutput = new FileOutput() {
 			public void writeFile(OutputStream os) throws IOException {
 				userPrefs.write(os);
@@ -674,6 +676,26 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		
 		IO.writeFile(userPrefsFile, userPrefsOutput, null);
 	}
+
+	/**
+	 * Ensure that a file is writable. If not currently writable,
+	 * check it as so that we can edit it.
+	 * 
+	 * @param file - file that should be made writable
+	 * @throws CoreException
+	 */
+    public static void ensureReadWrite(IFile file) throws CoreException {
+        /*
+         * fix for bug 1683264: we should checkout file before writing to it 
+         */
+        if(file.isReadOnly()){
+            IStatus checkOutStatus = 
+                ResourcesPlugin.getWorkspace().validateEdit(new IFile[]{file}, null);
+            if(! checkOutStatus.isOK()){
+                throw new CoreException(checkOutStatus);
+            }
+        }
+    }
 	
 	/**
 	 * Save current UserPreferences for given project.
@@ -691,6 +713,9 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		if (!userPrefsFile.exists()) {
 			throw new IOException("User preferences file not present yet. Save UserPreferences first.");
 		}		
+        
+        ensureReadWrite(userPrefsFile);
+        
 		File prefsFile = userPrefsFile.getLocation().toFile();
 		
 		extendedPrefs.write(prefsFile);
