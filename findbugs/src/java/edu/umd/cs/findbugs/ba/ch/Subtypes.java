@@ -160,11 +160,16 @@ public class Subtypes {
 			if (co instanceof ConstantDouble || co instanceof ConstantLong)
 				i++;
 			if (co instanceof ConstantClass) {
-				String name = ((ConstantClass) co).getBytes(cp);
-				name = extractClassName(name);
+	             String originalName = null;
+			    try {
+				originalName = ((ConstantClass) co).getBytes(cp);
+				String name = extractClassName(originalName);
 				if (DEBUG_HIERARCHY)
 					System.out.println(i + " : " + name);
 				addNamedClass(name);
+			    } catch (RuntimeException e) {
+			        AnalysisContext.logError("Error extracting name from " + originalName, e);
+			    }
 			} else if (co instanceof ConstantCP) {
 				ConstantCP co2 = (ConstantCP) co;
 				ConstantNameAndType nt = (ConstantNameAndType) cp
@@ -194,8 +199,13 @@ public class Subtypes {
 			XFactory.createXMethod(c, m);
 	}
 	public void addNamedClass(String name) {
+	    if (name.length() == 0 || name.charAt(0) == '[') {
+	        AnalysisContext.logError("Bad class name: " + name);
+	        return;
+	    }
+	    
 		name = name.replace('/', '.');
-
+		
 		if (referenced.add(name))
 			try {
 				
@@ -332,13 +342,15 @@ public class Subtypes {
 		return descendents;
 	}
 
-	public static String extractClassName(String name) {
+	public static String extractClassName(String originalName) {
+	    String name = originalName;
 		if (name.charAt(0) != '[' && name.charAt(name.length() - 1) != ';')
 			return name;
 		while (name.charAt(0) == '[')
 			name = name.substring(1);
 		if (name.charAt(0) == 'L' && name.charAt(name.length() - 1) == ';')
 			name = name.substring(1, name.length() - 1);
+		if (name.charAt(0) == '[') throw new IllegalArgumentException("Bad class name: " + originalName);
 		return name;
 	}
 
