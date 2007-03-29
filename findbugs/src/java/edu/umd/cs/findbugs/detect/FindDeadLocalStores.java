@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
@@ -248,6 +249,12 @@ public class FindDeadLocalStores implements Detector {
 				}
 			}
 
+            for(Field f : javaClass.getFields()) {
+                if (f.getName().equals(name)) {
+                    propertySet.addProperty(DeadLocalStoreProperty.SHADOWS_FIELD);
+                    break;
+                }
+            }
 			
 			// Ignore assignments that were killed by a subsequent assignment.
 			boolean killedBySubsequentStore = llsaDataflow.getAnalysis().killedByStore(liveStoreSet, local);

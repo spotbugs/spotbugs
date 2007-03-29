@@ -40,7 +40,10 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
 	/** There are no loads of this local. (Maybe it's final?). */
 	public static final DeadLocalStoreProperty NO_LOADS =
 		new DeadLocalStoreProperty("NO_LOADS",PriorityAdjustment.LOWER_PRIORITY);
-    public static final DeadLocalStoreProperty SYNTHETIC_NAME =
+    /** Variable shadows a fields with the same name */
+    public static final DeadLocalStoreProperty SHADOWS_FIELD =
+        new DeadLocalStoreProperty("SHADOWS_FIELD",PriorityAdjustment.RAISE_PRIORITY);
+  public static final DeadLocalStoreProperty SYNTHETIC_NAME =
         new DeadLocalStoreProperty("SYNTHETIC_NAME",PriorityAdjustment.AT_MOST_LOW);
 	/** This local is a parameter which is dead on entry to the method. */
 	public static final DeadLocalStoreProperty PARAM_DEAD_ON_ENTRY =
