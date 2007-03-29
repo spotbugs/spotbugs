@@ -209,9 +209,7 @@ public class FindDeadLocalStores implements Detector {
             BitSet liveStoreSet = llsaDataflow.getAnalysis().getFactAtLocation(location);
             
             // Is store alive?
-            if (llsaDataflow.getAnalysis().isStoreAlive(liveStoreSet, local))
-                continue;
-            // Store is dead
+            boolean storeLive = llsaDataflow.getAnalysis().isStoreAlive(liveStoreSet, local);
 			
 			LocalVariableAnnotation lvAnnotation 
 			= LocalVariableAnnotation.getLocalVariableAnnotation(method, location, ins);			
@@ -230,13 +228,13 @@ public class FindDeadLocalStores implements Detector {
 			if (parameterThatIsDeadAtEntry && !complainedAbout.get(local)) {
 				
 				// TODO: add warning properties?
-				pendingBugReportAboutOverwrittenParameter = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN", NORMAL_PRIORITY)
+				pendingBugReportAboutOverwrittenParameter = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN", storeLive ? NORMAL_PRIORITY : HIGH_PRIORITY)
 					.addClassAndMethod(methodGen, javaClass.getSourceFileName())
 					.add(lvAnnotation)
 					.addSourceLine(classContext, methodGen, javaClass.getSourceFileName(), location.getHandle());
 				complainedAbout.set(local);
 			}
-
+            if (storeLive) continue;
 			boolean storeOfNull = false;
 			InstructionHandle prevInsHandle = location.getHandle().getPrev();
 			if (prevInsHandle != null) {
