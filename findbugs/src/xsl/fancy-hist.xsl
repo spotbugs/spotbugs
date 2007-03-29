@@ -331,6 +331,7 @@
             }
 
             t = countTotalBugsVersion(0);
+            o = countFixedButActiveBugsVersion(0);
             content += "<tr>";
             content += "<td class='summary-name'>" + versions[0][1] + "</td>";
             content += "<td class='summary-priority-all'> " + (t[0] + o[0]) + " </td>";
