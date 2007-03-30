@@ -1,0 +1,531 @@
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/.classpath
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/.classpath	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/.classpath	(working copy)
+@@ -1,7 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <classpath>
+ 	<classpathentry kind="src" path="src/java"/>
+-	<classpathentry kind="src" path="examples"/>
+ 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+ 	<classpathentry kind="output" path="eclipse"/>
+ </classpath>
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/.settings/org.eclipse.jdt.core.prefs
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/.settings/org.eclipse.jdt.core.prefs	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/.settings/org.eclipse.jdt.core.prefs	(working copy)
+@@ -1,12 +1,12 @@
+-#Tue Jan 24 00:19:24 EST 2006
++#Fri Feb 23 10:19:35 EST 2007
+ eclipse.preferences.version=1
+-org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=disabled
+-org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.2
++org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=enabled
++org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.5
+ org.eclipse.jdt.core.compiler.codegen.unusedLocal=preserve
+-org.eclipse.jdt.core.compiler.compliance=1.4
++org.eclipse.jdt.core.compiler.compliance=1.5
+ org.eclipse.jdt.core.compiler.debug.lineNumber=generate
+ org.eclipse.jdt.core.compiler.debug.localVariable=generate
+ org.eclipse.jdt.core.compiler.debug.sourceFile=generate
+-org.eclipse.jdt.core.compiler.problem.assertIdentifier=warning
+-org.eclipse.jdt.core.compiler.problem.enumIdentifier=warning
+-org.eclipse.jdt.core.compiler.source=1.3
++org.eclipse.jdt.core.compiler.problem.assertIdentifier=error
++org.eclipse.jdt.core.compiler.problem.enumIdentifier=error
++org.eclipse.jdt.core.compiler.source=1.5
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/build.xml
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/build.xml	(revision 0)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/build.xml	(revision 0)
+@@ -0,0 +1,39 @@
++<project name="bcel" default="build">
++
++	<property name="src.dir" value="src/java"/>
++	<property name="classes.dir" value="eclipse"/>
++	<property name="jar.dir" value="."/>
++
++	<target name="jar" depends="clean,classes">
++		<!-- Main engine and command line jar file. -->
++		<jar destfile="${jar.dir}/bcel.jar" >
++			<!-- Compiled classes, properties files. -->
++			<fileset dir="${classes.dir}">
++				<include name="**/*.class"/>
++			</fileset>
++		</jar>
++   </target>
++	
++	<!-- Compile Java source files, and copy other files (properties,
++		images, html, XSL stylesheets) that need to be part of the codebase. -->
++	<target name="classes">
++		<mkdir dir="${classes.dir}"/>
++		<!-- Compile Java source files. -->
++		<javac srcdir="${src.dir}"
++						destdir="${classes.dir}"
++						source="1.5"
++						target="jsr14"
++						deprecation="on"
++						debug="on">
++				</javac>
++	</target>
++	<!-- Delete generated files. -->
++	<target name="clean">
++		<delete file="${classes.dir}"/>
++		<mkdir dir="${classes.dir}"/>
++	</target>
++
++	
++</project>
++
++<!-- vim:set ts=4: -->
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/Constant.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/Constant.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/Constant.java	(working copy)
+@@ -141,7 +141,7 @@
+             case Constants.CONSTANT_NameAndType:
+                 return new ConstantNameAndType(file);
+             case Constants.CONSTANT_Utf8:
+-                return new ConstantUtf8(file);
++                return ConstantUtf8.getInstance(file);
+             default:
+                 throw new ClassFormatException("Invalid byte tag in constant pool: " + b);
+         }
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/ConstantUtf8.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/ConstantUtf8.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/ConstantUtf8.java	(working copy)
+@@ -19,7 +19,14 @@
+ import java.io.DataInputStream;
+ import java.io.DataOutputStream;
+ import java.io.IOException;
++import java.util.HashMap;
++import java.util.LinkedHashMap;
++import java.util.Map;
++
+ import org.apache.bcel.Constants;
++import org.apache.bcel.generic.ObjectType;
++
++import com.sun.org.apache.xerces.internal.impl.io.UTF8Reader;
+ 
+ /** 
+  * This class is derived from the abstract 
+@@ -32,9 +39,60 @@
+  */
+ public final class ConstantUtf8 extends Constant {
+ 
+-    private String bytes;
++     private final String bytes;
++    
++    private static final int MAX_CACHE_ENTRIES = 20000;
++    private static final int INITIAL_CACHE_CAPACITY = (int)(MAX_CACHE_ENTRIES/0.75);
++    private static HashMap<String, ConstantUtf8> cache;
++    private static int considered = 0;
++    private static int hits = 0;
++    private static int skipped = 0;
++    private static int created = 0;
++    final static boolean BCEL_STATISTICS = Boolean.getBoolean("bcel.statistics");
++    final static boolean BCEL_DONT_CACHE = Boolean.getBoolean("bcel.dontCache");
++    
++    static {
++        if (BCEL_STATISTICS)
++        Runtime.getRuntime().addShutdownHook(new Thread() {
++            public void run() {
++                System.err.println("Cache hit " + hits + "/" + considered +", " 
++                        + skipped + " skipped");
++                System.err.println("Total of " + created + " ConstantUtf8 objects created");
++            }
++        });
++    }
++    public  static synchronized ConstantUtf8 getCachedInstance(String s) {
++        if (BCEL_DONT_CACHE || s.length() > 200) {
++            skipped++;
++            return  new ConstantUtf8(s);
++        }
++        considered++;
++        if (cache == null)  {
++                      cache = new LinkedHashMap<String, ConstantUtf8>(INITIAL_CACHE_CAPACITY, 0.75f, true) {
++            
++            protected boolean removeEldestEntry(Map.Entry eldest) {
++               return size() > MAX_CACHE_ENTRIES;
++            }
++            
++        };
++        }
++        ConstantUtf8 result = cache.get(s);
++        if (result != null) {
++            hits++;
++            return result;
++        }
++        result = new ConstantUtf8(s);
++        cache.put(s, result);
++        return result;
++    }
+ 
++    public static ConstantUtf8 getInstance(String s) {
++        return getCachedInstance(s);
++    }
+ 
++    public static ConstantUtf8 getInstance (DataInputStream file)  throws IOException {
++        return getInstance(file.readUTF());
++    }
+     /**
+      * Initialize from another object.
+      */
+@@ -52,6 +110,7 @@
+     ConstantUtf8(DataInputStream file) throws IOException {
+         super(Constants.CONSTANT_Utf8);
+         bytes = file.readUTF();
++        created++;
+     }
+ 
+ 
+@@ -64,6 +123,7 @@
+             throw new IllegalArgumentException("bytes must not be null!");
+         }
+         this.bytes = bytes;
++        created++;
+     }
+ 
+ 
+@@ -101,9 +161,10 @@
+ 
+     /**
+      * @param bytes the raw bytes of this Utf-8
++     * @deprecated
+      */
+     public final void setBytes( String bytes ) {
+-        this.bytes = bytes;
++        throw new UnsupportedOperationException();
+     }
+ 
+ 
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/LineNumber.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/LineNumber.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/classfile/LineNumber.java	(working copy)
+@@ -32,8 +32,8 @@
+  */
+ public final class LineNumber implements Cloneable, Node, Serializable {
+ 
+-    private int start_pc; // Program Counter (PC) corresponds to line
+-    private int line_number; // number in source file
++    private short start_pc; // Program Counter (PC) corresponds to line
++    private short line_number; // number in source file
+ 
+ 
+     /**
+@@ -59,8 +59,8 @@
+      * @param line_number line number in source file
+      */
+     public LineNumber(int start_pc, int line_number) {
+-        this.start_pc = start_pc;
+-        this.line_number = line_number;
++        this.start_pc = (short) start_pc;
++        this.line_number = (short)line_number;
+     }
+ 
+ 
+@@ -92,7 +92,7 @@
+      * @return Corresponding source line
+      */
+     public final int getLineNumber() {
+-        return line_number;
++        return 0xffff & line_number;
+     }
+ 
+ 
+@@ -100,7 +100,7 @@
+      * @return PC in code
+      */
+     public final int getStartPC() {
+-        return start_pc;
++        return  0xffff & start_pc;
+     }
+ 
+ 
+@@ -108,7 +108,7 @@
+      * @param line_number the source line number
+      */
+     public final void setLineNumber( int line_number ) {
+-        this.line_number = line_number;
++        this.line_number = (short) line_number;
+     }
+ 
+ 
+@@ -116,7 +116,7 @@
+      * @param start_pc the pc for this line number
+      */
+     public final void setStartPC( int start_pc ) {
+-        this.start_pc = start_pc;
++        this.start_pc = (short) start_pc;
+     }
+ 
+ 
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/ArrayType.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/ArrayType.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/ArrayType.java	(working copy)
+@@ -46,7 +46,7 @@
+      * @param class_name complete name of class (java.lang.String, e.g.)
+      */
+     public ArrayType(String class_name, int dimensions) {
+-        this(new ObjectType(class_name), dimensions);
++        this(ObjectType.getInstance(class_name), dimensions);
+     }
+ 
+ 
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/FieldGen.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/FieldGen.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/FieldGen.java	(working copy)
+@@ -107,7 +107,7 @@
+      * by the JVM automatically.
+      */
+     public void setInitValue( String str ) {
+-        checkType(new ObjectType("java.lang.String"));
++        checkType(  ObjectType.getInstance("java.lang.String"));
+         if (str != null) {
+             value = str;
+         }
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/FieldOrMethod.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/FieldOrMethod.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/FieldOrMethod.java	(working copy)
+@@ -94,7 +94,7 @@
+      *    getReferenceType() instead.
+      */
+     public ObjectType getClassType( ConstantPoolGen cpg ) {
+-        return new ObjectType(getClassName(cpg));
++        return ObjectType.getInstance(getClassName(cpg));
+     }
+ 
+ 
+@@ -115,7 +115,7 @@
+             return (ArrayType) Type.getType(className);
+         } else {
+             className = className.replace('/', '.');
+-            return new ObjectType(className);
++            return ObjectType.getInstance(className);
+         }
+     }
+ 
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/InstructionFactory.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/InstructionFactory.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/InstructionFactory.java	(working copy)
+@@ -616,7 +616,7 @@
+ 
+ 
+     public NEW createNew( String s ) {
+-        return createNew(new ObjectType(s));
++        return createNew(ObjectType.getInstance(s));
+     }
+ 
+ 
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/MethodGen.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/MethodGen.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/MethodGen.java	(working copy)
+@@ -122,7 +122,7 @@
+             /* Add local variables, namely the implicit `this' and the arguments
+              */
+             if (!isStatic() && (class_name != null)) { // Instance method -> `this' is local var 0
+-                addLocalVariable("this", new ObjectType(class_name), start, end);
++                addLocalVariable("this",  ObjectType.getInstance(class_name), start, end);
+             }
+         }
+         if (arg_types != null) {
+@@ -183,7 +183,7 @@
+                         if (type > 0) {
+                             String cen = m.getConstantPool().getConstantString(type,
+                                     Constants.CONSTANT_Class);
+-                            c_type = new ObjectType(cen);
++                            c_type =  ObjectType.getInstance(cen);
+                         }
+                         int end_pc = ce.getEndPC();
+                         int length = m.getCode().getCode().length;
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/ObjectType.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/ObjectType.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/ObjectType.java	(working copy)
+@@ -16,6 +16,10 @@
+  */
+ package org.apache.bcel.generic;
+ 
++import java.util.HashMap;
++import java.util.LinkedHashMap;
++import java.util.Map;
++
+ import org.apache.bcel.Constants;
+ import org.apache.bcel.Repository;
+ import org.apache.bcel.classfile.JavaClass;
+@@ -20,6 +24,7 @@
+ import org.apache.bcel.Repository;
+ import org.apache.bcel.classfile.JavaClass;
+ 
++
+ /** 
+  * Denotes reference such as java.lang.String.
+  *
+@@ -28,8 +33,27 @@
+  */
+ public class ObjectType extends ReferenceType {
+ 
+-    private String class_name; // Class name of type
++    private static final int MAX_CACHE_ENTRIES = 200;
++    private static final int INITIAL_CACHE_CAPACITY = (int)(MAX_CACHE_ENTRIES/0.75);
++    private static HashMap<String, ObjectType> cache;
++    public synchronized static ObjectType getInstance(String class_name) {
++        if (cache == null) 
++            cache = new LinkedHashMap<String, ObjectType>(INITIAL_CACHE_CAPACITY, 0.75f, true) {
++            
++
++            protected boolean removeEldestEntry(Map.Entry eldest) {
++               return size() > MAX_CACHE_ENTRIES;
++            }
++        
++        };
++        ObjectType result = cache.get(class_name);
++        if (result != null) return result;
++        result = new ObjectType(class_name);
++        cache.put(class_name, result);
++        return result;
++    }
+ 
++    final private String class_name; // Class name of type
+ 
+     /**
+      * @param class_name fully qualified class name, e.g. java.lang.String
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/ReferenceType.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/ReferenceType.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/ReferenceType.java	(working copy)
+@@ -162,7 +162,7 @@
+             // 'java.io.Serializable'"
+             if ((T instanceof ObjectType) && (((ObjectType) T).referencesInterfaceExact())) {
+                 for (int ii = 0; ii < Constants.INTERFACES_IMPLEMENTED_BY_ARRAYS.length; ii++) {
+-                    if (T.equals(new ObjectType(Constants.INTERFACES_IMPLEMENTED_BY_ARRAYS[ii]))) {
++                    if (T.equals(ObjectType.getInstance(Constants.INTERFACES_IMPLEMENTED_BY_ARRAYS[ii]))) {
+                         return true;
+                     }
+                 }
+@@ -248,7 +248,7 @@
+         for (int i = 0; i < t_sups.length; i++) {
+             for (int j = 0; j < this_sups.length; j++) {
+                 if (this_sups[j].equals(t_sups[i])) {
+-                    return new ObjectType(this_sups[j].getClassName());
++                    return ObjectType.getInstance(this_sups[j].getClassName());
+                 }
+             }
+         }
+@@ -320,7 +320,7 @@
+         for (int i = 0; i < t_sups.length; i++) {
+             for (int j = 0; j < this_sups.length; j++) {
+                 if (this_sups[j].equals(t_sups[i])) {
+-                    return new ObjectType(this_sups[j].getClassName());
++                    return ObjectType.getInstance(this_sups[j].getClassName());
+                 }
+             }
+         }
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/Type.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/Type.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/generic/Type.java	(working copy)
+@@ -31,7 +31,7 @@
+  */
+ public abstract class Type implements java.io.Serializable {
+ 
+-    protected byte type;
++    final protected byte type;
+     protected String signature; // signature for the type
+     /** Predefined constants
+      */
+@@ -44,11 +44,11 @@
+     public static final BasicType DOUBLE = new BasicType(Constants.T_DOUBLE);
+     public static final BasicType FLOAT = new BasicType(Constants.T_FLOAT);
+     public static final BasicType CHAR = new BasicType(Constants.T_CHAR);
+-    public static final ObjectType OBJECT = new ObjectType("java.lang.Object");
+-    public static final ObjectType CLASS = new ObjectType("java.lang.Class");
+-    public static final ObjectType STRING = new ObjectType("java.lang.String");
+-    public static final ObjectType STRINGBUFFER = new ObjectType("java.lang.StringBuffer");
+-    public static final ObjectType THROWABLE = new ObjectType("java.lang.Throwable");
++    public static final ObjectType OBJECT = ObjectType.getInstance("java.lang.Object");
++    public static final ObjectType CLASS = ObjectType.getInstance("java.lang.Class");
++    public static final ObjectType STRING = ObjectType.getInstance("java.lang.String");
++    public static final ObjectType STRINGBUFFER = ObjectType.getInstance("java.lang.StringBuffer");
++    public static final ObjectType THROWABLE = ObjectType.getInstance("java.lang.Throwable");
+     public static final Type[] NO_ARGS = new Type[0];
+     public static final ReferenceType NULL = new ReferenceType() {
+     };
+@@ -190,7 +190,7 @@
+             }
+             //corrected concurrent private static field acess
+             wrap(consumed_chars, index + 1); // "Lblabla;" `L' and `;' are removed
+-            return new ObjectType(signature.substring(1, index).replace('/', '.'));
++            return ObjectType.getInstance(signature.substring(1, index).replace('/', '.'));
+         }
+     }
+ 
+@@ -278,7 +278,7 @@
+                 throw new IllegalStateException("Ooops, what primitive type is " + cl);
+             }
+         } else { // "Real" class
+-            return new ObjectType(cl.getName());
++            return ObjectType.getInstance(cl.getName());
+         }
+     }
+ 
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/verifier/structurals/InstConstraintVisitor.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/verifier/structurals/InstConstraintVisitor.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/verifier/structurals/InstConstraintVisitor.java	(working copy)
+@@ -52,7 +52,7 @@
+  */
+ public class InstConstraintVisitor extends EmptyVisitor implements org.apache.bcel.generic.Visitor{
+ 
+-	private static ObjectType GENERIC_ARRAY = new ObjectType("org.apache.bcel.verifier.structurals.GenericArray");
++	private static ObjectType GENERIC_ARRAY = ObjectType.getInstance("org.apache.bcel.verifier.structurals.GenericArray");
+ 
+ 	/**
+ 	 * The constructor. Constructs a new instance of this class.
+@@ -1207,7 +1207,7 @@
+ 
+ 		if (f.isProtected()){
+ 			ObjectType classtype = o.getClassType(cpg);
+-			ObjectType curr = new ObjectType(mg.getClassName());
++			ObjectType curr = ObjectType.getInstance(mg.getClassName());
+ 
+ 			if (	classtype.equals(curr) ||
+ 						curr.subclassOf(classtype)	){
+@@ -2531,7 +2531,7 @@
+ 		
+ 		if (f.isProtected()){
+ 			ObjectType classtype = o.getClassType(cpg);
+-			ObjectType curr = new ObjectType(mg.getClassName());
++			ObjectType curr = ObjectType.getInstance(mg.getClassName());
+ 
+ 			if (	classtype.equals(curr) ||
+ 						curr.subclassOf(classtype)	){
+Index: /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/verifier/structurals/Pass3bVerifier.java
+===================================================================
+--- /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/verifier/structurals/Pass3bVerifier.java	(revision 510968)
++++ /Users/pugh/Documents/eclipse/workspace/jakarta-bcel-5.2/src/java/org/apache/bcel/verifier/structurals/Pass3bVerifier.java	(working copy)
+@@ -301,7 +301,7 @@
+ 				Frame f = new Frame(mg.getMaxLocals(),mg.getMaxStack());
+ 				if ( !mg.isStatic() ){
+ 					if (mg.getName().equals(Constants.CONSTRUCTOR_NAME)){
+-						Frame._this = new UninitializedObjectType(new ObjectType(jc.getClassName()));
++						Frame._this = new UninitializedObjectType(ObjectType.getInstance(jc.getClassName()));
+ 						f.getLocals().set(0, Frame._this);
+ 					}
+ 					else{
+@@ -306,7 +306,7 @@
+ 					}
+ 					else{
+ 						Frame._this = null;
+-						f.getLocals().set(0, new ObjectType(jc.getClassName()));
++						f.getLocals().set(0, ObjectType.getInstance(jc.getClassName()));
+ 					}
+ 				}
+ 				Type[] argtypes = mg.getArgumentTypes();
