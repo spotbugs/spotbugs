@@ -144,7 +144,7 @@ public class WrongMapIterator extends BytecodeScanningDetector implements   Stat
    					if (keyRegister >= 0)
    						state = SAW_KEY_STORE;
    					else
-   						seen = SAW_NOTHING;
+   					    state = SAW_NOTHING;
    				}
      		break;
     		
