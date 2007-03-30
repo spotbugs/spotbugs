@@ -367,6 +367,11 @@ public class GUISaveState{
 		
 		p.putFloat(FONT_SIZE, fontSize);
 		
+		try {
+			p.put(STARTERDIRECTORY,starterDirectoryForLoadBugs.getCanonicalPath());
+		} catch (IOException e) {
+			Debug.println(e);
+		}
 		int sorterLength=MainFrame.getInstance().getSorter().getColumnCount();
 		ArrayList<Sortables> sortables=MainFrame.getInstance().getSorter().getOrder();
 		p.putInt(GUISaveState.SORTERTABLELENGTH, sorterLength);
