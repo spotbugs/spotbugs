@@ -23,9 +23,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Properties;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Set;
 
 import edu.umd.cs.findbugs.FindBugs;
 import edu.umd.cs.findbugs.TigerSubstitutes;
@@ -140,8 +140,8 @@ public class ExtendedPreferences implements Cloneable {
 	 *            The key prefix of the array.
 	 * @return The array of Strings, or an empty array if no values exist.
 	 */
-	private SortedSet<String>readFilters(Properties props, String keyPrefix) {
-		SortedSet<String> filters = new TreeSet<String>();
+	private Set<String>readFilters(Properties props, String keyPrefix) {
+		Set<String> filters = new LinkedHashSet<String>();
 		int counter = 0;
 		boolean keyFound = true;
 		while (keyFound) {

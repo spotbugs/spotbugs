@@ -31,8 +31,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -407,8 +407,8 @@ public class FindbugsPropertyPage extends PropertyPage {
 		});
 	}
 
-	private SortedSet<String> filesToStrings(List<FilePlaceHolder> filters) {
-        SortedSet<String>result = new TreeSet<String>();
+	private Set<String> filesToStrings(List<FilePlaceHolder> filters) {
+        Set<String>result = new LinkedHashSet<String>();
 		for (FilePlaceHolder holder : filters) 
             result.add(holder.getFile().getProjectRelativePath().toString());
 		
