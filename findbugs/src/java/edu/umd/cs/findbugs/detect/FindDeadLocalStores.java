@@ -316,7 +316,7 @@ public class FindDeadLocalStores implements Detector {
 				// might be final local constant
 				propertySet.addProperty(DeadLocalStoreProperty.SINGLE_STORE);
 				
-			} else if (false && !parameterThatIsDeadAtEntry &&  localLoadCount[local] == 0) {
+			} else if (!parameterThatIsDeadAtEntry &&  localLoadCount[local] == 0) {
 				// TODO: why is this significant?
 				propertySet.addProperty(DeadLocalStoreProperty.NO_LOADS);
 				
