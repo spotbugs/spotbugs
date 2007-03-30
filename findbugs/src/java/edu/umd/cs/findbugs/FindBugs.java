@@ -74,13 +74,14 @@ import edu.umd.cs.findbugs.visitclass.Constants2;
  * An instance of this class is used to apply the selected set of
  * analyses on some collection of Java classes.  It also implements the
  * command line interface.
+ * 
+ * Much of the active work has migrated to the FindBugs2 engine, and that should be used
+ * instead of FindBugs if possible.
  *
  * @author Bill Pugh
  * @author David Hovemeyer
  * 
- * @deprecated use FindBug2 instead
  */
-@Deprecated
 public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	/* ----------------------------------------------------------------------
 	 * Helper classes
