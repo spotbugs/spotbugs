@@ -200,7 +200,8 @@ public class WarningPropertySet implements Cloneable {
 					throw new IllegalStateException("Unknown priority " + adj);
 
 			}
-			if (aLittleBitLower > 1)
+			
+			if (aLittleBitLower >= 3 || priority == 1 && aLittleBitLower == 2)
 				priority++;
 			if (atMostLow)
 				return Math.min(Math.max(Detector.LOW_PRIORITY, priority), Detector.EXP_PRIORITY);
