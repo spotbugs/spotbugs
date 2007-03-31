@@ -180,6 +180,8 @@ public class WarningPropertySet implements Cloneable {
 					falsePositive = true;
 				else if (adj == PriorityAdjustment.A_LITTLE_BIT_LOWER_PRIORITY)
 					aLittleBitLower++;
+				else if (adj == PriorityAdjustment.A_LITTLE_BIT_HIGHER_PRIORITY)
+					aLittleBitLower--;
 				else if (adj == PriorityAdjustment.RAISE_PRIORITY)
 					--priority;
 				else if (adj == PriorityAdjustment.RAISE_PRIORITY_TO_AT_LEAST_NORMAL) {
@@ -203,6 +205,8 @@ public class WarningPropertySet implements Cloneable {
 			
 			if (aLittleBitLower >= 3 || priority == 1 && aLittleBitLower == 2)
 				priority++;
+			else if (aLittleBitLower <= -2)
+				priority--;
 			if (atMostLow)
 				return Math.min(Math.max(Detector.LOW_PRIORITY, priority), Detector.EXP_PRIORITY);
 			if (atLeastMedium && priority > Detector.NORMAL_PRIORITY)

@@ -28,6 +28,8 @@ public class DeadLocalStoreProperty extends AbstractWarningProperty {
 	/** The dead store is an increment. */
 	public static final DeadLocalStoreProperty DEAD_INCREMENT = new DeadLocalStoreProperty("DEAD_INCREMENT",
 	        PriorityAdjustment.LOWER_PRIORITY);
+	public static final DeadLocalStoreProperty METHOD_RESULT = new DeadLocalStoreProperty("METHOD_RESULT",
+	        PriorityAdjustment.A_LITTLE_BIT_HIGHER_PRIORITY);
 
 	/** The dead store is an increment: the only one in the method. */
 	public static final DeadLocalStoreProperty SINGLE_DEAD_INCREMENT = new DeadLocalStoreProperty("SINGLE_DEAD_INCREMENT",

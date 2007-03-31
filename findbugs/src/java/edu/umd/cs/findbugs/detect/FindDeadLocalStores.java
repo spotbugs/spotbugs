@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 
 import org.apache.bcel.generic.BasicType;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.ALOAD;
@@ -276,20 +277,23 @@ public class FindDeadLocalStores implements Detector {
 				InstructionHandle prev = location.getBasicBlock().getPredecessorOf(location.getHandle());
 				int prevOpCode = -1;
 
-				if (prev != null && defensiveConstantValueOpcodes.get(prev.getInstruction().getOpcode())) {
-					propertySet.addProperty(DeadLocalStoreProperty.DEFENSIVE_CONSTANT_OPCODE);
-					prevOpCode = prev.getInstruction().getOpcode();
+				if (prev != null) {
+					if (defensiveConstantValueOpcodes.get(prev.getInstruction().getOpcode())) {
+						propertySet.addProperty(DeadLocalStoreProperty.DEFENSIVE_CONSTANT_OPCODE);
+						prevOpCode = prev.getInstruction().getOpcode();
+					}
+
+					if (prev.getInstruction() instanceof GETFIELD) {
+						InstructionHandle prev2 = prev.getPrev();
+
+						if (prev2 != null && prev2.getInstruction() instanceof ALOAD)
+							propertySet.addProperty(DeadLocalStoreProperty.CACHING_VALUE);
+					}
+					if (prev.getInstruction() instanceof LoadInstruction)
+						propertySet.addProperty(DeadLocalStoreProperty.COPY_VALUE);
+					if (prev.getInstruction() instanceof InvokeInstruction)
+						propertySet.addProperty(DeadLocalStoreProperty.METHOD_RESULT);
 				}
-
-				if (prev != null && prev.getInstruction() instanceof GETFIELD) {
-					InstructionHandle prev2 = prev.getPrev();
-
-					if (prev2 != null && prev2.getInstruction() instanceof ALOAD)
-						propertySet.addProperty(DeadLocalStoreProperty.CACHING_VALUE);
-				}
-				if (prev != null && prev.getInstruction() instanceof LoadInstruction)
-					propertySet.addProperty(DeadLocalStoreProperty.COPY_VALUE);
-
 				boolean deadObjectStore = false;
 				if (ins instanceof IINC) {
 					// special handling of IINC

@@ -57,6 +57,9 @@ public class PriorityAdjustment {
 	/** Lower the priority a little*/
 	public static final PriorityAdjustment A_LITTLE_BIT_LOWER_PRIORITY = new PriorityAdjustment("A_LITTLE_BIT_LOWER_PRIORITY");
 
+	/** Raise the priority a little*/
+	public static final PriorityAdjustment A_LITTLE_BIT_HIGHER_PRIORITY = new PriorityAdjustment("A_HIGHER_BIT_LOWER_PRIORITY");
+
 	/** Warning is likely to be a false positive. */
 	public static final PriorityAdjustment FALSE_POSITIVE = new PriorityAdjustment("FALSE_POSITIVE");
 }
