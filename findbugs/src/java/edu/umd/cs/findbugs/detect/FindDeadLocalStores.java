@@ -32,14 +32,11 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
-
-import org.apache.bcel.generic.BasicType;
-import org.apache.bcel.generic.InvokeInstruction;
-import org.apache.bcel.generic.Type;
 import org.apache.bcel.generic.ACONST_NULL;
 import org.apache.bcel.generic.ALOAD;
 import org.apache.bcel.generic.ANEWARRAY;
 import org.apache.bcel.generic.ASTORE;
+import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.ConstantPushInstruction;
 import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.IINC;
@@ -47,12 +44,14 @@ import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.IndexedInstruction;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.LoadInstruction;
 import org.apache.bcel.generic.MULTIANEWARRAY;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.NEWARRAY;
 import org.apache.bcel.generic.StoreInstruction;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
@@ -70,6 +69,7 @@ import edu.umd.cs.findbugs.ba.DataflowAnalysisException;
 import edu.umd.cs.findbugs.ba.LiveLocalStoreAnalysis;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.type.TypeDataflow;
+import edu.umd.cs.findbugs.ba.type.TypeFrame;
 import edu.umd.cs.findbugs.props.WarningPropertySet;
 import edu.umd.cs.findbugs.props.WarningPropertyUtil;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
@@ -244,7 +244,10 @@ public class FindDeadLocalStores implements Detector {
 				}
 				if (storeLive)
 					continue;
-				Type typeOfValue = typeDateflow.getAnalysis().getFactAtLocation(location).getTopValue();
+				TypeFrame typeFrame = typeDateflow.getAnalysis().getFactAtLocation(location);
+				Type typeOfValue = null;
+				if (typeFrame.isValid() && typeFrame.getStackDepth() > 0) typeOfValue = typeFrame.getTopType();
+				
 				boolean storeOfNull = false;
 				InstructionHandle prevInsHandle = location.getHandle().getPrev();
 				if (prevInsHandle != null) {
@@ -264,7 +267,7 @@ public class FindDeadLocalStores implements Detector {
 					}
 				}
 
-				if (typeOfValue instanceof BasicType || typeOfValue.equals(Type.STRING))
+				if (typeOfValue instanceof BasicType || Type.STRING.equals(typeOfValue))
 					propertySet.addProperty(DeadLocalStoreProperty.BASE_VALUE);
 				// Ignore assignments that were killed by a subsequent
 				// assignment.
