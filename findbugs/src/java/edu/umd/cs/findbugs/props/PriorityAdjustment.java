@@ -19,44 +19,44 @@
 package edu.umd.cs.findbugs.props;
 
 /**
- * Enum representing how a particular warning property is
- * expected to affect its likelihood of being serious, benign,
- * or a false positive.
+ * Enum representing how a particular warning property is expected to affect its
+ * likelihood of being serious, benign, or a false positive.
  * 
  * @author David Hovemeyer
  */
 public class PriorityAdjustment {
 	private String value;
-	
+
 	private PriorityAdjustment(String value) {
 		this.value = value;
 	}
 
-        @Override
-		public String toString() {
+	@Override
+	public String toString() {
 		return value;
-		}
-	
+	}
+
 	/** No adjustment to the priority. */
-	public static final PriorityAdjustment NO_ADJUSTMENT =
-		new PriorityAdjustment("NO_ADJUSTMENT");
+	public static final PriorityAdjustment NO_ADJUSTMENT = new PriorityAdjustment("NO_ADJUSTMENT");
+
 	/** Raise the priority. */
-	public static final PriorityAdjustment RAISE_PRIORITY =
-		new PriorityAdjustment("RAISE_PRIORITY");
+	public static final PriorityAdjustment RAISE_PRIORITY = new PriorityAdjustment("RAISE_PRIORITY");
+
 	/** Raise the priority. */
-	public static final PriorityAdjustment RAISE_PRIORITY_TO_AT_LEAST_NORMAL =
-		new PriorityAdjustment("RAISE_PRIORITY_TO_AT_LEAST_NORMAL");
+	public static final PriorityAdjustment RAISE_PRIORITY_TO_AT_LEAST_NORMAL = new PriorityAdjustment(
+	        "RAISE_PRIORITY_TO_AT_LEAST_NORMAL");
+
 	/** Raise the priority. */
-	public static final PriorityAdjustment RAISE_PRIORITY_TO_HIGH =
-		new PriorityAdjustment("RAISE_PRIORITY_TO_HIGH");
-    /** Priority is at most low. */
-    public static final PriorityAdjustment AT_MOST_LOW =
-        new PriorityAdjustment("AT_MOST_LOW");
+	public static final PriorityAdjustment RAISE_PRIORITY_TO_HIGH = new PriorityAdjustment("RAISE_PRIORITY_TO_HIGH");
+
+	/** Priority is at most low. */
+	public static final PriorityAdjustment AT_MOST_LOW = new PriorityAdjustment("AT_MOST_LOW");
 
 	/** Lower the priority. */
-	public static final PriorityAdjustment LOWER_PRIORITY =
-		new PriorityAdjustment("LOWER_PRIORITY");
+	public static final PriorityAdjustment LOWER_PRIORITY = new PriorityAdjustment("LOWER_PRIORITY");
+	/** Lower the priority a little*/
+	public static final PriorityAdjustment A_LITTLE_BIT_LOWER_PRIORITY = new PriorityAdjustment("A_LITTLE_BIT_LOWER_PRIORITY");
+
 	/** Warning is likely to be a false positive. */
-	public static final PriorityAdjustment FALSE_POSITIVE =
-		new PriorityAdjustment("FALSE_POSITIVE");
+	public static final PriorityAdjustment FALSE_POSITIVE = new PriorityAdjustment("FALSE_POSITIVE");
 }
