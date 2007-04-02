@@ -28,6 +28,8 @@
 					<li>Significant improvements in memory footprint, memory allocation and CPU utilization 
 					    (20-30% reduction in all three) 
 					<li>Added a project name, to provide better descriptions in the HTML output.
+					<li>Added new bug pattern: Casting to char, or bit masking with nonnegative value, and then checking to see
+						if the result is negative.
 					<li>Stopped reporting transient fields
 					of classes not marked as serializable. Transient is used by other persistence frameworks.
 					<li>Improvements to detector for SQL injection (Thanks to Matt Hargett for
@@ -35,7 +37,9 @@
 					<li>Changed open/save options in GUI2 to not distinguish between FindBugs projects
 					and saved FindBugs analysis results.
 					<li>Improvements to detection of serious non-short-circuit evaluation.
-					 <li>Eclipse plugin changes:
+					<li>Updated Japanese localization (thanks to Ruimo Uno)
+					
+					<li>Eclipse plugin changes:
 					<ul>
 					<li>Created Bug User Annotations and Bug Tree Views
 					<li>Use different icons for different bug priorities
