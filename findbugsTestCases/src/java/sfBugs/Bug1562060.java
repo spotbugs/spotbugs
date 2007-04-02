@@ -15,7 +15,7 @@ public class Bug1562060 {
         Statement stmt = conn.createStatement();
         stmt.execute(query);
     }
-    /*
+
     void falseNegative(Connection conn, String query) throws SQLException {
         PreparedStatement preparedStmt = null;
         try {
@@ -69,6 +69,6 @@ public class Bug1562060 {
             }
         }
     }
-*/
+
     
 }
