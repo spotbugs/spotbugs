@@ -260,7 +260,7 @@ public class DetailsView extends ViewPart {
 
         else {
             StyledText control = this.control;
-            if (control != null && !control.isDisposed()) {
+            if (control != null && !control.isDisposed() && presenter != null) {
                 Rectangle size = this.control.getClientArea();
                 html = presenter.updatePresentation(getSite().getShell().getDisplay(), html, presentation, size.width,
                         size.height);
