@@ -1,68 +1,29 @@
 package de.tobject.findbugs.view;
 
-import java.awt.event.MouseEvent;
-import java.util.Iterator;
 import java.util.HashMap;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.jface.text.DefaultInformationControl;
-import org.eclipse.jface.text.TextPresentation;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTError;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.custom.ViewForm;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.ISelectionService;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.part.ViewPart;
+
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
-import edu.umd.cs.findbugs.BugAnnotation;
-import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.BugPattern;
-import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.I18N;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 public class BugTreeView extends ViewPart{
 
@@ -75,10 +36,6 @@ public class BugTreeView extends ViewPart{
 	private HashMap<String, HashMap<String, TreeItem>> patternMap; //maps project names to HashMaps that map strings describing patterns to root TreeItems
 
 	private HashMap<TreeItem, IMarker> instanceMap; //maps TreeItems to the markers they represent
-
-	private IProject theProject; //used to communicate with run methods
-
-	private IMarker theMarker; ///used to communicate with run methods
 
 	private class BugTreeSelectionListener extends SelectionAdapter{
 		private Tree theTree;
@@ -120,15 +77,24 @@ public class BugTreeView extends ViewPart{
 		}
 	}
 
-
-	public static BugTreeView getBugTreeView()
-	{
+	/**
+     *
+     * @return opened bug tree instance or null if it is not opened
+	 */
+	public static BugTreeView getBugTreeView() {
 		return bugTreeView;
 	}
 
-	public static IMarker getMarkerForTreeItem(TreeItem theItem)
-	{
-		return bugTreeView.instanceMap.get(theItem);
+    /**
+     *
+     * @param theItem
+     * @return null if nothing found
+     */
+	public static IMarker getMarkerForTreeItem(TreeItem theItem) {
+        if(bugTreeView != null && theItem != null) {
+            return bugTreeView.instanceMap.get(theItem);
+        }
+        return null;
 	}
 
 	public void setFocus() {}
@@ -180,32 +146,40 @@ public class BugTreeView extends ViewPart{
 
     @Override
     public void dispose() {
+        projectTrees.clear();
+        patternMap.clear();
+        instanceMap.clear();
         theFolder.dispose();
+        // TODO we should get rid of static "bugTreeView" instance after 1.2.0 release
+        bugTreeView = null;
         super.dispose();
     }
 
-	public void clearTree(IProject currProject)
+	public void clearTree(final IProject currProject)
 	{
-		this.theProject = currProject;
 		Display.getDefault().syncExec(new Runnable(){
 			public void run(){
-				Tree treeToRemove = projectTrees.get(theProject.getName());
+				Tree treeToRemove = projectTrees.get(currProject.getName());
 				if(treeToRemove == null) return;
                 if (treeToRemove.isDisposed()) return;
 				for(TreeItem x : treeToRemove.getItems())
 					instanceMap.remove(x);
-				patternMap.get(theProject.getName()).clear();
+				patternMap.get(currProject.getName()).clear();
 				treeToRemove.removeAll();
 			}
 		});
 	}
-	public void addMarker(IProject currProject, IMarker currMarker)
-	{
-		this.theProject = currProject;
-		this.theMarker = currMarker;
+
+	public void addMarker(final IProject theProject, final IMarker theMarker) {
 		Display.getDefault().syncExec(new Runnable(){
 			public void run(){
 				try{
+                    BugInstance bug = MarkerUtil.findBugInstanceForMarker(theMarker);
+                    if (bug == null) {
+                         FindbugsPlugin.getDefault().logWarning("Couldn't find bug for " + theMarker);
+                        return;
+                    }
+
                     Tree theTree = projectTrees.get(theProject.getName());
                     if (theTree == null || theTree.isDisposed()) {
 
@@ -218,12 +192,7 @@ public class BugTreeView extends ViewPart{
 						patternMap.put(theProject.getName(), new HashMap<String, TreeItem>());
 					}
 
-					HashMap<String, TreeItem> theMap = patternMap.get(theProject.getName());
-					BugInstance bug = MarkerUtil.findBugInstanceForMarker(theMarker);
-                    if (bug == null) {
-                        FindbugsPlugin.getDefault().logWarning("Couldn't find bug for " + theMarker);
-                        return;
-                    }
+                    HashMap<String, TreeItem> theMap = patternMap.get(theProject.getName());
 					String pattern = bug.getBugPattern().getShortDescription();
 					if(!theMap.containsKey(pattern))
 					{
