@@ -1,17 +1,17 @@
-/* 
+/*
  * FindBugs Eclipse Plug-in.
  * Copyright (C) 2003 - 2004, Peter Friese
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -19,37 +19,21 @@
 
 package de.tobject.findbugs.view;
 
-import java.util.Iterator;
 import java.util.Calendar;
-import java.util.Date;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.jface.text.DefaultInformationControl;
-import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTError;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.custom.ViewForm;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.ISelectionListener;
@@ -62,7 +46,6 @@ import org.eclipse.ui.part.ViewPart;
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
-import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
@@ -71,11 +54,11 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * View which shows bug details.
- * 
+ *
  * TODO (PeterF) This info should be displayed in the help system or maybe a
  * marker popup. (philc) Custom marker popup info is notoriously hard as of
  * Eclipse 3.0.
- * 
+ *
  * @author Phil Crosby
  * @version 1.0
  * @since 19.04.2004
@@ -83,29 +66,33 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 public class UserAnnotationsView extends ViewPart {
 
 	private static UserAnnotationsView userAnnotationsView;
-	
+
 	private String userAnnotation = "";
-	
+
 	private String firstVersionText = "";
-	
+
 	private @CheckForNull BugInstance theBug;
-	
+
 	private Text userAnnotationTextField;
-	
+
 	private Label firstVersionLabel;
-	
+
 	private Combo designationComboBox;
-	
+
 	private Composite visibilityTester;
+
+    private ISelectionListener selectionListener;
+
+    private Composite main;
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
-		Composite main = new Composite(parent, SWT.VERTICAL);
+        main = new Composite(parent, SWT.VERTICAL);
 		main.setLayout(new GridLayout(2, false));
 		designationComboBox = new Combo(main, SWT.LEFT|SWT.DROP_DOWN|SWT.READ_ONLY);
 		designationComboBox.setToolTipText("User-specified bug designation");
@@ -144,30 +131,39 @@ public class UserAnnotationsView extends ViewPart {
 		});
 		//	Add selection listener to detect click in problems view or bug tree view
 		ISelectionService theService = this.getSite().getWorkbenchWindow().getSelectionService();
-		theService.addSelectionListener(new ISelectionListener(){
-			public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection)
-			{
-				if(theSelection instanceof IStructuredSelection)
-				{
+
+        selectionListener = new ISelectionListener(){
+			public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection) {
+				if(theSelection instanceof IStructuredSelection) {
 					Object elt = ((IStructuredSelection)theSelection).getFirstElement();
-					if(elt instanceof IMarker)
-						UserAnnotationsView.showMarker((IMarker)elt, false);
-					if(elt instanceof TreeItem)
-					{
+					if(elt instanceof IMarker) {
+                        UserAnnotationsView.showMarker((IMarker)elt, false);
+                    }
+					if(elt instanceof TreeItem)	{
 						IMarker theMarker = BugTreeView.getMarkerForTreeItem((TreeItem)elt);
-						if(theMarker != null)
-							UserAnnotationsView.showMarker(theMarker, false);
+						if(theMarker != null) {
+                            UserAnnotationsView.showMarker(theMarker, false);
+                        }
 					}
 				}
 			}
-		});
+		};
+        theService.addSelectionListener(selectionListener);
 		visibilityTester = main;
 		UserAnnotationsView.userAnnotationsView = this;
 
 	}
 
-	public void dispose() {
+	@Override
+    public void dispose() {
+        if(selectionListener != null){
+            getSite().getWorkbenchWindow().getSelectionService().removeSelectionListener(
+                    selectionListener);
+            selectionListener = null;
+        }
+        main.dispose();
 		userAnnotationsView = null;
+        super.dispose();
 	}
 
 	/**
@@ -187,7 +183,7 @@ public class UserAnnotationsView extends ViewPart {
 
 	/**
 	 * Set the content to be displayed.
-	 * 
+	 *
 	 * @param title
 	 *            the title of the bug
 	 * @param description
@@ -205,7 +201,7 @@ public class UserAnnotationsView extends ViewPart {
 	/**
 	 * Show the details of a FindBugs marker in the details view. Brings the
 	 * view to the foreground.
-	 * 
+	 *
 	 * @param marker
 	 *            the FindBugs marker containing the bug pattern to show details
 	 *            for
@@ -234,7 +230,7 @@ public class UserAnnotationsView extends ViewPart {
 					userAnnotation = "Error - BugInstance not found.";
 				else
 					userAnnotation = bug.getNonnullUserDesignation().getAnnotationText();
-				
+
 				if (pattern != null && UserAnnotationsView.getuserAnnotationsView() != null)
 					UserAnnotationsView.getuserAnnotationsView().setContent(userAnnotation, bug, firstVersionText);
 
@@ -244,7 +240,7 @@ public class UserAnnotationsView extends ViewPart {
 			}
 		}
 	}
-	
+
 	private static String convertTimestamp(long timestamp)
 	{
 		if(timestamp == -2)
@@ -268,13 +264,13 @@ public class UserAnnotationsView extends ViewPart {
 
 	/**
 	 * Accessor for the details view associated with this plugin.
-	 * 
+	 *
 	 * @return the details view, or null if it has not been initialized yet
 	 */
 	public static UserAnnotationsView getuserAnnotationsView() {
 		return userAnnotationsView;
 	}
-	
+
 	public static boolean isVisible()
 	{
 		if(userAnnotationsView == null)
@@ -285,7 +281,7 @@ public class UserAnnotationsView extends ViewPart {
 	/**
 	 * Set the details view for the rest of the plugin. Details view should call
 	 * this when it has been initialized.
-	 * 
+	 *
 	 * @param view
 	 *            the details view
 	 */
@@ -298,7 +294,7 @@ public class UserAnnotationsView extends ViewPart {
     @Override
     public void setFocus() {
         designationComboBox.setFocus();
-        
+
     }
 
 }

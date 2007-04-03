@@ -65,26 +65,26 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 public class BugTreeView extends ViewPart{
-	
+
 	private TabFolder theFolder;
-	
+
 	public static BugTreeView bugTreeView;
-	
+
 	public HashMap<String, Tree> projectTrees; //maps project names to corresponding trees
-	
+
 	private HashMap<String, HashMap<String, TreeItem>> patternMap; //maps project names to HashMaps that map strings describing patterns to root TreeItems
-	
+
 	private HashMap<TreeItem, IMarker> instanceMap; //maps TreeItems to the markers they represent
-	
+
 	private IProject theProject; //used to communicate with run methods
-	
+
 	private IMarker theMarker; ///used to communicate with run methods
-	
+
 	private class BugTreeSelectionListener extends SelectionAdapter{
 		private Tree theTree;
 		public BugTreeSelectionListener(Tree theTree)
 		{this.theTree = theTree;}
-		
+
 		public void widgetSelected(SelectionEvent e)
 		{
 			IMarker myMarker = instanceMap.get(theTree.getSelection()[0]);
@@ -94,12 +94,12 @@ public class BugTreeView extends ViewPart{
 				System.out.println("Project not open");
 				return;
 			}
-			
+
             FindbugsPlugin.showMarker(myMarker, false, false);
 			try{IDE.openEditor(getSite().getPage(), myMarker, false);}
 			catch(PartInitException ex){ex.printStackTrace();}
 		}
-		
+
 		public void widgetDefaultSelected(SelectionEvent e)
 		{
 			TreeItem theItem = theTree.getSelection()[0];
@@ -119,20 +119,20 @@ public class BugTreeView extends ViewPart{
 			}
 		}
 	}
-	
-	
+
+
 	public static BugTreeView getBugTreeView()
 	{
 		return bugTreeView;
 	}
-	
+
 	public static IMarker getMarkerForTreeItem(TreeItem theItem)
 	{
 		return bugTreeView.instanceMap.get(theItem);
 	}
-	
+
 	public void setFocus() {}
-	
+
 	public void createPartControl(Composite parent)
 	{
 		theFolder = new TabFolder(parent, SWT.LEFT);
@@ -177,7 +177,13 @@ public class BugTreeView extends ViewPart{
 			};
 		workspace.addResourceChangeListener(listener);*/
 	}
-	
+
+    @Override
+    public void dispose() {
+        theFolder.dispose();
+        super.dispose();
+    }
+
 	public void clearTree(IProject currProject)
 	{
 		this.theProject = currProject;
@@ -189,7 +195,7 @@ public class BugTreeView extends ViewPart{
 				for(TreeItem x : treeToRemove.getItems())
 					instanceMap.remove(x);
 				patternMap.get(theProject.getName()).clear();
-				treeToRemove.removeAll();			
+				treeToRemove.removeAll();
 			}
 		});
 	}
@@ -200,9 +206,9 @@ public class BugTreeView extends ViewPart{
 		Display.getDefault().syncExec(new Runnable(){
 			public void run(){
 				try{
-                    Tree theTree = projectTrees.get(theProject.getName()); 
+                    Tree theTree = projectTrees.get(theProject.getName());
                     if (theTree == null || theTree.isDisposed()) {
-  
+
 						TabItem newTab = new TabItem(theFolder, SWT.LEFT);
 						theTree = new Tree(theFolder, SWT.LEFT);
                         theTree.addSelectionListener(new BugTreeSelectionListener(theTree));
@@ -211,7 +217,7 @@ public class BugTreeView extends ViewPart{
 						projectTrees.put(theProject.getName(), theTree);
 						patternMap.put(theProject.getName(), new HashMap<String, TreeItem>());
 					}
-					
+
 					HashMap<String, TreeItem> theMap = patternMap.get(theProject.getName());
 					BugInstance bug = MarkerUtil.findBugInstanceForMarker(theMarker);
                     if (bug == null) {

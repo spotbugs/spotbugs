@@ -185,13 +185,13 @@ public abstract class MarkerUtil {
 	 * @param project the project
 	 * @param sla     the SourceLineAnnotation to get the resource for. If null, use the primary source line annotation.
 	 * @return the IResource representing the Java class
-	 * @throws JavaModelException  
+	 * @throws JavaModelException
 	 */
 	public static @CheckForNull IResource getUnderlyingResource(BugInstance bug, IProject project, SourceLineAnnotation sla) throws JavaModelException
 		 {
-        
+
         if (!FindbugsPlugin.isJavaProject(project)) return null;
-        
+
 		SourceLineAnnotation primarySourceLineAnnotation;
 		if(sla == null)
 			primarySourceLineAnnotation = bug.getPrimarySourceLineAnnotation();
@@ -221,7 +221,7 @@ public abstract class MarkerUtil {
 			+ qualifiedClassName);
 		}
 
-	
+
 		Matcher m = fullName.matcher(qualifiedClassName);
 		IType type;
 		String innerName = null;
@@ -231,7 +231,7 @@ public abstract class MarkerUtil {
 			innerName  = m.group(2).substring(1);
 			type = javaProject.findType(outerQualifiedClassName);
 			// dump(type, 0);
-			
+
 			/*
 			 * code below only points to the first line of inner class
 			 * even if this is not a class bug but field bug
@@ -446,9 +446,9 @@ public abstract class MarkerUtil {
 		if (javaElement instanceof NamedMember) {
 			for(int i = 0; i < indentation; i++) System.out.print(" ");
 			System.out.println("--> " + ((NamedMember)javaElement).getFullyQualifiedName('.', false));
-			
+
 		}
-		if (javaElement instanceof IParent) 	for(IJavaElement child : ((IParent) javaElement).getChildren()) 
+		if (javaElement instanceof IParent) 	for(IJavaElement child : ((IParent) javaElement).getChildren())
 				dump(child, indentation+1);
 		} catch (Exception e) {
 			FindbugsPlugin.getDefault().logException(e, "Dump exception");
@@ -525,7 +525,7 @@ public abstract class MarkerUtil {
 	 */
 	public static void redisplayMarkers(final IProject project, Shell shell) {
         if (!FindbugsPlugin.isJavaProject(project)) throw new IllegalArgumentException("Not a Java project");
-        
+
 		ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(shell);
 
 		try {
@@ -576,7 +576,7 @@ public abstract class MarkerUtil {
 	public static void redisplayMarkersWithoutProgressDialog(final IProject project) {
 		try {
             if (!FindbugsPlugin.isJavaProject(project)) throw new IllegalArgumentException("Not a Java project");
-            
+
 			// Get user preferences for project,
 			// so we know what to diplay
 			UserPreferences userPrefs = FindbugsPlugin.getUserPreferences(project);
@@ -624,9 +624,11 @@ public abstract class MarkerUtil {
 		}
 		try {
 			if (!marker.isSubtypeOf(FindBugsMarker.NAME)) {
-				FindbugsPlugin.getDefault().logError("Selected marker is not a FindBugs marker");
-				FindbugsPlugin.getDefault().logError(marker.getType());
-				FindbugsPlugin.getDefault().logError(FindBugsMarker.NAME);
+                // log disabled because otherwise each selection in problems view generates
+                // 6 new errors (we need refactor all bug views to get rid of this).
+//				FindbugsPlugin.getDefault().logError("Selected marker is not a FindBugs marker");
+//				FindbugsPlugin.getDefault().logError(marker.getType());
+//				FindbugsPlugin.getDefault().logError(FindBugsMarker.NAME);
 				return null;
 			}
 
@@ -651,7 +653,7 @@ public abstract class MarkerUtil {
 				System.out.println(e.getMessage());
 			}
  			*/
-			
+
 			String bugId = (String) marker.getAttribute(FindBugsMarker.UNIQUE_ID);
             String bugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
             Integer lineNumber = (Integer)marker.getAttribute(FindBugsMarker.BUG_LINE_NUMBER);
@@ -660,7 +662,7 @@ public abstract class MarkerUtil {
                 return null;
             }
              BugInstance bug = bugCollection.findBug(
-					bugId, 
+					bugId,
 					bugType,
 					lineNumber);
 
@@ -674,7 +676,7 @@ public abstract class MarkerUtil {
 			return null;
 		}
 	}
-	
+
 	public static @CheckForNull IProject findProjectForWarning(BugInstance warning)
 	{
 		IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();

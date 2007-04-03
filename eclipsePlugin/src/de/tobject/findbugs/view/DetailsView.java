@@ -1,17 +1,17 @@
-/* 
+/*
  * FindBugs Eclipse Plug-in.
  * Copyright (C) 2003 - 2004, Peter Friese
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
@@ -19,52 +19,41 @@
 
 package de.tobject.findbugs.view;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Iterator;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.DefaultInformationControl.IInformationPresenter;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.custom.ViewForm;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
+
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
 import de.tobject.findbugs.reporter.MarkerUtil;
@@ -78,11 +67,11 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * View which shows bug details.
- * 
+ *
  * TODO (PeterF) This info should be displayed in the help system or maybe a
  * marker popup. (philc) Custom marker popup info is notoriously hard as of
  * Eclipse 3.0.
- * 
+ *
  * @author Phil Crosby
  * @version 1.0
  * @since 19.04.2004
@@ -96,12 +85,16 @@ public class DetailsView extends ViewPart {
     private String title = "";
 
     private List annotationList;
-    
+
     private Text priorityTypeArea;
-    
+
     private String priorityTypeString = "";
 
-    private BugInstance theBug = null;
+    private BugInstance theBug;
+
+    private ISelectionListener selectionListener;
+
+    private SashForm sash;
 
     // HTML presentation classes that don't depend upon Browser
     @CheckForNull
@@ -116,17 +109,18 @@ public class DetailsView extends ViewPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
      */
     @Override
     public void createPartControl(Composite parent) {
-        SashForm sash = new SashForm(parent, SWT.VERTICAL);
+        sash = new SashForm(parent, SWT.VERTICAL);
         priorityTypeArea = new Text(sash, SWT.VERTICAL);
         priorityTypeArea.setEditable(false);
         annotationList = new List(sash, SWT.V_SCROLL);
         annotationList.setToolTipText("Additional information about the selected bug");
         annotationList.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 if (theBug == null)
                     return;
@@ -184,23 +178,23 @@ public class DetailsView extends ViewPart {
                     updateDisplay();
                 }
             });
-         
+
             try {
                 Class presenterClass = Class.forName("org.eclipse.jdt.internal.ui.text.HTMLTextPresenter.HTMLTextPresenter");
                 presenter = (IInformationPresenter) presenterClass.getConstructor(Boolean.TYPE).newInstance(false);
-   
+
 
             } catch (Exception e2) {
                 FindbugsPlugin.getDefault().logException(
                         e2, "Could not create HTMLTextPresenter");
             }
-           
+
         }
         sash.setWeights(new int[] { 1, 4, 8 });
         // Add selection listener to detect click in problems view or in tree
         // view
-        ISelectionService theService = this.getSite().getWorkbenchWindow().getSelectionService();
-        theService.addSelectionListener(new ISelectionListener() {
+        ISelectionService theService = getSite().getWorkbenchWindow().getSelectionService();
+        selectionListener = new ISelectionListener() {
             public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection) {
                 if (theSelection instanceof IStructuredSelection) {
                     Object elt = ((IStructuredSelection) theSelection).getFirstElement();
@@ -213,14 +207,15 @@ public class DetailsView extends ViewPart {
                     }
                 }
             }
-        });
+        };
+        theService.addSelectionListener(selectionListener);
         DetailsView.detailsView = this;
 
     }
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPart#setFocus()
      */
     @Override
@@ -230,17 +225,19 @@ public class DetailsView extends ViewPart {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.IWorkbenchPart#dispose()
      */
     @Override
     public void dispose() {
-        annotationList.dispose();
-        if (browser != null)
-            browser.dispose();
-        else if (control != null)
-            control.dispose();
+        if(selectionListener != null){
+            getSite().getWorkbenchWindow().getSelectionService().removeSelectionListener(
+                    selectionListener);
+            selectionListener = null;
+        }
+        sash.dispose();
     	detailsView = null;
+        super.dispose();
     }
 
     /**
@@ -272,7 +269,7 @@ public class DetailsView extends ViewPart {
 
     /**
      * Set the content to be displayed.
-     * 
+     *
      * @param title
      *            the title of the bug
      * @param description
@@ -290,11 +287,11 @@ public class DetailsView extends ViewPart {
         updateDisplay();
     }
 
-    
+
     /**
      * Show the details of a FindBugs marker in the details view. Brings the
      * view to the foreground.
-     * 
+     *
      * @param marker
      *            the FindBugs marker containing the bug pattern to show details
      *            for
@@ -346,7 +343,7 @@ public class DetailsView extends ViewPart {
 
     /**
      * Accessor for the details view associated with this plugin.
-     * 
+     *
      * @return the details view, or null if it has not been initialized yet
      */
     public static DetailsView getDetailsView() {
@@ -356,7 +353,7 @@ public class DetailsView extends ViewPart {
     /**
      * Set the details view for the rest of the plugin. Details view should call
      * this when it has been initialized.
-     * 
+     *
      * @param view
      *            the details view
      */
