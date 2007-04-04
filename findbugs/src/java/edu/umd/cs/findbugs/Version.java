@@ -50,7 +50,7 @@ public class Version {
 	 * Release candidate number.
 	 * "0" indicates that the version is not a release candidate.
 	 */
-	public static final int RELEASE_CANDIDATE = 4;
+	public static final int RELEASE_CANDIDATE = 0;
 	
 	static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy");
 	static final SimpleDateFormat eclipseDateFormat = new SimpleDateFormat("yyyyMMdd");
