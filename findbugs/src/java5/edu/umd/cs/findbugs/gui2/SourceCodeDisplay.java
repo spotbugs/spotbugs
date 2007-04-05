@@ -20,20 +20,19 @@
 package edu.umd.cs.findbugs.gui2;
 
 import java.awt.Color;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
 import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
-import javax.swing.text.Element;
 import javax.swing.text.StyledDocument;
-import javax.swing.text.BadLocationException;
 
 import edu.umd.cs.findbugs.BugAnnotation;
 import edu.umd.cs.findbugs.BugInstance;
@@ -56,7 +55,7 @@ public final class SourceCodeDisplay implements Runnable {
 	public JavaSourceDocument myDocument;
 	private int currentChar = -1; //for find
 	
-	private final Map<String, JavaSourceDocument> map = new HashMap<String, JavaSourceDocument>();
+	private final Map<String, SoftReference<JavaSourceDocument>> map = new HashMap<String,  SoftReference<JavaSourceDocument>>();
 
 	SourceCodeDisplay(MainFrame frame) {
 		this.frame = frame;
@@ -88,7 +87,10 @@ public final class SourceCodeDisplay implements Runnable {
 		try {
 			SourceFile sourceFile = frame.sourceFinder.findSourceFile(source);
 			String fullFileName = sourceFile.getFullFileName();
-			JavaSourceDocument result = map.get(fullFileName);
+			SoftReference<JavaSourceDocument> resultReference = map.get(fullFileName);
+			JavaSourceDocument result = null;
+			if (resultReference != null)
+				result = resultReference.get();
 			if (result != null)
 				return result;
 			try {
@@ -99,7 +101,7 @@ public final class SourceCodeDisplay implements Runnable {
 				result = JavaSourceDocument.UNKNOWNSOURCE;
 				Debug.println(e); // e.printStackTrace();
 			}
-			map.put(fullFileName, result);
+			map.put(fullFileName, new SoftReference<JavaSourceDocument>(result));
 			return result;
 		} catch (Exception e) {
 			Debug.println(e); // e.printStackTrace();
