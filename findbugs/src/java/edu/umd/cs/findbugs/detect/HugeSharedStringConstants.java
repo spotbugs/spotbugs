@@ -20,16 +20,21 @@
 package edu.umd.cs.findbugs.detect;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-import edu.umd.cs.findbugs.*;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantString;
+import org.apache.bcel.classfile.ConstantValue;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.IntAnnotation;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
-
-import org.apache.bcel.classfile.*;
-import org.jaxen.function.StringLengthFunction;
 
 public class HugeSharedStringConstants extends BytecodeScanningDetector {
 
@@ -42,7 +47,7 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
 		return s.length() + ":" + s.hashCode();
 	}
 
-	HashMap<String, Set<String>> map = new HashMap<String, Set<String>>();
+	HashMap<String, SortedSet<String>> map = new HashMap<String, SortedSet<String>>();
 
 	HashMap<String, XField> definition = new HashMap<String, XField>();
 
@@ -60,9 +65,9 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
 		if (value.length() < SIZE_OF_HUGE_CONSTANT)
 			return;
 		String key = getStringKey(value);
-		Set<String> set = map.get(key);
+		SortedSet<String> set = map.get(key);
 		if (set == null) {
-			set = new HashSet<String>();
+			set = new TreeSet<String>();
 			map.put(key, set);
 		}
 		set.add(getDottedClassName());
