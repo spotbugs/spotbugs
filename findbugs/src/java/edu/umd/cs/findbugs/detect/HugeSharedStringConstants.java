@@ -92,7 +92,7 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
 
 	@Override
 	public void report() {
-		for (Map.Entry<String, Set<String>> e : map.entrySet()) {
+		for (Map.Entry<String, SortedSet<String>> e : map.entrySet()) {
 			Set<String> occursIn = e.getValue();
 			if (occursIn.size() == 1)
 				continue;
