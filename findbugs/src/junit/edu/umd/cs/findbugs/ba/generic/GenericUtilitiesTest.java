@@ -42,6 +42,12 @@ public class GenericUtilitiesTest extends TestCase {
 		System.out.println(s);
 		assertEquals(1,t.getNumParameters());
 	}
+	public void testMapSignature() {
+		GenericObjectType t = (GenericObjectType) GenericUtilities.getType("Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;");
+		String s = t.getSignature();
+		System.out.println(s);
+		assertEquals(2,t.getNumParameters());
+	}
 	public void testNestedSignatureParser() {
 		GenericSignatureParser parser = new GenericSignatureParser("("+SAMPLE_SIGNATURE+")V");
 		assertEquals(1,parser.getNumParameters());

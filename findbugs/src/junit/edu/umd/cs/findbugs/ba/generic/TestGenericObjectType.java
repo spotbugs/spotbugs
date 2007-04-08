@@ -22,11 +22,12 @@ package edu.umd.cs.findbugs.ba.generic;
 import java.util.Arrays;
 import java.util.List;
 
+import junit.framework.TestCase;
+
+import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities.TypeCategory;
-
-import junit.framework.TestCase;
 
 /**
  * @author Nat Ayewah
@@ -40,7 +41,7 @@ public class TestGenericObjectType extends TestCase {
 	
 	String variable;
 	Type extension;
-	List<Type> parameters;
+	List<ObjectType> parameters;
 	
 	
 	public void initTest(
@@ -50,7 +51,7 @@ public class TestGenericObjectType extends TestCase {
 			GenericUtilities.TypeCategory typeCategory, 
 			String variable, 
 			Type extension, 
-			List<Type> parameters) {
+			List<ObjectType> parameters) {
 		this.obj = (GenericObjectType) GenericUtilities.getType(bytecodeSignature);
 		this.javaSignature = javaSignature;
 		this.underlyingClass = underlyingClass;
@@ -125,8 +126,8 @@ public class TestGenericObjectType extends TestCase {
 				null, 
 				null,
 				Arrays.asList(
-						GenericUtilities.getType("Ljava/lang/Comparable;"),
-						GenericUtilities.getType("TE;")
+						(ObjectType) GenericUtilities.getType("Ljava/lang/Comparable;"),
+						(ObjectType) GenericUtilities.getType("TE;")
 				)
 			);
 		processTest();
