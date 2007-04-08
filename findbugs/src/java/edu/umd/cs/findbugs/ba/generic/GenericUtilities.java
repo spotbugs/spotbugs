@@ -184,13 +184,13 @@ public class GenericUtilities {
 		int index = 0;
 	
 		if (signature.startsWith("L")) {
-			index = signature.indexOf('<');
+			index = lastMatchedLeftAngleBracket(signature);
 			if (index < 0)
 				return Type.getType(signature);
 			
 			List<Type> parameters = GenericUtilities.getTypes(
-					signature.substring(index+1, signature.lastIndexOf('>')));			
-			return new GenericObjectType(signature.substring(1,index),	parameters);		
+					signature.substring(index+1, nextUnmatchedRightAngleBracket(signature, index+1)));			
+			return new GenericObjectType(removeMatchedAngleBrackets(signature.substring(1,index)).replace('.', '$'),	parameters);		
 			
 		} else if (signature.startsWith("T")) {
 			// ignore the prefix "T" and the suffix ";"
@@ -213,6 +213,48 @@ public class GenericUtilities {
 			return Type.getType(signature);
 	}
 
+	public static String removeMatchedAngleBrackets(String s) {
+		int first = s.indexOf('<');
+		if (first < 0) return s;
+		StringBuffer result = new StringBuffer(s.substring(0, first));
+		int pos = first;
+		int nesting = 0;
+		while (pos < s.length()) {
+			char c = s.charAt(pos++);
+			if (c == '<') nesting++;
+			else if (c == '>') nesting--;
+			else if (nesting == 0) result.append(c);
+		}
+		return result.toString();
+		
+	}
+	public static int nextUnmatchedRightAngleBracket(String s, int startingAt) {
+		int nesting = 0;
+		int pos = startingAt;
+	
+		while (true) {
+			if (pos < 0) return -1;
+			char c = s.charAt(pos);
+			if (c == '>') {
+				if (nesting == 0) return pos;
+				nesting--;
+			} else if (c == '<') nesting++;
+			pos++;
+		}
+	}
+	public static int lastMatchedLeftAngleBracket(String s) {
+		int nesting = 0;
+		int pos = s.length()-1;
+	
+		while (true) {
+			char c = s.charAt(pos);
+			if (c == '<') {
+				nesting--;
+				if (nesting == 0) return pos;
+			} else if (c == '>') nesting++;
+			pos--;
+		}
+	}
 	/**
 	 * Parse a bytecode signature that has 1 or more (possibly generic) types 
 	 * and return a list of the Types.
