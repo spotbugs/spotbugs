@@ -25,8 +25,10 @@ import java.util.Map;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTypeTable;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.generic.ATHROW;
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.CodeExceptionGen;
@@ -39,6 +41,8 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
+
+import com.sun.corba.se.impl.ior.GenericTaggedComponent;
 
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -63,6 +67,7 @@ import edu.umd.cs.findbugs.ba.MissingClassException;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
 import edu.umd.cs.findbugs.ba.RepositoryLookupFailureCallback;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
+import edu.umd.cs.findbugs.ba.generic.GenericObjectType;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 import edu.umd.cs.findbugs.ba.generic.GenericUtilities;
 import edu.umd.cs.findbugs.ba.vna.ValueNumber;
@@ -167,6 +172,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	protected CFG cfg;
 	private TypeMerger typeMerger;
 	private TypeFrameModelingVisitor visitor;
+	private LocalVariableTypeTable typeTable;
 	private Map<BasicBlock, CachedExceptionSet> thrownExceptionSetMap;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private ExceptionSetFactory exceptionSetFactory;
@@ -191,6 +197,13 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	                    RepositoryLookupFailureCallback lookupFailureCallback, ExceptionSetFactory exceptionSetFactory) {
 		super(dfs);
         this.method = method;
+        Code code = method.getCode();
+        if (code == null) throw new IllegalArgumentException(method.getName() + " has no code");
+        for(Attribute a : code.getAttributes()) {
+        	if (a instanceof LocalVariableTypeTable) {
+        		typeTable = (LocalVariableTypeTable) a;
+        	}
+        }
 		this.methodGen = methodGen;
 		this.cfg = cfg;
 		this.typeMerger = typeMerger;
@@ -365,6 +378,22 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	@Override
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, TypeFrame fact)
 	        throws DataflowAnalysisException {
+		if (typeTable != null) {
+			int pos = handle.getPosition();
+			for(LocalVariable local : typeTable.getLocalVariableTable()) {
+				if (local.getStartPC() == pos) {
+					String signature = local.getSignature();
+					Type t = GenericUtilities.getType(signature);
+					if (t instanceof GenericObjectType) {
+						int index = local.getIndex();
+						Type currentValue = fact.getValue(index);
+						if (!(currentValue instanceof GenericObjectType))
+							fact.setValue(index, t);
+					}
+					
+				}
+			}
+		}
 		visitor.setFrameAndLocation(fact, new Location(handle, basicBlock));
 		visitor.analyzeInstruction(handle.getInstruction());
 	}

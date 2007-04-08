@@ -48,6 +48,7 @@ import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
+import org.apache.bcel.classfile.LocalVariableTypeTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Signature;
 import org.apache.bcel.classfile.SourceFile;
@@ -170,6 +171,9 @@ public abstract class BetterVisitor implements Visitor {
 
 	public void visit(LocalVariableTable obj) {
 		visit((Attribute) obj);
+	}
+	public void visit(LocalVariableTypeTable obj) {
+		// must explicitly override to get functionality
 	}
 
 	public void visit(SourceFile obj) {
@@ -311,6 +315,10 @@ public abstract class BetterVisitor implements Visitor {
 	public void visitLocalVariableTable(LocalVariableTable obj) {
 		visit(obj);
 	}
+	public void visitLocalVariableTypeTable(LocalVariableTypeTable obj) {
+		visit(obj);
+	}
+
 
 	public void visitMethod(Method obj) {
 		visit(obj);
