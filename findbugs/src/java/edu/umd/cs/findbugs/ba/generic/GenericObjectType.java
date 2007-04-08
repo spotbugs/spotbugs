@@ -116,6 +116,7 @@ public class GenericObjectType extends ObjectType {
 	}
 	
 	public List<? extends ObjectType> getParameters() {
+		if (parameters == null) return null;
 		return Collections.unmodifiableList(parameters);
 	}
 	// Package Level constructors

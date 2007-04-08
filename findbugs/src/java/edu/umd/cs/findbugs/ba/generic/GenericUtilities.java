@@ -213,8 +213,10 @@ public class GenericUtilities {
 			return Type.getType(signature);
 	}
 
-	public static GenericObjectType  merge(GenericObjectType t1, ObjectType t2) {
-		return new GenericObjectType(t2.getClassName(), t1.getParameters());
+	public static ObjectType  merge(GenericObjectType t1, ObjectType t2) {
+		List<? extends ObjectType> parameters = t1.getParameters();
+		if (parameters == null) return t2;
+		return new GenericObjectType(t2.getClassName(), parameters);
 	}
 	public static String removeMatchedAngleBrackets(String s) {
 		int first = s.indexOf('<');
