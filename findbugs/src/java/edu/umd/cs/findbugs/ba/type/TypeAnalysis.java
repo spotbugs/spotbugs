@@ -384,7 +384,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	        throws DataflowAnalysisException {
 		if (typeTable != null) {
 			int pos = handle.getPosition();
-			if (startOfLocalTypedVariables.get(pos))
+			if (pos >= 0 && startOfLocalTypedVariables.get(pos))
 			for(LocalVariable local : typeTable.getLocalVariableTable()) {
 				if (local.getStartPC() == pos) {
 					String signature = local.getSignature();
