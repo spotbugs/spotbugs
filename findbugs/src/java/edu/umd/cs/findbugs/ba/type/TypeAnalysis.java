@@ -383,7 +383,14 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 			for(LocalVariable local : typeTable.getLocalVariableTable()) {
 				if (local.getStartPC() == pos) {
 					String signature = local.getSignature();
-					Type t = GenericUtilities.getType(signature);
+					Type t;
+					try {
+					 t = GenericUtilities.getType(signature);
+					} catch (IllegalArgumentException e) {
+						AnalysisContext.logError("Bad signature " + signature + " for " + local.getName() + " in " 
+								+  methodGen.getClassName() + "." + method.getName());
+						continue;
+					}
 					if (t instanceof GenericObjectType) {
 						int index = local.getIndex();
 						Type currentValue = fact.getValue(index);
