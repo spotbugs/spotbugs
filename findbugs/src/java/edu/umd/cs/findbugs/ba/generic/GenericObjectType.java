@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.generic;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.bcel.generic.ObjectType;
@@ -42,7 +43,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  */
 public class GenericObjectType extends ObjectType {
 
-	final List<Type> parameters;
+	final List<? extends ObjectType> parameters;
 	
 	final String variable;
 	
@@ -114,6 +115,9 @@ public class GenericObjectType extends ObjectType {
 			throw new IndexOutOfBoundsException("The index " + index + " is too large");
 	}
 	
+	public List<? extends ObjectType> getParameters() {
+		return Collections.unmodifiableList(parameters);
+	}
 	// Package Level constructors
 	
 	/**
@@ -142,7 +146,7 @@ public class GenericObjectType extends ObjectType {
 	 * @param class_name the class that is parameterized. e.g. <code>java.util.List</code>
 	 * @param parameters the parameters of this class, must be at least 1 parameter
 	 */
-	GenericObjectType(String class_name, List<Type> parameters) {
+	GenericObjectType(String class_name, List<? extends ObjectType> parameters) {
 		super(class_name);
 		variable = null;
 		extension = null;

@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.ba.type;
 
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -41,8 +42,6 @@ import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
-
-import com.sun.corba.se.impl.ior.GenericTaggedComponent;
 
 import edu.umd.cs.findbugs.DeepSubtypeAnalysis;
 import edu.umd.cs.findbugs.SystemProperties;
@@ -173,6 +172,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	private TypeMerger typeMerger;
 	private TypeFrameModelingVisitor visitor;
 	private LocalVariableTypeTable typeTable;
+	private BitSet startOfLocalTypedVariables = new BitSet();
 	private Map<BasicBlock, CachedExceptionSet> thrownExceptionSetMap;
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private ExceptionSetFactory exceptionSetFactory;
@@ -202,6 +202,9 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
         for(Attribute a : code.getAttributes()) {
         	if (a instanceof LocalVariableTypeTable) {
         		typeTable = (LocalVariableTypeTable) a;
+        		for (LocalVariable v : typeTable.getLocalVariableTable()) {
+        			startOfLocalTypedVariables.set(v.getStartPC());
+        		}
         	}
         }
 		this.methodGen = methodGen;
@@ -380,6 +383,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 	        throws DataflowAnalysisException {
 		if (typeTable != null) {
 			int pos = handle.getPosition();
+			if (startOfLocalTypedVariables.get(pos))
 			for(LocalVariable local : typeTable.getLocalVariableTable()) {
 				if (local.getStartPC() == pos) {
 					String signature = local.getSignature();
@@ -394,8 +398,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 					if (t instanceof GenericObjectType) {
 						int index = local.getIndex();
 						Type currentValue = fact.getValue(index);
-						if (!(currentValue instanceof GenericObjectType))
-							fact.setValue(index, t);
+						if (!(currentValue instanceof GenericObjectType) && (currentValue instanceof ObjectType))
+							fact.setValue(index, GenericUtilities.merge((GenericObjectType)t, (ObjectType)currentValue));
 					}
 					
 				}

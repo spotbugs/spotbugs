@@ -188,7 +188,7 @@ public class GenericUtilities {
 			if (index < 0)
 				return Type.getType(signature);
 			
-			List<Type> parameters = GenericUtilities.getTypes(
+			List<ObjectType> parameters = GenericUtilities.getTypes(
 					signature.substring(index+1, nextUnmatchedRightAngleBracket(signature, index+1)));			
 			return new GenericObjectType(removeMatchedAngleBrackets(signature.substring(1,index)).replace('.', '$'),	parameters);		
 			
@@ -213,6 +213,9 @@ public class GenericUtilities {
 			return Type.getType(signature);
 	}
 
+	public static GenericObjectType  merge(GenericObjectType t1, ObjectType t2) {
+		return new GenericObjectType(t2.getClassName(), t1.getParameters());
+	}
 	public static String removeMatchedAngleBrackets(String s) {
 		int first = s.indexOf('<');
 		if (first < 0) return s;
@@ -263,14 +266,14 @@ public class GenericUtilities {
 	 * @param signature bytecode signature e.g. 
 	 * e.g. <code>Ljava/util/ArrayList&lt;Ljava/lang/String;&gt;;Ljava/util/ArrayList&lt;TT;&gt;;Ljava/util/ArrayList&lt;*&gt;;</code>
 	 */
-	public static final List<Type> getTypes(String signature) {
+	public static final List<ObjectType> getTypes(String signature) {
 		GenericSignatureParser parser = new GenericSignatureParser("(" + signature + ")V");
-		List<Type> types = new ArrayList<Type>();
+		List<ObjectType> types = new ArrayList<ObjectType>();
 		
 		Iterator<String> iter = parser.parameterSignatureIterator();
 		while (iter.hasNext()) {
 			String parameterString = iter.next();
-			types.add(getType(parameterString));
+			types.add((ObjectType)getType(parameterString));
 		}
 		return types;
 	}
