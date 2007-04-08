@@ -203,7 +203,8 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
         	if (a instanceof LocalVariableTypeTable) {
         		typeTable = (LocalVariableTypeTable) a;
         		for (LocalVariable v : typeTable.getLocalVariableTable()) {
-        			startOfLocalTypedVariables.set(v.getStartPC());
+        			int startPC = v.getStartPC();
+					if (startPC >= 0) startOfLocalTypedVariables.set(startPC);
         		}
         	}
         }
