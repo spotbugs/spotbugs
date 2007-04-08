@@ -81,7 +81,7 @@ public class GenericSignatureParser {
 					do {
 						semi = signature.indexOf(';', startsemi + 1);
 						if (semi < 0)
-							throw new IllegalStateException("Invalid method signature: " + signature);
+							throw new IllegalArgumentException("Invalid method signature: " + signature);
 						tmp = signature.substring(index, semi + 1);
 						startsemi = semi;
 					} while(tmp.split("<").length != tmp.split(">").length);

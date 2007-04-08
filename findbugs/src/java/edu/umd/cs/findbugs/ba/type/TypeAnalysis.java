@@ -386,7 +386,7 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 					Type t;
 					try {
 					 t = GenericUtilities.getType(signature);
-					} catch (IllegalArgumentException e) {
+					} catch (RuntimeException e) {
 						AnalysisContext.logError("Bad signature " + signature + " for " + local.getName() + " in " 
 								+  methodGen.getClassName() + "." + method.getName());
 						continue;
