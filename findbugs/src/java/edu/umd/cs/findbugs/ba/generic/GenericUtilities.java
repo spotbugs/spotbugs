@@ -247,6 +247,8 @@ public class GenericUtilities {
 		int pos = s.length()-1;
 	
 		while (true) {
+			if (pos < 0) 
+				return -1;
 			char c = s.charAt(pos);
 			if (c == '<') {
 				nesting--;
