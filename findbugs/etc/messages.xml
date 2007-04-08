@@ -5766,7 +5766,7 @@ and the next method is supposed to change the state of the iterator.
 
   <BugPattern type="GC_UNRELATED_TYPES">
     <ShortDescription>No relationship between generic parameter and method argument</ShortDescription>
-    <LongDescription>{3} is incompatible with expected argument {2} in {1}</LongDescription>
+    <LongDescription>{2} is incompatible with expected argument type {3} in {1}</LongDescription>
     <Details>
      <![CDATA[
      <p> This call to a generic container's method contains an argument
