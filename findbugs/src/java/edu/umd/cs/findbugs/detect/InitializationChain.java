@@ -20,22 +20,32 @@
 package edu.umd.cs.findbugs.detect;
 
 
-import edu.umd.cs.findbugs.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
-import java.util.*;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.SystemProperties;
 
 public class InitializationChain extends BytecodeScanningDetector {
 	Set<String> requires = new TreeSet<String>();
 	Map<String, Set<String>> classRequires = new TreeMap<String, Set<String>>();
+	Set<String> staticFieldsAccessedInConstructor = new HashSet<String>();
+	Map<String, BugInstance> staticFieldWritten = new HashMap<String, BugInstance>();
 	private BugReporter bugReporter;
 	private boolean instanceCreated;
 	private int instanceCreatedPC;
 	private boolean instanceCreatedWarningGiven;
 
 	private static final boolean DEBUG = SystemProperties.getBoolean("ic.debug");
-	private static final boolean REPORT_CREATE_INSTANCE_BEFORE_FIELDS_ASSIGNED =
-	        SystemProperties.getBoolean("ic.createInstance");
 
 	public InitializationChain(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -45,7 +55,7 @@ public class InitializationChain extends BytecodeScanningDetector {
          public void visit(Code obj) {
 		instanceCreated = false;
 		instanceCreatedWarningGiven = false;
-		if (!getMethodName().equals("<clinit>")) return;
+		if (!getMethodName().equals("<clinit>") && !getMethodName().equals("<init>")) return;
 		super.visit(obj);
 		requires.remove(getDottedClassName());
 		if (getDottedClassName().equals("java.lang.System")) {
@@ -61,21 +71,39 @@ public class InitializationChain extends BytecodeScanningDetector {
 		}
 	}
 
+	@Override
+	public void visitAfter(JavaClass obj) {
+		for(String name : staticFieldsAccessedInConstructor) {
+			BugInstance bug = staticFieldWritten.get(name);
+			if (bug != null) bugReporter.reportBug(bug);
+		}
+		staticFieldWritten.clear();
+		staticFieldsAccessedInConstructor.clear();
+
+	}
 
 	@Override
          public void sawOpcode(int seen) {
 
+		if (getMethodName().equals("<init>")) {
+			if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName())) {
+				staticFieldsAccessedInConstructor.add(getNameConstantOperand());
+			}
+			return;
+		}
+			
 
 		if (seen == PUTSTATIC && getClassConstantOperand().equals(getClassName())) {
 			// Don't do this check; it generates too many false
 			// positives. We need to do a more detailed check
 			// of which variables could be seen.
-			if (REPORT_CREATE_INSTANCE_BEFORE_FIELDS_ASSIGNED &&
-			        instanceCreated && !instanceCreatedWarningGiven && !getSuperclassName().equals("java.lang.Enum")) {
+			if (instanceCreated && !instanceCreatedWarningGiven && !getSuperclassName().equals("java.lang.Enum")) {
 				String okSig = "L" + getClassName() + ";";
 				if (!okSig.equals(getSigConstantOperand())) {
-					bugReporter.reportBug(new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY)
+					staticFieldWritten.put(getNameConstantOperand(), 
+							new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY)
 					        .addClassAndMethod(this)
+					        .addReferencedField(this)
 					        .addSourceLine(this, instanceCreatedPC));
 					instanceCreatedWarningGiven = true;
 				}
