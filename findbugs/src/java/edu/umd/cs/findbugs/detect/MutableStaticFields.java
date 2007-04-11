@@ -21,6 +21,9 @@ package edu.umd.cs.findbugs.detect;
 
 
 import edu.umd.cs.findbugs.*;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
+
 import java.util.*;
 import org.apache.bcel.classfile.*;
 
@@ -39,21 +42,17 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 		        || sig.charAt(0) == '[';
 	}
 
-	static class FieldRecord {
-		String className;
-		String name;
-		String signature;
-		boolean isPublic;
-		boolean isFinal;
-	}
 
 
-	LinkedList<FieldRecord> seen = new LinkedList<FieldRecord>();
+
+	LinkedList<XField> seen = new LinkedList<XField>();
 	boolean publicClass;
 	boolean zeroOnTOS;
 	boolean emptyArrayOnTOS;
 	boolean inStaticInitializer;
 	String packageName;
+	Set<String> readAnywhere = new HashSet<String>();
+	
 	Set<String> unsafeValue = new HashSet<String>();
 	Set<String> interfaces = new HashSet<String>();
 	Set<String> notFinal = new HashSet<String>();
@@ -102,16 +101,10 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 			        || !mutableSignature(getSigConstantOperand());
 			String name = (getClassConstantOperand() + "." + getNameConstantOperand())
 			        .replace('/', '.');
-			/*
-			System.out.println("In " + betterClassName
-				+ " accessing "
-				+ (classConstant + "." + nameConstant)
-				+ "	" + samePackage
-				+ "	" + initOnly
-				+ "	" + safeValue
-				);
-			*/
 
+			if (seen == GETSTATIC)
+				readAnywhere.add(name);
+			
 			if (!samePackage)
 				outsidePackage.add(name);
 
@@ -162,14 +155,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 
 		if (isFinal && !(isHashtable || isArray)) return;
 
-		FieldRecord f = new FieldRecord();
-		f.className = getDottedClassName();
-		f.name = getFieldName();
-		f.signature = getFieldSig();
-		f.isPublic = isPublic;
-		f.isFinal = isFinal;
-
-		seen.add(f);
+		seen.add(XFactory.createXField(this));
 
 	}
 
@@ -180,22 +166,22 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 			System.out.println("Unsafe: " + i.next());
 			}
 		*/
-		for (FieldRecord f : seen) {
-			boolean isFinal = f.isFinal;
-			String className = f.className;
-			String fieldSig = f.signature;
-			String fieldName = f.name;
+		for (XField f : seen) {
+			boolean isFinal = f.isFinal();
+			String className = f.getClassName();
+			String fieldSig = f.getSignature();
+			String fieldName = f.getName();
 			String name = className + "." + fieldName;
 			boolean couldBeFinal = !isFinal
 					&& !notFinal.contains(name);
-			boolean isPublic = f.isPublic;
+			boolean isPublic = f.isPublic();
 			boolean couldBePackage = !outsidePackage.contains(name);
 			boolean movedOutofInterface = couldBePackage &&
 					interfaces.contains(className);
 			boolean isHashtable = fieldSig.equals("Ljava.util.Hashtable;");
 			boolean isArray = fieldSig.charAt(0) == '['
 					&& unsafeValue.contains(name);
-			
+			boolean isReadAnywhere = readAnywhere.contains(name);
 			if (false) 
 			              System.out.println(className + "."  + fieldName
 						              + " : " + fieldSig
@@ -231,11 +217,11 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 				bugType = "MS_CANNOT_BE_FINAL";
 			else
 				throw new IllegalStateException("impossible");
-
+			if (!isReadAnywhere) priority = LOW_PRIORITY;
 
 			BugInstance bug = new BugInstance(this, bugType, priority)
 												.addClass(className)
-												.addField(className, fieldName, fieldSig, true);
+												.addField(f);
 			SourceLineAnnotation firstPC = firstFieldUse.get(className + "." + fieldName);
 			if (firstPC != null)
 				bug.addSourceLine(firstPC);
