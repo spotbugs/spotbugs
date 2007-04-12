@@ -79,7 +79,7 @@ public class NullnessAnnotationDatabase extends AnnotationDatabase<NullnessAnnot
 		addMethodParameterAnnotation("java.util.concurrent.FutureTask", "<init>", "(Ljava/lang/Runnable;Ljava/lang/Object;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		addMethodParameterAnnotation("java.util.concurrent.Executors", "callable", "(Ljava/lang/Runnable;Ljava/lang/Object;)Ljava/util/concurrent/Callable;", true, 1, NullnessAnnotation.CHECK_FOR_NULL);
 		
-        addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "addWorker", "(Ljava/lang/Runnable;Z)Z", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
+        addMethodParameterAnnotation("java.util.concurrent.ThreadPoolExecutor", "addWorker", "(Ljava/lang/Runnable;Z)Z", false, 0, NullnessAnnotation.CHECK_FOR_NULL);
         
 		addMethodParameterAnnotation("java.util.concurrent.ConcurrentHashMap$Segment", "remove", "(Ljava/lang/Object;ILjava/lang/Object;)Ljava/lang/Object;", false, 2, NullnessAnnotation.CHECK_FOR_NULL);
 		addMethodParameterAnnotation("java.util.concurrent.CyclicBarrier", "<init>", "(ILjava/lang/Runnable;)V", false, 1, NullnessAnnotation.CHECK_FOR_NULL);
