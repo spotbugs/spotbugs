@@ -675,11 +675,12 @@ public class SourceLineAnnotation implements BugAnnotation {
 			String className, String methodName, String methodSig) {
 		JavaClassAndMethod targetMethod = null;
 		Code code = null;
-		try {
-			JavaClass targetClass = AnalysisContext.currentAnalysisContext()
-			.lookupClass(className);
+
+        try {
+			JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(className);
 			targetMethod = Hierarchy.findMethod(targetClass, methodName, methodSig);
-			code = targetMethod.getMethod().getCode();
+		    Method method = targetMethod.getMethod();
+			if (method != null) code = method.getCode();
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}
@@ -697,7 +698,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 		if (sourceInfoMap.fallBackToClassfile() && targetMethod != null) 
 			return  forEntireMethod(
-					targetMethod.getJavaClass(), targetMethod.getMethod());
+					targetMethod.getJavaClass(), method);
 
 
 		// If we couldn't find the source lines,
