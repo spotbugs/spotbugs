@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -37,7 +38,6 @@ import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.ba.SourceInfoMap.SourceLineRange;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -208,8 +208,10 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @param method    the method
 	 * @return a SourceLineAnnotation for the entire method
 	 */
-	public static SourceLineAnnotation forEntireMethod(JavaClass javaClass, Method method) {
+	public static SourceLineAnnotation forEntireMethod(JavaClass javaClass, @CheckForNull Method method) {
 		String sourceFile = javaClass.getSourceFileName();
+		if (method == null) 
+		    return createUnknown(javaClass.getClassName(), sourceFile);
 		Code code = method.getCode();
 		LineNumberTable lineNumberTable = method.getLineNumberTable();
 		if (code == null || lineNumberTable == null) {
@@ -698,7 +700,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 		if (sourceInfoMap.fallBackToClassfile() && targetMethod != null) 
 			return  forEntireMethod(
-					targetMethod.getJavaClass(), method);
+					targetMethod.getJavaClass(), targetMethod.getMethod());
 
 
 		// If we couldn't find the source lines,
