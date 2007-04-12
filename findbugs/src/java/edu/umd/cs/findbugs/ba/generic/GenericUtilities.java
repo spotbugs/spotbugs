@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 /**
@@ -188,7 +189,7 @@ public class GenericUtilities {
 			if (index < 0)
 				return Type.getType(signature);
 			
-			List<ObjectType> parameters = GenericUtilities.getTypes(
+			List<ReferenceType> parameters = GenericUtilities.getTypes(
 					signature.substring(index+1, nextUnmatchedRightAngleBracket(signature, index+1)));			
 			return new GenericObjectType(removeMatchedAngleBrackets(signature.substring(1,index)).replace('.', '$'),	parameters);		
 			
@@ -214,7 +215,7 @@ public class GenericUtilities {
 	}
 
 	public static ObjectType  merge(GenericObjectType t1, ObjectType t2) {
-		List<? extends ObjectType> parameters = t1.getParameters();
+		List<? extends ReferenceType> parameters = t1.getParameters();
 		if (parameters == null) return t2;
 		return new GenericObjectType(t2.getClassName(), parameters);
 	}
@@ -268,14 +269,14 @@ public class GenericUtilities {
 	 * @param signature bytecode signature e.g. 
 	 * e.g. <code>Ljava/util/ArrayList&lt;Ljava/lang/String;&gt;;Ljava/util/ArrayList&lt;TT;&gt;;Ljava/util/ArrayList&lt;*&gt;;</code>
 	 */
-	public static final List<ObjectType> getTypes(String signature) {
+	public static final List<ReferenceType> getTypes(String signature) {
 		GenericSignatureParser parser = new GenericSignatureParser("(" + signature + ")V");
-		List<ObjectType> types = new ArrayList<ObjectType>();
+		List<ReferenceType> types = new ArrayList<ReferenceType>();
 		
 		Iterator<String> iter = parser.parameterSignatureIterator();
 		while (iter.hasNext()) {
 			String parameterString = iter.next();
-			types.add((ObjectType)getType(parameterString));
+			types.add((ReferenceType)getType(parameterString));
 		}
 		return types;
 	}

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -43,7 +44,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  */
 public class GenericObjectType extends ObjectType {
 
-	final List<? extends ObjectType> parameters;
+	final List<? extends ReferenceType> parameters;
 	
 	final String variable;
 	
@@ -108,14 +109,14 @@ public class GenericObjectType extends ObjectType {
 	 * @param index should be less than getNumParameters()
 	 * @return the type parameter at index
 	 */
-	public Type getParameterAt(int index) {
+	public ReferenceType getParameterAt(int index) {
 		if (index < getNumParameters())
 			return parameters.get(index);
 		else 
 			throw new IndexOutOfBoundsException("The index " + index + " is too large");
 	}
 	
-	public List<? extends ObjectType> getParameters() {
+	public List<? extends ReferenceType> getParameters() {
 		if (parameters == null) return null;
 		return Collections.unmodifiableList(parameters);
 	}
@@ -147,7 +148,7 @@ public class GenericObjectType extends ObjectType {
 	 * @param class_name the class that is parameterized. e.g. <code>java.util.List</code>
 	 * @param parameters the parameters of this class, must be at least 1 parameter
 	 */
-	GenericObjectType(String class_name, List<? extends ObjectType> parameters) {
+	GenericObjectType(String class_name, List<? extends ReferenceType> parameters) {
 		super(class_name);
 		variable = null;
 		extension = null;
