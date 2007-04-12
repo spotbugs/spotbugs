@@ -41,6 +41,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.type.TypeFrame;
 
@@ -396,7 +397,7 @@ public class Hierarchy {
 	 * @param methodSig  the signature of the method
 	 * @return the JavaClassAndMethod, or null if no such method exists in the class
 	 */
-	public static JavaClassAndMethod findMethod(JavaClass javaClass, String methodName, String methodSig) {
+	public static @CheckForNull JavaClassAndMethod findMethod(JavaClass javaClass, String methodName, String methodSig) {
 		return findMethod(javaClass, methodName, methodSig, ANY_METHOD);
 	}
 
@@ -410,7 +411,7 @@ public class Hierarchy {
 	 *                   (assuming class, name, and signature already match)
 	 * @return the JavaClassAndMethod, or null if no such method exists in the class
 	 */
-	public static JavaClassAndMethod findMethod(
+	public static  @CheckForNull  JavaClassAndMethod findMethod(
 			JavaClass javaClass,
 			String methodName,
 			String methodSig,
@@ -443,7 +444,7 @@ public class Hierarchy {
      * @param methodSig  the signature of the method
      * @return the JavaClassAndMethod, or null if no such method exists in the class
      */
-    public static JavaClassAndMethod findConcreteMethod(
+    public static  @CheckForNull  JavaClassAndMethod findConcreteMethod(
             JavaClass javaClass,
             String methodName,
             String methodSig) {
@@ -474,7 +475,7 @@ public class Hierarchy {
 	 * @param chooser    the JavaClassAndMethodChooser to use to screen possible candidates
 	 * @return the XMethod, or null if no such method exists in the class
 	 */
-	public static XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig,
+	public static  @CheckForNull XMethod findXMethod(JavaClass javaClass, String methodName, String methodSig,
 			JavaClassAndMethodChooser chooser) {
 		JavaClassAndMethod result = findMethod(javaClass, methodName, methodSig, chooser);
 		return result == null ? null : XFactory.createXMethod(result.getJavaClass(), result.getMethod());

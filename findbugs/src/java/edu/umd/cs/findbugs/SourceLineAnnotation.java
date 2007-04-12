@@ -681,8 +681,11 @@ public class SourceLineAnnotation implements BugAnnotation {
         try {
 			JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(className);
 			targetMethod = Hierarchy.findMethod(targetClass, methodName, methodSig);
-		    Method method = targetMethod.getMethod();
-			if (method != null) code = method.getCode();
+		    if (targetMethod != null) {
+		        Method method = targetMethod.getMethod();
+		        if (method != null) code = method.getCode();
+		    }
+			
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}
