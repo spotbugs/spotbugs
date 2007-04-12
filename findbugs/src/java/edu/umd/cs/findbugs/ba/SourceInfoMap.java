@@ -101,7 +101,7 @@ public class SourceInfoMap {
 		}
 		@Override
         public String toString() {
-			return className +"." + methodName;
+			return className +"." + methodName + ":" + methodSignature;
 		}
 		/* (non-Javadoc)
 		 * @see java.lang.Comparable#compareTo(T)

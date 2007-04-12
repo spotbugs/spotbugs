@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.ba.SourceInfoMap.SourceLineRange;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -154,24 +155,10 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * @return the SourceLineAnnotation
 	 */
 	public static SourceLineAnnotation fromVisitedMethod(PreorderVisitor visitor) {
-		LineNumberTable lineNumberTable = getLineNumberTable(visitor);
-        String className = visitor.getDottedClassName();
-        String sourceFile = visitor.getSourceFile();
-        Code code = visitor.getMethod().getCode();
-        int codeSize = (code != null) ? code.getCode().length : 0;
-
-        SourceInfoMap sourceInfoMap = AnalysisContext.currentAnalysisContext().getSourceInfoMap();
-        SourceInfoMap.SourceLineRange range = sourceInfoMap
-                .getMethodLine(className, visitor.getMethodName(), visitor.getMethodSig());
-        if (range != null)
-            return new SourceLineAnnotation(className, visitor.getSourceFile(), range.getStart().intValue(), range
-                    .getEnd().intValue(), 0, codeSize - 1);
-
-        if (lineNumberTable == null || !sourceInfoMap.fallBackToClassfile())
-
-            return createUnknown(className, sourceFile, 0, codeSize - 1);
-
-        return forEntireMethod(className, sourceFile, lineNumberTable, codeSize);
+		
+		SourceLineAnnotation sourceLines = getSourceAnnotationForMethod(
+				visitor.getDottedClassName(), visitor.getMethodName(), visitor.getMethodSig());
+        return sourceLines;
     }
 
 	/**
@@ -675,6 +662,49 @@ public class SourceLineAnnotation implements BugAnnotation {
 
 	public boolean isSignificant() {
 		return false;
+	}
+
+
+	/**
+	 * @param className
+	 * @param methodName
+	 * @param methodSig
+	 * @return
+	 */
+	static SourceLineAnnotation getSourceAnnotationForMethod(
+			String className, String methodName, String methodSig) {
+		JavaClassAndMethod targetMethod = null;
+		Code code = null;
+		try {
+			JavaClass targetClass = AnalysisContext.currentAnalysisContext()
+			.lookupClass(className);
+			targetMethod = Hierarchy.findMethod(targetClass, methodName, methodSig);
+			code = targetMethod.getMethod().getCode();
+		} catch (ClassNotFoundException e) {
+			AnalysisContext.reportMissingClass(e);
+		}
+		SourceInfoMap sourceInfoMap = AnalysisContext.currentAnalysisContext().getSourceInfoMap();
+		SourceInfoMap.SourceLineRange range = sourceInfoMap.getMethodLine(className, methodName, methodSig);
+
+		if (range != null) 
+			return new SourceLineAnnotation(
+					className,
+					AnalysisContext.currentAnalysisContext().lookupSourceFile(className),
+					range.getStart(),
+					range.getEnd(),
+					0,
+					code == null ? -1 : code.getLength());
+
+		if (sourceInfoMap.fallBackToClassfile() && targetMethod != null) 
+			return  forEntireMethod(
+					targetMethod.getJavaClass(), targetMethod.getMethod());
+
+
+		// If we couldn't find the source lines,
+		// create an unknown source line annotation referencing
+		// the class and source file.
+
+		return createUnknown(className);
 	}
 }
 

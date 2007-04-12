@@ -22,13 +22,8 @@ package edu.umd.cs.findbugs;
 import java.io.IOException;
 
 import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.JavaClass;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.ba.Hierarchy;
-import edu.umd.cs.findbugs.ba.JavaClassAndMethod;
 import edu.umd.cs.findbugs.ba.SignatureConverter;
-import edu.umd.cs.findbugs.ba.SourceInfoMap;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
@@ -142,48 +137,14 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		MethodAnnotation methodAnnotation =
 			new MethodAnnotation(className, methodName, methodSig, isStatic);
 		
-		SourceLineAnnotation sourceLines = null;
-		SourceInfoMap sourceInfoMap = AnalysisContext.currentAnalysisContext().getSourceInfoMap();
-        SourceInfoMap.SourceLineRange range = sourceInfoMap.getMethodLine(className, methodName, methodSig);
-		if (range != null) 
-		    sourceLines = new SourceLineAnnotation(
-		            className,
-		            AnalysisContext.currentAnalysisContext().lookupSourceFile(className),
-		            range.getStart(),
-		            range.getEnd(),
-		            -1,
-		            -1);
-
-		if (sourceLines == null && sourceInfoMap.fallBackToClassfile()) {
-		    // Try to find source lines by looking up the exact class and method.
-
-
-		    try {
-		        JavaClass targetClass = AnalysisContext.currentAnalysisContext()
-		        .lookupClass(className);
-		        JavaClassAndMethod targetMethod = Hierarchy.findMethod(targetClass, methodName, methodSig);
-		        if (targetMethod != null) {
-		            sourceLines = SourceLineAnnotation.forEntireMethod(
-		                    targetMethod.getJavaClass(), targetMethod.getMethod());
-		        }
-		    } catch (ClassNotFoundException e) {
-		        // Can't find the class
-		    }
-
-        }
-
-		// If we couldn't find the source lines,
-		// create an unknown source line annotation referencing
-		// the class and source file.
-		if (sourceLines == null) {
-			sourceLines = SourceLineAnnotation.createUnknown(className);
-		}
+		SourceLineAnnotation sourceLines = SourceLineAnnotation.getSourceAnnotationForMethod(
+				className, methodName, methodSig);
 		
 		methodAnnotation.setSourceLines(sourceLines);
 		
 		return methodAnnotation;
 	}
-	
+
 	/**
 	 * Create a MethodAnnotation from a method that is not
 	 * directly accessible.  We will use the repository to
