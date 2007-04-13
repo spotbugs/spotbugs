@@ -2,23 +2,23 @@
 
 <FindBugsFilter>
   <Match>
-    <Bug code="EI_EXPOSE_REP"/>
+    <Bug pattern="EI_EXPOSE_REP"/>
   </Match>
   <Match>
-    <Bug code="EI_EXPOSE_REP2"/>
+    <Bug pattern="EI_EXPOSE_REP2"/>
   </Match>
   <Match>
-    <Bug code="EI_EXPOSE_REP2"/>
+    <Bug pattern="EI_EXPOSE_REP2"/>
   </Match>
   <Match>
-    <Bug code="MS_PKGPROTECT"/>
+    <Bug pattern="MS_PKGPROTECT"/>
   </Match>
   <Match>
-    <Bug code="SE_NO_SERIALVERSIONID"/>
-    <Class name="edu.umd.cs.findbugs.gui"/>
+    <Bug pattern="SE_NO_SERIALVERSIONID"/>
+    <Class name="~edu.umd.cs.findbugs.gui.*"/>
   </Match>
   <Match>
-    <Bug code="SE_NO_SERIALVERSIONID"/>
-    <Class name="edu.umd.cs.findbugs.gui2"/>
+    <Bug pattern="SE_BAD_FIELD"/>
+    <Class name="~edu.umd.cs.findbugs.gui.*"/>
   </Match>
 </FindBugsFilter>

@@ -150,7 +150,7 @@ public class DerefFinder {
                         }
 
                         if (unconditionallyDereferencedNullArgSet != null
-                                && !unconditionallyDereferencedNullArgSet.isEmpty())
+                                && !unconditionallyDereferencedNullArgSet.isEmpty() && valueNumberFrame.isValid())
                             for (int j = unconditionallyDereferencedNullArgSet.nextSetBit(0); j >= 0; j = unconditionallyDereferencedNullArgSet
                                     .nextSetBit(j + 1)) {
                                 int slot = sigParser.getSlotsFromTopOfStackForParameter(j);

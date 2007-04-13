@@ -19,6 +19,8 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import java.util.Arrays;
+
 import edu.umd.cs.findbugs.BugInstance;
 
 /**
@@ -49,4 +51,5 @@ public class BugMatcher implements Matcher {
 				|| patterns.match(bugInstance.getType())
 				|| categories.match(bugInstance.getBugPattern().getCategory());
 	}
+	
 }

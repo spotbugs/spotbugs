@@ -118,8 +118,11 @@ public class SignatureConverter {
 			case 'Z':
 				result.append("boolean");
 				break;
+            case 'V':
+                result.append("void");
+                break;
 			default:
-				throw new IllegalStateException("bad signature " + signature);
+				throw new IllegalArgumentException("bad signature " + signature);
 			}
 			skip();
 		}

@@ -26,6 +26,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
@@ -46,12 +47,12 @@ public class GenericObjectType extends ObjectType {
 
 	final List<? extends ReferenceType> parameters;
 	
-	final String variable;
+	final @CheckForNull String variable;
 	
-	final Type extension;
+	final @CheckForNull Type extension;
 
 	public Type getUpperBound() {
-		if (variable.equals("+")) return extension;
+		if ("+".equals(variable)) return extension;
 		return this;
 	}
 	
