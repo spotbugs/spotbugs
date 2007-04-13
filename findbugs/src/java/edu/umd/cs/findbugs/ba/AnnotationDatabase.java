@@ -331,7 +331,8 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 	}
 	
 	private boolean onlyAppliesToReferenceParameters(AnnotationEnum annotation) {
-	    return annotation instanceof NullnessAnnotation;
+	    // return annotation instanceof NullnessAnnotation; work around JDK bug
+	    return true;
 	}
 	protected void addMethodParameterAnnotation(String cName, String mName, String mSig, boolean isStatic, int param, AnnotationEnum annotation) {
 		subtypes.addNamedClass(cName);
