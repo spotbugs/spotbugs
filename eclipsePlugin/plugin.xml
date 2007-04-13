@@ -204,7 +204,7 @@
                id="findbugs"
                label="Find Bugs"
                path="additions"/>
-         <action
+    	 <action
                class="de.tobject.findbugs.actions.ClearMarkersAction"
                id="de.tobject.findbugs.removeMarkers"
                label="%menu.clearMarkers"
@@ -272,7 +272,7 @@
                value="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker">
          </filter>
       </objectContribution>
-     
+          
       <!-- 
       	"Show Details" context menu entry for markers in the editor margin.
 	    The existing FindBugs marker action cannot be used, as the editor margin 
@@ -291,6 +291,27 @@
                   class="org.eclipse.core.resources.IMarker">
             </selection>
          </action>
+      </viewerContribution>
+      <viewerContribution
+            id="de.tobject.findbugs.TextEditorActions"
+            targetID="#CompilationUnitEditorContext">
+         <menu
+               id="findbugs"
+               label="Find Bugs"
+               path="additions"/>
+         <action
+               class="de.tobject.findbugs.actions.FindBugsEditorAction"
+               icon="icons/bug.gif"
+               id="de.tobject.findbugs.findBugs"
+               label="&amp;Find Bugs"
+               menubarPath="findbugs/additions"
+               tooltip="%menu.findBugsPopup"/>
+         <action
+               class="de.tobject.findbugs.actions.ClearMarkersEditorAction"
+               id="de.tobject.findbugs.removeMarkers"
+               label="%menu.clearMarkers"
+               menubarPath="findbugs/additions"
+               tooltip="%menu.clearMarkersPopup"/>
       </viewerContribution>
    </extension>
    
