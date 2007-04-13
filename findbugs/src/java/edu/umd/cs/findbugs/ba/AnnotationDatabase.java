@@ -329,6 +329,10 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
 		addDirectAnnotation(m, annotation);
 	}
+	
+	private boolean onlyAppliesToReferenceParameters(AnnotationEnum annotation) {
+	    return annotation instanceof NullnessAnnotation;
+	}
 	protected void addMethodParameterAnnotation(String cName, String mName, String mSig, boolean isStatic, int param, AnnotationEnum annotation) {
 		subtypes.addNamedClass(cName);
 		if (addClassOnly) return;
@@ -338,7 +342,7 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		String signature = parser.getParameter(param);
 		char firstChar = signature.charAt(0);
 		boolean isReference = firstChar == 'L' || firstChar == '[';
-		if (annotation instanceof NullnessAnnotation && !isReference) {
+		if (onlyAppliesToReferenceParameters(annotation) && !isReference) {
 			AnalysisContext.logError("Can't apply " + 
 					annotation + " to parameter " + param + " with signature " + signature + 
 					" of " + cName +"." + mName +" : " + mSig);
