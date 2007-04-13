@@ -1,5 +1,5 @@
 #FindBugs User Preferences
-#Fri Feb 16 17:40:29 EST 2007
+#Fri Apr 13 10:56:55 EDT 2007
 detectorBCPMethodReturnCheck=BCPMethodReturnCheck|false
 detectorBadAppletConstructor=BadAppletConstructor|false
 detectorBadResultSetAccess=BadResultSetAccess|true
@@ -124,5 +124,7 @@ detectorWaitInLoop=WaitInLoop|true
 detectorWrongMapIterator=WrongMapIterator|true
 detectorXMLFactoryBypass=XMLFactoryBypass|true
 detector_threshold=2
+effort=default
+excludefilter0=findbugsExclude.xml
 filter_settings=Medium|PERFORMANCE,CORRECTNESS,MT_CORRECTNESS,BAD_PRACTICE,STYLE|false
 filter_settings_neg=I18N,MALICIOUS_CODE|
