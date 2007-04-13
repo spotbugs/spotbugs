@@ -335,6 +335,15 @@ public class AnnotationDatabase<AnnotationEnum extends AnnotationEnumeration<Ann
 		SignatureParser parser = new SignatureParser(mSig);
 		if (param < 0 || param >= parser.getNumParameters())
 			throw new IllegalArgumentException("can't annotation parameter #" + param + " of " + cName +"." + mName + mSig);
+		String signature = parser.getParameter(param);
+		char firstChar = signature.charAt(0);
+		boolean isReference = firstChar == 'L' || firstChar == '[';
+		if (annotation instanceof NullnessAnnotation && !isReference) {
+			AnalysisContext.logError("Can't apply " + 
+					annotation + " to parameter " + param + " with signature " + signature + 
+					" of " + cName +"." + mName +" : " + mSig);
+			return;
+		}
 		XMethod m = XFactory.createXMethod(cName, mName, mSig, isStatic);
 		addDirectAnnotation(new XMethodParameter(m, param), annotation);
 	}

@@ -166,6 +166,15 @@ public class SignatureParser {
 		return count;
 	}
 	
+	public String getParameter(int pos) {
+		int count = 0;
+		for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
+			String p = i.next();
+			if (pos == count) return p;
+			++count;
+		}
+		throw new IndexOutOfBoundsException("Asked for parameter " + pos + " of " + signature);
+	}
 	/**
 	 * Get the number of parameters passed to method invocation.
 	 * 
