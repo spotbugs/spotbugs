@@ -115,7 +115,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		}
 		classesScanned.add(getDottedClassName());	
 		if (getSuperclassName().indexOf("$") >= 0
-		        || getSuperclassName().indexOf("+") >= 0) {
+		        || getSuperclassName().indexOf("+") >= 0 || withinAnonymousClass.matcher(getDottedClassName()).find()) {
 			// System.out.println("hicfsc: " + betterClassName);
 			innerClassCannotBeStatic.add(getDottedClassName());
 			// System.out.println("hicfsc: " + betterSuperclassName);
@@ -539,7 +539,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		
 	}
 
-	Pattern dontComplainAbout = Pattern.compile("class[$]");
+	static Pattern dontComplainAbout = Pattern.compile("class[$]");
+	static Pattern withinAnonymousClass = Pattern.compile("[$][0-9].*[$]");
 	@Override
          public void report() {
 		Set<String> fieldNamesSet = new HashSet<String>();
@@ -724,6 +725,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 						if (easyChange && !isAnonymousInnerClass)
 							priority = NORMAL_PRIORITY;
 
+						boolean b = withinAnonymousClass.matcher(getDottedClassName()).find();
 						String bug = "SIC_INNER_SHOULD_BE_STATIC";
 						if (isAnonymousInnerClass)
 							bug = "SIC_INNER_SHOULD_BE_STATIC_ANON";
