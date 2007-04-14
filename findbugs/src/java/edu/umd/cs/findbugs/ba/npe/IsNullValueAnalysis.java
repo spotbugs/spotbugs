@@ -539,6 +539,7 @@ public class IsNullValueAnalysis
 			short secondToLastOpcode = prev.getInstruction().getOpcode();
 			// System.out.println("Second last opcode: " +  Constants.OPCODE_NAMES[secondToLastOpcode]);
 			if (secondToLastOpcode != Constants.INSTANCEOF) return null;
+			if (instanceOfFrame == null) return null;
 			IsNullValue tos = instanceOfFrame.getTopValue();
 			boolean isNotInstanceOf = (lastInSourceOpcode != Constants.IFNE);
 			Location atInstanceOf = new Location(prev, basicBlock);
