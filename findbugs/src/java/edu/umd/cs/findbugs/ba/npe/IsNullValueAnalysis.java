@@ -200,7 +200,7 @@ public class IsNullValueAnalysis
 			throws DataflowAnalysisException {
 		// Determine if this basic block ends in a redundant branch.
 		if (end == null) {
-			if (lastFrame == null || instanceOfFrame == null)
+			if (lastFrame == null)
 				result.setDecision(null);
 			else {
 				IsNullConditionDecision decision = getDecision(basicBlock, lastFrame);
