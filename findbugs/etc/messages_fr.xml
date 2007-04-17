@@ -2953,7 +2953,7 @@ String s = buf.toString();
   <LongDescription>Alimentation à null de {2} dans la méthode {1}</LongDescription>
   <Details>
 <![CDATA[
-<p>Le code alimente une variable locale avec null, la valeur n'étant jamais lue par la suite. Cette alimentation a pu être introduite pour faciliter le travail du rammase miettes, mais cela n'a plus aucun intérêt avec Java SE 6.</p>
+<p>Le code alimente une variable locale avec null, la valeur n'étant jamais lue par la suite. Cette alimentation a pu être introduite pour faciliter le travail du ramasse-miettes, mais cela n'a plus aucun intérêt avec Java SE 6.</p>
 ]]>
   </Details>
  </BugPattern>
