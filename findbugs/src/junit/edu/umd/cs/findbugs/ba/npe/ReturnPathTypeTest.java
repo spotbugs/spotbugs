@@ -49,7 +49,7 @@ public class ReturnPathTypeTest extends TestCase {
 		Assert.assertFalse(top.isValid());
 		Assert.assertTrue(top.isTop());
 		try {
-			boolean b = top.canReturnNormally();// should throw exception
+			top.canReturnNormally();// should throw exception
 			Assert.assertTrue(false);
 		} catch (DataflowAnalysisException e) {
 			// Good
