@@ -5896,4 +5896,80 @@ and the next method is supposed to change the state of the iterator.
   <BugCode abbrev="VR">Version compatibility issue</BugCode>
   <BugCode abbrev="DP">Use doPrivileged</BugCode>
   <BugCode abbrev="GC">Suspicious calls to generic container methods</BugCode>
+
+<Detector class="de.shipdown.bismarck.findbugs.checks.StaticCalendarDetector">
+<Details>
+<![CDATA[
+<p>This detector warns about static fields of type java.util.Calendar or java.text.DateFormat (and subclasses) because
+ Calendars are inherently unsafe for multithreaded use.
+It is a fast detector.</p>
+]]>
+</Details>
+</Detector>
+
+<BugPattern type="STCAL_STATIC_CALENDAR_INSTANCE">
+<ShortDescription>Static Calendar</ShortDescription>
+<LongDescription>Found static field of type java.util.Calendar in {1}</LongDescription>
+<Details>
+<![CDATA[
+<p>Even though the JavaDoc does not contain a hint about it, Calendars are inherently unsafe for multihtreaded use. 
+Sharing a single instance across thread boundaries without proper synchronization will result in erratic behavior of the
+application. Under 1.4 problems seem to surface less often than under Java 5 where you will probably see
+random ArrayIndexOutOfBoundsExceptions or IndexOutOfBoundsExceptions in sun.util.calendar.BaseCalendar.getCalendarDateFromFixedDate().</p>
+<p>You may also experience serialization problems.</p>
+<p>Using an instance field is recommended.</p>
+<p>For more information on this see <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6231579">Sun Bug #6231579</a>
+and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a>.</p>
+]]>
+</Details>
+</BugPattern>
+
+<BugPattern type="STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE">
+<ShortDescription>Call to static Calendar</ShortDescription>
+<LongDescription>Call to method of static java.util.Calendar in {1}</LongDescription>
+<Details>
+<![CDATA[
+<p>Even though the JavaDoc does not contain a hint about it, Calendars are inherently unsafe for multihtreaded use. 
+The detector has found a call to an instance of Calendar that has been obtained via a static
+field. This looks suspicous.</p>
+<p>For more information on this see <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6231579">Sun Bug #6231579</a>
+and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a>.</p>
+]]>
+</Details>
+</BugPattern>
+
+
+<BugPattern type="STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE">
+<ShortDescription>Static DateFormat</ShortDescription>
+<LongDescription>Found static field of type java.text.DateFormat in {1}</LongDescription>
+<Details>
+<![CDATA[
+<p>As the JavaDoc states, DateFormats are inherently unsafe for multithreaded use. 
+Sharing a single instance across thread boundaries without proper synchronization will result in erratic behavior of the
+application.</p>
+<p>You may also experience serialization problems.</p>
+<p>Using an instance field is recommended.</p>
+<p>For more information on this see <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6231579">Sun Bug #6231579</a>
+and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a>.</p>
+]]>
+</Details>
+</BugPattern>
+
+<BugPattern type="STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE">
+<ShortDescription>Call to static DateFormat</ShortDescription>
+<LongDescription>Call to method of static java.text.DateFormat in {1}</LongDescription>
+<Details>
+<![CDATA[
+<p>As the JavaDoc states, DateFormats are inherently unsafe for multithreaded use. 
+The detector has found a call to an instance of DateFormat that has been obtained via a static
+field. This looks suspicous.</p>
+<p>For more information on this see <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6231579">Sun Bug #6231579</a>
+and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug #6178997</a>.</p>
+]]>
+</Details>
+</BugPattern>
+
+<BugCode abbrev="STCAL">Static use of type Calendar or DateFormat</BugCode>
+
+
   </MessageCollection>
