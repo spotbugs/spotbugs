@@ -1302,7 +1302,7 @@ factory pattern to create these objects.</p>
     </Details>
   </Detector>
 
-<Detector class="de.shipdown.bismarck.findbugs.checks.StaticCalendarDetector">
+<Detector class="edu.umd.cs.findbugs.detect.StaticCalendarDetector">
 <Details>
 <![CDATA[
 <p>This detector warns about static fields of type java.util.Calendar or java.text.DateFormat (and subclasses) because
