@@ -20,6 +20,16 @@
 
 					<p> Changes since version 1.1.3</p>
 					<ul>
+					<li>Added -xml:withAbridgedMessages option to generate xml containing shorter messages.
+					    The messages will be shorted by doing things like eliding package names, and leaving off
+					    the source line from the LongMessage.
+					    These messages are appropriate if being used in a context where 
+					    the non-message components of the bug annotations will be used to provide more information
+					    (e.g., clicking on the message for a MethodAnnotation will display the source for the method).
+					<ul><li>FindBugsDisplayFeatures.setAbridgedMessages(true) can be used to generate abridged messages
+					    when FindBugs is being accessed directly (not via generated XML) from a GUI or IDE.
+					    </li>
+					    </ul>
 					<li>In null pointer analysis, try to be better about always showing two locations: where it is known null and
 					where it is dereferenced.
 					<li>Interprocedural analysis of which methods return nonnull values
