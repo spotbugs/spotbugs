@@ -90,6 +90,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						"Invalid top-level element (expected BugCollection, saw " + qName + ")");
 			
 			// Read and set the sequence number.
+			String version = attributes.getValue("version");
+			if (bugCollection instanceof SortedBugCollection)
+			  ((SortedBugCollection)bugCollection).setAnalysisVersion(version);
+		
+			// Read and set the sequence number.
 			String sequence = attributes.getValue("sequence");
 			long seqval = parseLong(sequence, 0L);
 			bugCollection.setSequenceNumber(seqval);

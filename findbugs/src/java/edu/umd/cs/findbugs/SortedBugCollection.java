@@ -80,6 +80,7 @@ import edu.umd.cs.findbugs.xml.XMLOutputUtil;
  */
 public class SortedBugCollection implements BugCollection {
 	long analysisTimestamp = System.currentTimeMillis();
+	String analysisVersion = Version.RELEASE;
 	private boolean withMessages = false;
     
 	private static final boolean REPORT_SUMMARY_HTML =
@@ -306,7 +307,7 @@ public class SortedBugCollection implements BugCollection {
 		xmlOutput.beginDocument();
 		xmlOutput.openTag(ROOT_ELEMENT_NAME,
 			new XMLAttributeList()
-				.addAttribute("version",Version.RELEASE)
+				.addAttribute("version", analysisVersion)
 				.addAttribute("sequence",String.valueOf(getSequenceNumber()))
 				.addAttribute("timestamp", String.valueOf(getTimestamp()))
 				.addAttribute("analysisTimestamp", String.valueOf(getAnalysisTimestamp()))
@@ -1015,6 +1016,14 @@ public class SortedBugCollection implements BugCollection {
 					&&  bug.getPrimarySourceLineAnnotation().getStartLine() == lineNumber) return bug;
 		return null;
 	}
+
+	/**
+     * @param version
+     */
+    public void setAnalysisVersion(String version) {
+	    this.analysisVersion = version;
+	    
+    }
 }
 
 // vim:ts=4
