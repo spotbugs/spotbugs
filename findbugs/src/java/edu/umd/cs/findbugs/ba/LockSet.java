@@ -289,8 +289,8 @@ public final class LockSet {
 		return -(array.length + 1); // didn't find requested valueNumber, and array is full
 	}
 
-	private void addEntry(int index, int valueNumber, int lockCount) {
-		index = -(index + 1);
+	private void addEntry(int negatedIndex, int valueNumber, int lockCount) {
+		int index = -(negatedIndex + 1);
 		int origCapacity = array.length;
 		if (index == origCapacity) {
 			// Grow the array.
@@ -317,7 +317,7 @@ public final class LockSet {
 	}
 
 	@Override
-         public String toString() {
+	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append('[');
 		boolean first = true;
