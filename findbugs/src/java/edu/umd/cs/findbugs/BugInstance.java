@@ -34,6 +34,7 @@ import java.util.StringTokenizer;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
@@ -903,7 +904,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		addField(new FieldAnnotation(className, fieldName, fieldSig, isStatic));
 		return this;
 	}
-
+	
+	public BugInstance addField(PreorderVisitor visitor) {
+		FieldAnnotation fieldAnnotation = FieldAnnotation.fromVisitedField(visitor);
+		return addField(fieldAnnotation);
+	}
 	/**
 	 * Add a field annotation
 	 *
