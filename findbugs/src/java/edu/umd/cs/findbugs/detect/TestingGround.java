@@ -19,60 +19,44 @@
 
 package edu.umd.cs.findbugs.detect;
 
-
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 
-public class TestingGround extends BytecodeScanningDetector  {
+public class TestingGround extends BytecodeScanningDetector {
 
-	private static final boolean active 
-		 = SystemProperties.getBoolean("findbugs.tg.active");
-	
+	private static final boolean active = SystemProperties.getBoolean("findbugs.tg.active");
 
 	BugReporter bugReporter;
 
 	OpcodeStack stack = new OpcodeStack();
+
 	public TestingGround(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
-
-	boolean checked = true;
 	@Override
-         public void visit(JavaClass obj) {
-        if (!checked) {
-            checked = true;
-             try {
-                 JavaClass javaLangClass = Repository.lookupClass("java.lang.Class");
-                 bugReporter.reportBug(new BugInstance(this, 
-                         "TESTING", HIGH_PRIORITY).addClass(obj).addString(javaLangClass.toString()));
-            } catch (ClassNotFoundException e) {
-             AnalysisContext.logError("Error looking up java.lang.Class", e);
-            }
-        }
+	public void visit(JavaClass obj) {
 	}
 
 	@Override
-         public void visit(Method obj) {
+	public void visit(Method obj) {
 	}
 
 	@Override
-         public void visit(Code obj) {
+	public void visit(Code obj) {
 		// unless active, don't bother dismantling bytecode
 		if (active) {
-			// System.out.println("TestingGround: " + getFullyQualifiedMethodName());
-                	stack.resetForMethodEntry(this);
+			stack.resetForMethodEntry(this);
 			super.visit(obj);
 		}
 	}
 
-
 	@Override
-         public void sawOpcode(int seen) {
+	public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
-				stack.sawOpcode(this,seen);
+		stack.sawOpcode(this, seen);
 	}
 }
