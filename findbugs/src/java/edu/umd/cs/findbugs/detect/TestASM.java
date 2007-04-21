@@ -20,8 +20,11 @@
 package edu.umd.cs.findbugs.detect;
 
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -29,12 +32,14 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 
 /**
+ * Sample detector, using 
  * @author David Hovemeyer
  */
-public class TestASM implements Detector2 {
+public class TestASM extends ClassNode implements Detector2 {
 	
+	final BugReporter bugReporter;
 	public TestASM(BugReporter bugReporter) {
-		
+		this.bugReporter = bugReporter;
 	}
 
 	/* (non-Javadoc)
@@ -64,6 +69,18 @@ public class TestASM implements Detector2 {
 		
 		cr.accept(cn, 0);
 		
+	}
+	
+	public FieldVisitor visitField(int access,
+            String name,
+            String desc,
+            String signature,
+            Object value) {
+		if ((access & Opcodes.ACC_STATIC) != 0 && (access & Opcodes.ACC_FINAL) != 0 
+				&& !name.equals(name.toUpperCase()))
+			bugReporter.reportBug(new BugInstance(this, "TESTING", Detector2.LOW_PRIORITY)
+			.addClass(this).addField(this.name, name, desc, (access & Opcodes.ACC_STATIC) != 0));
+		return null;
 	}
 
 }

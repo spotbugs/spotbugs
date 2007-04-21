@@ -32,7 +32,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  *
  * @see AnnotationVisitor
  */
-public class AnnotationDetector extends AnnotationVisitor implements Detector {
+abstract public class AnnotationDetector extends AnnotationVisitor implements Detector {
 	private ClassContext classContext;
 
 	public void visitClassContext(ClassContext classContext) {

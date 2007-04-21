@@ -39,6 +39,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.MethodGen;
+import org.objectweb.asm.tree.ClassNode;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -188,6 +189,28 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		
 	}
 		
+	/**
+	 * Create a new BugInstance.
+	 * This is the constructor that should be used by Detectors.
+	 * 
+	 * @param detector the Detector2 that is reporting the BugInstance
+	 * @param type     the bug type
+	 * @param priority the bug priority
+	 */
+	public BugInstance(Detector2 detector, String type, int priority) {
+		this(type, priority);
+		
+		if (detector != null) {
+			// Adjust priority if required
+			DetectorFactory factory =
+				DetectorFactoryCollection.instance().getFactoryByClassName(detector.getDetectorClassName());
+			if (factory != null) {
+				this.priority += factory.getPriorityAdjustment();
+                boundPriority();
+			}
+		}
+		
+	}
 	public static void setAdjustExperimental(boolean adjust) {
 		adjustExperimental = adjust;
 	}
@@ -803,6 +826,18 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public BugInstance addClass(String className) {
 		className = ClassName.toDottedClassName(className);
 		ClassAnnotation classAnnotation = new ClassAnnotation(className);
+		add(classAnnotation);
+		return this;
+	}
+
+	/**
+	 * Add a class annotation for the classNode.
+	 *
+	 * @param classNode the ASM visitor
+	 * @return this object
+	 */
+	public BugInstance addClass(ClassNode classNode) {
+		ClassAnnotation classAnnotation = new ClassAnnotation(classNode.name);
 		add(classAnnotation);
 		return this;
 	}

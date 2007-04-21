@@ -671,7 +671,9 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 					break;
 				}
 				nextPC = i;
+				beforeOpcode(opcode);
 				sawOpcode(opcode);
+				afterOpcode(opcode);
 
 				if (opcode == TABLESWITCH) {
 					sawInt(switchLow);
@@ -766,6 +768,8 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 	public void sawOffset(int seen) {
 	}
 
+	public void beforeOpcode(int seen) {}
+	public void afterOpcode(int seen) {}
 	public void sawOpcode(int seen) {
 	}
 
