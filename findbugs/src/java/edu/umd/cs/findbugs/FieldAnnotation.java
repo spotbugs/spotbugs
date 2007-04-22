@@ -21,6 +21,8 @@ package edu.umd.cs.findbugs;
 
 import java.io.IOException;
 
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
@@ -72,7 +74,17 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		this.fieldSig = fieldSig;
 		this.isStatic = isStatic;
 	}
-
+	/**
+	 * Constructor.
+	 *
+	 * @param className the name of the class containing the field
+	 * @param fieldName the name of the field
+	 * @param fieldSig  the type signature of the field
+	 * @param accessFlags accessFlags for the field
+	 */
+	public FieldAnnotation(String className, String fieldName, String fieldSig, int accessFlags) {
+		this(className, fieldName, fieldSig, (accessFlags & Constants.ACC_STATIC) != 0);
+	}
 	/**
 	 * Factory method. Class name, field name, and field signatures are taken from
 	 * the given visitor, which is visiting the field.

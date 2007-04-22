@@ -940,6 +940,19 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return this;
 	}
 	
+	/**
+	 * Add a field annotation.
+	 *
+	 * @param className name of the class containing the field
+	 * @param fieldName the name of the field
+	 * @param fieldSig  type signature of the field
+	 * @param isStatic  whether or not the field is static
+	 * @return this object
+	 */
+	public BugInstance addField(String className, String fieldName, String fieldSig, int accessFlags) {
+		addField(new FieldAnnotation(className, fieldName, fieldSig, accessFlags));
+		return this;
+	}
 	public BugInstance addField(PreorderVisitor visitor) {
 		FieldAnnotation fieldAnnotation = FieldAnnotation.fromVisitedField(visitor);
 		return addField(fieldAnnotation);
@@ -1039,6 +1052,21 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance addMethod(String className, String methodName, String methodSig, boolean isStatic) {
 		addMethod(MethodAnnotation.fromForeignMethod(className, methodName, methodSig, isStatic));
+		return this;
+	}
+
+	/**
+	 * Add a method annotation.  If this is the first method annotation added,
+	 * it becomes the primary method annotation.
+	 *
+	 * @param className  name of the class containing the method
+	 * @param methodName name of the method
+	 * @param methodSig  type signature of the method
+	 * @param accessFlags   accessFlags for the method
+	 * @return this object
+	 */
+	public BugInstance addMethod(String className, String methodName, String methodSig, int accessFlags) {
+		addMethod(MethodAnnotation.fromForeignMethod(className, methodName, methodSig, accessFlags));
 		return this;
 	}
 

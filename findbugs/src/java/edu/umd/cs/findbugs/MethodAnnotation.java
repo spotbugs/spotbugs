@@ -126,6 +126,37 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 * @return the MethodAnnotation
 	 */
 	public static MethodAnnotation fromForeignMethod(
+			String className, String methodName, String methodSig, int accessFlags) {
+		
+		// FIXME: would be nice to do this without using BCEL
+		
+ 		className = ClassName.toDottedClassName(className);
+		
+		// Create MethodAnnotation.
+		// It won't have source lines yet.
+		MethodAnnotation methodAnnotation =
+			new MethodAnnotation(className, methodName, methodSig, (accessFlags & Constants.ACC_STATIC) != 0);
+		
+		SourceLineAnnotation sourceLines = SourceLineAnnotation.getSourceAnnotationForMethod(
+				className, methodName, methodSig);
+		
+		methodAnnotation.setSourceLines(sourceLines);
+		
+		return methodAnnotation;
+	}
+	/**
+	 * Factory method to create the MethodAnnotation from
+	 * the classname, method name, signature, etc.
+	 * The method tries to look up source line information for
+	 * the method.
+	 * 
+	 * @param className  name of the class containing the method
+	 * @param methodName name of the method
+	 * @param methodSig  signature of the method
+	 * @param isStatic   true if the method is static, false otherwise
+	 * @return the MethodAnnotation
+	 */
+	public static MethodAnnotation fromForeignMethod(
 			String className, String methodName, String methodSig, boolean isStatic) {
 		
 		// FIXME: would be nice to do this without using BCEL

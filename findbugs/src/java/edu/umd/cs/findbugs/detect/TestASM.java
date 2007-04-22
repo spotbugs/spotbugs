@@ -21,65 +21,48 @@ package edu.umd.cs.findbugs.detect;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
+import edu.umd.cs.findbugs.asm.ClassNodeDetector;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.Global;
 
 /**
- * Sample detector, using 
+ * Sample detector, using ASM
  * @author David Hovemeyer
  */
-public class TestASM extends ClassNode implements Detector2 {
+public class TestASM extends ClassNodeDetector  {
 	
-	final BugReporter bugReporter;
 	public TestASM(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
+		super(bugReporter);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.Detector2#finishPass()
-	 */
-	public void finishPass() {
-		// do nothing
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.Detector2#getDetectorClassName()
-	 */
-	public String getDetectorClassName() {
-		return getClass().getName();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.umd.cs.findbugs.Detector2#visitClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
-	 */
-	public void visitClass(ClassDescriptor classDescriptor)
-			throws CheckedAnalysisException {
-		
-		System.out.println("TestASM visiting " + classDescriptor);
-		
-		ClassReader cr = Global.getAnalysisCache().getClassAnalysis(ClassReader.class, classDescriptor);
-		ClassNode cn = new ClassNode();
-		
-		cr.accept(cn, 0);
-		
-	}
-	
+	@Override
+	public MethodVisitor visitMethod(int access,
+            String name,
+            String desc,
+            String signature, String [] exceptions) {
+	BugInstance bug = new BugInstance(this, "TESTING", NORMAL_PRIORITY)
+	.addClass(this).addMethod(this.name, name, desc, access).addString("method should start with lower case character");
+	bugReporter.reportBug(bug);
+	return null;
+}
+	@Override
 	public FieldVisitor visitField(int access,
             String name,
             String desc,
             String signature,
             Object value) {
-		if ((access & Opcodes.ACC_STATIC) != 0 && (access & Opcodes.ACC_FINAL) != 0 
+		if ((access & Opcodes.ACC_STATIC) != 0 && (access & Opcodes.ACC_FINAL) != 0 && (access & Opcodes.ACC_PUBLIC) != 0 
 				&& !name.equals(name.toUpperCase()))
 			bugReporter.reportBug(new BugInstance(this, "TESTING", Detector2.LOW_PRIORITY)
-			.addClass(this).addField(this.name, name, desc, (access & Opcodes.ACC_STATIC) != 0));
+			.addClass(this).addField(this.name, name, desc, access));
 		return null;
 	}
 

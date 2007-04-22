@@ -27,19 +27,12 @@ import org.apache.bcel.classfile.*;
 
 public class TestingGround extends BytecodeScanningDetector {
 
-	private static final boolean active = SystemProperties.getBoolean("findbugs.tg.active");
-
 	BugReporter bugReporter;
-
-	OpcodeStack stack = new OpcodeStack();
 
 	public TestingGround(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
-	@Override
-	public void visit(JavaClass obj) {
-	}
 
 	@Override
 	public void visit(Method obj) {
@@ -48,11 +41,11 @@ public class TestingGround extends BytecodeScanningDetector {
 				.addClass(this).addMethod(this).addString("method should start with lower case character");
 				bugReporter.reportBug(bug);
 			}
-
+		prevOpcode = -1;
 	}
 	@Override
 	public void visit(Field obj) {
-		if (obj.isFinal() && obj.isStatic() 
+		if (obj.isFinal() && obj.isStatic() && obj.isPublic()
             && !obj.getName().equals(obj.getName().toUpperCase()) 
             && !obj.getName().equals("serialVersionUID")) {
 			BugInstance bug = new BugInstance(this, "TESTING", 
@@ -63,19 +56,9 @@ public class TestingGround extends BytecodeScanningDetector {
 		}
 	}
 
-	@Override
-	public void visit(Code obj) {
-		// unless active, don't bother dismantling bytecode
-		if (active) {
-			stack.resetForMethodEntry(this);
-			super.visit(obj);
-		}
-	}
-
-	int prevOpcode = 0;
+	int prevOpcode;
 	@Override
 	public void sawOpcode(int seen) {
-		stack.mergeJumps(this);
 		
 		if (prevOpcode == I2D && seen == INVOKESTATIC
 				&& getNameConstantOperand().equals("ceil")
@@ -85,7 +68,5 @@ public class TestingGround extends BytecodeScanningDetector {
 	
 		
 		prevOpcode = seen;
-		
-		stack.sawOpcode(this, seen);
 	}
 }
