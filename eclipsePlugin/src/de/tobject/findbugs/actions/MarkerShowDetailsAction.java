@@ -31,8 +31,6 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
-import de.tobject.findbugs.view.DetailsView;
-import de.tobject.findbugs.view.UserAnnotationsView;
 
 /**
  * Show details on a selected FindBugs marker.

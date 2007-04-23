@@ -48,8 +48,6 @@ import org.eclipse.ui.texteditor.IUpdate;
 
 import de.tobject.findbugs.FindbugsPlugin;
 import de.tobject.findbugs.marker.FindBugsMarker;
-import de.tobject.findbugs.view.DetailsView;
-import de.tobject.findbugs.view.UserAnnotationsView;
 
 /**
  * An action that can display a bug marker's details in the FindBugs details view.

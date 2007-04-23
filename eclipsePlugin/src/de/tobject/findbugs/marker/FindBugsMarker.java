@@ -20,8 +20,6 @@
  
 package de.tobject.findbugs.marker;
 
-import edu.umd.cs.findbugs.BugInstance;
-
 /**
  * Marker for the findbugs plug-in.
  * 

@@ -20,8 +20,6 @@
 
 package de.tobject.findbugs.reporter;
 
-import java.sql.Timestamp;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;

@@ -20,7 +20,6 @@
  
 package de.tobject.findbugs.reporter;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -10,7 +10,6 @@ import org.dom4j.Document;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
-import org.dom4j.io.SAXWriter;
 import org.dom4j.io.XMLWriter;
 
 /**
