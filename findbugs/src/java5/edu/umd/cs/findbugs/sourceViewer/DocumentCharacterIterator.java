@@ -55,7 +55,7 @@ public class DocumentCharacterIterator implements CharacterIterator {
 	}
 
 	@Override
-    public Object clone() {
+	public Object clone() {
 		throw new UnsupportedOperationException();
 	}
 

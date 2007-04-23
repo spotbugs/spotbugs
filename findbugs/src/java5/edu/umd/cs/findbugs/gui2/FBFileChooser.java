@@ -65,7 +65,7 @@ public class FBFileChooser extends JFileChooser {
 	}
 	
 	@Override
-    public void addNotify(){
+	public void addNotify(){
 		super.addNotify();
 		setFontSize(Driver.getFontSize());
 		
@@ -85,7 +85,7 @@ public class FBFileChooser extends JFileChooser {
 	}
 	
 	@Override
-    public int showOpenDialog(Component parent)
+	public int showOpenDialog(Component parent)
 	{
 		 assert java.awt.EventQueue.isDispatchThread();
 		int x=super.showOpenDialog(parent);
@@ -98,7 +98,7 @@ public class FBFileChooser extends JFileChooser {
 	}
 
 	@Override
-    public int showSaveDialog(Component parent){
+	public int showSaveDialog(Component parent){
 		 assert java.awt.EventQueue.isDispatchThread();
 		int x=super.showSaveDialog(parent);
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
@@ -110,7 +110,7 @@ public class FBFileChooser extends JFileChooser {
 	}
 
 	@Override
-    public int showDialog(Component parent, String approveButtonText){
+	public int showDialog(Component parent, String approveButtonText){
 		 assert java.awt.EventQueue.isDispatchThread();
 		int x=super.showDialog(parent, approveButtonText);
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))

@@ -108,7 +108,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 	}
 	
 	@Override
-    public String toString()
+	public String toString()
 	{
 		switch(mode)
 		{
@@ -152,7 +152,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 	}
 	
 	@Override
-    public boolean equals(Object o)
+	public boolean equals(Object o)
 	{
 		if (!(o instanceof FilterMatcher))
 			return false;
@@ -162,7 +162,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 	}
 	
 	@Override
-    public int hashCode()
+	public int hashCode()
 	{
 		return value.hashCode() + filterBy.hashCode();
 	}

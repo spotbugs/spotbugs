@@ -116,64 +116,64 @@ public class NavigableTextPane extends JTextPane {
 	
 	/** scroll the specified primary lines into view, along
 	 *  with as many of the other lines as is convenient */
-    public void scrollLinesToVisible(int startLine, int endLine, Collection<Integer> otherLines) {
-    	int startY, endY;
-    	try {
+	public void scrollLinesToVisible(int startLine, int endLine, Collection<Integer> otherLines) {
+		int startY, endY;
+		try {
     		startY = lineToY(startLine);
-    	} catch (BadLocationException ble) {
+		} catch (BadLocationException ble) {
 			if (MainFrame.DEBUG) ble.printStackTrace();
-    		return; // give up
-    	}
-    	try {
+			return; // give up
+		}
+		try {
     		endY = lineToY(endLine);
-    	} catch (BadLocationException ble) {
-    		endY = startY; // better than nothing
-    	}
+		} catch (BadLocationException ble) {
+			endY = startY; // better than nothing
+		}
     	
-    	int max = parentHeight() - 0;
-    	if (endY-startY > max) {
-    		endY = startY+max;
+		int max = parentHeight() - 0;
+		if (endY-startY > max) {
+			endY = startY+max;
     	}
-    	else if (otherLines!=null && otherLines.size() > 0) {
-    		int origin = startY + endY / 2;
-    		PriorityQueue<Integer> pq = new PriorityQueue<Integer>(otherLines.size(), new DistanceComparator(origin));
+		else if (otherLines!=null && otherLines.size() > 0) {
+			int origin = startY + endY / 2;
+			PriorityQueue<Integer> pq = new PriorityQueue<Integer>(otherLines.size(), new DistanceComparator(origin));
     		for (int line : otherLines) {
-    			int otherY;
-    			try {
-    				otherY = lineToY(line);
+				int otherY;
+				try {
+					otherY = lineToY(line);
     			} catch (BadLocationException ble) {
-    				continue; // give up on this one
-    			}
-    			pq.add(otherY);
+					continue; // give up on this one
+				}
+				pq.add(otherY);
     		}
-    	
-    		while ( !pq.isEmpty() ) {
-    			int y = pq.remove();
+		
+			while ( !pq.isEmpty() ) {
+				int y = pq.remove();
     			int lo = Math.min(startY, y);
-    			int hi = Math.max(endY, y);
-    			if (hi-lo > max) break;
-    			else {
+				int hi = Math.max(endY, y);
+				if (hi-lo > max) break;
+				else {
     				startY = lo;
-    				endY = hi;
-    			}
-    		}
+					endY = hi;
+				}
+			}
     	}
-    	scrollYToVisibleImpl((startY+endY)/2, max/2);
-    }
-    
+		scrollYToVisibleImpl((startY+endY)/2, max/2);
+	}
+	
     public static class DistanceComparator implements Comparator<Integer> {
-    	private final int origin;
-    	public DistanceComparator(int origin) {
-    		this.origin = origin;
+		private final int origin;
+		public DistanceComparator(int origin) {
+			this.origin = origin;
     	}
-    	/* Returns a negative integer, zero, or a positive integer as
-    	 * the first argument is farther from, equadistant, or closer
-    	 * to (respectively) the origin.
+		/* Returns a negative integer, zero, or a positive integer as
+		 * the first argument is farther from, equadistant, or closer
+		 * to (respectively) the origin.
     	 * This sounds backwards, but this way closer values get a
-    	 * higher priority in the priority queue. */
-    	public int compare(Integer a, Integer b) {
-    		return Math.abs(b-origin) - Math.abs(a-origin);
+		 * higher priority in the priority queue. */
+		public int compare(Integer a, Integer b) {
+			return Math.abs(b-origin) - Math.abs(a-origin);
     	}
-    }
-    
+	}
+	
 }

@@ -383,7 +383,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			rebuildingThread = new Thread()
 			{
 				@Override
-                public void run()
+				public void run()
 				{	
 					try
 					{
@@ -405,7 +405,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 						newModel.tree = newTree;
 						Debug.println("Making new tree from Rebuild, this happens in swing thread");
 						MainFrame.getInstance().newTree(newTree,newModel);
-                        
+						
 						
 						rebuildingThread = null;
 //						System.out.println(Thread.currentThread() + " finish");
@@ -722,7 +722,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		}
 		
 		@Override
-        protected void finalize() throws Throwable
+		protected void finalize() throws Throwable
 		{
 			super.finalize();
 			
@@ -782,7 +782,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		}
 		static void pleaseWait(final String message)
 		{
-            MainFrame.getInstance().showWaitCard();
+			MainFrame.getInstance().showWaitCard();
 		}
 		
 		public TreeModelEvent restructureBranch(ArrayList<String> stringsToBranch, boolean removing) throws BranchOperationException

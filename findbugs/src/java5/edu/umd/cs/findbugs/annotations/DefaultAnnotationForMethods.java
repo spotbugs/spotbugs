@@ -46,6 +46,6 @@ import java.lang.annotation.Target;
 
 public @interface DefaultAnnotationForMethods {
 	Class<? extends Annotation>[] value();
-    Priority priority() default Priority.MEDIUM;
+	Priority priority() default Priority.MEDIUM;
 }
 

@@ -53,7 +53,7 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 		return lst.size();
 	}
 	@Override
-    public String toString()
+	public String toString()
 	{
 		if (lst.isEmpty())
 			return edu.umd.cs.findbugs.L10N.getLocalString("tree.bugs", "Bugs") + " (" + count + ")";
@@ -107,7 +107,7 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 		StackedFilterMatcher sfm = new StackedFilterMatcher(filters);
 		return sfm;
 	}
-         
+		 
 	public BugSet getMatchingBugs(BugSet theSet)
 	{        
 		return theSet.getBugsMatchingFilter(this.getStackedFilterMatcher());
@@ -124,13 +124,13 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 		}
 		
 		@Override
-        public int hashCode()
+		public int hashCode()
 		{
 			return key.hashCode() + value.hashCode();
 		}
 		
 		@Override
-        public boolean equals(Object that)
+		public boolean equals(Object that)
 		{
 			if (!(that instanceof StringPair))
 				return false;
@@ -139,7 +139,7 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 		}
 		
 		@Override
-        public String toString()
+		public String toString()
 		{
 			return key +":"+ value;
 		}

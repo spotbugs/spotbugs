@@ -64,8 +64,8 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 				{
 					if (changeSettings)
 						ProjectSettings.newInstance();
-                    MainFrame instance = MainFrame.getInstance();
-                    instance.setProjectAndBugCollection(project, results);
+					MainFrame instance = MainFrame.getInstance();
+					instance.setProjectAndBugCollection(project, results);
 				}
 			
 			public void analysisInterrupted() {}
@@ -85,7 +85,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		this.project = project;
 		this.callback = callback;
 		initComponents();
-        MainFrame.getInstance().showWaitCard();
+		MainFrame.getInstance().showWaitCard();
 		analysisThread.start();
 		if (joinThread)
 			try {analysisThread.join();} catch (InterruptedException e) {}
@@ -213,9 +213,9 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		}
 		
 		@Override
-        public void run()
+		public void run()
 		{
-            if (project == null) throw new NullPointerException("null project");
+			if (project == null) throw new NullPointerException("null project");
 
 			BugCollection data = BugLoader.doAnalysis(project, AnalyzingDialog.this);
 			if (data == null) // We were interrupted

@@ -27,8 +27,8 @@ class NumberedEditorKit extends StyledEditorKit {
 	public  NumberedEditorKit(HighlightInformation highlight) {
 		this.highlight = highlight;
 	}
-    @Override
-    public ViewFactory getViewFactory() {
-        return new NumberedViewFactory(highlight);
+	@Override
+	public ViewFactory getViewFactory() {
+		return new NumberedViewFactory(highlight);
     }
 }

@@ -74,7 +74,7 @@ public class FBDialog extends JDialog {
 	}
 	
 	@Override
-    public void addNotify(){
+	public void addNotify(){
 		super.addNotify();
 		
 		setFontSize(Driver.getFontSize());

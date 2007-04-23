@@ -51,19 +51,19 @@ public class OSXAdapter extends ApplicationAdapter {
 	public void handleAbout(ApplicationEvent ae) {
 		if (mainApp != null) {
 			ae.setHandled(true);
-                        // We need to invoke modal About Dialog asynchronously
-                        // otherwise the Application queue is locked for the duration
-                        // of the about Dialog, which results in a deadlock if a URL is
+						// We need to invoke modal About Dialog asynchronously
+						// otherwise the Application queue is locked for the duration
+						// of the about Dialog, which results in a deadlock if a URL is
                         // selected, and we get a ReOpenApplication event when user
-                        // switches back to Findbugs.
-                        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
+						// switches back to Findbugs.
+						javax.swing.SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
                                     mainApp.about();
-                                }
-                            });
+								}
+							});
 		} else {
 			throw new IllegalStateException("handleAbout: " +
-                                                        "MyApp instance detached from listener");
+														"MyApp instance detached from listener");
 		}
 	}
 	
@@ -74,7 +74,7 @@ public class OSXAdapter extends ApplicationAdapter {
 			ae.setHandled(true);
 		} else {
 			throw new IllegalStateException("handlePreferences: MyApp instance " +
-                                                        "detached from listener");
+														"detached from listener");
 		}
 	}
 	
@@ -83,7 +83,7 @@ public class OSXAdapter extends ApplicationAdapter {
 		if (mainApp != null) {
 
 			/*
-                         * You MUST setHandled(false) if you want to
+						 * You MUST setHandled(false) if you want to
 			 * delay or cancel the quit. This is important
 			 * for cross-platform development -- have a
 			 * universal quit routine that chooses whether
@@ -97,7 +97,7 @@ public class OSXAdapter extends ApplicationAdapter {
 			mainApp.callOnClose();
 		} else {
 			throw new IllegalStateException("handleQuit: MyApp instance detached " +
-                                                        "from listener");
+														"from listener");
 		}
 	}
 	

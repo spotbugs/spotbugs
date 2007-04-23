@@ -158,9 +158,9 @@ public final class SourceCodeDisplay implements Runnable {
 					frame.sourceCodeTextPane.setEditorKit(src.getEditorKit());
 					StyledDocument document = src.getDocument();
 					frame.sourceCodeTextPane.setDocument(document);
-                    String sourceFile = thisSource.getSourceFile();
-                    if (sourceFile == null || sourceFile.equals("<Unknown>")) {
-                        sourceFile = thisSource.getSimpleClassName();
+					String sourceFile = thisSource.getSourceFile();
+					if (sourceFile == null || sourceFile.equals("<Unknown>")) {
+						sourceFile = thisSource.getSimpleClassName();
                     }
 					frame.setSourceTabTitle(sourceFile + " in " + thisSource.getPackageName());
 					int startLine = thisSource.getStartLine();
@@ -212,13 +212,13 @@ public final class SourceCodeDisplay implements Runnable {
 	
 	private int search(JavaSourceDocument document, String target, int start, Boolean backwards)
 	{
-        if (document == null) return -1;
-        
+		if (document == null) return -1;
+		
 		String docContent = null;
 		try{
 		StyledDocument document2 = document.getDocument();
-        if (document2 == null) return -1;
-        docContent = document2.getText(0, document2.getLength());
+		if (document2 == null) return -1;
+		docContent = document2.getText(0, document2.getLength());
 		}
 		catch(BadLocationException ble){System.out.println("Bad location exception");}
 		catch(NullPointerException npe){return -1;}

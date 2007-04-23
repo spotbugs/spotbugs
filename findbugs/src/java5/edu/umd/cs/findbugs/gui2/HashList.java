@@ -163,15 +163,15 @@ public class HashList<E> extends ArrayList<E>
 	public boolean retainAll(Collection<?> c)
 	{
 		boolean result = false;
-        for(Iterator<E> iterator = this.iterator(); iterator.hasNext(); ) {
-            E i = iterator.next();
-            if (!c.contains(i))
+		for(Iterator<E> iterator = this.iterator(); iterator.hasNext(); ) {
+			E i = iterator.next();
+			if (!c.contains(i))
             {
-                iterator.remove();
-                result = true;
-              
+				iterator.remove();
+				result = true;
+				
             }
-        }
+		}
 		
 		return result;
 	}
@@ -209,7 +209,7 @@ public class HashList<E> extends ArrayList<E>
 				for (Integer j : i.getValue())
 					if (j >= index)
 						newSet.add(j + 1);
-                    else newSet.add(j);
+					else newSet.add(j);
 				i.setValue(newSet);
 			}
 				

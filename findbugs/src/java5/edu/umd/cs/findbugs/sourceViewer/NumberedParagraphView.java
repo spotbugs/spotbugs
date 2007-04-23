@@ -39,79 +39,79 @@ import edu.umd.cs.findbugs.gui2.Driver;
 // Code inspired by http://www.developer.com/java/other/article.php/3318421
 
 class NumberedParagraphView extends ParagraphView {
-    public final static int NUMBERS_WIDTH= (int) Driver.getFontSize()*3+9;
-    HighlightInformation highlight;
-    public NumberedParagraphView(Element e, HighlightInformation highlight) {
+	public final static int NUMBERS_WIDTH= (int) Driver.getFontSize()*3+9;
+	HighlightInformation highlight;
+	public NumberedParagraphView(Element e, HighlightInformation highlight) {
         super(e);
-        this.highlight = highlight;
-    }
+		this.highlight = highlight;
+	}
 
 //    protected void setInsets(short top, short left, short bottom,
 //            short right) {super.setInsets
 //            (top,(short)(left+NUMBERS_WIDTH),
 //            bottom,right);
 //}
-    @Override
-    public void paint(Graphics g, Shape allocation) {
-        Rectangle r = (allocation instanceof Rectangle) ?
+	@Override
+	public void paint(Graphics g, Shape allocation) {
+		Rectangle r = (allocation instanceof Rectangle) ?
                 (Rectangle)allocation : allocation.getBounds();
 
-    	Color oldColor = g.getColor();
+		Color oldColor = g.getColor();
 		Integer lineNumber = getLineNumber();
-    	Color highlightColor = highlight.getHighlight(lineNumber);
-    	if (highlightColor != null) {
-    		g.setColor(highlightColor);
+		Color highlightColor = highlight.getHighlight(lineNumber);
+		if (highlightColor != null) {
+			g.setColor(highlightColor);
     		g.fillRect(r.x, r.y, r.width, r.height);
-    		g.setColor(oldColor);
-    	}
+			g.setColor(oldColor);
+		}
 		// r.x += NUMBERS_WIDTH;
 		
 		super.paint(g, r);
 
 
-        FontMetrics metrics = g.getFontMetrics();
-         
-        g.setColor(Color.GRAY);
+		FontMetrics metrics = g.getFontMetrics();
+		 
+		g.setColor(Color.GRAY);
         String lineNumberString = lineNumber.toString();
-        int width = metrics.stringWidth(lineNumberString);
-        int numberX = r.x - width-9 + NUMBERS_WIDTH;
-        int numberY = r.y + metrics.getAscent();
+		int width = metrics.stringWidth(lineNumberString);
+		int numberX = r.x - width-9 + NUMBERS_WIDTH;
+		int numberY = r.y + metrics.getAscent();
        
 		g.drawString(lineNumberString, numberX, numberY);
-        g.setColor(oldColor);
-        // System.out.println("Drawing line for " + lineNumber + " @ " + numberX +"," + numberY);
-        // r.x -= NUMBERS_WIDTH;
+		g.setColor(oldColor);
+		// System.out.println("Drawing line for " + lineNumber + " @ " + numberX +"," + numberY);
+		// r.x -= NUMBERS_WIDTH;
         
-    }
+	}
 
-    public int getPreviousLineCount0() {
-        int lineCount = 0;
-        View parent = this.getParent();
+	public int getPreviousLineCount0() {
+		int lineCount = 0;
+		View parent = this.getParent();
         int count = parent.getViewCount();
-        for (int i = 0; i < count; i++) {
-            if (parent.getView(i) == this) {
-                break;
+		for (int i = 0; i < count; i++) {
+			if (parent.getView(i) == this) {
+				break;
             }
-            else {
-                lineCount += parent.getView(i).getViewCount();
-            }
+			else {
+				lineCount += parent.getView(i).getViewCount();
+			}
         }
-        return lineCount;
-    }
-    static WeakHashMap<Element, Integer> elementLineNumberCache = new WeakHashMap<Element, Integer>();
+		return lineCount;
+	}
+	static WeakHashMap<Element, Integer> elementLineNumberCache = new WeakHashMap<Element, Integer>();
     public Integer getLineNumber() {
-    
-        Element element = this.getElement();
-    	Integer result = elementLineNumberCache.get(element);
+	
+		Element element = this.getElement();
+		Integer result = elementLineNumberCache.get(element);
     	if (result != null) return result;
-        Element parent = element.getParentElement();
-        int count = parent.getElementCount();
-        for (int i = 0; i < count; i++) {
+		Element parent = element.getParentElement();
+		int count = parent.getElementCount();
+		for (int i = 0; i < count; i++) {
         	elementLineNumberCache.put(parent.getElement(i), i+1);
-        }
-       result = elementLineNumberCache.get(element);
-    	if (result != null) return result;
+		}
+		result = elementLineNumberCache.get(element);
+		if (result != null) return result;
     	return -1;
 
-    }
+	}
 }

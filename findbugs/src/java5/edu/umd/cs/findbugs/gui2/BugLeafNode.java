@@ -48,7 +48,7 @@ public class BugLeafNode {
 	}
 	
 	@Override
-    public String toString()
+	public String toString()
 	{
 		
 		
@@ -80,7 +80,7 @@ public class BugLeafNode {
 	}
 
 	@Override
-    public boolean equals(Object o)
+	public boolean equals(Object o)
 	{
 		if (!(o instanceof BugLeafNode))
 			return false;
@@ -90,7 +90,7 @@ public class BugLeafNode {
 
 	
 	@Override
-    public int hashCode()
+	public int hashCode()
 	{
 		return bug.hashCode();
 	}

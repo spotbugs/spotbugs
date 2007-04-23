@@ -39,13 +39,13 @@ public class StackedFilterMatcher extends FilterMatcher
 	private FilterMatcher[] filters;
 	
 	@Override
-    Sortables getFilterBy()
+	Sortables getFilterBy()
 	{
 		throw new UnsupportedOperationException("Stacked filter matchers do not filter out a single Sortables, use getFilters()");
 	}
 	
 	@Override
-    String getValue()
+	String getValue()
 	{
 		throw new UnsupportedOperationException("Stacked filter matchers do not filter out a single Sortables's value, use getFilters and getValue individually on returned filters.");
 	}
@@ -60,7 +60,7 @@ public class StackedFilterMatcher extends FilterMatcher
 	//See BugTreeModel's long ranting comment about filtering to see the reason for all this
 	//All this does is not force the tree to rebuild when you turn filters for branches on and off
 	@Override
-    public void setActive(boolean active)
+	public void setActive(boolean active)
 	{
 		TreeModelEvent event=null;
 		BugTreeModel.TreeModification whatToDo;
@@ -144,7 +144,7 @@ public class StackedFilterMatcher extends FilterMatcher
 	}
 	
 	@Override
-    public boolean match(BugInstance bugInstance)
+	public boolean match(BugInstance bugInstance)
 	{
 		if (!isActive())
 			return true;

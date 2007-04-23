@@ -155,8 +155,8 @@ public class MainFrame extends FBFrame implements LogSync
 	boolean userInputEnabled;
 	
 	static boolean isMacLookAndFeel() {
-        return UIManager.getLookAndFeel().getClass().getName().startsWith("apple");
-    }
+		return UIManager.getLookAndFeel().getClass().getName().startsWith("apple");
+	}
 	
 	static final String DEFAULT_SOURCE_CODE_MSG = edu.umd.cs.findbugs.L10N.getLocalString("msg.nosource_txt", "No available source");
 	
@@ -410,13 +410,13 @@ public class MainFrame extends FBFrame implements LogSync
 	void setProjectAndBugCollection(Project project, BugCollection bugCollection) {
 		setRebuilding(false);
 		if (bugCollection == null) {
-            showTreeCard();
+			showTreeCard();
 		} else {
 			curProject = project;
 			this.bugCollection = bugCollection;
 			displayer.clearCache();
 			
-            BugTreeModel model = (BugTreeModel) getTree().getModel();     
+			BugTreeModel model = (BugTreeModel) getTree().getModel();     
 			setSourceFinder(new SourceFinder());
 			getSourceFinder().setSourceBaseList(project.getSourceDirList());
 			BugSet bs = new BugSet(bugCollection);
@@ -763,9 +763,9 @@ public class MainFrame extends FBFrame implements LogSync
 		menuBar.add(designationMenu);
 
 		if (!MAC_OS_X) {		
-		    // On Mac, 'About' appears under Findbugs menu, so no need for it here
-		    JMenu helpMenu = newJMenu("menu.help_menu", "Help");
-		    JMenuItem aboutItem = newJMenuItem("menu.about_item", "About FindBugs");
+			// On Mac, 'About' appears under Findbugs menu, so no need for it here
+			JMenu helpMenu = newJMenu("menu.help_menu", "Help");
+			JMenuItem aboutItem = newJMenuItem("menu.about_item", "About FindBugs");
 		    helpMenu.add(aboutItem);
 
 				aboutItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1034,55 +1034,55 @@ public class MainFrame extends FBFrame implements LogSync
 		}
 	}
 
-    static final String TREECARD = "Tree";
-    static final String WAITCARD = "Wait";
-    
+	static final String TREECARD = "Tree";
+	static final String WAITCARD = "Wait";
+	
 
-    public void showWaitCard() {
-        showCard(WAITCARD, new Cursor(Cursor.WAIT_CURSOR));
-    }
+	public void showWaitCard() {
+		showCard(WAITCARD, new Cursor(Cursor.WAIT_CURSOR));
+	}
 
-    public void showTreeCard() {
-        showCard(TREECARD, new Cursor(Cursor.DEFAULT_CURSOR));
-    }
+	public void showTreeCard() {
+		showCard(TREECARD, new Cursor(Cursor.DEFAULT_CURSOR));
+	}
     private void showCard(final String c, final Cursor cursor) {
-        if (SwingUtilities.isEventDispatchThread()) {
-            setCursor(cursor);
-            CardLayout layout = (CardLayout) cardPanel.getLayout();
+		if (SwingUtilities.isEventDispatchThread()) {
+			setCursor(cursor);
+			CardLayout layout = (CardLayout) cardPanel.getLayout();
             layout.show(cardPanel, c);
-        } else
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
+		} else
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
                     setCursor(cursor);
-                    CardLayout layout = (CardLayout) cardPanel.getLayout();
-                    layout.show(cardPanel, c);
-                }
+					CardLayout layout = (CardLayout) cardPanel.getLayout();
+					layout.show(cardPanel, c);
+				}
             });
-    }
-    
-    JPanel waitPanel, cardPanel;
+	}
+	
+	JPanel waitPanel, cardPanel;
 	/**
 	 * 
 	 * @return
 	 */
 	JPanel bugListPanel()
 	{
-        cardPanel = new JPanel(new CardLayout());
+		cardPanel = new JPanel(new CardLayout());
 
 		JPanel topPanel = new JPanel();
-        waitPanel = new JPanel();
-        waitPanel.add(new JLabel("Please wait..."));
-        cardPanel.add(topPanel, TREECARD);
+		waitPanel = new JPanel();
+		waitPanel.add(new JLabel("Please wait..."));
+		cardPanel.add(topPanel, TREECARD);
         cardPanel.add(waitPanel, WAITCARD);
-        
-        topPanel.setMinimumSize(new Dimension(200,200));
+		
+		topPanel.setMinimumSize(new Dimension(200,200));
 		tableheader = new JTableHeader();
 		//Listener put here for when user double clicks on sorting
 		//column header SorterDialog appears.
 		tableheader.addMouseListener(new MouseAdapter(){
 
 			@Override
-            public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent e) {
 				Debug.println("tableheader.getReorderingAllowed() = " + tableheader.getReorderingAllowed());
 				if (!tableheader.getReorderingAllowed())
 					return;
@@ -1091,7 +1091,7 @@ public class MainFrame extends FBFrame implements LogSync
 			}
 
 			@Override
-            public void mouseReleased(MouseEvent arg0) {
+			public void mouseReleased(MouseEvent arg0) {
 				if (!tableheader.getReorderingAllowed())
 					return;
 				BugTreeModel bt=(BugTreeModel) (MainFrame.this.getTree().getModel());
@@ -1150,7 +1150,7 @@ public class MainFrame extends FBFrame implements LogSync
 				tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 				tree.setLargeModel(true);
 				tree.setCellRenderer(new BugRenderer());
-                showTreeCard();
+				showTreeCard();
 				Container container = treeScrollPane.getParent();
 				
 				container.remove(treeScrollPane);
@@ -1422,9 +1422,9 @@ public class MainFrame extends FBFrame implements LogSync
 		summaryHtmlArea.setContentType("text/html");
 		summaryHtmlArea.setEditable(false);
 		summaryHtmlArea.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
-	            public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
-	                AboutDialog.editorPaneHyperlinkUpdate(evt);
-	            }
+				public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
+					AboutDialog.editorPaneHyperlinkUpdate(evt);
+				}
 	        });
 		setStyleSheets();
 		//JPanel temp = new JPanel(new BorderLayout());
@@ -1596,14 +1596,14 @@ public class MainFrame extends FBFrame implements LogSync
 		
 			addComponentListener(new ComponentAdapter(){
 				@Override
-                public void componentResized(ComponentEvent e){
+				public void componentResized(ComponentEvent e){
 					comments.resized();
 				}
 			});
 			
 			addWindowListener(new WindowAdapter(){
 				@Override
-                public void windowClosing(WindowEvent e) {
+				public void windowClosing(WindowEvent e) {
 					if(comments.hasFocus())
 						setProjectChanged(true);
 					callOnClose();
@@ -1635,16 +1635,16 @@ public class MainFrame extends FBFrame implements LogSync
 		}
 		
 		@Override
-        public void mouseClicked(MouseEvent e) {			
+		public void mouseClicked(MouseEvent e) {			
 			displayer.displaySource(bugInstance, note);
 		}
 		@Override
-        public void mouseEntered(MouseEvent e){
+		public void mouseEntered(MouseEvent e){
 			label.setForeground(Color.blue);
 			setCursor(new Cursor(Cursor.HAND_CURSOR));
 		}
 		@Override
-        public void mouseExited(MouseEvent e){
+		public void mouseExited(MouseEvent e){
 			label.setForeground(Color.black);
 			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
@@ -1669,9 +1669,9 @@ public class MainFrame extends FBFrame implements LogSync
 	private void setStyleSheets() {
 		StyleSheet styleSheet = new StyleSheet();
 		styleSheet.addRule("body {font-size: " + Driver.getFontSize() +"pt}");
-        styleSheet.addRule("H1 {color: red;  font-size: 120%; font-weight: bold;}");
-        styleSheet.addRule("code {font-family: courier; font-size: " + Driver.getFontSize() +"pt}");
-        htmlEditorKit.setStyleSheet(styleSheet);
+		styleSheet.addRule("H1 {color: red;  font-size: 120%; font-weight: bold;}");
+		styleSheet.addRule("code {font-family: courier; font-size: " + Driver.getFontSize() +"pt}");
+		htmlEditorKit.setStyleSheet(styleSheet);
         summaryHtmlArea.setEditorKit(htmlEditorKit);
 	}
 	
@@ -1795,7 +1795,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * This is overridden for changing the font size
 	 */
 	@Override
-    public void addNotify(){
+	public void addNotify(){
 		super.addNotify();
 		
 		float size = Driver.getFontSize();
@@ -1889,12 +1889,12 @@ public class MainFrame extends FBFrame implements LogSync
 		preferencesMenuItem.setEnabled(!b);
 		if (b) {
 			SorterDialog.getInstance().freeze();
-            showWaitCard();
-        }
+			showWaitCard();
+		}
 		else {
 			SorterDialog.getInstance().thaw();
-            showTreeCard();
-        }
+			showTreeCard();
+		}
 		recentMenu.setEnabled(!b);
 
 	}
@@ -2077,10 +2077,10 @@ public class MainFrame extends FBFrame implements LogSync
 		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
 		
 		showWaitCard();
-        new Thread()
+		new Thread()
 		{
 			@Override
-            public void run()
+			public void run()
 			{
 				updateDesignationDisplay();
 				BugCollection  bc=BugLoader.redoAnalysisKeepComments(curProject);

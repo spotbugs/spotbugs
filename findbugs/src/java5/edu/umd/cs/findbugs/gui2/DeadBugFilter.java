@@ -35,14 +35,14 @@ public class DeadBugFilter extends FilterMatcher {
 		super(filterBy, value, mode);
 	}
 
-    @Override
+	@Override
 	public String toString()
 	{
 		return edu.umd.cs.findbugs.L10N.getLocalString("pref.dead_bugs", "Dead Bugs");
 	}
-    
-    @Override
-    public boolean match(BugInstance bugInstance) {
+	
+	@Override
+	public boolean match(BugInstance bugInstance) {
         return super.match(bugInstance);
-    }
+	}
 }

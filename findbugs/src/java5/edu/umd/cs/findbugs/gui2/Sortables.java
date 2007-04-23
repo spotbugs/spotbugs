@@ -49,7 +49,7 @@ public enum Sortables implements Comparator<StringPair>
 	FIRSTVERSION(edu.umd.cs.findbugs.L10N.getLocalString("sort.first_version", "First Version"))
 	{
 		@Override
-        public String getFrom(BugInstance bug)
+		public String getFrom(BugInstance bug)
 		{
 			return Long.toString(bug.getFirstVersion());
 		}
@@ -59,8 +59,8 @@ public enum Sortables implements Comparator<StringPair>
 		{	
 			int seqNum = Integer.parseInt(value);
 			BugCollection bugCollection = MainFrame.getInstance().bugCollection;
-            if (bugCollection == null) return "--";
-            AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
+			if (bugCollection == null) return "--";
+			AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
 			String appendItem = "";
 			if(appVersion != null)
 			{
@@ -83,7 +83,7 @@ public enum Sortables implements Comparator<StringPair>
 	LASTVERSION(edu.umd.cs.findbugs.L10N.getLocalString("sort.last_version", "Last Version"))
 	{
 		@Override
-        public String getFrom(BugInstance bug)
+		public String getFrom(BugInstance bug)
 		{
 			return Long.toString(bug.getLastVersion());
 		}
@@ -95,8 +95,8 @@ public enum Sortables implements Comparator<StringPair>
 			if(value.equals("-1"))
 				return "";
 			int seqNum = Integer.parseInt(value);
-            BugCollection bugCollection = MainFrame.getInstance().bugCollection;
-            if (bugCollection == null) return "--";
+			BugCollection bugCollection = MainFrame.getInstance().bugCollection;
+			if (bugCollection == null) return "--";
 			AppVersion appVersion = bugCollection.getAppVersionFromSequenceNumber(seqNum);
 			String appendItem = "";
 			if(appVersion != null)
@@ -128,7 +128,7 @@ public enum Sortables implements Comparator<StringPair>
 	PRIORITY(edu.umd.cs.findbugs.L10N.getLocalString("sort.priority", "Priority"))
 	{
 		@Override
-        public String getFrom(BugInstance bug)
+		public String getFrom(BugInstance bug)
 		{
 			return String.valueOf(bug.getPriority());
 		}
@@ -158,7 +158,7 @@ public enum Sortables implements Comparator<StringPair>
 	CLASS(edu.umd.cs.findbugs.L10N.getLocalString("sort.class", "Class"))
 	{
 		@Override
-        public String getFrom(BugInstance bug)
+		public String getFrom(BugInstance bug)
 		{
 			return bug.getPrimarySourceLineAnnotation().getClassName();
 		}
@@ -182,13 +182,13 @@ public enum Sortables implements Comparator<StringPair>
 	PACKAGE(edu.umd.cs.findbugs.L10N.getLocalString("sort.package", "Package"))
 	{
 		@Override
-        public String getFrom(BugInstance bug)
+		public String getFrom(BugInstance bug)
 		{
 			return bug.getPrimarySourceLineAnnotation().getPackageName();
 		}
 		
 		@Override
-        public String formatValue(String value)
+		public String formatValue(String value)
 		{
 			if (value.equals(""))
 				return "(Default)";
@@ -198,7 +198,7 @@ public enum Sortables implements Comparator<StringPair>
 	CATEGORY(edu.umd.cs.findbugs.L10N.getLocalString("sort.category", "Category"))
 	{
 		@Override
-        public String getFrom(BugInstance bug)
+		public String getFrom(BugInstance bug)
 		{
 			return bug.getBugPattern().getCategory();
 		}
@@ -212,7 +212,7 @@ public enum Sortables implements Comparator<StringPair>
 	DESIGNATION(edu.umd.cs.findbugs.L10N.getLocalString("sort.designation", "Designation"))
 	{
 		@Override
-        public String getFrom(BugInstance bug)
+		public String getFrom(BugInstance bug)
 		{
 			return bug.getUserDesignationKey();
 		}
@@ -229,7 +229,7 @@ public enum Sortables implements Comparator<StringPair>
 		}
 		
 		@Override
-        public String[] getAllSorted()
+		public String[] getAllSorted()
 		{//FIXME I think we always want user to see all possible designations, not just the ones he has set in his project, Agreement?  -Dan
 			List<String> sortedDesignations=I18N.instance().getUserDesignationKeys(true);
 			return sortedDesignations.toArray(new String[sortedDesignations.size()]);
@@ -238,13 +238,13 @@ public enum Sortables implements Comparator<StringPair>
 	BUGCODE(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_kind", "Bug Kind"))
 	{
 		@Override
-        public String getFrom(BugInstance bug)
+		public String getFrom(BugInstance bug)
 		{
 			return bug.getBugPattern().getAbbrev();
 		}
 				
 		@Override
-        public String formatValue(String value)
+		public String formatValue(String value)
 		{
 			return I18N.instance().getBugTypeDescription(value);
 		}
@@ -258,7 +258,7 @@ public enum Sortables implements Comparator<StringPair>
 	TYPE(edu.umd.cs.findbugs.L10N.getLocalString("sort.bug_pattern", "Bug Pattern"))
 	{
 		@Override
-        public String getFrom(BugInstance bug)
+		public String getFrom(BugInstance bug)
 		{
 			if((bug.getBugPattern()) == null)
 				return "Missing bug pattern";
@@ -266,7 +266,7 @@ public enum Sortables implements Comparator<StringPair>
 		}
 				
 		@Override
-        public String formatValue(String value)
+		public String formatValue(String value)
 		{
 			return I18N.instance().getShortMessageWithoutCode(value);
 		}
@@ -306,7 +306,7 @@ public enum Sortables implements Comparator<StringPair>
 	}
 
 	@Override
-    public String toString()
+	public String toString()
 	{
 		return prettyName;
 	}

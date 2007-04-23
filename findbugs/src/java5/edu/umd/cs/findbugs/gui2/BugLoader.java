@@ -68,7 +68,7 @@ public class BugLoader {
 	public static BugCollection doAnalysis(@NonNull Project p, FindBugsProgress progressCallback)
 	{
 		BugCollectionBugReporter  pcb=new BugCollectionBugReporter(p);
-        pcb.setPriorityThreshold(Priorities.NORMAL_PRIORITY);
+		pcb.setPriorityThreshold(Priorities.NORMAL_PRIORITY);
 		IFindBugsEngine fb=createEngine(p, pcb);
 		fb.setUserPreferences(UserPreferences.getUserPreferences());
 		fb.setProgressCallback(progressCallback);
@@ -76,8 +76,8 @@ public class BugLoader {
 			fb.execute();
 			List<String> possibleDirectories=p.getSourceDirList();
 			MainFrame instance = MainFrame.getInstance();
-            
-            //			System.out.println("List of directories: "+p.getSourceDirList());
+			
+			//			System.out.println("List of directories: "+p.getSourceDirList());
 			instance.setSourceFinder(new SourceFinder());
 			instance.getSourceFinder().setSourceBaseList(possibleDirectories);
 
@@ -217,7 +217,7 @@ public class BugLoader {
 	 */
 	public static BugCollection redoAnalysisKeepComments(@NonNull Project p)
 	{
-        if (p == null) throw new NullPointerException("null project");
+		if (p == null) throw new NullPointerException("null project");
 
 		BugSet oldSet=BugSet.getMainBugSet();
 		BugCollection current=MainFrame.getInstance().bugCollection;//Now we should no longer get this December 31st 1969 business.
@@ -231,7 +231,7 @@ public class BugLoader {
 		RedoAnalysisCallback ac= new RedoAnalysisCallback();
 		
 		new AnalyzingDialog(p,ac,true);
-        
+		
 		if (ac.finished)
 			return update.mergeCollections(current, ac.getBugCollection(), true, false);
 		else
@@ -244,8 +244,8 @@ public class BugLoader {
 	{
 
 		BugCollection getBugCollection() {
-		    return justAnalyzed;      
-        }
+			return justAnalyzed;      
+		}
 		BugCollection justAnalyzed;
 		volatile boolean finished;
 		public void analysisFinished(BugCollection b)

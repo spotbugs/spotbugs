@@ -46,7 +46,7 @@ public class RecentMenu{
 		}
 		
 		@Override
-        public boolean add(T element)
+		public boolean add(T element)
 		{
 			if (!this.contains(element))
 			{

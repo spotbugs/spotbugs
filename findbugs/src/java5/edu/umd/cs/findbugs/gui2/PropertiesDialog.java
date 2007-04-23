@@ -104,7 +104,7 @@ public class PropertiesDialog extends FBDialog {
 		
 		addWindowListener(new WindowAdapter(){
 			@Override
-            public void windowDeactivated(WindowEvent e) {
+			public void windowDeactivated(WindowEvent e) {
 				if(Integer.decode(tabTextField.getText()).intValue() != GUISaveState.getInstance().getTabSize())
 					tabTextField.setText(Integer.toString(GUISaveState.getInstance().getTabSize()));
 				

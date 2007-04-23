@@ -53,7 +53,7 @@ public class FBFrame extends JFrame {
 	}
 	
 	@Override
-    public void addNotify(){
+	public void addNotify(){
 		super.addNotify();
 		
 		try {
