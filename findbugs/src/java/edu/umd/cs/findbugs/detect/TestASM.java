@@ -19,50 +19,71 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Attribute;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.ClassNode;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
+import edu.umd.cs.findbugs.asm.AbstractMethodVisitorWithPC;
 import edu.umd.cs.findbugs.asm.ClassNodeDetector;
-import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
-import edu.umd.cs.findbugs.classfile.ClassDescriptor;
-import edu.umd.cs.findbugs.classfile.Global;
+import edu.umd.cs.findbugs.asm.MethodVisitorWithPC;
+import edu.umd.cs.findbugs.asm.MethodWithPCAdapter;
 
 /**
  * Sample detector, using ASM
+ * 
  * @author David Hovemeyer
  */
-public class TestASM extends ClassNodeDetector  {
-	
+public class TestASM extends ClassNodeDetector {
+
 	public TestASM(BugReporter bugReporter) {
 		super(bugReporter);
 	}
 
 	@Override
-	public MethodVisitor visitMethod(int access,
-            String name,
-            String desc,
-            String signature, String [] exceptions) {
-	BugInstance bug = new BugInstance(this, "TESTING", NORMAL_PRIORITY)
-	.addClass(this).addMethod(this.name, name, desc, access).addString("method should start with lower case character");
-	bugReporter.reportBug(bug);
-	return null;
-}
+	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
+	        final String[] exceptions) {
+		if (Character.isUpperCase(name.charAt(0))) {
+			BugInstance bug0 = new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClass(this).addMethod(this.name, name, desc,
+			        access).addString("method should start with lower case character");
+			bugReporter.reportBug(bug0);
+		}
+		return new MethodWithPCAdapter(new AbstractMethodVisitorWithPC() {
+			int lineNumber;
+
+			public void visitLineNumber(int line, Label start) {
+				lineNumber = line;
+			}
+
+			public void visitMethodInsn(int arg0, String arg1, final String arg2, String arg3) {
+				if (previousOpcode == Opcodes.I2D && arg0 == Opcodes.INVOKESTATIC && arg1.equals("java/lang/Math")
+				        && arg2.equals("ceil")) {
+					SourceLineAnnotation sourceLine = SourceLineAnnotation.fromRawData(TestASM.this.name, sourceFile, lineNumber,
+					        lineNumber, pc, pc);
+
+					BugInstance bug = new BugInstance(TestASM.this, "TESTING", NORMAL_PRIORITY).addClass(TestASM.this).addMethod(
+					        TestASM.this.name, name, desc, access).addCalledMethod(arg1, arg2, arg3, true).addSourceLine(
+					        sourceLine).addString("int cast to double and passed to Math.ceil");
+					bugReporter.reportBug(bug);
+				}
+
+			}
+
+		});
+	}
+
 	@Override
-	public FieldVisitor visitField(int access,
-            String name,
-            String desc,
-            String signature,
-            Object value) {
-		if ((access & Opcodes.ACC_STATIC) != 0 && (access & Opcodes.ACC_FINAL) != 0 && (access & Opcodes.ACC_PUBLIC) != 0 
-				&& !name.equals(name.toUpperCase()))
-			bugReporter.reportBug(new BugInstance(this, "TESTING", Detector2.LOW_PRIORITY)
-			.addClass(this).addField(this.name, name, desc, access));
+	public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+		if ((access & Opcodes.ACC_STATIC) != 0 && (access & Opcodes.ACC_FINAL) != 0 && (access & Opcodes.ACC_PUBLIC) != 0
+		        && !name.equals(name.toUpperCase()))
+			bugReporter.reportBug(new BugInstance(this, "TESTING", Detector2.LOW_PRIORITY).addClass(this).addField(this.name,
+			        name, desc, access));
 		return null;
 	}
 

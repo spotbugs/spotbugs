@@ -336,6 +336,13 @@ public class SourceLineAnnotation implements BugAnnotation {
 				.addInstructionContext(classContext, visitor.getMethod());
 	}
 
+	public static SourceLineAnnotation fromRawData(String className, String sourceFile, int startLine, int endLine, int startPC, int endPC) {
+		if (startLine == -1)
+			return createUnknown(className, sourceFile, startPC, endPC);
+
+		return new SourceLineAnnotation(className, sourceFile, startLine, endLine, startPC, endPC)
+				.addInstructionContext(null, null); // throw exception if we ever start using this
+	}
 	/**
 	 * Factory method for creating a source line annotation describing the
 	 * source line number for the instruction being visited by given visitor.
