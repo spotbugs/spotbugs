@@ -52,7 +52,7 @@ public class AbstractDataflow<Fact, AnalysisType extends BasicAbstractDataflowAn
 	public Fact getFactAtLocation(Location location) throws DataflowAnalysisException {
 		return getAnalysis().getFactAtLocation(location);
 	}
-	
+
 	/**
 	 * Get dataflow fact after given Location.
 	 * 
@@ -63,7 +63,7 @@ public class AbstractDataflow<Fact, AnalysisType extends BasicAbstractDataflowAn
 	public Fact getFactAfterLocation(Location location) throws DataflowAnalysisException {
 		return getAnalysis().getFactAfterLocation(location);
 	}
-	
+
 	/**
 	 * Get the fact that is true on the given control edge.
 	 * 

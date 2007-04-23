@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.L10N;
  * @author David Hovemeyer
  */
 public class AnalysisErrorDialog extends javax.swing.JDialog {
-	
+
 	private BugReporter reporter;
 
 	/**
@@ -45,7 +45,7 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
 		this.reporter = reporter;
 		initComponents();
 	}
-	
+
 	public void generateContents() {
 		reporter.reportQueuedErrors();
 	}
@@ -217,7 +217,7 @@ public class AnalysisErrorDialog extends javax.swing.JDialog {
 	public void clear() {
 		errorMessageTextArea.setText("");
 	}
-	
+
 	public void finish() {
 		errorMessageTextArea.setText(buf.toString());
 	}

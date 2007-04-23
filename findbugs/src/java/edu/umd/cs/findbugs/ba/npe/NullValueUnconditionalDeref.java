@@ -15,7 +15,7 @@ public class NullValueUnconditionalDeref {
 	private boolean alwaysMethodReturnValue;
 	private Set<Location> derefLocationSet;
 	private Set<IsNullValue> values = new HashSet<IsNullValue>();
-	
+
 	public NullValueUnconditionalDeref() {
 		this.alwaysOnExceptionPath = true;
 		this.alwaysMethodReturnValue = true;
@@ -36,14 +36,14 @@ public class NullValueUnconditionalDeref {
 		values.add(isNullValue);
 		derefLocationSet.addAll(unconditionalDerefLocationSet);
 	}
-	
+
 	/**
 	 * @return Returns the derefLocationSet.
 	 */
 	public Set<Location> getDerefLocationSet() {
 		return derefLocationSet;
 	}
-	
+
 	/**
 	 * @return Returns the alwaysOnExceptionPath.
 	 */

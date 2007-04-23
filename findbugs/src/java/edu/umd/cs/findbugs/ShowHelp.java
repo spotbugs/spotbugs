@@ -32,7 +32,7 @@ public class ShowHelp {
 		// to be standalone), but this main() method is only
 		// used from the "findbugs" script, which can safely
 		// assume that findbugsGUI.jar is available.
-		
+
 		System.out.println("FindBugs version " + Version.RELEASE + ", " + Version.WEBSITE);
 		FindBugsFrame.showSynopsis();
 		FindBugs.showSynopsis();

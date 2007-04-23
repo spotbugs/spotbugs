@@ -158,7 +158,7 @@ public class Invoke extends PatternElement {
 	 * @param mode       the mode of invocation
 	 */
 	public Invoke(String className, String methodName, String methodSig, int mode,
-	              @Nullable RepositoryLookupFailureCallback lookupFailureCallback) {
+				  @Nullable RepositoryLookupFailureCallback lookupFailureCallback) {
 		this.classNameMatcher = createClassMatcher(className);
 		this.methodNameMatcher = createMatcher(methodName);
 		this.methodSigMatcher = createMatcher(methodSig);
@@ -167,19 +167,19 @@ public class Invoke extends PatternElement {
 
 	private StringMatcher createClassMatcher(String s) {
 		return s.startsWith("+")
-		        ? new SubclassMatcher(s.substring(1))
-		        : createMatcher(s);
+				? new SubclassMatcher(s.substring(1))
+				: createMatcher(s);
 	}
 
 	private StringMatcher createMatcher(String s) {
 		return s.startsWith("/")
-		        ? (StringMatcher) new RegexpStringMatcher(s.substring(1))
-		        : (StringMatcher) new ExactStringMatcher(s);
+				? (StringMatcher) new RegexpStringMatcher(s.substring(1))
+				: (StringMatcher) new ExactStringMatcher(s);
 	}
 
 	@Override
-         public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+		 public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
+							 ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		// See if the instruction is an InvokeInstruction
 		Instruction ins = handle.getInstruction();
@@ -203,8 +203,8 @@ public class Invoke extends PatternElement {
 
 		// Check class name, method name, and method signature.
 		if (!methodNameMatcher.match(methodName) ||
-		        !methodSigMatcher.match(inv.getSignature(cpg)) ||
-		        !classNameMatcher.match(inv.getClassName(cpg)))
+				!methodSigMatcher.match(inv.getSignature(cpg)) ||
+				!classNameMatcher.match(inv.getClassName(cpg)))
 			return null;
 
 		// It's a match!
@@ -213,17 +213,17 @@ public class Invoke extends PatternElement {
 	}
 
 	@Override
-         public boolean acceptBranch(Edge edge, InstructionHandle source) {
+		 public boolean acceptBranch(Edge edge, InstructionHandle source) {
 		return true;
 	}
 
 	@Override
-         public int minOccur() {
+		 public int minOccur() {
 		return 1;
 	}
 
 	@Override
-         public int maxOccur() {
+		 public int maxOccur() {
 		return 1;
 	}
 }

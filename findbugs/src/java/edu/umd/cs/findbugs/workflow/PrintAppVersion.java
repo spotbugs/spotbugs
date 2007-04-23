@@ -34,7 +34,7 @@ public class PrintAppVersion {
 					" <bug collection>" );
 			System.exit(1);
 		}
-		
+
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		bugCollection.readXML(args[0], new Project());
 		System.out.println(bugCollection.getCurrentAppVersion());

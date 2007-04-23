@@ -91,7 +91,7 @@ public interface IAnalysisCache {
 	 * @param databaseFactory the database factory
 	 */
 	public<E> void registerDatabaseFactory(Class<E> databaseClass, IDatabaseFactory<E> databaseFactory);
-	
+
 	/**
 	 * Get a database.
 	 * 
@@ -101,14 +101,14 @@ public interface IAnalysisCache {
 	 * @throws CheckedAnalysisException 
 	 */
 	public<E> E getDatabase(Class<E> databaseClass) throws CheckedAnalysisException;
-	
+
 	/**
 	 * Get the classpath from which classes are loaded. 
 	 * 
 	 * @return the classpath
 	 */
 	public IClassPath getClassPath();
-	
+
 	/**
 	 * Get the error logger.
 	 * 

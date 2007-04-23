@@ -26,23 +26,23 @@ import java.util.List;
 public abstract class CompoundMatcher implements Matcher {
 	private List<Matcher> childList = new LinkedList<Matcher>();
 
-    @Override
-    public int hashCode() {
-        int result = this.getClass().hashCode();
+	@Override
+	public int hashCode() {
+		int result = this.getClass().hashCode();
         for(Matcher m : childList) 
-            result += m.hashCode();
-        return result;
-    }
+			result += m.hashCode();
+		return result;
+	}
     @Override
-    public boolean equals(Object o) {
-        if (o == null) return false;
-        if (o.getClass() != this.getClass()) return false;
+	public boolean equals(Object o) {
+		if (o == null) return false;
+		if (o.getClass() != this.getClass()) return false;
         CompoundMatcher m = (CompoundMatcher) o;
-        return childList.equals(m.childList);
-    }
-    public int numberChildren() {
+		return childList.equals(m.childList);
+	}
+	public int numberChildren() {
         return childList.size();
-    }
+	}
 	public void addChild(Matcher child) {
 		childList.add(child);
 	}

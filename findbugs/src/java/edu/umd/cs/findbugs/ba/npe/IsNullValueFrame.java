@@ -50,7 +50,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	public void cleanStaleKnowledge(ValueNumberFrame vnaFrameAfter) {
 		if (vnaFrameAfter.isTop() && !isTop()) throw new IllegalArgumentException("VNA frame is top");
 		if (!trackValueNumbers) return;
-        if (!ValueNumberAnalysisFeatures.REDUNDANT_LOAD_ELIMINATION) return;
+		if (!ValueNumberAnalysisFeatures.REDUNDANT_LOAD_ELIMINATION) return;
 		for(Iterator<ValueNumber> i = knownValueMap.keySet().iterator(); i.hasNext(); ) {
 			ValueNumber v = i.next();
 			if (vnaFrameAfter.getLoad(v) == null) {
@@ -59,7 +59,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 				i.remove();
 			}
 		}
-		
+
 	}
 	@Override
 	public void setTop() {
@@ -89,7 +89,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 	public @CheckForNull IsNullConditionDecision getDecision() {
 		return decision;
 	}
-	
+
 	public void setKnownValue(@NonNull ValueNumber valueNumber, @NonNull IsNullValue knownValue) {
 		assert trackValueNumbers;
 		if (valueNumber == null || knownValue == null ) throw new NullPointerException();
@@ -112,7 +112,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 		assert trackValueNumbers;
 		return knownValueMap.get(valueNumber);
 	}
-	
+
 	public Collection<ValueNumber> getKnownValues() {
 		if (trackValueNumbers) {
 			return knownValueMap.keySet();
@@ -128,7 +128,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 			return TigerSubstitutes.emptySet();
 		}
 	}
-	
+
 	public void mergeKnownValuesWith(IsNullValueFrame otherFrame) {
 		assert trackValueNumbers;
 		if (IsNullValueAnalysis.DEBUG) {
@@ -142,7 +142,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 			if (otherKnownValue == null) {
 				if (IsNullValueAnalysis.DEBUG) {
 					System.out.println("No match for " + entry.getKey());
-					
+
 				}
 				continue;
 			}
@@ -163,7 +163,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.Frame#copyFrom(edu.umd.cs.findbugs.ba.Frame)
 	 */
@@ -175,7 +175,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 			knownValueMap = new HashMap<ValueNumber, IsNullValue>(((IsNullValueFrame)other).knownValueMap);
 		}
 	}
-	
+
 	@Override
 	public boolean sameAs(Frame<IsNullValue> other) {
 		if (!(other instanceof IsNullValueFrame)) return false;
@@ -224,7 +224,7 @@ public class IsNullValueFrame extends Frame<IsNullValue> {
 			value = value.downgradeOnControlSplit();
 			setValue(i, value);
 		}
-		
+
 		if (knownValueMap != null) {
 			for (Map.Entry<ValueNumber, IsNullValue> entry : knownValueMap.entrySet()) {
 				entry.setValue(entry.getValue().downgradeOnControlSplit());

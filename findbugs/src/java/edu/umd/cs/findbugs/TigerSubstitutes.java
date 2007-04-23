@@ -33,15 +33,15 @@ import org.w3c.dom.NodeList;
  * 
  */
 public class TigerSubstitutes {
-    
-    @SuppressWarnings("unchecked")
-    public static final <T> List<T> emptyList() {
+
+	@SuppressWarnings("unchecked")
+	public static final <T> List<T> emptyList() {
          return (List<T>) Collections.EMPTY_LIST;
-     }
+	 }
    @SuppressWarnings("unchecked")
    public static final <T> Set<T> emptySet() {
-        return (Set<T>) Collections.EMPTY_SET;
-    }
+		return (Set<T>) Collections.EMPTY_SET;
+	}
 
 	public static boolean parseBoolean(String s) {
 		// return Boolean.parseBoolean(s);
@@ -51,54 +51,54 @@ public class TigerSubstitutes {
 		// return Long.valueOf(value);
 		return  (Long) value;
 	}
-    
-    /**
-     * Copied from java.util.Arrays;
+
+	/**
+	 * Copied from java.util.Arrays;
      * 
-     */
-      public static int hashCode(Object a[]) {
-            if (a == null)
+	 */
+	  public static int hashCode(Object a[]) {
+			if (a == null)
                 return 0;
 
-            int result = 1;
+			int result = 1;
 
-            for (Object element : a)
-                result = 31 * result + (element == null ? 0 : element.hashCode());
+			for (Object element : a)
+				result = 31 * result + (element == null ? 0 : element.hashCode());
 
-            return result;
-        }
+			return result;
+		}
 
-      public static <U> Class<? extends U> asSubclass(Class base, Class<U> clazz) {
-          if (clazz.isAssignableFrom(base))
-              return (Class<? extends U>) base;
+	  public static <U> Class<? extends U> asSubclass(Class base, Class<U> clazz) {
+		  if (clazz.isAssignableFrom(base))
+			  return (Class<? extends U>) base;
           else
-              throw new ClassCastException(base.toString());
-      }
-      
+			  throw new ClassCastException(base.toString());
+	  }
+
       public static String getSimpleName(Class c) {
-              if (c.isArray())
-                  return getSimpleName(c.getComponentType())+"[]";
-              String name = c.getName();
+			  if (c.isArray())
+				  return getSimpleName(c.getComponentType())+"[]";
+			  String name = c.getName();
              name =  name.substring(name.lastIndexOf(".")+1);
-             int index = name.lastIndexOf("$");
-             if (index == -1) return name;
-             if (index +1 ==name.length() )
+			 int index = name.lastIndexOf("$");
+			 if (index == -1) return name;
+			 if (index +1 ==name.length() )
                  throw new InternalError("Malformed class name");
-             if (isAsciiDigit(name.charAt(index+1))) return "";
-             return name.substring(index+1);
-      }
+			 if (isAsciiDigit(name.charAt(index+1))) return "";
+			 return name.substring(index+1);
+	  }
       private static boolean isAsciiDigit(char c) {
-          return '0' <= c && c <= '9';
-      }
-      
+		  return '0' <= c && c <= '9';
+	  }
+
       public static String getTextContent(Node n) {
-          NodeList nodeList= n.getChildNodes();
-          StringBuffer buf = new StringBuffer();
-          for (int j=0; j < nodeList.getLength(); j++) {
+		  NodeList nodeList= n.getChildNodes();
+		  StringBuffer buf = new StringBuffer();
+		  for (int j=0; j < nodeList.getLength(); j++) {
               Node k = nodeList.item(j);
-              buf.append( k.getNodeValue()); 
-          }
-          return buf.toString();
+			  buf.append( k.getNodeValue()); 
+		  }
+		  return buf.toString();
       }
 
 

@@ -11,7 +11,7 @@ public class AnalysisError {
 	private String message;
 	private String exceptionMessage;
 	private String[] stackTrace;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -20,7 +20,7 @@ public class AnalysisError {
 	public AnalysisError(String message) {
 		this(message, null);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -48,7 +48,7 @@ public class AnalysisError {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	
+
 	/**
 	 * Get the message describing the error.
 	 */
@@ -65,7 +65,7 @@ public class AnalysisError {
 	public void setExceptionMessage(String exceptionMessage) {
 		this.exceptionMessage = exceptionMessage;
 	}
-	
+
 	/**
 	 * Get the exception message.  This is the value returned by
 	 * calling toString() on the original exception object.

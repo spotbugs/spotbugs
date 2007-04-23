@@ -28,11 +28,11 @@ import java.util.Iterator;
  * Algorithm to transpose a graph.
  */
 public class Transpose
-        <
-        GraphType extends Graph<EdgeType, VertexType>,
-        EdgeType extends GraphEdge<EdgeType, VertexType>,
+		<
+		GraphType extends Graph<EdgeType, VertexType>,
+		EdgeType extends GraphEdge<EdgeType, VertexType>,
         VertexType extends GraphVertex<VertexType>
-        > {
+		> {
 
 	private IdentityHashMap<VertexType, VertexType> m_origToTransposeMap;
 	private IdentityHashMap<VertexType, VertexType> m_transposeToOrigMap;

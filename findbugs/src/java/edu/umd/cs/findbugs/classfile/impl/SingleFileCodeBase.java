@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.io.IO;
  * @author David Hovemeyer
  */
 public class SingleFileCodeBase implements IScannableCodeBase {
-	
+
 	private ICodeBaseLocator codeBaseLocator;
 	private String fileName;
 	private boolean isAppCodeBase;
@@ -56,41 +56,41 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 	private long lastModifiedTime;
 	private boolean resourceNameKnown;
 	private String resourceName;
-	
+
 	public SingleFileCodeBase(ICodeBaseLocator codeBaseLocator, String fileName) {
 		this.codeBaseLocator = codeBaseLocator;
 		this.fileName = fileName;
 		this.lastModifiedTime = new File(fileName).lastModified();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getCodeBaseLocator()
 	 */
 	public ICodeBaseLocator getCodeBaseLocator() {
 		return codeBaseLocator;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#containsSourceFiles()
 	 */
 	public boolean containsSourceFiles() throws InterruptedException {
 		return false;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
 	 */
 	public ICodeBaseIterator iterator() throws InterruptedException {
 		return new ICodeBaseIterator() {
 			boolean done = false;
-			
+
 			/* (non-Javadoc)
 			 * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#hasNext()
 			 */
 			public boolean hasNext() throws InterruptedException {
 				return !done;
 			}
-			
+
 			/* (non-Javadoc)
 			 * @see edu.umd.cs.findbugs.classfile.ICodeBaseIterator#next()
 			 */
@@ -103,7 +103,7 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 			}
 		};
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
@@ -111,38 +111,38 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 		if (!resourceName.equals(getResourceName())) {
 			throw new ResourceNotFoundException(resourceName);
 		}
-		
+
 		return new SingleFileCodeBaseEntry(this);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
 	 */
 	public void setApplicationCodeBase(boolean isAppCodeBase) {
 		this.isAppCodeBase = isAppCodeBase;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#isApplicationCodeBase()
 	 */
 	public boolean isApplicationCodeBase() {
 		return isAppCodeBase;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setHowDiscovered(int)
 	 */
 	public void setHowDiscovered(int howDiscovered) {
 		this.howDiscovered = howDiscovered;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getHowDiscovered()
 	 */
 	public int getHowDiscovered() {
 		return howDiscovered;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
 	 */
@@ -151,25 +151,25 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 			this.lastModifiedTime = lastModifiedTime;
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getLastModifiedTime()
 	 */
 	public long getLastModifiedTime() {
 		return lastModifiedTime;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
 	 */
 	public String getPathName() {
 		return fileName;
 	}
-	
+
 	InputStream openFile() throws IOException {
 		return new BufferedInputStream(new FileInputStream(fileName));
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
 	 */
@@ -197,12 +197,12 @@ public class SingleFileCodeBase implements IScannableCodeBase {
 			} catch (Exception e) {
 				resourceName = fileName;
 			}
-			
+
 			resourceNameKnown = true;
 		}
 		return resourceName;
 	}
-	
+
 	ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
 		DataInputStream in = null;
 		try {

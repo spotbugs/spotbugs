@@ -32,7 +32,7 @@ public class BugMatcher implements Matcher {
 	private StringSetMatch codes;
 	private StringSetMatch patterns;
 	private StringSetMatch categories;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -45,11 +45,11 @@ public class BugMatcher implements Matcher {
 		this.patterns = new StringSetMatch(patterns);
 		this.categories = new StringSetMatch(categories);
 	}
-	
+
 	public boolean match(BugInstance bugInstance) {
 		return codes.match(bugInstance.getAbbrev())
 				|| patterns.match(bugInstance.getType())
 				|| categories.match(bugInstance.getBugPattern().getCategory());
 	}
-	
+
 }

@@ -38,7 +38,7 @@ public class AndMatcher extends CompoundMatcher {
 		}
 		anyMatches = true;
 		return true;
-		
+
 	}
 
 }

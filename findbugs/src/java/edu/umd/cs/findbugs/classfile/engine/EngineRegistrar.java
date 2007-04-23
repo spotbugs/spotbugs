@@ -34,7 +34,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 			new ClassDataAnalysisEngine(),
 			new ClassInfoAnalysisEngine(),
 	};
-	
+
 	private static IMethodAnalysisEngine[] methodAnalysisEngineList = {
 	};
 
@@ -43,7 +43,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 	 */
 	public EngineRegistrar() {
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
 	 */

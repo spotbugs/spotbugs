@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 
 @DefaultAnnotationForParameters(NonNull.class)
 public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<ResourceValue, ResourceValueFrame>
-        implements EdgeTypes {
+		implements EdgeTypes {
 
 	private static final boolean DEBUG = SystemProperties.getBoolean("dataflow.debug");
 
@@ -43,7 +43,7 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 	private boolean ignoreImplicitExceptions;
 
 	public ResourceValueAnalysis(MethodGen methodGen, CFG cfg, DepthFirstSearch dfs,
-	                             ResourceTracker<Resource> resourceTracker, Resource resource) {
+								 ResourceTracker<Resource> resourceTracker, Resource resource) {
 
 		super(dfs);
 		this.methodGen = methodGen;
@@ -83,14 +83,14 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 			// and the resource tracker says to ignore implicit exceptions
 			// for this resource, ignore it.
 			if (AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS) &&
-			        ignoreImplicitExceptions &&
-			        !edge.isFlagSet(EXPLICIT_EXCEPTIONS_FLAG))
+					ignoreImplicitExceptions &&
+					!edge.isFlagSet(EXPLICIT_EXCEPTIONS_FLAG))
 				return;
 
 			// The ResourceTracker may veto the exception edge
 			if (resourceTracker.ignoreExceptionEdge(edge, resource, methodGen.getConstantPool()))
 				return;
-			
+
 			if (fact.getStatus() == ResourceValueFrame.OPEN) {
 				// If status is OPEN, downgrade to OPEN_ON_EXCEPTION_PATH
 				tmpFact = modifyFrame(fact, null);
@@ -139,7 +139,7 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 
 						if (topValue.isInstance()) {
 							if ((lastInSource instanceof IFNULL && edgeType == IFCMP_EDGE) ||
-							        (lastInSource instanceof IFNONNULL && edgeType == FALL_THROUGH_EDGE)) {
+									(lastInSource instanceof IFNONNULL && edgeType == FALL_THROUGH_EDGE)) {
 								//System.out.println("**** making resource nonexistent on edge "+edge.getId());
 								tmpFact = modifyFrame(fact, tmpFact);
 								tmpFact.setStatus(ResourceValueFrame.NONEXISTENT);
@@ -157,25 +157,25 @@ public class ResourceValueAnalysis <Resource> extends FrameDataflowAnalysis<Reso
 	}
 
 	@Override
-         protected void mergeInto(ResourceValueFrame frame, ResourceValueFrame result)
-	        throws DataflowAnalysisException {
+		 protected void mergeInto(ResourceValueFrame frame, ResourceValueFrame result)
+			throws DataflowAnalysisException {
 		// Merge slots
 		super.mergeInto(frame, result);
 
 		// Merge status
 		result.setStatus(Math.min(result.getStatus(), frame.getStatus()));
 	}
-	
-	
+
+
 	@Override
-         protected void mergeValues(ResourceValueFrame otherFrame, ResourceValueFrame resultFrame, int slot) throws DataflowAnalysisException {
+		 protected void mergeValues(ResourceValueFrame otherFrame, ResourceValueFrame resultFrame, int slot) throws DataflowAnalysisException {
 		ResourceValue value = ResourceValue.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
 		resultFrame.setValue(slot, value);
 	}
 
 	@Override
-         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ResourceValueFrame fact)
-	        throws DataflowAnalysisException {
+		 public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ResourceValueFrame fact)
+			throws DataflowAnalysisException {
 
 		visitor.setFrameAndLocation(fact, new Location(handle, basicBlock));
 		visitor.transferInstruction(handle, basicBlock);

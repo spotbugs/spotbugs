@@ -57,7 +57,7 @@ public class BugCode {
 	public String getDescription() {
 		return description;
 	}
-	
+
 	/**
 	 * Get the abbreviation fo this bug code.
 	 */

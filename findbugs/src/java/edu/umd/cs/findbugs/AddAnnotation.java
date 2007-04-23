@@ -40,7 +40,7 @@ public class AddAnnotation {
 	}
 
 	public AddAnnotation(String resultsFile, String annotation)
-	        throws IOException, DocumentException {
+			throws IOException, DocumentException {
 		this(new SortedBugCollection(), new Project(), annotation);
 		bugCollection.readXML(resultsFile, project);
 	}

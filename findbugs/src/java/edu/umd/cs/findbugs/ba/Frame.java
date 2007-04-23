@@ -463,7 +463,7 @@ public abstract class Frame<ValueType> {
 			throws DataflowAnalysisException {
 		BitSet chosenArgSet = new BitSet();
 		SignatureParser sigParser = new SignatureParser(invokeInstruction.getSignature(cpg));
-		
+
 		for (int i = 0; i < sigParser.getNumParameters(); ++i) {
 			ValueType value = getArgument(invokeInstruction, cpg, i,
 					sigParser);

@@ -24,11 +24,11 @@ package edu.umd.cs.findbugs.graph;
  * and for copying auxiliary information in vertices and edges.
  */
 public interface GraphToolkit
-        <
-        GraphType extends Graph<EdgeType, VertexType>,
-        EdgeType extends GraphEdge<EdgeType, VertexType>,
+		<
+		GraphType extends Graph<EdgeType, VertexType>,
+		EdgeType extends GraphEdge<EdgeType, VertexType>,
         VertexType extends GraphVertex<VertexType>
-        > {
+		> {
 
 	/**
 	 * Create a new empty graph (no vertices or edges).

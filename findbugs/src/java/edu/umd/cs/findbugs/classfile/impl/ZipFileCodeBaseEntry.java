@@ -37,19 +37,19 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry implements ICodeBaseEntry {
 	private final ZipFileCodeBase codeBase;
 	private final ZipEntry zipEntry;
-	
+
 	public ZipFileCodeBaseEntry(ZipFileCodeBase codeBase, ZipEntry zipEntry) {
 		this.codeBase = codeBase;
 		this.zipEntry = zipEntry;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getNumBytes()
 	 */
 	public int getNumBytes() {
 		return (int) zipEntry.getSize();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#openResource()
 	 */
@@ -64,7 +64,7 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry impleme
 	public AbstractScannableCodeBase getCodeBase() {
 		return codeBase;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getRealResourceName()
 	 */
@@ -72,14 +72,14 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry impleme
 	public String getRealResourceName() {
 		return zipEntry.getName();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
 	 */
 	public ClassDescriptor getClassDescriptor() {
 		return ClassDescriptor.fromResourceName(getResourceName());
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -92,7 +92,7 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry impleme
 		return this.codeBase.equals(other.codeBase)
 			&& this.zipEntry.equals(other.zipEntry);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -100,7 +100,7 @@ public class ZipFileCodeBaseEntry extends AbstractScannableCodeBaseEntry impleme
 	public int hashCode() {
 		return 7919 * codeBase.hashCode() + zipEntry.hashCode();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

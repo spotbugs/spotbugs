@@ -24,7 +24,7 @@ package edu.umd.cs.findbugs.ba;
  */
 public class CompoundMethodChooser implements JavaClassAndMethodChooser {
 	JavaClassAndMethodChooser[] conjunctList;
-	
+
 	public CompoundMethodChooser(JavaClassAndMethodChooser[] conjunctList) {
 		this.conjunctList = conjunctList;
 	}

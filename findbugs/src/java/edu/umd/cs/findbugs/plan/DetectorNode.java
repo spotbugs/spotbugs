@@ -52,7 +52,7 @@ public class DetectorNode
 	public DetectorFactory getFactory() {
 		return factory;
 	}
-	
+
 	/**
 	 * Get the Plugin Name for this DetectorFactory for debugging support
 	 */

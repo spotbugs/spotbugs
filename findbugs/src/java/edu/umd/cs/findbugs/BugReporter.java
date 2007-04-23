@@ -92,7 +92,7 @@ public interface BugReporter extends RepositoryLookupFailureCallback, IClassObse
 	 * the overall project being analyzed.
 	 */
 	public ProjectStats getProjectStats();
-	
+
 	/**
 	 * Get the real bug reporter at the end of a chain of delegating bug reporters.
 	 * All non-delegating bug reporters should simply "return this".

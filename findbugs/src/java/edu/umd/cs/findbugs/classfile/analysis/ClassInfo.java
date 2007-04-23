@@ -35,7 +35,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo {
 	private FieldDescriptor[] fieldDescriptorList;
 	private MethodDescriptor[] methodDescriptorList;
 	private ClassDescriptor[] referencedClassDescriptorList;
-	
+
 	/**
 	 * Constructor.
 	 * Does not initialize any fields; setters should be called
@@ -43,7 +43,7 @@ public class ClassInfo extends ClassNameAndSuperclassInfo {
 	 */
 	public ClassInfo() {
 	}
-	
+
 	/**
 	 * 
 	 * @param classDescriptor         ClassDescriptor representing the class name
@@ -69,21 +69,21 @@ public class ClassInfo extends ClassNameAndSuperclassInfo {
 		this.methodDescriptorList = methodDescriptorList;
 		this.referencedClassDescriptorList = referencedClassDescriptorList;
 	}
-	
+
 	/**
 	 * @return Returns the fieldDescriptorList.
 	 */
 	public FieldDescriptor[] getFieldDescriptorList() {
 		return fieldDescriptorList;
 	}
-	
+
 	/**
 	 * @return Returns the methodDescriptorList.
 	 */
 	public MethodDescriptor[] getMethodDescriptorList() {
 		return methodDescriptorList;
 	}
-	
+
 	/**
 	 * @return Returns the referencedClassDescriptorList.
 	 */

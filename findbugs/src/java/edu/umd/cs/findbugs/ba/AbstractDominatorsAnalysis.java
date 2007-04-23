@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 public abstract class AbstractDominatorsAnalysis extends BasicAbstractDataflowAnalysis<BitSet> {
 	private final CFG cfg;
 	private EdgeChooser edgeChooser;
-	
+
 	/**
 	 * Constructor.
 	 *

@@ -25,7 +25,7 @@ public class DeepSubtypeAnalysis {
 			collection = AnalysisContext.lookupSystemClass("java.util.Collection");
 			map = AnalysisContext.lookupSystemClass("java.util.Map");
 			comparator = AnalysisContext.lookupSystemClass("java.util.Comparator");
-			
+
 		} catch (ClassNotFoundException e) {
 			storedException = e;
 		}
@@ -50,7 +50,7 @@ public class DeepSubtypeAnalysis {
 
 		if (isPrimitiveComponentClass(refSig))
 			return 1.0;
-		
+
 		String refName = getComponentClass(refSig);
 		if (refName.equals("java.lang.Object"))
 			return 0.99;
@@ -61,7 +61,7 @@ public class DeepSubtypeAnalysis {
 
 	public static double isDeepRemote(String refSig) {
 		if (remote == null) return 0.1;
-		
+
 		String refName = getComponentClass(refSig);
 		if (refName.equals("java.lang.Object"))
 			return 0.99;
@@ -73,7 +73,7 @@ public class DeepSubtypeAnalysis {
 		} catch (ClassNotFoundException e) {
 			return 0.99;
 		}
-		
+
 
 	}
 	private static boolean isPrimitiveComponentClass(String refSig) {
@@ -81,7 +81,7 @@ public class DeepSubtypeAnalysis {
 		while (c < refSig.length() && refSig.charAt(c) == '[') {
 			c++;
 		}
-		
+
 		// If the string is now empty, then we evidently have
 		// an invalid type signature.  We'll return "true",
 		// which in turn will cause isDeepSerializable() to return
@@ -89,11 +89,11 @@ public class DeepSubtypeAnalysis {
 		// by whatever detector is calling us.
 		return c >= refSig.length() || refSig.charAt(c) != 'L';
 	}
-	
+
 	public static String getComponentClass(String refSig) {
 		while (refSig.charAt(0) == '[')
 			refSig = refSig.substring(1);
-		
+
 		//TODO: This method now returns primitive type signatures, is this ok?
 		if (refSig.charAt(0) == 'L')
 			return refSig.substring(1, refSig.length() - 1).replace('/', '.');
@@ -175,7 +175,7 @@ public class DeepSubtypeAnalysis {
 		Set<JavaClass> ySubtypes = subtypes.getTransitiveSubtypes(y);
 
 		boolean emptyIntersection = true;
-		
+
 		boolean concreteClassesInXButNotY = false;
 		for(JavaClass s : xSubtypes) {
 			if (ySubtypes.contains(s)) emptyIntersection = false;
@@ -183,7 +183,7 @@ public class DeepSubtypeAnalysis {
 				concreteClassesInXButNotY = true;
 		}
 
-		
+
 		if (emptyIntersection) {
 			if (concreteClassesInXButNotY) {
 				if (x.isAbstract() || x.isInterface()) return 0.2;

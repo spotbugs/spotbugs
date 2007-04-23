@@ -62,7 +62,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 		this.frame = null;
 		this.cpg = cpg;
 	}
-	
+
 	/**
 	 * Analyze the given Instruction.
 	 * 
@@ -108,7 +108,7 @@ public abstract class AbstractFrameModelingVisitor <Value, FrameType extends Fra
 	public FrameType getFrame() {
 		return frame;
 	}
-	
+
 	/**
 	 * Get the Location.
 	 * 

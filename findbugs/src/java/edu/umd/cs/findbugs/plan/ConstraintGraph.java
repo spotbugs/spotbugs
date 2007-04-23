@@ -36,10 +36,10 @@ public class ConstraintGraph
 	extends AbstractGraph<ConstraintEdge, DetectorNode>
 {
 	@Override
-         protected ConstraintEdge allocateEdge(DetectorNode source, DetectorNode target) {
+		 protected ConstraintEdge allocateEdge(DetectorNode source, DetectorNode target) {
 		return new ConstraintEdge(source, target);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "ConstraintGraph[Vertices: " + getNumVertices() + " Edges: " + getNumEdges() + "]";

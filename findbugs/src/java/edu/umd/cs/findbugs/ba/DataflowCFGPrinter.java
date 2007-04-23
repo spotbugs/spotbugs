@@ -36,7 +36,7 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends BasicAbstractDataflo
 
 		setIsForwards(dataflow.getAnalysis().isForwards());
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.CFGPrinter#edgeAnnotate(edu.umd.cs.findbugs.ba.Edge)
 	 */
@@ -55,7 +55,7 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends BasicAbstractDataflo
 	public String blockStartAnnotate(BasicBlock bb) {
 		boolean flip = isForwards() != dataflow.getAnalysis().isForwards();
 		Fact fact = flip ? dataflow.getResultFact(bb) : dataflow.getStartFact(bb);
-		
+
 		return " " + dataflow.getAnalysis().factToString(fact);
 	}
 
@@ -71,7 +71,7 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends BasicAbstractDataflo
 	public String instructionAnnotate(InstructionHandle handle, BasicBlock bb) {
 		try {
 			boolean flip = isForwards() != dataflow.getAnalysis().isForwards();
-			
+
 			Location loc =new Location(handle, bb); 
 
 			Fact fact = flip
@@ -97,7 +97,7 @@ public class DataflowCFGPrinter <Fact, AnalysisType extends BasicAbstractDataflo
 			new DataflowCFGPrinter<Fact, AnalysisType>(dataflow);
 		printer.print(out);
 	}
-	
+
 }
 
 // vim:ts=4

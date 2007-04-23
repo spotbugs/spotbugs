@@ -140,9 +140,9 @@ public class Hierarchy {
 	 */
 	public static boolean isMonitorWait(String methodName, String methodSig) {
 		return methodName.equals("wait") &&
-		        (methodSig.equals("()V") || methodSig.equals("(J)V") || methodSig.equals("(JI)V"));
+				(methodSig.equals("()V") || methodSig.equals("(J)V") || methodSig.equals("(JI)V"));
 	}
-	
+
 	/**
 	 * Determine if given Instruction is a monitor wait.
 	 * 
@@ -156,11 +156,11 @@ public class Hierarchy {
 			return false;
 		if (ins.getOpcode() == Constants.INVOKESTATIC)
 			return false;
-		
+
 		InvokeInstruction inv = (InvokeInstruction) ins;
 		String methodName = inv.getMethodName(cpg);
 		String methodSig = inv.getSignature(cpg);
-		
+
 		return isMonitorWait(methodName, methodSig);
 	}
 
@@ -174,7 +174,7 @@ public class Hierarchy {
 	 */
 	public static boolean isMonitorNotify(String methodName, String methodSig) {
 		return (methodName.equals("notify") || methodName.equals("notifyAll")) &&
-		        methodSig.equals("()V");
+				methodSig.equals("()V");
 	}
 	/**
 	 * Determine if given Instruction is a monitor wait.
@@ -189,11 +189,11 @@ public class Hierarchy {
 			return false;
 		if (ins.getOpcode() == Constants.INVOKESTATIC)
 			return false;
-		
+
 		InvokeInstruction inv = (InvokeInstruction) ins;
 		String methodName = inv.getMethodName(cpg);
 		String methodSig = inv.getSignature(cpg);
-		
+
 		return isMonitorNotify(methodName, methodSig);
 	}
 
@@ -231,7 +231,7 @@ public class Hierarchy {
 		JavaClass jclass = Repository.lookupClass(className);
 		return findMethod(jclass, methodName, methodSig, chooser);
 	}
-	
+
 	/**
 	 * Visit all superclass methods which the given method overrides. 
 	 * 
@@ -248,7 +248,7 @@ public class Hierarchy {
 				method.getMethod().getSignature(),
 				chooser);
 	}
-	
+
 	/**
 	 * Visit all superinterface methods which the given method implements. 
 	 * 
@@ -265,7 +265,7 @@ public class Hierarchy {
 				method.getMethod().getSignature(),
 				chooser);
 	}
-	
+
 	/**
 	 * Find the least upper bound method in the class hierarchy
 	 * which could be called by the given InvokeInstruction.
@@ -293,22 +293,22 @@ public class Hierarchy {
 	 */
 	public static JavaClassAndMethod findInvocationLeastUpperBound(
 			InvokeInstruction inv, ConstantPoolGen cpg)
-	        throws ClassNotFoundException {
+			throws ClassNotFoundException {
 		return findInvocationLeastUpperBound(inv, cpg, ANY_METHOD);
 	}
 
 	public static JavaClassAndMethod findInvocationLeastUpperBound(
 			InvokeInstruction inv, ConstantPoolGen cpg, JavaClassAndMethodChooser methodChooser)
-	        throws ClassNotFoundException {
+			throws ClassNotFoundException {
 		JavaClassAndMethod result;
-		
+
 		if (DEBUG_METHOD_LOOKUP) {
 			System.out.println("Find prototype method for " +
 					SignatureConverter.convertMethodSignature(inv,cpg));
 		}
-		
+
 		short opcode = inv.getOpcode();
-		
+
 		if (methodChooser != ANY_METHOD) {
 			methodChooser = new CompoundMethodChooser(new JavaClassAndMethodChooser[]{
 					methodChooser, opcode == Constants.INVOKESTATIC ? STATIC_METHOD : INSTANCE_METHOD
@@ -328,7 +328,7 @@ public class Hierarchy {
 				System.out.println("[Method name is " + methodName + "]");
 				System.out.println("[Method signature is " + methodSig + "]");
 			}
-			
+
 			if (className.startsWith("[")) {
 				// Java 1.5 allows array classes to appear as the class name
 				className= "java.lang.Object";
@@ -371,7 +371,7 @@ public class Hierarchy {
 	 *         if we can't find the list of declared exceptions
 	 */
 	public static ObjectType[] findDeclaredExceptions(InvokeInstruction inv, ConstantPoolGen cpg)
-	        throws ClassNotFoundException {
+			throws ClassNotFoundException {
 		JavaClassAndMethod method = findInvocationLeastUpperBound(inv, cpg);
 
 		if (method == null)
@@ -421,13 +421,13 @@ public class Hierarchy {
 		}
 		Method[] methodList = javaClass.getMethods();
 		for (Method method : methodList)  if (method.getName().equals(methodName)
-		        && method.getSignature().equals(methodSig)) {
-		    JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
-		    if (chooser.choose(m)) {
+				&& method.getSignature().equals(methodSig)) {
+			JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
+			if (chooser.choose(m)) {
 		        if (DEBUG_METHOD_LOOKUP) {
-		            System.out.println("\t==> FOUND: " + method);
-		        }
-		        return m;
+					System.out.println("\t==> FOUND: " + method);
+				}
+				return m;
 		    }
 		}
 		if (DEBUG_METHOD_LOOKUP) {
@@ -435,37 +435,37 @@ public class Hierarchy {
 		}
 		return null;
 	}
-	
-    /**
-     * Find a method in given class.
+
+	/**
+	 * Find a method in given class.
      *
-     * @param javaClass  the class
-     * @param methodName the name of the method
-     * @param methodSig  the signature of the method
+	 * @param javaClass  the class
+	 * @param methodName the name of the method
+	 * @param methodSig  the signature of the method
      * @return the JavaClassAndMethod, or null if no such method exists in the class
-     */
-    public static  @CheckForNull  JavaClassAndMethod findConcreteMethod(
-            JavaClass javaClass,
+	 */
+	public static  @CheckForNull  JavaClassAndMethod findConcreteMethod(
+			JavaClass javaClass,
             String methodName,
-            String methodSig) {
-        
-        if (DEBUG_METHOD_LOOKUP) {
+			String methodSig) {
+
+		if (DEBUG_METHOD_LOOKUP) {
             System.out.println("Check " + javaClass.getClassName());
-        }
-        Method[] methodList = javaClass.getMethods();
-        for (Method method : methodList)  if (method.getName().equals(methodName)
+		}
+		Method[] methodList = javaClass.getMethods();
+		for (Method method : methodList)  if (method.getName().equals(methodName)
                 && method.getSignature().equals(methodSig)
-                && accessFlagsAreConcrete(method.getAccessFlags())) {
-            JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
- 
+				&& accessFlagsAreConcrete(method.getAccessFlags())) {
+			JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
+
             return m;
-            
-        }
-        if (DEBUG_METHOD_LOOKUP) {
+
+		}
+		if (DEBUG_METHOD_LOOKUP) {
             System.out.println("\t==> NOT FOUND");
-        }
-        return null;
-    }
+		}
+		return null;
+	}
 	/**
 	 * Find a method in given class.
 	 *
@@ -480,7 +480,7 @@ public class Hierarchy {
 		JavaClassAndMethod result = findMethod(javaClass, methodName, methodSig, chooser);
 		return result == null ? null : XFactory.createXMethod(result.getJavaClass(), result.getMethod());
 	}
-	
+
 	/**
 	 * JavaClassAndMethodChooser which accepts any method.
 	 */
@@ -489,13 +489,13 @@ public class Hierarchy {
 			return true;
 		}
 	};
-	
-    
-    // FIXME: perhaps native methods should be concrete.
+
+
+	// FIXME: perhaps native methods should be concrete.
     public static boolean accessFlagsAreConcrete(int accessFlags) {
-        return (accessFlags & Constants.ACC_ABSTRACT) == 0
-            && (accessFlags & Constants.ACC_NATIVE) == 0;
-    }
+		return (accessFlags & Constants.ACC_ABSTRACT) == 0
+			&& (accessFlags & Constants.ACC_NATIVE) == 0;
+	}
 
 	/**
 	 * JavaClassAndMethodChooser which accepts only concrete (not abstract or native) methods.
@@ -507,7 +507,7 @@ public class Hierarchy {
 			return accessFlagsAreConcrete(accessFlags);
 		}
 	};
-	
+
 	/**
 	 * JavaClassAndMethodChooser which accepts only static methods.
 	 */
@@ -516,7 +516,7 @@ public class Hierarchy {
 			return javaClassAndMethod.getMethod().isStatic();
 		}
 	};
-	
+
 	/**
 	 * JavaClassAndMethodChooser which accepts only instance methods.
 	 */
@@ -596,7 +596,7 @@ public class Hierarchy {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Resolve possible method call targets.
 	 * This works for both static and instance method calls.
@@ -612,9 +612,9 @@ public class Hierarchy {
 			InvokeInstruction invokeInstruction,
 			TypeFrame typeFrame,
 			ConstantPoolGen cpg) throws DataflowAnalysisException, ClassNotFoundException {
-		
+
 		short opcode = invokeInstruction.getOpcode(); 
-		
+
 		if (opcode == Constants.INVOKESTATIC) {
 			HashSet<JavaClassAndMethod> result = new HashSet<JavaClassAndMethod>();
 			JavaClassAndMethod targetMethod = findInvocationLeastUpperBound(invokeInstruction, cpg, CONCRETE_METHOD);
@@ -623,7 +623,7 @@ public class Hierarchy {
 			}
 			return result;
 		}
-		
+
 		if (!typeFrame.isValid()) {
 			return new HashSet<JavaClassAndMethod>();
 		}
@@ -655,7 +655,7 @@ public class Hierarchy {
 
 		return resolveMethodCallTargets((ReferenceType) receiverType, invokeInstruction, cpg, receiverTypeIsExact);
 	}
-	
+
 	/**
 	 * Resolve possible instance method call targets.
 	 * Assumes that invokevirtual and invokeinterface methods may
@@ -693,13 +693,13 @@ public class Hierarchy {
 			boolean receiverTypeIsExact
 			) throws ClassNotFoundException {
 		HashSet<JavaClassAndMethod> result = new HashSet<JavaClassAndMethod>();
-		
+
 		if (invokeInstruction.getOpcode() == Constants.INVOKESTATIC)
 			throw new IllegalArgumentException();
-		
+
 		String methodName = invokeInstruction.getName(cpg);
 		String methodSig = invokeInstruction.getSignature(cpg);
-		
+
 		// Array method calls aren't virtual.
 		// They should just resolve to Object methods.
 		if (receiverType instanceof ArrayType) {
@@ -709,9 +709,9 @@ public class Hierarchy {
 				result.add(classAndMethod);
 			return result;
 		}
-		
+
 		AnalysisContext analysisContext = AnalysisContext.currentAnalysisContext();
-		
+
 		// Get the receiver class.
 		JavaClass receiverClass = analysisContext.lookupClass(
 				((ObjectType) receiverType).getClassName());
@@ -731,12 +731,12 @@ public class Hierarchy {
 			}
 			result.add(upperBound);
 		}
-		
+
 		// Is this a virtual call site?
 		boolean virtualCall =
 			   invokeInstruction.getOpcode() != Constants.INVOKESPECIAL
 			&& !receiverTypeIsExact;
-		
+
 		if (virtualCall) {
 			// This is a true virtual call: assume that any concrete
 			// subtype method may be called.
@@ -748,7 +748,7 @@ public class Hierarchy {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 //	
@@ -802,7 +802,7 @@ public class Hierarchy {
 					return jclass;
 				}
 			}
-	
+
 			jclass = jclass.getSuperClass();
 		}
 
@@ -823,7 +823,7 @@ public class Hierarchy {
 	 * @return an XField object representing the field, or null if no such field could be found
 	 */
 	public static XField findXField(String className, String fieldName, String fieldSig)
-	        throws ClassNotFoundException {
+			throws ClassNotFoundException {
 
 		JavaClass classDefiningField = Repository.lookupClass(className);
 
@@ -847,8 +847,8 @@ public class Hierarchy {
 			String realClassName = classDefiningField.getClassName();
 			int accessFlags = field.getAccessFlags();
 			return field.isStatic()
-			        ? (XField) new StaticField(realClassName, fieldName, fieldSig, accessFlags)
-			        : (XField) new InstanceField(realClassName, fieldName, fieldSig, accessFlags);
+					? (XField) new StaticField(realClassName, fieldName, fieldSig, accessFlags)
+					: (XField) new InstanceField(realClassName, fieldName, fieldSig, accessFlags);
 		}
 	}
 
@@ -862,7 +862,7 @@ public class Hierarchy {
 	 *         if no such field could be found
 	 */
 	public static XField findXField(FieldInstruction fins, @NonNull ConstantPoolGen cpg)
-	        throws ClassNotFoundException {
+			throws ClassNotFoundException {
 
 		String className = fins.getClassName(cpg);
 		String fieldName = fins.getFieldName(cpg);
@@ -871,7 +871,7 @@ public class Hierarchy {
 		XField xfield = findXField(className, fieldName, fieldSig);
 		short opcode = fins.getOpcode();
 		if (xfield != null &&
-		        xfield.isStatic() == (opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC))
+				xfield.isStatic() == (opcode == Constants.GETSTATIC || opcode == Constants.PUTSTATIC))
 			return xfield;
 		else
 			return null;
@@ -911,7 +911,7 @@ public class Hierarchy {
 			: null;
 	}
 
- 
+
 }
 
 // vim:ts=4

@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
  */
 public class TypeFrame extends Frame<Type> {
 	private BitSet exactTypeSet;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -67,7 +67,7 @@ public class TypeFrame extends Frame<Type> {
 	public boolean isExact(int slot) {
 		return exactTypeSet.get(slot);
 	}
-	
+
 	/**
 	 * Clear the exact type set.
 	 * The result is that all slots will be assumed <em>not</em> to
@@ -76,21 +76,21 @@ public class TypeFrame extends Frame<Type> {
 	public void clearExactSet() {
 		exactTypeSet.clear();
 	}
-	
+
 	@Override
 	public void setTop() {
 		super.setTop();
 		clearExactSet();
 	}
- 	
+
 	@Override
 	public void copyFrom(Frame<Type> other_) {
 		clearExactSet();
-		
+
 		TypeFrame other = (TypeFrame) other_;
-		
+
 		this.exactTypeSet.or(other.exactTypeSet);
-		
+
 		super.copyFrom(other_);
 	}
 
@@ -161,8 +161,8 @@ public class TypeFrame extends Frame<Type> {
 		return super.popValue();
 	}
 
-	
-	
+
+
 
 }
 

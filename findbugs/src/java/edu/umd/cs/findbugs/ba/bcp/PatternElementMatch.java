@@ -49,8 +49,8 @@ public class PatternElementMatch {
 	 * @param prev               the previous PatternElementMatch
 	 */
 	public PatternElementMatch(PatternElement patternElement, InstructionHandle matchedInstruction,
-	                           BasicBlock basicBlock,
-	                           int matchCount, PatternElementMatch prev) {
+							   BasicBlock basicBlock,
+							   int matchCount, PatternElementMatch prev) {
 		this.patternElement = patternElement;
 		this.matchedInstruction = matchedInstruction;
 		this.basicBlock = basicBlock;
@@ -142,7 +142,7 @@ public class PatternElementMatch {
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		StringBuffer buf = new StringBuffer();
 		PatternElementMatch cur = this;
 		buf.append(cur.patternElement.toString());
@@ -154,13 +154,13 @@ public class PatternElementMatch {
 	}
 
 	@Override
-         public int hashCode() {
+		 public int hashCode() {
 		// Do the simplest thing possible that works
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-         public boolean equals(Object o) {
+		 public boolean equals(Object o) {
 		if (!(o instanceof PatternElementMatch))
 			return false;
 		PatternElementMatch lhs = this;
@@ -168,8 +168,8 @@ public class PatternElementMatch {
 
 		while (lhs != null && rhs != null) {
 			if (lhs.patternElement != rhs.patternElement ||
-			        lhs.matchedInstruction != rhs.matchedInstruction ||
-			        lhs.matchCount != rhs.matchCount)
+					lhs.matchedInstruction != rhs.matchedInstruction ||
+					lhs.matchCount != rhs.matchCount)
 				return false;
 
 			lhs = lhs.prev;

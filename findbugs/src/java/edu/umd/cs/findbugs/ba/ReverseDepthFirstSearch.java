@@ -42,7 +42,7 @@ public class ReverseDepthFirstSearch
 	}
 
 	@Override
-         protected BasicBlock getNextSearchTreeRoot() {
+		 protected BasicBlock getNextSearchTreeRoot() {
 		BasicBlock result = firstRoot;
 		firstRoot = null;
 		return result;

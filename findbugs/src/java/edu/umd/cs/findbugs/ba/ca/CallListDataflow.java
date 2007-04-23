@@ -27,11 +27,11 @@ public class CallListDataflow extends Dataflow<CallList, CallListAnalysis> {
 	public CallListDataflow(CFG cfg, CallListAnalysis analysis) {
 		super(cfg, analysis);
 	}
-	
+
 	public CallList getFactAtLocation(Location location) throws DataflowAnalysisException {
 		return getAnalysis().getFactAtLocation(location);
 	}
-	
+
 	public CallList getFactAfterLocation(Location location) throws DataflowAnalysisException {
 		return getAnalysis().getFactAfterLocation(location);
 	}

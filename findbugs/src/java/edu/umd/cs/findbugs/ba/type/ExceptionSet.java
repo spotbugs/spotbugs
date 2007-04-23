@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
  * @see TypeAnalysis
  */
 public class ExceptionSet implements Serializable {
-        private static final long serialVersionUID = 1;
+		private static final long serialVersionUID = 1;
 
 	private ExceptionSetFactory factory;
 	private BitSet exceptionSet;
@@ -125,19 +125,19 @@ public class ExceptionSet implements Serializable {
 	}
 
 	@Override
-         public int hashCode() {
+		 public int hashCode() {
 		return exceptionSet.hashCode() + explicitSet.hashCode();
 	}
 
 	@Override
-         public boolean equals(Object o) {
+		 public boolean equals(Object o) {
 		if (o == null) return false;
 		if (o.getClass() != this.getClass()) return false;
 
 		ExceptionSet other = (ExceptionSet) o;
 		return exceptionSet.equals(other.exceptionSet)
-		        && explicitSet.equals(other.explicitSet)
-		        && universalHandler == other.universalHandler;
+				&& explicitSet.equals(other.explicitSet)
+				&& universalHandler == other.universalHandler;
 	}
 
 	/**
@@ -197,7 +197,7 @@ public class ExceptionSet implements Serializable {
 		if (size != 1) return false;
 		ObjectType e = iterator().next();
 		return e.toString().equals(exceptionName);
-		
+
 	}
 	/**
 	 * Add an explicit exception.
@@ -308,7 +308,7 @@ public class ExceptionSet implements Serializable {
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append('{');
 		boolean first = true;
@@ -326,9 +326,9 @@ public class ExceptionSet implements Serializable {
 		buf.append('}');
 		return buf.toString();
 	}
-    public int size() {
-        return size;
-    }
+	public int size() {
+		return size;
+	}
 }
 
 // vim:ts=4

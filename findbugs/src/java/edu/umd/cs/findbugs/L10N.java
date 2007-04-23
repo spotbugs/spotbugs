@@ -56,11 +56,11 @@ public class L10N {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			bundle = ResourceBundle.getBundle("edu.umd.cs.findbugs.gui.bundle.findbugs");
 			bundle_en = ResourceBundle.getBundle("edu.umd.cs.findbugs.gui.bundle.findbugs", Locale.ENGLISH);
 
-							
+
 		} catch (Exception mre) {
 		}
 	}
@@ -71,7 +71,7 @@ public class L10N {
 
 	private static String lookup(ResourceBundle b, String key) {
 		if (b == null || key == null ) throw new MissingResourceException(null,null,null);
-		
+
 		return b.getString(key);
 	}
 	public static String getLocalString(String key, String defaultString) {

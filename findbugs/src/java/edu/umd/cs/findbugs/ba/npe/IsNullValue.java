@@ -44,15 +44,15 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	private static final int NULL = 0;
 	/** Definitely null because of a comparison to a known null value. */
 	private static final int CHECKED_NULL = 1;
-	
+
 	/** Definitely not null. */
 	private static final int NN = 2;
 	/** Definitely not null because of a comparison to a known null value. */
 	private static final int CHECKED_NN = 3;
 	/** Definitely not null an NPE would have occurred and we would not be here if it were null. */
 	private static final int NO_KABOOM_NN = 4;
-	
-	
+
+
 	/** Null on some simple path (at most one branch) to current location. */
 	private static final int NSP = 5;
 	/** Unknown value (method param, value read from heap, etc.), assumed not null. */
@@ -63,14 +63,14 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	private static final int NCP3 = 8;
 
 	private static final int FLAG_SHIFT = 8;
-	
+
 	/** Value was propagated along an exception path. */
 	private static final int EXCEPTION = 1 << FLAG_SHIFT;
 	/** Value is (potentially) null because of a parameter passed to the method. */
 	private static final int PARAM = 2 << FLAG_SHIFT;
 	/** Value is (potentially) null because of a value returned from a called method. */
 	private static final int RETURN_VAL = 4 << FLAG_SHIFT;
-    private static final int FIELD_VAL = 8 << FLAG_SHIFT;
+	private static final int FIELD_VAL = 8 << FLAG_SHIFT;
 
 	private static final int FLAG_MASK = EXCEPTION | PARAM | RETURN_VAL | FIELD_VAL; 
 
@@ -86,7 +86,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		{NSP,   NSP,         NCP2,       NCP2,       NCP2, NCP2, NCP2,        NCP2,},    // NCP2
 		{NSP,   NSP,         NCP3,       NCP3,       NCP3, NCP3, NCP3,        NCP3, NCP3}// NCP3
 	};
-	
+
 	private static final IsNullValue[][] instanceByFlagsList = createInstanceByFlagList();
 
 	private static IsNullValue[][] createInstanceByFlagList() {
@@ -106,7 +106,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 					new IsNullValue(NCP3 | flags),
 			};
 		}
-		
+
 		return result;
 	}
 
@@ -119,13 +119,13 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		locationOfKaBoom = null;
 		if (VERIFY_INTEGRITY) checkNoKaboomNNLocation();
 	}
-	
+
 	private IsNullValue(int kind, Location ins) {
 		this.kind = kind;
 		locationOfKaBoom = ins;
 		if (VERIFY_INTEGRITY) checkNoKaboomNNLocation();
 	}
-	
+
 	private void checkNoKaboomNNLocation() {
 		if (getBaseKind() == NO_KABOOM_NN && locationOfKaBoom == null) {
 			throw new IllegalStateException("construction of no-KaBoom NN without Location");
@@ -154,7 +154,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	private int getBaseKind() {
 		return kind & ~FLAG_MASK;
 	}
-	
+
 	private int getFlags() {
 		return kind & FLAG_MASK;
 	}
@@ -171,9 +171,9 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	public boolean isReturnValue() {
 		return (kind & RETURN_VAL) != 0;
 	}
-   
-        public boolean isFieldValue() {
-            return (kind & FIELD_VAL) != 0;
+
+		public boolean isFieldValue() {
+			return (kind & FIELD_VAL) != 0;
         }
 	/**
 	 * Was this value marked as a possibly null parameter?
@@ -207,7 +207,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		if (getBaseKind() == NO_KABOOM_NN) return new IsNullValue(kind | EXCEPTION, locationOfKaBoom);
 		return instanceByFlagsList[(getFlags() | EXCEPTION) >> FLAG_SHIFT][getBaseKind()];
 	}
-	
+
 	/**
 	 * Convert to a value known because it was returned from a method
 	 * in a method property database.
@@ -217,16 +217,16 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		if (getBaseKind() == NO_KABOOM_NN) return new IsNullValue(kind | RETURN_VAL, locationOfKaBoom);
 		return instanceByFlagsList[(getFlags() | RETURN_VAL) >> FLAG_SHIFT][getBaseKind()];
 	}
-    /**
-     * Convert to a value known because it was returned from a method
-     * in a method property database.
+	/**
+	 * Convert to a value known because it was returned from a method
+	 * in a method property database.
      * @param methodInvoked TODO
-     */
-    public IsNullValue markInformationAsComingFromFieldValue(XField field) {
-        if (getBaseKind() == NO_KABOOM_NN) return new IsNullValue(kind | FIELD_VAL, locationOfKaBoom);
+	 */
+	public IsNullValue markInformationAsComingFromFieldValue(XField field) {
+		if (getBaseKind() == NO_KABOOM_NN) return new IsNullValue(kind | FIELD_VAL, locationOfKaBoom);
         return instanceByFlagsList[(getFlags() | FIELD_VAL) >> FLAG_SHIFT][getBaseKind()];
-    }
-	
+	}
+
 	/**
 	 * Get the instance representing values that are definitely null.
 	 */
@@ -283,7 +283,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	public static IsNullValue parameterMarkedAsMightBeNull(XMethodParameter mp) {
 		return instanceByFlagsList[PARAM >> FLAG_SHIFT][NSP];
 	}
-	
+
 	/**
 	 * Get non-reporting non-null value.
 	 * This is what we use for unknown values.
@@ -302,7 +302,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	public static IsNullValue nullOnComplexPathValue() {
 		return instanceByFlagsList[0][NCP2];
 	}
-	
+
 	/**
 	 * Like "null on complex path" except that there are at least
 	 * <em>three</em> branches between the explicit null value
@@ -336,17 +336,17 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		int bKind = b.kind & 0xff;
 		int aFlags = a.getFlags();
 		int bFlags = b.getFlags();
-		
+
 
 		int combinedFlags =  aFlags & bFlags;
 
-		
+
 		if (!(a.isNullOnSomePath() || a.isDefinitelyNull()) && b.isException())
 				combinedFlags |= EXCEPTION;
 		else
 			if (!(b.isNullOnSomePath() || b.isDefinitelyNull()) && a.isException())
 				combinedFlags |= EXCEPTION;
-		
+
 		// Left hand value should be >=, since it is used
 		// as the first dimension of the matrix to index.
 		if (aKind < bKind) {
@@ -356,7 +356,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 		}
 		assert aKind >= bKind;
 		int result = mergeMatrix[aKind][bKind];
-		
+
 		IsNullValue resultValue = (result == NO_KABOOM_NN)
 				? noKaboomNonNullValue(a.locationOfKaBoom)
 				: instanceByFlagsList[combinedFlags >> FLAG_SHIFT][result];
@@ -424,7 +424,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 				if ((flags & EXCEPTION) != 0) pfx += "e";
 				if ((flags & PARAM) != 0) pfx += "p";
 				if ((flags & RETURN_VAL) != 0) pfx += "r";
-                if ((flags & FIELD_VAL) != 0) pfx += "f";
+				if ((flags & FIELD_VAL) != 0) pfx += "f";
 			}
 		}
 		if (DEBUG_KABOOM && locationOfKaBoom == null) {
@@ -463,14 +463,14 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	 */
 	public IsNullValue downgradeOnControlSplit() {
 		IsNullValue value = this;
-		
+
 		if (NCP_EXTRA_BRANCH) {
 			// Experimental: track two distinct kinds of "null on complex path" values.
 			if (value.isNullOnSomePath())
 				value = nullOnComplexPathValue();
 			else if (value.equals(nullOnComplexPathValue()))
 				value = nullOnComplexPathValue3();
-				
+
 		} else {
 			// Downgrade "null on simple path" values to
 			// "null on complex path".

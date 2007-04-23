@@ -74,7 +74,7 @@ public class AnalysisPass {
 			throw new IllegalArgumentException("Detector " + factory.getFullName() + " appended to pass it doesn't belong to");
 		this.orderedFactoryList.addLast(factory);
 	}
-	
+
 	/**
 	 * Get the members of this pass.
 	 * 
@@ -83,7 +83,7 @@ public class AnalysisPass {
 	public Collection<DetectorFactory> getMembers() {
 		return memberSet;
 	}
-	
+
 	/**
 	 * Get Set of pass members which haven't been assigned a position in the pass.
 	 */
@@ -100,7 +100,7 @@ public class AnalysisPass {
 	public Iterator<DetectorFactory> iterator() {
 		return orderedFactoryList.iterator();
 	}
-	
+
 	/**
 	 * Return whether or not this pass contains the given DetectorFactory.
 	 * 
@@ -126,7 +126,7 @@ public class AnalysisPass {
 		}
 		return detectorList;
 	}
-	
+
 	/**
 	 * Instantiate all of the detectors in this pass as objects implementing
 	 * the BCEL-only Detector interface.  Detectors that do not support this
@@ -139,7 +139,7 @@ public class AnalysisPass {
 	 */
 	public Detector[] instantiateDetectorsInPass(BugReporter bugReporter) {
 		int count;
-		
+
 		count = 0;
 		for (DetectorFactory factory : orderedFactoryList) {
 			if (factory.isDetectorClassSubtypeOf(Detector.class)) {
@@ -148,14 +148,14 @@ public class AnalysisPass {
 		}
 
 		Detector[] detectorList = new Detector[count];
-		
+
 		count = 0;
 		for (DetectorFactory factory : orderedFactoryList) {
 			if (factory.isDetectorClassSubtypeOf(Detector.class)) {
 				detectorList[count++] = factory.create(bugReporter);
 			}
 		}
-		
+
 		return detectorList;
 	}
 }

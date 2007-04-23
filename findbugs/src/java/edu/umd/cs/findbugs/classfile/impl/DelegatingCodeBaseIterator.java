@@ -35,7 +35,7 @@ public class DelegatingCodeBaseIterator implements ICodeBaseIterator {
 	private ICodeBase frontEndCodeBase;
 	private IScannableCodeBase delegateCodeBase;
 	private ICodeBaseIterator delegateCodeBaseIterator;
-	
+
 	public DelegatingCodeBaseIterator(ICodeBase frontEndCodeBase, IScannableCodeBase delegateCodeBase) throws InterruptedException {
 		this.frontEndCodeBase = frontEndCodeBase;
 		this.delegateCodeBase = delegateCodeBase;

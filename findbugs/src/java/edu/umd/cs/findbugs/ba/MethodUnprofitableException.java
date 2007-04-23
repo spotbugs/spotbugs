@@ -50,7 +50,7 @@ public class MethodUnprofitableException extends CFGBuilderException {
 		super("Appears unprofitable to analyze " + method);
 		this.method = XFactory.createXMethod(jClass, method);
 	}
-	
+
 	/**
 	 * @return the method that is unprofitable to analyze
 	 */

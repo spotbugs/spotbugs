@@ -26,16 +26,16 @@ import java.util.Map;
 
 
 public class BugAccumulator {
-	
+
 	private BugReporter reporter;
 	public BugAccumulator(	BugReporter reporter) {
 		this.reporter = reporter;
 	}
-	
+
 	private Map<BugInstance, LinkedList<SourceLineAnnotation>> map 
 			= new HashMap<BugInstance, LinkedList<SourceLineAnnotation>>();
-	
-	
+
+
 	public void accumulateBug(BugInstance bug, SourceLineAnnotation sourceLine) {
 		LinkedList<SourceLineAnnotation> where = map.get(bug);
 		if (where == null) {
@@ -44,7 +44,7 @@ public class BugAccumulator {
 		}
 		where.add(sourceLine);
 	}
-	
+
 
 	public void accumulateBug(BugInstance bug, BytecodeScanningDetector visitor) {
 		SourceLineAnnotation source = SourceLineAnnotation.fromVisitedInstruction(visitor);
@@ -53,12 +53,12 @@ public class BugAccumulator {
 	public void reportAccumulatedBugs() {
 		for(Map.Entry<BugInstance,LinkedList<SourceLineAnnotation>> e : map.entrySet()) {
 			BugInstance bug = e.getKey();
-            boolean first = true;
+			boolean first = true;
 			for(SourceLineAnnotation source : e.getValue())
 				if (source != null) {
-                    bug.addSourceLine(source);
-                    if (first) first = false;
-                    else bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
+					bug.addSourceLine(source);
+					if (first) first = false;
+					else bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
                 }
 			reporter.reportBug(bug);
 		}

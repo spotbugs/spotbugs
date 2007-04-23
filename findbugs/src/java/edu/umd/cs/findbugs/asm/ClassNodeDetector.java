@@ -49,15 +49,15 @@ abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
 	}
 
 	public String getDetectorClassName() {
-    	return this.getClass().getName();
-    }
+		return this.getClass().getName();
+	}
 
 	public void visitClass(ClassDescriptor classDescriptor) throws CheckedAnalysisException {
-    	
-    	ClassReader cr = Global.getAnalysisCache().getClassAnalysis(ClassReader.class, classDescriptor);
-    	cr.accept(this, 0);
+
+		ClassReader cr = Global.getAnalysisCache().getClassAnalysis(ClassReader.class, classDescriptor);
+		cr.accept(this, 0);
     }
-	
+
 	public void finishPass() {
 		// do nothing
 	}

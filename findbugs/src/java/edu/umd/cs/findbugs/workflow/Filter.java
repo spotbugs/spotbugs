@@ -70,7 +70,7 @@ public class Filter {
 		String afterAsString;  
 		long before;
 		String beforeAsString; 
-		
+
 		long last;
 		String lastAsString; 
 		String fixedAsString; // alternate way to specify 'last'
@@ -81,13 +81,13 @@ public class Filter {
 		String annotation;
 		public boolean activeSpecified = false;
 		public boolean active = false;
-	
-        public boolean hasField = false;
-        public boolean hasFieldSpecified = false;
+
+		public boolean hasField = false;
+		public boolean hasFieldSpecified = false;
         
-        public boolean hasLocal = false;
-        public boolean hasLocalSpecified = false;
-       
+		public boolean hasLocal = false;
+		public boolean hasLocalSpecified = false;
+
 		public boolean withSource = false;
 		public boolean withSourceSpecified = false;
 		public boolean introducedByChange = false;
@@ -95,7 +95,7 @@ public class Filter {
 
 		public boolean removedByChange = false;
 		public boolean removedByChangeSpecified = false;
-		
+
 		public boolean newCode = false;
 		public boolean newCodeSpecified = false;
 
@@ -113,7 +113,7 @@ public class Filter {
 		public boolean withMessages = false;
 		public boolean serious = false;
 		public boolean seriousSpecified = false;
-		
+
 		private Matcher includeFilter, excludeFilter;
 		String designationString;
 		String designationKey;
@@ -122,19 +122,19 @@ public class Filter {
 		int priority = 3;
 
 		FilterCommandLine() {
-			
+
 			addSwitch("-not", "reverse (all) switches for the filter");
 			addSwitchWithOptionalExtraPart("-withSource", "truth", "only warnings for switch source is available");
 			addSwitchWithOptionalExtraPart("-hashChanged", "truth", "only warnings for which the stored hash is not the same as the calculated hash");
 			addOption("-exclude", "filter file", "exclude bugs matching given filter");
 			addOption("-include", "filter file", "include only bugs matching given filter");
-			
+
 			addOption("-annotation", "text", "allow only warnings containing this text in an annotation");
 			addSwitchWithOptionalExtraPart("-classified", "truth", "allow only classified warnings");
 			addSwitchWithOptionalExtraPart("-withMessages", "truth", "generated XML should contain textual messages");
-			
+
 			addSwitchWithOptionalExtraPart("-serious", "truth", "allow only warnings classified as serious");
-			
+
 			addOption("-after", "when", "allow only warnings that first occurred after this version");
 			addOption("-before", "when", "allow only warnings that first occurred before this version");
 			addOption("-first", "when", "allow only warnings that first occurred in this version");
@@ -142,9 +142,9 @@ public class Filter {
 			addOption("-fixed", "when", "allow only warnings that last occurred in the previous version (clobbers last)");
 			addOption("-present", "when", "allow only warnings present in this version");
 			addOption("-absent", "when", "allow only warnings absent in this version");
-            addSwitchWithOptionalExtraPart("-hasField", "truth", "allow only warnings that are annotated with a field");
-            addSwitchWithOptionalExtraPart("-hasLocal", "truth", "allow only warnings that are annotated with a local variable");
-            addSwitchWithOptionalExtraPart("-active", "truth", "allow only warnings alive in the last sequence number");
+			addSwitchWithOptionalExtraPart("-hasField", "truth", "allow only warnings that are annotated with a field");
+			addSwitchWithOptionalExtraPart("-hasLocal", "truth", "allow only warnings that are annotated with a local variable");
+			addSwitchWithOptionalExtraPart("-active", "truth", "allow only warnings alive in the last sequence number");
 			
 			addSwitchWithOptionalExtraPart("-introducedByChange", "truth",
 					"allow only warnings introduced by a change of an existing class");
@@ -159,7 +159,7 @@ public class Filter {
 			addOption("-bugPattern", "pattern", "allow only bugs whose type matches this pattern");
 			addOption("-category", "category", "allow only warnings with a category that starts with this string");
 			addOption("-designation", "designation", "allow only warnings with this designation (e.g., -designation SHOULD_FIX)");
-	
+
 		}
 
 		static long getVersionNum(Map<String, AppVersion> versions, 
@@ -167,7 +167,7 @@ public class Filter {
 				boolean roundToLaterVersion, long numVersions) {
 			if (val == null) return -1;
 			if (val.equals("last") || val.equals("lastVersion")) return numVersions -1;
-			
+
 			AppVersion v = versions.get(val);
 			if (v != null) return v.getSequenceNumber();
 			try {
@@ -189,7 +189,7 @@ public class Filter {
 				}
 			}
 		}
-		
+
 		// timeStamps contains 0 10 20 30
 		// if roundToLater == true, ..0 = 0, 1..10 = 1, 11..20 = 2, 21..30 = 3, 31.. = Long.MAX
 		// if roundToLater == false, ..-1 = Long.MIN, 0..9 = 0, 10..19 = 1, 20..29 = 2, 30..39 = 3, 40 .. = 4
@@ -218,7 +218,7 @@ public class Filter {
 			AppVersion v = collection.getCurrentAppVersion();
 			versions.put(v.getReleaseName(), v);
 			timeStamps.put(v.getTimestamp(), v);
-			
+
 			first = getVersionNum(versions, timeStamps, firstAsString, true, v.getSequenceNumber());
 			last = getVersionNum(versions, timeStamps, lastAsString, true,  v.getSequenceNumber());
 			before = getVersionNum(versions, timeStamps, beforeAsString, true,  v.getSequenceNumber());
@@ -255,13 +255,13 @@ public class Filter {
 				return false;
 			if (absentAsString != null && bugLiveAt(bug, absent))
 				return false;
-			
-            if (hasFieldSpecified && (hasField != (bug.getPrimaryField() != null)))
-                    return false;
+
+			if (hasFieldSpecified && (hasField != (bug.getPrimaryField() != null)))
+					return false;
             if (hasLocalSpecified && (hasLocal != (bug.getPrimaryLocalVariableAnnotation() != null)))
-                    return false;
-             
-    
+					return false;
+
+
 			if (activeSpecified && active != (bug.getLastVersion() == -1))
 				return false;
 			if (removedByChangeSpecified
@@ -285,7 +285,7 @@ public class Filter {
 				return false;
 			if (designationKey != null && !designationKey.equals(bug.getUserDesignationKey()))
 				return false;
-			
+
 			if (withSourceSpecified) {
 				if (sourceSearcher.findSource(bug.getPrimarySourceLineAnnotation()) != withSource) 
 					return false;
@@ -341,7 +341,7 @@ public class Filter {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-			
+
 		}
 		@Override
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
@@ -350,7 +350,7 @@ public class Filter {
 				priority = parsePriority(argument);
 			}
 
-			
+
 			else if (option.equals("-first")) 
 				firstAsString = argument;
 			else if (option.equals("-last")) 
@@ -365,7 +365,7 @@ public class Filter {
 				presentAsString = argument;
 			else if (option.equals("-absent")) 
 				absentAsString = argument;
-			
+
 			else if (option.equals("-category"))
 				categoryString = argument;
 			else if (option.equals("-designation"))
@@ -404,7 +404,7 @@ public class Filter {
 	}
 
 	static SourceSearcher sourceSearcher;
-	
+
 	public static void main(String[] args) throws Exception {
 		DetectorFactoryCollection.instance();
 		final FilterCommandLine commandLine = new FilterCommandLine();
@@ -436,7 +436,7 @@ public class Filter {
 						break;
 					}
 		}
-		
+
 		if (commandLine.designationString != null) {
 			for (String designationKey : i18n.getUserDesignationKeys()) {
 				if (designationKey.startsWith(commandLine.designationString) 
@@ -444,7 +444,7 @@ public class Filter {
 					commandLine.designationKey = designationKey;
 					break;
 				}
-					
+
 			}
 		}
 		SortedBugCollection resultCollection = origCollection.createEmptyCollectionWithMetadata();

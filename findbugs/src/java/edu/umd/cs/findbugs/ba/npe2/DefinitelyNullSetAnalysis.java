@@ -53,21 +53,21 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 	private ValueNumberDataflow vnaDataflow;
 	private CompactLocationNumbering compactLocationNumbering;
 	private Map<BasicBlock, Condition> conditionMap;
-	
+
 	private static final BitSet IFNULL_OPCODE_SET = new BitSet();
 	private static final BitSet IFACMP_OPCODE_SET = new BitSet();
 	private static final BitSet REFCMP_OPCODE_SET = new BitSet();
 	static {
 		IFNULL_OPCODE_SET.set(Constants.IFNULL);
 		IFNULL_OPCODE_SET.set(Constants.IFNONNULL);
-		
+
 		IFACMP_OPCODE_SET.set(Constants.IF_ACMPEQ);
 		IFACMP_OPCODE_SET.set(Constants.IF_ACMPNE);
-		
+
 		REFCMP_OPCODE_SET.or(IFNULL_OPCODE_SET);
 		REFCMP_OPCODE_SET.or(IFACMP_OPCODE_SET);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -75,8 +75,8 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 	 * @param vnaDataflow              value number dataflow for the method
 	 * @param compactLocationNumbering CompactLocationNumbering for the method
 	 */
-    
-     //TODO: compactLocationNumbering is ignored. Why?
+
+	 //TODO: compactLocationNumbering is ignored. Why?
 	public DefinitelyNullSetAnalysis(
 			DepthFirstSearch dfs,
 			ValueNumberDataflow vnaDataflow,
@@ -102,24 +102,24 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, DefinitelyNullSet fact) throws DataflowAnalysisException {
 		Location location = new Location(handle, basicBlock);
 		ValueNumberFrame vnaFrame = vnaDataflow.getFactAfterLocation(location);
-		
+
 		if (!vnaFrame.isValid()) {
 			fact.setTop();
 			return;
 		}
-		
+
 		// ACONST_NULL obviously produces a value that is DEFINITELY NULL.
 		// LDC produces values that are NOT NULL.
 		// NEW produces values that are NOT NULL.
-		
+
 		short opcode = handle.getInstruction().getOpcode();
-		
+
 		if (opcode == Constants.ACONST_NULL) {
 			setTOS(vnaFrame, location, fact, NullnessValue.definitelyNullValue());
 		} else if (opcode == Constants.LDC || opcode == Constants.NEW) {
 			setTOS(vnaFrame, location, fact, NullnessValue.definitelyNotNullValue());
 		}
-		
+
 		// TODO: for method invocations, check return annotation
 
 		// Refresh condition/decision information
@@ -131,7 +131,7 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 			}
 		}
 	}
-	
+
 	/**
 	 * Get the ConditionDecision providing information about the
 	 * branch at the end of the given basic block.
@@ -167,11 +167,11 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 		if (!fact.isValid()) {
 			return;
 		}
-		
+
 		if (edge.getSource().isEmpty()) {
 			return;
 		}
-		
+
 		Condition condition = getCondition(edge.getSource());
 		if (condition == null) {
 			return;
@@ -185,9 +185,9 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 			fact.setTop();
 			return;
 		}
-		
+
 		System.out.println("Setting " + condition.getValueNumber() + " to " + decision.getNullnessValue() + " on edge " + edge);
-		
+
 		changeNullnessOfValue(
 				condition.getValueNumber(),
 				condition.getLocation(),
@@ -226,13 +226,13 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 //		} else {
 //			fact.clearAssignNullLocations(valueNumber.getNumber());
 //		}
-		
+
 		fact.setNullnessValue(valueNumber, nullnessValue);
-		
+
 		if (fact.getNulllessValue(valueNumber) != nullnessValue) {
 			throw new IllegalStateException();
 		}
-		
+
 		// TODO: set location where value becomes null or non-null
 	}
 
@@ -290,13 +290,13 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 	public boolean same(DefinitelyNullSet fact1, DefinitelyNullSet fact2) {
 		return fact1.equals(fact2);
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		if (args.length != 1) {
 			System.err.println("Usage: " + DefinitelyNullSetAnalysis.class.getName() + " <classfile>");
 			System.exit(1);
 		}
-		
+
 		DataflowTestDriver<DefinitelyNullSet, DefinitelyNullSetAnalysis> driver =
 			new DataflowTestDriver<DefinitelyNullSet, DefinitelyNullSetAnalysis>() {
 			/* (non-Javadoc)
@@ -307,7 +307,7 @@ public class DefinitelyNullSetAnalysis extends ForwardDataflowAnalysis<Definitel
 				return classContext.getDefinitelyNullSetDataflow(method);
 			}
 		};
-		
+
 		driver.execute(args[0]);
 	}
 }

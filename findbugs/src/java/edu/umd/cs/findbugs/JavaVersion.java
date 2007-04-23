@@ -108,7 +108,7 @@ public class JavaVersion {
 	public String getRest() {
 		return rest;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
@@ -118,7 +118,7 @@ public class JavaVersion {
 		if (rest != null) {
 			buf.append(rest);
 		}
-		
+
 		return buf.toString();
 	}
 
@@ -140,7 +140,7 @@ public class JavaVersion {
 	 */
 	public boolean isSameOrNewerThan(JavaVersion other) {
 		return this.major > other.major ||
-		        (this.major == other.major && this.minor >= other.minor);
+				(this.major == other.major && this.minor >= other.minor);
 	}
 }
 

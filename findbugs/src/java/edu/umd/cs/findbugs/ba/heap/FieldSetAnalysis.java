@@ -42,19 +42,19 @@ import edu.umd.cs.findbugs.ba.XField;
  */
 public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet> {
 	private ConstantPoolGen cpg;
-	
+
 	private Map<InstructionHandle, XField> instructionToFieldMap;
-	
+
 	public FieldSetAnalysis(DepthFirstSearch dfs, ConstantPoolGen cpg) {
 		super(dfs);
 		this.cpg = cpg;
 		this.instructionToFieldMap = new HashMap<InstructionHandle, XField>();
 	}
-	
+
 	public ConstantPoolGen getCPG() {
 		return cpg;
 	}
-	
+
 	public void makeFactTop(FieldSet fact) {
 		fact.setTop();
 	}
@@ -64,41 +64,41 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 	public void initEntryFact(FieldSet result) throws DataflowAnalysisException {
 		result.clear();
 	}
-	
+
 	public void initResultFact(FieldSet result) {
 		makeFactTop(result);
 	}
-	
+
 	public void meetInto(FieldSet fact, Edge edge, FieldSet result) throws DataflowAnalysisException {
 		result.mergeWith(fact);
 	}
-	
+
 	public boolean same(FieldSet fact1, FieldSet fact2) {
 		return fact1.sameAs(fact2);
 	}
-	
+
 	public FieldSet createFact() {
 		return new FieldSet();
 	}
-	
-	
+
+
 	@Override
-         public boolean isFactValid(FieldSet fact) {
+		 public boolean isFactValid(FieldSet fact) {
 		return fact.isValid();
 	}
-	
+
 	public void copy(FieldSet source, FieldSet dest) {
 		dest.copyFrom(source);
 	}
-	
+
 	@Override
-         public void transferInstruction(
+		 public void transferInstruction(
 			InstructionHandle handle,
 			BasicBlock basicBlock,
 			FieldSet fact) throws DataflowAnalysisException {
 		if (!isFactValid(fact))
 			return;
-		
+
 		try {
 			handleInstruction(handle, basicBlock, fact);
 		} catch (ClassNotFoundException e) {
@@ -106,7 +106,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 			fact.setBottom();
 		}
 	}
-	
+
 	private void handleInstruction(
 			InstructionHandle handle,
 			BasicBlock basicBlock,
@@ -114,7 +114,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 		Instruction ins = handle.getInstruction();
 		short opcode = ins.getOpcode();
 		XField field;
-		
+
 		switch (opcode) {
 		case Constants.GETFIELD:
 		case Constants.GETSTATIC:
@@ -123,7 +123,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 				sawLoad(fact, field);
 			}
 			break;
-		
+
 		case Constants.PUTFIELD:
 		case Constants.PUTSTATIC:
 			field = lookupField(handle, (FieldInstruction) ins);
@@ -131,7 +131,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 				sawStore(fact, field);
 			}
 			break;
-		
+
 		case Constants.INVOKEINTERFACE:
 		case Constants.INVOKESPECIAL:
 		case Constants.INVOKESTATIC:
@@ -141,7 +141,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 			break;
 		}
 	}
-	
+
 	private XField lookupField(InstructionHandle handle, FieldInstruction fins) throws ClassNotFoundException {
 		XField field = instructionToFieldMap.get(handle);
 		if (field == null) {
@@ -150,7 +150,7 @@ public abstract class FieldSetAnalysis extends ForwardDataflowAnalysis<FieldSet>
 		}
 		return field;
 	}
-	
+
 	protected abstract void sawLoad(FieldSet fact, XField field);
 	protected abstract void sawStore(FieldSet fact, XField field);
 }

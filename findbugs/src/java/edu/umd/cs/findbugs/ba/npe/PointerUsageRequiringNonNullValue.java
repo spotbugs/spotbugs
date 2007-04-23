@@ -29,88 +29,88 @@ import edu.umd.cs.findbugs.ba.XMethodParameter;
  * @author pugh
  */
 public abstract class PointerUsageRequiringNonNullValue {
-    
-    public abstract String getDescription();
 
-    public boolean isDirect() {
-        return false;
+	public abstract String getDescription();
+
+	public boolean isDirect() {
+		return false;
+	}
+
+	public boolean getReturnFromNonNullMethod() {
+		return false;
+	}
+
+	public @CheckForNull
+	XMethodParameter getNonNullParameter() {
+		return null;
     }
 
-    public boolean getReturnFromNonNullMethod() {
-        return false;
+	public @CheckForNull
+	XField getNonNullField() {
+		return null;
     }
 
-    public @CheckForNull
-    XMethodParameter getNonNullParameter() {
-        return null;
-    }
-
-    public @CheckForNull
-    XField getNonNullField() {
-        return null;
-    }
-
-    private static final PointerUsageRequiringNonNullValue instance = new PointerUsageRequiringNonNullValue() {
-        @Override
-        public boolean isDirect() {
+	private static final PointerUsageRequiringNonNullValue instance = new PointerUsageRequiringNonNullValue() {
+		@Override
+		public boolean isDirect() {
             return true;
-        }
+		}
 
-        @Override
-        public String getDescription() {
-            return  "SOURCE_LINE_DEREF";
+		@Override
+		public String getDescription() {
+			return  "SOURCE_LINE_DEREF";
         }
-    };
+	};
 
-    private static final PointerUsageRequiringNonNullValue nonNullReturnInstance = new PointerUsageRequiringNonNullValue() {
-        @Override
-        public boolean getReturnFromNonNullMethod() {
+	private static final PointerUsageRequiringNonNullValue nonNullReturnInstance = new PointerUsageRequiringNonNullValue() {
+		@Override
+		public boolean getReturnFromNonNullMethod() {
             return true;
+		}
+
+		@Override
+		public String getDescription() {
+			return  "SOURCE_LINE_RETURNED";
         }
+	};
 
-        @Override
-        public String getDescription() {
-            return  "SOURCE_LINE_RETURNED";
-        }
-    };
+	public static PointerUsageRequiringNonNullValue getPointerDereference() {
+		return instance;
+	}
 
-    public static PointerUsageRequiringNonNullValue getPointerDereference() {
-        return instance;
-    }
+	public static PointerUsageRequiringNonNullValue getReturnFromNonNullMethod(XMethod m) {
+		return nonNullReturnInstance;
+	}
 
-    public static PointerUsageRequiringNonNullValue getReturnFromNonNullMethod(XMethod m) {
-        return nonNullReturnInstance;
-    }
-
-    public static PointerUsageRequiringNonNullValue getPassedAsNonNullParameter(final XMethod m, final int param) {
-        return new PointerUsageRequiringNonNullValue() {
-            @Override
+	public static PointerUsageRequiringNonNullValue getPassedAsNonNullParameter(final XMethod m, final int param) {
+		return new PointerUsageRequiringNonNullValue() {
+			@Override
             public @CheckForNull
-            XMethodParameter getNonNullParameter() {
-                return new XMethodParameter(m, param);
+			XMethodParameter getNonNullParameter() {
+				return new XMethodParameter(m, param);
+			}
+
+			@Override
+			public String getDescription() {
+				return  "SOURCE_LINE_INVOKED";
             }
 
-            @Override
-            public String getDescription() {
-                return  "SOURCE_LINE_INVOKED";
-            }
+		};
+	}
 
-        };
-    }
-
-    public static PointerUsageRequiringNonNullValue getStoredIntoNonNullField(final XField f) {
-        return new PointerUsageRequiringNonNullValue() {
-            @Override
+	public static PointerUsageRequiringNonNullValue getStoredIntoNonNullField(final XField f) {
+		return new PointerUsageRequiringNonNullValue() {
+			@Override
             public @CheckForNull
-            XField getNonNullField() {
-                return f;
+			XField getNonNullField() {
+				return f;
+			}
+
+			@Override
+			public String getDescription() {
+				return  "SOURCE_LINE_STORED";
             }
 
-            @Override
-            public String getDescription() {
-                return  "SOURCE_LINE_STORED";
-            }
-
-        };
-    }
+		};
+	}
 }

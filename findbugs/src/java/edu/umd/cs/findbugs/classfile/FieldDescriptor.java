@@ -39,7 +39,7 @@ public class FieldDescriptor
 	public FieldDescriptor(String className, String fieldName, String fieldSignature, boolean isStatic) {
 		super(className, fieldName, fieldSignature, isStatic);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */

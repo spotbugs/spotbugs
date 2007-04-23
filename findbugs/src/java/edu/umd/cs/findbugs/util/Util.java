@@ -38,13 +38,13 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  * @author pugh
  */
 public class Util {
-    public static final boolean LOGGING = SystemProperties.getBoolean("findbugs.shutdownLogging");
-    
-    public static void runLogAtShutdown(Runnable r) {
+	public static final boolean LOGGING = SystemProperties.getBoolean("findbugs.shutdownLogging");
+
+	public static void runLogAtShutdown(Runnable r) {
         if (LOGGING) Runtime.getRuntime().addShutdownHook(new Thread(r));
-        
-    }
-	
+
+	}
+
 	public static int  nullSafeHashcode(@CheckForNull Object o) {
 		if (o == null) return 0;
 		return o.hashCode();		
@@ -54,23 +54,23 @@ public class Util {
 		if (o1 == null || o2 == null) return false;
 		return o1.equals(o2);
 	}
-    
-    public static Reader getReader(InputStream in) throws UnsupportedEncodingException {
-        return new InputStreamReader(in, "UTF-8");
-    }
-    public static Reader getFileReader(String filename) throws UnsupportedEncodingException, FileNotFoundException {
-        return getReader(new FileInputStream(filename));
-    }
-    public static Reader getFileReader(File filename) throws UnsupportedEncodingException, FileNotFoundException {
-        return getReader(new FileInputStream(filename));
-    }
-    public static Writer getWriter(OutputStream out) throws UnsupportedEncodingException, FileNotFoundException {
-        return new OutputStreamWriter(out, "UTF-8");
-    }
 
-    public static Writer getFileWriter(String filename) throws UnsupportedEncodingException, FileNotFoundException {
-        return  getWriter(new FileOutputStream(filename));
+	public static Reader getReader(InputStream in) throws UnsupportedEncodingException {
+		return new InputStreamReader(in, "UTF-8");
     }
+	public static Reader getFileReader(String filename) throws UnsupportedEncodingException, FileNotFoundException {
+		return getReader(new FileInputStream(filename));
+	}
+    public static Reader getFileReader(File filename) throws UnsupportedEncodingException, FileNotFoundException {
+		return getReader(new FileInputStream(filename));
+	}
+	public static Writer getWriter(OutputStream out) throws UnsupportedEncodingException, FileNotFoundException {
+        return new OutputStreamWriter(out, "UTF-8");
+	}
+
+	public static Writer getFileWriter(String filename) throws UnsupportedEncodingException, FileNotFoundException {
+		return  getWriter(new FileOutputStream(filename));
+	}
 
 
 }

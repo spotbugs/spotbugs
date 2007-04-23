@@ -36,35 +36,35 @@ public abstract class FieldOrMethodDescriptor {
 		this.signature = signature;
 		this.isStatic = isStatic;
 	}
-	
+
 	/**
 	 * @return Returns the class name
 	 */
 	public String getClassName() {
 		return className;
 	}
-	
+
 	/**
 	 * @return Returns the method name
 	 */
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * @return Returns the method signature
 	 */
 	public String getSignature() {
 		return signature;
 	}
-	
+
 	/**
 	 * @return Returns true if method is static, false if not
 	 */
 	public boolean isStatic() {
 		return isStatic;
 	}
-	
+
 	protected int compareTo(FieldOrMethodDescriptor o) {
 		int cmp;
 		cmp = this.className.compareTo(o.className);
@@ -81,7 +81,7 @@ public abstract class FieldOrMethodDescriptor {
 		}
 		return (this.isStatic ? 1 : 0) - (o.isStatic ? 1 : 0);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -96,7 +96,7 @@ public abstract class FieldOrMethodDescriptor {
 			&& this.signature.equals(other.signature)
 			&& this.isStatic == other.isStatic;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -107,7 +107,7 @@ public abstract class FieldOrMethodDescriptor {
 			+ signature.hashCode() * 131
 			+ (isStatic ? 1 : 0);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

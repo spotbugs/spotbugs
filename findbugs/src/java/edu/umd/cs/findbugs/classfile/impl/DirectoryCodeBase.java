@@ -59,17 +59,17 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 		 */
 		public ICodeBaseEntry next() throws InterruptedException {
 			final String fileName = fileNameIterator.next();
-			
+
 			// Make the filename relative to the directory
 			String resourceName = getResourceName(fileName);
-			
+
 			// Update last modified time
 			File file = new File(fileName);
 			long modTime = file.lastModified();
 			if (modTime > 0 && modTime > getLastModifiedTime()) {
 				setLastModifiedTime(modTime);
 			}
-			
+
 			return new DirectoryCodeBaseEntry(DirectoryCodeBase.this, resourceName);
 		}
 	}
@@ -107,17 +107,17 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 			rfs.search();
 			searchPerformed = true;
 		}
-		
+
 		return new DirectoryCodeBaseIterator();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
 	 */
 	public String getPathName() {
 		return directory.getPath();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
 	 */
@@ -133,14 +133,14 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 		// has been overridden and the resource is being accessed
 		// using the overridden name.
 		resourceName = translateResourceName(resourceName);
-		
+
 		File file = getFullPathOfResource(resourceName);
 		if (!file.exists()) {
 			throw new ResourceNotFoundException(resourceName);
 		}
 		return new DirectoryCodeBaseEntry(this, resourceName);
 	}
-	
+
 	InputStream openFile(String resourceName) throws FileNotFoundException, IOException {
 		File path = getFullPathOfResource(resourceName);
 		return new BufferedInputStream(new FileInputStream(path));
@@ -155,7 +155,7 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 	File getFullPathOfResource(String resourceName) {
 		return new File(directory, resourceName);
 	}
-	
+
 	/**
 	 * Get the resource name given a full filename.
 	 * 
@@ -164,25 +164,25 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 	 */
 	String getResourceName(String fileName) {
 		// FIXME: there is probably a more robust way to do this
-		
+
 		// Strip off the directory part.
 		String dirPath = directory.getPath();
 		if (!fileName.startsWith(dirPath)) {
 			throw new IllegalStateException("Filename " + fileName + " not inside directory "+ dirPath);
 		}
-		
+
 		// The problem here is that we need to take the relative part of the filename
 		// and break it into components that we can then reconstruct into
 		// a resource name (using '/' characters to separate the components).
 		// Unfortunately, the File class does not make this task particularly easy.
-		
+
 		String relativeFileName = fileName.substring(dirPath.length());
 		File file = new File(relativeFileName);
 		LinkedList<String> partList = new LinkedList<String>();
 		do {
 			partList.addFirst(file.getName());
 		} while ((file = file.getParentFile()) != null);
-		
+
 		StringBuffer buf = new StringBuffer();
 		for (String part : partList) {
 			if (buf.length() > 0) {
@@ -190,10 +190,10 @@ public class DirectoryCodeBase extends AbstractScannableCodeBase implements ISca
 			}
 			buf.append(part);
 		}
-		
+
 		return buf.toString();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

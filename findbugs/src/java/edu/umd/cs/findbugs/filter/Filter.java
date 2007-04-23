@@ -74,7 +74,7 @@ public class Filter extends OrMatcher {
 			throw new FilterException("Couldn't parse filter file " + fileName, e);
 		}
 
-        int count = 1;
+		int count = 1;
 		// Iterate over Match elements
 		for (Object matchObj : filterDoc.selectNodes("/FindBugsFilter/Match")) {
 			Element matchNode = (Element) matchObj;
@@ -103,13 +103,13 @@ public class Filter extends OrMatcher {
 				matchMatcher.addChild(matcher);
 			}
 			if (matchMatcher.numberChildren() == 0)
-                throw new FilterException("Match element #" + count + " (starting at 1) is invalid in filter file " + fileName);
+				throw new FilterException("Match element #" + count + " (starting at 1) is invalid in filter file " + fileName);
 			// Add the Match matcher to the overall Filter
 			this.addChild(matchMatcher);
-            count++;
+			count++;
 		}
-        if (this.numberChildren() == 0)
-           throw new  FilterException("Could not find any /FindBugsFilter/Match nodes in filter file " + fileName);
+		if (this.numberChildren() == 0)
+		   throw new  FilterException("Could not find any /FindBugsFilter/Match nodes in filter file " + fileName);
 
 	}
 
@@ -125,9 +125,9 @@ public class Filter extends OrMatcher {
 		String name = element.getName();
 		if (name.equals("BugCode")) {
 			return new BugMatcher(element.valueOf("@name"), "", "");
-        } else  if (name.equals("Local")) {
-                return new LocalMatcher(element.valueOf("@name"));
-        } else if (name.equals("BugPattern")) {
+		} else  if (name.equals("Local")) {
+				return new LocalMatcher(element.valueOf("@name"));
+		} else if (name.equals("BugPattern")) {
 			return new BugMatcher("", element.valueOf("@name"), "");
 		} else if (name.equals("Bug")) {
 			return new BugMatcher(element.valueOf("@code"), element
@@ -136,17 +136,17 @@ public class Filter extends OrMatcher {
 			return new PriorityMatcher(element.valueOf("@value"));
 		} else if (name.equals("Class")) {
 			Attribute nameAttr = element.attribute("name");
-			
+
 			if (nameAttr == null)
 				throw new FilterException("Missing name attribute in Class element");
-			
+
 			return new ClassMatcher(nameAttr.getValue());
 		} else if (name.equals("Package")) {
 			Attribute nameAttr = element.attribute("name");
-			
+
 			if (nameAttr == null)
 				throw new FilterException("Missing name attribute in Package element");
-			
+
 			String pName = nameAttr.getValue();
 			pName = pName.startsWith("~") ? pName : "~" + Strings.replace(pName, ".", "\\.");			
 			return new ClassMatcher(pName + "\\.[^.]+");
@@ -175,7 +175,7 @@ public class Filter extends OrMatcher {
 			Attribute nameAttr = element.attribute("name");
 			String nameValue;
 			Attribute typeAttr = element.attribute("type");
-			
+
 			if (nameAttr == null)
 				if(typeAttr == null)
 					throw new FilterException("Field element must have either name or type attribute");
@@ -183,7 +183,7 @@ public class Filter extends OrMatcher {
 					nameValue = "~.*"; // any name
 			else
 				nameValue = nameAttr.getValue();
-			
+
 			if (typeAttr == null)
 				return new FieldMatcher(nameValue);
 			else

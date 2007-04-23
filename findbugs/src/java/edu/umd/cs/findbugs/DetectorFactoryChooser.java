@@ -32,11 +32,11 @@ public interface DetectorFactoryChooser {
 	 * @return true if the DetectorFactory should be chosen, false if not
 	 */
 	public boolean choose(DetectorFactory factory);
-    
-    
-    /**
+
+
+	/**
      * Enable the factory due to ordering constraints with other enabled detectors
-     * @param factory
-     */
-    public void enable(DetectorFactory factory) ;
+	 * @param factory
+	 */
+	public void enable(DetectorFactory factory) ;
 }

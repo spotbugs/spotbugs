@@ -79,7 +79,7 @@ public class ReturnPath {
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		switch (kind) {
 		case TOP:
 			return "[TOP]";

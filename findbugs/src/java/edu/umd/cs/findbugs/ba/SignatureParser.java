@@ -34,7 +34,7 @@ import org.apache.bcel.generic.InvokeInstruction;
 public class SignatureParser {
 	int totalArgumentSize;
 	int parameterOffset[] = null;
-	
+
 	private void calculateOffsets() {
 		if (parameterOffset != null) return;
 		ArrayList<Integer> offsets = new ArrayList<Integer>();
@@ -51,19 +51,19 @@ public class SignatureParser {
 		for(int j = 0; j < offsets.size(); j++)
 			parameterOffset[j] = offsets.get(j);
 	}
-	
+
 	public int getSlotsFromTopOfStackForParameter(int paramNum) {
 		calculateOffsets();
 		int result = totalArgumentSize - parameterOffset[paramNum];
 		return result;
 	}
-	
+
 	private class ParameterSignatureIterator implements Iterator<String> {
 		private int index = 1;
 
 		public boolean hasNext() {
 			return index < signature.length()
-			        && signature.charAt(index) != ')';
+					&& signature.charAt(index) != ')';
 		}
 
 		public String next() {
@@ -85,7 +85,7 @@ public class SignatureParser {
 					result.append(signature.charAt(index));
 					++index;
 					break;
-					
+
 				case 'L':
 					int semi = signature.indexOf(';', index + 1);
 					if (semi < 0)
@@ -93,13 +93,13 @@ public class SignatureParser {
 					result.append(signature.substring(index, semi + 1));
 					index = semi + 1;
 					break;
-					
+
 				case '[':
 					result.append('[');
 					++index;
 					done = false;
 					break;
-					
+
 				case 'V':
 				default:
 					throw new IllegalStateException("Invalid method signature: " + signature);
@@ -117,7 +117,7 @@ public class SignatureParser {
 	private final String signature;
 
 	@Override
-    public String toString() {
+	public String toString() {
 		return signature;
 	}
 	/**
@@ -139,7 +139,7 @@ public class SignatureParser {
 	public Iterator<String> parameterSignatureIterator() {
 		return new ParameterSignatureIterator();
 	}
-	
+
 	/**
 	 * Get the method return type signature.
 	 * 
@@ -151,7 +151,7 @@ public class SignatureParser {
 			throw new IllegalArgumentException("Bad method signature: " + signature);
 		return signature.substring(endOfParams + 1);
 	}
-	
+
 	/**
 	 * Get the number of parameters in the signature.
 	 * 
@@ -165,7 +165,7 @@ public class SignatureParser {
 		}
 		return count;
 	}
-	
+
 	public String getParameter(int pos) {
 		int count = 0;
 		for (Iterator<String> i = parameterSignatureIterator(); i.hasNext();) {
@@ -186,7 +186,7 @@ public class SignatureParser {
 		SignatureParser sigParser = new SignatureParser(inv.getSignature(cpg));
 		return sigParser.getNumParameters();
 	}
-	
+
 	public static void main(String[] args) {
 		if (args.length != 1) {
 			System.err.println("Usage: " + SignatureParser.class.getName() + " '<method signature>'");

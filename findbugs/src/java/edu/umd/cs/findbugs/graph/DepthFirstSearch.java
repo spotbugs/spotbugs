@@ -30,9 +30,9 @@ import java.util.Iterator;
  */
 public class DepthFirstSearch
 		<
-        GraphType extends Graph<EdgeType, VertexType>,
-        EdgeType extends GraphEdge<EdgeType, VertexType>,
-        VertexType extends GraphVertex<VertexType>
+		GraphType extends Graph<EdgeType, VertexType>,
+		EdgeType extends GraphEdge<EdgeType, VertexType>,
+		VertexType extends GraphVertex<VertexType>
 		>
 	extends AbstractDepthFirstSearch<GraphType, EdgeType, VertexType> {
 
@@ -46,17 +46,17 @@ public class DepthFirstSearch
 	}
 
 	@Override
-         protected Iterator<EdgeType> outgoingEdgeIterator(GraphType graph, VertexType vertex) {
+		 protected Iterator<EdgeType> outgoingEdgeIterator(GraphType graph, VertexType vertex) {
 		return graph.outgoingEdgeIterator(vertex);
 	}
 
 	@Override
-         protected VertexType getTarget(EdgeType edge) {
+		 protected VertexType getTarget(EdgeType edge) {
 		return edge.getTarget();
 	}
 
 	@Override
-         protected VertexType getSource(EdgeType edge) {
+		 protected VertexType getSource(EdgeType edge) {
 		return edge.getSource();
 	}
 

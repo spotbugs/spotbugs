@@ -117,7 +117,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 		 */
 		public void predictPassCount(int[] classesPerPass) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 	}
@@ -341,7 +341,7 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 
 	private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
 		int option = JOptionPane.showConfirmDialog(this, L10N.getLocalString("msg.cancelanalysis_txt", "Cancel analysis?"), L10N.getLocalString("msg.analyze_txt", "Analysis"),
-		        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 		if (option == JOptionPane.YES_OPTION) {
 			// All we need to do to cancel the analysis is to interrupt
@@ -352,11 +352,11 @@ public class RunAnalysisDialog extends javax.swing.JDialog {
 
 	private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
 		// Here is where we actually kick off the analysis thread.
-		
+
 		// Lower the priority of the analysis thread to leave more
 		// CPU for interactive tasks.
 		analysisThread.setPriority(Thread.NORM_PRIORITY - 1);
-		
+
 		analysisThread.start();
 	}//GEN-LAST:event_formWindowOpened
 

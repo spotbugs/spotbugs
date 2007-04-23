@@ -31,7 +31,7 @@ public class CheckedAnalysisException extends Exception {
 	 */
 	public CheckedAnalysisException() {
 	}
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -40,7 +40,7 @@ public class CheckedAnalysisException extends Exception {
 	public CheckedAnalysisException(String msg) {
 		super(msg);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * 

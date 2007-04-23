@@ -66,7 +66,7 @@ public class InnerClassAccessMap {
 	/* ----------------------------------------------------------------------
 	 * Public interface
 	 * ---------------------------------------------------------------------- */
-	
+
 	/**
 	 * Create an instance.
 	 * 
@@ -312,7 +312,7 @@ public class InnerClassAccessMap {
 	 * @return map of access method names to the fields they access
 	 */
 	private Map<String, InnerClassAccess> getAccessMapForClass(String className)
-	        throws ClassNotFoundException {
+			throws ClassNotFoundException {
 
 		Map<String, InnerClassAccess> map = classToAccessMap.get(className);
 		if (map == null) {

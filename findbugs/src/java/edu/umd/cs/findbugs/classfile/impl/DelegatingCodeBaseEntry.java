@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 	private ICodeBase frontEndCodeBase;
 	private ICodeBaseEntry delegateCodeBaseEntry;
-	
+
 	public DelegatingCodeBaseEntry(ICodeBase frontEndCodeBase, ICodeBaseEntry delegateCodeBaseEntry) {
 		this.frontEndCodeBase = frontEndCodeBase;
 		this.delegateCodeBaseEntry = delegateCodeBaseEntry;
@@ -66,28 +66,28 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 	public InputStream openResource() throws IOException {
 		return delegateCodeBaseEntry.openResource();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
 	 */
 	public ICodeBase getCodeBase() {
 		return frontEndCodeBase;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
 	 */
 	public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
 		return delegateCodeBaseEntry.getClassDescriptor();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java.lang.String)
 	 */
 	public void overrideResourceName(String resourceName) {
 		delegateCodeBaseEntry.overrideResourceName(resourceName);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -100,7 +100,7 @@ public class DelegatingCodeBaseEntry implements ICodeBaseEntry {
 		return this.frontEndCodeBase.equals(other.frontEndCodeBase)
 			&& this.delegateCodeBaseEntry.equals(other.delegateCodeBaseEntry);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

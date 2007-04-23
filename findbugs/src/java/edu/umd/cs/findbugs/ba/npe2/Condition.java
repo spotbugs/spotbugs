@@ -30,17 +30,17 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public abstract class Condition {
 	private Location location;
-	
+
 	public Condition(Location location) {
 		this.location= location;
 	}
-	
+
 	public Location getLocation() {
 		return location;
 	}
-	
+
 	public abstract void refresh(ValueNumberFrame vnaFrame, DefinitelyNullSet definitelyNullSet) throws DataflowAnalysisException;
-	
+
 	public abstract ValueNumber getValueNumber();
 
 	public abstract Decision getDecision(Edge edge);

@@ -41,7 +41,7 @@ public class UnionResults {
 	static public SortedBugCollection union (SortedBugCollection origCollection, SortedBugCollection newCollection) {
 
 		SortedBugCollection result = origCollection.duplicate();
-		
+
 		for (Iterator<BugInstance> i = newCollection.iterator(); i.hasNext();) {
 			BugInstance bugInstance = i.next();
 			result.add(bugInstance);
@@ -68,7 +68,7 @@ public class UnionResults {
 			more.readXML(argv[i], new Project());
 			results = union(results, more);
 		}
-	
+
 		results.writeXML(System.out, new Project());
 	}
 

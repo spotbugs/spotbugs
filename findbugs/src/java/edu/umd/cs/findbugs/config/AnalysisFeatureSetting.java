@@ -40,7 +40,7 @@ public class AnalysisFeatureSetting {
 		this.property = property;
 		this.enabled = enabled;
 	}
-	
+
 	/**
 	 * Set the configured value of the analysis property in the given
 	 * AnalysisContext.

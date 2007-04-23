@@ -46,10 +46,10 @@ public class ClassDataAnalysisEngine implements IClassAnalysisEngine {
 	 */
 	public Object analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
-		
+
 		// Compute the resource name
 		String resourceName = descriptor.toResourceName();
-		
+
 		// Look up the codebase entry for the resource
 		ICodeBaseEntry codeBaseEntry;
 		try {
@@ -66,7 +66,7 @@ public class ClassDataAnalysisEngine implements IClassAnalysisEngine {
 		} else {
 			byteSink = new ByteArrayOutputStream();
 		}
-		
+
 		// Read the class data into the byte array
 		InputStream in = null;
 		try {
@@ -84,7 +84,7 @@ public class ClassDataAnalysisEngine implements IClassAnalysisEngine {
 		byte[] data = byteSink.toByteArray();
 		return new ClassData(descriptor, codeBaseEntry, data);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#registerWith(edu.umd.cs.findbugs.classfile.IAnalysisCache)
 	 */

@@ -34,7 +34,7 @@ public class LongOrDoubleLocalVariable implements Variable {
 			return false;
 		LongOrDoubleLocalVariable otherLongOrDouble = (LongOrDoubleLocalVariable) other;
 		return topValue.equals(otherLongOrDouble.topValue)
-		        && nextValue.equals(otherLongOrDouble.nextValue);
+				&& nextValue.equals(otherLongOrDouble.nextValue);
 	}
 }
 

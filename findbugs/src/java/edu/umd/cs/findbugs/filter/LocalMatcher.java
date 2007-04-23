@@ -28,15 +28,15 @@ import edu.umd.cs.findbugs.LocalVariableAnnotation;
 
 public class LocalMatcher implements Matcher {
 	private NameMatch name;
-	
+
 	public LocalMatcher(String name) {
 		this.name = new NameMatch(name);
 	}
-	
+
 	public LocalMatcher(String name, String type) {
 		this.name = new NameMatch(name);
 	}
-	
+
 	public boolean match(BugInstance bugInstance) {
 		LocalVariableAnnotation localAnnotation = bugInstance.getPrimaryLocalVariableAnnotation();
 		if(localAnnotation == null) {

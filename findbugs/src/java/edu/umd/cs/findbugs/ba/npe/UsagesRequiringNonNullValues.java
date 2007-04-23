@@ -33,58 +33,58 @@ import edu.umd.cs.findbugs.util.MultiMap;
  */
 public class UsagesRequiringNonNullValues {
 
-    public static class Pair {
-        public final ValueNumber vn;
-        public final PointerUsageRequiringNonNullValue pu;
+	public static class Pair {
+		public final ValueNumber vn;
+		public final PointerUsageRequiringNonNullValue pu;
 
-        Pair(ValueNumber vn, PointerUsageRequiringNonNullValue pu) {
-            this.vn = vn;
-            this.pu = pu;
+		Pair(ValueNumber vn, PointerUsageRequiringNonNullValue pu) {
+			this.vn = vn;
+			this.pu = pu;
         }
 
-        @Override
-        public String toString() {
-            return vn.toString();
+		@Override
+		public String toString() {
+			return vn.toString();
         }
-    }
+	}
 
-    MultiMap<Location, Pair> map = new MultiMap<Location, Pair>(LinkedList.class);
-    
-    @Override
+	MultiMap<Location, Pair> map = new MultiMap<Location, Pair>(LinkedList.class);
+
+	@Override
     public String toString() {
-        StringBuffer buf = new StringBuffer();
-        for(Location loc : map.keySet()) {
-            buf.append(loc.getHandle().getPosition() + ":" + loc.getHandle().getInstruction() +"\n");
+		StringBuffer buf = new StringBuffer();
+		for(Location loc : map.keySet()) {
+			buf.append(loc.getHandle().getPosition() + ":" + loc.getHandle().getInstruction() +"\n");
             for(Pair p : getPairs(loc)) {
-                buf.append("  ").append(p.vn).append("\n");
-            }
-        }
+				buf.append("  ").append(p.vn).append("\n");
+			}
+		}
         return buf.toString();
-    }
+	}
 
-    public void add(Location loc, ValueNumber vn, PointerUsageRequiringNonNullValue usage) {
-        Pair p = new Pair(vn, usage);
-        if (DerefFinder.DEBUG)
+	public void add(Location loc, ValueNumber vn, PointerUsageRequiringNonNullValue usage) {
+		Pair p = new Pair(vn, usage);
+		if (DerefFinder.DEBUG)
             System.out.println("At " + loc + " adding dereference " + p);
 
-        map.add(loc, p);
-    }
+		map.add(loc, p);
+	}
 
-    public @CheckForNull
-    PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn) {
-        PointerUsageRequiringNonNullValue secondBest = null;
+	public @CheckForNull
+	PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn) {
+		PointerUsageRequiringNonNullValue secondBest = null;
         for (Pair p : map.get(loc)) {
-            if (p.vn.equals(vn))
-                return p.pu;
-            else secondBest = p.pu;
+			if (p.vn.equals(vn))
+				return p.pu;
+			else secondBest = p.pu;
         }
-        return secondBest;
-    }
+		return secondBest;
+	}
 
-    public Collection<? extends Pair> getPairs(Location loc) {
-        return map.get(loc);
-    }
+	public Collection<? extends Pair> getPairs(Location loc) {
+		return map.get(loc);
+	}
 
-   
+
 
 }

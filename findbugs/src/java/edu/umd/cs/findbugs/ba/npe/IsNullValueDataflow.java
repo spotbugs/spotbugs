@@ -34,11 +34,11 @@ public class IsNullValueDataflow extends AbstractDataflow<IsNullValueFrame, IsNu
 	public IsNullValueFrame getFactAtLocation(Location loc) throws DataflowAnalysisException {
 		return getAnalysis().getFactAtLocation(loc);
 	}
-   
-    public IsNullValueFrame getFactAtMidEdge(Edge edge) throws DataflowAnalysisException {
-        return getAnalysis().getFactAtMidEdge(edge);
+
+	public IsNullValueFrame getFactAtMidEdge(Edge edge) throws DataflowAnalysisException {
+		return getAnalysis().getFactAtMidEdge(edge);
     }
-    
+
 }
 
 // vim:ts=4

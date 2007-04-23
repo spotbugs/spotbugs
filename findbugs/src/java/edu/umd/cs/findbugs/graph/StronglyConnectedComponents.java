@@ -32,11 +32,11 @@ import java.util.TreeSet;
  * p. 489.
  */
 public class StronglyConnectedComponents
-        <
-        GraphType extends Graph<EdgeType, VertexType>,
-        EdgeType extends GraphEdge<EdgeType, VertexType>,
+		<
+		GraphType extends Graph<EdgeType, VertexType>,
+		EdgeType extends GraphEdge<EdgeType, VertexType>,
         VertexType extends GraphVertex<VertexType>
-        > {
+		> {
 
 	private ArrayList<SearchTree<VertexType>> m_stronglyConnectedSearchTreeList;
 	private VertexChooser<VertexType> m_vertexChooser;
@@ -66,26 +66,26 @@ public class StronglyConnectedComponents
 	 *                used by the algorithm
 	 */
 	public void findStronglyConnectedComponents(GraphType g,
-	                                            GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
+												GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
 
 		// Perform the initial depth first search
 		DepthFirstSearch<GraphType, EdgeType, VertexType> initialDFS =
-		        new DepthFirstSearch<GraphType, EdgeType, VertexType>(g);
+				new DepthFirstSearch<GraphType, EdgeType, VertexType>(g);
 		if (m_vertexChooser != null)
 			initialDFS.setVertexChooser(m_vertexChooser);
 		initialDFS.search();
 
 		// Create a transposed graph
 		Transpose<GraphType, EdgeType, VertexType> t =
-		        new Transpose<GraphType, EdgeType, VertexType>();
+				new Transpose<GraphType, EdgeType, VertexType>();
 		GraphType transpose = t.transpose(g, toolkit);
 
 		// Create a set of vertices in the transposed graph,
 		// in descending order of finish time in the initial
 		// depth first search.
 		VisitationTimeComparator<VertexType> comparator =
-		        new VisitationTimeComparator<VertexType>(initialDFS.getFinishTimeList(),
-		                VisitationTimeComparator.DESCENDING);
+				new VisitationTimeComparator<VertexType>(initialDFS.getFinishTimeList(),
+						VisitationTimeComparator.DESCENDING);
 		Set<VertexType> descendingByFinishTimeSet = new TreeSet<VertexType>(comparator);
 		Iterator<VertexType> i = transpose.vertexIterator();
 		while (i.hasNext()) {
@@ -99,9 +99,9 @@ public class StronglyConnectedComponents
 		// to visit in the main loop by descending finish time
 		final Iterator<VertexType> vertexIter = descendingByFinishTimeSet.iterator();
 		DepthFirstSearch<GraphType, EdgeType, VertexType> transposeDFS =
-		        new DepthFirstSearch<GraphType, EdgeType, VertexType>(transpose) {
+				new DepthFirstSearch<GraphType, EdgeType, VertexType>(transpose) {
 			@Override
-                         protected VertexType getNextSearchTreeRoot() {
+						 protected VertexType getNextSearchTreeRoot() {
 				while(vertexIter.hasNext()) {
 					VertexType vertex = vertexIter.next();
 					if (visitMe(vertex))
@@ -134,7 +134,7 @@ public class StronglyConnectedComponents
 	 *             the original graph
 	 */
 	private SearchTree<VertexType> copySearchTree(SearchTree<VertexType> tree,
-	                                              Transpose<GraphType, EdgeType, VertexType> t) {
+												  Transpose<GraphType, EdgeType, VertexType> t) {
 		// Copy this node
 		SearchTree<VertexType> copy = new SearchTree<VertexType>(t.getOriginalGraphVertex(tree.getVertex()));
 

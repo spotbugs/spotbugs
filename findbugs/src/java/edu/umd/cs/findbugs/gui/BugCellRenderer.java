@@ -40,9 +40,9 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
  * text color based on the bug priority.
  */
 public class BugCellRenderer extends DefaultTreeCellRenderer {
-	
+
 	private static final BugCellRenderer theInstance = new BugCellRenderer();
-	
+
 	/**
 	 * Get the single instance.
 	 * 
@@ -51,7 +51,7 @@ public class BugCellRenderer extends DefaultTreeCellRenderer {
 	public static BugCellRenderer instance() {
 		return theInstance;
 	}
-	
+
 	private static final long serialVersionUID = 1L;
 	private ImageIcon bugGroupIcon;
 	private ImageIcon packageIcon;

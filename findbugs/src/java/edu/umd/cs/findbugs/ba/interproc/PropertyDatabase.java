@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 	private Map<KeyType, ValueType> propertyMap;
-	
+
 	/**
 	 * Constructor.
 	 * Creates an empty property database. 
@@ -58,7 +58,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 	protected PropertyDatabase() {
 		this.propertyMap = new HashMap<KeyType, ValueType>();
 	}
-	
+
 	/**
 	 * Set a property.
 	 * 
@@ -68,7 +68,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 	public void setProperty(KeyType key, ValueType property) {
 		propertyMap.put(key, property);
 	}
-	
+
 	/**
 	 * Get a property.
 	 * 
@@ -78,7 +78,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 	public ValueType getProperty(KeyType key) {
 		return propertyMap.get(key);
 	}
-	
+
 	public Set<KeyType> getKeys() {
 		return propertyMap.keySet();
 	}
@@ -90,7 +90,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 	public boolean isEmpty() {
 		return propertyMap.isEmpty();
 	}
-	
+
 	/**
 	 * Remove a property.
 	 * 
@@ -100,7 +100,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 	public ValueType removeProperty(KeyType key) {
 		return propertyMap.remove(key);
 	}
-	
+
 	/**
 	 * Read property database from given file.
 	 * 
@@ -123,7 +123,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 	 */
 	public void read(InputStream in) throws IOException, PropertyDatabaseFormatException {
 		BufferedReader reader = null;
-		
+
 		try {
 			reader = new BufferedReader(
 				Util.getReader(in));
@@ -139,7 +139,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 				}
 				KeyType key = parseKey(line.substring(0, bar));
 				ValueType property = decodeProperty(line.substring(bar+1));
-				
+
 				setProperty(key, property);
 			}
 		} finally {
@@ -151,7 +151,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 			}
 		}
 	}
-	
+
 	/**
 	 * Write property database to given file.
 	 * 
@@ -186,17 +186,17 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 	public void write(OutputStream out) throws IOException {
 		BufferedWriter writer = null;
 		boolean missingClassWarningsSuppressed = AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(true);
-		
+
 		try {
 			writer = new BufferedWriter(
 					new OutputStreamWriter(out, Charset.forName("UTF-8")));
-			
+
 			TreeSet<KeyType> sortedMethodSet = new TreeSet<KeyType>();
 			XFactory xFactory = AnalysisContext.currentXFactory();
 			sortedMethodSet.addAll(propertyMap.keySet());
 			for (KeyType key : sortedMethodSet) {
 				if (AnalysisContext.currentAnalysisContext().isApplicationClass(key.getClassName())) {
-					
+
 				ValueType property = propertyMap.get(key);
 				writeKey(writer, intern(xFactory, key));
 				writer.write("|");
@@ -206,7 +206,7 @@ public abstract class PropertyDatabase<KeyType extends ClassMember, ValueType> {
 			}
 		} finally {
 			AnalysisContext.currentAnalysisContext().setMissingClassWarningsSuppressed(missingClassWarningsSuppressed);
-			
+
 			try {
 				if (writer != null)
 					writer.close();

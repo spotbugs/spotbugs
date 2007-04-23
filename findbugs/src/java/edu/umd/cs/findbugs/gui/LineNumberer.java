@@ -33,25 +33,25 @@ public class LineNumberer extends JComponent
 {
 	public static final int PAD = 10;
 	public static final String PROTOTYPE = "00000";
-	
+
 	private JTextArea textArea;
 	private FontMetrics fm;
-	
+
 	public LineNumberer(JTextArea ta) {
 		setFont( ta.getFont() );
 		textArea = ta;
 		setForeground( Color.BLUE );
-		
+
 		fm = this.getFontMetrics(ta.getFont());
 		setWidths();
 	}
-	
+
 	@Override
 	public void setFont(Font font)
 	{
 		//ignore
 	}
-	
+
 	private void setWidths() {
 		int width = fm.stringWidth( PROTOTYPE );
 		Dimension d = getPreferredSize();

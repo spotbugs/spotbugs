@@ -55,14 +55,14 @@ public class DefaultSortedTableModel extends AbstractTableModel
 	public static final int SORT_ASCENDING_ORDER = 1;
 	public static final int SORT_DESCENDING_ORDER = 2;
 	public static final int NUM_SORT_DIREECTIONS = 3;
-	
+
 	private AbstractTableModel baseModel;
 	private List<Integer> viewToModelMapping;
 	private int sortDirection = SORT_ASCENDING_ORDER;
 	private int sortColumn = 0;
 	private ImageIcon upIcon, downIcon;
-	
-	
+
+
 	public DefaultSortedTableModel( AbstractTableModel model, JTableHeader header ) {
 		baseModel = model;
 		model.addTableModelListener(new BaseTableModelListener());
@@ -87,25 +87,25 @@ public class DefaultSortedTableModel extends AbstractTableModel
 				return label;
 			}
 		});
-			
+
 		setupMapping();
 		ClassLoader classLoader = this.getClass().getClassLoader();
 		upIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/up.png"));
 		downIcon = new ImageIcon(classLoader.getResource("edu/umd/cs/findbugs/gui/down.png"));
 	}
-	
+
 	// Base Model handling
-	
+
 	public TableModel getBaseTableModel() {
 		return baseModel;
 	}
-	
+
 	public int getBaseModelIndex( int viewIndex ) {
 		return viewToModelMapping.get(viewIndex).intValue();
 	}
-		
+
 	// Event handling
-	
+
 	@Override
 	public void fireTableCellUpdated( int row, int col ) {
 		if (baseModel != null)
@@ -126,7 +126,7 @@ public class DefaultSortedTableModel extends AbstractTableModel
 			setupMapping();
 		super.fireTableDataChanged();
 	}
-	
+
 	@Override
 	public void fireTableRowsDeleted( int first, int last ) {
 		if (baseModel != null)
@@ -154,102 +154,102 @@ public class DefaultSortedTableModel extends AbstractTableModel
 			setupMapping();
 		super.fireTableStructureChanged();
 	}
-	
+
 	// accessors
-	
+
 	@Override
 	public int findColumn( String columnName ) {
 		if (baseModel == null)
 			return -1;
-	
+
 		return baseModel.findColumn(columnName);	
 	}
-	
+
 	public int getColumnCount() {
 		if (baseModel == null)
 			return 0;
-			
+
 		return baseModel.getColumnCount();
 	}
-	
+
 	public int getRowCount() {
 		if (baseModel == null)
 			return 0;
-			
+
 		return baseModel.getRowCount();
 	}
-	
+
 	@Override
 	public Class<?> getColumnClass( int column ) {
 		if (baseModel == null)
 			return null;
-			
+
 		return baseModel.getColumnClass(column);
 	}
-	
+
 	@Override
 	public String getColumnName( int column ) {
 		if (baseModel == null)
 			return null;
-			
+
 		return baseModel.getColumnName(column);
 	}
-	
+
 	@Override
 	public boolean isCellEditable( int row, int col ) {
 		if (baseModel == null)
 			return false;
-			
+
 		return baseModel.isCellEditable( row, col );
 	}
-	
+
 	public Object getValueAt( int row, int col ) {
 		if (baseModel == null)
 			return null;
-			
+
 		return baseModel.getValueAt(viewToModelMapping.get(row).intValue(), col);
 	}
-	
+
 	@Override
 	public void setValueAt( Object value, int row, int col ) {
 		if (baseModel == null)
 			return;
-			
+
 		baseModel.setValueAt( value, viewToModelMapping.get(row).intValue(), col );
 		fireTableDataChanged();
 	}
-	
+
 	private void setupMapping() {
 		int numRows = baseModel.getRowCount();
 		viewToModelMapping = new ArrayList<Integer>(numRows);
 		for (int i = 0; i < numRows; i++)
 			viewToModelMapping.add((Integer)(i));
-		
+
 		Collections.sort( viewToModelMapping, new Comparator<Integer>() {
 			@SuppressWarnings("unchecked")
 			public int compare( Integer a, Integer b ) {
 				if ((sortDirection == SORT_NO_ORDER) || (sortColumn == -1))
 					return a.compareTo(b);
-				
+
 				Comparable<Object> first = (Comparable<Object>)baseModel.getValueAt( a.intValue(), sortColumn );
 				Comparable<Object>  second = (Comparable<Object>)baseModel.getValueAt( b.intValue(), sortColumn );
-				
+
 				if (sortDirection == SORT_ASCENDING_ORDER) 
 					return first.compareTo(second);
 				else
 					return second.compareTo(first);
 			}
 		});
-		
+
 	}
-	
+
 	private class BaseTableModelListener implements TableModelListener
 	{
 		public void tableChanged( TableModelEvent e ) {
 			DefaultSortedTableModel.this.fireTableChanged(e);
 		}
 	}
-	
+
 	private class HeaderListener extends MouseAdapter
 	{
 		@Override

@@ -69,20 +69,20 @@ public class IO {
 	}
 
 	public static long copy(InputStream in, OutputStream out)
-	        throws IOException {
+			throws IOException {
 		return copy(in, out, Long.MAX_VALUE);
 	}
 
 	public static long copy(Reader in, Writer out)
-	        throws IOException {
+			throws IOException {
 		return copy(in, out, Long.MAX_VALUE);
 	}
 
 
 	public static long copy(InputStream in, OutputStream out,
-	                        long maxBytes)
+							long maxBytes)
 
-	        throws IOException {
+			throws IOException {
 		long total = 0;
 
 		int sz;
@@ -90,9 +90,9 @@ public class IO {
 		byte buf [] =  myByteBuf.get();
 
 		while (maxBytes > 0 &&
-		        (sz = in.read(buf, 0,
-		                (int) Math.min(maxBytes, (long) buf.length)))
-		        > 0) {
+				(sz = in.read(buf, 0,
+						(int) Math.min(maxBytes, (long) buf.length)))
+				> 0) {
 			total += sz;
 			maxBytes -= sz;
 			out.write(buf, 0, sz);
@@ -101,9 +101,9 @@ public class IO {
 	}
 
 	public static long copy(Reader in, Writer out,
-	                        long maxChars)
+							long maxChars)
 
-	        throws IOException {
+			throws IOException {
 		long total = 0;
 
 		int sz;
@@ -111,16 +111,16 @@ public class IO {
 		char buf [] =  myCharBuf.get();
 
 		while (maxChars > 0 &&
-		        (sz = in.read(buf, 0,
-		                (int) Math.min(maxChars, (long) buf.length)))
-		        > 0) {
+				(sz = in.read(buf, 0,
+						(int) Math.min(maxChars, (long) buf.length)))
+				> 0) {
 			total += sz;
 			maxChars -= sz;
 			out.write(buf, 0, sz);
 		}
 		return total;
 	}
-	
+
 	/**
 	 * Close given InputStream, ignoring any resulting exception.
 	 * 
@@ -131,14 +131,14 @@ public class IO {
 		if (inputStream == null) {
 			return;
 		}
-		
+
 		try {
 			inputStream.close();
 		} catch (IOException e) {
 			// Ignore
 		}
 	}
-	
+
 	/**
 	 * Close given OutputStream, ignoring any resulting exception.
 	 * 
@@ -149,7 +149,7 @@ public class IO {
 		if (outputStream == null) {
 			return;
 		}
-		
+
 		try {
 			outputStream.close();
 		} catch (IOException e) {

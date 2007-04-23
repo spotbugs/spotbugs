@@ -56,14 +56,14 @@ public class GenerateUIDs {
 	@NonNull private Project project;
 	private String inputFilename;
 	private String outputFilename;
-	
+
 	public GenerateUIDs(String inputFilename, String outputFilename) {
 		this.bugCollection = new SortedBugCollection();
 		this.project = new Project();
 		this.inputFilename = inputFilename;
 		this.outputFilename = outputFilename;
 	}
-	
+
 	public void execute() throws IOException, DocumentException {
 		InputStream in;
 		if (inputFilename.equals("-")) {
@@ -73,15 +73,15 @@ public class GenerateUIDs {
 			if (inputFilename.endsWith(".gz"))
 				in = new GZIPInputStream(in);
 		}
-		
+
 		bugCollection.readXML(in, project);
 
 		Document document = DocumentFactory.getInstance().createDocument();
 		Dom4JXMLOutput xmlOutput = new Dom4JXMLOutput(document);
 		bugCollection.writeXML(xmlOutput, project);
-		
+
 		int count = 0;
-		
+
 		List<Element> bugInstanceList = document.selectNodes("/BugCollection/BugInstance");
 		for (Element element : bugInstanceList) {
 			Attribute uidAttr = element.attribute("uid");
@@ -89,7 +89,7 @@ public class GenerateUIDs {
 				element.addAttribute("uid", Integer.toString(count++));
 			}
 		}
-		
+
 		OutputStream out;
 		if (outputFilename.equals("-")) {
 			out = System.out;
@@ -99,17 +99,17 @@ public class GenerateUIDs {
 		XMLWriter xmlWriter = new XMLWriter(out, OutputFormat.createPrettyPrint());
 		xmlWriter.write(document);
 	}
-	
+
 	public static void main(String[] args) throws IOException, DocumentException {
 		if (args.length != 2) {
 			System.err.println("Usage: " + GenerateUIDs.class.getName() +
 					" <input file> <output file>");
 			System.exit(1);
 		}
-		
+
 		String inputFilename = args[0];
 		String outputFilename = args[1];
-		
+
 		GenerateUIDs generateUIDs = new GenerateUIDs(inputFilename, outputFilename);
 		generateUIDs.execute();
 	}

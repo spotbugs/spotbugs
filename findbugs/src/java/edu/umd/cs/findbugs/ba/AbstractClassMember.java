@@ -31,7 +31,7 @@ public abstract class AbstractClassMember implements ClassMember {
 	static  int dottedCountClass = 0;
 	static  int slashCountSignature= 0;
 	static  int dottedCountSignature = 0;
-	
+
 
 	protected AbstractClassMember(String className, String name, String signature, int accessFlags) {
 		if (className.indexOf('.') >= 0) {
@@ -85,11 +85,11 @@ public abstract class AbstractClassMember implements ClassMember {
 	public boolean isPublic() {
 		return (accessFlags & Constants.ACC_PUBLIC) != 0;
 	}
-	
+
 	public boolean isProtected() {
 		return (accessFlags & Constants.ACC_PROTECTED) != 0;
 	}
-	
+
 	public boolean isPrivate() {
 		return (accessFlags & Constants.ACC_PRIVATE) != 0;
 	}
@@ -118,7 +118,7 @@ public abstract class AbstractClassMember implements ClassMember {
 		 resolved = true;
 	 }
 	@Override
-         public int hashCode() {
+		 public int hashCode() {
 		if (cachedHashCode == 0) {
 			cachedHashCode = className.hashCode() ^ name.hashCode() ^ signature.hashCode();
 		}
@@ -126,17 +126,17 @@ public abstract class AbstractClassMember implements ClassMember {
 	}
 
 	@Override
-         public boolean equals(Object o) {
+		 public boolean equals(Object o) {
 		if (o == null || this.getClass() != o.getClass())
 			return false;
 		AbstractClassMember other = (AbstractClassMember) o;
 		return className.equals(other.className)
-		        && name.equals(other.name)
-		        && signature.equals(other.signature);
+				&& name.equals(other.name)
+				&& signature.equals(other.signature);
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		return className + "." + name;
 	}
 

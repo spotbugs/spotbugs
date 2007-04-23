@@ -49,7 +49,7 @@ public class ReportingDetectorFactorySelector implements DetectorFactorySelector
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		String s = "All reporting detectors";
 		if (plugin != null) {
 			s += " in plugin " + plugin.getPluginId();

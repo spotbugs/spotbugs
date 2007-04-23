@@ -114,14 +114,14 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	 */
 	public CFG() {
 	}
-	
+
 	/**
 	 * @param methodName The methodName to set.
 	 */
 	public void setMethodName(String methodName) {
 		this.methodName = methodName;
 	}
-	
+
 	public void setMethodGen(MethodGen methodGen) {
 		this.methodGen = methodGen;
 	}
@@ -249,7 +249,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Get a Collection of Locations which specify the instruction
 	 * at given bytecode offset.
@@ -267,7 +267,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Get the first predecessor reachable from given edge type.
 	 *
@@ -308,17 +308,17 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 		InstructionHandle handle = exceptionEdge.getSource().getExceptionThrower();
 		if (handle == null)
 			throw new IllegalStateException();
-		
+
 		BasicBlock basicBlock = (handle.getInstruction() instanceof ATHROW)
 			? exceptionEdge.getSource()
 			: getSuccessorWithEdgeType(exceptionEdge.getSource(), EdgeTypes.FALL_THROUGH_EDGE);
 		if (basicBlock == null) {
- 			throw new IllegalStateException("No basic block for thrower " + handle);
-        }
-		
+			 throw new IllegalStateException("No basic block for thrower " + handle);
+		}
+
 		return new Location(handle, basicBlock);
 	}
-	
+
 	/**
 	 * Get the first incoming edge in basic block with given type.
 	 *
@@ -340,7 +340,7 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 	public Edge getOutgoingEdgeWithType(BasicBlock basicBlock, int edgeType) {
 		return getEdgeWithType(outgoingEdgeIterator(basicBlock), edgeType);
 	}
-	
+
 	private Edge getEdgeWithType(Iterator<Edge> iter, int edgeType) {
 		while (iter.hasNext()) {
 			Edge edge = iter.next();
@@ -387,14 +387,14 @@ public class CFG extends AbstractGraph<Edge, BasicBlock> implements Debug {
 				InstructionHandle handle = j.next();
 				if (prev != null && prev.getNext() != handle)
 					throw new IllegalStateException("Non-consecutive instructions in block " + basicBlock.getId() +
-					        ": prev=" + prev + ", handle=" + handle);
+							": prev=" + prev + ", handle=" + handle);
 				prev = handle;
 			}
 		}
 	}
 
 	@Override
-         protected Edge allocateEdge(BasicBlock source, BasicBlock target) {
+		 protected Edge allocateEdge(BasicBlock source, BasicBlock target) {
 		return new Edge(source, target);
 	}
 }

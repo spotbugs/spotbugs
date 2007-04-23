@@ -30,11 +30,11 @@ import java.util.TreeSet;
  * Note that the graph is modified as part of this process.
  */
 public class MergeVertices
-        <
-        GraphType extends Graph<EdgeType, VertexType>,
-        EdgeType extends GraphEdge<EdgeType, VertexType>,
+		<
+		GraphType extends Graph<EdgeType, VertexType>,
+		EdgeType extends GraphEdge<EdgeType, VertexType>,
         VertexType extends GraphVertex<VertexType>
-        > {
+		> {
 
 	/**
 	 * Constructor.
@@ -51,7 +51,7 @@ public class MergeVertices
 	 * @param toolkit    GraphToolkit used to copy auxiliary information for edges
 	 */
 	public void mergeVertices(Set<VertexType> vertexSet, GraphType g, VertexCombinator<VertexType> combinator,
-	                          GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
+							  GraphToolkit<GraphType, EdgeType, VertexType> toolkit) {
 
 		// Special case: if the vertex set contains a single vertex
 		// or is empty, there is nothing to do

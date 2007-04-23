@@ -31,7 +31,7 @@ public interface Priorities {
 	 * Experimental priority for bug instances.
 	 */
 	public static final int EXP_PRIORITY = 4;	
-	
+
 	/**
 	 * Low priority for bug instances.
 	 */

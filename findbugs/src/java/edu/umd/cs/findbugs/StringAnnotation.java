@@ -47,8 +47,8 @@ public class StringAnnotation implements BugAnnotation {
 		this.value = quoteCharacters(value);
 		this.description = DEFAULT_ROLE;
 	}
-	
-	
+
+
 	@Override
 	public Object clone() {
 		try {
@@ -58,42 +58,42 @@ public class StringAnnotation implements BugAnnotation {
 		}
 	}
 
-	
+
 	 private static String quoteCharacters(String s) {
-	        StringBuffer result = null;
-	        for(int i = 0, max = s.length(), delta = 0; i < max; i++) {
-	            char c = s.charAt(i);
+			StringBuffer result = null;
+			for(int i = 0, max = s.length(), delta = 0; i < max; i++) {
+				char c = s.charAt(i);
 	            String replacement = null;
 
-	            if (c == '&') {
-	                replacement = "&amp;";
-	            } else if (c == '<') {
+				if (c == '&') {
+					replacement = "&amp;";
+				} else if (c == '<') {
 	                replacement = "&lt;";
-	            } else if (c == '\r') {
-	                replacement = "&#13;";
-	            } else if (c == '>') {
+				} else if (c == '\r') {
+					replacement = "&#13;";
+				} else if (c == '>') {
 	                replacement = "&gt;";
-	            } else if (c == '"') {
-	                replacement = "&quot;";
-	            } else if (c == '\'') {
+				} else if (c == '"') {
+					replacement = "&quot;";
+				} else if (c == '\'') {
 	                replacement = "&apos;";
-	            }
+				}
 
-	            if (replacement != null) {
-	                if (result == null) {
-	                    result = new StringBuffer(s);
+				if (replacement != null) {
+					if (result == null) {
+						result = new StringBuffer(s);
 	                }
-	                result.replace(i + delta, i + delta + 1, replacement);
-	                delta += (replacement.length() - 1);
-	            }
+					result.replace(i + delta, i + delta + 1, replacement);
+					delta += (replacement.length() - 1);
+				}
 	        }
-	        if (result == null) {
-	            return s;
-	        }
+			if (result == null) {
+				return s;
+			}
 	        return result.toString();
-	    }
+		}
 
-	 
+
 	/**
 	 * Get the String value.
 	 *
@@ -157,11 +157,11 @@ public class StringAnnotation implements BugAnnotation {
 	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("value", value);
-		
+
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", role);
-		
+
 		BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
 	}
 

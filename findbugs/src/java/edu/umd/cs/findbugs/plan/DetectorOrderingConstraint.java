@@ -30,22 +30,22 @@ package edu.umd.cs.findbugs.plan;
 public class DetectorOrderingConstraint {
 	private DetectorFactorySelector earlier;
 	private DetectorFactorySelector later;
-	
+
 	public DetectorOrderingConstraint(DetectorFactorySelector earlier, DetectorFactorySelector later) {
 		this.earlier = earlier;
 		this.later = later;
 	}
-	
+
 	public DetectorFactorySelector getEarlier() {
 		return earlier;
 	}
-	
+
 	public DetectorFactorySelector getLater() {
 		return later;
 	}
-	
+
 	@Override
-         public String toString() {
+		 public String toString() {
 		return earlier.toString() + " -> " + later.toString();
 	}
 }

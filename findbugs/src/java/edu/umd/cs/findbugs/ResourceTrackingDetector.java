@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.ba.SignatureConverter;
  * @author David Hovemeyer
  */
 public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType extends ResourceTracker<Resource>>
-        implements Detector {
+		implements Detector {
 
 	private static final boolean DEBUG = SystemProperties.getBoolean("rtd.debug");
 
@@ -63,10 +63,10 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 	public abstract boolean prescreen(ClassContext classContext, Method method);
 
 	public abstract ResourceTrackerType getResourceTracker(ClassContext classContext, Method method)
-	        throws DataflowAnalysisException, CFGBuilderException;
+			throws DataflowAnalysisException, CFGBuilderException;
 
 	public abstract void inspectResult(ClassContext classContext, MethodGen methodGen, CFG cfg,
-	                                   Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow, Resource resource);
+									   Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow, Resource resource);
 
 	public void visitClassContext(ClassContext classContext) {
 
@@ -111,8 +111,8 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 	}
 
 	private ResourceCollection<Resource> buildResourceCollection(ClassContext classContext,
-	                                                             Method method, ResourceTrackerType resourceTracker)
-	        throws CFGBuilderException, DataflowAnalysisException {
+																 Method method, ResourceTrackerType resourceTracker)
+			throws CFGBuilderException, DataflowAnalysisException {
 
 		ResourceCollection<Resource> resourceCollection = new ResourceCollection<Resource>();
 
@@ -122,7 +122,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 			Resource resource = resourceTracker.isResourceCreation(location.getBasicBlock(),
-			        location.getHandle(), cpg);
+					location.getHandle(), cpg);
 			if (resource != null)
 				resourceCollection.addCreatedResource(location, resource);
 		}
@@ -131,12 +131,12 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 	}
 
 	public void analyzeMethod(ClassContext classContext, Method method,
-	                          ResourceTrackerType resourceTracker, ResourceCollection<Resource> resourceCollection)
-	        throws CFGBuilderException, DataflowAnalysisException {
+							  ResourceTrackerType resourceTracker, ResourceCollection<Resource> resourceCollection)
+			throws CFGBuilderException, DataflowAnalysisException {
 
 		MethodGen methodGen = classContext.getMethodGen(method);
 		if (methodGen == null) return;
-        try {
+		try {
 		CFG cfg = classContext.getCFG(method);
 		DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 
@@ -146,18 +146,18 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 			Resource resource = i.next();
 
 			ResourceValueAnalysis<Resource> analysis =
-			        new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource);
+					new ResourceValueAnalysis<Resource>(methodGen, cfg, dfs, resourceTracker, resource);
 			Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>> dataflow =
-			        new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
+					new Dataflow<ResourceValueFrame, ResourceValueAnalysis<Resource>>(cfg, analysis);
 
 			dataflow.execute();
 			inspectResult(classContext, methodGen, cfg, dataflow, resource);
 		}
-        } catch (RuntimeException e) {
-            System.out.println("Exception while analyzing " + methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature());
-            e.printStackTrace();
+		} catch (RuntimeException e) {
+			System.out.println("Exception while analyzing " + methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature());
+			e.printStackTrace();
             throw e;
-        }
+		}
 	}
 
 	public void report() {

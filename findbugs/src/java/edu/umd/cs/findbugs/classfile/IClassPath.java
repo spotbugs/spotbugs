@@ -47,14 +47,14 @@ public interface IClassPath {
 	 * @return iterator over the application codebases
 	 */
 	public Iterator<? extends ICodeBase> appCodeBaseIterator();
-	
+
 	/**
 	 * Return an iterator over the auxiliary codebases.
 	 * 
 	 * @return iterator over the auxiliary codebases
 	 */
 	public Iterator<? extends ICodeBase> auxCodeBaseIterator();
-	
+
 	/**
 	 * Lookup a resource by name.
 	 * 
@@ -63,7 +63,7 @@ public interface IClassPath {
 	 * @throws ResourceNotFoundException if the resource is not found
 	 */
 	public ICodeBaseEntry lookupResource(String resourceName) throws ResourceNotFoundException;
-	
+
 	/**
 	 * Add a resource name to codebase entry mapping.
 	 * Once this is done, future lookups of this resource will
@@ -73,7 +73,7 @@ public interface IClassPath {
 	 * @param codeBaseEntry the codebase entry to use for this resource
 	 */
 	public void mapResourceNameToCodeBaseEntry(String resourceName, ICodeBaseEntry codeBaseEntry);
-	
+
 	/**
 	 * Close all of the code bases that are part of this class path.
 	 * This should be done once the client is finished with the classpath.

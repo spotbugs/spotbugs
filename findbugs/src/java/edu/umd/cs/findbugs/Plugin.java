@@ -143,7 +143,7 @@ public class Plugin {
 	public void addDetectorFactory(DetectorFactory factory) {
 		detectorFactoryList.add(factory);
 	}
-	
+
 	/**
 	 * Add a BugPattern reported by the Plugin.
 	 * 
@@ -152,7 +152,7 @@ public class Plugin {
 	public void addBugPattern(BugPattern bugPattern) {
 		bugPatternList.add(bugPattern);
 	}
-	
+
 	/**
 	 * Add a BugCode reported by the Plugin.
 	 * 
@@ -207,7 +207,7 @@ public class Plugin {
 			}
 		});
 	}
-	
+
 	/**
 	 * Get Iterator over DetectorFactory objects in the Plugin.
 	 * 
@@ -216,7 +216,7 @@ public class Plugin {
 	public Iterator<DetectorFactory> detectorFactoryIterator() {
 		return detectorFactoryList.iterator();
 	}
-	
+
 	/**
 	 * Get Iterator over BugPattern objects in the Plugin.
 	 * 
@@ -225,7 +225,7 @@ public class Plugin {
 	public Iterator<BugPattern> bugPatternIterator() {
 		return bugPatternList.iterator();
 	}
-	
+
 	/**
 	 * Get Iterator over BugCode objects in the Plugin.
 	 * 

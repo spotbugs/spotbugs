@@ -28,9 +28,9 @@ package edu.umd.cs.findbugs.graph;
  * @author David Hovemeyer
  */
 public class AbstractVertex <
-        EdgeType extends AbstractEdge<EdgeType, ActualVertexType>,
-        ActualVertexType extends AbstractVertex<EdgeType, ActualVertexType>
-        > implements GraphVertex<ActualVertexType> {
+		EdgeType extends AbstractEdge<EdgeType, ActualVertexType>,
+		ActualVertexType extends AbstractVertex<EdgeType, ActualVertexType>
+		> implements GraphVertex<ActualVertexType> {
 
 	private int id;
 	private int label;
@@ -54,11 +54,11 @@ public class AbstractVertex <
 	}
 
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		return id;
 	}
 	@Override
-    public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		if (o instanceof AbstractVertex) 
 			return id == ((AbstractVertex)o).id;
 		return false;

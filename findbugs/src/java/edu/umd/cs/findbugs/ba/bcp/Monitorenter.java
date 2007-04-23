@@ -44,8 +44,8 @@ public class Monitorenter extends OneVariableInstruction {
 	}
 
 	@Override
-         public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+		 public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
+							 ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		// Instruction must be MONITORENTER.
 		Instruction ins = handle.getInstruction();

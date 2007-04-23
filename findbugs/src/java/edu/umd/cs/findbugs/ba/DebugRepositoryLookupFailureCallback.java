@@ -41,7 +41,7 @@ public class DebugRepositoryLookupFailureCallback implements
 		ex.printStackTrace();
 		System.exit(1);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
 	 */

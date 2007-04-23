@@ -32,23 +32,23 @@ import edu.umd.cs.findbugs.model.IdentityClassNameRewriter;
  * @author David Hovemeyer
  */
 public class SloppyBugComparator implements  WarningComparator {
-	
+
 	private static final boolean DEBUG = SystemProperties.getBoolean("sloppyComparator.debug");
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private ClassNameRewriter classNameRewriter = IdentityClassNameRewriter.instance();
-	
+
 	/**
 	 * Constructor.
 	 */
 	public SloppyBugComparator() {
 	}
-	
+
 	public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
 		this.classNameRewriter = classNameRewriter;
 	}
-	
+
 	private int compareNullElements(Object lhs, Object rhs) {
 		if (lhs == null && rhs == null)
 			return 0;
@@ -67,17 +67,17 @@ public class SloppyBugComparator implements  WarningComparator {
 		if (lhs == null || rhs == null) {
 			return compareNullElements(lhs, rhs);
 		}
-		
+
 		String lhsClassName = classNameRewriter.rewriteClassName(lhs.getClassName());
 		String rhsClassName = classNameRewriter.rewriteClassName(rhs.getClassName());
-		
+
 		if (DEBUG) System.err.println("Comparing " + lhsClassName + " and " + rhsClassName);
-		
+
 		int cmp = lhsClassName.compareTo(rhsClassName);
 		if (DEBUG) System.err.println("\t==> " + cmp);
 		return cmp;
 	}
-	
+
 	private int compareMethodsAllowingNull(MethodAnnotation lhs, MethodAnnotation rhs) {
 		if (lhs == null || rhs == null) {
 			return compareNullElements(lhs, rhs);
@@ -85,10 +85,10 @@ public class SloppyBugComparator implements  WarningComparator {
 
 		lhs = convertMethod(lhs);
 		rhs = convertMethod(rhs);
-		
+
 		return lhs.compareTo(rhs);
 	}
-	
+
 	private int compareFieldsAllowingNull(FieldAnnotation lhs, FieldAnnotation rhs) {
 		if (lhs == null || rhs == null) {
 			return compareNullElements(lhs, rhs);
@@ -96,16 +96,16 @@ public class SloppyBugComparator implements  WarningComparator {
 
 		lhs = convertField(lhs);
 		rhs = convertField(rhs);
-		
+
 		if (DEBUG) System.err.println("Compare fields: " + lhs + " and " + rhs);
-		
+
 		return lhs.compareTo(rhs);
 	}
 
 	private MethodAnnotation convertMethod(MethodAnnotation methodAnnotation) {
 		return ClassNameRewriterUtil.convertMethodAnnotation(classNameRewriter, methodAnnotation);
 	}
-	
+
 	private FieldAnnotation convertField(FieldAnnotation fieldAnnotation) {
 		return ClassNameRewriterUtil.convertFieldAnnotation(classNameRewriter, fieldAnnotation);
 	}
@@ -114,9 +114,9 @@ public class SloppyBugComparator implements  WarningComparator {
 	 * @see edu.umd.cs.findbugs.WarningComparator#compare(edu.umd.cs.findbugs.BugInstance, edu.umd.cs.findbugs.BugInstance)
 	 */
 	public int compare(BugInstance lhs, BugInstance rhs) {
-		
+
 		int cmp;
-		
+
 		// Bug abbrevs must match
 		BugPattern lhsPattern = lhs.getBugPattern();
 		BugPattern rhsPattern = rhs.getBugPattern();
@@ -133,26 +133,26 @@ public class SloppyBugComparator implements  WarningComparator {
 			if (DEBUG) System.err.println("bug abbrevs do not match");
 			return cmp;
 		}
-		
+
 		// Primary class must match
 		cmp = compareClassesAllowingNull(lhs.getPrimaryClass(), rhs.getPrimaryClass());
 		if (cmp != 0)
 			return cmp;
-		
+
 		// Primary method must match (if any)
 		cmp = compareMethodsAllowingNull(lhs.getPrimaryMethod(), rhs.getPrimaryMethod());
 		if (cmp != 0) {
 			if (DEBUG) System.err.println("primary methods do not match");
 			return cmp;
 		}
-		
+
 		// Primary field must match (if any)
 		cmp = compareFieldsAllowingNull(lhs.getPrimaryField(), rhs.getPrimaryField());
 		if (cmp != 0) {
 			if (DEBUG) System.err.println("primary fields do not match");
 			return cmp;
 		}
-		
+
 		// Assume they're the same
 		return 0;
 	}

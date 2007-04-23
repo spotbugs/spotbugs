@@ -40,50 +40,50 @@ import edu.umd.cs.findbugs.SystemProperties;
  * @author David Hovemeyer
  */
 public class MovedClassMap implements ClassNameRewriter {
-	
+
 	private static final boolean DEBUG = SystemProperties.getBoolean("movedClasses.debug");
-	
+
 	private BugCollection before;
 	private BugCollection after;
 	private Map<String,String> rewriteMap;
-	
+
 	public MovedClassMap(BugCollection before, BugCollection after) {
 		 this.before = before;
 		 this.after = after;
 		 this.rewriteMap = new HashMap<String,String>();
 	}
-	
+
 	public MovedClassMap execute() {
 		Set<String> beforeClasses = buildClassSet(before);
 		Set<String> afterClasses = buildClassSet(after);
-		
+
 		Set<String> removedClasses = new HashSet<String>(beforeClasses);
 		removedClasses.removeAll(afterClasses);
-		
+
 		Set<String> addedClasses = new HashSet<String>(afterClasses);
 		addedClasses.removeAll(beforeClasses);
-		
+
 		Map<String,String> removedShortNameToFullNameMap = buildShortNameToFullNameMap(removedClasses);
-		
+
 		// Map names of added classes to names of removed classes if
 		// they have the same short name.
 		for (String fullAddedName : addedClasses) {
-			
+
 			// FIXME: could use a similarity metric to match added and removed
 			// classes.  Instead, we just match based on the short class name.
-			
+
 			String shortAddedName = getShortClassName(fullAddedName);
 			String fullRemovedName = removedShortNameToFullNameMap.get(shortAddedName);
 			if (fullRemovedName != null) {
 				if (DEBUG) System.err.println(fullAddedName + " --> " + fullRemovedName);
 				rewriteMap.put(fullAddedName, fullRemovedName);
 			}
-			
+
 		}
-		
+
 		return this;
 	}
-	
+
 	public boolean isEmpty() {
 		return rewriteMap.isEmpty();
 	}
@@ -103,7 +103,7 @@ public class MovedClassMap implements ClassNameRewriter {
 	 */
 	private Set<String> buildClassSet(BugCollection bugCollection) {
 		Set<String> classSet = new HashSet<String>();
-		
+
 		for (Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); ) {
 			BugInstance warning = i.next();
 			for (Iterator<BugAnnotation> j = warning.annotationIterator(); j.hasNext();) {
@@ -113,7 +113,7 @@ public class MovedClassMap implements ClassNameRewriter {
 				classSet.add(((ClassAnnotation)annotation).getClassName());
 			}
 		}
-		
+
 		return classSet;
 	}
 
@@ -146,6 +146,6 @@ public class MovedClassMap implements ClassNameRewriter {
 		}
 		return className.toLowerCase(Locale.US).replace('+', '$');
 	}
-	
-	
+
+
 }

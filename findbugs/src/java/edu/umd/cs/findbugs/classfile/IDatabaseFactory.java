@@ -26,6 +26,6 @@ package edu.umd.cs.findbugs.classfile;
  */
 public interface IDatabaseFactory<T> {
 	public T createDatabase() throws CheckedAnalysisException;
-	
+
 	public void registerWith(IAnalysisCache analysisCache);
 }

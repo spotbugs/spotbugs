@@ -34,7 +34,7 @@ public interface IAnalysisEngine<DescriptorType> {
 	 */
 	public Object analyze(IAnalysisCache analysisCache, DescriptorType descriptor)
 		throws CheckedAnalysisException;
-	
+
 	/**
 	 * Register the analysis engine with given analysis cache.
 	 * 

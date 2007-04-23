@@ -44,7 +44,7 @@ public class Util {
 	 * @return JavaClass for outer class, or null if obj is not an outer class
 	 * @throws ClassNotFoundException
 	 */
-			
+
 	@CheckForNull public static JavaClass getOuterClass(JavaClass obj) throws ClassNotFoundException {
 		for(Attribute a : obj.getAttributes()) 
 			if (a instanceof InnerClasses) {
@@ -59,7 +59,7 @@ public class Util {
 			}
 		return null;
 	}
-	
+
 	 public static int getSizeOfSurroundingTryBlock(ConstantPool constantPool, Code code, String vmNameOfExceptionClass, int pc) {
 			int size = Integer.MAX_VALUE;
 			int tightStartPC = 0;
@@ -83,12 +83,12 @@ public class Util {
 				}
 			}
 			if (size == Integer.MAX_VALUE) return size;
-			
+
 			// try to guestimate number of lines that correspond
 			size = (size+7) / 8;
 			LineNumberTable lineNumberTable = code.getLineNumberTable();
 			if (lineNumberTable == null) return size;
-		
+
 			int count = 0;
 			for(LineNumber line : lineNumberTable.getLineNumberTable()) {
 				if (line.getStartPC() > tightEndPC) break;

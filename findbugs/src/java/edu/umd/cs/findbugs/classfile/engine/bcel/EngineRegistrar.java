@@ -55,7 +55,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 		new ClassContextClassAnalysisEngine(),
 		new JavaClassAnalysisEngine(),
 	};
-	
+
 	private static final IDatabaseFactory<?>[] databaseFactoryList = {
 		new ReflectionDatabaseFactory<Subtypes>(Subtypes.class),
 		new ReflectionDatabaseFactory<InnerClassAccessMap>(InnerClassAccessMap.class),
@@ -67,7 +67,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 		new ReflectionDatabaseFactory<SourceInfoMap>(SourceInfoMap.class),
 		new ReflectionDatabaseFactory<FieldStoreTypeDatabase>(FieldStoreTypeDatabase.class),
 		new ReflectionDatabaseFactory<ParameterNullnessPropertyDatabase>(ParameterNullnessPropertyDatabase.class),
-        new ReflectionDatabaseFactory<ReturnValueNullnessPropertyDatabase>(ReturnValueNullnessPropertyDatabase.class),
+		new ReflectionDatabaseFactory<ReturnValueNullnessPropertyDatabase>(ReturnValueNullnessPropertyDatabase.class),
 	};
 
 	/* (non-Javadoc)
@@ -77,7 +77,7 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 		for (IClassAnalysisEngine engine : classAnalysisEngineList) {
 			engine.registerWith(analysisCache);
 		}
-		
+
 		for (IDatabaseFactory<?> databaseFactory : databaseFactoryList) {
 			databaseFactory.registerWith(analysisCache);
 		}

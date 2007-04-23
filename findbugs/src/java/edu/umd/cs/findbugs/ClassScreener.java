@@ -41,7 +41,7 @@ import static edu.umd.cs.findbugs.util.Strings.replace;
  */
 public class ClassScreener implements IClassScreener {
 	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.classscreener.debug");
-	
+
 	/** regular expression fragment to match a directory separator. note: could use
 	 *  File.separatorChar instead, but that could be argued to be not general enough */
 	private static final String SEP = "[/\\\\]"; // could include ':' for classic macOS
@@ -78,7 +78,7 @@ public class ClassScreener implements IClassScreener {
 		return replace(replace(dotsName, "$", "\\$"), ".", SEP);
 		// note: The original code used the \Q and \E regex quoting constructs to escape $.
 	}
-	
+
 	/**
 	 * Add the name of a class to be matched by the screener.
 	 *
@@ -100,7 +100,7 @@ public class ClassScreener implements IClassScreener {
 		if (packageName.endsWith(".")) {
 			packageName = packageName.substring(0, packageName.length() - 1);
 		}
-		
+
 		String packageRegex = START+dotsToRegex(packageName)+SEP+JAVA_IDENTIFIER_PART+"+.class$";
 		if (DEBUG) System.out.println("Package regex: " + packageRegex);
 		patternList.add(Pattern.compile(packageRegex).matcher(""));

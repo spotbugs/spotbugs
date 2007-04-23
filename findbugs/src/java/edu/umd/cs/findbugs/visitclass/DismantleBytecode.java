@@ -270,7 +270,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 		if (pos < 0) pos += prevOpcode.length;
 		return prevOpcode[pos];
 	}
-	
+
 	/**
 	 * Return whether or not given opcode is a branch instruction.
 	 * 
@@ -281,7 +281,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 		byte[] operands = MEANING_OF_OPERANDS[opcode];
 		return operands.length > 0 && operands[0] == M_BR;
 	}
-	
+
 	/**
 	 * Return whether or not given opcode is a switch instruction.
 	 * 
@@ -828,7 +828,7 @@ abstract public class DismantleBytecode extends AnnotationVisitor {
 			}
 			System.out.print((switchPC + getDefaultSwitchOffset()) + "]");
 		}
-	
+
 		System.out.println();
 	}
 

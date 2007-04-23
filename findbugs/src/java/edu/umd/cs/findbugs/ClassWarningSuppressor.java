@@ -12,7 +12,7 @@ public class ClassWarningSuppressor extends WarningSuppressor {
 		if (DEBUG)
 		System.out.println("Suppressing " + bugPattern + " in " + clazz);
 		}
-	
+
 	public ClassAnnotation getClassAnnotation() {
 		return clazz;
 	}
@@ -24,9 +24,9 @@ public class ClassWarningSuppressor extends WarningSuppressor {
 
 	 ClassAnnotation primaryClassAnnotation = bugInstance.getPrimaryClass();
 	 if (DEBUG) System.out.println("Compare " + primaryClassAnnotation + " with " + clazz);
-	 
+
 	return clazz.contains(primaryClassAnnotation);
-	
+
 	}
 }
-	
+

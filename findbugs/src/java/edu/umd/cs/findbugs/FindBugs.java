@@ -205,11 +205,11 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 				return parseFromStream(u.getInputStream(), urlToParse.toString());
 			} catch (ClassFormatException e) {
 				throw new ClassFormatException("Invalid class file format for " +
-				        urlToParse.toString() + ": " + e.getMessage());
+						urlToParse.toString() + ": " + e.getMessage());
 			}
 		}
 
-	
+
 		public boolean containsSourceFiles() {
 			return false;
 		}
@@ -251,7 +251,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			this.containsSourceFiles = false;
 		}
 
-		
+
 		public JavaClass getNextClass() throws IOException, InterruptedException {
 			for (;;) {
 				if (Thread.interrupted())
@@ -377,7 +377,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 				return parseClass(new URL("file:" + fileName));
 			} catch (ClassFormatException e) {
 				throw new ClassFormatException("Invalid class file format for " +
-				        fileName + ": " + e.getMessage());
+						fileName + ": " + e.getMessage());
 			}
 		}
 
@@ -408,7 +408,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, false),
 			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false),
 	};
-	
+
 	public static final AnalysisFeatureSetting[] LESS_EFFORT = new AnalysisFeatureSetting[]{
 		new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
 		new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
@@ -432,7 +432,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS, true),
 			new AnalysisFeatureSetting(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES, false),
 	};
-	
+
 	public static final AnalysisFeatureSetting[] MORE_EFFORT = new AnalysisFeatureSetting[]{
 		new AnalysisFeatureSetting(AnalysisFeatures.CONSERVE_SPACE, false),
 		new AnalysisFeatureSetting(AnalysisFeatures.ACCURATE_EXCEPTIONS, true),
@@ -496,22 +496,22 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	private String trainingOutputDir;
 	private AnalysisFeatureSetting[] settingList = DEFAULT_EFFORT;
 	private String releaseName;
-    private String projectName;
-	
+	private String projectName;
+
 	private int passCount;
 	private String sourceInfoFile;
 
 	/* ----------------------------------------------------------------------
 	 * Public methods
 	 * ---------------------------------------------------------------------- */
-	
+
 	/**
 	 * Constructor.
 	 * The setBugReporter() and setProject() methods must be called
 	 * before this object is used.
 	 */
 	public FindBugs() {
-		
+
 		this.relaxedReportingMode = false;
 
 		this.classObserverList = new LinkedList<IClassObserver>();
@@ -534,7 +534,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	 */
 	public FindBugs(BugReporter bugReporter, Project project) {
 		this();
-		
+
 		if (bugReporter == null)
 			throw new IllegalArgumentException("null bugReporter");
 		if (project == null)
@@ -543,21 +543,21 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		setBugReporter(bugReporter);
 		setProject(project);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setDetectorFactoryCollection(edu.umd.cs.findbugs.DetectorFactoryCollection)
 	 */
 	public void setDetectorFactoryCollection(DetectorFactoryCollection detectorFactoryCollection) {
 		this.detectorFactoryCollection = detectorFactoryCollection;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getBugReporter()
 	 */
 	public BugReporter getBugReporter() {
 		return bugReporter;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setBugReporter(edu.umd.cs.findbugs.BugReporter)
 	 */
@@ -565,14 +565,14 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		this.bugReporter = new ErrorCountingBugReporter(bugReporter);
 		addClassObserver(bugReporter);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setProject(edu.umd.cs.findbugs.Project)
 	 */
 	public void setProject(Project project) {
 		this.project = project.duplicate();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getProject()
 	 */
@@ -600,7 +600,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	public void setUserPreferences(UserPreferences userPreferences) {
 		this.userPreferences = userPreferences;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#addClassObserver(edu.umd.cs.findbugs.classfile.IClassObserver)
 	 */
@@ -614,14 +614,14 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	public void setClassScreener(IClassScreener classScreener) {
 		this.classScreener = classScreener;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setRelaxedReportingMode(boolean)
 	 */
 	public void setRelaxedReportingMode(boolean relaxedReportingMode) {
 		this.relaxedReportingMode = relaxedReportingMode;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingOutput(java.lang.String)
 	 */
@@ -629,7 +629,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		this.emitTrainingOutput = true;
 		this.trainingOutputDir = trainingOutputDir;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#enableTrainingInput(java.lang.String)
 	 */
@@ -645,30 +645,30 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		if (settingList != null)
 			this.settingList  = settingList;
 	}
-	
-    
-    
+
+
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getReleaseName()
 	 */
 	public String getReleaseName() {
 		return releaseName;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setReleaseName(java.lang.String)
 	 */
 	public void setReleaseName(String releaseName) {
 		this.releaseName = releaseName;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setSourceInfoFile(java.lang.String)
 	 */
 	public void setSourceInfoFile(String sourceInfoFile) {
 		this.sourceInfoFile = sourceInfoFile;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#execute()
 	 */
@@ -680,13 +680,13 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		if (sourceInfoFile != null) {
 			analysisContext.getSourceInfoMap().read(new FileInputStream(sourceInfoFile));
 		}
-		
+
 		// Enable/disable relaxed reporting mode
 		FindBugsAnalysisFeatures.setRelaxedMode(relaxedReportingMode);
-		
+
 		// Enable input/output of interprocedural property databases
 		configureTrainingDatabases(this);
-		
+
 		// Configure analysis features
 		configureAnalysisFeatures();
 
@@ -704,7 +704,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 
 		// Clear the repository of classes
 		analysisContext.clearRepository();
-		
+
 		// Get list of files to analyze.
 		LinkedList<ArchiveWorkListItem> archiveWorkList = new LinkedList<ArchiveWorkListItem>();
 		for (String fileName : project.getFileList()) {
@@ -720,7 +720,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 
 		// set the initial repository classpath.
 		setRepositoryClassPath();
-		
+
 		// Record additional entries that should be added to
 		// the aux classpath.  These occur when one or more classes
 		// in a directory or archive are skipped, to ensure that
@@ -733,19 +733,19 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			scanArchiveOrDirectory(item, archiveWorkList, repositoryClassList,
 				additionalAuxClasspathEntryList);
 		}
-		
+
 		// Add "extra" aux classpath entries needed to ensure that
 		// skipped classes can be referenced.
 		addCollectionToClasspath(additionalAuxClasspathEntryList);
 
 		// finish up initializing analysisContext
 		analysisContext.initDatabases();
-		
+
 		// Examine all classes for bugs.
 		// Don't examine the same class more than once.
 		// (The user might specify two jar files that contain
 		// the same class.)
-		
+
 		if (DEBUG)
 			detectorTimings = new HashMap<String,Long>();
 
@@ -762,8 +762,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		analysisContext.clearClassContextCache();
 		}
 		else if (DEBUG) System.err.println("execution plan has no passes");
-		
-		
+
+
 		// Execute each subsequent analysis pass in the execution plan
 		while (i.hasNext()) {
 			AnalysisPass analysisPass = i.next();
@@ -784,7 +784,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 
 		// Free up memory for reports
 		analysisContext.clearRepository();
-		
+
 		if (false)
 		System.out.println(analysisContext.getClassContextStats());
 	}
@@ -816,14 +816,14 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	public int getMissingClassCount() {
 		return bugReporter.getMissingClassCount();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#emitTrainingOutput()
 	 */
 	public boolean emitTrainingOutput() {
 		return emitTrainingOutput;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getUserPreferences()
 	 */
@@ -832,28 +832,28 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			userPreferences = UserPreferences.createDefaultUserPreferences();
 		return userPreferences;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingInputDir()
 	 */
 	public String getTrainingInputDir() {
 		return trainingInputDir;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#getTrainingOutputDir()
 	 */
 	public String getTrainingOutputDir() {
 		return trainingOutputDir;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#useTrainingInput()
 	 */
 	public boolean useTrainingInput() {
 		return useTrainingInput;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setScanNestedArchives(boolean)
 	 */
@@ -902,7 +902,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	public static void configureTrainingDatabases(IFindBugsEngine findBugs) throws IOException {
 		if (findBugs.emitTrainingOutput()) {
 			String trainingOutputDir = findBugs.getTrainingOutputDir();
-			
+
 			if (!new File(trainingOutputDir).isDirectory())
 				throw new IOException("Training output directory " + trainingOutputDir + " does not exist");
 			AnalysisContext.currentAnalysisContext().setDatabaseOutputDir(trainingOutputDir);
@@ -911,7 +911,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		}
 		if (findBugs.useTrainingInput()) {
 			String trainingInputDir = findBugs.getTrainingInputDir();
-			
+
 			if (!new File(trainingInputDir).isDirectory())
 				throw new IOException("Training input directory " + trainingInputDir + " does not exist");
 			AnalysisContext.currentAnalysisContext().setDatabaseInputDir(trainingInputDir);
@@ -931,18 +931,18 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	 */
 	private void createExecutionPlan() throws OrderingConstraintException {
 		executionPlan = new ExecutionPlan();
-		
+
 		// Only enabled detectors should be part of the execution plan
 		executionPlan.setDetectorFactoryChooser(new DetectorFactoryChooser() {
-            HashSet<DetectorFactory> forcedEnabled = new HashSet<DetectorFactory>();
+			HashSet<DetectorFactory> forcedEnabled = new HashSet<DetectorFactory>();
 
-            public boolean choose(DetectorFactory factory) {
-                return FindBugs.isDetectorEnabled(FindBugs.this, factory) || forcedEnabled.contains(factory);
-            }
-            public void enable(DetectorFactory factory) {
-                forcedEnabled.add(factory);
-                factory.setPriorityAdjustment(100);        
-            }
+			public boolean choose(DetectorFactory factory) {
+				return FindBugs.isDetectorEnabled(FindBugs.this, factory) || forcedEnabled.contains(factory);
+			}
+			public void enable(DetectorFactory factory) {
+				forcedEnabled.add(factory);
+				factory.setPriorityAdjustment(100);        
+			}
 		});
 
 		// Add plugins
@@ -965,13 +965,13 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	public static boolean isDetectorEnabled(IFindBugsEngine findBugs, DetectorFactory factory) {
 		if (!factory.getPlugin().isEnabled())
 			return false;
-		
+
 		if (!findBugs.getUserPreferences().isDetectorEnabled(factory))
 			return false;
-		
+
 		if (!factory.isEnabledForCurrentJRE())
 			return false;
-		
+
 		// Slow first pass detectors are usually disabled, but may be explicitly enabled
 		if (!AnalysisContext.currentAnalysisContext().getBoolProperty(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS)
 				&& factory.isDetectorClassSubtypeOf(InterproceduralFirstPassDetector.class))
@@ -983,12 +983,12 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		if (findBugs.emitTrainingOutput()) {
 			return isTrainingDetector || isNonReportingDetector;
 		}
-		
+
 		if (isTrainingDetector) return false;
-			
+
 		return true;
 	}
-	
+
 	/**
 	 * Based on Project settings, set the classpath to be used
 	 * by the Repository when looking up classes.
@@ -996,7 +996,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	private void setRepositoryClassPath() {
 		// Set aux classpath entries
 		addCollectionToClasspath(project.getAuxClasspathEntryList());
-		
+
 		// Set implicit classpath entries
 		addCollectionToClasspath(project.getImplicitClasspathEntryList());
 
@@ -1049,7 +1049,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	private void scanArchiveOrDirectory(ArchiveWorkListItem item,
 			LinkedList<ArchiveWorkListItem> archiveWorkList, List<String> repositoryClassList,
 			List<String> additionalAuxClasspathEntryList)
-	        throws IOException, InterruptedException {
+			throws IOException, InterruptedException {
 
 		String fileName = item.getFileName();
 		ClassProducer classProducer = null;
@@ -1090,7 +1090,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			if (DEBUG || URLClassPathRepository.DEBUG) {
 				System.out.println("Scanning " + url + " for classes");
 			}
-			
+
 			// Load all referenced classes into the Repository
 			for (; ;) {
 				if (Thread.interrupted())
@@ -1140,7 +1140,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	private void executeAnalysisPass(AnalysisPass analysisPass, List<String> repositoryClassList) throws InterruptedException {
 		// Callback for progress dialog: analysis is starting
 		progressCallback.startAnalysis(repositoryClassList.size());
-		
+
 		int thisPass = passCount++;
 		if (ExecutionPlan.DEBUG) {
 			System.out.println("************* Analysis pass " + thisPass + " *************");
@@ -1149,7 +1149,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 				System.out.println("\t" + factory.getFullName());
 			}
 		}
-		
+
 		// Create detectors
 		// XXX: we can only support BCEL-based detectors.
 		Detector[] detectors = analysisPass.instantiateDetectorsInPass(bugReporter);
@@ -1160,7 +1160,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			if (examinedClassSet.add(className))
 				examineClass(detectors, className);
 		}
-		
+
 		if (DEBUG) {
 			long total = 0;
 			for (Long aLong : detectorTimings.values()) {
@@ -1183,7 +1183,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		// Force any detectors which defer work until all classes have
 		// been seen to do that work.
 		this.reportFinal(detectors);
-		
+
 		AnalysisContext.currentAnalysisContext().updateDatabases(thisPass);
 	}
 
@@ -1196,8 +1196,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	private void examineClass(Detector[] detectors, String className) throws InterruptedException {
 		if (DEBUG) System.out.println("Examining class " + className);
 		long entireClassAnalysisStart = 0;
-		
-		
+
+
 		if (TIMEDEBUG || DEBUG)  {
 			entireClassAnalysisStart = System.currentTimeMillis();
 		}
@@ -1330,7 +1330,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	 * Parse the data for a class to create a JavaClass object.
 	 */
 	private static JavaClass parseClass(String archiveName, InputStream in, String fileName)
-	        throws IOException {
+			throws IOException {
 		if (DEBUG) System.out.println("About to parse " + fileName + " in " + archiveName);
 		return parseFromStream(in, fileName);
 	}
@@ -1366,7 +1366,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			}
 		}
 	}
-	
+
 
 	/**
 	 * Process -bugCategories option.
@@ -1458,8 +1458,8 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	}
 
 	private static FindBugs createEngine(TextUICommandLine commandLine, String[] argv)
-	        throws java.io.IOException, FilterException {
-		
+			throws java.io.IOException, FilterException {
+
 		FindBugs findBugs = new FindBugs();
 		processCommandLine(commandLine, argv, findBugs);
 		return findBugs;
@@ -1482,7 +1482,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		// Blank lines and comment lines (beginning with "#")
 		// are ignored.
 		argv = CommandLine.expandOptionFiles(argv, true, true);
-		
+
 		int argCount = 0;
 		try {
 			argCount = commandLine.parse(argv);
@@ -1501,7 +1501,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		if (project.getFileCount() == 0) {
 			showHelp(commandLine);
 		}
-		
+
 		commandLine.configureEngine(findBugs);
 	}
 
@@ -1515,7 +1515,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 
 	@SuppressWarnings("DM_EXIT")
 	public static void runMain(IFindBugsEngine findBugs, TextUICommandLine commandLine)
-	        throws java.io.IOException, RuntimeException {
+			throws java.io.IOException, RuntimeException {
 		try {
 			findBugs.execute();
 		} catch (InterruptedException e) {
@@ -1525,7 +1525,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		int bugCount = findBugs.getBugCount();
 		int missingClassCount = findBugs.getMissingClassCount();
 		int errorCount = findBugs.getErrorCount();
-			
+
 		if (!commandLine.quiet() || commandLine.setExitCode()) {
 			if (bugCount > 0)
 				System.err.println("Warnings generated: " + bugCount);
@@ -1547,14 +1547,14 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			System.exit(exitCode);
 		}
 	}
-	
+
 	/**
 	 * Print command line options synopses to stdout.
 	 */
 	public static void showCommandLineOptions() {
 		showCommandLineOptions(new TextUICommandLine());
 	}
-	
+
 	public static void showCommandLineOptions(TextUICommandLine commandLine) {
 		System.out.println("Command line options:");
 		commandLine.printUsage(System.out);
@@ -1563,7 +1563,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	public static void showSynopsis() {
 		System.out.println("Usage: findbugs [general options] -textui [command line options...] [jar/zip/class files, directories...]");
 	}
-	
+
 	public static void configureFilter(DelegatingBugReporter bugReporter, String filterFileName, boolean include)
 			throws IOException, FilterException {
 		Filter filter = new Filter(filterFileName);
@@ -1580,7 +1580,7 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 	 */
 	public static void configureBugCollection(IFindBugsEngine findBugs) {
 		BugReporter realBugReporter = findBugs.getBugReporter().getRealBugReporter();
-		
+
 		if (realBugReporter instanceof BugCollectionBugReporter) {
 			BugCollectionBugReporter bugCollectionBugReporter =
 				(BugCollectionBugReporter) realBugReporter;
@@ -1588,10 +1588,10 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 			bugCollectionBugReporter = (BugCollectionBugReporter) realBugReporter;
 
 			bugCollectionBugReporter.getBugCollection().setReleaseName(findBugs.getReleaseName());
-			
+
 			Project project = findBugs.getProject();
-			
-            project.setProjectName(findBugs.getProjectName());
+
+			project.setProjectName(findBugs.getProjectName());
 			if (project.getTimestamp() != 0) {
 				bugCollectionBugReporter.getBugCollection().setTimestamp(project.getTimestamp());
 				bugCollectionBugReporter.getBugCollection().getProjectStats().setTimestamp(project.getTimestamp());
@@ -1600,28 +1600,28 @@ public class FindBugs implements Constants2, ExitCodes, IFindBugsEngine {
 		}
 	}
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.IFindBugsEngine#getProjectName()
-     */
-    public String getProjectName() {
-        return projectName;
-    }
+	/* (non-Javadoc)
+		* @see edu.umd.cs.findbugs.IFindBugsEngine#getProjectName()
+		*/
+	public String getProjectName() {
+		return projectName;
+	}
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.IFindBugsEngine#setProjectName(java.lang.String)
-     */
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-        
-    }
+	/* (non-Javadoc)
+		* @see edu.umd.cs.findbugs.IFindBugsEngine#setProjectName(java.lang.String)
+		*/
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.IFindBugsEngine#setAbridgedMessages(boolean)
-     */
-    public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
-        // TODO Auto-generated method stub
-        
-    }
+	}
+
+	/* (non-Javadoc)
+		* @see edu.umd.cs.findbugs.IFindBugsEngine#setAbridgedMessages(boolean)
+		*/
+	public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
+		// TODO Auto-generated method stub
+
+	}
 }
 
 // vim:ts=4

@@ -29,7 +29,7 @@ package edu.umd.cs.findbugs.classfile;
 public abstract class Global {
 	private static final InheritableThreadLocal<IAnalysisCache> analysisCacheThreadLocal =
 		new InheritableThreadLocal<IAnalysisCache>();
-	
+
 	/**
 	 * Set the analysis cache for the current thread.
 	 * This should be called before any detectors or analyses that

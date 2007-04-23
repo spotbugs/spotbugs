@@ -57,14 +57,14 @@ public class FuzzyBugComparator implements WarningComparator {
 	 * Filter ignored BugAnnotations from given Iterator.
 	 */
 	private static class FilteringBugAnnotationIterator implements Iterator<BugAnnotation> {
-		
+
 		Iterator<BugAnnotation> iter;
 		BugAnnotation next;
-		
+
 		public FilteringBugAnnotationIterator(Iterator<BugAnnotation> iter) {
 			this.iter = iter;
 		}
-		
+
 		private void findNext() {
 			if (next == null) {
 				while (iter.hasNext()) {
@@ -76,7 +76,7 @@ public class FuzzyBugComparator implements WarningComparator {
 				}
 			}
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see java.util.Iterator#hasNext()
 		 */
@@ -84,7 +84,7 @@ public class FuzzyBugComparator implements WarningComparator {
 			findNext();
 			return next != null;
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see java.util.Iterator#next()
 		 */
@@ -96,7 +96,7 @@ public class FuzzyBugComparator implements WarningComparator {
 			next = null;
 			return result;
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see java.util.Iterator#remove()
 		 */
@@ -104,23 +104,23 @@ public class FuzzyBugComparator implements WarningComparator {
 			throw new UnsupportedOperationException();
 		}
 	}
-	
+
 	/** Keep track of which BugCollections the various BugInstances have come from. */
 	private IdentityHashMap<BugInstance, BugCollection> bugCollectionMap;
-	
+
 	private ClassNameRewriter classNameRewriter;
-	
+
 	/**
 	 * Map of class hashes to canonicate class names used for comparison purposes.
 	 */
 	//private Map<ClassHash, String> classHashToCanonicalClassNameMap;
-	
+
 	public FuzzyBugComparator() {
 		if (DEBUG) System.out.println("Created fuzzy comparator");
 		this.bugCollectionMap = new IdentityHashMap<BugInstance, BugCollection>();
 		//this.classHashToCanonicalClassNameMap = new TreeMap<ClassHash, String>();
 	}
-	
+
 	/**
 	 * Register a BugCollection.  This allows us to find the class and method
 	 * hashes for BugInstances to be compared.
@@ -137,16 +137,16 @@ public class FuzzyBugComparator implements WarningComparator {
 	public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
 		this.classNameRewriter = classNameRewriter;
 	}
-	
+
 	public int compare(BugInstance lhs, BugInstance rhs) {
 		int cmp;
-		
+
 		if (DEBUG) System.out.println("Fuzzy comparison");
-		
+
 		// Bug abbreviations must match.
 		BugPattern lhsPattern = lhs.getBugPattern();
 		BugPattern rhsPattern = rhs.getBugPattern();
-		
+
 		if (lhsPattern == null || rhsPattern == null) {
 			if (DEBUG) {
 				if (lhsPattern == null)
@@ -162,19 +162,19 @@ public class FuzzyBugComparator implements WarningComparator {
 			if ((cmp = lhsPattern.getAbbrev().compareTo(rhsPattern.getAbbrev())) != 0)
 				return cmp;
 		}
-		
+
 		BugCollection lhsCollection = bugCollectionMap.get(lhs);
 		BugCollection rhsCollection = bugCollectionMap.get(rhs);
-		
+
 		// Scan through bug annotations, comparing fuzzily if possible
-		
+
 		Iterator<BugAnnotation> lhsIter = new FilteringBugAnnotationIterator(lhs.annotationIterator());
 		Iterator<BugAnnotation> rhsIter = new FilteringBugAnnotationIterator(rhs.annotationIterator());
-		
+
 		while (lhsIter.hasNext() && rhsIter.hasNext()) {
 			BugAnnotation lhsAnnotation = lhsIter.next();
 			BugAnnotation rhsAnnotation = rhsIter.next();
-			
+
 			if (DEBUG) System.out.println("Compare annotations: " + lhsAnnotation + "," + rhsAnnotation);
 
 			// Annotation classes must match exactly
@@ -184,7 +184,7 @@ public class FuzzyBugComparator implements WarningComparator {
 						"," + rhsAnnotation.getClass().getName());
 				return cmp;
 			}
-			
+
 			if (lhsAnnotation.getClass() == ClassAnnotation.class)
 				cmp = compareClasses(lhsCollection, rhsCollection, (ClassAnnotation) lhsAnnotation, (ClassAnnotation) rhsAnnotation);
 			else if (lhsAnnotation.getClass() == MethodAnnotation.class)
@@ -194,11 +194,11 @@ public class FuzzyBugComparator implements WarningComparator {
 			else
 				// everything else just compare directly
 				cmp = lhsAnnotation.compareTo(rhsAnnotation);
-			
+
 			if (cmp != 0)
 				return cmp;
 		}
-		
+
 		// Number of bug annotations must match
 		if (!lhsIter.hasNext() && !rhsIter.hasNext()) {
 			if (DEBUG) System.out.println("Match!");
@@ -227,7 +227,7 @@ public class FuzzyBugComparator implements WarningComparator {
 		else
 			return 0;
 	}
-	
+
 	public int compareClasses(BugCollection lhsCollection, BugCollection rhsCollection, ClassAnnotation lhsClass, ClassAnnotation rhsClass) {
 		if (lhsClass == null || rhsClass == null) {
 			return compareNullElements(lhsClass, rhsClass);
@@ -235,16 +235,16 @@ public class FuzzyBugComparator implements WarningComparator {
 			return compareClassesByName(lhsCollection, rhsCollection, lhsClass.getClassName(), rhsClass.getClassName());
 		}
 	}
-	
+
 	// Compare classes: either exact fully qualified name must match, or class hash must match
 	public int compareClassesByName(BugCollection lhsCollection, BugCollection rhsCollection, String lhsClassName, String rhsClassName) {
-		
+
 		lhsClassName = rewriteClassName(lhsClassName);
 		rhsClassName = rewriteClassName(rhsClassName);
 
 		return lhsClassName.compareTo(rhsClassName);
 	}
-	
+
 	/**
 	 * @param className
 	 * @return the rewritten class name
@@ -264,16 +264,16 @@ public class FuzzyBugComparator implements WarningComparator {
 
 		// Compare for exact match
 		int cmp = lhsMethod.compareTo(rhsMethod);
-		
+
 		return cmp;
 	}
-	
+
 	/**
 	 * For now, just look at the 2 preceeding and succeeding opcodes
 	 * for fuzzy source line matching.
 	 */
 	private static final int NUM_CONTEXT_OPCODES = 2;
-	
+
 	/**
 	 * Compare source line annotations.
 	 * 
@@ -287,15 +287,15 @@ public class FuzzyBugComparator implements WarningComparator {
 		if (lhs == null || rhs == null) {
 			return compareNullElements(lhs, rhs);
 		}
-		
+
 		// Classes must match fuzzily.
 		int cmp = compareClassesByName(lhsCollection, rhsCollection, lhs.getClassName(), rhs.getClassName());
 		if (cmp != 0)
 			return cmp;
-		
+
 		return 0;
 	}
-	
+
 	// See "FindBugsAnnotationDescriptions.properties"
 	private static final HashSet<String> significantDescriptionSet = new HashSet<String>();
 	static {
@@ -313,13 +313,13 @@ public class FuzzyBugComparator implements WarningComparator {
 		significantDescriptionSet.add("FIELD_SUPER");
 		significantDescriptionSet.add("FIELD_MASKED");
 		significantDescriptionSet.add("FIELD_MASKING");
-        significantDescriptionSet.add("FIELD_STORED");
-        significantDescriptionSet.add("TYPE_DEFAULT");
-        significantDescriptionSet.add("TYPE_EXPECTED");
+		significantDescriptionSet.add("FIELD_STORED");
+		significantDescriptionSet.add("TYPE_DEFAULT");
+		significantDescriptionSet.add("TYPE_EXPECTED");
         significantDescriptionSet.add("TYPE_FOUND");
-        
-        significantDescriptionSet.add("LOCAL_VARIABLE_NAMED");
-        
+
+		significantDescriptionSet.add("LOCAL_VARIABLE_NAMED");
+
        
 		// Many int annotations are NOT significant: e.g., sync %, biased locked %, bytecode offset, etc.
 		// The null parameter annotations, however, are definitely significant.
@@ -329,7 +329,7 @@ public class FuzzyBugComparator implements WarningComparator {
 		// Only DEFAULT source line annotations are significant.
 		significantDescriptionSet.add("SOURCE_LINE_DEFAULT");
 	}
-	
+
 	public static boolean ignore(BugAnnotation annotation) {
 		return !significantDescriptionSet.contains(annotation.getDescription());
 	}

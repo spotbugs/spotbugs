@@ -25,19 +25,19 @@ public class AnalysisLocal<T> {
 	protected T initialValue() {
 		return null;
 	}
-	
+
 	protected Map <AnalysisLocal<T>, T> getMap() {
 		Map<?,?> m = AnalysisContext.currentAnalysisContext().getAnalysisLocals();
 		return (Map<AnalysisLocal<T>, T>) m;
 	}
-	
+
 	public T get() {
 		Map<AnalysisLocal<T>, T> m = getMap();
 
 		if (m.containsKey(this)) {
 			return m.get(this);
 		}
-		
+
 		synchronized(m) {
 			if (m.containsKey(this)) {
 				return m.get(this);

@@ -33,7 +33,7 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
 	public ValueNumberDataflow(CFG cfg, ValueNumberAnalysis analysis) {
 		super(cfg, analysis);
 	}
-	
+
 	/**
 	 * Build map of value numbers to param indices.
 	 * The first parameter has index 0, the second has index 1, etc.
@@ -44,7 +44,7 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
 	public Map<ValueNumber, Integer> getValueNumberToParamMap(Method method) {
 		return getValueNumberToParamMap(method.getSignature(), method.isStatic());
 	}
-	
+
 	/**
 	 * Build map of value numbers to param indices.
 	 * The first parameter has index 0, the second has index 1, etc.
@@ -56,7 +56,7 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
 	public Map<ValueNumber, Integer> getValueNumberToParamMap(String methodSignature, boolean isStatic) {
 		HashMap<ValueNumber, Integer> valueNumberToParamMap =
 			new HashMap<ValueNumber, Integer>();
-		
+
 		ValueNumberFrame frameAtEntry = getStartFact(getCFG().getEntry());
 
 		int numParams = new SignatureParser(methodSignature).getNumParameters(); 
@@ -65,9 +65,9 @@ public class ValueNumberDataflow extends AbstractDataflow<ValueNumberFrame, Valu
 			valueNumberToParamMap.put(
 					frameAtEntry.getValue(i + shift), (Integer)(i));
 		}
-		
+
 		return valueNumberToParamMap;
-		
+
 	}
 }
 

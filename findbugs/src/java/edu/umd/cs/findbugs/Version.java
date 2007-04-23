@@ -51,7 +51,7 @@ public class Version {
 	 * "0" indicates that the version is not a release candidate.
 	 */
 	public static final int RELEASE_CANDIDATE = 0;
-	
+
 	static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss z, dd MMMM, yyyy");
 	static final SimpleDateFormat eclipseDateFormat = new SimpleDateFormat("yyyyMMdd");
 	/**
@@ -61,7 +61,7 @@ public class Version {
 
 	public static final String ECLIPSE_DATE = eclipseDateFormat.format(new Date()) ;
 
-	
+
 	/**
 	 * Preview release number.
 	 * "0" indicates that the version is not a preview release.
@@ -106,8 +106,8 @@ public class Version {
 
 		String arg = argv[0];
 		if (!IS_DEVELOPMENT && RELEASE_CANDIDATE != 0) {
-            throw new IllegalStateException("Non developmental version, but is release candidate " + RELEASE_CANDIDATE);
-        }
+			throw new IllegalStateException("Non developmental version, but is release candidate " + RELEASE_CANDIDATE);
+		}
 		if (arg.equals("-release"))
 			System.out.println(RELEASE);
 		else if (arg.equals("-date"))
@@ -126,7 +126,7 @@ public class Version {
 
 	private static void usage() {
 		System.err.println("Usage: " + Version.class.getName() +
-		        "  (-release|-date|-props)");
+				"  (-release|-date|-props)");
 	}
 }
 

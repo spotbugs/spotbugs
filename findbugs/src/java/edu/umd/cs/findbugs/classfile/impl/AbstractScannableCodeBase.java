@@ -47,13 +47,13 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 	private int howDiscovered;
 	private long lastModifiedTime;
 	private Map<String, String> resourceNameTranslationMap;
-	
+
 	public AbstractScannableCodeBase(ICodeBaseLocator codeBaseLocator) {
 		this.codeBaseLocator = codeBaseLocator;
 		this.lastModifiedTime = -1L;
 		this.resourceNameTranslationMap = new HashMap<String, String>();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getCodeBaseLocator()
 	 */
@@ -80,35 +80,35 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 		}
 		return containsSourceFiles;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setApplicationCodeBase(boolean)
 	 */
 	public void setApplicationCodeBase(boolean isAppCodeBase) {
 		this.isAppCodeBase = isAppCodeBase;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#isApplicationCodeBase()
 	 */
 	public boolean isApplicationCodeBase() {
 		return isAppCodeBase;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setHowDiscovered(int)
 	 */
 	public void setHowDiscovered(int howDiscovered) {
 		this.howDiscovered = howDiscovered;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getHowDiscovered()
 	 */
 	public int getHowDiscovered() {
 		return howDiscovered;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#setLastModifiedTime(long)
 	 */
@@ -117,18 +117,18 @@ public abstract class AbstractScannableCodeBase implements IScannableCodeBase {
 			this.lastModifiedTime = lastModifiedTime;
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getLastModifiedTime()
 	 */
 	public long getLastModifiedTime() {
 		return lastModifiedTime;
 	}
-	
+
 	public void addResourceNameTranslation(String origResourceName, String newResourceName) {
 		resourceNameTranslationMap.put(origResourceName, newResourceName);
 	}
-	
+
 	public String translateResourceName(String resourceName) {
 		String translatedName = resourceNameTranslationMap.get(resourceName);
 		return translatedName != null ? translatedName : resourceName;

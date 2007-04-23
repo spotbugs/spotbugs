@@ -65,8 +65,8 @@ public class Footprint {
 		try {
 			cpuTime = new OperatingSystemBeanWrapper().getProcessCpuTime();
 		} catch (NoClassDefFoundError ncdfe) { cpuTime = -9; }
-	      catch (ClassCastException cce) { cpuTime = -8; }
-	      catch (Error error) { cpuTime = -7; } // catch possible Error thrown when complied by the Eclipse compiler
+		  catch (ClassCastException cce) { cpuTime = -8; }
+		  catch (Error error) { cpuTime = -7; } // catch possible Error thrown when complied by the Eclipse compiler
 
 		clockTime = System.currentTimeMillis(); // or new java.util.Date().getTime()	;
 
@@ -96,7 +96,7 @@ public class Footprint {
 	public String toString() {
 		return "cpuTime="+cpuTime+", clockTime="+clockTime+", peakMemory="+peakMem;
 	}
-	
+
 	public static void main(String[] argv) {
 		System.out.println(new Footprint());
 	}
@@ -109,7 +109,7 @@ public class Footprint {
 		List<MemoryPoolMXBean> mlist = ManagementFactory.getMemoryPoolMXBeans();
 		//java.lang.management.MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
 		//java.lang.management.MemoryUsage memUsage = memBean.getHeapMemoryUsage();
-	  
+
 		public long getPeakUsage() {
 			long sum = 0;
 			// problem: sum of the peaks is not necessarily the peak of the sum.
@@ -135,7 +135,7 @@ public class Footprint {
 		// OperatingSystemMXBean is not accessible due to restriction on required library classes.jar"
 		// depending on the contents of the .classpath file.
 		com.sun.management.OperatingSystemMXBean sunBean = (com.sun.management.OperatingSystemMXBean)osBean;
-	  
+
 		public long getProcessCpuTime() {
 			return sunBean.getProcessCpuTime();
 		}
@@ -145,7 +145,7 @@ public class Footprint {
 	 *  this class will throw a NoClassDefFoundError on JDK 1.4 and earlier. */
 	public static class CollectionBeanWrapper {
 		List<GarbageCollectorMXBean> clist = ManagementFactory.getGarbageCollectorMXBeans();
-	  
+
 		public long getCollectionTime() {
 			long sum = 0;
 			for (GarbageCollectorMXBean gcBean : clist) {

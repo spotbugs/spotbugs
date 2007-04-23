@@ -28,7 +28,7 @@ package edu.umd.cs.findbugs.classfile;
  */
 public class ClassNameMismatchException extends InvalidClassFileFormatException {
 	private ClassDescriptor loadedClassDescriptor;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -48,7 +48,7 @@ public class ClassNameMismatchException extends InvalidClassFileFormatException 
 				codeBaseEntry);
 		this.loadedClassDescriptor = loadedClassDescriptor;
 	}
-	
+
 	/**
 	 * @return Returns the loadedClassDescriptor.
 	 */

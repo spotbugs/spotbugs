@@ -45,7 +45,7 @@ public interface ICodeBaseIterator {
 	 *          false otherwise
 	 */
 	public boolean hasNext() throws InterruptedException;
-	
+
 	/**
 	 * Get the ICodeBaseEntry representing the next resource in the code base.
 	 * 

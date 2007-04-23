@@ -68,14 +68,14 @@ public class NonNullContractCollector implements JavaClassAndMethodChooser {
 			System.out.println("Found specification: " + specification);
 		}
 		specificationList.add(specification);
-		
+
 		return false;
 	}
-	
+
 	public void findContractForCallSite(InvokeInstruction invokeInstruction, ConstantPoolGen cpg) throws ClassNotFoundException {
 		Hierarchy.findInvocationLeastUpperBound(invokeInstruction, cpg, this);
 	}
-	
+
 	public void findContractForMethod(JavaClassAndMethod classAndMethod) throws ClassNotFoundException {
 		String methodName = classAndMethod.getMethod().getName();
 		String signature = classAndMethod.getMethod().getSignature();
@@ -83,34 +83,34 @@ public class NonNullContractCollector implements JavaClassAndMethodChooser {
 		Hierarchy.visitSuperClassMethods(classAndMethod, this);
 		Hierarchy.visitSuperInterfaceMethods(classAndMethod, this);
 	}
-	
+
 	public interface SpecificationBuilder {
 		public boolean checkParam(int param);
 		public void setNonNullParam(int param, NonNullSpecification specification);
 		public void setCheckForNullParam(int param, NonNullSpecification specification);
 	}
-	
+
 	public void checkSpecifications(int numParams, SpecificationBuilder builder) {
 		BitSet checkedParams = new BitSet();
 		for (NonNullSpecification specification : specificationList) {
 			if (DEBUG_NULLARG) {
 				System.out.println("Check specification: " + specification);
 			}
-			
+
 		paramLoop:
 			for (int i = 0; i < numParams; ++i) {
 				if (DEBUG_NULLARG) {
 					System.out.print("\tParam " + i);
 				}
-				
+
 				if (checkedParams.get(i)) {
 					if (DEBUG_NULLARG) System.out.println(" ==> already checked");
 					continue paramLoop;
 				}
-				
+
 				if (!builder.checkParam(i))
 					continue paramLoop;
-				
+
 				// Param should be checked, and we haven't seen a specification for the parameter yet.
 				// See if this method defines a specification.
 				if (specification.getCheckForNullProperty().isNonNull(i)) {
@@ -127,13 +127,13 @@ public class NonNullContractCollector implements JavaClassAndMethodChooser {
 			}
 		}
 	}
-	
+
 	public void getViolationList(
 			int numParams,
 			final BitSet nullArgSet,
 			final List<NonNullParamViolation> violationList,
 			final BitSet violatedParamSet) {
-		
+
 		SpecificationBuilder builder = new SpecificationBuilder() {
 			public boolean checkParam(int param) {
 				if (!argIsNull(param)) {
@@ -142,41 +142,41 @@ public class NonNullContractCollector implements JavaClassAndMethodChooser {
 				}
 				return true;
 			}
-			
+
 			public void setNonNullParam(int param, NonNullSpecification specification) {
 				if (DEBUG_NULLARG) System.out.println(" ==> @NonNull violation!");
 				violationList.add(new NonNullParamViolation(specification.getClassAndMethod(), param));
 				violatedParamSet.set(param);
 			}
-			
+
 			public void setCheckForNullParam(int param, NonNullSpecification specification) {
 				if (DEBUG_NULLARG) System.out.println(" ==> @CheckForNull");
 			}
-			
+
 			private boolean argIsNull(int param) {
 				return nullArgSet.get(param);
 			}
 		};
 		checkSpecifications(numParams, builder);
 	}
-	
+
 	public void getAnnotationSets(int numParams, final BitSet nonNullParamSet, final BitSet possiblyNullParamSet) {
 		SpecificationBuilder builder = new SpecificationBuilder() {
 			public boolean checkParam(int param) {
 				return true;
 			}
-			
+
 			public void setNonNullParam(int param, NonNullSpecification specification) {
 				nonNullParamSet.set(param);
 			}
-			
+
 			public void setCheckForNullParam(int param, NonNullSpecification specification) {
 				possiblyNullParamSet.set(param);
 			}
 		};
 		checkSpecifications(numParams, builder);
 	}
-	
+
 	static ParameterNullnessProperty wrapProperty(ParameterNullnessProperty property) {
 		return property != null ? property : new ParameterNullnessProperty();
 	}

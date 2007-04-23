@@ -32,9 +32,9 @@ public class ParameterNullnessProperty {
 	 * Maximum number of parameters that can be represented by a ParameterNullnessProperty.
 	 */
 	public static final int MAX_PARAMS = 32;
-	
+
 	private int nonNullParamSet;
-	
+
 	/**
 	 * Constructor.
 	 * Parameters are all assumed not to be non-null.
@@ -42,7 +42,7 @@ public class ParameterNullnessProperty {
 	public ParameterNullnessProperty() {
 		this.nonNullParamSet = 0;
 	}
-	
+
 	/**
 	 * Get the non-null param bitset.
 	 * 
@@ -51,7 +51,7 @@ public class ParameterNullnessProperty {
 	int getNonNullParamSet() {
 		return nonNullParamSet;
 	}
-	
+
 	/**
 	 * Set the non-null param bitset.
 	 * 
@@ -72,7 +72,7 @@ public class ParameterNullnessProperty {
 			setNonNull(i, nonNullSet.get(i));
 		}
 	}
-	
+
 	/**
 	 * Set whether or not a parameter might be non-null.
 	 * 
@@ -88,7 +88,7 @@ public class ParameterNullnessProperty {
 			nonNullParamSet &= ~(1 << param);
 		}
 	}
-	
+
 	/**
 	 * Return whether or not a parameter might be non-null.
 	 * 
@@ -101,7 +101,7 @@ public class ParameterNullnessProperty {
 		else
 			return (nonNullParamSet & (1 << param)) != 0;
 	}
-	
+
 	/**
 	 * Given a bitset of null arguments passed to the method represented
 	 * by this property, return a bitset indicating which null arguments
@@ -117,7 +117,7 @@ public class ParameterNullnessProperty {
 		}
 		return result;
 	}
-	
+
 	public BitSet getAsBitSet() {
 		BitSet result = new BitSet();
 		if (isEmpty()) return result;
@@ -135,11 +135,11 @@ public class ParameterNullnessProperty {
 	public boolean isEmpty() {
 		return nonNullParamSet == 0;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
-		
+
 		buf.append('{');
 		for (int i = 0; i < 32; ++i) {
 			if (isNonNull(i)) {
@@ -149,7 +149,7 @@ public class ParameterNullnessProperty {
 			}
 		}
 		buf.append('}');
-		
+
 		return buf.toString();
 	}
 

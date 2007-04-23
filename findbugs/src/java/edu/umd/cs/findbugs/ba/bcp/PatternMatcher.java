@@ -75,7 +75,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 	 * @param method       the Method to analyze
 	 */
 	public PatternMatcher(ByteCodePattern pattern, ClassContext classContext, Method method)
-	        throws CFGBuilderException, DataflowAnalysisException {
+			throws CFGBuilderException, DataflowAnalysisException {
 		this.pattern = pattern;
 		this.cfg = classContext.getCFG(method);
 		this.cpg = classContext.getConstantPoolGen();
@@ -136,7 +136,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 	 *                            the first instruction to be matched
 	 */
 	private void attemptMatch(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator)
-	        throws DataflowAnalysisException {
+			throws DataflowAnalysisException {
 		work(new State(basicBlock, instructionIterator, pattern.getFirst()));
 	}
 
@@ -164,7 +164,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 		 * @param patternElement      the first PatternElement of the pattern
 		 */
 		public State(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
-		             PatternElement patternElement) {
+					 PatternElement patternElement) {
 			this(basicBlock, instructionIterator, patternElement, 0, null, null, true);
 		}
 
@@ -172,8 +172,8 @@ public class PatternMatcher implements DFSEdgeTypes {
 		 * Constructor.
 		 */
 		public State(BasicBlock basicBlock, BasicBlock.InstructionIterator instructionIterator,
-		             PatternElement patternElement, int matchCount, @Nullable PatternElementMatch currentMatch,
-		             @Nullable BindingSet bindingSet, boolean canFork) {
+					 PatternElement patternElement, int matchCount, @Nullable PatternElementMatch currentMatch,
+					 @Nullable BindingSet bindingSet, boolean canFork) {
 			this.basicBlock = basicBlock;
 			this.instructionIterator = instructionIterator;
 			this.patternElement = patternElement;
@@ -242,7 +242,7 @@ public class PatternMatcher implements DFSEdgeTypes {
 			// Create state to advance to matching next pattern element
 			// at current basic block and instruction.
 			State advance = new State(basicBlock, instructionIterator.duplicate(), patternElement.getNext(),
-			        0, currentMatch, bindingSet, true);
+					0, currentMatch, bindingSet, true);
 
 			// Now that this state has forked from this element
 			// at this instruction, it must not do so again.
@@ -310,11 +310,11 @@ public class PatternMatcher implements DFSEdgeTypes {
 			// for example, only continue the pattern on the true branch
 			// of an "if" comparison.
 			if (matchResult != null &&
-			        !matchResult.getPatternElement().acceptBranch(edge, getLastMatchedInstruction()))
+					!matchResult.getPatternElement().acceptBranch(edge, getLastMatchedInstruction()))
 				return null;
 
 			return new State(edge.getTarget(), edge.getTarget().instructionIterator(),
-			        patternElement, matchCount, currentMatch, bindingSet, canFork);
+					patternElement, matchCount, currentMatch, bindingSet, canFork);
 		}
 
 		/**
@@ -374,20 +374,20 @@ public class PatternMatcher implements DFSEdgeTypes {
 			boolean debug = DEBUG && (!(patternElement instanceof Wild) || SHOW_WILD);
 			if (debug)
 				System.out.println("Match " + patternElement +
-				        " against " + location.getHandle() + " " +
-				        (bindingSet != null ? bindingSet.toString() : "[]") + "...");
+						" against " + location.getHandle() + " " +
+						(bindingSet != null ? bindingSet.toString() : "[]") + "...");
 			MatchResult matchResult = patternElement.match(location.getHandle(),
-			        cpg, before, after, bindingSet);
+					cpg, before, after, bindingSet);
 			if (debug)
 				System.out.println("\t" +
-				        ((matchResult != null) ? " ==> MATCH" : " ==> NOT A MATCH"));
+						((matchResult != null) ? " ==> MATCH" : " ==> NOT A MATCH"));
 			if (matchResult != null) {
 				// Successful match!
 				// Update state to reflect that the match has occurred.
 				++matchCount;
 				canFork = true;
 				currentMatch = new PatternElementMatch(matchResult.getPatternElement(),
-				        location.getHandle(), location.getBasicBlock(), matchCount, currentMatch);
+						location.getHandle(), location.getBasicBlock(), matchCount, currentMatch);
 				bindingSet = matchResult.getBindingSet();
 			}
 			return matchResult;

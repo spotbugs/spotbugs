@@ -35,17 +35,17 @@ import org.apache.bcel.classfile.*;
 abstract public class OpcodeStackDetector extends BytecodeScanningDetector {
 
 	protected OpcodeStack stack = new OpcodeStack();
-	
+
 	@Override
 	public void beforeOpcode(int seen) {
 		stack.mergeJumps(this);
 	}
-	
+
 	@Override
 	public void afterOpcode(int seen) {
 		stack.sawOpcode(this, seen);
 	}
-	
+
 	@Override
 	abstract public void sawOpcode(int seen);
 }

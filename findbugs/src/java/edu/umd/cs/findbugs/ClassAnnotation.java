@@ -66,11 +66,11 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
 		if (key.equals("") || key.equals("hash"))
 			return className;
-        else if (key.equals("givenClass"))
-            return shorten(primaryClass.getPackageName(), className);
-        else if (key.equals("excludingPackage"))
+		else if (key.equals("givenClass"))
+			return shorten(primaryClass.getPackageName(), className);
+		else if (key.equals("excludingPackage"))
             return shorten(getPackageName(), className);
-        else
+		else
 			throw new IllegalArgumentException("unknown key " + key);
 	}
 
@@ -94,7 +94,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 		int firstDollar = className.indexOf('$');
 		if (firstDollar == -1) return this;
 		return new ClassAnnotation(className.substring(0,firstDollar));
-		
+
 	}
 	public int compareTo(BugAnnotation o) {
 		if (!(o instanceof ClassAnnotation)) // BugAnnotations must be Comparable with any type of BugAnnotation
@@ -102,7 +102,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 		ClassAnnotation other = (ClassAnnotation) o;
 		return className.compareTo(other.className);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.PackageMemberAnnotation#getSourceLines()
 	 */
@@ -110,7 +110,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 	public SourceLineAnnotation getSourceLines() {
 		if (sourceLines == null) {
 			// Create source line annotation for class on demand
-			
+
 			AnalysisContext currentAnalysisContext = AnalysisContext.currentAnalysisContext();
 			if (currentAnalysisContext == null)
 				sourceLines = new SourceLineAnnotation(className, sourceFileName, -1, -1, -1, -1);
@@ -118,7 +118,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 			SourceInfoMap.SourceLineRange classLine = currentAnalysisContext
 				.getSourceInfoMap()
 				.getClassLine(className);
-			
+
 			if (classLine == null)
 				sourceLines = new SourceLineAnnotation(
 						className, sourceFileName, -1,-1, -1, -1);
@@ -154,7 +154,7 @@ public class ClassAnnotation extends PackageMemberAnnotation {
 			xmlOutput.closeTag(BugAnnotation.MESSAGE_TAG);
 		}
 		xmlOutput.closeTag(ELEMENT_NAME);
-		
+
 	}
 }
 

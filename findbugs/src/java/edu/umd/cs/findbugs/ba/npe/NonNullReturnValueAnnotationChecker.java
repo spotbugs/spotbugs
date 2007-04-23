@@ -15,7 +15,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
  */
 public class NonNullReturnValueAnnotationChecker implements JavaClassAndMethodChooser {
 	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.nullreturn");
-	
+
 	private MayReturnNullPropertyDatabase database;
 	private JavaClassAndMethod annotatedMethod;
 	private Boolean property;
@@ -24,15 +24,15 @@ public class NonNullReturnValueAnnotationChecker implements JavaClassAndMethodCh
 	public NonNullReturnValueAnnotationChecker(MayReturnNullPropertyDatabase database) {
 		this.database = database;
 	}
-	
+
 	public Boolean getProperty() {
 		return property;
 	}
-	
+
 	public JavaClassAndMethod getAnnotatedMethod() {
 		return annotatedMethod;
 	}
-	
+
 	public boolean choose(JavaClassAndMethod javaClassAndMethod) {
 		XMethod xmethod = javaClassAndMethod.toXMethod();
 		if (DEBUG) {

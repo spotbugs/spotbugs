@@ -33,7 +33,7 @@ public interface ICodeBaseLocator {
 	 * @return the codebase object
 	 */
 	public ICodeBase openCodeBase() throws IOException, ResourceNotFoundException;
-	
+
 	/**
 	 * Get the codebase locator describing the location of
 	 * a relative codebase.  This method is useful for getting the
@@ -44,7 +44,7 @@ public interface ICodeBaseLocator {
 	 * @return codebase locator of the relative codebase whose path is given
 	 */
 	public ICodeBaseLocator createRelativeCodeBaseLocator(String relativePath);
-	
+
 	/**
 	 * Convert the codebase locator to a string representation.
 	 * If possible two codebase locators that refer to the same codebase

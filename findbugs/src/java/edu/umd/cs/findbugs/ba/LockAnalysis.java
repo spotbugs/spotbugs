@@ -101,8 +101,8 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 	}
 
 	@Override
-         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, LockSet fact)
-	        throws DataflowAnalysisException {
+		 public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, LockSet fact)
+			throws DataflowAnalysisException {
 
 		Instruction ins = handle.getInstruction();
 		short opcode = ins.getOpcode();
@@ -132,7 +132,7 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 	}
 
 	@Override
-         public boolean isFactValid(LockSet fact) {
+		 public boolean isFactValid(LockSet fact) {
 		return true;
 	}
 
@@ -144,8 +144,8 @@ public class LockAnalysis extends ForwardDataflowAnalysis<LockSet> {
 
 		DataflowTestDriver<LockSet, LockAnalysis> driver = new DataflowTestDriver<LockSet, LockAnalysis>() {
 			@Override
-                         public Dataflow<LockSet, LockAnalysis> createDataflow(ClassContext classContext, Method method)
-			        throws CFGBuilderException, DataflowAnalysisException {
+						 public Dataflow<LockSet, LockAnalysis> createDataflow(ClassContext classContext, Method method)
+					throws CFGBuilderException, DataflowAnalysisException {
 				return classContext.getLockDataflow(method);
 			}
 		};

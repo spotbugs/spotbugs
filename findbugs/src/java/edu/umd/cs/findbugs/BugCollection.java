@@ -59,7 +59,7 @@ public interface BugCollection
 	 * @return current release name
 	 */
 	public String getReleaseName();
-	
+
 	/**
 	 * Get the project stats.
 	 */
@@ -71,32 +71,32 @@ public interface BugCollection
 	 * @param timestamp the  timestamp.
 	 */
 	public void setTimestamp(long timestamp);
-	
+
 	/**
 	 * Get the timestamp for the analyzed code
 	 * return the  timestamp.
 	 */
 	public long getTimestamp();
-	
+
 	/**
 	 * Get the timestamp for when the analysis was performed.
 	 * 
 	 * @param timestamp the analysis timestamp.
 	 */
 	public void setAnalysisTimestamp(long timestamp);
-	
+
 	/**
 	 * Get the timestamp for when the analysis was performed.
 	 */
 	public long getAnalysisTimestamp();
-	
-	
+
+
 	/**
 	 * Gets the AppVersion corresponding to the given sequence number.
 	 */
-	
+
 	public AppVersion getAppVersionFromSequenceNumber(long target);
-	
+
 	/**
 	 * Set the sequence number of the BugCollection.
 	 * 
@@ -137,7 +137,7 @@ public interface BugCollection
 	 * Get an Iterator over AppVersions defined in the collection.
 	 */
 	public Iterator<AppVersion> appVersionIterator();
-	
+
 	/**
 	 * Add a BugInstance to this BugCollection.
 	 * This just calls add(bugInstance, true).
@@ -147,7 +147,7 @@ public interface BugCollection
 	 *         BugInstance was already in the BugCollection
 	 */
 	public boolean add(BugInstance bugInstance);
-	
+
 	/**
 	 * Add a BugInstance to this BugCollection.
 	 *
@@ -170,7 +170,7 @@ public interface BugCollection
 	 */
 	@Deprecated
 	public BugInstance lookupFromUniqueId(String uniqueId);
-	
+
 	/**
 	 * Add an analysis error.
 	 *
@@ -195,9 +195,9 @@ public interface BugCollection
 	public void setClassFeatureSet(ClassFeatureSet classFeatureSet);
 
 	public void writePrologue(XMLOutput xmlOutput, Project project) throws IOException;
-	
+
 	public void writeEpilogue(XMLOutput xmlOutput) throws IOException;
-	
+
 	public void clearClassFeatures();
 
 	/**
@@ -208,8 +208,8 @@ public interface BugCollection
 	 * @param project  the Project
 	 */
 	public void readXML(String fileName, Project project)
-    	throws IOException, DocumentException;
-	
+		throws IOException, DocumentException;
+
 	/**
 	 * Read XML data from given input stream into this
 	 * object, populating the Project as a side effect.
@@ -220,7 +220,7 @@ public interface BugCollection
 	 * @param project the Project
 	 */
 	public void readXML(InputStream in, Project project)
-	        throws IOException, DocumentException;
+			throws IOException, DocumentException;
 
 	/**
 	 * Write this BugCollection to a file as XML.
@@ -230,7 +230,7 @@ public interface BugCollection
 	 */
 	public void writeXML(String fileName, Project project) 
 		throws IOException;
-	
+
 	/**
 	 * Write the BugCollection to given output stream as XML.
 	 * The output stream will be closed, even if an exception is thrown.
@@ -254,18 +254,18 @@ public interface BugCollection
 	 * @param project   the Project from which the BugCollection was generated
 	 */
 	public void writeXML(XMLOutput xmlOutput, Project project) throws IOException;
-	
+
 	/**
 	 * Return an Iterator over all the BugInstance objects in
 	 * the BugCollection.
 	 */
 	public Iterator<BugInstance> iterator();
-	
+
 	/**
 	 * Return the Collection storing the BugInstance objects.
 	 */
 	public Collection<BugInstance> getCollection();
-	
+
 	/**
 	 * Convert the BugCollection into a dom4j Document object.
 	 *
@@ -273,14 +273,14 @@ public interface BugCollection
 	 * @return the Document representing the BugCollection as a dom4j tree
 	 */
 	public Document toDocument(Project project);
-	
+
 	/**
 	 * Create a new empty BugCollection with the same metadata as this one.
 	 * 
 	 * @return a new empty BugCollection with the same metadata as this one
 	 */
 	public BugCollection createEmptyCollectionWithMetadata();
-	
+
 	/**
 	 * Set whether textual messages should be added to any generated XML
 	 */
@@ -290,7 +290,7 @@ public interface BugCollection
 	 * Return whether textual messages will be added to any generated XML
 	 */
 	public boolean getWithMessages();
-		
+
 	public BugInstance findBug(String instanceHash, String bugType, int lineNumber);
 
 }

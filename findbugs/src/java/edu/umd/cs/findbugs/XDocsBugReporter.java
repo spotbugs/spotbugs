@@ -154,7 +154,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 		}
 		return buf.toString();
 	}
-	
+
 	public void toElement(BugInstance bugInstance) {
 
 		String className = bugInstance.getPrimaryClass().getClassName();
@@ -188,7 +188,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 		element.addAttribute("message", xmlEscape(bugInstance.getMessage()));
 
 		SourceLineAnnotation line =
-		        bugInstance.getPrimarySourceLineAnnotation();
+				bugInstance.getPrimarySourceLineAnnotation();
 		if (line == null) {
 			element.addAttribute("line", "0");
 		} else {
@@ -206,7 +206,7 @@ public class XDocsBugReporter extends TextUIBugReporter {
 		System.out.println(y);
 	}
 */
-	
+
 }
 
 // vim:ts=3

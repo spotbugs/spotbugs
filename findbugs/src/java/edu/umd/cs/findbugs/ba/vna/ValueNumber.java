@@ -51,11 +51,11 @@ public class ValueNumber implements Comparable<ValueNumber> {
 	 * of a called method.
 	 */
 	public static final int RETURN_VALUE = 1;
-	
+
 	public static final int ARRAY_VALUE = 2;
-	
+
 	public static final int CONSTANT_CLASS_OBJECT = 4;
-	
+
 	public static final int PHI_NODE = 8;
 
 	/**
@@ -89,17 +89,17 @@ public class ValueNumber implements Comparable<ValueNumber> {
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		if (flags != 0) return number+"("+flags+"),";
 		return number + ",";
 	}
 
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		return number;
 	}
 	@Override
-    public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		if (o instanceof ValueNumber) 
 			return number == ((ValueNumber)o).number;
 		return false;
@@ -108,12 +108,12 @@ public class ValueNumber implements Comparable<ValueNumber> {
 		return number - other.number;
 	}
 /*
-	
+
 	public int hashCode() {
 		return number;
 	}
-	
-	
+
+
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;

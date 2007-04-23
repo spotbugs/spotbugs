@@ -42,62 +42,62 @@ import edu.umd.cs.findbugs.SortedBugCollection;
 public class RegenerateClassFeatures {
 	private BugCollection bugCollection;
 	private String jarFile;
-	
+
 	public RegenerateClassFeatures(BugCollection bugCollection, String jarFile) {
 		this.bugCollection = bugCollection;
 		this.jarFile = jarFile;
 	}
-	
+
 	public RegenerateClassFeatures execute() throws IOException {
 		bugCollection.clearClassFeatures();
-		
+
 		ZipFile zipFile = new ZipFile(jarFile);
-		
+
 		ArrayList<JavaClass> classList = new ArrayList<JavaClass>();
 
 		// Add all classes to repository (for hierarchy queries)
 		Enumeration<? extends ZipEntry> entries = zipFile.entries();
 		while (entries.hasMoreElements()) {
 			ZipEntry entry = entries.nextElement();
-			
+
 			if (!entry.getName().endsWith(".class"))
 				continue;
-			
+
 			ClassParser parser = new ClassParser(zipFile.getInputStream(entry), entry.getName());
 			JavaClass javaClass = parser.parse();
-			
+
 			Repository.addClass(javaClass);
 			classList.add(javaClass);
 		}
-		
+
 		for (JavaClass javaClass : classList) {
 			ClassFeatureSet classFeatureSet = new ClassFeatureSet().initialize(javaClass);
 			bugCollection.setClassFeatureSet(classFeatureSet);
 		}
-		
+
 		return this;
 	}
-	
+
 	/**
 	 * @return Returns the bugCollection.
 	 */
 	public BugCollection getBugCollection() {
 		return bugCollection;
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		if (args.length != 2) {
 			System.err.println("Usage: " + RegenerateClassFeatures.class.getName() + " <bug collection> <jar file>");
 			System.exit(1);
 		}
-		
+
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		Project project = new Project();
-		
+
 		bugCollection.readXML(args[0], project);
-		
+
 		new RegenerateClassFeatures(bugCollection, args[1]).execute();
-		
+
 		bugCollection.writeXML(System.out, project);
 	}
 }

@@ -27,37 +27,37 @@ import java.util.BitSet;
  */
 public class UnconditionalDerefSet extends BitSet {
 	private static final long serialVersionUID = 1L;
-	
+
 	private final int numParams;
-	
+
 	public UnconditionalDerefSet(int numParams) {
 		this.numParams = numParams;
 	}
-	
+
 	public void setTop() {
 		clear();
 		set(numParams);
 	}
-	
+
 	public void setBottom() {
 		clear();
 		set(numParams + 1);
 	}
-	
+
 	public boolean isValid() {
 		return !isTop() && !isBottom();
 	}
-	
+
 	public boolean isTop() {
 		return get(numParams);
 	}
-	
+
 	public boolean isBottom() {
 		return get(numParams + 1);
 	}
-	
+
 	@Override
-         public String toString() {
+		 public String toString() {
 		if (isTop())
 			return "TOP";
 		else if (isBottom())

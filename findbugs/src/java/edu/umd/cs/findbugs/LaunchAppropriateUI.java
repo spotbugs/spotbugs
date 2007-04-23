@@ -34,7 +34,7 @@ public class LaunchAppropriateUI {
 			FindBugs2.main(args);
 		else {
 			String version = System.getProperty("java.version");
-			
+
 			Class launchClass = null;
 			if ("1.5".compareTo(version) <= 0) try {
 				launchClass = Class.forName("edu.umd.cs.findbugs.gui2.Driver", false,
@@ -44,12 +44,12 @@ public class LaunchAppropriateUI {
 			}
 			if (launchClass == null || launchProperty == 1) 
 				launchClass = edu.umd.cs.findbugs.gui.FindBugsFrame.class;
-			
+
 			Method mainMethod = launchClass.getMethod("main", args.getClass());
 			mainMethod.invoke(null, (Object) args);
 		}
 	}
-	
+
 	/** user should set -Dfindbugs.launchUI=0 for textui,
 	 *  or -Dfindbugs.launchUI=1 for the original swing gui.
 	 *  Any other value (or the absense of any value) will

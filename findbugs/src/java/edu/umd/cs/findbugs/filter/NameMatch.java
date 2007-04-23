@@ -37,11 +37,11 @@ import java.util.regex.Pattern;
  * @author rafal@caltha.pl
  */
 public class NameMatch {
-	
+
 	private String exact;
-	
+
 	private Pattern pattern;
-	
+
 	public String getValue() {
 		if (exact != null) return exact;
 		return pattern.toString();
@@ -55,7 +55,7 @@ public class NameMatch {
 			}
 		}
 	}
-	
+
 	public boolean match(String value) {
 		if (exact != null) 
 			return exact.equals(value);
@@ -63,7 +63,7 @@ public class NameMatch {
 			return pattern.matcher(value).matches();
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		if (exact != null) 

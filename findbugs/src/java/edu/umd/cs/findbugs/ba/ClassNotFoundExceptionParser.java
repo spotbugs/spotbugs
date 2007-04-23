@@ -40,11 +40,11 @@ import edu.umd.cs.findbugs.util.ClassName;
 public class ClassNotFoundExceptionParser {
 	// BCEL reports missing classes in this format
 	private static final Pattern BCEL_MISSING_CLASS_PATTERN =
-	        Pattern.compile("^.*while looking for class ([^:]*):.*$");
+			Pattern.compile("^.*while looking for class ([^:]*):.*$");
 
 	// edu.umd.cs.findbugs.ba.type.TypeRepository uses this format
 	private static final Pattern TYPE_REPOSITORY_MISSING_CLASS_PATTERN =
-	        Pattern.compile("^Class ([^ ]*) cannot be resolved.*$");
+			Pattern.compile("^Class ([^ ]*) cannot be resolved.*$");
 
 	private static final Pattern[] patternList;
 
@@ -74,7 +74,7 @@ public class ClassNotFoundExceptionParser {
 				return classDesc.toDottedClassName();
 			}
 		}
-		
+
 		// Try the regular expression patterns to parse the class name
 		// from the exception message.
 		for (Pattern pattern : patternList) {

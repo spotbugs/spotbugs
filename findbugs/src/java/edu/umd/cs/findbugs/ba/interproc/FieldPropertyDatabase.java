@@ -40,14 +40,14 @@ public abstract class FieldPropertyDatabase<Property>
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#parseKey(java.lang.String)
 	 */
-	
+
 	@Override
-         protected XField parseKey(String s) throws PropertyDatabaseFormatException {
+		 protected XField parseKey(String s) throws PropertyDatabaseFormatException {
 		String[] tuple = s.split(",");
 		if (tuple.length != 4) {
 			throw new PropertyDatabaseFormatException("Invalid field tuple: " + s);
 		}
-		
+
 		String className = XFactory.canonicalizeString(tuple[0]);
 		String fieldName = XFactory.canonicalizeString(tuple[1]);
 		String signature = XFactory.canonicalizeString(tuple[2]);
@@ -57,16 +57,16 @@ public abstract class FieldPropertyDatabase<Property>
 		} catch (NumberFormatException e) {
 			throw new PropertyDatabaseFormatException("Invalid field access flags: " + tuple[3]);
 		}
-        return XFactory.createXField(className, fieldName, signature, accessFlags);
+		return XFactory.createXField(className, fieldName, signature, accessFlags);
 
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.PropertyDatabase#writeKey(java.io.Writer, KeyType)
 	 */
-	
+
 	@Override
-         protected void writeKey(Writer writer, XField key) throws IOException {
+		 protected void writeKey(Writer writer, XField key) throws IOException {
 		writer.write(key.getClassName());
 		writer.write(",");
 		writer.write(key.getName());

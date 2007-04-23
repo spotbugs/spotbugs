@@ -63,12 +63,12 @@ public class URLClassPath implements Serializable {
 		 * @throws IOException if an I/O error occurs
 		 */
 		public InputStream openStream(String resourceName) throws IOException;
-		
+
 		/**
 		 * Get filename or URL as string.
 		 */
 		public String getURL();
-		
+
 		/**
 		 * Close the underlying resource.
 		 */
@@ -81,7 +81,7 @@ public class URLClassPath implements Serializable {
 	 */
 	private static class LocalArchiveEntry implements Entry {
 		private ZipFile zipFile;
-		
+
 		public LocalArchiveEntry(String fileName) throws IOException {
 			try {
 				zipFile = new ZipFile(fileName);
@@ -117,14 +117,14 @@ public class URLClassPath implements Serializable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Classpath entry class to load files from a directory
 	 * in the local filesystem.
 	 */
 	private static class LocalDirectoryEntry implements Entry {
 		private String dirName;
-		
+
 		/**
 		 * Constructor.
 		 * 
@@ -157,9 +157,9 @@ public class URLClassPath implements Serializable {
 		public void close() {
 			// Nothing to do here
 		}
-		
+
 	}
-	
+
 	/**
 	 * Classpath entry class to load files from a remote archive URL.
 	 * It uses jar URLs to specify individual files within the
@@ -167,7 +167,7 @@ public class URLClassPath implements Serializable {
 	 */
 	private static class RemoteArchiveEntry implements Entry {
 		private URL remoteArchiveURL;
-		
+
 		/**
 		 * Constructor.
 		 * @param remoteArchiveURL the remote zip/jar file URL
@@ -199,15 +199,15 @@ public class URLClassPath implements Serializable {
 		public void close() {
 			// Nothing to do
 		}
-		
+
 	}
-	
+
 	/**
 	 * Classpath entry class to load files from a remote directory URL.
 	 */
 	private static class RemoteDirectoryEntry implements Entry {
 		private URL remoteDirURL;
-		
+
 		/**
 		 * Constructor.
 		 * @param remoteDirURL URL of the remote directory; must end in "/"
@@ -250,7 +250,7 @@ public class URLClassPath implements Serializable {
 	public URLClassPath() {
 		this.entryList = new LinkedList<Entry>();
 	}
-	
+
 	/**
 	 * Add given filename/URL to the classpath.
 	 * If no URL protocol is given, the filename is assumed
@@ -267,14 +267,14 @@ public class URLClassPath implements Serializable {
 			fileName = "file:" + fileName;
 			protocol = "file";
 		}
-		
+
 		String fileExtension = URLClassPath.getFileExtension(fileName);
 		boolean isArchive = fileExtension != null && URLClassPath.isArchiveExtension(fileExtension);
-		
+
 		Entry entry;
 		if (protocol.equals("file")) {
 			String localFileName = fileName.substring("file:".length());
-			
+
 			if (fileName.endsWith("/") || new File(localFileName).isDirectory())
 				entry = new LocalDirectoryEntry(localFileName);
 			else if (isArchive)
@@ -291,10 +291,10 @@ public class URLClassPath implements Serializable {
 				throw new IOException("Classpath entry " + fileName +
 						"  is not a remote directory or archive file");
 		}
-		
+
 		entryList.add(entry);
 	}
-	
+
 	/**
 	 * Return the classpath string.
 	 * @return the classpath string
@@ -308,7 +308,7 @@ public class URLClassPath implements Serializable {
 		}
 		return buf.toString();
 	}
-	
+
 	/**
 	 * Open a stream to read given resource.
 	 * 
@@ -321,7 +321,7 @@ public class URLClassPath implements Serializable {
 	private InputStream getInputStreamForResource(String resourceName) throws IOException {
 		// Try each classpath entry, in order, until we find one
 		// that has the resource.  Catch and ignore IOExceptions.
-		
+
 		// FIXME: The following code should throw IOException.
 		//
 		// URL.openStream() does not seem to distinguish
@@ -371,20 +371,20 @@ public class URLClassPath implements Serializable {
 		String resourceName = className.replace('.', '/') + ".class";
 		InputStream in = null;
 		boolean parsedClass = false;
-		
+
 		try {
-			
+
 			in = getInputStreamForResource(resourceName);
 			if (in == null) {
 				classesThatCantBeFound.add(className);
 				throw new ClassNotFoundException("Error while looking for class " + 
 						className + ": class not found");
 			}
-			
+
 			ClassParser classParser = new ClassParser(in, resourceName);
 			JavaClass javaClass = classParser.parse();
 			parsedClass = true;
-			
+
 			return javaClass;
 		} catch (IOException e) {
 			classesThatCantBeFound.add(className);
@@ -400,7 +400,7 @@ public class URLClassPath implements Serializable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Close all underlying resources.
 	 */

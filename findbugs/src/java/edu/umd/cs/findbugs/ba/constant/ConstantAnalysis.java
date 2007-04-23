@@ -42,17 +42,17 @@ import edu.umd.cs.findbugs.ba.Location;
 public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFrame> {
 	private MethodGen methodGen;
 	private ConstantFrameModelingVisitor visitor;
-	
+
 	public ConstantAnalysis(MethodGen methodGen, DepthFirstSearch dfs) {
 		super(dfs);
 		this.methodGen = methodGen;
 		this.visitor = new ConstantFrameModelingVisitor(methodGen.getConstantPool());
 	}
-	
+
 	public ConstantFrame createFact() {
 		return new ConstantFrame(methodGen.getMaxLocals());
 	}
-	
+
 	public void initEntryFact(ConstantFrame frame) {
 		frame.setValid();
 		frame.clearStack();
@@ -61,45 +61,45 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 			frame.setValue(i, new Constant("parameter" + i));
 		}
 	}
-	
+
 	@Override
-         public void transferInstruction(
+		 public void transferInstruction(
 			InstructionHandle handle,
 			BasicBlock basicBlock,
 			ConstantFrame frame) throws DataflowAnalysisException {
 		visitor.setFrameAndLocation(frame, new Location(handle, basicBlock));
 		visitor.analyzeInstruction(handle.getInstruction());
 	}
-	
+
 	public void meetInto(
 			ConstantFrame fact,
 			Edge edge,
 			ConstantFrame result) throws DataflowAnalysisException {
-		
+
 		if (fact.isValid()) {
 			ConstantFrame tmpFact = null;
-		
+
 			if (edge.isExceptionEdge()) {
 				tmpFact = modifyFrame(fact, tmpFact);
 				tmpFact.clearStack();
 				tmpFact.pushValue(Constant.NOT_CONSTANT);
 			}
-		
+
 			if (tmpFact != null) {
 				fact = tmpFact;
 			}
 		}
-		
+
 		mergeInto(fact, result);
 	}
-	
+
 	@Override
-         protected void mergeValues(ConstantFrame otherFrame, ConstantFrame resultFrame, int slot)
+		 protected void mergeValues(ConstantFrame otherFrame, ConstantFrame resultFrame, int slot)
 			throws DataflowAnalysisException {
 		Constant value = Constant.merge(resultFrame.getValue(slot), otherFrame.getValue(slot));
 		resultFrame.setValue(slot, value);
 	}
-	
+
 	/*
 	 * Test driver.
 	 */
@@ -108,17 +108,17 @@ public class ConstantAnalysis extends FrameDataflowAnalysis<Constant, ConstantFr
 			System.err.println("Usage: " + ConstantAnalysis.class.getName() + " <class file>");
 			System.exit(1);
 		}
-		
+
 		DataflowTestDriver<ConstantFrame, ConstantAnalysis> driver =
 			new DataflowTestDriver<ConstantFrame, ConstantAnalysis>() {
 				@Override
-                                 public Dataflow<ConstantFrame, ConstantAnalysis> createDataflow(
+								 public Dataflow<ConstantFrame, ConstantAnalysis> createDataflow(
 						ClassContext classContext,
 						Method method) throws CFGBuilderException, DataflowAnalysisException {
 					return classContext.getConstantDataflow(method);
 				}
 			};
-			
+
 		driver.execute(argv[0]);
 	}
 }

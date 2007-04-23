@@ -68,7 +68,7 @@ public class DataflowAnalysisException extends CheckedAnalysisException {
 	public DataflowAnalysisException(String message, MethodGen methodGen, InstructionHandle handle) {
 		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle);
 	}
-	
+
 	/**
 	 * Constructor from message, method and instruction, and Throwable object (cause).
 	 * 

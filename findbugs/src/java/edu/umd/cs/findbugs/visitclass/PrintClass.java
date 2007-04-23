@@ -110,7 +110,7 @@ public class PrintClass {
 						printClass(new ClassParser(z.getInputStream(ze), name));
 
 
-					
+
 				}
 			} else
 				for (int i = 0; i < files; i++)

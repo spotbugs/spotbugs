@@ -118,9 +118,9 @@ public class SignatureConverter {
 			case 'Z':
 				result.append("boolean");
 				break;
-            case 'V':
-                result.append("void");
-                break;
+			case 'V':
+				result.append("void");
+				break;
 			default:
 				throw new IllegalArgumentException("bad signature " + signature);
 			}
@@ -184,7 +184,7 @@ public class SignatureConverter {
 	public static String convertMethodSignature(XMethod xmethod) {
 		return convertMethodSignature(xmethod.getClassName(), xmethod.getName(), xmethod.getSignature());
 	}
-	
+
 	/**
 	 * Convenience method for generating a method signature in
 	 * human readable form.

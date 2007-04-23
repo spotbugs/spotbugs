@@ -49,8 +49,8 @@ public class Store extends FieldAccess {
 	}
 
 	@Override
-         public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-	                         ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
+		 public MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
+							 ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException {
 
 		Instruction ins = handle.getInstruction();
 		FieldInstruction fieldIns;
@@ -61,8 +61,8 @@ public class Store extends FieldAccess {
 			fieldIns = (PUTFIELD) ins;
 			int numSlots = before.getNumSlots();
 			ValueNumber ref = before.getValue(isLongOrDouble(fieldIns, cpg)
-			        ? numSlots - 3
-			        : numSlots - 2);
+					? numSlots - 3
+					: numSlots - 2);
 			field = new FieldVariable(ref, fieldIns.getClassName(cpg), fieldIns.getFieldName(cpg), fieldIns.getSignature(cpg));
 		} else if (ins instanceof PUTSTATIC) {
 			fieldIns = (PUTSTATIC) ins;

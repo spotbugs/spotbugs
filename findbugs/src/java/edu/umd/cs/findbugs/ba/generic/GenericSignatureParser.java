@@ -47,7 +47,7 @@ public class GenericSignatureParser {
 
 		public boolean hasNext() {
 			return index < signature.length()
-			        && signature.charAt(index) != ')';
+					&& signature.charAt(index) != ')';
 		}
 
 		public String next() {
@@ -70,7 +70,7 @@ public class GenericSignatureParser {
 					result.append(signature.charAt(index));
 					++index;
 					break;
-					
+
 				case 'L':
 				case 'T':
 					String tmp = "";
@@ -88,7 +88,7 @@ public class GenericSignatureParser {
 					result.append(tmp);
 					index = semi + 1;
 					break;
-					
+
 				case '[':
 				case '+':
 				case '-':
@@ -96,7 +96,7 @@ public class GenericSignatureParser {
 					++index;
 					done = false;
 					break;
-					
+
 				case 'V':
 				default:
 					throw new IllegalStateException("Invalid method signature: " + signature);
@@ -137,7 +137,7 @@ public class GenericSignatureParser {
 	public Iterator<String> parameterSignatureIterator() {
 		return new ParameterSignatureIterator();
 	}
-	
+
 	/**
 	 * Get the method return type signature.
 	 * 
@@ -149,7 +149,7 @@ public class GenericSignatureParser {
 			throw new IllegalArgumentException("Bad method signature: " + signature);
 		return signature.substring(endOfParams + 1);
 	}
-	
+
 	/**
 	 * Get the number of parameters in the signature.
 	 * 
@@ -163,7 +163,7 @@ public class GenericSignatureParser {
 		}
 		return count;
 	}
-	
+
 	/**
 	 * Get the number of parameters passed to method invocation.
 	 * 
@@ -188,7 +188,7 @@ public class GenericSignatureParser {
 			String genericSignature = null;			
 			for (Attribute a : target.getAttributes()) {
 				if (a instanceof Signature) {
-					
+
 					Signature sig = (Signature) a;
 					if ( genericSignature != null) {
 						if (!genericSignature.equals(sig.getSignature()) ) {
@@ -201,7 +201,7 @@ public class GenericSignatureParser {
 						}
 						continue;
 					}
-					
+
 					genericSignature = sig.getSignature();
 					if (compareSignatures(target.getSignature(), genericSignature))
 						parser = new GenericSignatureParser( genericSignature );
@@ -213,7 +213,7 @@ public class GenericSignatureParser {
 		} catch (RuntimeException e) {} // degrade gracefully
 		return null;
 	}
-	
+
 	/**
 	 * Compare a plain method signature to the a generic method Signature and
 	 * return true if they match
@@ -224,14 +224,14 @@ public class GenericSignatureParser {
 			new GenericSignatureParser( plainSignature );
 		GenericSignatureParser genericParser =
 			new GenericSignatureParser( genericSignature );
-		
+
 		if (plainParser.getNumParameters() != genericParser.getNumParameters())
 			return false;
-		
+
 		return true;
 	}
 
-	
+
 	public static void main(String[] args) {
 		if (args.length != 1) {
 			System.err.println("Usage: " + GenericSignatureParser.class.getName() + " '<method signature>'");
@@ -248,8 +248,8 @@ public class GenericSignatureParser {
 			System.out.println("-~- " + t.getClass());
 		}
 		System.out.println(parser.getNumParameters() + " parameter(s)");
-		
-		
+
+
 	}
 }
 

@@ -27,16 +27,16 @@ import edu.umd.cs.findbugs.ba.Edge;
 public class Decision {
 	private boolean feasible;
 	private NullnessValue nullnessValue;
-	
+
 	public Decision(boolean feasible, NullnessValue nullnessValue) {
 		this.feasible= feasible;
 		this.nullnessValue = nullnessValue;
 	}
-	
+
 	public boolean isFeasible() {
 		return feasible;
 	}
-	
+
 	public NullnessValue getNullnessValue() {
 		return nullnessValue;
 	}

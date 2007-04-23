@@ -37,18 +37,18 @@ import java.util.Iterator;
 public abstract class TextUIBugReporter extends AbstractBugReporter {
 	private boolean reportStackTrace;
 	private boolean useLongBugCodes = false;
-    private boolean reportHistory = false;
-    private boolean reportUserDesignations = false;
-    
+	private boolean reportHistory = false;
+	private boolean reportUserDesignations = false;
+
 	static final String OTHER_CATEGORY_ABBREV = "X";
 
 	protected PrintStream outputStream = System.out;
-	
+
 	public TextUIBugReporter() {
 		reportStackTrace = true;
 	}
 
-	
+
 	/**
 	 * Set the PrintStream to write bug output to.
 	 * 
@@ -57,7 +57,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	public void setOutputStream(PrintStream outputStream) {
 		this.outputStream = outputStream;
 	}
-	
+
 	/**
 	 * Set whether or not stack traces should be reported in error output.
 	 * 
@@ -102,38 +102,38 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 		outputStream.print(bugInstance.getType());
 		outputStream.print(" ");
 		}
-        if (reportUserDesignations) {
-            outputStream.print(bugInstance.getUserDesignationKey());
-            outputStream.print(" ");
+		if (reportUserDesignations) {
+			outputStream.print(bugInstance.getUserDesignationKey());
+			outputStream.print(" ");
             }
-        
-        if (reportHistory) {
-            long first = bugInstance.getFirstVersion();
+
+		if (reportHistory) {
+			long first = bugInstance.getFirstVersion();
             long last = bugInstance.getLastVersion();
-            outputStream.print(first);
+			outputStream.print(first);
+			outputStream.print(" ");
+			outputStream.print(last);
             outputStream.print(" ");
-            outputStream.print(last);
-            outputStream.print(" ");
-        }
+		}
 		SourceLineAnnotation line =
-		        bugInstance.getPrimarySourceLineAnnotation();
+				bugInstance.getPrimarySourceLineAnnotation();
 		if (line == null)
 			outputStream.println(bugInstance.getMessage());
 		else
 			outputStream.println(bugInstance.getMessage()
-			        + "  " + line.toString());
+					+ "  " + line.toString());
 	}
 
 	private boolean analysisErrors;
 	private boolean missingClasses;
-	
-	
+
+
 	@Override
 	public void reportQueuedErrors() {
 		analysisErrors = missingClasses = false;
 		super.reportQueuedErrors();
 	}
-	
+
 	@Override
 	public void reportAnalysisError(AnalysisError error) {
 		if (!analysisErrors) {
@@ -162,7 +162,7 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 		}
 		emitLine("\t" + message);
 	}
-	
+
 	/**
 	 * Emit one line of the error message report.
 	 * By default, error messages are printed to System.err.
@@ -180,26 +180,26 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 		return useLongBugCodes;
 	}
 
-    public void setReportHistory(boolean reportHistory) {
-        this.reportHistory = reportHistory;
-    }
+	public void setReportHistory(boolean reportHistory) {
+		this.reportHistory = reportHistory;
+	}
     
 	public void setUseLongBugCodes(boolean useLongBugCodes) {
 		this.useLongBugCodes = useLongBugCodes;
 	}
-	
-    public void setReportUserDesignations(boolean reportUserDesignations) {
-        this.reportUserDesignations = reportUserDesignations;
+
+	public void setReportUserDesignations(boolean reportUserDesignations) {
+		this.reportUserDesignations = reportUserDesignations;
     }
-    
-    
+
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugReporter#getRealBugReporter()
 	 */
 	public BugReporter getRealBugReporter() {
 		return this;
 	}
-	
+
 	/**
 	 * For debugging: check a BugInstance to make sure it
 	 * is valid.

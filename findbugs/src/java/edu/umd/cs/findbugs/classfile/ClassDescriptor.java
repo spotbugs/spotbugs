@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.util.ClassName;
 public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String className;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -46,14 +46,14 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 		}
 		this.className = className;
 	}
-	
+
 	/**
 	 * @return Returns the class name in VM format, e.g. "java/lang/String"
 	 */
 	public String getClassName() {
 		return className;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
@@ -103,7 +103,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 		// This could be more sophisticated.
 		return resourceName.endsWith(".class");
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -111,7 +111,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 	public String toString() {
 		return className;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -123,7 +123,7 @@ public class ClassDescriptor implements Comparable<ClassDescriptor>, Serializabl
 		ClassDescriptor other = (ClassDescriptor) obj;
 		return this.className.equals(other.className);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

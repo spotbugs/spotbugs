@@ -61,7 +61,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisitor<IsNullValue, IsNullValueFrame> {
 
 	private static final boolean NO_ASSERT_HACK = SystemProperties.getBoolean("inva.noAssertHack");
-    private static final boolean MODEL_NONNULL_RETURN = SystemProperties.getBoolean("fnd.modelNonnullReturn",true);
+	private static final boolean MODEL_NONNULL_RETURN = SystemProperties.getBoolean("fnd.modelNonnullReturn",true);
 	private AssertionMethods assertionMethods;
 	private ValueNumberDataflow vnaDataflow;
 	private final boolean trackValueNumbers;
@@ -77,7 +77,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		this.vnaDataflow = vnaDataflow;
 		this.trackValueNumbers = trackValueNumbers;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor#analyzeInstruction(org.apache.bcel.generic.Instruction)
 	 */
@@ -86,7 +86,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		slotContainingNewNullValue = -1;
 		super.analyzeInstruction(ins);
 	}
-	
+
 	/**
 	 * @return Returns the slotContainingNewNullValue; or -1 if no new null value
 	 *          was produced
@@ -94,7 +94,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 	public int getSlotContainingNewNullValue() {
 		return slotContainingNewNullValue;
 	}
-	
+
 	@Override
 	public IsNullValue getDefaultValue() {
 		return IsNullValue.nonReportingNotNullValue();
@@ -126,7 +126,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		frame.pushValue(value);
 		frame.pushValue(value);
 	}
-	
+
 	/**
 	 * Handle method invocations.
 	 * Generally, we want to get rid of null information following a
@@ -136,14 +136,14 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		Type callType = obj.getLoadClassType(getCPG());
 		Type returnType = obj.getReturnType(getCPG());
 		String methodName = obj.getMethodName(getCPG());
-		
+
 		boolean stringMethodCall = callType.equals(Type.STRING) && returnType.equals(Type.STRING);
 
 		boolean isReadLine =  methodName.equals("readLine");
 		// Determine if we are going to model the return value of this call.
 		boolean modelCallReturnValue = MODEL_NONNULL_RETURN && returnType instanceof ReferenceType;
 
-			
+
 		if( !modelCallReturnValue) {
 			// Normal case: Assume returned values are non-reporting non-null.
 			handleNormalInstruction(obj);
@@ -161,25 +161,25 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 				if (IsNullValueAnalysis.DEBUG) System.out.println("Check " + calledMethod + " for null return...");
 				NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase().getResolvedAnnotation(calledMethod, false);
 				Boolean alwaysNonNull =  AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase().getProperty(calledMethod);
-                    if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
+					if (annotation == NullnessAnnotation.CHECK_FOR_NULL) {
 					if (IsNullValueAnalysis.DEBUG) {
 						System.out.println("Null value returned from " + calledMethod);
 					}
 					pushValue = IsNullValue.nullOnSimplePathValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
-                } else  if (annotation == NullnessAnnotation.NULLABLE)  {
-                    pushValue = IsNullValue.nonReportingNotNullValue();
+				} else  if (annotation == NullnessAnnotation.NULLABLE)  {
+					pushValue = IsNullValue.nonReportingNotNullValue();
 				} else  if (annotation == NullnessAnnotation.NONNULL || alwaysNonNull != null && alwaysNonNull.booleanValue()) {
 					// Method is declared NOT to return null
 					if (IsNullValueAnalysis.DEBUG) {
 						System.out.println("NonNull value return from " + calledMethod);
 					}
 					pushValue = IsNullValue.nonNullValue().markInformationAsComingFromReturnValueOfMethod(calledMethod);
-					
+
 				} else {
 					pushValue = IsNullValue.nonReportingNotNullValue();
 				}
 			}
-			
+
 			modelInstruction(obj, getNumWordsConsumed(obj), getNumWordsProduced(obj), pushValue);
 			newValueOnTOS();
 		}
@@ -197,12 +197,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 					IsNullValue value = e.getValue();
 					if (value.isDefinitelyNull() || value.isNullOnSomePath()) 
 						e.setValue(IsNullValue.nonReportingNotNullValue());
-					
+
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Hook indicating that a new (possibly-null) value is on the
 	 * top of the stack.
@@ -236,7 +236,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			super.visitPUTFIELD(obj);
 			return;
 		}
-		
+
 		IsNullValue nullValueStored = null;
 		try {
 			nullValueStored = getFrame().getTopValue();
@@ -272,7 +272,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		}
 
 		XField field = XFactory.createXField(obj, cpg);
-		
+
 		NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase().getResolvedAnnotation(field, false);
 		if (annotation == NullnessAnnotation.NONNULL) {
 			modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
@@ -282,12 +282,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 				modelNormalInstruction(obj, getNumWordsConsumed(obj), 0);
 				produce(IsNullValue.nullOnSimplePathValue().markInformationAsComingFromFieldValue(field));
 		} else {
-			
+
 			super.visitGETFIELD(obj);
 		}
 
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AbstractFrameModelingVisitor#visitGETSTATIC(org.apache.bcel.generic.GETSTATIC)
 	 */
@@ -302,12 +302,12 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			return;
 		}
 		XField field = XFactory.createXField(obj, cpg);
-        if (field.getClassName().equals("java.util.logging.Level")
-                && field.getName().equals("SEVERE")
-                || field.getClassName().equals("org.apache.log4j.Level") 
+		if (field.getClassName().equals("java.util.logging.Level")
+				&& field.getName().equals("SEVERE")
+				|| field.getClassName().equals("org.apache.log4j.Level") 
                 && (field.getName().equals("ERROR") || field.getName().equals("FATAL")))
-            getFrame().toExceptionValues();
-            
+			getFrame().toExceptionValues();
+
 		if (field.getName().startsWith("class$")) {
 			produce(IsNullValue.nonNullValue());
 			return;
@@ -326,7 +326,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 			super.visitGETSTATIC(obj);
 		}
 	}
-	
+
 	/**
 	 * Check given Instruction to see if it produces a known value.
 	 * If so, model the instruction and return true.

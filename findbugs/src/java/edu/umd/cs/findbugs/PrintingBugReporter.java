@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
 public class PrintingBugReporter extends TextUIBugReporter {
 	private String stylesheet = null;
 	private boolean annotationUploadFormat = false;
-  	private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
+	  private HashSet<BugInstance> seenAlready = new HashSet<BugInstance>();
 
 	public void observeClass(ClassDescriptor classDescriptor) {
 		// Don't need to do anything special, since we won't be
@@ -54,14 +54,14 @@ public class PrintingBugReporter extends TextUIBugReporter {
 	public void finish() {
 		outputStream.close();
 	}
-	
+
 	class PrintingCommandLine extends CommandLine {
 
 		public PrintingCommandLine() {
 			addSwitch("-longBugCodes", "use long bug codes when generating text");
-            addSwitch("-designations", "report user designations for each bug");
-            addSwitch("-history", "report first and last versions for each bug");
-            
+			addSwitch("-designations", "report user designations for each bug");
+			addSwitch("-history", "report first and last versions for each bug");
+
 			addSwitch("-annotationUpload", "generate annotations in upload format");
 			addSwitchWithOptionalExtraPart("-html", "stylesheet",
 			"Generate HTML output (default stylesheet is default.xsl)");
@@ -75,11 +75,11 @@ public class PrintingBugReporter extends TextUIBugReporter {
 				setUseLongBugCodes(true);
 			else if (option.equals("-designations"))
 				setReportUserDesignations(true);
-            else if (option.equals("-history"))
-                setReportHistory(true);
-           else if (option.equals("-annotationUpload"))
+			else if (option.equals("-history"))
+				setReportHistory(true);
+		   else if (option.equals("-annotationUpload"))
                 annotationUploadFormat = true;
-            else if (option.equals("-html")) {
+			else if (option.equals("-html")) {
 				if (!optionExtraPart.equals("")) {
 					stylesheet = optionExtraPart;
 				} else {
@@ -94,9 +94,9 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		@Override
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 	}
 	public static void main(String[] args) throws Exception {
 
@@ -108,19 +108,19 @@ public class PrintingBugReporter extends TextUIBugReporter {
 
 		// Load plugins, in order to get message files
 		DetectorFactoryCollection.instance();
-		
+
 		if (reporter.stylesheet != null) {
 			// actually do xsl via HTMLBugReporter instead of PrintingBugReporter
 			xslt(reporter.stylesheet, args, argCount);
 			return;
 		}
-		
+
 		SortedBugCollection bugCollection = new SortedBugCollection();
 		if (argCount < args.length)
 			bugCollection.readXML(args[argCount++], new Project());
 		else
 			bugCollection.readXML(System.in, new Project());
-		
+
 		if (argCount < args.length)
 			reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));
 		RuntimeException storedException = null;
@@ -131,8 +131,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 				try {
 					String fHash = "fb-"+ 	warning.getInstanceHash() +"-"+	warning.getInstanceOccurrenceNum()
 					+"-"+warning.getInstanceOccurrenceMax();
-					
-					
+
+
 				System.out.print("#" + fHash);
 				String key = warning.getUserDesignationKey();
 				if (key.equals(BugDesignation.UNCLASSIFIED) || key.equals("NEEDS_FURTHER_STUDY"))
@@ -163,7 +163,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 		}
 		}
 		if (storedException != null) throw storedException;
-		
+
 	}
 
 
@@ -182,8 +182,8 @@ public class PrintingBugReporter extends TextUIBugReporter {
 			reporter.setOutputStream(new PrintStream(new FileOutputStream(args[argCount++]), true));
 
 		reporter.finish();
-        Exception e = reporter.getFatalException();
-        if (e != null) throw e;
+		Exception e = reporter.getFatalException();
+		if (e != null) throw e;
 	}
 }
 

@@ -86,7 +86,7 @@ public class Location implements Comparable<Location> {
 	public BasicBlock getBasicBlock() {
 		return basicBlock;
 	}
-	
+
 	/**
 	 * Return whether or not the Location is positioned at the
 	 * first instruction in the basic block.
@@ -94,7 +94,7 @@ public class Location implements Comparable<Location> {
 	public boolean isFirstInstructionInBasicBlock() {
 		return !basicBlock.isEmpty() && handle == basicBlock.getFirstInstruction();
 	}
-	
+
 	/**
 	 * Return whether or not the Location is positioned at the
 	 * last instruction in the basic block.
@@ -114,12 +114,12 @@ public class Location implements Comparable<Location> {
 	}
 
 	@Override
-         public int hashCode() {
+		 public int hashCode() {
 		return System.identityHashCode(basicBlock) + handle.getPosition();
 	}
 
 	@Override
-         public boolean equals(Object o) {
+		 public boolean equals(Object o) {
 		if (!(o instanceof Location))
 			return false;
 		Location other = (Location) o;
@@ -127,7 +127,7 @@ public class Location implements Comparable<Location> {
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		return handle.toString() + " in basic block " + basicBlock.getId();
 	}
 }

@@ -220,30 +220,30 @@ public class Update {
 
 		// Copy unmatched bugs
 		if (copyDeadBugs || incrementalAnalysis)
-            for (BugInstance bug : origCollection.getCollection())
-                if (!matchedOldBugs.contains(bug) && bug.getLastVersion() == -1) {
-                    newlyDeadBugs++;
+			for (BugInstance bug : origCollection.getCollection())
+				if (!matchedOldBugs.contains(bug) && bug.getLastVersion() == -1) {
+					newlyDeadBugs++;
 
-                    BugInstance newBug = (BugInstance) bug.clone();
+					BugInstance newBug = (BugInstance) bug.clone();
 
-                    ClassAnnotation classBugFoundIn = bug.getPrimaryClass();
-                    String className = classBugFoundIn.getClassName();
-                    if (newCollection.getProjectStats().getClassStats(className) != null) {
+					ClassAnnotation classBugFoundIn = bug.getPrimaryClass();
+					String className = classBugFoundIn.getClassName();
+					if (newCollection.getProjectStats().getClassStats(className) != null) {
                         if (!copyDeadBugs)
-                            continue;
-                        newBug.setRemovedByChangeOfPersistingClass(true);
-                        newBug.setLastVersion(lastSequence);
+							continue;
+						newBug.setRemovedByChangeOfPersistingClass(true);
+						newBug.setLastVersion(lastSequence);
                     } else {
-                        deadBugInDeadCode++;
-                        if (!incrementalAnalysis)
-                            newBug.setLastVersion(lastSequence);
+						deadBugInDeadCode++;
+						if (!incrementalAnalysis)
+							newBug.setLastVersion(lastSequence);
                     }
 
-                    if (newBug.getLastVersion() != -1 && newBug.getFirstVersion() > newBug.getLastVersion())
-                        throw new IllegalStateException("Illegal Version range: " + newBug.getFirstVersion() + ".."
-                                + newBug.getLastVersion());
+					if (newBug.getLastVersion() != -1 && newBug.getFirstVersion() > newBug.getLastVersion())
+						throw new IllegalStateException("Illegal Version range: " + newBug.getFirstVersion() + ".."
+								+ newBug.getLastVersion());
                     resultCollection.add(newBug, false);
-                }
+				}
 		// Copy matched bugs
 		for (BugInstance bug : newCollection.getCollection()) {
 			BugInstance newBug = (BugInstance) bug.clone();

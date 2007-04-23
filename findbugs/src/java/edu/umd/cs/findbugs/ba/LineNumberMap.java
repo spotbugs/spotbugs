@@ -68,7 +68,7 @@ public class LineNumberMap {
 
 		if (DEBUG) {
 			System.out.println("Method: " + methodGen.getName() + " - " + methodGen.getSignature() +
-			        "in class " + methodGen.getClassName());
+					"in class " + methodGen.getClassName());
 		}
 
 		// Associate line number information with each InstructionHandle
@@ -94,7 +94,7 @@ public class LineNumberMap {
 				if (sourceLine >= 0)
 					++numGood;
 				lineNumberMap.put(handle,
-				        new LineNumber(bytecodeOffset, sourceLine));
+						new LineNumber(bytecodeOffset, sourceLine));
 				handle = handle.getNext();
 				++numBytecodes;
 			}

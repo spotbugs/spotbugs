@@ -42,7 +42,7 @@ public interface ResourceTracker <Resource> {
 	 *         null if it is not a creation site
 	 */
 	public Resource isResourceCreation(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg)
-	        throws DataflowAnalysisException;
+			throws DataflowAnalysisException;
 
 	/**
 	 * Determine if the given instruction is the site where a resource
@@ -57,7 +57,7 @@ public interface ResourceTracker <Resource> {
 	 * @return true if the resource is closed here, false otherwise
 	 */
 	public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle, ConstantPoolGen cpg, Resource resource,
-	                               ResourceValueFrame frame) throws DataflowAnalysisException;
+								   ResourceValueFrame frame) throws DataflowAnalysisException;
 
 	/**
 	 * Create a ResourceValueFrameModelingVisitor to model the effect

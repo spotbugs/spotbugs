@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 public class LocationWhereValueBecomesNull implements Comparable<LocationWhereValueBecomesNull> {
 	private Location location;
 	private ValueNumber valueNumber;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -41,21 +41,21 @@ public class LocationWhereValueBecomesNull implements Comparable<LocationWhereVa
 		this.location = location;
 		this.valueNumber = valueNumber;
 	}
-	
+
 	/**
 	 * @return Returns the location.
 	 */
 	public Location getLocation() {
 		return location;
 	}
-	
+
 	/**
 	 * @return Returns the valueNumber.
 	 */
 	public ValueNumber getValueNumber() {
 		return valueNumber;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
@@ -67,7 +67,7 @@ public class LocationWhereValueBecomesNull implements Comparable<LocationWhereVa
 		cmp = this.valueNumber.compareTo(o.valueNumber);
 		return cmp;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -80,7 +80,7 @@ public class LocationWhereValueBecomesNull implements Comparable<LocationWhereVa
 		return this.location.equals(other.location)
 			&& this.valueNumber.equals(other.valueNumber);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -88,7 +88,7 @@ public class LocationWhereValueBecomesNull implements Comparable<LocationWhereVa
 	public int hashCode() {
 		return location.hashCode() * 6563 + valueNumber.hashCode();
 	}
-	
+
 	@Override
 	public String toString() {
 		return valueNumber + " becomes null at " + location.getHandle().getPosition() +":" + location;

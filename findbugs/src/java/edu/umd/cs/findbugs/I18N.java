@@ -98,7 +98,7 @@ public class I18N {
 	 */
 	public Iterator<BugPattern> bugPatternIterator() {
 		DetectorFactoryCollection.instance(); // ensure detectors loaded
-		
+
 		return bugPatternMap.values().iterator();
 	}
 
@@ -173,9 +173,9 @@ public class I18N {
 				return "TRANSLATE(key=" + key + ") (param={0}}";
 			else try {
 				return englishAnnotationDescriptionBundle.getString(key);
-            } catch(MissingResourceException mre2){
-                    return key;
-                }
+			} catch(MissingResourceException mre2){
+					return key;
+				}
             
 		}
 	}
@@ -242,12 +242,12 @@ public class I18N {
 	 */
 	public Collection<String> getBugCategories() {
 		DetectorFactoryCollection.instance(); // ensure detectors loaded
-		
+
 		return categoryDescriptionMap.keySet(); // backed by the Map
 	}
 	public Collection<BugCategory> getBugCategoryObjects() {
 		DetectorFactoryCollection.instance(); // ensure detectors loaded
-		
+
 		return categoryDescriptionMap.values(); // backed by the Map
 	}
 	/**
@@ -308,15 +308,15 @@ public class I18N {
 			if (key.length() <= 0) return -29;
 			switch (key.charAt(0)) {
 				case 'U': if ("UNCLASSIFIED".equals(key)) return 20;
-				          break;
+						  break;
 				case 'B': if ("BAD_ANALYSIS".equals(key)) return 15;
-				          break;
+						  break;
 				case 'N': if ("NEEDS_STUDY".equals(key)) return -22;
 						  if ("NOT_A_BUG".equals(key)) return -15;
-				          break;
+						  break;
 				case 'M': if ("MOSTLY_HARMLESS".equals(key)) return -10;
-				          if ("MUST_FIX".equals(key)) return 10;
-				          break;
+						  if ("MUST_FIX".equals(key)) return 10;
+						  break;
 				case 'S': if ("SHOULD_FIX".equals(key)) return 5;
 			}
 			return 0; // between MOSTLY_HARMLESS and SHOULD_FIX

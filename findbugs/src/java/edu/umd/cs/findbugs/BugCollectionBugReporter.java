@@ -88,12 +88,12 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 		return this;
 	}
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.BugReporter#finish()
-     */
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.BugReporter#finish()
+	 */
     public void finish() {
-        assert true; // nothing to do.
-    }
+		assert true; // nothing to do.
+	}
 }
 
 // vim:ts=4

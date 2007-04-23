@@ -39,22 +39,22 @@ public class SourceSearcher {
 	public SourceSearcher(Project project) {
 		sourceFinder.setSourceBaseList(project.getSourceDirList());
 	}
-	
+
 	public boolean findSource(SourceLineAnnotation srcLine) {
 		if (srcLine == null) return false;
-        String cName = srcLine.getClassName();
-        if (sourceFound.contains(cName)) return true;
-        if (sourceNotFound.contains(cName)) return false;
+		String cName = srcLine.getClassName();
+		if (sourceFound.contains(cName)) return true;
+		if (sourceNotFound.contains(cName)) return false;
     
-        try {
-            InputStream in = sourceFinder.openSource(srcLine);
-            in.close();
+		try {
+			InputStream in = sourceFinder.openSource(srcLine);
+			in.close();
             sourceFound.add(cName);
-            return true;
-        } catch (IOException e1) {
-            sourceNotFound.add(cName);
+			return true;
+		} catch (IOException e1) {
+			sourceNotFound.add(cName);
             return false;
-        }
-    }
+		}
+	}
 
 }

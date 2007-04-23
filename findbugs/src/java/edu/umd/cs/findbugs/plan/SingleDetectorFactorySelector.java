@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.Plugin;
 public class SingleDetectorFactorySelector implements DetectorFactorySelector {
 	private Plugin plugin;
 	private String className;
-	
+
 	public SingleDetectorFactorySelector(Plugin plugin, String className) {
 		this.plugin = plugin;
 		this.className = className;
@@ -40,10 +40,10 @@ public class SingleDetectorFactorySelector implements DetectorFactorySelector {
 		return plugin == factory.getPlugin() &&
 			 (factory.getFullName().equals(className) || factory.getShortName().equals(className));
 	}
-	
+
 	@Override
-         public String toString() {
+		 public String toString() {
 		return className;
 	}
-	
+
 }

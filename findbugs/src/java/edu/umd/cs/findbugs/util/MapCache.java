@@ -52,7 +52,7 @@ public class MapCache<K,V> extends LinkedHashMap<K,V> {
 			if (e.getKey().equals(k)) {
 				count[age]++;
 				if (false && age > 20 && k instanceof JavaClass) {
-					
+
 					System.out.println("Reusing value from " + age + " steps ago ");
 					System.out.println("Class " + ((JavaClass)k).getClassName());
 					new RuntimeException().printStackTrace(System.out);
@@ -60,19 +60,19 @@ public class MapCache<K,V> extends LinkedHashMap<K,V> {
 				break;
 			}
 			age--;
-			
+
 		}
 		}
 		return super.get(k);
 	}
 	@Override
 	protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
-        boolean result = size() > maxCapacity;
-        if (false && result && eldest.getKey() instanceof JavaClass)
-        		System.out.println("Dropping " + ((JavaClass)eldest.getKey()).getClassName());
+		boolean result = size() > maxCapacity;
+		if (false && result && eldest.getKey() instanceof JavaClass)
+				System.out.println("Dropping " + ((JavaClass)eldest.getKey()).getClassName());
 		return result;
-     }
-	
+	 }
+
 	public String getStatistics() {
 		StringBuffer b = new StringBuffer();
 		for(int c : count) 

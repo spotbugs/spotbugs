@@ -40,21 +40,21 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
 public class FieldStoreType {
 	private HashSet<String> typeSignatureSet;
 	private ReferenceType loadType;
-	
+
 	public FieldStoreType() {
 		this.typeSignatureSet = new HashSet<String>();
 	}
-	
+
 	// TODO: type may be exact
 	public void addTypeSignature(String signature) {
 		loadType = null;
 		typeSignatureSet.add(signature);
 	}
-	
+
 	public Iterator<String> signatureIterator() {
 		return typeSignatureSet.iterator();
 	}
-	
+
 	public ReferenceType getLoadType(ReferenceType fieldType) {
 		if (loadType == null) {
 			computeLoadType(fieldType);
@@ -64,34 +64,34 @@ public class FieldStoreType {
 
 	private void computeLoadType(ReferenceType fieldType) {
 		ReferenceType leastSupertype = null;
-		
+
 		for (Iterator<String> i = signatureIterator(); i.hasNext();) {
 			try {
 				String signature = i.next();
 				Type type = Type.getType(signature);
 				if (!(type instanceof ReferenceType))
 					continue;
-				
+
 				// FIXME: this will mangle interface types, since
 				// getFirstCommonSuperclass() ignores interfaces.
 				leastSupertype = (leastSupertype == null)
 					? (ReferenceType) type
 					: leastSupertype.getFirstCommonSuperclass((ReferenceType) type);
-					
+
 			} catch (ClassFormatException e) {
 				// Bad signature: ignore
 			} catch (ClassNotFoundException e) {
 				AnalysisContext.reportMissingClass(e);
 			}
 		}
-		
+
 		try {
 			if (leastSupertype != null && Hierarchy.isSubtype(leastSupertype, fieldType))
 				loadType = leastSupertype;
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}
-		
+
 		if (loadType == null)
 			loadType = fieldType;
 	}

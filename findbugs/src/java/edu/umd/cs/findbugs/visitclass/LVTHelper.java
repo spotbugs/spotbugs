@@ -40,7 +40,7 @@ public class LVTHelper
 	public static LocalVariable getLocalVariableAtPC(@NonNull LocalVariableTable lvt, int index, int pc) {
 		int length = lvt.getTableLength();
 		LocalVariable[] lvs = lvt.getLocalVariableTable();
-		
+
 		for(int i = 0; i < length; i++) {
 			if (lvs[i].getIndex() == index) {
 				int startPC = lvs[i].getStartPC();
@@ -48,7 +48,7 @@ public class LVTHelper
 					return lvs[i];
 			}
 		}
-		
+
 		return null;
 	}
 }

@@ -23,4 +23,4 @@ public class MethodWarningSuppressor extends ClassWarningSuppressor {
 	return true;
 	}
 }
-	
+

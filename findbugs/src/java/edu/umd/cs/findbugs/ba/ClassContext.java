@@ -110,7 +110,7 @@ public class ClassContext {
 	/* ----------------------------------------------------------------------
 	 * Helper classes
 	 * ---------------------------------------------------------------------- */
-	
+
 	/**
 	 * Unpacked code for a method.
 	 * Contains set of all opcodes in the method, as well as a map
@@ -123,14 +123,14 @@ public class ClassContext {
 			this.bytecodeSet = bytecodeSet;
 			this.offsetToBytecodeMap = offsetToBytecodeMap;
 		}
-		
+
 		/**
 		 * @return Returns the bytecodeSet.
 		 */
 		public BitSet getBytecodeSet() {
 			return bytecodeSet;
 		}
-		
+
 		/**
 		 * @return Returns the offsetToBytecodeMap.
 		 */
@@ -144,7 +144,7 @@ public class ClassContext {
 	private static void indent() {
 		for (int i = 0; i < depth; ++i) System.out.print("  ");
 	}
-	
+
 	/**
 	 * An AnalysisResult stores the result of requesting an analysis
 	 * from an AnalysisFactory.  It can represent a successful outcome
@@ -160,7 +160,7 @@ public class ClassContext {
 		private AnalysisException analysisException;
 		private CFGBuilderException cfgBuilderException;
 		private DataflowAnalysisException dataflowAnalysisException;
-		
+
 		public Analysis getAnalysis() throws CFGBuilderException, DataflowAnalysisException {
 			if (analysisSetExplicitly)
 				return analysis;
@@ -172,7 +172,7 @@ public class ClassContext {
 				throw cfgBuilderException;
 			throw new IllegalStateException();
 		}
-		
+
 		/**
 		 * Record a successful outcome, where the analysis was created.
 		 * 
@@ -182,7 +182,7 @@ public class ClassContext {
 			this.analysisSetExplicitly = true;
 			this.analysis = analysis;
 		}
-		
+
 		/**
 		 * Record that an AnalysisException occurred while attempting
 		 * to create the Analysis.
@@ -192,7 +192,7 @@ public class ClassContext {
 		public void setAnalysisException(AnalysisException analysisException) {
 			this.analysisException = analysisException;
 		}
-		
+
 		/**
 		 * Record that a CFGBuilderException occurred while attempting
 		 * to create the Analysis.
@@ -202,7 +202,7 @@ public class ClassContext {
 		public void setCFGBuilderException(CFGBuilderException cfgBuilderException) {
 			this.cfgBuilderException = cfgBuilderException;
 		}
-		
+
 		/**
 		 * Record that a DataflowAnalysisException occurred while attempting
 		 * to create the Analysis.
@@ -230,7 +230,7 @@ public class ClassContext {
 		 */
 		public AnalysisFactory(String analysisName) {
 			this.analysisName = analysisName;
-			
+
 			analysisFactoryList.add(this);
 		}
 
@@ -251,11 +251,11 @@ public class ClassContext {
 					++depth;
 					indent();
 					System.out.println("CC: Starting " + analysisName + " for " +
-					        SignatureConverter.convertMethodSignature(jclass, method) + ":");
+							SignatureConverter.convertMethodSignature(jclass, method) + ":");
 				}
 
 				long begin = System.currentTimeMillis();
-				
+
 				// Create a new AnalysisResult
 				result = new AnalysisResult<Analysis>();
 
@@ -283,12 +283,12 @@ public class ClassContext {
 				// Cache the outcome of this analysis attempt.
 				map.put(method, result);
 			}
-			
+
 			return result.getAnalysis();
 		}
 
 		@CheckForNull protected abstract Analysis analyze(Method method)
-		        throws CFGBuilderException, DataflowAnalysisException;
+				throws CFGBuilderException, DataflowAnalysisException;
 
 		/**
 		 * @return true if this analysis factory is a dataflow analysis,
@@ -321,7 +321,7 @@ public class ClassContext {
 				throw new IllegalStateException("Should not happen");
 			}
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#isDataflow()
 		 */
@@ -344,7 +344,7 @@ public class ClassContext {
 				throw new IllegalStateException("Should not happen");
 			}
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#isDataflow()
 		 */
@@ -363,7 +363,7 @@ public class ClassContext {
 		}
 
 		@Override
-        public CFG getAnalysis(Method method) throws CFGBuilderException {
+		public CFG getAnalysis(Method method) throws CFGBuilderException {
 			try {
 				return super.getAnalysis(method);
 			} catch (DataflowAnalysisException e) {
@@ -378,7 +378,7 @@ public class ClassContext {
 		public CFG getRefinedCFG(Method method) throws CFGBuilderException {
 			CFG cfg = getRawCFG(method);
 			if (cfg.isFlagSet(REFINED)) return cfg;
-			
+
 			MethodGen methodGen = getMethodGen(method);
 			if (methodGen == null) {
 				JavaClassAndMethod javaClassAndMethod = new JavaClassAndMethod(jclass, method);
@@ -389,7 +389,7 @@ public class ClassContext {
 			// Record method name and signature for informational purposes
 			cfg.setMethodName(SignatureConverter.convertMethodSignature(methodGen));
 			cfg.setMethodGen(methodGen);
-			
+
 			// HACK:
 			// Due to recursive method invocations, we may get a recursive
 			// request for the pruned CFG of a method.  In this case,
@@ -405,7 +405,7 @@ public class ClassContext {
 				return cfg;
 
 			cfg.setFlags(REFINED);
-			
+
 			boolean changed = false;
 			boolean ASSUME_ASSERTIONS_ENABLED = true;
 			if (ASSUME_ASSERTIONS_ENABLED) {
@@ -454,10 +454,10 @@ public class ClassContext {
 					cfg.removeEdge(e);
 				}
 			}
-			
+
 			final boolean PRUNE_INFEASIBLE_EXCEPTION_EDGES =
 				analysisContext.getBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS);
-		
+
 			if (PRUNE_INFEASIBLE_EXCEPTION_EDGES && !cfg.isFlagSet(PRUNED_INFEASIBLE_EXCEPTIONS)) {
 				try {
 					TypeDataflow typeDataflow = getTypeDataflow(method);
@@ -474,7 +474,7 @@ public class ClassContext {
 				}
 			}
 			cfg.setFlags(cfg.getFlags() | PRUNED_INFEASIBLE_EXCEPTIONS);
-			
+
 			final boolean PRUNE_UNCONDITIONAL_EXCEPTION_THROWER_EDGES =
 				!analysisContext.getBoolProperty(AnalysisFeatures.CONSERVE_SPACE);
 
@@ -489,7 +489,7 @@ public class ClassContext {
 				}
 			}
 			cfg.setFlags(cfg.getFlags() | PRUNED_UNCONDITIONAL_THROWERS);
-			
+
 			if (changed) {
 				ClassContext.this.purgeAnalysisResultsAfterCFGPruning(method);
 			}
@@ -511,7 +511,7 @@ public class ClassContext {
 			cfgBuilder.build();
 			return cfgBuilder.getCFG();
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#isDataflow()
 		 */
@@ -520,14 +520,14 @@ public class ClassContext {
 			return false;
 		}
 	}
-	
+
 	private abstract class DataflowAnalysisFactory<Analysis>
 		extends AnalysisFactory<Analysis> {
-		
+
 		DataflowAnalysisFactory(String desc) {
 			super(desc);
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#isDataflow()
 		 */
@@ -543,12 +543,12 @@ public class ClassContext {
 
 	private JavaClass jclass;
 	private AnalysisContext analysisContext;
-	
+
 	// List of all analysis factories.
 	private List<AnalysisFactory<?>> analysisFactoryList =
 		new LinkedList<AnalysisFactory<?>>();
 
-	
+
 	private NoExceptionAnalysisFactory<MethodGen> methodGenFactory =
 		new NoExceptionAnalysisFactory<MethodGen>("MethodGen construction") {
 		@CheckForNull
@@ -556,7 +556,7 @@ public class ClassContext {
 		protected MethodGen analyze(Method method) {
 			if (method.getCode() == null)
 				return null;
-            try {
+			try {
 			String methodName = method.getName();
 			if (analysisContext.getBoolProperty(AnalysisFeatures.SKIP_HUGE_METHODS)) {
 				int codeLength = method.getCode().getLength();
@@ -567,9 +567,9 @@ public class ClassContext {
 				}
 			}
 			return  new MethodGen(method, jclass.getClassName(), getConstantPoolGen());
-            } catch (Exception e) {
-                AnalysisContext.logError("Error constructing methodGen", e);
-                return null;
+			} catch (Exception e) {
+				AnalysisContext.logError("Error constructing methodGen", e);
+				return null;
             }
 
 		}
@@ -577,156 +577,156 @@ public class ClassContext {
 
 	private CFGFactory cfgFactory = new CFGFactory();
 
-    private AnalysisFactory<UsagesRequiringNonNullValues> derefFactory =
-        new AnalysisFactory<UsagesRequiringNonNullValues>("Dereference factory") {
+	private AnalysisFactory<UsagesRequiringNonNullValues> derefFactory =
+		new AnalysisFactory<UsagesRequiringNonNullValues>("Dereference factory") {
 
-            @Override
-            protected UsagesRequiringNonNullValues analyze(Method method) throws CFGBuilderException,
-                    DataflowAnalysisException {
+			@Override
+			protected UsagesRequiringNonNullValues analyze(Method method) throws CFGBuilderException,
+					DataflowAnalysisException {
                 return DerefFinder.getAnalysis(ClassContext.this, method);
+			}
+
+			@Override
+			public boolean isDataflow() {
+				return false;
             }
 
-            @Override
-            public boolean isDataflow() {
-                return false;
-            }
 
-           
-        };
-        
+		};
+
         
 	private AnalysisFactory<ValueNumberDataflow> vnaDataflowFactory =
-	        new DataflowAnalysisFactory<ValueNumberDataflow>("value number analysis") {
+			new DataflowAnalysisFactory<ValueNumberDataflow>("value number analysis") {
 				@Override
-		        protected ValueNumberDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
-			        MethodGen methodGen = getMethodGen(method);
-			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
+				protected ValueNumberDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+					MethodGen methodGen = getMethodGen(method);
+					if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
 			        DepthFirstSearch dfs = getDepthFirstSearch(method);
-			        LoadedFieldSet loadedFieldSet = getLoadedFieldSet(method);
-			        ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs, loadedFieldSet,
+					LoadedFieldSet loadedFieldSet = getLoadedFieldSet(method);
+					ValueNumberAnalysis analysis = new ValueNumberAnalysis(methodGen, dfs, loadedFieldSet,
 							getLookupFailureCallback());
 					analysis.setMergeTree(new MergeTree(analysis.getFactory()));
-			        CFG cfg = getCFG(method);
-			        
-			        ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, analysis);
+					CFG cfg = getCFG(method);
+
+					ValueNumberDataflow vnaDataflow = new ValueNumberDataflow(cfg, analysis);
 			        vnaDataflow.execute();
-			        if (DUMP_DATAFLOW_ANALYSIS) {
-			        	TreeSet<Location> tree = new TreeSet<Location>();
-			    		for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
+					if (DUMP_DATAFLOW_ANALYSIS) {
+						TreeSet<Location> tree = new TreeSet<Location>();
+						for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
 			    			Location loc = locs.next();
-			    			tree.add(loc);
-			    		}
-			        	System.out.println("\n\nValue number analysis for " + method.getName() + " {");
+							tree.add(loc);
+						}
+						System.out.println("\n\nValue number analysis for " + method.getName() + " {");
 			        	for(Location loc : tree) {
-			        		System.out.println("\nBefore: " + vnaDataflow.getFactAtLocation(loc));
-			        		System.out.println("Location: " + loc);
-			        		System.out.println("After: " + vnaDataflow.getFactAfterLocation(loc));	
+							System.out.println("\nBefore: " + vnaDataflow.getFactAtLocation(loc));
+							System.out.println("Location: " + loc);
+							System.out.println("After: " + vnaDataflow.getFactAfterLocation(loc));	
 			        	}
-			        	System.out.println("}\n");
-			        }
-			        return vnaDataflow;
+						System.out.println("}\n");
+					}
+					return vnaDataflow;
 		        }
-	        };
+			};
 
 	private AnalysisFactory<IsNullValueDataflow> invDataflowFactory =
-	        new DataflowAnalysisFactory<IsNullValueDataflow>("null value analysis") {
-		        @Override
-                   protected IsNullValueDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+			new DataflowAnalysisFactory<IsNullValueDataflow>("null value analysis") {
+				@Override
+				   protected IsNullValueDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
-			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
-			        CFG cfg = getCFG(method);
-			        ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
+					if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
+					CFG cfg = getCFG(method);
+					ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
 			        DepthFirstSearch dfs = getDepthFirstSearch(method);
-			        AssertionMethods assertionMethods = getAssertionMethods();
+					AssertionMethods assertionMethods = getAssertionMethods();
 
-			        IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow, dfs, assertionMethods);
+					IsNullValueAnalysis invAnalysis = new IsNullValueAnalysis(methodGen, cfg, vnaDataflow, dfs, assertionMethods);
 
 					// Set return value and parameter databases
 
 					invAnalysis.setClassAndMethod(new JavaClassAndMethod(getJavaClass(), method));
-					
-			        IsNullValueDataflow invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
-			        invDataflow.execute();
+
+					IsNullValueDataflow invDataflow = new IsNullValueDataflow(cfg, invAnalysis);
+					invDataflow.execute();
 			        if (DUMP_DATAFLOW_ANALYSIS) {
-			        	TreeSet<Location> tree = new TreeSet<Location>();
-			    		for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
-			    			Location loc = locs.next();
+						TreeSet<Location> tree = new TreeSet<Location>();
+						for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
+							Location loc = locs.next();
 			    			tree.add(loc);
-			    		}
-			        	System.out.println("\n\nInv analysis for " + method.getName() + " {");
-			        	for(Location loc : tree) {
+						}
+						System.out.println("\n\nInv analysis for " + method.getName() + " {");
+						for(Location loc : tree) {
 			        		System.out.println("\nBefore: " + invDataflow.getFactAtLocation(loc));
-			        		System.out.println("Location: " + loc);
-			        		System.out.println("After: " + invDataflow.getFactAfterLocation(loc));	
-			        	}
+							System.out.println("Location: " + loc);
+							System.out.println("After: " + invDataflow.getFactAfterLocation(loc));	
+						}
 			        	System.out.println("}\n");
-			        }
-			        return invDataflow;
-		        }
+					}
+					return invDataflow;
+				}
 	        };
 
 	private AnalysisFactory<TypeDataflow> typeDataflowFactory =
-	        new DataflowAnalysisFactory<TypeDataflow>("type analysis") {
+			new DataflowAnalysisFactory<TypeDataflow>("type analysis") {
 				@Override
 				protected TypeDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
-			        MethodGen methodGen = getMethodGen(method);
-			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
-			        CFG cfg = getRawCFG(method);
+					MethodGen methodGen = getMethodGen(method);
+					if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
+					CFG cfg = getRawCFG(method);
 			        DepthFirstSearch dfs = getDepthFirstSearch(method);
-			        ExceptionSetFactory exceptionSetFactory = getExceptionSetFactory(method);
+					ExceptionSetFactory exceptionSetFactory = getExceptionSetFactory(method);
 
-			        TypeAnalysis typeAnalysis =
-			                new TypeAnalysis(method, methodGen, cfg, dfs, getLookupFailureCallback(), exceptionSetFactory);
-			        
+					TypeAnalysis typeAnalysis =
+							new TypeAnalysis(method, methodGen, cfg, dfs, getLookupFailureCallback(), exceptionSetFactory);
+
 					if (analysisContext.getBoolProperty(AnalysisFeatures.MODEL_INSTANCEOF)) {
 						typeAnalysis.setValueNumberDataflow(getValueNumberDataflow(method));
 					}
-					
+
 					// Field store type database.
 					// If present, this can give us more accurate type information
 					// for values loaded from fields.
 					typeAnalysis.setFieldStoreTypeDatabase(analysisContext.getFieldStoreTypeDatabase());
-					
+
 					TypeDataflow typeDataflow = new TypeDataflow(cfg, typeAnalysis);
-			        typeDataflow.execute();
-			        if (TypeAnalysis.DEBUG) {
-			        	dumpTypeDataflow(method, cfg, typeDataflow);
+					typeDataflow.execute();
+					if (TypeAnalysis.DEBUG) {
+						dumpTypeDataflow(method, cfg, typeDataflow);
 			        }
 
-			        return typeDataflow;
-		        }
-	        };
+					return typeDataflow;
+				}
+			};
 
 	private NoDataflowAnalysisFactory<DepthFirstSearch> dfsFactory =
-	        new NoDataflowAnalysisFactory<DepthFirstSearch>("depth first search") {
+			new NoDataflowAnalysisFactory<DepthFirstSearch>("depth first search") {
 				@Override
 				protected DepthFirstSearch analyze(Method method) throws CFGBuilderException {
-			        CFG cfg = getRawCFG(method);
-			        DepthFirstSearch dfs = new DepthFirstSearch(cfg);
-			        dfs.search();
+					CFG cfg = getRawCFG(method);
+					DepthFirstSearch dfs = new DepthFirstSearch(cfg);
+					dfs.search();
 			        return dfs;
-		        }
-	        };
+				}
+			};
 
 	private NoDataflowAnalysisFactory<ReverseDepthFirstSearch> rdfsFactory =
 			new NoDataflowAnalysisFactory<ReverseDepthFirstSearch>("reverse depth first search") {
 				@Override
 				protected ReverseDepthFirstSearch analyze(Method method) throws CFGBuilderException {
-			        CFG cfg = getRawCFG(method);
-			        ReverseDepthFirstSearch rdfs = new ReverseDepthFirstSearch(cfg);
-			        rdfs.search();
+					CFG cfg = getRawCFG(method);
+					ReverseDepthFirstSearch rdfs = new ReverseDepthFirstSearch(cfg);
+					rdfs.search();
 			        return rdfs;
-		        }
-	        };
+				}
+			};
 	private static class UnpackedBytecodeCallback implements BytecodeScanner.Callback {
 		private BitSet bytecodeSet;
 		private short[] offsetToOpcodeMap;
-		
+
 		public UnpackedBytecodeCallback(int codeSize) {
 			this.bytecodeSet = new BitSet();
 			this.offsetToOpcodeMap = new short[codeSize];
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.ba.BytecodeScanner.Callback#handleInstruction(int, int)
 		 */
@@ -734,50 +734,50 @@ public class ClassContext {
 			bytecodeSet.set(opcode);
 			offsetToOpcodeMap[index] = (short) opcode;
 		}
-		
+
 		public UnpackedCode getUnpackedCode() {
 			return new UnpackedCode(bytecodeSet, offsetToOpcodeMap);
 		}
 	}
 
 	private NoExceptionAnalysisFactory<UnpackedCode> unpackedCodeFactory =
-	        new NoExceptionAnalysisFactory<UnpackedCode>("unpacked bytecode") {
-		        @Override
-                         protected UnpackedCode analyze(Method method) {
+			new NoExceptionAnalysisFactory<UnpackedCode>("unpacked bytecode") {
+				@Override
+						 protected UnpackedCode analyze(Method method) {
 
-			        Code code = method.getCode();
-			        if (code == null)
-				        return null;
+					Code code = method.getCode();
+					if (code == null)
+						return null;
 
-			        byte[] instructionList = code.getCode();
+					byte[] instructionList = code.getCode();
 
-			        // Create callback
-			        UnpackedBytecodeCallback callback = new UnpackedBytecodeCallback(instructionList.length);
+					// Create callback
+					UnpackedBytecodeCallback callback = new UnpackedBytecodeCallback(instructionList.length);
 
-			        // Scan the method.
-			        BytecodeScanner scanner = new BytecodeScanner();
-			        scanner.scan(instructionList, callback);
+					// Scan the method.
+					BytecodeScanner scanner = new BytecodeScanner();
+					scanner.scan(instructionList, callback);
 
-			        return callback.getUnpackedCode();
-		        }
-	        };
+					return callback.getUnpackedCode();
+				}
+			};
 
 	private AnalysisFactory<LockDataflow> lockDataflowFactory =
-	        new DataflowAnalysisFactory<LockDataflow>("lock set analysis") {
-		        @Override
-                         protected LockDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+			new DataflowAnalysisFactory<LockDataflow>("lock set analysis") {
+				@Override
+						 protected LockDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        MethodGen methodGen = getMethodGen(method);
-			        if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
-			        ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
-			        DepthFirstSearch dfs = getDepthFirstSearch(method);
+					if (methodGen == null) throw new MethodUnprofitableException(getJavaClass(),method);
+					ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
+					DepthFirstSearch dfs = getDepthFirstSearch(method);
 			        CFG cfg = getCFG(method);
 
-			        LockAnalysis analysis = new LockAnalysis(methodGen, vnaDataflow, dfs);
-			        LockDataflow dataflow = new LockDataflow(cfg, analysis);
-			        dataflow.execute();
+					LockAnalysis analysis = new LockAnalysis(methodGen, vnaDataflow, dfs);
+					LockDataflow dataflow = new LockDataflow(cfg, analysis);
+					dataflow.execute();
 			        return dataflow;
-		        }
-	        };
+				}
+			};
 
 	private AnalysisFactory<LockChecker> lockCheckerFactory =
 			new DataflowAnalysisFactory<LockChecker>("lock checker meta-analysis") {
@@ -785,59 +785,59 @@ public class ClassContext {
 				 * @see edu.umd.cs.findbugs.ba.ClassContext.AnalysisFactory#analyze(org.apache.bcel.classfile.Method)
 				 */
 				@Override
-                                 protected LockChecker analyze(Method method) throws CFGBuilderException,
+								 protected LockChecker analyze(Method method) throws CFGBuilderException,
 						DataflowAnalysisException {
 					LockChecker lockChecker = new LockChecker(ClassContext.this, method);
 					lockChecker.execute();
 					return lockChecker;
 				}
 			};
-	        
+
 	private AnalysisFactory<ReturnPathDataflow> returnPathDataflowFactory =
-	        new DataflowAnalysisFactory<ReturnPathDataflow>("return path analysis") {
-		        @Override
-                         protected ReturnPathDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+			new DataflowAnalysisFactory<ReturnPathDataflow>("return path analysis") {
+				@Override
+						 protected ReturnPathDataflow analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        CFG cfg = getCFG(method);
-			        DepthFirstSearch dfs = getDepthFirstSearch(method);
-			        ReturnPathAnalysis analysis = new ReturnPathAnalysis(dfs);
-			        ReturnPathDataflow dataflow = new ReturnPathDataflow(cfg, analysis);
+					DepthFirstSearch dfs = getDepthFirstSearch(method);
+					ReturnPathAnalysis analysis = new ReturnPathAnalysis(dfs);
+					ReturnPathDataflow dataflow = new ReturnPathDataflow(cfg, analysis);
 			        dataflow.execute();
-			        return dataflow;
-		        }
-	        };
+					return dataflow;
+				}
+			};
 
 	private AnalysisFactory<DominatorsAnalysis> nonExceptionDominatorsAnalysisFactory =
-	        new DataflowAnalysisFactory<DominatorsAnalysis>("non-exception dominators analysis") {
-		        @Override
-                         protected DominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+			new DataflowAnalysisFactory<DominatorsAnalysis>("non-exception dominators analysis") {
+				@Override
+						 protected DominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        CFG cfg = getCFG(method);
-			        DepthFirstSearch dfs = getDepthFirstSearch(method);
-			        DominatorsAnalysis analysis = new DominatorsAnalysis(cfg, dfs, true);
-			        Dataflow<java.util.BitSet, DominatorsAnalysis> dataflow =
+					DepthFirstSearch dfs = getDepthFirstSearch(method);
+					DominatorsAnalysis analysis = new DominatorsAnalysis(cfg, dfs, true);
+					Dataflow<java.util.BitSet, DominatorsAnalysis> dataflow =
 			                new Dataflow<java.util.BitSet, DominatorsAnalysis>(cfg, analysis);
-			        dataflow.execute();
-			        return analysis;
-		        }
+					dataflow.execute();
+					return analysis;
+				}
 	        };
 
 	private AnalysisFactory<PostDominatorsAnalysis> nonExceptionPostDominatorsAnalysisFactory =
-	        new DataflowAnalysisFactory<PostDominatorsAnalysis>("non-exception postdominators analysis") {
-		        @Override
-                         protected PostDominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
+			new DataflowAnalysisFactory<PostDominatorsAnalysis>("non-exception postdominators analysis") {
+				@Override
+						 protected PostDominatorsAnalysis analyze(Method method) throws DataflowAnalysisException, CFGBuilderException {
 			        CFG cfg = getCFG(method);
-			        ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(method);
-			        PostDominatorsAnalysis analysis = new PostDominatorsAnalysis(cfg, rdfs, getDepthFirstSearch(method), true);
-			        Dataflow<java.util.BitSet, PostDominatorsAnalysis> dataflow =
+					ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(method);
+					PostDominatorsAnalysis analysis = new PostDominatorsAnalysis(cfg, rdfs, getDepthFirstSearch(method), true);
+					Dataflow<java.util.BitSet, PostDominatorsAnalysis> dataflow =
 			                new Dataflow<java.util.BitSet, PostDominatorsAnalysis>(cfg, analysis);
-			        dataflow.execute();
-			        return analysis;
-		        }
+					dataflow.execute();
+					return analysis;
+				}
 	        };
 
 	private AnalysisFactory<PostDominatorsAnalysis> nonImplicitExceptionPostDominatorsAnalysisFactory =
 		new DataflowAnalysisFactory<PostDominatorsAnalysis>("non-implicit-exception postdominators analysis") {
 			@Override
-                         protected PostDominatorsAnalysis analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+						 protected PostDominatorsAnalysis analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
 				CFG cfg = getCFG(method);
 				PostDominatorsAnalysis analysis = new PostDominatorsAnalysis(
 						cfg,
@@ -852,31 +852,31 @@ public class ClassContext {
 				Dataflow<BitSet, PostDominatorsAnalysis> dataflow =
 					new Dataflow<BitSet, PostDominatorsAnalysis>(cfg, analysis);
 				dataflow.execute();
-				
+
 				return analysis;
 			}
 		};
-			
+
 	private NoExceptionAnalysisFactory<ExceptionSetFactory> exceptionSetFactoryFactory =
-	        new NoExceptionAnalysisFactory<ExceptionSetFactory>("exception set factory") {
-		        @Override
-                         protected ExceptionSetFactory analyze(Method method) {
+			new NoExceptionAnalysisFactory<ExceptionSetFactory>("exception set factory") {
+				@Override
+						 protected ExceptionSetFactory analyze(Method method) {
 			        return new ExceptionSetFactory();
-		        }
-	        };
+				}
+			};
 
 	private NoExceptionAnalysisFactory<String[]> parameterSignatureListFactory =
-	        new NoExceptionAnalysisFactory<String[]>("parameter signature list factory") {
-		        @Override
-                         protected String[] analyze(Method method) {
+			new NoExceptionAnalysisFactory<String[]>("parameter signature list factory") {
+				@Override
+						 protected String[] analyze(Method method) {
 			        SignatureParser parser = new SignatureParser(method.getSignature());
-			        ArrayList<String> resultList = new ArrayList<String>();
-			        for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
-				        resultList.add(i.next());
+					ArrayList<String> resultList = new ArrayList<String>();
+					for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
+						resultList.add(i.next());
 			        }
-			        return resultList.toArray(new String[resultList.size()]);
-		        }
-	        };
+					return resultList.toArray(new String[resultList.size()]);
+				}
+			};
 
 	private AnalysisFactory<ConstantDataflow> constantDataflowFactory =
 		new DataflowAnalysisFactory<ConstantDataflow>("constant propagation analysis") {
@@ -890,7 +890,7 @@ public class ClassContext {
 				);
 				ConstantDataflow dataflow = new ConstantDataflow(getCFG(method), analysis);
 				dataflow.execute();
-				
+
 				return dataflow;
 			}
 		};
@@ -919,7 +919,7 @@ public class ClassContext {
 //				return dataflow;
 //			}
 //		};
-	
+
 	private AnalysisFactory<LoadDataflow> loadDataflowFactory =
 		new DataflowAnalysisFactory<LoadDataflow>("field load analysis") {
 			@Override @CheckForNull
@@ -953,7 +953,7 @@ public class ClassContext {
 				return dataflow;
 			}
 		};
-		
+
 	private static final BitSet fieldInstructionOpcodeSet = new BitSet();
 	static {
 		fieldInstructionOpcodeSet.set(Constants.GETFIELD);
@@ -978,7 +978,7 @@ public class ClassContext {
 	private NoExceptionAnalysisFactory<LoadedFieldSet> loadedFieldSetFactory =
 			new NoExceptionAnalysisFactory<LoadedFieldSet>("loaded field set factory") {
 				@Override
-                                 protected LoadedFieldSet analyze(Method method) {
+								 protected LoadedFieldSet analyze(Method method) {
 					MethodGen methodGen = getMethodGen(method);
 					if (methodGen == null) return null;
 					InstructionList il = methodGen.getInstructionList();
@@ -1029,7 +1029,7 @@ public class ClassContext {
 	private AnalysisFactory<LiveLocalStoreDataflow> liveLocalStoreDataflowFactory =
 			new DataflowAnalysisFactory<LiveLocalStoreDataflow>("live local stores analysis") {
 				@Override
-                                 protected LiveLocalStoreDataflow analyze(Method method)
+								 protected LiveLocalStoreDataflow analyze(Method method)
 					throws DataflowAnalysisException, CFGBuilderException {
 						MethodGen methodGen = getMethodGen(method);
 						if (methodGen == null) return null;
@@ -1049,7 +1049,7 @@ public class ClassContext {
 	private AnalysisFactory<Dataflow<BlockType, BlockTypeAnalysis>> blockTypeDataflowFactory =
 			new DataflowAnalysisFactory<Dataflow<BlockType, BlockTypeAnalysis>>("block type analysis") {
 				@Override
-                                 protected Dataflow<BlockType, BlockTypeAnalysis> analyze(Method method)
+								 protected Dataflow<BlockType, BlockTypeAnalysis> analyze(Method method)
 						throws DataflowAnalysisException, CFGBuilderException {
 					CFG cfg = getCFG(method);
 					DepthFirstSearch dfs = getDepthFirstSearch(method);
@@ -1065,22 +1065,22 @@ public class ClassContext {
 
 	private AnalysisFactory<CallListDataflow> callListDataflowFactory =
 		new DataflowAnalysisFactory<CallListDataflow>("call list analysis") {
-			
+
 			@Override
-                         protected CallListDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
+						 protected CallListDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
 
 				CallListAnalysis analysis = new CallListAnalysis(
 						getCFG(method),
 						getDepthFirstSearch(method),
 						getConstantPoolGen());
-				
+
 				CallListDataflow dataflow = new CallListDataflow(getCFG(method), analysis);
 				dataflow.execute();
-				
+
 				return dataflow;
 			}
 		};
-		
+
 	private AnalysisFactory<UnconditionalValueDerefDataflow> unconditionalValueDerefDataflowFactory =
 		new DataflowAnalysisFactory<UnconditionalValueDerefDataflow>("unconditional value dereference analysis") {
 			/* (non-Javadoc)
@@ -1088,11 +1088,11 @@ public class ClassContext {
 			 */
 			@Override
 			protected UnconditionalValueDerefDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
-				
+
 				CFG cfg = getCFG(method);
-				
+
 				ValueNumberDataflow vnd = getValueNumberDataflow(method);
-				
+
 				UnconditionalValueDerefAnalysis analysis = new UnconditionalValueDerefAnalysis(
 						getReverseDepthFirstSearch(method),
 						getDepthFirstSearch(method),
@@ -1100,27 +1100,27 @@ public class ClassContext {
 						method,
 						getMethodGen(method), vnd, getAssertionMethods()
 						);
-				
+
 				IsNullValueDataflow inv = getIsNullValueDataflow(method);
 				// XXX: hack to clear derefs on not-null branches
 				analysis.clearDerefsOnNonNullBranches(inv);
-				
+
 				TypeDataflow typeDataflow = getTypeDataflow(method);
-                // XXX: type analysis is needed to resolve method calls for
+				// XXX: type analysis is needed to resolve method calls for
 				// checking whether call targets unconditionally dereference parameters
 				analysis.setTypeDataflow(typeDataflow);
-				
+
 				UnconditionalValueDerefDataflow dataflow =
 					new UnconditionalValueDerefDataflow(getCFG(method), analysis);
 				dataflow.execute();
 				 if (UnconditionalValueDerefAnalysis.DEBUG) {
-			        	dumpDataflowInformation(method, cfg, vnd, inv, dataflow, typeDataflow);
-			        }
-			 
+						dumpDataflowInformation(method, cfg, vnd, inv, dataflow, typeDataflow);
+					}
+
 				return dataflow;
 			}
 		};
-		
+
 	private NoDataflowAnalysisFactory<CompactLocationNumbering> compactLocationNumberingFactory =
 		new NoDataflowAnalysisFactory<CompactLocationNumbering>("compact location numbering") {
 		/* (non-Javadoc)
@@ -1131,12 +1131,12 @@ public class ClassContext {
 			if (method.getCode() == null) {
 				return null;
 			}
-			
+
 			CFG cfg = getCFG(method);
 			return new CompactLocationNumbering(cfg);
 		}
 	};
-	
+
 	private DataflowAnalysisFactory<DefinitelyNullSetDataflow> definitelyNullSetDataflowFactory =
 		new DataflowAnalysisFactory<DefinitelyNullSetDataflow>("definitely null set dataflow") {
 		/* (non-Javadoc)
@@ -1144,21 +1144,21 @@ public class ClassContext {
 		 */
 		@Override
 		protected DefinitelyNullSetDataflow analyze(Method method) throws CFGBuilderException, DataflowAnalysisException {
-			
+
 			CFG cfg = getCFG(method);
 			DepthFirstSearch  dfs = getDepthFirstSearch(method);
 			ValueNumberDataflow vnaDataflow = getValueNumberDataflow(method);
 			CompactLocationNumbering compactLocationNumbering = getCompactLocationNumbering(method);
-			
+
 			DefinitelyNullSetAnalysis analysis = new DefinitelyNullSetAnalysis(dfs, vnaDataflow, compactLocationNumbering);
 			DefinitelyNullSetDataflow dataflow = new DefinitelyNullSetDataflow(cfg, analysis);
-			
+
 			dataflow.execute();
-			
+
 			return dataflow;
 		}
 	};
-	
+
 	private DataflowAnalysisFactory<ReturnPathTypeDataflow> returnPathTypeDataflowFactory =
 		new DataflowAnalysisFactory<ReturnPathTypeDataflow>("return path type dataflow") {
 		/* (non-Javadoc)
@@ -1171,13 +1171,13 @@ public class ClassContext {
 			ReverseDepthFirstSearch rdfs = getReverseDepthFirstSearch(method);
 			ReturnPathTypeAnalysis analysis = new ReturnPathTypeAnalysis(cfg, rdfs, dfs);
 			ReturnPathTypeDataflow dataflow = new ReturnPathTypeDataflow(cfg, analysis);
-			
+
 			dataflow.execute();
-			
+
 			return dataflow;
 		}
 	};
-			
+
 	private ClassGen classGen;
 	private AssignedFieldMap assignedFieldMap;
 	private AssertionMethods assertionMethods;
@@ -1218,7 +1218,7 @@ public class ClassContext {
 	public JavaClass getJavaClass() {
 		return jclass;
 	}
-	
+
 	/**
 	 * Look up the Method represented by given MethodGen.
 	 * 
@@ -1237,48 +1237,48 @@ public class ClassContext {
 		return null;
 	}
 
-    @CheckForNull List<Method> methodsInCallOrder = null;
+	@CheckForNull List<Method> methodsInCallOrder = null;
 	public @NonNull List<Method> getMethodsInCallOrder() {
-	    if (methodsInCallOrder != null) return methodsInCallOrder;
-        List<Method> methodList = Arrays.asList(getJavaClass().getMethods());
-        final Map<String, Method> map = new HashMap<String, Method>();
+		if (methodsInCallOrder != null) return methodsInCallOrder;
+		List<Method> methodList = Arrays.asList(getJavaClass().getMethods());
+		final Map<String, Method> map = new HashMap<String, Method>();
         for (Method m : methodList) {
-            map.put(m.getName() + m.getSignature(), m);
-        }
-        final ConstantPoolGen cpg = getConstantPoolGen();
+			map.put(m.getName() + m.getSignature(), m);
+		}
+		final ConstantPoolGen cpg = getConstantPoolGen();
         final String thisClassName = getJavaClass().getClassName();
-        methodsInCallOrder =  TopologicalSort.sortByCallGraph(methodList, new OutEdges<Method>() {
+		methodsInCallOrder =  TopologicalSort.sortByCallGraph(methodList, new OutEdges<Method>() {
 
-            public Collection<Method> getOutEdges(Method method) {
-                HashSet<Method> result = new HashSet<Method>();
-                try {
+			public Collection<Method> getOutEdges(Method method) {
+				HashSet<Method> result = new HashSet<Method>();
+				try {
                     CFG cfg = getCFG(method);
-                    for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-                        Instruction ins = i.next().getHandle().getInstruction();
-                        if (ins instanceof InvokeInstruction) {
+					for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+						Instruction ins = i.next().getHandle().getInstruction();
+						if (ins instanceof InvokeInstruction) {
                             InvokeInstruction inv = (InvokeInstruction) ins;
-                            String className = inv.getClassName(cpg);
-                            if (!thisClassName.equals(className)) continue;
-                            String signature = inv.getSignature(cpg);
+							String className = inv.getClassName(cpg);
+							if (!thisClassName.equals(className)) continue;
+							String signature = inv.getSignature(cpg);
                             if (signature.indexOf('L') < 0 && signature.indexOf('[') < 0) continue;
-                            String methodKey = inv.getMethodName(cpg) + signature;
-                            Method method2 = map.get(methodKey);
-                            if (method2 != null) result.add(method2);
+							String methodKey = inv.getMethodName(cpg) + signature;
+							Method method2 = map.get(methodKey);
+							if (method2 != null) result.add(method2);
                         }
-                    }
-                } catch (CFGBuilderException e) {
-                    AnalysisContext.logError("Error getting methods called by " + thisClassName + "." + method.getName() + ":"
+					}
+				} catch (CFGBuilderException e) {
+					AnalysisContext.logError("Error getting methods called by " + thisClassName + "." + method.getName() + ":"
                             + method.getSignature(), e);
-                }
-                return result;
-            }
+				}
+				return result;
+			}
         });
-        assert methodList.size() == methodsInCallOrder.size();
-        return methodsInCallOrder;
-    }
+		assert methodList.size() == methodsInCallOrder.size();
+		return methodsInCallOrder;
+	}
 
 
-	
+
 	/**
 	 * Get the AnalysisContext.
 	 */
@@ -1355,16 +1355,16 @@ public class ClassContext {
 		return classGen.getConstantPool();
 	}
 
-    
-    /**
-     * Get a UsagesRequiringNonNullValues for given method.
+
+	/**
+	 * Get a UsagesRequiringNonNullValues for given method.
      *
-     * @param method the method
-     * @return the UsagesRequiringNonNullValues
-     */
+	 * @param method the method
+	 * @return the UsagesRequiringNonNullValues
+	 */
     public UsagesRequiringNonNullValues getUsagesRequiringNonNullValues(Method method) throws DataflowAnalysisException, CFGBuilderException {
-        return derefFactory.getAnalysis(method);
-    }
+		return derefFactory.getAnalysis(method);
+	}
 
 	/**
 	 * Get a ValueNumberDataflow for given method.
@@ -1413,13 +1413,13 @@ public class ClassContext {
 	 * @return the ReverseDepthFirstSearch
 	 */
 	public ReverseDepthFirstSearch getReverseDepthFirstSearch(Method method)
-	        throws CFGBuilderException {
+			throws CFGBuilderException {
 		return rdfsFactory.getAnalysis(method);
 	}
 
 	static MapCache<XMethod,BitSet> cachedBitsets = new MapCache<XMethod, BitSet>(64);
 	static MapCache<XMethod,Set<Integer>> cachedLoopExits = new MapCache<XMethod, Set<Integer>>(13);
-	
+
 	/**
 	 * Get a BitSet representing the bytecodes that are used in the given method.
 	 * This is useful for prescreening a method for the existence of particular instructions.
@@ -1451,45 +1451,45 @@ public class ClassContext {
 				if (cachedBitsets.containsKey(xmethod)) {
 					return cachedBitsets.get(xmethod);
 				}
-		        Code code = method.getCode();
-		        if (code == null)
-			        return null;
+				Code code = method.getCode();
+				if (code == null)
+					return null;
 
-		        byte[] instructionList = code.getCode();
+				byte[] instructionList = code.getCode();
 
-		        // Create callback
-		        UnpackedBytecodeCallback callback = new UnpackedBytecodeCallback(instructionList.length);
+				// Create callback
+				UnpackedBytecodeCallback callback = new UnpackedBytecodeCallback(instructionList.length);
 
-		        // Scan the method.
-		        BytecodeScanner scanner = new BytecodeScanner();
-		        scanner.scan(instructionList, callback);
+				// Scan the method.
+				BytecodeScanner scanner = new BytecodeScanner();
+				scanner.scan(instructionList, callback);
 
-		        UnpackedCode unpackedCode = callback.getUnpackedCode();
+				UnpackedCode unpackedCode = callback.getUnpackedCode();
 				BitSet result =  null;
-		        if (unpackedCode != null) result =  unpackedCode.getBytecodeSet();
-		        cachedBitsets.put(xmethod, result);
-		        return result;
+				if (unpackedCode != null) result =  unpackedCode.getBytecodeSet();
+				cachedBitsets.put(xmethod, result);
+				return result;
 	}
-	
+
 	@CheckForNull static public Set<Integer> getLoopExitBranches(Method method, MethodGen methodGen) {
 
 		XMethod xmethod = XFactory.createXMethod(methodGen);
 		if (cachedLoopExits.containsKey(xmethod)) {
 			return cachedLoopExits.get(xmethod);
 		}
-        Code code = method.getCode();
-        if (code == null)
-	        return null;
+		Code code = method.getCode();
+		if (code == null)
+			return null;
 
-        byte[] instructionList = code.getCode();
+		byte[] instructionList = code.getCode();
 
-        Set<Integer> result = new HashSet<Integer>();
-        for(int i = 0; i < instructionList.length; i++)
-        	if (checkForBranchExit(instructionList,i)) result.add(i);
+		Set<Integer> result = new HashSet<Integer>();
+		for(int i = 0; i < instructionList.length; i++)
+			if (checkForBranchExit(instructionList,i)) result.add(i);
         if (result.size() == 0)
-        	result = TigerSubstitutes.emptySet(); // alas, emptySet() is @since 1.5
-        
-        cachedLoopExits.put(xmethod, result);
+			result = TigerSubstitutes.emptySet(); // alas, emptySet() is @since 1.5
+
+		cachedLoopExits.put(xmethod, result);
         return result;
 }
 	static short getBranchOffset(byte [] codeBytes, int pos) {
@@ -1497,7 +1497,7 @@ public class ClassContext {
 		int branchByte2 = 0xff & codeBytes[pos+1];
 		int branchOffset = (short) (branchByte1 << 8 | branchByte2);
 		return (short) branchOffset;
-	
+
 	}
 
 	static boolean checkForBranchExit(byte [] codeBytes, int pos) {
@@ -1544,7 +1544,7 @@ public class ClassContext {
 	 * @return the LockDataflow
 	 */
 	public LockDataflow getLockDataflow(Method method)
-	        throws CFGBuilderException, DataflowAnalysisException {
+			throws CFGBuilderException, DataflowAnalysisException {
 		return lockDataflowFactory.getAnalysis(method);
 	}
 
@@ -1562,7 +1562,7 @@ public class ClassContext {
 	public LockChecker getLockChecker(Method method) throws CFGBuilderException, DataflowAnalysisException {
 		return lockCheckerFactory.getAnalysis(method);
 	}
-	
+
 	/**
 	 * Get ReturnPathDataflow for method.
 	 *
@@ -1570,7 +1570,7 @@ public class ClassContext {
 	 * @return the ReturnPathDataflow
 	 */
 	public ReturnPathDataflow getReturnPathDataflow(Method method)
-	        throws CFGBuilderException, DataflowAnalysisException {
+			throws CFGBuilderException, DataflowAnalysisException {
 		return returnPathDataflowFactory.getAnalysis(method);
 	}
 
@@ -1582,7 +1582,7 @@ public class ClassContext {
 	 * @return the DominatorsAnalysis
 	 */
 	public DominatorsAnalysis getNonExceptionDominatorsAnalysis(Method method)
-	        throws CFGBuilderException, DataflowAnalysisException {
+			throws CFGBuilderException, DataflowAnalysisException {
 		return nonExceptionDominatorsAnalysisFactory.getAnalysis(method);
 	}
 
@@ -1594,7 +1594,7 @@ public class ClassContext {
 	 * @return the DominatorsAnalysis
 	 */
 	public PostDominatorsAnalysis getNonImplicitExceptionDominatorsAnalysis(Method method)
-	        throws CFGBuilderException, DataflowAnalysisException {
+			throws CFGBuilderException, DataflowAnalysisException {
 		return nonImplicitExceptionPostDominatorsAnalysisFactory.getAnalysis(method);
 	}
 
@@ -1606,7 +1606,7 @@ public class ClassContext {
 	 * @return the PostDominatorsAnalysis
 	 */
 	public PostDominatorsAnalysis getNonExceptionPostDominatorsAnalysis(Method method)
-	        throws CFGBuilderException, DataflowAnalysisException {
+			throws CFGBuilderException, DataflowAnalysisException {
 		return nonExceptionPostDominatorsAnalysisFactory.getAnalysis(method);
 	}
 
@@ -1689,7 +1689,7 @@ public class ClassContext {
 		}
 		return assertionMethods;
 	}
-	
+
 	/**
 	 * Get ConstantDataflow for method.
 	 * 
@@ -1702,7 +1702,7 @@ public class ClassContext {
 			throws CFGBuilderException, DataflowAnalysisException {
 		return constantDataflowFactory.getAnalysis(method);
 	}
-	
+
 	/**
 	 * Get load dataflow.
 	 * 
@@ -1714,7 +1714,7 @@ public class ClassContext {
 	public LoadDataflow getLoadDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
 		return loadDataflowFactory.getAnalysis(method);
 	}
-	
+
 	/**
 	 * Get store dataflow.
 	 * 
@@ -1726,7 +1726,7 @@ public class ClassContext {
 	public StoreDataflow getStoreDataflow(Method method) throws CFGBuilderException, DataflowAnalysisException {
 		return storeDataflowFactory.getAnalysis(method);
 	}
-	
+
 	/**
 	 * Get CallListDataflow for method.
 	 * 
@@ -1739,10 +1739,10 @@ public class ClassContext {
 			throws CFGBuilderException, DataflowAnalysisException {
 		return callListDataflowFactory.getAnalysis(method);
 	}
-    
-	 
+
+
 	public static BitSet linesMentionedMultipleTimes(Method method) {
-        
+
 		BitSet lineMentionedMultipleTimes = new BitSet();
 		Code code = method.getCode();
 		if (code == null || code.getExceptionTable() == null) return lineMentionedMultipleTimes;
@@ -1750,20 +1750,20 @@ public class ClassContext {
 		LineNumberTable lineNumberTable = method.getLineNumberTable();
 		int lineNum = -1;
 		if (lineNumberTable != null) 
-		    for(LineNumber  line : lineNumberTable.getLineNumberTable()) {
-		        int newLine = line.getLineNumber();
-		        if (newLine == lineNum || newLine == -1) continue;
+			for(LineNumber  line : lineNumberTable.getLineNumberTable()) {
+				int newLine = line.getLineNumber();
+				if (newLine == lineNum || newLine == -1) continue;
 		        lineNum = newLine;
-		        if (foundOnce.get(lineNum)  ) {
-		            lineMentionedMultipleTimes.set(lineNum);
-		        }
+				if (foundOnce.get(lineNum)  ) {
+					lineMentionedMultipleTimes.set(lineNum);
+				}
 		        else  {
-		            foundOnce.set(lineNum);	
-		        }
-		    }
+					foundOnce.set(lineNum);	
+				}
+			}
 		return lineMentionedMultipleTimes;
 	}
-	
+
 	/**
 	 * Get the UnconditionalValueDerefDataflow for a method.
 	 * 
@@ -1776,7 +1776,7 @@ public class ClassContext {
 			throws CFGBuilderException, DataflowAnalysisException {
 		return 	unconditionalValueDerefDataflowFactory.getAnalysis(method);
 	}
-	
+
 	/**
 	 * Get a CompactLocationNumbering for a method.
 	 * 
@@ -1815,17 +1815,17 @@ public class ClassContext {
 		return returnPathTypeDataflowFactory.getAnalysis(method);
 	}
 
-    public  void dumpDataflowInformation(Method method) {
-        try {
-            dumpDataflowInformation(method, getCFG(method), getValueNumberDataflow(method), getIsNullValueDataflow(method), getUnconditionalValueDerefDataflow(method), getTypeDataflow(method));
+	public  void dumpDataflowInformation(Method method) {
+		try {
+			dumpDataflowInformation(method, getCFG(method), getValueNumberDataflow(method), getIsNullValueDataflow(method), getUnconditionalValueDerefDataflow(method), getTypeDataflow(method));
         } catch (DataflowAnalysisException e) {
-            AnalysisContext.logError("Could not dump data information for " + getJavaClass().getClassName() +"." + method.getName(), e);
-        } catch (CFGBuilderException e) {
-            AnalysisContext.logError("Could not dump data information for " + getJavaClass().getClassName() +"." + method.getName(), e);
+			AnalysisContext.logError("Could not dump data information for " + getJavaClass().getClassName() +"." + method.getName(), e);
+		} catch (CFGBuilderException e) {
+			AnalysisContext.logError("Could not dump data information for " + getJavaClass().getClassName() +"." + method.getName(), e);
             
-        }
-    }
-    
+		}
+	}
+
 	/**
 	 * @param method
 	 * @param cfg
@@ -1838,7 +1838,7 @@ public class ClassContext {
 	public static void dumpDataflowInformation(Method method, CFG cfg, ValueNumberDataflow vnd, IsNullValueDataflow inv, UnconditionalValueDerefDataflow dataflow, TypeDataflow typeDataflow) throws DataflowAnalysisException {
 		System.out.println("\n\n{ UnconditionalValueDerefAnalysis analysis for " + method.getName());
 		TreeSet<Location> tree = new TreeSet<Location>();
-		
+
 		for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
 			Location loc = locs.next();
 			tree.add(loc);
@@ -1848,12 +1848,12 @@ public class ClassContext {
 			System.out.println("\n Pre: " + factAfterLocation);
 			System.out.println("Vna: " + vnd.getFactAtLocation(loc));
 			System.out.println("inv: " + inv.getFactAtLocation(loc));
-            if (typeDataflow != null) System.out.println("type: " + typeDataflow.getFactAtLocation(loc));
+			if (typeDataflow != null) System.out.println("type: " + typeDataflow.getFactAtLocation(loc));
 			System.out.println("Location: " + loc);
 			System.out.println("Post: " + dataflow.getFactAtLocation(loc));
 			System.out.println("Vna: " + vnd.getFactAfterLocation(loc));
 			System.out.println("inv: " + inv.getFactAfterLocation(loc));
-               if (typeDataflow != null)  System.out.println("type: " + typeDataflow.getFactAfterLocation(loc));
+			   if (typeDataflow != null)  System.out.println("type: " + typeDataflow.getFactAfterLocation(loc));
 		}
 		System.out.println("}\n\n");
 	}
@@ -1866,7 +1866,7 @@ public class ClassContext {
 	public static void dumpTypeDataflow(Method method, CFG cfg, TypeDataflow typeDataflow) throws DataflowAnalysisException {
 		System.out.println("\n\n{ Type analysis for " + cfg.getMethodGen().getClassName() + "." + method.getName());
 		TreeSet<Location> tree = new TreeSet<Location>();
-		
+
 		for(Iterator<Location> locs = cfg.locationIterator(); locs.hasNext(); ) {
 			Location loc = locs.next();
 			tree.add(loc);

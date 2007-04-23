@@ -44,7 +44,7 @@ import edu.umd.cs.findbugs.ba.bcp.PatternMatcher;
 public abstract class ByteCodePatternDetector implements Detector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("bcpd.debug");
 	private static final String METHOD = SystemProperties.getProperty("bcpd.method");
-	
+
 	protected abstract BugReporter getBugReporter();
 
 	public void visitClassContext(ClassContext classContext) {
@@ -98,7 +98,7 @@ public abstract class ByteCodePatternDetector implements Detector {
 			getBugReporter().logError(getDetectorName() + " caught exception", e);
 		}
 	}
-	
+
 	private String getDetectorName() {
 		String className = this.getClass().getName();
 		int lastDot = className.lastIndexOf('.');
@@ -146,7 +146,7 @@ public abstract class ByteCodePatternDetector implements Detector {
 	 *                     of the ByteCodePattern against actual instructions in the method
 	 */
 	public abstract void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
-	        throws CFGBuilderException, DataflowAnalysisException;
+			throws CFGBuilderException, DataflowAnalysisException;
 }
 
 // vim:ts=4

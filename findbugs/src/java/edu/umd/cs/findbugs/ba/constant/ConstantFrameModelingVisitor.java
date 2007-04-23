@@ -44,7 +44,7 @@ public class ConstantFrameModelingVisitor
 	public ConstantFrameModelingVisitor(ConstantPoolGen cpg) {
 		super(cpg);
 	}
-			
+
 	@Override
 	public Constant getDefaultValue() {
 		return Constant.NOT_CONSTANT;
@@ -76,7 +76,7 @@ public class ConstantFrameModelingVisitor
 		Constant c = new Constant(value);
 		getFrame().pushValue(c);
 	}
-	
+
 	@Override
 	public void visitSIPUSH(SIPUSH obj) {
 		Number value = obj.getValue();
@@ -84,14 +84,14 @@ public class ConstantFrameModelingVisitor
 		getFrame().pushValue(c);
 	}
 
-	
+
 	@Override
 	public void visitLDC(LDC obj) {
 		Object value = obj.getValue(getCPG());
 		Constant c = new Constant(value);
 		getFrame().pushValue(c);
 	}
-	
+
 	@Override
 	public void visitLDC2_W(LDC2_W obj) {
 		Object value = obj.getValue(getCPG());

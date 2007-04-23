@@ -35,15 +35,15 @@ public class TypeAnnotation implements BugAnnotation {
 	private static final long serialVersionUID = 1L;
 
 	public static final String DEFAULT_ROLE = "TYPE_DEFAULT";
-    public static final String EXPECTED_ROLE = "TYPE_EXPECTED";
-    public static final String FOUND_ROLE = "TYPE_FOUND";
-    public static final String CLOSEIT_ROLE = "TYPE_CLOSEIT";
+	public static final String EXPECTED_ROLE = "TYPE_EXPECTED";
+	public static final String FOUND_ROLE = "TYPE_FOUND";
+	public static final String CLOSEIT_ROLE = "TYPE_CLOSEIT";
     public static final String UNHASHABLE_ROLE = "TYPE_UNHASHABLE";
-    
-    
+
+
 	final private String descriptor; // jvm type descriptor, such as "[I"
 	private String roleDescription;
-	
+
 	/**
 	 * constructor.
 	 * 
@@ -56,13 +56,13 @@ public class TypeAnnotation implements BugAnnotation {
 	public TypeAnnotation(String typeDescriptor) {
 		this(typeDescriptor, DEFAULT_ROLE);
 	}
-	
+
 	public TypeAnnotation(String typeDescriptor, String roleDescription) {
-	    descriptor = typeDescriptor;
+		descriptor = typeDescriptor;
 		this.roleDescription = roleDescription;
 	}
-	
-	
+
+
 	@Override
 	public Object clone() {
 		try {
@@ -84,7 +84,7 @@ public class TypeAnnotation implements BugAnnotation {
 		visitor.visitTypeAnnotation(this);
 	}
 
-	
+
 	public String format(String key, ClassAnnotation primaryClass) {
 		return new SignatureConverter(descriptor).parseNext();
 	}
@@ -136,11 +136,11 @@ public class TypeAnnotation implements BugAnnotation {
 	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("descriptor", descriptor);
-		
+
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", role);
-		
+
 		BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
 	}
 

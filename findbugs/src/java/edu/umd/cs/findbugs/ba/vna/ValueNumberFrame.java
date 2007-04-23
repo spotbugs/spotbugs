@@ -69,12 +69,12 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 				buf.append(v).append(",");
 			buf.append(";  ");
 		}
-		
+
 		buf.append(" }");
 		return buf.toString();
 	}
 	public @CheckForNull AvailableLoad getLoad(ValueNumber v) {
-        if (!REDUNDANT_LOAD_ELIMINATION) return null;
+		if (!REDUNDANT_LOAD_ELIMINATION) return null;
 		for(Map.Entry<AvailableLoad, ValueNumber[]> e : getAvailableLoadMap().entrySet()) {
 			if (e.getValue() != null)
 				for(ValueNumber v2 : e.getValue())
@@ -161,29 +161,29 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		}
 	}
 
-    public void killLoadsWithSimilarName(String className, String methodName) {
-        String packageName = extractPackageName(className);
-        if (REDUNDANT_LOAD_ELIMINATION) {
+	public void killLoadsWithSimilarName(String className, String methodName) {
+		String packageName = extractPackageName(className);
+		if (REDUNDANT_LOAD_ELIMINATION) {
             for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
-                AvailableLoad availableLoad = i.next();
-                
-                XField field = availableLoad.getField();
-                String fieldPackageName = extractPackageName(field.getClassName());
-                if (packageName.equals(fieldPackageName) && field.isStatic() 
-                        && methodName.toLowerCase().indexOf(field.getName().toLowerCase()) >= 0)
-                    i.remove();
-                
-            }
-        }
-    }
+				AvailableLoad availableLoad = i.next();
 
-    /**
-     * @param className
-     * @return
+				XField field = availableLoad.getField();
+                String fieldPackageName = extractPackageName(field.getClassName());
+				if (packageName.equals(fieldPackageName) && field.isStatic() 
+						&& methodName.toLowerCase().indexOf(field.getName().toLowerCase()) >= 0)
+					i.remove();
+                
+			}
+		}
+	}
+
+	/**
+	 * @param className
+	 * @return
      */
-    private String extractPackageName(String className) {
-        return className.substring(className.lastIndexOf('.')+1);
-    }
+	private String extractPackageName(String className) {
+		return className.substring(className.lastIndexOf('.')+1);
+	}
 
 	void mergeAvailableLoadSets(ValueNumberFrame other, ValueNumberFactory factory, MergeTree mergeTree) {
 		if (REDUNDANT_LOAD_ELIMINATION) {
@@ -207,12 +207,12 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 					if (false && this.phiNodeForLoads && myVN != null && myVN.length == 1 && myVN[0].hasFlag(ValueNumber.PHI_NODE))
 						continue;
 					if (!Arrays.equals(myVN, otherVN)) {
-						
+
 						ValueNumber phi = getMergedLoads().get(load);
 						if (phi == null) {
 							phi = factory.createFreshValue();
 							int flags = ValueNumber.PHI_NODE;
-							
+
 							getUpdateableMergedLoads().put(load, phi);
 							for(ValueNumber vn : myVN) {
 								mergeTree.mapInputToOutput(vn, phi);
@@ -235,16 +235,16 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 						}
 
 					}
-					
+
 				}	
 			}
 			Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = other.getPreviouslyKnownAs();
 			if (getPreviouslyKnownAs() != previouslyKnownAsOther 
-                    && previouslyKnownAsOther.size() != 0) {
-                if (getPreviouslyKnownAs().size() == 0) 
-                    assignPreviouslyKnownAs(other);
+					&& previouslyKnownAsOther.size() != 0) {
+				if (getPreviouslyKnownAs().size() == 0) 
+					assignPreviouslyKnownAs(other);
                 else getUpdateablePreviouslyKnownAs().putAll(previouslyKnownAsOther);
-            }
+			}
 			if (changed)
 				this.phiNodeForLoads = true;
 			if (changed && RLE_DEBUG) {
@@ -264,7 +264,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		mergedValueList.set(slot, value);
 	}
 
-  	@Override
+	  @Override
 	public void copyFrom(Frame<ValueNumber> other) {
 		// If merged value list hasn't been created yet, create it.
 		if (mergedValueList == null && other.isValid()) {
@@ -291,23 +291,23 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		super.copyFrom(other);
 	}
 
-    private void assignPreviouslyKnownAs(Frame<ValueNumber> other) {
-        Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = ((ValueNumberFrame) other).getPreviouslyKnownAs();
-        if (previouslyKnownAsOther instanceof HashMap) {
+	private void assignPreviouslyKnownAs(Frame<ValueNumber> other) {
+		Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = ((ValueNumberFrame) other).getPreviouslyKnownAs();
+		if (previouslyKnownAsOther instanceof HashMap) {
             previouslyKnownAsOther = Collections.unmodifiableMap(previouslyKnownAsOther);
-            ((ValueNumberFrame) other).setPreviouslyKnownAs(previouslyKnownAsOther);
-            setPreviouslyKnownAs(previouslyKnownAsOther);   
-            constructedUnmodifiableMap++;
+			((ValueNumberFrame) other).setPreviouslyKnownAs(previouslyKnownAsOther);
+			setPreviouslyKnownAs(previouslyKnownAsOther);   
+			constructedUnmodifiableMap++;
         } else {
-            setPreviouslyKnownAs(previouslyKnownAsOther);
-            reusedMap++;
-        }
+			setPreviouslyKnownAs(previouslyKnownAsOther);
+			reusedMap++;
+		}
     }
-    
-    
 
-    static int constructedUnmodifiableMap;
-    static int reusedMap;
+
+
+	static int constructedUnmodifiableMap;
+	static int reusedMap;
 	@Override
 	public String toString() {
 		String frameValues = super.toString();
@@ -326,7 +326,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 					buf.append(',');
 				buf.append(key + "=" + valueToString(value));
 			}
-			
+
 			buf.append(" #");
 			buf.append(System.identityHashCode(this));
 			if (phiNodeForLoads) buf.append(" phi");
@@ -357,7 +357,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		else
 		  return v1.equals(v2);
 	}
-		
+
 	public boolean fromMatchingLoads(ValueNumber v1, ValueNumber v2) {
 		AvailableLoad load1 = getLoad(v1);
 		if (load1 == null) load1 = getPreviouslyKnownAs().get(v1);
@@ -378,7 +378,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 		int flag2 = v2.getFlags();
 		return (flag1 & flag2) != 0;
 	}
-	
+
 	public Collection<ValueNumber> valueNumbersForLoads() {
 		HashSet<ValueNumber> result = new HashSet<ValueNumber>();
 		if (REDUNDANT_LOAD_ELIMINATION)
@@ -425,7 +425,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	private Map<AvailableLoad,ValueNumber> getUpdateableMergedLoads() {
 		if (!(mergedLoads instanceof HashMap))
 			mergedLoads = new HashMap<AvailableLoad, ValueNumber>();
-		
+
 		return mergedLoads;
 	}
 
@@ -442,40 +442,40 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	private Map<ValueNumber, AvailableLoad> getPreviouslyKnownAs() {
 		return previouslyKnownAs;
 	}
-    static int createdEmptyMap;
-    static int madeImmutableMutable;
-    static int reusedMutableMap;
+	static int createdEmptyMap;
+	static int madeImmutableMutable;
+	static int reusedMutableMap;
     static {
-        Util.runLogAtShutdown(new Runnable() {
+		Util.runLogAtShutdown(new Runnable() {
 
-            public void run() {
-               System.err.println("Getting updatable previously known as:");
-               System.err.println("  " + createdEmptyMap + " created empty map");
+			public void run() {
+			   System.err.println("Getting updatable previously known as:");
+			   System.err.println("  " + createdEmptyMap + " created empty map");
                System.err.println("  " + madeImmutableMutable + " made immutable map mutable");
-               System.err.println("  " + reusedMutableMap + " reused mutable map");
-               System.err.println("Copying map:");
-               System.err.println("  " + constructedUnmodifiableMap + " made mutable map unmodifiable");
+			   System.err.println("  " + reusedMutableMap + " reused mutable map");
+			   System.err.println("Copying map:");
+			   System.err.println("  " + constructedUnmodifiableMap + " made mutable map unmodifiable");
                System.err.println("  " + reusedMap + " reused immutable map");
-               System.err.println();
-                
-            }});
+			   System.err.println();
+
+			}});
     }
 	private Map<ValueNumber, AvailableLoad> getUpdateablePreviouslyKnownAs() {
-        if (previouslyKnownAs.size() == 0) {
-            previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(4);
-            createdEmptyMap++;
+		if (previouslyKnownAs.size() == 0) {
+			previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(4);
+			createdEmptyMap++;
         }
-        else if (!(previouslyKnownAs instanceof HashMap)) {
+		else if (!(previouslyKnownAs instanceof HashMap)) {
 			previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(previouslyKnownAs);
-            madeImmutableMutable++;
-        } else
-            reusedMutableMap++;
+			madeImmutableMutable++;
+		} else
+			reusedMutableMap++;
 		
 		return previouslyKnownAs;
 	}
-    private  void assignPreviouslyKnownAs(Map<ValueNumber, AvailableLoad> newValue) {
-        previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(newValue);
-    }
+	private  void assignPreviouslyKnownAs(Map<ValueNumber, AvailableLoad> newValue) {
+		previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(newValue);
+	}
 	
 }
 

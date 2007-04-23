@@ -69,7 +69,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 	public ValueNumberAnalysis(MethodGen methodGen, DepthFirstSearch dfs,
 							   LoadedFieldSet loadedFieldSet,
-	                           RepositoryLookupFailureCallback lookupFailureCallback) {
+							   RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		super(dfs);
 		this.methodGen = methodGen;
@@ -77,7 +77,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		ValueNumberCache cache = new ValueNumberCache();
 		this.visitor = new ValueNumberFrameModelingVisitor(methodGen, factory, cache,
 				loadedFieldSet,
-		        lookupFailureCallback);
+				lookupFailureCallback);
 
 		int numLocals = methodGen.getMaxLocals();
 		this.entryLocalValueList = new ValueNumber[numLocals];
@@ -94,7 +94,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		this.factAtLocationMap = new HashMap<Location, ValueNumberFrame>();
 		this.factAfterLocationMap = new HashMap<Location, ValueNumberFrame>();
 		if (DEBUG) System.out.println("VNA Analysis " + methodGen.getClassName() + "." + methodGen.getName() + " : " + methodGen.getSignature());
-		
+
 	}
 	public ValueNumber getClassObjectValue(String className) {
 		return visitor.getClassObjectValue(className);
@@ -102,7 +102,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	public void setMergeTree(MergeTree mergeTree) {
 		this.mergeTree = mergeTree;
 	}
-	
+
 	public MergeTree getMergeTree() {
 		return mergeTree;
 	}
@@ -143,7 +143,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 	@Override
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ValueNumberFrame fact)
-	        throws DataflowAnalysisException {
+			throws DataflowAnalysisException {
 
 		Location location = new Location(handle, basicBlock);
 
@@ -185,7 +185,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 		result.mergeAvailableLoadSets(frame, factory, mergeTree);
 		super.mergeInto(frame, result);
 	}
-	
+
 	@Override
 	protected void mergeValues(ValueNumberFrame otherFrame, ValueNumberFrame resultFrame, int slot) throws DataflowAnalysisException {
 		ValueNumber value =
@@ -194,7 +194,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 	}
 
 	private ValueNumber mergeValues(ValueNumberFrame frame, int slot, ValueNumber mine, ValueNumber other)
-	        throws DataflowAnalysisException {
+			throws DataflowAnalysisException {
 
 		// Merging slot values:
 		//   - Merging identical values results in no change
@@ -220,7 +220,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 			mergedValue = factory.createFreshValue();
 			mergedValue.setFlags(mine.getFlags() | other.getFlags() | ValueNumber.PHI_NODE);
 			frame.setMergedValue(slot, mergedValue);
-			
+
 		}
 
 		if (mergeTree != null) {
@@ -331,7 +331,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 
 		if (DEBUG && after < before && before > 0)
 			System.out.println("Value compaction: " + after + "/" + before + " (" +
-			        ((after * 100) / before) + "%)");
+					((after * 100) / before) + "%)");
 
 	}
 
@@ -365,13 +365,13 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 			}
 
 			DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis> driver =
-			        new DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis>() {
-				        @Override
-                                         public Dataflow<ValueNumberFrame, ValueNumberAnalysis> createDataflow(ClassContext classContext, Method method)
+					new DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis>() {
+						@Override
+										 public Dataflow<ValueNumberFrame, ValueNumberAnalysis> createDataflow(ClassContext classContext, Method method)
 				                throws CFGBuilderException, DataflowAnalysisException {
-					        return classContext.getValueNumberDataflow(method);
-				        }
-			        };
+							return classContext.getValueNumberDataflow(method);
+						}
+					};
 
 			driver.execute(argv[0]);
 

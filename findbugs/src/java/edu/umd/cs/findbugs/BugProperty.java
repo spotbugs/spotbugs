@@ -40,7 +40,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 
 	/** Boolean property defining whether or not the BugInstance is really a bug. */
 	public static final String IS_BUG = "isBug";
-	
+
 	/** Integer property defining the warning severity (1=least severe, 5=most severe). */
 	public static final String SEVERITY = "severity"; 
 
@@ -48,7 +48,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 	private String name;
 	private String value;
 	private BugProperty next;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -59,8 +59,8 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 		this.name = name.intern();
 		this.value = value;
 	}
-	
-	
+
+
 	@Override
 	protected Object clone() {
 		try {
@@ -69,7 +69,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 			throw new AssertionError(e);
 		}
 	}
-	
+
 	/**
 	 * Get name of property.
 	 * 
@@ -78,7 +78,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * Get value of property.
 	 * 
@@ -87,7 +87,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 	public String getValue() {
 		return value;
 	}
-	
+
 	/**
 	 * Get value of property as boolean.
 	 * 
@@ -96,7 +96,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 	public boolean getValueAsBoolean() {
 		return Boolean.valueOf(getValue()).booleanValue();
 	}
-	
+
 	/**
 	 * Get value of property as an integer.
 	 * 
@@ -107,7 +107,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 	public int getValueAsInt() {
 		return Integer.parseInt(getValue());
 	}
-	
+
 	/**
 	 * Set value of property.
 	 * 
@@ -116,7 +116,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
+
 	/**
 	 * Set next property in list.
 	 * 
@@ -125,7 +125,7 @@ public class BugProperty implements XMLWriteable, Serializable, Cloneable {
 	void setNext(BugProperty next) {
 		this.next = next;
 	}
-	
+
 	/**
 	 * Get next property in list.
 	 * 

@@ -82,7 +82,7 @@ public class SortedBugCollection implements BugCollection {
 	long analysisTimestamp = System.currentTimeMillis();
 	String analysisVersion = Version.RELEASE;
 	private boolean withMessages = false;
-    
+
 	private static final boolean REPORT_SUMMARY_HTML =
 		SystemProperties.getBoolean("findbugs.report.SummaryHTML");
 
@@ -159,8 +159,8 @@ public class SortedBugCollection implements BugCollection {
 	 * @param project  the Project
 	 */
 	public void readXML(String fileName, Project project)
-	        throws IOException, DocumentException {
-        readXML(new File(fileName), project);
+			throws IOException, DocumentException {
+		readXML(new File(fileName), project);
 	}
 
 	/**
@@ -171,35 +171,35 @@ public class SortedBugCollection implements BugCollection {
 	 * @param project the Project
 	 */
 	public void readXML(File file, Project project)
-	        throws IOException, DocumentException {
+			throws IOException, DocumentException {
 		InputStream in = new BufferedInputStream(new FileInputStream(file));
 		if (file.getName().endsWith(".gz"))
 			in = new GZIPInputStream(in);
 		readXML(in, project, file);
 	}
 
-    /**
-     * Read XML data from given input stream into this
-     * object, populating the Project as a side effect.
+	/**
+	 * Read XML data from given input stream into this
+	 * object, populating the Project as a side effect.
      * An attempt will be made to close the input stream
-     * (even if an exception is thrown).
-     *
-     * @param in      the InputStream
+	 * (even if an exception is thrown).
+	 *
+	 * @param in      the InputStream
      * @param project the Project
-     */
-    public void readXML(InputStream in, Project project, File base)
-            throws IOException, DocumentException {
+	 */
+	public void readXML(InputStream in, Project project, File base)
+			throws IOException, DocumentException {
         if (in == null) throw new IllegalArgumentException();
 
-        try {
-            if (project == null) throw new IllegalArgumentException();
-            doReadXML(in, project, base);
+		try {
+			if (project == null) throw new IllegalArgumentException();
+			doReadXML(in, project, base);
         } finally {
-            in.close();
-        }
-    }
+			in.close();
+		}
+	}
 	public void readXML(InputStream in, Project project)
-	        throws IOException, DocumentException {
+			throws IOException, DocumentException {
 			doReadXML(in, project, null);
 
 	}
@@ -211,18 +211,18 @@ public class SortedBugCollection implements BugCollection {
 		try {
 			SAXBugCollectionHandler handler = new SAXBugCollectionHandler(this, project, base);
 
-			
+
 			XMLReader xr = null;
-            if (true) try { // FIXME: try this in 1.1.4
-                xr = XMLReaderFactory.createXMLReader();
-              } catch (SAXException e) {
+			if (true) try { // FIXME: try this in 1.1.4
+				xr = XMLReaderFactory.createXMLReader();
+			  } catch (SAXException e) {
                 AnalysisContext.logError("Couldn't create XMLReaderFactory", e);   
-              }
-            
-            if (xr == null) {
+			  }
+
+			if (xr == null) {
                //  FIXME: for now, use dom4j's XML parser
-                xr = new org.dom4j.io.aelfred.SAXDriver();
-                }
+				xr = new org.dom4j.io.aelfred.SAXDriver();
+				}
 			xr.setContentHandler(handler);
 			xr.setErrorHandler(handler);
 
@@ -273,7 +273,7 @@ public class SortedBugCollection implements BugCollection {
 	 * @return the Document representing the BugCollection as a dom4j tree
 	 */
 	public Document toDocument(Project project) {
-        if (project == null) throw new NullPointerException("No project");
+		if (project == null) throw new NullPointerException("No project");
 		DocumentFactory docFactory = new DocumentFactory();
 		Document document = docFactory.createDocument();
 		Dom4JXMLOutput treeBuilder = new Dom4JXMLOutput(document);
@@ -296,7 +296,7 @@ public class SortedBugCollection implements BugCollection {
 	 */
 	public void writeXML(OutputStream out, Project project) throws IOException {
 		XMLOutput xmlOutput;
-        if (project == null) throw new NullPointerException("No project");
+		if (project == null) throw new NullPointerException("No project");
 		if (withMessages) xmlOutput= new OutputStreamXMLOutput(out, "http://findbugs.sourceforge.net/xsl/default.xsl");
 		else xmlOutput= new OutputStreamXMLOutput(out);
 
@@ -316,7 +316,7 @@ public class SortedBugCollection implements BugCollection {
 		);
 		project.writeXML(xmlOutput);
 	}
-	
+
 	private String getQuickInstanceHash(BugInstance bugInstance) {
 		String hash = bugInstance.getInstanceHash();
 		if (hash != null) return hash;
@@ -345,9 +345,9 @@ public class SortedBugCollection implements BugCollection {
 		} catch (Exception e2) {
 			// OK, we won't digest
 		}
-		
+
 		HashMap<String, Integer> seen = new HashMap<String, Integer>();
-		
+
 		for(BugInstance bugInstance : getCollection()) {
 			String hash = bugInstance.getInstanceHash();
 			if (hash == null) {
@@ -388,11 +388,11 @@ public class SortedBugCollection implements BugCollection {
 	 * @param project   the Project from which the BugCollection was generated
 	 */
 	public void writeXML(XMLOutput xmlOutput, @NonNull Project project) throws IOException {
-        if (project == null) throw new NullPointerException("No project");
+		if (project == null) throw new NullPointerException("No project");
 		try {
 			writePrologue(xmlOutput, project);
 			if (withMessages) computeBugHashes();
-			
+
 			// Write BugInstances
 			for(BugInstance bugInstance : getCollection())
 				bugInstance.writeXML(xmlOutput, withMessages);
@@ -666,7 +666,7 @@ public class SortedBugCollection implements BugCollection {
 	private Map<String, ClassFeatureSet> classFeatureSetMap;
 	private List<AppVersion> appVersionList;
 
-	
+
 	private boolean preciseHashOccurrenceNumbersAvailable = false;
 	/**
 	 * Sequence number of the most-recently analyzed version
@@ -738,7 +738,7 @@ public class SortedBugCollection implements BugCollection {
 	}
 
 
-	
+
 	private void invalidateHashes() {
 		preciseHashOccurrenceNumbersAvailable = false;
 	}
@@ -755,7 +755,7 @@ public class SortedBugCollection implements BugCollection {
 		return bugSet;
 	}
 
-	
+
 	public void addError(String message, Throwable exception) {
 		if (exception instanceof MissingClassException) {
 			MissingClassException e = (MissingClassException) exception;
@@ -825,8 +825,8 @@ public class SortedBugCollection implements BugCollection {
 	}
 
 	/* (non-Javadoc)
-	     * @see edu.umd.cs.findbugs.BugCollection#lookupFromUniqueId(java.lang.String)
-	     */
+		 * @see edu.umd.cs.findbugs.BugCollection#lookupFromUniqueId(java.lang.String)
+		 */
 	@Deprecated
 	public BugInstance lookupFromUniqueId(String uniqueId) {
 		for(BugInstance bug : bugSet)
@@ -874,17 +874,17 @@ public class SortedBugCollection implements BugCollection {
 	}
 
 	/* (non-Javadoc)
-	     * @see edu.umd.cs.findbugs.BugCollection#getReleaseName()
-	     */
+		 * @see edu.umd.cs.findbugs.BugCollection#getReleaseName()
+		 */
 
 	public String getReleaseName() {
-        if (releaseName == null) return "";
+		if (releaseName == null) return "";
 		return releaseName;
 	}
 
 	/* (non-Javadoc)
-	     * @see edu.umd.cs.findbugs.BugCollection#setReleaseName(java.lang.String)
-	     */
+		 * @see edu.umd.cs.findbugs.BugCollection#setReleaseName(java.lang.String)
+		 */
 
 	public void setReleaseName(String releaseName) {
 		this.releaseName = releaseName;
@@ -975,8 +975,8 @@ public class SortedBugCollection implements BugCollection {
 	}
 
 	/* (non-Javadoc)
-	     * @see edu.umd.cs.findbugs.BugCollection#clearClassFeatures()
-	     */
+		 * @see edu.umd.cs.findbugs.BugCollection#clearClassFeatures()
+		 */
 	public void clearClassFeatures() {
 		classFeatureSetMap.clear();
 	}
@@ -1018,12 +1018,12 @@ public class SortedBugCollection implements BugCollection {
 	}
 
 	/**
-     * @param version
-     */
-    public void setAnalysisVersion(String version) {
+	 * @param version
+	 */
+	public void setAnalysisVersion(String version) {
 	    this.analysisVersion = version;
-	    
-    }
+
+	}
 }
 
 // vim:ts=4

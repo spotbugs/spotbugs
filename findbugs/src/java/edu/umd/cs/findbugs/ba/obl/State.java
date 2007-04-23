@@ -34,7 +34,7 @@ package edu.umd.cs.findbugs.ba.obl;
 public class State {
 	private ObligationSet obligationSet;
 	private Path path;
-	
+
 	private State() {		
 	}
 
@@ -42,7 +42,7 @@ public class State {
 		this.obligationSet = new ObligationSet(maxObligationTypes, factory);
 		this.path = new Path();
 	}
-	
+
 	/**
 	 * @return Returns the obligationSet.
 	 */
@@ -56,17 +56,17 @@ public class State {
 	public Path getPath() {
 		return path;
 	}
-	
+
 	public State duplicate() {
 		State dup = new State();
 		dup.obligationSet = this.obligationSet.duplicate();
 		dup.path = this.path.duplicate();
-		
+
 		return dup;
 	}
 
 	@Override
-         public boolean equals(Object o) {
+		 public boolean equals(Object o) {
 		if (o == null || o.getClass() != this.getClass())
 			return false;
 		State other = (State) o;
@@ -75,12 +75,12 @@ public class State {
 	}
 
 	@Override
-         public int hashCode() {
+		 public int hashCode() {
 		return obligationSet.hashCode() + (1009 * path.hashCode());
 	}
-	
+
 	@Override
-         public String toString() {
+		 public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("[");
 		buf.append(obligationSet.toString());

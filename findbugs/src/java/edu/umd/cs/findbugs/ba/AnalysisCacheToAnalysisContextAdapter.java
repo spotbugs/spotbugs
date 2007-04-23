@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.util.ClassName;
  * @author David Hovemeyer
  */
 public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
-	
+
 	static class DelegatingRepositoryLookupFailureCallback implements RepositoryLookupFailureCallback {
 
 		/* (non-Javadoc)
@@ -71,7 +71,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		public void reportMissingClass(ClassNotFoundException ex) {
 			Global.getAnalysisCache().getErrorLogger().reportMissingClass(ex);
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
 		 */
@@ -85,11 +85,11 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 		public void reportSkippedAnalysis(MethodDescriptor method) {
 			Global.getAnalysisCache().getErrorLogger().reportSkippedAnalysis(method);
 		}
-		
+
 	}
-	
+
 	private RepositoryLookupFailureCallback lookupFailureCallback;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -154,10 +154,10 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	public ClassContext getClassContext(JavaClass javaClass) {
 		// This is a bit silly since we're doing an unnecessary ClassDescriptor->JavaClass lookup.
 		// However, we can be assured that it will succeed.
-		
+
 		ClassDescriptor classDescriptor =
 			new ClassDescriptor(ClassName.toSlashedClassName(javaClass.getClassName())); 
-		
+
 		try {
 			return Global.getAnalysisCache().getClassAnalysis(ClassContext.class, classDescriptor);
 		} catch (CheckedAnalysisException e) {
@@ -295,11 +295,11 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	 * @param appClassCollection List of ClassDescriptors identifying application classes
 	 */
 	public void setAppClassList(List<ClassDescriptor> appClassCollection) throws CheckedAnalysisException {
-		
+
 		// FIXME: we really should drive the progress callback here
-		
+
 		Subtypes subtypes = getSubtypes();
-		
+
 		for (ClassDescriptor appClass : appClassCollection) {
 			try {
 				JavaClass jclass =
@@ -310,7 +310,7 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 						"Error parsing application class " + appClass, e);
 			}
 		}
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -322,18 +322,18 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 			getCheckReturnAnnotationDatabase().loadAuxiliaryAnnotations();
 			getNullnessAnnotationDatabase().loadAuxiliaryAnnotations();
 		}
-		
+
 	}
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AnalysisContext#getReturnValueNullnessPropertyDatabase()
-     */
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getReturnValueNullnessPropertyDatabase()
+	 */
     @Override
-    public ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase() {
-            return getDatabase(ReturnValueNullnessPropertyDatabase.class);
-        
+	public ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase() {
+			return getDatabase(ReturnValueNullnessPropertyDatabase.class);
+
     }
 
-	
+
 
 }

@@ -31,7 +31,7 @@ public interface IErrorLogger {
 	 * @param ex a ClassNotFoundException resulting from the class lookup failure
 	 */
 	public void reportMissingClass(ClassNotFoundException ex);
-	
+
 	/**
 	 * Called to report a class lookup failure.
 	 * 
@@ -45,7 +45,7 @@ public interface IErrorLogger {
 	 * @param message the error message
 	 */
 	public void logError(String message);
-	
+
 	/**
 	 * Log an error that occurs while performing analysis.
 	 *
@@ -53,7 +53,7 @@ public interface IErrorLogger {
 	 * @param e       the exception which is the underlying cause of the error
 	 */
 	public void logError(String message, Throwable e);
-	
+
 	/**
 	 * Report that we skipped some analysis of a method
 	 * 

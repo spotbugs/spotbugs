@@ -61,7 +61,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		this.description = DEFAULT_ROLE;
 		this.setDescription(name.equals("?") ? "LOCAL_VARIABLE_UNKNOWN" : "LOCAL_VARIABLE_NAMED");
 	}
-	
+
 	public static LocalVariableAnnotation getLocalVariableAnnotation(
 			Method method, Location location, IndexedInstruction ins) {
 		int local = ins.getIndex();
@@ -86,7 +86,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 		}
 		return new LocalVariableAnnotation(localName, local, position1);
 	}
-	
+
 	@Override
 	public Object clone() {
 		try {
@@ -163,11 +163,11 @@ public class LocalVariableAnnotation implements BugAnnotation {
 			.addAttribute("name", value)
 		.addAttribute("register", String.valueOf(register))
 		.addAttribute("pc", String.valueOf(pc));
-		
+
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", role);
-		
+
 		BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
 	}
 
@@ -175,7 +175,7 @@ public class LocalVariableAnnotation implements BugAnnotation {
 	 * @return name of local variable
 	 */
 	public String getName() {
-		
+
 		return value;
 	}
 

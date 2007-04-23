@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
  * @author David Hovemeyer
  */
 public abstract class ClassNameRewriterUtil {
-	
+
 	/**
 	 * Rewrite a method signature.
 	 * 
@@ -42,23 +42,23 @@ public abstract class ClassNameRewriterUtil {
 	public static String rewriteMethodSignature(ClassNameRewriter classNameRewriter, String methodSignature) {
 		if (classNameRewriter != IdentityClassNameRewriter.instance()) {
 			SignatureParser parser = new SignatureParser(methodSignature);
-			
+
 			StringBuffer buf = new StringBuffer();
-			
+
 			buf.append('(');
 			for (Iterator<String> i = parser.parameterSignatureIterator(); i.hasNext();) {
 				buf.append(rewriteSignature(classNameRewriter, i.next()));
 			}
-			
+
 			buf.append(')');
 			buf.append(rewriteSignature(classNameRewriter, parser.getReturnTypeSignature()));
-			
+
 			methodSignature = buf.toString();
 		}
-		
+
 		return methodSignature;
 	}
-	
+
 	/**
 	 * Rewrite a signature.
 	 * 
@@ -69,13 +69,13 @@ public abstract class ClassNameRewriterUtil {
 	public static String rewriteSignature(ClassNameRewriter classNameRewriter, String signature) {
 		if (classNameRewriter != IdentityClassNameRewriter.instance()
 				&& signature.startsWith("L")) {
-		
+
 			String className = signature.substring(1, signature.length() - 1).replace('/', '.');
 			className = classNameRewriter.rewriteClassName(className);
-			
+
 			signature = "L" + className.replace('.', '/') + ";";
 		}
-		
+
 		return signature;
 	}
 
@@ -108,7 +108,7 @@ public abstract class ClassNameRewriterUtil {
 	 * @return the possibly-rewritten FieldAnnotation
 	 */
 	public static FieldAnnotation convertFieldAnnotation(ClassNameRewriter classNameRewriter, FieldAnnotation annotation) {
-		
+
 		if (classNameRewriter != IdentityClassNameRewriter.instance()) {
 			annotation = new FieldAnnotation(
 					classNameRewriter.rewriteClassName(annotation.getClassName()),

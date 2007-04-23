@@ -31,21 +31,21 @@ public class NonNullSpecification {
 		this.nonNullProperty = nonParamProperty;
 		this.possiblyNullProperty = possiblyNullProperty;
 	}
-	
+
 	public JavaClassAndMethod getClassAndMethod() {
 		return classAndMethod;
 	}
-	
+
 	public ParameterNullnessProperty getNonNullProperty() {
 		return nonNullProperty;
 	}
-	
+
 	public ParameterNullnessProperty getCheckForNullProperty() {
 		return possiblyNullProperty;
 	}
-	
+
 	@Override
-         public String toString() {
+		 public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(classAndMethod);
 		buf.append(":");

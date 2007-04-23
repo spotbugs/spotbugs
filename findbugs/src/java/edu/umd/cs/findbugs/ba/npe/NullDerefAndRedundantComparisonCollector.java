@@ -57,7 +57,7 @@ public interface NullDerefAndRedundantComparisonCollector {
 	 * @param redundantBranch the RedundantBranch
 	 */
 	public void foundRedundantNullCheck(Location location, RedundantBranch redundantBranch);
-	
+
 	/**
 	 * Subclasses should override this method to capture values
 	 * assigned null (or that become null through a comparison and branch)

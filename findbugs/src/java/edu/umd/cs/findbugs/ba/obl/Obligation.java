@@ -48,7 +48,7 @@ public class Obligation {
 	public String getClassName() {
 		return className;
 	}
-	
+
 	public ObjectType getType() {
 		return type;
 	}
@@ -56,7 +56,7 @@ public class Obligation {
 	public int getId() {
 		return id;
 	}
-	
+
 	@Override
 	public String toString() {
 		// Make dataflow output more compact by dropping package

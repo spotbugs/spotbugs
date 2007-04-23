@@ -40,7 +40,7 @@ import org.apache.bcel.generic.Select;
  * @author Chadd Williams
  */
 public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisitor
-        implements EdgeTypes {
+		implements EdgeTypes {
 
 	private InstructionHandle handle;
 	private ConstantPoolGen constPoolGen;
@@ -99,7 +99,7 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
 	}
 
 	@Override
-         public void visitGotoInstruction(GotoInstruction ins) {
+		 public void visitGotoInstruction(GotoInstruction ins) {
 		isBranch = true;
 		InstructionHandle target = ins.getTarget();
 		if (target == null) throw new IllegalStateException();
@@ -107,7 +107,7 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
 	}
 
 	@Override
-         public void visitIfInstruction(IfInstruction ins) {
+		 public void visitIfInstruction(IfInstruction ins) {
 		isBranch = true;
 		InstructionHandle target = ins.getTarget();
 		if (target == null) throw new IllegalStateException();
@@ -117,7 +117,7 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
 	}
 
 	@Override
-         public void visitSelect(Select ins) {
+		 public void visitSelect(Select ins) {
 		isBranch = true;
 
 		// Add non-default switch edges.
@@ -135,17 +135,17 @@ public class TargetEnumeratingVisitor extends org.apache.bcel.generic.EmptyVisit
 	}
 
 	@Override
-         public void visitReturnInstruction(ReturnInstruction ins) {
+		 public void visitReturnInstruction(ReturnInstruction ins) {
 		isReturn = true;
 	}
 
 	@Override
-         public void visitATHROW(ATHROW ins) {
+		 public void visitATHROW(ATHROW ins) {
 		isThrow = true;
 	}
 
 	@Override
-         public void visitINVOKESTATIC(INVOKESTATIC ins) {
+		 public void visitINVOKESTATIC(INVOKESTATIC ins) {
 		// Find calls to System.exit(), since this effectively terminates the basic block.
 
 		String className = ins.getClassName(constPoolGen);

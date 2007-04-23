@@ -51,7 +51,7 @@ public class EmacsBugReporter extends TextUIBugReporter {
 			// Ignore - should not happen
 		}
 	}
-	
+
 	private String fileNameFor(final String packageName, final String sourceName) {
 		String result;
 		SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
@@ -90,9 +90,9 @@ public class EmacsBugReporter extends TextUIBugReporter {
 			}
 		}
 		outputStream.print(fullPath + ":"
-		        + lineStart + ":"
-		        + lineEnd + " "
-		        + bugInstance.getMessage());
+				+ lineStart + ":"
+				+ lineEnd + " "
+				+ bugInstance.getMessage());
 
 		switch (bugInstance.getPriority()) {
 		case Detector.EXP_PRIORITY:

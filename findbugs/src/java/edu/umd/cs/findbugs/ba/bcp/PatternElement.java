@@ -150,7 +150,7 @@ public abstract class PatternElement {
 	 *         and BindingSet; if the match is not successful, returns null
 	 */
 	public abstract MatchResult match(InstructionHandle handle, ConstantPoolGen cpg,
-	                                  ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException;
+									  ValueNumberFrame before, ValueNumberFrame after, BindingSet bindingSet) throws DataflowAnalysisException;
 
 	/**
 	 * Return whether or not it is acceptable to take the given branch.
@@ -200,7 +200,7 @@ public abstract class PatternElement {
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		StringBuffer buf = new StringBuffer();
 		String className = this.getClass().getName();
 		buf.append(className.substring(className.lastIndexOf('.') + 1));

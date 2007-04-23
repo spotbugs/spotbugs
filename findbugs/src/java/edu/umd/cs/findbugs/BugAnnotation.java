@@ -33,7 +33,7 @@ public interface BugAnnotation
 	 * XML tag for a formatted text message describing the annotation. 
 	 */
 	public static final String MESSAGE_TAG = "Message";
-	
+
 	public Object clone();
 
 	/**
@@ -64,7 +64,7 @@ public interface BugAnnotation
 	 * The description is a key for the FindBugsAnnotationDescriptions resource bundle.
 	 */
 	public void setDescription(String description);
-	
+
 	/**
 	 * Is this annotation used to compute instance hashes or match bug instances across versions
 	 * @return true if significant

@@ -34,7 +34,7 @@ public abstract class FindBugsAnalysisFeatures {
 	 static {
 		 START = AnalysisFeatures.NUM_BOOLEAN_ANALYSIS_PROPERTIES;
 	 }
-	
+
 	/**
 	 * "Relaxed" warning reporting mode.
 	 * Rather than using hard-coded heuristics to decide when
@@ -43,7 +43,7 @@ public abstract class FindBugsAnalysisFeatures {
 	 * by a machine-learning-based ranking algorithm).
 	 */
 	public static final int RELAXED_REPORTING_MODE = START + 0;
-	
+
 	/**
 	 * Enable interprocedural analysis.
 	 */
@@ -53,7 +53,7 @@ public abstract class FindBugsAnalysisFeatures {
 	static void setProperty(int property, boolean value) {
 		AnalysisContext.currentAnalysisContext().setBoolProperty(property, value);
 	}
-	
+
 	static boolean getProperty(int property) {
 		return AnalysisContext.currentAnalysisContext().getBoolProperty(property);
 	}
@@ -66,8 +66,8 @@ public abstract class FindBugsAnalysisFeatures {
 	public static void setRelaxedMode(boolean relaxedMode) {
 		setProperty(RELAXED_REPORTING_MODE, relaxedMode);
 	}
-	
-   
+
+
 	/**
 	 * Get relaxed reporting mode.
 	 * 

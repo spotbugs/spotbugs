@@ -46,9 +46,9 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
  */
 public abstract class AbstractDepthFirstSearch
 		<
-        GraphType extends Graph<EdgeType, VertexType>,
-        EdgeType extends GraphEdge<EdgeType, VertexType>,
-        VertexType extends GraphVertex<VertexType>
+		GraphType extends Graph<EdgeType, VertexType>,
+		EdgeType extends GraphEdge<EdgeType, VertexType>,
+		VertexType extends GraphVertex<VertexType>
 		>
 	implements DFSEdgeTypes {
 
@@ -278,10 +278,10 @@ public abstract class AbstractDepthFirstSearch
 
 			ArrayList<Visit> stack = new ArrayList<Visit>(graph.getNumVertexLabels());
 			stack.add(new Visit(searchTreeRoot));
-	
+
 			while (!stack.isEmpty()) {
 				Visit visit = stack.get(stack.size() - 1);
-	
+
 				if (visit.hasNextEdge()) {
 					// Continue visiting successors
 					EdgeType edge = visit.getNextEdge();
@@ -292,7 +292,7 @@ public abstract class AbstractDepthFirstSearch
 					setColor(vertex, BLACK);
 					topologicalSortList.addFirst(vertex);
 					setFinishTime(vertex, timestamp++);
-	
+
 					stack.remove(stack.size() - 1);
 				}
 			}

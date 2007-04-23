@@ -43,8 +43,8 @@ public class IntAnnotation implements BugAnnotation {
 	 */
 	public static final String INT_SYNC_PERCENT = "INT_SYNC_PERCENT";
 	public static final String INT_OCCURRENCES = "INT_OCCURRENCES";
-    public static final String INT_VALUE = "INT_VALUE";
-    public static final String INT_SHIFT= "INT_SHIFT";
+	public static final String INT_VALUE = "INT_VALUE";
+	public static final String INT_SHIFT= "INT_SHIFT";
 
 	/**
 	 * Constructor.
@@ -55,8 +55,8 @@ public class IntAnnotation implements BugAnnotation {
 		this.value = value;
 		this.description = DEFAULT_ROLE;
 	}
-	
-	
+
+
 	@Override
 	public Object clone() {
 		try {
@@ -130,14 +130,14 @@ public class IntAnnotation implements BugAnnotation {
 	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("value", String.valueOf(value));
-		
+
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", role);
-		
+
 		BugAnnotationUtil.writeXML(xmlOutput, ELEMENT_NAME, this, attributeList, addMessages);
 	}
- 
+
 	public boolean isSignificant() {
 		return !description.equals(INT_SYNC_PERCENT) && !description.equals(INT_OCCURRENCES);
 	}

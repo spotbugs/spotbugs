@@ -122,5 +122,5 @@ public class BugCategory implements Comparable<BugCategory> {
 	public String toString() {
 		return "BugCategory["+category+"]{short="+shortDescription+",abbrev="+abbrev+",details="+detailText+'}';
 	}
-	
+
 }

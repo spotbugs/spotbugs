@@ -59,7 +59,7 @@ public class XMLAttributeList {
 		}
 
 		@Override
-                 public void process() {
+				 public void process() {
 			try {
 				super.process();
 			} catch (java.io.IOException e) {
@@ -68,7 +68,7 @@ public class XMLAttributeList {
 		}
 
 		@Override
-                 public void emitLiteral(String s) {
+				 public void emitLiteral(String s) {
 			buf.append(s);
 		}
 	}
@@ -104,9 +104,9 @@ public class XMLAttributeList {
 	 */
 	public XMLAttributeList addAttribute(@NonNull String name, @NonNull String value) {
 		if (name == null) 
-            throw new NullPointerException("name must be nonnull");
+			throw new NullPointerException("name must be nonnull");
 		if (value == null) 
-            throw new NullPointerException("value must be nonnull");
+			throw new NullPointerException("value must be nonnull");
 		nameValuePairList.add(new NameValuePair(name, value));
 		return this;
 	}
@@ -116,7 +116,7 @@ public class XMLAttributeList {
 	 * directly output as part of an XML tag.
 	 */
 	@Override
-         public String toString() {
+		 public String toString() {
 		StringBuffer buf = new StringBuffer();
 		for (NameValuePair pair : nameValuePairList) {
 			buf.append(' ');

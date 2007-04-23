@@ -51,8 +51,8 @@ public abstract class OneVariableInstruction extends SingleInstruction {
 	protected MatchResult addOrCheckDefinition(Variable variable, BindingSet bindingSet) {
 		bindingSet = addOrCheckDefinition(varName, variable, bindingSet);
 		return bindingSet != null
-		        ? new MatchResult(this, bindingSet)
-		        : null;
+				? new MatchResult(this, bindingSet)
+				: null;
 	}
 
 }

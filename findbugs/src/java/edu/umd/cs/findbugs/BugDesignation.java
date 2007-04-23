@@ -50,16 +50,16 @@ public class BugDesignation implements XMLWriteable, Serializable {
 	/** free text from the user */
 	//TODO: make this @CheckForNull 
 	private String annotationText;
-	
+
 	/** return the user designation
 	 *  E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
 	 *  
 	 *  Note that this is the key, suitable for writing to XML,
 	 *  but not for showing to the user.
 	 *  @see I18N#getUserDesignation(String key) */
-    @NonNull public String getDesignationKey() {
+	@NonNull public String getDesignationKey() {
 		return designation;
-    }
+	}
 
 	/** set the user designation
 	 *  E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
@@ -71,31 +71,31 @@ public class BugDesignation implements XMLWriteable, Serializable {
 	 *  if designationKey is not one of the keys returned by
 	 *  I18N.instance().getUserDesignations().
 	 *  @see I18N#getUserDesignationKeys() */
-    public void setDesignationKey(String designationKey) {
+	public void setDesignationKey(String designationKey) {
 		designation = (designationKey!=null ? designationKey : UNCLASSIFIED);
-    }
+	}
 
 
-    @CheckForNull public String getUser() {
+	@CheckForNull public String getUser() {
 		return user;
-    }
-    public void setUser(String u) {
+	}
+	public void setUser(String u) {
 		user = u;
-    }
+	}
 
-    public long getTimestamp() {
-    		return timestamp;
-    }
+	public long getTimestamp() {
+			return timestamp;
+	}
     public void setTimestamp(long ts) {
-    		timestamp = ts;
-    }
+			timestamp = ts;
+	}
 
-    @CheckForNull public String getAnnotationText() {
-    		return annotationText;
-    }
+	@CheckForNull public String getAnnotationText() {
+			return annotationText;
+	}
     public void setAnnotationText(String s) {
-    		annotationText = s;
-    }
+			annotationText = s;
+	}
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList();

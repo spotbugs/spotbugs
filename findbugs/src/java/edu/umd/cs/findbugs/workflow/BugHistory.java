@@ -63,23 +63,23 @@ import edu.umd.cs.findbugs.util.Util;
 @Deprecated
 public class BugHistory {
 	private static final boolean DEBUG = false;
-	
+
 	private static class BugCollectionAndProject {
 		SortedBugCollection bugCollection;
 		Project project;
-		
+
 		public BugCollectionAndProject(SortedBugCollection bugCollection, Project project) {
 			this.bugCollection = bugCollection;
 			this.project = project;
 		}
-		
+
 		/**
 		 * @return Returns the bugCollection.
 		 */
 		public SortedBugCollection getBugCollection() {
 			return bugCollection;
 		}
-		
+
 		/**
 		 * @return Returns the project.
 		 */
@@ -95,19 +95,19 @@ public class BugHistory {
 	 */
 	private static class BugCollectionAndProjectCache extends LinkedHashMap<String,BugCollectionAndProject> {
 		private static final long serialVersionUID = 1L;
-		
+
 		// 2 should be sufficient if the pairs are sorted
 		private static final int CACHE_SIZE = 5;
-		
+
 		/* (non-Javadoc)
 		 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)
 		 */
-		
+
 		@Override
 		protected boolean removeEldestEntry(Entry<String, BugCollectionAndProject> eldest) {
 			return size() > CACHE_SIZE;
 		}
-		
+
 		/**
 		 * Fetch an entry, reading it if necessary.
 		 * 
@@ -127,7 +127,7 @@ public class BugHistory {
 			return result;
 		}
 	}
-	
+
 	/**
 	 * A set operation between two bug collections.
 	 */
@@ -143,7 +143,7 @@ public class BugHistory {
 		public SortedBugCollection perform(Set<BugInstance> result,
 				SortedBugCollection origCollection, SortedBugCollection newCollection);
 	}
-	
+
 	/**
 	 * Get the warnings which were <em>added</em>,
 	 * meaning that they were not part of the original BugCollection.
@@ -156,14 +156,14 @@ public class BugHistory {
 
 			// Get shared instances
 			List<BugInstance> inBoth = getSharedInstances(result, origCollection);
-			
+
 			// Remove the shared instances from the result
 			removeBugInstances(result, inBoth);
-			
+
 			return newCollection;
 		}
 	};
-	
+
 	/**
 	 * Get the warnings which were <em>retained</em>,
 	 * meaning that they occur in both the original and new BugCollections.
@@ -174,18 +174,18 @@ public class BugHistory {
 				SortedBugCollection origCollection, SortedBugCollection newCollection) {
 			result.addAll(newCollection.getCollection());
 			if (DEBUG) System.out.println(result.size() + " instances initially");
-			
+
 			// Get shared instances
 			List<BugInstance> inBoth = getSharedInstances(result, origCollection);
-			
+
 			// Replace instances with only those shared
 			replaceBugInstances(result, inBoth);
-			
+
 			if (DEBUG) System.out.println(result.size() + " after retaining new instances");
 			return newCollection;
 		}
 	};
-	
+
 	/**
 	 * Get the warnings which were <em>removed</em>,
 	 * meaning that they occur in the original BugCollection but not in
@@ -196,22 +196,22 @@ public class BugHistory {
 		public SortedBugCollection perform(Set<BugInstance> result,
 				SortedBugCollection origCollection, SortedBugCollection newCollection) {
 			result.addAll(origCollection.getCollection());
-			
+
 			// Get shared instances
 			List<BugInstance> inBoth = getSharedInstances(result, newCollection);
-			
+
 			// Remove shared instances
 			removeBugInstances(result, inBoth);
-			
+
 			return origCollection;
 		}
 	};
-	
+
 	private SortedBugCollection origCollection, newCollection;
 	private SortedBugCollection resultCollection;
 	private SortedBugCollection originator;
 	private WarningComparator comparator;
-	
+
 	/**
 	 * Contructor.
 	 * 
@@ -222,14 +222,14 @@ public class BugHistory {
 		this.origCollection = origCollection;
 		this.newCollection = newCollection;
 	}
-	
+
 	/**
 	 * Get the Comparator used to compare BugInstances from different BugCollections.
 	 */
 	public WarningComparator getComparator() {
 		return comparator;
 	}
-	
+
 	/**
 	 * @param comparator The comparator to set.
 	 */
@@ -248,50 +248,50 @@ public class BugHistory {
 		// This will help figure out which bug instances are the "same"
 		// between versions.
 		TreeSet<BugInstance> result = new TreeSet<BugInstance>(getComparator());
-		
+
 		// Perform the operation, keeping track of which input BugCollection
 		// should be cloned for metadata.
 		originator = operation.perform(result, origCollection, newCollection);
-		
+
 		// Clone the actual BugInstances selected by the set operation.
 		Collection<BugInstance> selected = new LinkedList<BugInstance>();
 		SortedBugCollection.cloneAll(selected, result);
-		
+
 		// Duplicate the collection from which the results came,
 		// in order to copy all metadata, such as analysis errors,
 		// class/method hashes, etc.
 		SortedBugCollection resultCollection = originator.duplicate();
-		
+
 		// Replace with just the cloned instances of the subset selected by the set operation.
 		resultCollection.clearBugInstances();
 		resultCollection.addAll(selected);
-		
+
 		this.resultCollection = resultCollection;
-		
+
 		return resultCollection;
 	}
-	
+
 	/**
 	 * @return Returns the originator.
 	 */
 	public SortedBugCollection getOriginator() {
 		return originator;
 	}
-	
+
 	/**
 	 * @return Returns the origCollection.
 	 */
 	public SortedBugCollection getOrigCollection() {
 		return origCollection;
 	}
-	
+
 	/**
 	 * @return Returns the newCollection.
 	 */
 	public SortedBugCollection getNewCollection() {
 		return newCollection;
 	}
-	
+
 	/**
 	 * @return Returns the result.
 	 */
@@ -346,11 +346,11 @@ public class BugHistory {
 			result.remove(aToRemove);
 		}
 	}
-	
+
 	private static final int VERSION_INSENSITIVE_COMPARATOR = 0;
 	private static final int FUZZY_COMPARATOR = 1;
 	private static final int SLOPPY_COMPARATOR = 2;
-	
+
 	private static class BugHistoryCommandLine extends CommandLine {
 		private int comparatorType = VERSION_INSENSITIVE_COMPARATOR;
 		private boolean count;
@@ -359,7 +359,7 @@ public class BugHistory {
 		private String listFile;
 		private String outputDir;
 		private boolean verbose;
-		
+
 		public BugHistoryCommandLine() {
 			addSwitch("-fuzzy", "use fuzzy warning matching");
 			addSwitch("-sloppy", "use sloppy warning matching");
@@ -373,11 +373,11 @@ public class BugHistory {
 			addOption("-outputDir", "output dir", "output directory for bulk mode (optional)");
 			addSwitch("-verbose", "verbose output for bulk mode");
 		}
-		
+
 		 /* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOption(java.lang.String, java.lang.String)
 		 */
-		
+
 		@Override
 		protected void handleOption(String option, String optionExtraPart) throws IOException {
 			if (option.equals("-fuzzy")) {
@@ -401,11 +401,11 @@ public class BugHistory {
 				throw new IllegalArgumentException("Unknown option: " + option);
 			}
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see edu.umd.cs.findbugs.config.CommandLine#handleOptionWithArgument(java.lang.String, java.lang.String)
 		 */
-		
+
 		@Override
 		protected void handleOptionWithArgument(String option, String argument) throws IOException {
 			if (option.equals("-bulk")) {
@@ -416,49 +416,49 @@ public class BugHistory {
 				throw new IllegalArgumentException("Unknown option: " + option);
 			}
 		}
-		
+
 		/**
 		 * @return Returns the comparatorType.
 		 */
 		public int getComparatorType() {
 			return comparatorType;
 		}
-		
+
 		/**
 		 * @return true if we should just output the delta
 		 */
 		public boolean isCount() {
 			return count;
 		}
-		
+
 		/**
 		 * @return Returns the opName.
 		 */
 		public String getOpName() {
 			return opName;
 		}
-		
+
 		/**
 		 * @return Returns the set operation to apply.
 		 */
 		public SetOperation getSetOp() {
 			return setOp;
 		}
-		
+
 		/**
 		 * @return Returns the listFile.
 		 */
 		public String getListFile() {
 			return listFile;
 		}
-		
+
 		/**
 		 * @return Returns the outputDir.
 		 */
 		public String getOutputDir() {
 			return outputDir;
 		}
-		
+
 		/**
 		 * @return Returns the verbose.
 		 */
@@ -485,14 +485,14 @@ public class BugHistory {
 			default:
 				throw new IllegalStateException();
 			}
-			
+
 			// Handle renamed classes
 			MovedClassMap classNameRewriter = new MovedClassMap(origCollection, newCollection).execute();
 			comparator.setClassNameRewriter(classNameRewriter);
-			
+
 			bugHistory.setComparator(comparator);
 		}
-		
+
 		public BugHistory createAndExecute(
 				String origFile, String newFile, Project origProject, Project newProject) throws IOException, DocumentException {
 			SortedBugCollection origCollection = readCollection(origFile, origProject);
@@ -500,7 +500,7 @@ public class BugHistory {
 
 			return createAndExecute(origCollection, newCollection, origProject, newProject);
 		}
-		
+
 		public BugHistory createAndExecute(
 				SortedBugCollection origCollection,
 				SortedBugCollection newCollection,
@@ -509,16 +509,16 @@ public class BugHistory {
 			BugHistory bugHistory = new BugHistory(origCollection, newCollection);
 
 			configure(bugHistory, origCollection, newCollection);
-			
+
 			// We can ignore the return value because it will be accessible by calling getResult()
 			bugHistory.performSetOperation(getSetOp());
 
 			return bugHistory;
 		}
-		
+
 		public String getBulkOutputFileName(String fileName) {
 			File file = new File(fileName);
-			
+
 			String filePart = file.getName();
 			int ext = filePart.lastIndexOf('.');
 			if (ext < 0 ) {
@@ -528,12 +528,12 @@ public class BugHistory {
 			}
 
 			String dirPart = (getOutputDir() != null) ? getOutputDir() : file.getParent();
-					
+
 			File outputFile = new File(dirPart, filePart);
 			return outputFile.getPath();
 		}
 	}
-	
+
 	private static SortedBugCollection readCollection(String fileName, Project project)
 			throws IOException, DocumentException {
 		SortedBugCollection result = new SortedBugCollection();
@@ -544,7 +544,7 @@ public class BugHistory {
 	public static void main(String[] argv) throws Exception {
 		BugHistoryCommandLine commandLine = new BugHistoryCommandLine();
 		int argCount = commandLine.parse(argv);
-		
+
 		if (commandLine.getSetOp() == null) {
 			System.err.println("No set operation specified");
 			printUsage();
@@ -561,10 +561,10 @@ public class BugHistory {
 			if (argv.length - argCount != 2) {
 				printUsage();
 			}
-			
+
 			String origFile = argv[argCount++];
 			String newFile = argv[argCount++];
-			
+
 			runSinglePair(commandLine, origFile, newFile);
 		}
 	}
@@ -580,7 +580,7 @@ public class BugHistory {
 		try {
 		BugCollectionAndProjectCache cache = new BugCollectionAndProjectCache();
 
-		
+
 		String csvRecord;
 		while ((csvRecord = reader.readLine()) != null) {
 			csvRecord = csvRecord.trim();
@@ -590,10 +590,10 @@ public class BugHistory {
 
 			String origFile = tuple[0];
 			String newFile = tuple[1];
-			
+
 			BugCollectionAndProject orig;
 			BugCollectionAndProject next;
-			
+
 			try {
 				orig = cache.fetch(origFile);
 				next = cache.fetch(newFile);
@@ -604,7 +604,7 @@ public class BugHistory {
 				++missing;
 				continue;
 			}
-			
+
 			if (commandLine.isVerbose()) {
 				System.out.print("Computing delta from " + origFile + " to " + newFile + "...");
 				System.out.flush();
@@ -612,14 +612,14 @@ public class BugHistory {
 
 			BugHistory bugHistory = commandLine.createAndExecute(
 					orig.getBugCollection(), next.getBugCollection(), orig.getProject(), next.getProject());
-			
+
 			String outputFile = commandLine.getBulkOutputFileName(newFile);
 			if (commandLine.isVerbose()) {
 				System.out.print("Writing " + outputFile + "...");
 				System.out.flush();
 			}
-			
-			
+
+
 			bugHistory.writeResultCollection(orig.getProject(), next.getProject(),
 					new BufferedOutputStream(new FileOutputStream(outputFile)));
 			if (commandLine.isVerbose()) {
@@ -638,7 +638,7 @@ public class BugHistory {
 		Project origProject = new Project();
 		Project newProject = new Project();
 		BugHistory bugHistory = commandLine.createAndExecute(origFile, newFile, origProject, newProject);
-		
+
 		if (commandLine.isCount()) {
 			System.out.println(bugHistory.getResultCollection().getCollection().size());
 		} else {
@@ -652,7 +652,7 @@ public class BugHistory {
 	 */
 	private static void printUsage() {
 		System.err.println("Usage: " + BugHistory.class.getName() +
-		        " [options] <operation> <old results> <new results>");
+				" [options] <operation> <old results> <new results>");
 		new BugHistoryCommandLine().printUsage(System.err);
 		System.exit(1);
 	}

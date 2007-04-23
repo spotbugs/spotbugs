@@ -66,7 +66,7 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
 	}
 
 	@Override
-         public boolean sameAs(Frame<ResourceValue> other_) {
+		 public boolean sameAs(Frame<ResourceValue> other_) {
 		if (!super.sameAs(other_))
 			return false;
 
@@ -75,7 +75,7 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
 	}
 
 	@Override
-         public void copyFrom(Frame<ResourceValue> other_) {
+		 public void copyFrom(Frame<ResourceValue> other_) {
 		super.copyFrom(other_);
 		ResourceValueFrame other = (ResourceValueFrame) other_;
 		this.status = other.status;
@@ -84,7 +84,7 @@ public class ResourceValueFrame extends Frame<ResourceValue> {
 	private static final String[] statusList = {"(escaped)", "(open)", "(open_exception)", "(closed)", "(created)", "(nonexistent)"};
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		return super.toString() + statusList[status];
 	}
 

@@ -28,15 +28,15 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 public class SwitchHandler
 {
 	private List<SwitchDetails> switchOffsetStack;
-	
+
 	public SwitchHandler() {
 		switchOffsetStack = new ArrayList<SwitchDetails>();
 	}
-	
+
 	public void enterSwitch( DismantleBytecode dbc ) {
 
 		SwitchDetails details = new SwitchDetails( dbc.getPC(), dbc.getSwitchOffsets(), dbc.getDefaultSwitchOffset());
-		
+
 		int size = switchOffsetStack.size();
 		while (--size >= 0) {
 			SwitchDetails existingDetail = switchOffsetStack.get(size);
@@ -45,12 +45,12 @@ public class SwitchHandler
 		}
 		switchOffsetStack.add(details);
 	}
-	
+
 	public boolean isOnSwitchOffset( DismantleBytecode dbc ) {
 		int pc = dbc.getPC();
 		if (pc == getDefaultOffset())
 			return false;
-		
+
 		return (pc == getNextSwitchOffset(dbc));		
 	}
 
@@ -58,7 +58,7 @@ public class SwitchHandler
 		int size = switchOffsetStack.size();
 		while (size > 0) {
 			SwitchDetails details = switchOffsetStack.get(size-1);
-			
+
 			int nextSwitchOffset = details.getNextSwitchOffset(dbc.getPC());
 			if (nextSwitchOffset >= 0)
 				return nextSwitchOffset;
@@ -66,26 +66,26 @@ public class SwitchHandler
 			switchOffsetStack.remove(size-1);
 			size--;
 		}
-		
+
 		return -1;
 	}
-	
+
 	public int getDefaultOffset() {
 		int size = switchOffsetStack.size();
 		if (size == 0)
 			return -1;
-		
+
 		SwitchDetails details = switchOffsetStack.get(size-1);
 		return details.getDefaultOffset();
 	}
-	
+
 	public static class SwitchDetails
 	{
 		int   switchPC;
 		int[] swOffsets;
 		int	  defaultOffset;
 		int   nextOffset;
-		
+
 		public SwitchDetails(int pc, int[] offsets, int defOffset) {
 			switchPC = pc;
 			int uniqueOffsets = 0;
@@ -96,7 +96,7 @@ public class SwitchHandler
 					lastValue = offset;
 				}
 			}
-			
+
 			swOffsets = new int[uniqueOffsets];
 			int insertPos = 0;
 			lastValue = -1;
@@ -109,17 +109,17 @@ public class SwitchHandler
 			defaultOffset = defOffset;
 			nextOffset = 0;
 		}	
-		
+
 		public int getNextSwitchOffset(int currentPC) {
 			while ((nextOffset < swOffsets.length) && (currentPC > (switchPC + swOffsets[nextOffset])))
 				nextOffset++;
-			
+
 			if (nextOffset >= swOffsets.length)
 				return -1;
-			
+
 			return switchPC + swOffsets[nextOffset];
 		}
-		
+
 		public int getDefaultOffset() {
 			return switchPC + defaultOffset;
 		}

@@ -41,7 +41,7 @@ public class DepthFirstSearch
 	}
 
 	@Override
-         protected BasicBlock getNextSearchTreeRoot() {
+		 protected BasicBlock getNextSearchTreeRoot() {
 		BasicBlock result = firstRoot;
 		firstRoot = null;
 		return result;

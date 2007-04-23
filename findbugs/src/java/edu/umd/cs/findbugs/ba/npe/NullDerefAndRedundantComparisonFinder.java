@@ -73,15 +73,15 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
  */
 public class NullDerefAndRedundantComparisonFinder {
 	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug");
-    private static final boolean PRUNE_GUARANTEED_DEREFERENCES = SystemProperties.getBoolean("fnd.prune", true);
-    
+	private static final boolean PRUNE_GUARANTEED_DEREFERENCES = SystemProperties.getBoolean("fnd.prune", true);
+
 	private static final boolean DEBUG_DEREFS = SystemProperties.getBoolean("fnd.derefs.debug");
-	
+
 	private ClassContext classContext;
 	private Method method;
 	private NullDerefAndRedundantComparisonCollector collector;
 	private final boolean findGuaranteedDerefs;
-	
+
 	private List<RedundantBranch> redundantBranchList;
 	private BitSet definitelySameBranchSet;
 	private BitSet definitelyDifferentBranchSet;
@@ -108,23 +108,23 @@ public class NullDerefAndRedundantComparisonFinder {
 			ClassContext classContext,
 			Method method,
 			NullDerefAndRedundantComparisonCollector collector) {
-		
+
 		this.classContext = classContext;
 		this.method = method;
 		this.collector = collector;
 		this.findGuaranteedDerefs = classContext.getAnalysisContext().getBoolProperty(
 				AnalysisFeatures.TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS);
 		this.lineMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
-		
+
 		this.redundantBranchList = new LinkedList<RedundantBranch>();
 		this.definitelySameBranchSet = new BitSet();
 		this.definitelyDifferentBranchSet = new BitSet();
 		this.undeterminedBranchSet = new BitSet();
 		this.assertionMethods = classContext.getAssertionMethods();
 	}
-	
+
 	public void execute() {
-        try {
+		try {
 		// Do the null-value analysis
 		this.invDataflow = classContext.getIsNullValueDataflow(method);
 		this.vnaDataflow = classContext.getValueNumberDataflow(method);
@@ -144,9 +144,9 @@ public class NullDerefAndRedundantComparisonFinder {
 			examineNullValues();
 		}
 		examineRedundantBranches();
-        }  catch (CheckedAnalysisException e) {
-            AnalysisContext.logError("Error while for guaranteed derefs in " +
-                    method.getName(), e);
+		}  catch (CheckedAnalysisException e) {
+			AnalysisContext.logError("Error while for guaranteed derefs in " +
+					method.getName(), e);
         }
 
 	}
@@ -189,7 +189,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			}
 		}
 	}
-	
+
 	/**
 	 * Examine null values.
 	 * Report any that are guaranteed to be dereferenced on
@@ -204,112 +204,112 @@ public class NullDerefAndRedundantComparisonFinder {
 		if (DEBUG_DEREFS) {
 			System.out.println("----------------------- examineNullValues " + locationWhereValueBecomesNullSet.size());
 		}
-		
+
 		Map<ValueNumber, SortedSet<Location>> bugStatementLocationMap =
 			new HashMap<ValueNumber, SortedSet<Location>>();
 		// Inspect the method for locations where a null value is guaranteed to
 		// be dereferenced.  Add the dereference locations
 		Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap =
 			new HashMap<ValueNumber, NullValueUnconditionalDeref>();
-		
-       // Check every location
+
+	   // Check every location
 		for (Iterator<Location> i = classContext.getCFG(method).locationIterator(); i.hasNext();) {
 			Location location = i.next();
-			
+
 			if (DEBUG_DEREFS) {
 				System.out.println("At location " + location);
 			}
 			if (false) {
 				Instruction in = location.getHandle().getInstruction();
-                
-               if (in instanceof InvokeInstruction && in.produceStack(classContext.getConstantPoolGen()) == 1 || in instanceof GETFIELD || in instanceof GETSTATIC) {
-                    IsNullValueFrame invFrame = invDataflow.getFactAfterLocation(location);
+
+			   if (in instanceof InvokeInstruction && in.produceStack(classContext.getConstantPoolGen()) == 1 || in instanceof GETFIELD || in instanceof GETSTATIC) {
+					IsNullValueFrame invFrame = invDataflow.getFactAfterLocation(location);
                     if (invFrame.getStackDepth() > 0) {
-                    IsNullValue isNullValue = invFrame.getTopValue();
-                    if (isNullValue.isNullOnSomePath()) {
-                        // OK, must be from return value
+					IsNullValue isNullValue = invFrame.getTopValue();
+					if (isNullValue.isNullOnSomePath()) {
+						// OK, must be from return value
                         ValueNumber vn = vnaDataflow.getFactAfterLocation(location).getTopValue();
-                        UnconditionalValueDerefSet uvd = uvdDataflow.getFactAfterLocation(location);
-                        if (uvd.isUnconditionallyDereferenced(vn)) {
-                            // System.out.println("Found it");
+						UnconditionalValueDerefSet uvd = uvdDataflow.getFactAfterLocation(location);
+						if (uvd.isUnconditionallyDereferenced(vn)) {
+							// System.out.println("Found it");
                             SortedSet<Location> knownNullAndDoomedAt = bugStatementLocationMap.get(vn);
-                            noteUnconditionallyDereferencedNullValue(  location,
-                                    bugStatementLocationMap,
-                                    nullValueGuaranteedDerefMap,
+							noteUnconditionallyDereferencedNullValue(  location,
+									bugStatementLocationMap,
+									nullValueGuaranteedDerefMap,
                                     uvd, isNullValue, vn);
-                        }
-                    }
-                    }
+						}
+					}
+					}
                 }
-                
-                
+
+
 				if (assertionMethods.isAssertionInstruction (in, classContext.getConstantPoolGen()) ) {
 					if (DEBUG_DEREFS) 
 						System.out.println("Skipping because it is an assertion method ");
 					continue;
 				}
-				
+
 			}
 
 			checkForUnconditionallyDereferencedNullValues(
 					location,
-                    bugStatementLocationMap,
+					bugStatementLocationMap,
 					nullValueGuaranteedDerefMap,
-                    vnaDataflow.getFactAtLocation(location), invDataflow.getFactAtLocation(location), uvdDataflow.getFactAfterLocation(location));
+					vnaDataflow.getFactAtLocation(location), invDataflow.getFactAtLocation(location), uvdDataflow.getFactAfterLocation(location));
 		}
 		HashSet<ValueNumber> npeIfStatementCovered = new HashSet<ValueNumber>(nullValueGuaranteedDerefMap.keySet());
-        Map<ValueNumber, SortedSet<Location>> bugEdgeLocationMap =
-            new HashMap<ValueNumber, SortedSet<Location>>();
-        
+		Map<ValueNumber, SortedSet<Location>> bugEdgeLocationMap =
+			new HashMap<ValueNumber, SortedSet<Location>>();
+
 		// Check every non-exception control edge
 		for (Iterator<Edge> i = classContext.getCFG(method).edgeIterator(); i.hasNext();) {
 			Edge edge = i.next();
-			
+
 			if (edge.isExceptionEdge()) {
 				continue;
 			}
-			
+
 			if (DEBUG_DEREFS) {
 				System.out.println("On edge " + edge.formatAsString(false));
 			}
-			
+
 			ValueNumberFrame vnaFact = vnaDataflow.getResultFact(edge.getSource());
-            ValueNumberFrame vnaEdgeFact = vnaDataflow.getFactOnEdge(edge);
-            ValueNumberFrame vnaTargetFact = vnaDataflow.getStartFact(edge.getTarget());
-            
+			ValueNumberFrame vnaEdgeFact = vnaDataflow.getFactOnEdge(edge);
+			ValueNumberFrame vnaTargetFact = vnaDataflow.getStartFact(edge.getTarget());
+
 			IsNullValueFrame invFact = invDataflow.getFactAtMidEdge(edge);
-            
-                IsNullValueFrame invSourceFact = invDataflow.getResultFact(edge.getSource());
-                IsNullValueFrame invTargetFact = invDataflow.getStartFact(edge.getTarget());
+
+				IsNullValueFrame invSourceFact = invDataflow.getResultFact(edge.getSource());
+				IsNullValueFrame invTargetFact = invDataflow.getStartFact(edge.getTarget());
                 UnconditionalValueDerefSet uvdSourceFact = uvdDataflow.getStartFact(edge.getSource());
-                UnconditionalValueDerefSet uvdTargetFact = uvdDataflow.getResultFact(edge.getTarget());
-                Location location = Location.getLastLocation(edge.getSource());
-                
+				UnconditionalValueDerefSet uvdTargetFact = uvdDataflow.getResultFact(edge.getTarget());
+				Location location = Location.getLastLocation(edge.getSource());
+
 			UnconditionalValueDerefSet uvdFact = uvdDataflow.getFactOnEdge(edge);
-            // UnconditionalValueDerefSet uvdFact = uvdDataflow.getStartFact(edge.getTarget());
-               
-            
+			// UnconditionalValueDerefSet uvdFact = uvdDataflow.getStartFact(edge.getTarget());
+
+
             if (uvdFact.isEmpty()) continue;
 			if (location != null) {
-                
-                
+
+
 				Instruction in = location.getHandle().getInstruction();
 				if (assertionMethods.isAssertionInstruction(in, classContext.getConstantPoolGen())) {
 					if (DEBUG_DEREFS) 
 						System.out.println("Skipping because it is an assertion method ");
 					continue;
 				}
-				
+
 
 			checkForUnconditionallyDereferencedNullValues(
 					location,
-                    bugEdgeLocationMap,
+					bugEdgeLocationMap,
 					nullValueGuaranteedDerefMap,
-                    vnaFact, invFact, uvdFact);
+					vnaFact, invFact, uvdFact);
 			}
 		}
-        Map<ValueNumber, SortedSet<Location>> bugLocationMap = bugEdgeLocationMap;
-        bugLocationMap.putAll(bugStatementLocationMap);
+		Map<ValueNumber, SortedSet<Location>> bugLocationMap = bugEdgeLocationMap;
+		bugLocationMap.putAll(bugStatementLocationMap);
 		//	For each value number that is null somewhere in the
 		// method, collect the set of locations where it becomes null.
 		// FIXME: we may see some locations that are not guaranteed to be dereferenced (how to fix this?)
@@ -346,75 +346,75 @@ public class NullDerefAndRedundantComparisonFinder {
 				+ " while analyzing " + classContext.getJavaClass().getClassName() + "." + method.getName();
 				assignedNullLocationSet = TigerSubstitutes.emptySet();
 			}
-            SortedSet<Location> knownNullAndDoomedAt = bugLocationMap.get(valueNumber);
-                 
-            BugAnnotation variableAnnotation = null;
+			SortedSet<Location> knownNullAndDoomedAt = bugLocationMap.get(valueNumber);
+
+			BugAnnotation variableAnnotation = null;
             try {
-                for (Location loc : derefLocationSet)  {
-                    variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
-                    if (variableAnnotation != null) break;
+				for (Location loc : derefLocationSet)  {
+					variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
+					if (variableAnnotation != null) break;
                 }
-                if (variableAnnotation == null) for (Location loc : knownNullAndDoomedAt) {
-                    variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
-                    if (variableAnnotation != null) break;
+				if (variableAnnotation == null) for (Location loc : knownNullAndDoomedAt) {
+					variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
+					if (variableAnnotation != null) break;
                 }
-                if (variableAnnotation == null) for (Location loc : assignedNullLocationSet) {
-                    variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
-                    if (variableAnnotation != null) break;
+				if (variableAnnotation == null) for (Location loc : assignedNullLocationSet) {
+					variableAnnotation = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method, loc, valueNumber, vnaDataflow.getFactAtLocation(loc));
+					if (variableAnnotation != null) break;
                 }
-                
-                
-            } catch (DataflowAnalysisException e2) {
+
+
+			} catch (DataflowAnalysisException e2) {
             }
-            if (variableAnnotation == null) variableAnnotation = new LocalVariableAnnotation("?",-1,-1);
+			if (variableAnnotation == null) variableAnnotation = new LocalVariableAnnotation("?",-1,-1);
 
-            
 
-            if (PRUNE_GUARANTEED_DEREFERENCES) {
-                PostDominatorsAnalysis postDomAnalysis =
-                    classContext.getNonExceptionPostDominatorsAnalysis(method);
+
+			if (PRUNE_GUARANTEED_DEREFERENCES) {
+				PostDominatorsAnalysis postDomAnalysis =
+					classContext.getNonExceptionPostDominatorsAnalysis(method);
             removeStrictlyPostDominatedLocations(derefLocationSet, postDomAnalysis);
-            
-            removeStrictlyPostDominatedLocations(knownNullAndDoomedAt, postDomAnalysis);
-            
+
+			removeStrictlyPostDominatedLocations(knownNullAndDoomedAt, postDomAnalysis);
+
             removeStrictlyPostDominatedLocations(assignedNullLocationSet, postDomAnalysis);
-            }
-            
-            
+			}
+
+
 			collector.foundGuaranteedNullDeref(
 					assignedNullLocationSet,
 					derefLocationSet,
 					knownNullAndDoomedAt,
 					vnaDataflow, valueNumber, 
-                    variableAnnotation, e.getValue(),  npeIfStatementCovered.contains(valueNumber));
+					variableAnnotation, e.getValue(),  npeIfStatementCovered.contains(valueNumber));
 		}
 	}
 
-    private void removeStrictlyPostDominatedLocations(Set<Location> locations, PostDominatorsAnalysis postDomAnalysis) {
-        BitSet strictlyDominated = new BitSet();
-        for(Location loc : locations) {
+	private void removeStrictlyPostDominatedLocations(Set<Location> locations, PostDominatorsAnalysis postDomAnalysis) {
+		BitSet strictlyDominated = new BitSet();
+		for(Location loc : locations) {
             BitSet allDominatedBy = postDomAnalysis.getAllDominatedBy(loc.getBasicBlock());
-            allDominatedBy.clear(loc.getBasicBlock().getId());
-            strictlyDominated.or(allDominatedBy);
-        }
+			allDominatedBy.clear(loc.getBasicBlock().getId());
+			strictlyDominated.or(allDominatedBy);
+		}
         LinkedList<Location> locations2 = new LinkedList<Location>(locations);
-        
-        for(Iterator<Location> i = locations.iterator(); i.hasNext(); ) {
-            Location loc = i.next();
-            if (strictlyDominated.get(loc.getBasicBlock().getId())) { 
-                i.remove();
-                continue;
-            }
-            for(Location loc2 : locations2) {
-                if (loc.getBasicBlock().equals(loc2.getBasicBlock()) && loc.getHandle().getPosition() > loc2.getHandle().getPosition()) {
-                    i.remove();
-                    break;
-                }
-            }
-        }
-    }
 
-    private static final boolean MY_DEBUG = false;
+		for(Iterator<Location> i = locations.iterator(); i.hasNext(); ) {
+			Location loc = i.next();
+            if (strictlyDominated.get(loc.getBasicBlock().getId())) { 
+				i.remove();
+				continue;
+			}
+            for(Location loc2 : locations2) {
+				if (loc.getBasicBlock().equals(loc2.getBasicBlock()) && loc.getHandle().getPosition() > loc2.getHandle().getPosition()) {
+					i.remove();
+					break;
+                }
+			}
+		}
+	}
+
+	private static final boolean MY_DEBUG = false;
 	/**
 	 * Check for unconditionally dereferenced null values
 	 * at a particular location in the CFG.
@@ -430,13 +430,13 @@ public class NullDerefAndRedundantComparisonFinder {
 			Map<ValueNumber, SortedSet<Location>> knownNullAndDoomedAt,
 			Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap,
 			ValueNumberFrame vnaFrame, IsNullValueFrame invFrame, UnconditionalValueDerefSet derefSet) {
-		
+
 		if (DEBUG_DEREFS) {
 			System.out.println("vna *** " + vnaFrame);
 			System.out.println("inv *** " + invFrame);
 			System.out.println("deref * " + derefSet);
 		}
-		
+
 		// Make sure the frames contain meaningful information
 		if (!vnaFrame.isValid() || !invFrame.isValid() || vnaFrame.getNumSlots() != invFrame.getNumSlots())  {
 			return;
@@ -444,40 +444,40 @@ public class NullDerefAndRedundantComparisonFinder {
 		if (derefSet.isEmpty()) return;
 		// See if there are any definitely-null values in the frame
 		for (int j = 0; j < invFrame.getNumSlots(); j++) {
-		    IsNullValue isNullValue = invFrame.getValue(j); 
-		    ValueNumber valueNumber = vnaFrame.getValue(j);
-		    if ((isNullValue.isDefinitelyNull() || isNullValue.isNullOnSomePath() && isNullValue.isReturnValue()) && (derefSet.isUnconditionallyDereferenced(valueNumber) 
+			IsNullValue isNullValue = invFrame.getValue(j); 
+			ValueNumber valueNumber = vnaFrame.getValue(j);
+			if ((isNullValue.isDefinitelyNull() || isNullValue.isNullOnSomePath() && isNullValue.isReturnValue()) && (derefSet.isUnconditionallyDereferenced(valueNumber) 
                   )) {
-                if (MY_DEBUG) {
-                    System.out.println("Found NP bug");
-                    System.out.println("Location: " + thisLocation);
+				if (MY_DEBUG) {
+					System.out.println("Found NP bug");
+					System.out.println("Location: " + thisLocation);
                     System.out.println("Value number: " + valueNumber);
-                    System.out.println("IsNullValue frame: " + invFrame);
-                    System.out.println("IsNullValue value: " + isNullValue);
-                    System.out.println("Unconditional dere framef: " + derefSet);
+					System.out.println("IsNullValue frame: " + invFrame);
+					System.out.println("IsNullValue value: " + isNullValue);
+					System.out.println("Unconditional dere framef: " + derefSet);
                     System.out.println("Unconditionally dereferenced: " + derefSet.isUnconditionallyDereferenced(valueNumber) );
-              
-                }
-                noteUnconditionallyDereferencedNullValue(
+
+				}
+				noteUnconditionallyDereferencedNullValue(
 		                thisLocation,
-		                knownNullAndDoomedAt,
-		                nullValueGuaranteedDerefMap,
-		                derefSet, isNullValue, valueNumber);
+						knownNullAndDoomedAt,
+						nullValueGuaranteedDerefMap,
+						derefSet, isNullValue, valueNumber);
 		    }
 		}
 
 		// See if there are any known-null values in the heap that
 		// will be dereferenced in the future.
 		for (Map.Entry<ValueNumber, IsNullValue> entry : invFrame.getKnownValueMapEntrySet()) {
-		    ValueNumber valueNumber = entry.getKey();
-		    IsNullValue isNullValue = entry.getValue();
-		    if ((isNullValue.isDefinitelyNull() || isNullValue.isNullOnSomePath() && isNullValue.isReturnValue()) && derefSet.isUnconditionallyDereferenced(valueNumber) ) {
+			ValueNumber valueNumber = entry.getKey();
+			IsNullValue isNullValue = entry.getValue();
+			if ((isNullValue.isDefinitelyNull() || isNullValue.isNullOnSomePath() && isNullValue.isReturnValue()) && derefSet.isUnconditionallyDereferenced(valueNumber) ) {
                noteUnconditionallyDereferencedNullValue(
-		                thisLocation,
-		                knownNullAndDoomedAt,
-		                nullValueGuaranteedDerefMap,
+						thisLocation,
+						knownNullAndDoomedAt,
+						nullValueGuaranteedDerefMap,
 		                derefSet, isNullValue, valueNumber);
-		    }
+			}
 		}
 	}
 
@@ -492,16 +492,16 @@ public class NullDerefAndRedundantComparisonFinder {
 	 * @param valueNumber                 the value number of the null value
 	 */
 	private void noteUnconditionallyDereferencedNullValue(
-            Location thisLocation, 
-            Map<ValueNumber, SortedSet<Location>> bugLocations, 
-            Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap, 
+			Location thisLocation, 
+			Map<ValueNumber, SortedSet<Location>> bugLocations, 
+			Map<ValueNumber, NullValueUnconditionalDeref> nullValueGuaranteedDerefMap, 
             UnconditionalValueDerefSet derefSet, 
-            IsNullValue isNullValue, 
-            ValueNumber valueNumber) {
+			IsNullValue isNullValue, 
+			ValueNumber valueNumber) {
 		if (DEBUG) {
 			System.out.println("%%% HIT for value number " + valueNumber + " @ " + thisLocation);
 		}
-		
+
 		// OK, we have a null value that is unconditionally
 		// derferenced.  Make a note of the locations where it
 		// will be dereferenced.
@@ -511,7 +511,7 @@ public class NullDerefAndRedundantComparisonFinder {
 			nullValueGuaranteedDerefMap.put(valueNumber, thisNullValueDeref);
 		}
 		thisNullValueDeref.add(isNullValue, derefSet.getUnconditionalDerefLocationSet(valueNumber));
-	
+
 		if (thisLocation != null) {
 			SortedSet<Location> locationsForThisBug = bugLocations.get(valueNumber);
 
@@ -556,7 +556,7 @@ public class NullDerefAndRedundantComparisonFinder {
 	private void analyzeRefComparisonBranch(
 			BasicBlock basicBlock,
 			InstructionHandle lastHandle) throws DataflowAnalysisException {
-		
+
 		Location location = new Location(lastHandle, basicBlock);
 
 		IsNullValueFrame frame = invDataflow.getFactAtLocation(location);
@@ -578,8 +578,8 @@ public class NullDerefAndRedundantComparisonFinder {
 
 		boolean definitelySame = top.isDefinitelyNull() && topNext.isDefinitelyNull();
 		boolean definitelyDifferent =
-		        (top.isDefinitelyNull() && topNext.isDefinitelyNotNull()) ||
-		        (top.isDefinitelyNotNull() && topNext.isDefinitelyNull());
+				(top.isDefinitelyNull() && topNext.isDefinitelyNotNull()) ||
+				(top.isDefinitelyNotNull() && topNext.isDefinitelyNull());
 
 		if (definitelySame || definitelyDifferent) {
 			if (definitelySame) {
@@ -592,14 +592,14 @@ public class NullDerefAndRedundantComparisonFinder {
 			}
 
 			RedundantBranch redundantBranch = new RedundantBranch(location, lineNumber, top, topNext);
-			
+
 			// Figure out which control edge is made infeasible by the redundant comparison
 			boolean wantSame = (lastHandle.getInstruction().getOpcode() == Constants.IF_ACMPEQ);
 			int infeasibleEdgeType = (wantSame == definitelySame)
 					? EdgeTypes.FALL_THROUGH_EDGE : EdgeTypes.IFCMP_EDGE;
 			Edge infeasibleEdge = invDataflow.getCFG().getOutgoingEdgeWithType(basicBlock, infeasibleEdgeType);
 			redundantBranch.setInfeasibleEdge(infeasibleEdge);
-			
+
 			if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
 			redundantBranchList.add(redundantBranch);
 		} else {
@@ -612,7 +612,7 @@ public class NullDerefAndRedundantComparisonFinder {
 	private void analyzeIfNullBranch(
 			BasicBlock basicBlock,
 			InstructionHandle lastHandle) throws DataflowAnalysisException {
-		
+
 		Location location = new Location(lastHandle, basicBlock);
 
 		IsNullValueFrame frame = invDataflow.getFactAtLocation(location);
@@ -628,7 +628,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		int lineNumber = getLineNumber(method, lastHandle);
 		if (lineNumber < 0)
 			return;
-		
+
 		if (!(top.isDefinitelyNull() || top.isDefinitelyNotNull())) {
 			if (DEBUG) System.out.println("Line " + lineNumber + " undetermined");
 			undeterminedBranchSet.set(lineNumber);
@@ -650,33 +650,33 @@ public class NullDerefAndRedundantComparisonFinder {
 		}
 
 		RedundantBranch redundantBranch = new RedundantBranch(location, lineNumber, top);
-		
+
 		// Determine which control edge is made infeasible by the redundant comparison
 		boolean wantNull = (opcode == Constants.IFNULL);
 		int infeasibleEdgeType = (wantNull == top.isDefinitelyNull())
 				? EdgeTypes.FALL_THROUGH_EDGE : EdgeTypes.IFCMP_EDGE;
 		Edge infeasibleEdge = invDataflow.getCFG().getOutgoingEdgeWithType(basicBlock, infeasibleEdgeType);
 		redundantBranch.setInfeasibleEdge(infeasibleEdge);
-		
+
 		if (DEBUG) System.out.println("Adding redundant branch: " + redundantBranch);
 		redundantBranchList.add(redundantBranch);
 	}
 
 	private void analyzeNullCheck(ClassContext classContext, Method method, IsNullValueDataflow invDataflow,
-            BasicBlock basicBlock)
+			BasicBlock basicBlock)
 		throws DataflowAnalysisException, CFGBuilderException {
 		// Look for null checks where the value checked is definitely
 		// null or null on some path.
-		
+
 		InstructionHandle exceptionThrowerHandle = basicBlock.getExceptionThrower();
 		Instruction exceptionThrower = exceptionThrowerHandle.getInstruction();
-		
+
 		// Get the stack values at entry to the null check.
 		IsNullValueFrame frame = invDataflow.getStartFact(basicBlock);
 		if (!frame.isValid())
 			return;
 
-		
+
 		// Could the reference be null?
 		IsNullValue refValue = frame.getInstance(exceptionThrower, classContext.getConstantPoolGen());
 		if (DEBUG) {
@@ -684,7 +684,7 @@ public class NullDerefAndRedundantComparisonFinder {
 		}
 		if (!refValue.mightBeNull())
 			return;
-		
+
 		// if (!refValue.isDefinitelyNull()) return;
 		// Get the value number
 		ValueNumberFrame vnaFrame = classContext.getValueNumberDataflow(method).getStartFact(basicBlock);
@@ -693,80 +693,80 @@ public class NullDerefAndRedundantComparisonFinder {
 		ValueNumber valueNumber = vnaFrame.getInstance(exceptionThrower, classContext.getConstantPoolGen());
 		Location location = new Location(exceptionThrowerHandle, basicBlock);
 		if (DEBUG) System.out.println("Warning: VN " + valueNumber + " invf: " + frame + " @ " + location);
-		
+
 		// Issue a warning
 		collector.foundNullDeref(classContext, location, valueNumber, refValue, vnaFrame);
 	}
 
 	public static XField findXFieldFromValueNumber(Method method,
-            Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
-        if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop())
+			Location location, ValueNumber valueNumber,
+			ValueNumberFrame vnaFrame) {
+		if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop())
             return null;
-    
-        AvailableLoad load = vnaFrame.getLoad(valueNumber);
-        if (load != null) {
+
+		AvailableLoad load = vnaFrame.getLoad(valueNumber);
+		if (load != null) {
             return load.getField();
-        }
-        return null;
-    }
+		}
+		return null;
+	}
 
-    public static FieldAnnotation findFieldAnnotationFromValueNumber(
-            Method method, Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
+	public static FieldAnnotation findFieldAnnotationFromValueNumber(
+			Method method, Location location, ValueNumber valueNumber,
+			ValueNumberFrame vnaFrame) {
         XField field = NullDerefAndRedundantComparisonFinder.findXFieldFromValueNumber(method, location, valueNumber,
-                vnaFrame);
-        if (field == null)
-            return null;
+				vnaFrame);
+		if (field == null)
+			return null;
         return FieldAnnotation.fromXField(field);
-    }
+	}
 
-    public static LocalVariableAnnotation findLocalAnnotationFromValueNumber(
-            Method method, Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
+	public static LocalVariableAnnotation findLocalAnnotationFromValueNumber(
+			Method method, Location location, ValueNumber valueNumber,
+			ValueNumberFrame vnaFrame) {
     
-        if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop())
-            return null;
-    
+		if (vnaFrame == null || vnaFrame.isBottom() || vnaFrame.isTop())
+			return null;
+
         LocalVariableAnnotation localAnnotation = null;
-        for (int i = 0; i < vnaFrame.getNumLocals(); i++) {
-            if (valueNumber.equals(vnaFrame.getValue(i))) {
-                InstructionHandle handle = location.getHandle();
+		for (int i = 0; i < vnaFrame.getNumLocals(); i++) {
+			if (valueNumber.equals(vnaFrame.getValue(i))) {
+				InstructionHandle handle = location.getHandle();
                 int position1 = handle.getPrev().getPosition();
-                int position2 = handle.getPosition();
-                localAnnotation = LocalVariableAnnotation
-                        .getLocalVariableAnnotation(method, i, position1,
+				int position2 = handle.getPosition();
+				localAnnotation = LocalVariableAnnotation
+						.getLocalVariableAnnotation(method, i, position1,
                                 position2);
-                if (localAnnotation != null)
-                    return localAnnotation;
-            }
+				if (localAnnotation != null)
+					return localAnnotation;
+			}
         }
-        return null;
-    }
+		return null;
+	}
 
-    /**
-     * @param method
-     *            TODO
+	/**
+	 * @param method
+	 *            TODO
      * @param location
-     * @param valueNumber
-     * @param vnaFrame
-     * @return
+	 * @param valueNumber
+	 * @param vnaFrame
+	 * @return
      */
-    public static BugAnnotation findAnnotationFromValueNumber(Method method,
-            Location location, ValueNumber valueNumber,
-            ValueNumberFrame vnaFrame) {
+	public static BugAnnotation findAnnotationFromValueNumber(Method method,
+			Location location, ValueNumber valueNumber,
+			ValueNumberFrame vnaFrame) {
         LocalVariableAnnotation ann = NullDerefAndRedundantComparisonFinder.findLocalAnnotationFromValueNumber(
-                method, location, valueNumber, vnaFrame);
-        if (ann != null && ann.isSignificant())
-            return ann;
+				method, location, valueNumber, vnaFrame);
+		if (ann != null && ann.isSignificant())
+			return ann;
         FieldAnnotation field = NullDerefAndRedundantComparisonFinder.findFieldAnnotationFromValueNumber(method,
-                location, valueNumber, vnaFrame);
-        if (field != null)
-            return field;
+				location, valueNumber, vnaFrame);
+		if (field != null)
+			return field;
         return ann;
-    }
+	}
 
-    private static int getLineNumber(Method method, InstructionHandle handle) {
+	private static int getLineNumber(Method method, InstructionHandle handle) {
 		LineNumberTable table = method.getCode().getLineNumberTable();
 		if (table == null)
 			return -1;

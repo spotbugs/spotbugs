@@ -29,12 +29,12 @@ import edu.umd.cs.findbugs.annotations.Nullable;
  */
 public class Constant {
 	private final Object value;
-	
+
 	/**
 	 * Single instance representing all non-constant values.
 	 */
 	public static final Constant NOT_CONSTANT = new Constant(null);
-	
+
 	/**
 	 * Constructor for a constant value.
 	 * 
@@ -43,7 +43,7 @@ public class Constant {
 	public Constant(@Nullable Object value) {
 		this.value = value;
 	}
-	
+
 	/**
 	 * Return whether or not this value is a constant.
 	 * 
@@ -52,7 +52,7 @@ public class Constant {
 	public boolean isConstant() {
 		return value != null;
 	}
-	
+
 	/**
 	 * Return whether or not this value is a constant String.
 	 * 
@@ -61,7 +61,7 @@ public class Constant {
 	public boolean isConstantString() {
 		return isConstant() && (value instanceof String);
 	}
-	
+
 	/**
 	 * Get the constant String value of this value.
 	 * 
@@ -79,8 +79,8 @@ public class Constant {
 	public boolean isConstantInteger() {
 		return isConstant() && (value instanceof Integer);
 	}
-	
-	
+
+
 	/**
 	 * Get the constant int value of this value.
 	 * 
@@ -90,7 +90,7 @@ public class Constant {
 		return ((Integer) value).intValue();
 	}
 
-	
+
 	/**
 	 * Merge two Constants.
 	 * 
@@ -105,10 +105,10 @@ public class Constant {
 			return NOT_CONSTANT;
 		return a;
 	}
-	
-	
+
+
 	@Override
-         public boolean equals(Object obj) {
+		 public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
 		Constant other = (Constant) obj;
@@ -119,15 +119,15 @@ public class Constant {
 		else
 			return this.value.equals(other.value);
 	}
-	
-	
+
+
 	@Override
-         public int hashCode() {
+		 public int hashCode() {
 		return (value == null) ? 123 : value.hashCode();
 	}
-	
+
 	@Override
-         public String toString() {
+		 public String toString() {
 		if (!isConstant()) {
 			return "-";
 		} else {

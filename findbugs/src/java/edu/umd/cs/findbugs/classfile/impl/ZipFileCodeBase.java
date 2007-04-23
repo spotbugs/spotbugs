@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  */
 public class ZipFileCodeBase extends AbstractScannableCodeBase {
 	ZipFile zipFile;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -61,7 +61,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 			throw new ZipException("Error opening " + file);
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
@@ -83,13 +83,13 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 		throw new ResourceNotFoundException(resourceName, ise);
 	}
 	}
-	
+
 	public ICodeBaseIterator iterator() {
 		final Enumeration<? extends ZipEntry> zipEntryEnumerator = zipFile.entries();
-		
+
 		return new ICodeBaseIterator() {
 			ZipFileCodeBaseEntry nextEntry;
-			
+
 			public boolean hasNext() {
 				scanForNextEntry();
 				return nextEntry != null;
@@ -115,7 +115,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 					}
 
 					ZipEntry zipEntry = zipEntryEnumerator.nextElement();
-				
+
 					if (!zipEntry.isDirectory()) {
 						setLastModifiedTime(zipEntry.getTime());
 						nextEntry = new ZipFileCodeBaseEntry(ZipFileCodeBase.this, zipEntry);
@@ -123,17 +123,17 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 					}
 				}
 			}
-			
+
 		};
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
 	 */
 	public String getPathName() {
 		return zipFile.getName();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
 	 */
@@ -144,7 +144,7 @@ public class ZipFileCodeBase extends AbstractScannableCodeBase {
 			// Ignore
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

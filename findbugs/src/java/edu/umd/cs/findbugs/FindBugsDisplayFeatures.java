@@ -25,14 +25,14 @@ package edu.umd.cs.findbugs;
 public class FindBugsDisplayFeatures {
 
 	private static boolean abridgedMessages;
-	
+
 	public static boolean isAbridgedMessages() {
-	    return abridgedMessages;
+		return abridgedMessages;
 	}
 
 	public static void setAbridgedMessages(boolean b) {
 		abridgedMessages = b;
 	}
 
-	
+
 }

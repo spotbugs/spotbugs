@@ -56,7 +56,7 @@ public class DelegatingBugReporter implements BugReporter {
 	public void setDelegate(BugReporter delegate) {
 		this.delegate = delegate;
 	}
-	
+
 	public BugReporter getDelegate() {
 		return this.delegate;
 	}
@@ -88,7 +88,7 @@ public class DelegatingBugReporter implements BugReporter {
 	public void reportMissingClass(ClassNotFoundException ex) {
 		delegate.reportMissingClass(ex);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
 	 */

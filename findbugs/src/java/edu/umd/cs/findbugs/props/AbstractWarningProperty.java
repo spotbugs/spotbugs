@@ -27,7 +27,7 @@ package edu.umd.cs.findbugs.props;
 public abstract class AbstractWarningProperty implements WarningProperty {
 	private String shortName;
 	private PriorityAdjustment priorityAdjustment;
-	
+
 	/**
 	 * Constructor.
 	 * 

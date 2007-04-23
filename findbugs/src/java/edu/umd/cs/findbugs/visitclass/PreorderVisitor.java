@@ -82,7 +82,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	private String fieldSig = "none";
 	private String dottedFieldSig = "none";
 	private boolean fieldIsStatic;
-	
+
 	// Available when visiting a Code
 	private Code code;
 
@@ -103,7 +103,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		if (code == null) throw new IllegalStateException("Not visiting Code");
 		return code;
 	}
-	 
+
 	 public Set<String> getSurroundingCaughtExceptions(int pc) {
 		 HashSet<String> result = new HashSet<String>();
 			if (code == null) throw new IllegalStateException("Not visiting Code");
@@ -143,7 +143,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	 }
 	// Attributes
 	@Override
-         public void visitCode(Code obj) {
+		 public void visitCode(Code obj) {
 		code = obj;
 		super.visitCode(obj);
 		CodeException[] exceptions = obj.getExceptionTable();
@@ -157,7 +157,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 
 	// Constants
 	@Override
-         public void visitConstantPool(ConstantPool obj) {
+		 public void visitConstantPool(ConstantPool obj) {
 		super.visitConstantPool(obj);
 		Constant[] constant_pool = obj.getConstantPool();
 		for (int i = 1; i < constant_pool.length; i++) {
@@ -175,7 +175,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		this.field = field;
 		try {
 			fieldName = fieldSig = dottedFieldSig = fullyQualifiedFieldName = null;
-			
+
 			fieldIsStatic = field.isStatic();
 			field.accept(this);
 			Attribute[] attributes = field.getAttributes();
@@ -206,7 +206,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 
 	// Extra classes (i.e. leaves in this context)
 	@Override
-         public void visitInnerClasses(InnerClasses obj) {
+		 public void visitInnerClasses(InnerClasses obj) {
 		super.visitInnerClasses(obj);
 		InnerClass[] inner_classes = obj.getInnerClasses();
 		for (InnerClass inner_class : inner_classes)
@@ -218,7 +218,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 
 	// General classes
 	@Override
-         public void visitJavaClass(JavaClass obj) {
+		 public void visitJavaClass(JavaClass obj) {
 		setupVisitorForClass(obj);
 		constantPool.accept(this);
 		Field[] fields = obj.getFields();
@@ -248,7 +248,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	}
 
 	@Override
-         public void visitLineNumberTable(LineNumberTable obj) {
+		 public void visitLineNumberTable(LineNumberTable obj) {
 		super.visitLineNumberTable(obj);
 		LineNumber[] line_number_table = obj.getLineNumberTable();
 		for (LineNumber aLine_number_table : line_number_table)
@@ -256,7 +256,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 	}
 
 	@Override
-         public void visitLocalVariableTable(LocalVariableTable obj) {
+		 public void visitLocalVariableTable(LocalVariableTable obj) {
 		super.visitLocalVariableTable(obj);
 		LocalVariable[] local_variable_table = obj.getLocalVariableTable();
 		for (LocalVariable aLocal_variable_table : local_variable_table)
@@ -314,13 +314,13 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 			getMethodName();
 			getDottedMethodSig();
 			StringBuffer ref = new StringBuffer(5 + dottedClassName.length()
-			        + methodName.length()
-			        + dottedMethodSig.length());
+					+ methodName.length()
+					+ dottedMethodSig.length());
 
 			ref.append(dottedClassName)
-			        .append(".")
-			        .append(methodName)
-			        .append(" : ")
+					.append(".")
+					.append(methodName)
+					.append(" : ")
 			        .append(dottedMethodSig);
 			fullyQualifiedMethodName = ref.toString();
 		}
@@ -358,40 +358,40 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 			throw new IllegalStateException("getMethodName called while not visiting method");
 		if (methodName == null) 
 			methodName = getStringFromIndex(method.getNameIndex());
-		
+
 		return methodName;
 	}
 
 	static Pattern argumentSignature = Pattern.compile("\\[*([BCDFIJSZ]|L[^;]*;)");
-	
+
 	public static int getNumberArguments(String signature) {
-        int count = 0;
-        int pos = 1;
-        boolean inArray = false;
+		int count = 0;
+		int pos = 1;
+		boolean inArray = false;
         
-        while (true) {
-            switch (signature.charAt(pos++)) {
-            case ')' : return count;
+		while (true) {
+			switch (signature.charAt(pos++)) {
+			case ')' : return count;
             case '[' :
-                if (!inArray) count++;
-                inArray = true;
-                break;
+				if (!inArray) count++;
+				inArray = true;
+				break;
             case 'L' :
-                if (!inArray) count++;
-                while (signature.charAt(pos) != ';') pos++;
-                pos++;
+				if (!inArray) count++;
+				while (signature.charAt(pos) != ';') pos++;
+				pos++;
                 inArray = false;
-                break;
-            default: 
-                if (!inArray) count++;
+				break;
+			default: 
+				if (!inArray) count++;
             inArray = false;
-            break;
-            }
-        }
+			break;
+			}
+		}
 
 		}
-	
-	
+
+
 	public int getNumberMethodArguments() {
 		return getNumberArguments(getMethodSig());
 	}
@@ -419,8 +419,8 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 			throw new IllegalStateException("getFieldName called while not visiting field");
 		if (fieldName == null)
 			fieldName = getStringFromIndex(field.getNameIndex());
-	
-		
+
+
 
 		return fieldName;
 	}
@@ -446,7 +446,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 			throw new IllegalStateException("getFullyQualifiedFieldName called while not visiting field");
 		if (fullyQualifiedFieldName == null)
 			fullyQualifiedFieldName = getDottedClassName() + "." + getFieldName()
-	        + " : " + getFieldSig();
+			+ " : " + getFieldSig();
 		return fullyQualifiedFieldName;
 	}
 

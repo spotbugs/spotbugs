@@ -33,10 +33,10 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 public abstract class ResourceValueAnalysisTestDriver <Resource, ResourceTrackerType extends ResourceTracker<Resource>> {
 
 	public abstract ResourceTrackerType createResourceTracker(ClassContext classContext, Method method)
-	        throws CFGBuilderException, DataflowAnalysisException;
+			throws CFGBuilderException, DataflowAnalysisException;
 
 	public void execute(String classFile, String methodName, int offset)
-	        throws IOException, CFGBuilderException, DataflowAnalysisException {
+			throws IOException, CFGBuilderException, DataflowAnalysisException {
 
 		final RepositoryLookupFailureCallback lookupFailureCallback = new DebugRepositoryLookupFailureCallback();
 

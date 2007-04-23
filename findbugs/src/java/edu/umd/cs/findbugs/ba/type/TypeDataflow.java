@@ -31,13 +31,13 @@ public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
 	public static class LocationAndFactPair {
 		public final Location location;
 		public final TypeFrame frame;
-		
+
 		LocationAndFactPair(Location location, TypeFrame frame) {
 			this.location = location;
 			this.frame = frame;
 		}
 	}
-	
+
 	public TypeDataflow(CFG cfg, TypeAnalysis analysis) {
 		super(cfg, analysis);
 	}
@@ -53,12 +53,12 @@ public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
 	public ExceptionSet getEdgeExceptionSet(Edge edge) {
 		return getAnalysis().getEdgeExceptionSet(edge);
 	}
-	
+
 	public LocationAndFactPair getLocationAndFactForInstruction(int pc) {
 		Collection<Location> locations = getCFG().getLocationsContainingInstructionWithOffset(pc);
-		
+
 		LocationAndFactPair result = null;
-		
+
 		// Return the first valid frame at any of the returned Locations
 		for (Location location : locations) {
 			try {
@@ -71,7 +71,7 @@ public class TypeDataflow extends Dataflow<TypeFrame, TypeAnalysis> {
 				// Ignore
 			}
 		}
-		
+
 		return result;
 	}
 }

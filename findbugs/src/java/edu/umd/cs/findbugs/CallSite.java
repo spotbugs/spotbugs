@@ -75,8 +75,8 @@ public class CallSite {
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(method)
-		        ^ getBasicBlock().getId()
-		        ^ System.identityHashCode(location.getHandle());
+				^ getBasicBlock().getId()
+				^ System.identityHashCode(location.getHandle());
 	}
 
 	@Override
@@ -85,8 +85,8 @@ public class CallSite {
 			return false;
 		CallSite other = (CallSite) o;
 		return method == other.method
-		        && getBasicBlock() == other.getBasicBlock()
-		        && getHandle() == other.getHandle();
+				&& getBasicBlock() == other.getBasicBlock()
+				&& getHandle() == other.getHandle();
 	}
 }
 

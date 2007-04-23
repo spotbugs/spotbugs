@@ -55,7 +55,7 @@ public class BindingSet {
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		StringBuffer buf = new StringBuffer();
 		BindingSet cur = this;
 		buf.append('[');

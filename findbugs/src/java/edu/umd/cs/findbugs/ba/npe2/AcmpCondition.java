@@ -31,10 +31,10 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @author David Hovemeyer
  */
 public class AcmpCondition extends Condition {
-    //TODO: these fields are ignored. Why?
+	//TODO: these fields are ignored. Why?
 	private Decision ifcmpDecision;
 	private Decision fallThroughDecision;
-	
+
 	public AcmpCondition(Location location) {
 		super(location);
 	}
@@ -62,7 +62,7 @@ public class AcmpCondition extends Condition {
 	 */
 	@Override
 	public void refresh(ValueNumberFrame vnaFrame, DefinitelyNullSet definitelyNullSet) throws DataflowAnalysisException {
-		
+
 //		// Get top two stack values
 //		ValueNumber a = vnaFrame.getStackValue(0);
 //		ValueNumber b = vnaFrame.getStackValue(1);
@@ -91,8 +91,8 @@ public class AcmpCondition extends Condition {
 //			
 //			return;
 //		}
-		
-		
+
+
 	}
 
 

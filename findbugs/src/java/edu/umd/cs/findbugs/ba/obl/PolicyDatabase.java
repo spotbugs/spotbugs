@@ -74,11 +74,11 @@ public class PolicyDatabase {
 		public boolean isStatic() {
 			return isStatic;
 		}
-		
+
 		public int getAction() {
 			return action;
 		}
-		
+
 		public Obligation getObligation() {
 			return obligation;
 		}
@@ -96,7 +96,7 @@ public class PolicyDatabase {
 			int action, Obligation obligation) {
 		entryList.add(new Entry(className, methodName, signature, isStatic, action, obligation));
 	}
-	
+
 	public Obligation lookup(
 			String className, String methodName, String signature, boolean isStatic,
 			int action) throws ClassNotFoundException {
@@ -109,7 +109,7 @@ public class PolicyDatabase {
 				return entry.getObligation();
 			}
 		}
-		
+
 		return null;
 	}
 }

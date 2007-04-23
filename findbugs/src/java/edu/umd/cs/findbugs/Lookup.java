@@ -26,13 +26,13 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 
 public class Lookup
-        implements Constants2 {
+		implements Constants2 {
 	public static JavaClass
-	        findSuperImplementor(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
+			findSuperImplementor(JavaClass clazz, String name, String signature, BugReporter bugReporter) {
 		try {
 			JavaClass c =
-			        findImplementor(Repository.getSuperClasses(clazz),
-			                name, signature);
+					findImplementor(Repository.getSuperClasses(clazz),
+							name, signature);
 			return c;
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
@@ -41,11 +41,11 @@ public class Lookup
 	}
 
 	public static String
-	        findSuperImplementor(String clazz, String name, String signature, BugReporter bugReporter) {
+			findSuperImplementor(String clazz, String name, String signature, BugReporter bugReporter) {
 		try {
 			JavaClass c =
-			        findImplementor(Repository.getSuperClasses(clazz),
-			                name, signature);
+					findImplementor(Repository.getSuperClasses(clazz),
+							name, signature);
 			return (c != null) ? c.getClassName() : clazz;
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
@@ -54,7 +54,7 @@ public class Lookup
 	}
 
 	public static JavaClass
-	        findImplementor(JavaClass[] clazz, String name, String signature) {
+			findImplementor(JavaClass[] clazz, String name, String signature) {
 
 		for (JavaClass aClazz : clazz) {
 			Method m = findImplementation(aClazz, name, signature);
@@ -69,7 +69,7 @@ public class Lookup
 	}
 
 	public static Method
-	        findImplementation(JavaClass clazz, String name, String signature) {
+			findImplementation(JavaClass clazz, String name, String signature) {
 		Method[] m = clazz.getMethods();
 		for (Method aM : m)
 			if (aM.getName().equals(name)

@@ -28,7 +28,7 @@ public class DFSCFGPrinter extends CFGPrinter implements DFSEdgeTypes {
 	}
 
 	@Override
-         public String edgeAnnotate(Edge edge) {
+		 public String edgeAnnotate(Edge edge) {
 		int dfsEdgeType = dfs.getDFSEdgeType(edge);
 		switch (dfsEdgeType) {
 		case UNKNOWN_EDGE:

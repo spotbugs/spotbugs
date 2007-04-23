@@ -50,17 +50,17 @@ import edu.umd.cs.findbugs.annotations.NonNull;
  */
 public class URLClassPathRepository implements Repository {
 	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.classpath.debug");
-	
+
 	private static final long serialVersionUID = 1L;
 
 	private Map<String, JavaClass> nameToClassMap;
 	private URLClassPath urlClassPath;
-	
+
 	public URLClassPathRepository() {
 		this.nameToClassMap = new HashMap<String, JavaClass>();
 		this.urlClassPath = new URLClassPath();
 	}
-	
+
 	/**
 	 * Clear the repository and close all underlying resources.
 	 */
@@ -80,7 +80,7 @@ public class URLClassPathRepository implements Repository {
 	public void addURL(String fileName) throws IOException {
 		urlClassPath.addURL(fileName);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.apache.bcel.util.Repository#storeClass(org.apache.bcel.classfile.JavaClass)
 	 */
@@ -123,7 +123,7 @@ public class URLClassPathRepository implements Repository {
 		// wrong name to look it up) and be evicted by some other random
 		// version of the class loaded from the classpath.
 		String dottedClassName = className.replace('/', '.');
-		
+
 		return nameToClassMap.get(dottedClassName);
 	}
 

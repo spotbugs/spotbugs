@@ -32,16 +32,16 @@ public class EngineRegistrar implements IAnalysisEngineRegistrar {
 	private static final IClassAnalysisEngine[] classAnalysisEngineList = {
 		new ClassReaderAnalysisEngine(),
 	};
-	
+
 	private static IMethodAnalysisEngine[] methodAnalysisEngineList = {
 	};
-	
+
 	/**
 	 * Constructor.
 	 */
 	public EngineRegistrar() {
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngineRegistrar#registerAnalysisEngines(edu.umd.cs.findbugs.classfile.IAnalysisCache)
 	 */

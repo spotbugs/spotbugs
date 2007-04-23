@@ -43,7 +43,7 @@ public class ClassPathImpl implements IClassPath {
 	private List<IScannableCodeBase> appCodeBaseList;
 	private List<ICodeBase> auxCodeBaseList;
 	private Map<String, ICodeBaseEntry> codeBaseEntryMap;
-	
+
 	public ClassPathImpl() {
 		this.appCodeBaseList = new LinkedList<IScannableCodeBase>();
 		this.auxCodeBaseList = new LinkedList<ICodeBase>();
@@ -63,21 +63,21 @@ public class ClassPathImpl implements IClassPath {
 			auxCodeBaseList.add(codeBase);
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IClassPath#appCodeBaseIterator()
 	 */
 	public Iterator<? extends ICodeBase> appCodeBaseIterator() {
 		return appCodeBaseList.iterator();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IClassPath#auxCodeBaseIterator()
 	 */
 	public Iterator<? extends ICodeBase> auxCodeBaseIterator() {
 		return auxCodeBaseList.iterator();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IClassPath#close()
 	 */
@@ -89,7 +89,7 @@ public class ClassPathImpl implements IClassPath {
 			codeBase.close();
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IClassPath#lookupResource(java.lang.String)
 	 */
@@ -99,19 +99,19 @@ public class ClassPathImpl implements IClassPath {
 
 		if (result == null) {
 			// No previously resolved entry - look up the resources in the codebases
-			
+
 			// First try application codebases
 			result = search(appCodeBaseList, resourceName);
 			if (result == null) {
 				// Next try aux codebases
 				result = search(auxCodeBaseList, resourceName);
 			}
-			
+
 			// If not found in any codebase, then throw ResourceNotFoundException
 			if (result == null) {
 				throw new ResourceNotFoundException(resourceName);
 			}
-			
+
 			// Cache the entry for future lookups
 			codeBaseEntryMap.put(resourceName, result);
 		}
@@ -137,7 +137,7 @@ public class ClassPathImpl implements IClassPath {
 		}
 		return null;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IClassPath#mapResourceNameToCodeBaseEntry(java.lang.String, edu.umd.cs.findbugs.classfile.ICodeBaseEntry)
 	 */

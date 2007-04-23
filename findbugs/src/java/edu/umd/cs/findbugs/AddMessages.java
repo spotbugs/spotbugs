@@ -77,7 +77,7 @@ public class AddMessages {
 			bugTypeSet.add(bugType);
 
 			BugPattern bugPattern = bugInstance.getBugPattern();
-			
+
 			bugCategorySet.add(bugPattern.getCategory());
 			bugCodeSet.add(bugPattern.getAbbrev());
 
@@ -165,29 +165,29 @@ public class AddMessages {
 					.addCDATA(bugPattern.getDetailText());
 		}
 	}
-	
+
 	@SuppressWarnings("DM_EXIT")
 	public static void main(String[] args) throws Exception {
 		if (args.length != 2) {
 			System.err.println("Usage: " + AddMessages.class.getName() + " <input collection> <output collection>");
 			System.exit(1);
 		}
-		
+
 		// Load plugins, in order to get message files
 		DetectorFactoryCollection.instance();
-		
+
 		String inputFile = args[0];
 		String outputFile = args[1];
 		Project project = new Project();
-		
+
 		SortedBugCollection inputCollection = new SortedBugCollection();
 		inputCollection.readXML(inputFile, project);
-		
+
 		Document document = inputCollection.toDocument(project);
-		
+
 		AddMessages addMessages = new AddMessages(inputCollection, document);
 		addMessages.execute();
-		
+
 		XMLWriter writer = new XMLWriter(new BufferedOutputStream(new FileOutputStream(outputFile)),
 				OutputFormat.createPrettyPrint());
 		writer.write(document);

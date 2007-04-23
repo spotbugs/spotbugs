@@ -35,17 +35,17 @@ public class StoreAnalysis extends FieldSetAnalysis {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.heap.FieldSetAnalysis#sawLoad(edu.umd.cs.findbugs.ba.heap.FieldSet, edu.umd.cs.findbugs.ba.XField)
 	 */
-	
+
 	@Override
-         protected void sawLoad(FieldSet fact, XField field) {
+		 protected void sawLoad(FieldSet fact, XField field) {
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.heap.FieldSetAnalysis#sawStore(edu.umd.cs.findbugs.ba.heap.FieldSet, edu.umd.cs.findbugs.ba.XField)
 	 */
-	
+
 	@Override
-         protected void sawStore(FieldSet fact, XField field) {
+		 protected void sawStore(FieldSet fact, XField field) {
 		fact.addField(field);
 	}
 

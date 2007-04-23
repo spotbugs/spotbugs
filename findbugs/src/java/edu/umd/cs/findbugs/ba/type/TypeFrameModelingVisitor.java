@@ -52,8 +52,8 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  * @see TypeAnalysis
  */
 public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type, TypeFrame>
-        implements Constants, Debug {
-		
+		implements Constants, Debug {
+
 	static private final  ObjectType COLLECTION_TYPE = ObjectTypeFactory.getInstance("java.util.Collection");
 
 	private ValueNumberDataflow valueNumberDataflow;
@@ -63,7 +63,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	private boolean instanceOfFollowedByBranch;
 	private Type instanceOfType;
 	private ValueNumber instanceOfValueNumber;
-		
+
 	private FieldStoreTypeDatabase database;
 
 	/**
@@ -85,7 +85,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	public void setValueNumberDataflow(ValueNumberDataflow valueNumberDataflow) {
 		this.valueNumberDataflow = valueNumberDataflow;
 	}
-	
+
 	/**
 	 * Get the last opcode analyzed by this visitor.
 	 * The TypeAnalysis may use this to get more precise types in
@@ -96,7 +96,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	public short getLastOpcode() {
 		return lastOpcode;
 	}
-	
+
 	/**
 	 * Return whether an instanceof instruction was followed by a branch.
 	 * The TypeAnalysis may use this to get more precise types in
@@ -108,7 +108,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	public boolean isInstanceOfFollowedByBranch() {
 		return instanceOfFollowedByBranch;
 	}
-	
+
 	/**
 	 * Get the type of the most recent instanceof instruction modeled.
 	 * The TypeAnalysis may use this to get more precise types in
@@ -119,7 +119,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	public Type getInstanceOfType() {
 		return instanceOfType;
 	}
-	
+
 	/**
 	 * Get the value number of the most recent instanceof instruction modeled.
 	 * The TypeAnalysis may use this to get more precise types in
@@ -130,7 +130,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	public ValueNumber getInstanceOfValueNumber() {
 		return instanceOfValueNumber;
 	}
-	
+
 	/**
 	 * Set the field store type database.
 	 * We can use this to get more accurate types for values loaded
@@ -146,7 +146,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	public Type getDefaultValue() {
 		return TypeFrame.getBottomType();
 	}
-	
+
 	@Override
 	public void analyzeInstruction(Instruction ins) throws DataflowAnalysisException {
 		instanceOfFollowedByBranch = false;
@@ -243,7 +243,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	public void visitATHROW(ATHROW obj) {
 		// do nothing. The same value remains on the stack (but we jump to a new location)
 	}
-	
+
 	@Override
 	public void visitACONST_NULL(ACONST_NULL obj) {
 		pushValue(TypeFrame.getNullType());
@@ -295,10 +295,10 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 	}
 
 	@Override
-         public void visitGETFIELD(GETFIELD obj) {
+		 public void visitGETFIELD(GETFIELD obj) {
 		modelFieldLoad(obj);
 	}
-	
+
 	public void modelFieldLoad(FieldInstruction obj) {
 		consumeStack(obj);
 
@@ -330,7 +330,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 						break;
 					}
 				}
-				
+
 				// replace loadType with information from field signature (conservative)
 				if (signature != null && 
 					(loadType instanceof ObjectType || loadType instanceof ArrayType) &&
@@ -342,7 +342,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		} catch (RuntimeException e) {} // degrade gracefully
-				
+
 		pushValue(loadType);
 	}
 
@@ -370,11 +370,11 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 		TypeFrame frame = getFrame();
 		if (obj.getMethodName(cpg).equals("initCause") && obj.getSignature(cpg).equals("(Ljava/lang/Throwable;)Ljava/lang/Throwable;") && obj.getClassName(cpg).endsWith("Exception")) {
 			try {
-	
+
 				frame.popValue();
 				return;
 			} catch (DataflowAnalysisException e) {
-				
+
 			}
 		}
 		if (handleToArray(obj)) return;
@@ -389,7 +389,7 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 			ReferenceType target = obj.getReferenceType(getCPG());
 			String signature = obj.getSignature(getCPG());
 			if (signature.equals("([Ljava/lang/Object;)[Ljava/lang/Object;") && target.isAssignmentCompatibleWith(COLLECTION_TYPE)) {
-				
+
 				boolean topIsExact = frame.isExact(frame.getStackLocation(0));
 				Type resultType = frame.popValue();
 				frame.popValue();
@@ -432,8 +432,8 @@ public class TypeFrameModelingVisitor extends AbstractFrameModelingVisitor<Type,
 				// Ignore
 			}
 		}
-		
-		
+
+
 		consumeStack(obj);
 		pushValue(Type.INT);
 	}

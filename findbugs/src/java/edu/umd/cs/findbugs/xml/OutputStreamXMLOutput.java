@@ -50,7 +50,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
 		}
 
 		@Override
-                 public void emitLiteral(String s) throws IOException {
+				 public void emitLiteral(String s) throws IOException {
 			out.write(s);
 			newLine = s.endsWith("\n");
 		}
@@ -72,7 +72,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
 		this.out = new OutputStreamWriter(os, Charset.forName("UTF-8"));
 		this.nestingLevel = 0;
 		this.newLine = true;
-        this.stylesheet = stylesheet;
+		this.stylesheet = stylesheet;
 	}
 	public void beginDocument() throws IOException {
 		out.write(OPENING);
@@ -102,14 +102,14 @@ public class OutputStreamXMLOutput implements XMLOutput {
 		++nestingLevel;
 		out.write("<" + tagName);
 	}
-	
+
 	public void addAttribute(String name, String value) throws IOException {
 		out.write(' ');
 		out.write(name);
 		out.write('=');
 		out.write(XMLAttributeList.getQuotedAttributeValue(value));
 	}
-	
+
 	public void stopTag(boolean close) throws IOException {
 		if (close) {
 			out.write("/>\n");
@@ -120,7 +120,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
 			newLine = false;
 		}
 	}
-	
+
 	private void emitTag(String tagName, boolean close) throws IOException {
 		startTag(tagName);
 		stopTag(close);

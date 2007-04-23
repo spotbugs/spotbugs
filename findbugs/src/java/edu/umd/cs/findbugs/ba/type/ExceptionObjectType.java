@@ -60,31 +60,31 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
 			return commonSupertype;
 
 		ObjectType exceptionSupertype = (ObjectType) commonSupertype;
-        
+
 		String className = exceptionSupertype.getClassName();
-        if (className.equals("java.lang.Throwable"))
-            return exceptionSupertype;
-        return new ExceptionObjectType(className, exceptionSet);
+		if (className.equals("java.lang.Throwable"))
+			return exceptionSupertype;
+		return new ExceptionObjectType(className, exceptionSet);
 	}
 
 	@Override
-         public byte getType() {
+		 public byte getType() {
 		return T_EXCEPTION;
 	}
 
 	@Override
-         public int hashCode() {
+		 public int hashCode() {
 		return getSignature().hashCode();
 	}
 
 	@Override
-         public boolean equals(Object o) {
+		 public boolean equals(Object o) {
 		if (o == null) return false;
 		if (o.getClass() != this.getClass()) return false;
 
 		ExceptionObjectType other = (ExceptionObjectType) o;
 		return getSignature().equals(other.getSignature())
-		        && exceptionSet.equals(other.exceptionSet);
+				&& exceptionSet.equals(other.exceptionSet);
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class ExceptionObjectType extends ObjectType implements Constants, Extend
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("<exception:");
 		boolean first = true;

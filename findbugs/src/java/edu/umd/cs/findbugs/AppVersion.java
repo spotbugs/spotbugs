@@ -40,13 +40,13 @@ public class AppVersion implements XMLWriteable, Cloneable {
 	 * XML element name for a stored AppVersion object.
 	 */
 	public static final String ELEMENT_NAME = "AppVersion";
-	
+
 	private long sequence;
 	private long timestamp;
 	private String releaseName;
 	private int numClasses;
 	private int codeSize;
-	
+
 	public AppVersion(long sequence, long time, String name) {
 		this.sequence = sequence;
 		this.timestamp = time;
@@ -62,11 +62,11 @@ public class AppVersion implements XMLWriteable, Cloneable {
 		this.timestamp = -1;
 		this.releaseName = "";
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#clone()
 	 */
-	
+
 	@Override
 	public Object clone() {
 		try {
@@ -75,28 +75,28 @@ public class AppVersion implements XMLWriteable, Cloneable {
 			throw new AssertionError(e);
 		}
 	}
-	
+
 	/**
 	 * @return Returns the sequence.
 	 */
 	public long getSequenceNumber() {
 		return sequence;
 	}
-	
+
 	/**
 	 * @return Returns the timestamp.
 	 */
 	public long getTimestamp() {
 		return timestamp;
 	}
-	
+
 	/**
 	 * @return Returns the releaseName.
 	 */
 	public String getReleaseName() {
 		return releaseName;
 	}
-	
+
 	/**
 	 * @param timestamp The timestamp to set.
 	 */
@@ -104,7 +104,7 @@ public class AppVersion implements XMLWriteable, Cloneable {
 		this.timestamp = timestamp;
 		return this;
 	}
-	
+
 	/**
 	 * @param releaseName The releaseName to set.
 	 */
@@ -112,7 +112,7 @@ public class AppVersion implements XMLWriteable, Cloneable {
 		this.releaseName = releaseName;
 		return this;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.xml.XMLWriteable#writeXML(edu.umd.cs.findbugs.xml.XMLOutput)
 	 */
@@ -124,11 +124,11 @@ public class AppVersion implements XMLWriteable, Cloneable {
 				.addAttribute("codeSize", String.valueOf(codeSize))
 				.addAttribute("numClasses", String.valueOf(numClasses)));
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	
+
 	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();

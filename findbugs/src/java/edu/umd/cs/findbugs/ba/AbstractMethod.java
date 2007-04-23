@@ -24,22 +24,22 @@ public abstract class AbstractMethod extends AbstractClassMember implements XMet
 	protected AbstractMethod(String className, String methodName, String methodSig, int accessFlags) {
 		super(className, methodName, methodSig, accessFlags);
 	}
-	
+
 	public int getNumParams() {
 		// FIXME: cache this?
 		return new SignatureParser(getSignature()).getNumParameters();
 	}
-	
+
 	public boolean isNative() {
 		return (getAccessFlags() & Constants.ACC_NATIVE) != 0;
 	}
-	
+
 	public boolean isSynchronized() {
 		return (getAccessFlags() & Constants.ACC_SYNCHRONIZED) != 0;
 	}
-	
+
 	@Override
-         public String toString() {
+		 public String toString() {
 		return SignatureConverter.convertMethodSignature(this);
 	}
 }

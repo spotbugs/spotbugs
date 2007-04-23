@@ -68,7 +68,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		this.timestamp = new Date();
 		this.baseFootprint = new Footprint();
 	}
-	
+
 	@Override
 	public Object clone() {
 		try {
@@ -98,11 +98,11 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	public void setTimestamp(String timestamp) throws ParseException {
 		this.timestamp = new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).parse(timestamp);
 	}
-	
+
 	public void setTimestamp(long timestamp) {
 		this.timestamp = new Date(timestamp);
 	}
-	
+
 	/**
 	 * Get the number of classes analyzed.
 	 */
@@ -130,7 +130,7 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		totalClasses++;
 		totalSize += size;
 	}
-	
+
 	/**
 	 * Report that a class has been analyzed.
 	 *
@@ -175,14 +175,14 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 	 */
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		xmlOutput.startTag("FindBugsSummary");
-		
+
 		xmlOutput.addAttribute("timestamp",
 				new SimpleDateFormat(TIMESTAMP_FORMAT, Locale.ENGLISH).format(timestamp));
 		xmlOutput.addAttribute("total_classes", String.valueOf(totalClasses));
 		xmlOutput.addAttribute("total_bugs", String.valueOf(totalErrors[0]));
 		xmlOutput.addAttribute("total_size", String.valueOf(totalSize));
 		xmlOutput.addAttribute("num_packages", String.valueOf(packageStatsMap.size()));
-		
+
 		Footprint delta = new Footprint(baseFootprint);
 		NumberFormat twoPlaces = NumberFormat.getInstance(Locale.ENGLISH);
 		twoPlaces.setMinimumFractionDigits(2);
@@ -204,18 +204,18 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 		if (gcTime >= 0) {
 			xmlOutput.addAttribute("gc_seconds", twoPlaces.format(gcTime / 1000.0));
 		}
-		
+
 		PackageStats.writeBugPriorities(xmlOutput, totalErrors);
-		
+
 		xmlOutput.stopTag(false);
 
 		for (PackageStats stats : packageStatsMap.values()) {
 			stats.writeXML(xmlOutput);
 		}
-		
+
 		xmlOutput.closeTag("FindBugsSummary");
 	}
-	
+
 	/**
 	 * Report statistics as an XML document to given output stream.
 	 */

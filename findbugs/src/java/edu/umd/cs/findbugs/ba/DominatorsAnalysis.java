@@ -63,10 +63,10 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 			System.err.println("Usage: " + DominatorsAnalysis.class.getName() + " <classfile>");
 			System.exit(1);
 		}
-		
+
 		DataflowTestDriver<BitSet, DominatorsAnalysis> driver =
 			new DataflowTestDriver<BitSet, DominatorsAnalysis>() {
-			
+
 			/* (non-Javadoc)
 			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
 			 */
@@ -74,20 +74,20 @@ public class DominatorsAnalysis extends AbstractDominatorsAnalysis {
 			public Dataflow<BitSet, DominatorsAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
 				CFG cfg = classContext.getCFG(method);
 				DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
-				
+
 				DominatorsAnalysis analysis =
 					new DominatorsAnalysis(cfg, dfs, SystemProperties.getBoolean("dominators.ignoreexceptionedges"));
-			
+
 				Dataflow<BitSet, DominatorsAnalysis> dataflow =
 					new Dataflow<BitSet, DominatorsAnalysis>(cfg, analysis);
-				
+
 				dataflow.execute();
-				
+
 				return dataflow;
 			}
-			
+
 		};
-		
+
 		driver.execute(argv[0]);
 	}
 }

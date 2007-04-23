@@ -35,7 +35,7 @@ public class FatalException extends RuntimeException {
 	public FatalException(String msg) {
 		super(msg);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -45,5 +45,5 @@ public class FatalException extends RuntimeException {
 	public FatalException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
-	
+
 }

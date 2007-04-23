@@ -29,25 +29,25 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
  * @author David Hovemeyer
  */
 public class ReturnValueNullnessPropertyDatabase extends MethodPropertyDatabase<Boolean> {
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#decodeProperty(java.lang.String)
 	 */
 
 	@Override
-         protected Boolean decodeProperty(String propStr) {
+		 protected Boolean decodeProperty(String propStr) {
 			return TigerSubstitutes.parseBoolean(propStr);
-		
+
 	}
 
-  
+
 
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#encodeProperty(Property)
 	 */
 
 	@Override
-         protected String encodeProperty(Boolean property) {
+		 protected String encodeProperty(Boolean property) {
 		return property.toString();
 	}
 

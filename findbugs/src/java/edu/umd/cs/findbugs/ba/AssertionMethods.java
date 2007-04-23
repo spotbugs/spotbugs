@@ -47,9 +47,9 @@ import edu.umd.cs.findbugs.SystemProperties;
  * @author David Hovemeyer
  */
 public class AssertionMethods implements Constants {
-	
+
 	private static final boolean DEBUG = SystemProperties.getBoolean("assertionmethods.debug");
-	
+
 	/**
 	 * Bitset of methodref constant pool indexes referring to likely assertion methods.
 	 */
@@ -113,11 +113,11 @@ public class AssertionMethods implements Constants {
 					String methodName = ((ConstantUtf8) cp.getConstant(cnat.getNameIndex(), CONSTANT_Utf8)).getBytes();
 					String className = cp.getConstantString(cmr.getClassIndex(), CONSTANT_Class).replace('/', '.');
 					String methodSig = ((ConstantUtf8) cp.getConstant(cnat.getSignatureIndex(), CONSTANT_Utf8)).getBytes();
-					
+
 					String classNameLC = className.toLowerCase();
 					String methodNameLC = methodName.toLowerCase();
 					boolean voidReturnType = methodSig.endsWith(")V");
-					
+
 					if (DEBUG) {
 						System.out.print("Is " + className + "." + methodName + " assertion method: " + voidReturnType);
 					}
@@ -130,7 +130,7 @@ public class AssertionMethods implements Constants {
 									|| methodNameLC.startsWith("throw")
 									|| methodName.startsWith("affirm")
 									|| methodName.startsWith("panic")
-                                    || methodName.equals("logTerminal")
+									|| methodName.equals("logTerminal")
 									|| methodNameLC.equals("insist")
 									|| methodNameLC.equals("usage")
 									|| methodNameLC.startsWith("fail")
@@ -170,27 +170,27 @@ public class AssertionMethods implements Constants {
 	 * @param ins the InvokeInstruction
 	 * @return true if the instruction likely refers to an assertion, false if not
 	 */
-    
-    public boolean isAssertionInstruction(Instruction ins, ConstantPoolGen cpg) {
-    
+
+	public boolean isAssertionInstruction(Instruction ins, ConstantPoolGen cpg) {
+
         if (ins instanceof InvokeInstruction)
-            return isAssertionCall((InvokeInstruction)ins);
-        if (ins instanceof GETSTATIC) {
-            GETSTATIC getStatic = (GETSTATIC) ins;
+			return isAssertionCall((InvokeInstruction)ins);
+		if (ins instanceof GETSTATIC) {
+			GETSTATIC getStatic = (GETSTATIC) ins;
             String className = getStatic.getClassName(cpg);
-            String fieldName = getStatic.getFieldName(cpg);
-            if (className.equals("java.util.logging.Level")
-                    && fieldName.equals("SEVERE")) return true;
+			String fieldName = getStatic.getFieldName(cpg);
+			if (className.equals("java.util.logging.Level")
+					&& fieldName.equals("SEVERE")) return true;
             if (className.equals("org.apache.log4j.Level") 
-                    && (fieldName.equals("ERROR") || fieldName.equals("FATAL")))
-                    return true;
-            return false;
+					&& (fieldName.equals("ERROR") || fieldName.equals("FATAL")))
+					return true;
+			return false;
       
-        }
-        return false;
-    }
+		}
+		return false;
+	}
         
-    
+
 	public boolean isAssertionCall(InvokeInstruction inv) {
 //		if (DEBUG) {
 //			System.out.print("Checking if " + inv + " is an assertion method: ");

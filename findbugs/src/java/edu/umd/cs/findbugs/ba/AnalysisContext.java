@@ -69,25 +69,25 @@ import edu.umd.cs.findbugs.util.MapCache;
 @NotThreadSafe
 public abstract class AnalysisContext {
 	public static final boolean DEBUG = SystemProperties.getBoolean("findbugs.analysiscontext.debug");
-    public static final boolean IGNORE_BUILTIN_MODELS = SystemProperties.getBoolean("findbugs.ignoreBuiltinModels");
-    
+	public static final boolean IGNORE_BUILTIN_MODELS = SystemProperties.getBoolean("findbugs.ignoreBuiltinModels");
+
 	public static final String DEFAULT_NONNULL_PARAM_DATABASE_FILENAME = "nonnullParam.db";
-  
-    
+
+
 	public static final String DEFAULT_CHECK_FOR_NULL_PARAM_DATABASE_FILENAME = "checkForNullParam.db";
 	public static final String DEFAULT_NULL_RETURN_VALUE_ANNOTATION_DATABASE = "nullReturn.db";
-    
+
 	public static final String UNCONDITIONAL_DEREF_DB_FILENAME = "unconditionalDeref.db";
-    public static final String NONNULL_RETURN_DB_FILENAME = "nonnullReturn.db";
-      
+	public static final String NONNULL_RETURN_DB_FILENAME = "nonnullReturn.db";
+
 	public static final String UNCONDITIONAL_DEREF_DB_RESOURCE = "jdkBaseUnconditionalDeref.db";
-    public static final String NONNULL_RETURN_DB_RESOURCE = "jdkBaseNonnullReturn.db";
-    
+	public static final String NONNULL_RETURN_DB_RESOURCE = "jdkBaseNonnullReturn.db";
+
 	public static final String DEFAULT_NULL_RETURN_VALUE_DB_FILENAME = "mayReturnNull.db";
 
 	private static InheritableThreadLocal<AnalysisContext> currentAnalysisContext
 		= new InheritableThreadLocal<AnalysisContext>();
-	
+
 	private static InheritableThreadLocal<XFactory> currentXFactory
 	= new InheritableThreadLocal<XFactory>() {
 		@Override
@@ -95,12 +95,12 @@ public abstract class AnalysisContext {
 			return new XFactory();
 		}
 	};
-	
+
 	public abstract NullnessAnnotationDatabase getNullnessAnnotationDatabase();
 	public abstract CheckReturnAnnotationDatabase getCheckReturnAnnotationDatabase();
 	public abstract AnnotationRetentionDatabase getAnnotationRetentionDatabase();
 	public abstract JCIPAnnotationDatabase getJCIPAnnotationDatabase();
-	
+
 	/** save the original SyntheticRepository so we may
 	 *  obtain JavaClass objects which we can reuse.
 	 *  (A URLClassPathRepository gets closed after analysis.) */
@@ -113,13 +113,13 @@ public abstract class AnalysisContext {
 	 */
 	private static final int DEFAULT_CACHE_SIZE = 3;
 
-	
+
 	// Instance fields
 	private BitSet boolPropertySet;
 	private Map<Object,Object> analysisLocals;
 	private String databaseInputDir;
 	private String databaseOutputDir;
-	
+
 	protected AnalysisContext() {
 		this.boolPropertySet = new BitSet();
 		this.analysisLocals = Collections.synchronizedMap(new HashMap<Object,Object>());
@@ -137,13 +137,13 @@ public abstract class AnalysisContext {
 		setCurrentAnalysisContext(analysisContext);
 		return analysisContext;
 	}
-	
+
 	/** Instantiate the CheckReturnAnnotationDatabase.
 	 *  Do this after the repository has been set up.
 	 */
 	public abstract void initDatabases();
 
-	
+
 	/**
 	 * After a pass has been completed, allow the analysis context to update information.
 	 * @param pass -- the first pass is pass 0
@@ -159,7 +159,7 @@ public abstract class AnalysisContext {
 	static public XFactory currentXFactory() {
 		return currentXFactory.get();
 	}
-	
+
 	UnreadFields unreadFields;
 	public UnreadFields getUnreadFields() {
 		if (unreadFields == null) throw new IllegalStateException("UnreadFields detector not set");
@@ -174,14 +174,14 @@ public abstract class AnalysisContext {
 	 * @see #getLookupFailureCallback()
 	 */
 	static public void reportMissingClass(ClassNotFoundException e) {
-        if (e == null) throw new NullPointerException("argument is null");
+		if (e == null) throw new NullPointerException("argument is null");
 		AnalysisContext currentAnalysisContext2 = currentAnalysisContext();
 		if (currentAnalysisContext2 == null) return;
 		if (currentAnalysisContext2.missingClassWarningsSuppressed) return;
 		RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
 		if (lookupFailureCallback != null) lookupFailureCallback.reportMissingClass(e);
 	}
-	
+
 	/**
 	 * Report an error
 	 */
@@ -200,9 +200,9 @@ public abstract class AnalysisContext {
 		RepositoryLookupFailureCallback lookupFailureCallback = currentAnalysisContext2.getLookupFailureCallback();
 		if (lookupFailureCallback != null) lookupFailureCallback.logError(msg);
 	}
-	
+
 	boolean missingClassWarningsSuppressed = false;
-	
+
 	public boolean setMissingClassWarningsSuppressed(boolean value) {
 		boolean oldValue = missingClassWarningsSuppressed;
 		missingClassWarningsSuppressed = value;
@@ -231,18 +231,18 @@ public abstract class AnalysisContext {
 	 * @return the Subtypes database
 	 */
 	public abstract Subtypes getSubtypes();
-	
+
 	/**
 	 * Clear the BCEL Repository in preparation for analysis.
 	 */
 	public abstract void clearRepository();
-	
+
 	/**
 	 * Clear the ClassContext cache.
 	 * This should be done between analysis passes.
 	 */
 	public abstract void clearClassContextCache();
-	
+
 	/**
 	 * Add an entry to the Repository's classpath.
 	 * 
@@ -257,7 +257,7 @@ public abstract class AnalysisContext {
 	 * @param appClass the application class
 	 */
 	public abstract void addApplicationClassToRepository(JavaClass appClass);
-	
+
 	/**
 	 * Return whether or not the given class is an application class.
 	 * 
@@ -268,7 +268,7 @@ public abstract class AnalysisContext {
 	public boolean isApplicationClass(JavaClass cls) {
 		return getSubtypes().isApplicationClass(cls);
 	}
-	
+
 	/**
 	 * Return whether or not the given class is an application class.
 	 * 
@@ -307,7 +307,7 @@ public abstract class AnalysisContext {
 	public JavaClass lookupClass(@NonNull ClassDescriptor classDescriptor) throws ClassNotFoundException {
 		return lookupClass(classDescriptor.toDottedClassName());
 	}
-	
+
 	/**
 	 * This is equivalent to Repository.lookupClass() or this.lookupClass(),
 	 * except it uses the original Repository instead of the current one.
@@ -358,14 +358,14 @@ public abstract class AnalysisContext {
 	 * @return the ClassContext for that class
 	 */
 	public abstract ClassContext getClassContext(JavaClass javaClass);
-	
+
 	/**
 	 * Get stats about hit rate for ClassContext cache.
 	 * 
 	 * @return stats about hit rate for ClassContext cache
 	 */
 	public abstract String getClassContextStats();
-	
+
 	/**
 	 * If possible, load interprocedural property databases.
 	 */
@@ -378,26 +378,26 @@ public abstract class AnalysisContext {
 				getUnconditionalDerefParamDatabase(),
 				UNCONDITIONAL_DEREF_DB_FILENAME,
 				"unconditional param deref database");
-        loadPropertyDatabase(
-                getReturnValueNullnessPropertyDatabase(),
-                NONNULL_RETURN_DB_FILENAME,
+		loadPropertyDatabase(
+				getReturnValueNullnessPropertyDatabase(),
+				NONNULL_RETURN_DB_FILENAME,
                 "nonnull return db database");
 	}
-	
+
 	/**
 	 * If possible, load default (built-in) interprocedural property databases.
 	 * These are the databases for things like Java core APIs that
 	 * unconditional dereference parameters.
 	 */
 	public final void loadDefaultInterproceduralDatabases() {
-        if (IGNORE_BUILTIN_MODELS) return;
+		if (IGNORE_BUILTIN_MODELS) return;
 		loadPropertyDatabaseFromResource(
 				getUnconditionalDerefParamDatabase(),
 				UNCONDITIONAL_DEREF_DB_RESOURCE,
 				"unconditional param deref database");
-        loadPropertyDatabaseFromResource(
-                getReturnValueNullnessPropertyDatabase(),
-                NONNULL_RETURN_DB_RESOURCE,
+		loadPropertyDatabaseFromResource(
+				getReturnValueNullnessPropertyDatabase(),
+				NONNULL_RETURN_DB_RESOURCE,
                 "nonnull return db database");
 	}
 
@@ -421,12 +421,12 @@ public abstract class AnalysisContext {
 	public final boolean getBoolProperty(int prop) {
 		return boolPropertySet.get(prop);
 	}
-	
+
 	/**
 	 * Get the SourceInfoMap.
 	 */
 	public abstract SourceInfoMap getSourceInfoMap();
-	
+
 	/**
 	 * Set the interprocedural database input directory.
 	 * 
@@ -436,7 +436,7 @@ public abstract class AnalysisContext {
 		if (DEBUG) System.out.println("Setting database input directory: " + databaseInputDir);
 		this.databaseInputDir = databaseInputDir;
 	}
-	
+
 	/**
 	 * Get the interprocedural database input directory.
 	 * 
@@ -455,7 +455,7 @@ public abstract class AnalysisContext {
 		if (DEBUG) System.out.println("Setting database output directory: " + databaseOutputDir);
 		this.databaseOutputDir = databaseOutputDir;
 	}
-	
+
 	/**
 	 * Get the interprocedural database output directory.
 	 * 
@@ -464,7 +464,7 @@ public abstract class AnalysisContext {
 	public final String getDatabaseOutputDir() {
 		return databaseOutputDir;
 	}
-	
+
 	/**
 	 * Get the property database recording the types of values stored
 	 * into fields.
@@ -481,12 +481,12 @@ public abstract class AnalysisContext {
 	 */
 	public abstract ParameterNullnessPropertyDatabase getUnconditionalDerefParamDatabase();
 
-    /**
-     * Get the property database recording which methods always return nonnull values
-     * 
+	/**
+	 * Get the property database recording which methods always return nonnull values
+	 * 
      * @return the database, or null if there is no database available
-     */
-    public abstract ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase();
+	 */
+	public abstract ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase();
 
 	/**
 	 * Load an interprocedural property database.
@@ -510,7 +510,7 @@ public abstract class AnalysisContext {
 		try {
 			File dbFile = new File(getDatabaseInputDir(), fileName);
 			if (DEBUG) System.out.println("Loading " + description + " from " + dbFile.getPath() + "...");
-			
+
 			database.readFromFile(dbFile.getPath());
 			return database;
 		} catch (IOException e) {
@@ -518,7 +518,7 @@ public abstract class AnalysisContext {
 		} catch (PropertyDatabaseFormatException e) {
 			getLookupFailureCallback().logError("Invalid " + description, e);
 		}
-		
+
 		return null;
 	}
 
@@ -554,11 +554,11 @@ public abstract class AnalysisContext {
 		} catch (PropertyDatabaseFormatException e) {
 			getLookupFailureCallback().logError("Invalid " + description, e);
 		}
-		
+
 		return null;
 	}
 
-	
+
 	/**
 	 * Write an interprocedural property database.
 	 * 
@@ -583,17 +583,17 @@ public abstract class AnalysisContext {
 			getLookupFailureCallback().logError("Error writing " + description, e);
 		}
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getAnalyisLocals()
 	 */
 	public final Map<Object, Object> getAnalysisLocals() {
 		return analysisLocals;
 	}
-	
+
 	public abstract InnerClassAccessMap getInnerClassAccessMap();
-	
+
 	/**
 	 * Set the current analysis context for this thread.
 	 * 
@@ -602,7 +602,7 @@ public abstract class AnalysisContext {
 	public static void setCurrentAnalysisContext(AnalysisContext analysisContext) {
 		currentAnalysisContext.set(analysisContext);
 	}
-	
+
 }
 
 // vim:ts=4

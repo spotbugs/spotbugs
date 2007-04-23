@@ -99,7 +99,7 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 	}
 
 	@Override
-         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BitSet fact)
+		 public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, BitSet fact)
 		throws DataflowAnalysisException {
 		isFactValid(fact);
 
@@ -129,7 +129,7 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 	}
 
 	@Override
-         public boolean isFactValid(BitSet fact) {
+		 public boolean isFactValid(BitSet fact) {
 		if (VERIFY_INTEGRITY) {
 			if (isTop(fact) && fact.nextSetBit(0) < topBit)
 				throw new IllegalStateException();
@@ -138,7 +138,7 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 	}
 
 	@Override
-         public String factToString(BitSet fact) {
+		 public String factToString(BitSet fact) {
 		if (isTop(fact))
 			return "[TOP]";
 		else
@@ -183,8 +183,8 @@ public class LiveLocalStoreAnalysis extends BackwardDataflowAnalysis<BitSet>
 			new DataflowTestDriver<BitSet, LiveLocalStoreAnalysis>() {
 
 			@Override
-                         public Dataflow<BitSet, LiveLocalStoreAnalysis> createDataflow(ClassContext classContext, Method method)
-	        		throws CFGBuilderException, DataflowAnalysisException {
+						 public Dataflow<BitSet, LiveLocalStoreAnalysis> createDataflow(ClassContext classContext, Method method)
+					throws CFGBuilderException, DataflowAnalysisException {
 				return classContext.getLiveLocalStoreDataflow(method);
 			}
 		};

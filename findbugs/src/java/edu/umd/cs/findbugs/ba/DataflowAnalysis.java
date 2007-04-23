@@ -35,7 +35,7 @@ public interface DataflowAnalysis <Fact> {
 	 */
 	public Fact createFact();
 
-	
+
 	/**
 	 * Get the start fact for given basic block.
 	 *
@@ -126,7 +126,7 @@ public interface DataflowAnalysis <Fact> {
 	 * @throws DataflowAnalysisException
 	 */
 	public void edgeTransfer(Edge edge, Fact fact) throws DataflowAnalysisException;
-	
+
 	/**
 	 * Meet a dataflow fact associated with an incoming edge into another fact.
 	 * This is used to determine the start fact for a basic block.
@@ -136,7 +136,7 @@ public interface DataflowAnalysis <Fact> {
 	 * @param result the result fact
 	 */
 	public void meetInto(Fact fact, Edge edge, Fact result) throws DataflowAnalysisException;
-	
+
 	/**
 	 * Called before beginning an iteration of analysis.
 	 * Each iteration visits every basic block in the CFG.
@@ -147,9 +147,9 @@ public interface DataflowAnalysis <Fact> {
 	 * Called after finishing an iteration of analysis. 
 	 */
 	public void finishIteration();
-	
+
 	public int getLastUpdateTimestamp(Fact fact);
-	
+
 	public void setLastUpdateTimestamp(Fact fact, int timestamp);
 }
 

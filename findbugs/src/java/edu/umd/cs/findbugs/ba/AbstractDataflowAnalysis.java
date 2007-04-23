@@ -111,7 +111,7 @@ public abstract class AbstractDataflowAnalysis <Fact> extends BasicAbstractDataf
 					break;
 
 				if (DEBUG && end == null) System.out.print("Transfer " + handle);
-	
+
 				// Transfer the dataflow value
 				transferInstruction(handle, basicBlock, result);
 

@@ -119,7 +119,7 @@ public class DetectorFactoryCollection {
 		return pluginByIdMap.values().iterator();
 	}
 
-	
+
 	/**
 	 * Get a Plugin by its unique id.
 	 *
@@ -150,7 +150,7 @@ public class DetectorFactoryCollection {
 		ensureLoaded();
 		return factoriesByName.get(name);
 	}
-	
+
 	/**
 	 * Look up a DetectorFactory by its class name.
 	 * 
@@ -194,7 +194,7 @@ public class DetectorFactoryCollection {
 		ArrayList<URL> arr = new ArrayList<URL>();
 		for (File aContentList : contentList) {
 			if (aContentList.getName().endsWith(".jar")) {
-			
+
 				try {
 					arr.add(aContentList.toURL());
 					if (FindBugs.DEBUG)
@@ -202,13 +202,13 @@ public class DetectorFactoryCollection {
 				} catch (MalformedURLException e) {
 
 				}
-				
+
 			}
 		}
 		pluginList = arr.toArray(new URL[arr.size()]);
 
 	}
-	
+
 	public void ensureLoaded() {
 		if (loaded) return;
 		loadPlugins();
@@ -221,30 +221,30 @@ public class DetectorFactoryCollection {
 	 */
 	void loadPlugins() {
 		if (loaded) throw new IllegalStateException();
-	
+
 		//If we are running under jaws, just use the loaded plugin
-	    if (SystemProperties.getBoolean("findbugs.jaws")) {
+		if (SystemProperties.getBoolean("findbugs.jaws")) {
 			URL u = DetectorFactoryCollection.class.getResource("/findbugs.xml");
 			// JOptionPane.showMessageDialog(null, "Loading plugin from " + u);
-		    URL[] plugins = new URL[1];
-		    if (u != null) {
-		    	String path = u.toString();
+			URL[] plugins = new URL[1];
+			if (u != null) {
+				String path = u.toString();
 		    	path = path.substring(0, path.length() - "findbugs.xml".length());
-		        if (FindBugs.DEBUG) System.out.println("Jaws uses plugin: " + path);
-		        try {
+				if (FindBugs.DEBUG) System.out.println("Jaws uses plugin: " + path);
+				try {
 					plugins[0] = new URL(path);
-					
+
 				} catch (MalformedURLException e) {
 					throw new RuntimeException(e);
 				}
-		        setPluginList(plugins);
-		    
-		    }
+				setPluginList(plugins);
+
+			}
 		}
-		
+
 		// Load all detector plugins.
 		loaded = true;
-	    determinePlugins();
+		determinePlugins();
 
 		int numLoaded = 0;
 		for (final URL url : pluginList) {
@@ -256,16 +256,16 @@ public class DetectorFactoryCollection {
 						public PluginLoader run() throws PluginException {
 							return	new PluginLoader(url, this.getClass().getClassLoader());
 						}
-						
+
 					});
-			
+
 
 				Plugin plugin = pluginLoader.getPlugin();
 				pluginByIdMap.put(plugin.getPluginId(), plugin);
 
 				// Register all of the detectors that this plugin contains
 				for (Iterator<DetectorFactory> j = plugin.detectorFactoryIterator();
-				     j.hasNext();) {
+					 j.hasNext();) {
 					DetectorFactory factory = j.next();
 					registerDetector(factory);
 				}
@@ -295,8 +295,8 @@ public class DetectorFactoryCollection {
 					e.printStackTrace();
 			}
 		}
-		
-	
+
+
 		//System.out.println("Loaded " + numLoaded + " plugins");
 	}
 }

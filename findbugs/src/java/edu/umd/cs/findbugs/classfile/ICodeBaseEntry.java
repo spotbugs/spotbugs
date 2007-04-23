@@ -34,7 +34,7 @@ public interface ICodeBaseEntry {
 	 * @return the name of the resource
 	 */
 	public String getResourceName();
-	
+
 	/**
 	 * Get the number of bytes in the resource.
 	 * Returns &lt;0 if the number of bytes is not known.
@@ -50,7 +50,7 @@ public interface ICodeBaseEntry {
 	 * @throws IOException if an error occurs reading from the resource
 	 */
 	public InputStream openResource() throws IOException;
-	
+
 	/**
 	 * Get the codebase this codebase entry belongs to.
 	 * 

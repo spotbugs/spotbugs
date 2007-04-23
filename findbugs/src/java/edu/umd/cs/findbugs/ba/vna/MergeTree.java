@@ -34,10 +34,10 @@ import edu.umd.cs.findbugs.SystemProperties;
  */
 public class MergeTree {
 	public static final boolean DEBUG = SystemProperties.getBoolean("vna.merge.debug");
-	
+
 	private ValueNumberFactory factory;
 	private Map<ValueNumber, BitSet> outputToInputMap;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -47,7 +47,7 @@ public class MergeTree {
 		this.factory = factory;
 		this.outputToInputMap = new HashMap<ValueNumber, BitSet>();
 	}
-	
+
 	/**
 	 * Map an input ValueNumber to an output ValueNumber.
 	 * 
@@ -81,7 +81,7 @@ public class MergeTree {
 		}
 		return outputSet;
 	}
-	
+
 	/**
 	 * Get the transitive set of input ValueNumbers which contributed
 	 * (directly or indirectly) to the given output ValueNumber.
@@ -92,11 +92,11 @@ public class MergeTree {
 	public BitSet getTransitiveInputSet(ValueNumber output) {
 		BitSet visited = new BitSet();
 		BitSet result = new BitSet();
-		
+
 		if (DEBUG) {
 			System.out.println("Output: " + output.getNumber());
 		}
-		
+
 		LinkedList<ValueNumber> workList = new LinkedList<ValueNumber>();
 		workList.addLast(output);
 		while (!workList.isEmpty()) {
@@ -122,7 +122,7 @@ public class MergeTree {
 		if (DEBUG) {
 			System.out.println("Result: " + result);
 		}
-		
+
 		return result;
 	}
 }

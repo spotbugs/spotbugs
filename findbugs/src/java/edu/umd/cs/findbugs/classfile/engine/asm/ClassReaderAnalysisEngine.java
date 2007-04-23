@@ -41,9 +41,9 @@ public class ClassReaderAnalysisEngine implements IClassAnalysisEngine {
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
 
 		ClassData classData = analysisCache.getClassAnalysis(ClassData.class, descriptor);
-		
+
 		ClassReader classReader = new ClassReader(classData.getData());
-		
+
 		return classReader;
 	}
 

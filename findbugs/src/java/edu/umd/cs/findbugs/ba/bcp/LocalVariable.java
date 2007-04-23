@@ -36,7 +36,7 @@ public class LocalVariable implements Variable {
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		return valueNumber.toString();
 	}
 }

@@ -115,7 +115,7 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
 			System.err.println("Usage: " + BlockTypeAnalysis.class.getName() + " <classfile>");
 			System.exit(1);
 		}
-		
+
 		DataflowTestDriver<BlockType, BlockTypeAnalysis> driver = new DataflowTestDriver<BlockType, BlockTypeAnalysis>() {
 			/* (non-Javadoc)
 			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
@@ -125,7 +125,7 @@ public class BlockTypeAnalysis extends BasicAbstractDataflowAnalysis<BlockType> 
 				return classContext.getBlockTypeDataflow(method);
 			}
 		};
-		
+
 		driver.execute(argv[0]);
 	}
 }

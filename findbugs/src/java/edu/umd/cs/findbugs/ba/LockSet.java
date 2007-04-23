@@ -362,7 +362,7 @@ public final class LockSet {
 		return result;
 	}
 
-	
+
 /*
 	public static void main(String[] argv) {
 		LockSet l = new LockSet();

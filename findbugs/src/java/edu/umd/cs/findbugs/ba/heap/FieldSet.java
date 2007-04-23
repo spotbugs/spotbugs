@@ -30,77 +30,77 @@ import edu.umd.cs.findbugs.ba.XField;
 public class FieldSet {
 	private boolean isTop, isBottom;
 	private Set<XField> fieldSet;
-	
+
 	public FieldSet() {
 		fieldSet = new HashSet<XField>();
 	}
-	
+
 	public void setTop() {
 		clear();
 		isTop = true;
 	}
-	
+
 	public boolean isTop() {
 		return isTop;
 	}
-	
+
 	public void setBottom() {
 		clear();
 		isBottom = true;
 	}
-	
+
 	public boolean isBottom() {
 		return isBottom;
 	}
-	
+
 	public boolean isValid() {
 		return !isTop && !isBottom;
 	}
-	
+
 	public boolean isEmpty() {
 		return !isTop && !isBottom && fieldSet.isEmpty();
 	}
-	
+
 	public void clear() {
 		isTop = isBottom = false;
 		fieldSet.clear();
 	}
-	
+
 	public void addField(XField field) {
 		if (!isValid())
 			throw new IllegalStateException();
 		fieldSet.add(field);
 	}
-	
+
 	public boolean contains(XField field) {
 		return fieldSet.contains(field);
 	}
-	
+
 	public void mergeWith(FieldSet other) {
 		if (other.isTop() || this.isBottom())
 			return;
-		
+
 		if (other.isBottom() || this.isTop()) {
 			this.copyFrom(other);
 			return;
 		}
-		
+
 		fieldSet.addAll(other.fieldSet);
 	}
-	
+
 	public boolean sameAs(FieldSet other) {
 		return this.isTop == other.isTop
 			&& this.isBottom == other.isBottom
 			&& this.fieldSet.equals(other.fieldSet);
 	}
-	
+
 	public void copyFrom(FieldSet other) {
 		this.isTop = other.isTop;
 		this.isBottom = other.isBottom;
 		this.fieldSet.clear();
 		this.fieldSet.addAll(other.fieldSet);
 	}
-	
+
 	public boolean isIntersectionNonEmpty(FieldSet other) {
 		for (XField field : fieldSet) {
 			if (other.fieldSet.contains(field))
@@ -108,9 +108,9 @@ public class FieldSet {
 		}
 		return false;
 	}
-	
+
 	@Override
-         public String toString() {
+		 public String toString() {
 		if (isTop)
 			return "TOP";
 		else if (isBottom)

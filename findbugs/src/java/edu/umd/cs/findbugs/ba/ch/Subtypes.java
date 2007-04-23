@@ -66,7 +66,7 @@ public class Subtypes {
 
 	public Subtypes() {
 	}
-	
+
 	/**
 	 * Get immediate subtypes of given class or interface.
 	 * 
@@ -116,7 +116,7 @@ public class Subtypes {
 		compute();
 		return transitiveSubtypes.get(c);
 	}
-	
+
 	/**
 	 * Get set of all known transitive classes and interfaces which are subtypes of
 	 * both of the given classes and/or interfaces.  Note that in this method,
@@ -130,22 +130,22 @@ public class Subtypes {
 	 */
 	public Set<JavaClass> getTransitiveCommonSubtypes(JavaClass a, JavaClass b) {
 		Set<JavaClass> result = new HashSet<JavaClass>();
-		
+
 		// Get all subtypes of A, inclusive
 		result.addAll(getTransitiveSubtypes(a));
 		result.add(a);
-		
+
 		// Is B a subtype of A?
 		boolean bIsSubtypeOfA = result.contains(b); 
-		
+
 		// Remove all subtypes of A which aren't proper subtypes of B
 		result.retainAll(getTransitiveSubtypes(b));
-		
+
 		// Fix up: if B is a subtype of A, then we were wrong to
 		// remove it.  Add it back if appropriate.
 		if (bIsSubtypeOfA)
 			result.add(b);
-		
+
 		return result;
 	}
 
@@ -160,16 +160,16 @@ public class Subtypes {
 			if (co instanceof ConstantDouble || co instanceof ConstantLong)
 				i++;
 			if (co instanceof ConstantClass) {
-	             String originalName = null;
-			    try {
+				 String originalName = null;
+				try {
 				originalName = ((ConstantClass) co).getBytes(cp);
 				String name = extractClassName(originalName);
 				if (DEBUG_HIERARCHY)
 					System.out.println(i + " : " + name);
 				addNamedClass(name);
-			    } catch (RuntimeException e) {
-			        AnalysisContext.logError("Error extracting name from " + originalName, e);
-			    }
+				} catch (RuntimeException e) {
+					AnalysisContext.logError("Error extracting name from " + originalName, e);
+				}
 			} else if (co instanceof ConstantCP) {
 				ConstantCP co2 = (ConstantCP) co;
 				ConstantNameAndType nt = (ConstantNameAndType) cp
@@ -199,21 +199,21 @@ public class Subtypes {
 			XFactory.createXMethod(c, m);
 	}
 	public void addNamedClass(String name) {
-	    if (name.length() == 0 || name.charAt(0) == '[') {
-	        AnalysisContext.logError("Bad class name: " + name);
-	        return;
+		if (name.length() == 0 || name.charAt(0) == '[') {
+			AnalysisContext.logError("Bad class name: " + name);
+			return;
 	    }
-	    
+
 		name = name.replace('/', '.');
-		
+
 		if (referenced.add(name))
 			try {
-				
+
 				JavaClass clazz = Repository.lookupClass(name);
 				learnFieldsAndMethods(clazz);
 				addClass(clazz);
 			} catch (ClassNotFoundException e) {
-				
+
 				if (name.length() > 1) {
 					AnalysisContext.reportMissingClass(e);
 					// e.printStackTrace(System.out);
@@ -241,7 +241,7 @@ public class Subtypes {
 		if (allClasses.add(c)) {
 			if (DEBUG_HIERARCHY)
 				System.out.println("ADDING " + c.getClassName() + " " + System.identityHashCode(c) + " " + c.hashCode());
-			
+
 			immediateSubtypes.put(c, new HashSet<JavaClass>());
 			if (DEBUG_HIERARCHY && computed)
 				System.out.println("Need to recompute");
@@ -325,9 +325,9 @@ public class Subtypes {
 				+ System.identityHashCode(c)
 				+ " " 
 				+ c.hashCode()
-		 		+ (immediateSubtypes.get(c) == null 
+				 + (immediateSubtypes.get(c) == null 
 				   ? " is null" : " is non null"));
-				
+
 		for (JavaClass child : immediateSubtypes.get(c)) {
 			if (DEBUG_HIERARCHY)
 				System.out.println("Updating child " 
@@ -343,7 +343,7 @@ public class Subtypes {
 	}
 
 	public static String extractClassName(String originalName) {
-	    String name = originalName;
+		String name = originalName;
 		if (name.charAt(0) != '[' && name.charAt(name.length() - 1) != ';')
 			return name;
 		while (name.charAt(0) == '[')

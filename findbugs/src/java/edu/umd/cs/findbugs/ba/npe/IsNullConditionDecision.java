@@ -57,14 +57,14 @@ public class IsNullConditionDecision implements EdgeTypes {
 	}
 
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		return Util.nullSafeHashcode(value) + 5
 				* Util.nullSafeHashcode(ifcmpDecision) + 17
 				* Util.nullSafeHashcode(fallThroughDecision);
 	}
 
 	@Override
-    public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		if (!(o instanceof IsNullConditionDecision))
 			return false;
 		IsNullConditionDecision other = (IsNullConditionDecision) o;

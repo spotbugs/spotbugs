@@ -31,17 +31,17 @@ import org.apache.bcel.generic.ObjectType;
 public class ObjectTypeFactory {
 
 	private static Map<String, ObjectType> map = new HashMap<String, ObjectType>();
-	
-    public static ObjectType getInstance(String s) {
-    	if (s.indexOf("/") >= 0) {
+
+	public static ObjectType getInstance(String s) {
+		if (s.indexOf("/") >= 0) {
     		s = s.replace('/','.');
-    	}
-    		
-    	ObjectType result = map.get(s);
+		}
+
+		ObjectType result = map.get(s);
     	if (result != null) return result;
-    	result = new ObjectType(s);
-    	map.put(s, result);
-    	return result;
+		result = new ObjectType(s);
+		map.put(s, result);
+		return result;
     }
 
 }

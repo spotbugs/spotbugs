@@ -28,11 +28,11 @@ import java.util.List;
  */
 public class SimilarClassFinder {
 	private List<SimilarClassSet> similarClassSetList;
-	
+
 	public SimilarClassFinder() {
 		this.similarClassSetList = new LinkedList<SimilarClassSet>();
 	}
-	
+
 	public void add(ClassFeatureSet classFeatureSet) {
 		for (SimilarClassSet similarClassSet : similarClassSetList) {
 			if (similarClassSet.shouldContain(classFeatureSet)) {
@@ -40,16 +40,16 @@ public class SimilarClassFinder {
 				return;
 			}
 		}
-		
+
 		SimilarClassSet newSimilarClassSet = new SimilarClassSet();
 		newSimilarClassSet.addMember(classFeatureSet);
 		similarClassSetList.add(newSimilarClassSet);
 	}
-	
+
 	public int size() {
 		return similarClassSetList.size();
 	}
-	
+
 	public Iterator<SimilarClassSet> similarClassSetIterator() {
 		return similarClassSetList.iterator();
 	}

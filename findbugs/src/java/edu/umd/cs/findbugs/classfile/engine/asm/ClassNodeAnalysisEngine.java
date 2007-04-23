@@ -42,7 +42,7 @@ public class ClassNodeAnalysisEngine implements IClassAnalysisEngine {
 	 */
 	public Object analyze(IAnalysisCache analysisCache, ClassDescriptor descriptor) throws CheckedAnalysisException {
 		ClassReader classReader = analysisCache.getClassAnalysis(ClassReader.class, descriptor);
-		
+
 		ICodeBaseEntry entry = analysisCache.getClassPath().lookupResource(descriptor.toResourceName());
 
 		// One of the less-than-ideal features of ASM is that

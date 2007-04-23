@@ -25,26 +25,26 @@ import edu.umd.cs.findbugs.TigerSubstitutes;
  * @author pugh
  */
 public class MultiMap<K,  V> {
-    final Class<? extends Collection> containerClass;
+	final Class<? extends Collection> containerClass;
    public  MultiMap(Class<? extends Collection> c) {
-        containerClass = c;
-    }
-    @SuppressWarnings("unchecked")
+		containerClass = c;
+	}
+	@SuppressWarnings("unchecked")
     private Collection<V> makeCollection() {
-        try {
-            return containerClass.newInstance();
-        } catch (InstantiationException e) {
+		try {
+			return containerClass.newInstance();
+		} catch (InstantiationException e) {
           throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
     }
 	Map<K,  Collection<V>> map = new HashMap<K,  Collection<V>>();
-    public Collection<? extends K> keySet() {
-        return map.keySet();
-    }
+	public Collection<? extends K> keySet() {
+		return map.keySet();
+	}
 	public void add(K k, V v) {
-        Collection<V> s = map.get(k);
+		Collection<V> s = map.get(k);
 		if (s == null) {
 			s = makeCollection();
 			map.put(k, s);
@@ -52,14 +52,14 @@ public class MultiMap<K,  V> {
 		s.add(v);
 	}
 	public void remove(K k, V v) {
-        Collection<V> s = map.get(k);
+		Collection<V> s = map.get(k);
 		if (s != null) {
 			s.remove(v);
 			if (s.isEmpty()) map.remove(k);
 		}
 	}
 	public Collection<V> get(K k) {
-        Collection<V> s = map.get(k);
+		Collection<V> s = map.get(k);
 		if (s != null) return s;
 		return TigerSubstitutes.emptySet();
 		}

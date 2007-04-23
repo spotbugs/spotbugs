@@ -58,7 +58,7 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<UnconditionalDerefSet> {
 	private static final boolean DEBUG = SystemProperties.getBoolean("npe.deref.debug");
-	
+
 	private final CFG cfg;
 	private final MethodGen methodGen;
 	//private final TypeDataflow typeDataflow;
@@ -67,7 +67,7 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 	private final int numParams;
 	//private final int topBit;
 	//private final int bottomBit;
-	
+
 	public UnconditionalDerefAnalysis(
 			ReverseDepthFirstSearch rdfs,
 			DepthFirstSearch dfs,
@@ -91,21 +91,21 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 		dest.clear();
 		dest.or(source);
 	}
-	
+
 	public UnconditionalDerefSet createFact() {
 		return new UnconditionalDerefSet(numParams);
 	}
-	
+
 	public void initEntryFact(UnconditionalDerefSet result) throws DataflowAnalysisException {
 		// At entry (really the CFG exit, since this is a backwards analysis)
 		// no dereferences have been seen
 		result.clear();
 	}
-	
+
 	public void initResultFact(UnconditionalDerefSet result) {
 		makeFactTop(result);
 	}
-	
+
 	public void makeFactTop(UnconditionalDerefSet fact) {
 		fact.setTop();
 	}
@@ -119,7 +119,7 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 				&& !edge.isFlagSet(EdgeTypes.EXPLICIT_EXCEPTIONS_FLAG)) {
 			return;
 		}
-		
+
 		if (result.isTop() || fact.isBottom()) {
 			copy(fact, result);
 		} else if (result.isBottom() || fact.isTop()) {
@@ -130,20 +130,20 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 		}
 		boolean isBackEdge = edge.isBackwardInBytecode();
 	}
-	
+
 	public boolean same(UnconditionalDerefSet fact1, UnconditionalDerefSet fact2) {
 		return fact1.equals(fact2);
 	}
-	
+
 	@Override
-    public boolean isFactValid(UnconditionalDerefSet fact) {
+	public boolean isFactValid(UnconditionalDerefSet fact) {
 		return fact.isValid();
 	}
-	
+
 	@Override
-    public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, UnconditionalDerefSet fact)
+	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, UnconditionalDerefSet fact)
 		throws DataflowAnalysisException {
-		
+
 		if (!fact.isValid())
 			throw new IllegalStateException();
 
@@ -170,7 +170,7 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 		Integer param = valueNumberToParamMap.get(instance);
 		if (param == null)
 			return;
-		
+
 		if (DEBUG) {
 			System.out.println("[Value is a parameter!]");
 		}
@@ -185,7 +185,7 @@ public class UnconditionalDerefAnalysis extends BackwardDataflowAnalysis<Uncondi
 		DataflowTestDriver<UnconditionalDerefSet, UnconditionalDerefAnalysis> driver =
 			new DataflowTestDriver<UnconditionalDerefSet, UnconditionalDerefAnalysis>() {
 				@Override
-                                 public UnconditionalDerefDataflow createDataflow(ClassContext classContext, Method method)
+								 public UnconditionalDerefDataflow createDataflow(ClassContext classContext, Method method)
 						throws CFGBuilderException, DataflowAnalysisException {
 					//return classContext.getUnconditionalDerefDataflow(method);
 					return null;

@@ -31,12 +31,12 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  */
 public abstract class PackageMemberAnnotation implements BugAnnotation {
 	private static final long serialVersionUID = -8208567669352996892L;
-	
+
 	protected String className;
 	protected String sourceFileName;
 	protected String description;
 	protected SourceLineAnnotation sourceLines;
-	 
+
 	/**
 	 * Constructor.
 	 *
@@ -49,8 +49,8 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 		else this.sourceFileName = SourceLineAnnotation.UNKNOWN_SOURCE_FILE;
 		this.description = description;
 	}
-	
-	
+
+
 	@Override
 	public Object clone() {
 		try {
@@ -100,8 +100,8 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 		else if (key.equals("package"))
 			return getPackageName();
 		else if (key.equals("") && FindBugsDisplayFeatures.isAbridgedMessages() && primaryClass != null)
-            return formatPackageMember("givenClass", primaryClass);
-        else return formatPackageMember(key, primaryClass);
+			return formatPackageMember("givenClass", primaryClass);
+		else return formatPackageMember(key, primaryClass);
 	}
 
 	public void setDescription(String description) {
@@ -155,7 +155,7 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 		FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
 		return format.format(new BugAnnotation[]{this}, null);
 	}
-	
+
 	/**
 	 * Set a SourceLineAnnotation describing the source lines
 	 * where the package element is defined.
@@ -175,13 +175,13 @@ public abstract class PackageMemberAnnotation implements BugAnnotation {
 	public SourceLineAnnotation getSourceLines() {
 		return sourceLines;
 	}
-	
+
 
 	public boolean isSignificant() {
 		return true;
 	}
 
-	
+
 }
 
 // vim:ts=4

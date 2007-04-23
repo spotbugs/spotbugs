@@ -373,8 +373,8 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 			if (VERIFY_INTEGRITY) {
 				if (destBlock.isExceptionHandler() && edgeType != HANDLED_EXCEPTION_EDGE)
 					throw new IllegalStateException("In method " + SignatureConverter.convertMethodSignature(methodGen) +
-					        ": exception handler " + destBlock.getFirstInstruction() + " reachable by non exception edge type " +
-					        edgeType);
+							": exception handler " + destBlock.getFirstInstruction() + " reachable by non exception edge type " +
+							edgeType);
 			}
 			cfg.createEdge(sourceBlock, destBlock, edgeType);
 		}
@@ -657,7 +657,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 							while (i.hasNext()) {
 								Target target = i.next();
 								subroutine.addEdgeAndExplore(basicBlock, target.getTargetInstruction(),
-								        target.getEdgeType());
+										target.getEdgeType());
 							}
 						}
 					}
@@ -739,7 +739,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		if (ins instanceof MONITORENTER) return false;
 		if (ins instanceof MONITOREXIT) return false;
 		return true;
-	
+
 	}
 	/**
 	 * Determine whether or not the given instruction is a control flow merge.
@@ -800,7 +800,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 		while (context.hasMoreWork()) {
 			BasicBlock subBlock = context.nextItem();
 			BasicBlock resultBlock = context.getBlock(subBlock);
-			
+
 			// Mark blocks which are in JSR subroutines
 			resultBlock.setInJSRSubroutine(context.getCaller() != null);
 
@@ -872,7 +872,7 @@ public class BetterCFGBuilder2 implements CFGBuilder, EdgeTypes, Debug {
 
 				if (caller == null)
 					throw new CFGBuilderException("Unknown caller for escape target " + targetInstruction +
-					        " referenced by " + context.getSubroutine().getStartInstruction());
+							" referenced by " + context.getSubroutine().getStartInstruction());
 
 				// Find result block in caller
 				BasicBlock subCallerTargetBlock = caller.getSubroutine().getBlock(targetInstruction);

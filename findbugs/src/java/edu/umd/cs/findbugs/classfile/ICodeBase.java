@@ -34,13 +34,13 @@ import java.util.Iterator;
 public interface ICodeBase {
 	/** Codebase was explicitly specified. */
 	public static final int SPECIFIED = 0;
-	
+
 	/** Codebase was discovered as a nested archive in another codebase. */
 	public static final int NESTED = 1;
-	
+
 	/** Codebase was referenced in the Class-Path attribute of a Jar manifest of another codebase. */
 	public static final int IN_JAR_MANIFEST = 2;
-	
+
 	/** Codebase was discovered in the system classpath. */
 	public static final int IN_SYSTEM_CLASSPATH = 3;
 
@@ -50,7 +50,7 @@ public interface ICodeBase {
 	 * @return the ICodeBaseLocator
 	 */
 	public ICodeBaseLocator getCodeBaseLocator();
-	
+
 	/**
 	 * Look up a resource in this code base.
 	 * 
@@ -66,14 +66,14 @@ public interface ICodeBase {
 	 * @param isAppCodeBase true if this is an application codebase, false if not
 	 */
 	public void setApplicationCodeBase(boolean isAppCodeBase);
-	
+
 	/**
 	 * Return whether or not this codebase is an application codebase.
 	 * 
 	 * @return true if this is an application codebase, false if not
 	 */
 	public boolean isApplicationCodeBase();
-	
+
 	/**
 	 * Set how this codebase was discovered.
 	 * 
@@ -81,14 +81,14 @@ public interface ICodeBase {
 	 *                       IN_JAR_MANIFEST, or IN_SYSTEM_CLASSPATH
 	 */
 	public void setHowDiscovered(int howDiscovered);
-	
+
 	/**
 	 * Return how this codebase was discovered.
 	 * 
 	 * @return one of the constants SPECIFIED, NESTED, IN_JAR_MANIFEST, or IN_SYSTEM_CLASSPATH
 	 */
 	public int getHowDiscovered();
-	
+
 	/**
 	 * Return whether or not this code base contains any source files.
 	 * 
@@ -104,7 +104,7 @@ public interface ICodeBase {
 	 *          or null if this codebase is not accessible via the filesystem
 	 */
 	public String getPathName();
-	
+
 	/**
 	 * Set timestamp indicating the most recent time when any of the files
 	 * in the codebase were modified.
@@ -112,7 +112,7 @@ public interface ICodeBase {
 	 * @param lastModifiedTime timestamp when any codebase files were most-recently modified
 	 */
 	public void setLastModifiedTime(long lastModifiedTime);
-	
+
 	/**
 	 * Get timestamp indicating the most recent time when any of the files
 	 * in the codebase were modified.
@@ -124,7 +124,7 @@ public interface ICodeBase {
 	 *          -1 if unknown
 	 */
 	public long getLastModifiedTime();
-	
+
 	/**
 	 * This method should be called when done using the code base.
 	 */

@@ -47,7 +47,7 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
 
 	private final static CheckReturnValueAnnotation[] myValues = { CHECK_RETURN_VALUE_UNKNOWN,
 		CHECK_RETURN_VALUE_HIGH,CHECK_RETURN_VALUE_MEDIUM, CHECK_RETURN_VALUE_LOW, CHECK_RETURN_VALUE_IGNORE };
-	
+
 
 	@CheckForNull public static CheckReturnValueAnnotation parse(String s, String priority) {
 		if (!s.endsWith("CheckReturnValue")) return null;
@@ -59,7 +59,7 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
 		if (priority.endsWith("LOW"))
 			return CHECK_RETURN_VALUE_LOW;
 		throw new IllegalArgumentException("Bad priority: " + priority);
-		
+
 	}
 	public static CheckReturnValueAnnotation[] values() {
 		return myValues.clone();
@@ -71,9 +71,9 @@ public class CheckReturnValueAnnotation extends AnnotationEnumeration<CheckRetur
 	private CheckReturnValueAnnotation(String s, int i, int p) {
 		super(s,i);
 		priority = p;
-		
+
 	}
 
-	
+
 
 }

@@ -163,7 +163,7 @@ public abstract class CommandLine {
 	}
 
 	public static class HelpRequestedException extends Exception {
-		
+
 	}
 	@SuppressWarnings("DM_EXIT")
 	public int parse(String argv[], int minArgs, int maxArgs, String usage) {
@@ -181,7 +181,7 @@ public abstract class CommandLine {
 		return count;
 		} catch (HelpRequestedException e) {
 			// fall through
-		
+
 		} catch (RuntimeException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

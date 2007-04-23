@@ -37,9 +37,9 @@ import java.util.NoSuchElementException;
  * @author David Hovemeyer
  */
 public abstract class AbstractGraph
-        <
-        EdgeType extends AbstractEdge<EdgeType, VertexType>,
-        VertexType extends AbstractVertex<EdgeType, VertexType>
+		<
+		EdgeType extends AbstractEdge<EdgeType, VertexType>,
+		VertexType extends AbstractVertex<EdgeType, VertexType>
         > implements Graph<EdgeType, VertexType> {
 
 	/* ----------------------------------------------------------------------
@@ -50,9 +50,9 @@ public abstract class AbstractGraph
 	 * Iterator over outgoing edges.
 	 */
 	private static class OutgoingEdgeIterator
-	        <
-	        EdgeType extends AbstractEdge<EdgeType, VertexType>,
-	        VertexType extends AbstractVertex<EdgeType, VertexType>
+			<
+			EdgeType extends AbstractEdge<EdgeType, VertexType>,
+			VertexType extends AbstractVertex<EdgeType, VertexType>
 	        > implements Iterator<EdgeType> {
 
 		private EdgeType edge;
@@ -82,9 +82,9 @@ public abstract class AbstractGraph
 	 * Iterator over incoming edges.
 	 */
 	private static class IncomingEdgeIterator
-	        <
-	        EdgeType extends AbstractEdge<EdgeType, VertexType>,
-	        VertexType extends AbstractVertex<EdgeType, VertexType>
+			<
+			EdgeType extends AbstractEdge<EdgeType, VertexType>,
+			VertexType extends AbstractVertex<EdgeType, VertexType>
 	        > implements Iterator<EdgeType> {
 
 		private EdgeType edge;

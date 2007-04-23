@@ -33,7 +33,7 @@ public class RedundantBranch {
 	public final int lineNumber;
 
 	public final IsNullValue firstValue, secondValue;
-	
+
 	public Edge infeasibleEdge;
 
 	/**
@@ -55,7 +55,7 @@ public class RedundantBranch {
 		this.firstValue = firstValue;
 		this.secondValue = secondValue;
 	}
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -73,7 +73,7 @@ public class RedundantBranch {
 		this.firstValue = firstValue;
 		this.secondValue = null;
 	}
-	
+
 	/**
 	 * Set the edge which has been determined to be infeasible.
 	 * 
@@ -84,7 +84,7 @@ public class RedundantBranch {
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		return location.toString() + ": line " + lineNumber;
 	}
 }

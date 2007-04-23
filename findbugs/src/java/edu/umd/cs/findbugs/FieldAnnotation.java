@@ -206,9 +206,9 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	protected String formatPackageMember(String key, ClassAnnotation primaryClass) {
 		if (key.equals("") || key.equals("hash"))
 			return className + "." + fieldName;
-        else if (key.equals("givenClass")) {
-            if (className.equals(primaryClass.getClassName())) return getNameInClass(primaryClass);
-            else return shorten(primaryClass.getPackageName(), className) + "." + getNameInClass(primaryClass);
+		else if (key.equals("givenClass")) {
+			if (className.equals(primaryClass.getClassName())) return getNameInClass(primaryClass);
+			else return shorten(primaryClass.getPackageName(), className) + "." + getNameInClass(primaryClass);
         }
 		else if (key.equals("name"))
 			return fieldName;
@@ -228,21 +228,21 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	}
 
 	/**
-     * @param primaryClass
-     * @return
-     */
+	 * @param primaryClass
+	 * @return
+	 */
     private String getNameInClass(ClassAnnotation primaryClass) {
-        if (primaryClass == null)
-            return   className + "." + fieldName;
-        String givenPackageName = primaryClass.getPackageName();
+		if (primaryClass == null)
+			return   className + "." + fieldName;
+		String givenPackageName = primaryClass.getPackageName();
         String thisPackageName = this.getPackageName();
-        if (thisPackageName.equals(givenPackageName))
-            if (thisPackageName.length() == 0) return fieldName;
-            else return className.substring(thisPackageName.length() + 1) +"." + fieldName;
+		if (thisPackageName.equals(givenPackageName))
+			if (thisPackageName.length() == 0) return fieldName;
+			else return className.substring(thisPackageName.length() + 1) +"." + fieldName;
         return   className + "." + fieldName;
-    }
+	}
 
-    @Override
+	@Override
 	public int hashCode() {
 		return className.hashCode() + fieldName.hashCode() + fieldSig.hashCode();
 	}
@@ -253,9 +253,9 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			return false;
 		FieldAnnotation other = (FieldAnnotation) o;
 		return className.equals(other.className)
-		        && fieldName.equals(other.fieldName)
-		        && fieldSig.equals(other.fieldSig)
-		        && isStatic == other.isStatic;
+				&& fieldName.equals(other.fieldName)
+				&& fieldSig.equals(other.fieldSig)
+				&& isStatic == other.isStatic;
 	}
 
 	public int compareTo(BugAnnotation o) {
@@ -271,7 +271,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			return cmp;
 		return fieldSig.compareTo(other.fieldSig);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.PackageMemberAnnotation#getSourceLines()
 	 */
@@ -311,11 +311,11 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 			.addAttribute("name", getFieldName())
 			.addAttribute("signature", getFieldSignature())
 			.addAttribute("isStatic", String.valueOf(isStatic()));
-		
+
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", role);
-		
+
 		xmlOutput.openTag(ELEMENT_NAME, attributeList);
 		getSourceLines().writeXML(xmlOutput, addMessages);
 		if (addMessages) {

@@ -36,27 +36,27 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
  */
 public class FieldStoreTypeDatabase
 	extends FieldPropertyDatabase<FieldStoreType> {
-	
+
 	public static final String DEFAULT_FILENAME = "fieldStoreTypes.db";
 
-    public void purgeBoringEntries() {
-        Collection<XField> keys = new ArrayList<XField>(getKeys());
-        for(XField f : keys) {
+	public void purgeBoringEntries() {
+		Collection<XField> keys = new ArrayList<XField>(getKeys());
+		for(XField f : keys) {
             String s = f.getSignature();
-            FieldStoreType type = getProperty(f);
-            Type fieldType = Type.getType(f.getSignature());
-            if (!(fieldType instanceof ReferenceType)) {
+			FieldStoreType type = getProperty(f);
+			Type fieldType = Type.getType(f.getSignature());
+			if (!(fieldType instanceof ReferenceType)) {
                 removeProperty(f);
-                continue;
-            }
-            ReferenceType storeType = type.getLoadType((ReferenceType)fieldType);
+				continue;
+			}
+			ReferenceType storeType = type.getLoadType((ReferenceType)fieldType);
             if (storeType.equals(fieldType)) 
-                removeProperty(f);
-        }
-    }
+				removeProperty(f);
+		}
+	}
 	
 	@Override
-         protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {
+		 protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {
 		FieldStoreType property = new FieldStoreType();
 		StringTokenizer t = new StringTokenizer(propStr, ",");
 		while (t.hasMoreTokens()) {
@@ -66,9 +66,9 @@ public class FieldStoreTypeDatabase
 		return property;
 	}
 
-	
+
 	@Override
-         protected String encodeProperty(FieldStoreType property) {
+		 protected String encodeProperty(FieldStoreType property) {
 		StringBuffer buf = new StringBuffer();
 		for (Iterator<String> i = property.signatureIterator(); i.hasNext();) {
 			if (buf.length() > 0) {

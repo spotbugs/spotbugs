@@ -40,7 +40,7 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
 	private final static NullnessAnnotation[] myValues = { UNKNOWN_NULLNESS,
 		NONNULL, NULLABLE,
 		CHECK_FOR_NULL };
-	
+
 	public static class Parser {
 	@CheckForNull public static NullnessAnnotation parse(String s) {
 		for(NullnessAnnotation v : myValues) 
@@ -56,9 +56,9 @@ public class NullnessAnnotation extends AnnotationEnumeration<NullnessAnnotation
 
 	private NullnessAnnotation(String s, int i) {
 		super(s,i);
-		
+
 	}
 
-	
+
 
 }

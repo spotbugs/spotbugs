@@ -93,7 +93,7 @@ public class AnnotatedString {
 		}
 		return mnemonic;
 	}
-    
+
 	/**
 	 * @return the index in the plain string at which the mnemonic should be
 	 *         displayed, or -1 if no mnemonic should be set
@@ -109,7 +109,7 @@ public class AnnotatedString {
 		return index;
 	}
 
-    
+
 	/*
 	 * Some test code
 	 */	
@@ -142,9 +142,9 @@ public class AnnotatedString {
 		addButton(frame, "Foo&");
 		addButton(frame, "Cat & Dog");
 		addButton(frame, "Cat && Dog");
-	
+
 		frame.pack();
 		frame.setVisible(true);
 	}
-	
+
 }

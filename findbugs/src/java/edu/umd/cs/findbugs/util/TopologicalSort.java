@@ -35,42 +35,42 @@ import edu.umd.cs.findbugs.classfile.analysis.ClassInfo;
  * @author pugh
  */
 public class TopologicalSort {
-    
-    public interface OutEdges<E> {
-        Collection<E> getOutEdges(E e);
-    }
-    
-    public static <E> List<E> sortByCallGraph(Collection<E> elements, OutEdges<E> outEdges) {
-        List<E> result = new ArrayList<E>(elements.size());
-        Foo<E> instance = new Foo<E>(result, outEdges);
-        instance.consider.addAll(elements);
-        for (E e : elements)
-            instance.visit(e);
-        return result;
+
+	public interface OutEdges<E> {
+		Collection<E> getOutEdges(E e);
     }
 
-    static class Foo<E> {
-        Foo(List<E> result, OutEdges<E> outEdges) {
-            this.result = result;
+	public static <E> List<E> sortByCallGraph(Collection<E> elements, OutEdges<E> outEdges) {
+		List<E> result = new ArrayList<E>(elements.size());
+        Foo<E> instance = new Foo<E>(result, outEdges);
+		instance.consider.addAll(elements);
+		for (E e : elements)
+			instance.visit(e);
+        return result;
+	}
+
+	static class Foo<E> {
+		Foo(List<E> result, OutEdges<E> outEdges) {
+			this.result = result;
             this.outEdges = outEdges;
 
-        }
-        OutEdges<E> outEdges;
-        
+		}
+		OutEdges<E> outEdges;
+
         List<E> result;
 
-        HashSet<E> visited = new HashSet<E>();
-        HashSet<E> consider = new HashSet<E>();
+		HashSet<E> visited = new HashSet<E>();
+		HashSet<E> consider = new HashSet<E>();
 
-        void visit(E e) {
-            if (!consider.contains(e)) return;
-            if (!visited.add(e))
+		void visit(E e) {
+			if (!consider.contains(e)) return;
+			if (!visited.add(e))
                 return;
-             for(E e2  :outEdges.getOutEdges(e))
-                visit(e2);
-           
+			 for(E e2  :outEdges.getOutEdges(e))
+				visit(e2);
+
             result.add(e);
-        }
-    }
+		}
+	}
 
 }

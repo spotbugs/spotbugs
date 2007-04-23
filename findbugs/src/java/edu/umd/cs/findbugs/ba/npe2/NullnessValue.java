@@ -29,22 +29,22 @@ public class NullnessValue {
 	static final int DEFINITELY_NOT_NULL = 1;
 	static final int CHECKED = 2;
 	static final int NO_KABOOM = 3;
-	
+
 	static final int FLAGS_MAX = 4;
-	
+
 	private static final NullnessValue[] instanceList = new NullnessValue[1 << FLAGS_MAX];
 	static {
 		for (int i = 0; i < instanceList.length; i++) {
 			instanceList[i] = new NullnessValue(i);
 		}
 	}
-	
+
 	private final int flags;
-	
+
 	private NullnessValue(int flags) {
 		this.flags= flags;
 	}
-	
+
 	int getFlags() {
 		return flags;
 	}
@@ -52,27 +52,27 @@ public class NullnessValue {
 	public boolean isDefinitelyNull() {
 		return isFlagSet(DEFINITELY_NULL);
 	}
-	
+
 	public boolean isDefinitelyNotNull() {
 		return isFlagSet(DEFINITELY_NOT_NULL);
 	}
-	
+
 	public boolean isChecked() {
 		return isFlagSet(CHECKED);
 	}
-	
+
 	public boolean isNoKaboom() {
 		return isFlagSet(NO_KABOOM);
 	}
-	
+
 	public NullnessValue toCheckedValue() {
 		return instanceList[flags | (1 << CHECKED)];
 	}
-	
+
 	public NullnessValue toNoKaboomValue() {
 		return instanceList[flags | (1 << NO_KABOOM)];
 	}
-	
+
 //	public NullnessValue toCheckedNullValue() {
 //		if (isDefinitelyNull() || isDefinitelyNotNull()) {
 //			throw new IllegalStateException();
@@ -88,44 +88,44 @@ public class NullnessValue {
 //
 //		return fromFlags(flags | DEFINITELY_NOT_NULL | CHECKED);
 //	}
-	
+
 	private boolean isFlagSet(int flag) {
 		return (flags & (1 << flag)) != 0;
 	}
-	
+
 	static NullnessValue fromFlags(int flags) {
 		return instanceList[flags];
 	}
-	
+
 	public static NullnessValue definitelyNullValue() {
 		return fromFlags(1 << DEFINITELY_NULL);
 	}
-	
+
 	public static NullnessValue definitelyNotNullValue() {
 		return fromFlags(1 << DEFINITELY_NOT_NULL);
 	}
-	
+
 	public static NullnessValue unknownValue() {
 		return fromFlags(0);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		String pfx = "";
-		
+
 		if (isChecked()) {
 			pfx += "c";
 		}
-		
+
 		if (isNoKaboom()) {
 			pfx += "k";
 		}
 
 		String val;
-		
+
 		if (isDefinitelyNull()) {
 			val = "n";
 		} else if (isDefinitelyNotNull()) {
@@ -133,7 +133,7 @@ public class NullnessValue {
 		} else {
 			val = "-";
 		}
-		
+
 		return pfx + val;
 	}
 }

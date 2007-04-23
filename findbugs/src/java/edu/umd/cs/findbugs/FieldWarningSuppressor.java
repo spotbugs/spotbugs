@@ -23,4 +23,4 @@ public class FieldWarningSuppressor extends ClassWarningSuppressor {
 	return true;
 	}
 }
-	
+

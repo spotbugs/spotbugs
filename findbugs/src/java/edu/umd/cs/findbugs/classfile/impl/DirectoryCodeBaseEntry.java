@@ -67,7 +67,7 @@ public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry imple
 	public AbstractScannableCodeBase getCodeBase() {
 		return codeBase;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.impl.AbstractScannableCodeBaseEntry#getRealResourceName()
 	 */
@@ -75,14 +75,14 @@ public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry imple
 	public String getRealResourceName() {
 		return realResourceName;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
 	 */
 	public ClassDescriptor getClassDescriptor() throws InvalidClassFileFormatException {
 		return ClassDescriptor.fromResourceName(getResourceName());
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -95,7 +95,7 @@ public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry imple
 		return this.codeBase.equals(other.codeBase)
 			&& this.realResourceName.equals(other.realResourceName);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -103,7 +103,7 @@ public class DirectoryCodeBaseEntry extends AbstractScannableCodeBaseEntry imple
 	public int hashCode() {
 		return 7919 * codeBase.hashCode() + realResourceName.hashCode();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

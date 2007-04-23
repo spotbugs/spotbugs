@@ -69,7 +69,7 @@ public class UserPreferences implements Cloneable {
 	private UserPreferences() {
 		this.filterSettings = ProjectFilterSettings.createDefault();
 	}
-	
+
 	/**
 	 * Create default UserPreferences.
 	 * 
@@ -104,7 +104,7 @@ public class UserPreferences implements Cloneable {
 			// Ignore - just use default preferences
 		}
 	}
-	
+
 	/**
 	 * Read user preferences from given input stream.
 	 * The InputStream is guaranteed to be closed by this method.
@@ -136,21 +136,21 @@ public class UserPreferences implements Cloneable {
 				recentProjectsList.add(projectName);
 		}
 
-        for(Map.Entry<?,?> e :  props.entrySet()) {
+		for(Map.Entry<?,?> e :  props.entrySet()) {
 
-            String key = (String) e.getKey();
-            if(!key.startsWith("detector") || key.startsWith("detector_")){
-                // it is not a detector enablement property
+			String key = (String) e.getKey();
+			if(!key.startsWith("detector") || key.startsWith("detector_")){
+				// it is not a detector enablement property
                 continue;
-            }
-            String detectorState = (String) e.getValue();
-            int pipePos = detectorState.indexOf("|");
+			}
+			String detectorState = (String) e.getValue();
+			int pipePos = detectorState.indexOf("|");
             if (pipePos >= 0) {
-                String name = detectorState.substring(0, pipePos);
-                String enabled = detectorState.substring(pipePos + 1);
-                detectorEnablementMap.put(name, Boolean.valueOf(enabled));
+				String name = detectorState.substring(0, pipePos);
+				String enabled = detectorState.substring(pipePos + 1);
+				detectorEnablementMap.put(name, Boolean.valueOf(enabled));
             }
-        }
+		}
 
 		if (props.get(FILTER_SETTINGS_KEY) != null) {
 			// Properties contain encoded project filter settings.
@@ -172,7 +172,7 @@ public class UserPreferences implements Cloneable {
 			// populate the hidden bug categories in the project filter settings
 			ProjectFilterSettings.hiddenFromEncodedString(filterSettings, props.getProperty(FILTER_SETTINGS2_KEY));
 		}
-		
+
 
 	}
 
@@ -197,30 +197,30 @@ public class UserPreferences implements Cloneable {
 	 * @throws IOException
 	 */
 	public void write(OutputStream out) throws IOException {
-        
+
 		Properties props = new SortedProperties();
-        
+
 		for (int i = 0; i < recentProjectsList.size(); i++) {
 			String projectName = recentProjectsList.get(i);
 			String key = "recent" + i;
 			props.put(key, projectName);
 		}
 
-        Iterator<Entry<String, Boolean>> it = detectorEnablementMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Entry<String, Boolean> entry = it.next();
+		Iterator<Entry<String, Boolean>> it = detectorEnablementMap.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<String, Boolean> entry = it.next();
             props.put("detector" + entry.getKey(), entry.getKey() + "|" + String.valueOf(entry.getValue().booleanValue()));
-        }
+		}
 
 		// Save ProjectFilterSettings
 		props.put(FILTER_SETTINGS_KEY, filterSettings.toEncodedString());
 		props.put(FILTER_SETTINGS2_KEY, filterSettings.hiddenToEncodedString());
-		
+
 		// Backwards-compatibility: save minimum warning priority as integer.
 		// This will allow the properties file to work with older versions
 		// of FindBugs.
 		props.put(DETECTOR_THRESHOLD_KEY, String.valueOf(filterSettings.getMinPriorityAsInt()));
-		
+
 		OutputStream prefStream = null;
 		try {
 			prefStream = new BufferedOutputStream(out);
@@ -235,7 +235,7 @@ public class UserPreferences implements Cloneable {
 		}
 	}
 
-    
+
 	/**
 	 * Get List of recent project filenames.
 	 * 
@@ -271,7 +271,7 @@ public class UserPreferences implements Cloneable {
 			if (projectName.equals(it.next())) it.remove();
 		}
 	}
-	
+
 	/**
 	 * Set the enabled/disabled status of given Detector.
 	 * 
@@ -282,7 +282,7 @@ public class UserPreferences implements Cloneable {
 	public void enableDetector(DetectorFactory factory, boolean enable) {
 		detectorEnablementMap.put(factory.getShortName(), enable );
 	}
-	
+
 	/**
 	 * Get the enabled/disabled status of given Detector.
 	 * 
@@ -310,7 +310,7 @@ public class UserPreferences implements Cloneable {
 	 */
 	public void enableAllDetectors(boolean enable) {
 		detectorEnablementMap.clear();
-		
+
 		DetectorFactoryCollection factoryCollection = DetectorFactoryCollection.instance();
 		for (Iterator<DetectorFactory> i = factoryCollection.factoryIterator(); i.hasNext();) {
 			DetectorFactory factory = i.next();
@@ -318,7 +318,7 @@ public class UserPreferences implements Cloneable {
 					factory.getShortName(), enable );
 		}
 	}
-	
+
 	/**
 	 * Set the ProjectFilterSettings.
 	 * 
@@ -327,7 +327,7 @@ public class UserPreferences implements Cloneable {
 	public void setProjectFilterSettings(ProjectFilterSettings filterSettings) {
 		this.filterSettings = filterSettings;
 	}
-	
+
 	/**
 	 * Get ProjectFilterSettings.
 	 * 
@@ -355,7 +355,7 @@ public class UserPreferences implements Cloneable {
 		String minPriority = ProjectFilterSettings.getIntPriorityAsString(threshold);
 		filterSettings.setMinPriority(minPriority);
 	}
-	
+
 	/**
 	 * Set the detector threshold  (min severity to report a warning). 
 	 * 
@@ -364,41 +364,41 @@ public class UserPreferences implements Cloneable {
 	public void setUserDetectorThreshold(String threshold) {
 		filterSettings.setMinPriority(threshold);
 	}
-	
+
 	@Override
-         public boolean equals(Object obj) {
+		 public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
 			return false;
-		
+
 		UserPreferences other = (UserPreferences) obj;
-		
+
 		return recentProjectsList.equals(other.recentProjectsList)
 			&& detectorEnablementMap.equals(other.detectorEnablementMap)
 			&& filterSettings.equals(other.filterSettings);
 	}
-	
-	
+
+
 	@Override
-         public int hashCode() {
+		 public int hashCode() {
 		return recentProjectsList.hashCode()
 			+ detectorEnablementMap.hashCode()
 			+ filterSettings.hashCode();
 	}
-	
-	
+
+
 	@Override
-         public Object clone() {
+		 public Object clone() {
 		try {
 			UserPreferences dup = (UserPreferences) super.clone();
-			
+
 			dup.recentProjectsList = new LinkedList<String>();
 			dup.recentProjectsList.addAll(this.recentProjectsList);
-			
+
 			dup.detectorEnablementMap = new HashMap<String, Boolean>();
 			dup.detectorEnablementMap.putAll(this.detectorEnablementMap);
-			
+
 			dup.filterSettings = (ProjectFilterSettings) this.filterSettings.clone();
-			
+
 			return dup;
 		} catch (CloneNotSupportedException e) {
 			throw new AssertionError(e);

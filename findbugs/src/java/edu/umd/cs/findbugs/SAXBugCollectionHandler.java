@@ -54,7 +54,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 	private ClassFeatureSet classFeatureSet;
 	private ArrayList<String> stackTrace;
 	private int nestingOfIgnoredElements = 0;
-    private final File base;
+	private final File base;
 
 	public SAXBugCollectionHandler(BugCollection bugCollection, Project project, File base) {
 		this.bugCollection = bugCollection;
@@ -63,14 +63,14 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		this.elementStack = new ArrayList<String>();
 		this.textBuffer = new StringBuffer();
 		this.stackTrace = new ArrayList<String>();
-        this.base = base;
+		this.base = base;
 	}
 
 	Pattern ignoredElement = Pattern.compile("Message|ShortMessage|LongMessage|BugCategory|BugPattern|BugCode");
-	
+
 	public boolean discardedElement(String qName) {
 		return ignoredElement.matcher(qName).matches();
-		
+
 	}
 
 	@Override
@@ -88,22 +88,22 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			if (!qName.equals("BugCollection"))
 				throw new SAXException(
 						"Invalid top-level element (expected BugCollection, saw " + qName + ")");
-			
+
 			// Read and set the sequence number.
 			String version = attributes.getValue("version");
 			if (bugCollection instanceof SortedBugCollection)
 			  ((SortedBugCollection)bugCollection).setAnalysisVersion(version);
-		
+
 			// Read and set the sequence number.
 			String sequence = attributes.getValue("sequence");
 			long seqval = parseLong(sequence, 0L);
 			bugCollection.setSequenceNumber(seqval);
-			
+
 			// Read and set timestamp.
 			String timestamp = attributes.getValue("timestamp");
 			long tsval = parseLong(timestamp, -1L);
 			bugCollection.setTimestamp(tsval);
-			
+
 			// Set release name, if present.
 			String releaseName = attributes.getValue("release");
 			bugCollection.setReleaseName((releaseName != null) ? releaseName : "");
@@ -117,9 +117,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					String filename = attributes.getValue(Project.FILENAME_ATTRIBUTE_NAME);
 					if (filename != null)
 						project.setProjectFileName(filename);
-                    String projectName = attributes.getValue(Project.PROJECTNAME_ATTRIBUTE_NAME);
-                    if (projectName != null)
-                        project.setProjectName(projectName);
+					String projectName = attributes.getValue(Project.PROJECTNAME_ATTRIBUTE_NAME);
+					if (projectName != null)
+						project.setProjectName(projectName);
 				} else if (qName.equals("BugInstance")) {
 					// BugInstance element - get required type and priority attributes
 					String type = getRequiredAttribute(attributes, "type", qName);
@@ -132,7 +132,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						throw new SAXException("BugInstance with invalid priority value \"" +
 							priority + "\"", e);
 					}
-					
+
 					String uniqueId = attributes.getValue("uid");
 					if (uniqueId != null) {
 						bugInstance.setUniqueId(uniqueId);
@@ -146,11 +146,11 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					if (lastVersion != null) {
 						bugInstance.setLastVersion(Long.parseLong(lastVersion));
 					}
-					
+
 					if (bugInstance.getLastVersion() >= 0 &&
 							bugInstance.getFirstVersion() > bugInstance.getLastVersion())
 						throw new IllegalStateException("huh");
-					
+
 					String introducedByChange = attributes.getValue("introducedByChange");
 					if (introducedByChange != null) {
 						bugInstance.setIntroducedByChangeOfExistingClass(TigerSubstitutes.parseBoolean(introducedByChange));
@@ -163,8 +163,8 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 					if (oldInstanceHash != null) {
 						bugInstance.setOldInstanceHash(oldInstanceHash);
 						}
-					
-					
+
+
 				} else if (qName.equals("FindBugsSummary")) {
 					String timestamp = getRequiredAttribute(attributes, "timestamp", qName);
 					try {
@@ -200,7 +200,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						bugAnnotation = packageMemberAnnotation = 
 							new FieldAnnotation(classname, fieldOrMethodName, signature, Boolean.valueOf(isStatic));
 					}
-					
+
 				} else if (qName.equals("SourceLine")) {
 					SourceLineAnnotation sourceAnnotation = createSourceLineAnnotation(qName, attributes);
 					if (!sourceAnnotation.isSynthetic())
@@ -302,7 +302,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 							appVersion.setCodeSize(Integer.parseInt(codeSize));
 						if (numClasses != null)
 							appVersion.setNumClasses(Integer.parseInt(numClasses));
-						
+
 						bugCollection.addAppVersion(appVersion);
 					} catch (NumberFormatException e) {
 						throw new SAXException("Invalid AppVersion element", e);
@@ -370,7 +370,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 
 			SourceLineAnnotation annotation =
 				new SourceLineAnnotation(classname, sourceFile, sl, el, sb, eb);
-			
+
 			return annotation;
 		} catch (NumberFormatException e) {
 			throw new SAXException("Bad integer value in SourceLine element", e);
@@ -393,9 +393,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			if (outerElement.equals("BugCollection")) {
 				if (qName.equals("BugInstance")) {
 					bugCollection.add(bugInstance, false);
-                   // TODO: check this
-                    if (bugInstance.getLastVersion() == -1)
-                    	bugCollection.getProjectStats().addBug(bugInstance);
+				   // TODO: check this
+					if (bugInstance.getLastVersion() == -1)
+						bugCollection.getProjectStats().addBug(bugInstance);
 				}
 			} else if (outerElement.equals("Project")) {
 				//System.out.println("Adding project element " + qName + ": " + textBuffer.toString());
@@ -421,7 +421,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 				} else if (qName.equals(BugCollection.MISSING_CLASS_ELEMENT_NAME)) {
 					bugCollection.addMissingClass(textBuffer.toString());
 				}
-				
+
 			} else if (outerElement.equals(BugCollection.ERROR_ELEMENT_NAME)) {
 				if (qName.equals(BugCollection.ERROR_MESSAGE_ELEMENT_NAME)) {
 					analysisError.setMessage(textBuffer.toString());
@@ -454,7 +454,7 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		return value;
 	}
 
-	
+
 }
 
 // vim:ts=4

@@ -32,26 +32,26 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumber;
 public class DefinitelyNullSet /*extends BitSet*/ {
 	private BitSet contents;
 	private int numValueNumbers;
-	
+
 	public DefinitelyNullSet(int numValueNumbers) {
 		this.contents = new BitSet();
 		this.numValueNumbers  = numValueNumbers;
 	}
-	
+
 	public NullnessValue getNulllessValue(ValueNumber valueNumber) {
 		return getNullnessValue(valueNumber.getNumber());
 	}
-	
+
 	private NullnessValue getNullnessValue(int vn) {
 		int flags = 0;
-		
+
 		int start = getStartIndex(vn);
 		for (int i = 0; i < NullnessValue.FLAGS_MAX; i++) {
 			if (contents.get(start + i)) {
 				flags |= (1 << i);
 			}
 		}
-		
+
 		return NullnessValue.fromFlags(flags);
 	}
 
@@ -63,7 +63,7 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 			contents.set(start + i, (flags & (1 << i)) != 0);
 		}
 	}
-	
+
 	public void clear() {
 		contents.clear();
 	}
@@ -72,16 +72,16 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 		contents.clear();
 		contents.set(lastUsedBit());
 	}
-	
+
 	public boolean isTop() {
 		return contents.get(lastUsedBit());
 	}
-	
+
 	public void setBottom() {
 		contents.clear();
 		contents.set(lastUsedBit() + 1);
 	}
-	
+
 	public boolean isBottom() {
 		return contents.get(lastUsedBit() + 1);
 	}
@@ -89,26 +89,26 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 	public boolean isValid() {
 		return !(isTop() || isBottom());
 	}
-	
+
 	public void makeSameAs(DefinitelyNullSet other) {
 		contents.clear();
 		contents.or(other.contents);
 	}
-	
+
 	public void mergeWith(DefinitelyNullSet other) {
 		if (this.isBottom() || other.isTop()) {
 			return;
 		}
-		
+
 		if (this.isTop() || other.isBottom()) {
 			this.makeSameAs(other);
 			return;
 		}
-		
+
 		// Result is intersection of sets
 		this.contents.and(other.contents);
 	}
-	
+
 	public BitSet getAssignedNullLocationSet(ValueNumber vn) {
 		throw new UnsupportedOperationException();
 	}
@@ -128,15 +128,15 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 	private int lastUsedBit() {
 		return numValueNumbers * NullnessValue.FLAGS_MAX;
 	}
-	
+
 	private int topBit() {
 		return lastUsedBit();
 	}
-	
+
 	private int bottomBit() {
 		return lastUsedBit() + 1;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -144,7 +144,7 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 	public int hashCode() {
 		return contents.hashCode();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -153,11 +153,11 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 		if (obj == null || obj.getClass() != this.getClass()) {
 			return false;
 		}
-		
+
 		DefinitelyNullSet other = (DefinitelyNullSet) obj;
 		return this.contents.equals(other.contents);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -170,9 +170,9 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 		} else {
 			StringBuffer buf = new StringBuffer();
 			boolean first = true;
-			
+
 			buf.append("{");
-			
+
 			for (int i = 0; i < numValueNumbers; i++)  {
 				NullnessValue val = getNullnessValue(i);
 				if (val.isDefinitelyNull() || val.isDefinitelyNotNull()) {
@@ -186,9 +186,9 @@ public class DefinitelyNullSet /*extends BitSet*/ {
 					buf.append(val.toString());
 				}
 			}
-			
+
 			buf.append("}");
-			
+
 			return buf.toString();
 		}
 	}

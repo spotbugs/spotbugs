@@ -27,7 +27,7 @@ import java.io.Serializable;
  * @author David Hovemeyer
  */
 public class IdentityClassNameRewriter implements ClassNameRewriter, Serializable {
-	
+
 	private static final IdentityClassNameRewriter theInstance = new IdentityClassNameRewriter();
 
 	private static final long serialVersionUID = 1L;

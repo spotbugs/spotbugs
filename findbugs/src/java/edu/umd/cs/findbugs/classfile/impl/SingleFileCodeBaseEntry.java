@@ -46,28 +46,28 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 	public InputStream openResource() throws IOException {
 		return codeBase.openFile();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getCodeBase()
 	 */
 	public ICodeBase getCodeBase() {
 		return codeBase;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#getClassDescriptor()
 	 */
 	public ClassDescriptor getClassDescriptor() throws ResourceNotFoundException, InvalidClassFileFormatException {
 		return codeBase.getClassDescriptor();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBaseEntry#overrideResourceName(java.lang.String)
 	 */
 	public void overrideResourceName(String resourceName) {
 		// FIXME: implement this
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -79,7 +79,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 		SingleFileCodeBaseEntry other = (SingleFileCodeBaseEntry) obj;
 		return other.codeBase.equals(this.codeBase);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -87,7 +87,7 @@ public class SingleFileCodeBaseEntry implements ICodeBaseEntry {
 	public int hashCode() {
 		return codeBase.hashCode();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

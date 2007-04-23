@@ -66,14 +66,14 @@ import edu.umd.cs.findbugs.xml.XMLWriteable;
 public class Project implements XMLWriteable {
 	private static final boolean DEBUG = SystemProperties.getBoolean("findbugs.project.debug");
 
-    private File currentWorkingDirectory;
+	private File currentWorkingDirectory;
 	/**
 	 * Project filename.
 	 */
-    @Deprecated
+	@Deprecated
 	private String projectFileName;
-    
-    private String projectName;
+
+	private String projectName;
 
 	/**
 	 * Options.
@@ -106,7 +106,7 @@ public class Project implements XMLWriteable {
 	public static final String UNNAMED_PROJECT = "<<unnamed project>>";
 
 	private long timestamp = 0L;
-	
+
 	/**
 	 * Create an anonymous project.
 	 */
@@ -126,7 +126,7 @@ public class Project implements XMLWriteable {
 	public Project duplicate() {
 		Project dup = new Project();
 		dup.projectFileName = this.projectFileName;
-        dup.currentWorkingDirectory = this.currentWorkingDirectory;
+		dup.currentWorkingDirectory = this.currentWorkingDirectory;
 		dup.optionsMap.clear();
 		dup.optionsMap.putAll(this.optionsMap);
 		dup.fileList.addAll(this.fileList);
@@ -137,9 +137,9 @@ public class Project implements XMLWriteable {
 		return dup;
 	}
 
-    public void setCurrentWorkingDirectory(File f) {
-        this.currentWorkingDirectory = f;
-    }
+	public void setCurrentWorkingDirectory(File f) {
+		this.currentWorkingDirectory = f;
+	}
 	/**
 	 * Return whether or not this Project has unsaved modifications.
 	 */
@@ -157,7 +157,7 @@ public class Project implements XMLWriteable {
 	/**
 	 * Get the project filename.
 	 */
-    @Deprecated
+	@Deprecated
 	public String getProjectFileName() {
 		return projectFileName;
 	}
@@ -167,7 +167,7 @@ public class Project implements XMLWriteable {
 	 *
 	 * @param projectFileName the new filename
 	 */
-    @Deprecated
+	@Deprecated
 	public void setProjectFileName(String projectFileName) {
 		this.projectFileName = projectFileName;
 	}
@@ -523,7 +523,7 @@ public class Project implements XMLWriteable {
 	 * @throws IOException if an error occurs while writing
 	 */
 	public void write(String outputFile, boolean useRelativePaths, String relativeBase)
-	        throws IOException {
+			throws IOException {
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outputFile)));
 		try {
 			writer.println(JAR_FILES_KEY);
@@ -554,7 +554,7 @@ public class Project implements XMLWriteable {
 		} finally {
 			writer.close();
 		}
-		
+
 		// Project successfully saved
 		isModified = false;
 	}
@@ -622,7 +622,7 @@ public class Project implements XMLWriteable {
 				makeListAbsoluteProject(srcDirList);
 				makeListAbsoluteProject(auxClasspathEntryList);
 			}
-	
+
 			// Clear the modification flag set by the various "add" methods.
 			isModified = false;
 		} finally {
@@ -645,18 +645,18 @@ public class Project implements XMLWriteable {
 		return line;
 	}
 
-    
-    public String projectNameFromProjectFileName() {
-        String name = projectFileName;
-        int lastSep = name.lastIndexOf(File.separatorChar);
-        if (lastSep >= 0)
-            name = name.substring(lastSep + 1);
-        int dot = name.lastIndexOf('.');
-        if (dot >= 0)
-            name = name.substring(0, dot);
-        return name;
 
-    }
+	public String projectNameFromProjectFileName() {
+		String name = projectFileName;
+        int lastSep = name.lastIndexOf(File.separatorChar);
+		if (lastSep >= 0)
+			name = name.substring(lastSep + 1);
+		int dot = name.lastIndexOf('.');
+        if (dot >= 0)
+			name = name.substring(0, dot);
+		return name;
+
+	}
 	/**
 	 * Convert to a string in a nice (displayable) format.
 	 */
@@ -688,16 +688,16 @@ public class Project implements XMLWriteable {
 	static final String AUX_CLASSPATH_ENTRY_ELEMENT_NAME = "AuxClasspathEntry";
 	static final String SRC_DIR_ELEMENT_NAME = "SrcDir";
 	static final String FILENAME_ATTRIBUTE_NAME = "filename";
-    static final String PROJECTNAME_ATTRIBUTE_NAME = "projectName";
+	static final String PROJECTNAME_ATTRIBUTE_NAME = "projectName";
 
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		XMLAttributeList attributeList = new XMLAttributeList().addAttribute(FILENAME_ATTRIBUTE_NAME, getProjectFileName());
-        if (getProjectName() != null)
-            attributeList = attributeList.addAttribute(PROJECTNAME_ATTRIBUTE_NAME, getProjectName());
-        xmlOutput.openTag(
+		if (getProjectName() != null)
+			attributeList = attributeList.addAttribute(PROJECTNAME_ATTRIBUTE_NAME, getProjectName());
+		xmlOutput.openTag(
 				BugCollection.PROJECT_ELEMENT_NAME,
 				attributeList
-                );
+				);
 
 		XMLOutputUtil.writeElementList(xmlOutput, JAR_ELEMENT_NAME, fileList);
 		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
@@ -727,7 +727,7 @@ public class Project implements XMLWriteable {
 	 * feel free to submit a patch :-)
 	 */
 	private static final boolean FILE_IGNORE_CASE =
-	        SystemProperties.getProperty("os.name", "unknown").startsWith("Windows");
+			SystemProperties.getProperty("os.name", "unknown").startsWith("Windows");
 
 	/**
 	 * Converts a full path to a relative path if possible
@@ -756,7 +756,7 @@ public class Project implements XMLWriteable {
 				return "." + SystemProperties.getProperty("file.separator") + srcFile.substring(base.length());
 			}
 		}
-		
+
 		//See if we can build a relative path above the base using .. notation
 		int slashPos = srcFile.indexOf(slash);
 		int branchPoint;
@@ -829,13 +829,13 @@ public class Project implements XMLWriteable {
 	 * current working directory.
 	 */
 	private  String makeAbsoluteCWD(String fileName) {
-		 
-		boolean hasProtocol = (URLClassPath.getURLProtocol(fileName) != null);
-        if (hasProtocol) return fileName;
 
-        if (new File(fileName).isAbsolute()) return fileName;
-        return new File(currentWorkingDirectory, fileName).getAbsolutePath();
-        
+		boolean hasProtocol = (URLClassPath.getURLProtocol(fileName) != null);
+		if (hasProtocol) return fileName;
+
+		if (new File(fileName).isAbsolute()) return fileName;
+		return new File(currentWorkingDirectory, fileName).getAbsolutePath();
+
 	}
 
 	/**
@@ -877,7 +877,7 @@ public class Project implements XMLWriteable {
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
-	
+
 	public void addTimestamp(long timestamp) {
 		if (this.timestamp < timestamp)
 			this.timestamp = timestamp;
@@ -889,19 +889,19 @@ public class Project implements XMLWriteable {
 		return timestamp;
 	}
 
-    /**
-     * @param projectName The projectName to set.
-     */
+	/**
+	 * @param projectName The projectName to set.
+	 */
     public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
+		this.projectName = projectName;
+	}
 
-    /**
-     * @return Returns the projectName.
-     */
+	/**
+	 * @return Returns the projectName.
+	 */
     public String getProjectName() {
-        return projectName;
-    }
+		return projectName;
+	}
 }
 
 // vim:ts=4

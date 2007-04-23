@@ -58,7 +58,7 @@ public class Path {
 	public int getLength() {
 		return length;
 	}
-	
+
 	/**
 	 * Return an exact copy of this Path.
 	 * 
@@ -69,7 +69,7 @@ public class Path {
 		dup.copyFrom(this);
 		return dup;
 	}
-	
+
 	/**
 	 * Make this Path identical to the given one.
 	 * 
@@ -85,9 +85,9 @@ public class Path {
 	private void invalidate() {
 		this.cachedHashCode = INVALID_HASH_CODE;
 	}
-	
+
 	@Override
-         public int hashCode() {
+		 public int hashCode() {
 		if (cachedHashCode == INVALID_HASH_CODE) {
 			int value = 0;
 			for (int i = 0; i < this.length; ++i) {
@@ -97,9 +97,9 @@ public class Path {
 		}
 		return cachedHashCode;
 	}
-	
+
 	@Override
-         public boolean equals(Object o) {
+		 public boolean equals(Object o) {
 		if (o == null || o.getClass() != this.getClass())
 			return false;
 		Path other = (Path) o;
@@ -111,12 +111,12 @@ public class Path {
 		}
 		return true;
 	}
-	
+
 	private static final String SYMBOLS =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()";
-	
+
 	@Override
-         public String toString() {
+		 public String toString() {
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < length; ++i) {
 			int block = blockIdList[i];

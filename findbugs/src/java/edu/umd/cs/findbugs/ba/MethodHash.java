@@ -35,7 +35,7 @@ import org.apache.bcel.classfile.Method;
  */
 public class MethodHash implements Comparable<MethodHash> {
 	public static final String METHOD_HASH_ELEMENT_NAME = "MethodHash";
-	
+
 	private byte[] hash;
 	private String methodName;
 	private String methodSig;
@@ -47,7 +47,7 @@ public class MethodHash implements Comparable<MethodHash> {
 	 */
 	public MethodHash() {
 	}
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -63,28 +63,28 @@ public class MethodHash implements Comparable<MethodHash> {
 		this.hash = new byte[hash.length];
 		System.arraycopy(hash, 0, this.hash, 0, hash.length);
 	}
-	
+
 	/**
 	 * @return Returns the method name.
 	 */
 	public String getMethodName() {
 		return methodName;
 	}
-	
+
 	/**
 	 * @return Returns the method signature.
 	 */
 	public String getMethodSig() {
 		return methodSig;
 	}
-	
+
 	/**
 	 * @return Returns whether the method is static.
 	 */
 	public boolean isStatic() {
 		return isStatic;
 	}
-	
+
 	/**
 	 * Get the computed method hash.
 	 * 
@@ -93,7 +93,7 @@ public class MethodHash implements Comparable<MethodHash> {
 	public byte[] getMethodHash() {
 		return hash;
 	}
-	
+
 	/**
 	 * Compute hash on given method.
 	 * 
@@ -115,21 +115,21 @@ public class MethodHash implements Comparable<MethodHash> {
 		} else {
 			code = method.getCode().getCode();
 		}
-		
+
 		BytecodeScanner.Callback callback = new BytecodeScanner.Callback() {
 			public void handleInstruction(int opcode, int index) {
 				digest.update((byte) opcode);
 			}
 		};
-		
+
 		BytecodeScanner bytecodeScanner = new BytecodeScanner();
 		bytecodeScanner.scan(code, callback);
-		
+
 		hash = digest.digest();
-		
+
 		return this;
 	}
-	
+
 	/**
 	 * Return whether or not this method hash has the same value as the one given.
 	 * 
@@ -146,15 +146,15 @@ public class MethodHash implements Comparable<MethodHash> {
 	public int compareTo(MethodHash other) {
 		return MethodHash.compareHashes(this.hash, other.hash);
 	}
-	
+
 	@Override
-    public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		if (o instanceof MethodHash) 
 			return isSameHash((MethodHash)o);
 		return false;
 	}
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		int result = 0;
 		for(byte b : hash) 
 			result = result * 17 + b;

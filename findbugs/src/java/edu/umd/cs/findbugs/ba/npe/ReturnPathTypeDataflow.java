@@ -39,11 +39,11 @@ public class ReturnPathTypeDataflow extends Dataflow<ReturnPathType, ReturnPathT
 	public ReturnPathTypeDataflow(CFG cfg, ReturnPathTypeAnalysis analysis) {
 		super(cfg, analysis);
 	}
-	
+
 	public ReturnPathType getFactAtLocation(Location location) {
 		return getStartFact(location.getBasicBlock());
 	}
-	
+
 	public ReturnPathType getFactAfterLocation(Location location) {
 		return getResultFact(location.getBasicBlock());
 	}

@@ -32,11 +32,11 @@ import edu.umd.cs.findbugs.classfile.ICodeBaseLocator;
  */
 public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 	private final String pathName;
-	
+
 	public FilesystemCodeBaseLocator(String pathName) {
 		this.pathName = pathName;
 	}
-	
+
 	/**
 	 * @return Returns the pathName.
 	 */
@@ -70,7 +70,7 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 	public String toString() {
 		return "filesystem:" + pathName;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -82,7 +82,7 @@ public class FilesystemCodeBaseLocator implements ICodeBaseLocator {
 		FilesystemCodeBaseLocator other = (FilesystemCodeBaseLocator) obj;
 		return this.pathName.equals(other.pathName);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

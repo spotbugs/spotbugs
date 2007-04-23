@@ -53,7 +53,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	private String methodSig;
 	private String fullMethod;
 	private boolean isStatic;
-	
+
 
 	/**
 	 * Constructor.
@@ -108,7 +108,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		String className = visitor.getDottedClassConstantOperand();
 		String methodName = visitor.getNameConstantOperand();
 		String methodSig = visitor.getSigConstantOperand();
-		
+
 		return fromCalledMethod(className, methodName, methodSig,
 				visitor.getOpcode() == Constants.INVOKESTATIC);
 	}
@@ -127,21 +127,21 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 */
 	public static MethodAnnotation fromForeignMethod(
 			String className, String methodName, String methodSig, int accessFlags) {
-		
+
 		// FIXME: would be nice to do this without using BCEL
-		
- 		className = ClassName.toDottedClassName(className);
-		
+
+		 className = ClassName.toDottedClassName(className);
+
 		// Create MethodAnnotation.
 		// It won't have source lines yet.
 		MethodAnnotation methodAnnotation =
 			new MethodAnnotation(className, methodName, methodSig, (accessFlags & Constants.ACC_STATIC) != 0);
-		
+
 		SourceLineAnnotation sourceLines = SourceLineAnnotation.getSourceAnnotationForMethod(
 				className, methodName, methodSig);
-		
+
 		methodAnnotation.setSourceLines(sourceLines);
-		
+
 		return methodAnnotation;
 	}
 	/**
@@ -158,21 +158,21 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 */
 	public static MethodAnnotation fromForeignMethod(
 			String className, String methodName, String methodSig, boolean isStatic) {
-		
+
 		// FIXME: would be nice to do this without using BCEL
-		
- 		className = ClassName.toDottedClassName(className);
-		
+
+		 className = ClassName.toDottedClassName(className);
+
 		// Create MethodAnnotation.
 		// It won't have source lines yet.
 		MethodAnnotation methodAnnotation =
 			new MethodAnnotation(className, methodName, methodSig, isStatic);
-		
+
 		SourceLineAnnotation sourceLines = SourceLineAnnotation.getSourceAnnotationForMethod(
 				className, methodName, methodSig);
-		
+
 		methodAnnotation.setSourceLines(sourceLines);
-		
+
 		return methodAnnotation;
 	}
 
@@ -190,14 +190,14 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	 */
 	public static MethodAnnotation fromCalledMethod(
 			String className, String methodName, String methodSig, boolean isStatic) {
-		
+
 		MethodAnnotation methodAnnotation =
 			fromForeignMethod(className, methodName, methodSig, isStatic);
 		methodAnnotation.setDescription("METHOD_CALLED");
 		return methodAnnotation;
-		
+
 	}
-	
+
 	/**
 	 * Create a MethodAnnotation from an XMethod.
 	 * 
@@ -248,7 +248,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	public String getMethodSignature() {
 		return methodSig;
 	}
-	
+
 	/**
 	 * Return whether or not the method is static.
 	 * 
@@ -257,7 +257,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	public boolean isStatic() {
 		return isStatic;
 	}
-	
+
 	/**
 	 * Convert to an XMethod.
 	 * 
@@ -267,7 +267,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		return XFactory.createXMethod(className, methodName, methodSig, isStatic);
 	}
 
-	
+
 	public void accept(BugAnnotationVisitor visitor) {
 		visitor.visitMethodAnnotation(this);
 	}
@@ -277,9 +277,9 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		if (key.equals(""))
 			return UGLY_METHODS ? getUglyMethod() : getFullMethod(primaryClass);
 		else if (key.equals("givenClass")) {
-            if (className.equals(primaryClass.getClassName())) return getNameInClass(primaryClass);
-            else return shorten(primaryClass.getPackageName(), className) + "." + getNameInClass(primaryClass);
-        }
+			if (className.equals(primaryClass.getClassName())) return getNameInClass(primaryClass);
+			else return shorten(primaryClass.getPackageName(), className) + "." + getNameInClass(primaryClass);
+		}
 		else if (key.equals("shortMethod") )
 			return className + "." + methodName + "(...)";
 		else if (key.equals("hash")){
@@ -331,7 +331,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 
 		// append args
 		SignatureConverter converter = new SignatureConverter(methodSig);
-		
+
 		if (converter.getFirst() != '(')
 			throw new IllegalStateException("bad method signature " + methodSig);
 		converter.skip();
@@ -339,8 +339,8 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		boolean needsComma = false;
 		while (converter.getFirst() != ')') {
 			if (needsComma)
-                if (hash) result.append(",");
-                else result.append(", ");
+				if (hash) result.append(",");
+				else result.append(", ");
 			if (shortenPackages)
 				result.append(removePackageName(converter.parseNext()));
 			else
@@ -353,7 +353,7 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 		return result.toString();
 	}
 
-	
+
 	/**
 	 * Get the "full" method name.
 	 * This is a format which looks sort of like a method signature
@@ -383,8 +383,8 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			return false;
 		MethodAnnotation other = (MethodAnnotation) o;
 		return className.equals(other.className)
-		        && methodName.equals(other.methodName)
-		        && methodSig.equals(other.methodSig);
+				&& methodName.equals(other.methodName)
+				&& methodSig.equals(other.methodSig);
 	}
 
 	public int compareTo(BugAnnotation o) {
@@ -416,11 +416,11 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			.addAttribute("name", getMethodName())
 			.addAttribute("signature", getMethodSignature())
 			.addAttribute("isStatic", String.valueOf(isStatic()));
-		
+
 		String role = getDescription();
 		if (!role.equals(DEFAULT_ROLE))
 			attributeList.addAttribute("role", role);
-		
+
 		if (sourceLines == null && !addMessages) {
 			xmlOutput.openCloseTag(ELEMENT_NAME, attributeList);
 		} else {

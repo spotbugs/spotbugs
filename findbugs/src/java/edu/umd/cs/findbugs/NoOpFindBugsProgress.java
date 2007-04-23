@@ -24,6 +24,6 @@ public class NoOpFindBugsProgress implements FindBugsProgress {
 	 */
 	public void predictPassCount(int[] classesPerPass) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

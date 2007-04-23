@@ -62,143 +62,143 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
  */
 public class DerefFinder {
 
-    public static boolean DEBUG = SystemProperties.getBoolean("deref.finder.debug");
-    public static UsagesRequiringNonNullValues getAnalysis(ClassContext classContext, Method method) {
-        XMethod thisMethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+	public static boolean DEBUG = SystemProperties.getBoolean("deref.finder.debug");
+	public static UsagesRequiringNonNullValues getAnalysis(ClassContext classContext, Method method) {
+		XMethod thisMethod = XFactory.createXMethod(classContext.getJavaClass(), method);
         if (DEBUG) System.out.println(thisMethod);
-        UsagesRequiringNonNullValues derefs = new UsagesRequiringNonNullValues();
-        try {
+		UsagesRequiringNonNullValues derefs = new UsagesRequiringNonNullValues();
+		try {
 
-            CFG cfg = classContext.getCFG(method);
+			CFG cfg = classContext.getCFG(method);
 
-            ValueNumberDataflow vna = classContext.getValueNumberDataflow(method);
-            TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
-            NullnessAnnotationDatabase db = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
+			ValueNumberDataflow vna = classContext.getValueNumberDataflow(method);
+			TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
+			NullnessAnnotationDatabase db = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
 
-            ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase = AnalysisContext
-                    .currentAnalysisContext().getUnconditionalDerefParamDatabase();
-            Iterator<BasicBlock> bbIter = cfg.blockIterator();
+			ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase = AnalysisContext
+					.currentAnalysisContext().getUnconditionalDerefParamDatabase();
+			Iterator<BasicBlock> bbIter = cfg.blockIterator();
             ConstantPoolGen cpg = classContext.getConstantPoolGen();
-            ValueNumber valueNumberForThis = null;
-            if (!method.isStatic()) {
-                ValueNumberFrame frameAtEntry = vna.getStartFact(cfg.getEntry());
+			ValueNumber valueNumberForThis = null;
+			if (!method.isStatic()) {
+				ValueNumberFrame frameAtEntry = vna.getStartFact(cfg.getEntry());
                 valueNumberForThis = frameAtEntry.getValue(0);
-            }
+			}
 
-            NullnessAnnotation methodAnnotation = getMethodNullnessAnnotation(classContext, method);
+			NullnessAnnotation methodAnnotation = getMethodNullnessAnnotation(classContext, method);
 
-            while (bbIter.hasNext()) {
-                BasicBlock basicBlock = bbIter.next();
+			while (bbIter.hasNext()) {
+				BasicBlock basicBlock = bbIter.next();
 
-                if (basicBlock.isNullCheck()) {
-                    InstructionHandle exceptionThrowerHandle = basicBlock.getExceptionThrower();
-                    Instruction exceptionThrower = exceptionThrowerHandle.getInstruction();
+				if (basicBlock.isNullCheck()) {
+					InstructionHandle exceptionThrowerHandle = basicBlock.getExceptionThrower();
+					Instruction exceptionThrower = exceptionThrowerHandle.getInstruction();
                     ValueNumberFrame vnaFrame = vna.getStartFact(basicBlock);
-                    if (!vnaFrame.isValid())
-                        continue;
-                    ValueNumber valueNumber = vnaFrame.getInstance(exceptionThrower, cpg);
+					if (!vnaFrame.isValid())
+						continue;
+					ValueNumber valueNumber = vnaFrame.getInstance(exceptionThrower, cpg);
 
-                    Location location = new Location(exceptionThrowerHandle, basicBlock);
-                    if (valueNumberForThis != valueNumber)
-                        derefs.add(location, valueNumber, PointerUsageRequiringNonNullValue.getPointerDereference());
+					Location location = new Location(exceptionThrowerHandle, basicBlock);
+					if (valueNumberForThis != valueNumber)
+						derefs.add(location, valueNumber, PointerUsageRequiringNonNullValue.getPointerDereference());
 
-                }
-            }
+				}
+			}
 
-            for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-                Location location = i.next();
-                InstructionHandle handle = location.getHandle();
+			for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
+				Location location = i.next();
+				InstructionHandle handle = location.getHandle();
                 Instruction ins = handle.getInstruction();
-                ValueNumberFrame valueNumberFrame = vna.getFactAtLocation(location);
-                TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
-                if (ins instanceof InvokeInstruction) {
+				ValueNumberFrame valueNumberFrame = vna.getFactAtLocation(location);
+				TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
+				if (ins instanceof InvokeInstruction) {
                     InvokeInstruction inv = (InvokeInstruction) ins;
-                    XMethod m = XFactory.createXMethod(inv, cpg);
-                    SignatureParser sigParser = new SignatureParser(m.getSignature());
-                    int numParams = sigParser.getNumParameters();
+					XMethod m = XFactory.createXMethod(inv, cpg);
+					SignatureParser sigParser = new SignatureParser(m.getSignature());
+					int numParams = sigParser.getNumParameters();
 
-                    // Check nonnull annotations
+					// Check nonnull annotations
 
-                    for (int j = 0; j < numParams; j++)
-                        if (db.parameterMustBeNonNull(m, j)) {
-                            int slot = sigParser.getSlotsFromTopOfStackForParameter(j);
+					for (int j = 0; j < numParams; j++)
+						if (db.parameterMustBeNonNull(m, j)) {
+							int slot = sigParser.getSlotsFromTopOfStackForParameter(j);
                             ValueNumber valueNumber = valueNumberFrame.getStackValue(slot);
-                            if (valueNumberForThis != valueNumber) derefs.add(location, valueNumber, PointerUsageRequiringNonNullValue
-                                    .getPassedAsNonNullParameter(m, j));
-                        }
+							if (valueNumberForThis != valueNumber) derefs.add(location, valueNumber, PointerUsageRequiringNonNullValue
+									.getPassedAsNonNullParameter(m, j));
+						}
 
-                    // Check actual targets
-                    try {
-                        Set<JavaClassAndMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(inv, typeFrame,
+					// Check actual targets
+					try {
+						Set<JavaClassAndMethod> targetMethodSet = Hierarchy.resolveMethodCallTargets(inv, typeFrame,
                                 cpg);
-                        BitSet unconditionallyDereferencedNullArgSet = null;
-                         for (JavaClassAndMethod targetMethod : targetMethodSet) {
+						BitSet unconditionallyDereferencedNullArgSet = null;
+						 for (JavaClassAndMethod targetMethod : targetMethodSet) {
 
-                            ParameterNullnessProperty property = unconditionalDerefParamDatabase
-                                    .getProperty(targetMethod.toXMethod());
-                            if (property == null) {
+							ParameterNullnessProperty property = unconditionalDerefParamDatabase
+									.getProperty(targetMethod.toXMethod());
+							if (property == null) {
                                 unconditionallyDereferencedNullArgSet = null;
-                                break;
-                            }
-                            BitSet foo = property.getAsBitSet();
+								break;
+							}
+							BitSet foo = property.getAsBitSet();
                             if (unconditionallyDereferencedNullArgSet == null)
-                                unconditionallyDereferencedNullArgSet = foo;
-                            else
-                                unconditionallyDereferencedNullArgSet.intersects(foo);
+								unconditionallyDereferencedNullArgSet = foo;
+							else
+								unconditionallyDereferencedNullArgSet.intersects(foo);
                             if (unconditionallyDereferencedNullArgSet.isEmpty())
-                                break;
-                        }
+								break;
+						}
 
-                        if (unconditionallyDereferencedNullArgSet != null
-                                && !unconditionallyDereferencedNullArgSet.isEmpty() && valueNumberFrame.isValid())
-                            for (int j = unconditionallyDereferencedNullArgSet.nextSetBit(0); j >= 0; j = unconditionallyDereferencedNullArgSet
+						if (unconditionallyDereferencedNullArgSet != null
+								&& !unconditionallyDereferencedNullArgSet.isEmpty() && valueNumberFrame.isValid())
+							for (int j = unconditionallyDereferencedNullArgSet.nextSetBit(0); j >= 0; j = unconditionallyDereferencedNullArgSet
                                     .nextSetBit(j + 1)) {
-                                int slot = sigParser.getSlotsFromTopOfStackForParameter(j);
-                                ValueNumber valueNumber = valueNumberFrame.getStackValue(slot);
-                                if (valueNumberForThis != valueNumber)  derefs.add(location, valueNumber, PointerUsageRequiringNonNullValue
+								int slot = sigParser.getSlotsFromTopOfStackForParameter(j);
+								ValueNumber valueNumber = valueNumberFrame.getStackValue(slot);
+								if (valueNumberForThis != valueNumber)  derefs.add(location, valueNumber, PointerUsageRequiringNonNullValue
                                         .getPassedAsNonNullParameter(m, j));
-                            }
+							}
 
-                    } catch (ClassNotFoundException e) {
-                        AnalysisContext.reportMissingClass(e);
-                    }
+					} catch (ClassNotFoundException e) {
+						AnalysisContext.reportMissingClass(e);
+					}
 
-                } else if (ins instanceof ARETURN && methodAnnotation == NullnessAnnotation.NONNULL) {
-                    ValueNumber valueNumber = valueNumberFrame.getTopValue();
-                    if (valueNumberForThis != valueNumber) derefs.add(location, valueNumber, PointerUsageRequiringNonNullValue
+				} else if (ins instanceof ARETURN && methodAnnotation == NullnessAnnotation.NONNULL) {
+					ValueNumber valueNumber = valueNumberFrame.getTopValue();
+					if (valueNumberForThis != valueNumber) derefs.add(location, valueNumber, PointerUsageRequiringNonNullValue
                             .getReturnFromNonNullMethod(thisMethod));
 
-                } else if (ins instanceof PUTFIELD || ins instanceof PUTSTATIC) {
-                    FieldInstruction inf = (FieldInstruction) ins;
-                    XField field = XFactory.createXField(inf, cpg);
+				} else if (ins instanceof PUTFIELD || ins instanceof PUTSTATIC) {
+					FieldInstruction inf = (FieldInstruction) ins;
+					XField field = XFactory.createXField(inf, cpg);
                     NullnessAnnotation annotation = AnalysisContext.currentAnalysisContext()
-                            .getNullnessAnnotationDatabase().getResolvedAnnotation(field, false);
-                    if (annotation == NullnessAnnotation.NONNULL) {
-                        ValueNumber valueNumber = valueNumberFrame.getTopValue();
+							.getNullnessAnnotationDatabase().getResolvedAnnotation(field, false);
+					if (annotation == NullnessAnnotation.NONNULL) {
+						ValueNumber valueNumber = valueNumberFrame.getTopValue();
                         if (valueNumberForThis != valueNumber)  derefs.add(location, valueNumber, PointerUsageRequiringNonNullValue
-                                .getStoredIntoNonNullField(field));
-                    }
+								.getStoredIntoNonNullField(field));
+					}
 
-                }
-            }
+				}
+			}
 
-        } catch (CFGBuilderException e) {
+		} catch (CFGBuilderException e) {
+			AnalysisContext.logError("Error generating derefs for " + thisMethod, e);
+		} catch (DataflowAnalysisException e) {
             AnalysisContext.logError("Error generating derefs for " + thisMethod, e);
-        } catch (DataflowAnalysisException e) {
-            AnalysisContext.logError("Error generating derefs for " + thisMethod, e);
+		}
+		return derefs;
+	}
+
+	public static NullnessAnnotation getMethodNullnessAnnotation(ClassContext classContext, Method method) {
+
+		if (method.getSignature().indexOf(")L") >= 0 || method.getSignature().indexOf(")[") >= 0) {
+
+			XMethod m = XFactory.createXMethod(classContext.getJavaClass(), method);
+			return AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase().getResolvedAnnotation(m,
+					false);
         }
-        return derefs;
-    }
-
-    public static NullnessAnnotation getMethodNullnessAnnotation(ClassContext classContext, Method method) {
-
-        if (method.getSignature().indexOf(")L") >= 0 || method.getSignature().indexOf(")[") >= 0) {
-
-            XMethod m = XFactory.createXMethod(classContext.getJavaClass(), method);
-            return AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase().getResolvedAnnotation(m,
-                    false);
-        }
-        return NullnessAnnotation.UNKNOWN_NULLNESS;
-    }
+		return NullnessAnnotation.UNKNOWN_NULLNESS;
+	}
 
 }

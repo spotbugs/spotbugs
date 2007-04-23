@@ -58,7 +58,7 @@ public interface IFindBugsEngine {
 	 * @param project The Project to set
 	 */
 	public void setProject(Project project);
-	
+
 	/**
 	 * Get the Project.
 	 * 
@@ -149,15 +149,15 @@ public interface IFindBugsEngine {
 	 */
 	public void setReleaseName(String releaseName);
 
-    
-    /**
-     * @return Returns the projectName.
-     */
-    public String getProjectName();
 
-    /**
-     * @param projectName The project name to set.
+	/**
+	 * @return Returns the projectName.
      */
+	public String getProjectName();
+
+	/**
+	 * @param projectName The project name to set.
+	 */
     public void setProjectName(String projectName);
 
 
@@ -254,8 +254,8 @@ public interface IFindBugsEngine {
 	 */
 	public void setDetectorFactoryCollection(DetectorFactoryCollection detectorFactoryCollection);
 
-    /**
-     * @param xmlWithAbridgedMessages
-     */
+	/**
+	 * @param xmlWithAbridgedMessages
+	 */
     public void setAbridgedMessages(boolean xmlWithAbridgedMessages);
 }

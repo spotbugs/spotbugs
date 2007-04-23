@@ -95,7 +95,7 @@ public abstract class FieldAccess extends SingleInstruction implements org.apach
 	 *                 or the value loaded
 	 */
 	protected static Variable snarfFieldValue(FieldInstruction fieldIns, ConstantPoolGen cpg, ValueNumberFrame frame)
-	        throws DataflowAnalysisException {
+			throws DataflowAnalysisException {
 
 		if (isLongOrDouble(fieldIns, cpg)) {
 			int numSlots = frame.getNumSlots();

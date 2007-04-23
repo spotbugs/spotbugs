@@ -88,7 +88,7 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  */
 public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMessages, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private String type;
 	private int priority;
 	private ArrayList<BugAnnotation> annotationList;
@@ -100,8 +100,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	private String instanceHash;
 	private int instanceOccurrenceNum;
 	private int instanceOccurrenceMax;
-	
-	
+
+
 	/*
 	 * The following fields are used for tracking Bug instances across multiple versions of software.
 	 * They are meaningless in a BugCollection for just one version of software. 
@@ -110,19 +110,19 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	private long lastVersion = -1;
 	private boolean introducedByChangeOfExistingClass;
 	private boolean removedByChangeOfPersistingClass;
-	
+
 	/**
 	 * This value is used to indicate that the cached hashcode
 	 * is invalid, and should be recomputed.
 	 */
 	private static final int INVALID_HASH_CODE = 0;
-	
+
 	/**
 	 * This value is used to indicate whether BugInstances should be reprioritized very low,
 	 * when the BugPattern is marked as experimental
 	 */
 	private static boolean adjustExperimental = false;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -131,31 +131,31 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance(String type, int priority) {
 		this.type = type;
-        this.priority = priority;
+		this.priority = priority;
 		annotationList = new ArrayList<BugAnnotation>(4);
 		cachedHashCode = INVALID_HASH_CODE;
-		
+
 		if (adjustExperimental && isExperimental())
 			this.priority = Detector.EXP_PRIORITY;
-        boundPriority();
+		boundPriority();
 	}
-	
-    private void boundPriority() {
-        priority = boundedPriority(priority);
+
+	private void boundPriority() {
+		priority = boundedPriority(priority);
     }
 
 	@Override
 	public Object clone() {
 		BugInstance dup;
-		
+
 		try {
 			dup = (BugInstance) super.clone();
-			
+
 			// Do deep copying of mutable objects
 			for (int i = 0; i < dup.annotationList.size(); ++i) {
 				dup.annotationList.set(i, (BugAnnotation) dup.annotationList.get(i).clone());
 			}
- 			dup.propertyListHead = dup.propertyListTail = null;
+			 dup.propertyListHead = dup.propertyListTail = null;
 			for (Iterator<BugProperty> i = propertyIterator(); i.hasNext(); ) {
 				dup.addProperty((BugProperty) i.next().clone());
 			}
@@ -176,19 +176,19 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance(Detector detector, String type, int priority) {
 		this(type, priority);
-		
+
 		if (detector != null) {
 			// Adjust priority if required
 			DetectorFactory factory =
 				DetectorFactoryCollection.instance().getFactoryByClassName(detector.getClass().getName());
 			if (factory != null) {
 				this.priority += factory.getPriorityAdjustment();
-                boundPriority();
+				boundPriority();
 			}
 		}
-		
+
 	}
-		
+
 	/**
 	 * Create a new BugInstance.
 	 * This is the constructor that should be used by Detectors.
@@ -199,22 +199,22 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugInstance(Detector2 detector, String type, int priority) {
 		this(type, priority);
-		
+
 		if (detector != null) {
 			// Adjust priority if required
 			DetectorFactory factory =
 				DetectorFactoryCollection.instance().getFactoryByClassName(detector.getDetectorClassName());
 			if (factory != null) {
 				this.priority += factory.getPriorityAdjustment();
-                boundPriority();
+				boundPriority();
 			}
 		}
-		
+
 	}
 	public static void setAdjustExperimental(boolean adjust) {
 		adjustExperimental = adjust;
 	}
-	
+
 	/* ----------------------------------------------------------------------
 	 * Accessors
 	 * ---------------------------------------------------------------------- */
@@ -254,15 +254,15 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		//TODO: internationalize the word "Priority"
 	}
 
-    public String getPriorityTypeAbbreviation()
-    {
-        String priorityString = getPriorityAbbreviation();
+	public String getPriorityTypeAbbreviation()
+	{
+		String priorityString = getPriorityAbbreviation();
          return priorityString + " " + getBugPattern().getCategoryAbbrev();
-       
-    }
 
-    public String getPriorityString() {
-        //first, get the priority
+	}
+
+	public String getPriorityString() {
+		//first, get the priority
 		int value = this.getPriority();
 		String priorityString;
 		if (value == Detector.HIGH_PRIORITY)
@@ -275,12 +275,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_experimental", "Experimental");
 		else
 			priorityString = edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This probably shouldn't ever happen, but what the hell, let's be complete
-        return priorityString;
-    }
-	
+		return priorityString;
+	}
+
     public String getPriorityAbbreviation() {
-        return getPriorityString().substring(0,1);
-    }
+		return getPriorityString().substring(0,1);
+	}
 	/**
 	 * Set the bug priority.
 	 */
@@ -288,20 +288,20 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		priority = boundedPriority(p);
 	}
 
-    private int boundedPriority(int p) {
-        return Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, p));
-    }
+	private int boundedPriority(int p) {
+		return Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, p));
+	}
     public void raisePriority() {
-        priority = boundedPriority(priority-1);
-        
-    }
-    public void lowerPriority() {
-        priority = boundedPriority(priority+1);
-    }
+		priority = boundedPriority(priority-1);
 
-    public void lowerPriorityALot() {
-        priority = boundedPriority(priority+2);
-    }
+	}
+    public void lowerPriority() {
+		priority = boundedPriority(priority+1);
+	}
+
+	public void lowerPriorityALot() {
+		priority = boundedPriority(priority+2);
+	}
 
 	/**
 	 * Is this bug instance the result of an experimental detector?
@@ -331,14 +331,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return (FieldAnnotation) findAnnotationOfType(FieldAnnotation.class);
 	}
 
-	
+
 	public BugInstance lowerPriorityIfDeprecated() {
 		MethodAnnotation m = getPrimaryMethod();
 		if (m != null && AnalysisContext.currentXFactory().getDeprecated().contains(XFactory.createXMethod(m)))
 				lowerPriority();
 		FieldAnnotation f = getPrimaryField();
 		if (f != null && AnalysisContext.currentXFactory().getDeprecated().contains(XFactory.createXField(f)))
-            lowerPriority();
+			lowerPriority();
 		return this;
 	}
 	/**
@@ -357,7 +357,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		}
 		return null;
 	}
-	
+
 	public LocalVariableAnnotation getPrimaryLocalVariableAnnotation() {
 		for (BugAnnotation annotation : annotationList) 
 			if (annotation instanceof LocalVariableAnnotation)
@@ -377,7 +377,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			if (annotation instanceof SourceLineAnnotation)
 				return (SourceLineAnnotation) annotation;
 		}
-		
+
 		// Next: Try primary method, primary field, primary class
 		SourceLineAnnotation srcLine;
 		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryMethod())) != null)
@@ -386,7 +386,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			return srcLine;
 		if ((srcLine = inspectPackageMemberSourceLines(getPrimaryClass())) != null)
 			return srcLine;
-		
+
 		// Last resort: throw exception
 		throw new IllegalStateException("BugInstance must contain at least one class, method, or field annotation");
 	}
@@ -457,7 +457,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			userDesignation = new BugDesignation();
 		return userDesignation;
 	}
-	
+
 
 	/** Get the user designation key.
 	 *  E.g., "MOSTLY_HARMLESS", "CRITICAL", "NOT_A_BUG", etc.
@@ -521,7 +521,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Get the BugInstance's unique id.
 	 * 
@@ -533,7 +533,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public String getUniqueId() {
 		return uniqueId;
 	}
-	
+
 	/**
 	 * Set the unique id of the BugInstance.
 	 * 
@@ -546,16 +546,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		this.uniqueId = uniqueId;
 	}
 
-	
-	
+
+
 	/* ----------------------------------------------------------------------
 	 * Property accessors
 	 * ---------------------------------------------------------------------- */
-	
+
 	private class BugPropertyIterator implements Iterator<BugProperty> {
 		private BugProperty prev, cur;
 		private boolean removed;
-		
+
 		/* (non-Javadoc)
 		 * @see java.util.Iterator#hasNext()
 		 */
@@ -574,7 +574,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			removed = false;
 			return cur;
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see java.util.Iterator#remove()
 		 */
@@ -591,7 +591,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			}
 			removed = true;
 		}
-		
+
 		private BugProperty findNext() {
 			return cur == null ? propertyListHead : cur.getNext();
 		}
@@ -609,7 +609,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		BugProperty prop = lookupProperty(name);
 		return prop != null ? prop.getValue() : null;
 	}
-	
+
 	/**
 	 * Get value of given property, returning given default
 	 * value if the property has not been set.
@@ -623,7 +623,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		String value = getProperty(name);
 		return value != null ? value : defaultValue;
 	}
-	
+
 	/**
 	 * Get an Iterator over the properties defined in this BugInstance.
 	 * 
@@ -632,7 +632,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public Iterator<BugProperty> propertyIterator() {
 		return new BugPropertyIterator();
 	}
-	
+
 	/**
 	 * Set value of given property.
 	 * 
@@ -650,7 +650,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Look up a property by name.
 	 * 
@@ -660,16 +660,16 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 */
 	public BugProperty lookupProperty(String name) {
 		BugProperty prop = propertyListHead;
-		
+
 		while (prop != null) {
 			if (prop.getName().equals(name))
 				break;
 			prop = prop.getNext();
 		}
-		
+
 		return prop;
 	}
-	
+
 	/**
 	 * Delete property with given name.
 	 * 
@@ -680,14 +680,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public boolean deleteProperty(String name) {
 		BugProperty prev = null;
 		BugProperty prop = propertyListHead;
-		
+
 		while (prop != null) {
 			if (prop.getName().equals(name))
 				break;
 			prev = prop;
 			prop = prop.getNext();
 		}
-		
+
 		if (prop != null) {
 			if (prev != null) {
 				// Deleted node in interior or at tail of list
@@ -696,19 +696,19 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 				// Deleted node at head of list
 				propertyListHead = prop.getNext();
 			}
-			
+
 			if (prop.getNext() == null) {
 				// Deleted node at end of list
 				propertyListTail = prev;
 			}
-			
+
 			return true;
 		} else {
 			// No such property
 			return false;
 		}
 	}
-	
+
 	private void addProperty(BugProperty prop) {
 		if (propertyListTail != null) {
 			propertyListTail.setNext(prop);
@@ -718,11 +718,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		}
 		prop.setNext(null);
 	}
-	
+
 	/* ----------------------------------------------------------------------
 	 * Generic BugAnnotation adders
 	 * ---------------------------------------------------------------------- */
-	
+
 	/**
 	 * Add a Collection of BugAnnotations.
 	 * 
@@ -738,7 +738,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	/* ----------------------------------------------------------------------
 	 * Combined annotation adders
 	 * ---------------------------------------------------------------------- */
-	
+
 	public BugInstance addClassAndMethod(MethodDescriptor methodDescriptor) {
 		addClass(methodDescriptor.getClassName());
 		add(MethodAnnotation.fromMethodDescriptor(methodDescriptor));
@@ -782,8 +782,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		addMethod(methodGen, sourceFile);
 		return this;
 	}
-	
-	
+
+
 	/**
 	 * Add class and method annotations for given class and method.
 	 *  
@@ -910,12 +910,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		add(typeAnnotation);
 		return this;
 	}
-	
-    public BugInstance addFoundAndExpectedType(String foundType, String expectedType) {
-        add( new TypeAnnotation(foundType)).describe(TypeAnnotation.FOUND_ROLE);
+
+	public BugInstance addFoundAndExpectedType(String foundType, String expectedType) {
+		add( new TypeAnnotation(foundType)).describe(TypeAnnotation.FOUND_ROLE);
         add( new TypeAnnotation(expectedType)).describe(TypeAnnotation.EXPECTED_ROLE);
-        return this;
-    }
+		return this;
+	}
 
 	public BugInstance addTypeOfNamedClass(String typeName) {
 		TypeAnnotation typeAnnotation = new TypeAnnotation("L" + typeName.replace('.','/')+";");
@@ -939,7 +939,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		addField(new FieldAnnotation(className, fieldName, fieldSig, isStatic));
 		return this;
 	}
-	
+
 	/**
 	 * Add a field annotation.
 	 *
@@ -987,7 +987,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public BugInstance addField(XField xfield) {
 		return addField(xfield.getClassName(), xfield.getName(), xfield.getSignature(), xfield.isStatic());
 	}
-	
+
 	/**
 	 * Add a field annotation for a FieldDescriptor.
 	 * 
@@ -1083,12 +1083,12 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public BugInstance addMethod(MethodGen methodGen, String sourceFile) {
 		String className = methodGen.getClassName();
 		MethodAnnotation methodAnnotation =
-		        new MethodAnnotation(className, methodGen.getName(), methodGen.getSignature(), methodGen.isStatic());
+				new MethodAnnotation(className, methodGen.getName(), methodGen.getSignature(), methodGen.isStatic());
 		addMethod(methodAnnotation);
 		addSourceLinesForMethod(methodAnnotation, SourceLineAnnotation.fromVisitedMethod(methodGen, sourceFile));
 		return this;
 	}
-	
+
 	/**
 	 * Add a method annotation.  If this is the first method annotation added,
 	 * it becomes the primary method annotation.
@@ -1109,7 +1109,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		addMethod(methodAnnotation);
 		return this;
 	}
-	
+
 	/**
 	 * Add a method annotation.  If this is the first method annotation added,
 	 * it becomes the primary method annotation.
@@ -1181,7 +1181,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		describe("METHOD_CALLED");
 		return this;
 	}
-	
+
 	/**
 	 * Add a MethodAnnotation from an XMethod.
 	 * 
@@ -1451,23 +1451,23 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			return shortPattern + " [Error generating customized description]";
 		}
 	}
-    public String getAbridgedMessage() {
-        BugPattern bugPattern = I18N.instance().lookupBugPattern(type);
-        String pattern, shortPattern;
+	public String getAbridgedMessage() {
+		BugPattern bugPattern = I18N.instance().lookupBugPattern(type);
+		String pattern, shortPattern;
         if (bugPattern == null) 
-            shortPattern = pattern = "Error: missing bug pattern for key " + type;
-        else {
-            pattern = bugPattern.getLongDescription().replaceAll(" in \\{1\\}", "");
+			shortPattern = pattern = "Error: missing bug pattern for key " + type;
+		else {
+			pattern = bugPattern.getLongDescription().replaceAll(" in \\{1\\}", "");
             shortPattern = bugPattern.getShortDescription();
-        }
-        try {
-            FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
+		}
+		try {
+			FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
             return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
-        } catch (RuntimeException e) {
-            AnalysisContext.logError("Error generating bug msg ", e);
-            return shortPattern + " [Error generating customized description]";
+		} catch (RuntimeException e) {
+			AnalysisContext.logError("Error generating bug msg ", e);
+			return shortPattern + " [Error generating customized description]";
         }
-    }
+	}
 	/**
 	 * Format a string describing this bug instance.
 	 *
@@ -1486,7 +1486,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			return bugPattern.getShortDescription() + " [Error generating customized description]";
 		}
 	}
-	
+
 	/**
 	 * Format a string describing this bug pattern, with the priority and type at the beginning.
 	 * e.g. "(High Priority Correctness) Guaranteed null pointer dereference..."
@@ -1495,9 +1495,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return "(" + this.getPriorityTypeString() + ") " + this.getMessage();
 	}
 
-    public String getMessageWithPriorityTypeAbbreviation() {
-        return this.getPriorityTypeAbbreviation() + " "+ this.getMessage();
-    }
+	public String getMessageWithPriorityTypeAbbreviation() {
+		return this.getPriorityTypeAbbreviation() + " "+ this.getMessage();
+	}
 
 	/**
 	 * Add a description to the most recently added bug annotation.
@@ -1530,9 +1530,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
 		writeXML(xmlOutput, false);
 	}
-	
-    public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
-  		XMLAttributeList attributeList = new XMLAttributeList()
+
+	public void writeXML(XMLOutput xmlOutput, boolean addMessages) throws IOException {
+		  XMLAttributeList attributeList = new XMLAttributeList()
 			.addAttribute("type", type)
 			.addAttribute("priority", String.valueOf(priority));
 
@@ -1546,8 +1546,8 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			attributeList.addAttribute("abbrev", pattern.getAbbrev());
 			attributeList.addAttribute("category", pattern.getCategory());
 		}
-		
-		
+
+
 		if (addMessages) {
 			//		Add a uid attribute, if we have a unique id.
 			if (getUniqueId() != null) {
@@ -1556,7 +1556,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 			attributeList.addAttribute("instanceHash", getInstanceHash());
 			attributeList.addAttribute("instanceOccurrenceNum", Integer.toString(getInstanceOccurrenceNum()));
 			attributeList.addAttribute("instanceOccurrenceMax", Integer.toString(getInstanceOccurrenceMax()));
-		
+
 		}
 		if (firstVersion > 0) attributeList.addAttribute("first", Long.toString(firstVersion));
 		if (lastVersion >= 0) 	attributeList.addAttribute("last", Long.toString(lastVersion));
@@ -1573,14 +1573,14 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 		if (addMessages) {
 			BugPattern bugPattern = getBugPattern();
-			
+
 			xmlOutput.openTag("ShortMessage");
 			xmlOutput.writeText(bugPattern != null ? bugPattern.getShortDescription() : this.toString());
 			xmlOutput.closeTag("ShortMessage");
-			
+
 			xmlOutput.openTag("LongMessage");
-            if (FindBugsDisplayFeatures.isAbridgedMessages()) xmlOutput.writeText(this.getAbridgedMessage());
-            else xmlOutput.writeText(this.getMessageWithoutPrefix());
+			if (FindBugsDisplayFeatures.isAbridgedMessages()) xmlOutput.writeText(this.getAbridgedMessage());
+			else xmlOutput.writeText(this.getMessageWithoutPrefix());
 			xmlOutput.closeTag("LongMessage");
 		}
 
@@ -1597,7 +1597,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 				synth.writeXML(xmlOutput, addMessages);
 			}
 		}
-		
+
 		if (propertyListHead != null) {
 			BugProperty prop = propertyListHead;
 			while (prop != null) {
@@ -1616,9 +1616,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
 
-    public BugInstance addOptionalAnnotation(@CheckForNull BugAnnotation annotation) {
-        if (annotation == null) return this;
-        return add(annotation);
+	public BugInstance addOptionalAnnotation(@CheckForNull BugAnnotation annotation) {
+		if (annotation == null) return this;
+		return add(annotation);
     }
 	public BugInstance add(BugAnnotation annotation) {
 		if (annotation == null)
@@ -1778,7 +1778,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public void setOldInstanceHash(String oldInstanceHash) {
 		this.oldInstanceHash = oldInstanceHash;
 	}
-    private static final boolean DONT_HASH =  SystemProperties.getBoolean("findbugs.dontHash");
+	private static final boolean DONT_HASH =  SystemProperties.getBoolean("findbugs.dontHash");
 	/**
 	 * @return Returns the instanceHash.
 	 */

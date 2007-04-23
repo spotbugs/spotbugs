@@ -72,7 +72,7 @@ public class Strings {
 		sb.append(']');
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Trim trailing comma from given string.
 	 * 

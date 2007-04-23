@@ -38,7 +38,7 @@ import java.lang.reflect.Modifier;
  */
 public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
 	private Class<E> databaseClass;
-	
+
 	public ReflectionDatabaseFactory(Class<E> databaseClass) {
 		this.databaseClass = databaseClass;
 	}
@@ -48,12 +48,12 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
 	 */
 	public E createDatabase() throws CheckedAnalysisException {
 		E database;
-		
+
 		database = createUsingStaticCreateMethod();
 		if (database != null) {
 			return database;
 		}
-		
+
 		database = createUsingConstructor();
 		if (database != null) {
 			return database;
@@ -76,7 +76,7 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
 		} catch (NoSuchMethodException e) {
 			return null;
 		}
-			
+
 		if (!Modifier.isStatic(createMethod.getModifiers())) {
 			return null;
 		}
@@ -107,7 +107,7 @@ public class ReflectionDatabaseFactory<E> implements IDatabaseFactory<E> {
 		} catch (NoSuchMethodException e) {
 			return null;
 		}
-		
+
 		try {
 			return constructor.newInstance(new Object[0]);
 		} catch (InstantiationException e) {

@@ -47,7 +47,7 @@ public class MissingClassException extends ResourceNotFoundException {
 		super(classDescriptor.toResourceName(), cause);
 		this.classDescriptor= classDescriptor;
 	}
-	
+
 	/**
 	 * @return Returns the classDescriptor.
 	 */

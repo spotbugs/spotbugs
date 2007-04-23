@@ -45,18 +45,18 @@ public class ClassParser {
 	static class Constant {
 		int tag;
 		Object[] data;
-		
+
 		Constant(int tag, Object[] data) {
 			this.tag = tag;
 			this.data = data;
 		}
 	}
-	
+
 	private DataInputStream in;
 	private ClassDescriptor expectedClassDescriptor;
 	private ICodeBaseEntry codeBaseEntry;
 	private Constant[] constantPool;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -72,7 +72,7 @@ public class ClassParser {
 		this.expectedClassDescriptor = expectedClassDescriptor;
 		this.codeBaseEntry = codeBaseEntry;
 	}
-	
+
 	/**
 	 * Parse the class data into a ClassNameAndSuperclassInfo object containing
 	 * (some of) the class's symbolic information.
@@ -97,7 +97,7 @@ public class ClassParser {
 					++i;
 				}
 			}
-			
+
 			int access_flags = in.readUnsignedShort();
 
 			int this_class = in.readUnsignedShort();
@@ -147,7 +147,7 @@ public class ClassParser {
 			for (int i = 0; i < fields_count; i++) {
 				fieldDescriptorList[i] = readField(classInfo.getClassDescriptor());
 			}
-			
+
 			int methods_count = in.readUnsignedShort();
 			if (methods_count < 0) {
 				throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
@@ -156,19 +156,19 @@ public class ClassParser {
 			for (int i = 0; i < methods_count; i++) {
 				methodDescriptorList[i] = readMethod(classInfo.getClassDescriptor());
 			}
-			
+
 			// Extract all references to other classes,
 			// both CONSTANT_Class entries and also referenced method
 			// signatures.
 			ClassDescriptor[] referencedClassDescriptorList = extractReferencedClasses();
-			
+
 			classInfo.setFieldDescriptorList(fieldDescriptorList);
 			classInfo.setMethodDescriptorList(methodDescriptorList);
 			classInfo.setReferencedClassDescriptorList(referencedClassDescriptorList);
 		} catch (IOException e) {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry, e);
 		}
-		
+
 	}
 
 	/**
@@ -196,7 +196,7 @@ public class ClassParser {
 				// Get the target class name
 				String className = getClassName((Integer) constant.data[0]);
 				extractReferencedClassesFromSignature(referencedClassSet, className);
-				
+
 				// Parse signature to extract class names
 				String signature = getSignatureFromNameAndType((Integer)constant.data[1]);
 				extractReferencedClassesFromSignature(referencedClassSet, signature);
@@ -291,7 +291,7 @@ public class ClassParser {
 			default: throw new IllegalStateException();
 			}
 		}
-		
+
 		return new Constant(tag, data);
 	}
 
@@ -307,17 +307,17 @@ public class ClassParser {
 		if (index == 0) {
 			return null;
 		}
-		
+
 		checkConstantPoolIndex(index);
 		Constant constant = constantPool[index];
 		checkConstantTag(constant, IClassConstants.CONSTANT_Class);
-		
+
 		int refIndex = ((Integer)constant.data[0]).intValue();
 		String stringValue = getUtf8String(refIndex);
 
 		return stringValue;
 	}
-	
+
 	/**
 	 * Get the ClassDescriptor of a class referenced in the constant pool.
 	 * 
@@ -371,7 +371,7 @@ public class ClassParser {
 			throw new InvalidClassFileFormatException(expectedClassDescriptor, codeBaseEntry);
 		}
 	}
-	
+
 	interface FieldOrMethodDescriptorCreator<E> {
 		public E create(String className, String name, String signature, int accessFlags);
 	}
@@ -434,7 +434,7 @@ public class ClassParser {
 		int name_index = in.readUnsignedShort();
 		int descriptor_index = in.readUnsignedShort();
 		int attributes_count = in.readUnsignedShort();
-	
+
 		String name = getUtf8String(name_index);
 		String signature = getUtf8String(descriptor_index);
 		if (attributes_count < 0) {

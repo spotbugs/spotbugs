@@ -40,34 +40,34 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
  */
 public abstract class AbstractBugReporter implements BugReporter {
 	private static final boolean DEBUG_MISSING_CLASSES = SystemProperties.getBoolean("findbugs.debug.missingclasses");
-	
+
 	private static class Error {
 		private int sequence;
 		private String message;
 		private Throwable cause;
-		
+
 		public Error(int sequence, String message) {
 			this(sequence, message, null);
 		}
-		
+
 		public Error(int sequence, String message, Throwable cause) {
 			this.sequence = sequence;
 			this.message = message;
 			this.cause = cause;
 		}
-		
+
 		public int getSequence() {
 			return sequence;
 		}
-		
+
 		public String getMessage() {
 			return message;
 		}
-		
+
 		public Throwable getCause() {
 			return cause;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			int hashCode = message.hashCode();
@@ -76,8 +76,8 @@ public abstract class AbstractBugReporter implements BugReporter {
 			}
 			return hashCode;
 		}
-		
-		
+
+
 		@Override
 		public boolean equals(Object obj) {
 			if (obj == null || obj.getClass() != this.getClass())
@@ -113,8 +113,8 @@ public abstract class AbstractBugReporter implements BugReporter {
 
 	// Subclasses must override doReportBug(), not this method.
 	public final void reportBug(BugInstance bugInstance) {
-        if (priorityThreshold == 0)
-            throw new IllegalStateException("Priority threshold not set");
+		if (priorityThreshold == 0)
+			throw new IllegalStateException("Priority threshold not set");
 		if (!analysisUnderway) {
 			if (FindBugsAnalysisFeatures.isRelaxedMode()) {
 				relaxed = true;
@@ -139,7 +139,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 				className = className.replace('/','.');
 			}
 			return className;
-			
+
 		}
 
 		// Just return the entire message.
@@ -152,12 +152,12 @@ public abstract class AbstractBugReporter implements BugReporter {
 			System.out.println("Missing class: " + ex.toString());
 			ex.printStackTrace(System.out);
 		}
-		
+
 		if (verbosityLevel == SILENT)
 			return;
 
 		String message = getMissingClassName(ex);
-		
+
 		if (message.startsWith("[")) {
 			// Sometimes we see methods called on array classes.
 			// Obviously, these don't exist as class files.
@@ -168,10 +168,10 @@ public abstract class AbstractBugReporter implements BugReporter {
 			return;
 		}
 
-        assert message.indexOf('<') == -1 : "message is " + message;
+		assert message.indexOf('<') == -1 : "message is " + message;
 		logMissingClass(message);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IErrorLogger#reportMissingClass(edu.umd.cs.findbugs.classfile.ClassDescriptor)
 	 */
@@ -182,7 +182,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 
 		if (verbosityLevel == SILENT)
 			return;
-		
+
 		logMissingClass(classDescriptor.toDottedClassName());
 	}
 
@@ -195,7 +195,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 			missingClassMessageList.add(message);
 		}
 	}
-	
+
 	/**
 	 * Report that we skipped some analysis of a method
 	 * @param method
@@ -211,7 +211,7 @@ public abstract class AbstractBugReporter implements BugReporter {
 		if (!errorSet.contains(error))
 			errorSet.add(error);
 	}
-	
+
 	public void logError(String message, Throwable e) {
 
 		if (e instanceof MethodUnprofitableException) {
@@ -228,10 +228,10 @@ public abstract class AbstractBugReporter implements BugReporter {
 			// Too much noise.
 			return;
 		}
-		
+
 		if (verbosityLevel == SILENT)
 			return;
-	
+
 		Error error = new Error(errorCount++, message, e);
 		if (!errorSet.contains(error))
 			errorSet.add(error);

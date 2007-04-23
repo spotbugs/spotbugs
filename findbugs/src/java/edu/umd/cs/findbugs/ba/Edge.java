@@ -106,16 +106,16 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 	}
 
 	@Override
-         public boolean equals(Object o) {
+		 public boolean equals(Object o) {
 		if (o == null || this.getClass() != o.getClass())
 			return false;
 		Edge other = (Edge) o;
 		return this.getSource() == other.getSource() && this.getTarget() == other.getTarget()
-		        && this.getType() == other.getType();
+				&& this.getType() == other.getType();
 	}
 
 	@Override
-         public int hashCode() {
+		 public int hashCode() {
 		return 2003 * getSource().getLabel() + getTarget().getLabel();
 	}
 
@@ -123,7 +123,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 	 * Compare with other edge.
 	 */
 	@Override
-         public int compareTo(Edge other) {
+		 public int compareTo(Edge other) {
 		int cmp = super.compareTo(other);
 		if (cmp != 0)
 			return cmp;
@@ -131,7 +131,7 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		return formatAsString(false);
 	}
 
@@ -146,15 +146,15 @@ public class Edge extends AbstractEdge<Edge, BasicBlock> implements EdgeTypes, D
 		return targetInstruction.getPosition() < sourceInstruction.getPosition();
 
 	}
-	
+
 	public boolean sourceIsTopOfLoop(Set<Integer> positions) {
 		BasicBlock source = getSource();
-	
+
 		InstructionHandle sourceInstruction = source.getLastInstruction();
-	
+
 		if ( sourceInstruction == null) return false;
 		return positions.contains(sourceInstruction.getPosition());
-		
+
 
 	}
 	/**

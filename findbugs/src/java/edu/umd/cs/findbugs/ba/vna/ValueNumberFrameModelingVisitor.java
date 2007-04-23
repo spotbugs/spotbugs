@@ -65,8 +65,8 @@ import edu.umd.cs.findbugs.ba.XField;
  * @author David Hovemeyer
  */
 public class ValueNumberFrameModelingVisitor
-        extends AbstractFrameModelingVisitor<ValueNumber, ValueNumberFrame>
-        implements Debug, ValueNumberAnalysisFeatures {
+		extends AbstractFrameModelingVisitor<ValueNumber, ValueNumberFrame>
+		implements Debug, ValueNumberAnalysisFeatures {
 
 	/* ----------------------------------------------------------------------
 	 * Fields
@@ -96,9 +96,9 @@ public class ValueNumberFrameModelingVisitor
 	 * @param lookupFailureCallback callback to use to report class lookup failures
 	 */
 	public ValueNumberFrameModelingVisitor(MethodGen methodGen, ValueNumberFactory factory,
-	                                       ValueNumberCache cache,
-	                                       LoadedFieldSet loadedFieldSet,
-	                                       RepositoryLookupFailureCallback lookupFailureCallback) {
+										   ValueNumberCache cache,
+										   LoadedFieldSet loadedFieldSet,
+										   RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		super(methodGen.getConstantPool());
 		this.methodGen = methodGen;
@@ -358,7 +358,7 @@ public class ValueNumberFrameModelingVisitor
 							// Some inner class access store methods
 							// return the value stored.
 							boolean pushValue = !methodSig.endsWith(")V");
-	
+
 							if (xfield.isStatic())
 								storeStaticField((StaticField) xfield, obj, pushValue);
 							else
@@ -386,13 +386,13 @@ public class ValueNumberFrameModelingVisitor
 
 	private void killLoadsOfObjectsPassed(InvokeInstruction ins) {
 		try {
-            int passed = getNumWordsConsumed(ins);
-            ValueNumber [] arguments = new ValueNumber[passed];
-            getFrame().killLoadsWithSimilarName(ins.getClassName(cpg), ins.getMethodName(cpg));
+			int passed = getNumWordsConsumed(ins);
+			ValueNumber [] arguments = new ValueNumber[passed];
+			getFrame().killLoadsWithSimilarName(ins.getClassName(cpg), ins.getMethodName(cpg));
 			getFrame().getTopStackWords(arguments);
 			for(ValueNumber v : arguments)
 				getFrame().killAllLoadsOf(v);
-			
+
 		} catch (DataflowAnalysisException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -457,21 +457,21 @@ public class ValueNumberFrameModelingVisitor
 		}
 		getFrame().pushValue(value);
 	}
-	
+
 	@Override
 	public void visitIINC(IINC obj) {
 		if (obj.getIncrement() == 0) {
 			// A no-op.
 			return;
 		}
-		
+
 		// IINC is a special case because its input and output are not on the stack.
 		// However, we still want to use the value number cache to ensure that
 		// this operation is modeled consistently.  (If we do nothing, we miss
 		// the fact that the referenced local is modified.)
-		
+
 		int local = obj.getIndex();
-		
+
 		ValueNumber[] input = new ValueNumber[]{ getFrame().getValue(local) };
 		ValueNumberCache.Entry entry = new ValueNumberCache.Entry(handle, input);
 		ValueNumber[] output = cache.lookupOutputValues(entry);
@@ -479,7 +479,7 @@ public class ValueNumberFrameModelingVisitor
 			output = new ValueNumber[]{ factory.createFreshValue() };
 			cache.addOutputValues(entry, output);
 		}
-		
+
 		getFrame().setValue(local, output[0]);
 	}
 
@@ -487,7 +487,7 @@ public class ValueNumberFrameModelingVisitor
 	public void visitCHECKCAST(CHECKCAST obj) {
 		// Do nothing
 	}
-	
+
 	/* ----------------------------------------------------------------------
 	 * Implementation
 	 * ---------------------------------------------------------------------- */
@@ -584,7 +584,7 @@ public class ValueNumberFrameModelingVisitor
 				// Get (or create) the cached result for this instruction
 				ValueNumber[] inputValueList = new ValueNumber[]{reference};
 				loadedValue = getOutputValues(inputValueList, getNumWordsProduced(obj));
-	
+
 				// Make the load available
 				frame.addAvailableLoad(availableLoad, loadedValue);
 				if (RLE_DEBUG) {

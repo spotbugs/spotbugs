@@ -49,7 +49,7 @@ public class IncompatibleTypes {
 	}
 
 	@Override
-    public String toString() {
+	public String toString() {
 		return msg;
 	}
 
@@ -78,7 +78,7 @@ public class IncompatibleTypes {
 		if (!(rhsType instanceof ReferenceType))
 			return SEEMS_OK;
 
-	
+
 		while (lhsType instanceof ArrayType && rhsType instanceof ArrayType) {
 			lhsType = ((ArrayType) lhsType).getElementType();
 			rhsType = ((ArrayType) rhsType).getElementType();

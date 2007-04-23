@@ -43,7 +43,7 @@ public class ObligationSet {
 		this.factory = factory;
 		invalidate();
 	}
-	
+
 	public int getMaxObligationTypes() {
 		return countList.length;
 	}
@@ -55,7 +55,7 @@ public class ObligationSet {
 
 	public void remove(Obligation obligation) throws NonexistentObligationException {
 		short count = countList[obligation.getId()];
-		
+
 		// It is possible to remove a nonexistent obligation.
 		// Generally this indicates buggy code, e.g.
 		//     InputStream in = null;
@@ -66,11 +66,11 @@ public class ObligationSet {
 		//     }
 //		if (count <= 0)
 //			throw new NonexistentObligationException(obligation);
-		
+
 		invalidate();
 		countList[obligation.getId()] = (short)(count - 1);
 	}
-	
+
 	public int getCount(int id) {
 		return countList[id];
 	}
@@ -96,7 +96,7 @@ public class ObligationSet {
 
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
@@ -115,7 +115,7 @@ public class ObligationSet {
 		buf.append("}");
 		return buf.toString();
 	}
-	
+
 	public ObligationSet duplicate() {
 		ObligationSet dup = new ObligationSet(countList.length, factory);
 		System.arraycopy(this.countList, 0, dup.countList, 0, countList.length);

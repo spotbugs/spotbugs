@@ -28,9 +28,9 @@ import edu.umd.cs.findbugs.filter.Matcher;
 
 public class SuppressionMatcher implements Matcher {
 	private Map <ClassAnnotation, Collection<WarningSuppressor>> suppressedWarnings
-            = new HashMap<ClassAnnotation, Collection<WarningSuppressor>>();
+			= new HashMap<ClassAnnotation, Collection<WarningSuppressor>>();
 	private Map <String, Collection<WarningSuppressor>> suppressedPackageWarnings
-            = new HashMap<String, Collection<WarningSuppressor>>();
+			= new HashMap<String, Collection<WarningSuppressor>>();
 	int count = 0;
 
 	public void addPackageSuppressor(PackageWarningSuppressor suppressor) {
@@ -43,7 +43,7 @@ public class SuppressionMatcher implements Matcher {
 			}
 			c.add(suppressor);
 		}
-		
+
 	public void addSuppressor(ClassWarningSuppressor suppressor) {
 		ClassAnnotation clazz = suppressor.getClassAnnotation().getTopLevelClass();
 		Collection<WarningSuppressor> c =  suppressedWarnings.get(clazz);
@@ -74,7 +74,7 @@ public class SuppressionMatcher implements Matcher {
 			}
 		return false;
 		}
-		
+
 
 }
 

@@ -44,7 +44,7 @@ public class ClassContextClassAnalysisEngine implements IClassAnalysisEngine {
 	 */
 	public Object analyze(IAnalysisCache analysisCache,
 			ClassDescriptor descriptor) throws CheckedAnalysisException {
-		
+
 		JavaClass javaClass = analysisCache.getClassAnalysis(JavaClass.class, descriptor);
 		ClassContext classContext = new ClassContext(javaClass, AnalysisContext.currentAnalysisContext());
 		return classContext;
@@ -56,7 +56,7 @@ public class ClassContextClassAnalysisEngine implements IClassAnalysisEngine {
 	public void registerWith(IAnalysisCache analysisCache) {
 		analysisCache.registerClassAnalysisEngine(ClassContext.class, this);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisEngine#retainAnalysisResults()
 	 */

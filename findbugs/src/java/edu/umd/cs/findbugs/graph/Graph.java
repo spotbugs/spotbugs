@@ -28,9 +28,9 @@ import java.util.Iterator;
  * a graph.
  */
 public interface Graph
-        <
-        EdgeType extends GraphEdge<EdgeType, VertexType>,
-        VertexType extends GraphVertex<VertexType>
+		<
+		EdgeType extends GraphEdge<EdgeType, VertexType>,
+		VertexType extends GraphVertex<VertexType>
         > {
 
 	/**

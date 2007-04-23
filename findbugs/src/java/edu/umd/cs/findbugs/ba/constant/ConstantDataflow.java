@@ -34,11 +34,11 @@ public class ConstantDataflow extends Dataflow<ConstantFrame, ConstantAnalysis> 
 	public ConstantDataflow(CFG cfg, ConstantAnalysis analysis) {
 		super(cfg, analysis);
 	}
-	
+
 	public ConstantFrame getFactAtLocation(Location location) throws DataflowAnalysisException {
 		return getAnalysis().getFactAtLocation(location);
 	}
-	
+
 	public ConstantFrame getFactAfterLocation(Location location) throws DataflowAnalysisException {
 		return getAnalysis().getFactAfterLocation(location);
 	}

@@ -39,14 +39,14 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
  */
 public class ClassFactory implements IClassFactory {
 	private static IClassFactory theInstance = new ClassFactory();
-	
+
 	private ClassFactory() {
 	}
-	
+
 	public static IClassFactory instance() {
 		return theInstance;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.impl.IClassFactory#createClassPath()
 	 */
@@ -60,7 +60,7 @@ public class ClassFactory implements IClassFactory {
 	public IClassPathBuilder createClassPathBuilder(IErrorLogger errorLogger) {
 		return new ClassPathBuilder(this, errorLogger);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.impl.IClassFactory#createFilesystemCodeBaseLocator(java.lang.String)
 	 */
@@ -72,7 +72,7 @@ public class ClassFactory implements IClassFactory {
 		} catch (IOException e) {
 			// Ignore
 		}
-		
+
 		return new FilesystemCodeBaseLocator(pathName);
 	}
 
@@ -82,12 +82,12 @@ public class ClassFactory implements IClassFactory {
 	public ICodeBaseLocator createNestedArchiveCodeBaseLocator(ICodeBase parentCodeBase, String path) {
 		return new NestedZipFileCodeBaseLocator(parentCodeBase, path);
 	}
-	
+
 	static IScannableCodeBase createFilesystemCodeBase(FilesystemCodeBaseLocator codeBaseLocator) throws IOException {
 		String fileName = codeBaseLocator.getPathName();
-		
+
 		File file = new File(fileName);
-		
+
 		if (file.isDirectory()) {
 			return new DirectoryCodeBase(codeBaseLocator, file);
 		} else if (fileName.endsWith(".class")) {
@@ -96,13 +96,13 @@ public class ClassFactory implements IClassFactory {
 			return new ZipFileCodeBase(codeBaseLocator, file);
 		}
 	}
-	
+
 	static IScannableCodeBase createNestedZipFileCodeBase(
 			NestedZipFileCodeBaseLocator codeBaseLocator)
 			throws ResourceNotFoundException, IOException {
 		return new NestedZipFileCodeBase(codeBaseLocator);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IClassFactory#createAnalysisCache(edu.umd.cs.findbugs.classfile.IClassPath)
 	 */

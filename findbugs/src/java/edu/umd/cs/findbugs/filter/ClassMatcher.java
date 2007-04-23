@@ -27,9 +27,9 @@ public class ClassMatcher implements Matcher {
 	private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
 
 	private NameMatch className;
-	
+
 	@Override
-    public String toString() {
+	public String toString() {
 		return "class=\"" + className.getValue() +"\"";
 	}
 

@@ -29,11 +29,11 @@ import java.util.List;
  */
 public class SimilarClassSet {
 	private List<ClassFeatureSet> memberList;
-	
+
 	public SimilarClassSet() {
 		this.memberList = new LinkedList<ClassFeatureSet>();
 	}
-	
+
 	public boolean shouldContain(ClassFeatureSet candidate) {
 		for (ClassFeatureSet member : memberList) {
 			if (candidate.similarTo(member))
@@ -41,17 +41,17 @@ public class SimilarClassSet {
 		}
 		return false;
 	}
-	
+
 	public void addMember(ClassFeatureSet member) {
 		memberList.add(member);
 	}
-	
+
 	public String getRepresentativeClassName() {
 		if (memberList.isEmpty())
 			throw new IllegalStateException();
 		return memberList.get(0).getClassName();
 	}
-	
+
 	public int size() {
 		return memberList.size();
 	}

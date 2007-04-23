@@ -80,12 +80,12 @@ public class ThrownException {
 	}
 
 	@Override
-         public int hashCode() {
+		 public int hashCode() {
 		return type.hashCode();
 	}
 
 	@Override
-         public boolean equals(Object o) {
+		 public boolean equals(Object o) {
 		if (o == null) return false;
 		if (o.getClass() != this.getClass()) return false;
 

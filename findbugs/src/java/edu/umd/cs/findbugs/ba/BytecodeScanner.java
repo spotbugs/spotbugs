@@ -69,9 +69,9 @@ public class BytecodeScanner implements org.apache.bcel.Constants {
 	 */
 	private static int extractInt(byte[] arr, int offset) {
 		return ((arr[offset] & 0xFF) << 24) |
-		        ((arr[offset + 1] & 0xFF) << 16) |
-		        ((arr[offset + 2] & 0xFF) << 8) |
-		        (arr[offset + 3] & 0xFF);
+				((arr[offset + 1] & 0xFF) << 16) |
+				((arr[offset + 2] & 0xFF) << 8) |
+				(arr[offset + 3] & 0xFF);
 	}
 
 	private static final int PAD[] = {0, 3, 2, 1};

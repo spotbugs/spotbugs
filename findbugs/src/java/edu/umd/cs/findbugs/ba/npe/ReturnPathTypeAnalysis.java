@@ -149,7 +149,7 @@ public class ReturnPathTypeAnalysis implements DataflowAnalysis<ReturnPathType> 
 		// can return normally.  If we traverse exception edges which
 		// lead to the exit block, then we'll mark those as "can't return
 		// normally" (see edgeTransfer() method).
-		
+
 		result.setCanReturnNormally(true);
 	}
 

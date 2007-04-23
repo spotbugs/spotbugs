@@ -38,7 +38,7 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 	}
 
 	@Override
-         public ResourceValue getDefaultValue() {
+		 public ResourceValue getDefaultValue() {
 		return ResourceValue.notInstance();
 	}
 
@@ -69,12 +69,12 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 	}
 
 	@Override
-         public void visitPUTFIELD(PUTFIELD putfield) {
+		 public void visitPUTFIELD(PUTFIELD putfield) {
 		handleFieldStore(putfield);
 	}
 
 	@Override
-         public void visitPUTSTATIC(PUTSTATIC putstatic) {
+		 public void visitPUTSTATIC(PUTSTATIC putstatic) {
 		handleFieldStore(putstatic);
 	}
 
@@ -112,42 +112,42 @@ public abstract class ResourceValueFrameModelingVisitor extends AbstractFrameMod
 		handleNormalInstruction(inv);
 	}
 
-    @Override
-    public void visitCHECKCAST(CHECKCAST obj) {
-        try {
+	@Override
+	public void visitCHECKCAST(CHECKCAST obj) {
+		try {
             ResourceValueFrame frame = getFrame();
-            ResourceValue topValue;
+			ResourceValue topValue;
 
-            topValue = frame.getTopValue();
+			topValue = frame.getTopValue();
 
-            if (topValue.equals(ResourceValue.instance()))
-                frame.setStatus(ResourceValueFrame.ESCAPED);
-        } catch (DataflowAnalysisException e) {
+			if (topValue.equals(ResourceValue.instance()))
+				frame.setStatus(ResourceValueFrame.ESCAPED);
+		} catch (DataflowAnalysisException e) {
             AnalysisContext.logError("Analysis error", e);
-        }
-    }
+		}
+	}
 	@Override
-         public void visitINVOKEVIRTUAL(INVOKEVIRTUAL inv) {
+		 public void visitINVOKEVIRTUAL(INVOKEVIRTUAL inv) {
 		handleInvoke(inv);
 	}
 
 	@Override
-         public void visitINVOKEINTERFACE(INVOKEINTERFACE inv) {
+		 public void visitINVOKEINTERFACE(INVOKEINTERFACE inv) {
 		handleInvoke(inv);
 	}
 
 	@Override
-         public void visitINVOKESPECIAL(INVOKESPECIAL inv) {
+		 public void visitINVOKESPECIAL(INVOKESPECIAL inv) {
 		handleInvoke(inv);
 	}
 
 	@Override
-         public void visitINVOKESTATIC(INVOKESTATIC inv) {
+		 public void visitINVOKESTATIC(INVOKESTATIC inv) {
 		handleInvoke(inv);
 	}
 
 	@Override
-         public void visitARETURN(ARETURN ins) {
+		 public void visitARETURN(ARETURN ins) {
 		try {
 			ResourceValueFrame frame = getFrame();
 			ResourceValue topValue = frame.getTopValue();

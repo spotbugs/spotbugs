@@ -57,7 +57,7 @@ public interface XMLOutput {
 	 * @param tagName	   the tag name
 	 */
 	public void startTag(String tagName) throws IOException;
-	
+
 	/**
 	 * Add an attribute to a started tag.
 	 * Must follow a call to startTag.

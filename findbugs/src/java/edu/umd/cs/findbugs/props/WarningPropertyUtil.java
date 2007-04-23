@@ -44,7 +44,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
  * @author David Hovemeyer
  */
 public abstract class WarningPropertyUtil {
-	
+
 	/** Set of instructions which operate on a receiver object. */
 	private static final BitSet receiverObjectInstructionSet= new BitSet();
 	static {
@@ -82,7 +82,7 @@ public abstract class WarningPropertyUtil {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Add a RECEIVER_OBJECT_TYPE warning property for a particular
 	 * location in a method to given warning property set.
@@ -99,10 +99,10 @@ public abstract class WarningPropertyUtil {
 			Location location) {
 		try {
 			Instruction ins = location.getHandle().getInstruction();
-			
+
 			if (!receiverObjectInstructionSet.get(ins.getOpcode()))
 				return;
-			
+
 			TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 			TypeFrame frame = typeDataflow.getFactAtLocation(location);
 			if (frame.isValid()) {
@@ -117,7 +117,7 @@ public abstract class WarningPropertyUtil {
 			// Ignore
 		}
 	}
-	
+
 	/**
 	 * Add CALLED_METHOD_<i>n</i> warning properties based on methods
 	 * which have been called and returned normally at given Location.
@@ -160,7 +160,7 @@ public abstract class WarningPropertyUtil {
 			// Ignore
 		}
 	}
-	
+
 	/**
 	 * Add all relevant general warning properties to the given property set
 	 * for the given Location.
@@ -178,7 +178,7 @@ public abstract class WarningPropertyUtil {
 		addReceiverObjectType(propertySet, classContext, method, location);
 		addRecentlyCalledMethods(propertySet, classContext, method, location);
 	}
-	
+
 	/**
 	 * Add all relevant general warning properties to the given property set
 	 * for the given Location.

@@ -97,7 +97,7 @@ public class AnalysisException extends RuntimeException {
 	 * @param throwable the cause of the error
 	 */
 	public AnalysisException(String message, MethodGen methodGen, InstructionHandle handle,
-	                         Throwable throwable) {
+							 Throwable throwable) {
 		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + handle, throwable);
 	}
 
@@ -110,7 +110,7 @@ public class AnalysisException extends RuntimeException {
 	 * @param throwable the cause of the error
 	 */
 	public AnalysisException(String message, MethodGen methodGen, Instruction ins,
-	                         Throwable throwable) {
+							 Throwable throwable) {
 		super(message + " in " + SignatureConverter.convertMethodSignature(methodGen) + " at " + ins, throwable);
 	}
 }

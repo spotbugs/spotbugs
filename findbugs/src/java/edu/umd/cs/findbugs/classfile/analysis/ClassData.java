@@ -34,7 +34,7 @@ public class ClassData {
 	private final ClassDescriptor classDescriptor;
 	private final ICodeBaseEntry codeBaseEntry;
 	private final byte[] data;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -46,21 +46,21 @@ public class ClassData {
 		this.codeBaseEntry = codeBaseEntry;
 		this.data = data;
 	}
-	
+
 	/**
 	 * @return Returns the ClassDescriptor.
 	 */
 	public ClassDescriptor getClassDescriptor() {
 		return classDescriptor;
 	}
-	
+
 	/**
 	 * @return Returns the codeBaseEntry.
 	 */
 	public ICodeBaseEntry getCodeBaseEntry() {
 		return codeBaseEntry;
 	}
-	
+
 	/**
 	 * @return Returns the data.
 	 */

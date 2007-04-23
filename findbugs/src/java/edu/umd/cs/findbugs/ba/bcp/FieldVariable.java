@@ -89,13 +89,13 @@ public class FieldVariable implements Variable {
 		if (isStatic() != otherField.isStatic())
 			return false;
 		return (ref == null || ref.equals(otherField.ref))
-		        && className.equals(otherField.className)
-		        && fieldName.equals(otherField.fieldName)
-		        && fieldSig.equals(otherField.fieldSig);
+				&& className.equals(otherField.className)
+				&& fieldName.equals(otherField.fieldName)
+				&& fieldSig.equals(otherField.fieldSig);
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(className);
 		buf.append('.');

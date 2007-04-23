@@ -43,7 +43,7 @@ public class CompactLocationNumbering {
 		this.numberToLocationMap = new HashMap<Integer, Location>();
 		build(cfg);
 	}
-	
+
 	/**
 	 * Get the size of the numbering,
 	 * which is the maximum number assigned plus one.
@@ -53,7 +53,7 @@ public class CompactLocationNumbering {
 	public int getSize() {
 		return locationToNumberMap.size();
 	}
-	
+
 	/**
 	 * Get the number of given Location,
 	 * which will be a non-negative integer

@@ -109,18 +109,18 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
 		if (location.getBasicBlock().isEmpty()) {
 			return getResultFact(location.getBasicBlock());
 		}
-		
+
 		InstructionHandle logicalLastInstruction = isForwards()
 			? location.getBasicBlock().getLastInstruction()
 			: location.getBasicBlock().getFirstInstruction();
-			
+
 		if (location.getHandle() == logicalLastInstruction) {
 			return getResultFact(location.getBasicBlock());
 		} else {
 			return getStartFact(location.getBasicBlock());
 		}
 	}
-	
+
 	/**
 	 * Get the fact that is true at the target of the given control edge.
 	 * 
@@ -130,33 +130,33 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
 	 */
 	public Fact getFactOnEdge(Edge edge) throws DataflowAnalysisException {
 		BasicBlock block = isForwards() ? edge.getSource() : edge.getTarget();
-		
+
 		Fact predFact = createFact();
 		copy(getResultFact(block), predFact);
-		
+
 		edgeTransfer(edge, predFact);
-		
+
 		Fact result = createFact();
 		makeFactTop(result);
 		meetInto(predFact, edge, result);
 
 		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#startIteration()
 	 */
 	public void startIteration() {
 		// Do nothing - subclass may override
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#finishIteration()
 	 */
 	public void finishIteration() {
 		// Do nothing - subclass may override
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#edgeTransfer(edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
 	 */
@@ -173,12 +173,12 @@ public abstract class BasicAbstractDataflowAnalysis<Fact> implements DataflowAna
 		}
 		return fact;
 	}
-	
+
 	public int getLastUpdateTimestamp(Fact fact) {
 		return 0;
 	}
 	public void setLastUpdateTimestamp(Fact fact, int lastUpdateTimestamp) {
-		
+
 	}
-	
+
 }

@@ -28,7 +28,7 @@ public class SignatureUtil {
 
 	public static String createMethodSignature(String params, String returns) {
 		StringBuffer buf = new StringBuffer();
-	
+
 		buf.append('(');
 		StringTokenizer tok = new StringTokenizer(params, " \t\n\r\f,");
 		while (tok.hasMoreTokens()) {
@@ -37,10 +37,10 @@ public class SignatureUtil {
 		}
 		buf.append(')');
 		buf.append(typeToSignature(returns));
-	
+
 		return buf.toString();
 	}
-	
+
 	public static String createFieldSignature(String type) {
 		return typeToSignature(type);
 	}

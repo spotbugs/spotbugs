@@ -29,7 +29,7 @@ public interface GraphEdge
 		ActualEdgeType extends GraphEdge<ActualEdgeType, VertexType>,
 		VertexType extends GraphVertex<VertexType>
 		>
-        extends Comparable<ActualEdgeType> {
+		extends Comparable<ActualEdgeType> {
 
 	/**
 	 * Get the source vertex.

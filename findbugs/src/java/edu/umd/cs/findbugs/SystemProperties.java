@@ -58,7 +58,7 @@ public class SystemProperties {
 		return ((name != null) && name.equalsIgnoreCase("true"));
 	}
 
-	  
+
 	/**
 	 * @param arg0 property name
 	 * @param arg1 default value

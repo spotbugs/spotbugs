@@ -34,19 +34,19 @@ import edu.umd.cs.findbugs.classfile.ResourceNotFoundException;
 public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
 	private final ICodeBase parentCodeBase;
 	private final String resourceName;
-	
+
 	public NestedZipFileCodeBaseLocator(ICodeBase parentCodeBase, String resourceName) {
 		this.parentCodeBase = parentCodeBase;
 		this.resourceName = resourceName;
 	}
-	
+
 	/**
 	 * @return Returns the parentCodeBase.
 	 */
 	public ICodeBase getParentCodeBase() {
 		return parentCodeBase;
 	}
-	
+
 	/**
 	 * @return Returns the resourceName.
 	 */
@@ -76,7 +76,7 @@ public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
 	public String toString() {
 		return "nested:[" + parentCodeBase.getCodeBaseLocator() + "]" + resourceName;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -89,7 +89,7 @@ public class NestedZipFileCodeBaseLocator implements ICodeBaseLocator {
 		return this.parentCodeBase.equals(other.parentCodeBase)
 			&& this.resourceName.equals(other.resourceName);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

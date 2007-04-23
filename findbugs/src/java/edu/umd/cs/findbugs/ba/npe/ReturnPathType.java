@@ -37,7 +37,7 @@ public class ReturnPathType {
 	private static final int CAN_RETURN_NORMALLY = 0;
 	private static final int CANNOT_RETURN_NORMALLY = 1;
 	private static final int TOP = 2;
-	
+
 	private int type;
 
 	/**
@@ -47,7 +47,7 @@ public class ReturnPathType {
 	public ReturnPathType() {
 		type = TOP; 
 	}
-	
+
 	/**
 	 * @return true if the method can return normally at this
 	 *          location, false otherwise
@@ -58,7 +58,7 @@ public class ReturnPathType {
 		}
 		return type == CAN_RETURN_NORMALLY;
 	}
-	
+
 	/**
 	 * Make this dataflow fact an exact copy of the other one.
 	 * 
@@ -67,21 +67,21 @@ public class ReturnPathType {
 	public void copyFrom(ReturnPathType other) {
 		this.type = other.type;
 	}
-	
+
 	/**
 	 * Set the dataflow fact to top.
 	 */
 	public void setTop() {
 		type = TOP;
 	}
-	
+
 	/**
 	 * @return true if the dataflow fact is top, false otherwise
 	 */
 	public boolean isTop() {
 		return type == TOP;
 	}
-	
+
 	/**
 	 * Set whether or not it is possible to return normally.
 	 * 
@@ -132,7 +132,7 @@ public class ReturnPathType {
 	public boolean isValid() {
 		return type != TOP;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

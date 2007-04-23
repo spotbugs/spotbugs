@@ -27,7 +27,7 @@ package edu.umd.cs.findbugs.ba;
  */
 public class MissingClassException extends DataflowAnalysisException {
 	private static final long serialVersionUID = 1L;
-	
+
 	private String className;
 
 	private MissingClassException(String className) {
@@ -44,7 +44,7 @@ public class MissingClassException extends DataflowAnalysisException {
 		this(ClassNotFoundExceptionParser.getMissingClassName(exception));
 		initCause(exception);
 	}
-	
+
 	/**
 	 * Get the name of the missing class.
 	 * 

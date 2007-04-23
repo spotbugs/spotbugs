@@ -59,41 +59,41 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 		super(codeBaseLocator);
 		this.parentCodeBase = codeBaseLocator.getParentCodeBase();
 		this.resourceName = codeBaseLocator.getResourceName();
-		
+
 		InputStream inputStream = null;
 		OutputStream outputStream = null;
 		try {
 			// Create a temp file
 			this.tempFile = File.createTempFile("findbugs", ".zip");
 			tempFile.deleteOnExit(); // just in case we crash before the codebase is closed
-			
+
 			// Copy nested zipfile to the temporary file
 			// FIXME: potentially long blocking operation - should be interruptible
 			inputStream = parentCodeBase.lookupResource(resourceName).openResource();
 			outputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
 			IO.copy(inputStream, outputStream);
 			outputStream.flush();
-			
+
 			// Create the delegate to read from the temporary file
 			delegateCodeBase = new ZipFileCodeBase(codeBaseLocator, tempFile);
 		} finally {
 			if (inputStream != null) {
 				IO.close(inputStream);
 			}
-			
+
 			if (outputStream != null) {
 				IO.close(outputStream);
 			}
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IScannableCodeBase#iterator()
 	 */
 	public ICodeBaseIterator iterator() throws InterruptedException {
 		return new DelegatingCodeBaseIterator(this, delegateCodeBase);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#lookupResource(java.lang.String)
 	 */
@@ -101,14 +101,14 @@ public class NestedZipFileCodeBase extends AbstractScannableCodeBase implements 
 		ICodeBaseEntry delegateCodeBaseEntry = delegateCodeBase.lookupResource(resourceName);
 		return new DelegatingCodeBaseEntry(this, delegateCodeBaseEntry);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#getPathName()
 	 */
 	public String getPathName() {
 		return null;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.ICodeBase#close()
 	 */

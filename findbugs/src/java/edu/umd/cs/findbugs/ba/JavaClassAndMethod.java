@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 public class JavaClassAndMethod {
 	private final JavaClass javaClass;
 	private final Method method;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -47,7 +47,7 @@ public class JavaClassAndMethod {
 		this.javaClass = javaClass;
 		this.method = method;
 	}
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -80,14 +80,14 @@ public class JavaClassAndMethod {
 	public Method getMethod() {
 		return method;
 	}
-	
+
 	/**
 	 * Convert to an XMethod.
 	 */
 	public XMethod toXMethod() {
 		return XFactory.createXMethod(javaClass, method);
 	}
-	
+
 	/**
 	 * Get the MethodDescriptor that (hopefully) uniqely names
 	 * this method.
@@ -105,12 +105,12 @@ public class JavaClassAndMethod {
 	private String getSlashedClassName() {
 		return javaClass.getConstantPool().getConstantString(javaClass.getClassNameIndex(), Constants.CONSTANT_Class);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return javaClass.hashCode() + method.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != this.getClass())
@@ -118,7 +118,7 @@ public class JavaClassAndMethod {
 		JavaClassAndMethod other = (JavaClassAndMethod) obj;
 		return javaClass.equals(other.javaClass) && method.equals(other.method);
 	}
-	
+
 	@Override
 	public String toString() {
 		return SignatureConverter.convertMethodSignature(javaClass, method);

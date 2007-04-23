@@ -67,8 +67,8 @@ public class DefectDensity {
 				projectDensity, stats.getTotalBugs(),
 				stats.getCodeSize());
 		for (PackageStats p : stats.getPackageStats()) if (p.getTotalBugs() > 4) {
-			
-			
+
+
 				double packageDensity = density( p.getTotalBugs(),p.size());
 				if (Double.isNaN(packageDensity) || packageDensity < projectDensity) continue;
 				printRow("package", p.getPackageName(), 
@@ -82,6 +82,6 @@ public class DefectDensity {
 		}
 
 	}
-	
+
 
 }

@@ -88,11 +88,11 @@ public class AnnotationVisitor extends PreorderVisitor {
 
 	public void visitSyntheticParameterAnnotation(int p,  boolean runtimeVisible) {
 	}
-	
+
 	@Override
-         public void visit(Unknown obj) {
+		 public void visit(Unknown obj) {
 		try {
-			
+
 				String name = obj.getName();
 				if (DEBUG)
 					System.out.println("In " + getDottedClassName() + " found "
@@ -146,7 +146,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 							int numPairs = bytes.readUnsignedShort();
 							Map<String, Object> values = readAnnotationValues(
 									bytes, numPairs);
-							
+
 							visitParameterAnnotation(
 									p+offset,
 									annotationName,
@@ -163,7 +163,7 @@ public class AnnotationVisitor extends PreorderVisitor {
 								+ " ");
 					System.out.println();
 				}
-			
+
 
 		} catch (Exception e) {
 			// ignore

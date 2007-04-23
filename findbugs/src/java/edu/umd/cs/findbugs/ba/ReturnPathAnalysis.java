@@ -55,13 +55,13 @@ public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> impl
 	}
 
 	@Override
-         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ReturnPath fact)
-	        throws DataflowAnalysisException {
+		 public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, ReturnPath fact)
+			throws DataflowAnalysisException {
 		// Nothing to do
 	}
 
 	@Override
-         public boolean isFactValid(ReturnPath fact) {
+		 public boolean isFactValid(ReturnPath fact) {
 		return true;
 	}
 
@@ -86,9 +86,9 @@ public class ReturnPathAnalysis extends ForwardDataflowAnalysis<ReturnPath> impl
 
 		DataflowTestDriver<ReturnPath, ReturnPathAnalysis> driver = new DataflowTestDriver<ReturnPath, ReturnPathAnalysis>() {
 			@Override
-                         public Dataflow<ReturnPath, ReturnPathAnalysis>
-			        createDataflow(ClassContext classContext, Method method)
-			        throws CFGBuilderException, DataflowAnalysisException {
+						 public Dataflow<ReturnPath, ReturnPathAnalysis>
+					createDataflow(ClassContext classContext, Method method)
+					throws CFGBuilderException, DataflowAnalysisException {
 				return classContext.getReturnPathDataflow(method);
 			}
 		};

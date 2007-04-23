@@ -53,17 +53,17 @@ public class MineBugHistory {
 	static final int DEAD       = 5;
 	static final int ACTIVE_NOW = 6;
 	static final int TUPLE_SIZE = 7;
-	
+
 	static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HH:mm");
 
 	static class Version {
 		long sequence;
 		int tuple[] = new int[TUPLE_SIZE];
-		
+
 		Version(long sequence) {
 			this.sequence = sequence;
 		}
-		
+
 		/**
 		 * @return Returns the sequence.
 		 */
@@ -76,12 +76,12 @@ public class MineBugHistory {
 			if (key == ADDED || key == RETAINED || key == NEWCODE)
 				tuple[ACTIVE_NOW]++;
 		}
-		
+
 		int get(int key) {
 			return tuple[key];
 		}
 	}
-	
+
 	BugCollection bugCollection;
 	Version[] versionList;
 	Map<Long, AppVersion> sequenceToAppVersionMap = new HashMap<Long, AppVersion>();
@@ -89,7 +89,7 @@ public class MineBugHistory {
 	boolean noTabs = false;
 	boolean summary = false;
 	boolean xml = false;
-	
+
 	public MineBugHistory() {
 	}
 	public MineBugHistory(BugCollection bugCollection) {
@@ -109,19 +109,19 @@ public class MineBugHistory {
 		this.noTabs = true;
 		this.summary = false;
 	}
-    public void setXml() {
+	public void setXml() {
 		this.xml = true;
 		this.noTabs = false;
 		this.summary = false;
-    }
+	}
 	public void setSummary() {
 		this.xml = false;
 		this.summary = true;
 		this.noTabs = false;
 	}
 
-	
-	
+
+
 	public MineBugHistory execute() {
 		long sequenceNumber = bugCollection.getSequenceNumber();
 		int maxSequence = (int)sequenceNumber;
@@ -129,18 +129,18 @@ public class MineBugHistory {
 		for (int i = 0; i <= maxSequence; ++i) {
 			versionList[i] = new Version(i);
 		}
-		
+
 		for (Iterator<AppVersion> i = bugCollection.appVersionIterator(); i.hasNext();) {
 			AppVersion appVersion = i.next();
 			long versionSequenceNumber = appVersion.getSequenceNumber();
 			sequenceToAppVersionMap.put(TigerSubstitutes.valueOf(versionSequenceNumber), appVersion);
 		}
-		
+
 		AppVersion currentAppVersion = bugCollection.getCurrentAppVersion();
 		sequenceToAppVersionMap.put(
 			TigerSubstitutes.valueOf(sequenceNumber),
 			currentAppVersion);
-		
+
 		for (Iterator<BugInstance> j = bugCollection.iterator(); j.hasNext();) {
 			BugInstance bugInstance = j.next();
 
@@ -149,19 +149,19 @@ public class MineBugHistory {
 				boolean activePrevious = bugInstance.getFirstVersion() < i
 					&& (bugInstance.getLastVersion() == -1 || bugInstance.getLastVersion() >= i-1 );
 				boolean activeCurrent = bugInstance.getLastVersion() == -1 || bugInstance.getLastVersion() >= i ;
-				
+
 				int key = getKey(activePrevious, activeCurrent);
 				if (key == REMOVED && !bugInstance.isRemovedByChangeOfPersistingClass()) key = REMOVEDCODE;
 				else if (key == ADDED && !bugInstance.isIntroducedByChangeOfExistingClass()) key = NEWCODE;
 				versionList[i].increment(key);
 			}
 		}
-		
+
 		return this;
 	}
 
-	
-	
+
+
 
 	public void dump(PrintStream out) {
 		if (xml) dumpXml(out);
@@ -171,9 +171,9 @@ public class MineBugHistory {
 	}
 
 	public void dumpSummary(PrintStream out) {
-	
+
 		StringBuffer b = new StringBuffer();
-		
+
 		for (int i = Math.max(0,versionList.length - 10); i < versionList.length; ++i) {
 			Version version = versionList[i];
 			int added = version.get(ADDED) + version.get(NEWCODE);
@@ -186,14 +186,14 @@ public class MineBugHistory {
 				b.append('-'); b.append(removed); 
 			}
 			if (added == 0 && removed == 0) b.append('0');
-			
+
 			int paddingNeeded = 8 - b.length() % 8;
 			if (paddingNeeded > 0) b.append("        ".substring(0,paddingNeeded));
 		}
-			
+
 		out.println(b.toString());
 	}
-	
+
 	/** This is how dump() was implemented up to and including version 0.9.5. */
 	public void dumpOriginal(PrintStream out) {
 		out.println("seq	version	time	classes	NCSS	added	newCode	fixed	removed	retained	dead	active");
@@ -314,7 +314,7 @@ public class MineBugHistory {
 			else out.print(appVersion != null ? appVersion.getTimestamp() : 0L);
 			out.print("\"");
 			out.println(">");
-			
+
 			String attributeName[] = new String[TUPLE_SIZE];
 			attributeName[0] = "added";
 			attributeName[1] = "newCode";
@@ -327,7 +327,7 @@ public class MineBugHistory {
 				// newCode and retained are already comprised within active
 				// so we skip tehm
 				if (j==1 || j==4) {
-			   	continue;
+				   continue;
 				}
 				out.print(startData + " name=\"" + attributeName[j] + "\" value=\"");
 				out.print(version.get(j));
@@ -338,7 +338,7 @@ public class MineBugHistory {
 		}
 		out.print("</history>");
 	}
-    
+
 	/**
 	 * Get key used to classify the presence and/or abscence of a BugInstance
 	 * in successive versions in the history.
@@ -397,7 +397,7 @@ public class MineBugHistory {
 
 		mineBugHistory.execute();
 		PrintStream out = System.out;
-		
+
 		try {
 		if (argCount < args.length)  {
 			out = new PrintStream(new FileOutputStream(args[argCount++]), true);
@@ -406,6 +406,6 @@ public class MineBugHistory {
 		} finally {
 		out.close();
 		}
-		
+
 	}
 }

@@ -220,7 +220,7 @@ public class BlockType extends BitSet {
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		if (isTop())
 			return "<top>";
 		else if (isBottom())

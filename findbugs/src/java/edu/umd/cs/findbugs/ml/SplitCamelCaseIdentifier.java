@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public class SplitCamelCaseIdentifier {
 	private String ident;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -39,7 +39,7 @@ public class SplitCamelCaseIdentifier {
 	public SplitCamelCaseIdentifier(String ident) {
 		this.ident = ident;
 	}
-	
+
 	/**
 	 * Split the identifier into words.
 	 * 
@@ -48,14 +48,14 @@ public class SplitCamelCaseIdentifier {
 	public Collection<String> split() {
 		String s = ident;
 		Set<String> result = new HashSet<String>();
-		
+
 		while (s.length() > 0) {
 			StringBuffer buf = new StringBuffer();
 
 			char first = s.charAt(0);
 			buf.append(first);
 			int i = 1;
-			
+
 			if (s.length() > 1) {
 				boolean camelWord;
 				if (Character.isLowerCase(first)) {
@@ -65,7 +65,7 @@ public class SplitCamelCaseIdentifier {
 					buf.append(next);
 					camelWord = Character.isLowerCase(next);
 				}
-				
+
 				while (i < s.length()) {
 					char c = s.charAt(i);
 					if (Character.isUpperCase(c)) {
@@ -77,17 +77,17 @@ public class SplitCamelCaseIdentifier {
 					buf.append(c);
 					++i;
 				}
-				
+
 				if (!camelWord && i < s.length()) {
 					buf.deleteCharAt(buf.length() - 1);
 					--i;
 				}
 			}
-			
+
 			result.add(buf.toString().toLowerCase(Locale.US));
 			s = s.substring(i);
 		}
-		
+
 		return result;
 	}
 }

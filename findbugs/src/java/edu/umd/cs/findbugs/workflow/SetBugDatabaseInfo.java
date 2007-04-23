@@ -54,11 +54,11 @@ public class SetBugDatabaseInfo {
 	private static final String USAGE = "Usage: <cmd> " 
 			+ " [options] [<oldData> [<newData>]]";
 
-	
+
 	static class SetInfoCommandLine extends CommandLine {
 		String revisionName;
-     boolean withMessages = false;
-		
+	 boolean withMessages = false;
+
 		long revisionTimestamp = 0L;
 		public  List<String> sourcePaths = new LinkedList<String>();
 		public  List<String> searchSourcePaths = new LinkedList<String>();
@@ -76,8 +76,8 @@ public class SetBugDatabaseInfo {
 				throws IOException {
 			if (option.equals("-withMessages"))
 				withMessages = true;
-        else
-           throw new IllegalArgumentException("no option " + option);
+		else
+		   throw new IllegalArgumentException("no option " + option);
 
 		}
 
@@ -115,13 +115,13 @@ public class SetBugDatabaseInfo {
 			origCollection.readXML(args[argCount++], project);
 		else
 			origCollection.readXML(System.in, project);
-		
+
 
 		if (commandLine.revisionName != null)
 			origCollection.setReleaseName(commandLine.revisionName);
 		if (commandLine.revisionTimestamp != 0)
 			origCollection.setTimestamp(commandLine.revisionTimestamp);
-        origCollection.setWithMessages(commandLine.withMessages);
+		origCollection.setWithMessages(commandLine.withMessages);
 
 		for(String source : commandLine.sourcePaths)
 			project.addSourceDir(source);
@@ -160,20 +160,20 @@ public class SetBugDatabaseInfo {
 							}
 						}
 					}
-				
-					
+
+
 				}
-					
-			
+
+
 				}
-		
+
 			// OK, now we know all the missing source files
 			// we also know all the .java files in the directories we were pointed to
-		
+
+
+
 			
-		
-			
-		
+
 		if (argCount < args.length) 
 			origCollection.writeXML(args[argCount++], project);
 		else
@@ -185,6 +185,6 @@ public class SetBugDatabaseInfo {
 		+ File.separatorChar + src.getSourceFile();
 	}
 	static SourceSearcher sourceSearcher;
-	
+
 
 }

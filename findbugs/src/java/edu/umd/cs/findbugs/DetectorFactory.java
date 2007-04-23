@@ -43,7 +43,7 @@ public class DetectorFactory {
 	static class ReflectionDetectorCreator {
 		private Class<?> detectorClass;
 		private Method setAnalysisContext;
-		
+
 		ReflectionDetectorCreator(Class<?> detectorClass) {
 			this.detectorClass = detectorClass;
 
@@ -54,7 +54,7 @@ public class DetectorFactory {
 				// Ignore
 			}
 		}
-		
+
 		public Detector createDetector(BugReporter bugReporter) {
 			try {
 				Constructor<?> constructor =
@@ -71,7 +71,7 @@ public class DetectorFactory {
 						" as Detector", e);
 			}
 		}
-		
+
 		public Detector2 createDetector2(BugReporter bugReporter) {
 			if (Detector2.class.isAssignableFrom(detectorClass)) {
 				try {
@@ -83,21 +83,21 @@ public class DetectorFactory {
 							" as Detector2", e);
 				}
 			}
-			
+
 			if (Detector.class.isAssignableFrom(detectorClass)) {
 				DetectorToDetector2Adapter adapter = new DetectorToDetector2Adapter(
 						createDetector(bugReporter));
 				return adapter;
 			}
-			
+
 			throw new RuntimeException("Class " + detectorClass.getName() + " is not a detector class");
 		}
-		
+
 		public Class<?> getDetectorClass() {
 			return detectorClass;
 		}
 	}
-	
+
 	private Plugin plugin;
 	private final ReflectionDetectorCreator detectorCreator;
 	private int positionSpecifiedInPluginDescriptor;
@@ -123,8 +123,8 @@ public class DetectorFactory {
 	 *                      the detector: e.g., "1.5"
 	 */
 	public DetectorFactory(Plugin plugin,
-                           Class<?> detectorClass, boolean enabled, String speed, String reports,
-	                       String requireJRE) {
+						   Class<?> detectorClass, boolean enabled, String speed, String reports,
+						   String requireJRE) {
 		this.plugin = plugin;
 		this.detectorCreator = new ReflectionDetectorCreator(detectorClass);
 		this.defEnabled = enabled;
@@ -173,7 +173,7 @@ public class DetectorFactory {
 			int positionSpecifiedInPluginDescriptor) {
 		this.positionSpecifiedInPluginDescriptor = positionSpecifiedInPluginDescriptor;
 	}
-	
+
 	/**
 	 * Get the overall position in which this detector was specified
 	 * in the plugin descriptor.
@@ -183,7 +183,7 @@ public class DetectorFactory {
 	public int getPositionSpecifiedInPluginDescriptor() {
 		return positionSpecifiedInPluginDescriptor;
 	}
-	
+
 	/**
 	 * Get the Plugin that this Detector is part of.
 	 * 
@@ -192,7 +192,7 @@ public class DetectorFactory {
 	public Plugin getPlugin() {
 		return plugin;
 	}
-	
+
 	/**
 	 * Determine whether the detector class is a subtype of the given class (or interface).
 	 * 
@@ -202,7 +202,7 @@ public class DetectorFactory {
 	public boolean isDetectorClassSubtypeOf(Class<?> otherClass) {
 		return otherClass.isAssignableFrom(detectorCreator.getDetectorClass());
 	}
-	
+
 	/**
 	 * Return whether or not this DetectorFactory produces detectors
 	 * which report warnings.
@@ -214,7 +214,7 @@ public class DetectorFactory {
 			&& !isDetectorClassSubtypeOf(NonReportingDetector.class);
 
 	}
-	
+
 	/**
 	 * Check to see if we are running on a recent-enough JRE for
 	 * this detector to be enabled.
@@ -236,7 +236,7 @@ public class DetectorFactory {
 						", running on " + runtimeVersion + ")");
 			}
 
-			
+
 			boolean enabledForCurrentJRE = runtimeVersion.isSameOrNewerThan(requiredVersion);
 			if (DEBUG_JAVA_VERSION) {
 				System.out.println("\t==> " + enabledForCurrentJRE);
@@ -275,7 +275,7 @@ public class DetectorFactory {
 	public boolean isDefaultEnabled() {
 		return defEnabled;
 	}
-	
+
 	/**
 	 * Set the priority adjustment for the detector produced by this factory.
 	 * 
@@ -284,7 +284,7 @@ public class DetectorFactory {
 	public void setPriorityAdjustment(int priorityAdjustment) {
 		this.priorityAdjustment = priorityAdjustment;
 	}
-	
+
 	/**
 	 * Get the priority adjustment for the detector produced by this factory.
 	 * 
@@ -338,7 +338,7 @@ public class DetectorFactory {
 	public void setDetailHTML(String detailHTML) {
 		this.detailHTML = detailHTML;
 	}
-	
+
 	/**
 	 * Create a Detector instance.
 	 * This method is only guaranteed to work for

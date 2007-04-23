@@ -29,13 +29,13 @@ import edu.umd.cs.findbugs.ba.interproc.PropertyDatabaseFormatException;
  * @author David Hovemeyer
  */
 public class ParameterNullnessPropertyDatabase extends MethodPropertyDatabase<ParameterNullnessProperty> {
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.interproc.MethodPropertyDatabase#decodeProperty(java.lang.String)
 	 */
 
 	@Override
-         protected ParameterNullnessProperty decodeProperty(String propStr)
+		 protected ParameterNullnessProperty decodeProperty(String propStr)
 			throws PropertyDatabaseFormatException {
 		try {
 			int unconditionalDerefSet = Integer.parseInt(propStr);
@@ -52,7 +52,7 @@ public class ParameterNullnessPropertyDatabase extends MethodPropertyDatabase<Pa
 	 */
 
 	@Override
-         protected String encodeProperty(ParameterNullnessProperty property) {
+		 protected String encodeProperty(ParameterNullnessProperty property) {
 		return String.valueOf(property.getNonNullParamSet());
 	}
 

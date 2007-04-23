@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.SystemProperties;
  */
 public abstract class DataflowTestDriver <Fact, AnalysisType extends BasicAbstractDataflowAnalysis<Fact>> {
 	private boolean overrideIsForwards;
-	
+
 	public void overrideIsForwards() {
 		this.overrideIsForwards = true;
 	}
@@ -57,7 +57,7 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends BasicAbstra
 
 		AnalysisContext analysisContext = AnalysisContext.create(lookupFailureCallback);
 		analysisContext.setBoolProperty(AnalysisFeatures.ACCURATE_EXCEPTIONS, true);
-		
+
 		configureAnalysisContext(analysisContext);
 
 		ClassContext classContext = analysisContext.getClassContext(jclass);
@@ -79,17 +79,17 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends BasicAbstra
 			execute(classContext, method);
 		}
 	}
-	
+
 	static class Knob {
 		String systemPropertyName;
 		int analysisProperty;
-		
+
 		Knob(String systemPropertyName, int analysisProperty) {
 			this.systemPropertyName = systemPropertyName;
 			this.analysisProperty = analysisProperty;
 		}
 	}
-	
+
 	private static final Knob[] KNOB_LIST = {
 		new Knob("ta.instanceof", AnalysisFeatures.MODEL_INSTANCEOF),
 		new Knob("inva.trackvalues", AnalysisFeatures.TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS),
@@ -140,7 +140,7 @@ public abstract class DataflowTestDriver <Fact, AnalysisType extends BasicAbstra
 	 * @return the Dataflow driver
 	 */
 	public abstract Dataflow<Fact, AnalysisType> createDataflow(ClassContext classContext, Method method)
-	        throws CFGBuilderException, DataflowAnalysisException;
+			throws CFGBuilderException, DataflowAnalysisException;
 
 	/**
 	 * Downcall method to inspect the analysis results.

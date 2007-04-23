@@ -58,7 +58,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
  */
 public class ObligationAnalysis
 	extends ForwardDataflowAnalysis<StateSet> {
-	
+
 	private static final boolean DEBUG = SystemProperties.getBoolean("oa.debug");
 
 	private TypeDataflow typeDataflow;
@@ -105,9 +105,9 @@ public class ObligationAnalysis
 	@Override
 	public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock, StateSet fact)
 			throws DataflowAnalysisException {
-		
+
 		Obligation obligation;
-		
+
 		if ((obligation = addsObligation(handle)) != null) {
 			// Add obligation to all states
 			if (DEBUG) { System.out.println("Adding obligation " + obligation.toString()); }
@@ -119,7 +119,7 @@ public class ObligationAnalysis
 		}
 
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AbstractDataflowAnalysis#transfer(edu.umd.cs.findbugs.ba.BasicBlock, org.apache.bcel.generic.InstructionHandle, java.lang.Object, java.lang.Object)
 	 */
@@ -128,7 +128,7 @@ public class ObligationAnalysis
 		super.transfer(basicBlock, end, start, result);
 		endTransfer(basicBlock, end, result);
 	}
-	
+
 	public void endTransfer(BasicBlock basicBlock, @CheckForNull InstructionHandle end, StateSet result)
 			throws DataflowAnalysisException {
 		// Append this block id to the Paths of all States
@@ -151,25 +151,25 @@ public class ObligationAnalysis
 
 		if (!(ins instanceof InvokeInstruction))
 			return null;
-		
+
 		InvokeInstruction inv = (InvokeInstruction) ins;
-		
+
 		ConstantPoolGen cpg = methodGen.getConstantPool();
-		
+
 		String className = inv.getClassName(cpg);
 		// FIXME: could prescreen class here...?
-		
+
 		String methodName = inv.getName(cpg);
 		String signature = inv.getSignature(cpg);
 		boolean isStatic = inv.getOpcode() == Constants.INVOKESTATIC;
-		
+
 		if (DEBUG) {
 			System.out.println("Checking instruction: " + handle);
 			System.out.println("  class    =" + className);
 			System.out.println("  method   =" + methodName);
 			System.out.println("  signature=" + signature);
 		}
-		
+
 		try {
 			return database.lookup(
 				className, methodName, signature, isStatic, action);
@@ -177,9 +177,9 @@ public class ObligationAnalysis
 			lookupFailureCallback.reportMissingClass(e);
 			return null;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Delete Obligation from all states, throwing a DataflowAnalysisException
 	 * if any of the states doesn't contain that Obligation.
@@ -256,7 +256,7 @@ public class ObligationAnalysis
 				deleteObligation(fact, obligation, handle);
 			}
 		}
-		
+
 		// Similarly, if the incoming edge is from a reference comparision
 		// which has established that a reference of an obligation type
 		// is null, then we remove one occurrence of that type of
@@ -291,7 +291,7 @@ public class ObligationAnalysis
 			// We will destructively replace the state map of the result fact
 			// we're building.
 			final Map<ObligationSet, State> updatedStateMap = result.createEmptyMap();
-			
+
 			// Get all of the States from the input fact that don't
 			// have matching states.  These will be copied verbatim
 			// into the result fact.
@@ -321,7 +321,7 @@ public class ObligationAnalysis
 					updatedStateMap.put(state.getObligationSet(), state);
 				}
 			};
-			
+
 			try {
 				result.applyToAllStatesAndUpdateMap(callback, updatedStateMap);
 			} catch (NonexistentObligationException e) {
@@ -331,21 +331,21 @@ public class ObligationAnalysis
 			}
 		}
 	}
-	
+
 	private boolean isPossibleIfComparison(Edge edge) {
 		return edge.getType() == EdgeTypes.IFCMP_EDGE
 			|| edge.getType() == EdgeTypes.FALL_THROUGH_EDGE;
 	}
-	
+
 	private Obligation comparesObligationTypeToNull(Edge edge)
 			throws DataflowAnalysisException {
 		BasicBlock sourceBlock = edge.getSource();
 		InstructionHandle last = sourceBlock.getLastInstruction();
 		if (last == null)
 			return null;
-		
+
 		Type type;
-		
+
 		short opcode = last.getInstruction().getOpcode();
 		switch (opcode) {
 		case Constants.IFNULL:
@@ -353,28 +353,28 @@ public class ObligationAnalysis
 			if (   (edge.getType() == EdgeTypes.IFCMP_EDGE && opcode == Constants.IFNONNULL)
 				|| (edge.getType() == EdgeTypes.FALL_THROUGH_EDGE && opcode == Constants.IFNULL))
 				return null;
-			
+
 			Location location = new Location(last, sourceBlock);
 			TypeFrame typeFrame = typeDataflow.getFactAtLocation(location);
 			type = typeFrame.getTopValue();
 			break;
-			
+
 /*
 		// FIXME: handle IF_ACMPXX
- 		case Constants.IFACMP_EQ:
- 		case Constants.IFACMP_NE:
- 			// ...
+		 case Constants.IFACMP_EQ:
+		 case Constants.IFACMP_NE:
+			 // ...
  			break;
- 		
+
  */
-		
+
 		default:
 			return null;
 		}
-		
+
 		if (!(type instanceof ObjectType))
 			return null;
-		
+
 		try {
 			return factory.getObligationByType((ObjectType) type);
 		} catch (ClassNotFoundException e) {

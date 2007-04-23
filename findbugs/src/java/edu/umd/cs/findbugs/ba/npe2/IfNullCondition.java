@@ -35,7 +35,7 @@ public class IfNullCondition extends Condition {
 	private ValueNumber valueNumber;
 	private Decision ifcmpDecision;
 	private Decision fallThroughDecision;
-	
+
 	public IfNullCondition(Location location) {
 		super(location);
 	}
@@ -62,28 +62,28 @@ public class IfNullCondition extends Condition {
 	@Override
 	public void refresh(ValueNumberFrame vnaFrame, DefinitelyNullSet definitelyNullSet) throws DataflowAnalysisException {
 		valueNumber = vnaFrame.getTopValue();
-		
+
 		NullnessValue nullnessValue = definitelyNullSet.getNulllessValue(valueNumber);
 		short opcode = getLocation().getHandle().getInstruction().getOpcode();
-		
+
 		if (nullnessValue.isDefinitelyNull() || nullnessValue.isDefinitelyNotNull()) {
 			// Comparison is redundant.
-			
+
 			boolean ifcmpFeasible = nullnessValue.isDefinitelyNull() == (opcode == Constants.IFNULL);
 			ifcmpDecision = new Decision(
 					ifcmpFeasible,
 					ifcmpFeasible ? nullnessValue.toCheckedValue() : null
 			);
-			
+
 			boolean fallThroughFeasible = nullnessValue.isDefinitelyNull() != (opcode == Constants.IFNONNULL);
 			fallThroughDecision = new Decision(
 					fallThroughFeasible,
 					fallThroughFeasible ? nullnessValue.toCheckedValue() : null
 			);
-			
+
 			return;
 		}
-		
+
 		NullnessValue definitelyNull = NullnessValue.definitelyNullValue().toCheckedValue();
 		NullnessValue definitelyNotNull = NullnessValue.definitelyNotNullValue().toCheckedValue();
 

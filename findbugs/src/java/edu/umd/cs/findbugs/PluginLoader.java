@@ -99,12 +99,12 @@ public class PluginLoader extends URLClassLoader {
 			init();
 		return plugin;
 	}
-	
+
 	private void init() throws PluginException {
 		// Plugin descriptor (a.k.a, "findbugs.xml").  Defines
 		// the bug detectors and bug patterns that the plugin provides.
 		Document pluginDescriptor;
-		
+
 		// Unique plugin id
 		String pluginId;
 
@@ -122,7 +122,7 @@ public class PluginLoader extends URLClassLoader {
 		} catch (DocumentException e) {
 			throw new PluginException("Couldn't parse \"findbugs.xml\"", e);
 		}
-		
+
 		// Get the unique plugin id (or generate one, if none is present)
 		pluginId = pluginDescriptor.valueOf("/FindbugsPlugin/@pluginid");
 		if (pluginId.equals("")) {
@@ -152,7 +152,7 @@ public class PluginLoader extends URLClassLoader {
 			e.printStackTrace();
 			throw new PluginException("Couldn't parse \"messages.xml\"", e);
 		}
-		
+
 		// Create the Plugin object (but don't assign to the plugin field yet,
 		// since we're still not sure if everything will load correctly)
 		Plugin plugin = new Plugin(pluginId);
@@ -344,7 +344,7 @@ public class PluginLoader extends URLClassLoader {
 			}
 
 		}
-		
+
 		// Success!
 		// Assign to the plugin field, so getPlugin() can return the
 		// new Plugin object.
@@ -362,7 +362,7 @@ public class PluginLoader extends URLClassLoader {
 			String detectorClass = node.valueOf("@class");
 			return new SingleDetectorFactorySelector(plugin, detectorClass);
 		}
-		
+
 		node = constraintElement.selectSingleNode("./" + detectorCategoryElementName);
 		if (node != null) {
 			String categoryName = node.valueOf("@name");
@@ -377,7 +377,7 @@ public class PluginLoader extends URLClassLoader {
 				throw new PluginException("Invalid constraint selector node");
 			}
 		}
-		
+
 		throw new PluginException("Invalid constraint selector node");
 	}
 
@@ -396,7 +396,7 @@ public class PluginLoader extends URLClassLoader {
 	}
 
 	private void addCollection(List<Document> messageCollectionList, String filename)
-	        throws DocumentException {
+			throws DocumentException {
 		URL messageURL = findResource(filename);
 		if (messageURL != null) {
 			SAXReader reader = new SAXReader();
@@ -406,7 +406,7 @@ public class PluginLoader extends URLClassLoader {
 	}
 
 	private static Node findMessageNode(List<Document> messageCollectionList, String xpath,
-	                                    String missingMsg) throws PluginException {
+										String missingMsg) throws PluginException {
 
 		for (Document document : messageCollectionList) {
 			Node node = document.selectSingleNode(xpath);

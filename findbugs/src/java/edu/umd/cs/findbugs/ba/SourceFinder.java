@@ -62,7 +62,7 @@ public class SourceFinder {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-                 protected boolean removeEldestEntry(Map.Entry<String, SourceFile> eldest) {
+				 protected boolean removeEldestEntry(Map.Entry<String, SourceFile> eldest) {
 			return size() >= CACHE_SIZE;
 		}
 	}
@@ -72,7 +72,7 @@ public class SourceFinder {
 	 */
 	private interface SourceRepository {
 		public boolean contains(String fileName);
-		
+
 		public boolean isPlatformDependent();
 
 		public SourceFileDataSource getDataSource(String fileName);
@@ -102,7 +102,7 @@ public class SourceFinder {
 		public boolean isPlatformDependent() {
 			return true;
 		}
-		
+
 		public SourceFileDataSource getDataSource(String fileName) {
 			return new FileSourceFileDataSource(getFullFileName(fileName));
 		}
@@ -125,7 +125,7 @@ public class SourceFinder {
 			}
 			}
 		}
-		
+
 	}
 	/**
 	 * A zip or jar archive containing source files.
@@ -219,7 +219,7 @@ public class SourceFinder {
 		if (j >= 0)
 			baseClassName = baseClassName.substring(0,j);
 		return findSourceFile(packageName, baseClassName + ".java");
-		
+
 	}
 	/**
 	 * Open a source file in given package.
@@ -233,11 +233,11 @@ public class SourceFinder {
 		// On windows the fileName specification is different between a file in a directory tree, and a 
 		// file in a zip file. In a directory tree the separator used is '\', while in a zip it's '/'
 		// Therefore for each repository figure out what kind it is and use the appropriate separator.
-		
+
 		// In all practicality, this code could just use the hardcoded '/' char, as windows can open 
 		// files with this separator, but to allow for the mythical 'other' platform that uses an
 		// alternate separator, make a distinction
-		
+
 		// Create a fully qualified source filename using the package name for both directories and zips
 		String platformName = packageName.replace('.', File.separatorChar) + 
 								(packageName.length() > 0 ? File.separator : "") + fileName;
@@ -248,7 +248,7 @@ public class SourceFinder {
 		SourceFile sourceFile = cache.get(canonicalName);
 		if (sourceFile != null)
 			return sourceFile;
-		
+
 		// Find this source file, add its data to the cache
 		if (DEBUG) System.out.println("Trying " + fileName +  " in package " + packageName + "...");
 		// Query each element of the source path to find the requested source file

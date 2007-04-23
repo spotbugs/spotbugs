@@ -19,11 +19,11 @@ public class OSXAdapter extends ApplicationAdapter {
 
 	// reference to the app where the existing quit, about, prefs code is
 	private FindBugsFrame mainApp;
-	
+
 	private OSXAdapter (FindBugsFrame inApp) {
 		mainApp = inApp;
 	}
-	
+
 	// implemented handler methods. These are basically hooks into
 	// existing functionality from the main app, as if it came
 	// over from another platform.
@@ -32,22 +32,22 @@ public class OSXAdapter extends ApplicationAdapter {
 	public void handleAbout(ApplicationEvent ae) {
 		if (mainApp != null) {
 			ae.setHandled(true);
-                        // We need to invoke modal About Dialog asynchronously
-                        // otherwise the Application queue is locked for the duration
-                        // of the about Dialog, which results in a deadlock if a URL is
+						// We need to invoke modal About Dialog asynchronously
+						// otherwise the Application queue is locked for the duration
+						// of the about Dialog, which results in a deadlock if a URL is
                         // selected, and we get a ReOpenApplication event when user
-                        // switches back to Findbugs.
-                        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
+						// switches back to Findbugs.
+						javax.swing.SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
                                     mainApp.about();
-                                }
-                            });
+								}
+							});
 		} else {
 			throw new IllegalStateException("handleAbout: " +
-                                                        "MyApp instance detached from listener");
+														"MyApp instance detached from listener");
 		}
 	}
-	
+
 	@Override
 	public void handlePreferences(ApplicationEvent ae) {
 		if (mainApp != null) {
@@ -55,16 +55,16 @@ public class OSXAdapter extends ApplicationAdapter {
 			ae.setHandled(true);
 		} else {
 			throw new IllegalStateException("handlePreferences: MyApp instance " +
-                                                        "detached from listener");
+														"detached from listener");
 		}
 	}
-	
+
 	@Override
 	public void handleQuit(ApplicationEvent ae) {
 		if (mainApp != null) {
 
 			/*
-                         * You MUST setHandled(false) if you want to
+						 * You MUST setHandled(false) if you want to
 			 * delay or cancel the quit. This is important
 			 * for cross-platform development -- have a
 			 * universal quit routine that chooses whether
@@ -78,11 +78,11 @@ public class OSXAdapter extends ApplicationAdapter {
 			mainApp.exitFindBugs();
 		} else {
 			throw new IllegalStateException("handleQuit: MyApp instance detached " +
-                                                        "from listener");
+														"from listener");
 		}
 	}
-	
-	
+
+
 	// The main entry-point for this functionality.  This is the only method
 	// that needs to be called at runtime, and it can easily be done using
 	// reflection (see MyApp.java) 
@@ -90,13 +90,13 @@ public class OSXAdapter extends ApplicationAdapter {
 		if (theApplication == null) {
 			theApplication = new com.apple.eawt.Application();
 		}			
-		
+
 		if (theAdapter == null) {
 			theAdapter = new OSXAdapter(inApp);
 		}
 		theApplication.addApplicationListener(theAdapter);
 	}
-	
+
 	// Another static entry point for EAWT functionality.  Enables the 
 	// "Preferences..." menu item in the application menu. 
 	public static void enablePrefs(boolean enabled) {

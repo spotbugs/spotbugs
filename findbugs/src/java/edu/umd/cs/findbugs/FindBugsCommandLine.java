@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.config.CommandLine;
  * @author David Hovemeyer
  */
 public abstract class FindBugsCommandLine extends CommandLine {
-	
+
 	/**
 	 * Analysis settings to configure the analysis effort.
 	 */
@@ -53,22 +53,22 @@ public abstract class FindBugsCommandLine extends CommandLine {
 		addOption("-project", "project", "analyze given project");
 		addOption("-home", "home directory", "specify FindBugs home directory");
 		addOption("-pluginList", "jar1[" + File.pathSeparator + "jar2...]",
-		        "specify list of plugin Jar files to load");
+				"specify list of plugin Jar files to load");
 		addSwitchWithOptionalExtraPart("-effort", "min|default|max", "set analysis effort level");
 		addSwitch("-adjustExperimental", "lower priority of experimental Bug Patterns");
 		addSwitch("-workHard", "ensure analysis effort is at least 'default'");
 		addSwitch("-conserveSpace", "same as -effort:min (for backward compatibility)");
 	}
-	
+
 	public AnalysisFeatureSetting[] getSettingList() {
 		return settingList;
 	}
-	
+
 	public Project getProject() {
 		return project;
 	}
 
-	
+
 	@Override
 	protected void handleOption(String option, String optionExtraPart) {
 		if (option.equals("-effort")) {
@@ -88,7 +88,7 @@ public abstract class FindBugsCommandLine extends CommandLine {
 		} else if (option.equals("-workHard")) {
 			if (settingList != FindBugs.MAX_EFFORT)
 				settingList = FindBugs.MORE_EFFORT;
-			
+
 		} else if (option.equals("-conserveSpace")) {
 			settingList = FindBugs.MIN_EFFORT;
 		} else if (option.equals("-adjustExperimental")) {

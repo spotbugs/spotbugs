@@ -46,7 +46,7 @@ public class PackageStats implements XMLWriteable {
 		public ClassStats(String name) {
 			this.name = name;
 		}
-		
+
 		@Override
 		public Object clone() {
 			try {
@@ -60,11 +60,11 @@ public class PackageStats implements XMLWriteable {
 		public void setInterface(boolean isInterface) {
 			this.isInterface = isInterface;
 		}
-		
+
 		public void setSize(int size) {
 			this.size = size;
 		}
-		
+
 		public void addError(BugInstance bug) {
 			++nBugs[bug.getPriority()];
 			++nBugs[0];
@@ -98,7 +98,7 @@ public class PackageStats implements XMLWriteable {
 		 */
 		public void clearBugCounts() {
 			for(int i = 0; i < nBugs.length; i++) nBugs[i] = 0;
-			
+
 		}
 	}
 
@@ -141,7 +141,7 @@ public class PackageStats implements XMLWriteable {
 
 		return result;
 	}
-	
+
 	public ClassStats getClassStatsOrNull(String name) {
 		ClassStats result = packageMembers.get(name);
 		return result;
@@ -212,11 +212,11 @@ public class PackageStats implements XMLWriteable {
 	public void clearBugCounts() {
 		for(int i = 0; i < nBugs.length; i++)
 			nBugs[i] = 0;
-		
+
 		for(ClassStats classStats :  packageMembers.values()) {
 			classStats.clearBugCounts();
 		}
-		
+
 	}
 }
 

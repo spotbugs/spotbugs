@@ -82,14 +82,14 @@ public class AnalysisRun {
 			engine.setBugReporter(reporter);
 			engine.setProject(project);
 			engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
-			
+
 			this.findBugs = engine;
 		} else {
 			this.findBugs = new FindBugs(reporter, project);
 		}
 		this.treeModelMap = new HashMap<String, DefaultTreeModel>();
 	}
-	
+
 	/**
 	 * Get the FindBugsFrame which created this analysis run.
 	 * 
@@ -113,10 +113,10 @@ public class AnalysisRun {
 	 */
 	public void execute(FindBugsProgress progressCallback) throws IOException, InterruptedException {
 		findBugs.setProgressCallback(progressCallback);
-		
+
 		// Honor current UserPreferences
 		findBugs.setUserPreferences(UserPreferences.getUserPreferences());
-		
+
 		// Set analysis feature settings
 		findBugs.setAnalysisFeatureSettings(frame.getSettingList());
 
@@ -131,9 +131,9 @@ public class AnalysisRun {
 	}
 
 	private static final String MISSING_SUMMARY_MESSAGE =
-	        "<html><head><title>Could not format summary</title></head>" +
-	        "<body><h1>Could not format summary</h1>" +
-	        "<p> Please report this failure to <a href=\"findbugs-discuss@cs.umd.edu\">" +
+			"<html><head><title>Could not format summary</title></head>" +
+			"<body><h1>Could not format summary</h1>" +
+			"<p> Please report this failure to <a href=\"findbugs-discuss@cs.umd.edu\">" +
 	        "findbugs-discuss@cs.umd.edu</a>.</body></html>";
 
 	private void createSummary(ProjectStats stats) throws IOException {
@@ -158,7 +158,7 @@ public class AnalysisRun {
 		// Update summary stats
 		summary = reporter.getBugCollection().getSummaryHTML();
 	}
-	
+
 	/**
 	 * Load bugs from an InputStream.
 	 * 
@@ -168,7 +168,7 @@ public class AnalysisRun {
 	 */
 	public void loadBugsFromInputStream(InputStream in) throws IOException, DocumentException {
 		reporter.getBugCollection().readXML(in, project);
-		
+
 		// Update summary stats
 		summary = reporter.getBugCollection().getSummaryHTML();
 	}

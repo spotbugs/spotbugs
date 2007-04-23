@@ -52,7 +52,7 @@ public class BugPattern implements Comparable<BugPattern> {
 	 * @param detailText       HTML text containing a full description of the bug species
 	 */
 	public BugPattern(String type, String abbrev, String category, boolean experimental,
-	                  String shortDescription, String longDescription, String detailText) {
+					  String shortDescription, String longDescription, String detailText) {
 		this.type = type;
 		this.abbrev = abbrev;
 		this.category = category;
@@ -83,16 +83,16 @@ public class BugPattern implements Comparable<BugPattern> {
 		return category;
 	}
 
-    public String getCategoryAbbrev() {
-        String categoryAbbrev = null;
-        BugCategory bcat = I18N.instance().getBugCategory(getCategory());
+	public String getCategoryAbbrev() {
+		String categoryAbbrev = null;
+		BugCategory bcat = I18N.instance().getBugCategory(getCategory());
         if (bcat != null)
-            categoryAbbrev = bcat.getAbbrev();
-        if (categoryAbbrev == null)
-            categoryAbbrev = TextUIBugReporter.OTHER_CATEGORY_ABBREV;
+			categoryAbbrev = bcat.getAbbrev();
+		if (categoryAbbrev == null)
+			categoryAbbrev = TextUIBugReporter.OTHER_CATEGORY_ABBREV;
         return categoryAbbrev;
-    }
-    
+	}
+
 	/**
 	 * Is the bug pattern experimental?
 	 */

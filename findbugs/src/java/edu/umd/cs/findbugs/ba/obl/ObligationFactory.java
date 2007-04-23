@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.ba.Hierarchy;
  */
 public class ObligationFactory {
 	private Map<String, Obligation> classNameToObligationMap;
-	
+
 //	// XXX: this is just for debugging.
 //	static ObligationFactory lastInstance;
 
@@ -47,11 +47,11 @@ public class ObligationFactory {
 	public int getMaxObligationTypes() {
 		return classNameToObligationMap.size();
 	}
-	
+
 	public Iterator<Obligation> obligationIterator() {
 		return classNameToObligationMap.values().iterator();
 	}
-	
+
 	/**
 	 * Look up an Obligation by type.
 	 * This returns the first Obligation that is a supertype
@@ -82,7 +82,7 @@ public class ObligationFactory {
 		}
 		return obligation;
 	}
-	
+
 	public Obligation getObligationById(int id) {
 		for (Obligation obligation : classNameToObligationMap.values()) {
 			if (obligation.getId() == id)

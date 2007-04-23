@@ -25,7 +25,7 @@ package edu.umd.cs.findbugs.classfile;
 public class InvalidClassFileFormatException extends CheckedAnalysisException {
 	private ClassDescriptor classDescriptor;
 	private ICodeBaseEntry codeBaseEntry;
-	
+
 	public InvalidClassFileFormatException(ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry) {
 		super("Invalid classfile format");
 		this.classDescriptor = classDescriptor;
@@ -38,27 +38,27 @@ public class InvalidClassFileFormatException extends CheckedAnalysisException {
 		this.classDescriptor = classDescriptor;
 		this.codeBaseEntry = codeBaseEntry;
 	}
-	
+
 	InvalidClassFileFormatException(String msg, ClassDescriptor classDescriptor, ICodeBaseEntry codeBaseEntry) {
 		super(msg);
 		this.classDescriptor = classDescriptor;
 		this.codeBaseEntry = codeBaseEntry;
 	}
-	
+
 	/**
 	 * @return Returns the ClassDescriptor of the class found to have an invalid format (null if unknown)
 	 */
 	public ClassDescriptor getClassDescriptor() {
 		return classDescriptor;
 	}
-	
+
 	/**
 	 * @return Returns the codeBaseEntry.
 	 */
 	public ICodeBaseEntry getCodeBaseEntry() {
 		return codeBaseEntry;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Throwable#getMessage()
 	 */

@@ -27,14 +27,14 @@ import java.io.IOException;
 public interface IClassFactory {
 
 	public IClassPath createClassPath();
-	
+
 	public IClassPathBuilder createClassPathBuilder(IErrorLogger errorLogger);
 
 	public ICodeBaseLocator createFilesystemCodeBaseLocator(
 			String pathName);
-	
+
 	public ICodeBaseLocator createNestedArchiveCodeBaseLocator(ICodeBase parentCodeBase, String path);
-	
+
 	public IAnalysisCache createAnalysisCache(IClassPath classPath, IErrorLogger errorLogger);
 
 //	public IScannableCodeBase createLocalCodeBase(String fileName)

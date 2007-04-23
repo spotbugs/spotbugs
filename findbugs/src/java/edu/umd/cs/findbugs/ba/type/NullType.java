@@ -44,12 +44,12 @@ public class NullType extends Type implements ExtendedTypes {
 	}
 
 	@Override
-         public int hashCode() {
+		 public int hashCode() {
 		return System.identityHashCode(this);
 	}
 
 	@Override
-         public boolean equals(Object o) {
+		 public boolean equals(Object o) {
 		return o == this;
 	}
 

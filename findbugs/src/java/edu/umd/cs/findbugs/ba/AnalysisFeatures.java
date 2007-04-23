@@ -39,7 +39,7 @@ public interface AnalysisFeatures {
 	 * conserve space at the expense of precision.
 	 */
 	public static final int CONSERVE_SPACE = 1;
-	
+
 	/**
 	 * If true, model the effect of instanceof checks in type analysis.
 	 */
@@ -49,7 +49,7 @@ public interface AnalysisFeatures {
 	 * Skip generating CFG's and methodGen's for huge methods
 	 */
 	public static final int SKIP_HUGE_METHODS = 3;
-	
+
 	/**
 	 * Perform interative opcode stack analysis
 	 */
@@ -60,7 +60,7 @@ public interface AnalysisFeatures {
 	 * guaranteed to be dereferenced on some (non-implicit-exception) path.
 	 */
 	public static final int TRACK_GUARANTEED_VALUE_DEREFS_IN_NULL_POINTER_ANALYSIS = 5;
-	
+
 	/**
 	 * In the null pointer analysis, track value numbers that are known to be
 	 * null.  This allows us to not lose track of null values that are not
@@ -69,7 +69,7 @@ public interface AnalysisFeatures {
 	 * forward substitution.
 	 */
 	public static final int TRACK_VALUE_NUMBERS_IN_NULL_POINTER_ANALYSIS = 6;
-	
+
 	/**
 	 * Number of boolean analysis properties reserved for the bytecode analysis framework.
 	 * Clients of the framework may use property values &gt;= this value.

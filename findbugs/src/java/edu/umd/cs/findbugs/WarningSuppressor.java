@@ -21,12 +21,12 @@ abstract public class WarningSuppressor implements Matcher {
 	System.out.println("Checking " + bugInstance);
 	System.out.println("    type:" + bugInstance.getType());
 	System.out.println(" against: " + bugPattern);
-	
+
 	}
 	if (!(
-	    bugPattern == null
-	    || bugInstance.getType().startsWith(bugPattern)
-	    || bugInstance.getBugPattern().getCategory().equalsIgnoreCase(bugPattern)
+		bugPattern == null
+		|| bugInstance.getType().startsWith(bugPattern)
+		|| bugInstance.getBugPattern().getCategory().equalsIgnoreCase(bugPattern)
 	    || bugInstance.getBugPattern().getAbbrev().equalsIgnoreCase(bugPattern)))
 	return false;
 	if (DEBUG)
@@ -34,4 +34,4 @@ abstract public class WarningSuppressor implements Matcher {
 	return true;
 	}
 }
-	
+

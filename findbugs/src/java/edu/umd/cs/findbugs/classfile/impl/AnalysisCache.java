@@ -65,7 +65,7 @@ public class AnalysisCache implements IAnalysisCache {
 	 */
 	static class AnalysisError {
 		CheckedAnalysisException exception;
-		
+
 		public AnalysisError(CheckedAnalysisException exception) {
 			this.exception = exception;
 		}
@@ -83,13 +83,13 @@ public class AnalysisCache implements IAnalysisCache {
 		this.classAnalysisEngineMap = new HashMap<Class<?>, IClassAnalysisEngine>();
 		this.methodAnalysisEngineMap = new HashMap<Class<?>, IMethodAnalysisEngine>();
 		this.databaseFactoryMap = new HashMap<Class<?>, IDatabaseFactory<?>>();
-		
+
 		this.classAnalysisMap = new HashMap<Class<?>, Map<ClassDescriptor,Object>>();
 		this.methodAnalysisMap = new HashMap<Class<?>, Map<MethodDescriptor,Object>>();
-		
+
 		this.databaseMap = new HashMap<Class<?>, Object>();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getClassPath()
 	 */
@@ -109,7 +109,7 @@ public class AnalysisCache implements IAnalysisCache {
 				classDescriptor,
 				analysisClass);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#probeClassAnalysis(java.lang.Class, edu.umd.cs.findbugs.classfile.ClassDescriptor)
 	 */
@@ -133,7 +133,7 @@ public class AnalysisCache implements IAnalysisCache {
 				methodDescriptor,
 				analysisClass);
 	}
-	
+
 	/**
 	 * Analyze a class or method,
 	 * or get the cached analysis result.
@@ -155,7 +155,7 @@ public class AnalysisCache implements IAnalysisCache {
 			final DescriptorType descriptor,
 			final Class<E> analysisClass
 	) throws CheckedAnalysisException {
-		
+
 		// Get the descriptor->result map for this analysis class,
 		// creating if necessary
 		Map<DescriptorType, Object> descriptorMap = analysisClassToDescriptorMapMap.get(analysisClass);
@@ -164,7 +164,7 @@ public class AnalysisCache implements IAnalysisCache {
 			// decide that analysis results should be retained indefinitely.
 			descriptorMap = new MapCache<DescriptorType, Object>(CACHE_SIZE) {
 				IAnalysisEngine<DescriptorType> engine = engineMap.get(analysisClass);
-				
+
 				/* (non-Javadoc)
 				 * @see edu.umd.cs.findbugs.util.MapCache#removeEldestEntry(java.util.Map.Entry)
 				 */
@@ -179,7 +179,7 @@ public class AnalysisCache implements IAnalysisCache {
 			};
 			analysisClassToDescriptorMapMap.put(analysisClass, descriptorMap);
 		}
-		
+
 		// See if there is a cached result in the descriptor map
 		Object analysisResult = descriptorMap.get(descriptor);
 		if (analysisResult == null) {
@@ -189,7 +189,7 @@ public class AnalysisCache implements IAnalysisCache {
 				throw new IllegalArgumentException(
 						"No analysis engine registered to produce " + analysisClass.getName());
 			}
-			
+
 			// Perform the analysis
 			try {
 				analysisResult = engine.analyze(analysisCache, descriptor);
@@ -207,7 +207,7 @@ public class AnalysisCache implements IAnalysisCache {
 		if (analysisResult instanceof AnalysisError) {
 			throw ((AnalysisError) analysisResult).exception;
 		}
-		
+
 		// If we could assume a 1.5 or later JVM, the Class.cast()
 		// method could do this cast without a warning.
 		return (E) analysisResult;
@@ -228,20 +228,20 @@ public class AnalysisCache implements IAnalysisCache {
 			IMethodAnalysisEngine methodAnalysisEngine) {
 		methodAnalysisEngineMap.put(analysisResultType, methodAnalysisEngine);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#registerDatabaseFactory(java.lang.Class, edu.umd.cs.findbugs.classfile.IDatabaseFactory)
 	 */
 	public <E> void registerDatabaseFactory(Class<E> databaseClass, IDatabaseFactory<E> databaseFactory) {
 		databaseFactoryMap.put(databaseClass, databaseFactory);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.classfile.IAnalysisCache#getDatabase(java.lang.Class)
 	 */
 	public <E> E getDatabase(Class<E> databaseClass) throws CheckedAnalysisException {
 		Object database = databaseMap.get(databaseClass);
-		
+
 		if (database == null) {
 			try {
 				// Find the database factory
@@ -250,21 +250,21 @@ public class AnalysisCache implements IAnalysisCache {
 					throw new IllegalArgumentException(
 							"No database factory registered for " + databaseClass.getName());
 				}
-				
+
 				// Create the database
 				database = databaseFactory.createDatabase();
 			} catch (CheckedAnalysisException e) {
 				// Error - record the analysis error
 				database = new AnalysisError(e);
 			}
-			
+
 			databaseMap.put(databaseClass, database);
 		}
-		
+
 		if (database instanceof AnalysisError) {
 			throw ((AnalysisError)database).exception;
 		}
-		
+
 		// Again, we really should be using Class.cast()
 		return (E) database;
 	}

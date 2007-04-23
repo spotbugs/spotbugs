@@ -49,7 +49,7 @@ public class LockChecker {
 	private LockDataflow lockDataflow;
 	private ValueNumberDataflow vnaDataflow;
 	private HashMap<Location, LockSet> cache;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -61,7 +61,7 @@ public class LockChecker {
 		this.method = method;
 		this.cache = new HashMap<Location, LockSet>();
 	}
-	
+
 	/**
 	 * Execute dataflow analyses (only if required).
 	 * 
@@ -77,7 +77,7 @@ public class LockChecker {
 			this.vnaDataflow = classContext.getValueNumberDataflow(method); // will need this later
 		}
 	}
-	
+
 	/**
 	 * Get LockSet at given Location.
 	 * 

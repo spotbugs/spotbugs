@@ -37,7 +37,7 @@ public interface IsNullValueAnalysisFeatures {
 	 */
 	public static final boolean NO_SPLIT_DOWNGRADE_NSP =
 		SystemProperties.getBoolean("inva.noSplitDowngradeNSP");
-	
+
 	/**
 	 * Don't consider switch default cases as exception paths.
 	 */
@@ -51,7 +51,7 @@ public interface IsNullValueAnalysisFeatures {
 	 */
 	public static final boolean NCP_EXTRA_BRANCH =
 		SystemProperties.getBoolean("inva.ncpExtraBranch");
-	
+
 	/**
 	 * If this property is true, then we assume parameters
 	 * and return values can be null (but aren't definitely null).

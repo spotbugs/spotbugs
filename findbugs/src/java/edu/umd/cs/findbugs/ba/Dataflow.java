@@ -72,8 +72,8 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 		Iterator<BasicBlock> i = cfg.blockIterator();
 		while (i.hasNext()) {
 			BasicBlock block = i.next();
-			
-			
+
+
 			// Initial result facts are whatever the analysis sets them to be.
 			Fact result = analysis.getResultFact(block);
 			if (block == logicalEntryBlock())
@@ -129,9 +129,9 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				assert false : "Too many iterations (" + numIterations + ") in dataflow when analyzing " + getFullyQualifiedMethodName();
 				break;
 			}
-	
+
 			analysis.startIteration();
-			
+
 			if (DEBUG) {
 				if (blockOrder instanceof ReverseDFSOrder) {
 					ReverseDFSOrder rBlockOrder = (ReverseDFSOrder) blockOrder;
@@ -145,21 +145,21 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					}
 				}
 			}
-			
+
 			// For each block in CFG...
 			Iterator<BasicBlock> i = blockOrder.blockIterator();
 			while (i.hasNext()) {
 
 				BasicBlock block = i.next();
 				if (DEBUG) debug(block, "start\n");
-	
+
 				// Get start fact for block.
 				Fact start = analysis.getStartFact(block);
 				boolean needToRecompute = false;
 				//				 Get result facts for block,
 				Fact result = analysis.getResultFact(block);
 				int originalResultTimestamp = analysis.getLastUpdateTimestamp(result);
-				
+
 				// Meet all of the logical predecessor results into this block's start.
 				// Special case: if the block is the logical entry, then it gets
 				// the special "entry fact".
@@ -173,13 +173,13 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					Iterator<Edge> predEdgeIter = logicalPredecessorEdgeIterator(block);
 
 					int predCount = 0;
-                    int rawPredCount = 0;
+					int rawPredCount = 0;
 					while (predEdgeIter.hasNext()) {
 						Edge edge = predEdgeIter.next();
-                        rawPredCount++;
-                        if (needToRecompute) continue;
+						rawPredCount++;
+						if (needToRecompute) continue;
 						BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
-	
+
 						// Get the predecessor result fact
 						Fact predFact = analysis.getResultFact(logicalPred);
 						int predLastUpdated = analysis.getLastUpdateTimestamp(predFact);
@@ -207,7 +207,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 							while (predEdgeIter.hasNext()) {
 								Edge edge = predEdgeIter.next();
 								BasicBlock logicalPred = isForwards ? edge.getSource() : edge.getTarget();
-								
+
 								// Get the predecessor result fact
 								Fact predFact = analysis.getResultFact(logicalPred);
 								int predLastUpdated = analysis.getLastUpdateTimestamp(predFact);
@@ -219,7 +219,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					}
 
 					if (needToRecompute) {
-						
+
 						analysis.makeFactTop(start);
 						predEdgeIter = logicalPredecessorEdgeIterator(block);
 						while (predEdgeIter.hasNext()) {
@@ -244,13 +244,13 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 							if (DEBUG) debug(block, logicalPred, edge, "\n  Meet " + start + "\n   with " + edgeFact 
 									+ "\n   pred last updated at " +  analysis.getLastUpdateTimestamp(predFact) +"\n");
 
-							
-                            if (analysis instanceof UnconditionalValueDerefAnalysis) {
-                                ((UnconditionalValueDerefAnalysis)analysis).meetInto((UnconditionalValueDerefSet)edgeFact, edge, (UnconditionalValueDerefSet) start, rawPredCount==1);
+
+							if (analysis instanceof UnconditionalValueDerefAnalysis) {
+								((UnconditionalValueDerefAnalysis)analysis).meetInto((UnconditionalValueDerefSet)edgeFact, edge, (UnconditionalValueDerefSet) start, rawPredCount==1);
                             }
-                            else analysis.meetInto(edgeFact, edge, start);
+							else analysis.meetInto(edgeFact, edge, start);
 							analysis.setLastUpdateTimestamp(start, timestamp);
-							
+
 							int pos = -1;
 							if (block.getFirstInstruction() != null)
 								pos = block.getFirstInstruction().getPosition();
@@ -259,7 +259,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					}
 				}
 				if (DEBUG) debug(block, "start fact is " + start + "\n");
-	
+
 				// making a copy of result facts (so we can detect if it changed).
 				boolean resultWasTop = analysis.isTop(result);
 				Fact origResult = null;
@@ -267,7 +267,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 					origResult = analysis.createFact();
 					analysis.copy(result, origResult);
 				}
-	
+
 				if (true || analysis.isTop(start)) {
 					// Apply the transfer function.
 
@@ -286,7 +286,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 						System.out.println("\t" + handle + " " + tmpResult);
 					}
 				}
-	
+
 				// See if the result changed.
 				if (DEBUG) debug(block, "orig result is " + origResult + "\n");
 				boolean thisResultChanged = false;
@@ -307,7 +307,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 				if (DEBUG) debug(block, "result is " + result + " @ timestamp " 
 						+ analysis.getLastUpdateTimestamp(result) + "\n");
 			}
-			
+
 			analysis.finishIteration();
 		} while (change);
 	}
@@ -318,8 +318,8 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 		return bb.getId()+":"+ handle.getPosition() + " " + handle.getInstruction();
 	}
 	private static void debug(BasicBlock bb, String msg) {
-		
-		
+
+
 		System.out.print("Dataflow (block " + blockId(bb) + "): " + msg);
 	}
 

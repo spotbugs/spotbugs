@@ -46,16 +46,16 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 public class GenericObjectType extends ObjectType {
 
 	final List<? extends ReferenceType> parameters;
-	
+
 	final @CheckForNull String variable;
-	
+
 	final @CheckForNull Type extension;
 
 	public Type getUpperBound() {
 		if ("+".equals(variable)) return extension;
 		return this;
 	}
-	
+
 	/**
 	 * @return Returns the extension.
 	 */
@@ -77,20 +77,20 @@ public class GenericObjectType extends ObjectType {
 	public GenericUtilities.TypeCategory getTypeCategory() {
 		if (hasParameters() && variable == null && extension == null) {
 			return GenericUtilities.TypeCategory.PARAMETERS;
-			
+
 		} else if(!hasParameters() && variable != null && extension == null){
 			if (variable.equals("*")) return GenericUtilities.TypeCategory.WILDCARD;
 			else return GenericUtilities.TypeCategory.TYPE_VARIABLE;
-			
+
 		} else if(!hasParameters() && variable != null && extension != null){
 			if (variable.equals("+")) return GenericUtilities.TypeCategory.WILDCARD_EXTENDS;
 			else if (variable.equals("-")) return GenericUtilities.TypeCategory.WILDCARD_SUPER;
-			
+
 		}
 		// this should never happen
 		throw new IllegalStateException("The Generic Object Type is badly initialized");
 	}
-	
+
 	/**
 	 * @return true if this GenericObjectType represents a parameterized type e.g.
 	 * <code>List&lt;String&gt;</code>. This implies that isVariable() is falses
@@ -98,14 +98,14 @@ public class GenericObjectType extends ObjectType {
 	public boolean hasParameters() {
 		return parameters != null && parameters.size() > 0;
 	}
-	
+
 	/**
 	 * @return the number of parameters if this is a parameterized class, 0 otherwise
 	 */
 	public int getNumParameters() {
 		return parameters != null ? parameters.size() : 0;
 	}
-	
+
 	/**
 	 * @param index should be less than getNumParameters()
 	 * @return the type parameter at index
@@ -116,13 +116,13 @@ public class GenericObjectType extends ObjectType {
 		else 
 			throw new IndexOutOfBoundsException("The index " + index + " is too large");
 	}
-	
+
 	public List<? extends ReferenceType> getParameters() {
 		if (parameters == null) return null;
 		return Collections.unmodifiableList(parameters);
 	}
 	// Package Level constructors
-	
+
 	/**
 	 * Create a GenericObjectType that represents a Simple Type Variable 
 	 * or a simple wildcard with no extensions
@@ -131,7 +131,7 @@ public class GenericObjectType extends ObjectType {
 	GenericObjectType(@NonNull String variable) {
 		this(variable, (Type) null);
 	}
-	
+
 	/**
 	 * Create a GenericObjectType that represents a Wildcard 
 	 * with extensions
@@ -143,7 +143,7 @@ public class GenericObjectType extends ObjectType {
 		this.extension = extension;
 		parameters = null;
 	}
-	
+
 	/**
 	 * Create a GenericObjectType that represents a parameterized class
 	 * @param class_name the class that is parameterized. e.g. <code>java.util.List</code>
@@ -157,14 +157,14 @@ public class GenericObjectType extends ObjectType {
 			throw new IllegalStateException("argument 'parameters' must contain at least 1 parameter");
 		this.parameters = parameters;
 	}
-	
+
 	/**
 	 * @return the underlying ObjectType for this Generic Object
 	 */
 	public ObjectType getObjectType() {
 		return (ObjectType) Type.getType(getSignature());
 	}
-		
+
 	/**
 	 * Return a string representation of this object. 
 	 * (I do not override <code>toString()</code> in case 
@@ -178,8 +178,8 @@ public class GenericObjectType extends ObjectType {
 	 */
 	public String toString(boolean includeGenerics) {
 		if (!includeGenerics) return super.toString();
-		
+
 		return getTypeCategory().asString(this);
 	}
-		
+
 }

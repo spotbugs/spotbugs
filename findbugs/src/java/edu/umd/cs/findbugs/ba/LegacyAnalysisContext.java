@@ -39,22 +39,22 @@ import edu.umd.cs.findbugs.util.MapCache;
  * @author David Hovemeyer
  */
 public class LegacyAnalysisContext extends AnalysisContext {
-	
+
 	private RepositoryLookupFailureCallback lookupFailureCallback;
 	private SourceFinder sourceFinder;
 	private MapCache<JavaClass, ClassContext> classContextCache;
 	private Subtypes subtypes;
 	private final SourceInfoMap sourceInfoMap;
 	private InnerClassAccessMap innerClassAccessMap;
-	
+
 	// Interprocedural fact databases
 	// private MayReturnNullPropertyDatabase mayReturnNullDatabase;
 	private FieldStoreTypeDatabase fieldStoreTypeDatabase;
 	private ParameterNullnessPropertyDatabase unconditionalDerefParamDatabase;
-    private ReturnValueNullnessPropertyDatabase  returnValueNullnessDatabase;
-	
+	private ReturnValueNullnessPropertyDatabase  returnValueNullnessDatabase;
+
 	private NullnessAnnotationDatabase nullnessAnnotationDatabase; //= new NullnessAnnotationDatabase();
-	
+
 	@Override
 	public NullnessAnnotationDatabase getNullnessAnnotationDatabase() {
 		return nullnessAnnotationDatabase;
@@ -66,16 +66,16 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	public CheckReturnAnnotationDatabase getCheckReturnAnnotationDatabase() {
 		return checkReturnAnnotationDatabase;
 	}
-	
+
 	private AnnotationRetentionDatabase annotationRetentionDatabase;
 
 	@Override
 	public AnnotationRetentionDatabase getAnnotationRetentionDatabase() {
 		return annotationRetentionDatabase;
 	}
-	
+
 	private JCIPAnnotationDatabase jcipAnnotationDatabase;
-	
+
 	@Override
 	public JCIPAnnotationDatabase getJCIPAnnotationDatabase() {
 		return jcipAnnotationDatabase;
@@ -104,7 +104,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		this.sourceFinder = new SourceFinder();
 		this.subtypes = new Subtypes();
 		this.sourceInfoMap = new SourceInfoMap();
-		
+
 		if (originalRepository instanceof URLClassPathRepository) {
 			getLookupFailureCallback().logError(
 				"originalRepository is a URLClassPathRepository, which may cause problems");
@@ -112,7 +112,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 
 		//CheckReturnAnnotationDatabase may reportMissingClass, so do it after the currentAnalysisContext is set.
 		//Otherwise null ptr exceptions will happen.
-		
+
 		/*
 		checkReturnAnnotationDatabase = new CheckReturnAnnotationDatabase();
 
@@ -138,7 +138,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		nullnessAnnotationDatabase = new NullnessAnnotationDatabase();
 	}
 
-	
+
 	@Override
 	public void updateDatabases(int pass) {
 		if (pass == 0) {
@@ -155,12 +155,12 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	public SourceFinder getSourceFinder() {
 		return sourceFinder;
 	}
-	
+
 	@Override
 	public Subtypes getSubtypes() {
 		return subtypes;
 	}
-	
+
 	@Override
 	public void clearRepository() {
 		// If the old repository backing store is a URLClassPathRepository
@@ -170,10 +170,10 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		if (repos instanceof URLClassPathRepository) {
 			((URLClassPathRepository) repos).destroy();
 		}
-		
+
 		// Purge repository of previous contents
 		Repository.clearCache();
-		
+
 		// Clear any ClassContexts
 		clearClassContextCache();
 
@@ -184,25 +184,25 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		URLClassPathRepository repository = new URLClassPathRepository(); 
 		Repository.setRepository(repository);
 	}
-	
+
 	@Override
 	public void clearClassContextCache() {
 		if (classContextCache != null)
 			classContextCache.clear();
 	}
-	
+
 	@Override
 	public void addClasspathEntry(String url) throws IOException {
 		URLClassPathRepository repos = (URLClassPathRepository) Repository.getRepository();
 		repos.addURL(url);
 	}
-	
+
 	@Override
 	public void addApplicationClassToRepository(JavaClass appClass) {
 		Repository.addClass(appClass);
 		subtypes.addApplicationClass(appClass);
 	}
-	
+
 	@Override
 	public JavaClass lookupClass(@NonNull String className) throws ClassNotFoundException {
 		// TODO: eventually we should move to our own thread-safe repository implementation
@@ -210,7 +210,7 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		return Repository.lookupClass(className);
 		// note: previous line does not throw ClassNotFoundException, instead returns null
 	}
-	
+
 	/**
 	 * Get the ClassContext for a class.
 	 *
@@ -261,10 +261,10 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		}
 		return unconditionalDerefParamDatabase;
 	}
-	
 
 
-    
+
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getInnerClassAccessMap()
 	 */
@@ -276,17 +276,17 @@ public class LegacyAnalysisContext extends AnalysisContext {
 		return innerClassAccessMap;
 	}
 
-    /* (non-Javadoc)
-     * @see edu.umd.cs.findbugs.ba.AnalysisContext#getReturnValueNullnessPropertyDatabase()
-     */
+	/* (non-Javadoc)
+	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getReturnValueNullnessPropertyDatabase()
+	 */
     @Override
-    public ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase() {
-        if (returnValueNullnessDatabase  == null) {
-            returnValueNullnessDatabase = new ReturnValueNullnessPropertyDatabase();
+	public ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase() {
+		if (returnValueNullnessDatabase  == null) {
+			returnValueNullnessDatabase = new ReturnValueNullnessPropertyDatabase();
         }
-        return returnValueNullnessDatabase;
-    }
+		return returnValueNullnessDatabase;
+	}
 
-			
+
 
 }

@@ -33,7 +33,7 @@ import org.apache.bcel.generic.MethodGen;
  */
 public class InvalidBytecodeException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -42,7 +42,7 @@ public class InvalidBytecodeException extends RuntimeException {
 	public InvalidBytecodeException(String msg) {
 		super(msg);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * 

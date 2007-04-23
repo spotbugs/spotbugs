@@ -42,7 +42,7 @@ public class StateSet {
 	public interface StateCallback {
 		public void apply(State state) throws NonexistentObligationException;
 	}
-	
+
 	private boolean isTop;
 	private boolean isBottom;
 	private Map<ObligationSet, State> stateMap;
@@ -75,7 +75,7 @@ public class StateSet {
 	public boolean isValid() {
 		return !this.isTop && !this.isBottom;
 	}
-	
+
 	/**
 	 * Return an Iterator over the States in the StateSet.
 	 * 
@@ -84,7 +84,7 @@ public class StateSet {
 	public Iterator<State> stateIterator() {
 		return stateMap.values().iterator();
 	}
-	
+
 	/**
 	 * Get the State which has the given ObligationSet.
 	 * Returns null if there is no such state.
@@ -95,7 +95,7 @@ public class StateSet {
 	public State getStateWithObligationSet(ObligationSet obligationSet) {
 		return stateMap.get(obligationSet);
 	}
-	
+
 	/**
 	 * Initialize this object as the entry fact for a method:
 	 * a single state with empty obligation set and path.
@@ -105,12 +105,12 @@ public class StateSet {
 	public void initEntryFact(ObligationFactory factory) {
 		this.isTop = this.isBottom = false;
 		this.stateMap.clear();
-		
+
 		// Add initial fact: empty obligations, empty path
 		State initState = new State(factory.getMaxObligationTypes(), factory);
 		this.stateMap.put(initState.getObligationSet(), initState);
 	}
-	
+
 	/**
 	 *  Make this StateSet an exact copy of the given StateSet.
 	 *  
@@ -125,7 +125,7 @@ public class StateSet {
 			this.stateMap.put(dup.getObligationSet(), dup);
 		}
 	}
-	
+
 	/**
 	 * Return an exact deep copy of this StateSet.
 	 * 
@@ -136,7 +136,7 @@ public class StateSet {
 		dup.copyFrom(this);
 		return dup;
 	}
-	
+
 	/**
 	 * Add an obligation to every State in the StateSet.
 	 * 
@@ -145,7 +145,7 @@ public class StateSet {
 	public void addObligation(final Obligation obligation) {
 		final Map<ObligationSet, State> updatedStateMap =
 			new HashMap<ObligationSet, State>();
-		
+
 		try {
 			applyToAllStatesAndUpdateMap(new StateCallback() {
 				public void apply(State state) {
@@ -157,7 +157,7 @@ public class StateSet {
 			// This can't actually happen.
 		}
 	}
-	
+
 	/**
 	 * Remove an Obligation from every State in the StateSet.
 	 * 
@@ -168,7 +168,7 @@ public class StateSet {
 			throws NonexistentObligationException {
 		final Map<ObligationSet, State> updatedStateMap =
 			new HashMap<ObligationSet, State>();
-		
+
 		applyToAllStatesAndUpdateMap(new StateCallback() {
 			/* (non-Javadoc)
 			 * @see edu.umd.cs.findbugs.ba.obl.StateSet.StateCallback#apply(edu.umd.cs.findbugs.ba.obl.State)
@@ -180,7 +180,7 @@ public class StateSet {
 			}
 		}, updatedStateMap);
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || o.getClass() != this.getClass())
@@ -190,12 +190,12 @@ public class StateSet {
 			&& this.isBottom == other.isBottom
 			&& this.stateMap.equals(other.stateMap);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public String toString() {
 		if (isTop)
@@ -216,7 +216,7 @@ public class StateSet {
 			return buf.toString();
 		}
 	}
-	
+
 	/**
 	 * Return a newly allocated Map of ObligationSet to State
 	 * that may be passed to applyToAllStatesAndUpdateMap().
@@ -224,7 +224,7 @@ public class StateSet {
 	public Map<ObligationSet, State> createEmptyMap() {
 		return new HashMap<ObligationSet, State>();
 	}
-	
+
 	/**
 	 * Apply a callback to all States and replace the
 	 * ObligationSet -&gt; State map with the one given

@@ -30,16 +30,16 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 public class FieldMatcher implements Matcher {
 	private NameMatch name;
 	private String signature;
-	
+
 	public FieldMatcher(String name) {
 		this.name = new NameMatch(name);
 	}
-	
+
 	public FieldMatcher(String name, String type) {
 		this.name = new NameMatch(name);
 		this.signature = SignatureUtil.createFieldSignature(type);
 	}
-	
+
 	public boolean match(BugInstance bugInstance) {
 		FieldAnnotation fieldAnnotation = bugInstance.getPrimaryField();
 		if(fieldAnnotation == null) {

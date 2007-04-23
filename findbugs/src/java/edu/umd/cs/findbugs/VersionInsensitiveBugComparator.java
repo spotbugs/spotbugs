@@ -31,15 +31,15 @@ import edu.umd.cs.findbugs.model.IdentityClassNameRewriter;
  * remain constant between versions.
  */
 public class VersionInsensitiveBugComparator implements WarningComparator {
-	
+
 	private ClassNameRewriter classNameRewriter = IdentityClassNameRewriter.instance();
-	
+
 	private boolean exactBugPatternMatch = true;
-	
+
 	private boolean comparePriorities = false;
 	public VersionInsensitiveBugComparator() {
 	}
-	
+
 	public void setClassNameRewriter(ClassNameRewriter classNameRewriter) {
 		this.classNameRewriter = classNameRewriter; 
 	}
@@ -115,7 +115,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 		else
 			return 0;
 	}
-	
+
 	private static String getCode(String pattern) {
 		int sep = pattern.indexOf('_');
 		if (sep < 0)
@@ -130,19 +130,19 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 		// Compare field annotations.
 
 		int cmp;
-		
+
 		BugPattern lhsPattern = lhs.getBugPattern();
 		BugPattern rhsPattern = rhs.getBugPattern();
-		
+
 		if (lhsPattern == null || rhsPattern == null) {
 			// One of the patterns is missing.
 			// However, we can still accurately match by abbrev (usually) by comparing
 			// the part of the type before the first '_' character.
 			// This is almost always equivalent to the abbrev.
-			
+
 			String lhsCode = getCode(lhs.getType());
 			String rhsCode = getCode(rhs.getType());
-			
+
 			if ((cmp = lhsCode.compareTo(rhsCode)) != 0) {
 				return cmp;
 			}
@@ -158,7 +158,7 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 			if (isExactBugPatternMatch() && (cmp = lhsPattern.getType().compareTo(rhsPattern.getType())) != 0)
 				return cmp;
 		}
-		
+
 
 
 
@@ -183,32 +183,32 @@ public class VersionInsensitiveBugComparator implements WarningComparator {
 			if (lhsAnnotation.getClass() == ClassAnnotation.class) {
 				// ClassAnnotations should have their class names rewritten to
 				// handle moved and renamed classes.
-				
+
 				String lhsClassName = classNameRewriter.rewriteClassName(
 						((ClassAnnotation)lhsAnnotation).getClassName());
 				String rhsClassName = classNameRewriter.rewriteClassName(
 						((ClassAnnotation)rhsAnnotation).getClassName());
-				
+
 				return lhsClassName.compareTo(rhsClassName);
-				
+
 			} else if(lhsAnnotation.getClass() == MethodAnnotation.class ) {
 				// Rewrite class names in MethodAnnotations
 				MethodAnnotation lhsMethod = ClassNameRewriterUtil.convertMethodAnnotation(
 						classNameRewriter, (MethodAnnotation) lhsAnnotation);
 				MethodAnnotation rhsMethod = ClassNameRewriterUtil.convertMethodAnnotation(
 						classNameRewriter, (MethodAnnotation) rhsAnnotation);
-				
+
 				cmp = lhsMethod.compareTo(rhsMethod);
 				if (cmp != 0)
 					return cmp;
-				
+
 			} else if(lhsAnnotation.getClass() == FieldAnnotation.class) {
 				// Rewrite class names in FieldAnnotations
 				FieldAnnotation lhsField = ClassNameRewriterUtil.convertFieldAnnotation(
 						classNameRewriter, (FieldAnnotation) lhsAnnotation);
 				FieldAnnotation rhsField = ClassNameRewriterUtil.convertFieldAnnotation(
 						classNameRewriter, (FieldAnnotation) rhsAnnotation);
-				
+
 				cmp = lhsField.compareTo(rhsField);
 				if (cmp != 0)
 					return cmp;

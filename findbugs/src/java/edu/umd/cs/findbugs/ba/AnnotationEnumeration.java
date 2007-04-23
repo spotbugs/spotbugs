@@ -26,25 +26,25 @@ public class AnnotationEnumeration <E extends AnnotationEnumeration<E>> implemen
 	private final int index;
 
 	protected final String name;
-	
+
 	protected AnnotationEnumeration(String s, int i) {
 		name = s;
 		index = i;
 	}
 	@Override
-         public boolean equals(Object o) {
+		 public boolean equals(Object o) {
 		if (!(o instanceof AnnotationEnumeration))
 			return false;
 		return index == ((AnnotationEnumeration) o).getIndex();
 	}
 
 	@Override
-         public int hashCode() {
+		 public int hashCode() {
 		return index;
 	}
 
 	@Override
-         public String toString() {
+		 public String toString() {
 		return name;
 	}
 	/**

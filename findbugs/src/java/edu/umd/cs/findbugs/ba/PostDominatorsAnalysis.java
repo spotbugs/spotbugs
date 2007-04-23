@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.SystemProperties;
 public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 	final private ReverseDepthFirstSearch rdfs;
 	final private DepthFirstSearch dfs;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -59,7 +59,7 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 	 * @param ignoreExceptionEdges true if exception edges should be ignored
 	 */
 	public PostDominatorsAnalysis(CFG cfg, ReverseDepthFirstSearch rdfs,
-	                              DepthFirstSearch dfs, boolean ignoreExceptionEdges) {
+								  DepthFirstSearch dfs, boolean ignoreExceptionEdges) {
 		super(cfg, ignoreExceptionEdges);
 		this.rdfs = rdfs;
 		this.dfs = dfs;
@@ -72,16 +72,16 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 	public BlockOrder getBlockOrder(CFG cfg) {
 		return new ReverseDFSOrder(cfg, rdfs, dfs);
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		if (args.length != 1) {
 			System.err.println("Usage: " + PostDominatorsAnalysis.class.getName() + " <classfile>");
 			System.exit(1);
 		}
-		
+
 		DataflowTestDriver<BitSet, PostDominatorsAnalysis> driver =
 			new DataflowTestDriver<BitSet, PostDominatorsAnalysis>() {
-			
+
 			/* (non-Javadoc)
 			 * @see edu.umd.cs.findbugs.ba.DataflowTestDriver#createDataflow(edu.umd.cs.findbugs.ba.ClassContext, org.apache.bcel.classfile.Method)
 			 */
@@ -89,20 +89,20 @@ public class PostDominatorsAnalysis extends AbstractDominatorsAnalysis {
 			public Dataflow<BitSet, PostDominatorsAnalysis> createDataflow(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
 				CFG cfg = classContext.getCFG(method);
 				ReverseDepthFirstSearch rdfs = classContext.getReverseDepthFirstSearch(method);
-				
+
 				PostDominatorsAnalysis analysis =
 					new PostDominatorsAnalysis(cfg, rdfs, classContext.getDepthFirstSearch(method), SystemProperties.getBoolean("dominators.ignoreexceptionedges"));
-			
+
 				Dataflow<BitSet, PostDominatorsAnalysis> dataflow =
 					new Dataflow<BitSet, PostDominatorsAnalysis>(cfg, analysis);
-				
+
 				dataflow.execute();
-				
+
 				return dataflow;
 			}
-			
+
 		};
-		
+
 		driver.execute(args[0]);
 	}
 }
