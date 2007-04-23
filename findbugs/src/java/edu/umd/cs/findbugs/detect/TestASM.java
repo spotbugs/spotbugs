@@ -54,28 +54,7 @@ public class TestASM extends ClassNodeDetector {
 			        access).addString("method should start with lower case character");
 			bugReporter.reportBug(bug0);
 		}
-		return new MethodWithPCAdapter(new AbstractMethodVisitorWithPC() {
-			int lineNumber;
-
-			public void visitLineNumber(int line, Label start) {
-				lineNumber = line;
-			}
-
-			public void visitMethodInsn(int arg0, String arg1, final String arg2, String arg3) {
-				if (previousOpcode == Opcodes.I2D && arg0 == Opcodes.INVOKESTATIC && arg1.equals("java/lang/Math")
-				        && arg2.equals("ceil")) {
-					SourceLineAnnotation sourceLine = SourceLineAnnotation.fromRawData(TestASM.this.name, sourceFile, lineNumber,
-					        lineNumber, pc, pc);
-
-					BugInstance bug = new BugInstance(TestASM.this, "TESTING", NORMAL_PRIORITY).addClass(TestASM.this).addMethod(
-					        TestASM.this.name, name, desc, access).addCalledMethod(arg1, arg2, arg3, true).addSourceLine(
-					        sourceLine).addString("int cast to double and passed to Math.ceil");
-					bugReporter.reportBug(bug);
-				}
-
-			}
-
-		});
+		return null;
 	}
 
 	@Override
