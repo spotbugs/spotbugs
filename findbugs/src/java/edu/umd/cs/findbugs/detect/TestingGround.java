@@ -55,6 +55,12 @@ public class TestingGround extends BytecodeScanningDetector {
 			bugReporter.reportBug(bug);
 		}
 	}
+	
+	@Override
+	public void visit(Code obj) {
+		if (true) // do we want to dismantle the bytecode?
+			super.visit(obj);
+	}
 
 	int prevOpcode;
 	@Override
