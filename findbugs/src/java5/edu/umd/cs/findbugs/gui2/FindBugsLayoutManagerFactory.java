@@ -38,7 +38,7 @@ public class FindBugsLayoutManagerFactory {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		
+
 	}
 
 }

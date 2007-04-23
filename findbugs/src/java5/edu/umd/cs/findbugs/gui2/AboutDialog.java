@@ -91,7 +91,7 @@ public class AboutDialog extends javax.swing.JDialog {
 			 reader = new BufferedReader(new InputStreamReader(in));
 
 			// Replace instances of @VERSION@ with actual version number
-	
+
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = pattern.matcher(line).replaceAll(Version.RELEASE);
@@ -126,11 +126,11 @@ public class AboutDialog extends javax.swing.JDialog {
 		aboutTabPane = new javax.swing.JTabbedPane();
 		aboutScrollPane = new javax.swing.JScrollPane();
 		aboutEditorPane = new javax.swing.JEditorPane();
-        licenseScrollPane = new javax.swing.JScrollPane();
+		licenseScrollPane = new javax.swing.JScrollPane();
 		licenseEditorPane = new javax.swing.JEditorPane();
 		acknowledgmentsScrollPane = new javax.swing.JScrollPane();
 		acknowldgementsEditorPane = new javax.swing.JEditorPane();
-        jSeparator1 = new javax.swing.JSeparator();
+		jSeparator1 = new javax.swing.JSeparator();
 		okButton = new javax.swing.JButton();
 
 		getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -145,7 +145,7 @@ public class AboutDialog extends javax.swing.JDialog {
 		aboutEditorPane.setEditable(false);
 		aboutEditorPane.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
 			public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
-                editorPaneHyperlinkUpdate(evt);
+				editorPaneHyperlinkUpdate(evt);
 			}
 		});
 
@@ -156,7 +156,7 @@ public class AboutDialog extends javax.swing.JDialog {
 		licenseEditorPane.setEditable(false);
 		licenseEditorPane.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
 			public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
-                editorPaneHyperlinkUpdate(evt);
+				editorPaneHyperlinkUpdate(evt);
 			}
 		});
 
@@ -167,7 +167,7 @@ public class AboutDialog extends javax.swing.JDialog {
 		acknowldgementsEditorPane.setEditable(false);
 		acknowldgementsEditorPane.addHyperlinkListener(new javax.swing.event.HyperlinkListener() {
 			public void hyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {
-                editorPaneHyperlinkUpdate(evt);
+				editorPaneHyperlinkUpdate(evt);
 			}
 		});
 
@@ -178,33 +178,33 @@ public class AboutDialog extends javax.swing.JDialog {
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
 		gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.weighty = 1.0;
 		getContentPane().add(aboutTabPane, gridBagConstraints);
 
 		{
 			aboutTabPane.setTitleAt(0, edu.umd.cs.findbugs.L10N.getLocalString("dlg.about_tab", "About"));
 			aboutTabPane.setTitleAt(1, edu.umd.cs.findbugs.L10N.getLocalString("dlg.license_tab", "License"));
-            aboutTabPane.setTitleAt(2, edu.umd.cs.findbugs.L10N.getLocalString("dlg.acknowledgements_tab", "Acknowledgements"));
+			aboutTabPane.setTitleAt(2, edu.umd.cs.findbugs.L10N.getLocalString("dlg.acknowledgements_tab", "Acknowledgements"));
 		}
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+		gridBagConstraints.gridy = 1;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		getContentPane().add(jSeparator1, gridBagConstraints);
 
 		okButton.setMnemonic('O');
 		okButton.setText("OK");
 		okButton.setText(edu.umd.cs.findbugs.L10N.getLocalString("dlg.ok_btn", "OK"));
-        okButton.addActionListener(new java.awt.event.ActionListener() {
+		okButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				okButtonActionPerformed(evt);
 			}
-        });
+		});
 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 2;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+		gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
 		getContentPane().add(okButton, gridBagConstraints);
 
 		pack();
@@ -213,15 +213,15 @@ public class AboutDialog extends javax.swing.JDialog {
 	static void editorPaneHyperlinkUpdate(javax.swing.event.HyperlinkEvent evt) {//GEN-FIRST:event_editorPaneHyperlinkUpdate
 		try {
 			if (evt.getEventType().equals( HyperlinkEvent.EventType.ACTIVATED)) {
-                URL url = evt.getURL();
+				URL url = evt.getURL();
 				//showInBrowser(url.toString());
 				LaunchBrowser.showDocument(url);
 			}
-        }
+		}
 		catch (Exception e) {
 		}
 	}//GEN-LAST:event_editorPaneHyperlinkUpdate
-    
+
 
 	private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
 		closeDialog();
@@ -242,11 +242,11 @@ public class AboutDialog extends javax.swing.JDialog {
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JEditorPane aboutEditorPane;
 	private javax.swing.JScrollPane aboutScrollPane;
-    private javax.swing.JTabbedPane aboutTabPane;
+	private javax.swing.JTabbedPane aboutTabPane;
 	private javax.swing.JEditorPane acknowldgementsEditorPane;
 	private javax.swing.JScrollPane acknowledgmentsScrollPane;
 	private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JEditorPane licenseEditorPane;
+	private javax.swing.JEditorPane licenseEditorPane;
 	private javax.swing.JScrollPane licenseScrollPane;
 	private javax.swing.JButton okButton;
 	// End of variables declaration//GEN-END:variables

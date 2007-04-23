@@ -33,7 +33,7 @@ import javax.swing.UIManager;
 public class TabbedLayout implements FindBugsLayoutManager {
 
 	final MainFrame frame;
-	
+
 	private JTabbedPane mainTabs = null;
 	/**
 	 * @param frame
@@ -58,9 +58,9 @@ public class TabbedLayout implements FindBugsLayoutManager {
 			UIManager.put("TabbedPaneUI", "javax.swing.plaf.basic.BasicTabbedPaneUI");
 			UIManager.put("FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI");
 		}
-		
+
 		mainTabs = bottomTabs();
-		
+
 		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 				frame.bugListPanel(), mainTabs);
 		split.setOneTouchExpandable(true);
@@ -110,18 +110,18 @@ public class TabbedLayout implements FindBugsLayoutManager {
 	JTabbedPane bottomTabs()
 	{
 		JTabbedPane bottomTabs = new JTabbedPane();
-		
+
 		bottomTabs.addTab("Bug Summary", frame.summaryTab());
 		bottomTabs.addTab("Comments", null, frame.createCommentsInputPanel(), 
 				"User defined comments of current bug.");
 		bottomTabs.addTab("Source", null, frame.createSourceCodePanel(),
 				"Source code of current bug if available.");
-		
+
 		//Set keyboard mnemonic for tabs.
 		bottomTabs.setMnemonicAt(0, KeyEvent.VK_B);
 		bottomTabs.setMnemonicAt(1, KeyEvent.VK_C);
 		bottomTabs.setMnemonicAt(2, KeyEvent.VK_S);
-		
+
 		return bottomTabs;
 	}
 }

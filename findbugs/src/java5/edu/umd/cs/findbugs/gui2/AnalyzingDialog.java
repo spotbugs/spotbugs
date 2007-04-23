@@ -48,14 +48,14 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 	@NonNull private Project project;
 	private AnalysisCallback callback;
 	private AnalysisThread analysisThread = new AnalysisThread();
-	
+
 	private int count;
 	private int goal;
-	
+
 	private JLabel statusLabel;
 	private JProgressBar progressBar;
 	private JButton cancelButton;
-	
+
 	public AnalyzingDialog(@NonNull final Project project, final boolean changeSettings)
 	{
 		this(project, new AnalysisCallback()
@@ -67,12 +67,12 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 					MainFrame instance = MainFrame.getInstance();
 					instance.setProjectAndBugCollection(project, results);
 				}
-			
+
 			public void analysisInterrupted() {}
 		}, false);
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * @param project The Project to analyze
@@ -90,7 +90,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 		if (joinThread)
 			try {analysisThread.join();} catch (InterruptedException e) {}
 	}
-	
+
 	public void initComponents()
 	{
 		statusLabel = new JLabel(" ");
@@ -113,7 +113,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 				cancel();
 			}
 		});
-		
+
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
@@ -134,7 +134,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 			}
 		});		
 	}
-	
+
 	private void cancel()
 	{
 		if (!analysisFinished)
@@ -144,12 +144,12 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 			// TODO there should be a call to dispose() here, but it seems to cause repainting issues
 		}
 	}
-	
+
 	private void updateStage(String stage)
 	{
 		statusLabel.setText(stage);
 	}
-	
+
 	private void incrementCount()
 	{
 		count++;
@@ -162,7 +162,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 			}
 		});
 	}
-	
+
 	private void updateCount(final int count, final int goal)
 	{
 		this.count = count;
@@ -177,7 +177,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 			}
 		});
 	}
-	
+
 	public void finishArchive()
 	{
 		incrementCount();
@@ -211,7 +211,7 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 			// Give the analysis thread lower priority than the UI
 			setPriority(NORM_PRIORITY - 1);
 		}
-		
+
 		@Override
 		public void run()
 		{
@@ -235,6 +235,6 @@ public final class AnalyzingDialog extends FBDialog implements FindBugsProgress
 	 */
 	public void predictPassCount(int[] classesPerPass) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

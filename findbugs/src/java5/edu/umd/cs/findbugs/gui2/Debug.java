@@ -32,12 +32,12 @@ public class Debug {
 		if (MainFrame.DEBUG)
 			System.out.println(s);
 	}
-	
+
 	public static void println(Exception e){
 		if(MainFrame.DEBUG)
 			e.printStackTrace();
 	}
-	
+
 	public static void main(String[] args)
 	{
 

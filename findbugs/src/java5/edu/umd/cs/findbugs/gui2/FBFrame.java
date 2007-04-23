@@ -34,34 +34,34 @@ public class FBFrame extends JFrame {
 	 */
 	protected void setFontSize(float size){
 		setFont(this.getFont().deriveFont(size));
-		
+
 		setFontSizeHelper(this.getComponents(), size);		
 	}
-	
+
 	/*
 	 * Helps above method, runs through all components recursively.
 	 */
 	protected void setFontSizeHelper(Component[] comps, float size){
 		if(comps.length <= 0)
 			return;
-		
+
 		for(Component comp : comps){
 			comp.setFont(comp.getFont().deriveFont(size));
 			if(comp instanceof Container)
 				setFontSizeHelper(((Container)comp).getComponents(), size);
 		}
 	}
-	
+
 	@Override
 	public void addNotify(){
 		super.addNotify();
-		
+
 		try {
 			setIconImage(ImageIO.read(MainFrame.class.getResource("smallBuggy.png")));
 		} catch (IOException e) {
 			Debug.println(e);
 		}
-		
+
 		setFontSize(Driver.getFontSize());
 	}
 }

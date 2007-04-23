@@ -44,14 +44,14 @@ public class PropertiesDialog extends FBDialog {
 	private static PropertiesDialog instance;
 	private JTextField tabTextField;
 	private JTextField fontTextField;
-	
+
 	public static PropertiesDialog getInstance()
 	{
 		if(instance == null)
 			instance = new PropertiesDialog();
 		return instance;
 	}
-	
+
 	private PropertiesDialog()
 	{
 		JPanel contentPanel = new JPanel(new BorderLayout());
@@ -60,13 +60,13 @@ public class PropertiesDialog extends FBDialog {
 		mainPanel.add(new JLabel("Tab Size"));
 		tabTextField = new JTextField(Integer.toString(GUISaveState.getInstance().getTabSize()));
 		mainPanel.add(tabTextField);
-		
+
 		mainPanel.add(new JLabel("Font Size"));
 		fontTextField = new JTextField(Float.toString(GUISaveState.getInstance().getFontSize()));
 		mainPanel.add(fontTextField);
-		
+
 		contentPanel.add(mainPanel, BorderLayout.CENTER);
-		
+
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.add(new JButton(new AbstractAction("Apply")
 		{
@@ -77,7 +77,7 @@ public class PropertiesDialog extends FBDialog {
 					MainFrame.getInstance().displayer.clearCache();
 					MainFrame.getInstance().syncBugInformation(); //This causes the GUI to redisplay the current code
 				}
-				
+
 				if(Float.parseFloat(fontTextField.getText()) != GUISaveState.getInstance().getFontSize()){
 					GUISaveState.getInstance().setFontSize(Float.parseFloat(fontTextField.getText()));
 					JOptionPane.showMessageDialog(PropertiesDialog.getInstance(),
@@ -86,7 +86,7 @@ public class PropertiesDialog extends FBDialog {
 				}
 			}
 		}));
-		
+
 		bottomPanel.add(new JButton(new AbstractAction("Reset")
 		{
 			public void actionPerformed(ActionEvent evt)
@@ -95,19 +95,19 @@ public class PropertiesDialog extends FBDialog {
 				fontTextField.setText(Float.toString(GUISaveState.getInstance().getFontSize()));
 			}
 		}));
-		
+
 		contentPanel.add(bottomPanel, BorderLayout.SOUTH);
 		setContentPane(contentPanel);
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		setModal(true);
 		pack();
-		
+
 		addWindowListener(new WindowAdapter(){
 			@Override
 			public void windowDeactivated(WindowEvent e) {
 				if(Integer.decode(tabTextField.getText()).intValue() != GUISaveState.getInstance().getTabSize())
 					tabTextField.setText(Integer.toString(GUISaveState.getInstance().getTabSize()));
-				
+
 				if(Float.parseFloat(fontTextField.getText()) != GUISaveState.getInstance().getFontSize()){
 					fontTextField.setText(Float.toString(GUISaveState.getInstance().getFontSize()));
 				}

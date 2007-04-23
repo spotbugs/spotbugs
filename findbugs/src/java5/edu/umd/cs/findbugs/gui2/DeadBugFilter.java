@@ -40,9 +40,9 @@ public class DeadBugFilter extends FilterMatcher {
 	{
 		return edu.umd.cs.findbugs.L10N.getLocalString("pref.dead_bugs", "Dead Bugs");
 	}
-	
+
 	@Override
 	public boolean match(BugInstance bugInstance) {
-        return super.match(bugInstance);
+		return super.match(bugInstance);
 	}
 }

@@ -38,11 +38,11 @@ public class OSXAdapter extends ApplicationAdapter {
 
 	// reference to the app where the existing quit, about, prefs code is
 	private MainFrame mainApp;
-	
+
 	private OSXAdapter (MainFrame inApp) {
 		mainApp = inApp;
 	}
-	
+
 	// implemented handler methods. These are basically hooks into
 	// existing functionality from the main app, as if it came
 	// over from another platform.
@@ -54,11 +54,11 @@ public class OSXAdapter extends ApplicationAdapter {
 						// We need to invoke modal About Dialog asynchronously
 						// otherwise the Application queue is locked for the duration
 						// of the about Dialog, which results in a deadlock if a URL is
-                        // selected, and we get a ReOpenApplication event when user
+						// selected, and we get a ReOpenApplication event when user
 						// switches back to Findbugs.
 						javax.swing.SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
-                                    mainApp.about();
+									mainApp.about();
 								}
 							});
 		} else {
@@ -66,7 +66,7 @@ public class OSXAdapter extends ApplicationAdapter {
 														"MyApp instance detached from listener");
 		}
 	}
-	
+
 	@Override
 	public void handlePreferences(ApplicationEvent ae) {
 		if (mainApp != null) {
@@ -77,7 +77,7 @@ public class OSXAdapter extends ApplicationAdapter {
 														"detached from listener");
 		}
 	}
-	
+
 	@Override
 	public void handleQuit(ApplicationEvent ae) {
 		if (mainApp != null) {
@@ -100,8 +100,8 @@ public class OSXAdapter extends ApplicationAdapter {
 														"from listener");
 		}
 	}
-	
-	
+
+
 	// The main entry-point for this functionality.  This is the only method
 	// that needs to be called at runtime, and it can easily be done using
 	// reflection (see MyApp.java) 
@@ -109,13 +109,13 @@ public class OSXAdapter extends ApplicationAdapter {
 		if (theApplication == null) {
 			theApplication = new com.apple.eawt.Application();
 		}			
-		
+
 		if (theAdapter == null) {
 			theAdapter = new OSXAdapter(inApp);
 		}
 		theApplication.addApplicationListener(theAdapter);
 	}
-	
+
 	// Another static entry point for EAWT functionality.  Enables the 
 	// "Preferences..." menu item in the application menu. 
 	public static void enablePrefs(boolean enabled) {

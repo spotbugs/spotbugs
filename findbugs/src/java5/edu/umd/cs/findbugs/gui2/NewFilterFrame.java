@@ -59,9 +59,9 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 @SuppressWarnings("serial")
 public class NewFilterFrame extends FBDialog
 {
-	
+
 	private JList list = new JList();
-	
+
 	private static NewFilterFrame instance;
 	public static void open()
 	{
@@ -80,7 +80,7 @@ public class NewFilterFrame extends FBDialog
 		instance.dispose();
 		instance = null;
 	}
-	
+
 	private NewFilterFrame()
 	{
 		super(PreferencesFrame.getInstance());
@@ -93,12 +93,12 @@ public class NewFilterFrame extends FBDialog
 			}
 		});
 		setLayout(new BorderLayout());
-		
+
 		JPanel north = new JPanel();
 		north.setLayout(new BoxLayout(north, BoxLayout.X_AXIS));
 		north.add(Box.createHorizontalStrut(3));
 		north.add(new JLabel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.filter_bugs_lbl", "Filter out all bugs whose") + " "));
-		
+
 		//Argh divider
 		Sortables[] valuesWithoutDivider=new Sortables[Sortables.values().length-1];
 		int index=0;
@@ -111,12 +111,12 @@ public class NewFilterFrame extends FBDialog
 				index++;
 			}
 		}
-		
+
 		final JComboBox comboBox = new JComboBox(valuesWithoutDivider);
 		comboBox.setRenderer(new ListCellRenderer()
 		{
 			final Color SELECTED_BACKGROUND = new Color(183, 184, 204);
-			
+
 			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
 			{
 				JLabel result = new JLabel();
@@ -184,7 +184,7 @@ public class NewFilterFrame extends FBDialog
 		south.add(Box.createHorizontalStrut(2));
 		south.add(cancelButton);
 		south.add(Box.createHorizontalStrut(3));
-		
+
 		list.addMouseListener(new MouseAdapter()
 		{
 			@Override
@@ -210,16 +210,16 @@ public class NewFilterFrame extends FBDialog
 				}
 			}
 		});
-		
+
 		add(north, BorderLayout.NORTH);
 		add(Box.createHorizontalStrut(2), BorderLayout.WEST);
 		add(new JScrollPane(list), BorderLayout.CENTER);
 		add(Box.createHorizontalStrut(2), BorderLayout.EAST);
 		add(south, BorderLayout.SOUTH);
-		
+
 		// Populate the box with initial values
 		comboBox.getActionListeners()[0].actionPerformed(null);
-		
+
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter()
 		{
@@ -229,11 +229,11 @@ public class NewFilterFrame extends FBDialog
 				close();
 			}
 		});
-		
+
 		setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.create_new_filter_ttl", "Create New Filter"));
 		pack();
 	}
-	
+
 	public static void main(String[] args)
 	{
 		new NewFilterFrame().setDefaultCloseOperation(EXIT_ON_CLOSE);

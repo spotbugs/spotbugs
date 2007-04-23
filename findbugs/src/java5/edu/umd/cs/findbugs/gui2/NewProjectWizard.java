@@ -59,7 +59,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 public class NewProjectWizard extends FBDialog
 {
 	private EmptyBorder border = new EmptyBorder(5, 5, 5, 5);
-	
+
 	private Project project;
 	private boolean projectChanged = false;
 	private FBFileChooser chooser = new FBFileChooser();
@@ -79,29 +79,29 @@ public class NewProjectWizard extends FBDialog
 			return edu.umd.cs.findbugs.L10N.getLocalString("file.accepted_extensions", "Class archive files (*.[jwes]ar, *.zip)");
 		}
 	};
-	
+
 	private JList analyzeList = new JList();
 	private DefaultListModel analyzeModel = new DefaultListModel();
 
 	private JTextField projectName = new JTextField();
 	private JList auxList = new JList();
 	private DefaultListModel auxModel = new DefaultListModel();
-	
+
 	private JList sourceList = new JList();
 	private DefaultListModel sourceModel = new DefaultListModel();
-	
+
 	private JButton finishButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.finish_btn", "Finish"));
 	private JButton cancelButton = new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.cancel_btn", "Cancel"));
-	
+
 	private JComponent[] wizardComponents = new JComponent[3];
 	private int currentPanel;
-	
+
 	public NewProjectWizard()
 	{
 		this(null);
 		finishButton.setEnabled(false);
 	}
-	
+
 	/**
 	 * @param curProject the project to populate from, or null to start a new one
 	 */
@@ -109,58 +109,58 @@ public class NewProjectWizard extends FBDialog
 	{
 		project = curProject;
 		boolean temp = false;
-		
+
 		if(curProject == null)
 			setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.new_item", "New Project"));
 		else{
 			setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.reconfig", "Reconfigure"));
 			temp = true;
 		}
-		
+
 		final boolean reconfig = temp;
-		
+
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new GridLayout(3,1));
-		
-		
+
+
 		wizardComponents[0] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.class_jars_dirs_lbl", "Class archives and directories to analyze:"), 
 				analyzeList, analyzeModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive);
-		
+
 		wizardComponents[1] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.aux_class_lbl", "Auxiliary class locations:"), 
 				auxList, auxModel, JFileChooser.FILES_AND_DIRECTORIES, directoryOrArchive);
-		
+
 		wizardComponents[2] = createFilePanel(edu.umd.cs.findbugs.L10N.getLocalString("dlg.source_dirs_lbl", "Source directories:"), sourceList, sourceModel, JFileChooser.FILES_AND_DIRECTORIES, null);
-				
+
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
 		if (MainFrame.isMacLookAndFeel()) {
 			buttons.add(Box.createHorizontalStrut(5));
 			buttons.add(cancelButton);
 			buttons.add(Box.createHorizontalStrut(5));
-		    buttons.add(finishButton);
+			buttons.add(finishButton);
 		} else {
 			buttons.add(Box.createHorizontalStrut(5));
 			buttons.add(finishButton);
 			buttons.add(Box.createHorizontalStrut(5));
-		    buttons.add(cancelButton);
+			buttons.add(cancelButton);
 		}
 		finishButton.addActionListener(new ActionListener()
 		{
 			boolean keepGoing = false;
 			private boolean displayWarningAndAskIfWeShouldContinue(String msg, String title) {
 				if (keepGoing) return true;
-                boolean result =  JOptionPane.showConfirmDialog(NewProjectWizard.this, msg, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION;
+				boolean result =  JOptionPane.showConfirmDialog(NewProjectWizard.this, msg, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION;
 				if (result) keepGoing = true;
 				return result;
 
 			}
 			public void actionPerformed(ActionEvent evt)
 			{
-                
+
 				 for (int i = 0; i < analyzeModel.getSize(); i++){
 					File temp = new File((String)analyzeModel.get(i));
 					if(!temp.exists() && directoryOrArchive.accept(temp)) { 
-                        if (!displayWarningAndAskIfWeShouldContinue(temp.getName()+" " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), 
+						if (!displayWarningAndAskIfWeShouldContinue(temp.getName()+" " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), 
 								edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file"))) return;
 
 					}
@@ -169,67 +169,67 @@ public class NewProjectWizard extends FBDialog
 				 for (int i = 0; i < sourceModel.getSize(); i++){
 					File temp = new File((String)sourceModel.get(i));
 					if(!temp.exists() && directoryOrArchive.accept(temp)) { 
-                        if (!displayWarningAndAskIfWeShouldContinue(temp.getName()+" " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), 
+						if (!displayWarningAndAskIfWeShouldContinue(temp.getName()+" " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), 
 								edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file"))) return;
 					}
 				}
-                for (int i = 0; i < auxModel.getSize(); i++){
+				for (int i = 0; i < auxModel.getSize(); i++){
 					File temp = new File((String)auxModel.get(i));
 					if(!temp.exists() && directoryOrArchive.accept(temp)) { 
 						if (!displayWarningAndAskIfWeShouldContinue(temp.getName()+" " + edu.umd.cs.findbugs.L10N.getLocalString("dlg.invalid_txt", " is invalid."), 
-                                edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file"))) return;
+								edu.umd.cs.findbugs.L10N.getLocalString("dlg.error_ttl", "Can't locate file"))) return;
 					}
 				}
 				Project p;
-                boolean resetSettings;
+				boolean resetSettings;
 				if (project==null)
 				{
 					p=new Project();
-                	resetSettings=true;
+					resetSettings=true;
 				}
 				else
 				{
-                	p=project;
+					p=project;
 					resetSettings=false;
 				}
 					//First clear p's old files, otherwise we can't remove a file once an analysis has been performed on it	
-                int numOldFiles= p.getFileCount();
+				int numOldFiles= p.getFileCount();
 				for (int x=0; x< numOldFiles;x++)
 					p.removeFile(0);	
-				
-                int numOldAuxFiles=p.getNumAuxClasspathEntries();
+
+				int numOldAuxFiles=p.getNumAuxClasspathEntries();
 				for (int x=0; x< numOldAuxFiles;x++)
 					p.removeAuxClasspathEntry(0);
-				
-                int numOldSrc=p.getNumSourceDirs();
+
+				int numOldSrc=p.getNumSourceDirs();
 				for (int x=0; x< numOldSrc;x++)
 					p.removeSourceDir(0);
-				
-                //Now that p is cleared, we can add in all the correct files.
+
+				//Now that p is cleared, we can add in all the correct files.
 				for (int i = 0; i < analyzeModel.getSize(); i++)
 					p.addFile((String) analyzeModel.get(i));
 				for (int i = 0; i < auxModel.getSize(); i++)
-                    p.addAuxClasspathEntry((String) auxModel.get(i));
+					p.addAuxClasspathEntry((String) auxModel.get(i));
 				for (int i = 0; i < sourceModel.getSize(); i++)
 					p.addSourceDir((String) sourceModel.get(i));
 				p.setProjectName(projectName.getText());
-                if (keepGoing) {
+				if (keepGoing) {
 					MainFrame.getInstance().setProject(p);
 					List<String> possibleDirectories=p.getSourceDirList();
 					MainFrame.getInstance().setSourceFinder(new SourceFinder());
-                    MainFrame.getInstance().getSourceFinder().setSourceBaseList(possibleDirectories);
+					MainFrame.getInstance().getSourceFinder().setSourceBaseList(possibleDirectories);
 				}
 				else if (project == null || (projectChanged && JOptionPane.showConfirmDialog(NewProjectWizard.this, edu.umd.cs.findbugs.L10N.getLocalString("dlg.project_settings_changed_lbl", "Project settings have been changed.  Perform a new analysis with the changed files?"), edu.umd.cs.findbugs.L10N.getLocalString("dlg.redo_analysis_question_lbl", "Redo analysis?"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION))
 					new AnalyzingDialog(p,resetSettings);
 
 				if(reconfig == true)
 					MainFrame.getInstance().setProjectChanged(true);
-				
-        		String name = p.getProjectName();
+
+				String name = p.getProjectName();
 				if(name == null)
 					name = Project.UNNAMED_PROJECT;
 				MainFrame.getInstance().setTitle(MainFrame.TITLE_START_TXT + name);
-                
+
 				dispose();
 			}
 		});
@@ -240,12 +240,12 @@ public class NewProjectWizard extends FBDialog
 				dispose();
 			}
 		});
-		
+
 		JPanel south = new JPanel(new BorderLayout());
 		south.add(new JSeparator(), BorderLayout.NORTH);
 		south.add(buttons, BorderLayout.EAST);
-		
-		
+
+
 		if (curProject != null)
 		{
 			for (String i : curProject.getFileList()) 
@@ -264,16 +264,16 @@ public class NewProjectWizard extends FBDialog
 			//If project is null, disable finish button until classes are added
 			finishButton.setEnabled(false);
 		}
-		
+
 		//loadPanel(0);
 		loadAllPanels(mainPanel);
 		add(mainPanel, BorderLayout.CENTER);
 		add(south, BorderLayout.SOUTH);
 		add(createTextFieldPanel("Project name (i.e., description)", projectName), 
 				BorderLayout.NORTH);
-			
+
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		
+
 //		pack();
 		setModal(true);
 		setVisible(true);
@@ -281,12 +281,12 @@ public class NewProjectWizard extends FBDialog
 
 	private JComponent createTextFieldPanel(String label, JTextField textField) {
 		JPanel myPanel = new JPanel(new BorderLayout());
-		
-        myPanel.add(new JLabel(label), BorderLayout.NORTH);
+
+		myPanel.add(new JLabel(label), BorderLayout.NORTH);
 		myPanel.add(textField, BorderLayout.CENTER);
-		
+
 		return myPanel;
-    }
+	}
 	/**
 	 * @param label TODO
 	 * 
@@ -401,19 +401,19 @@ public class NewProjectWizard extends FBDialog
 			}
 		});
 	}
-	
+
 	@Override
 	public void addNotify(){
 		super.addNotify();
-		
+
 		for(JComponent component : wizardComponents){
 			setFontSizeHelper(component.getComponents(), Driver.getFontSize());
 		}
-		
+
 		pack();
-		
+
 		int width = super.getWidth();
-		
+
 		if(width < 600)
 			width = 600;
 		setSize(new Dimension(width, 500));

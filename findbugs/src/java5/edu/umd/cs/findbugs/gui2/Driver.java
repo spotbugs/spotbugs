@@ -52,11 +52,11 @@ import edu.umd.cs.findbugs.gui.FindBugsFrame;
  * 
  */
 public class Driver {
-	
+
 	private static float fontSize = 12;
 	private static boolean docking = true;
 	private static SplashFrame splash;
-	
+
 	public static void main(String[] args) throws Exception {
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
 		{
@@ -64,18 +64,18 @@ public class Driver {
 			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "FindBugs");	
 			Debug.println("Mac OS detected");
 		}
-		
+
 		splash = new SplashFrame();
 		splash.setVisible(true);
-		
-				
+
+
 		try {
 			Class.forName("net.infonode.docking.DockingWindow");
 			Class.forName("edu.umd.cs.findbugs.gui2.DockLayout");
 		} catch (Exception e) {
 			docking = false;
 		}
-		
+
 		for(int i = 0; i < args.length; i++){
 			if((args[i].equals("-f")) && (i+1 < args.length)){
 				float num = 0;
@@ -88,7 +88,7 @@ public class Driver {
 				}
 				fontSize = num;
 			}
-			
+
 			if(args[i].startsWith("--font=")){
 				float num = 0;
 				try{
@@ -99,23 +99,23 @@ public class Driver {
 				}
 				fontSize = num;
 			}
-			
+
 			if(args[i].equals("-clear")){
 				GUISaveState.clear();
 				System.exit(0);
 			}
-			
+
 			if (args[i].equals("-d") || args[i].equals("--nodock"))
 				docking = false;
 		}
-		
+
 		try {
 			GUISaveState.loadInstance();
 		} catch (RuntimeException e) {
 			GUISaveState.clear();
 			e.printStackTrace();	
 		}
-		
+
 		if(fontSize == 12 && GUISaveState.getInstance().getFontSize() != 12)
 			fontSize = GUISaveState.getInstance().getFontSize();
 		else
@@ -136,11 +136,11 @@ public class Driver {
 		else
 			factory = new FindBugsLayoutManagerFactory(SplitLayout.class.getName());
 		MainFrame.makeInstance(factory);
-		
+
 		splash.setVisible(false);
 		splash.dispose();
 	}
-	
+
 	public static void removeSplashScreen() {
 		splash.setVisible(false);
 		splash.dispose();
@@ -149,7 +149,7 @@ public class Driver {
 	{
 		return docking;
 	}
-	
+
 	public static float getFontSize(){
 		return fontSize;
 	}

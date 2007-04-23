@@ -50,12 +50,12 @@ import edu.umd.cs.findbugs.gui2.SortableStringComparator;
  *
  */
 public class BugSet implements Iterable<BugLeafNode>{
-	
+
 	private HashList<BugLeafNode> mainList;
 	private HashMap<StringPair,BugSet> doneMap;
 	private HashMap<StringPair,Boolean>   doneContainsMap;
 	private HashMap<Sortables,HashList<String>> sortablesToStrings;
-	
+
 
 	private static BugSet mainBugSet=null;
 
@@ -69,7 +69,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	{
 		return mainBugSet;
 	}
-	
+
 	/**
 	 * Gets all the string values out of the bugs in the set
 	 * @param s The Sortables you want all values for
@@ -94,12 +94,12 @@ public class BugSet implements Iterable<BugLeafNode>{
 		doneContainsMap=new HashMap<StringPair,Boolean>();
 		cacheSortables();
 	}
-	
+
 	BugSet(BugCollection bugCollection) {
 		this(Collections.EMPTY_LIST);
 		for(Iterator<BugInstance> i = bugCollection.iterator(); i.hasNext(); )
 			mainList.add(new BugLeafNode(i.next()));
-		
+
 	}
 	/**
 	 * Sets the BugSet passed in to be the mainBugSet, this should always match up with the data set in the BugTreeModel
@@ -111,7 +111,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 		bs.sortList();
 		bs.cacheSortables();
 	}
-	
+
 	/**
 	 * we cache all values of each sortable that appear in the BugSet as we create it using cacheSortables, this makes it
 	 * possible to only show branches that actually have bugs in them, and makes it faster by caching the results.
@@ -125,19 +125,19 @@ public class BugSet implements Iterable<BugLeafNode>{
 				HashList<String> list=new HashList<String>();
 				sortablesToStrings.put(key,list);
 			}
-		
+
 		ArrayList<BugLeafNode> bugNodes=new ArrayList<BugLeafNode>();
 		for(BugLeafNode p:mainList)
 		{
 			if (ProjectSettings.getInstance().getAllMatchers().match(p.getBug()))
 				bugNodes.add(p);
 		}
-		
+
 		for (BugLeafNode b:bugNodes)
 		{
 			BugInstance bug=b.getBug();
 			BugPattern bugP=bug.getBugPattern();
-			
+
 			if (bugP==null)
 			{
 				assert false;
@@ -149,19 +149,19 @@ public class BugSet implements Iterable<BugLeafNode>{
 				if (key != Sortables.DIVIDER)
 				{
 					HashList<String> list=sortablesToStrings.get(key);
-					
+
 					String value=key.getFrom(bug);
 					if (!list.contains(value))
 						list.add(value);
 					sortablesToStrings.put(key,list);
 				}
 		}	
-		
+
 		for (Sortables key: Sortables.values())
 			if (key != Sortables.DIVIDER)
 				Collections.sort(sortablesToStrings.get(key));
 	}
-	
+
 	/** used to update the status bar in mainframe with the number of bugs that are filtered out */ 
 	static int countFilteredBugs()
 	{
@@ -173,7 +173,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 
 		return result;
 	}
-		
+
 	/**
 	 * Copy constructor, also used to make sure things are recalculated
 	 * @param copySet
@@ -186,7 +186,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 		doneContainsMap=new HashMap<StringPair,Boolean>();
 		cacheSortables();
 	}
-	
+
 
 	/**
 	 * A String pair has a key and a value.  The key is the general category ie: Type
@@ -205,13 +205,13 @@ public class BugSet implements Iterable<BugLeafNode>{
 		if (doneMap.containsKey(keyValuePair))
 			return doneMap.get(keyValuePair);
 		ArrayList<BugLeafNode> bugs=new ArrayList<BugLeafNode>();
-		
+
 		for(BugLeafNode b:mainList)
 		{
 			if (b.matches(keyValuePair))
 				bugs.add(b);
 		}
-		
+
 		BugSet temp=new BugSet(bugs);
 		doneMap.put(keyValuePair,temp);
 		return temp;
@@ -225,7 +225,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 		final List<Sortables> order = MainFrame.getInstance().getSorter().getOrderAfterDivider();
 //		for (int i = order.size() - 1; i >= 0; i--)
 //			Collections.sort(mainList, order.get(i).getBugLeafNodeComparator());
-		
+
 		Collections.sort(mainList, new Comparator<BugLeafNode>(){
 			public int compare(BugLeafNode one, BugLeafNode two)
 			{
@@ -240,7 +240,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 			}
 		});
 	}
-	
+
 	/**
 	 * 
 	 * Contains takes a key/value pair
@@ -252,7 +252,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 	{
 		if (doneContainsMap.containsKey(keyValuePair))
 			return doneContainsMap.get(keyValuePair);
-		
+
 		for(BugLeafNode p:filterNoCache().mainList)
 		{
 			if (p.matches(keyValuePair))
@@ -264,8 +264,8 @@ public class BugSet implements Iterable<BugLeafNode>{
 		doneContainsMap.put(keyValuePair,false);
 		return false;
 	}
-	
-	
+
+
 	/**
 	 *Gives you back the BugSet containing all bugs that match your query
 	 */
@@ -279,7 +279,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 
 		return result;
 	}
-	
+
 	public int sizeUnfiltered()
 	{
 		return mainList.size();
@@ -293,19 +293,19 @@ public class BugSet implements Iterable<BugLeafNode>{
 	{
 		return mainList.indexOf(p);
 	}
-	
+
 	public BugLeafNode getUnfiltered(int index)
 	{
 		return mainList.get(index);
 	}
-	
+
 	public Iterator<BugLeafNode> iterator()
 	{	
 		return mainList.iterator();
 	}
-	
+
 	////////Filtered API
-	
+
 	BugSet(ArrayList<BugLeafNode> filteredSet, boolean cacheSortables)
 	{
 		this.mainList=new HashList<BugLeafNode>((ArrayList<BugLeafNode>)filteredSet.clone());
@@ -314,10 +314,10 @@ public class BugSet implements Iterable<BugLeafNode>{
 		if (cacheSortables)
 			cacheSortables();
 	}
-	
+
 	public BugSet filterNoCache()
 	{
-		
+
 		Matcher m=ProjectSettings.getInstance().getAllMatchers();
 		ArrayList<BugLeafNode> people=new ArrayList<BugLeafNode>();
 		for(BugLeafNode p:mainList)
@@ -327,7 +327,7 @@ public class BugSet implements Iterable<BugLeafNode>{
 		}
 		return new BugSet(people,false);
 	}
-	
+
 	public BugSet getBugsMatchingFilter(Matcher m)
 	{
 		ArrayList<BugLeafNode> people=new ArrayList<BugLeafNode>();
@@ -338,17 +338,17 @@ public class BugSet implements Iterable<BugLeafNode>{
 		}
 		return new BugSet(people,false);
 	}
-	
+
 	public int size()
 	{
 		return filterNoCache().sizeUnfiltered();
 	}
-	
+
 	public int indexOf(BugLeafNode p)
 	{
 		return filterNoCache().indexOfUnfiltered(p);
 	}
-	
+
 	public BugLeafNode get(int index)
 	{
 		return filterNoCache().getUnfiltered(index);

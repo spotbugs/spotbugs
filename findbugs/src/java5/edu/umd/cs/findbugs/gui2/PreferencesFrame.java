@@ -91,13 +91,13 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
  */
 @SuppressWarnings("serial")
 public class PreferencesFrame extends FBDialog {
-	
+
 	private static int PROPERTIES_TAB = 0;
 	private static int FILTERS_TAB = 1;
 	private static int SUPPRESSIONS_TAB = 2;
-	
+
 	JTabbedPane mainTabPane;
-	
+
 	private static PreferencesFrame instance;
 	private CheckBoxList filterCheckBoxList = new CheckBoxList();
 	private UneditableTableModel suppressionTableModel;
@@ -107,7 +107,7 @@ public class PreferencesFrame extends FBDialog {
 	JButton removeButton;
 	JButton removeAllButton;
 	boolean frozen=false;
-	
+
 	//Variables for Properties tab.
 	private JTextField tabTextField;
 	private JTextField fontTextField;
@@ -115,36 +115,36 @@ public class PreferencesFrame extends FBDialog {
 	private static int TAB_MAX = 20;
 	private static int FONT_MIN = 10;
 	private static int FONT_MAX = 99;
-	
+
 	public static PreferencesFrame getInstance()
 	{
 //		MainFrame.getInstance().getSorter().freezeOrder();
 		if(instance == null)
 			instance = new PreferencesFrame();
-		
+
 		return instance;
 	}
-	
+
 	private PreferencesFrame(){
 		setTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.fil_sup_ttl", "Filters/Suppressions"));
 		setModal(true);
-		
+
 		mainTabPane = new JTabbedPane();
-		
+
 		mainTabPane.add("Properties", createPropertiesPane());
-		
+
 		mainTabPane.add(edu.umd.cs.findbugs.L10N.getLocalString("pref.filters", "Filters"), createFilterPane());		
 
 		mainTabPane.add(edu.umd.cs.findbugs.L10N.getLocalString("pref.suppressions_tab", "Suppressions"), createSuppressionPane());
 		MainFrame.getInstance().updateStatusBar();
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-		
+
 		JPanel top = new JPanel();
 		top.setLayout(new BoxLayout(top, BoxLayout.X_AXIS));
 		top.add(Box.createHorizontalStrut(5));
 		top.add(mainTabPane);
 		top.add(Box.createHorizontalStrut(5));
-		
+
 		JPanel bottom = new JPanel();
 		bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
 		bottom.add(Box.createHorizontalGlue());
@@ -157,23 +157,23 @@ public class PreferencesFrame extends FBDialog {
 				TreeModel bt= (MainFrame.getInstance().getTree().getModel());
 				if (bt instanceof BugTreeModel)		
 					((BugTreeModel)bt).checkSorter();
-				
+
 				resetPropertiesPane();
 			}
 		}));
 		bottom.add(Box.createHorizontalStrut(5));
-		
+
 		add(Box.createVerticalStrut(5));
 		add(top);
 		add(Box.createVerticalStrut(5));
 		add(bottom);
 		add(Box.createVerticalStrut(5));
-		
+
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		
+
 		pack();
 	}
-	
+
 //	/**
 //	 * Creates the general tab. This lets the user change the font
 //	 * size and the total number of possible previous comments.
@@ -194,34 +194,34 @@ public class PreferencesFrame extends FBDialog {
 //		return generalPanel;
 //	}
 //	
-	
+
 	private JPanel createPropertiesPane()
 	{
 		JPanel contentPanel = new JPanel(new BorderLayout());
 		JPanel mainPanel = new JPanel();
-		
+
 		float currFS = Driver.getFontSize();
-		
+
 		JPanel temp = new JPanel();
 		temp.add(new JLabel("Tab Size"));
 		tabTextField = new JTextField(Integer.toString(GUISaveState.getInstance().getTabSize()));
 		tabTextField.setPreferredSize(new Dimension((int)(currFS*2), (int)(currFS*1.3)));
 		temp.add(tabTextField);
-		
+
 		mainPanel.add(temp);
 		mainPanel.add(Box.createVerticalStrut(5));
-		
+
 		temp = new JPanel();
 		temp.add(new JLabel("Font Size"));
 		fontTextField = new JTextField(Float.toString(GUISaveState.getInstance().getFontSize()));
 		fontTextField.setPreferredSize(new Dimension((int)(currFS*3), (int)(currFS*1.3)));
 		temp.add(fontTextField);
-		
+
 		mainPanel.add(temp);
 		mainPanel.add(Box.createVerticalGlue());
-		
+
 		contentPanel.add(mainPanel, BorderLayout.CENTER);
-		
+
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.add(new JButton(new AbstractAction("Apply")
 		{
@@ -231,7 +231,7 @@ public class PreferencesFrame extends FBDialog {
 				changeFontSize();
 			}
 		}));
-		
+
 		bottomPanel.add(new JButton(new AbstractAction("Reset")
 		{
 			public void actionPerformed(ActionEvent evt)
@@ -239,22 +239,22 @@ public class PreferencesFrame extends FBDialog {
 				resetPropertiesPane();
 			}
 		}));
-		
+
 		contentPanel.add(bottomPanel, BorderLayout.SOUTH);
-		
+
 		addWindowListener(new WindowAdapter(){
 			@Override
 			public void windowDeactivated(WindowEvent e) {
 				resetPropertiesPane();
 			}
 		});
-		
+
 		return contentPanel;
 	}
-	
+
 	private void changeTabSize(){
 		int tabSize = 0;
-		
+
 		try{
 			tabSize = Integer.decode(tabTextField.getText()).intValue();					
 		}
@@ -263,13 +263,13 @@ public class PreferencesFrame extends FBDialog {
 					"Tab Size Error", JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
-		
+
 		if(tabSize < TAB_MIN || tabSize > TAB_MAX){
 			JOptionPane.showMessageDialog(instance,	"Tab size excedes range ("+TAB_MIN+" - "+TAB_MAX+").",
 					"Tab Size Excedes Range", JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
-				
+
 		if(tabSize != GUISaveState.getInstance().getTabSize()){
 			GUISaveState.getInstance().setTabSize(tabSize);
 			MainFrame.getInstance().displayer.clearCache();
@@ -277,10 +277,10 @@ public class PreferencesFrame extends FBDialog {
 			MainFrame.getInstance().syncBugInformation();
 		}
 	}
-	
+
 	private void changeFontSize(){
 		float fontSize = 0;
-		
+
 		try{
 			fontSize = Float.parseFloat(fontTextField.getText());				
 		}
@@ -289,26 +289,26 @@ public class PreferencesFrame extends FBDialog {
 					"Font Size Error", JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
-				
+
 		if(fontSize < FONT_MIN || fontSize > FONT_MAX){
 			JOptionPane.showMessageDialog(instance,	"Font size excedes range ("+FONT_MIN+" - "+FONT_MAX+").",
 					"Font Size Excedes Range", JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
-		
+
 		if(fontSize != GUISaveState.getInstance().getFontSize()){
 			GUISaveState.getInstance().setFontSize(fontSize);
 			JOptionPane.showMessageDialog(instance,	"To implement the new font size please restart FindBugs.",
 					"Changing Font", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
-	
+
 	private void resetPropertiesPane()
 	{
 		tabTextField.setText(Integer.toString(GUISaveState.getInstance().getTabSize()));
 		fontTextField.setText(Float.toString(GUISaveState.getInstance().getFontSize()));
 	}
-	
+
 	/**
 	 * Create list of particular bugs that are suppressed by
 	 * the user.
@@ -320,19 +320,19 @@ public class PreferencesFrame extends FBDialog {
 		suppressP.setLayout(new BorderLayout());
 		final JTable table=new JTable();
 		JScrollPane scrollable= new JScrollPane(table);
-		
+
 		suppressionTableModel=new UneditableTableModel(new Object[0][4],new String[]{edu.umd.cs.findbugs.L10N.getLocalString("pref.name", "Name"),edu.umd.cs.findbugs.L10N.getLocalString("pref.type", "Type"),edu.umd.cs.findbugs.L10N.getLocalString("pref.description", "Description"),edu.umd.cs.findbugs.L10N.getLocalString("pref.comments", "Comments")});
 		table.setModel(suppressionTableModel);
 		table.doLayout();
 		table.setCellEditor(null);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);	
 		table.setRowHeight((int)(Driver.getFontSize() * 1.25) + table.getRowMargin());
-		
+
 		suppressP.add(new JLabel(edu.umd.cs.findbugs.L10N.getLocalString("pref.suppressions", "Bug Suppressions")),BorderLayout.NORTH);
 		suppressP.add(scrollable,BorderLayout.CENTER);
 		suppressP.add(new JLabel(edu.umd.cs.findbugs.L10N.getLocalString("pref.suppressions", "Bug Suppressions")));
 		suppressP.add(scrollable);
-		
+
 		ActionListener buttonListener=new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				int[] selectedBugs=table.getSelectedRows();
@@ -343,18 +343,18 @@ public class PreferencesFrame extends FBDialog {
 					BugInstance b=ProjectSettings.getInstance().getSuppressionMatcher().get(rowNumber);
 					ProjectSettings.getInstance().getSuppressionMatcher().remove(b);//Suppressions IS the bugSuppression filter
 					suppressionTableModel.removeRow(rowNumber);
-					
+
 					if (ProjectSettings.getInstance().getAllMatchers().match(b))
 					{
 						TreePath fullPathToBug=((BugTreeModel)(MainFrame.getInstance().getTree().getModel())).getPathToNewlyUnsuppressedBug(b);
 						FilterMatcher.notifyListeners(FilterListener.Action.UNSUPPRESSING,fullPathToBug);				
 					}
 				}
-				
+
 				MainFrame.getInstance().updateStatusBar();
 			}
 		};
-		
+
 		unsuppressButton=new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.unsuppress_btn", "Unsuppress"));
 
 		table.addKeyListener(new KeyListener(){
@@ -370,12 +370,12 @@ public class PreferencesFrame extends FBDialog {
 			public void keyReleased(KeyEvent arg0) 
 			{
 			}
-			
+
 		});
-		
+
 //		unsuppressButton.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,0),JPanel.WHEN_IN_FOCUSED_WINDOW);
 //		unsuppressButton.getActionMap().put(JPanel.WHEN_IN_FOCUSED_WINDOW,buttonListener);
-		
+
 		unsuppressButton.addActionListener(buttonListener);
 		suppressP.add(unsuppressButton,BorderLayout.SOUTH);
 
@@ -393,7 +393,7 @@ public class PreferencesFrame extends FBDialog {
 		JPanel filterPanel = new JPanel();
 		filterPanel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
-		
+
 		gbc.gridheight = 4;
 		gbc.gridwidth = 1;
 		gbc.gridx = 0;
@@ -404,7 +404,7 @@ public class PreferencesFrame extends FBDialog {
 		//filterPanel.add(new JScrollPane(new CheckBoxList(new JCheckBox[]{ new JCheckBox("Dummy Filter #1 with an extremely long name that should necessitate the use of a scroll bar"), new JCheckBox("Dummy Filter #2") })), gbc);
 		filterPanel.add(new JScrollPane(filterCheckBoxList), gbc);
 		updateFilterPanel();
-		
+
 		gbc.gridheight = 1;
 		gbc.gridx = 1;
 		gbc.gridy = 0;
@@ -419,7 +419,7 @@ public class PreferencesFrame extends FBDialog {
 				NewFilterFrame.open();
 			}
 		});
-		
+
 		gbc.gridy = 1;
 		gbc.insets = new Insets(5, 0, 0, 0);
 		filterPanel.add(removeButton, gbc);
@@ -440,7 +440,7 @@ public class PreferencesFrame extends FBDialog {
 					MainFrame.getInstance().setProjectChanged(true);
 				}
 				updateFilterPanel();
-				
+
 			}
 		});
 		gbc.gridy = 2;
@@ -460,17 +460,17 @@ public class PreferencesFrame extends FBDialog {
 							MainFrame.getInstance().setProjectChanged(true);
 						}
 						updateFilterPanel();
-						
+
 					}
 				});		
 		gbc.gridy = 3;
 		gbc.weighty = 1;
 		gbc.insets = new Insets(0, 0, 0, 0);
 		filterPanel.add(Box.createGlue(), gbc);
-		
+
 		return filterPanel;
 	}
-	
+
 	void updateFilterPanel()
 	{
 		ArrayList<JCheckBox> boxes = new ArrayList<JCheckBox>();
@@ -481,7 +481,7 @@ public class PreferencesFrame extends FBDialog {
 			box.setSelected(i.isActive());
 			boxes.add(box);
 		}
-		
+
 		filterCheckBoxList.setListData(boxes.toArray(new JCheckBox[boxes.size()]));
 	}
 
@@ -496,16 +496,16 @@ public class PreferencesFrame extends FBDialog {
 			return false;
 		}
 	}
-	
+
 	private static class FilterCheckBoxListener implements ItemListener
 	{
 		FilterMatcher filter;
-		
+
 		FilterCheckBoxListener(FilterMatcher filter)
 		{
 			this.filter = filter;
 		}
-		
+
 		public void itemStateChanged(ItemEvent evt)
 		{
 //			RebuildThreadMonitor.waitForRebuild();
@@ -514,7 +514,7 @@ public class PreferencesFrame extends FBDialog {
 			MainFrame.getInstance().setProjectChanged(true);
 		}	
 	}
-	
+
 	public void suppressionsChanged(BugLeafNode bugLeaf)
 	{
 		BugInstance b=bugLeaf.getBug();
@@ -524,10 +524,10 @@ public class PreferencesFrame extends FBDialog {
 		bugData[1]=bp.getType();
 		bugData[2]=b.getMessage();
 		bugData[3]=b.getAnnotationText();
-		
+
 		suppressionTableModel.addRow(bugData);
 	}	
-	
+
 	public void clearSuppressions()
 	{
 		int size=suppressionTableModel.getRowCount();
@@ -544,7 +544,7 @@ public class PreferencesFrame extends FBDialog {
 		addButton.setEnabled(false);
 		removeButton.setEnabled(false);
 	}
-	
+
 	void thaw()
 	{
 		filterCheckBoxList.setEnabled(true);
@@ -553,7 +553,7 @@ public class PreferencesFrame extends FBDialog {
 		removeButton.setEnabled(true);
 		frozen=false;
 	}
-	
+
 	void setSelectedTab(int index)
 	{
 		if(index > 0 && index <= mainTabPane.getTabCount())

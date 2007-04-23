@@ -45,7 +45,7 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 	private static final long serialVersionUID = -5503915081879996968L;
 	private int count=-1;
 	private ArrayList<BugAspects.StringPair> lst = new ArrayList<BugAspects.StringPair>();
-	
+
 	public StringPair last() {
 		return lst.get(lst.size() - 1);
 	}
@@ -65,7 +65,7 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 				return last().key.formatValue(last().value) + " (" + count + ")";
 		}
 	}
-	
+
 	/**
 	 * This is how the numbers after the branches contain the number of bugs in them, even if they aren't the final branch
 	 * @param count
@@ -74,23 +74,23 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 	{
 		this.count=count;
 	}
-	
+
 	public int getCount()
 	{
 		return count;
 	}
-	
+
 	public BugAspects()
 	{
 		super();
 	}
-	
+
 	public BugAspects(BugAspects a)
 	{
 		lst = new ArrayList<StringPair>(a.lst);
 		count = a.count;
 	}
-	
+
 	public void add(StringPair sp) {
 		lst.add(sp);
 	}
@@ -107,7 +107,7 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 		StackedFilterMatcher sfm = new StackedFilterMatcher(filters);
 		return sfm;
 	}
-		 
+
 	public BugSet getMatchingBugs(BugSet theSet)
 	{        
 		return theSet.getBugsMatchingFilter(this.getStackedFilterMatcher());
@@ -116,19 +116,19 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 	{
 		final public Sortables key;
 		final public String value;
-		
+
 		public StringPair(Sortables key, String value)
 		{
 			this.key = key;
 			this.value = value;
 		}
-		
+
 		@Override
 		public int hashCode()
 		{
 			return key.hashCode() + value.hashCode();
 		}
-		
+
 		@Override
 		public boolean equals(Object that)
 		{
@@ -137,7 +137,7 @@ public class BugAspects implements Iterable<BugAspects.StringPair>
 			StringPair thatStringPair = ((StringPair)that);
 			return this.key.equals(thatStringPair.key) && this.value.equals(thatStringPair.value);
 		}
-		
+
 		@Override
 		public String toString()
 		{

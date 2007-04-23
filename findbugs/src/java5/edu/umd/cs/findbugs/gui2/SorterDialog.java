@@ -56,25 +56,25 @@ public class SorterDialog extends FBDialog {
 	private CheckBoxList chBList;
 	JButton sortApply;
 	private static SorterDialog instance;
-	
+
 	public static SorterDialog getInstance()
 	{
 		if (instance==null)
 			instance=new SorterDialog();
 		return instance;
 	}
-	
+
 	@Override
 	public void setVisible(boolean visible)
 	{
 		super.setVisible(visible);
-		
+
 		if (visible){
 			((SorterTableColumnModel)(preview.getColumnModel())).createFrom(MainFrame.getInstance().getSorter());
 			setSorterCheckBoxes();
 		}
 	}
-	
+
 	private SorterDialog()
 	{
 		setTitle("Sort By...");
@@ -97,30 +97,30 @@ public class SorterDialog extends FBDialog {
 		sorter.setLayout(new BorderLayout());
 		preview=new JTableHeader();
 		preview.setColumnModel(new SorterTableColumnModel(Sortables.values()));
-		
+
 		Sortables[] sortList = Sortables.values();
-		
+
 		for(Sortables s : Sortables.values()){
 			if (s == Sortables.DIVIDER)
 				checkBoxSortList.add(new JCheckBox(edu.umd.cs.findbugs.L10N.getLocalString("sort.divider", "[divider]")));
 			else
 				checkBoxSortList.add(new JCheckBox(s.toString()));
 		}
-		
+
 		setSorterCheckBoxes();
-		
+
 		for(int i = 0; i < sortList.length; i++){
 			checkBoxSortList.get(i).addChangeListener(new CheckBoxChangedListener(i));
 		}		
-		
+
 		chBList = new CheckBoxList(checkBoxSortList.toArray(
 				new JCheckBox[checkBoxSortList.size()]));
-				
+
 		insidePanel.add(chBList, BorderLayout.NORTH);
-		
+
 		//insidePanel.add(sorterInfoLabel(), BorderLayout.CENTER);
-		
-		
+
+
 		JPanel bottomPanel=new JPanel();
 		bottomPanel.setLayout(new BorderLayout());
 		//bottomPanel.add(previewLabel,BorderLayout.NORTH);
@@ -138,8 +138,8 @@ public class SorterDialog extends FBDialog {
 		//End of changed code.
 
 		insidePanel.add(bottomPanel,BorderLayout.SOUTH);
-		
-		
+
+
 		sortApply=new JButton(edu.umd.cs.findbugs.L10N.getLocalString("dlg.apply_btn", "Apply"));
 		sortApply.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e)
@@ -151,23 +151,23 @@ public class SorterDialog extends FBDialog {
 		});
 		bottomPanel.add(sortApply,BorderLayout.SOUTH);
 		sorter.add(new JScrollPane(insidePanel), BorderLayout.CENTER);
-		
+
 		return sorter;
 	}
-	
+
 	private class CheckBoxChangedListener implements ChangeListener{
 
 		int indexOfCheckBox;
-		
+
 		public CheckBoxChangedListener(int index){
 			indexOfCheckBox = index;
 		}
-		
+
 		public void stateChanged(ChangeEvent e) {
 				((SorterTableColumnModel)preview.getColumnModel()).setIndexChanged(indexOfCheckBox);
 		}
 	}	
-	
+
 	/**
 	 * Sets the checkboxes in the sorter panel to what is shown in 
 	 * the MainFrame. This assumes that sorterTableColumnModel will 
@@ -178,7 +178,7 @@ public class SorterDialog extends FBDialog {
 		boolean[] chBoxSorterBooleans = MainFrame.getInstance().getSorter().getVisibleColumns();
 		if(chBoxSorterBooleans.length != checkBoxSortList.size())
 			return;
-		
+
 		for(int i = 0; i < checkBoxSortList.size(); i++){
 			checkBoxSortList.get(i).setSelected(chBoxSorterBooleans[i]);
 		}
@@ -188,7 +188,7 @@ public class SorterDialog extends FBDialog {
 	{
 		sortApply.setEnabled(false);
 	}
-	
+
 	void thaw()
 	{
 		sortApply.setEnabled(true);

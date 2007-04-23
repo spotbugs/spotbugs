@@ -91,17 +91,17 @@ public class GUISaveState{
 	private static final String NUMPROJECTS= "NumberOfProjectsToLoad";
 	private static final String NUMANALYSES= "NumberOfAnalysesToLoad";
 	private static final String STARTERDIRECTORY= "Starter Directory";
-	
+
 	private static final String SPLIT_MAIN = "MainSplit";
 	private static final String SPLIT_TREE_COMMENTS = "TreeCommentsSplit";
 	private static final String SPLIT_TOP = "TopSplit";
 	private static final String SPLIT_SUMMARY = "SummarySplit";
-	
+
 	private int splitMain;
 	private int splitTreeComments;
 	private int splitTop;
 	private int splitSummary;
-	
+
 	private File starterDirectoryForLoadBugs;
 	/**
 	 * List of previous comments by the user.
@@ -113,12 +113,12 @@ public class GUISaveState{
 	private ArrayList<File> recentAnalyses;
 	private byte[] dockingLayout;
 	private Rectangle frameBounds;
-	
+
 	private static final String TAB_SIZE = "TabSize";
 	private int tabSize; //Tab size in the source code display.
 	private static final String FONT_SIZE = "FontSize";
 	private float fontSize; //Font size of entire GUI.
-	
+
 	public int getTabSize() {
 		return tabSize;
 	}
@@ -126,7 +126,7 @@ public class GUISaveState{
 	public void setTabSize(int tabSize) {
 		this.tabSize = tabSize;
 	}
-	
+
 	public byte[] getDockingLayout()
 	{
 		return dockingLayout;
@@ -146,7 +146,7 @@ public class GUISaveState{
 		}
 		return result;
 	}
-	
+
 	SorterTableColumnModel getStarterTable()
 	{
 		if (useDefault || (starterTable == null))
@@ -154,7 +154,7 @@ public class GUISaveState{
 
 		return starterTable;
 	}
-	
+
 	private GUISaveState()
 	{
 		recentProjects=new ArrayList<File>();
@@ -162,14 +162,14 @@ public class GUISaveState{
 //		projectsToLocations=new HashMap<String,String>();
 		previousComments=new LinkedList<String>();
 	}
-	
+
 	public static GUISaveState getInstance()
 	{
 		if (instance==null)
 			instance=new GUISaveState();
 		return instance;
 	}
-	
+
 	public ArrayList<File> getRecent(SaveType s)
 	{
 		if (s==SaveType.PROJECT)
@@ -183,7 +183,7 @@ public class GUISaveState{
 	{
 		return recentProjects;
 	}
-	
+
 	public ArrayList<File> getRecentAnalyses()
 	{
 		return recentAnalyses;
@@ -193,7 +193,7 @@ public class GUISaveState{
 	{
 		addRecentFile(f, SaveType.PROJECT);
 	}
-	
+
 	public void addRecentFile(File f, SaveType s)
 	{
 		if (s==SaveType.PROJECT)
@@ -201,12 +201,12 @@ public class GUISaveState{
 		else if (s==SaveType.XML_ANALYSIS)
 			recentAnalyses.add(f);
 	}
-	
+
 	public void projectReused(File f)
 	{
 		projectReused(f, SaveType.PROJECT);
 	}
-	
+
 	public void projectReused(File f, SaveType s)
 	{
 		if (s==SaveType.PROJECT)
@@ -233,12 +233,12 @@ public class GUISaveState{
 				recentAnalyses.add(f);
 			}					}
 	}
-	
+
 	public void projectNotFound(File f)
 	{
 		projectNotFound(f, SaveType.PROJECT);
 	}
-	
+
 	public void projectNotFound(File f, SaveType s)
 	{
 		if (s==SaveType.PROJECT)
@@ -276,28 +276,28 @@ public class GUISaveState{
 		this.starterDirectoryForLoadBugs = f;
 	}
 
-	
+
 	public static void loadInstance()
 	{
 		GUISaveState newInstance=new GUISaveState();
 		newInstance.recentProjects=new ArrayList<File>();
 		newInstance.recentAnalyses=new ArrayList<File>();
 		Preferences p=Preferences.userNodeForPackage(GUISaveState.class);
-		
+
 		newInstance.tabSize = p.getInt(TAB_SIZE, 4);
-		
+
 		newInstance.fontSize = p.getFloat(FONT_SIZE, 12.0f);
-		
+
 		newInstance.starterDirectoryForLoadBugs=new File(p.get(GUISaveState.STARTERDIRECTORY, SystemProperties.getProperty("user.dir")));
-		
+
 		int prevCommentsSize=p.getInt(GUISaveState.PREVCOMMENTSSIZE, 0);
-		
+
 		for (int x=0;x<prevCommentsSize;x++)
 		{
 			String comment=p.get(GUISaveState.COMMENTKEYS[x], "");
 			newInstance.previousComments.add(comment);
 		}
-		
+
 		int size=Math.min(MAXNUMRECENTPROJECTS,p.getInt(GUISaveState.NUMPROJECTS,0));
 		for (int x=0;x<size;x++)
 		{
@@ -331,7 +331,7 @@ public class GUISaveState{
 			newInstance.useDefault=true;
 
 		newInstance.dockingLayout = p.getByteArray(DOCKINGLAYOUT, new byte[0]);
-		
+
 		String boundsString = p.get(FRAME_BOUNDS, null);
 		Rectangle r = new Rectangle(0, 0, 800, 650);
 		if (boundsString != null) {
@@ -350,23 +350,23 @@ public class GUISaveState{
 			} catch (NumberFormatException nfe) { assert true; }
 		}
 		newInstance.frameBounds = r;
-		
+
 		newInstance.splitMain = p.getInt(SPLIT_MAIN, 400);
 		newInstance.splitSummary = p.getInt(SPLIT_SUMMARY, 85);
 		newInstance.splitTop = p.getInt(SPLIT_TOP, -1);
 		newInstance.splitTreeComments = p.getInt(SPLIT_TREE_COMMENTS, 250);
-		
+
 		instance=newInstance;
 	}
-	
+
 	public void save()
 	{	
 		Preferences p=Preferences.userNodeForPackage(GUISaveState.class);
-		
+
 		p.putInt(TAB_SIZE, tabSize);
-		
+
 		p.putFloat(FONT_SIZE, fontSize);
-		
+
 		try {
 			p.put(STARTERDIRECTORY,starterDirectoryForLoadBugs.getCanonicalPath());
 		} catch (IOException e) {
@@ -375,21 +375,21 @@ public class GUISaveState{
 		int sorterLength=MainFrame.getInstance().getSorter().getColumnCount();
 		ArrayList<Sortables> sortables=MainFrame.getInstance().getSorter().getOrder();
 		p.putInt(GUISaveState.SORTERTABLELENGTH, sorterLength);
-		
+
 		String[] sorterKeys=GUISaveState.generateSorterKeys(sorterLength);
 		for (int x=0; x<sorterKeys.length;x++)
 		{
 			p.put(sorterKeys[x], sortables.get(x).prettyName);
 		}
-		
+
 		p.putInt(GUISaveState.PREVCOMMENTSSIZE, previousComments.size());
-		
+
 		for (int x=0; x<previousComments.size();x++)
 		{
 			String comment=previousComments.get(x);
 			p.put(GUISaveState.COMMENTKEYS[x], comment);
 		}
-		
+
 		int size=recentProjects.size();
 		int size2=recentAnalyses.size();
 		while (recentProjects.size()>MAXNUMRECENTPROJECTS)
@@ -400,7 +400,7 @@ public class GUISaveState{
 		{
 			recentAnalyses.remove(0);
 		}
-		
+
 		p.putInt(GUISaveState.NUMPROJECTS,Math.min(size,MAXNUMRECENTPROJECTS));
 		p.putInt(GUISaveState.NUMANALYSES,Math.min(size2,MAXNUMRECENTANALYSES));
 		for (int x=0; x<Math.min(size,MAXNUMRECENTPROJECTS);x++)
@@ -413,17 +413,17 @@ public class GUISaveState{
 			File file=recentAnalyses.get(x);
 			p.put(GUISaveState.RECENTANALYSISKEYS[x],file.getAbsolutePath());			
 		}
-		
+
 		p.putByteArray(DOCKINGLAYOUT, dockingLayout);
-		
+
 		p.put(FRAME_BOUNDS, frameBounds.x+","+frameBounds.y+","+frameBounds.width+","+frameBounds.height);
-	
+
 		p.putInt(SPLIT_MAIN, splitMain);
 		p.putInt(SPLIT_SUMMARY, splitSummary);
 		p.putInt(SPLIT_TOP, splitTop);
 		p.putInt(SPLIT_TREE_COMMENTS, splitTreeComments);
 	}
-		
+
 	static void clear()
 	{
 		Preferences p=Preferences.userNodeForPackage(GUISaveState.class);
@@ -434,7 +434,7 @@ public class GUISaveState{
 		}
 		instance=new GUISaveState();
 	}
-	
+
 	/**
 	 * @return Returns the previousComments.
 	 */

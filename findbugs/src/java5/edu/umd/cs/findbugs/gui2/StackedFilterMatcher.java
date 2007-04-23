@@ -37,25 +37,25 @@ public class StackedFilterMatcher extends FilterMatcher
 {
 	private static final long serialVersionUID = 3958267780332359162L;
 	private FilterMatcher[] filters;
-	
+
 	@Override
 	Sortables getFilterBy()
 	{
 		throw new UnsupportedOperationException("Stacked filter matchers do not filter out a single Sortables, use getFilters()");
 	}
-	
+
 	@Override
 	String getValue()
 	{
 		throw new UnsupportedOperationException("Stacked filter matchers do not filter out a single Sortables's value, use getFilters and getValue individually on returned filters.");
 	}
-	
+
 	public StackedFilterMatcher(FilterMatcher... filters)
 	{
 		super(null, null);
 		this.filters = filters;
 	}
-	
+
 	//If only FilterMatcher's setActive were as simple as this one... not.
 	//See BugTreeModel's long ranting comment about filtering to see the reason for all this
 	//All this does is not force the tree to rebuild when you turn filters for branches on and off
@@ -124,7 +124,7 @@ public class StackedFilterMatcher extends FilterMatcher
 					if (active) whatToDo=BugTreeModel.TreeModification.REMOVERESTRUCTURE;
 					else whatToDo=BugTreeModel.TreeModification.INSERTRESTRUCTURE;
 				}
-			
+
 			if (active==true)
 				this.active=active;
 			((BugTreeModel)(MainFrame.getInstance().getTree().getModel())).sendEvent(event,whatToDo);		
@@ -135,24 +135,24 @@ public class StackedFilterMatcher extends FilterMatcher
 				this.active=active;
 			}
 		}
-		
+
 	}
 
 	public FilterMatcher[] getFilters()
 	{
 		return filters;
 	}
-	
+
 	@Override
 	public boolean match(BugInstance bugInstance)
 	{
 		if (!isActive())
 			return true;
-		
+
 		for (FilterMatcher i : filters)
 			if (i.match(bugInstance))
 				return true;
-		
+
 		return false;
 	}
 
@@ -169,30 +169,30 @@ public class StackedFilterMatcher extends FilterMatcher
 			result.append(filters[filters.length - 1]);
 		return result.toString();
 	}
-	
+
 	@Override
 	public boolean equals(Object o)
 	{
 		if (o == null || !(o instanceof StackedFilterMatcher))
 			return false;
-		
+
 		FilterMatcher[] mine = new FilterMatcher[filters.length];
 		System.arraycopy(this.filters, 0, mine, 0, mine.length);
 		Arrays.sort(mine);
-		
+
 		FilterMatcher[] others = new FilterMatcher[((StackedFilterMatcher)o).filters.length];
 		System.arraycopy(((StackedFilterMatcher)o).filters, 0, others, 0, others.length);
 		Arrays.sort(others);
 
 		return (Arrays.equals(mine, others));
 	}
-	
+
 	@Override
 	public int hashCode()
 	{
 		return filters.hashCode();
 	}
-	
+
 	public static void main(String[] args)
 	{
 		System.out.println(new StackedFilterMatcher(new FilterMatcher[0]).equals(new StackedFilterMatcher(new FilterMatcher[0])));

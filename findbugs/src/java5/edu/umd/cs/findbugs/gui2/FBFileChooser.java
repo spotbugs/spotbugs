@@ -33,42 +33,42 @@ import edu.umd.cs.findbugs.SystemProperties;
  *
  */
 public class FBFileChooser extends JFileChooser {
-	
+
 	public FBFileChooser(){
 		super();
 		assert java.awt.EventQueue.isDispatchThread();
 		this.setCurrentDirectory(GUISaveState.getInstance().getStarterDirectoryForLoadBugs());
 	}
-	
+
 	/**
 	 * Sets size of font
 	 * @param size
 	 */
 	protected void setFontSize(float size){
 		setFont(this.getFont().deriveFont(size));
-		
+
 		setFontSizeHelper(this.getComponents(), size);		
 	}
-	
+
 	/*
 	 * Helps above method, runs through all components recursively.
 	 */
 	protected void setFontSizeHelper(Component[] comps, float size){
 		if(comps.length <= 0)
 			return;
-		
+
 		for(Component comp : comps){
 			comp.setFont(comp.getFont().deriveFont(size));
 			if(comp instanceof Container)
 				setFontSizeHelper(((Container)comp).getComponents(), size);
 		}
 	}
-	
+
 	@Override
 	public void addNotify(){
 		super.addNotify();
 		setFontSize(Driver.getFontSize());
-		
+
 	}
 
 	private static void workAroundJFileChooserBug() {
@@ -83,7 +83,7 @@ public class FBFileChooser extends JFileChooser {
 		catch ( InvocationTargetException e ) { assert false; }
 		catch ( IllegalAccessException e ) { assert false; }
 	}
-	
+
 	@Override
 	public int showOpenDialog(Component parent)
 	{
@@ -91,9 +91,9 @@ public class FBFileChooser extends JFileChooser {
 		int x=super.showOpenDialog(parent);
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
 			workAroundJFileChooserBug();
-		
+
 		GUISaveState.getInstance().setStarterDirectoryForLoadBugs(getCurrentDirectory());
-		
+
 		return x;
 	}
 
@@ -103,9 +103,9 @@ public class FBFileChooser extends JFileChooser {
 		int x=super.showSaveDialog(parent);
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
 			workAroundJFileChooserBug();
-		
+
 		GUISaveState.getInstance().setStarterDirectoryForLoadBugs(getCurrentDirectory());
-		
+
 		return x;
 	}
 
@@ -115,11 +115,11 @@ public class FBFileChooser extends JFileChooser {
 		int x=super.showDialog(parent, approveButtonText);
 		if (SystemProperties.getProperty("os.name").startsWith("Mac"))
 			workAroundJFileChooserBug();
-		
+
 		GUISaveState.getInstance().setStarterDirectoryForLoadBugs(getCurrentDirectory());
-		
+
 		return x;
 	}
 
-	
+
 }

@@ -43,22 +43,22 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 	private FilterWhere mode;
 	protected boolean active;
 	private static HashSet<FilterListener> listeners = new HashSet<FilterListener>();
-	
+
 	public FilterMatcher(StringPair sp)
 	{
 		this(sp.key, sp.value);
 	}
-	
+
 	Sortables getFilterBy()
 	{
 		return filterBy;
 	}
-	
+
 	String getValue()
 	{
 		return value;
 	}
-	
+
 	public FilterMatcher(Sortables filterBy, String value, FilterWhere mode) //0 = exactly; 1 = at or after; 2 = at or before; 3 = not at
 	{
 		this.filterBy = filterBy;
@@ -66,7 +66,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		this.mode = mode;
 		this.active = true;
 	}
-	
+
 	public FilterMatcher(Sortables filterBy, String value)
 	{
 		this.filterBy = filterBy;
@@ -85,17 +85,17 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 				notifyListeners(FilterListener.Action.UNFILTERING, null);
 		}
 	}
-	
+
 	public boolean isActive()
 	{
 		return active;
 	}
-	
+
 	public boolean match(BugInstance bugInstance)
 	{		
 		if (!active)
 			return true;
-		
+
 		SortableStringComparator ssc = new SortableStringComparator(filterBy);
 		switch(mode)
 		{
@@ -106,7 +106,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		default: return true;
 		}
 	}
-	
+
 	@Override
 	public String toString()
 	{
@@ -119,17 +119,17 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 		default: throw new RuntimeException();
 		}
 	}
-	
+
 	public static boolean addFilterListener(FilterListener newListener)
 	{
 		return listeners.add(newListener);
 	}
-	
+
 	public static void removeFilterListener(FilterListener toRemove)
 	{
 		listeners.remove(toRemove);
 	}
-	
+
 	public static void notifyListeners(FilterListener.Action whatsGoingOnCode,
 			TreePath optionalPath) {
 		HashSet<FilterListener> listeners = (HashSet<FilterListener>) FilterMatcher.listeners
@@ -150,7 +150,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 			break;
 		}
 	}
-	
+
 	@Override
 	public boolean equals(Object o)
 	{
@@ -160,7 +160,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 			return true;
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode()
 	{
@@ -171,7 +171,7 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 	{
 		if (this.filterBy != that.filterBy)
 			return (this.filterBy.ordinal() < that.filterBy.ordinal() ? -1 : 1);
-		
+
 		return this.value.compareTo(that.value);
 	}
 }

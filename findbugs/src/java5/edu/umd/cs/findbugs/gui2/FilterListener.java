@@ -28,10 +28,10 @@ import javax.swing.tree.TreePath;
 public interface FilterListener
 {
 	enum Action {FILTERING, UNFILTERING, SUPPRESSING, UNSUPPRESSING};
-	
-	
+
+
 	public void clearCache();
 	public void suppressBug(TreePath path);
 	public void unsuppressBug(TreePath path);
-	
+
 }

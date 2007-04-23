@@ -47,14 +47,14 @@ public class NewFilterFromBug extends FBDialog
 	private HashMap<JRadioButton, Sortables> map = new HashMap<JRadioButton, Sortables>();
 	private JRadioButton selectedRadioButton = null;
 	static List<NewFilterFromBug> listOfAllFrames=new ArrayList<NewFilterFromBug>();
-	
+
 	public NewFilterFromBug(final BugInstance bug)
 	{
 		this.setModal(true);
 		listOfAllFrames.add(this);
 		setLayout(new BorderLayout());
 		add(new JLabel("Filter out all bugs whose..."), BorderLayout.NORTH);
-		
+
 		JPanel center = new JPanel();
 		center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
 		ButtonGroup group = new ButtonGroup();
@@ -74,7 +74,7 @@ public class NewFilterFromBug extends FBDialog
 			center.add(radio);
 		}
 		add(center, BorderLayout.CENTER);
-		
+
 		JPanel south = new JPanel();
 		JButton okButton = new JButton("OK");
 		okButton.addActionListener(new ActionListener()
@@ -93,7 +93,7 @@ public class NewFilterFromBug extends FBDialog
 					{
 						filters.get(filters.indexOf(newFilter)).setActive(true);
 					}
-					
+
 					PreferencesFrame.getInstance().updateFilterPanel();
 					NewFilterFromBug.this.dispose();
 				}
@@ -113,11 +113,11 @@ public class NewFilterFromBug extends FBDialog
 		south.add(Box.createHorizontalStrut(5));
 		south.add(cancelButton);
 		add(south, BorderLayout.SOUTH);
-		
+
 		pack();
 		setVisible(true);
 	}
-	
+
 	static void closeAll()
 	{
 		for(NewFilterFromBug frame: listOfAllFrames)

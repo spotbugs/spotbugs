@@ -51,10 +51,10 @@ public final class SourceCodeDisplay implements Runnable {
 	private static final Color FOUND_HIGHLIGHT = new Color(0.75f, 0.75f, 1f);
 
 	static final Document SOURCE_NOT_RELEVANT = new DefaultStyledDocument();;
-	
+
 	public JavaSourceDocument myDocument;
 	private int currentChar = -1; //for find
-	
+
 	private final Map<String, SoftReference<JavaSourceDocument>> map = new HashMap<String,  SoftReference<JavaSourceDocument>>();
 
 	SourceCodeDisplay(MainFrame frame) {
@@ -81,7 +81,7 @@ public final class SourceCodeDisplay implements Runnable {
 	public void clearCache() {
 		map.clear();
 	}
-	
+
 	@NonNull
 	private JavaSourceDocument getDocument(SourceLineAnnotation source) {
 		try {
@@ -106,7 +106,7 @@ public final class SourceCodeDisplay implements Runnable {
 		} catch (Exception e) {
 			Debug.println(e); // e.printStackTrace();
 			return JavaSourceDocument.UNKNOWNSOURCE;
-		
+
 		}
 	}
 
@@ -132,7 +132,7 @@ public final class SourceCodeDisplay implements Runnable {
 				frame.clearSourcePane();
 				continue;
 			}
-			
+
 			try {
 			final JavaSourceDocument src = getDocument(mySourceLine);
 			this.myDocument = src;
@@ -161,7 +161,7 @@ public final class SourceCodeDisplay implements Runnable {
 					String sourceFile = thisSource.getSourceFile();
 					if (sourceFile == null || sourceFile.equals("<Unknown>")) {
 						sourceFile = thisSource.getSimpleClassName();
-                    }
+					}
 					frame.setSourceTabTitle(sourceFile + " in " + thisSource.getPackageName());
 					int startLine = thisSource.getStartLine();
 					int endLine = thisSource.getEndLine();
@@ -202,18 +202,18 @@ public final class SourceCodeDisplay implements Runnable {
 		if (!sourceAnnotation.getClassName().equals(src.getTitle())) return;
 		src.getHighlightInformation().setHighlight(startLine, sourceAnnotation.getEndLine(), color);
 	}
-	
+
 	public void foundItem(int lineNum) {
 		myDocument.getHighlightInformation().updateFoundLineNum(lineNum);
 		myDocument.getHighlightInformation().setHighlight(lineNum, FOUND_HIGHLIGHT);
 		frame.sourceCodeTextPane.scrollLineToVisible(lineNum);
 		frame.sourceCodeTextPane.updateUI();
 	}
-	
+
 	private int search(JavaSourceDocument document, String target, int start, Boolean backwards)
 	{
 		if (document == null) return -1;
-		
+
 		String docContent = null;
 		try{
 		StyledDocument document2 = document.getDocument();
@@ -248,7 +248,7 @@ public final class SourceCodeDisplay implements Runnable {
 			return -1;
 		}
 	}
-	
+
 	private int charToLineNum(int charNum)
 	{
 		if(charNum==-1) return -1;
@@ -263,7 +263,7 @@ public final class SourceCodeDisplay implements Runnable {
 		}
 		catch(BadLocationException ble){return -1;}
 	}
-	
+
 	public int find(String target)
 	{
 		int charFoundAt = search(myDocument, target, 0, false);
@@ -272,7 +272,7 @@ public final class SourceCodeDisplay implements Runnable {
 		//System.out.println(charToLineNum(currentChar));
 		return charToLineNum(currentChar);
 	}
-	
+
 	public int findNext(String target)
 	{
 		int charFoundAt = search(myDocument, target, currentChar+1, false);
@@ -281,7 +281,7 @@ public final class SourceCodeDisplay implements Runnable {
 		//System.out.println(charToLineNum(currentChar));
 		return charToLineNum(currentChar);
 	}
-	
+
 	public int findPrevious(String target)
 	{
 		int charFoundAt = search(myDocument, target, currentChar-1, true);
@@ -290,7 +290,7 @@ public final class SourceCodeDisplay implements Runnable {
 		//System.out.println(charToLineNum(currentChar));
 		return charToLineNum(currentChar);
 	}
-	
+
 	private void show(JTextPane pane, Document src, SourceLineAnnotation sourceAnnotation) {
 
 		int startLine = sourceAnnotation.getStartLine();

@@ -536,7 +536,7 @@ public class CommentsArea {
 		changed = false;
 		// setUserCommentInputEnableFromSwingThread(true);
 	}
-	
+
 	protected String getNonLeafCommentsText(BugAspects theAspects)
 	{	if (theAspects == null)
 			return "";

@@ -63,16 +63,16 @@ public class CheckBoxList extends JList
 		this();
 		setListData(list);
 	}
-	
+
 	@Override
 	public void setEnabled(boolean enabled)
 	{
 		super.setEnabled(enabled);
-		
+
 		for (int i = 0; i < getModel().getSize(); i++)
 			((JCheckBox) getModel().getElementAt(i)).setEnabled(enabled);
 	}
-	
+
 	protected class CellRenderer implements ListCellRenderer
 	{
 		public Component getListCellRendererComponent(JList list, Object value,

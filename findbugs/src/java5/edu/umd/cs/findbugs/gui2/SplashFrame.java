@@ -52,19 +52,19 @@ import java.io.IOException;
 
 public class SplashFrame extends JWindow
 {
-	
+
 	private static Thread animator;
-	
+
 	public SplashFrame()
 	{
 		super(new Frame());
-		
+
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Image image = toolkit.getImage(MainFrame.class.getResource("SplashBug1.png"));
 		Image image2 = toolkit.getImage(MainFrame.class.getResource("SplashBug2B.png"));
 		Image imageReverse = toolkit.getImage(MainFrame.class.getResource("SplashBug1reverse.png"));
 		Image image2Reverse = toolkit.getImage(MainFrame.class.getResource("SplashBug2reverseB.png"));
-		
+
 		//		JPanel temp = new JPanel(new BorderLayout());
 //		temp.setBorder(BorderFactory.createLineBorder(Color.black, 2));
 //		setContentPane(temp);
@@ -74,7 +74,7 @@ public class SplashFrame extends JWindow
 		final JPanel bottom = viewer;
 		p.setBackground(Color.white);
 		bottom.setBackground(Color.white);
-		
+
 		p.add(l);
 		getContentPane().add(p, BorderLayout.CENTER);
 		getContentPane().add(bottom, BorderLayout.SOUTH);
@@ -87,32 +87,32 @@ public class SplashFrame extends JWindow
 		bottom.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		Dimension panelSize = p.getPreferredSize();
 		bottom.setPreferredSize(new Dimension(panelSize.width, image.getHeight(null)+2));
-		
+
 		setLocation(screenSize.width/2 - (panelSize.width/2),
 				screenSize.height/2 - (panelSize.height/2));
-		
+
 //		g.drawImage(new ImageIcon("bugSplash3.png"),0 ,0 ,null);
-		
+
 		pack();
 		screenSize = null;
 		labelSize = null;
 		viewer.animate();
-		
-		
+
+
 	}
-	
+
 	public static void main(String[] args){
 		(new SplashFrame()).setVisible(true);
-		
+
 	}
-	
+
 	@Override
 	public void setVisible(boolean b){
 		super.setVisible(b);
 		if(!b)
 			animator.interrupt();			
 	}
-	
+
 	private static class Viewer extends JPanel {
 		private Image image;
 		private Image image2;
@@ -124,7 +124,7 @@ public class SplashFrame extends JWindow
 		int xpos=0;
 		int ypos=0;
 		int farRight;
-		
+
 		public Viewer(Image i1,Image i2,Image i1r,Image i2r) {
 			image=i1;
 			image2=i2;
@@ -152,12 +152,12 @@ public class SplashFrame extends JWindow
 				public void run()
 				{
 					int deltaX=1;
-					
+
 					while(true)
 					{
 						if(Thread.currentThread().isInterrupted())
 							return;
-						
+
 						callCount++;
 						if (callCount==10)
 						{
@@ -182,18 +182,18 @@ public class SplashFrame extends JWindow
 							deltaX=1;
 							reverse=!reverse;
 						}
-						
+
 						Viewer.this.repaint();
 					}
 				}
 			});
 		}
-		
+
 		public void animate()
 		{
 			animator.start();
 		}
-		
+
 		@Override
 		public void setPreferredSize(Dimension d)
 		{
@@ -214,11 +214,11 @@ public class SplashFrame extends JWindow
 				return image2R;
 			}
 		}
-		
+
 		@Override
 		public void paint(Graphics graphics) {
 			super.paint(graphics);
-			
+
 //			graphics.clearRect(0,0,500,500);
 			graphics.drawImage(imageToDraw(), xpos, ypos, null);
 		}

@@ -69,27 +69,27 @@ public class ProjectSettings implements Serializable
 			instance= new ProjectSettings();
 		return instance;
 	}
-	
+
 	/**
 	 * The matcher suppressing all user-selected bugs.
 	 */
 	private SuppressionMatcher suppressionMatcher;
-	
+
 	/**
 	 * The list of all defined filters
 	 */
 	private ArrayList<FilterMatcher> filters;
-	
+
 	/**
 	 * The CompoundMatcher enveloping all enabled matchers.
 	 */
 	private CompoundMatcher allMatchers;
-		
+
 	/**
 	 * Max number of previous comments stored.
 	 */
 	private int maxSizeOfPreviousComments;
-		
+
 	public static void loadInstance(InputStream in)
 	{
 		try
@@ -114,7 +114,7 @@ public class ProjectSettings implements Serializable
 			instance=newInstance();
 		}
 	}
-	
+
 	public void save(OutputStream out)
 	{
 		try
@@ -127,22 +127,22 @@ public class ProjectSettings implements Serializable
 			Debug.println(e);
 		}
 	}
-	
+
 	SuppressionMatcher getSuppressionMatcher()
 	{
 		return suppressionMatcher;
 	}
-	
+
 	void setSuppressionMatcher(SuppressionMatcher suppressionMatcher)
 	{
 		this.suppressionMatcher = suppressionMatcher;
 	}
-	
+
 	CompoundMatcher getAllMatchers()
 	{
 		return allMatchers;
 	}
-	
+
 	public void addFilter(FilterMatcher filter)
 	{
 		filters.add(filter);
@@ -199,7 +199,7 @@ public class ProjectSettings implements Serializable
 		PreferencesFrame.getInstance().updateFilterPanel();
 		MainFrame.getInstance().updateStatusBar();
 	}
-	
+
 	public void addFilters(FilterMatcher[] newFilters)
 	{
 		for (FilterMatcher i : newFilters)
@@ -217,7 +217,7 @@ public class ProjectSettings implements Serializable
 		PreferencesFrame.getInstance().updateFilterPanel();
 		MainFrame.getInstance().updateStatusBar();
 	}
-	
+
 	public boolean removeFilter(FilterMatcher filter)
 	{
 		boolean result = filters.remove(filter) && allMatchers.remove(filter);
@@ -226,19 +226,19 @@ public class ProjectSettings implements Serializable
 		MainFrame.getInstance().updateStatusBar();
 		return result;
 	}
-	
+
 	ArrayList<FilterMatcher> getAllFilters()
 	{
 		return filters;
 	}
-	
+
 	/**
 	 * @return Returns the maximum number of previous comments stored.
 	 */
 	public int getMaxSizeOfPreviousComments(){
 		return maxSizeOfPreviousComments;
 	}
-	
+
 	/**
 	 * Sets the maximum number of previous comments stored.
 	 * @param num

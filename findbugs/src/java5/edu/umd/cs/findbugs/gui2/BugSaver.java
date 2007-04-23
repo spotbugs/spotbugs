@@ -38,12 +38,12 @@ import edu.umd.cs.findbugs.SortedBugCollection;
  *
  */
 public class BugSaver {
-	
+
 	private static String lastPlaceSaved;
 	public static void saveBugs(OutputStream out, BugCollection data, Project p)
 	{
-		
-		
+
+
 		try {
 			data.writeXML(out,p);
 		} catch (IOException e) {
@@ -66,5 +66,5 @@ public class BugSaver {
 	{
 		return lastPlaceSaved;
 	}
-	
+
 }

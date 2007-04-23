@@ -40,12 +40,12 @@ public class HashList<E> extends ArrayList<E>
 
 	// Map from hashcodes to sets of indices in the ArrayList
 	private HashMap<Integer, TreeSet<Integer>> map = new HashMap<Integer, TreeSet<Integer>>(); 
-	
+
 	public HashList()
 	{
 		super();
 	}
-	
+
 	public HashList(Collection<? extends E> c)
 	{
 		super();
@@ -58,14 +58,14 @@ public class HashList<E> extends ArrayList<E>
 		add(size(), o);
 		return true;
 	}
-	
+
 	@Override
 	public void add(int index, E element)
 	{
 		addToMap(element, index);
 		super.add(index, element);
 	}
-	
+
 	@Override
 	public boolean addAll(Collection<? extends E> c)
 	{
@@ -73,7 +73,7 @@ public class HashList<E> extends ArrayList<E>
 			add(i);
 		return (c.size() > 0);
 	}
-	
+
 	@Override
 	public boolean addAll(int index, Collection<? extends E> c)
 	{
@@ -85,20 +85,20 @@ public class HashList<E> extends ArrayList<E>
 		}
 		return (c.size() > 0);
 	}	
-	
+
 	@Override
 	public void clear()
 	{
 		super.clear();
 		map.clear();
 	}
-	
+
 	@Override
 	public boolean contains(Object elem)
 	{
 		return (indexOf(elem) != -1);
 	}
-	
+
 	@Override
 	public boolean containsAll(Collection<?> c)
 	{
@@ -107,7 +107,7 @@ public class HashList<E> extends ArrayList<E>
 				return false;
 		return true;
 	}
-	
+
 	@Override
 	public int indexOf(Object elem)
 	{
@@ -119,7 +119,7 @@ public class HashList<E> extends ArrayList<E>
 				return i;
 		return -1;
 	}
-	
+
 	@Override
 	public int lastIndexOf(Object elem)
 	{
@@ -129,7 +129,7 @@ public class HashList<E> extends ArrayList<E>
 				result = i;
 		return result;
 	}
-	
+
 	@Override
 	public E remove(int index)
 	{
@@ -137,7 +137,7 @@ public class HashList<E> extends ArrayList<E>
 		removeFromMap(result, index);
 		return result;
 	}
-	
+
 	@Override
 	public boolean remove(Object o)
 	{
@@ -149,7 +149,7 @@ public class HashList<E> extends ArrayList<E>
 		else
 			return false;
 	}
-	
+
 	@Override
 	public boolean removeAll(Collection<?> c)
 	{
@@ -158,7 +158,7 @@ public class HashList<E> extends ArrayList<E>
 			result |= remove(i);
 		return result;
 	}
-	
+
 	@Override
 	public boolean retainAll(Collection<?> c)
 	{
@@ -166,40 +166,40 @@ public class HashList<E> extends ArrayList<E>
 		for(Iterator<E> iterator = this.iterator(); iterator.hasNext(); ) {
 			E i = iterator.next();
 			if (!c.contains(i))
-            {
+			{
 				iterator.remove();
 				result = true;
-				
-            }
+
+			}
 		}
-		
+
 		return result;
 	}
-	
+
 	@Override
 	protected void removeRange(int fromIndex, int toIndex)
 	{
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public E set(int index, E element)
 	{
 		E result = get(index);
-		
+
 		if (map.get(result.hashCode()).size() == 1)
 			map.remove(result.hashCode());
 		else
 			map.get(result.hashCode()).remove(index);
-		
+
 		if (!map.containsKey(element.hashCode()))
 			map.put(element.hashCode(), new TreeSet<Integer>());
 		map.get(element.hashCode()).add(index);
-		
+
 		super.set(index, element);
 		return result;
 	}
-	
+
 	private void addToMap(E o, int index)
 	{
 		if (index < size())
@@ -212,20 +212,20 @@ public class HashList<E> extends ArrayList<E>
 					else newSet.add(j);
 				i.setValue(newSet);
 			}
-				
-		
+
+
 		if (!map.containsKey(o.hashCode()))
 			map.put(o.hashCode(), new TreeSet<Integer>());
 		map.get(o.hashCode()).add(index);
 	}
-	
+
 	private void removeFromMap(E o, int index)
 	{
 		if (map.get(o.hashCode()).size() == 1)
 			map.remove(o.hashCode());
 		else
 			map.get(o.hashCode()).remove(index);
-		
+
 		if (index < size() - 1)
 			for (Map.Entry<Integer, TreeSet<Integer>> i : map.entrySet())
 			{
@@ -236,7 +236,7 @@ public class HashList<E> extends ArrayList<E>
 				i.setValue(newSet);
 			}
 	}
-	
+
 	@Override
 	public ListIterator<E> listIterator()
 	{
@@ -245,7 +245,7 @@ public class HashList<E> extends ArrayList<E>
 			int cursor = -1;
 			boolean removable = false;
 			boolean removed = false;
-			
+
 			public void add(E o)
 			{
 				HashList.this.add(cursor++, o);
@@ -266,7 +266,7 @@ public class HashList<E> extends ArrayList<E>
 			{
 				if (!hasNext())
 					throw new NoSuchElementException();
-				
+
 				if (removed)
 				{
 					removable = true;
@@ -290,7 +290,7 @@ public class HashList<E> extends ArrayList<E>
 			{
 				if (!hasPrevious())
 					throw new NoSuchElementException();
-				
+
 				removable = true;
 				removed = false;
 				return get(--cursor);

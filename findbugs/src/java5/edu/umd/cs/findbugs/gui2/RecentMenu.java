@@ -44,7 +44,7 @@ public class RecentMenu{
 		{
 			super(MAX_ENTRIES);
 		}
-		
+
 		@Override
 		public boolean add(T element)
 		{
@@ -64,7 +64,7 @@ public class RecentMenu{
 			return true;
 		}
 	}
-	
+
 	LimitedArrayList<File> recentProjects;
 	LimitedArrayList<File> recentAnalyses;
 	JMenu recentMenu;
@@ -75,17 +75,17 @@ public class RecentMenu{
 		recentAnalyses=new LimitedArrayList<File>();
 		recentMenu=menu;
 		recentMenu.add("Recent Projects:").setEnabled(false);
-		
+
 		for (File f: GUISaveState.getInstance().getRecentProjects())
 		{
 			recentProjects.add(f);
 		}
-		
+
 		for (File f: GUISaveState.getInstance().getRecentAnalyses())
 		{
 			recentAnalyses.add(f);
 		}
-		
+
 		makeRecentMenu();
 	}
 
@@ -118,7 +118,7 @@ public class RecentMenu{
 			recentMenu.add(MainFrame.getInstance().createRecentItem(f, SaveType.XML_ANALYSIS));
 		}
 	}
-	
+
 	public void addRecentFile(final File f, final SaveType localSaveType)
 	{
 		if (localSaveType==SaveType.PROJECT)
@@ -127,10 +127,10 @@ public class RecentMenu{
 			recentAnalyses.add(f);
 		makeRecentMenu();
 	}
-	
-	
 
-	
-	
-	
+
+
+
+
+
 }

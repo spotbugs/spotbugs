@@ -57,7 +57,7 @@ import edu.umd.cs.findbugs.workflow.Update;
  *
  */
 public class BugLoader {
-		
+
 	/**
 	 * Performs an analysis and returns the BugSet created
 	 * 
@@ -76,7 +76,7 @@ public class BugLoader {
 			fb.execute();
 			List<String> possibleDirectories=p.getSourceDirList();
 			MainFrame instance = MainFrame.getInstance();
-			
+
 			//			System.out.println("List of directories: "+p.getSourceDirList());
 			instance.setSourceFinder(new SourceFinder());
 			instance.getSourceFinder().setSourceBaseList(possibleDirectories);
@@ -87,10 +87,10 @@ public class BugLoader {
 		} catch (InterruptedException e) {
 			// Do nothing
 		}
-		
-		
+
+
 		return null;
-		
+
 	}
 
 	/**
@@ -110,13 +110,13 @@ public class BugLoader {
 			FindBugs2 engine = new FindBugs2();
 			engine.setBugReporter(pcb);
 			engine.setProject(p);
-			
+
 			engine.setDetectorFactoryCollection(DetectorFactoryCollection.instance());
-			
+
 			return engine;
 		}
 	}
-	
+
 	public static BugSet loadBugsHelper(BugCollection collection)
 	{
 		ArrayList<BugLeafNode> bugList=new ArrayList<BugLeafNode>();
@@ -125,11 +125,11 @@ public class BugLoader {
 		{
 			bugList.add(new BugLeafNode(i.next()));
 		}
-		
+
 		return new BugSet(bugList);
-		
+
 	}
-	
+
 	public static SortedBugCollection loadBugs(MainFrame mainFrame, Project project, URL url){
 		try {
 			return loadBugs(mainFrame, project, url.openConnection().getInputStream());
@@ -161,12 +161,12 @@ public class BugLoader {
 			return null;
 	}
 
-	
+
 	private BugLoader()
 	{
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * TODO: This really needs to be rewritten such that they don't have to choose ALL xmls in one fel swoop.  I'm thinking something more like new project wizard's functionality. -Dan
 	 * 
@@ -186,7 +186,7 @@ public class BugLoader {
 			chooser.setDialogTitle(edu.umd.cs.findbugs.L10N.getLocalString("dlg.choose_xmls_ttl", "Choose All XML's To Combine"));
 			if (chooser.showOpenDialog(MainFrame.getInstance())==JFileChooser.CANCEL_OPTION)
 				return null;
-			
+
 			SortedBugCollection conglomeration=new SortedBugCollection();
 			conglomeration.readXML(chooser.getSelectedFiles()[0],project);
 			Update update = new Update();
@@ -198,7 +198,7 @@ public class BugLoader {
 				col.readXML(f,p);
 				conglomeration=(SortedBugCollection) update.mergeCollections(conglomeration, col, false, false);//False means dont show dead bugs
 			}
-			
+
 			return conglomeration;
 		} catch (IOException e) {
 			Debug.println(e);
@@ -209,7 +209,7 @@ public class BugLoader {
 		}
 
 	}
-	
+
 	/**
 	 * Does what it says it does, hit apple r (control r on pc) and the analysis is redone using the current project
 	 * @param p
@@ -227,18 +227,18 @@ public class BugLoader {
 			current.add(bug);
 		}
 		Update update = new Update();
-		
+
 		RedoAnalysisCallback ac= new RedoAnalysisCallback();
-		
+
 		new AnalyzingDialog(p,ac,true);
-		
+
 		if (ac.finished)
 			return update.mergeCollections(current, ac.getBugCollection(), true, false);
 		else
 			return null;
-		
+
 	}
-	
+
 	/** just used to know how the new analysis went*/
 	private static class RedoAnalysisCallback implements AnalysisCallback
 	{

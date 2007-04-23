@@ -53,7 +53,7 @@ public enum Sortables implements Comparator<StringPair>
 		{
 			return Long.toString(bug.getFirstVersion());
 		}
-		
+
 		@Override
 		public String formatValue(String value)
 		{	
@@ -71,7 +71,7 @@ public enum Sortables implements Comparator<StringPair>
 				appendItem = "#" +seqNum;
 			return  appendItem;
 		}
-		
+
 		@Override
 		public int compare(StringPair one, StringPair two)
 		{
@@ -79,7 +79,7 @@ public enum Sortables implements Comparator<StringPair>
 			return Integer.valueOf(one.value).compareTo(Integer.valueOf(two.value));
 		}
 	},
-	
+
 	LASTVERSION(edu.umd.cs.findbugs.L10N.getLocalString("sort.last_version", "Last Version"))
 	{
 		@Override
@@ -87,7 +87,7 @@ public enum Sortables implements Comparator<StringPair>
 		{
 			return Long.toString(bug.getLastVersion());
 		}
-		
+
 		@Override
 		public String formatValue(String value)
 		{
@@ -108,12 +108,12 @@ public enum Sortables implements Comparator<StringPair>
 				appendItem = "#" + seqNum;
 			return appendItem;		
 			}
-		
+
 		@Override
 		public int compare(StringPair one, StringPair two)
 		{
 			if (one.value.equals(two.value)) return 0;
-			
+
 			// Numerical (except that -1 is last)
 			int first = Integer.valueOf(one.value);
 			int second = Integer.valueOf(two.value);
@@ -124,7 +124,7 @@ public enum Sortables implements Comparator<StringPair>
 			return 1;
 		}
 	},
-	
+
 	PRIORITY(edu.umd.cs.findbugs.L10N.getLocalString("sort.priority", "Priority"))
 	{
 		@Override
@@ -132,7 +132,7 @@ public enum Sortables implements Comparator<StringPair>
 		{
 			return String.valueOf(bug.getPriority());
 		}
-		
+
 		@Override
 		public String formatValue(String value)
 		{
@@ -145,9 +145,9 @@ public enum Sortables implements Comparator<StringPair>
 			if (value.equals(String.valueOf(Detector.EXP_PRIORITY)))
 				return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_experimental", "Experimental");
 			return edu.umd.cs.findbugs.L10N.getLocalString("sort.priority_ignore", "Ignore"); // This probably shouldn't ever happen, but what the hell, let's be complete
-			
+
 		}
-		
+
 		@Override
 		public int compare(StringPair one, StringPair two)
 		{
@@ -162,7 +162,7 @@ public enum Sortables implements Comparator<StringPair>
 		{
 			return bug.getPrimarySourceLineAnnotation().getClassName();
 		}
-				
+
 		@Override
 		public int compare(StringPair one, StringPair two)
 		{
@@ -174,7 +174,7 @@ public enum Sortables implements Comparator<StringPair>
 					return Integer.valueOf(one.value.substring(one.value.lastIndexOf("$"))).compareTo(Integer.valueOf(two.value.substring(two.value.lastIndexOf("$"))));
 			}
 			catch (NumberFormatException e) {} // Somebody's playing silly buggers with dollar signs, just do it lexicographically
-			
+
 			// Otherwise, lexicographicalify it
 			return one.value.compareTo(two.value);
 		}
@@ -186,7 +186,7 @@ public enum Sortables implements Comparator<StringPair>
 		{
 			return bug.getPrimarySourceLineAnnotation().getPackageName();
 		}
-		
+
 		@Override
 		public String formatValue(String value)
 		{
@@ -202,7 +202,7 @@ public enum Sortables implements Comparator<StringPair>
 		{
 			return bug.getBugPattern().getCategory();
 		}
-		
+
 		@Override
 		public String formatValue(String value)
 		{			
@@ -216,7 +216,7 @@ public enum Sortables implements Comparator<StringPair>
 		{
 			return bug.getUserDesignationKey();
 		}
-						
+
 		/**
 		 * value is the key of the designations.
 		 * @param value
@@ -227,7 +227,7 @@ public enum Sortables implements Comparator<StringPair>
 		{
 			return I18N.instance().getUserDesignation(value);
 		}
-		
+
 		@Override
 		public String[] getAllSorted()
 		{//FIXME I think we always want user to see all possible designations, not just the ones he has set in his project, Agreement?  -Dan
@@ -242,13 +242,13 @@ public enum Sortables implements Comparator<StringPair>
 		{
 			return bug.getBugPattern().getAbbrev();
 		}
-				
+
 		@Override
 		public String formatValue(String value)
 		{
 			return I18N.instance().getBugTypeDescription(value);
 		}
-		
+
 		@Override
 		public int compare(StringPair one, StringPair two)
 		{
@@ -264,7 +264,7 @@ public enum Sortables implements Comparator<StringPair>
 				return "Missing bug pattern";
 			else return bug.getBugPattern().getType();
 		}
-				
+
 		@Override
 		public String formatValue(String value)
 		{
@@ -278,26 +278,26 @@ public enum Sortables implements Comparator<StringPair>
 		{
 			throw new UnsupportedOperationException();
 		}
-		
+
 		@Override
 		public String[] getAll()
 		{
 			throw new UnsupportedOperationException();
 		}
-		
+
 		@Override
 		public String formatValue(String value)
 		{
 			throw new UnsupportedOperationException();
 		}
-		
+
 		@Override
 		public int compare(StringPair one, StringPair two)
 		{
 			throw new UnsupportedOperationException();
 		}
 	};
-	
+
 	String prettyName;
 
 	Sortables(String prettyName)
@@ -320,23 +320,23 @@ public enum Sortables implements Comparator<StringPair>
 	{
 		return set.getAll(this);
 	}
-	
+
 	public String formatValue(String value)
 	{
 		return value;
 	}
-	
+
 	public int compare(StringPair one, StringPair two)
 	{
 		// Lexicographical by default
 		return one.value.compareTo(two.value);
 	}
-	
+
 	public String[] getAllSorted()
 	{
 		return getAllSorted(BugSet.getMainBugSet());
 	}
-	
+
 	public String[] getAllSorted(BugSet set)
 	{
 		String[] values = getAll(set);
@@ -348,7 +348,7 @@ public enum Sortables implements Comparator<StringPair>
 			values[i] = pairs[i].value;
 		return values;
 	}
-	
+
 	public Comparator<BugLeafNode> getBugLeafNodeComparator()
 	{
 		final Sortables key = this;
@@ -360,7 +360,7 @@ public enum Sortables implements Comparator<StringPair>
 			}
 		};
 	}
-	
+
 	public static Sortables getSortableByPrettyName(String name)
 	{
 		for (Sortables s: Sortables.values())

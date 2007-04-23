@@ -34,24 +34,24 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 // only thing of note is the equals method, which purposefully uses == since JTree's only show one of multiple equal objects.
 
 public class BugLeafNode {
-	
+
 	private BugInstance bug;
-	
+
 	BugLeafNode(BugInstance b)
 	{
 		bug=b;
 	}
-	
+
 	public BugInstance getBug()
 	{
 		return bug;
 	}
-	
+
 	@Override
 	public String toString()
 	{
-		
-		
+
+
 		return bug.getMessageWithoutPrefix();
 	}
 
@@ -88,13 +88,13 @@ public class BugLeafNode {
 			return bug==(((BugLeafNode)o).getBug());
 	}
 
-	
+
 	@Override
 	public int hashCode()
 	{
 		return bug.hashCode();
 	}
-	
+
 	public boolean matches(BugAspects aspects) {
 		if(aspects.size() == 0)
 			return true;
@@ -102,7 +102,7 @@ public class BugLeafNode {
 			if(!matches(strPair))
 				return false;
 		}
-		
+
 		return true;
 	}
 }

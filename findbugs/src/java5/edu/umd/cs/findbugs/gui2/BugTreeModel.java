@@ -100,12 +100,12 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		static Vector<BugLeafNode> selectedBugLeafNodes = new Vector<BugLeafNode>();
 
 		private static final boolean DEBUG = false;
-		
+
 		private volatile Thread rebuildingThread;
 		private boolean sortOrderChanged;
 		private boolean sortsAddedOrRemoved;
-		
-		
+
+
 		public BugTreeModel(JTree tree, SorterTableColumnModel st, BugSet data)
 		{
 			st.addColumnModelListener(this);
@@ -121,28 +121,28 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					public void treeNodesChanged(TreeModelEvent arg0) {
 						System.out.println("Tree nodes changed");
 						System.out.println("  " + arg0.getTreePath());
-						
+
 					}
 
 					public void treeNodesInserted(TreeModelEvent arg0) {
 						System.out.println("Tree nodes inserted");
 						System.out.println("  " + arg0.getTreePath());
-						
+
 					}
 
 					public void treeNodesRemoved(TreeModelEvent arg0) {
 						System.out.println("Tree nodes removed");
 						System.out.println("  " + arg0.getTreePath());
-						
+
 					}
 
 					public void treeStructureChanged(TreeModelEvent arg0) {
 						System.out.println("Tree structure changed");
 						System.out.println("  " + arg0.getTreePath());
-						
+
 					}});
 		}
-		
+
 		public BugTreeModel(BugTreeModel other)
 		{
 			this.root = new BugAspects(other.root);
@@ -151,14 +151,14 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			//this.listeners = other.listeners;
 			this.tree = other.tree;
 		}
-		
+
 		public void getOffListenerList()
 		{
 			FilterMatcher.removeFilterListener(this);
 			st.removeColumnModelListener(this);
 			tree.removeTreeExpansionListener(this);
 		}
-		
+
 		public Object getRoot()
 		{
 			return root;
@@ -200,12 +200,12 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		//			System.out.println("getChildCount: " + Thread.currentThread().toString());
 			if(!(o instanceof BugAspects))
 				return 0;
-			
+
 			BugAspects a = (BugAspects) o;
-					
+
 					if (st.getOrderBeforeDivider().size()==0 && a.size() == 0)//If its the root and we aren't sorting by anything
 						return data.size();
-					
+
 					if ((a.size() == 0) || (a.last().key != st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().size() - 1)))
 //			{
 //			System.out.println("#  before enumsThatExist: " + (bean.getCurrentThreadCpuTime() - start));
@@ -223,9 +223,9 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 //			}
 		}
 
-		
+
 		/*This contract has been changed to return a HashList of Stringpair, our own data structure in which finding the index of an object in the list is very fast*/
-		
+
 		private HashList<StringPair> enumsThatExist(BugAspects a)
 		{
 		//			long start = bean.getCurrentThreadCpuTime();
@@ -235,7 +235,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					//StringPair[] toCheck = null;
 					if (st.getOrderBeforeDivider().size()==0)
 						return null;					
-					
+
 //					if (a.size() == 0) // root
 //						toCheck = getValues(st.getOrder().get(0));
 //					else if (st.getOrder().indexOf(a.get(a.size() - 1).key) == st.getOrder().size() - 1) // last branch
@@ -249,11 +249,11 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 //							result.add(sp);
 //			System.out.println(" ## after loop (" + toCheck.length + " elements): " + (bean.getCurrentThreadCpuTime() - start));
 //					return result;
-					
+
 					Sortables key = (a.size() == 0 ?
 							st.getOrderBeforeDivider().get(0) :
 								st.getOrderBeforeDivider().get(st.getOrderBeforeDivider().indexOf(a.last().key) + 1));
-					
+
 					String[] all = key.getAll(data.query(a));
 					ArrayList<StringPair> result = new ArrayList<StringPair>();
 					for (String i : all)
@@ -268,7 +268,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 //			System.out.println(" ## finished: " + (bean.getCurrentThreadCpuTime() - start));
 //			}
 		}
-		
+
 		public boolean isLeaf(Object o)
 		{
 			return (o instanceof BugLeafNode);
@@ -280,7 +280,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		{	
 			if (parent == null || child == null || isLeaf(parent))
 				return -1;
-			
+
 			if (isLeaf(child))
 			{
 				return data.query((BugAspects) parent).indexOf((BugLeafNode) child);
@@ -311,7 +311,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		{
 			listeners.add(listener);
 		}
-		
+
 		public void removeTreeModelListener(TreeModelListener listener)
 		{
 			listeners.remove(listener);
@@ -327,21 +327,21 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 				result[i] = new StringPair(key, values[i]);
 			}
 			return result;
-						
+
 		}
-		
+
 		public void columnAdded(TableColumnModelEvent e)
 		{
 			sortsAddedOrRemoved=true;
 			//rebuild();	
 		}
-		
+
 		public void columnRemoved(TableColumnModelEvent e)
 		{
 			sortsAddedOrRemoved=true;
 			//rebuild();
 		}
-		
+
 		public void columnMoved(final TableColumnModelEvent evt)
 		{
 			if (evt.getFromIndex() == evt.getToIndex())
@@ -349,8 +349,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			sortOrderChanged=true;
 			//rebuild();
 		}
-		
-		
+
+
 		void changeSet(BugSet set)
 		{
 			BugSet.setAsRootAndCache(set);
@@ -358,8 +358,8 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			root.setCount(data.size());
 			rebuild();
 		}
-		
-		
+
+
 		/**
 		 * Swaps in a new BugTreeModel and a new JTree
 		 *
@@ -373,11 +373,11 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 
 			//If this thread is not interrupting a previous thread, set the paths to be opened when the new tree is complete
 			//If the thread is interrupting another thread, dont do this, because you dont have the tree with the correct paths selected
-			
+
 			//As of now, it should be impossible to interrupt a rebuilding thread, in another version this may change, so this if statement check is left in, even though it should always be true.
 			if (rebuildingThread==null)
 				setOldSelectedBugs();
-			
+
 			Debug.println("Please Wait called right before starting rebuild thread");
 			pleaseWait();
 			rebuildingThread = new Thread()
@@ -388,7 +388,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					try
 					{
 						/* Start Time */
-						
+
 
 						Debug.println(Thread.currentThread() + " start");
 //						System.out.println(st.getOrder());
@@ -397,16 +397,16 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 						newModel.listeners = listeners;
 						newModel.resetData();
 						newModel.data.sortList();
-						
+
 
 						JTree newTree = new JTree(newModel);
-						
+
 
 						newModel.tree = newTree;
 						Debug.println("Making new tree from Rebuild, this happens in swing thread");
 						MainFrame.getInstance().newTree(newTree,newModel);
-						
-						
+
+
 						rebuildingThread = null;
 //						System.out.println(Thread.currentThread() + " finish");
 					}
@@ -423,7 +423,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			};
 			rebuildingThread.start();
 		}
-		
+
 		public void crawl(final ArrayList<BugAspects> path, final int depth)
 		{
 			for (int i = 0; i < getChildCount(path.get(path.size() - 1)); i++)
@@ -439,9 +439,9 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 						l.treeStructureChanged(new TreeModelEvent(this, path.toArray()));
 				}
 		}
-		
-		
-		
+
+
+
 		
 		void openPreviouslySelected(List<BugLeafNode> selected)
 		{
@@ -478,15 +478,15 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 						continue;
 					}
 				}
-	
+
 		}
-		
+
 		/* Recursively traverses the tree, opens all nodes matching any bug 
 		 * in the list, then creates the full paths to the bugs that are selected
 		 * This keeps whatever bugs were selected selected when sorting
 		 *	DEPRECATED--Too Slow, use openPreviouslySelected
 		 */
-		
+
 		public void crawlToOpen(TreePath path, ArrayList<BugLeafNode> bugLeafNodes, ArrayList<TreePath> treePaths)
 		{
 			for (int i = 0; i < getChildCount(path.getLastPathComponent()); i++)
@@ -514,12 +514,12 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 				}
 			}
 		}
-		
+
 		public void resetData()//FIXME:  Does this need a setAsRootAndCache() on the new BugSet?
 		{
 			data=new BugSet(data);
 		}
-		
+
 		public void clearCache()
 		{
 			resetData();
@@ -530,7 +530,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 //				l.treeStructureChanged(new TreeModelEvent(this,new Object[]{root}));
 			rebuild();
 		}
-				
+
 		public void unsuppressBug(TreePath path)
 		{
 			if (path==null)
@@ -553,7 +553,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 						earlyStop=true;
 						break;
 					}
-					
+
 					for (TreeModelListener l: listeners)
 					{
 						if (pathToFirstDeleted.getParentPath()!=null)
@@ -561,7 +561,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					}
 				}
 			}
-						
+
 
 			if (path.getParentPath()==null)//They are unsuppressing from the root, but we don't allow root to be suppressed, Dont know what to do here
 			{
@@ -572,15 +572,15 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			{
 				pathToFirstDeleted=path;
 			}
-			
+
 			if (earlyStop==false)
 			{
 				pathToFirstDeleted=pathToFirstDeleted.pathByAddingChild(path.getLastPathComponent());
 			}
-			
+
 			Object parent=pathToFirstDeleted.getParentPath().getLastPathComponent();
 			Object child=pathToFirstDeleted.getLastPathComponent();
-			
+
 			TreeModelEvent insertionEvent=new TreeModelEvent(this, pathToFirstDeleted.getParentPath(),new int[]{getIndexOfChild(parent,child)}, new Object[]{child});
 			for (TreeModelListener l: listeners)			
 			{
@@ -620,9 +620,9 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					}
 				}
 			}
-			
+
 			TreeModelEvent event;
-		
+
 			if (path.getParentPath()==null)//They are suppressing the last bug in the tree
 			{
 				event=new TreeModelEvent(this,path,new int[]{0},new Object[]{this.getChild(root,0)});
@@ -648,7 +648,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					return;
 				}
 			}
-			
+
 			for (TreeModelListener l: listeners)			
 			{
 				l.treeNodesRemoved(event);
@@ -667,14 +667,14 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 				}
 				return;
 			}
-			
+
 			TreeModelEvent event=new TreeModelEvent(this,path.getParentPath(),new int[]{getIndexOfChild(path.getParentPath().getLastPathComponent(),path.getLastPathComponent())},new Object[] {path.getLastPathComponent()});
 			for (TreeModelListener l: listeners)
 			{
 				l.treeNodesChanged(event);
 			}
 		}
-		
+
 		public TreePath getPathToBug(BugInstance b)
 		{
 			//ArrayList<Sortables> order=MainFrame.getInstance().getSorter().getOrder();
@@ -683,7 +683,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			BugAspects[] toBug=new BugAspects[order.size()];
 			for (int i=0; i < order.size(); i++)
 				toBug[i]=new BugAspects();
-				
+
 			for (int x=0; x< order.size();x++)
 			{
 				for (int y=0; y<=x;y++)
@@ -703,7 +703,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					if (MainFrame.DEBUG) System.err.println("Node does not exist in the tree");//For example, not a bug bugs are filtered, they set a bug to be not a bug it filters out
 					return null;
 				}
-				
+
 				pathToBug=pathToBug.pathByAddingChild(getChild(pathToBug.getLastPathComponent(),index));
 			}
 			//Using a hashlist to store bugs in BugSet will make getIndexOfChild Waaaaaay faster, thus making this O(1) (avg case)
@@ -714,31 +714,31 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			return pathToBug;
 
 		}
-		
+
 		public TreePath getPathToNewlyUnsuppressedBug(BugInstance b)
 		{
 			resetData();
 			return getPathToBug(b);
 		}
-		
+
 		@Override
 		protected void finalize() throws Throwable
 		{
 			super.finalize();
-			
+
 			//this will inform us when the garbage collector finds our old bug tree models and deletes them, thus preventing obnoxiously hard to find bugs from not remembering to remove the model from our listeners
 			Debug.println("The BugTreeModel has been DELETED!  This means there are no more references to it, and its finally off all of the stupid listener lists");
 		}
-		
+
 		public void columnMarginChanged(ChangeEvent arg0) {}
 		public void columnSelectionChanged(ListSelectionEvent arg0) {}
 
 		public void treeExpanded(TreeExpansionEvent event) {
 		}
-		
+
 		public void treeCollapsed(TreeExpansionEvent event) {
 		}
-		
+
 		private void setOldSelectedBugs()
 		{
 			selectedBugLeafNodes.clear();
@@ -747,13 +747,13 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					if (isLeaf(path.getLastPathComponent()))
 						selectedBugLeafNodes.add((BugLeafNode) path.getLastPathComponent());
 		}
-		
+
 		Vector<BugLeafNode> getOldSelectedBugs()
 		{
 			return selectedBugLeafNodes;
 		}
-		
-				
+
+
 		void checkSorter()
 		{
 			if (sortOrderChanged==true || sortsAddedOrRemoved==true)
@@ -775,7 +775,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 //				rebuild();
 //			}
 		}		
-		
+
 		static void pleaseWait()
 		{
 			pleaseWait(null);
@@ -784,7 +784,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 		{
 			MainFrame.getInstance().showWaitCard();
 		}
-		
+
 		public TreeModelEvent restructureBranch(ArrayList<String> stringsToBranch, boolean removing) throws BranchOperationException
 		{
 			if (removing)
@@ -792,17 +792,17 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			else
 				return branchOperations(stringsToBranch, TreeModification.INSERTRESTRUCTURE);
 		}
-		
+
 		public TreeModelEvent insertBranch(ArrayList<String> stringsToBranch) throws BranchOperationException
 		{
 			return branchOperations(stringsToBranch, TreeModification.INSERT);
 		}
-		
+
 		public TreeModelEvent removeBranch(ArrayList<String> stringsToBranch) throws BranchOperationException
 		{
 			return branchOperations(stringsToBranch, TreeModification.REMOVE);
 		}
-		
+
 		public void sortBranch(TreePath pathToBranch)
 		{
 			BugSet bs=data.query((BugAspects)pathToBranch.getLastPathComponent());
@@ -812,7 +812,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			{
 				Debug.println(b);
 			}
-		
+
 			Object[] children=new Object[getChildCount(pathToBranch.getLastPathComponent())];
 			int[] childIndices=new int[children.length];
 			for (int x=0; x<children.length; x++)
@@ -827,7 +827,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			}
 
 		}
-		
+
 		@SuppressWarnings("serial")
 		static class BranchOperationException extends Exception
 		{
@@ -850,7 +850,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			else if (whatToDo==TreeModification.INSERTRESTRUCTURE)
 				Debug.println("Restructuring from branch to insert......");
 			Debug.println(stringsToBranch);
-			
+
 			if (whatToDo==TreeModification.INSERT || whatToDo==TreeModification.INSERTRESTRUCTURE)
 			{
 				resetData();
@@ -861,14 +861,14 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			BugAspects[] toBug=new BugAspects[stringsToBranch.size()];
 			for (int x=0; x < stringsToBranch.size(); x++) {
 				toBug[x]=new BugAspects();
-	
+
 				for (int y=0; y<=x;y++)
 				{
 					Sortables s = order.get(y);
 					toBug[x].add(new StringPair(s,stringsToBranch.get(y)));
 				}
 			}
-			
+
 			//Add this array as elements of the path
 			TreePath pathToBranch=new TreePath(root);
 			for (int x=0;x<stringsToBranch.size();x++)
@@ -895,7 +895,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 				}
 			Debug.println(pathToBranch);
 
-			
+
 			if (whatToDo==TreeModification.INSERT)
 			{
 				event=new TreeModelEvent(this,pathToBranch.getParentPath(),new int[]{getIndexOfChild(pathToBranch.getParentPath().getLastPathComponent(),pathToBranch.getLastPathComponent())}, new Object[]{pathToBranch.getLastPathComponent()});				
@@ -904,11 +904,11 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 			{
 				event=new TreeModelEvent(this,pathToBranch);
 			}
-			
+
 			if (whatToDo==TreeModification.REMOVE)
 			{
 				event=new TreeModelEvent(this,pathToBranch.getParentPath(),new int[]{getIndexOfChild(pathToBranch.getParentPath().getLastPathComponent(),pathToBranch.getLastPathComponent())}, new Object[]{pathToBranch.getLastPathComponent()});
-			
+
 			}
 			else if (whatToDo==TreeModification.REMOVERESTRUCTURE)
 			{
@@ -917,10 +917,10 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 
 			if (whatToDo==TreeModification.REMOVE || whatToDo==TreeModification.REMOVERESTRUCTURE)
 				resetData();
-			
+
 			return event;
 		}		
-		
+
 		void sendEvent(TreeModelEvent event, TreeModification whatToDo)
 		{
 			Debug.println("Sending An Event!");
@@ -943,7 +943,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 					l.treeStructureChanged(event);
 				}
 			}
-			
+
 			root.setCount(data.size());
 			TreePath changedPath=new TreePath(root);
 			treeNodeChanged(changedPath);
