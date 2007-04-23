@@ -39,6 +39,7 @@ public class FixIndentation {
 	static final String TABS = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
 			+ "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
 
+	static final String SPACES = "                                                     ";
 	public static void main(String args[]) throws Exception {
 		recursiveFix(new File(args[0]), true);
 	}
@@ -90,11 +91,8 @@ public class FixIndentation {
 			pos++;
 		}
 		if (badSpaces || spaces > 1) {
-			int tabs = (indentation + 2) / 4;
-			String result;
-			if (indentation == tabs*4+1)
-				result = TABS.substring(0, tabs) + " " + s.substring(pos);
-			else result = TABS.substring(0, tabs) + s.substring(pos);
+			int tabs = (indentation) / 4;
+			String result = TABS.substring(0, tabs) + SPACES.substring(0, indentation - tabs*4) + s.substring(pos);
 			return result;
 		}
 		return s;
@@ -113,7 +111,7 @@ public class FixIndentation {
 				if (s == null)
 					break;
 				String s2 = fix(s);
-				if (s2 != s) {
+				if (!s2.equals(s)) {
 					consecutiveFixes++;
 					if (consecutiveFixes > 3 && partial) {
 						s2 = s;
