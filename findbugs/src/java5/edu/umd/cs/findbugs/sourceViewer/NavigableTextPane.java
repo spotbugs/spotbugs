@@ -45,7 +45,7 @@ public class NavigableTextPane extends JTextPane {
 	public NavigableTextPane(StyledDocument doc) {
 		super(doc);
 	}
-	
+
 	/** return the height of the parent (which is presumably a JViewport).
 	 *  If there is no parent, return this.getHeight(). */
 	private int parentHeight() {
@@ -53,11 +53,11 @@ public class NavigableTextPane extends JTextPane {
 		if (parent != null) return parent.getHeight();
 		return getHeight(); // entire pane height, may be huge
 	}
-	
+
 	public int getLineOffset(int line) throws BadLocationException {
 		return lineToOffset(line);
 	}
-	
+
 	private int lineToOffset(int line) throws BadLocationException {
 		Document d = getDocument();
 		try {
@@ -76,14 +76,14 @@ public class NavigableTextPane extends JTextPane {
 		Rectangle r = modelToView(offset);
 		return r.y;
 	}
-	
+
 	private int lineToY(int line) throws BadLocationException {
 		return offsetToY( lineToOffset(line) );
 	}
-	
+
 	private void scrollYToVisibleImpl(int y, int margin) {
 		final Rectangle r = new Rectangle(0, y-margin, 4, 2*margin);
-			
+
 		SwingUtilities.invokeLater(
 			new Runnable() {
 				public void run() {
@@ -91,7 +91,7 @@ public class NavigableTextPane extends JTextPane {
 				}
 			});
 	}
-	
+
 	private void scrollLineToVisibleImpl(int line, int margin) {
 		try {
 			int y = lineToY(line);
@@ -100,80 +100,80 @@ public class NavigableTextPane extends JTextPane {
 			if (MainFrame.DEBUG) ble.printStackTrace();
 		}
 	}
-	
+
 	/** scroll the specified line into view, with a margin of 'margin' pixels above and below */
 	public void scrollLineToVisible(int line, int margin) {
 		int maxMargin = (parentHeight() - 20) / 2;
 		if (margin > maxMargin) margin = Math.max(0, maxMargin);
 		scrollLineToVisibleImpl(line, margin);
 	}
-	
+
 	/** scroll the specified line into the middle third of the view */
 	public void scrollLineToVisible(int line) {
 		int margin = parentHeight() / 3;
 		scrollLineToVisibleImpl(line, margin);
 	}
-	
+
 	/** scroll the specified primary lines into view, along
 	 *  with as many of the other lines as is convenient */
 	public void scrollLinesToVisible(int startLine, int endLine, Collection<Integer> otherLines) {
 		int startY, endY;
 		try {
-    		startY = lineToY(startLine);
+			startY = lineToY(startLine);
 		} catch (BadLocationException ble) {
 			if (MainFrame.DEBUG) ble.printStackTrace();
 			return; // give up
 		}
 		try {
-    		endY = lineToY(endLine);
+			endY = lineToY(endLine);
 		} catch (BadLocationException ble) {
 			endY = startY; // better than nothing
 		}
-    	
+
 		int max = parentHeight() - 0;
 		if (endY-startY > max) {
 			endY = startY+max;
-    	}
+		}
 		else if (otherLines!=null && otherLines.size() > 0) {
 			int origin = startY + endY / 2;
 			PriorityQueue<Integer> pq = new PriorityQueue<Integer>(otherLines.size(), new DistanceComparator(origin));
-    		for (int line : otherLines) {
+			for (int line : otherLines) {
 				int otherY;
 				try {
 					otherY = lineToY(line);
-    			} catch (BadLocationException ble) {
+				} catch (BadLocationException ble) {
 					continue; // give up on this one
 				}
 				pq.add(otherY);
-    		}
-		
+			}
+
 			while ( !pq.isEmpty() ) {
 				int y = pq.remove();
-    			int lo = Math.min(startY, y);
+				int lo = Math.min(startY, y);
 				int hi = Math.max(endY, y);
 				if (hi-lo > max) break;
 				else {
-    				startY = lo;
+					startY = lo;
 					endY = hi;
 				}
 			}
-    	}
+		}
 		scrollYToVisibleImpl((startY+endY)/2, max/2);
 	}
-	
-    public static class DistanceComparator implements Comparator<Integer> {
+
+	public static class DistanceComparator implements Comparator<Integer> {
 		private final int origin;
 		public DistanceComparator(int origin) {
 			this.origin = origin;
-    	}
+		}
 		/* Returns a negative integer, zero, or a positive integer as
 		 * the first argument is farther from, equadistant, or closer
 		 * to (respectively) the origin.
-    	 * This sounds backwards, but this way closer values get a
+		 * This sounds backwards, but this way closer values get a
 		 * higher priority in the priority queue. */
 		public int compare(Integer a, Integer b) {
 			return Math.abs(b-origin) - Math.abs(a-origin);
-    	}
+		}
 	}
-	
+
 }

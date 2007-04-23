@@ -42,7 +42,7 @@ class NumberedParagraphView extends ParagraphView {
 	public final static int NUMBERS_WIDTH= (int) Driver.getFontSize()*3+9;
 	HighlightInformation highlight;
 	public NumberedParagraphView(Element e, HighlightInformation highlight) {
-        super(e);
+		super(e);
 		this.highlight = highlight;
 	}
 
@@ -54,64 +54,64 @@ class NumberedParagraphView extends ParagraphView {
 	@Override
 	public void paint(Graphics g, Shape allocation) {
 		Rectangle r = (allocation instanceof Rectangle) ?
-                (Rectangle)allocation : allocation.getBounds();
+				(Rectangle)allocation : allocation.getBounds();
 
 		Color oldColor = g.getColor();
 		Integer lineNumber = getLineNumber();
 		Color highlightColor = highlight.getHighlight(lineNumber);
 		if (highlightColor != null) {
 			g.setColor(highlightColor);
-    		g.fillRect(r.x, r.y, r.width, r.height);
+			g.fillRect(r.x, r.y, r.width, r.height);
 			g.setColor(oldColor);
 		}
 		// r.x += NUMBERS_WIDTH;
-		
+
 		super.paint(g, r);
 
 
 		FontMetrics metrics = g.getFontMetrics();
-		 
+
 		g.setColor(Color.GRAY);
-        String lineNumberString = lineNumber.toString();
+		String lineNumberString = lineNumber.toString();
 		int width = metrics.stringWidth(lineNumberString);
 		int numberX = r.x - width-9 + NUMBERS_WIDTH;
 		int numberY = r.y + metrics.getAscent();
-       
+
 		g.drawString(lineNumberString, numberX, numberY);
 		g.setColor(oldColor);
 		// System.out.println("Drawing line for " + lineNumber + " @ " + numberX +"," + numberY);
 		// r.x -= NUMBERS_WIDTH;
-        
+
 	}
 
 	public int getPreviousLineCount0() {
 		int lineCount = 0;
 		View parent = this.getParent();
-        int count = parent.getViewCount();
+		int count = parent.getViewCount();
 		for (int i = 0; i < count; i++) {
 			if (parent.getView(i) == this) {
 				break;
-            }
+			}
 			else {
 				lineCount += parent.getView(i).getViewCount();
 			}
-        }
+		}
 		return lineCount;
 	}
 	static WeakHashMap<Element, Integer> elementLineNumberCache = new WeakHashMap<Element, Integer>();
-    public Integer getLineNumber() {
-	
+	public Integer getLineNumber() {
+
 		Element element = this.getElement();
 		Integer result = elementLineNumberCache.get(element);
-    	if (result != null) return result;
+		if (result != null) return result;
 		Element parent = element.getParentElement();
 		int count = parent.getElementCount();
 		for (int i = 0; i < count; i++) {
-        	elementLineNumberCache.put(parent.getElement(i), i+1);
+			elementLineNumberCache.put(parent.getElement(i), i+1);
 		}
 		result = elementLineNumberCache.get(element);
 		if (result != null) return result;
-    	return -1;
+		return -1;
 
 	}
 }

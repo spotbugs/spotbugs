@@ -34,13 +34,13 @@ public class DocumentCharacterIterator implements CharacterIterator {
 	private final Document doc;
 
 	private final Segment text;
-	
+
 	/** Position of iterator in document. */
 	private int docPos = 0;
-	
+
 	/** Index of end of current segment in document. */
 	private int segmentEnd;
-	
+
 	DocumentCharacterIterator(Document doc) {
 		this.doc = doc;
 		text = new Segment();

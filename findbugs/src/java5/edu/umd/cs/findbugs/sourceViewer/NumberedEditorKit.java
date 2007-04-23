@@ -30,5 +30,5 @@ class NumberedEditorKit extends StyledEditorKit {
 	@Override
 	public ViewFactory getViewFactory() {
 		return new NumberedViewFactory(highlight);
-    }
+	}
 }

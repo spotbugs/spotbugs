@@ -83,7 +83,7 @@ public class JavaSourceDocument {
 
 	}
 
-	
+
 	final HighlightInformation highlights = new HighlightInformation();
 	final NumberedEditorKit dek = new NumberedEditorKit(highlights);
 
@@ -92,7 +92,7 @@ public class JavaSourceDocument {
 	final Element root;
 
 	final DefaultStyledDocument doc;
-	
+
 	final SourceFile sourceFile;
 
 	public HighlightInformation getHighlightInformation() {
@@ -108,11 +108,11 @@ public class JavaSourceDocument {
 	public String getTitle() {
 		return title;
 	}
-	
+
 	public SourceFile getSourceFile() {
 		return sourceFile;
 	}
-	
+
 	public JavaSourceDocument(String title, Reader in, SourceFile theSource) throws IOException  {
 		doc = new DefaultStyledDocument();
 		this.title = title;
@@ -130,7 +130,7 @@ public class JavaSourceDocument {
 		FontMetrics fontMetrics = toolkit.getFontMetrics(sourceFont);
 		TabStop[] tabs = new TabStop[50];
 		float width = fontMetrics.stringWidth(" ");
-		
+
 		int tabSize = GUISaveState.getInstance().getTabSize();
 		for (int i = 0; i < tabs.length; i++)
 			tabs[i] = new TabStop(width * (tabSize + tabSize * i));
@@ -148,7 +148,7 @@ public class JavaSourceDocument {
 		StyleConstants.setFontFamily(whiteAttributes, sourceFont.getFamily());
 		StyleConstants.setFontSize(whiteAttributes, sourceFont.getSize());
 		StyleConstants.setLeftIndent(whiteAttributes, NumberedParagraphView.NUMBERS_WIDTH);
-		
+
 		doc.setParagraphAttributes(0, doc.getLength(), whiteAttributes, true);
 		JavaScanner parser = new JavaScanner(new DocumentCharacterIterator(doc));
 		while (parser.next() != JavaScanner.EOF) {
@@ -188,5 +188,5 @@ public class JavaSourceDocument {
 			throw new RuntimeException(e);
 		}
 	}
-		
+
 }

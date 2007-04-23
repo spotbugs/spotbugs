@@ -30,7 +30,7 @@ public class HighlightInformation {
 
 	Map<Integer, Color> map = new HashMap<Integer, Color>();
 	private int foundLineNum = -1;
-	
+
 	public void clear() {
 		map.clear();
 		foundLineNum = -1;
@@ -39,21 +39,21 @@ public class HighlightInformation {
 		for(int i = start; i <= end; i++)
 			map.put(i, color);
 	}
-	
+
 	public void setHighlight(Integer line, Color color) {
 		map.put(line, color);
 	}
-	
+
 	public void unsetHighlight(Integer line) {
 		map.remove(line);
 	}
-	
+
 	public void updateFoundLineNum(Integer line) {
 		if(foundLineNum != -1)
 			unsetHighlight(foundLineNum);
 		foundLineNum = line;
 	}
-	
+
 	public @CheckForNull Color getHighlight(Integer line) {
 		return map.get(line);
 	}

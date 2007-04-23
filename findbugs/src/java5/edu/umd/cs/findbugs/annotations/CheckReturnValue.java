@@ -38,6 +38,6 @@ public @interface CheckReturnValue {
 	Priority priority() default Priority.MEDIUM;
 	/**
 	 * A textual explaination of why the return value should be checked
-     */
+	 */
 	String explanation() default "";
 }
