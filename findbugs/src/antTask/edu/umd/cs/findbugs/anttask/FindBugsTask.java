@@ -120,8 +120,8 @@ import edu.umd.cs.findbugs.ExitCodes;
 
 public class FindBugsTask extends Task {
 
-    private static final String FINDBUGS_JAR = "findbugs.jar";
-    private static final long DEFAULT_TIMEOUT = 600000; // ten minutes
+	private static final String FINDBUGS_JAR = "findbugs.jar";
+	private static final long DEFAULT_TIMEOUT = 600000; // ten minutes
 
 	private boolean debug = false;
 	private String effort;
@@ -132,7 +132,7 @@ public class FindBugsTask extends Task {
 	private boolean failOnError = false;
 	private String errorProperty = null;
 	private String warningsProperty = null;
-    private String projectName = null;
+	private String projectName = null;
 	private boolean workHard = false;
 	private boolean relaxed = false;
 	private boolean adjustExperimental = false;
@@ -151,16 +151,16 @@ public class FindBugsTask extends Task {
 	private String omitVisitors = null;
 	private String outputFileName = null;
 	private String stylesheet = null;
-    private List<ClassLocation> classLocations = new ArrayList<ClassLocation>();
+	private List<ClassLocation> classLocations = new ArrayList<ClassLocation>();
 	private long timeout = DEFAULT_TIMEOUT;
 	private Path classpath = null;
 	private Path pluginList = null;
-        private List<SystemProperty> systemPropertyList = new ArrayList<SystemProperty>();
-        private String onlyAnalyze = null;
+		private List<SystemProperty> systemPropertyList = new ArrayList<SystemProperty>();
+		private String onlyAnalyze = null;
 
 	private Java findbugsEngine = null;
 
-    //define the inner class to store class locations
+	//define the inner class to store class locations
 	public static class ClassLocation {
 		File classLocation = null;
 
@@ -171,12 +171,12 @@ public class FindBugsTask extends Task {
 		public File getLocation( ) {
 			return classLocation;
 		}
-      
-        @Override
+
+		@Override
 		public String toString( ) {
-           return classLocation!=null?classLocation.toString():"";
-        }
- 
+		   return classLocation!=null?classLocation.toString():"";
+		}
+
 	}
 
 	// A System property to set when FindBugs is run
@@ -225,7 +225,7 @@ public class FindBugsTask extends Task {
 	public void setRelaxed(boolean relaxed) {
 		this.relaxed = relaxed;
 	}
-	
+
 	/**
 	 * Set the adjustExperimental flag
 	 * 
@@ -234,7 +234,7 @@ public class FindBugsTask extends Task {
 	public void setAdjustExperimental(boolean adjustExperimental){
 		this.adjustExperimental = adjustExperimental;
 	}
-    
+
 	/**
 	 * Set the specific visitors to use 
 	 */
@@ -311,7 +311,7 @@ public class FindBugsTask extends Task {
 	public void setErrorProperty(String name) {
 		this.errorProperty = name;
 	}
-	
+
 	/**
 	 * Tells this task to set the property with the
 	 * given name to "true" when bugs were found.
@@ -336,13 +336,13 @@ public class FindBugsTask extends Task {
 		this.effort = effort;
 	}
 
-    /**
-     * Set project name
-     * 
+	/**
+	 * Set project name
+	 * 
      * @param projectName the project name
-     */
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+	 */
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
     }
 
 	/**
@@ -378,7 +378,7 @@ public class FindBugsTask extends Task {
 	 */
 	public void setAuxClasspath(Path src) {
 		boolean nonEmpty = false;
-		
+
 		String[] elementList = src.list();
 		for (String anElementList : elementList) {
 			if (!anElementList.equals("")) {
@@ -386,7 +386,7 @@ public class FindBugsTask extends Task {
 				break;
 			}
 		}
-		
+
 		if (nonEmpty) {
 			if (auxClasspath == null) {
 				auxClasspath = src;
@@ -413,45 +413,45 @@ public class FindBugsTask extends Task {
 		createAuxClasspath().setRefid(r);
 	}
 
-    /**
-     * the auxAnalyzepath to use.
-     */
+	/**
+	 * the auxAnalyzepath to use.
+	 */
     public void setAuxAnalyzepath(Path src) {
-        boolean nonEmpty = false;
-        
-        String[] elementList = src.list();
+		boolean nonEmpty = false;
+
+		String[] elementList = src.list();
         for (String anElementList : elementList) {
-            if (!anElementList.equals("")) {
-                nonEmpty = true;
-                break;
+			if (!anElementList.equals("")) {
+				nonEmpty = true;
+				break;
             }
-        }
-        
-        if (nonEmpty) {
+		}
+
+		if (nonEmpty) {
             if (auxAnalyzepath == null) {
-                auxAnalyzepath = src;
-            } else {
-                auxAnalyzepath.append(src);
+				auxAnalyzepath = src;
+			} else {
+				auxAnalyzepath.append(src);
             }
-        }
-    }
+		}
+	}
 
-    /**
-     * Path to use for auxAnalyzepath.
-     */
+	/**
+	 * Path to use for auxAnalyzepath.
+	 */
     public Path createAuxAnalyzepath() {
-        if (auxAnalyzepath == null) {
-            auxAnalyzepath = new Path(getProject());
-        }
+		if (auxAnalyzepath == null) {
+			auxAnalyzepath = new Path(getProject());
+		}
         return auxAnalyzepath.createPath();
-    }
+	}
 
-    /**
-     * Adds a reference to a sourcepath defined elsewhere.
-     */
+	/**
+	 * Adds a reference to a sourcepath defined elsewhere.
+	 */
     public void setAuxAnalyzepathRef(Reference r) {
-        createAuxAnalyzepath().setRefid(r);
-    }
+		createAuxAnalyzepath().setRefid(r);
+	}
 
 	/**
 	 * the sourcepath to use.
@@ -482,8 +482,8 @@ public class FindBugsTask extends Task {
 	}
 
 	/**
-     * Add a class location
-     */
+	 * Add a class location
+	 */
 	public ClassLocation createClass() {
 		ClassLocation cl = new ClassLocation();
 		classLocations.add( cl );
@@ -495,15 +495,15 @@ public class FindBugsTask extends Task {
 	 */
 	public void setOutputFile(String outputFileName) {
 		if (outputFileName != null && outputFileName.length() > 0)
-            this.outputFileName = outputFileName;
+			this.outputFileName = outputFileName;
 	}
 
-        /**
-         * Set the packages or classes to analyze
-         */
+		/**
+		 * Set the packages or classes to analyze
+		 */
         public void setOnlyAnalyze(String filter) {
-                this.onlyAnalyze = filter;
-        }
+				this.onlyAnalyze = filter;
+		}
 
 	/**
 	 * Set timeout in milliseconds.
@@ -593,11 +593,11 @@ public class FindBugsTask extends Task {
 		return systemProperty;
 	}
 
-    /**
-     * Check that all required attributes have been set
-     *
+	/**
+	 * Check that all required attributes have been set
+	 *
      * @since Ant 1.5
-     */
+	 */
 	private void checkParameters() {
 		if ( homeDir == null && (classpath == null || pluginList == null) ) {
 			throw new BuildException( "either home attribute or " +
@@ -625,7 +625,7 @@ public class FindBugsTask extends Task {
 										+ getTaskName() + "/>",
 									  getLocation() );
 		}
- 
+
 		if ( outputFormat != null  && 
 			!( outputFormat.trim().equalsIgnoreCase("xml" ) || 
 			   outputFormat.trim().equalsIgnoreCase("xml:withMessages" ) || 
@@ -634,18 +634,18 @@ public class FindBugsTask extends Task {
 			   outputFormat.trim().equalsIgnoreCase("xdocs" ) ||
 			   outputFormat.trim().equalsIgnoreCase("emacs") ) ) { 
 			throw new BuildException( "output attribute must be either " +
-  									  "'text', 'xml', 'html', 'xdocs' or 'emacs' for task <"
+										"'text', 'xml', 'html', 'xdocs' or 'emacs' for task <"
 										+ getTaskName() + "/>",
 									  getLocation() );
 		}
-	
+
 		if ( reportLevel != null  && 
 			!( reportLevel.trim().equalsIgnoreCase("experimental" ) || 
 			   reportLevel.trim().equalsIgnoreCase("low" ) || 
 			   reportLevel.trim().equalsIgnoreCase("medium" ) ||
 			   reportLevel.trim().equalsIgnoreCase("high" ) ) ) { 
 			throw new BuildException( "reportlevel attribute must be either " +
-  									  "'experimental' or 'low' or 'medium' or 'high' for task <" + 
+										"'experimental' or 'low' or 'medium' or 'high' for task <" + 
 										getTaskName() + "/>",
 									  getLocation() );
 		}
@@ -656,16 +656,16 @@ public class FindBugsTask extends Task {
 				getLocation());
 		}
 
-	    for (SystemProperty aSystemPropertyList : systemPropertyList) {
-		    SystemProperty systemProperty = (SystemProperty) aSystemPropertyList;
-		    if (systemProperty.getName() == null || systemProperty.getValue() == null)
+		for (SystemProperty aSystemPropertyList : systemPropertyList) {
+			SystemProperty systemProperty = (SystemProperty) aSystemPropertyList;
+			if (systemProperty.getName() == null || systemProperty.getValue() == null)
 			    throw new BuildException("systemProperty elements must have name and value attributes");
-	    }
-		
+		}
+
 		if (effort != null && !effort.equals("min") && !effort.equals("default") && !effort.equals("max")) {
 			throw new BuildException("effort attribute must be one of 'min', 'default', or 'max'");
 		}
-    } 
+	} 
 
 	/**
 	 * Add an argument to the JVM used to execute FindBugs.
@@ -675,11 +675,11 @@ public class FindBugsTask extends Task {
 		findbugsEngine.createArg().setValue(arg);
 	}
 
-    /**
-     * Create a new JVM to do the work.
-     *
+	/**
+	 * Create a new JVM to do the work.
+	 *
      * @since Ant 1.5
-     */
+	 */
 	private void execFindbugs() throws BuildException {
 		findbugsEngine = (Java) getProject().createTask("java");
 
@@ -694,18 +694,18 @@ public class FindBugsTask extends Task {
 		findbugsEngine.createJvmarg().setLine( jvmargs ); 
 
 		// Add JVM arguments for system properties
-	    for (SystemProperty aSystemPropertyList : systemPropertyList) {
-		    SystemProperty systemProperty = (SystemProperty) aSystemPropertyList;
-		    String jvmArg = "-D" + systemProperty.getName() + "=" + systemProperty.getValue();
+		for (SystemProperty aSystemPropertyList : systemPropertyList) {
+			SystemProperty systemProperty = (SystemProperty) aSystemPropertyList;
+			String jvmArg = "-D" + systemProperty.getName() + "=" + systemProperty.getValue();
 		    findbugsEngine.createJvmarg().setValue(jvmArg);
-	    }
+		}
 
 		if (homeDir != null) {
 			// Use findbugs.home to locate findbugs.jar and the standard
 			// plugins.  This is the usual means of initialization.
 
 			findbugsEngine.setJar( new File( homeDir + File.separator + "lib" + 
-                                         File.separator + FINDBUGS_JAR ) );
+										 File.separator + FINDBUGS_JAR ) );
 
 			addArg("-home");
 			addArg(homeDir.getPath());
@@ -720,11 +720,11 @@ public class FindBugsTask extends Task {
 			addArg("-pluginList");
 			addArg(pluginList.toString());
 		}
-		
-        if (projectName != null) {
-            addArg("-projectName");
+
+		if (projectName != null) {
+			addArg("-projectName");
             addArg(projectName);
-        }
+		}
 		if (adjustExperimental) {
 			addArg("-adjustExperimental");
 		}
@@ -741,7 +741,7 @@ public class FindBugsTask extends Task {
 
 		if ( sorted ) addArg("-sortByClass");
 		if ( timestampNow ) addArg("-timestampNow");
-		
+
 		if ( outputFormat != null && !outputFormat.trim().equalsIgnoreCase("text") ) {
 			outputFormat = outputFormat.trim();
 			String outputArg = "-";
@@ -796,11 +796,11 @@ public class FindBugsTask extends Task {
 		if ( relaxed ) {
 			addArg("-relaxed");
 		}
-                if ( onlyAnalyze != null ) {
-                        addArg("-onlyAnalyze");
-                        addArg(onlyAnalyze);
+				if ( onlyAnalyze != null ) {
+						addArg("-onlyAnalyze");
+						addArg(onlyAnalyze);
                 }
-        
+
 		addArg("-exitcode");
 		for (ClassLocation classLocation : classLocations) {
 			addArg(classLocation.toString());
@@ -815,9 +815,9 @@ public class FindBugsTask extends Task {
 
 		log("Running FindBugs...");
 
-                if (debug) {
-                        log(findbugsEngine.getCommandLine().describeCommand());    
-                }
+				if (debug) {
+						log(findbugsEngine.getCommandLine().describeCommand());    
+				}
 
 
 		int rc = findbugsEngine.executeJava();
@@ -831,11 +831,11 @@ public class FindBugsTask extends Task {
 		if (warningsProperty != null && (rc & ExitCodes.BUGS_FOUND_FLAG) != 0) {
 			getProject().setProperty(warningsProperty, "true");
 		}
-        
+
 		if (outputFileName != null) {
 			log("Output saved to " + outputFileName);
 		}
-    } 
+	} 
 
 }
 
