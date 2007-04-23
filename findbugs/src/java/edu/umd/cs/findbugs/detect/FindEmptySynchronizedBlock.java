@@ -36,11 +36,11 @@ public class FindEmptySynchronizedBlock
 
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (seen == MONITOREXIT && (getPrevOpcode(2) == MONITORENTER || getPrevOpcode(1) == MONITORENTER) )
 		  bugReporter.reportBug(new BugInstance(this, "ESync_EMPTY_SYNC", NORMAL_PRIORITY)
-                                .addClassAndMethod(this)
-                                .addSourceLine(this));
+								.addClassAndMethod(this)
+								.addSourceLine(this));
 
 		}
 	}

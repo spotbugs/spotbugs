@@ -232,14 +232,14 @@ public class FindDeadLocalStores implements Detector {
 				// Is this a store to a parameter which was dead on entry to the
 				// method?
 				boolean parameterThatIsDeadAtEntry = isParameter
-				        && !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
+						&& !llsaDataflow.getAnalysis().isStoreAlive(liveStoreSetAtEntry, local);
 				if (parameterThatIsDeadAtEntry && !complainedAbout.get(local)) {
 
 					// TODO: add warning properties?
 					pendingBugReportAboutOverwrittenParameter = new BugInstance(this, "IP_PARAMETER_IS_DEAD_BUT_OVERWRITTEN",
-					        storeLive ? NORMAL_PRIORITY : HIGH_PRIORITY).addClassAndMethod(methodGen,
-					        javaClass.getSourceFileName()).add(lvAnnotation).addSourceLine(classContext, methodGen,
-					        javaClass.getSourceFileName(), location.getHandle());
+							storeLive ? NORMAL_PRIORITY : HIGH_PRIORITY).addClassAndMethod(methodGen,
+							javaClass.getSourceFileName()).add(lvAnnotation).addSourceLine(classContext, methodGen,
+							javaClass.getSourceFileName(), location.getHandle());
 					complainedAbout.set(local);
 				}
 				if (storeLive)
@@ -247,7 +247,7 @@ public class FindDeadLocalStores implements Detector {
 				TypeFrame typeFrame = typeDateflow.getAnalysis().getFactAtLocation(location);
 				Type typeOfValue = null;
 				if (typeFrame.isValid() && typeFrame.getStackDepth() > 0) typeOfValue = typeFrame.getTopType();
-				
+
 				boolean storeOfNull = false;
 				InstructionHandle prevInsHandle = location.getHandle().getPrev();
 				if (prevInsHandle != null) {
@@ -312,8 +312,8 @@ public class FindDeadLocalStores implements Detector {
 
 					Instruction prevIns = prev.getInstruction();
 					if ((prevIns instanceof INVOKESPECIAL && ((INVOKESPECIAL) prevIns).getMethodName(methodGen.getConstantPool())
-					        .equals("<init>"))
-					        || prevIns instanceof ANEWARRAY || prevIns instanceof NEWARRAY || prevIns instanceof MULTIANEWARRAY) {
+							.equals("<init>"))
+							|| prevIns instanceof ANEWARRAY || prevIns instanceof NEWARRAY || prevIns instanceof MULTIANEWARRAY) {
 						deadObjectStore = true;
 
 					}
@@ -327,7 +327,7 @@ public class FindDeadLocalStores implements Detector {
 					propertySet.addProperty(DeadLocalStoreProperty.TWO_STORES_MULTIPLE_LOADS);
 
 				} else if (!parameterThatIsDeadAtEntry && localStoreCount[local] == 1 && localLoadCount[local] == 0
-				        && propertySet.containsProperty(DeadLocalStoreProperty.DEFENSIVE_CONSTANT_OPCODE)) {
+						&& propertySet.containsProperty(DeadLocalStoreProperty.DEFENSIVE_CONSTANT_OPCODE)) {
 					// might be final local constant
 					propertySet.addProperty(DeadLocalStoreProperty.SINGLE_STORE);
 
@@ -352,8 +352,8 @@ public class FindDeadLocalStores implements Detector {
 
 					// Report the warning
 					BugInstance bugInstance = new BugInstance(this, storeOfNull ? "DLS_DEAD_LOCAL_STORE_OF_NULL"
-					        : "DLS_DEAD_LOCAL_STORE", priority).addClassAndMethod(methodGen, javaClass.getSourceFileName()).add(
-					        lvAnnotation);
+							: "DLS_DEAD_LOCAL_STORE", priority).addClassAndMethod(methodGen, javaClass.getSourceFileName()).add(
+							lvAnnotation);
 
 					// If in relaxed reporting mode, encode heuristic
 					// information.
@@ -365,7 +365,7 @@ public class FindDeadLocalStores implements Detector {
 						propertySet.decorateBugInstance(bugInstance);
 					}
 					SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation.fromVisitedInstruction(classContext,
-					        methodGen, javaClass.getSourceFileName(), location.getHandle());
+							methodGen, javaClass.getSourceFileName(), location.getHandle());
 
 					if (DEBUG) {
 						System.out.println(javaClass.getSourceFileName() + " : " + methodGen.getName());
@@ -397,7 +397,7 @@ public class FindDeadLocalStores implements Detector {
 	 *            control flow graph (CFG) of method
 	 */
 	private void countLocalStoresLoadsAndIncrements(int[] localStoreCount, int[] localLoadCount, int[] localIncrementCount,
-	        CFG cfg) {
+			CFG cfg) {
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 

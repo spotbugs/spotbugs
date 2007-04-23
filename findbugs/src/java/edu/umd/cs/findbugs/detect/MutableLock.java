@@ -45,19 +45,19 @@ public class MutableLock extends BytecodeScanningDetector implements  StatelessD
 	}
 
 	@Override
-    public void visit(Field obj) {
+	public void visit(Field obj) {
 	super.visit(obj);
 	if (obj.isFinal()) finalFields.add(obj.getName());
 }
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		super.visit(obj);
 		setFields.clear();
 		thisOnTOS = false;
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 
 		switch (seen) {
 		case ALOAD_0:
@@ -72,16 +72,16 @@ public class MutableLock extends BytecodeScanningDetector implements  StatelessD
 			break;
 		case GETFIELD:
 			if (thisOnTOS && getClassConstantOperand().equals(getClassName())
-			        && setFields.contains(getNameConstantOperand())
-			        && asUnsignedByte(codeBytes[getPC() + 3]) == DUP
-			        && asUnsignedByte(codeBytes[getPC() + 5]) == MONITORENTER
+					&& setFields.contains(getNameConstantOperand())
+					&& asUnsignedByte(codeBytes[getPC() + 3]) == DUP
+					&& asUnsignedByte(codeBytes[getPC() + 5]) == MONITORENTER
 			        
-			        && !finalFields.contains(getNameConstantOperand())
+					&& !finalFields.contains(getNameConstantOperand())
 			)
 				bugReporter.reportBug(new BugInstance(this, "ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addReferencedField(this)
-				        .addSourceLine(this, getPC() + 5));
+						.addClassAndMethod(this)
+						.addReferencedField(this)
+						.addSourceLine(this, getPC() + 5));
 			break;
 		default:
 		}

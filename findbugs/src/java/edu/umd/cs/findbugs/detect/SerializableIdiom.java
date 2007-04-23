@@ -48,10 +48,10 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 
 public class SerializableIdiom extends BytecodeScanningDetector
-        {
+		{
 
-    final static boolean reportTransientFieldOfNonSerializableClass =
-        SystemProperties.getBoolean("reportTransientFieldOfNonSerializableClass");
+	final static boolean reportTransientFieldOfNonSerializableClass =
+		SystemProperties.getBoolean("reportTransientFieldOfNonSerializableClass");
 
 	boolean sawSerialVersionUID;
 	boolean isSerializable, implementsSerializableDirectly;
@@ -68,7 +68,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	private HashMap<String, XField> transientFields = new HashMap<String, XField>();
 	private HashMap<String, Integer> transientFieldsUpdates = new HashMap<String, Integer>();
 	private HashSet<String> transientFieldsSetInConstructor = new HashSet<String>();
-	
+
 	private boolean sawReadExternal;
 	private boolean sawWriteExternal;
 	private boolean sawReadObject;
@@ -95,14 +95,14 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	}
 
 	@Override
-         public void visitClassContext(ClassContext classContext) {
+		 public void visitClassContext(ClassContext classContext) {
 		classContext.getJavaClass().accept(this);
 		flush();
 	}
 
 	private void flush() {
 		if (!isAbstract &&
-		        !((sawReadExternal && sawWriteExternal) || (sawReadObject && sawWriteObject))) {
+				!((sawReadExternal && sawWriteExternal) || (sawReadObject && sawWriteObject))) {
 			for (BugInstance aFieldWarningList : fieldWarningList)
 				bugReporter.reportBug(aFieldWarningList);
 		}
@@ -115,14 +115,14 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	boolean innerClassHasOuterInstance;
 	private boolean isEnum;
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 		String superClassname = obj.getSuperclassName();
 		// System.out.println("superclass of " + getClassName() + " is " + superClassname);
 		isEnum = superClassname.equals("java.lang.Enum");
 		if (isEnum) return;
 		int flags = obj.getAccessFlags();
 		isAbstract = (flags & ACC_ABSTRACT) != 0
-		        || (flags & ACC_INTERFACE) != 0;
+				|| (flags & ACC_INTERFACE) != 0;
 		isAnonymousInnerClass 
 		  = anonymousInnerClassNamePattern
 			.matcher(getClassName()).matches();
@@ -133,7 +133,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 				break;
 			}
 		}
-		
+
 		sawSerialVersionUID = false;
 		isSerializable = implementsSerializableDirectly = false;
 		isExternalizable = false;
@@ -169,9 +169,9 @@ public class SerializableIdiom extends BytecodeScanningDetector
 				if (Repository.instanceOf(obj, "java.io.Serializable"))
 					isSerializable = true;
 /*
-	        if (Repository.instanceOf(obj,"java.rmi.Remote")) {
-		    isRemote = true;
-		    }
+			if (Repository.instanceOf(obj,"java.rmi.Remote")) {
+			isRemote = true;
+			}
 */
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
@@ -186,15 +186,15 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			if (superClass != null) {
 				Method[] superClassMethods = superClass.getMethods();
 				superClassImplementsSerializable = Repository.instanceOf(superClass,
-				        "java.io.Serializable");
+						"java.io.Serializable");
 				superClassHasVoidConstructor = false;
 				for (Method m : superClassMethods) {
 					/*
-					                        if (!m.isPrivate())
-					                        System.out.println("Supercase of " + className
-						                        + " has an accessible method named " + m.getName()
+											if (!m.isPrivate())
+											System.out.println("Supercase of " + className
+												+ " has an accessible method named " + m.getName()
 						                        + " with sig " + m.getSignature());
-					                        */
+											*/
 					if (m.getName().equals("<init>")
 							&& m.getSignature().equals("()V")
 							&& !m.isPrivate()
@@ -230,7 +230,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	}
 
 	@Override
-         public void visitAfter(JavaClass obj) {
+		 public void visitAfter(JavaClass obj) {
 		if (isEnum) return;
 		if (false) {
 			System.out.println(getDottedClassName());
@@ -259,36 +259,36 @@ public class SerializableIdiom extends BytecodeScanningDetector
 					} catch (ClassNotFoundException e1) {
 						// ignore it
 					}
-					
+
 					bugReporter.reportBug(new BugInstance(this, "SE_TRANSIENT_FIELD_NOT_RESTORED",
-					        priority )
-					        .addClass(getThisClass())
-					        .addField(fieldX));
+							priority )
+							.addClass(getThisClass())
+							.addField(fieldX));
 				
 			}
-			
+
 		}
 		if (isSerializable && !isExternalizable
-		        && !superClassHasVoidConstructor
-		        && !superClassImplementsSerializable)
+				&& !superClassHasVoidConstructor
+				&& !superClassImplementsSerializable)
 			bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR",
-			        implementsSerializableDirectly|| seenTransientField ? HIGH_PRIORITY : 
-			        	( sawSerialVersionUID ?  NORMAL_PRIORITY : LOW_PRIORITY))
-			        .addClass(getThisClass().getClassName()));
+					implementsSerializableDirectly|| seenTransientField ? HIGH_PRIORITY : 
+						( sawSerialVersionUID ?  NORMAL_PRIORITY : LOW_PRIORITY))
+					.addClass(getThisClass().getClassName()));
 		// Downgrade class-level warnings if it's a GUI class.
 		int priority = false && isGUIClass ? LOW_PRIORITY : NORMAL_PRIORITY;
 		if (obj.getClassName().endsWith("_Stub")) priority++;
 
 		if (isExternalizable && !hasPublicVoidConstructor && !isAbstract)
 			bugReporter.reportBug(new BugInstance(this, "SE_NO_SUITABLE_CONSTRUCTOR_FOR_EXTERNALIZATION",
-			        directlyImplementsExternalizable ?
-			        HIGH_PRIORITY : NORMAL_PRIORITY)
-			        .addClass(getThisClass().getClassName()));
+					directlyImplementsExternalizable ?
+					HIGH_PRIORITY : NORMAL_PRIORITY)
+					.addClass(getThisClass().getClassName()));
 		if (!foundSynthetic) priority++;
 		if (seenTransientField) priority--;
 		if (!isAnonymousInnerClass 
 			&& !isExternalizable && !isGUIClass && !obj.isAbstract()
-		        && isSerializable && !isAbstract && !sawSerialVersionUID)
+				&& isSerializable && !isAbstract && !sawSerialVersionUID)
 			bugReporter.reportBug(new BugInstance(this, "SE_NO_SERIALVERSIONID", priority).addClass(this));
 
 		if (writeObjectIsSynchronized && !foundSynchronizedMethods)
@@ -296,16 +296,16 @@ public class SerializableIdiom extends BytecodeScanningDetector
 	}
 
 	@Override
-         public void visit(Method obj) {
-		
+		 public void visit(Method obj) {
+
 		int accessFlags = obj.getAccessFlags();
 		boolean isSynchronized = (accessFlags & ACC_SYNCHRONIZED) != 0;
 		if (getMethodName().equals("<init>") && getMethodSig().equals("()V")
-		        && (accessFlags & ACC_PUBLIC) != 0
+				&& (accessFlags & ACC_PUBLIC) != 0
 		)
 			hasPublicVoidConstructor = true;
 		if (!getMethodName().equals("<init>")
-		        && isSynthetic(obj))
+				&& isSynthetic(obj))
 			foundSynthetic = true;
 		// System.out.println(methodName + isSynchronized);
 
@@ -327,7 +327,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			if (!getMethodSig().equals("()Ljava/lang/Object;"))
 				bugReporter.reportBug(new BugInstance(this, "SE_READ_RESOLVE_MUST_RETURN_OBJECT", HIGH_PRIORITY)
 						.addClassAndMethod(this));
-			
+
 		}else if (getMethodName().equals("readObject")
 				&& getMethodSig().equals("(Ljava/io/ObjectInputStream;)V")
 				&& isSerializable) {
@@ -335,7 +335,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			if (!obj.isPrivate())
 				bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY)
 						.addClassAndMethod(this));
-			
+
 		} else if (getMethodName().equals("readObjectNoData")
 				&& getMethodSig().equals("()V")
 				&& isSerializable) {
@@ -343,7 +343,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			if (!obj.isPrivate())
 				bugReporter.reportBug(new BugInstance(this, "SE_METHOD_MUST_BE_PRIVATE", HIGH_PRIORITY)
 						.addClassAndMethod(this));
-			
+
 		}else if (getMethodName().equals("writeObject")
 				&& getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
 				&& isSerializable) {
@@ -355,12 +355,12 @@ public class SerializableIdiom extends BytecodeScanningDetector
 
 		if (isSynchronized) {
 		if (getMethodName().equals("readObject") &&
-		        getMethodSig().equals("(Ljava/io/ObjectInputStream;)V") &&
-		        isSerializable)
+				getMethodSig().equals("(Ljava/io/ObjectInputStream;)V") &&
+				isSerializable)
 			bugReporter.reportBug(new BugInstance(this, "RS_READOBJECT_SYNC", NORMAL_PRIORITY).addClass(this));
 		else if (getMethodName().equals("writeObject")
-		        && getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
-		        && isSerializable)
+				&& getMethodSig().equals("(Ljava/io/ObjectOutputStream;)V")
+				&& isSerializable)
 			writeObjectIsSynchronized = true;
 		else
 			foundSynchronizedMethods = true;
@@ -378,7 +378,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		if (isSerializable) {
 			stack.resetForMethodEntry(this);
 			super.visit(obj);
@@ -442,11 +442,11 @@ public class SerializableIdiom extends BytecodeScanningDetector
 		stack.sawOpcode(this,seen);
 	}
 	private OpcodeStack stack = new OpcodeStack();
-	
+
 	@Override
-    public void visit(Field obj) {
+	public void visit(Field obj) {
 		int flags = obj.getAccessFlags();
-		
+
 		if (obj.isTransient()) {
 			if (isSerializable) {
 				seenTransientField = true;
@@ -459,11 +459,11 @@ public class SerializableIdiom extends BytecodeScanningDetector
 			}
 		}
 		else if (getClassName().indexOf("ObjectStreamClass") == -1
-		        && isSerializable
-		        && !isExternalizable
-		        && getFieldSig().indexOf("L") >= 0 && !obj.isTransient() && !obj.isStatic()) {
+				&& isSerializable
+				&& !isExternalizable
+				&& getFieldSig().indexOf("L") >= 0 && !obj.isTransient() && !obj.isStatic()) {
 			try {
-				
+
 				double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(getFieldSig());
 				if (isSerializable < 1.0)
 					fieldsThatMightBeAProblem.put(obj.getName(), XFactory.createXField(this));
@@ -475,7 +475,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 					int priority = computePriority(isSerializable, 0);
 					if (priority > NORMAL_PRIORITY
 							&& obj.getName().startsWith("this$"))
-						    priority = NORMAL_PRIORITY;
+							priority = NORMAL_PRIORITY;
 					else if (innerClassHasOuterInstance) {
 						if (isAnonymousInnerClass) priority+=2;
 						else priority+=1;
@@ -488,46 +488,46 @@ public class SerializableIdiom extends BytecodeScanningDetector
 						+" " +  sawSerialVersionUID
 						+" " +  isGUIClass);
 					// Report is queued until after the entire class has been seen.
-					
+
 					if (obj.getName().equals("this$0"))
 						fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD_INNER_CLASS", priority)
-					        .addClass(getThisClass().getClassName()));
+							.addClass(getThisClass().getClassName()));
 						else if (isSerializable < 0.9) fieldWarningList.add(new BugInstance(this, "SE_BAD_FIELD", priority)
-					        .addClass(getThisClass().getClassName())
-					        .addField(getDottedClassName(), obj.getName(), getFieldSig(), false));
+							.addClass(getThisClass().getClassName())
+							.addField(getDottedClassName(), obj.getName(), getFieldSig(), false));
 				} else if (false && obj.getName().equals("this$0"))
 					fieldWarningList.add(new BugInstance(this, "SE_INNER_CLASS",
 							implementsSerializableDirectly ? NORMAL_PRIORITY : LOW_PRIORITY)
-			        .addClass(getThisClass().getClassName()));
+					.addClass(getThisClass().getClassName()));
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
 			}
 		}
 
 		if (!getFieldName().startsWith("this")
-		        && isSynthetic(obj))
+				&& isSynthetic(obj))
 			foundSynthetic = true;
 		if (!getFieldName().equals("serialVersionUID")) return;
 		int mask = ACC_STATIC | ACC_FINAL;
 		if (!getFieldSig().equals("I")
-		        && !getFieldSig().equals("J"))
+				&& !getFieldSig().equals("J"))
 			return;
 		if ((flags & mask) == mask
-		        && getFieldSig().equals("I")) {
+				&& getFieldSig().equals("I")) {
 			bugReporter.reportBug(new BugInstance(this, "SE_NONLONG_SERIALVERSIONID", LOW_PRIORITY)
-			        .addClass(this)
-			        .addVisitedField(this));
+					.addClass(this)
+					.addVisitedField(this));
 			sawSerialVersionUID = true;
 			return;
 		} else if ((flags & ACC_STATIC) == 0) {
 			bugReporter.reportBug(new BugInstance(this, "SE_NONSTATIC_SERIALVERSIONID", NORMAL_PRIORITY)
-			        .addClass(this)
-			        .addVisitedField(this));
+					.addClass(this)
+					.addVisitedField(this));
 			return;
 		} else if ((flags & ACC_FINAL) == 0) {
 			bugReporter.reportBug(new BugInstance(this, "SE_NONFINAL_SERIALVERSIONID", NORMAL_PRIORITY)
-			        .addClass(this)
-			        .addVisitedField(this));
+					.addClass(this)
+					.addVisitedField(this));
 			return;
 		}
 		sawSerialVersionUID = true;
@@ -535,7 +535,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 
 	private int computePriority(double isSerializable, double bias) {
 		int priority = (int)(1.9+isSerializable*3 + bias);
-		
+
 		if (implementsSerializableDirectly || sawSerialVersionUID || sawReadObject)
 			priority--;
 		if (!implementsSerializableDirectly && priority == HIGH_PRIORITY)

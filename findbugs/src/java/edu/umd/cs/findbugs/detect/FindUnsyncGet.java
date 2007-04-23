@@ -38,7 +38,7 @@ public class FindUnsyncGet extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void report() {
+		 public void report() {
 		// Find the set of properties for which we have both
 		// unsynchronized get and synchronized set methods
 		Set<String> commonProperties = new HashSet<String>(getMethods.keySet());
@@ -59,13 +59,13 @@ public class FindUnsyncGet extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 		report();
 		prevClassName = getDottedClassName();
 	}
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		int flags = obj.getAccessFlags();
 		if ((flags & doNotConsider) != 0) return;
 		String name = obj.getName();
@@ -85,12 +85,12 @@ public class FindUnsyncGet extends BytecodeScanningDetector {
 				);
 		*/
 		if (name.startsWith("get")
-		        && !isSynchronized
+				&& !isSynchronized
 		// && returnValueIsRef
 		) {
 			getMethods.put(name.substring(3), MethodAnnotation.fromVisitedMethod(this));
 		} else if (name.startsWith("set")
-		        && isSynchronized
+				&& isSynchronized
 		// && firstArgIsRef
 		) {
 			setMethods.put(name.substring(3), MethodAnnotation.fromVisitedMethod(this));

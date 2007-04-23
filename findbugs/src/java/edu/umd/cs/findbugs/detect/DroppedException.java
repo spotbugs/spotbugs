@@ -49,7 +49,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class DroppedException extends PreorderVisitor implements Detector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("de.debug");
 	private static final boolean LOOK_IN_SOURCE_TO_FIND_COMMENTED_CATCH_BLOCKS
-	        = SystemProperties.getBoolean("findbugs.de.comment");
+			= SystemProperties.getBoolean("findbugs.de.comment");
 
 	Set<String> reported = new HashSet<String>();
 	Set<String> causes = new HashSet<String>();
@@ -74,7 +74,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
 		if (!causes.add(c)) return checkedCauses.contains(c);
 		try {
 			if (Hierarchy.isSubtype(c, "java.lang.Exception")
-			        && !Hierarchy.isSubtype(c, "java.lang.RuntimeException")) {
+					&& !Hierarchy.isSubtype(c, "java.lang.RuntimeException")) {
 				checkedCauses.add(c);
 				return true;
 			}
@@ -87,11 +87,11 @@ public class DroppedException extends PreorderVisitor implements Detector {
 
 	private int getUnsignedShort(byte[] a, int i) {
 		return asUnsignedByte(a[i]) << 8
-		        | asUnsignedByte(a[i + 1]);
+				| asUnsignedByte(a[i + 1]);
 	}
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 
 		CodeException[] exp = obj.getExceptionTable();
 		LineNumberTable lineNumbers = obj.getLineNumberTable();
@@ -120,7 +120,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
 				j += 1 + NO_OF_OPERANDS[opcode];
 				if (opcode >= IRETURN && opcode <= RETURN
 						|| opcode >= IFEQ && opcode <= GOTO
-						    && (opcode != GOTO || j < end)
+							&& (opcode != GOTO || j < end)
 						) {
 					exitInTryBlock = true;
 					if (DEBUG)
@@ -128,7 +128,7 @@ public class DroppedException extends PreorderVisitor implements Detector {
 								+ " in " + getFullyQualifiedMethodName());
 					break;
 				}
-			
+
 			}
 
 			if (exitInTryBlock) {

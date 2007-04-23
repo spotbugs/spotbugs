@@ -31,26 +31,26 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 	public static final int SEEN_ISTORE = 3;
 	public static final int SEEN_GOTO = 4;
 	public static final int SEEN_IF = 5;
-	
+
 	private BugReporter bugReporter;
 	private int state;
-	
+
 	private BugInstance bug;
 	public QuestionableBooleanAssignment(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 
-	
+
 	@Override
-         public void visitCode(Code obj) {
+		 public void visitCode(Code obj) {
 		state = SEEN_NOTHING;
 		super.visitCode(obj);
 		bug = null;
 	}
-	
+
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (seen == GOTO && getBranchOffset() == 4) {
 			state = SEEN_GOTO;
 		}
@@ -59,21 +59,21 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 				if ((seen == ICONST_1) || (seen == ICONST_0))
 					state = SEEN_ICONST_0_OR_1;
 			break;
-			
+
 			case SEEN_ICONST_0_OR_1:
 				if (seen == DUP)
 					state = SEEN_DUP;
 				else
 					state = SEEN_NOTHING;
 			break;
-			
+
 			case SEEN_DUP:
 				if (((seen >= ISTORE_0) && (seen <= ISTORE_3)) || (seen == ISTORE))
 					state = SEEN_ISTORE;
 				else
 					state = SEEN_NOTHING;
 			break;
-			
+
 			case SEEN_ISTORE: 
 				if (seen == IFEQ || seen == IFNE)
 				{
@@ -84,7 +84,7 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 				}
 				else state = SEEN_NOTHING;
 			break;
-			
+
 
 			case SEEN_IF:
 				state = SEEN_NOTHING;
@@ -93,8 +93,8 @@ public class QuestionableBooleanAssignment extends BytecodeScanningDetector impl
 					if (cName.equals("java/lang/AssertionError")) break;
 				}
 				bugReporter.reportBug(bug);
-				
-					
+
+
 				break;
 			case SEEN_GOTO:
 				state = SEEN_NOTHING;

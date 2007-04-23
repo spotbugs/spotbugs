@@ -39,11 +39,11 @@ import edu.umd.cs.findbugs.ba.npe.ParameterNullnessPropertyDatabase;
  * @author David Hovemeyer
  */
 public class FindBadEqualsImplementation implements Detector {
-	
+
 	private BugReporter bugReporter;
 	private ParameterNullnessPropertyDatabase database;
 	private boolean checkedDatabase;
-	
+
 	public FindBadEqualsImplementation(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
@@ -56,10 +56,10 @@ public class FindBadEqualsImplementation implements Detector {
 			database = AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase();
 			checkedDatabase = true;
 		}
-		
+
 		if (database == null)
 			return;
-		
+
 		JavaClass javaClass = classContext.getJavaClass();
 		Method[] methodList = javaClass.getMethods();
 		for (Method method : methodList) {

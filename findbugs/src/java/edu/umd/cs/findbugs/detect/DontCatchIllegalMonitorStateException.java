@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class DontCatchIllegalMonitorStateException
-        extends PreorderVisitor implements Detector {
+		extends PreorderVisitor implements Detector {
 
 	private static final boolean DEBUG = SystemProperties.getBoolean("dcimse.debug");
 
@@ -47,11 +47,11 @@ public class DontCatchIllegalMonitorStateException
 		if (DEBUG)
 			msgs = new HashSet<String>();
 	}
-	
+
 
 
 	@Override
-         public void visit(ExceptionTable obj) {
+		 public void visit(ExceptionTable obj) {
 		if (DEBUG) {
 			String names[] = obj.getExceptionNames();
 			for (String name : names)
@@ -62,7 +62,7 @@ public class DontCatchIllegalMonitorStateException
 	}
 
 	@Override
-         public void visit(CodeException obj) {
+		 public void visit(CodeException obj) {
 		int type = obj.getCatchType();
 		if (type == 0) return;
 		String name = getConstantPool().constantToString(getConstantPool().getConstant(type));
@@ -73,8 +73,8 @@ public class DontCatchIllegalMonitorStateException
 		}
 		if (name.equals("java.lang.IllegalMonitorStateException"))
 			bugReporter.reportBug(new BugInstance(this, "IMSE_DONT_CATCH_IMSE", HIGH_PRIORITY)
-			        .addClassAndMethod(this)
-			        .addSourceLine(this.classContext, this, obj.getHandlerPC()));
+					.addClassAndMethod(this)
+					.addSourceLine(this.classContext, this, obj.getHandlerPC()));
 
 	}
 

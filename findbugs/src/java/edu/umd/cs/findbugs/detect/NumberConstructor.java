@@ -50,39 +50,39 @@ public class NumberConstructor extends BytecodeScanningDetector {
    * Immutable information class of one handled number types.
    */
   static class Info {
-    public final boolean isRealNumber;
-    public final String argName;       
-    public final String constrArgs;
+	public final boolean isRealNumber;
+	public final String argName;       
+	public final String constrArgs;
        
-    public Info(boolean isRealNumber, String argName, String constrArgs) {
-      this.isRealNumber = isRealNumber;
-      this.argName = argName;
+	public Info(boolean isRealNumber, String argName, String constrArgs) {
+	  this.isRealNumber = isRealNumber;
+	  this.argName = argName;
       this.constrArgs = constrArgs;         
-    }
+	}
   }
-  
+
   private static final Map<String, Info> boxClasses = new HashMap<String, Info>();
   static {
-    boxClasses.put("java/lang/Byte", new Info(false, "byte", "(B)V"));
-    boxClasses.put("java/lang/Character", new Info(false, "char", "(C)V"));
-    boxClasses.put("java/lang/Short", new Info(false, "short", "(S)V"));
+	boxClasses.put("java/lang/Byte", new Info(false, "byte", "(B)V"));
+	boxClasses.put("java/lang/Character", new Info(false, "char", "(C)V"));
+	boxClasses.put("java/lang/Short", new Info(false, "short", "(S)V"));
     boxClasses.put("java/lang/Integer", new Info(false, "int", "(I)V"));
-    boxClasses.put("java/lang/Long", new Info(false, "long", "(J)V"));
-    boxClasses.put("java/lang/Float", new Info(true, "float", "(F)V"));
-    boxClasses.put("java/lang/Double", new Info(true, "double", "(D)V"));
+	boxClasses.put("java/lang/Long", new Info(false, "long", "(J)V"));
+	boxClasses.put("java/lang/Float", new Info(true, "float", "(F)V"));
+	boxClasses.put("java/lang/Double", new Info(true, "double", "(D)V"));
   }
 
   private final BugReporter bugReporter;
   private boolean constantArgument;
-	
+
   /**
    * Constructs a NC detector given the reporter to report bugs on
    * @param bugReporter the sync of bug reports
    */
   public NumberConstructor(BugReporter bugReporter) {
-    this.bugReporter = bugReporter;
+	this.bugReporter = bugReporter;
   }
-    
+
   /**
    * The detector is only meaningful for Java5 class libraries.
    * 
@@ -90,55 +90,55 @@ public class NumberConstructor extends BytecodeScanningDetector {
    */
   @Override
   public void visitClassContext(ClassContext classContext) {
-    int majorVersion = classContext.getJavaClass().getMajor();
-    if (majorVersion >= MAJOR_1_5) {
-      super.visitClassContext(classContext);
+	int majorVersion = classContext.getJavaClass().getMajor();
+	if (majorVersion >= MAJOR_1_5) {
+	  super.visitClassContext(classContext);
     }
   }
 
   @Override
   public void sawOpcode(int seen) {
-    // detect if previous op was a constant number
-    if (seen == ICONST_0 || seen == LCONST_0 ||
+	// detect if previous op was a constant number
+	if (seen == ICONST_0 || seen == LCONST_0 ||
 	seen == ICONST_1 || seen == LCONST_1 ||
 	seen == ICONST_2 || seen == ICONST_3 ||
 	seen == ICONST_4 || seen == ICONST_5 ||
 	seen == BIPUSH || seen == LDC) {
-      constantArgument = true;
-      return;
-    }
+	  constantArgument = true;
+	  return;
+	}
         
-    // only acts on constructor invoke
-    if (seen != INVOKESPECIAL) {
-      constantArgument = false;
+	// only acts on constructor invoke
+	if (seen != INVOKESPECIAL) {
+	  constantArgument = false;
       return;
-    }
-        
-    if (!"<init>".equals(getNameConstantOperand())) {
+	}
+
+	if (!"<init>".equals(getNameConstantOperand())) {
       return;
-    }
-    String cls = getClassConstantOperand(); 
-    Info info = boxClasses.get(cls);
+	}
+	String cls = getClassConstantOperand(); 
+	Info info = boxClasses.get(cls);
     if (info == null) {
-      return;
-    }
-        
+	  return;
+	}
+
     if (!info.constrArgs.equals(getSigConstantOperand())) {
-      return;
-    }
-        
+	  return;
+	}
+
     int prio;
-    String type;
-    if (info.isRealNumber) {
-      prio = LOW_PRIORITY;
+	String type;
+	if (info.isRealNumber) {
+	  prio = LOW_PRIORITY;
       type = "DM_FP_NUMBER_CTOR";
-    } else {
-      prio = NORMAL_PRIORITY;
-      type = "DM_NUMBER_CTOR";
+	} else {
+	  prio = NORMAL_PRIORITY;
+	  type = "DM_NUMBER_CTOR";
     }
-        
-    cls = cls.substring(cls.lastIndexOf('/')+1);
-    bugReporter.reportBug(new BugInstance(this, type, prio)
+
+	cls = cls.substring(cls.lastIndexOf('/')+1);
+	bugReporter.reportBug(new BugInstance(this, type, prio)
 			  .addClass(this)
 			  .addMethod(this)
 			  .addSourceLine(this)

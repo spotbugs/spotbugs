@@ -27,9 +27,9 @@ import org.apache.bcel.classfile.*;
 
 public class IteratorIdioms extends BytecodeScanningDetector implements  StatelessDetector {
 
-    private JavaClass iteratorClass;
+	private JavaClass iteratorClass;
 	private BugReporter bugReporter;
-	
+
 	public IteratorIdioms(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
@@ -37,19 +37,19 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 
 
 	@Override
-         public void visitClassContext(ClassContext classContext) {
+		 public void visitClassContext(ClassContext classContext) {
 		findJavaUtilIterator();
 
-	    if (iteratorClass == null)
-	        return;
-	    try {
+		if (iteratorClass == null)
+			return;
+		try {
 		    JavaClass cls = classContext.getJavaClass();
-		    if (cls.implementationOf(iteratorClass))
-		        super.visitClassContext(classContext); 
-	    }
+			if (cls.implementationOf(iteratorClass))
+				super.visitClassContext(classContext); 
+		}
 	    catch (ClassNotFoundException cnfe) {
-	        //Already logged
-	    }
+			//Already logged
+		}
 	}
 
 	private void findJavaUtilIterator() {
@@ -62,14 +62,14 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 			}
 		}
 	}
-	
+
 	boolean sawNoSuchElement;
 	boolean sawCall;
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		if (getMethodName().equals("next")
-		        && getMethodSig().equals("()Ljava/lang/Object;")) {
+				&& getMethodSig().equals("()Ljava/lang/Object;")) {
 			sawNoSuchElement = false;
 			sawCall = false;
 			super.visit(obj);
@@ -81,13 +81,13 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (seen == NEW
-		        && getClassConstantOperand().equals("java/util/NoSuchElementException"))
+				&& getClassConstantOperand().equals("java/util/NoSuchElementException"))
 			sawNoSuchElement = true;
 		else if (seen == INVOKESPECIAL
-		        || seen == INVOKEVIRTUAL
-		        || seen == INVOKEINTERFACE) {
+				|| seen == INVOKEVIRTUAL
+				|| seen == INVOKEINTERFACE) {
 			sawCall = true;
 			// System.out.println("Saw call to " + nameConstant);
 			if (getNameConstantOperand().toLowerCase().indexOf("next")  >= 0 || getNameConstantOperand().toLowerCase().indexOf("previous") >= 0 )

@@ -32,17 +32,17 @@ public class FindFloatMath extends BytecodeScanningDetector implements Stateless
 
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		switch (seen) {
 		case FMUL:
 		case FDIV:
 			if (getFullyQualifiedMethodName().indexOf("float") == -1
-			        && getFullyQualifiedMethodName().indexOf("Float") == -1
-			        && getFullyQualifiedMethodName().indexOf("FLOAT") == -1)
+					&& getFullyQualifiedMethodName().indexOf("Float") == -1
+					&& getFullyQualifiedMethodName().indexOf("FLOAT") == -1)
 				bugReporter.reportBug(new BugInstance(this, "FL_MATH_USING_FLOAT_PRECISION",
-				        LOW_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addSourceLine(this));
+						LOW_PRIORITY)
+						.addClassAndMethod(this)
+						.addSourceLine(this));
 			break;
 		case FCMPG:
 		case FCMPL:
@@ -51,13 +51,13 @@ public class FindFloatMath extends BytecodeScanningDetector implements Stateless
 		case FSUB:
 		case FREM:
 			if (getFullyQualifiedMethodName().indexOf("float") == -1
-			        && getFullyQualifiedMethodName().indexOf("Float") == -1
-			        && getFullyQualifiedMethodName().indexOf("FLOAT") == -1)
+					&& getFullyQualifiedMethodName().indexOf("Float") == -1
+					&& getFullyQualifiedMethodName().indexOf("FLOAT") == -1)
 
 				bugReporter.reportBug(new BugInstance(this, "FL_MATH_USING_FLOAT_PRECISION",
-				        NORMAL_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addSourceLine(this));
+						NORMAL_PRIORITY)
+						.addClassAndMethod(this)
+						.addSourceLine(this));
 			break;
 		default:
 			break;

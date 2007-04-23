@@ -57,12 +57,12 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 	}
 
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		seenTransferOfControl = false;
 		seenStateChange = false;
 		seenReturn = false;
@@ -81,7 +81,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 	}
 
 	@Override
-         public void sawBranchTo(int seen) {
+		 public void sawBranchTo(int seen) {
 		if (largestBranchTarget < seen)
 			largestBranchTarget = seen;
 		seenTransferOfControl = true;
@@ -95,7 +95,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 	 * has been no transfer of control.	
 	 */
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		if (seenReturn && seenTransferOfControl && seenStateChange)
 			return;
@@ -134,7 +134,7 @@ public class InfiniteRecursiveLoop extends BytecodeScanningDetector implements
 				System.out.println(xMethod);
 				System.out.println("vs. " + getClassName() + "." + getMethodName() + " : "
 						+ getMethodSig());
-			
+
 			}
 			if (xMethod.getClassName().replace('.','/').equals(getClassName()) || seen == INVOKEINTERFACE) {
 				// Invocation of same method

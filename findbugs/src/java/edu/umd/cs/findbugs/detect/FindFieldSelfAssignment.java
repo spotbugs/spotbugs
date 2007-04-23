@@ -43,31 +43,31 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 	public FindFieldSelfAssignment(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		state = 0;
 		super.visit(obj);
 		initializedFields.clear();
 	}
 
 
-    int register;
+	int register;
 	String f;
 	String className;
 	Set<String> initializedFields = new HashSet<String>();
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 
 		switch (state) {
 		case 0:
 			if (seen == ALOAD_0)
 				state = 1;
-            else if (seen == DUP)
-                state = 6;
+			else if (seen == DUP)
+				state = 6;
 			break;
 		case 1:
 			if (seen == ALOAD_0)
@@ -98,31 +98,31 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 				}
 				if (getMethodName().equals("<init>") && !initializedFields.contains(getRefConstantOperand()) && foundMatch)
 					priority = HIGH_PRIORITY;
-			
+
 				bugReporter.reportBug(new BugInstance(this, "SA_FIELD_SELF_ASSIGNMENT", priority)
-				        .addClassAndMethod(this)
-				        .addReferencedField(this)
-				        .addSourceLine(this));
+						.addClassAndMethod(this)
+						.addReferencedField(this)
+						.addSourceLine(this));
 			}
 			state = 0;
-            break;
-         case 6:
-            if (isRegisterStore()) {
+			break;
+		 case 6:
+			if (isRegisterStore()) {
                 state = 7;
-                register = getRegisterOperand();
-            } else state = 0;
-            break;
+				register = getRegisterOperand();
+			} else state = 0;
+			break;
         case 7:
-            if (isRegisterStore() && register ==  getRegisterOperand()) {
-                bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
-                .addClassAndMethod(this)
+			if (isRegisterStore() && register ==  getRegisterOperand()) {
+				bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
+				.addClassAndMethod(this)
                 .add( LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC(), getPC()-1))
-                .addSourceLine(this));
-            } 
-            state = 0;
+				.addSourceLine(this));
+			} 
+			state = 0;
             break;
 		}
-		
+
 		if (seen == PUTFIELD  && getClassConstantOperand().equals(className))
 			initializedFields.add(getRefConstantOperand());
 

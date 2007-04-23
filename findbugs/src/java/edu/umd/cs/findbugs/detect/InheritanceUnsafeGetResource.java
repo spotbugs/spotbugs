@@ -49,24 +49,24 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 		classIsFinal = obj.isFinal();
 		reportedForThisClass = false;
 		classIsVisibleToOtherPackages = obj.isPublic() || obj.isProtected();
 	}
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		methodIsStatic = obj.isStatic();
 		state = 0;
 		sawGetClass = -100;
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (reportedForThisClass) return;
 
-		
+
 		switch (seen) {
 		case LDC:
 			Constant constantValue = getConstantRefOperand();
@@ -76,15 +76,15 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 				stringConstant = ((ConstantString)constantValue).getBytes(getConstantPool());
 			}
 			break;
-			
+
 		case ALOAD_0:
 			state = 1;
 			break;
 		case INVOKEVIRTUAL:
 			if (getClassConstantOperand().equals("java/lang/Class")
-			        && (getNameConstantOperand().equals("getResource")
-			        || getNameConstantOperand().equals("getResourceAsStream"))
-			        && sawGetClass + 10 >= getPC()) {
+					&& (getNameConstantOperand().equals("getResource")
+					|| getNameConstantOperand().equals("getResourceAsStream"))
+					&& sawGetClass + 10 >= getPC()) {
 				 Subtypes subtypes = AnalysisContext.currentAnalysisContext()
 					.getSubtypes();
 				 int priority = NORMAL_PRIORITY;
@@ -103,16 +103,16 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 				 }
 				bugReporter.reportBug(new BugInstance(this, "UI_INHERITANCE_UNSAFE_GETRESOURCE", 
 						priority)
-				        .addClassAndMethod(this)
-				        .addSourceLine(this));
+						.addClassAndMethod(this)
+						.addSourceLine(this));
 				reportedForThisClass = true;
 
 			} else if (state == 1
-			        && !methodIsStatic
-			        && !classIsFinal
-			        && classIsVisibleToOtherPackages
+					&& !methodIsStatic
+					&& !classIsFinal
+					&& classIsVisibleToOtherPackages
 			        && getNameConstantOperand().equals("getClass")
-			        && getSigConstantOperand().equals("()Ljava/lang/Class;")) {
+					&& getSigConstantOperand().equals("()Ljava/lang/Class;")) {
 				sawGetClass = getPC();
 			}
 			state = 0;

@@ -66,7 +66,7 @@ public class ComparatorIdiom extends PreorderVisitor implements Detector {
 						break;
 					}
 				}
-				
+
 				if (easilySerializable < 0.9) priority = LOW_PRIORITY;
 				int lastDollar = getClassName().lastIndexOf('$');
 				if (lastDollar > 0 && Character.isDigit(getClassName().charAt(lastDollar+1)))

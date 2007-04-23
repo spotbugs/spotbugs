@@ -36,7 +36,7 @@ public class CalledMethods extends BytecodeScanningDetector implements Detector,
 
 	XFactory xFactory = AnalysisContext.currentXFactory();
 	public CalledMethods(BugReporter bugReporter) {
-		
+
 	}
 
 	@Override

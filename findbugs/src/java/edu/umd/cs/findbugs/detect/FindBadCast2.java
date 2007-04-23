@@ -142,12 +142,12 @@ public class FindBadCast2 implements Detector {
 		if (isSynthetic(method) || !prescreen(classContext, method))
 			return;
 		BugAccumulator accumulator = new BugAccumulator(bugReporter);
-		
+
 		CFG cfg = classContext.getCFG(method);
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 		IsNullValueDataflow isNullDataflow = classContext.getIsNullValueDataflow(method);
 		Set<ValueNumber> paramValueNumberSet = null;
-		
+
 		ValueNumberDataflow vnaDataflow = null;
 
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
@@ -182,16 +182,16 @@ public class FindBadCast2 implements Detector {
 					haveMultipleInstanceOf.add(sourceLineAnnotation);
 			}
 		}
-        BitSet linesMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
-        LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
-        
+		BitSet linesMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
+		LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
+
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
-	
+
 			InstructionHandle handle = location.getHandle();
 			int pc = handle.getPosition();
 			Instruction ins = handle.getInstruction();
-	
+
 			if (!(ins instanceof CHECKCAST) && !(ins instanceof INSTANCEOF))
 				continue;
 			if (handle.getNext() == null) continue;
@@ -202,20 +202,20 @@ public class FindBadCast2 implements Detector {
 			int occurrences = cfg.getLocationsContainingInstructionWithOffset(
 					pc).size();
 			boolean split = occurrences > 1;
-            if (lineNumberTable != null) {
-                int line = lineNumberTable.getSourceLine(handle.getPosition());
-                if (line > 0 && linesMentionedMultipleTimes.get(line)) split=true;
+			if (lineNumberTable != null) {
+				int line = lineNumberTable.getSourceLine(handle.getPosition());
+				if (line > 0 && linesMentionedMultipleTimes.get(line)) split=true;
             }
 
 			IsNullValueFrame nullFrame = isNullDataflow.getFactAtLocation(location);
-            if (!nullFrame.isValid()) continue;
+			if (!nullFrame.isValid()) continue;
 			IsNullValue operandNullness = nullFrame.getTopValue();
 			if (DEBUG) {
 				System.out
 						.println(kind + " at pc: " + pc + " in " + methodName);
 				System.out.println(" occurrences: " + occurrences);
 				System.out.println("XXX: " + operandNullness);
-				
+
 			}
 
 			if (split && !isCast) {
@@ -242,7 +242,7 @@ public class FindBadCast2 implements Detector {
 				continue;
 			}
 			String castSig = castType.getSignature();
-			
+
 			if (operandType.equals(NullType.instance()) || operandNullness.isDefinitelyNull()) {
 				SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
 				.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
@@ -261,12 +261,12 @@ public class FindBadCast2 implements Detector {
 			}
 			ReferenceType refType = (ReferenceType) operandType;
 
-		
+
 			if (refType.equals(castType)) {
 				// System.out.println("self-cast to " + castType.getSignature());
 				continue;
 			}
-			
+
 			String refSig = refType.getSignature();
 			String castSig2 = castSig;
 			String refSig2 = refSig;
@@ -275,7 +275,7 @@ public class FindBadCast2 implements Detector {
 				refSig2 = refSig2.substring(1);
 			}
 
-			
+
 			SourceLineAnnotation sourceLineAnnotation = SourceLineAnnotation
 			.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
 
@@ -286,9 +286,9 @@ public class FindBadCast2 implements Detector {
 				if ( refSig2.charAt(0) == '[' && (castSig2.equals("Ljava/io/Serializable;") 
 						|| castSig2.equals("Ljava/lang/Object;")
 						|| castSig2.equals("Ljava/lang/Cloneable;"))) continue;
-                int priority = HIGH_PRIORITY;
-                if (split && (castSig2.endsWith("Error;") || castSig2.endsWith("Exception;")))
-                    priority = LOW_PRIORITY;
+				int priority = HIGH_PRIORITY;
+				if (split && (castSig2.endsWith("Error;") || castSig2.endsWith("Exception;")))
+					priority = LOW_PRIORITY;
 				bugReporter.reportBug(
 						new BugInstance(this,
 						"BC_IMPOSSIBLE_CAST",  priority)
@@ -320,9 +320,9 @@ public class FindBadCast2 implements Detector {
 				paramValueNumberSet = getParameterValueNumbers(classContext, method, cfg);
 			ValueNumber valueNumber = vFrame
 					.getTopValue();
-            boolean isParameter = paramValueNumberSet.contains(valueNumber);
-            BugAnnotation variable = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
-                    location, valueNumber, vFrame);
+			boolean isParameter = paramValueNumberSet.contains(valueNumber);
+			BugAnnotation variable = NullDerefAndRedundantComparisonFinder.findAnnotationFromValueNumber(method,
+					location, valueNumber, vFrame);
 			try {
 				JavaClass castJavaClass = Repository.lookupClass(castName);
 				JavaClass refJavaClass = Repository.lookupClass(refName);
@@ -339,7 +339,7 @@ public class FindBadCast2 implements Detector {
 				} else {
 					boolean downcast = Repository.instanceOf(castJavaClass,
 							refJavaClass);
-					
+
 					if (!operandTypeIsExact && refName.equals("java.lang.Object")  ) continue;
 					double rank = 0.0;
 					boolean castToConcreteCollection = concreteCollectionClasses.contains(castName)
@@ -347,7 +347,7 @@ public class FindBadCast2 implements Detector {
 					boolean castToAbstractCollection = 
 							abstractCollectionClasses.contains(castName)
 							&& veryAbstractCollectionClasses.contains(refName);
-	
+
 					if (!operandTypeIsExact) {
 						rank = DeepSubtypeAnalysis.deepInstanceOf(refJavaClass,
 								castJavaClass);
@@ -359,15 +359,15 @@ public class FindBadCast2 implements Detector {
 						  rank = (rank + 0.3) /2;
 					}
 					if (castName.equals("java.lang.Class") && refName.equals("java.lang.reflect.Type") && !downcast) {
-                        String msg = "java.lang.Class and java.lang.reflect.Type are incompatible\n" + castJavaClass + "\n"+refJavaClass;
-                        AnalysisContext.logError(msg);
-                        BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(methodGen, sourceFile)
+						String msg = "java.lang.Class and java.lang.reflect.Type are incompatible\n" + castJavaClass + "\n"+refJavaClass;
+						AnalysisContext.logError(msg);
+						BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(methodGen, sourceFile)
                         .addString(msg);
-                        bugReporter.reportBug(bug);
-                        downcast = true;
-                        rank = 0.99;
+						bugReporter.reportBug(bug);
+						downcast = true;
+						rank = 0.99;
                     }
-						
+
 					if (false)
 						System.out.println("Rank:\t" + rank + "\t" + refName
 								+ "\t" + castName);
@@ -380,7 +380,7 @@ public class FindBadCast2 implements Detector {
 								+ castName);
 						System.out.println("  is downcast: " + downcast);
 						System.out.println("  operand type is exact: " + operandTypeIsExact);
-						
+
 						System.out.println("  complete information: "
 								+ completeInformation);
 						System.out.println("  isParameter: "
@@ -393,13 +393,13 @@ public class FindBadCast2 implements Detector {
 										: "BC_IMPOSSIBLE_INSTANCEOF",
 								isCast ? HIGH_PRIORITY : NORMAL_PRIORITY)
 								.addClassAndMethod(methodGen, sourceFile)
-								
+
 								.addFoundAndExpectedType(refSig, castSig)
-                                .addOptionalAnnotation(variable)
+								.addOptionalAnnotation(variable)
 								.addSourceLine(sourceLineAnnotation));
 					else if (isCast && rank < 0.9 && variable instanceof LocalVariableAnnotation
-                            && !valueNumber.hasFlag(ValueNumber.ARRAY_VALUE)
-                            && !valueNumber.hasFlag(ValueNumber.RETURN_VALUE)) {
+							&& !valueNumber.hasFlag(ValueNumber.ARRAY_VALUE)
+							&& !valueNumber.hasFlag(ValueNumber.RETURN_VALUE)) {
 
 						int priority = NORMAL_PRIORITY;
 
@@ -442,7 +442,7 @@ public class FindBadCast2 implements Detector {
 							priority++;
 						else if (methodGen.isPublic() && isParameter)
 							priority--;
-                       if (DEBUG)
+					   if (DEBUG)
 							System.out.println(" priority h: " + priority);
 						if (priority < HIGH_PRIORITY)
 							priority = HIGH_PRIORITY;
@@ -456,9 +456,9 @@ public class FindBadCast2 implements Detector {
 							BugInstance bugInstance = new BugInstance(this, bug, priority)
 									.addClassAndMethod(methodGen, sourceFile)
 									.addFoundAndExpectedType(refSig, castSig)
-                                     .addOptionalAnnotation(variable);
-                            
-                            accumulator.accumulateBug(bugInstance,
+									 .addOptionalAnnotation(variable);
+
+							accumulator.accumulateBug(bugInstance,
 									sourceLineAnnotation
 									);
 						}

@@ -36,21 +36,21 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Statele
 
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		super.visit(obj);
-        stack.resetForMethodEntry(this);
+		stack.resetForMethodEntry(this);
 	}
-		
+
 	@Override
-         public void sawOpcode(int seen) {		
+		 public void sawOpcode(int seen) {		
 		stack.mergeJumps(this);
 		if ((seen == INVOKEVIRTUAL) 
 		&&   getNameConstantOperand().equals("equals")
 		&&   getSigConstantOperand().equals("(Ljava/lang/Object;)Z")) {
-			
+
 			if (stack.getStackDepth() > 1) {
 				OpcodeStack.Item item1 = stack.getStackItem(1);
-				
+
 					try {
 						JavaClass cls = item1.getJavaClass();
 
@@ -63,9 +63,9 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Statele
 									return;
 
 								bugReporter.reportBug(new BugInstance("UOE_USE_OBJECT_EQUALS", LOW_PRIORITY)
-				    	    		.addClassAndMethod(this)
-				    	    		.addSourceLine(this));	
-				    	    }
+									.addClassAndMethod(this)
+									.addSourceLine(this));	
+							}
 				    	}
 					} catch (ClassNotFoundException cnfe) {
 						//cnfe.printStackTrace();

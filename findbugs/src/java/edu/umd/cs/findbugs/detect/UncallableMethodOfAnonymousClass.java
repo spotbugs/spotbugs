@@ -48,8 +48,8 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 	@Override
 	public void visit(JavaClass obj) {
 		String superclassName2 = getSuperclassName();
-        isAnonymousInnerClass = ClassName.isAnonymous(getClassName()) && 
-        !(superclassName2.equals("java.lang.Object") && obj.getInterfaceIndices().length == 0);
+		isAnonymousInnerClass = ClassName.isAnonymous(getClassName()) && 
+		!(superclassName2.equals("java.lang.Object") && obj.getInterfaceIndices().length == 0);
 	}
 
 	boolean definedInThisClassOrSuper(JavaClass clazz, String method)
@@ -87,25 +87,25 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 		}
 		return result;
 	}
-	
-	static private boolean skip(Method obj) {
-	    if (obj.isSynthetic())
-	        return true;
-	    if (obj.isPrivate())
-	        return true;
-	    if (obj.isAbstract()) return true;
 
-	    String methodName = obj.getName();
-	    String sig = obj.getSignature();
-	    if (methodName.equals("<init>"))
+	static private boolean skip(Method obj) {
+		if (obj.isSynthetic())
+			return true;
+		if (obj.isPrivate())
 	        return true;
-	    if (sig.equals("()Ljava/lang/Object;") 
-	            && (methodName.equals("readResolve") 
-	                    || methodName.equals("writeReplace")))
+		if (obj.isAbstract()) return true;
+
+		String methodName = obj.getName();
+		String sig = obj.getSignature();
+		if (methodName.equals("<init>"))
 	        return true;
-	    if (methodName.startsWith("access$"))
+		if (sig.equals("()Ljava/lang/Object;") 
+				&& (methodName.equals("readResolve") 
+						|| methodName.equals("writeReplace")))
 	        return true;
-	    return false;
+		if (methodName.startsWith("access$"))
+			return true;
+		return false;
 	}
 	@Override
 	public void visit(Method obj) {
@@ -138,7 +138,7 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 				if (code != null && code.getLength() == 1) priority++; // TODO: why didn't FindBugs give a warning here before the null check was added?
 				bugReporter.reportBug(new BugInstance("UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS",
 						priority).addClassAndMethod(this));
-			
+
 			}
 
 		} catch (ClassNotFoundException e) {

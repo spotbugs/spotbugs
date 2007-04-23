@@ -83,7 +83,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 		return !nonHashableClasses.contains(dottedClassName);
 	}
 	Map<String, BugInstance> potentialBugs = new HashMap<String, BugInstance>();
-	
+
 	private BugReporter bugReporter;
 
 	public FindHEmismatch(BugReporter bugReporter) {
@@ -100,7 +100,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 		if ((accessFlags & ACC_INTERFACE) != 0)
 			return;
 		visibleOutsidePackage = obj.isPublic() || obj.isProtected();
-		
+
 		String whereEqual = getDottedClassName();
 		boolean classThatDefinesEqualsIsAbstract = false;
 		boolean classThatDefinesHashCodeIsAbstract = false;
@@ -160,32 +160,32 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 				if (!visibleOutsidePackage)
 					priority++;
 				String bugPattern = "EQ_SELF_USE_OBJECT";
-               
-                BugInstance bug = new BugInstance(this, bugPattern,
+
+				BugInstance bug = new BugInstance(this, bugPattern,
 						priority).addClass(getDottedClassName());
-                if (equalsMethod != null)
-                    bug.addMethod(equalsMethod);
-                bugReporter.reportBug(bug);
+				if (equalsMethod != null)
+					bug.addMethod(equalsMethod);
+				bugReporter.reportBug(bug);
 			} else {
-			    int priority = NORMAL_PRIORITY;
-			    if (hasFields)
-			        priority--;
+				int priority = NORMAL_PRIORITY;
+				if (hasFields)
+					priority--;
 			    if (obj.isAbstract())
-			        priority++;
-			    String bugPattern = "EQ_SELF_NO_OBJECT";
-			    String superclassName = obj.getSuperclassName();
+					priority++;
+				String bugPattern = "EQ_SELF_NO_OBJECT";
+				String superclassName = obj.getSuperclassName();
 			    if (superclassName.equals("java.lang.Enum")) {
-			        bugPattern = "EQ_DONT_DEFINE_EQUALS_FOR_ENUM";
-			        priority = HIGH_PRIORITY;
-			    }
+					bugPattern = "EQ_DONT_DEFINE_EQUALS_FOR_ENUM";
+					priority = HIGH_PRIORITY;
+				}
 			    BugInstance bug = new BugInstance(this, bugPattern,
-			            priority).addClass(getDottedClassName());
-			    if (equalsMethod != null)
-			        bug.addMethod(equalsMethod);
+						priority).addClass(getDottedClassName());
+				if (equalsMethod != null)
+					bug.addMethod(equalsMethod);
 			    bugReporter.reportBug(bug);
 			}
 		}
-		
+
 //		 System.out.println("Class " + getDottedClassName());
 //		  System.out.println("usesDefaultEquals: " + usesDefaultEquals);
 //		  System.out.println("hasHashCode: : " + hasHashCode);
@@ -193,7 +193,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 //		  System.out.println("hasEquals: : " + hasEqualsObject);
 //		  System.out.println("hasCompareToObject: : " + hasCompareToObject);
 //		  System.out.println("hasCompareToSelf: : " + hasCompareToSelf);
-		 
+
 
 		if ((hasCompareToObject || hasCompareToSelf) && usesDefaultEquals) {
 			BugInstance bug = new BugInstance(this, "EQ_COMPARETO_USE_OBJECT_EQUALS",
@@ -304,7 +304,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 	@Override
 	public void visit(Method obj) {
 		stack.resetForMethodEntry(this);
-		
+
 		int accessFlags = obj.getAccessFlags();
 		if ((accessFlags & ACC_STATIC) != 0)
 			return;
@@ -371,7 +371,7 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 				return aM;
 		return null;
 	}
-	
+
 
 	@Override
 	public void sawOpcode(int seen) {
@@ -399,91 +399,91 @@ public class FindHEmismatch extends BytecodeScanningDetector implements
 		stack.sawOpcode(this, seen);
 	}
 	private void check(int pos) {
-	    OpcodeStack.Item item = stack.getStackItem(pos);
-	    JavaClass type = null;
+		OpcodeStack.Item item = stack.getStackItem(pos);
+		JavaClass type = null;
 
-	    try {
-	        type = item.getJavaClass();
-	    } catch (ClassNotFoundException e) {
+		try {
+			type = item.getJavaClass();
+		} catch (ClassNotFoundException e) {
 	        AnalysisContext.reportMissingClass(e);
-	    }
-	    if (type == null) return;
-	     int priority = NORMAL_PRIORITY;
+		}
+		if (type == null) return;
+		 int priority = NORMAL_PRIORITY;
 	    if (getClassConstantOperand().indexOf("Hash") >= 0) priority--;
-        if (!AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(type)) priority++;
-           
-	    if (type.isAbstract() || type.isInterface()) priority++;
-	    potentialBugs.put(type.getClassName(), 
-	            new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",priority)
-	    .addClassAndMethod(this)
-	    .addTypeOfNamedClass(type.getClassName()).describe(TypeAnnotation.UNHASHABLE_ROLE)
-	    .addTypeOfNamedClass(getClassConstantOperand())
-	    .addSourceLine(this));
-	}
-	
-    static final Pattern mapPattern = Pattern.compile("HashMap<L([^;<]*);");
-    static final Pattern hashTablePattern = Pattern.compile("Hashtable<L([^;<]*);");
-    
-    static final Pattern setPattern = Pattern.compile("HashSet<L([^;<]*);");
-    @CheckForNull String findHashedClassInSignature(String sig) {
-        Matcher m = mapPattern.matcher(sig);
-        if (m.find())
-            return m.group(1).replace('/','.');
-        m = hashTablePattern.matcher(sig);
-        if (m.find()) return m.group(1).replace('/','.');
-      
-        m = setPattern.matcher(sig);
-        if (m.find()) return m.group(1).replace('/','.');;
-        return null;
+		if (!AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(type)) priority++;
 
-    }
+		if (type.isAbstract() || type.isInterface()) priority++;
+	    potentialBugs.put(type.getClassName(), 
+				new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",priority)
+		.addClassAndMethod(this)
+		.addTypeOfNamedClass(type.getClassName()).describe(TypeAnnotation.UNHASHABLE_ROLE)
+	    .addTypeOfNamedClass(getClassConstantOperand())
+		.addSourceLine(this));
+	}
+
+	static final Pattern mapPattern = Pattern.compile("HashMap<L([^;<]*);");
+	static final Pattern hashTablePattern = Pattern.compile("Hashtable<L([^;<]*);");
     
-    @Override
+	static final Pattern setPattern = Pattern.compile("HashSet<L([^;<]*);");
+	@CheckForNull String findHashedClassInSignature(String sig) {
+		Matcher m = mapPattern.matcher(sig);
+        if (m.find())
+			return m.group(1).replace('/','.');
+		m = hashTablePattern.matcher(sig);
+		if (m.find()) return m.group(1).replace('/','.');
+      
+		m = setPattern.matcher(sig);
+		if (m.find()) return m.group(1).replace('/','.');;
+		return null;
+
+	}
+
+	@Override
     public void visit(Signature obj) {
-        String sig = obj.getSignature();
-        String className = findHashedClassInSignature(sig);
-        if (className == null) return;
+		String sig = obj.getSignature();
+		String className = findHashedClassInSignature(sig);
+		if (className == null) return;
         JavaClass type = null;
 
-        try {
-            type = Repository.lookupClass(className);
-        } catch (ClassNotFoundException e) {
+		try {
+			type = Repository.lookupClass(className);
+		} catch (ClassNotFoundException e) {
             AnalysisContext.reportMissingClass(e);
-        }
-        if (type == null) return;
-      
-        int priority = NORMAL_PRIORITY;
-        if (sig.indexOf("Hash") >= 0) priority--;
-        if (type.isAbstract() || type.isInterface()) priority++;
-        if (!AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(type)) priority++;
-        
-      
-        BugInstance bug = null;
+		}
+		if (type == null) return;
 
-        if (visitingField())
-            bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
-                    priority).addClass(this).addVisitedField(
+        int priority = NORMAL_PRIORITY;
+		if (sig.indexOf("Hash") >= 0) priority--;
+		if (type.isAbstract() || type.isInterface()) priority++;
+		if (!AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(type)) priority++;
+        
+
+		BugInstance bug = null;
+
+		if (visitingField())
+			bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
+					priority).addClass(this).addVisitedField(
                             this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
-        else if (visitingMethod())
-            bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
-                    priority).addClassAndMethod(this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
+		else if (visitingMethod())
+			bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
+					priority).addClassAndMethod(this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
         else
-            bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
-                    priority).addClass(this).addClass(this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
-        potentialBugs.put(className, bug);
+			bug = new BugInstance(this, "HE_USE_OF_UNHASHABLE_CLASS",
+					priority).addClass(this).addClass(this).addTypeOfNamedClass(className).describe(TypeAnnotation.UNHASHABLE_ROLE);
+		potentialBugs.put(className, bug);
     }
 
 
-    
+
 	@Override
 	public void report() {
 		for(Map.Entry<String, BugInstance> e : potentialBugs.entrySet()) {
 			if (!isHashableClassName(e.getKey())) {
-                BugInstance bug = e.getValue();
-               
-                bugReporter.reportBug(bug);
+				BugInstance bug = e.getValue();
+
+				bugReporter.reportBug(bug);
             }
 		}
-		
+
 	}
 }

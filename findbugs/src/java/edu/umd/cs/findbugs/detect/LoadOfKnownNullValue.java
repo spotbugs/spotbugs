@@ -61,7 +61,7 @@ public class LoadOfKnownNullValue implements Detector {
 			throws CFGBuilderException, DataflowAnalysisException {
 		BitSet lineMentionedMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
 		BitSet linesWithLoadsOfNotDefinitelyNullValues = null;
-		
+
 		CFG cfg = classContext.getCFG(method);
 		IsNullValueDataflow nullValueDataflow = classContext
 				.getIsNullValueDataflow(method);
@@ -86,7 +86,7 @@ public class LoadOfKnownNullValue implements Detector {
 					continue;
 				}
 				// System.out.println(handle.getPosition() + "\t" + ins.getName() +  "\t" + frame);
-				
+
 				ALOAD load = (ALOAD) ins;
 
 				int index = load.getIndex();
@@ -98,10 +98,10 @@ public class LoadOfKnownNullValue implements Detector {
 				}
 		}
 		}
-		
-		
+
+
 		IdentityHashMap<InstructionHandle, Object> sometimesGood = new	IdentityHashMap<InstructionHandle, Object>();
-		
+
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 			InstructionHandle handle = location.getHandle();
@@ -113,14 +113,14 @@ public class LoadOfKnownNullValue implements Detector {
 				continue;
 			}
 			// System.out.println(handle.getPosition() + "\t" + ins.getName() +  "\t" + frame);
-	
+
 			ALOAD load = (ALOAD) ins;
 
 			int index = load.getIndex();
 			IsNullValue v = frame.getValue(index);
 			if (!v.isDefinitelyNull()) sometimesGood.put(handle, null);
 		}
-		
+
 		// System.out.println(nullValueDataflow);
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
@@ -138,7 +138,7 @@ public class LoadOfKnownNullValue implements Detector {
 				continue;
 			}
 			// System.out.println(handle.getPosition() + "\t" + ins.getName() +  "\t" + frame);
-			
+
 			ALOAD load = (ALOAD) ins;
 
 			int index = load.getIndex();
@@ -150,7 +150,7 @@ public class LoadOfKnownNullValue implements Detector {
 				.fromVisitedInstruction(classContext, methodGen, sourceFile, handle);
 				SourceLineAnnotation prevSourceLineAnnotation = SourceLineAnnotation
 				.fromVisitedInstruction(classContext, methodGen, sourceFile, prevHandle);
-	
+
 				if (next instanceof ARETURN) {
 					// probably stored for duration of finally block
 					continue;
@@ -158,18 +158,18 @@ public class LoadOfKnownNullValue implements Detector {
 				int startLine = sourceLineAnnotation.getStartLine();
 				if (startLine > 0 && lineMentionedMultipleTimes.get(startLine) && linesWithLoadsOfNotDefinitelyNullValues.get(startLine))
 					continue;
-				
+
 				if (startLine > prevSourceLineAnnotation.getEndLine()) {
 					// probably stored for duration of finally block
 					// System.out.println("Inverted line");
 					continue;
 				}
 				int priority = NORMAL_PRIORITY;
-				
+
 				if (!v.isChecked()) priority++;
 				// System.out.println("lineMentionedMultipleTimes: " + lineMentionedMultipleTimes);
 				// System.out.println("linesWithLoadsOfNonNullValues: " + linesWithLoadsOfNotDefinitelyNullValues);
-				
+
 				bugReporter.reportBug(new BugInstance(this,
 						"NP_LOAD_OF_KNOWN_NULL_VALUE",
 						priority)

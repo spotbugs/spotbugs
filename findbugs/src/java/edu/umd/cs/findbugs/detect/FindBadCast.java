@@ -44,8 +44,8 @@ public @java.lang.Deprecated class FindBadCast extends BytecodeScanningDetector 
 		concreteCollectionClasses.add("java/util/LinkedHashSet");
 		concreteCollectionClasses.add("java/util/HashMap");
 		concreteCollectionClasses.add("java/util/HashSet");
-        concreteCollectionClasses.add("java/util/TreeMap");
-        concreteCollectionClasses.add("java/util/TreeSet");
+		concreteCollectionClasses.add("java/util/TreeMap");
+		concreteCollectionClasses.add("java/util/TreeSet");
 		concreteCollectionClasses.add("java/util/ArrayList");
 		concreteCollectionClasses.add("java/util/LinkedList");
 		concreteCollectionClasses.add("java/util/Hashtable");
@@ -58,23 +58,23 @@ public @java.lang.Deprecated class FindBadCast extends BytecodeScanningDetector 
 
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 	}
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 	}
 
 	/*
-        public boolean prescreen(ClassContext classContext, Method method) {
-                BitSet bytecodeSet = classContext.getBytecodeSet(method);
-                return bytecodeSet.get(Constants.CHECKCAST) || bytecodeSet.get(Constants.INSTANCEOF);
+		public boolean prescreen(ClassContext classContext, Method method) {
+				BitSet bytecodeSet = classContext.getBytecodeSet(method);
+				return bytecodeSet.get(Constants.CHECKCAST) || bytecodeSet.get(Constants.INSTANCEOF);
         }
 	*/
 	private int parameters;
 	OpcodeStack stack = new OpcodeStack();
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		if (DEBUG)  {
 			System.out.println(getFullyQualifiedMethodName());
 			}
@@ -85,7 +85,7 @@ public @java.lang.Deprecated class FindBadCast extends BytecodeScanningDetector 
 
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		if (DEBUG) {
 			System.out.println(stack);

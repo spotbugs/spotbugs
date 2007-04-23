@@ -49,7 +49,7 @@ public class VarArgsProblems extends BytecodeScanningDetector implements
 
 
 	@Override
-         public void visitCode(Code obj) {
+		 public void visitCode(Code obj) {
 		state = SEEN_NOTHING;
 		super.visitCode(obj);
 	}
@@ -73,7 +73,7 @@ public class VarArgsProblems extends BytecodeScanningDetector implements
 	Pattern primitiveArray = Pattern.compile("\\[[IJDFSCB]");
 	String primitiveArraySig;
 	@Override
-         public void sawOpcode( int seen) {
+		 public void sawOpcode( int seen) {
 		// System.out.println("State:" + state);
 		if (seen == GOTO && getBranchOffset() == 4) {
 			state = SEEN_GOTO;

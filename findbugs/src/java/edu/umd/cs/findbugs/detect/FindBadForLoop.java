@@ -33,19 +33,19 @@ public class FindBadForLoop extends BytecodeScanningDetector implements  Statele
 		this.bugReporter = bugReporter;
 	}
 
-	
+
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 	}
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 	}
 
-                LineNumberTable lineNumbers; 
+				LineNumberTable lineNumbers; 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 			lastRegStore = -1;
 			lineNumbers = obj.getLineNumberTable();
 			stack.resetForMethodEntry(this);
@@ -55,7 +55,7 @@ public class FindBadForLoop extends BytecodeScanningDetector implements  Statele
 
 	int lastRegStore;
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		try {
 		if (seen == ISTORE
@@ -86,8 +86,8 @@ public class FindBadForLoop extends BytecodeScanningDetector implements  Statele
 				int offset1 = (byte) getCodeByte(branchTarget - 2);
 				int offset2 = getCodeByte(branchTarget - 1);
 				int offset = offset1 << 8 | offset2;
-			 	int backTarget = branchTarget - 3 + offset;
-			 	int reg = getCodeByte(branchTarget - 5);
+				 int backTarget = branchTarget - 3 + offset;
+				 int reg = getCodeByte(branchTarget - 5);
 				int testLineNumber 
 					= lineNumbers.getSourceLine(getPC());
 				int incLineNumber 
@@ -100,17 +100,17 @@ public class FindBadForLoop extends BytecodeScanningDetector implements  Statele
 				&& incLineNumber < testLineNumber+3
 				&& beforeIncLineNumber > incLineNumber
 				) {
-			
+
 			bugReporter.reportBug(new BugInstance(this, "QF_QUESTIONABLE_FOR_LOOP", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
 			  }
 			  }
-			  
+
 			  }
 			}
 
-            	stack.sawOpcode(this, seen);
+				stack.sawOpcode(this, seen);
 
 		} catch (RuntimeException e) {
 			// FIXME

@@ -26,27 +26,27 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 public class InefficientMemberAccess extends BytecodeScanningDetector implements StatelessDetector {
-	
+
 	public static final String ACCESS_PREFIX = "access$";
 	private BugReporter bugReporter;
 	private String clsName;
-	
+
 	public InefficientMemberAccess(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 
-	
+
 	@Override
-         public void visitClassContext(ClassContext classContext) {
+		 public void visitClassContext(ClassContext classContext) {
 		JavaClass cls = classContext.getJavaClass();
 		clsName = cls.getClassName();
 		if (clsName.indexOf("$") >= 0)
 			super.visitClassContext(classContext);
 	}
-		
+
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		int varSlot;
 		if (seen == INVOKESTATIC) {
 			String methodName = getNameConstantOperand();
@@ -69,14 +69,14 @@ public class InefficientMemberAccess extends BytecodeScanningDetector implements
 				return;
 			if ((argTypes.length == 2) && !argTypes[1].getSignature().equals(Type.getReturnType(methodSig).getSignature()))
 				return;
-			
+
 			bugReporter.reportBug(new BugInstance(this, "IMA_INEFFICIENT_MEMBER_ACCESS", LOW_PRIORITY)
 				.addClassAndMethod(this)
 				.addSourceLine(this));
 		}
 	}
-	
-	
-	
+
+
+
 
 }

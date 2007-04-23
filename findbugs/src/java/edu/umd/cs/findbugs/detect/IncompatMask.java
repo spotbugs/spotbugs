@@ -44,7 +44,7 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		super.visit(obj);
 		this.state = 0;
 	}
@@ -67,17 +67,17 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 	}
 
 	@Override
-         public void sawInt(int val) {
+		 public void sawInt(int val) {
 		noteVal(val);
 	}
 
 	@Override
-         public void sawLong(long val) {
+		 public void sawLong(long val) {
 		noteVal(val);
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		// System.out.println("BIT: " + state + ": " + OPCODE_NAMES[seen]);
 
 		switch (seen) {
@@ -114,9 +114,9 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 		case LDC2_W:
 			return;  /* will pick up value via sawLong */
 
-        case SIPUSH:
-		    return;  /* will pick up value via sawInt */
-        case LDC:
+		case SIPUSH:
+			return;  /* will pick up value via sawInt */
+		case LDC:
 		    return;  /* will pick up value via sawInt */
 
 		case IAND:
@@ -140,7 +140,7 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 				arg1 = 0;
 				state = 3;
 			}
-            
+
 			/* fallthrough */
 
 		case IF_ICMPEQ:
@@ -178,8 +178,8 @@ public class IncompatMask extends BytecodeScanningDetector implements StatelessD
 		if (dif != 0) {
 			// System.out.println("Match at offset " + getPC());
 			bugReporter.reportBug(new BugInstance(this, t, NORMAL_PRIORITY)
-			        .addClassAndMethod(this)
-			        .addSourceLine(this));
+					.addClassAndMethod(this)
+					.addSourceLine(this));
 		}
 		state = 0;
 	}

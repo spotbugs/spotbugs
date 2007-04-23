@@ -35,14 +35,14 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 	private Location location;
 
 	public StreamFrameModelingVisitor(ConstantPoolGen cpg, StreamResourceTracker resourceTracker,
-	                                  Stream stream) {
+									  Stream stream) {
 		super(cpg);
 		this.resourceTracker = resourceTracker;
 		this.stream = stream;
 	}
 
 	@Override
-         public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) throws DataflowAnalysisException {
+		 public void transferInstruction(InstructionHandle handle, BasicBlock basicBlock) throws DataflowAnalysisException {
 		// Record what Location we are analyzing
 		this.location = new Location(handle, basicBlock);
 
@@ -88,7 +88,7 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 	}
 
 	@Override
-         protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
+		 protected boolean instanceEscapes(InvokeInstruction inv, int instanceArgNum) {
 		ConstantPoolGen cpg = getCPG();
 		String className = inv.getClassName(cpg);
 
@@ -110,7 +110,7 @@ public class StreamFrameModelingVisitor extends ResourceValueFrameModelingVisito
 					&& "getChannel".equals(methodName)
 					&& "()Ljava/nio/channels/FileChannel;".equals(methodSig))
 				escapes = true;
-	
+
 		if (FindOpenStream.DEBUG && escapes) {
 			System.out.println("ESCAPE at " + location + " at call to " + className +"." + methodName +":" + methodSig);
 		}

@@ -46,7 +46,7 @@ class Lock extends ResourceCreationPoint {
 public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnreleasedLock.LockResourceTracker> {
 	private static final boolean DEBUG = SystemProperties.getBoolean("ful.debug");
 	private  int numAcquires = 0;
-	
+
 	private static final int JDK15_MAJOR = 48;
 	private static final int JDK15_MINOR = 0;
 
@@ -111,7 +111,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 				if (lock.getLockValue().hasFlag(ValueNumber.RETURN_VALUE) )
 					System.out.println("is return value");
 			}
-			
+
 			for (int i = 0; i < updatedNumSlots; ++i) {
 				if (DEBUG) {
 					System.out.println("Slot " + i);
@@ -124,7 +124,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 					frame.setValue(i, ResourceValue.instance());
 				}
 			}
-			
+
 			// If needed, update frame status
 			if (status != -1) {
 				frame.setStatus(status);
@@ -205,7 +205,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 				if (methodName.equals("unlock") &&
 						methodSig.equals("()V") &&
 						Hierarchy.isSubtype(className, "java.util.concurrent.locks.Lock")) {
-					
+
 					return true;
 				}
 			} catch (ClassNotFoundException e) {
@@ -226,14 +226,14 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		}
 
 		public boolean ignoreExceptionEdge(Edge edge, Lock resource, ConstantPoolGen cpg) {
-			
+
 			try {
 				Location location = cfg.getExceptionThrowerLocation(edge);
 				if (DEBUG) {
 					System.out.println("Exception thrower location: " + location);
 				}
 				Instruction ins = location.getHandle().getInstruction();
-				
+
 				if (ins instanceof GETFIELD) {
 					GETFIELD insGetfield = (GETFIELD)ins;
 					String fieldName = insGetfield.getFieldName(cpg);
@@ -266,10 +266,10 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			} catch (DataflowAnalysisException e) {
 				// Report...
 			}
-			
+
 			return false;
 		}
-		
+
 		public boolean isParamInstance(Lock resource, int slot) {
 			// There is nothing special about Lock objects passed
 			// into the method as parameters.
@@ -298,7 +298,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 	public static boolean preTiger(JavaClass jclass) {
 		return jclass.getMajor() < JDK15_MAJOR ||
 				(jclass.getMajor() == JDK15_MAJOR && jclass.getMinor() < JDK15_MINOR);
-		
+
 	}
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
@@ -306,12 +306,12 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass jclass = classContext.getJavaClass();
-		
+
 		// We can ignore classes that were compiled for anything
 		// less than JDK 1.5.  This should avoid lots of unnecessary work
 		// when analyzing code for older VM targets.
 		if (preTiger(jclass)) return;
-		
+
 		boolean  sawUtilConcurrentLocks = false;
 		for(Constant c :  jclass.getConstantPool().getConstantPool()) 
 			if (c instanceof ConstantMethodref) {
@@ -320,12 +320,12 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 				ConstantUtf8 name =  (ConstantUtf8) jclass.getConstantPool().getConstant(cl.getNameIndex());
 				String nameAsString = name.getBytes();
 				if (nameAsString.startsWith("java/util/concurrent/locks")) sawUtilConcurrentLocks = true;
-				
+
 			}
 		if (sawUtilConcurrentLocks) super.visitClassContext(classContext);
 	}
 
-	
+
 	@Override
 	public boolean prescreen(ClassContext classContext, Method method) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
@@ -351,7 +351,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 			Dataflow<ResourceValueFrame, ResourceValueAnalysis<Lock>> dataflow, Lock resource) {
 
 		JavaClass javaClass = classContext.getJavaClass();
-		
+
 		ResourceValueFrame exitFrame = dataflow.getResultFact(cfg.getExit());
 		if (DEBUG) {
 			System.out.println("Resource value at exit: " + exitFrame);
@@ -395,7 +395,7 @@ public class FindUnreleasedLock extends ResourceTrackingDetector<Lock, FindUnrel
 		String methodName = argv[1];
 		int offset = Integer.parseInt(argv[2]);
 		final FindUnreleasedLock detector = new FindUnreleasedLock(null);
-		
+
 		ResourceValueAnalysisTestDriver<Lock, LockResourceTracker> driver =
 			new ResourceValueAnalysisTestDriver<Lock, LockResourceTracker>() {
 				@Override

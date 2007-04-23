@@ -44,7 +44,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		if (DEBUG) System.out.println(getFullyQualifiedMethodName());
 		super.visit(obj);
 		fields.clear();
@@ -58,7 +58,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (DEBUG) System.out.println(getPC() + "	" + OPCODE_NAMES[seen] + "	" + stage + "	" + count + "	" + countSinceGetReference);
 
 		if (seen == MONITORENTER) sawMonitorEnter = true;
@@ -79,15 +79,15 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 		switch (stage) {
 		case 0:
 			if (((seen == IFNULL || seen == IFNONNULL) && countSinceGetReference < 5)
-			        || ((seen == IFEQ || seen == IFNE) && countSinceGetBoolean < 5)) {
+					|| ((seen == IFEQ || seen == IFNE) && countSinceGetBoolean < 5)) {
 				int b = getBranchOffset();
 				if (DEBUG) {
 					System.out.println("branch offset is : " + b);
 				}
 				if (b > 0
-				        && !(seen == IFNULL && b > 9)
-				        && !(seen == IFEQ && (b > 9 && b < 34))
-				        && !(seen == IFNE && (b > 9 && b < 34))
+						&& !(seen == IFNULL && b > 9)
+						&& !(seen == IFEQ && (b > 9 && b < 34))
+						&& !(seen == IFNE && (b > 9 && b < 34))
 				        && (!sawMonitorEnter)) {
 					fields.add(pendingFieldLoad);
 					startPC = getPC();
@@ -101,7 +101,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 				stage = 2;
 				count = 0;
 			} else if (((seen == IFNULL || seen == IFNONNULL) && countSinceGetReference < 5)
-			        || ((seen == IFEQ || seen == IFNE) && countSinceGetBoolean < 5)) {
+					|| ((seen == IFEQ || seen == IFNE) && countSinceGetBoolean < 5)) {
 				int b = getBranchOffset();
 				if (b > 0 && (seen == IFNONNULL || b < 10)) {
 					fields.add(pendingFieldLoad);
@@ -115,7 +115,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 			break;
 		case 2:
 			if (((seen == IFNULL || seen == IFNONNULL) && countSinceGetReference < 5)
-			        || ((seen == IFEQ || seen == IFNE) && countSinceGetBoolean < 5)) {
+					|| ((seen == IFEQ || seen == IFNE) && countSinceGetBoolean < 5)) {
 				if (getBranchOffset() >= 0 && fields.contains(pendingFieldLoad)) {
 					endPC = getPC();
 					stage++;
@@ -131,7 +131,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 				FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
 				if (DEBUG) System.out.println("	" + f);
 				if (twice.contains(f) && !getNameConstantOperand().startsWith("class$")
-				        && !getSigConstantOperand().equals("Ljava/lang/String;")) {
+						&& !getSigConstantOperand().equals("Ljava/lang/String;")) {
 					Field declaration = findField(getClassConstantOperand(), getNameConstantOperand());
 					/*
 					System.out.println(f);
@@ -140,9 +140,9 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 					*/
 					if (declaration == null || !declaration.isVolatile())
 						bugReporter.reportBug(new BugInstance(this, "DC_DOUBLECHECK", NORMAL_PRIORITY)
-						        .addClassAndMethod(this)
-						        .addField(f).describe("FIELD_ON")
-						        .addSourceLineRange(this, startPC, endPC));
+								.addClassAndMethod(this)
+								.addField(f).describe("FIELD_ON")
+								.addSourceLineRange(this, startPC, endPC));
 					stage++;
 				}
 			}

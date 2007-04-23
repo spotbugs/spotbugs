@@ -81,7 +81,7 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 	 *                   the stream is not closed on all paths out of the method
 	 */
 	public MethodReturnValueStreamFactory(String baseClass, String methodName, String methodSig,
-	                                      String bugType) {
+										  String bugType) {
 		this.baseClassType = ObjectTypeFactory.getInstance(baseClass);
 		this.methodName = methodName;
 		this.methodSig = methodSig;
@@ -90,7 +90,7 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 	}
 
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-	                           RepositoryLookupFailureCallback lookupFailureCallback) {
+							   RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		try {
 			Instruction ins = location.getHandle().getInstruction();
@@ -115,8 +115,8 @@ public class MethodReturnValueStreamFactory implements StreamFactory {
 
 			String streamClass = type.getClassName();
 			Stream result = new Stream(location, streamClass, streamClass)
-			        .setIgnoreImplicitExceptions(true)
-			        .setIsOpenOnCreation(true);
+					.setIgnoreImplicitExceptions(true)
+					.setIsOpenOnCreation(true);
 			if (!isUninteresting)
 				result.setInteresting(bugType);
 			return result;

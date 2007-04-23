@@ -46,7 +46,7 @@ public interface StreamFactory {
 	 *         or null if no stream is created there
 	 */
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-	                           RepositoryLookupFailureCallback lookupFailureCallback);
+							   RepositoryLookupFailureCallback lookupFailureCallback);
 }
 
 // vim:ts=3

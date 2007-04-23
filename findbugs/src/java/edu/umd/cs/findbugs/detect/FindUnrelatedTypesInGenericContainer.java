@@ -76,7 +76,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	private BugReporter bugReporter;
 
 	private static final boolean DEBUG = SystemProperties.getBoolean("gc.debug");
-			
+
 	/** 
 	 * Map classname, methodname and signature to an int []. 
 	 * Each position in the int [] corresponds to an argument in the methodSignature.
@@ -87,7 +87,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	 * Get the String key by calling getCollectionsMapKey()
 	 */
 	private Map<String, int []> collectionsMap = new HashMap<String, int[]>();
-	
+
 	/**
 	 * @param triplet[0] = className. 
 	 * 			The name of the collection e.g. <code>java.util.List</code>
@@ -100,7 +100,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	public static String getCollectionsMapKey(String...triplet) {
 		return triplet[0] + "??" + triplet[1] + "???" + triplet[2];
 	}
-	
+
 	private void addToCollectionsMap(String className, String methodName, 
 			String methodSignature, int... argumentParameterIndex) {
 		collectionsMap.put(
@@ -129,7 +129,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			"java.util.HashSet",
 			"java.util.TreeSet"	
 	};
-	
+
 	String [] mapMembers = new String [] {
 			"java.util.Map",
 			"java.util.AbstractMap",
@@ -143,7 +143,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			"java.util.IdentityHashMap",
 			"java.util.WeakHashMap"
 	};
-	
+
 	String [] listMembers = new String [] {
 			"java.util.List",
 			"java.util.AbstractList",
@@ -156,7 +156,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		String basicSignature = "(Ljava/lang/Object;)Z";
 		String collectionSignature = "(Ljava/util/Collection<*>;)Z";
 		String indexSignature = "(Ljava/lang/Object;)I";
-		
+
 		// Collection<E>
 		addToCollectionsMap(collectionMembers, "contains", basicSignature, 0);
 		//addToCollectionsMap(collectionMembers, "equals",   basicSignature, 0);
@@ -165,20 +165,20 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		//addToCollectionsMap(collectionMembers, "containsAll", collectionSignature, 0);
 		//addToCollectionsMap(collectionMembers, "removeAll",   collectionSignature, 0);
 		//addToCollectionsMap(collectionMembers, "retainAll",   collectionSignature, 0);
-		
+
 		// List<E>
 		addToCollectionsMap(listMembers, "indexOf", indexSignature, 0);
 		addToCollectionsMap(listMembers, "lastIndexOf", indexSignature, 0);
-		
+
 		// Map<K,V>
 		addToCollectionsMap(mapMembers, "containsKey", basicSignature, 0);
 		addToCollectionsMap(mapMembers, "containsValue", basicSignature, 1);
-		
+
 		// XXX these do not work, to support these need changeable return types
 		addToCollectionsMap(mapMembers, "get", basicSignature, 0);
 		addToCollectionsMap(mapMembers, "remove", basicSignature, 0);
 	}
-	
+
 	/**
 	 * Visit the class context
 	 * @see edu.umd.cs.findbugs.Detector#visitClassContext(edu.umd.cs.findbugs.ba.ClassContext)
@@ -238,9 +238,9 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	throws CFGBuilderException, DataflowAnalysisException {
 		if (isSynthetic(method) || !prescreen(classContext, method))
 			return;
-		
+
 		BugAccumulator accumulator = new BugAccumulator(bugReporter);
-		
+
 		CFG cfg = classContext.getCFG(method);
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 
@@ -266,17 +266,17 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				continue;
 
 			InvokeInstruction inv = (InvokeInstruction)ins;
-			
+
 			// check the relevance of this instruction
 			String [] itriplet = getInstructionTriplet(inv, cpg);
 			String [] triplet = getRelevantTriplet(itriplet);
 			if (triplet == null)
 				continue;
-			
+
 			// get the list of parameter indexes for each argument position
 			int [] argumentParameterIndex = 
 				collectionsMap.get( getCollectionsMapKey(triplet) );
-			
+
 			TypeFrame frame = typeDataflow.getFactAtLocation(location);
 			if (!frame.isValid()) {
 				// This basic block is probably dead
@@ -288,22 +288,22 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				// unreachable
 				continue;
 			}			
-			
+
 			// Only consider generic... 
 			Type objectType = frame.getInstance(inv, cpg);			
 			if (!(objectType instanceof GenericObjectType))
 				continue;
-			
+
 			GenericObjectType operand = (GenericObjectType) objectType;
-			
+
 			// ... containers
 			if (!operand.hasParameters()) continue;
-			
+
 			int numArguments = frame.getNumArguments(inv, cpg);
-			
+
 			if (numArguments <= 0 || argumentParameterIndex.length != numArguments)
 				continue; 
-			
+
 			// compare containers type parameters to corresponding arguments
 			boolean match = true;
 			IncompatibleTypes [] matches = new IncompatibleTypes [numArguments];
@@ -314,14 +314,14 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				if (argumentParameterIndex[ii] < 0) continue; // not relevant argument
 				if (argumentParameterIndex[ii] >= operand.getNumParameters()) 
 					continue; // should never happen
-		
+
 				Type parmType = operand.getParameterAt(argumentParameterIndex[ii]);
 				Type argType = frame.getArgument(inv, cpg, ii, sigParser);
 				matches[ii] = compareTypes(parmType, argType);
 
 				if (matches[ii] != IncompatibleTypes.SEEMS_OK) match = false;
 			}
-			
+
 			if (match)
 				continue; // no bug
 
@@ -337,22 +337,22 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				if (parmType instanceof GenericObjectType)
 					parmType = ((GenericObjectType)parmType).getUpperBound();
 				Type argType = frame.getArgument(inv, cpg, i, sigParser);
-				
+
 				accumulator.accumulateBug(new BugInstance(this,
 						"GC_UNRELATED_TYPES", matches[i].getPriority())
 						.addClassAndMethod(methodGen, sourceFile)					
 						//.addString(GenericUtilities.getString(parmType))
 						//.addString(GenericUtilities.getString(argType))
-                        .addFoundAndExpectedType(argType.getSignature(), parmType.getSignature())
+						.addFoundAndExpectedType(argType.getSignature(), parmType.getSignature())
 						.addCalledMethod(methodGen, (InvokeInstruction) ins)
 						,sourceLineAnnotation);
 			}
-			
+
 		}
-						
+
 		accumulator.reportAccumulatedBugs();
 	}
-	
+
 	/**
 	 * Get a String triplet representing the information in this instruction:
 	 * the className, methodName, and methodSignature
@@ -362,7 +362,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		// get the class name
 		ConstantCP ref = (ConstantCP) cpg.getConstant( inv.getIndex() );
 		String className = ref.getClass(cpg.getConstantPool());
-		
+
 		// get the method name
 		ConstantNameAndType refNT = 
 			(ConstantNameAndType) cpg.getConstant( ref.getNameAndTypeIndex() );
@@ -370,10 +370,10 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 
 		// get the method signature
 		String methodSignature = refNT.getSignature(cpg.getConstantPool());
-		
+
 		return new String[] { className, methodName, methodSignature };
 	}
-	
+
 	/**
 	 * Given a triplet representing the className, methodName, and methodSignature
 	 * of an instruction, check to see if it is in our collectionsMap. <p>
@@ -383,7 +383,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 	private @CheckForNull String [] getRelevantTriplet(String [] instructionTriplet) {
 		if (collectionsMap.containsKey( getCollectionsMapKey(instructionTriplet) ))
 			return instructionTriplet;
-		
+
 		// HARDCODES
 		// Map "get" and "remove"
 		if (Arrays.asList(mapMembers).contains(instructionTriplet[0])) {
@@ -394,13 +394,13 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				return instructionTriplet;
 			}
 		}
-		
+
 		// XXX The rest not implemented
-		
+
 		// Not found
 		return null;
 	}
-	
+
 	/**
 	 * Compare to see if the argument <code>argType</code> passed to the method 
 	 * matches the type of the corresponding parameter. The simplest case is when
@@ -505,7 +505,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		return IncompatibleTypes.SEEMS_OK;
 
 	}
-	
+
 	// old version of compare types
 	private boolean compareTypesOld(Type parmType, Type argType) {
 		// XXX equality not implemented for GenericObjectType
@@ -514,7 +514,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 		if (GenericUtilities.getString(parmType)
 				.equals(GenericUtilities.getString(argType)))
 			return true;
-		
+
 		if (parmType instanceof GenericObjectType) {
 			GenericObjectType o = (GenericObjectType) parmType;
 			if (o.getTypeCategory() == GenericUtilities.TypeCategory.WILDCARD_EXTENDS) {
@@ -526,7 +526,7 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 				!((GenericObjectType) parmType).hasParameters()) return true;
 		if (argType instanceof GenericObjectType && 
 				!((GenericObjectType) argType).hasParameters()) return true;
-		
+
 		// Case: Both are generic containers
 		if (parmType instanceof GenericObjectType && argType instanceof GenericObjectType) {
 			return true;
@@ -534,11 +534,11 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 			// Don't consider non reference types (should not be possible)
 			if (!(parmType instanceof ReferenceType && argType instanceof ReferenceType))
 				return true;
-			
+
 			// Don't consider non object types (for now)
 			if (!(parmType instanceof ObjectType && argType instanceof ObjectType))
 				return true;
-			
+
 			// Otherwise, compare base types ignoring generic information
 			try {				
 				return Repository.instanceOf(
@@ -546,10 +546,10 @@ public class FindUnrelatedTypesInGenericContainer implements Detector {
 						((ObjectType)parmType).getClassName());
 			} catch (ClassNotFoundException e) {}
 		}
-				 
+
 		return true;
 	}
-	
+
 	/**
 	 * Empty
 	 * @see edu.umd.cs.findbugs.Detector#report()

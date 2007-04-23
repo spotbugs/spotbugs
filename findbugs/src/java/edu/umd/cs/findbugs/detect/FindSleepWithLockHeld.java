@@ -46,16 +46,16 @@ import edu.umd.cs.findbugs.ba.LockSet;
  * @author David Hovemeyer
  */
 public class FindSleepWithLockHeld implements Detector {
-	
+
 	private BugReporter bugReporter;
-	
+
 	public FindSleepWithLockHeld(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass javaClass = classContext.getJavaClass();
-		
+
 		Method[] methodList = javaClass.getMethods();
 		for (Method method : methodList) {
 			if (method.getCode() == null)
@@ -80,17 +80,17 @@ public class FindSleepWithLockHeld implements Detector {
 		// method must acquire a lock
 		if (!bytecodeSet.get(Constants.MONITORENTER) && !method.isSynchronized())
 			return false;
-		
+
 		// and contain a static method invocation
 		if (!bytecodeSet.get(Constants.INVOKESTATIC))
 			return false;
-		
+
 		return true;
 	}
 
 	private void analyzeMethod(ClassContext classContext, Method method) throws CFGBuilderException, DataflowAnalysisException {
 //		System.out.println("Checking " + method);
-		
+
 		CFG cfg = classContext.getCFG(method);
 		LockDataflow lockDataflow = classContext.getLockDataflow(method);
 
@@ -100,12 +100,12 @@ public class FindSleepWithLockHeld implements Detector {
 
 			if (!(ins instanceof INVOKESTATIC))
 				continue;
-			
+
 			if (!isSleep((INVOKESTATIC) ins, classContext.getConstantPoolGen()))
 				continue;
-			
+
 //			System.out.println("Found sleep at " + location.getHandle());
-			
+
 			LockSet lockSet = lockDataflow.getFactAtLocation(location);
 			if (lockSet.getNumLockedObjects() > 0) {
 				bugReporter.reportBug(new BugInstance("SWL_SLEEP_WITH_LOCK_HELD", NORMAL_PRIORITY)
@@ -121,7 +121,7 @@ public class FindSleepWithLockHeld implements Detector {
 			return false;
 		String methodName = ins.getMethodName(cpg);
 		String signature = ins.getSignature(cpg);
-		
+
 		return methodName.equals("sleep")
 				&& (signature.equals("(J)V") || signature.equals("(JI)V"));
 	}

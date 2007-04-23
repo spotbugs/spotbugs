@@ -34,13 +34,13 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class NoteNonNullAnnotations
 		extends BuildNonNullAnnotationDatabase
 		implements Detector, NonReportingDetector {
-	
+
 	public NoteNonNullAnnotations(BugReporter bugReporter) {
 		AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase(); // force initialization
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-		
+
 		JavaClass javaClass = classContext.getJavaClass();
 		if  (!FindUnreleasedLock.preTiger(javaClass)) javaClass.accept(this);
 	}

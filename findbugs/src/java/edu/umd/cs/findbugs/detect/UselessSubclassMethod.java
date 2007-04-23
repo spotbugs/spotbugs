@@ -35,7 +35,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 	public static final int SEEN_INVOKE = 3;
 	public static final int SEEN_RETURN = 4;
 	public static final int SEEN_INVALID = 5;
-	
+
 	private BugReporter bugReporter;
 	private String superclassName;
 	private int state;
@@ -44,15 +44,15 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 	private int invokePC;
 	private Type[] argTypes;
 	private Set<String> interfaceMethods = null;
-	
+
 	public UselessSubclassMethod(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
 
-	
+
 	@Override
-         public void visitClassContext(ClassContext classContext) {
+		 public void visitClassContext(ClassContext classContext) {
 		try {
 			JavaClass cls = classContext.getJavaClass();
 			superclassName = cls.getSuperclassName();
@@ -72,15 +72,15 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 		}
 		super.visitClassContext(classContext);
 	}
-	
+
 	@Override
 	public void visitAfter(JavaClass obj) {
 		interfaceMethods = null;
 		super.visitAfter(obj);
 	}
-	
+
 	@Override
-         public void visitMethod(Method obj) {
+		 public void visitMethod(Method obj) {
 		if ((interfaceMethods != null) && ((obj.getAccessFlags() & Constants.ACC_ABSTRACT) != 0)) {
 			String curDetail = obj.getName() + obj.getSignature();
 			for (String infMethodDetail : interfaceMethods) {
@@ -91,28 +91,28 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 		}
 		super.visitMethod(obj);
 	}
-	
+
 	@Override
-         public void visitCode(Code obj)
+		 public void visitCode(Code obj)
 	{
 		try {
 			String methodName = getMethodName();
-			
+
 			if (!methodName.equals("<init>")
 			&&  !methodName.equals("clone")
 			&&  ((getMethod().getAccessFlags() & (Constants.ACC_STATIC|Constants.ACC_SYNTHETIC)) == 0)) {
-				
+
 				/* for some reason, access flags doesn't return Synthetic, so do this hocus pocus */
 				Attribute[] atts = getMethod().getAttributes();
 				for (Attribute att : atts) {
 					if (att.getClass().equals(Synthetic.class))
 						return;
 				}
-				
+
 				byte[] codeBytes = obj.getCode();
 				if ((codeBytes.length == 0) || (codeBytes[0] != ALOAD_0))
 					return;
-				
+
 				state = SEEN_NOTHING;
 				invokePC = 0;
 				super.visitCode(obj);
@@ -121,7 +121,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 					Method superMethod = findSuperclassMethod(superclassName, getMethod());
 					if ((superMethod == null) || accessModifiersAreDifferent(getMethod(), superMethod))
 						return;
-	
+
 					bugReporter.reportBug( new BugInstance( this, "USM_USELESS_SUBCLASS_METHOD", LOW_PRIORITY )
 						.addClassAndMethod(this)
 						.addSourceLine(this, invokePC));
@@ -132,9 +132,9 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 			bugReporter.reportMissingClass(cnfe);
 		}
 	}
-	
+
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		switch (state) {
 			case SEEN_NOTHING:
 				if (seen == ALOAD_0) {
@@ -148,7 +148,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 				} else
 					state = SEEN_INVALID;	
 			break;
-			
+
 			case SEEN_PARM:
 				if (curParm >= argTypes.length)
 					state = SEEN_INVALID;
@@ -172,10 +172,10 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 					}
 					if ((state != SEEN_INVALID) && (curParm >= argTypes.length))
 						state = SEEN_LAST_PARM;
-						
+
 				}
 			break;
-			
+
 			case SEEN_LAST_PARM:
 				if ((seen == INVOKENONVIRTUAL) && getMethodName().equals(getNameConstantOperand()) && getMethodSig().equals(getSigConstantOperand())) {
 					invokePC = getPC();
@@ -184,7 +184,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 				else
 					state = SEEN_INVALID;
 			break;
-			
+
 			case SEEN_INVOKE:
 				Type returnType = getMethod().getReturnType();
 				char retSigChar0 = returnType.getSignature().charAt(0);
@@ -203,13 +203,13 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 				else
 					state = SEEN_INVALID;
 			break;
-			
+
 			case SEEN_RETURN:
 				state = SEEN_INVALID;
 			break;
 		}
 	}
-	
+
 	private void checkParm(int seen, int fastOpBase, int slowOp, int parmSize) {
 		if ((curParmOffset >= 1) && (curParmOffset <= 3)) {
 			if (seen == (fastOpBase + curParmOffset))
@@ -224,10 +224,10 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 		else
 			state = SEEN_INVALID;
 	}
-	
+
 	private Method findSuperclassMethod(String superclassName, Method subclassMethod) 
 		throws ClassNotFoundException {
-		
+
 		String methodName = subclassMethod.getName();
 		Type[] subArgs = null;
 		JavaClass superClass = Repository.lookupClass(superclassName);
@@ -247,7 +247,7 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 				}
 			}
 		}
-		
+
 		if(!superclassName.equals("Object")) {
 			String superSuperClassName = superClass.getSuperclassName();
 			if (superSuperClassName.equals(superclassName)) {
@@ -256,10 +256,10 @@ public class UselessSubclassMethod extends BytecodeScanningDetector implements S
 				}
 			return findSuperclassMethod(superClass.getSuperclassName(), subclassMethod);
 			}
-		
+
 		return null;
 	}
-	
+
 	private boolean accessModifiersAreDifferent(Method m1, Method m2) {
 		int access1 = m1.getAccessFlags() & (Constants.ACC_PRIVATE|Constants.ACC_PROTECTED|Constants.ACC_PUBLIC|Constants.ACC_FINAL);
 		int access2 = m2.getAccessFlags() & (Constants.ACC_PRIVATE|Constants.ACC_PROTECTED|Constants.ACC_PUBLIC|Constants.ACC_FINAL);

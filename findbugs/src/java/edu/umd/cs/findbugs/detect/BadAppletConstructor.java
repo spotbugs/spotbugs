@@ -45,14 +45,14 @@ public class BadAppletConstructor extends BytecodeScanningDetector  {
 		}
 		this.appletClass = appletClass;
 	}
-	
+
 
 
 	@Override
-         public void visitClassContext(ClassContext classContext) {
+		 public void visitClassContext(ClassContext classContext) {
 		if (appletClass == null)
 			return;
-			
+
 		JavaClass cls = classContext.getJavaClass();
 		try {
 			if (cls.instanceOf(appletClass))
@@ -61,20 +61,20 @@ public class BadAppletConstructor extends BytecodeScanningDetector  {
 			bugReporter.reportMissingClass(cnfe);
 		}
 	}
-	
+
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		inConstructor = obj.getName().equals("<init>");
 	}
-	
+
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		if (inConstructor)
 			super.visit(obj);
 	}
-	
+
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (seen == INVOKEVIRTUAL) {
 			String method = getNameConstantOperand();
 			String signature = getSigConstantOperand();
@@ -82,8 +82,8 @@ public class BadAppletConstructor extends BytecodeScanningDetector  {
 			||  (method.equals("getAppletContext") &&  signature.equals("()Ljava/applet/AppletContext;"))
 			||  (method.equals("getParameter") && signature.equals("(Ljava/lang/String;)Ljava/lang/String;")))
 				bugReporter.reportBug(new BugInstance(this, "BAC_BAD_APPLET_CONSTRUCTOR", NORMAL_PRIORITY)
-				    .addClassAndMethod(this)
-				    .addSourceLine(this));
+					.addClassAndMethod(this)
+					.addSourceLine(this));
 		}
 	}
 }

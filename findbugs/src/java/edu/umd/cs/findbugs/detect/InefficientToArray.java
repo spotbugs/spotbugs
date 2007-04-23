@@ -63,13 +63,13 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 
 
 	@Override
-         public void visitClassContext(ClassContext classContext) {
+		 public void visitClassContext(ClassContext classContext) {
 		if (collectionClass != null)
 			classContext.getJavaClass().accept(this);
 	}
-	
+
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		if (DEBUG)
 			System.out.println("------------------- Analyzing " + obj.getName() + " ----------------");
 		state = SEEN_NOTHING;
@@ -77,7 +77,7 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (DEBUG) System.out.println("State: " + state + "  Opcode: " + OPCODE_NAMES[seen]);
 
 		switch (state) {
@@ -95,15 +95,15 @@ public class InefficientToArray extends BytecodeScanningDetector implements Stat
 
 		case SEEN_ANEWARRAY:
 			if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE))
-			        && (getNameConstantOperand().equals("toArray"))
-			        && (getSigConstantOperand().equals("([Ljava/lang/Object;)[Ljava/lang/Object;"))) {
+					&& (getNameConstantOperand().equals("toArray"))
+					&& (getSigConstantOperand().equals("([Ljava/lang/Object;)[Ljava/lang/Object;"))) {
 				try {
 					String clsName = getDottedClassConstantOperand();
 					JavaClass cls = Repository.lookupClass(clsName);
 					if (cls.implementationOf(collectionClass))
 						bugReporter.reportBug(new BugInstance(this, "ITA_INEFFICIENT_TO_ARRAY", LOW_PRIORITY)
-						        .addClassAndMethod(this)
-						        .addSourceLine(this));
+								.addClassAndMethod(this)
+								.addSourceLine(this));
 
 				} catch (ClassNotFoundException cnfe) {
 					bugReporter.reportMissingClass(cnfe);

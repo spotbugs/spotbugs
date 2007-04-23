@@ -42,22 +42,22 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 
 
 	@Override
-         public void visitJavaClass(JavaClass obj) {
+		 public void visitJavaClass(JavaClass obj) {
 		hasThisDollarZero = false;
 		// totally skip methods not defined in inner classes
 		if (obj.getClassName().indexOf('$') >= 0) super.visitJavaClass(obj);
-		
+
 	}
 
 	boolean hasThisDollarZero;
-	
+
 	@Override
 	public void visit(Field f) {
 		if (f.getName().equals("this$0")) hasThisDollarZero = true;
 	}
 	OpcodeStack stack = new OpcodeStack();
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		if (hasThisDollarZero) {
 		stack.resetForMethodEntry(this);
 		super.visit(obj);
@@ -70,43 +70,43 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 		return s.substring(0,i);
 	}
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		try {
-         if (seen != INVOKEVIRTUAL) return;
-         if (!getClassName().equals(getClassConstantOperand())) return;
-         XMethod invokedMethod = XFactory.createXMethod(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false);
+		 if (seen != INVOKEVIRTUAL) return;
+		 if (!getClassName().equals(getClassConstantOperand())) return;
+		 XMethod invokedMethod = XFactory.createXMethod(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false);
          if (invokedMethod.isResolved() && invokedMethod.getClassName().equals(getDottedClassConstantOperand())) {
-        	 // method is not inherited
-        	 return;
-         }
+			 // method is not inherited
+			 return;
+		 }
          // method is inherited
-         String possibleTargetClass = getDottedClassName();
-         String superClassName = getDottedSuperclassName();
-         while(true) {
+		 String possibleTargetClass = getDottedClassName();
+		 String superClassName = getDottedSuperclassName();
+		 while(true) {
         	 int i = possibleTargetClass.lastIndexOf('$');
 			if (i == -1) break;
 			possibleTargetClass = possibleTargetClass.substring(0,i);
 			if (possibleTargetClass.equals(superClassName)) break;
-        	 XMethod alternativeMethod = XFactory.createXMethod(possibleTargetClass, getNameConstantOperand(), getSigConstantOperand(), false);
-        	 if (alternativeMethod.isResolved() && alternativeMethod.getClassName().equals(possibleTargetClass)) 	{
-        		 String targetPackage = invokedMethod.getPackageName();
+			 XMethod alternativeMethod = XFactory.createXMethod(possibleTargetClass, getNameConstantOperand(), getSigConstantOperand(), false);
+			 if (alternativeMethod.isResolved() && alternativeMethod.getClassName().equals(possibleTargetClass)) 	{
+				 String targetPackage = invokedMethod.getPackageName();
         		 String alternativePackage = alternativeMethod.getPackageName();
-        		 int priority = HIGH_PRIORITY;
-        		 if (targetPackage.equals(alternativePackage)) priority++;
-        		 if (targetPackage.startsWith("javax.swing") || targetPackage.startsWith("java.awt"))
+				 int priority = HIGH_PRIORITY;
+				 if (targetPackage.equals(alternativePackage)) priority++;
+				 if (targetPackage.startsWith("javax.swing") || targetPackage.startsWith("java.awt"))
         			 priority+=2;
-        		 if (invokedMethod.getName().equals(getMethodName())) priority++;
-        		 
-        		 bugReporter.reportBug(new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
+				 if (invokedMethod.getName().equals(getMethodName())) priority++;
+
+				 bugReporter.reportBug(new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
 				        .addClassAndMethod(this)
-				          .addMethod(invokedMethod).describe("METHOD_INHERITED")
-				        .addMethod(alternativeMethod).describe("METHOD_ALTERNATIVE_TARGET")
-				        .addSourceLine(this, getPC()));
+						  .addMethod(invokedMethod).describe("METHOD_INHERITED")
+						.addMethod(alternativeMethod).describe("METHOD_ALTERNATIVE_TARGET")
+						.addSourceLine(this, getPC()));
         		 break;
-        	 }
-         }
-         
+			 }
+		 }
+
          
 		} finally {
 		stack.sawOpcode(this, seen);

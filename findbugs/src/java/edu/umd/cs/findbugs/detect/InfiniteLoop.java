@@ -43,25 +43,25 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	private static final boolean active = true;
 
 
-    ArrayList<BitSet> regModifiedAt = new ArrayList<BitSet>();
-    @NonNull BitSet getModifiedBitSet(int reg) {
-        while (regModifiedAt.size() <= reg)
+	ArrayList<BitSet> regModifiedAt = new ArrayList<BitSet>();
+	@NonNull BitSet getModifiedBitSet(int reg) {
+		while (regModifiedAt.size() <= reg)
             regModifiedAt.add(new BitSet());
-        return regModifiedAt.get(reg);
-    }
-    private void regModifiedAt(int reg, int pc) {
+		return regModifiedAt.get(reg);
+	}
+	private void regModifiedAt(int reg, int pc) {
         BitSet b = getModifiedBitSet(reg);
-        b.set(pc);
-    }
-    private void clearRegModified() {
+		b.set(pc);
+	}
+	private void clearRegModified() {
         for(BitSet b : regModifiedAt )
-            b.clear();
-    }
-    private boolean isRegModified(int reg, int firstPC, int lastPC) {
+			b.clear();
+	}
+	private boolean isRegModified(int reg, int firstPC, int lastPC) {
         if (reg < 0) return false;
-        BitSet b = getModifiedBitSet(reg);
-        int modified = b.nextSetBit(firstPC);
-        return (modified >= firstPC && modified <= lastPC);
+		BitSet b = getModifiedBitSet(reg);
+		int modified = b.nextSetBit(firstPC);
+		return (modified >= firstPC && modified <= lastPC);
     }
 	static class Jump {
 		final int from, to;
@@ -70,7 +70,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 			this.to = to;
 		}
 		@Override
-        public String toString() {
+		public String toString() {
 			return from + " -> " + to;
 		}
 	}
@@ -84,7 +84,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				if (stack.getLastUpdate(i) < to) 
 					invariantRegisters.add(i);
 			}
-					
+
 		}
 	static class ForwardConditionalBranch  extends Jump {
 		final OpcodeStack.Item item0, item1;
@@ -93,15 +93,15 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 			this.item0 = item0;
 			this.item1 = item1;
 		}
-		
+
 	}
 	BugReporter bugReporter;
 
 	LinkedList<Jump> backwardReach = new LinkedList<Jump>();
 	LinkedList<BackwardsBranch> backwardBranches = new LinkedList<BackwardsBranch>();
-	
+
 	LinkedList<ForwardConditionalBranch> forwardConditionalBranches = new LinkedList<ForwardConditionalBranch>();
-	
+
 	LinkedList<Jump> forwardJumps = new LinkedList<Jump>();
 	void purgeForwardJumps(int before) {
 		if (true) return;
@@ -115,7 +115,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		purgeForwardJumps(from);
 		forwardJumps.add(new Jump(from, to));
 	}
-	
+
 	int getFurthestJump(int from) {
 		int result = Integer.MIN_VALUE;
 		int from2 = getBackwardsReach(from);
@@ -139,10 +139,10 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	@Override
 	public void visit(Method obj) {
 	}
- 
+
 	@Override
 	public void visit(Code obj) {
-        clearRegModified();
+		clearRegModified();
 		stack.resetForMethodEntry(this);
 		backwardBranches.clear();
 		forwardConditionalBranches.clear();
@@ -156,7 +156,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 					myForwardBranches.add(fcb);
 			if (myForwardBranches.size() != 1) continue;
 			ForwardConditionalBranch fcb = myForwardBranches.get(0);
-            int backwardsReach = getBackwardsReach(bb.to);
+			int backwardsReach = getBackwardsReach(bb.to);
 			for(Jump fj : forwardJumps) 
 				if (fcb.from != fj.from && backwardsReach < fj.from && fj.from < bb.from && bb.from < fj.to) 
 					continue backwardBranchLoop;
@@ -166,23 +166,23 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 						HIGH_PRIORITY).addClassAndMethod(this).addSourceLine(
 						this, fcb.from);
 				int reg0 = fcb.item0.getRegisterNumber();
-                boolean reg0Invariant = true;
+				boolean reg0Invariant = true;
 				if (reg0 >= 0) {
-				    reg0Invariant = !isRegModified(reg0, backwardsReach, bb.from);
+					reg0Invariant = !isRegModified(reg0, backwardsReach, bb.from);
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, fcb.from, bb.from))
 					.addSourceLine(this, constantSince(fcb.item0)).describe("SOURCE_LINE_LAST_CHANGE");
-                }
+				}
 				int reg1 = fcb.item1.getRegisterNumber();
 				if (reg1 >= 0 && reg1 != reg0) 
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg1, fcb.from, bb.from))
 										.addSourceLine(this, constantSince(fcb.item1)).describe("SOURCE_LINE_LAST_CHANGE");
-                  boolean reg1Invariant = true;
-                if (reg1 >= 0) 
-                    reg1Invariant = !isRegModified(reg1, backwardsReach, bb.from);
+				  boolean reg1Invariant = true;
+				if (reg1 >= 0) 
+					reg1Invariant = !isRegModified(reg1, backwardsReach, bb.from);
                 if (reg0Invariant && reg1Invariant)
-                    bugReporter.reportBug(bug);
+					bugReporter.reportBug(bug);
 			}
-			
+
 		}
 	}
 	/**
@@ -191,7 +191,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	 * @return
 	 */
 	private boolean isConstant(Item item0, BackwardsBranch bb) {
-		
+
 		int reg = item0.getRegisterNumber();
 		if (reg >= 0) return bb.invariantRegisters.contains(reg) || reg >= bb.numLastUpdates;
 		if (item0.getConstant() != null) return true;
@@ -205,7 +205,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 		if (false) System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stack);
 		stack.mergeJumps(this);
-        if (isRegisterStore())  regModifiedAt(getRegisterOperand(), getPC());
+		if (isRegisterStore())  regModifiedAt(getRegisterOperand(), getPC());
 		switch (seen) {
 		case GOTO:
 			if (getBranchOffset() < 0) {
@@ -223,7 +223,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 					reportPossibleBug(bug);
 				}
 			}
-            
+
 			break;
 		case ARETURN:
 		case IRETURN:
@@ -231,7 +231,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		case DRETURN:
 		case FRETURN:
 		case LRETURN:
-        case ATHROW:
+		case ATHROW:
 			addForwardJump(getPC(), Integer.MAX_VALUE);
 			break;
 
@@ -263,7 +263,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 			}
 			if (getFurthestJump(target) > getPC())
 				break;
-			
+
 			if (constantSince(item0, target)) {
 				int since0 = constantSince(item0);
 				BugInstance bug = new BugInstance(this, "IL_INFINITE_LOOP",
@@ -274,8 +274,8 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 					bug.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), reg0, getPC(), target))
 					.addSourceLine(this, since0);
 				if (reg0 < 0 || !isRegModified(reg0, target, getPC()))
-				    reportPossibleBug(bug);
-				
+					reportPossibleBug(bug);
+
 			}
 		}
 			break;
@@ -315,7 +315,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 
 				reportPossibleBug(bug);
 				}
-			
+
 		}
 			break;
 		}
@@ -339,7 +339,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		}
 		backwardReach.add(new Jump(getPC(), target));
 	}
-	
+
 	private int getBackwardsReach(int target) {
 		int originalTarget = target;
 		for(Jump j : backwardReach) 
@@ -347,9 +347,9 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		assert target <= originalTarget;
 		return target;
 	}
-	
 
-	
+
+
 	/**
 	 * @param item1
 	 * @param branchTarget
@@ -369,7 +369,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 		return Integer.MAX_VALUE;
 
 	}
-	
+
 	void reportPossibleBug(BugInstance bug) {
 		int catchSize = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getCode(), "java/io/EOFException", getPC());
 		if (catchSize < Integer.MAX_VALUE) bug.lowerPriorityALot();

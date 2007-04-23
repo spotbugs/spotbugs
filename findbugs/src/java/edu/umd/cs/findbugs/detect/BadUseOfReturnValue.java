@@ -39,7 +39,7 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector {
 	boolean readLineOnTOS = false;
 	boolean stringIndexOfOnTOS= false;
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		stringIndexOfOnTOS= false;
 		readLineOnTOS = false;
 		super.visit(obj);
@@ -47,7 +47,7 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector {
 
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (seen == INVOKEVIRTUAL && 
 			getNameConstantOperand().equals("indexOf")
 			&& getClassConstantOperand().equals("java/lang/String")
@@ -55,24 +55,24 @@ public class BadUseOfReturnValue extends BytecodeScanningDetector {
 		   stringIndexOfOnTOS= true;
 		else if (stringIndexOfOnTOS) {
 			if (seen == IFLE || seen == IFGT)
-			       bugReporter.reportBug(new BugInstance(this, "RV_CHECK_FOR_POSITIVE_INDEXOF", LOW_PRIORITY)
-                                .addClassAndMethod(this)
-                                .addSourceLine(this));
+				   bugReporter.reportBug(new BugInstance(this, "RV_CHECK_FOR_POSITIVE_INDEXOF", LOW_PRIORITY)
+								.addClassAndMethod(this)
+								.addSourceLine(this));
 			stringIndexOfOnTOS = false;
 		}
 
 		if (seen == INVOKEVIRTUAL && 
-                getNameConstantOperand().equals("readLine")
+				getNameConstantOperand().equals("readLine")
 			&& getSigConstantOperand().equals("()Ljava/lang/String;")
-            && getClassConstantOperand().startsWith("java/io") 
-            && !getClassConstantOperand().equals("java/io/LineNumberReader")
-            )
+			&& getClassConstantOperand().startsWith("java/io") 
+			&& !getClassConstantOperand().equals("java/io/LineNumberReader")
+			)
 		  readLineOnTOS = true;
 		else if (readLineOnTOS) {
 			if (seen == IFNULL || seen == IFNONNULL)
-			       bugReporter.reportBug(new BugInstance(this, "RV_DONT_JUST_NULL_CHECK_READLINE", NORMAL_PRIORITY)
-                                .addClassAndMethod(this)
-                                .addSourceLine(this));
+				   bugReporter.reportBug(new BugInstance(this, "RV_DONT_JUST_NULL_CHECK_READLINE", NORMAL_PRIORITY)
+								.addClassAndMethod(this)
+								.addSourceLine(this));
 
 			readLineOnTOS = false;
 			}

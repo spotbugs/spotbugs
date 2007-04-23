@@ -52,7 +52,7 @@ public class InitializationChain extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		instanceCreated = false;
 		instanceCreatedWarningGiven = false;
 		if (!getMethodName().equals("<clinit>") && !getMethodName().equals("<init>")) return;
@@ -83,7 +83,7 @@ public class InitializationChain extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 
 		if (getMethodName().equals("<init>")) {
 			if (seen == GETSTATIC && getClassConstantOperand().equals(getClassName())) {
@@ -91,7 +91,7 @@ public class InitializationChain extends BytecodeScanningDetector {
 			}
 			return;
 		}
-			
+
 
 		if (seen == PUTSTATIC && getClassConstantOperand().equals(getClassName())) {
 			// Don't do this check; it generates too many false
@@ -102,9 +102,9 @@ public class InitializationChain extends BytecodeScanningDetector {
 				if (!okSig.equals(getSigConstantOperand())) {
 					staticFieldWritten.put(getNameConstantOperand(), 
 							new BugInstance(this, "SI_INSTANCE_BEFORE_FINALS_ASSIGNED", NORMAL_PRIORITY)
-					        .addClassAndMethod(this)
-					        .addReferencedField(this)
-					        .addSourceLine(this, instanceCreatedPC));
+							.addClassAndMethod(this)
+							.addReferencedField(this)
+							.addSourceLine(this, instanceCreatedPC));
 					instanceCreatedWarningGiven = true;
 				}
 			}
@@ -112,7 +112,7 @@ public class InitializationChain extends BytecodeScanningDetector {
 			instanceCreated = true;
 			instanceCreatedPC = getPC();
 		} else if (seen == PUTSTATIC || seen == GETSTATIC || seen == INVOKESTATIC
-		        || seen == NEW)
+				|| seen == NEW)
 			if (getPC() + 6 < codeBytes.length)
 				requires.add(getDottedClassConstantOperand());
 	}
@@ -137,7 +137,7 @@ public class InitializationChain extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void report() {
+		 public void report() {
 
 		if (DEBUG) System.out.println("Finishing computation");
 		compute();

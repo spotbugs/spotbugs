@@ -36,26 +36,26 @@ public class StartInConstructor extends BytecodeScanningDetector implements Stat
 	boolean isFinal;
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 		isFinal = (obj.getAccessFlags() & ACC_FINAL) != 0
-		        || (obj.getAccessFlags() & ACC_PUBLIC) == 0;
+				|| (obj.getAccessFlags() & ACC_PUBLIC) == 0;
 	}
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		if (getMethodName().equals("<init>")) super.visit(obj);
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (!isFinal && seen == INVOKEVIRTUAL && getNameConstantOperand().equals("start")
-		        && getSigConstantOperand().equals("()V")) {
+				&& getSigConstantOperand().equals("()V")) {
 			try {
 				if (Hierarchy.isSubtype(getDottedClassConstantOperand(), "java.lang.Thread")) {
 					bugReporter.reportBug(new BugInstance(this, "SC_START_IN_CTOR", NORMAL_PRIORITY)
-					        .addClassAndMethod(this)
-					        .addCalledMethod(this)
-					        .addSourceLine(this));
+							.addClassAndMethod(this)
+							.addCalledMethod(this)
+							.addSourceLine(this));
 				}
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);

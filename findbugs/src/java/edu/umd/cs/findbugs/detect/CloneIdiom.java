@@ -53,8 +53,8 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 	public CloneIdiom(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
-	
+
+
 
 	public void visitClassContext(ClassContext classContext) {
 		classContext.getJavaClass().accept(this);
@@ -65,17 +65,17 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 	}
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		if (getMethodName().equals("clone") &&
-		        getMethodSig().startsWith("()"))
+				getMethodSig().startsWith("()"))
 			super.visit(obj);
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (seen == INVOKESPECIAL
-		        && getNameConstantOperand().equals("clone")
-		        && getSigConstantOperand().startsWith("()")) {
+				&& getNameConstantOperand().equals("clone")
+				&& getSigConstantOperand().startsWith("()")) {
 			/*
 			System.out.println("Saw call to " + nameConstant
 						+ ":" + sigConstant
@@ -86,7 +86,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 	}
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 		implementsCloneableDirectly = false;
 		invokesSuperClone = false;
 		cloneOnlyThrowsException = false;
@@ -120,20 +120,20 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 	}
 
 	@Override
-         public void visitAfter(JavaClass obj) {
+		 public void visitAfter(JavaClass obj) {
 		if (!check) return;
 		if (cloneOnlyThrowsException) return;
 		if (implementsCloneableDirectly && !hasCloneMethod) {
 			if (!referencesCloneMethod)
 				bugReporter.reportBug(new BugInstance(this, "CN_IDIOM", NORMAL_PRIORITY)
-				        .addClass(this));
+						.addClass(this));
 		}
 
 		if (hasCloneMethod && !invokesSuperClone && !isFinal && obj.isPublic()) {
 			bugReporter.reportBug(new BugInstance(this, "CN_IDIOM_NO_SUPER_CALL", (obj.isPublic() || obj.isProtected()) ?
-			        NORMAL_PRIORITY : LOW_PRIORITY)
-			        .addClass(this)
-			        .addMethod(cloneMethodAnnotation));
+					NORMAL_PRIORITY : LOW_PRIORITY)
+					.addClass(this)
+					.addMethod(cloneMethodAnnotation));
 		}
 
 		/*
@@ -146,7 +146,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 	}
 
 	@Override
-         public void visit(ConstantNameAndType obj) {
+		 public void visit(ConstantNameAndType obj) {
 		String methodName = obj.getName(getConstantPool());
 		String methodSig = obj.getSignature(getConstantPool());
 		if (!methodName.equals("clone")) return;
@@ -155,7 +155,7 @@ public class CloneIdiom extends DismantleBytecode implements Detector, Stateless
 	}
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		if (obj.isAbstract()) return;
 		if (!obj.isPublic()) return;
 		if (!getMethodName().equals("clone")) return;

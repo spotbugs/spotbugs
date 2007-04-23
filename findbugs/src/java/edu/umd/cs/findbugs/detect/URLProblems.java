@@ -37,20 +37,20 @@ import edu.umd.cs.findbugs.OpcodeStack;
 public class URLProblems extends BytecodeScanningDetector {
 
 	final static String[] BAD_SIGNATURES = { "Hashtable<Ljava/net/URL", 
-        "Map<Ljava/net/URL",
+		"Map<Ljava/net/URL",
 			"Set<Ljava/net/URL" };
 
 	final private BugReporter bugReporter;
-    final private BugAccumulator accumulator;
+	final private BugAccumulator accumulator;
 
 	public URLProblems(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-        this.accumulator = new BugAccumulator(bugReporter);
+		this.accumulator = new BugAccumulator(bugReporter);
 	}
 
-    @Override
-    public void visitAfter(JavaClass obj) {
-        accumulator.reportAccumulatedBugs();
+	@Override
+	public void visitAfter(JavaClass obj) {
+		accumulator.reportAccumulatedBugs();
     }
 	@Override
 	public void visit(Signature obj) {
@@ -69,48 +69,48 @@ public class URLProblems extends BytecodeScanningDetector {
 							HIGH_PRIORITY).addClass(this).addClass(this));
 			}
 	}
-    OpcodeStack stack = new OpcodeStack();
-    @Override
-    public void visit(Method method) {
+	OpcodeStack stack = new OpcodeStack();
+	@Override
+	public void visit(Method method) {
      stack.resetForMethodEntry(this);
-    }
-    
-    
+	}
+
+
     void check(String className, Pattern name, int target, int url) {
-        if ( !name.matcher(getNameConstantOperand()).matches() ) return;
-        if (stack.getStackDepth() <= target) return;
-        OpcodeStack.Item targetItem = stack.getStackItem(target);
+		if ( !name.matcher(getNameConstantOperand()).matches() ) return;
+		if (stack.getStackDepth() <= target) return;
+		OpcodeStack.Item targetItem = stack.getStackItem(target);
         OpcodeStack.Item urlItem = stack.getStackItem(url);
-        if (!urlItem.getSignature().equals("Ljava/net/URL;")) return;
-        if (!targetItem.getSignature().equals(className)) return;
-        accumulator.accumulateBug(new BugInstance(this, "DMI_COLLECTION_OF_URLS",
+		if (!urlItem.getSignature().equals("Ljava/net/URL;")) return;
+		if (!targetItem.getSignature().equals(className)) return;
+		accumulator.accumulateBug(new BugInstance(this, "DMI_COLLECTION_OF_URLS",
                 HIGH_PRIORITY).addClassAndMethod(this)
-                .addCalledMethod(this), this);
-    }
+				.addCalledMethod(this), this);
+	}
 	@Override
 	public void sawOpcode(int seen) {
-        stack.mergeJumps(this);
+		stack.mergeJumps(this);
 
-        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stack);
-        if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
-            check("Ljava/util/HashSet;", Pattern.compile("add|remove|contains"), 1, 0);
+		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stack);
+		if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
+			check("Ljava/util/HashSet;", Pattern.compile("add|remove|contains"), 1, 0);
             check("Ljava/util/HashMap;", Pattern.compile("remove|containsKey|get"), 1, 0);
-            check("Ljava/util/HashMap;", Pattern.compile("put"), 2, 1);
-             
-        }
+			check("Ljava/util/HashMap;", Pattern.compile("put"), 2, 1);
 
-    
+		}
+
+
 		if (seen == INVOKEVIRTUAL
 				&& getClassConstantOperand().equals("java/net/URL")) {
 			if (getNameConstantOperand().equals("equals")
 					&& getSigConstantOperand().equals("(Ljava/lang/Object;)Z")
 					|| getNameConstantOperand().equals("hashCode")
 					&& getSigConstantOperand().equals("()I")) {
-                accumulator.accumulateBug(new BugInstance(this, "DMI_BLOCKING_METHODS_ON_URL",
+				accumulator.accumulateBug(new BugInstance(this, "DMI_BLOCKING_METHODS_ON_URL",
 						HIGH_PRIORITY).addClassAndMethod(this)
 						.addCalledMethod(this), this);
 			}
 		}
-        stack.sawOpcode(this,seen);
+		stack.sawOpcode(this,seen);
 	}
 }

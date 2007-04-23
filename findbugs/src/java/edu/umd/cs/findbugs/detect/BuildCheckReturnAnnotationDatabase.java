@@ -83,7 +83,7 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 			.getCheckReturnAnnotationDatabase().addSyntheticElement(
 					XFactory.createXMethod(this));
 	}
-		
+
 	@Override public void visit(Synthetic a) {
 		if (visitingMethod()) {
 			AnalysisContext.currentAnalysisContext()
@@ -116,7 +116,7 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 						.length());
 
 				String annotationTarget = defaultKind.get(annotationClass);
-				
+
 				if (annotationTarget != null)
 					for (Object aClass : (Object[]) v) {
 						n = CheckReturnValueAnnotation.parse((String) aClass, (String) map.get("priority"));
@@ -133,10 +133,10 @@ public class BuildCheckReturnAnnotationDatabase extends AnnotationVisitor {
 			AnalysisContext.currentAnalysisContext()
 					.getCheckReturnAnnotationDatabase().addDirectAnnotation(
 							XFactory.createXMethod(this), n);
-		
+
 
 	}
 
-	
+
 
 }

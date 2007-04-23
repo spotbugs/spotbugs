@@ -36,7 +36,7 @@ import org.apache.bcel.classfile.Method;
  */
 public class StringConcatenation extends BytecodeScanningDetector implements StatelessDetector {
 	private static final boolean DEBUG
-	        = SystemProperties.getBoolean("sbsc.debug");
+			= SystemProperties.getBoolean("sbsc.debug");
 
 	static final int SEEN_NOTHING = 0;
 	static final int SEEN_NEW = 1;
@@ -60,7 +60,7 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		if (DEBUG)
 			System.out.println("------------------- Analyzing " + obj.getName() + " ----------------");
 		reset();
@@ -98,15 +98,15 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (reportedThisMethod) return;
 		int oldState = state;
 		if (DEBUG) System.out.println("Opcode: " + OPCODE_NAMES[seen]);
 		switch (state) {
 		case SEEN_NOTHING:
 			if ((seen == NEW)
-			        &&
-			        getClassConstantOperand().startsWith("java/lang/StringBu")) {
+					&&
+					getClassConstantOperand().startsWith("java/lang/StringBu")) {
 				state = SEEN_NEW;
 				createPC = getPC();
 			}
@@ -120,11 +120,11 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 				System.out.println("   " + getSigConstantOperand());
 			}
 			if (seen == INVOKEVIRTUAL
-			        && "append".equals(getNameConstantOperand())
-			        && getClassConstantOperand().startsWith("java/lang/StringBu")) {
+					&& "append".equals(getNameConstantOperand())
+					&& getClassConstantOperand().startsWith("java/lang/StringBu")) {
 				if (DEBUG) System.out.println("Saw string being appended from register " + registerOnStack);
 				if (getSigConstantOperand().startsWith("(Ljava/lang/String;)")
-				        && registerOnStack >= 0) {
+						&& registerOnStack >= 0) {
 					if (DEBUG)
 						System.out.println("Saw string being appended, source = " + registerOnStack);
 					state = SEEN_APPEND1;
@@ -137,8 +137,8 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 			if (storeIntoRegister(seen, stringSource))
 				reset();
 			else if (seen == INVOKEVIRTUAL
-			        && "append".equals(getNameConstantOperand())
-			        && getClassConstantOperand().startsWith("java/lang/StringBu")) {
+					&& "append".equals(getNameConstantOperand())
+					&& getClassConstantOperand().startsWith("java/lang/StringBu")) {
 				state = SEEN_APPEND2;
 			}
 			break;
@@ -147,8 +147,8 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 			if (storeIntoRegister(seen, stringSource))
 				reset();
 			else if (seen == INVOKEVIRTUAL
-			        && "toString".equals(getNameConstantOperand())
-			        && getClassConstantOperand().startsWith("java/lang/StringBu")) {
+					&& "toString".equals(getNameConstantOperand())
+					&& getClassConstantOperand().startsWith("java/lang/StringBu")) {
 				state = CONSTRUCTED_STRING_ON_STACK;
 			}
 			break;
@@ -162,17 +162,17 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 
 		case POSSIBLE_CASE:
 			if (seen == GOTO
-			        && (getPC() - getBranchTarget()) < 300
-			        && getBranchTarget() < createPC) {
+					&& (getPC() - getBranchTarget()) < 300
+					&& getBranchTarget() < createPC) {
 				bugReporter.reportBug(new BugInstance(this, "SBSC_USE_STRINGBUFFER_CONCATENATION", NORMAL_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addSourceLine(this, createPC));
+						.addClassAndMethod(this)
+						.addSourceLine(this, createPC));
 				// System.out.println("SBSC spread: " + (getPC() - getBranchTarget()));
 				reset();
 				reportedThisMethod = true;
 			} else if ((seen == NEW)
-			        &&
-			        getClassConstantOperand().startsWith("java/lang/StringBu")) {
+					&&
+					getClassConstantOperand().startsWith("java/lang/StringBu")) {
 				state = SEEN_NEW;
 				createPC = getPC();
 			}
@@ -198,9 +198,9 @@ public class StringConcatenation extends BytecodeScanningDetector implements Sta
 		}
 		if (DEBUG && state != oldState)
 			System.out.println("At PC " + getPC()
-			        + " changing from state " + oldState
-			        + " to state " + state
-			        + ", regOnStack = " + registerOnStack);
+					+ " changing from state " + oldState
+					+ " to state " + state
+					+ ", regOnStack = " + registerOnStack);
 	}
 }
 

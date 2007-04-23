@@ -67,9 +67,9 @@ import edu.umd.cs.findbugs.ba.vna.ValueNumberFrame;
 public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 	private static final boolean DEBUG = SystemProperties.getBoolean("irl.debug");
 	private static final String IRL_METHOD = SystemProperties.getProperty("irl.method");
-	
+
 	private BugReporter bugReporter;
-	
+
 	public InfiniteRecursiveLoop2(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
@@ -123,7 +123,7 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 			if (isRecursiveCall((InvokeInstruction) ins, classContext, method)) {
 				checkRecursiveCall(classContext, method, cfg, basicBlock, thrower, (InvokeInstruction) ins);
 			}
-			
+
 			// Call to add(Object)?
 			if (isCallToAdd((InvokeInstruction) ins, classContext.getConstantPoolGen())) {
 				if (DEBUG) { System.out.println("Checking call to add..."); }
@@ -135,13 +135,13 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 	private boolean isRecursiveCall(InvokeInstruction instruction, ClassContext classContext, Method method) {
 		if ((instruction.getOpcode() == Constants.INVOKESTATIC) != method.isStatic())
 			return false;
-		
+
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		if (!instruction.getClassName(cpg).equals(classContext.getJavaClass().getClassName())
 				|| !instruction.getName(cpg).equals(method.getName())
 				|| !instruction.getSignature(cpg).equals(method.getSignature()))
 			return false;
-		
+
 		return true;
 	}
 
@@ -157,13 +157,13 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 			System.out.println("Checking recursive call in " +
 					SignatureConverter.convertMethodSignature(classContext.getJavaClass(), method));
 		}
-		
+
 		PostDominatorsAnalysis postDominators =
 			classContext.getNonImplicitExceptionDominatorsAnalysis(method);
-		
+
 		ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
 		ValueNumberFrame vnaFrameAtEntry = vnaDataflow.getStartFact(cfg.getEntry());
-		
+
 		// Get blocks which postdominate the method entry
 		BitSet entryPostDominators = postDominators.getAllDominatorsOf(cfg.getEntry());
 
@@ -179,7 +179,7 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 		// and the called method is known exactly.
 		report = entryPostDominators.get(basicBlock.getId())
 				&& targetMethodKnownExactly(classContext, method, basicBlock, ins);
-		
+
 		if (!report) {
 			// See if 
 			// (1) all parameters are passed unconditionally as arguments
@@ -188,7 +188,7 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 			report = allParamsPassedAsArgs(classContext, vnaDataflow, vnaFrameAtEntry, numArgsToCheck, basicBlock, ins)
 					&& !checkedStateHasBeenModified(classContext, method, basicBlock);
 		}
-		
+
 		if (report) {
 			JavaClass javaClass = classContext.getJavaClass();
 			BugInstance warning = new BugInstance("IL_INFINITE_RECURSIVE_LOOP", HIGH_PRIORITY)
@@ -200,7 +200,7 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 
 	private boolean targetMethodKnownExactly(ClassContext classContext, Method method, BasicBlock basicBlock, InvokeInstruction ins)
 			throws DataflowAnalysisException, CFGBuilderException {
-		
+
 		// Ways in which we can be confident that the called method
 		// is the same as the calling method:
 		// 1. invocation is nonvirtual: invokestatic or invokespecial
@@ -209,16 +209,16 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 		// 4. receiver instance is the same as "this"
 		// 5. receiver type is known exactly, and is the same as the class
 		//    containing the calling method
-		
+
 		if (ins.getOpcode() == Constants.INVOKESTATIC || ins.getOpcode() == Constants.INVOKESPECIAL)
 			return true;
-		
+
 		if (method.isPrivate())
 			return true;
-		
+
 		if (method.isFinal() || classContext.getJavaClass().isFinal())
 			return true;
-		
+
 		// See if caller and callee are the same.
 		// Technically, the call could still dispatch to a subclass,
 		// but that's pretty unlikely.
@@ -229,17 +229,17 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 		if (caller.equals(callee)) {
 			return true;
 		}
-		
+
 		TypeFrame typeFrame = classContext.getTypeDataflow(method).getStartFact(basicBlock); 
 		int receiverStackSlot = typeFrame.getInstanceSlot(ins, classContext.getConstantPoolGen());
-		
+
 		if (!typeFrame.isExact(receiverStackSlot))
 			return false;
-		
+
 		Type receiverType = typeFrame.getValue(receiverStackSlot);
 		if (!(receiverType instanceof ObjectType))
 			return false;
-		
+
 		return (((ObjectType) receiverType).getClassName().equals(
 				classContext.getJavaClass().getClassName()));
 	}
@@ -257,23 +257,23 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 		ValueNumberFrame vnaFrame = vnaDataflow.getStartFact(basicBlock);
 		if (vnaFrame.isValid() && vnaFrame.getStackDepth() >= numArgsToCheck) {
 			allParamsPassedAsArgs = true;
-			
+
 		checkArgsLoop:
 			for (int arg = 0; arg < numArgsToCheck; ++arg) {
 				ValueNumber paramVal = vnaFrameAtEntry.getValue(arg);
 				ValueNumber argVal = vnaFrame.getOperand(ins, classContext.getConstantPoolGen(), arg); 
-				
+
 				if (DEBUG) {
 					System.out.println("param="+paramVal.getNumber()+", arg=" + argVal.getNumber());
 				}
-				
+
 				if (!paramVal.equals(argVal)) {
 					allParamsPassedAsArgs = false;
 					break checkArgsLoop;
 				}
 			}
 		}
-		
+
 		return allParamsPassedAsArgs;
 	}
 
@@ -282,28 +282,28 @@ public @Deprecated class InfiniteRecursiveLoop2 implements Detector {
 
 		LoadDataflow loadDataflow = classContext.getLoadDataflow(method);
 		FieldSet loadSet = loadDataflow.getStartFact(basicBlock);
-		
+
 		StoreDataflow storeDataflow = classContext.getStoreDataflow(method);
 		FieldSet storeSet = storeDataflow.getStartFact(basicBlock);
 
 		if (DEBUG) {
 			System.out.println("Checking state: loads=" + loadSet + ", stores=" + storeSet);
 		}
-		
+
 		if (loadSet.isEmpty() || storeSet.isEmpty())
 			return false;
-		
+
 		// Bottom means "any field is potentially loaded or stored"
 		if (loadSet.isBottom() || storeSet.isBottom())
 			return true;
-		
+
 		// Top generally means dead code, so we should repress the warning
 		if (loadSet.isTop() || storeSet.isTop())
 			return true;
 
 		return loadSet.isIntersectionNonEmpty(storeSet);
 	}
-	
+
 	private boolean isCallToAdd(InvokeInstruction ins, ConstantPoolGen cpg) {
 		return ins.getOpcode() != Constants.INVOKESTATIC 
 			&& ins.getName(cpg).equals("add")

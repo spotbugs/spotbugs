@@ -43,7 +43,7 @@ public class NoteJCIPAnnotation extends AnnotationVisitor implements
 	public NoteJCIPAnnotation(BugReporter bugReporter) {
 	}
 
-	
+
 	@Override
 	public void visitAnnotation(String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {

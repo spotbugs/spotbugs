@@ -51,7 +51,7 @@ public class StreamEscape implements Comparable<StreamEscape> {
 	}
 
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		return source.hashCode() + 7*target.hashCode();
 	}
 	@Override
@@ -61,7 +61,7 @@ public class StreamEscape implements Comparable<StreamEscape> {
 		return source.equals(other.source) && target.equals(other.target);
 	}
 	@Override
-         public String toString() {
+		 public String toString() {
 		return source + " to " + target;
 	}
 }

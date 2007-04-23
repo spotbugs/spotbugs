@@ -48,9 +48,9 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 
 	static {
 		pattern
-		        .add(new Load("f", "val").label("start"))
-		        .add(new IfNull("val"))
-		        .add(new Wild(1, 1).label("createObject"))
+				.add(new Load("f", "val").label("start"))
+				.add(new IfNull("val"))
+				.add(new Wild(1, 1).label("createObject"))
 		        .add(new Store("f", pattern.dummyVariable()).label("end").dominatedBy("createObject"));
 	}
 
@@ -66,24 +66,24 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 		}
 	}
 	@Override
-         public BugReporter getBugReporter() {
+		 public BugReporter getBugReporter() {
 		return bugReporter;
 	}
 
 
 
 	@Override
-         public ByteCodePattern getPattern() {
+		 public ByteCodePattern getPattern() {
 		return pattern;
 	}
 
 	@Override
-         public boolean prescreen(Method method, ClassContext classContext) {
+		 public boolean prescreen(Method method, ClassContext classContext) {
 		BitSet bytecodeSet = classContext.getBytecodeSet(method);
 		if (bytecodeSet == null) return false;
 		// The pattern requires a get/put pair accessing the same field.
 		if (!(bytecodeSet.get(Constants.GETSTATIC) && bytecodeSet.get(Constants.PUTSTATIC)) &&
-		        !(bytecodeSet.get(Constants.GETFIELD) && bytecodeSet.get(Constants.PUTFIELD)))
+				!(bytecodeSet.get(Constants.GETFIELD) && bytecodeSet.get(Constants.PUTFIELD)))
 			return false;
 
 		// If the method is synchronized, then we'll assume that
@@ -95,8 +95,8 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 	}
 
 	@Override
-         public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
-	        throws CFGBuilderException, DataflowAnalysisException {
+		 public void reportMatch(ClassContext classContext, Method method, ByteCodePatternMatch match)
+			throws CFGBuilderException, DataflowAnalysisException {
 		JavaClass javaClass = classContext.getJavaClass();
 		MethodGen methodGen = classContext.getMethodGen(method);
 		CFG cfg = classContext.getCFG(method);
@@ -110,7 +110,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			// If it is volatile, then the instance is not a bug.
 			FieldVariable field = (FieldVariable) binding.getVariable();
 			XField xfield =
-			        Hierarchy.findXField(field.getClassName(), field.getFieldName(), field.getFieldSig());
+					Hierarchy.findXField(field.getClassName(), field.getFieldName(), field.getFieldSig());
 			if (xfield == null || (xfield.getAccessFlags() & Constants.ACC_VOLATILE) != 0)
 				return;
 
@@ -147,9 +147,9 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			// We will consider this to be all of the code that creates
 			// the object.
 			DominatorsAnalysis domAnalysis =
-			        classContext.getNonExceptionDominatorsAnalysis(method);
+					classContext.getNonExceptionDominatorsAnalysis(method);
 			PostDominatorsAnalysis postDomAnalysis =
-			        classContext.getNonExceptionPostDominatorsAnalysis(method);
+					classContext.getNonExceptionPostDominatorsAnalysis(method);
 			BitSet extent = domAnalysis.getAllDominatedBy(createBegin.getBasicBlock());
 			extent.and(postDomAnalysis.getAllDominatedBy(store.getBasicBlock()));
 			//System.out.println("Extent: " + extent);
@@ -201,7 +201,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			//  - otherwise, low priority
 			int priority = LOW_PRIORITY;
 			boolean isDefaultAccess =
-			        (method.getAccessFlags() & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED)) == 0;
+					(method.getAccessFlags() & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED)) == 0;
 			if (method.isPublic())
 				priority = NORMAL_PRIORITY;
 			else if (method.isProtected() || isDefaultAccess)
@@ -212,9 +212,9 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 			InstructionHandle end = match.getLabeledInstruction("end");
 			String sourceFile = javaClass.getSourceFileName();
 			bugReporter.reportBug(new BugInstance(this, "LI_LAZY_INIT_STATIC", priority)
-			        .addClassAndMethod(methodGen, sourceFile)
-			        .addField(xfield).describe("FIELD_ON")
-			        .addSourceLine(classContext, methodGen, sourceFile, start, end));
+					.addClassAndMethod(methodGen, sourceFile)
+					.addField(xfield).describe("FIELD_ON")
+					.addSourceLine(classContext, methodGen, sourceFile, start, end));
 		} catch (ClassNotFoundException e) {
 			bugReporter.reportMissingClass(e);
 		}

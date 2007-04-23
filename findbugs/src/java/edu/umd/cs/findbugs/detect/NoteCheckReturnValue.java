@@ -33,10 +33,10 @@ import org.apache.bcel.classfile.JavaClass;
 /**
  * @author William Pugh
  */
- 
+
 public class NoteCheckReturnValue extends AnnotationVisitor 
   implements Detector, NonReportingDetector {
-	
+
 	// XXX: Hack, for now
 	private static final String LOAD_TRAINING = SystemProperties.getProperty("findbugs.checkreturn.loadtraining");
 	private static final String SAVE_TRAINING = SystemProperties.getProperty("findbugs.checkreturn.savetraining");
@@ -63,7 +63,7 @@ public class NoteCheckReturnValue extends AnnotationVisitor
 	}
 
 		@Override
-                 public void visitAnnotation(String annotationClass, Map<String, Object> map,
+				 public void visitAnnotation(String annotationClass, Map<String, Object> map,
  boolean runtimeVisible)  {
 		if (!annotationClass.endsWith("CheckReturnValue")) return;
 		if (!visitingMethod()) return;
@@ -72,7 +72,7 @@ public class NoteCheckReturnValue extends AnnotationVisitor
 			getMethodName(),
 			getMethodSig(),
 			getThisClass().isStatic() ? Invoke.STATIC : Invoke.ANY);
-		
+
 		if (SAVE_TRAINING != null) {
 			checkReturnValueDatabase.add(XFactory.createXMethod(this));
 		}

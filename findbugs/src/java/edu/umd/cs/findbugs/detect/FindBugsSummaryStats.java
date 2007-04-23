@@ -28,7 +28,7 @@ import java.util.BitSet;
 import org.apache.bcel.classfile.*;
 
 public class FindBugsSummaryStats extends PreorderVisitor
-        implements Detector, BugReporterObserver {
+		implements Detector, BugReporterObserver {
 	private ProjectStats stats;
 
 	   BitSet lines = new BitSet(500);
@@ -43,28 +43,28 @@ public class FindBugsSummaryStats extends PreorderVisitor
 
 
 	   @Override
-            public void visit(JavaClass obj) {
+			public void visit(JavaClass obj) {
 		lines.clear();
 		methods = 0;
 		fields = 0;
 		classCodeSize = 0;
-	   	sawLineNumbers = false;
+		   sawLineNumbers = false;
 		}
 	   @Override
-            public void visit(Method obj) {
+			public void visit(Method obj) {
 		methods++;
 		}
 	   @Override
-            public void visit(Field obj) {
+			public void visit(Field obj) {
 		fields++;
 		}
 	   @Override
-            public void visit(Code obj) {
+			public void visit(Code obj) {
 		classCodeSize += obj.getCode().length;
 		}
 
 	   @Override
-            public void visitAfter(JavaClass obj) {
+			public void visitAfter(JavaClass obj) {
 		   int linesNCSS = 1 + methods + fields;
 		   if (sawLineNumbers) 
 			   linesNCSS += lines.cardinality();
@@ -81,12 +81,12 @@ public class FindBugsSummaryStats extends PreorderVisitor
 		}
 
 	   @Override
-            public void visit(LineNumber obj) {
-	   	sawLineNumbers = true;
+			public void visit(LineNumber obj) {
+		   sawLineNumbers = true;
 		int line = obj.getLineNumber();
 		lines.set(line);
-	        }
-	
+			}
+
 
 	public FindBugsSummaryStats(BugReporter bugReporter) {
 		this.stats = bugReporter.getProjectStats();
@@ -103,13 +103,13 @@ public class FindBugsSummaryStats extends PreorderVisitor
 	public void report() {
 	}
 	@Override
-         public void report(PrintStream out) {
+		 public void report(PrintStream out) {
 		out.println("NCSS\t" + totalNCSS);
 		out.println("codeSz\t" + totalCodeSize);
 		out.println("methods\t" + totalMethods);
 		out.println("fields\t" + totalFields);
 	}
-	
+
 	public void reportBug(BugInstance bug) {
 		stats.addBug(bug);
 	}

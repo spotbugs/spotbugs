@@ -48,7 +48,7 @@ public class IOStreamFactory implements StreamFactory {
 	}
 
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-	                           RepositoryLookupFailureCallback lookupFailureCallback) {
+							   RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		try {
 			Instruction ins = location.getHandle().getInstruction();
@@ -65,7 +65,7 @@ public class IOStreamFactory implements StreamFactory {
 					}
 				}
 				Stream result = new Stream(location, type.getClassName(), baseClassType.getClassName())
-				        .setIgnoreImplicitExceptions(true);
+						.setIgnoreImplicitExceptions(true);
 				if (!isUninteresting)
 					result.setInteresting(bugType);
 				return result;

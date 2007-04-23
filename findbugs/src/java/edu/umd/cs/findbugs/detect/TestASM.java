@@ -41,10 +41,10 @@ public class TestASM extends ClassNodeDetector {
 
 	@Override
 	public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
-	        final String[] exceptions) {
+			final String[] exceptions) {
 		if (Character.isUpperCase(name.charAt(0))) {
 			BugInstance bug0 = new BugInstance(this, "TESTING", NORMAL_PRIORITY).addClass(this).addMethod(this.name, name, desc,
-			        access).addString("method should start with lower case character");
+					access).addString("method should start with lower case character");
 			bugReporter.reportBug(bug0);
 		}
 		return null;
@@ -53,9 +53,9 @@ public class TestASM extends ClassNodeDetector {
 	@Override
 	public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
 		if ((access & Opcodes.ACC_STATIC) != 0 && (access & Opcodes.ACC_FINAL) != 0 && (access & Opcodes.ACC_PUBLIC) != 0
-		        && !name.equals(name.toUpperCase()))
+				&& !name.equals(name.toUpperCase()))
 			bugReporter.reportBug(new BugInstance(this, "TESTING", Detector2.LOW_PRIORITY).addClass(this).addField(this.name,
-			        name, desc, access));
+					name, desc, access));
 		return null;
 	}
 

@@ -55,11 +55,11 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	Set<String> hasNonAbstractSubClass = new HashSet<String>();
 	Set<String> classesScanned = new HashSet<String>();
 	Set<XField> fieldsOfNativeClasses
-    = new HashSet<XField>();
-    Set<XField> reflectiveFields
-    = new HashSet<XField>();
+	= new HashSet<XField>();
+	Set<XField> reflectiveFields
+	= new HashSet<XField>();
 	Set<XField> fieldsOfSerializableOrNativeClassed
-	        = new HashSet<XField>();
+			= new HashSet<XField>();
 	Set<XField> staticFieldsReadInThisMethod = new HashSet<XField>();
 	Set<XField> allMyFields = new TreeSet<XField>();
 	Set<XField> myFields = new TreeSet<XField>();
@@ -69,7 +69,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	Set<String> calledFromConstructors = new HashSet<String>();
 	Set<XField> writtenInConstructorFields = new HashSet<XField>();
 	Set<XField> writtenOutsideOfConstructorFields = new HashSet<XField>();
-	
+
 	Set<XField> readFields = new HashSet<XField>();
 	Set<XField> constantFields = new HashSet<XField>();
 	Set<XField> finalFields = new HashSet<XField>();
@@ -100,7 +100,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 		calledFromConstructors.clear();
 		hasNativeMethods = false;
 		sawSelfCallInConstructor = false;
@@ -115,7 +115,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		}
 		classesScanned.add(getDottedClassName());	
 		if (getSuperclassName().indexOf("$") >= 0
-		        || getSuperclassName().indexOf("+") >= 0 || withinAnonymousClass.matcher(getDottedClassName()).find()) {
+				|| getSuperclassName().indexOf("+") >= 0 || withinAnonymousClass.matcher(getDottedClassName()).find()) {
 			// System.out.println("hicfsc: " + betterClassName);
 			innerClassCannotBeStatic.add(getDottedClassName());
 			// System.out.println("hicfsc: " + betterSuperclassName);
@@ -160,7 +160,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		return false;
 	}
 	@Override
-         public void visitAfter(JavaClass obj) {
+		 public void visitAfter(JavaClass obj) {
 		declaredFields.addAll(myFields);
 		if (hasNativeMethods) {
 			fieldsOfSerializableOrNativeClassed.addAll(myFields);
@@ -177,13 +177,13 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	}
 
 	@Override
-         public void visit(Field obj) {
+		 public void visit(Field obj) {
 		super.visit(obj);
 		XField f = XFactory.createXField(this);
 		allMyFields.add(f);
 		int flags = obj.getAccessFlags();
 		if ((flags & doNotConsider) == 0
-		        && !getFieldName().equals("serialVersionUID")) {
+				&& !getFieldName().equals("serialVersionUID")) {
 
 			myFields.add(f);
 			if (obj.isFinal()) finalFields.add(f);
@@ -200,27 +200,27 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		if (isInjectionAttribute(annotationClass)) {
 			containerFields.add(XFactory.createXField(this));
 		}
-		
+
 
 	}
-    /**
-     * @param annotationClass
-     * @return
+	/**
+	 * @param annotationClass
+	 * @return
      */
-    private boolean isInjectionAttribute(String annotationClass) {
-        if ( annotationClass.startsWith("javax.annotation.") 
-                || annotationClass.startsWith("javax.ejb")|| annotationClass.equals("org.jboss.seam.annotations.In")  
+	private boolean isInjectionAttribute(String annotationClass) {
+		if ( annotationClass.startsWith("javax.annotation.") 
+				|| annotationClass.startsWith("javax.ejb")|| annotationClass.equals("org.jboss.seam.annotations.In")  
                 || annotationClass.startsWith("javax.persistence")
-                || annotationClass.endsWith("SpringBean")
-                || annotationClass.equals("com.google.inject.Inject"))
-            return true;
+				|| annotationClass.endsWith("SpringBean")
+				|| annotationClass.equals("com.google.inject.Inject"))
+			return true;
         int lastDot = annotationClass.lastIndexOf('.');
-        String lastPart = annotationClass.substring(lastDot+1);
-        if (lastPart.startsWith("Inject")) return true;
-        return false;
+		String lastPart = annotationClass.substring(lastDot+1);
+		if (lastPart.startsWith("Inject")) return true;
+		return false;
     }
 	@Override
-         public void visit(ConstantValue obj) {
+		 public void visit(ConstantValue obj) {
 		// ConstantValue is an attribute of a field, so the instance variables
 		// set during visitation of the Field are still valid here
 		XField f = XFactory.createXField(this);
@@ -234,33 +234,33 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	private int previousOpcode;
 	private int previousPreviousOpcode;
 	@Override
-         public void visit(Code obj) {
-	
+		 public void visit(Code obj) {
+
 		count_aload_1 = 0;
 		previousOpcode = -1;
 		previousPreviousOpcode = -1;
 		nullTested.clear();
 		seenInvokeStatic = false;
-        opcodeStack.resetForMethodEntry(this);
-        staticFieldsReadInThisMethod.clear();
+		opcodeStack.resetForMethodEntry(this);
+		staticFieldsReadInThisMethod.clear();
 		super.visit(obj);
 		if (getMethodName().equals("<init>") && count_aload_1 > 1
-		        && (getClassName().indexOf('$') >= 0
-		        || getClassName().indexOf('+') >= 0)) {
+				&& (getClassName().indexOf('$') >= 0
+				|| getClassName().indexOf('+') >= 0)) {
 			needsOuterObjectInConstructor.add(getDottedClassName());
 			// System.out.println(betterClassName + " needs outer object in constructor");
 		}
 	}
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		if (DEBUG) System.out.println("Checking " + getClassName() + "." + obj.getName());
 		if (getMethodName().equals("<init>")
 			&& (obj.isPublic() 
-			    || obj.isProtected() ))
+				|| obj.isProtected() ))
 			publicOrProtectedConstructor = true;
-        pendingGetField = null;
-        saState = 0;
+		pendingGetField = null;
+		saState = 0;
 		super.visit(obj);
 		int flags = obj.getAccessFlags();
 		if ((flags & ACC_NATIVE) != 0)
@@ -269,81 +269,81 @@ public class UnreadFields extends BytecodeScanningDetector  {
 
 	boolean seenInvokeStatic;
 
-    XField pendingGetField;
-    int saState = 0;
+	XField pendingGetField;
+	int saState = 0;
 	@Override
-         public void sawOpcode(int seen) {
-        if (DEBUG) System.out.println(getPC() + ": " + OPCODE_NAMES[seen] + " " + saState);
-        switch(saState) {
+		 public void sawOpcode(int seen) {
+		if (DEBUG) System.out.println(getPC() + ": " + OPCODE_NAMES[seen] + " " + saState);
+		switch(saState) {
         case 0:
-            if (seen == ALOAD_0)
-                saState = 1;
-            break;
+			if (seen == ALOAD_0)
+				saState = 1;
+			break;
         case 1:
-            if (seen == ALOAD_0)
-                saState = 2;
-            else
+			if (seen == ALOAD_0)
+				saState = 2;
+			else
                 saState = 0;
-            break;
-        case 2:
-            if (seen == GETFIELD)
+			break;
+		case 2:
+			if (seen == GETFIELD)
                 saState = 3;
-            else
-                saState = 0;
-            break;
+			else
+				saState = 0;
+			break;
         case 3:
-            if (seen == PUTFIELD)
-                saState = 4;
-            else
+			if (seen == PUTFIELD)
+				saState = 4;
+			else
                 saState = 0;
-            break;
-        }
-        boolean selfAssignment = false;
+			break;
+		}
+		boolean selfAssignment = false;
         if (pendingGetField != null) {
-            if (seen != PUTFIELD && seen != PUTSTATIC) 
-            readFields.add(pendingGetField);
-            else if ( XFactory.createReferencedXField(this).equals(pendingGetField) && (saState == 4 || seen == PUTSTATIC) ) 
+			if (seen != PUTFIELD && seen != PUTSTATIC) 
+			readFields.add(pendingGetField);
+			else if ( XFactory.createReferencedXField(this).equals(pendingGetField) && (saState == 4 || seen == PUTSTATIC) ) 
                 selfAssignment = true;
-            else 
-                readFields.add(pendingGetField);
-            pendingGetField = null;
+			else 
+				readFields.add(pendingGetField);
+			pendingGetField = null;
         }
-        if (saState == 4) saState = 0;
-        
+		if (saState == 4) saState = 0;
+
 		opcodeStack.mergeJumps(this);
-        if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicReferenceFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
-           String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
-           String fieldSignature = (String) opcodeStack.getStackItem(1).getConstant();
+		if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicReferenceFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
+		   String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
+		   String fieldSignature = (String) opcodeStack.getStackItem(1).getConstant();
             String  fieldClass = (String) opcodeStack.getStackItem(2).getConstant();
-            if (fieldName != null && fieldSignature != null && fieldClass != null) {
-               XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "L"+fieldSignature+";", false);
-               reflectiveFields.add(f);
+			if (fieldName != null && fieldSignature != null && fieldClass != null) {
+			   XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "L"+fieldSignature+";", false);
+			   reflectiveFields.add(f);
              }
-                  
-        }
-        if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicIntegerFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
+
+		}
+		if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicIntegerFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
             String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
-             String  fieldClass = (String) opcodeStack.getStackItem(1).getConstant();
-             if (fieldName != null && fieldClass != null) {
-                XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "I", false);
+			 String  fieldClass = (String) opcodeStack.getStackItem(1).getConstant();
+			 if (fieldName != null && fieldClass != null) {
+				XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "I", false);
                 reflectiveFields.add(f);
-              }
-                   
-         }
+			  }
+
+		 }
         if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicLongFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
-            String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
-             String  fieldClass = (String) opcodeStack.getStackItem(1).getConstant();
-             if (fieldName != null && fieldClass != null) {
+			String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
+			 String  fieldClass = (String) opcodeStack.getStackItem(1).getConstant();
+			 if (fieldName != null && fieldClass != null) {
                 XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "J", false);
-                reflectiveFields.add(f);
-              }
-                   
+				reflectiveFields.add(f);
+			  }
+
          }
 
 
 		if (seen == GETSTATIC) {
 			XField f = XFactory.createReferencedXField(this);
-                	staticFieldsReadInThisMethod.add(f);
+					staticFieldsReadInThisMethod.add(f);
 			}
 		else if (seen == INVOKESTATIC) {
 			seenInvokeStatic = true;
@@ -351,18 +351,18 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		else if (seen == PUTSTATIC 
 			&& !getMethod().isStatic()) {
 			XField f = XFactory.createReferencedXField(this);
-                	if (!staticFieldsReadInThisMethod.contains(f)) {
+					if (!staticFieldsReadInThisMethod.contains(f)) {
 				int priority = LOW_PRIORITY;
 				if (!publicOrProtectedConstructor)
 					priority--;
 				if (!seenInvokeStatic 
-				     && staticFieldsReadInThisMethod.isEmpty())
+					 && staticFieldsReadInThisMethod.isEmpty())
 					priority--;
 				if (getThisClass().isPublic() 
 					&& getMethod().isPublic())
 					priority--;
 				if (getThisClass().isPrivate() 
-				    || getMethod().isPrivate())
+					|| getMethod().isPrivate())
 					priority++;
 				if (getClassName().indexOf('$') != -1)
 					priority++;
@@ -370,9 +370,9 @@ public class UnreadFields extends BytecodeScanningDetector  {
 						"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD",
 					priority
 					)
-				        .addClassAndMethod(this)
-				        .addField(f)
-				        .addSourceLine(this)
+						.addClassAndMethod(this)
+						.addField(f)
+						.addSourceLine(this)
 					);
 				}
 			}
@@ -385,7 +385,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			String invokedClassName = getClassConstantOperand();
 			if (invokedClassName.equals(getClassName()) 
 					&& (getMethodName().equals("<init>") || getMethodName().equals("<clinit>"))) {
-				
+
 				calledFromConstructors.add(getNameConstantOperand()+":"+sig);
 			}
 			int pos = PreorderVisitor.getNumberArguments(sig);
@@ -480,18 +480,18 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			}
 			}
 
-      
-               
+
+
 		if (seen == ALOAD_1) {
 			count_aload_1++;
 		} else if (seen == GETFIELD || seen == GETSTATIC) {
 			XField f = XFactory.createReferencedXField(this);
-            pendingGetField = f;
-            if (getMethodName().equals("readResolve") 
-                    && seen == GETFIELD ) {
+			pendingGetField = f;
+			if (getMethodName().equals("readResolve") 
+					&& seen == GETFIELD ) {
                 writtenFields.add(f);
-                writtenNonNullFields.add(f);
-            }
+				writtenNonNullFields.add(f);
+			}
 			if (DEBUG) System.out.println("get: " + f);
 			// readFields.add(f);
 			if (!fieldAccess.containsKey(f))
@@ -511,7 +511,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				if (DEBUG) System.out.println("put nn: " + f);
 			}
 			else if (DEBUG) System.out.println("put: " + f);
-			
+
 			if ( getMethod().isStatic() == f.isStatic() && (
 					calledFromConstructors.contains(getMethodName()+":"+getMethodSig())
 					|| getMethodName().equals("<init>") 
@@ -526,8 +526,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			} else {
 				writtenOutsideOfConstructorFields.add(f);
 			}
-			
-			
+
+
 		}
 		opcodeStack.sawOpcode(this, seen);
 		previousPreviousOpcode = previousOpcode;
@@ -536,13 +536,13 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		System.out.println("After " + OPCODE_NAMES[seen] + " opcode stack is");
 		System.out.println(opcodeStack);
 		}
-		
+
 	}
 
 	static Pattern dontComplainAbout = Pattern.compile("class[$]");
 	static Pattern withinAnonymousClass = Pattern.compile("[$][0-9].*[$]");
 	@Override
-         public void report() {
+		 public void report() {
 		Set<String> fieldNamesSet = new HashSet<String>();
 		for(XField f : writtenNonNullFields)
 			fieldNamesSet.add(f.getName());
@@ -555,49 +555,49 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				for(XField f : containerFields) 
 					System.out.println("  " + f);
 			}
-            if (!reflectiveFields.isEmpty()) {
-                System.out.println("reflective fields:" );
-                for(XField f : reflectiveFields) 
+			if (!reflectiveFields.isEmpty()) {
+				System.out.println("reflective fields:" );
+				for(XField f : reflectiveFields) 
                     System.out.println("  " + f);
-            }
-        
-		
+			}
+
+
 			System.out.println("written fields:" );
 			for (XField f : writtenFields) 
 				System.out.println("  " + f);
 			System.out.println("written nonnull fields:" );
 			for (XField f : writtenNonNullFields) 
 				System.out.println("  " + f);
-		
+
 			System.out.println("assumed nonnull fields:" );
 			for (XField f : assumedNonNull.keySet()) 
 				System.out.println("  " + f);
 		}
 		// Don't report anything about ejb3Fields
 		declaredFields.removeAll(containerFields);
-        declaredFields.removeAll(reflectiveFields);
-		
+		declaredFields.removeAll(reflectiveFields);
+
 		TreeSet<XField> notInitializedInConstructors =
-		        new TreeSet<XField>(declaredFields);
+				new TreeSet<XField>(declaredFields);
 		notInitializedInConstructors.retainAll(readFields);
 		notInitializedInConstructors.retainAll(writtenFields);
 		notInitializedInConstructors.retainAll(assumedNonNull.keySet());
-        notInitializedInConstructors.removeAll(staticFields);
+		notInitializedInConstructors.removeAll(staticFields);
 		notInitializedInConstructors.removeAll(writtenInConstructorFields);
 		// notInitializedInConstructors.removeAll(staticFields);
-		
+
 		TreeSet<XField> readOnlyFields =
-		        new TreeSet<XField>(declaredFields);
+				new TreeSet<XField>(declaredFields);
 		readOnlyFields.removeAll(writtenFields);
 
 		readOnlyFields.retainAll(readFields);
-		
+
 		TreeSet<XField> nullOnlyFields =
-	        new TreeSet<XField>(declaredFields);
+			new TreeSet<XField>(declaredFields);
 		nullOnlyFields.removeAll(writtenNonNullFields);
 
 		nullOnlyFields.retainAll(readFields);
-		
+
 		Set<XField> writeOnlyFields = declaredFields;
 		writeOnlyFields.removeAll(readFields);
 
@@ -768,5 +768,5 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			instance.add(fieldAccess.get(f));
 		return instance;
 	}
-	
+
 }

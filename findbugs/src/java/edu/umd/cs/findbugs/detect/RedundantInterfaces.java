@@ -30,20 +30,20 @@ import org.apache.bcel.classfile.JavaClass;
 public class RedundantInterfaces extends PreorderVisitor implements Detector, StatelessDetector
 {
 	private BugReporter bugReporter;
-	
+
 	public RedundantInterfaces(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
 
-	
+
+
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass obj = classContext.getJavaClass();
 
 		String superClassName = obj.getSuperclassName();
 		if (superClassName.equals("java.lang.Object"))
 			return;
-		
+
 		String[] interfaceNames = obj.getInterfaceNames();
 		if ((interfaceNames == null) || (interfaceNames.length == 0))
 			return;
@@ -59,13 +59,13 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, St
 						redundantInfNames.add(inf.getClassName());
 				}
 			}
-				
+
 			if (redundantInfNames.size() > 0) {
 				BugInstance bug = new BugInstance( this, "RI_REDUNDANT_INTERFACES", LOW_PRIORITY )
 							.addClass(obj);
 				for (String redundantInfName : redundantInfNames)
 					bug.addClass(redundantInfName).describe("INTERFACE_TYPE");
-					
+
 				bugReporter.reportBug(bug);
 			}
 
@@ -73,7 +73,7 @@ public class RedundantInterfaces extends PreorderVisitor implements Detector, St
 			bugReporter.reportMissingClass(cnfe);
 		}
 	}
-	
+
 	public void report() {
 	}
 }

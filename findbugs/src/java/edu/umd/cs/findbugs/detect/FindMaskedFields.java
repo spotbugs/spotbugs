@@ -54,7 +54,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 
 	private Collection<RememberedBug> 
 		rememberedBugs = new LinkedList<RememberedBug>();
-		
+
 	static class RememberedBug {
 		BugInstance bug;
 		XField maskingField, maskedField;
@@ -70,14 +70,14 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void visitClassContext(ClassContext classContext) {
+		 public void visitClassContext(ClassContext classContext) {
 		JavaClass obj = classContext.getJavaClass();
 		if (!obj.isInterface())
 			classContext.getJavaClass().accept(this);
 	}
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 		classFields.clear();
 
 		Field[] fields = obj.getFields();
@@ -86,7 +86,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 			fieldName = field.getName();
 			classFields.put(fieldName, field);
 		}
-		
+
 		// Walk up the super class chain, looking for name collisions
 		try {
 			JavaClass[] superClasses = org.apache.bcel.Repository.getSuperClasses(obj);
@@ -123,12 +123,12 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 									&& !fld.getSignature().startsWith("Ljava/lang/")
 									|| fld.getSignature().charAt(0) == '[')
 								priority--;
-                            if (!fld.getSignature().equals(maskingField.getSignature()))
-                                priority+=2;
-                            else if (fld.getAccessFlags()
+							if (!fld.getSignature().equals(maskingField.getSignature()))
+								priority+=2;
+							else if (fld.getAccessFlags()
 									!= maskingField.getAccessFlags())
 								priority++;
-							
+
 
 							FieldAnnotation maskedFieldAnnotation
 									= FieldAnnotation.fromBCELField(superClassName, fld);
@@ -140,7 +140,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 									.addField(maskedFieldAnnotation)
 									.describe("FIELD_MASKED");
 							rememberedBugs.add(new RememberedBug(bug, fa, maskedFieldAnnotation));
-								
+
 						}
 					}
 				}
@@ -153,7 +153,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		super.visit(obj);
 		numParms = getNumberMethodArguments();
 		if (!obj.isStatic()) numParms++;
@@ -170,7 +170,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 		SystemProperties.getBoolean("findbugs.maskedfields.locals");
 
 	@Override
-         public void visit(LocalVariableTable obj) {
+		 public void visit(LocalVariableTable obj) {
 		if (ENABLE_LOCALS) {
 			if (staticMethod)
 				return;
@@ -201,14 +201,14 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 		}
 		super.visit(obj);
 	}
-	
+
 	@Override
-    public void report() {
+	public void report() {
 		UnreadFields unreadFields = AnalysisContext.currentAnalysisContext().getUnreadFields();
 		for(RememberedBug rb : rememberedBugs) {
 			BugInstance bug = rb.bug;
 			int score1 = 0;
-            int score2 = 0;
+			int score2 = 0;
 			int priority = bug.getPriority();
 			if (unreadFields.classesScanned.contains(rb.maskedField.getClassName())) {
 				if (unreadFields.getReadFields().contains(rb.maskedField))
@@ -224,9 +224,9 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 				score2++;
 			if (unreadFields.getWrittenOutsideOfConstructorFields().contains(rb.maskingField))
 				score2++;
-            int score = score1+score2;
-            if (score1 == 0 || score2 == 0)
-                bug.setPriority(priority+1);
+			int score = score1+score2;
+			if (score1 == 0 || score2 == 0)
+				bug.setPriority(priority+1);
             else if (score >= 5) 
 				bug.setPriority(priority-1);
 			else if (score < 3) 

@@ -37,15 +37,15 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector
 	private int monitorCount;
 	private boolean writingField;
 	private Set<String> alreadyReported;
-	
+
 	public MultithreadedInstanceAccess(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 	private Set<JavaClass> getMtClasses() {
 		if (mtClasses != null)
 			return mtClasses;
-		
+
 		mtClasses = new HashSet<JavaClass>();
 		try {
 			mtClasses.add(Repository.lookupClass(STRUTS_ACTION_NAME));
@@ -57,18 +57,18 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector
 		} catch (ClassNotFoundException cnfe) {
 			//probably would be annoying to report
 		}
-		
+
 		return mtClasses;
 	}
-	
+
 	@Override
-         public void visitClassContext(ClassContext classContext) {
+		 public void visitClassContext(ClassContext classContext) {
 		try {
 			JavaClass cls = classContext.getJavaClass();
 			String superClsName = cls.getSuperclassName();
 			if ("java.lang.Object".equals(superClsName))
 				return;
-			
+
 			if (STRUTS_ACTION_NAME.equals(superClsName)) {
 				mtClassName = STRUTS_ACTION_NAME;
 				super.visitClassContext(classContext);
@@ -96,30 +96,30 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector
 			//already reported
 		}
 	}
-	
+
 	@Override
-         public void visitMethod(Method obj) {
+		 public void visitMethod(Method obj) {
 		monitorCount = 0;
 		alreadyReported = new HashSet<String>();
 		writingField = false;
 	}
-	
+
 	@Override
-         public void visitCode(Code obj) {
+		 public void visitCode(Code obj) {
 		if (!getMethodName().equals("<init>") && !getMethodName().equals("init"))
 			super.visitCode(obj);
 	}
-	
+
 	@Override
-         public void sawField() {
+		 public void sawField() {
 		if ((monitorCount > 0) || (!writingField))
 			return;
-		
+
 		ConstantFieldref fieldRef;
 		Constant c = getConstantRefOperand();
 		if (c instanceof ConstantFieldref) {
 			fieldRef = (ConstantFieldref)c;
-			
+
 			String className = fieldRef.getClass(getConstantPool()).replace('.', '/');
 			if (className.equals( this.getClassName())) {
 				ConstantPool cp = getConstantPool();
@@ -151,17 +151,17 @@ public class MultithreadedInstanceAccess extends BytecodeScanningDetector
 			}
 		}
 	}
-	
+
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (seen == MONITORENTER)
 			monitorCount++;
 		else if (seen == MONITOREXIT)
 			monitorCount--;
-		
+
 		writingField = ((seen == PUTFIELD) || (seen == PUTFIELD_QUICK) || (seen == PUTFIELD_QUICK_W));
 	}
 
-	
+
 
 }

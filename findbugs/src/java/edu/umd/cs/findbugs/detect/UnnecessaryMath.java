@@ -39,7 +39,7 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
 	private BugReporter bugReporter;
 	private int state = SEEN_NOTHING;
 	private double constValue;
-	
+
 	private static final Set<String> zeroMethods = new HashSet<String>() 
 											{{ add("acos");
 											   add("asin");
@@ -84,22 +84,22 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
 	public UnnecessaryMath(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		// Don't complain about unnecessary math calls in class initializers,
 		// since they may be there to improve readability.
 		if (getMethod().getName().equals("<clinit>"))
 			return;
-		
+
 		state = SEEN_NOTHING;
 		super.visit(obj);
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (state == SEEN_NOTHING) {
 			if ((seen == DCONST_0) || (seen == DCONST_1)) {
 				constValue = (double) (seen - DCONST_0);
@@ -122,7 +122,7 @@ public class UnnecessaryMath extends BytecodeScanningDetector implements Statele
 				state = SEEN_NOTHING;
 				if (getDottedClassConstantOperand().equals("java.lang.Math")) {
 					String methodName = getNameConstantOperand();
-					
+
 					if (((constValue == 0.0) && zeroMethods.contains(methodName))
 					||  ((constValue == 1.0) && oneMethods.contains(methodName))
 					||   (anyMethods.contains(methodName))) {

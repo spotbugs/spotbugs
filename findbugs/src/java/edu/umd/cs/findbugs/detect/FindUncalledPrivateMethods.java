@@ -39,28 +39,28 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 	}
 
 
-	
+
 	@Override
-         public void visitMethod(Method obj) {
+		 public void visitMethod(Method obj) {
 		super.visitMethod(obj);
 		if (obj.isPrivate()
-		        && !getMethodName().equals("writeReplace")
-		        && !getMethodName().equals("readResolve")
-		        && !getMethodName().equals("readObject")
+				&& !getMethodName().equals("writeReplace")
+				&& !getMethodName().equals("readResolve")
+				&& !getMethodName().equals("readObject")
 		        && !getMethodName().equals("readObjectNoData")
-		        && !getMethodName().equals("writeObject")
-		        && getMethodName().indexOf("debug") == -1
-		        && getMethodName().indexOf("Debug") == -1
+				&& !getMethodName().equals("writeObject")
+				&& getMethodName().indexOf("debug") == -1
+				&& getMethodName().indexOf("Debug") == -1
 		        && getMethodName().indexOf("trace") == -1
-		        && getMethodName().indexOf("Trace") == -1
-		        && !getMethodName().equals("<init>")
-		        && !getMethodName().equals("<clinit>")
+				&& getMethodName().indexOf("Trace") == -1
+				&& !getMethodName().equals("<init>")
+				&& !getMethodName().equals("<clinit>")
 		)
 			definedPrivateMethods.add(MethodAnnotation.fromVisitedMethod(this));
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		switch (seen) {
 		case INVOKEVIRTUAL:
 		case INVOKESPECIAL:
@@ -84,7 +84,7 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 	}
 
 	@Override
-         public void visitClassContext(ClassContext classContext) {
+		 public void visitClassContext(ClassContext classContext) {
 		definedPrivateMethods = new HashSet<MethodAnnotation>();
 		calledMethods = new HashSet<MethodAnnotation>();
 		calledMethodNames = new HashSet<String>();

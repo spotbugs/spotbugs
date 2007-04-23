@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class Methods extends PreorderVisitor implements Detector,
 		NonReportingDetector {
-	
+
 	private XFactory xFactory = AnalysisContext.currentXFactory();
 
 	XMethod m;

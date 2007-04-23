@@ -68,13 +68,13 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
 		this.bugReporter = bugReporter;
 	}
 
-	
+
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (ifInstructionSet.get(seen)) {
 			if (getBranchTarget() == getBranchFallThrough()) {
 				int priority = NORMAL_PRIORITY;
-				
+
 				LineNumberTable lineNumbers = getCode().getLineNumberTable();
 				if (lineNumbers != null) {
 					int branchLineNumber = lineNumbers.getSourceLine(getPC());
@@ -83,8 +83,8 @@ public class FindUselessControlFlow extends BytecodeScanningDetector implements 
 					else if (branchLineNumber +2 < targetLineNumber) priority = LOW_PRIORITY;
 				} else priority = LOW_PRIORITY;
 				bugReporter.reportBug(new BugInstance(this, priority == HIGH_PRIORITY ? "UCF_USELESS_CONTROL_FLOW_NEXT_LINE" : "UCF_USELESS_CONTROL_FLOW", priority)
-				        .addClassAndMethod(this)
-				        .addSourceLine(this));
+						.addClassAndMethod(this)
+						.addSourceLine(this));
 			}
 		}
 	}

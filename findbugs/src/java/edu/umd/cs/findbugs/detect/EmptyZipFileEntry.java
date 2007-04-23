@@ -32,21 +32,21 @@ public class EmptyZipFileEntry extends BytecodeScanningDetector implements  Stat
 	public EmptyZipFileEntry(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 	}
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		sawPutEntry = -10000;
 		streamType = "";
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (seen == INVOKEVIRTUAL 
 			&& getNameConstantOperand().equals("putNextEntry")) {
 			streamType = getClassConstantOperand();
@@ -61,18 +61,18 @@ public class EmptyZipFileEntry extends BytecodeScanningDetector implements  Stat
 				&& getNameConstantOperand().equals("closeEntry")
 			&& getClassConstantOperand()
 				.equals(streamType) )
-                        bugReporter.reportBug(new BugInstance(
-                        	this,
-                        	streamType.equals("java/util/zip/ZipOutputStream") ?
+						bugReporter.reportBug(new BugInstance(
+							this,
+							streamType.equals("java/util/zip/ZipOutputStream") ?
 								"AM_CREATES_EMPTY_ZIP_FILE_ENTRY" :
 								"AM_CREATES_EMPTY_JAR_FILE_ENTRY", 
 							NORMAL_PRIORITY)
-                            .addClassAndMethod(this)
-                            .addSourceLine(this));
+							.addClassAndMethod(this)
+							.addSourceLine(this));
 
 			}
-	
-		
+
+
 
 
 	}

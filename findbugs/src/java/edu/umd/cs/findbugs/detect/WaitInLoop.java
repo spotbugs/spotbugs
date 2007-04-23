@@ -41,7 +41,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		sawWait = false;
 		sawAwait = false;
 		waitHasTimeout = false;
@@ -51,27 +51,27 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 		if ((sawWait || sawAwait) && waitAt < earliestJump) {
 			String bugType = sawWait ? "WA_NOT_IN_LOOP" : "WA_AWAIT_NOT_IN_LOOP";
 			bugReporter.reportBug(new BugInstance(this, bugType, waitHasTimeout ? LOW_PRIORITY : NORMAL_PRIORITY)
-			        .addClassAndMethod(this)
-			        .addSourceLine(this, waitAt));
+					.addClassAndMethod(this)
+					.addSourceLine(this, waitAt));
 		}
 		if (sawNotify)
 			bugReporter.reportBug(new BugInstance(this, "NO_NOTIFY_NOT_NOTIFYALL", LOW_PRIORITY)
-			        .addClassAndMethod(this)
-			        .addSourceLine(this, notifyPC));
+					.addClassAndMethod(this)
+					.addSourceLine(this, notifyPC));
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 
 		if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		        && getNameConstantOperand().equals("notify")
-		        && getSigConstantOperand().equals("()V")) {
+				&& getNameConstantOperand().equals("notify")
+				&& getSigConstantOperand().equals("()V")) {
 			sawNotify = true;
 			notifyPC = getPC();
 		}
 		if (!(sawWait || sawAwait)
 				&& (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		        && (isMonitorWait() || isConditionAwait())) {
+				&& (isMonitorWait() || isConditionAwait())) {
 
 			if (getNameConstantOperand().equals("wait")) {
 				sawWait = true;
@@ -84,7 +84,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 			return;
 		}
 		if (seen >= IFEQ && seen <= GOTO
-		        || seen >= IFNULL && seen <= GOTO_W)
+				|| seen >= IFNULL && seen <= GOTO_W)
 			earliestJump = Math.min(earliestJump, getBranchTarget());
 	}
 
@@ -94,9 +94,9 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 		String sig = getSigConstantOperand();
 
 		if (!className.equals("java/util/concurrent/locks/Condition")) return false;
-		
+
 		if (!name.startsWith("await")) return false;
-		
+
 		if (
 				name.equals("await") &&
 				(sig.equals("()V") || sig.equals("(JLjava/util/concurrent/TimeUnit;)V")))
@@ -107,7 +107,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 			return true;
 		if (name.equals("awaitUntil") && sig.equals("(Ljava/util/Date;)V"))
 			return true;
-		
+
 		return false;
 	}
 
@@ -116,7 +116,7 @@ public class WaitInLoop extends BytecodeScanningDetector implements StatelessDet
 		String sig = getSigConstantOperand();
 
 		return name.equals("wait")
-		        && (sig.equals("()V") || sig.equals("(J)V") || sig.equals("(JI)V"));
+				&& (sig.equals("()V") || sig.equals("(J)V") || sig.equals("(JI)V"));
 	}
 
 

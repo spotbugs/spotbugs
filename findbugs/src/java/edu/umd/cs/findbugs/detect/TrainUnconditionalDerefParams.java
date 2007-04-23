@@ -37,7 +37,7 @@ public class TrainUnconditionalDerefParams
 		extends BuildUnconditionalParamDerefDatabase
 		implements Detector, TrainingDetector {
 	private static final boolean VERBOSE_DEBUG = SystemProperties.getBoolean("upd.debug"); 
-	
+
 	public TrainUnconditionalDerefParams(BugReporter bugReporter) {
 	}
 
@@ -49,9 +49,9 @@ public class TrainUnconditionalDerefParams
 				AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase(),
 				AnalysisContext.UNCONDITIONAL_DEREF_DB_FILENAME,
 				"unconditional deref database");
-        AnalysisContext.currentAnalysisContext().storePropertyDatabase(
-                AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase(),
-                AnalysisContext.NONNULL_RETURN_DB_FILENAME,
+		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
+				AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase(),
+				AnalysisContext.NONNULL_RETURN_DB_FILENAME,
                 "nonnull return database");
 	}
 

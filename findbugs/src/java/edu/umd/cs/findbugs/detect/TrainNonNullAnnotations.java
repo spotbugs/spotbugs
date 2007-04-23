@@ -32,8 +32,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class TrainNonNullAnnotations extends BuildNonNullAnnotationDatabase
 		implements Detector, TrainingDetector {
-	
-	
+
+
 	public TrainNonNullAnnotations(BugReporter bugReporter) {
 	}
 

@@ -60,35 +60,35 @@ import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
 public class BuildUnconditionalParamDerefDatabase {
 	public static final boolean VERBOSE_DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg.verbose");
 	private static final boolean DEBUG = SystemProperties.getBoolean("fnd.debug.nullarg") || VERBOSE_DEBUG;
-	
+
 	public void visitClassContext(ClassContext classContext) {
 		boolean fullAnalysis = AnalysisContext.currentAnalysisContext().getBoolProperty(FindBugsAnalysisFeatures.INTERPROCEDURAL_ANALYSIS_OF_REFERENCED_CLASSES);
 		if (!fullAnalysis && !AnalysisContext.currentAnalysisContext().getSubtypes().isApplicationClass(classContext.getJavaClass()))
 				return;
 		if (VERBOSE_DEBUG) System.out.println("Visiting class " + classContext.getJavaClass().getClassName());
-		
-        for(Method m : classContext.getMethodsInCallOrder()) 
-            considerMethod(classContext, m);
+
+		for(Method m : classContext.getMethodsInCallOrder()) 
+			considerMethod(classContext, m);
 	}
 
-      
-    private void considerMethod(ClassContext classContext, Method method) {
-        boolean hasReferenceParameters = false;
+
+	private void considerMethod(ClassContext classContext, Method method) {
+		boolean hasReferenceParameters = false;
         for (Type argument : method.getArgumentTypes())
-        	if (argument instanceof ReferenceType) {
-        		hasReferenceParameters = true;
-                referenceParameters++;
+			if (argument instanceof ReferenceType) {
+				hasReferenceParameters = true;
+				referenceParameters++;
             }
 
-        if (hasReferenceParameters && classContext.getMethodGen(method) != null) {
-            if (VERBOSE_DEBUG) System.out.println("Check " + method);
-            analyzeMethod(classContext, method);
+		if (hasReferenceParameters && classContext.getMethodGen(method) != null) {
+			if (VERBOSE_DEBUG) System.out.println("Check " + method);
+			analyzeMethod(classContext, method);
         }
-    }
+	}
 
-    protected int referenceParameters;
-    protected int nonnullReferenceParameters;
-    
+	protected int referenceParameters;
+	protected int nonnullReferenceParameters;
+
 	private void analyzeMethod(ClassContext classContext, Method method) {
 		try {
 			CFG cfg = classContext.getCFG(method);
@@ -96,28 +96,28 @@ public class BuildUnconditionalParamDerefDatabase {
 			ValueNumberDataflow vnaDataflow = classContext.getValueNumberDataflow(method);
 			UnconditionalValueDerefDataflow dataflow =
 				classContext.getUnconditionalValueDerefDataflow(method);
-	
-            SignatureParser parser =  new SignatureParser(method.getSignature());
+
+			SignatureParser parser =  new SignatureParser(method.getSignature());
 			int paramLocalOffset = method.isStatic() ? 0 : 1;
 
 			// Build BitSet of params that are unconditionally dereferenced
 			BitSet unconditionalDerefSet = new BitSet();
 			UnconditionalValueDerefSet entryFact = dataflow.getResultFact(cfg.getEntry());
-            Iterator<String> paramIterator = parser.parameterSignatureIterator();
-            int i = 0;
+			Iterator<String> paramIterator = parser.parameterSignatureIterator();
+			int i = 0;
 			while (paramIterator.hasNext()) {
-                String paramSig = paramIterator.next();
-                
+				String paramSig = paramIterator.next();
+
 				ValueNumber paramVN = vnaDataflow.getAnalysis().getEntryValue(paramLocalOffset);
-				
+
 				if (entryFact.isUnconditionallyDereferenced(paramVN)) {
 					unconditionalDerefSet.set(i);
 				}
-                i++;
-                if (paramSig.equals("D") || paramSig.equals("J")) paramLocalOffset += 2;
-                else paramLocalOffset += 1;
+				i++;
+				if (paramSig.equals("D") || paramSig.equals("J")) paramLocalOffset += 2;
+				else paramLocalOffset += 1;
 			}
-			
+
 			// No need to add properties if there are no unconditionally dereferenced params
 			if (unconditionalDerefSet.isEmpty()) {
 				if (VERBOSE_DEBUG) {
@@ -130,17 +130,17 @@ public class BuildUnconditionalParamDerefDatabase {
 				ClassContext.dumpDataflowInformation(method, cfg, vnaDataflow, classContext.getIsNullValueDataflow(method), dataflow,  classContext.getTypeDataflow(method));
 			}
 			ParameterNullnessProperty property = new ParameterNullnessProperty();
-            nonnullReferenceParameters += unconditionalDerefSet.cardinality();
+			nonnullReferenceParameters += unconditionalDerefSet.cardinality();
 			property.setNonNullParamSet(unconditionalDerefSet);
-			
+
 			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
 			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase().setProperty(xmethod, property);
 			if (DEBUG) {
 				System.out.println("Unconditional deref: " + xmethod + "=" + property);
 			}
 		} catch (CheckedAnalysisException e) {
-            XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
-               AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
+			XMethod xmethod = XFactory.createXMethod(classContext.getJavaClass(), method);
+			   AnalysisContext.currentAnalysisContext().getLookupFailureCallback().logError(
 					"Error analyzing " + xmethod + " for unconditional deref training", e);
 		}
 	}

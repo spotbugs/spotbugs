@@ -702,9 +702,9 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		refComparisonList.add(new WarningWithProperties(instance, new WarningPropertySet(), location));
 	}
 
-    private static boolean testLikeName(String name) {
-        return name.toLowerCase().indexOf("test") >= 0;
-    }
+	private static boolean testLikeName(String name) {
+		return name.toLowerCase().indexOf("test") >= 0;
+	}
 	private void checkEqualsComparison(
 			Location location,
 			JavaClass jclass,
@@ -728,17 +728,17 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 				|| rhsType_.getType() == T_TOP || rhsType_.getType() == T_BOTTOM)
 			return;
 
-        boolean looksLikeTestCase = method.getName().startsWith("test") && method.isPublic() && method.getSignature().equals("()V")
-                || testLikeName(jclass.getClassName())|| testLikeName(jclass.getSuperclassName());
-        int priorityModifier = 0;
+		boolean looksLikeTestCase = method.getName().startsWith("test") && method.isPublic() && method.getSignature().equals("()V")
+				|| testLikeName(jclass.getClassName())|| testLikeName(jclass.getSuperclassName());
+		int priorityModifier = 0;
         if (looksLikeTestCase) priorityModifier = 1;
-        if (methodGen.getName().startsWith("test") && methodGen.getSignature().equals("()V")) {
-            try {
-                if (jclass.getSuperclassName().equals("junit.framework.TestCase") || Hierarchy.isSubtype(methodGen.getClassName(), "junit.framework.TestCase"))
+		if (methodGen.getName().startsWith("test") && methodGen.getSignature().equals("()V")) {
+			try {
+				if (jclass.getSuperclassName().equals("junit.framework.TestCase") || Hierarchy.isSubtype(methodGen.getClassName(), "junit.framework.TestCase"))
                     priorityModifier=2;
-            } catch (ClassNotFoundException e) { 
-                AnalysisContext.reportMissingClass(e);
-            }
+			} catch (ClassNotFoundException e) { 
+				AnalysisContext.reportMissingClass(e);
+			}
         }
 
 		if (!(lhsType_ instanceof ReferenceType) || !(rhsType_ instanceof ReferenceType)) {
@@ -764,42 +764,42 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		if (lhsType_ instanceof ArrayType && rhsType_ instanceof ArrayType)
 			bugReporter.reportBug(new BugInstance(this, "EC_BAD_ARRAY_COMPARE", NORMAL_PRIORITY)
 			.addClassAndMethod(methodGen, sourceFile)
-            .addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
+			.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
 			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 		IncompatibleTypes result = IncompatibleTypes.getPriorityForAssumingCompatible(lhsType_, rhsType_);
 				if (result == IncompatibleTypes.ARRAY_AND_NON_ARRAY || result == IncompatibleTypes.ARRAY_AND_OBJECT) 
 			bugReporter.reportBug(new BugInstance(this, "EC_ARRAY_AND_NONARRAY", result.getPriority())
 			.addClassAndMethod(methodGen, sourceFile)
-         .addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
-        			
+		 .addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
+
 			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 		else if (result == IncompatibleTypes.INCOMPATIBLE_CLASSES) {
-            String lhsSig = lhsType_.getSignature();
-            String rhsSig = rhsType_.getSignature();
-            boolean core = lhsSig.startsWith("Ljava") && rhsSig.startsWith("Ljava");
+			String lhsSig = lhsType_.getSignature();
+			String rhsSig = rhsType_.getSignature();
+			boolean core = lhsSig.startsWith("Ljava") && rhsSig.startsWith("Ljava");
             if (core) {
-                looksLikeTestCase = false;
-                priorityModifier = 0;
-            }
+				looksLikeTestCase = false;
+				priorityModifier = 0;
+			}
 			if (!looksLikeTestCase) bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_TYPES", result.getPriority() + priorityModifier)
 			.addClassAndMethod(methodGen, sourceFile)
-    .addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
-        			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+	.addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
+					.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
-        }
+		}
 		else if (result == IncompatibleTypes.UNRELATED_CLASS_AND_INTERFACE) 
 			bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_CLASS_AND_INTERFACE", result.getPriority())
 			.addClassAndMethod(methodGen, sourceFile)
-      .addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
-        			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+	  .addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
+					.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 		else if (result == IncompatibleTypes.UNRELATED_INTERFACES) 
 			bugReporter.reportBug(new BugInstance(this, "EC_UNRELATED_INTERFACES", result.getPriority())
 			.addClassAndMethod(methodGen, sourceFile)
-     .addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
-        			.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
+	 .addFoundAndExpectedType(rhsType_.getSignature(), lhsType_.getSignature())
+					.addSourceLine(this.classContext, methodGen, sourceFile, location.getHandle())
 			);
 	}
 

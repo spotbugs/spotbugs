@@ -39,13 +39,13 @@ public class FindSpinLoop extends BytecodeScanningDetector implements StatelessD
 
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		if (DEBUG) System.out.println("Saw " + getFullyQualifiedMethodName());
 		stage = 0;
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 
 		// System.out.println("PC: " + PC + ", stage: " + stage1);
 		switch (seen) {
@@ -80,9 +80,9 @@ public class FindSpinLoop extends BytecodeScanningDetector implements StatelessD
 			if (DEBUG) System.out.println("   conditional branch in stage " + stage + " to " + getBranchTarget());
 			if (stage == 2 && getBranchTarget() == start) {
 				bugReporter.reportBug(new BugInstance(this, "SP_SPIN_ON_FIELD", NORMAL_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addReferencedField(lastFieldSeen)
-				        .addSourceLine(this, start)
+						.addClassAndMethod(this)
+						.addReferencedField(lastFieldSeen)
+						.addSourceLine(this, start)
 				        );
 				stage = 0;
 			} else if (getBranchTarget() < getPC())

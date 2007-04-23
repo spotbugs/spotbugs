@@ -30,7 +30,7 @@ public class InconsistentSyncWarningProperty extends AbstractWarningProperty {
 	private InconsistentSyncWarningProperty(String name, PriorityAdjustment priorityAdjustment) {
 		super(name, priorityAdjustment);
 	}
-	
+
 //	/** Field is never accessed while locked. */
 //	public static final InconsistentSyncWarningProperty NEVER_LOCKED =
 //		new InconsistentSyncWarningProperty("NEVER_LOCKED", PriorityAdjustment.FALSE_POSITIVE);

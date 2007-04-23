@@ -173,7 +173,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 	}
 
 	public boolean isStreamOpen(BasicBlock basicBlock, InstructionHandle handle,
-	                            ConstantPoolGen cpg, ResourceValueFrame frame) {
+								ConstantPoolGen cpg, ResourceValueFrame frame) {
 		if (isOpenOnCreation)
 			return false;
 
@@ -185,13 +185,13 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 		INVOKESPECIAL inv = (INVOKESPECIAL) ins;
 
 		return frame.isValid()
-		        && getInstanceValue(frame, inv, cpg).isInstance()
-		        && matchMethod(inv, cpg, this.getResourceClass(), "<init>");
+				&& getInstanceValue(frame, inv, cpg).isInstance()
+				&& matchMethod(inv, cpg, this.getResourceClass(), "<init>");
 	}
 
 	public boolean isStreamClose(BasicBlock basicBlock, InstructionHandle handle,
-	                             ConstantPoolGen cpg, ResourceValueFrame frame,
-	                             RepositoryLookupFailureCallback lookupFailureCallback) {
+								 ConstantPoolGen cpg, ResourceValueFrame frame,
+								 RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		Instruction ins = handle.getInstruction();
 
@@ -200,7 +200,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 			InvokeInstruction inv = (InvokeInstruction) ins;
 
 			if (!frame.isValid() ||
-			        !getInstanceValue(frame, inv, cpg).isInstance())
+					!getInstanceValue(frame, inv, cpg).isInstance())
 				return false;
 
 			// It's a close if the invoked class is any subtype of the stream base class.
@@ -208,8 +208,8 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 			// even though it's the same instance.)
 			try {
 				return inv.getName(cpg).equals("close")
-				        && inv.getSignature(cpg).equals("()V")
-				        && Hierarchy.isSubtype(inv.getClassName(cpg), streamBase);
+						&& inv.getSignature(cpg).equals("()V")
+						&& Hierarchy.isSubtype(inv.getClassName(cpg), streamBase);
 			} catch (ClassNotFoundException e) {
 				lookupFailureCallback.reportMissingClass(e);
 				return false;
@@ -220,7 +220,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 	}
 
 	private ResourceValue getInstanceValue(ResourceValueFrame frame, InvokeInstruction inv,
-	                                       ConstantPoolGen cpg) {
+										   ConstantPoolGen cpg) {
 		int numConsumed = inv.consumeStack(cpg);
 		if (numConsumed == Constants.UNPREDICTABLE)
 			throw new IllegalStateException();
@@ -228,13 +228,13 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 	}
 
 	private boolean matchMethod(InvokeInstruction inv, ConstantPoolGen cpg, String className,
-	                            String methodName) {
+								String methodName) {
 		return inv.getClassName(cpg).equals(className)
-		        && inv.getName(cpg).equals(methodName);
+				&& inv.getName(cpg).equals(methodName);
 	}
 
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		return 
 		getLocation().hashCode()
 		+ 3*streamBase.hashCode() 
@@ -242,7 +242,7 @@ public class Stream extends ResourceCreationPoint implements Comparable<Stream> 
 		+ 11*instanceParam;
 	}
 	@Override
-    public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		if (!(o instanceof Stream)) return false;
 		Stream other = (Stream) o;
 		if (!getLocation().equals(other.getLocation())) return false;

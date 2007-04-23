@@ -33,11 +33,11 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 	public EqStringTest(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		super.visit(obj);
 		constantOnTOS = false;
 		callToInternSeen = false;
@@ -45,7 +45,7 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 
 		switch (seen) {
 		case LDC:
@@ -54,16 +54,16 @@ public class EqStringTest extends BytecodeScanningDetector implements  Stateless
 			return;
 		case INVOKEVIRTUAL:
 			if (getRefConstantOperand().equals("java.lang.String.intern : ()Ljava.lang.String;")
-			        || getRefConstantOperand().equals("java.lang.String.equals : (Ljava.lang.Object;)Z"))
+					|| getRefConstantOperand().equals("java.lang.String.equals : (Ljava.lang.Object;)Z"))
 				callToInternSeen = true;
 			break;
 		case IF_ACMPEQ:
 		case IF_ACMPNE:
 			if (constantOnTOS && !callToInternSeen)
 				bugReporter.reportBug(new BugInstance(this, "ES_COMPARING_STRINGS_WITH_EQ", NORMAL_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE)
-				        .addSourceLine(this, getPC()));
+						.addClassAndMethod(this)
+						.addType("Ljava/lang/String;").describe(TypeAnnotation.FOUND_ROLE)
+						.addSourceLine(this, getPC()));
 			break;
 		default:
 			break;

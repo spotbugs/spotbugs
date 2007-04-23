@@ -55,7 +55,7 @@ import edu.umd.cs.findbugs.ba.type.TypeFrame;
 public class TrainFieldStoreTypes implements Detector, TrainingDetector {
 	private BugReporter bugReporter;
 	private FieldStoreTypeDatabase database;
-	
+
 	public TrainFieldStoreTypes(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		this.database = new FieldStoreTypeDatabase();
@@ -84,32 +84,32 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
 		CFG cfg = classContext.getCFG(method);
 		TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
-		
+
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
 			Instruction ins = location.getHandle().getInstruction();
 			short opcode = ins.getOpcode();
-			
+
 			// Field store instruction?
 			if (opcode != Constants.PUTFIELD && opcode != Constants.PUTSTATIC)
 				continue;
-			
+
 			// Check if field type is a reference type
 			FieldInstruction fins = (FieldInstruction) ins;
 			Type fieldType = fins.getType(cpg);
 			if (!(fieldType instanceof ReferenceType))
 				continue;
-			
+
 			// Find the exact field being stored into
 			XField xfield = Hierarchy.findXField(fins, cpg);
 			if (xfield == null)
 				continue;
-			
+
 			// Skip public and protected fields, since it is reasonable to assume
 			// we won't see every store to those fields
 			if (xfield.isPublic() || xfield.isProtected())
 				continue;
-			
+
 			// The top value on the stack is the one which will be stored
 			// into the field
 			TypeFrame frame = typeDataflow.getFactAtLocation(location);
@@ -118,21 +118,21 @@ public class TrainFieldStoreTypes implements Detector, TrainingDetector {
 			Type storeType = frame.getTopValue();
 			if (!(storeType instanceof ReferenceType))
 				continue;
-			
+
 			// Get or create the field store type set
 			FieldStoreType property = database.getProperty(xfield);
 			if (property == null) {
 				property = new FieldStoreType();
 				database.setProperty(xfield, property);
 			}
-			
+
 			// Add the store type to the set
 			property.addTypeSignature(storeType.getSignature());
 		}
 	}
 
 	public void report() {
-        database.purgeBoringEntries();
+		database.purgeBoringEntries();
 		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
 				database, FieldStoreTypeDatabase.DEFAULT_FILENAME, "store type database");
 	}

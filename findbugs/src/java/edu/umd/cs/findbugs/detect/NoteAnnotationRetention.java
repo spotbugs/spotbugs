@@ -71,13 +71,13 @@ public class NoteAnnotationRetention extends AnnotationVisitor implements
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass javaClass = classContext.getJavaClass();
 		if  (!FindUnreleasedLock.preTiger(javaClass)) javaClass.accept(this);
-		
+
 	}
 
 
 	public void report() {
-		
+
 	}
-	
+
 
 }

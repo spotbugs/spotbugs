@@ -41,8 +41,8 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 	int sawAvailable = 0;
 
 	boolean wasBufferedInputStream = false;
-    BugAccumulator accumulator;
-    
+	BugAccumulator accumulator;
+
 
 	private int locationOfCall;
 
@@ -50,7 +50,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 			lastCallSig = null;
 
 	public ReadReturnShouldBeChecked(BugReporter bugReporter) {
-      this.accumulator = new BugAccumulator(bugReporter);
+	  this.accumulator = new BugAccumulator(bugReporter);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 		sawRead = false;
 		sawSkip = false;
 		super.visit(obj);
-        accumulator.reportAccumulatedBugs();
+		accumulator.reportAccumulatedBugs();
 	}
 
 	private boolean isInputStream()  {
@@ -76,7 +76,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 			return false;
 		}
 	}
-	
+
 	private boolean isBufferedInputStream() {
 		try {
 		if (lastCallClass.startsWith("[")) return false;
@@ -122,10 +122,10 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 		}
 		if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) 
 				&& 
-               ( getNameConstantOperand().equals("skip")
+			   ( getNameConstantOperand().equals("skip")
 				&& getSigConstantOperand().equals("(J)J")
-                ||  getNameConstantOperand().equals("skipBytes")
-                && getSigConstantOperand().equals("(I)I"))
+				||  getNameConstantOperand().equals("skipBytes")
+				&& getSigConstantOperand().equals("(I)I"))
 				&& isInputStream() ) {
 			// if not ByteArrayInput Stream
 			// and either no recent calls to length
@@ -133,7 +133,7 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 
 			wasBufferedInputStream = isBufferedInputStream();
 			sawSkip = true;
-            locationOfCall = getPC();
+			locationOfCall = getPC();
 			recentCallToAvailable = sawAvailable > 0 && !wasBufferedInputStream;
 			return;
 
@@ -146,18 +146,18 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 						recentCallToAvailable ? LOW_PRIORITY : NORMAL_PRIORITY)
 						.addClassAndMethod(this).addCalledMethod(lastCallClass,
 								lastCallMethod, lastCallSig, false),
-                               SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, locationOfCall));
+							   SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, locationOfCall));
 
 
 			} else if (sawSkip) {
 
-                accumulator.accumulateBug(new BugInstance(this, "SR_NOT_CHECKED",
+				accumulator.accumulateBug(new BugInstance(this, "SR_NOT_CHECKED",
 						(wasBufferedInputStream ? HIGH_PRIORITY
 								: recentCallToAvailable ? LOW_PRIORITY
 										: NORMAL_PRIORITY)).addClassAndMethod(
 						this).addCalledMethod(lastCallClass, lastCallMethod,
 						lastCallSig, false),
-                        SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, locationOfCall));
+						SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, locationOfCall));
 			}
 		}
 		sawRead = false;

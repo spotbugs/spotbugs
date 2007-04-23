@@ -50,14 +50,14 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 
 
 	@Override
-         public void visitClassContext(ClassContext classContext) {
+		 public void visitClassContext(ClassContext classContext) {
 		classContext.getJavaClass().accept(this);
 	}
 
 	Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
-	
+
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		reachable = false;
 		lastPC = 0;
 		found.clear();
@@ -69,22 +69,22 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 		fallthroughDistance = 1000;
 		super.visit(obj);
 		if (!found.isEmpty()) {
-            if (found.size() >= 4 && priority == NORMAL_PRIORITY) priority = LOW_PRIORITY;
+			if (found.size() >= 4 && priority == NORMAL_PRIORITY) priority = LOW_PRIORITY;
 			BugInstance bug = new BugInstance(this, "SF_SWITCH_FALLTHROUGH", priority)
-        			.addClassAndMethod(this).addAnnotations(found);
+					.addClassAndMethod(this).addAnnotations(found);
 			bugReporter.reportBug(bug);
-			
+
 		}
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
-        if (DEBUG)   System.out.println(getPC() + ": " + OPCODE_NAMES[seen] + " " + reachable + " " + switchHdlr.isOnSwitchOffset(this));
-         
+		 public void sawOpcode(int seen) {
+		if (DEBUG)   System.out.println(getPC() + ": " + OPCODE_NAMES[seen] + " " + reachable + " " + switchHdlr.isOnSwitchOffset(this));
+
 		if (reachable && switchHdlr.isOnSwitchOffset(this)) {
-            if (DEBUG) {
-                System.out.println("Fallthrough at : " + getPC() + ": " + OPCODE_NAMES[seen]);
-            }
+			if (DEBUG) {
+				System.out.println("Fallthrough at : " + getPC() + ": " + OPCODE_NAMES[seen]);
+			}
 			fallthroughDistance = 0;
 			potentiallyDeadStoresFromBeforeFallthrough = (BitSet) potentiallyDeadStores.clone();
 			if (!hasFallThruComment(lastPC + 1, getPC() - 1)) {
@@ -94,17 +94,17 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 					found.add(sourceLineAnnotation);
 				}
 			}
-			
+
 		}
-		
+
 		if (isBranch(seen) || isSwitch(seen)
 				|| seen == GOTO || seen == ARETURN || seen == IRETURN || seen == RETURN || seen == LRETURN
 				|| seen == DRETURN || seen == FRETURN) {
 			potentiallyDeadStores.clear();
 			potentiallyDeadStoresFromBeforeFallthrough.clear();
 		}
-				
-		
+
+
 		if (isRegisterLoad())
 			potentiallyDeadStores.clear(getRegisterOperand());
 
@@ -115,13 +115,13 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 				priority = HIGH_PRIORITY;
 				deadStore =  LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC()-1, getPC());
 				BugInstance bug = new BugInstance(this, "SF_DEAD_STORE_DUE_TO_SWITCH_FALLTHROUGH", priority)
-    			.addClassAndMethod(this).add(deadStore).addSourceLine(this);
+				.addClassAndMethod(this).add(deadStore).addSourceLine(this);
 				bugReporter.reportBug(bug);
 
 			}
 			potentiallyDeadStores.set(register);
 		}
-			
+
 		switch (seen) {
 			case TABLESWITCH:
 			case LOOKUPSWITCH:
@@ -140,28 +140,28 @@ public class SwitchFallthrough extends BytecodeScanningDetector implements State
 			case GOTO:
 				reachable = false;
 				break;
-				
+
 			case INVOKESTATIC:
 				reachable = !("exit".equals(getNameConstantOperand()) && "java/lang/System".equals(getClassConstantOperand()));
 				break;
-			
+
 			default:
 				reachable = true;
 		}
-		
+
 		lastPC = getPC();
 		fallthroughDistance++;
 	}
-	
+
 	private boolean hasFallThruComment( int startPC, int endPC ) {
 		if (LOOK_IN_SOURCE_FOR_FALLTHRU_COMMENT) {
 			BufferedReader r = null;
 			try {
 				SourceLineAnnotation srcLine
-	        		= SourceLineAnnotation.fromVisitedInstructionRange(this, lastPC, getPC());
+					= SourceLineAnnotation.fromVisitedInstructionRange(this, lastPC, getPC());
 				SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
 				SourceFile sourceFile = sourceFinder.findSourceFile(srcLine.getPackageName(), srcLine.getSourceFile());
-				
+
 				int startLine = srcLine.getStartLine();
 				int numLines = srcLine.getEndLine() - startLine - 1;
 				if (numLines <= 0)

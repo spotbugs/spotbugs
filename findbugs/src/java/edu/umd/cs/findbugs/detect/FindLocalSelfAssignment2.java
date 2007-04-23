@@ -44,7 +44,7 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 
 
 	@Override
-       public void visit(Code obj) {
+	   public void visit(Code obj) {
 		previousLoadOf = -1;
 		previousGotoTarget = -1;
 		gotoCount = 0;
@@ -54,7 +54,7 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 
 
 	@Override
-    public void sawOpcode(int seen) {
+	public void sawOpcode(int seen) {
 		if (seen == GOTO) {
 			previousGotoTarget = getBranchTarget();
 			gotoCount++;
@@ -70,18 +70,18 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 					String methodName = getMethodName();
 					if (methodName.equals("<init>") || methodName.startsWith("set") && getCode().getCode().length <= 5 ||
 							!previousStores.get(getRegisterOperand())) priority = HIGH_PRIORITY;
-				       bugReporter.reportBug(
+					   bugReporter.reportBug(
 					new BugInstance(this, 
 							"SA_LOCAL_SELF_ASSIGNMENT", priority)
-	                                        .addClassAndMethod(this)
-	                                        .add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), getRegisterOperand(), getPC(), getPC()))
-	                                        
+											.addClassAndMethod(this)
+											.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), getRegisterOperand(), getPC(), getPC()))
+
 	                                        .addSourceLine(this));
 					}
 					previousStores.set(getRegisterOperand());
 				}
-				
-	
+
+
 				previousLoadOf = -1;
 				gotoCount = 0;
 			}

@@ -44,12 +44,12 @@ import edu.umd.cs.findbugs.ba.SignatureConverter;
  * @author David Hovemeyer
  */
 public class CheckCalls implements Detector {
-	
+
 	private static final String METHOD = SystemProperties.getProperty("checkcalls.method");
 	private static final String TARGET_METHOD = SystemProperties.getProperty("checkcalls.targetmethod");
-	
+
 	BugReporter bugReporter;
-	
+
 	public CheckCalls(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
@@ -93,13 +93,13 @@ public class CheckCalls implements Detector {
 				if (TARGET_METHOD != null
 						&& !((InvokeInstruction)ins).getMethodName(classContext.getConstantPoolGen()).equals(TARGET_METHOD))
 					continue;
-				
+
 				System.out.println("\n*******************************************************\n");
-				
+
 				System.out.println("Method invocation: " + location.getHandle());
 				System.out.println("\tInvoking: " +
 						SignatureConverter.convertMethodSignature((InvokeInstruction)ins,classContext.getConstantPoolGen()));
-				
+
 				JavaClassAndMethod proto = Hierarchy.findInvocationLeastUpperBound(
 						(InvokeInstruction) ins,
 						classContext.getConstantPoolGen());

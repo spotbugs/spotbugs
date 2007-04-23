@@ -120,7 +120,7 @@ public class FindNonSerializableValuePassedToWriteObject implements Detector {
 			try {
 
 				double isSerializable = DeepSubtypeAnalysis.isDeepSerializable(refSig);
-				
+
 				if (isSerializable < 0.9) {
 					double isRemote = DeepSubtypeAnalysis.isDeepRemote(refSig);
 					if (isSerializable < isRemote)

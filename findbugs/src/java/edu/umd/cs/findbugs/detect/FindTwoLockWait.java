@@ -76,7 +76,7 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
 	}
 
 	private void analyzeMethod(ClassContext classContext, Method method)
-	        throws CFGBuilderException, DataflowAnalysisException {
+			throws CFGBuilderException, DataflowAnalysisException {
 
 		MethodGen methodGen = classContext.getMethodGen(method);
 		CFG cfg = classContext.getCFG(method);
@@ -114,7 +114,7 @@ public final class FindTwoLockWait implements Detector, StatelessDetector {
 
 	public void visitLocation(ClassContext classContext, Location location, MethodGen methodGen, LockDataflow dataflow) throws DataflowAnalysisException {
 		ConstantPoolGen cpg = methodGen.getConstantPool();
-		
+
 		if (Hierarchy.isMonitorWait(location.getHandle().getInstruction(), cpg)) {
 			int count = dataflow.getFactAtLocation(location).getNumLockedObjects();
 			if (count > 1) {

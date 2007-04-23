@@ -44,7 +44,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 
 	public void addAllDefinitions(JavaClass obj) {
 		String className2 = obj.getClassName();
-		
+
 		defined.add(className2);
 		for (Method m : obj.getMethods())
 			if (!m.isPrivate()) {
@@ -95,7 +95,7 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 		return false;
 	}
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 		compute();
 		ConstantPool cp = obj.getConstantPool();
 		Constant[] constants = cp.getConstantPool();
@@ -107,8 +107,8 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 				String ref = getClassName(obj, i);
 				if ((ref.startsWith("java") || ref.startsWith("org.w3c.dom")) && !defined.contains(ref))
 					bugReporter.reportBug(new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY)
-					        .addClass(obj).addString(ref));
-					
+							.addClass(obj).addString(ref));
+
 
 			} else if (co instanceof ConstantFieldref) {
 				// do nothing until we handle static fields defined in interfaces
@@ -129,14 +129,14 @@ public class ResolveAllReferences extends PreorderVisitor implements Detector {
 				String signature = ((ConstantUtf8) obj.getConstantPool().getConstant(
 						nt.getSignatureIndex(), CONSTANT_Utf8)).getBytes();
 
-				
+
 				try {
 					JavaClass target = Repository.lookupClass(className);
 					if (! find(target, name, signature))
 						bugReporter.reportBug(new BugInstance(this, "VR_UNRESOLVABLE_REFERENCE", NORMAL_PRIORITY)
-					        .addClass(obj).addString(getMemberName(target.getClassName(), name,
+							.addClass(obj).addString(getMemberName(target.getClassName(), name,
 									signature)));
-					
+
 				} catch (ClassNotFoundException e) {
 					bugReporter.reportMissingClass(e);
 				}

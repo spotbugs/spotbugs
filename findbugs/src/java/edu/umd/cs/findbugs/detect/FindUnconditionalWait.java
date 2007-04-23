@@ -40,19 +40,19 @@ public class FindUnconditionalWait extends BytecodeScanningDetector implements S
 	}
 
 
-	
+
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		stage = 0;
 	}
 
 	@Override
-         public void sawOffset(int offset) {
+		 public void sawOffset(int offset) {
 		if (stage == 1) stage = 0;
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		switch (stage) {
 		case 0:
 			if (seen == MONITORENTER)
@@ -61,9 +61,9 @@ public class FindUnconditionalWait extends BytecodeScanningDetector implements S
 		case 1:
 			if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("wait")) {
 				bugReporter.reportBug(new BugInstance(this, "UW_UNCOND_WAIT",
-				        getSigConstantOperand().equals("()V") ? NORMAL_PRIORITY : LOW_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addSourceLine(this));
+						getSigConstantOperand().equals("()V") ? NORMAL_PRIORITY : LOW_PRIORITY)
+						.addClassAndMethod(this)
+						.addSourceLine(this));
 				stage = 2;
 			}
 			break;

@@ -45,13 +45,13 @@ public class FindReturnRef extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 		publicClass = obj.isPublic();
 		super.visit(obj);
 	}
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		check = publicClass && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0;
 		if (!check) return;
 		dangerousToStoreIntoField = false;
@@ -77,12 +77,12 @@ public class FindReturnRef extends BytecodeScanningDetector {
 
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		if (check) super.visit(obj);
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		assert check;
 		/*
 		System.out.println("Saw " + PC + ": " + OPCODE_NAMES[seen] + "	"
@@ -93,19 +93,19 @@ public class FindReturnRef extends BytecodeScanningDetector {
 		*/
 
 		if (staticMethod && dangerousToStoreIntoField && seen == PUTSTATIC
-		        && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
+				&& MutableStaticFields.mutableSignature(getSigConstantOperand())) {
 			bugReporter.reportBug(new BugInstance(this, "EI_EXPOSE_STATIC_REP2", NORMAL_PRIORITY)
-			        .addClassAndMethod(this)
-			        .addField(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
-			                true)
+					.addClassAndMethod(this)
+					.addField(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
+							true)
 			        .addSourceLine(this));
 		}
 		if (!staticMethod && dangerousToStoreIntoField && seen == PUTFIELD
-		        && MutableStaticFields.mutableSignature(getSigConstantOperand())) {
+				&& MutableStaticFields.mutableSignature(getSigConstantOperand())) {
 			bugReporter.reportBug(new BugInstance(this, "EI_EXPOSE_REP2", NORMAL_PRIORITY)
-			        .addClassAndMethod(this)
-			        .addField(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
-			                true)
+					.addClassAndMethod(this)
+					.addField(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
+							true)
 			        .addSourceLine(this));
 			/*
 			System.out.println("Store of parameter "
@@ -200,18 +200,18 @@ public class FindReturnRef extends BytecodeScanningDetector {
 		}
 		thisOnTOS = false;
 		if (check && fieldOnTOS && seen == ARETURN
-		        /*
-		        && !sigOnStack.equals("Ljava/lang/String;")
-		        && sigOnStack.indexOf("Exception") == -1
+				/*
+				&& !sigOnStack.equals("Ljava/lang/String;")
+				&& sigOnStack.indexOf("Exception") == -1
 		        && sigOnStack.indexOf("[") >= 0
-		        */
-		        && nameOnStack.indexOf("EMPTY") == -1
-		        && MutableStaticFields.mutableSignature(sigOnStack)
+				*/
+				&& nameOnStack.indexOf("EMPTY") == -1
+				&& MutableStaticFields.mutableSignature(sigOnStack)
 		) {
 			bugReporter.reportBug(new BugInstance(this, staticMethod ? "MS_EXPOSE_REP" : "EI_EXPOSE_REP", NORMAL_PRIORITY)
-			        .addClassAndMethod(this)
-			        .addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic)
-			        .addSourceLine(this));
+					.addClassAndMethod(this)
+					.addField(classNameOnStack, nameOnStack, sigOnStack, fieldIsStatic)
+					.addSourceLine(this));
 		}
 
 		fieldOnTOS = false;

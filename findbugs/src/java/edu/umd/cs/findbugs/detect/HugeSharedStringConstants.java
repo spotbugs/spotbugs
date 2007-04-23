@@ -102,7 +102,7 @@ public class HugeSharedStringConstants extends BytecodeScanningDetector {
 			int overhead = length * (occursIn.size()-1);
 			if (overhead < 3*SIZE_OF_HUGE_CONSTANT) continue;
 			String className = field.getClassName();
-		
+
 			BugInstance bug = new BugInstance(this, "HSC_HUGE_SHARED_STRING_CONSTANT",
 					overhead > 20*SIZE_OF_HUGE_CONSTANT ? HIGH_PRIORITY : 
 						( overhead > 8*SIPUSH ? NORMAL_PRIORITY : LOW_PRIORITY))

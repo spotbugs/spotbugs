@@ -44,23 +44,23 @@ public class FindNakedNotify extends BytecodeScanningDetector implements  Statel
 
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		int flags = obj.getAccessFlags();
 		synchronizedMethod = (flags & ACC_SYNCHRONIZED) != 0;
 	}
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		stage = synchronizedMethod ? 1 : 0;
 		super.visit(obj);
 		if (synchronizedMethod && stage == 4)
 			bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY)
-			        .addClassAndMethod(this)
-			        .addSourceLine(this, notifyPC));
+					.addClassAndMethod(this)
+					.addSourceLine(this, notifyPC));
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		switch (stage) {
 		case 0:
 			if (seen == MONITORENTER)
@@ -71,9 +71,9 @@ public class FindNakedNotify extends BytecodeScanningDetector implements  Statel
 			break;
 		case 2:
 			if (seen == INVOKEVIRTUAL
-			        && (getNameConstantOperand().equals("notify")
-			        || getNameConstantOperand().equals("notifyAll"))
-			        && getSigConstantOperand().equals("()V")) {
+					&& (getNameConstantOperand().equals("notify")
+					|| getNameConstantOperand().equals("notifyAll"))
+					&& getSigConstantOperand().equals("()V")) {
 				stage = 3;
 				notifyPC = getPC();
 			} else
@@ -85,8 +85,8 @@ public class FindNakedNotify extends BytecodeScanningDetector implements  Statel
 		case 4:
 			if (seen == MONITOREXIT) {
 				bugReporter.reportBug(new BugInstance(this, "NN_NAKED_NOTIFY", NORMAL_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addSourceLine(this, notifyPC));
+						.addClassAndMethod(this)
+						.addSourceLine(this, notifyPC));
 				stage = 5;
 			} else
 				stage = 0;

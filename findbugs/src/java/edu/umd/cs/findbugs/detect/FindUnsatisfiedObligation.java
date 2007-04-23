@@ -58,16 +58,16 @@ import edu.umd.cs.findbugs.ba.type.TypeDataflow;
  * @author David Hovemeyer
  */
 public class FindUnsatisfiedObligation implements Detector {
-	
+
 	private static final boolean ENABLE = SystemProperties.getBoolean("oa.enable");
 	private static final boolean DEBUG = SystemProperties.getBoolean("oa.debug");
 	private static final boolean DEBUG_PRINTCFG = SystemProperties.getBoolean("oa.printcfg");
 	private static final String DEBUG_METHOD = SystemProperties.getProperty("oa.method");
-	
+
 	private BugReporter bugReporter;
 	private ObligationFactory factory;
 	private PolicyDatabase database;
-	
+
 	public FindUnsatisfiedObligation(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		this.factory = new ObligationFactory();
@@ -81,9 +81,9 @@ public class FindUnsatisfiedObligation implements Detector {
 		if (!ENABLE) {
 			return;
 		}
-		
+
 		// FIXME: prescreen class
-		
+
 		Method[] methodList = classContext.getJavaClass().getMethods();
 		for (Method method : methodList) {
 			if (DEBUG_METHOD != null && !method.getName().equals(DEBUG_METHOD))
@@ -117,19 +117,19 @@ public class FindUnsatisfiedObligation implements Detector {
 			DepthFirstSearch dfs = classContext.getDepthFirstSearch(method);
 			TypeDataflow typeDataflow = classContext.getTypeDataflow(method);
 			assert typeDataflow != null;
-			
+
 			ObligationAnalysis analysis =
 				new ObligationAnalysis(dfs, typeDataflow, methodGen, factory, database, bugReporter);
 			Dataflow<StateSet, ObligationAnalysis> dataflow =
 				new Dataflow<StateSet, ObligationAnalysis>(cfg, analysis);
-			
+
 			dataflow.execute();
-			
+
 			if (DEBUG_PRINTCFG) {
 				System.out.println("Dataflow CFG:");
 				DataflowCFGPrinter.printCFG(dataflow, System.out);
 			}
-			
+
 			// See if there are any states with nonempty obligation sets
 			StateSet factAtExit = dataflow.getStartFact(cfg.getExit());
 			Set<Obligation> leakedObligationSet = new HashSet<Obligation>();
@@ -173,7 +173,7 @@ public class FindUnsatisfiedObligation implements Detector {
 	 */
 	private PolicyDatabase buildDatabase() {
 		PolicyDatabase result = new PolicyDatabase();
-		
+
 		// Create the Obligation types
 		Obligation inputStreamObligation = factory.addObligation("java.io.InputStream");
 		Obligation outputStreamObligation = factory.addObligation("java.io.OutputStream");
@@ -188,7 +188,7 @@ public class FindUnsatisfiedObligation implements Detector {
 				PolicyDatabase.DEL, inputStreamObligation);
 		result.addEntry("java.io.OutputStream", "close", "()V", false,
 				PolicyDatabase.DEL, outputStreamObligation);
-		
+
 		return result;
 	}
 

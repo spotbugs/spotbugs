@@ -32,8 +32,8 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
  * @author David Hovemeyer
  */
 public class NoteNonnullReturnValues extends
-    BuildNonnullReturnDatabase implements Detector, InterproceduralFirstPassDetector {
-	
+	BuildNonnullReturnDatabase implements Detector, InterproceduralFirstPassDetector {
+
 	public NoteNonnullReturnValues(BugReporter bugReporter) {
 	}
 
@@ -41,7 +41,7 @@ public class NoteNonnullReturnValues extends
 	 * @see edu.umd.cs.findbugs.Detector#report()
 	 */
 	public void report() {
-        if (SystemProperties.getBoolean("findbugs.statistics")) System.err.println(returnsNonNull + "/" + returnsReference + " methods return nonnull values");
+		if (SystemProperties.getBoolean("findbugs.statistics")) System.err.println(returnsNonNull + "/" + returnsReference + " methods return nonnull values");
 	}
 
 }

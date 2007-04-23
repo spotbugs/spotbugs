@@ -47,7 +47,7 @@ public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
 			isDoPrivileged = true;
 		}
 	}
-	
+
 	@Override
 	public void visit(Code obj) {
 		if (isDoPrivileged && getMethodName().equals("run")) return;
@@ -63,9 +63,9 @@ public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
 			if (className.equals("java.lang.reflect.Field") || className.equals("java.lang.reflect.Method"))
 				bugReporter.reportBug(new BugInstance(this, "DP_DO_INSIDE_DO_PRIVILEGED",
 						LOW_PRIORITY)
-					        .addClassAndMethod(this)
-					        .addCalledMethod(this)
-					        .addSourceLine(this)
+							.addClassAndMethod(this)
+							.addCalledMethod(this)
+							.addSourceLine(this)
 					        );
 		}
 		if (seen == NEW) {
@@ -75,9 +75,9 @@ public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
 					&& !(getMethodName().equals("main") && getMethodSig().equals("([Ljava/lang/String;)V") && getMethod().isStatic()) )
 				bugReporter.reportBug(new BugInstance(this, "DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED",
 					NORMAL_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addClass(constructedClass)
-				        .addSourceLine(this)
+						.addClassAndMethod(this)
+						.addClass(constructedClass)
+						.addSourceLine(this)
 				        );
 		}
 		} catch (ClassNotFoundException e) {

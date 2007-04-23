@@ -46,11 +46,11 @@ public class TestingGround extends BytecodeScanningDetector {
 	@Override
 	public void visit(Field obj) {
 		if (obj.isFinal() && obj.isStatic() && obj.isPublic()
-            && !obj.getName().equals(obj.getName().toUpperCase()) 
-            && !obj.getName().equals("serialVersionUID")) {
+			&& !obj.getName().equals(obj.getName().toUpperCase()) 
+			&& !obj.getName().equals("serialVersionUID")) {
 			BugInstance bug = new BugInstance(this, "TESTING", 
 					obj.getSignature().equals("I") ? HIGH_PRIORITY : NORMAL_PRIORITY)
-			
+
 			.addClass(this).addField(this).addString("Should be upper case");
 			bugReporter.reportBug(bug);
 		}
@@ -65,14 +65,14 @@ public class TestingGround extends BytecodeScanningDetector {
 	int prevOpcode;
 	@Override
 	public void sawOpcode(int seen) {
-		
+
 		if (prevOpcode == I2D && seen == INVOKESTATIC
 				&& getNameConstantOperand().equals("ceil")
 				&& getClassConstantOperand().equals("java.lang.Math"))
 			bugReporter.reportBug(new BugInstance(this, "TESTING", HIGH_PRIORITY)
 			.addClassAndMethod(this).addCalledMethod(this).addSourceLine(this));
-	
-		
+
+
 		prevOpcode = seen;
 	}
 }

@@ -32,12 +32,12 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class NoteCheckReturnValueAnnotations
 	extends BuildCheckReturnAnnotationDatabase
 	implements Detector, NonReportingDetector {
-	
+
 	public NoteCheckReturnValueAnnotations(BugReporter bugReporter) {
 	}
 
 	public void visitClassContext(ClassContext classContext) {
-		
+
 		JavaClass javaClass = classContext.getJavaClass();
 		if  (!FindUnreleasedLock.preTiger(javaClass)) javaClass.accept(this);
 	}

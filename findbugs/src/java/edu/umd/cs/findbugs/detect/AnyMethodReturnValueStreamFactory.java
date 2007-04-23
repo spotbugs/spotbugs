@@ -53,7 +53,7 @@ public class AnyMethodReturnValueStreamFactory implements StreamFactory {
 	}
 
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-	                           RepositoryLookupFailureCallback lookupFailureCallback) {
+							   RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		Instruction ins = location.getHandle().getInstruction();
 
@@ -63,8 +63,8 @@ public class AnyMethodReturnValueStreamFactory implements StreamFactory {
 					return null;
 
 				Stream stream = new Stream(location, type.getClassName(), baseClassType.getClassName())
-				        .setIsOpenOnCreation(true)
-				        .setIgnoreImplicitExceptions(true);
+						.setIsOpenOnCreation(true)
+						.setIgnoreImplicitExceptions(true);
 				if (bugType != null)
 					stream.setInteresting(bugType);
 

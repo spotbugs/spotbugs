@@ -30,19 +30,19 @@ public class FindCircularDependencies extends BytecodeScanningDetector
 
 	private BugReporter bugReporter;
 	private String clsName;
-	
+
 	public FindCircularDependencies(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		this.dependencyGraph = new HashMap<String,Set<String>>();
 	}
-	
+
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 		clsName = obj.getClassName();
 	}
-	
+
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if ((seen == INVOKESPECIAL)
 		||  (seen == INVOKESTATIC)
 		||  (seen == INVOKEVIRTUAL)) {
@@ -50,32 +50,32 @@ public class FindCircularDependencies extends BytecodeScanningDetector
 			refClsName = refClsName.replace('/', '.');
 			if (refClsName.startsWith("java"))
 				return;
-			
+
 			if (clsName.equals(refClsName))
 				return;
-				
+
 			if (clsName.startsWith(refClsName) && (refClsName.indexOf("$") >= 0))
 				return;
-			
+
 			if (refClsName.startsWith(refClsName) && (clsName.indexOf("$") >= 0))
 				return;
-		
+
 			Set<String> dependencies = dependencyGraph.get(clsName);
 			if (dependencies == null) {
 				dependencies = new HashSet<String>();
 				dependencyGraph.put(clsName, dependencies);
 			}
-			
+
 			dependencies.add(refClsName);
 		}
 	}
-	
+
 	@Override
-         public void report() {
+		 public void report() {
 		removeDependencyLeaves(dependencyGraph);
-		
+
 		LoopFinder lf = new LoopFinder();
-		
+
 		while (dependencyGraph.size() > 0) {
 			String clsName = dependencyGraph.keySet().iterator().next();
 			Set<String> loop = lf.findLoop(dependencyGraph, clsName);
@@ -97,10 +97,10 @@ public class FindCircularDependencies extends BytecodeScanningDetector
 			if (pruneLeaves)
 				removeDependencyLeaves(dependencyGraph);
 		}
-			
+
 		dependencyGraph.clear();
 	}
-	
+
 	private void removeDependencyLeaves(Map<String, Set<String>> dependencyGraph)
 	{
 		boolean changed = true;
@@ -109,7 +109,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector
 			Iterator<Set<String>> it = dependencyGraph.values().iterator();
 			while (it.hasNext()) {
 				Set<String> dependencies = it.next();
-				
+
 				boolean foundClass = false;
 				Iterator<String> dit = dependencies.iterator();
 				while (dit.hasNext()) {
@@ -126,7 +126,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector
 			}
 		}
 	}
-	
+
 	private boolean removeLoopLinks(Map<String, Set<String>> dependencyGraph, Set<String> loop) 
 	{
 		Set<String> dependencies = null;
@@ -137,7 +137,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector
 		}
 		if (dependencies != null)
 			dependencies.remove(loop.iterator().next());
-		
+
 		boolean removedClass = false;
 		Iterator<String> cIt = loop.iterator();
 		while (cIt.hasNext()) {
@@ -150,14 +150,14 @@ public class FindCircularDependencies extends BytecodeScanningDetector
 		}
 		return removedClass;
 	}
-	
+
 	static class LoopFinder
 	{
 		private Map<String, Set<String>> dGraph = null;
 		private String startClass = null;
 		private Set<String> visited = null;
 		private Set<String> loop = null;
-				
+
 		public Set<String> findLoop(Map<String, Set<String>> dependencyGraph, String startCls) {
 			dGraph = dependencyGraph;
 			startClass = startCls;
@@ -167,12 +167,12 @@ public class FindCircularDependencies extends BytecodeScanningDetector
 				return loop;
 			return null;
 		}
-		
+
 		private boolean findLoop(String curClass) {
 			Set<String> dependencies = dGraph.get(curClass);
 			if (dependencies == null)
 				return false;
-			
+
 			visited.add(curClass);
 			loop.add(curClass);
 			for (String depClass : dependencies) {

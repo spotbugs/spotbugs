@@ -38,8 +38,8 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 
 	static boolean mutableSignature(String sig) {
 		return sig.equals("Ljava/util/Hashtable;")
-		        || sig.equals("Ljava/util/Date;")
-		        || sig.charAt(0) == '[';
+				|| sig.equals("Ljava/util/Date;")
+				|| sig.charAt(0) == '[';
 	}
 
 
@@ -52,7 +52,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 	boolean inStaticInitializer;
 	String packageName;
 	Set<String> readAnywhere = new HashSet<String>();
-	
+
 	Set<String> unsafeValue = new HashSet<String>();
 	Set<String> interfaces = new HashSet<String>();
 	Set<String> notFinal = new HashSet<String>();
@@ -65,11 +65,11 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 		super.visit(obj);
 		int flags = obj.getAccessFlags();
 		publicClass = (flags & ACC_PUBLIC) != 0
-		        && !getDottedClassName().startsWith("sun.");
+				&& !getDottedClassName().startsWith("sun.");
 		if ((flags & ACC_INTERFACE) != 0) {
 			interfaces.add(getDottedClassName());
 			}
@@ -78,33 +78,33 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		zeroOnTOS = false;
 		// System.out.println(methodName);
 		inStaticInitializer = getMethodName().equals("<clinit>");
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		// System.out.println("saw	"	+ OPCODE_NAMES[seen] + "	" + zeroOnTOS);
 		switch (seen) {
 		case GETSTATIC:
 		case PUTSTATIC:
 			boolean samePackage =
-			        packageName.equals(extractPackage(getClassConstantOperand()));
+					packageName.equals(extractPackage(getClassConstantOperand()));
 			boolean initOnly =
-			        seen == GETSTATIC ||
-			        getClassName().equals(getClassConstantOperand())
-			        && inStaticInitializer;
+					seen == GETSTATIC ||
+					getClassName().equals(getClassConstantOperand())
+					&& inStaticInitializer;
 			boolean safeValue =
-			        seen == GETSTATIC || emptyArrayOnTOS
-			        || !mutableSignature(getSigConstantOperand());
+					seen == GETSTATIC || emptyArrayOnTOS
+					|| !mutableSignature(getSigConstantOperand());
 			String name = (getClassConstantOperand() + "." + getNameConstantOperand())
-			        .replace('/', '.');
+					.replace('/', '.');
 
 			if (seen == GETSTATIC)
 				readAnywhere.add(name);
-			
+
 			if (!samePackage)
 				outsidePackage.add(name);
 
@@ -113,7 +113,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 
 			if (!safeValue)
 				unsafeValue.add(name);
-			
+
 			//Remove inStaticInitializer check to report all source lines of first use
 			//doing so, however adds quite a bit of memory bloat.
 			if (inStaticInitializer && !firstFieldUse.containsKey(name)) {
@@ -137,7 +137,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void visit(Field obj) {
+		 public void visit(Field obj) {
 		super.visit(obj);
 		int flags = obj.getAccessFlags();
 		boolean isStatic = (flags & ACC_STATIC) != 0;
@@ -160,7 +160,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void report() {
+		 public void report() {
 		/*
 		for(Iterator i = unsafeValue.iterator(); i.hasNext(); ) {
 			System.out.println("Unsafe: " + i.next());
@@ -183,12 +183,12 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 					&& unsafeValue.contains(name);
 			boolean isReadAnywhere = readAnywhere.contains(name);
 			if (false) 
-			              System.out.println(className + "."  + fieldName
-						              + " : " + fieldSig
-					              + "	" + isHashtable
+						  System.out.println(className + "."  + fieldName
+									  + " : " + fieldSig
+								  + "	" + isHashtable
 					              + "	" + isArray
-						              );
-			            
+									  );
+
 
 			String bugType;
 			int priority = NORMAL_PRIORITY;

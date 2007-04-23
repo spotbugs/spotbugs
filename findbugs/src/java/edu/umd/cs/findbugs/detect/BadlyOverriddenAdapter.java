@@ -42,11 +42,11 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector  {
 		methodMap = new HashMap<String, String>();
 		badOverrideMap = new HashMap<String,BugInstance>();
 	}
-	
+
 
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 		try {
 			methodMap.clear();
 			badOverrideMap.clear();
@@ -54,10 +54,10 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector  {
 			if (superClass == null) return;
 			String packageName = superClass.getPackageName();
 			String className = superClass.getClassName();
-			
+
 			//A more generic way to add Adapters would be nice here
 			isAdapter = ((className.endsWith("Adapter")) && (packageName.equals("java.awt.event") || packageName.equals("javax.swing.event")))
-			          ||((className.equals("DefaultHandler") && (packageName.equals("org.xml.sax.helpers"))));
+					  ||((className.equals("DefaultHandler") && (packageName.equals("org.xml.sax.helpers"))));
 			if (isAdapter) {
 				Method[] methods = superClass.getMethods();
 				for (Method method1 : methods) {
@@ -68,9 +68,9 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector  {
 			bugReporter.reportMissingClass(cnfe);
 		}
 	}
-	
+
 	@Override
-         public void visitAfter(JavaClass obj) {
+		 public void visitAfter(JavaClass obj) {
 		for (BugInstance bi : badOverrideMap.values()) {
 			if (bi != null)
 				bugReporter.reportBug(bi);
@@ -78,7 +78,7 @@ public class BadlyOverriddenAdapter extends BytecodeScanningDetector  {
 	}
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		if (isAdapter) {
 			String methodName = obj.getName();
 			String signature = methodMap.get(methodName);

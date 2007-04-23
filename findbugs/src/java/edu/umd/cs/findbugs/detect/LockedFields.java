@@ -93,7 +93,7 @@ public class LockedFields extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void visit(Field obj) {
+		 public void visit(Field obj) {
 		super.visit(obj);
 
 		FieldAnnotation f = FieldAnnotation.fromVisitedField(this);
@@ -109,7 +109,7 @@ public class LockedFields extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		super.visit(obj);
 		int flags = obj.getAccessFlags();
 		publicMethod = (flags & ACC_PUBLIC) != 0;
@@ -122,21 +122,21 @@ public class LockedFields extends BytecodeScanningDetector {
 		fieldsWritten.clear();
 		fieldsRead.clear();
 		inConstructor = getMethodName().equals("<init>")
-		        || getMethodName().equals("<clinit>")
-		        || getMethodName().equals("readObject")
-		        || getMethodName().equals("clone")
+				|| getMethodName().equals("<clinit>")
+				|| getMethodName().equals("readObject")
+				|| getMethodName().equals("clone")
 		        || getMethodName().equals("close")
-		        || getMethodName().equals("finalize");
+				|| getMethodName().equals("finalize");
 		/*
-	    privateMethod = (flags & ACC_PRIVATE) != 0
-			    || methodName.startsWith("access$");
+		privateMethod = (flags & ACC_PRIVATE) != 0
+				|| methodName.startsWith("access$");
 		*/
 
 	}
 
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		if (inConstructor) return;
 		thisOnTopOfStack = false;
 		thisLocked = false;
@@ -152,7 +152,7 @@ public class LockedFields extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		// state: 0 - unlocked
 		// state: 1 - locked
 		// state: 2 - saw unlocked, but might still be locked
@@ -225,7 +225,7 @@ public class LockedFields extends BytecodeScanningDetector {
 	}
 
 	@Override
-         public void report() {
+		 public void report() {
 
 		int noLocked = 0;
 		int noUnlocked = 0;

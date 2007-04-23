@@ -89,7 +89,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	 */
 	//@SuppressWarnings("EI2")
 	public StreamResourceTracker(StreamFactory[] streamFactoryList,
-	                             RepositoryLookupFailureCallback lookupFailureCallback) {
+								 RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		this.streamFactoryList = streamFactoryList;
 		this.lookupFailureCallback = lookupFailureCallback;
@@ -226,7 +226,7 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	}
 
 	public Stream isResourceCreation(BasicBlock basicBlock, InstructionHandle handle,
-	                                 ConstantPoolGen cpg) {
+									 ConstantPoolGen cpg) {
 
 		// Use precomputed map of Locations to Stream creations,
 		// if present.  Note that we don't care about preexisting
@@ -257,19 +257,19 @@ public class StreamResourceTracker implements ResourceTracker<Stream> {
 	}
 
 	public boolean isResourceOpen(BasicBlock basicBlock, InstructionHandle handle,
-	                              ConstantPoolGen cpg, Stream resource, ResourceValueFrame frame) {
+								  ConstantPoolGen cpg, Stream resource, ResourceValueFrame frame) {
 		return resource.isStreamOpen(basicBlock, handle, cpg, frame);
 	}
 
 	public boolean isResourceClose(BasicBlock basicBlock, InstructionHandle handle,
-	                               ConstantPoolGen cpg, Stream resource, ResourceValueFrame frame) {
+								   ConstantPoolGen cpg, Stream resource, ResourceValueFrame frame) {
 		return resource.isStreamClose(basicBlock, handle, cpg, frame, lookupFailureCallback);
 	}
 
 	public ResourceValueFrameModelingVisitor createVisitor(Stream resource, ConstantPoolGen cpg) {
 		return new StreamFrameModelingVisitor(cpg, this, resource);
 	}
-	
+
 	public boolean ignoreImplicitExceptions(Stream resource) {
 		return resource.ignoreImplicitExceptions();
 	}

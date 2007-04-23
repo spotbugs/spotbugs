@@ -54,13 +54,13 @@ public class CheckImmutableAnnotation extends PreorderVisitor implements
 
 
 	public void report() {
-	
+
 	}
 
 
 	public void visitClassContext(ClassContext classContext) {
 		 classContext.getJavaClass().accept(this);
-		
+
 	}
 
 }

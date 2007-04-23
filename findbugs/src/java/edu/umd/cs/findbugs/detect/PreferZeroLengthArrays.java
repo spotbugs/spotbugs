@@ -36,7 +36,7 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
 
 	Collection<SourceLineAnnotation> found = new LinkedList<SourceLineAnnotation>();
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		found.clear();
 		String returnType = getMethodSig().substring(getMethodSig().indexOf(")") + 1);
 		if (returnType.startsWith("[")) {
@@ -44,7 +44,7 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
 			super.visit(obj);
 			if (!found.isEmpty()) {
 				BugInstance bug = new BugInstance(this, "PZLA_PREFER_ZERO_LENGTH_ARRAYS", LOW_PRIORITY)
-				        .addClassAndMethod(this);
+						.addClassAndMethod(this);
 				for(SourceLineAnnotation s : found)
 					bug.add(s);
 				bugReporter.reportBug(bug);
@@ -55,7 +55,7 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
 
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 
 		switch (seen) {
 		case ACONST_NULL:
@@ -68,7 +68,7 @@ public class PreferZeroLengthArrays extends BytecodeScanningDetector implements 
 				if (sourceLineAnnotation != null)
 					found.add(sourceLineAnnotation);
 			}
-				
+
 			break;
 		}
 		nullOnTOS = false;

@@ -32,7 +32,7 @@ public class NullArgumentWarningProperty extends AbstractWarningProperty {
 	private NullArgumentWarningProperty(String name, PriorityAdjustment priorityAdjustment) {
 		super(name, priorityAdjustment);
 	}
-	
+
 	public static final NullArgumentWarningProperty ARG_DEFINITELY_NULL =
 		new NullArgumentWarningProperty("ARG_DEFINITELY_NULL", PriorityAdjustment.RAISE_PRIORITY);
 	public static final NullArgumentWarningProperty MONOMORPHIC_CALL_SITE =

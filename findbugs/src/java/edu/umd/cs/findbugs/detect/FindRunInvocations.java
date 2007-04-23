@@ -44,25 +44,25 @@ public class FindRunInvocations extends BytecodeScanningDetector implements Stat
 	}
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		alreadySawStart = false;
 		super.visit(obj);
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (alreadySawStart) return;
 		if ((seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE)
-		        && getSigConstantOperand().equals("()V")
-		        && isThread(getDottedClassConstantOperand())
+				&& getSigConstantOperand().equals("()V")
+				&& isThread(getDottedClassConstantOperand())
 		) {
 			if (getNameConstantOperand().equals("start"))
 				alreadySawStart = true;
 			else if (getNameConstantOperand().equals("run"))
 				bugReporter
-				        .reportBug(new BugInstance(this, "RU_INVOKE_RUN", NORMAL_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addSourceLine(this));
+						.reportBug(new BugInstance(this, "RU_INVOKE_RUN", NORMAL_PRIORITY)
+						.addClassAndMethod(this)
+						.addSourceLine(this));
 		}
 	}
 }

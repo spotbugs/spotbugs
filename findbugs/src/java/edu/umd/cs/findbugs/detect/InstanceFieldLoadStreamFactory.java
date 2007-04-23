@@ -64,7 +64,7 @@ public class InstanceFieldLoadStreamFactory implements StreamFactory {
 	}
 
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-	                           RepositoryLookupFailureCallback lookupFailureCallback) {
+							   RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		Instruction ins = location.getHandle().getInstruction();
 		if (ins.getOpcode() != Constants.GETFIELD)

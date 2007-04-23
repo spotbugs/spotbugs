@@ -36,7 +36,7 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
 
 	private static final int SEEN_NOTHING = 0;
 	private static final int SEEN_ALOAD = 1;
-	
+
 	private BugReporter bugReporter;
 	private LocalVariableTable varTable;
 	private int state;
@@ -45,26 +45,26 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
 	public SuperfluousInstanceOf(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		state = SEEN_NOTHING;
 		varTable = obj.getLocalVariableTable();
 		if (varTable != null)
 			super.visit(obj);
 	}
-	
+
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		if (varTable != null)
 			super.visit(obj);
 	}
-	
-	
+
+
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		switch (state) {
 			case SEEN_NOTHING:
 				if (seen == ALOAD)
@@ -75,7 +75,7 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
 					return;
 				state = SEEN_ALOAD;
 			break;
-			
+
 			case SEEN_ALOAD:
 				try {
 					if (seen == INSTANCEOF) {
@@ -85,12 +85,12 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
 							if (objSignature.charAt(0) == 'L') {
 								objSignature = objSignature.substring(1, objSignature.length()-1).replace('/', '.');
 								String clsSignature = getDottedClassConstantOperand();
-								
+
 								if (clsSignature.charAt(0) != '[') {
 									if (org.apache.bcel.Repository.instanceOf( objSignature, clsSignature )) {
 										bugReporter.reportBug(new BugInstance(this, "SIO_SUPERFLUOUS_INSTANCEOF", LOW_PRIORITY)
-								        	.addClassAndMethod(this)
-								        	.addSourceLine(this));
+											.addClassAndMethod(this)
+											.addSourceLine(this));
 									}
 								}
 							}
@@ -99,11 +99,11 @@ public class SuperfluousInstanceOf extends BytecodeScanningDetector implements S
 				} catch (ClassNotFoundException cnfe) {
 					bugReporter.reportMissingClass(cnfe);
 				}
-				
+
 				state = SEEN_NOTHING;
 			break;
 		}
-		
+
 	}
 }
 

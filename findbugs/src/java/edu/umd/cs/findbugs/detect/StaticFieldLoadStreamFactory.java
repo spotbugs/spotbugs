@@ -50,7 +50,7 @@ public class StaticFieldLoadStreamFactory implements StreamFactory {
 	 * @param fieldSig        signature of the static field
 	 */
 	public StaticFieldLoadStreamFactory(String streamBaseClass, String className,
-	                                    String fieldName, String fieldSig) {
+										String fieldName, String fieldSig) {
 		this.streamBaseClass = streamBaseClass;
 		this.className = className;
 		this.fieldName = fieldName;
@@ -58,7 +58,7 @@ public class StaticFieldLoadStreamFactory implements StreamFactory {
 	}
 
 	public Stream createStream(Location location, ObjectType type, ConstantPoolGen cpg,
-	                           RepositoryLookupFailureCallback lookupFailureCallback) {
+							   RepositoryLookupFailureCallback lookupFailureCallback) {
 
 		Instruction ins = location.getHandle().getInstruction();
 		if (ins.getOpcode() != Constants.GETSTATIC)
@@ -66,13 +66,13 @@ public class StaticFieldLoadStreamFactory implements StreamFactory {
 
 		GETSTATIC getstatic = (GETSTATIC) ins;
 		if (!className.equals(getstatic.getClassName(cpg))
-		        || !fieldName.equals(getstatic.getName(cpg))
-		        || !fieldSig.equals(getstatic.getSignature(cpg)))
+				|| !fieldName.equals(getstatic.getName(cpg))
+				|| !fieldSig.equals(getstatic.getSignature(cpg)))
 			return null;
 
 		return new Stream(location, type.getClassName(), streamBaseClass)
-		        .setIgnoreImplicitExceptions(true)
-		        .setIsOpenOnCreation(true);
+				.setIgnoreImplicitExceptions(true)
+				.setIsOpenOnCreation(true);
 	}
 }
 

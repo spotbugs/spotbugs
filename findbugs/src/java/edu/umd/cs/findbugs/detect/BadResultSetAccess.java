@@ -65,23 +65,23 @@ public class BadResultSetAccess extends BytecodeScanningDetector {
 		add("URL");
 		}
 	};
-	
+
 	private OpcodeStack stack = new OpcodeStack();
 	private BugReporter bugReporter;
-	
+
 	public BadResultSetAccess(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 
 	@Override
-         public void visit(Method obj) {
-        stack.resetForMethodEntry(this);
+		 public void visit(Method obj) {
+		stack.resetForMethodEntry(this);
 		super.visit(obj);
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		try {
 			if (seen == INVOKEINTERFACE) {
@@ -90,20 +90,20 @@ public class BadResultSetAccess extends BytecodeScanningDetector {
 				if  ((clsConstant.equals("java/sql/ResultSet") && 
 						((methodName.startsWith("get") && dbFieldTypesSet.contains(methodName.substring(3))) ||  
 						 (methodName.startsWith("update") && dbFieldTypesSet.contains(methodName.substring(6)))))
-			    ||   ((clsConstant.equals("java/sql/PreparedStatement") &&  
-			    		((methodName.startsWith("set") && dbFieldTypesSet.contains(methodName.substring(3))))))) {
+				||   ((clsConstant.equals("java/sql/PreparedStatement") &&  
+						((methodName.startsWith("set") && dbFieldTypesSet.contains(methodName.substring(3))))))) {
 					String signature = getSigConstantOperand();
 					int numParms = PreorderVisitor.getNumberArguments(signature);
 					if (stack.getStackDepth() >= numParms) {
 						OpcodeStack.Item item = stack.getStackItem(numParms-1);
-						
+
 
 						if ("I".equals(item.getSignature()) && item.couldBeZero()) {
 							bugReporter.reportBug(new BugInstance(this, 
 									clsConstant.equals("java/sql/PreparedStatement") ? "SQL_BAD_PREPARED_STATEMENT_ACCESS" : "SQL_BAD_RESULTSET_ACCESS", 
 											item.mustBeZero() ? HIGH_PRIORITY : NORMAL_PRIORITY)
-							        .addClassAndMethod(this)
-							        .addSourceLine(this));
+									.addClassAndMethod(this)
+									.addSourceLine(this));
 						}
 					}
 				}

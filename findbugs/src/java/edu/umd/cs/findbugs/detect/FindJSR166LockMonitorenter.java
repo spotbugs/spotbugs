@@ -68,9 +68,9 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 			if (!bytecodeSet.get(Constants.MONITORENTER))
 				continue;
 
-			
+
 			analyzeMethod(classContext, method);
-			
+
 		}
 	}
 
@@ -78,46 +78,46 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 			 {
 		ConstantPoolGen cpg = classContext.getConstantPoolGen();
 		CFG cfg;
-        try {
-            cfg = classContext.getCFG(method);
-        } catch (CFGBuilderException e1) {
+		try {
+			cfg = classContext.getCFG(method);
+		} catch (CFGBuilderException e1) {
             AnalysisContext.logError("Coult not get CFG", e1);
-            return;
-        }
+			return;
+		}
 		TypeDataflow typeDataflow;
-        try {
-            typeDataflow = classContext.getTypeDataflow(method);
-        } catch (CheckedAnalysisException e1) {
+		try {
+			typeDataflow = classContext.getTypeDataflow(method);
+		} catch (CheckedAnalysisException e1) {
             AnalysisContext.logError("Coult not get Type dataflow", e1);
-            return;
-        }
+			return;
+		}
 
 		for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
 			Location location = i.next();
-			
+
 			InstructionHandle handle = location.getHandle();
 			Instruction ins = handle.getInstruction();
-			
+
 			if (ins.getOpcode() != Constants.MONITORENTER)
 				continue;
-            Type type;
-            try {
+			Type type;
+			try {
 			TypeFrame frame = typeDataflow.getFactAtLocation(location);
 			if (!frame.isValid())
 				continue;
 			 type = frame.getInstance(ins, cpg);
-            } catch (CheckedAnalysisException e) {
-                AnalysisContext.logError("Coult not get Type dataflow", e);
-                continue;
+			} catch (CheckedAnalysisException e) {
+				AnalysisContext.logError("Coult not get Type dataflow", e);
+				continue;
             }
-			
+
 			if (!(type instanceof ReferenceType)) {
 				// Something is deeply wrong if a non-reference type
 				// is used for a monitorenter.  But, that's really a
 				// verification problem.
 				return;
 			}
-			
+
 			boolean isSubtype;
 			try {
 				isSubtype = Hierarchy.isSubtype((ReferenceType) type, LOCK_TYPE);
@@ -125,12 +125,12 @@ public final class FindJSR166LockMonitorenter implements Detector, StatelessDete
 				bugReporter.reportMissingClass(e);
 				return;
 			}
-			
+
 			if (isSubtype) {				
 				bugReporter.reportBug(new BugInstance(this, "JLM_JSR166_LOCK_MONITORENTER", NORMAL_PRIORITY)
 						.addClassAndMethod(classContext.getJavaClass(), method)
 						.addSourceLine(classContext,method, location)
-                        );
+						);
 			}
 		}
 	}

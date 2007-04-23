@@ -32,32 +32,32 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 	public FindFinalizeInvocations(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 
 
 	boolean sawSuperFinalize;
 
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		if (DEBUG) System.out.println("FFI: visiting " + getFullyQualifiedMethodName());
 		if (getMethodName().equals("finalize")
-		        && getMethodSig().equals("()V")
-		        && (obj.getAccessFlags() & (ACC_PUBLIC)) != 0
+				&& getMethodSig().equals("()V")
+				&& (obj.getAccessFlags() & (ACC_PUBLIC)) != 0
 		)
 			bugReporter.reportBug(new BugInstance(this, "FI_PUBLIC_SHOULD_BE_PROTECTED", NORMAL_PRIORITY).addClassAndMethod(this));
 	}
 
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		sawSuperFinalize = false;
 		super.visit(obj);
 		if (!getMethodName().equals("finalize")
-		        || !getMethodSig().equals("()V"))
+				|| !getMethodSig().equals("()V"))
 			return;
 		String overridesFinalizeIn
-		        = Lookup.findSuperImplementor(getDottedClassName(),
-		                "finalize",
-		                "()V",
+				= Lookup.findSuperImplementor(getDottedClassName(),
+						"finalize",
+						"()V",
 		                bugReporter);
 		boolean superHasNoFinalizer = overridesFinalizeIn.equals("java.lang.Object");
 		// System.out.println("superclass: " + superclassName);
@@ -67,23 +67,23 @@ public class FindFinalizeInvocations extends BytecodeScanningDetector implements
 				bugReporter.reportBug(new BugInstance(this, "FI_EMPTY", NORMAL_PRIORITY).addClassAndMethod(this));
 			} else
 				bugReporter.reportBug(new BugInstance(this, "FI_NULLIFY_SUPER", NORMAL_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addClass(overridesFinalizeIn));
+						.addClassAndMethod(this)
+						.addClass(overridesFinalizeIn));
 		} else if (obj.getCode().length == 5 && sawSuperFinalize)
 			bugReporter.reportBug(new BugInstance(this, "FI_USELESS", NORMAL_PRIORITY).addClassAndMethod(this));
 		else if (!sawSuperFinalize && !superHasNoFinalizer)
 			bugReporter.reportBug(new BugInstance(this, "FI_MISSING_SUPER_CALL", NORMAL_PRIORITY).addClassAndMethod(this)
-			        .addClass(overridesFinalizeIn));
+					.addClass(overridesFinalizeIn));
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (seen == INVOKEVIRTUAL && getNameConstantOperand().equals("finalize"))
 			bugReporter.reportBug(new BugInstance(this, "FI_EXPLICIT_INVOCATION", 
 						getMethodName().equals("finalize") && getMethodSig().equals("()V") ? HIGH_PRIORITY : NORMAL_PRIORITY)
-			        .addClassAndMethod(this)
-			        .addCalledMethod(this).describe("METHOD_CALLED")
-			        .addSourceLine(this, getPC()));
+					.addClassAndMethod(this)
+					.addCalledMethod(this).describe("METHOD_CALLED")
+					.addSourceLine(this, getPC()));
 		if (seen == INVOKESPECIAL && getNameConstantOperand().equals("finalize"))
 			sawSuperFinalize = true;
 	}

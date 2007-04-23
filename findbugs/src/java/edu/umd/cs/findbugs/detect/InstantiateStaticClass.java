@@ -31,13 +31,13 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 	private BugReporter bugReporter;
 
 	Map<String,Boolean> isStaticClass = new HashMap<String,Boolean>();
-	
+
 	public InstantiateStaticClass(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		try {
 			if ((seen == INVOKESPECIAL)
 			&&  getNameConstantOperand().equals("<init>")
@@ -45,25 +45,25 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 				String clsName = getClassConstantOperand();
 				if (clsName.equals("java/lang/Object"))
 					return;
-			
+
 				//ignore superclass synthesized ctor calls
 				if (getMethodName().equals("<init>") && (getPC() == 1))
 					return;
-				
+
 				//ignore the typesafe enumerated constant pattern
 				if (getMethodName().equals("<clinit>") && (getClassName().equals(clsName)))
 					return;
-				
+
 				Boolean b = isStaticClass.get(clsName);
 				if (b == null) {
 					b = Boolean.valueOf(isStaticOnlyClass(clsName));
 					isStaticClass.put(clsName, b);
 					}
 				if (b)
-				
+
 				bugReporter.reportBug(new BugInstance(this, "ISC_INSTANTIATE_STATIC_CLASS", LOW_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addSourceLine(this));
+						.addClassAndMethod(this)
+						.addSourceLine(this));
 			}
 		} catch (ClassNotFoundException cnfe) {
 			bugReporter.reportMissingClass(cnfe);
@@ -71,14 +71,14 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 	}
 
    private boolean isStaticOnlyClass(String clsName) throws ClassNotFoundException {
-   				clsName = clsName.replace('/', '.');
+				   clsName = clsName.replace('/', '.');
 				JavaClass cls = Repository.lookupClass(clsName);
 				if (cls.getInterfaceNames().length > 0)
 					return false;
 				String superClassName = cls.getSuperclassName();
 				if (!superClassName.equals("java.lang.Object"))
 					return false;
-				
+
 				Method[] methods = cls.getMethods();
 				int staticCount = 0;
 	   for (Method m : methods) {
@@ -99,7 +99,7 @@ public class InstantiateStaticClass extends BytecodeScanningDetector {
 			   return false;
 		   }
 	   }
-				
+
 				Field[] fields = cls.getFields();
 	   for (Field f : fields) {
 		   if (f.isStatic()) {

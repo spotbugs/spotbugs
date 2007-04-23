@@ -28,30 +28,30 @@ import org.apache.bcel.classfile.Field;
 public class VolatileUsage extends BytecodeScanningDetector  {
 	  private BugReporter bugReporter;
 
-    public VolatileUsage(BugReporter bugReporter) {
-            this.bugReporter = bugReporter;
-    }
+	public VolatileUsage(BugReporter bugReporter) {
+			this.bugReporter = bugReporter;
+	}
     	
 	@Override
-         public void visitClassContext(ClassContext classContext) {
-	            classContext.getJavaClass().accept(this);
+		 public void visitClassContext(ClassContext classContext) {
+				classContext.getJavaClass().accept(this);
 	}
 
 static class FieldRecord {
-                String className;
-                String name;
-                String signature;
+				String className;
+				String name;
+				String signature;
                 boolean isStatic;
-        }
+		}
 
 
 	Map<String,FieldRecord> fieldInfo = new HashMap<String,FieldRecord>();
 	Set<String> initializationWrites = new HashSet<String>();
 	Set<String> otherWrites = new HashSet<String>();
-	
+
 
 	@Override
-         public void visit(Field obj) {
+		 public void visit(Field obj) {
 		super.visit(obj);
 		int flags = obj.getAccessFlags();
 		if ((flags & ACC_VOLATILE) == 0) return;
@@ -66,24 +66,24 @@ static class FieldRecord {
 		}
 	}
 
-    @Override
-    public void sawOpcode(int seen) {
-                switch (seen) {
+	@Override
+	public void sawOpcode(int seen) {
+				switch (seen) {
                 case PUTSTATIC:
 			{
-                        String name = (getClassConstantOperand() 
+						String name = (getClassConstantOperand() 
 					+ "." + getNameConstantOperand())
-                                .replace('/', '.');
+								.replace('/', '.');
 			if (getMethodName().equals("<clinit>"))
 				initializationWrites.add(name);
 			else otherWrites.add(name);
 			break;
 			}
-                case PUTFIELD:
-                        {
+				case PUTFIELD:
+						{
 			String name = (getClassConstantOperand() 
 					+ "." + getNameConstantOperand())
-                                .replace('/', '.');
+								.replace('/', '.');
 			if (getMethodName().equals("<init>"))
 				initializationWrites.add(name);
 			else otherWrites.add(name);
@@ -91,10 +91,10 @@ static class FieldRecord {
 			}
 		}
 		}
-				
+
 
 	@Override
-         public void report() {
+		 public void report() {
 
 		for(Map.Entry<String, FieldRecord> r : fieldInfo.entrySet()) {	
 		   String name = r.getKey();
@@ -102,7 +102,7 @@ static class FieldRecord {
 		   int priority = LOW_PRIORITY;
 		   if (initializationWrites.contains(name) 
 			&& !otherWrites.contains(name))
-		     priority = NORMAL_PRIORITY;
+			 priority = NORMAL_PRIORITY;
 		   bugReporter.reportBug(
 			new BugInstance(this, "VO_VOLATILE_REFERENCE_TO_ARRAY", priority)
 			 .addClass(f.className)

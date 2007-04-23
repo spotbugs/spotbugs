@@ -93,7 +93,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 
 		if (DEBUG) 
 			System.out.println(state + " " + OPCODE_NAMES[seen]);
-		
+
 		if (state == SAW_INVOKE && isPop(seen)) {
 			CheckReturnValueAnnotation annotation = checkReturnAnnotationDatabase
 					.getResolvedAnnotation(callSeen, false);
@@ -156,7 +156,7 @@ public class MethodReturnCheck extends BytecodeScanningDetector {
 							.addClassAndMethod(this).addCalledMethod(this).describe(
 									"METHOD_CALLED").addSourceLine(this));
 				}
-				
+
 			}
 			previousOpcodeWasNEW = false;
 		}

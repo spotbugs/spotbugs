@@ -30,7 +30,7 @@ public class RefComparisonWarningProperty extends AbstractWarningProperty {
 	private RefComparisonWarningProperty(String name, PriorityAdjustment priorityAdjustment) {
 		super(name, priorityAdjustment);
 	}
-	
+
 	/** There is a call to equals() in the method. */
 	public static final RefComparisonWarningProperty SAW_CALL_TO_EQUALS =
 		new RefComparisonWarningProperty("SAW_CALL_TO_EQUALS", PriorityAdjustment.LOWER_PRIORITY);

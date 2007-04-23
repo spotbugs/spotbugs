@@ -81,7 +81,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 
 
 	@Override
-         public void visitMethod(Method method) {
+		 public void visitMethod(Method method) {
 		this.method = method;
 		if (DEBUG) {
 			System.out.println("RuntimeExceptionCapture visiting " + method);
@@ -91,10 +91,10 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 	}
 
 	@Override
-         public void visitCode(Code obj) {
+		 public void visitCode(Code obj) {
 		catchList = new ArrayList<ExceptionCaught>();
 		throwList = new ArrayList<ExceptionThrown>();
-                stack.resetForMethodEntry(this);
+				stack.resetForMethodEntry(this);
 
 		super.visitCode(obj);
 
@@ -138,7 +138,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 	}
 
 	@Override
-         public void visit(CodeException obj) {
+		 public void visit(CodeException obj) {
 		super.visit(obj);
 		int type = obj.getCatchType();
 		if (type == 0) return;
@@ -184,7 +184,7 @@ public class RuntimeExceptionCapture extends BytecodeScanningDetector implements
 	}
 
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		try {
 			switch (seen) {

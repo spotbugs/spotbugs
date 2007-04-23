@@ -38,59 +38,59 @@ public class PublicSemaphores extends BytecodeScanningDetector implements Statel
 	private BugReporter bugReporter;
 	private int state;
 	private boolean alreadyReported;
-	
+
 	public PublicSemaphores(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 
 
 	@Override
-         public void visitClassContext(ClassContext classContext) {
+		 public void visitClassContext(ClassContext classContext) {
 		JavaClass cls = classContext.getJavaClass();
 		if ((!cls.isPublic()) || (cls.getClassName().indexOf("$") >= 0))
 			return;
-		
+
 		alreadyReported = false;
 		super.visitClassContext(classContext);
 	}
-	
+
 	@Override
-         public void visit(Code obj) {
+		 public void visit(Code obj) {
 		Method m = getMethod();
 		if (m.isStatic() || alreadyReported)
 			return;
-		
+
 		state = SEEN_NOTHING;
 		super.visit(obj);
 	}
-	
+
 	@Override
-         public void sawOpcode(int seen) {
+		 public void sawOpcode(int seen) {
 		if (alreadyReported)
 			return;
-		
+
 		switch (state) {
 			case SEEN_NOTHING:
 				if (seen == ALOAD_0)
 					state = SEEN_ALOAD_0;
 			break;
-			
+
 			case SEEN_ALOAD_0:
 				if ((seen == INVOKEVIRTUAL)
 				&&  getClassConstantOperand().equals("java/lang/Object")) {
 					String methodName = getNameConstantOperand();
 					if ("wait".equals(methodName) || "notify".equals(methodName) || "notifyAll".equals(methodName)) {
 						bugReporter.reportBug( new BugInstance( this, "PS_PUBLIC_SEMAPHORES", NORMAL_PRIORITY )
-						        .addClassAndMethod(this)
-						        .addSourceLine(this));
+								.addClassAndMethod(this)
+								.addSourceLine(this));
 						alreadyReported = true;
 					}
 				}
 				state = SEEN_NOTHING;
 			break;
 		}
-		
+
 	}
-	
+
 }

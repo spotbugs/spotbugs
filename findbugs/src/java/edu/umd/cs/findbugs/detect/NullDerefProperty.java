@@ -28,11 +28,11 @@ import edu.umd.cs.findbugs.props.PriorityAdjustment;
  * @author David Hovemeyer
  */
 public class NullDerefProperty extends AbstractWarningProperty {
-	
+
 	private NullDerefProperty(String name, PriorityAdjustment priorityAdjustment) {
 		super(name, priorityAdjustment);
 	}
-	
+
 	/** Redundant null comparison is of a checked null value. */
 	public static final NullDerefProperty CHECKED_VALUE =
 		new NullDerefProperty("CHECKED_VALUE", PriorityAdjustment.RAISE_PRIORITY);

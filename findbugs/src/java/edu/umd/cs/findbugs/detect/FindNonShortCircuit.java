@@ -38,7 +38,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	boolean sawDangerOld;
 	boolean sawNumericTest, sawNumericTestOld, sawNumericTestVeryOld;
 	boolean sawArrayDanger, sawArrayDangerOld;
-    boolean sawMethodCall, sawMethodCallOld;
+	boolean sawMethodCall, sawMethodCallOld;
 
 	private BugReporter bugReporter;
 
@@ -55,23 +55,23 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		prevOpcode = NOP;
 	}
 
-    private void clearAll() {
-        stage1 = 0;
-        stage2 = 0;
+	private void clearAll() {
+		stage1 = 0;
+		stage2 = 0;
         distance = 1000000;
-        sawArrayDanger = sawArrayDangerOld = false;
-        sawDanger = sawDangerOld = false;
-        sawMethodCall = sawMethodCallOld = false;
+		sawArrayDanger = sawArrayDangerOld = false;
+		sawDanger = sawDangerOld = false;
+		sawMethodCall = sawMethodCallOld = false;
         sawNullTest = sawNullTestOld = sawNullTestVeryOld = false;
-        sawNumericTest = sawNumericTestOld = sawNumericTestVeryOld = false;
-    }
+		sawNumericTest = sawNumericTestOld = sawNumericTestVeryOld = false;
+	}
 	int prevOpcode;
 	@Override
 	public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stage1 + " " + stage2);
 		// System.out.println(stack);
-        // System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + sawMethodCall + " " + sawMethodCallOld + " " + stage1 + " " + stage2);
+		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + sawMethodCall + " " + sawMethodCallOld + " " + stage1 + " " + stage2);
 		distance++;
 		scanForBooleanValue(seen);
 		scanForDanger(seen);
@@ -93,29 +93,29 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 			sawArrayDanger = true;
 			sawDanger = true;
 			break;
-			
-        case INVOKEVIRTUAL:
-            if (getNameConstantOperand().equals("length") && getClassConstantOperand().equals("java/lang/String")) break;
+
+		case INVOKEVIRTUAL:
+			if (getNameConstantOperand().equals("length") && getClassConstantOperand().equals("java/lang/String")) break;
             sawDanger = true;
-            sawMethodCall = true;
-            break;
+			sawMethodCall = true;
+			break;
 		case INVOKEINTERFACE:
 		case INVOKESPECIAL:
 		case INVOKESTATIC:
-               sawDanger = true;
-                sawMethodCall = true;
-                break;
+			   sawDanger = true;
+				sawMethodCall = true;
+				break;
 		case IDIV:
 		case IREM:
-        case LDIV:
-        case LREM:
+		case LDIV:
+		case LREM:
 			sawDanger = true;
 			break;
-            
-        case ARRAYLENGTH:
-        case GETFIELD:
+
+		case ARRAYLENGTH:
+		case GETFIELD:
             // null pointer detector will handle these
-            break;
+			break;
 		default:
 			break;
 		}
@@ -126,14 +126,14 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		switch (seen) {
 		case IAND:
 		case IOR:
-            
+
 			// System.out.println("Saw IOR or IAND at distance " + distance);
 			OpcodeStack.Item item0 = stack.getStackItem(0);
 			OpcodeStack.Item item1 = stack.getStackItem(1);
 			if (item0.getConstant() == null && item1.getConstant() == null && distance < 4) {
-                if (item0.getRegisterNumber() >= 0 && item1.getRegisterNumber() >= 0)
-                    if (false) 
-                        clearAll();
+				if (item0.getRegisterNumber() >= 0 && item1.getRegisterNumber() >= 0)
+					if (false) 
+						clearAll();
 				operator = seen;
 				stage2 = 1;
 			} else
@@ -162,38 +162,38 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	}
 
 	private void reportBug() {
-	    int priority = LOW_PRIORITY;
-	    String pattern = "NS_NON_SHORT_CIRCUIT";
+		int priority = LOW_PRIORITY;
+		String pattern = "NS_NON_SHORT_CIRCUIT";
 
-	    if (sawDangerOld) {
-	        if (sawNullTestVeryOld) priority = HIGH_PRIORITY;
-	        if (sawMethodCallOld || sawNumericTestVeryOld && sawArrayDangerOld)  {
+		if (sawDangerOld) {
+			if (sawNullTestVeryOld) priority = HIGH_PRIORITY;
+			if (sawMethodCallOld || sawNumericTestVeryOld && sawArrayDangerOld)  {
 	            priority = HIGH_PRIORITY;
-	            pattern = "NS_DANGEROUS_NON_SHORT_CIRCUIT";
-	        }
-	        else priority = NORMAL_PRIORITY;
+				pattern = "NS_DANGEROUS_NON_SHORT_CIRCUIT";
+			}
+			else priority = NORMAL_PRIORITY;
 	    }
 
-	    bugReporter.reportBug(new BugInstance(this, pattern,
-	            priority)
-	    .addClassAndMethod(this).addSourceLine(this, getPC()));
+		bugReporter.reportBug(new BugInstance(this, pattern,
+				priority)
+		.addClassAndMethod(this).addSourceLine(this, getPC()));
 	}
 
 
 	private void scanForBooleanValue(int seen) {
 		switch (seen) {
 
-        case IAND:
-        case IOR:
-            switch(prevOpcode) {
+		case IAND:
+		case IOR:
+			switch(prevOpcode) {
             case ILOAD:
-            case ILOAD_0:
-            case ILOAD_1:
-            case ILOAD_2:
+			case ILOAD_0:
+			case ILOAD_1:
+			case ILOAD_2:
             case ILOAD_3:
-                clearAll();
-            }
-            break;
+				clearAll();
+			}
+			break;
 		case ICONST_1:
 			stage1 = 1;
 			switch(prevOpcode) {
@@ -215,8 +215,8 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 				stage1 = 2;
 			else {
 				stage1 = 0;
-                clearAll();
-            }
+				clearAll();
+			}
 			break;
 		case ICONST_0:
 			if (stage1 == 2) 
@@ -238,7 +238,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	}
 
 	private void sawBooleanValue() {
-        sawMethodCallOld = sawMethodCall;
+		sawMethodCallOld = sawMethodCall;
 		sawDangerOld = sawDanger;
 		sawArrayDangerOld = sawArrayDanger;
 		sawNullTestVeryOld = sawNullTestOld;
@@ -248,7 +248,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		sawNumericTest = false;
 		sawDanger = false;
 		sawArrayDanger = false;
-        sawMethodCall = false;
+		sawMethodCall = false;
 		distance = 0;
 		stage1 = 0;
 

@@ -57,10 +57,10 @@ public class Naming extends PreorderVisitor implements Detector {
 	public static  boolean confusingMethodNames(XMethod m1, XMethod m2) {
 		if (m1.isStatic() != m2.isStatic()) return false;
 		if (m1.getClassName().equals(m2.getClassName())) return false;
-		
+
 		if (m1.getName().equalsIgnoreCase(m2.getName())
-		        && !m1.getName().equals(m2.getName())
-		        && m1.getSignature().equals(m2.getSignature())) return true;
+				&& !m1.getName().equals(m2.getName())
+				&& m1.getSignature().equals(m2.getSignature())) return true;
 		if (m1.getSignature().equals(m2.getSignature())) return false;
 		if (removePackageNamesFromSignature(m1.getSignature()).equals(removePackageNamesFromSignature(m2.getSignature()))) 
 				return true;
@@ -69,10 +69,10 @@ public class Naming extends PreorderVisitor implements Detector {
 
 	// map of canonicalName -> trueMethodName
 	HashMap<String, HashSet<String>> canonicalToTrueMapping
-	        = new HashMap<String, HashSet<String>>();
+			= new HashMap<String, HashSet<String>>();
 	// map of canonicalName -> Set<XMethod>
 	HashMap<String, HashSet<XMethod>> canonicalToXMethod
-	        = new HashMap<String, HashSet<XMethod>>();
+			= new HashMap<String, HashSet<XMethod>>();
 
 	HashSet<String> visited = new HashSet<String>();
 
@@ -87,8 +87,8 @@ public class Naming extends PreorderVisitor implements Detector {
 	}
 
 	private boolean checkSuper(XMethod m, HashSet<XMethod> others) {
-        if (m.isStatic()) return false;
-        if (m.getName().equals("<init>") || m.getName().equals("<clinit>")) return false;
+		if (m.isStatic()) return false;
+		if (m.getName().equals("<init>") || m.getName().equals("<clinit>")) return false;
 		for (XMethod m2 : others) {
 			try {
 				if (confusingMethodNames(m, m2)
@@ -116,7 +116,7 @@ public class Naming extends PreorderVisitor implements Detector {
 					}
 					XFactory xFactory = AnalysisContext.currentXFactory();
 					if (xFactory.getDeprecated().contains(m) || xFactory.getDeprecated().contains(m2)) priority++;
-					
+
 					bugReporter.reportBug(new BugInstance(this, pattern, priority)
 					.addClass(m.getClassName())
 					.addMethod(m)
@@ -132,8 +132,8 @@ public class Naming extends PreorderVisitor implements Detector {
 	}
 
 	private boolean checkNonSuper(XMethod m, HashSet<XMethod> others) {
-        if (m.isStatic()) return false;
-        if (m.getName().startsWith("<init>") || m.getName().startsWith("<clinit>")) return false;
+		if (m.isStatic()) return false;
+		if (m.getName().startsWith("<init>") || m.getName().startsWith("<clinit>")) return false;
 		for (XMethod m2 : others) {
 			if (confusingMethodNames(m,m2)) {
 				bugReporter.reportBug(new BugInstance(this, "NM_CONFUSING", LOW_PRIORITY)
@@ -168,7 +168,7 @@ public class Naming extends PreorderVisitor implements Detector {
 	}
 
 	@Override
-         public void visitJavaClass(JavaClass obj) {
+		 public void visitJavaClass(JavaClass obj) {
 		if (obj.isInterface()) return;
 		String name = obj.getClassName();
 		if (!visited.add(name)) return;
@@ -184,7 +184,7 @@ public class Naming extends PreorderVisitor implements Detector {
 	}
 
 	@Override
-         public void visit(JavaClass obj) {
+		 public void visit(JavaClass obj) {
 		String name = obj.getClassName();
 		String[] parts = name.split("[$+.]");
 		baseClassName = parts[parts.length - 1];
@@ -200,7 +200,7 @@ public class Naming extends PreorderVisitor implements Detector {
 				? NORMAL_PRIORITY
 				: LOW_PRIORITY
 					)
-			        .addClass(this));
+					.addClass(this));
 		if (name.endsWith("Exception") 
 		&&  (!obj.getSuperclassName().endsWith("Exception"))
 		&&  (!obj.getSuperclassName().endsWith("Error"))
@@ -208,14 +208,14 @@ public class Naming extends PreorderVisitor implements Detector {
 			bugReporter.reportBug(new BugInstance(this, 
 					"NM_CLASS_NOT_EXCEPTION", 
 					NORMAL_PRIORITY )
-				        .addClass(this));
+						.addClass(this));
 		}
-			
+
 		super.visit(obj);
 	}
 
 	@Override
-         public void visit(Field obj) {
+		 public void visit(Field obj) {
 		if (getFieldName().length() == 1) return;
 
 		if (!obj.isFinal() 
@@ -230,8 +230,8 @@ public class Naming extends PreorderVisitor implements Detector {
 				 && (obj.isPublic() || obj.isProtected())  
 				? NORMAL_PRIORITY
 				: LOW_PRIORITY)
-			        .addClass(this)
-			        .addVisitedField(this)
+					.addClass(this)
+					.addVisitedField(this)
 				);
 		}
 		}
@@ -256,18 +256,18 @@ public class Naming extends PreorderVisitor implements Detector {
 			}
 		return false;
 	}
-    private static @CheckForNull Method findVoidConstructor(JavaClass clazz) {
-        for(Method m : clazz.getMethods()) 
-            if (m.getName().equals("<init>") && m.getSignature().equals("()V")) return m;
+	private static @CheckForNull Method findVoidConstructor(JavaClass clazz) {
+		for(Method m : clazz.getMethods()) 
+			if (m.getName().equals("<init>") && m.getSignature().equals("()V")) return m;
         return null;
-        
-    }
+
+	}
 	@Override
-         public void visit(Method obj) {
+		 public void visit(Method obj) {
 		String mName = getMethodName();
 		if (mName.length() == 1) return;
-        if (mName.equals("isRequestedSessionIdFromURL")
-                || mName.equals("isRequestedSessionIdFromUrl")) return;
+		if (mName.equals("isRequestedSessionIdFromURL")
+				|| mName.equals("isRequestedSessionIdFromUrl")) return;
 		if (Character.isLetter(mName.charAt(0))
 			&& !Character.isLowerCase(mName.charAt(0))
 			&& Character.isLetter(mName.charAt(1))
@@ -279,19 +279,19 @@ public class Naming extends PreorderVisitor implements Detector {
 				 && (obj.isPublic() || obj.isProtected())  
 				? NORMAL_PRIORITY
 				: LOW_PRIORITY)
-			        .addClassAndMethod(this));
+					.addClassAndMethod(this));
 		String sig = getMethodSig();
 		if (mName.equals(baseClassName) && sig.equals("()V")) {
 			Code code = obj.getCode();
-            Method realVoidConstructor = findVoidConstructor(getThisClass());
+			Method realVoidConstructor = findVoidConstructor(getThisClass());
 			if (code != null && !markedAsNotUsable(obj)) {
 				int priority = NORMAL_PRIORITY;
 				if (codeDoesSomething(code))
 					priority--;
-                else if (!obj.isPublic() && getThisClass().isPublic()) 
+				else if (!obj.isPublic() && getThisClass().isPublic()) 
 					priority--;
-                if (realVoidConstructor == null) priority++;
-                
+				if (realVoidConstructor == null) priority++;
+
 				bugReporter.reportBug( new BugInstance(this, "NM_METHOD_CONSTRUCTOR_CONFUSION", priority).addClassAndMethod(this).lowerPriorityIfDeprecated());
 				return;
 			}
@@ -302,31 +302,31 @@ public class Naming extends PreorderVisitor implements Detector {
 
 		if (mName.equals("equal") && sig.equals("(Ljava/lang/Object;)Z")) {
 			bugReporter.reportBug(new BugInstance(this, "NM_BAD_EQUAL", HIGH_PRIORITY)
-			        .addClassAndMethod(this).lowerPriorityIfDeprecated());
+					.addClassAndMethod(this).lowerPriorityIfDeprecated());
 			return;
 		}
 		if (mName.equals("hashcode") && sig.equals("()I")) {
 			bugReporter.reportBug(new BugInstance(this, "NM_LCASE_HASHCODE", HIGH_PRIORITY)
-			        .addClassAndMethod(this).lowerPriorityIfDeprecated());
+					.addClassAndMethod(this).lowerPriorityIfDeprecated());
 			return;
 		}
 		if (mName.equals("tostring") && sig.equals("()Ljava/lang/String;")) {
 			bugReporter.reportBug(new BugInstance(this, "NM_LCASE_TOSTRING", HIGH_PRIORITY)
-			        .addClassAndMethod(this).lowerPriorityIfDeprecated());
+					.addClassAndMethod(this).lowerPriorityIfDeprecated());
 			return;
 		}
 
 
 		if (obj.isPrivate()
-		        || obj.isStatic()
-		        || mName.equals("<init>")
+				|| obj.isStatic()
+				|| mName.equals("<init>")
 		)
 			return;
 
 		String trueName = mName + sig;
 		String sig2 = removePackageNamesFromSignature(sig);
 		String allSmall = mName.toLowerCase() + sig2;
-	
+
 
 		XMethod xm = XFactory.createXMethod(this);
 		{
@@ -348,9 +348,9 @@ public class Naming extends PreorderVisitor implements Detector {
 
 	}
 
-    private boolean codeDoesSomething(Code code) {
-        byte [] codeBytes = code.getCode();
-        return codeBytes.length > 1;
+	private boolean codeDoesSomething(Code code) {
+		byte [] codeBytes = code.getCode();
+		return codeBytes.length > 1;
     }
 
 	private static String removePackageNamesFromSignature(String sig) {

@@ -102,12 +102,12 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 			.getNullnessAnnotationDatabase().addSyntheticElement(
 					XFactory.createXMethod(this));
 	}
-	
+
 	@Override
 	public void visitAnnotation(String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {
 
-	
+
 
 		NullnessAnnotation n = NullnessAnnotation.Parser.parse(annotationClass);
 		annotationClass = lastPortion(annotationClass);
@@ -157,7 +157,7 @@ public class BuildNonNullAnnotationDatabase extends AnnotationVisitor {
 
 	}
 
-	
+
 	@Override
 	public void visitParameterAnnotation(int p, String annotationClass,
 			Map<String, Object> map, boolean runtimeVisible) {

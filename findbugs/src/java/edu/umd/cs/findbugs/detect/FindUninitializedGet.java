@@ -75,7 +75,7 @@ public class FindUninitializedGet extends BytecodeScanningDetector implements St
 		}
 		pendingBugs.clear();
 	}
-	
+
 	@Override
 	public void sawBranchTo(int target) {
 		Iterator<BugInstance> i = pendingBugs.iterator();

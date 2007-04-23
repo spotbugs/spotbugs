@@ -46,225 +46,225 @@ import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
  */
 public class StaticCalendarDetector extends BytecodeScanningDetector {
 
-    /** External Debug flag set? */
-    private static final boolean DEBUG = Boolean.getBoolean("debug.staticcal");
+	/** External Debug flag set? */
+	private static final boolean DEBUG = Boolean.getBoolean("debug.staticcal");
 
-    /** The reporter to report to */
-    private BugReporter reporter;
+	/** The reporter to report to */
+	private BugReporter reporter;
 
-    /** Name of the class being inspected */
-    private String currentClass;
+	/** Name of the class being inspected */
+	private String currentClass;
 
-    /**
-     * {@link ObjectType} for {@link java.util.Calendar}
-     */
+	/**
+	 * {@link ObjectType} for {@link java.util.Calendar}
+	 */
     private final ObjectType calendarType = ObjectTypeFactory.getInstance("java.util.Calendar");
 
-    /**
-     * {@link ObjectType} for {@link java.text.DateFormat}
-     */
+	/**
+	 * {@link ObjectType} for {@link java.text.DateFormat}
+	 */
     private final ObjectType dateFormatType = ObjectTypeFactory.getInstance("java.text.DateFormat");
 
-    /** ProgramCounter of the last seen  {@link org.apache.bcel.generic.GETSTATIC} call to a {@link Calendar} */
-    private int seenStaticGetCalendarAt;
+	/** ProgramCounter of the last seen  {@link org.apache.bcel.generic.GETSTATIC} call to a {@link Calendar} */
+	private int seenStaticGetCalendarAt;
 
-    /** ProgramCounter of the last seen  {@link org.apache.bcel.generic.GETSTATIC} call to a {@link DateFormat} */
-    private int seenStaticGetDateFormatAt;
+	/** ProgramCounter of the last seen  {@link org.apache.bcel.generic.GETSTATIC} call to a {@link DateFormat} */
+	private int seenStaticGetDateFormatAt;
 
-    /**
-     * Map of stores of a static {@link Calendar} instance to a register.
-     * Keys: Registers, Values: ProgramCounters
+	/**
+	 * Map of stores of a static {@link Calendar} instance to a register.
+	 * Keys: Registers, Values: ProgramCounters
      */
-    private Map<Integer, Integer> registerStaticStoreCalendarAt = new HashMap<Integer, Integer>();
+	private Map<Integer, Integer> registerStaticStoreCalendarAt = new HashMap<Integer, Integer>();
 
-    /**
-     * Map of stores of a static {@link DateFormat} instance to a register.
-     * Keys: Registers, Values: ProgramCounters
+	/**
+	 * Map of stores of a static {@link DateFormat} instance to a register.
+	 * Keys: Registers, Values: ProgramCounters
      */
-    private Map<Integer, Integer> registerStaticStoreDateFormatAt = new HashMap<Integer, Integer>();
+	private Map<Integer, Integer> registerStaticStoreDateFormatAt = new HashMap<Integer, Integer>();
 
-    /**
-     * Remembers the class name
-     */
+	/**
+	 * Remembers the class name
+	 */
     @Override
-    public void visit(JavaClass someObj) {
-        currentClass = someObj.getClassName();
-        super.visit(someObj);
+	public void visit(JavaClass someObj) {
+		currentClass = someObj.getClassName();
+		super.visit(someObj);
     }
 
-    /**
-     * Checks if the visited field is of type {@link Calendar} or
-     * {@link DateFormat} or a subclass of either one. If so and the field is
+	/**
+	 * Checks if the visited field is of type {@link Calendar} or
+	 * {@link DateFormat} or a subclass of either one. If so and the field is
      * static it is suspicious and will be reported.
-     */
-    @Override
-    public void visit(Field aField) {
+	 */
+	@Override
+	public void visit(Field aField) {
         super.visit(aField);
-        int tTyp = 0;
-        String tFieldSig = aField.getSignature();
-        if (aField.getType() instanceof ObjectType) {
+		int tTyp = 0;
+		String tFieldSig = aField.getSignature();
+		if (aField.getType() instanceof ObjectType) {
             ObjectType tType = (ObjectType)aField.getType();
-            try {
-                if (tType.subclassOf(calendarType)) {
-                    tTyp = 1;
+			try {
+				if (tType.subclassOf(calendarType)) {
+					tTyp = 1;
                 } else if (tType.subclassOf(dateFormatType)) {
-                    tTyp = 2;
-                }
-            } catch (ClassNotFoundException e) {
+					tTyp = 2;
+				}
+			} catch (ClassNotFoundException e) {
                 ; // ignore
-            }
-        } else {
-            return;
+			}
+		} else {
+			return;
         }
-        boolean tIsStatic = aField.isStatic();
-        if (tIsStatic) {
-            String tType = null;
+		boolean tIsStatic = aField.isStatic();
+		if (tIsStatic) {
+			String tType = null;
             switch (tTyp) {
-            case 1:
-                tType = "STCAL_STATIC_CALENDAR_INSTANCE";
-                break;
+			case 1:
+				tType = "STCAL_STATIC_CALENDAR_INSTANCE";
+				break;
             case 2:
-                tType = "STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE";
+				tType = "STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE";
+				break;
+			default:
                 break;
-            default:
-                break;
-            }
-            if (tType != null) {
-                reporter.reportBug(new BugInstance(this, tType, NORMAL_PRIORITY).addClass(currentClass).addField(
+			}
+			if (tType != null) {
+				reporter.reportBug(new BugInstance(this, tType, NORMAL_PRIORITY).addClass(currentClass).addField(
                         currentClass, aField.getName(), tFieldSig, tIsStatic));
-            }
-        }
-    }
+			}
+		}
+	}
 
-    /**
-     * @see edu.umd.cs.findbugs.visitclass.DismantleBytecode#visit(org.apache.bcel.classfile.Code)
-     */
+	/**
+	 * @see edu.umd.cs.findbugs.visitclass.DismantleBytecode#visit(org.apache.bcel.classfile.Code)
+	 */
     @Override
-    public void visit(Code obj) {
-        seenStaticGetCalendarAt = Integer.MIN_VALUE;
-        seenStaticGetDateFormatAt = Integer.MIN_VALUE;
+	public void visit(Code obj) {
+		seenStaticGetCalendarAt = Integer.MIN_VALUE;
+		seenStaticGetDateFormatAt = Integer.MIN_VALUE;
         registerStaticStoreCalendarAt.clear();
-        registerStaticStoreDateFormatAt.clear();
-        super.visit(obj);
-    }
+		registerStaticStoreDateFormatAt.clear();
+		super.visit(obj);
+	}
 
-    /**
-     * @see edu.umd.cs.findbugs.visitclass.DismantleBytecode#sawOpcode(int)
-     */
+	/**
+	 * @see edu.umd.cs.findbugs.visitclass.DismantleBytecode#sawOpcode(int)
+	 */
     @Override
-    public void sawOpcode(int seen) {
-        /* check simple case first. must be called before the rest, because it will set some fields if appropriate */
-        if (simpleCase(seen)) {
+	public void sawOpcode(int seen) {
+		/* check simple case first. must be called before the rest, because it will set some fields if appropriate */
+		if (simpleCase(seen)) {
             return;
-        }
+		}
 
-        // trickier case ----------------------->>
-        /* store to a register */
-        if (seen == ASTORE || seen == ASTORE_0 || seen == ASTORE_1 || seen == ASTORE_2 || seen == ASTORE_3) {
+		// trickier case ----------------------->>
+		/* store to a register */
+		if (seen == ASTORE || seen == ASTORE_0 || seen == ASTORE_1 || seen == ASTORE_2 || seen == ASTORE_3) {
             int tRegister = getRegisterOperand();
-            int tPC = getPC();
-            if (tPC >= seenStaticGetCalendarAt + 3 && tPC < seenStaticGetCalendarAt + 4) {
-                /* store to register is following the get of a static calendar, remember this for later */
+			int tPC = getPC();
+			if (tPC >= seenStaticGetCalendarAt + 3 && tPC < seenStaticGetCalendarAt + 4) {
+				/* store to register is following the get of a static calendar, remember this for later */
                 registerStaticStoreCalendarAt.put(tRegister, tPC);
-                if (DEBUG) {
-                    System.out.println("STCAL: astore: reg " + tRegister + " at " + tPC);
-                }
+				if (DEBUG) {
+					System.out.println("STCAL: astore: reg " + tRegister + " at " + tPC);
+				}
             } else if (tPC >= seenStaticGetDateFormatAt + 3 && tPC < seenStaticGetDateFormatAt + 4) {
-                /* store to register is following the get of a static dateformat, remember this for later */
-                registerStaticStoreDateFormatAt.put(tRegister, tPC);
-                if (DEBUG) {
+				/* store to register is following the get of a static dateformat, remember this for later */
+				registerStaticStoreDateFormatAt.put(tRegister, tPC);
+				if (DEBUG) {
                     System.out.println("STCAL: astore: reg " + tRegister + " at " + tPC);
-                }
-            } else {
-                /* this register if used for something else. forget about it */
+				}
+			} else {
+				/* this register if used for something else. forget about it */
                 registerStaticStoreCalendarAt.remove(tRegister);
-                registerStaticStoreDateFormatAt.remove(tRegister);
-                if (DEBUG) {
-                    System.out.println("STCAL: astore: clear reg " + tRegister + " at " + tPC);
+				registerStaticStoreDateFormatAt.remove(tRegister);
+				if (DEBUG) {
+					System.out.println("STCAL: astore: clear reg " + tRegister + " at " + tPC);
                 }
-            }
-        }
+			}
+		}
 
-        /* load of a register value */
-        if (seen == ALOAD || seen == ALOAD_0 || seen == ALOAD_1 || seen == ALOAD_2 || seen == ALOAD_3) {
-            int tPC = getPC();
+		/* load of a register value */
+		if (seen == ALOAD || seen == ALOAD_0 || seen == ALOAD_1 || seen == ALOAD_2 || seen == ALOAD_3) {
+			int tPC = getPC();
             int tRegister = getRegisterOperand();
-            Integer tPCOfStore = registerStaticStoreCalendarAt.get(tRegister);
-            /* if we find an entry in the map for this register, the last store to it has been a static calendar */
-            if (tPCOfStore != null) {
+			Integer tPCOfStore = registerStaticStoreCalendarAt.get(tRegister);
+			/* if we find an entry in the map for this register, the last store to it has been a static calendar */
+			if (tPCOfStore != null) {
                 if (DEBUG) {
-                    System.out.println("STCAL: aload: reg " + tRegister + " at " + tPC);
-                }
-                reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE", NORMAL_PRIORITY)
+					System.out.println("STCAL: aload: reg " + tRegister + " at " + tPC);
+				}
+				reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE", NORMAL_PRIORITY)
                         .addClassAndMethod(this).addSourceLine(this, tPCOfStore).addSourceLine(this, tPC));
-                return;
-            }
+				return;
+			}
 
-            tPCOfStore = registerStaticStoreDateFormatAt.get(tRegister);
-            /* if we find an entry in the map for this register, the last store to it has been a static dateformat */
-            if (tPCOfStore != null) {
+			tPCOfStore = registerStaticStoreDateFormatAt.get(tRegister);
+			/* if we find an entry in the map for this register, the last store to it has been a static dateformat */
+			if (tPCOfStore != null) {
                 if (DEBUG) {
-                    System.out.println("STCAL: aload: reg " + tRegister + " at " + tPC);
-                }
-                reporter
+					System.out.println("STCAL: aload: reg " + tRegister + " at " + tPC);
+				}
+				reporter
                         .reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE", NORMAL_PRIORITY)
-                                .addClassAndMethod(this).addSourceLine(this, tPCOfStore).addSourceLine(this, tPC));
-                return;
-            }
+								.addClassAndMethod(this).addSourceLine(this, tPCOfStore).addSourceLine(this, tPC));
+				return;
+			}
             // <<--------------------------------------------
-        }
-    }
+		}
+	}
 
-    /**
-     * Checks for a "simple match", e. g. an immediate succession of getstatic/invokevirtual on 
-     * a static {@link Calendar} or {@link DateFormat} field.
+	/**
+	 * Checks for a "simple match", e. g. an immediate succession of getstatic/invokevirtual on 
+	 * a static {@link Calendar} or {@link DateFormat} field.
      * @param seen Opcode
-     * @return <code>true</code> if we detected a simple case, i. e. the caller need not proceed with its anaysis.
-     * <code>false</code> if further analysis is recommended.
-     */
+	 * @return <code>true</code> if we detected a simple case, i. e. the caller need not proceed with its anaysis.
+	 * <code>false</code> if further analysis is recommended.
+	 */
     private boolean simpleCase(int seen) {
-        if (seen == GETSTATIC) {
-            String tClassName = getSigConstantOperand();
-            if (tClassName != null && tClassName.startsWith("L") && tClassName.endsWith(";")) {
+		if (seen == GETSTATIC) {
+			String tClassName = getSigConstantOperand();
+			if (tClassName != null && tClassName.startsWith("L") && tClassName.endsWith(";")) {
                 tClassName = tClassName.substring(1, tClassName.length() - 1);
-                ObjectType tType = ObjectTypeFactory.getInstance(tClassName);
-                try {
-                    if (tType.subclassOf(calendarType)) {
+				ObjectType tType = ObjectTypeFactory.getInstance(tClassName);
+				try {
+					if (tType.subclassOf(calendarType)) {
                         seenStaticGetCalendarAt = getPC();
+						return true;
+					} else if (tType.subclassOf(dateFormatType)) {
+						seenStaticGetDateFormatAt = getPC();
                         return true;
-                    } else if (tType.subclassOf(dateFormatType)) {
-                        seenStaticGetDateFormatAt = getPC();
-                        return true;
-                    }
-                } catch (ClassNotFoundException e) {
-                    ; // ignore
+					}
+				} catch (ClassNotFoundException e) {
+					; // ignore
                 }
-            }
-            return false;
-        }
+			}
+			return false;
+		}
         if (seen == INVOKEVIRTUAL) {
-            int tPC = getPC();
-            if (tPC >= seenStaticGetCalendarAt + 3 && tPC < seenStaticGetCalendarAt + 4) {
-                reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE", NORMAL_PRIORITY)
+			int tPC = getPC();
+			if (tPC >= seenStaticGetCalendarAt + 3 && tPC < seenStaticGetCalendarAt + 4) {
+				reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE", NORMAL_PRIORITY)
                         .addClassAndMethod(this).addSourceLine(this, tPC));
-                return true;
-            } else if (tPC >= seenStaticGetDateFormatAt + 3 && tPC < seenStaticGetDateFormatAt + 4) {
-                reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE", NORMAL_PRIORITY)
+				return true;
+			} else if (tPC >= seenStaticGetDateFormatAt + 3 && tPC < seenStaticGetDateFormatAt + 4) {
+				reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE", NORMAL_PRIORITY)
                         .addClassAndMethod(this).addSourceLine(this, tPC));
-                return true;
-            }
-        }
+				return true;
+			}
+		}
         return false;
-    }
+	}
 
-    /**
-     * Creates a new instance of this Detector.
-     * 
+	/**
+	 * Creates a new instance of this Detector.
+	 * 
      * @param aReporter
-     *            {@link BugReporter} instance to report found problems to.
-     */
-    public StaticCalendarDetector(BugReporter aReporter) {
+	 *            {@link BugReporter} instance to report found problems to.
+	 */
+	public StaticCalendarDetector(BugReporter aReporter) {
         reporter = aReporter;
-    }
+	}
 
 }
