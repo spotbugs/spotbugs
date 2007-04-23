@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<FindBugsFilter>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP2"/>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP2"/>
+  </Match>
+  <Match>
+    <Bug pattern="MS_PKGPROTECT"/>
+  </Match>
+  <Match>
+    <Bug pattern="SE_NO_SERIALVERSIONID"/>
+    <Class name="~edu.umd.cs.findbugs.gui.*"/>
+  </Match>
+  <Match>
+    <Bug pattern="SE_BAD_FIELD"/>
+    <Class name="~edu.umd.cs.findbugs.gui.*"/>
+  </Match>
+</FindBugsFilter>

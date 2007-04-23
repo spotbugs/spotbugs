@@ -1,6 +1,5 @@
 #FindBugs User Preferences
-#Mon Feb 26 20:08:53 PST 2007
-default_directory=/Users/pugh/Applications/eclipse/Eclipse.app/Contents/MacOS
+#Wed Apr 18 10:31:09 EDT 2007
 detectorBadAppletConstructor=BadAppletConstructor|false
 detectorBadResultSetAccess=BadResultSetAccess|true
 detectorBadSyntaxForRegularExpression=BadSyntaxForRegularExpression|true
@@ -85,6 +84,7 @@ detectorRedundantInterfaces=RedundantInterfaces|true
 detectorRuntimeExceptionCapture=RuntimeExceptionCapture|true
 detectorSerializableIdiom=SerializableIdiom|true
 detectorStartInConstructor=StartInConstructor|true
+detectorStaticCalendarDetector=StaticCalendarDetector|false
 detectorStringConcatenation=StringConcatenation|true
 detectorSuperfluousInstanceOf=SuperfluousInstanceOf|true
 detectorSuspiciousThreadInterrupted=SuspiciousThreadInterrupted|true
@@ -101,5 +101,7 @@ detectorWaitInLoop=WaitInLoop|true
 detectorWrongMapIterator=WrongMapIterator|true
 detectorXMLFactoryBypass=XMLFactoryBypass|true
 detector_threshold=2
+effort=default
+excludefilter0=findbugsExclude.xml
 filter_settings=Medium|PERFORMANCE,CORRECTNESS,I18N,MT_CORRECTNESS,BAD_PRACTICE,STYLE|false
 filter_settings_neg=MALICIOUS_CODE|
