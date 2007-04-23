@@ -157,14 +157,14 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 	public static void main(String[] args) throws Exception {
 		int argCount = 0;
 		boolean unabridged = false;
-		
+
 		if (argCount < args.length && args[argCount].equals("-unabridged")) {
 			++argCount;
 			// Unabridged mode: emit all warnings reported by at least one
 			// detector, even for disabled detectors.
 			unabridged = true;
 		}
-		
+
 		if (Boolean.getBoolean("findbugs.bugdesc.unabridged")) {
 			unabridged = true;
 		}
@@ -174,7 +174,7 @@ public class PrettyPrintBugDescriptions extends PlainPrintBugDescriptions {
 			docTitle = args[argCount++];
 		}
 		PrettyPrintBugDescriptions pp = new PrettyPrintBugDescriptions(docTitle, System.out);
-		
+
 		if (argCount < args.length) {
 			pp.setHeaderText(args[argCount++]);
 		}

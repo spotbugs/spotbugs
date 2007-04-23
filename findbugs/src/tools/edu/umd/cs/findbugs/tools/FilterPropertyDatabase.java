@@ -35,29 +35,29 @@ import edu.umd.cs.findbugs.util.Util;
  */
 public class FilterPropertyDatabase {
 
-    final static int FLAGS = Constants.ACC_PROTECTED | Constants.ACC_PUBLIC;
-    /**
-     * @param args
+	final static int FLAGS = Constants.ACC_PROTECTED | Constants.ACC_PUBLIC;
+	/**
+	 * @param args
      * @throws IOException 
-     */
-    public static void main(String[] args) throws IOException {
-       InputStream inSource = System.in;
+	 */
+	public static void main(String[] args) throws IOException {
+		InputStream inSource = System.in;
        if (args.length > 0)
-           inSource = new FileInputStream(args[0]);
-       BufferedReader in = new BufferedReader(Util.getReader(inSource));
-       Pattern p = Pattern.compile(",([0-9]+)\\|");
+			inSource = new FileInputStream(args[0]);
+		BufferedReader in = new BufferedReader(Util.getReader(inSource));
+		Pattern p = Pattern.compile(",([0-9]+)\\|");
        while (true) {
-           String s = in.readLine();
-           if (s == null) break;
-           Matcher m = p.matcher(s);
+			String s = in.readLine();
+			if (s == null) break;
+			Matcher m = p.matcher(s);
            if (m.find()) {
-               int value = Integer.parseInt(m.group(1));
-               if ((value & FLAGS) != 0)
-                   System.out.println(s);
+				int value = Integer.parseInt(m.group(1));
+				if ((value & FLAGS) != 0)
+					System.out.println(s);
            }
-           
-       }
 
-    }
+		}
+
+	}
 
 }

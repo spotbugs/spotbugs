@@ -37,10 +37,10 @@ import java.util.Set;
  */
 public class FixIndentation {
 	static final String TABS = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
-	        + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
+			+ "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
 
 	public static void main(String args[]) throws Exception {
-		fix(new File(args[0]), true);
+		recursiveFix(new File(args[0]), true);
 	}
 
 	static void recursiveFix(File root, boolean partial) throws IOException {
@@ -69,7 +69,7 @@ public class FixIndentation {
 	static String fix(String s) {
 		if (s.length() == 0)
 			return s;
-		// if (s.trim().length() == 0) return "";
+		if (s.trim().length() == 0) return "";
 		int spaces = 0;
 		boolean seenTabs = false;
 		boolean badSpaces = false;
@@ -90,8 +90,11 @@ public class FixIndentation {
 			pos++;
 		}
 		if (badSpaces || spaces > 1) {
-			int tabs = (indentation + 3) / 4;
-			String result = TABS.substring(0, tabs) + s.substring(pos);
+			int tabs = (indentation + 2) / 4;
+			String result;
+			if (indentation == tabs*4+1)
+				result = TABS.substring(0, tabs) + " " + s.substring(pos);
+			else result = TABS.substring(0, tabs) + s.substring(pos);
 			return result;
 		}
 		return s;
