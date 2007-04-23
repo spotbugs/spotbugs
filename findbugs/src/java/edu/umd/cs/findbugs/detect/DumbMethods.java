@@ -621,14 +621,16 @@ public class DumbMethods extends BytecodeScanningDetector  {
 				//System.out.println("GC invocation at pc " + PC);
 			}
 		if (!isSynthetic && (seen == INVOKESPECIAL)
-		        && getClassConstantOperand().equals("java/lang/Boolean")
-		        && getNameConstantOperand().equals("<init>")
-		        && !getClassName().equals("java/lang/Boolean")
-		)
-			if (alreadyReported.add(getRefConstantOperand()))
+				&& getClassConstantOperand().equals("java/lang/Boolean")
+				&& getNameConstantOperand().equals("<init>")
+				&& !getClassName().equals("java/lang/Boolean")
+				&& alreadyReported.add(getRefConstantOperand())) {
+			int majorVersion = getThisClass().getMajor();
+			if (majorVersion >= MAJOR_1_4)
 				bugReporter.reportBug(new BugInstance(this, "DM_BOOLEAN_CTOR", NORMAL_PRIORITY)
-				        .addClassAndMethod(this)
-				        .addSourceLine(this));
+				.addClassAndMethod(this)
+				.addSourceLine(this));
+		}
 		if ((seen == INVOKESTATIC)
 		        && getClassConstantOperand().equals("java/lang/System")
 		        && (getNameConstantOperand().equals("currentTimeMillis")
