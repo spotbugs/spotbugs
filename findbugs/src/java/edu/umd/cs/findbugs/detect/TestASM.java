@@ -19,21 +19,14 @@
 
 package edu.umd.cs.findbugs.detect;
 
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Attribute;
 import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector2;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
-import edu.umd.cs.findbugs.asm.AbstractMethodVisitorWithPC;
 import edu.umd.cs.findbugs.asm.ClassNodeDetector;
-import edu.umd.cs.findbugs.asm.MethodVisitorWithPC;
-import edu.umd.cs.findbugs.asm.MethodWithPCAdapter;
 
 /**
  * Sample detector, using ASM
