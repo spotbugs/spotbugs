@@ -11,7 +11,7 @@ public class NonNullParamPropertyTest extends TestCase {
 	
 	
 	@Override
-         protected void setUp() throws Exception {
+		 protected void setUp() throws Exception {
 		empty = new ParameterNullnessProperty();
 		
 		nonEmpty = new ParameterNullnessProperty();

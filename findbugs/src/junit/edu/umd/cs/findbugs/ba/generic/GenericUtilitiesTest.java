@@ -28,13 +28,13 @@ import org.apache.bcel.generic.Type;
  */
 public class GenericUtilitiesTest extends TestCase {
 	/**
-     * 
-     */
-    private static final String SAMPLE_SIGNATURE = "Lcom/sleepycat/persist/EntityJoin<TPK;TE;>.JoinForwardCursor<TV;>;";
+	 * 
+	 */
+	private static final String SAMPLE_SIGNATURE = "Lcom/sleepycat/persist/EntityJoin<TPK;TE;>.JoinForwardCursor<TV;>;";
 
-    public void testUnmatchedRightAngleBracket() {
-    	assertEquals(3,GenericUtilities.nextUnmatchedRightAngleBracket("<I>>", 0));
-    	assertEquals(1,GenericUtilities.nextUnmatchedRightAngleBracket("I><I>", 0));
+	public void testUnmatchedRightAngleBracket() {
+		assertEquals(3,GenericUtilities.nextUnmatchedRightAngleBracket("<I>>", 0));
+		assertEquals(1,GenericUtilities.nextUnmatchedRightAngleBracket("I><I>", 0));
     }
 	public void testNestedSignature() {
 		GenericObjectType t = (GenericObjectType) GenericUtilities.getType(SAMPLE_SIGNATURE);

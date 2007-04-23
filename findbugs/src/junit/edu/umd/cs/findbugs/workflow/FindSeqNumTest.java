@@ -23,7 +23,7 @@ public class FindSeqNumTest extends TestCase {
 		versionNames = new HashMap<String, AppVersion>();
 		timeStamps = new TreeMap<Long, AppVersion>();
 		Set<AppVersion> versions = new HashSet<AppVersion>();
-        SimpleDateFormat format = new SimpleDateFormat("MMMMM dd, yyyy");
+		SimpleDateFormat format = new SimpleDateFormat("MMMMM dd, yyyy");
 		versions.add(new AppVersion(0, format.parse("June 1, 2005"), "v1.0"));
 		versions.add(new AppVersion(1, format.parse("June 10, 2005"), "v1.1"));
 		versions.add(new AppVersion(2, format.parse("June 20, 2005"), "v2.0"));

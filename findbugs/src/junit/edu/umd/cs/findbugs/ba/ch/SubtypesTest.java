@@ -25,22 +25,22 @@ import junit.framework.TestCase;
  * @author pugh
  */
 public class SubtypesTest extends TestCase {
-    
-    public void testExtractClassName() {
-        assertEquals("java/lang/Integer", Subtypes.extractClassName("Ljava/lang/Integer;"));
+	
+	public void testExtractClassName() {
+		assertEquals("java/lang/Integer", Subtypes.extractClassName("Ljava/lang/Integer;"));
         assertEquals("java/lang/Integer", Subtypes.extractClassName("[Ljava/lang/Integer;"));
-        assertEquals("java/lang/Integer", Subtypes.extractClassName("[[Ljava/lang/Integer;"));
-        assertEquals("java/lang/Integer", Subtypes.extractClassName("[[[Ljava/lang/Integer;"));
-        assertEquals("java/lang/Integer", Subtypes.extractClassName("java/lang/Integer"));
+		assertEquals("java/lang/Integer", Subtypes.extractClassName("[[Ljava/lang/Integer;"));
+		assertEquals("java/lang/Integer", Subtypes.extractClassName("[[[Ljava/lang/Integer;"));
+		assertEquals("java/lang/Integer", Subtypes.extractClassName("java/lang/Integer"));
     }
-    public void testExtractClassNameBad() {
-        try {
-        Subtypes.extractClassName("L[Ljava/lang/Integer;");
+	public void testExtractClassNameBad() {
+		try {
+		Subtypes.extractClassName("L[Ljava/lang/Integer;");
         fail();
-        } catch (IllegalArgumentException e) {
-            assert true;
-        }
+		} catch (IllegalArgumentException e) {
+			assert true;
+		}
         
-    }
+	}
 
 }
