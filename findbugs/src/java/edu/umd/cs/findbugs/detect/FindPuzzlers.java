@@ -72,6 +72,12 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	int prevOpCode;
 	XMethod previousMethodInvocation;
 	OpcodeStack stack = new OpcodeStack();
+	boolean isTigerOrHigher;
+	
+	@Override
+	public void visit(JavaClass obj) {
+		isTigerOrHigher = obj.getMajor() >= MAJOR_1_5;
+	}
 
 	private void resetIMulCastLong() {
 		imul_constant = 1;
@@ -342,6 +348,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 							 .addSourceLine(this));
 		  }
 
+		  if (isTigerOrHigher) {
 		  if (previousMethodInvocation != null && prevOpCode == INVOKESPECIAL && seen == INVOKEVIRTUAL) {
 			  String classNameForPreviousMethod = previousMethodInvocation.getClassName();
 			  String classNameForThisMethod = getClassConstantOperand();
@@ -375,6 +382,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 				  bugReporter.reportBug(new BugInstance(this, "BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR", NORMAL_PRIORITY)
 				  .addClassAndMethod(this)
 				  .addSourceLine(this));
+		  }
 		  }
 
 		  if (seen == INVOKESTATIC)
