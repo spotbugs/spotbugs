@@ -4627,8 +4627,8 @@ directly. This avoids the need to create a second array
   </BugPattern>
 
   <BugPattern type="IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD">
-    <ShortDescription>JUnit assertion in run method</ShortDescription>
-    <LongDescription>JUnit assertion in {1}</LongDescription>
+    <ShortDescription>JUnit assertion in run method will not be noticed by JUnit</ShortDescription>
+    <LongDescription>JUnit assertion in {1} will not be noticed by JUnit</LongDescription>
     <Details>
 <![CDATA[
 <p> A JUnit assertion is performed in a run method. Failed JUnit assertions
