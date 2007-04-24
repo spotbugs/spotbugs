@@ -154,7 +154,7 @@ public class ExtendedPreferences implements Cloneable {
 			}
 		}
 
-        return filters;
+		return filters;
 	}
 
 	/**
@@ -171,9 +171,9 @@ public class ExtendedPreferences implements Cloneable {
 	private void writeFilters(Properties props, String keyPrefix,
 			Collection<String> filters) {
 		int counter = 0;
-        for(String s : filters) {
+		for(String s : filters) {
 			props.setProperty(keyPrefix + counter, s);
-            counter++;
+			counter++;
 		}
 		// remove obsolete keys from the properties file
 		boolean keyFound = true;
@@ -237,7 +237,7 @@ public class ExtendedPreferences implements Cloneable {
 	@Override
 	public int hashCode() {
 		return effort.hashCode() + includeFilterFiles.hashCode()
-        + excludeFilterFiles.hashCode();
+		+ excludeFilterFiles.hashCode();
 	}
 	@Override
 	public boolean equals(Object obj) {

@@ -17,7 +17,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
- 
+
 package de.tobject.findbugs.reporter;
 
 import java.util.HashSet;
@@ -54,28 +54,28 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  * @since 28.07.2003
  */
 public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
-	
+
 	/** Controls debugging for the reporter */
 	public static boolean DEBUG = false;
 
 	private static final int MAX_CLASS_NAME_LENGTH = 35;
-	
+
 	private IProject project;
 	private Project findBugsProject;
-	
+
 	/** determines how often the progress monitor gets updated */
 	private static int MONITOR_INTERVAL = 1;
 	private IProgressMonitor monitor;
 
 	/** Persistent store of reported warnings. */
 	private SortedBugCollection bugCollection;
-	
+
 	/** Set of names of analyzed classes. */
 	private Set<String> analyzedClassNameSet;
-	
+
 	/** Current user preferences for the project. */
 	private UserPreferences userPrefs;
-	
+
 	private boolean workStarted;
 	int filesNumber;
 	int expectedWork;
@@ -90,7 +90,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	 * @param findBugsProject the FindBugs Project object
 	 */
 	public Reporter(IProject project, IProgressMonitor monitor, Project findBugsProject) {
-        if (!FindbugsPlugin.isJavaProject(project)) throw new IllegalArgumentException("Not a Java project");
+		if (!FindbugsPlugin.isJavaProject(project)) throw new IllegalArgumentException("Not a Java project");
 		this.monitor = monitor;
 		this.project = project;
 		this.findBugsProject = findBugsProject;
@@ -104,7 +104,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 			this.userPrefs = UserPreferences.createDefaultUserPreferences();
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.AbstractBugReporter#doReportBug(edu.umd.cs.findbugs.BugInstance)
 	 */
@@ -116,7 +116,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 			filteredBugCount++;
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugReporter#finish()
 	 */
@@ -125,7 +125,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 			System.out.println("Finish: Found " + filteredBugCount + " bugs."); //$NON-NLS-1$//$NON-NLS-2$
 		}
 	}
-	
+
 	/**
 	 * Returns the list of bugs found in this project. If the list has not been
 	 * initialized yet, this will be done before returning.
@@ -135,7 +135,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	public SortedBugCollection getBugCollection() {
 		return bugCollection;
 	}
-	
+
 	/**
 	 * Returns the current project.
 	 * 
@@ -144,7 +144,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	public IProject getProject() {
 		return project;
 	}
-	
+
 	/**
 	 * Get set containing full names of analyzed classes.
 	 * 
@@ -153,7 +153,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 	public Set<String> getAnalyzedClassNames() {
 		return analyzedClassNameSet;
 	}
-	
+
 	/**
 	 * Returns the current project cast into a Java project.
 	 * 
@@ -171,7 +171,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 			// This should not happen
 			return;
 		}
-		
+
 		if (DEBUG) {
 			System.out.println("Observing class: " + clazz.getClassName()); //$NON-NLS-1$
 		}
@@ -179,7 +179,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 		analyzedClassNameSet.add(clazz.getClassName());
 		if (filesNumber < analyzedClassNameSet.size())
 			filesNumber = analyzedClassNameSet.size();
-		
+
 		// Update progress monitor
 		if (monitor == null) {
 			return;
@@ -195,7 +195,7 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 			// causes break in FindBugs main loop
 			Thread.currentThread().interrupt();
 		}
-		
+
 		if (pass <= 0)
 			monitor.setTaskName(
 					"Prescanning... (found "
@@ -217,11 +217,11 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 					+ ", checking "
 					+ getAbbreviatedClassName(clazz)
 					+ ")");
-	    int work = pass == 0 ? 1 : 2;
+		int work = pass == 0 ? 1 : 2;
 		monitor.worked( work);
 		workCount+= work;
 	}
-	
+
 	/**
 	 * Returns an abreviated version of the class name.
 	 * 
@@ -257,33 +257,33 @@ public class Reporter extends AbstractBugReporter  implements FindBugsProgress {
 
 	public void finishArchive() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void finishClass() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void finishPerClassAnalysis() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void reportNumberOfArchives(int numArchives) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void startAnalysis(int numClasses) {
 		pass++;
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void predictPassCount(int[] classesPerPass) {
 		for(int count : classesPerPass) expectedWork += 2*count;
 		expectedWork -= classesPerPass[0];
-		
+
 	}
 }

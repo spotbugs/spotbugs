@@ -41,26 +41,26 @@ import org.eclipse.jdt.core.dom.Name;
  */
 public class ImportDeclarationComparator<E extends ImportDeclaration> implements Comparator<E>, Serializable {
 
-    public int compare(E o1, E o2) {
-        if (o1 == o2) {
-            return 0;
+	public int compare(E o1, E o2) {
+		if (o1 == o2) {
+			return 0;
         }
-        if (o1 == null) {
-            return MAX_VALUE;
-        }
+		if (o1 == null) {
+			return MAX_VALUE;
+		}
         if (o2 == null) {
-            return MIN_VALUE;
-        }
+			return MIN_VALUE;
+		}
 
-        if (!(o1.isStatic() ^ o2.isStatic())) {
-            return compare(o1.getName(), o2.getName());
-        }
+		if (!(o1.isStatic() ^ o2.isStatic())) {
+			return compare(o1.getName(), o2.getName());
+		}
 
-        return o1.isStatic() ? MIN_VALUE : MAX_VALUE;
-    }
+		return o1.isStatic() ? MIN_VALUE : MAX_VALUE;
+	}
 
-    private int compare(Name o1, Name o2) {
-        return o1.getFullyQualifiedName().compareTo(o2.getFullyQualifiedName());
-    }
+	private int compare(Name o1, Name o2) {
+		return o1.getFullyQualifiedName().compareTo(o2.getFullyQualifiedName());
+	}
 
 }

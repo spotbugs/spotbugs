@@ -19,22 +19,22 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  */
 public class MakeInnerTypeStaticResolution extends BugResolution {
 
-    @Override
-    protected boolean resolveBindings() {
-        return false;
+	@Override
+	protected boolean resolveBindings() {
+		return false;
     }
 
-    @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
+	@Override
+	protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+		assert rewrite != null;
         assert workingUnit != null;
-        assert bug != null;
+		assert bug != null;
 
-        TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
-        Modifier finalMod = workingUnit.getAST().newModifier(Modifier.ModifierKeyword.STATIC_KEYWORD);
+		TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
+		Modifier finalMod = workingUnit.getAST().newModifier(Modifier.ModifierKeyword.STATIC_KEYWORD);
 
-        ListRewrite modRewrite = rewrite.getListRewrite(type, TypeDeclaration.MODIFIERS2_PROPERTY);
-        modRewrite.insertLast(finalMod, null);
-    }
+		ListRewrite modRewrite = rewrite.getListRewrite(type, TypeDeclaration.MODIFIERS2_PROPERTY);
+		modRewrite.insertLast(finalMod, null);
+	}
 
 }

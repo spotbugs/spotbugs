@@ -33,29 +33,29 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
  */
 public class MethodDeclarationNotFoundException extends BodyDeclarationNotFoundException {
 
-    private TypeDeclaration typeDeclaration;
+	private TypeDeclaration typeDeclaration;
 
-    private String methodName;
+	private String methodName;
 
-    private String methodSignature;
+	private String methodSignature;
 
-    public MethodDeclarationNotFoundException(TypeDeclaration typeDeclaration, String methodName, String methodSignature) {
-        super("Method declaration '" + methodName + methodSignature + "' not found in type declaration '" + typeDeclaration.getName() + "'.");
-        this.typeDeclaration = typeDeclaration;
+	public MethodDeclarationNotFoundException(TypeDeclaration typeDeclaration, String methodName, String methodSignature) {
+		super("Method declaration '" + methodName + methodSignature + "' not found in type declaration '" + typeDeclaration.getName() + "'.");
+		this.typeDeclaration = typeDeclaration;
         this.methodName = methodName;
-        this.methodSignature = methodSignature;
-    }
+		this.methodSignature = methodSignature;
+	}
 
-    public TypeDeclaration getTypeDeclaration() {
-        return typeDeclaration;
-    }
+	public TypeDeclaration getTypeDeclaration() {
+		return typeDeclaration;
+	}
 
-    public String getMethodName() {
-        return methodName;
-    }
+	public String getMethodName() {
+		return methodName;
+	}
 
-    public String getMethodSignature() {
-        return methodSignature;
-    }
+	public String getMethodSignature() {
+		return methodSignature;
+	}
 
 }

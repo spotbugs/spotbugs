@@ -17,7 +17,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
- 
+
 package de.tobject.findbugs.marker;
 
 /**
@@ -42,13 +42,13 @@ public class FindBugsMarker {
 	 * Marker attribute recording the bug type.
 	 */
 	public static final String BUG_TYPE = "BUGTYPE";
-	
+
 	/**
 	 * Marker attribute recording the unique id of the BugInstance
 	 * in its BugCollection.
 	 */
 	public static final String UNIQUE_ID = "FINDBUGS_UNIQUE_ID";
-	
+
 	/**
 	 * Marker attribute recording the line number of the BugInstance
 	 * in its BugCollection. This enables the BugInstance to be located
@@ -56,12 +56,12 @@ public class FindBugsMarker {
 	 * adding or deleting lines.
 	 */
 	public static final String BUG_LINE_NUMBER = "BUG_LINE_NUMBER";
-	
+
 	/**
 	 * Marker attribute recording the name and timestamp of the first version.
 	 */
 	public static final String FIRST_VERSION = "FIRST_VERSION";
-	
+
 	/**
 	 * Marker attribute recording the priority and type of the bug (e.g. "High Priority Correctness")
 	 */

@@ -406,10 +406,10 @@ public class FindbugsPropertyPage extends PropertyPage {
 	}
 
 	private Set<String> filesToStrings(List<FilePlaceHolder> filters) {
-        Set<String>result = new LinkedHashSet<String>();
+		Set<String>result = new LinkedHashSet<String>();
 		for (FilePlaceHolder holder : filters) 
-            result.add(holder.getFile().getProjectRelativePath().toString());
-		
+			result.add(holder.getFile().getProjectRelativePath().toString());
+
 		return result;
 	}
 
@@ -490,7 +490,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 	 */
 	private void buildBugCategoryList(Composite categoryGroup, final IProject project) {
 		DetectorFactoryCollection.instance(); // ensure detectors loaded
-		
+
 		List<String> bugCategoryList = new LinkedList<String>(I18N.instance().getBugCategories());
 		List<Button> checkBoxList = new LinkedList<Button>();
 		for (Iterator<String> i = bugCategoryList.iterator(); i.hasNext(); ) {
@@ -775,7 +775,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 				FindbugsPlugin.getDefault().logException(e,
 						"Could not store FindBugs preferences for project");
 			}
-			
+
 			// If already enabled (and still enabled) trigger a Findbugs rebuild here
 			if (this.initialEnabled && selection) {
 				runFindbugsBuilder();
@@ -817,11 +817,11 @@ public class FindbugsPropertyPage extends PropertyPage {
 		}
 		return result;
 	}
-	
+
 	protected IProject getProject() {
 		return project;
 	}
-	
+
 	private void runFindbugsBuilder() {
 		ProgressMonitorDialog monitor = new ProgressMonitorDialog(getShell());
 		try {
@@ -837,7 +837,7 @@ public class FindbugsPropertyPage extends PropertyPage {
 						"Error while runnning FindBugs builder for project");
 					}
 				}
-				
+
 			});
 		} catch (InvocationTargetException e) {
 			FindbugsPlugin.getDefault().logException(e,

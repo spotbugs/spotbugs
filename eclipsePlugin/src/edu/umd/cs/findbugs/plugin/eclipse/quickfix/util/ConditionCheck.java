@@ -31,29 +31,29 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.util;
  */
 public class ConditionCheck {
 
-    /**
-     * Same as <CODE>checkForNull(obj, "object")</CODE>.
-     * 
+	/**
+	 * Same as <CODE>checkForNull(obj, "object")</CODE>.
+	 * 
      * @see <CODE>ConditionCheck.checkForNull(Object, String)</CODE>
-     */
-    public static void checkForNull(Object obj) {
-        checkForNull(obj, "object");
+	 */
+	public static void checkForNull(Object obj) {
+		checkForNull(obj, "object");
     }
 
-    /**
-     * Checks the specified <CODE>Object</CODE> for <CODE>null</CODE>
-     * 
+	/**
+	 * Checks the specified <CODE>Object</CODE> for <CODE>null</CODE>
+	 * 
      * @param obj
-     *            the <CODE>Object</CODE>
-     * @param name
-     *            the name of the <CODE>Object</CODE>.
+	 *            the <CODE>Object</CODE>
+	 * @param name
+	 *            the name of the <CODE>Object</CODE>.
      * @throws IllegalArgumentException
-     *             if the specified <CODE>Object</CODE> is null.
-     */
-    public static void checkForNull(Object obj, String name) {
+	 *             if the specified <CODE>Object</CODE> is null.
+	 */
+	public static void checkForNull(Object obj, String name) {
         if (obj == null) {
-            throw new IllegalArgumentException("Missing " + name + ".");
-        }
-    }
+			throw new IllegalArgumentException("Missing " + name + ".");
+		}
+	}
 
 }

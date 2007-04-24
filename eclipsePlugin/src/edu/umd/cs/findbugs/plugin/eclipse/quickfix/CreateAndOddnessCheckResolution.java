@@ -42,29 +42,29 @@ import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
  */
 public class CreateAndOddnessCheckResolution extends CorrectOddnessCheckResolution {
 
-    /**
-     * Creates the new <CODE>InfixExpression</CODE> <CODE>(x & 1) == 1</CODE>.
-     */
+	/**
+	 * Creates the new <CODE>InfixExpression</CODE> <CODE>(x & 1) == 1</CODE>.
+	 */
     @Override
-    protected InfixExpression createCorrectOddnessCheck(ASTRewrite rewrite, Expression numberExpression) {
-        assert rewrite != null;
-        assert numberExpression != null;
+	protected InfixExpression createCorrectOddnessCheck(ASTRewrite rewrite, Expression numberExpression) {
+		assert rewrite != null;
+		assert numberExpression != null;
 
-        final AST ast = rewrite.getAST();
-        InfixExpression andOddnessCheck = ast.newInfixExpression();
-        ParenthesizedExpression parenthesizedExpression = ast.newParenthesizedExpression();
+		final AST ast = rewrite.getAST();
+		InfixExpression andOddnessCheck = ast.newInfixExpression();
+		ParenthesizedExpression parenthesizedExpression = ast.newParenthesizedExpression();
         InfixExpression andExpression = ast.newInfixExpression();
 
-        andExpression.setLeftOperand((Expression) rewrite.createMoveTarget(numberExpression));
-        andExpression.setOperator(AND);
-        andExpression.setRightOperand(ast.newNumberLiteral("1"));
+		andExpression.setLeftOperand((Expression) rewrite.createMoveTarget(numberExpression));
+		andExpression.setOperator(AND);
+		andExpression.setRightOperand(ast.newNumberLiteral("1"));
         parenthesizedExpression.setExpression(andExpression);
-        andOddnessCheck.setLeftOperand(parenthesizedExpression);
-        andOddnessCheck.setOperator(EQUALS);
-        andOddnessCheck.setRightOperand(ast.newNumberLiteral("1"));
+		andOddnessCheck.setLeftOperand(parenthesizedExpression);
+		andOddnessCheck.setOperator(EQUALS);
+		andOddnessCheck.setRightOperand(ast.newNumberLiteral("1"));
 
-        return andOddnessCheck;
+		return andOddnessCheck;
 
-    }
+	}
 
 }

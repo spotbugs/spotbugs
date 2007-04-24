@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
- 
+
 package de.tobject.findbugs.builder;
 
 import java.util.Collection;
@@ -31,10 +31,10 @@ import org.eclipse.core.runtime.CoreException;
  * @since 25.09.2003
  */
 public abstract class AbstractFilesCollector {
-	
+
 	/** Controls debugging. */
 	public static boolean DEBUG;
-	
+
 	/**
 	 * Retrieves a list of files to process.
 	 * 
@@ -42,7 +42,7 @@ public abstract class AbstractFilesCollector {
 	 * @throws CoreException If some error occurred.
 	 */
 	public abstract Collection getFiles() throws CoreException;
-	
 
-	
+
+
 }

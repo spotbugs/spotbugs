@@ -84,350 +84,350 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.util.ImportDeclarationCompara
  */
 public class CreateDoPrivilegedBlockResolution extends BugResolution {
 
-    private static final String DO_PRIVILEGED_METHOD_NAME = "doPrivileged"; //$NON-NLS-1$
+	private static final String DO_PRIVILEGED_METHOD_NAME = "doPrivileged"; //$NON-NLS-1$
 
-    private boolean updateImports = true;
+	private boolean updateImports = true;
 
-    private boolean staticImport = false;
+	private boolean staticImport = false;
 
-    private Comparator<ImportDeclaration> importComparator = new ImportDeclarationComparator<ImportDeclaration>();
+	private Comparator<ImportDeclaration> importComparator = new ImportDeclarationComparator<ImportDeclaration>();
 
-    public CreateDoPrivilegedBlockResolution() {
-        super();
+	public CreateDoPrivilegedBlockResolution() {
+		super();
+	}
+
+	public CreateDoPrivilegedBlockResolution(boolean updateImports) {
+		this();
+		setUpdateImports(updateImports);
     }
 
-    public CreateDoPrivilegedBlockResolution(boolean updateImports) {
-        this();
-        setUpdateImports(updateImports);
+	public CreateDoPrivilegedBlockResolution(boolean updateImports, boolean staticImport) {
+		this(updateImports);
+		setStaticImport(staticImport);
     }
 
-    public CreateDoPrivilegedBlockResolution(boolean updateImports, boolean staticImport) {
-        this(updateImports);
-        setStaticImport(staticImport);
-    }
-
-    /**
-     * Returns <CODE>true</CODE> if the imports were updated, otherwise <CODE>false</CODE>.
-     * 
+	/**
+	 * Returns <CODE>true</CODE> if the imports were updated, otherwise <CODE>false</CODE>.
+	 * 
      * @return <CODE>true</CODE> or <CODE>false</CODE>. Default is <CODE>true</CODE>.
-     */
-    public boolean isUpdateImports() {
-        return updateImports;
+	 */
+	public boolean isUpdateImports() {
+		return updateImports;
     }
 
-    /**
-     * Enables or disables the update on the imports.
-     * 
+	/**
+	 * Enables or disables the update on the imports.
+	 * 
      * @param updateImports
-     *            the flag.
-     */
-    public void setUpdateImports(boolean updateImports) {
+	 *            the flag.
+	 */
+	public void setUpdateImports(boolean updateImports) {
         this.updateImports = updateImports;
-    }
+	}
 
-    /**
-     * Returns <CODE>true</CODE> if the <CODE>doPrivileged()</CODE>-invocation
-     * is imported statically. This feature should only be used under
+	/**
+	 * Returns <CODE>true</CODE> if the <CODE>doPrivileged()</CODE>-invocation
+	 * is imported statically. This feature should only be used under
      * source-level 1.5 or higher.
-     * 
-     * @return <CODE>true</CODE> or </CODE>false</CODE>. Default is <CODE>false</CODE>.
-     */
+	 * 
+	 * @return <CODE>true</CODE> or </CODE>false</CODE>. Default is <CODE>false</CODE>.
+	 */
     public boolean isStaticImport() {
-        return staticImport;
-    }
+		return staticImport;
+	}
 
-    /**
-     * Enables or disables static import for the <CODE>doPrivileged()</CODE>-invocation.
-     * This feature should only be used under source-level 1.5 or higher.
+	/**
+	 * Enables or disables static import for the <CODE>doPrivileged()</CODE>-invocation.
+	 * This feature should only be used under source-level 1.5 or higher.
      * 
-     * @param staticImport
-     *            the flag.
-     */
+	 * @param staticImport
+	 *            the flag.
+	 */
     public void setStaticImport(boolean staticImport) {
-        this.staticImport = staticImport;
+		this.staticImport = staticImport;
+	}
+
+	public Comparator<ImportDeclaration> getImportComparator() {
+		return importComparator;
+	}
+
+	public void setImportComparator(Comparator<ImportDeclaration> importComparator) {
+		checkForNull(importComparator, "import comparator");
+		this.importComparator = importComparator;
     }
 
-    public Comparator<ImportDeclaration> getImportComparator() {
-        return importComparator;
+	@Override
+	protected boolean resolveBindings() {
+		return true;
     }
 
-    public void setImportComparator(Comparator<ImportDeclaration> importComparator) {
-        checkForNull(importComparator, "import comparator");
-        this.importComparator = importComparator;
-    }
-
-    @Override
-    protected boolean resolveBindings() {
-        return true;
-    }
-
-    @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
+	@Override
+	protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+		assert rewrite != null;
         assert workingUnit != null;
-        assert bug != null;
+		assert bug != null;
 
-        ClassInstanceCreation classLoaderCreation = findClassLoaderCreation(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
-        if (classLoaderCreation == null) {
-            throw new BugResolutionException("No matching class loader creation found at the specified source line.");
+		ClassInstanceCreation classLoaderCreation = findClassLoaderCreation(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
+		if (classLoaderCreation == null) {
+			throw new BugResolutionException("No matching class loader creation found at the specified source line.");
         }
-        updateVariableReferences(rewrite, classLoaderCreation);
-        rewrite.replace(classLoaderCreation, createDoPrivilegedInvocation(rewrite, classLoaderCreation), null);
-        updateImportDeclarations(rewrite, workingUnit);
+		updateVariableReferences(rewrite, classLoaderCreation);
+		rewrite.replace(classLoaderCreation, createDoPrivilegedInvocation(rewrite, classLoaderCreation), null);
+		updateImportDeclarations(rewrite, workingUnit);
     }
 
-    protected void updateVariableReferences(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
-        assert rewrite != null;
-        assert classLoaderCreation != null;
+	protected void updateVariableReferences(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
+		assert rewrite != null;
+		assert classLoaderCreation != null;
 
-        MethodDeclaration method = findMethodDeclaration(classLoaderCreation);
-        if (method != null) {
-            final Set<String> variableReferences = findVariableReferences(classLoaderCreation.arguments());
+		MethodDeclaration method = findMethodDeclaration(classLoaderCreation);
+		if (method != null) {
+			final Set<String> variableReferences = findVariableReferences(classLoaderCreation.arguments());
             if (!variableReferences.isEmpty()) {
-                updateMethodParams(rewrite, variableReferences, method.parameters());
-                updateLocalVariableDeclarations(rewrite, variableReferences, method.getBody());
-            }
+				updateMethodParams(rewrite, variableReferences, method.parameters());
+				updateLocalVariableDeclarations(rewrite, variableReferences, method.getBody());
+			}
         }
-    }
+	}
 
-    protected void updateMethodParams(ASTRewrite rewrite, Set<String> variables, List<SingleVariableDeclaration> params) {
-        assert rewrite != null;
-        assert variables != null;
+	protected void updateMethodParams(ASTRewrite rewrite, Set<String> variables, List<SingleVariableDeclaration> params) {
+		assert rewrite != null;
+		assert variables != null;
         assert params != null;
 
-        for (SingleVariableDeclaration param : params) {
-            if (variables.contains(param.getName().getFullyQualifiedName())) {
-                ListRewrite listRewrite = rewrite.getListRewrite(param, SingleVariableDeclaration.MODIFIERS2_PROPERTY);
+		for (SingleVariableDeclaration param : params) {
+			if (variables.contains(param.getName().getFullyQualifiedName())) {
+				ListRewrite listRewrite = rewrite.getListRewrite(param, SingleVariableDeclaration.MODIFIERS2_PROPERTY);
                 listRewrite.insertLast(rewrite.getAST().newModifier(ModifierKeyword.FINAL_KEYWORD), null);
-            }
-        }
-    }
+			}
+		}
+	}
 
-    protected void updateLocalVariableDeclarations(final ASTRewrite rewrite, final Set<String> variables, Block block) {
-        assert rewrite != null;
-        assert block != null;
+	protected void updateLocalVariableDeclarations(final ASTRewrite rewrite, final Set<String> variables, Block block) {
+		assert rewrite != null;
+		assert block != null;
         assert variables != null;
 
-        final AST ast = rewrite.getAST();
-        block.accept(new ASTVisitor() {
+		final AST ast = rewrite.getAST();
+		block.accept(new ASTVisitor() {
 
-            @Override
-            public boolean visit(VariableDeclarationFragment fragment) {
-                if (variables.contains(fragment.getName().getFullyQualifiedName())) {
+			@Override
+			public boolean visit(VariableDeclarationFragment fragment) {
+				if (variables.contains(fragment.getName().getFullyQualifiedName())) {
                     ASTNode parent = fragment.getParent();
-                    if (parent instanceof VariableDeclarationStatement) {
-                        ListRewrite listRewrite = rewrite.getListRewrite(parent, VariableDeclarationStatement.MODIFIERS2_PROPERTY);
-                        listRewrite.insertLast(ast.newModifier(ModifierKeyword.FINAL_KEYWORD), null);
+					if (parent instanceof VariableDeclarationStatement) {
+						ListRewrite listRewrite = rewrite.getListRewrite(parent, VariableDeclarationStatement.MODIFIERS2_PROPERTY);
+						listRewrite.insertLast(ast.newModifier(ModifierKeyword.FINAL_KEYWORD), null);
                     }
-                }
-                return true;
-            }
+				}
+				return true;
+			}
 
-        });
+		});
 
-    }
+	}
 
-    protected void updateImportDeclarations(ASTRewrite rewrite, CompilationUnit compilationUnit) {
-        assert rewrite != null;
-        assert compilationUnit != null;
+	protected void updateImportDeclarations(ASTRewrite rewrite, CompilationUnit compilationUnit) {
+		assert rewrite != null;
+		assert compilationUnit != null;
 
-        if (isUpdateImports()) {
-            final AST ast = rewrite.getAST();
-            SortedSet<ImportDeclaration> imports = new TreeSet<ImportDeclaration>(importComparator);
+		if (isUpdateImports()) {
+			final AST ast = rewrite.getAST();
+			SortedSet<ImportDeclaration> imports = new TreeSet<ImportDeclaration>(importComparator);
             imports.add(createImportDeclaration(ast, PrivilegedAction.class));
-            if (!isStaticImport()) {
-                imports.add(createImportDeclaration(ast, AccessController.class));
-            } else {
+			if (!isStaticImport()) {
+				imports.add(createImportDeclaration(ast, AccessController.class));
+			} else {
                 imports.add(createImportDeclaration(ast, AccessController.class, DO_PRIVILEGED_METHOD_NAME));
-            }
-            addImports(rewrite, compilationUnit, imports);
-        }
+			}
+			addImports(rewrite, compilationUnit, imports);
+		}
     }
 
-    protected ImportDeclaration createImportDeclaration(AST ast, Class<?> importClass) {
-        assert ast != null;
-        assert importClass != null;
+	protected ImportDeclaration createImportDeclaration(AST ast, Class<?> importClass) {
+		assert ast != null;
+		assert importClass != null;
         return createImportDeclaration(ast, importClass.getName(), false);
-    }
+	}
 
-    protected ImportDeclaration createImportDeclaration(AST ast, Class<?> importClass, String javaElementName) {
-        assert ast != null;
-        assert importClass != null;
+	protected ImportDeclaration createImportDeclaration(AST ast, Class<?> importClass, String javaElementName) {
+		assert ast != null;
+		assert importClass != null;
         assert javaElementName != null;
-        return createImportDeclaration(ast, importClass.getName() + "." + javaElementName, true);
-    }
+		return createImportDeclaration(ast, importClass.getName() + "." + javaElementName, true);
+	}
 
-    private ImportDeclaration createImportDeclaration(AST ast, String name, boolean isStatic) {
-        ImportDeclaration importDeclaration = ast.newImportDeclaration();
-        importDeclaration.setName(ast.newName(name));
+	private ImportDeclaration createImportDeclaration(AST ast, String name, boolean isStatic) {
+		ImportDeclaration importDeclaration = ast.newImportDeclaration();
+		importDeclaration.setName(ast.newName(name));
         importDeclaration.setStatic(isStatic);
-        return importDeclaration;
-    }
+		return importDeclaration;
+	}
 
-    protected MethodInvocation createDoPrivilegedInvocation(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
-        AST ast = rewrite.getAST();
+	protected MethodInvocation createDoPrivilegedInvocation(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
+		AST ast = rewrite.getAST();
 
-        MethodInvocation doPrivilegedInvocation = ast.newMethodInvocation();
-        ClassInstanceCreation privilegedActionCreation = createPrivilegedActionCreation(rewrite, classLoaderCreation);
-        List<Expression> arguments = doPrivilegedInvocation.arguments();
+		MethodInvocation doPrivilegedInvocation = ast.newMethodInvocation();
+		ClassInstanceCreation privilegedActionCreation = createPrivilegedActionCreation(rewrite, classLoaderCreation);
+		List<Expression> arguments = doPrivilegedInvocation.arguments();
 
-        if (!isStaticImport()) {
-            Name accessControllerName;
-            if (isUpdateImports()) {
+		if (!isStaticImport()) {
+			Name accessControllerName;
+			if (isUpdateImports()) {
                 accessControllerName = ast.newSimpleName(TigerSubstitutes.getSimpleName(AccessController.class));
-            } else {
-                accessControllerName = ast.newName(AccessController.class.getName());
-            }
+			} else {
+				accessControllerName = ast.newName(AccessController.class.getName());
+			}
             doPrivilegedInvocation.setExpression(accessControllerName);
-        }
-        doPrivilegedInvocation.setName(ast.newSimpleName(DO_PRIVILEGED_METHOD_NAME));
-        arguments.add(privilegedActionCreation);
+		}
+		doPrivilegedInvocation.setName(ast.newSimpleName(DO_PRIVILEGED_METHOD_NAME));
+		arguments.add(privilegedActionCreation);
 
-        return doPrivilegedInvocation;
-    }
+		return doPrivilegedInvocation;
+	}
 
-    private ClassInstanceCreation createPrivilegedActionCreation(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
-        AST ast = rewrite.getAST();
+	private ClassInstanceCreation createPrivilegedActionCreation(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
+		AST ast = rewrite.getAST();
 
-        ClassInstanceCreation privilegedActionCreation = ast.newClassInstanceCreation();
-        ParameterizedType privilegedActionType = createPrivilegedActionType(rewrite, classLoaderCreation);
-        AnonymousClassDeclaration anonymousClassDeclaration = createAnonymousClassDeclaration(rewrite, classLoaderCreation);
+		ClassInstanceCreation privilegedActionCreation = ast.newClassInstanceCreation();
+		ParameterizedType privilegedActionType = createPrivilegedActionType(rewrite, classLoaderCreation);
+		AnonymousClassDeclaration anonymousClassDeclaration = createAnonymousClassDeclaration(rewrite, classLoaderCreation);
 
-        privilegedActionCreation.setType(privilegedActionType);
-        privilegedActionCreation.setAnonymousClassDeclaration(anonymousClassDeclaration);
+		privilegedActionCreation.setType(privilegedActionType);
+		privilegedActionCreation.setAnonymousClassDeclaration(anonymousClassDeclaration);
 
-        return privilegedActionCreation;
-    }
+		return privilegedActionCreation;
+	}
 
-    private ParameterizedType createPrivilegedActionType(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
-        AST ast = rewrite.getAST();
+	private ParameterizedType createPrivilegedActionType(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
+		AST ast = rewrite.getAST();
 
-        Name privilegedActionName;
-        if (isUpdateImports()) {
-            privilegedActionName = ast.newSimpleName(TigerSubstitutes.getSimpleName(PrivilegedAction.class));
+		Name privilegedActionName;
+		if (isUpdateImports()) {
+			privilegedActionName = ast.newSimpleName(TigerSubstitutes.getSimpleName(PrivilegedAction.class));
         } else {
-            privilegedActionName = ast.newName(PrivilegedAction.class.getName());
-        }
-        SimpleType rawPrivilegedActionType = ast.newSimpleType(privilegedActionName);
+			privilegedActionName = ast.newName(PrivilegedAction.class.getName());
+		}
+		SimpleType rawPrivilegedActionType = ast.newSimpleType(privilegedActionName);
         ParameterizedType privilegedActionType = ast.newParameterizedType(rawPrivilegedActionType);
-        Type typeArgument = (Type) rewrite.createCopyTarget(classLoaderCreation.getType());
-        List<Type> typeArguments = privilegedActionType.typeArguments();
+		Type typeArgument = (Type) rewrite.createCopyTarget(classLoaderCreation.getType());
+		List<Type> typeArguments = privilegedActionType.typeArguments();
 
-        typeArguments.add(typeArgument);
+		typeArguments.add(typeArgument);
 
-        return privilegedActionType;
-    }
+		return privilegedActionType;
+	}
 
-    private AnonymousClassDeclaration createAnonymousClassDeclaration(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
-        AST ast = rewrite.getAST();
+	private AnonymousClassDeclaration createAnonymousClassDeclaration(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
+		AST ast = rewrite.getAST();
 
-        AnonymousClassDeclaration anonymousClassDeclaration = ast.newAnonymousClassDeclaration();
-        MethodDeclaration runMethodDeclaration = createRunMethodDeclaration(rewrite, classLoaderCreation);
-        List<BodyDeclaration> bodyDeclarations = anonymousClassDeclaration.bodyDeclarations();
+		AnonymousClassDeclaration anonymousClassDeclaration = ast.newAnonymousClassDeclaration();
+		MethodDeclaration runMethodDeclaration = createRunMethodDeclaration(rewrite, classLoaderCreation);
+		List<BodyDeclaration> bodyDeclarations = anonymousClassDeclaration.bodyDeclarations();
 
-        bodyDeclarations.add(runMethodDeclaration);
+		bodyDeclarations.add(runMethodDeclaration);
 
-        return anonymousClassDeclaration;
-    }
+		return anonymousClassDeclaration;
+	}
 
-    private MethodDeclaration createRunMethodDeclaration(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
-        AST ast = rewrite.getAST();
+	private MethodDeclaration createRunMethodDeclaration(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
+		AST ast = rewrite.getAST();
 
-        MethodDeclaration methodDeclaration = ast.newMethodDeclaration();
-        SimpleName methodName = ast.newSimpleName("run");
-        Type returnType = (Type) rewrite.createCopyTarget(classLoaderCreation.getType());
+		MethodDeclaration methodDeclaration = ast.newMethodDeclaration();
+		SimpleName methodName = ast.newSimpleName("run");
+		Type returnType = (Type) rewrite.createCopyTarget(classLoaderCreation.getType());
         Block methodBody = createRunMethodBody(rewrite, classLoaderCreation);
-        List<Modifier> modifiers = methodDeclaration.modifiers();
+		List<Modifier> modifiers = methodDeclaration.modifiers();
 
-        modifiers.add(ast.newModifier(PUBLIC_KEYWORD));
-        methodDeclaration.setName(methodName);
-        methodDeclaration.setReturnType2(returnType);
+		modifiers.add(ast.newModifier(PUBLIC_KEYWORD));
+		methodDeclaration.setName(methodName);
+		methodDeclaration.setReturnType2(returnType);
         methodDeclaration.setBody(methodBody);
 
-        return methodDeclaration;
-    }
+		return methodDeclaration;
+	}
 
-    private Block createRunMethodBody(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
-        AST ast = rewrite.getAST();
+	private Block createRunMethodBody(ASTRewrite rewrite, ClassInstanceCreation classLoaderCreation) {
+		AST ast = rewrite.getAST();
 
-        Block methodBody = ast.newBlock();
-        ReturnStatement returnStatement = ast.newReturnStatement();
-        List<Statement> statements = methodBody.statements();
+		Block methodBody = ast.newBlock();
+		ReturnStatement returnStatement = ast.newReturnStatement();
+		List<Statement> statements = methodBody.statements();
 
-        statements.add(returnStatement);
-        returnStatement.setExpression((ClassInstanceCreation) rewrite.createCopyTarget(classLoaderCreation));
+		statements.add(returnStatement);
+		returnStatement.setExpression((ClassInstanceCreation) rewrite.createCopyTarget(classLoaderCreation));
 
-        return methodBody;
-    }
+		return methodBody;
+	}
 
-    @CheckForNull
-    private ClassInstanceCreation findClassLoaderCreation(ASTNode node) {
-        ClassLoaderCreationFinder finder = new ClassLoaderCreationFinder();
+	@CheckForNull
+	private ClassInstanceCreation findClassLoaderCreation(ASTNode node) {
+		ClassLoaderCreationFinder finder = new ClassLoaderCreationFinder();
         node.accept(finder);
-        return finder.getClassLoaderCreation();
-    }
+		return finder.getClassLoaderCreation();
+	}
 
-    @CheckForNull
-    private MethodDeclaration findMethodDeclaration(ASTNode node) {
-        if (node == null || node instanceof MethodDeclaration) {
+	@CheckForNull
+	private MethodDeclaration findMethodDeclaration(ASTNode node) {
+		if (node == null || node instanceof MethodDeclaration) {
             return (MethodDeclaration) node;
-        }
-        return findMethodDeclaration(node.getParent());
-    }
+		}
+		return findMethodDeclaration(node.getParent());
+	}
 
-    private Set<String> findVariableReferences(List<Expression> arguments) {
-        final Set<String> refs = new HashSet<String>();
-        for (Expression argument : arguments) {
+	private Set<String> findVariableReferences(List<Expression> arguments) {
+		final Set<String> refs = new HashSet<String>();
+		for (Expression argument : arguments) {
             argument.accept(new ASTVisitor() {
 
-                @Override
-                public boolean visit(SimpleName node) {
-                    if (!(node.getParent() instanceof Type)) {
+				@Override
+				public boolean visit(SimpleName node) {
+					if (!(node.getParent() instanceof Type)) {
                         refs.add(node.getFullyQualifiedName());
-                    }
-                    return true;
-                }
+					}
+					return true;
+				}
 
-            });
-        }
-        return refs;
+			});
+		}
+		return refs;
     }
 
-    protected static class ClassLoaderCreationFinder extends ASTVisitor {
+	protected static class ClassLoaderCreationFinder extends ASTVisitor {
 
-        private ClassInstanceCreation classLoaderCreation = null;
+		private ClassInstanceCreation classLoaderCreation = null;
 
-        @Override
-        public boolean visit(ClassInstanceCreation node) {
-            if (classLoaderCreation == null) {
+		@Override
+		public boolean visit(ClassInstanceCreation node) {
+			if (classLoaderCreation == null) {
                 if (!isClassLoaderCreation(node)) {
-                    return true;
-                }
-                classLoaderCreation = node;
+					return true;
+				}
+				classLoaderCreation = node;
             }
-            return false;
-        }
+			return false;
+		}
 
-        public ClassInstanceCreation getClassLoaderCreation() {
-            return classLoaderCreation;
-        }
+		public ClassInstanceCreation getClassLoaderCreation() {
+			return classLoaderCreation;
+		}
 
-        private boolean isClassLoaderCreation(ClassInstanceCreation classLoaderCreation) {
-            return isClassLoader(classLoaderCreation.getType());
-        }
+		private boolean isClassLoaderCreation(ClassInstanceCreation classLoaderCreation) {
+			return isClassLoader(classLoaderCreation.getType());
+		}
 
-        private boolean isClassLoader(Type type) {
-            return isClassLoader(type.resolveBinding());
-        }
+		private boolean isClassLoader(Type type) {
+			return isClassLoader(type.resolveBinding());
+		}
 
-        private boolean isClassLoader(ITypeBinding typeBinding) {
-            if (typeBinding.getQualifiedName().equals(ClassLoader.class.getName())) {
-                return true;
+		private boolean isClassLoader(ITypeBinding typeBinding) {
+			if (typeBinding.getQualifiedName().equals(ClassLoader.class.getName())) {
+				return true;
             }
 
-            ITypeBinding superclass = typeBinding.getSuperclass();
-            return superclass != null && isClassLoader(superclass);
-        }
+			ITypeBinding superclass = typeBinding.getSuperclass();
+			return superclass != null && isClassLoader(superclass);
+		}
     }
 
 }

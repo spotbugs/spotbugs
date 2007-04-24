@@ -134,7 +134,7 @@ public class FindBugsWorker {
 
 		Project findBugsProject = new Project();
 		Iterator iter = files.iterator();
-        Map<File, String> outputFiles = new HashMap<File, String>();
+		Map<File, String> outputFiles = new HashMap<File, String>();
 		while (iter.hasNext()) {
 			// get the resource
 			IResource res = (IResource) iter.next();
@@ -148,57 +148,57 @@ public class FindBugsWorker {
 
 			IPath location = res.getLocation();
 			if (Util.isClassFile(res) && containsIn(outLocations, location)) {
-			    // add this file to the work list:
-			    String fileName = location.toOSString();
+				// add this file to the work list:
+				String fileName = location.toOSString();
 
-			    res.refreshLocal(IResource.DEPTH_INFINITE, null);
-			    if (DEBUG) {
-			        System.out.println(
+				res.refreshLocal(IResource.DEPTH_INFINITE, null);
+				if (DEBUG) {
+					System.out.println(
 			                "Resource: " + fileName //$NON-NLS-1$
-			                + ": in sync: " + res.isSynchronized(IResource.DEPTH_INFINITE)); //$NON-NLS-1$
-			    }
-			    findBugsProject.addFile(fileName);
+							+ ": in sync: " + res.isSynchronized(IResource.DEPTH_INFINITE)); //$NON-NLS-1$
+				}
+				findBugsProject.addFile(fileName);
 			}
 			else if (Util.isJavaFile(res)) {
-			    // this is a .java file, so get the corresponding .class file(s)
-			    // get the compilation unit for this file
-			    ICompilationUnit cu = JavaCore.createCompilationUnitFrom((IFile)res);
+				// this is a .java file, so get the corresponding .class file(s)
+				// get the compilation unit for this file
+				ICompilationUnit cu = JavaCore.createCompilationUnitFrom((IFile)res);
 			    if (cu == null) {
-			        if (DEBUG) {
-			            FindbugsPlugin.getDefault().logError("NULL Compilation Unit for "+res.getName());
-			        }
+					if (DEBUG) {
+						FindbugsPlugin.getDefault().logError("NULL Compilation Unit for "+res.getName());
+					}
 			        continue; // ignore and continue
-			    }
-			    // find the output location for this CompilationUnit
-			    IPackageFragmentRoot pkgRoot = (IPackageFragmentRoot) cu.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
+				}
+				// find the output location for this CompilationUnit
+				IPackageFragmentRoot pkgRoot = (IPackageFragmentRoot) cu.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
 			    if (pkgRoot == null) {
-			        if (DEBUG) {
-			            FindbugsPlugin.getDefault().logError("NULL Package Root for: "+res.getName());
-			        }
+					if (DEBUG) {
+						FindbugsPlugin.getDefault().logError("NULL Package Root for: "+res.getName());
+					}
 			        continue; // ignore and continue
-			    }
-			    IClasspathEntry cpe = pkgRoot.getRawClasspathEntry();
-			    if (cpe == null) {
+				}
+				IClasspathEntry cpe = pkgRoot.getRawClasspathEntry();
+				if (cpe == null) {
 			        if (DEBUG) {
-			            FindbugsPlugin.getDefault().logError("NULL Classpath Entry for: "+res.getName());
-			        }
-			        continue; // ignore and continue
+						FindbugsPlugin.getDefault().logError("NULL Classpath Entry for: "+res.getName());
+					}
+					continue; // ignore and continue
 			    }
-			    IPath outLocation = getAbsoluteOutputLocation(pkgRoot, cpe);
-			    // get the workspace relative path for this .java file
-			    IPath relativePath = getRelativeFilePath(res, cpe);
+				IPath outLocation = getAbsoluteOutputLocation(pkgRoot, cpe);
+				// get the workspace relative path for this .java file
+				IPath relativePath = getRelativeFilePath(res, cpe);
 			    IPath pkgPath = relativePath.removeLastSegments(1);
-			    String fName = relativePath.lastSegment();
-			    fName = fName.substring(0, fName.lastIndexOf('.'));
-			    // find the class and inner classes for this .java file
+				String fName = relativePath.lastSegment();
+				fName = fName.substring(0, fName.lastIndexOf('.'));
+				// find the class and inner classes for this .java file
 			    IPath clzLocation = outLocation.append(pkgPath);
-			    String exp = fName+"\\.class"+"|"+fName+"\\$.*\\.class";
-			    File clzDir = clzLocation.toFile();
-			    // check if the directory exists in the output locations
+				String exp = fName+"\\.class"+"|"+fName+"\\$.*\\.class";
+				File clzDir = clzLocation.toFile();
+				// check if the directory exists in the output locations
 			    String oldExp = outputFiles.get(clzDir);
-			    if (oldExp != null) {
-			        exp = oldExp + "|" + exp;
-			    }
+				if (oldExp != null) {
+					exp = oldExp + "|" + exp;
+				}
 			    outputFiles.put(clzDir, exp);
 			}
 		}
@@ -239,7 +239,7 @@ public class FindBugsWorker {
 
 			// Merge new results into existing results.
 			updateBugCollection(findBugsProject, bugReporter, incremental);
-			
+
 			// Redisplay markers (this makes sure version information can get in)
 			Iterator it = files.iterator();
 			if(it.hasNext()){
@@ -259,67 +259,67 @@ public class FindBugsWorker {
 			FindbugsPlugin.getDefault().logException(e, "Error performing FindBugs analysis");
 		}
 	}
-    /**
-     * Add the output .class files to the FindBugs project in the directories 
-     * that match the corresponding patterns in the <code>Map</code> outputFiles.
+	/**
+	 * Add the output .class files to the FindBugs project in the directories 
+	 * that match the corresponding patterns in the <code>Map</code> outputFiles.
      *  
-     * @param findBugsProject   findbugs <code>Project</code>
-     * @param outputFiles   Map containing output directories and patterns for .class files. 
-     */
+	 * @param findBugsProject   findbugs <code>Project</code>
+	 * @param outputFiles   Map containing output directories and patterns for .class files. 
+	 */
     private void addOutputFiles(Project findBugsProject, Map<File, String> outputFiles) {
-        for (Map.Entry<File, String> entry: outputFiles.entrySet()) {
-            File clzDir = entry.getKey();
-            final Pattern pat = Pattern.compile(entry.getValue());
+		for (Map.Entry<File, String> entry: outputFiles.entrySet()) {
+			File clzDir = entry.getKey();
+			final Pattern pat = Pattern.compile(entry.getValue());
             if (clzDir.exists() && clzDir.isDirectory()) {
-                File[] clzs = clzDir.listFiles(new FilenameFilter() {
-                    public boolean accept(File dir, String name) {
-                        return pat.matcher(name).find();
+				File[] clzs = clzDir.listFiles(new FilenameFilter() {
+					public boolean accept(File dir, String name) {
+						return pat.matcher(name).find();
                     }
-                });
-                // add the clzs to the list of files to be analysed
-                for (File cl: clzs) {
+				});
+				// add the clzs to the list of files to be analysed
+				for (File cl: clzs) {
                     findBugsProject.addFile(cl.getAbsolutePath());
-                }
-            }
-        }
+				}
+			}
+		}
     }
 
-    /**
-     * Get the workspace relative file path for the given .java file resource. 
-     * 
+	/**
+	 * Get the workspace relative file path for the given .java file resource. 
+	 * 
      * @param res   Resource to lookup in the workspace
-     * @param cpe   Classpath entry where the resource resides. 
-     * @return workspace relative file path for the .java file. 
-     */
+	 * @param cpe   Classpath entry where the resource resides. 
+	 * @return workspace relative file path for the .java file. 
+	 */
     private IPath getRelativeFilePath(IResource res, IClasspathEntry cpe) {
-        IPath cpePath = cpe.getPath();
-        IPath javaFilePath = res.getFullPath();
-        IPath relativePath = javaFilePath.removeFirstSegments(cpePath.matchingFirstSegments(javaFilePath));
+		IPath cpePath = cpe.getPath();
+		IPath javaFilePath = res.getFullPath();
+		IPath relativePath = javaFilePath.removeFirstSegments(cpePath.matchingFirstSegments(javaFilePath));
         return relativePath;
-    }
+	}
 
-    /**
-     * Get the absolute path in the local file system for the specified <code>IClasspathEntry</code>. 
-     * 
+	/**
+	 * Get the absolute path in the local file system for the specified <code>IClasspathEntry</code>. 
+	 * 
      * @param pkgRoot   Root package fragment for the classpath entry. 
-     * @param cpe       Classpath entry for the package. 
-     * @return absolute path in the local file system for the classpath entry. 
-     * @throws JavaModelException if the default location is not specified. 
+	 * @param cpe       Classpath entry for the package. 
+	 * @return absolute path in the local file system for the classpath entry. 
+	 * @throws JavaModelException if the default location is not specified. 
      */
-    private IPath getAbsoluteOutputLocation(IPackageFragmentRoot pkgRoot, IClasspathEntry cpe) throws JavaModelException {
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        IWorkspaceRoot root = workspace.getRoot();
+	private IPath getAbsoluteOutputLocation(IPackageFragmentRoot pkgRoot, IClasspathEntry cpe) throws JavaModelException {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot root = workspace.getRoot();
        
-      
-        IPath outLocation = cpe.getOutputLocation();
-        // check if it uses the default location
+
+		IPath outLocation = cpe.getOutputLocation();
+		// check if it uses the default location
         IJavaProject proj = pkgRoot.getJavaProject();
-        if (outLocation == null) {
-            outLocation = proj.getOutputLocation();
-        }
+		if (outLocation == null) {
+			outLocation = proj.getOutputLocation();
+		}
         IResource resource = root.findMember(outLocation);
-        return resource.getLocation();
-    }
+		return resource.getLocation();
+	}
 
 	/**
 	 * Update the BugCollection for the project.
@@ -347,7 +347,7 @@ public class FindBugsWorker {
 		Update update = new Update();
 		return (SortedBugCollection)(update.mergeCollections(firstCollection, secondCollection, false, incremental));
 	}
-	
+
 	/**
 	 * Update the original bug collection to include the information in
 	 * the new bug collection, preserving the history and classification
@@ -357,7 +357,7 @@ public class FindBugsWorker {
 	 * @param oldBugCollection original warnings
 	 * @param newBugCollection new warnings
 	 */
-	
+
 	private void updateBugCollectionIncrementally(
 			Reporter bugReporter,
 			SortedBugCollection oldBugCollection,
@@ -414,7 +414,7 @@ public class FindBugsWorker {
 		// configure extended preferences
 		findBugs.setAnalysisFeatureSettings(extendedPrefs.getAnalysisFeatureSettings());
 
-         for(String fileName : extendedPrefs.getIncludeFilterFiles()) {
+		 for(String fileName : extendedPrefs.getIncludeFilterFiles()) {
 			IFile file = project.getFile(fileName);
 			// TODO: some error reporting here to indicate that a filter no longer exists
 			if (file.exists()) {
@@ -422,8 +422,8 @@ public class FindBugsWorker {
 				try {
 				findBugs.addFilter(filterName, true);
 				} catch (RuntimeException e) {
-                    FindbugsPlugin.getDefault().logException(e, "Error while loading filter \"" + filterName + "\".");
-                } catch (FilterException e) {
+					FindbugsPlugin.getDefault().logException(e, "Error while loading filter \"" + filterName + "\".");
+				} catch (FilterException e) {
 					FindbugsPlugin.getDefault().logException(e, "Error while loading filter \"" + filterName + "\".");
 				} catch (IOException e) {
 					FindbugsPlugin.getDefault().logException(e, "Error while reading filter \"" + filterName + "\".");
@@ -466,38 +466,38 @@ public class FindBugsWorker {
 	 * @throws CoreException
 	 */
 	private Set<IPath> createOutputLocations() throws CoreException {
-	    Set<IPath> set = new HashSet<IPath>();
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        IWorkspaceRoot root = workspace.getRoot();
+		Set<IPath> set = new HashSet<IPath>();
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot root = workspace.getRoot();
        
-	    IJavaProject javaProject = JavaCore.create(this.project);
-	    // path to the project without project name itself
+		IJavaProject javaProject = JavaCore.create(this.project);
+		// path to the project without project name itself
 
-	    if (javaProject.exists() && javaProject.getProject().isOpen()) {
-	        IClasspathEntry entries[] = javaProject.getRawClasspath();
-	        for (int i = 0; i < entries.length; i++) {
+		if (javaProject.exists() && javaProject.getProject().isOpen()) {
+			IClasspathEntry entries[] = javaProject.getRawClasspath();
+			for (int i = 0; i < entries.length; i++) {
 	            IClasspathEntry classpathEntry = entries[i];
-	            IPath path = classpathEntry.getOutputLocation();
-	            if (path != null && classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
-	                // this location is workspace relative and starts with project dir
+				IPath path = classpathEntry.getOutputLocation();
+				if (path != null && classpathEntry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
+					// this location is workspace relative and starts with project dir
 	                IResource resource = root.findMember(path);
-	                if (resource != null) {
-	                    set.add(resource.getLocation());
-	                }
+					if (resource != null) {
+						set.add(resource.getLocation());
+					}
 	            }
-	        }
-	    }
+			}
+		}
 
-	    // add the default location
-	    IPath def = javaProject.getOutputLocation();
+		// add the default location
+		IPath def = javaProject.getOutputLocation();
 
-	    IResource resource = root.findMember(def);
-	    if (resource != null) {
-	        IPath location = resource.getLocation();
+		IResource resource = root.findMember(def);
+		if (resource != null) {
+			IPath location = resource.getLocation();
 	        set.add(location);
-	    }
+		}
 
-	    return set;
+		return set;
 	}
 
 	/**

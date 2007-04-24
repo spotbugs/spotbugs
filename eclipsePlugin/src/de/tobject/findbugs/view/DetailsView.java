@@ -78,287 +78,287 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  */
 public class DetailsView extends ViewPart {
 
-    private static DetailsView detailsView;
+	private static DetailsView detailsView;
 
-    private String description = "";
+	private String description = "";
 
-    private String title = "";
+	private String title = "";
 
-    private List annotationList;
+	private List annotationList;
 
-    private Text priorityTypeArea;
+	private Text priorityTypeArea;
 
-    private String priorityTypeString = "";
+	private String priorityTypeString = "";
 
-    private BugInstance theBug;
+	private BugInstance theBug;
 
-    private ISelectionListener selectionListener;
+	private ISelectionListener selectionListener;
 
-    private SashForm sash;
+	private SashForm sash;
 
-    // HTML presentation classes that don't depend upon Browser
-    @CheckForNull
-    private StyledText control;
+	// HTML presentation classes that don't depend upon Browser
+	@CheckForNull
+	private StyledText control;
 
-    private DefaultInformationControl.IInformationPresenter presenter;
+	private DefaultInformationControl.IInformationPresenter presenter;
 
-    private TextPresentation presentation = new TextPresentation();
+	private TextPresentation presentation = new TextPresentation();
 
-    @CheckForNull
-    private Browser browser;
+	@CheckForNull
+	private Browser browser;
 
-    /*
-     * (non-Javadoc)
-     *
+	/*
+	 * (non-Javadoc)
+	 *
      * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
-     */
-    @Override
-    public void createPartControl(Composite parent) {
+	 */
+	@Override
+	public void createPartControl(Composite parent) {
         sash = new SashForm(parent, SWT.VERTICAL);
-        priorityTypeArea = new Text(sash, SWT.VERTICAL);
-        priorityTypeArea.setEditable(false);
-        annotationList = new List(sash, SWT.V_SCROLL);
+		priorityTypeArea = new Text(sash, SWT.VERTICAL);
+		priorityTypeArea.setEditable(false);
+		annotationList = new List(sash, SWT.V_SCROLL);
         annotationList.setToolTipText("Additional information about the selected bug");
-        annotationList.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
+		annotationList.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
                 if (theBug == null)
-                    return;
-                int index = annotationList.getSelectionIndex();
-                Iterator<BugAnnotation> theIterator = theBug.annotationIterator();
+					return;
+				int index = annotationList.getSelectionIndex();
+				Iterator<BugAnnotation> theIterator = theBug.annotationIterator();
                 BugAnnotation theAnnotation = theIterator.next();
-                for (int i = 0; i < index; i++)
-                    theAnnotation = theIterator.next();
-                if (theAnnotation instanceof SourceLineAnnotation) {
+				for (int i = 0; i < index; i++)
+					theAnnotation = theIterator.next();
+				if (theAnnotation instanceof SourceLineAnnotation) {
                     SourceLineAnnotation sla = (SourceLineAnnotation) theAnnotation;
-                    IFile file = null;
-                    try {
-                        IProject project = MarkerUtil.findProjectForWarning(theBug);
+					IFile file = null;
+					try {
+						IProject project = MarkerUtil.findProjectForWarning(theBug);
                         if (project == null) return;
-                        file = (IFile) MarkerUtil.getUnderlyingResource(theBug, project, sla);
-                    } catch (JavaModelException ex) {
-                        FindbugsPlugin.getDefault().logException(
+						file = (IFile) MarkerUtil.getUnderlyingResource(theBug, project, sla);
+					} catch (JavaModelException ex) {
+						FindbugsPlugin.getDefault().logException(
                                 ex, "Could not find file for " + theBug.getMessage());
-                        return;
-                    }
-                    if (file == null){
+						return;
+					}
+					if (file == null){
                         FindbugsPlugin.getDefault().logError("Could not find file for " + theBug.getMessage());
-                        return;
-                    }
-                    HashMap<Object, Object> map = new HashMap<Object, Object>();
+						return;
+					}
+					HashMap<Object, Object> map = new HashMap<Object, Object>();
                     map.put(IMarker.LINE_NUMBER, sla.getStartLine());
-                   //  map.put(IDE.EDITOR_ID_ATTR,  org.eclipse.jdt.core.JavaCore;
-                    try {
-                        IMarker marker = file.createMarker(IMarker.TEXT);
+				   //  map.put(IDE.EDITOR_ID_ATTR,  org.eclipse.jdt.core.JavaCore;
+					try {
+						IMarker marker = file.createMarker(IMarker.TEXT);
                         marker.setAttributes(map);
-                        IDE.openEditor(getSite().getPage(), marker); // 3.0 API
-                        marker.delete();
-                    } catch (PartInitException x) {
+						IDE.openEditor(getSite().getPage(), marker); // 3.0 API
+						marker.delete();
+					} catch (PartInitException x) {
                         FindbugsPlugin.getDefault().logException(
-                                x, "Could not create marker for " + theBug.getMessage());
-                    } catch (CoreException y) {
-                        FindbugsPlugin.getDefault().logException(
+								x, "Could not create marker for " + theBug.getMessage());
+					} catch (CoreException y) {
+						FindbugsPlugin.getDefault().logException(
                                 y, "Could not create marker for " + theBug.getMessage());
-                    }
-                }
-            }
+					}
+				}
+			}
         });
-        try {
-            browser = new Browser(sash, SWT.NONE);
-            browser.setToolTipText("Description of the selected bug");
+		try {
+			browser = new Browser(sash, SWT.NONE);
+			browser.setToolTipText("Description of the selected bug");
         } catch (SWTError e) {
-            control = new StyledText(sash, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
-            control.setEditable(false);
-            // Handle control resizing. The HTMLPresenter cares about window
+			control = new StyledText(sash, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
+			control.setEditable(false);
+			// Handle control resizing. The HTMLPresenter cares about window
             // size
-            // when presenting HTML, so we should redraw the control.
-            control.addControlListener(new ControlAdapter() {
-                @Override
+			// when presenting HTML, so we should redraw the control.
+			control.addControlListener(new ControlAdapter() {
+				@Override
                 public void controlResized(ControlEvent e) {
-                    updateDisplay();
-                }
-            });
+					updateDisplay();
+				}
+			});
 
-            try {
-                Class presenterClass = Class.forName("org.eclipse.jdt.internal.ui.text.HTMLTextPresenter.HTMLTextPresenter");
-                presenter = (IInformationPresenter) presenterClass.getConstructor(Boolean.TYPE).newInstance(false);
+			try {
+				Class presenterClass = Class.forName("org.eclipse.jdt.internal.ui.text.HTMLTextPresenter.HTMLTextPresenter");
+				presenter = (IInformationPresenter) presenterClass.getConstructor(Boolean.TYPE).newInstance(false);
 
 
-            } catch (Exception e2) {
-                FindbugsPlugin.getDefault().logException(
-                        e2, "Could not create HTMLTextPresenter");
+			} catch (Exception e2) {
+				FindbugsPlugin.getDefault().logException(
+						e2, "Could not create HTMLTextPresenter");
             }
 
-        }
-        sash.setWeights(new int[] { 1, 4, 8 });
-        // Add selection listener to detect click in problems view or in tree
+		}
+		sash.setWeights(new int[] { 1, 4, 8 });
+		// Add selection listener to detect click in problems view or in tree
         // view
-        ISelectionService theService = getSite().getWorkbenchWindow().getSelectionService();
-        selectionListener = new ISelectionListener() {
-            public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection) {
+		ISelectionService theService = getSite().getWorkbenchWindow().getSelectionService();
+		selectionListener = new ISelectionListener() {
+			public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection) {
                 if (theSelection instanceof IStructuredSelection) {
-                    Object elt = ((IStructuredSelection) theSelection).getFirstElement();
-                    if (elt instanceof IMarker)
-                        DetailsView.showMarker((IMarker) elt, false);
+					Object elt = ((IStructuredSelection) theSelection).getFirstElement();
+					if (elt instanceof IMarker)
+						DetailsView.showMarker((IMarker) elt, false);
                     if (elt instanceof TreeItem) {
-                        IMarker theMarker = BugTreeView.getMarkerForTreeItem((TreeItem) elt);
-                        if (theMarker != null)
-                            DetailsView.showMarker(theMarker, false);
+						IMarker theMarker = BugTreeView.getMarkerForTreeItem((TreeItem) elt);
+						if (theMarker != null)
+							DetailsView.showMarker(theMarker, false);
                     }
-                }
-            }
-        };
+				}
+			}
+		};
         theService.addSelectionListener(selectionListener);
-        DetailsView.detailsView = this;
+		DetailsView.detailsView = this;
 
-    }
+	}
 
-    /*
-     * (non-Javadoc)
-     *
+	/*
+	 * (non-Javadoc)
+	 *
      * @see org.eclipse.ui.IWorkbenchPart#setFocus()
-     */
-    @Override
-    public void setFocus() {
+	 */
+	@Override
+	public void setFocus() {
         annotationList.setFocus();
-    }
+	}
 
-    /*
-     * (non-Javadoc)
-     *
+	/*
+	 * (non-Javadoc)
+	 *
      * @see org.eclipse.ui.IWorkbenchPart#dispose()
-     */
-    @Override
-    public void dispose() {
+	 */
+	@Override
+	public void dispose() {
         if(selectionListener != null){
-            getSite().getWorkbenchWindow().getSelectionService().removeSelectionListener(
-                    selectionListener);
-            selectionListener = null;
+			getSite().getWorkbenchWindow().getSelectionService().removeSelectionListener(
+					selectionListener);
+			selectionListener = null;
         }
-        sash.dispose();
-    	detailsView = null;
-        super.dispose();
+		sash.dispose();
+		detailsView = null;
+		super.dispose();
     }
 
-    /**
-     * Updates the control using the current window size and the contents of the
-     * title and description fields.
+	/**
+	 * Updates the control using the current window size and the contents of the
+	 * title and description fields.
      */
-    private void updateDisplay() {
-        String html = ("<b>" + title + "</b><br/>" + description);
-        setHTMLText(html);
+	private void updateDisplay() {
+		String html = ("<b>" + title + "</b><br/>" + description);
+		setHTMLText(html);
         priorityTypeArea.setText(this.priorityTypeString);
-    }
+	}
 
-    @SuppressWarnings("deprecation")
-    private void setHTMLText(String html) {
-        if (browser != null && !browser.isDisposed())
+	@SuppressWarnings("deprecation")
+	private void setHTMLText(String html) {
+		if (browser != null && !browser.isDisposed())
             browser.setText(html);
 
-        else {
-            StyledText control = this.control;
-            if (control != null && !control.isDisposed() && presenter != null) {
+		else {
+			StyledText control = this.control;
+			if (control != null && !control.isDisposed() && presenter != null) {
                 Rectangle size = this.control.getClientArea();
-                html = presenter.updatePresentation(getSite().getShell().getDisplay(), html, presentation, size.width,
-                        size.height);
-                control.setText(html);
+				html = presenter.updatePresentation(getSite().getShell().getDisplay(), html, presentation, size.width,
+						size.height);
+				control.setText(html);
                 TextPresentation.applyTextPresentation(presentation, control);
-            }
-        }
-    }
+			}
+		}
+	}
 
-    /**
-     * Set the content to be displayed.
-     *
+	/**
+	 * Set the content to be displayed.
+	 *
      * @param title
-     *            the title of the bug
-     * @param description
-     *            the description of the bug
+	 *            the title of the bug
+	 * @param description
+	 *            the description of the bug
      * @param theBug
-     * 			  the BugInstance
-     * @param priorityTypeString
-     * 			  A string describing the priority and ategory (e.g. "High Priority Correctness"
+	 * 			  the BugInstance
+	 * @param priorityTypeString
+	 * 			  A string describing the priority and ategory (e.g. "High Priority Correctness"
      */
-    public void setContent(String title, String description, BugInstance theBug, String priorityTypeString) {
-        this.title = (title == null) ? "" : title.trim();
-        this.description = (description == null) ? "" : description.trim();
+	public void setContent(String title, String description, BugInstance theBug, String priorityTypeString) {
+		this.title = (title == null) ? "" : title.trim();
+		this.description = (description == null) ? "" : description.trim();
         this.theBug = theBug;
-        this.priorityTypeString = priorityTypeString;
-        updateDisplay();
-    }
+		this.priorityTypeString = priorityTypeString;
+		updateDisplay();
+	}
 
 
-    /**
-     * Show the details of a FindBugs marker in the details view. Brings the
-     * view to the foreground.
+	/**
+	 * Show the details of a FindBugs marker in the details view. Brings the
+	 * view to the foreground.
      *
-     * @param marker
-     *            the FindBugs marker containing the bug pattern to show details
-     *            for
+	 * @param marker
+	 *            the FindBugs marker containing the bug pattern to show details
+	 *            for
      * @param focus
-     *            True if you want to set the focus to this view - but it won't if the user
-     *            annotations view is already selected
-     */
+	 *            True if you want to set the focus to this view - but it won't if the user
+	 *            annotations view is already selected
+	 */
     public static void showMarker(IMarker marker, boolean focus) {
 
-        // Obtain the current workbench page, and show the details view
-        IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
-        if (pages.length > 0) {
+		// Obtain the current workbench page, and show the details view
+		IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
+		if (pages.length > 0) {
             try {
-                if (focus && !(UserAnnotationsView.isVisible()))
-                	pages[0].showView("de.tobject.findbugs.view.detailsview");
-                if(detailsView == null)
+				if (focus && !(UserAnnotationsView.isVisible()))
+					pages[0].showView("de.tobject.findbugs.view.detailsview");
+				if(detailsView == null)
                     return;
-                String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
-                String priorityTypeString = marker.getAttribute(FindBugsMarker.PRIORITY_TYPE, "");
-                DetectorFactoryCollection.instance().ensureLoaded(); // fix
+				String bugType = marker.getAttribute(FindBugsMarker.BUG_TYPE, "");
+				String priorityTypeString = marker.getAttribute(FindBugsMarker.PRIORITY_TYPE, "");
+				DetectorFactoryCollection.instance().ensureLoaded(); // fix
                 // bug#1530195
-                BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
-                BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
-                if (pattern != null) {
+				BugPattern pattern = I18N.instance().lookupBugPattern(bugType);
+				BugInstance bug = MarkerUtil.findBugInstanceForMarker(marker);
+				if (pattern != null) {
                     String shortDescription = pattern.getShortDescription();
-                    String detailText = pattern.getDetailText();
-                    if(DetailsView.getDetailsView() != null)
-                    	DetailsView.getDetailsView().setContent(shortDescription, detailText, bug, priorityTypeString);
+					String detailText = pattern.getDetailText();
+					if(DetailsView.getDetailsView() != null)
+						DetailsView.getDetailsView().setContent(shortDescription, detailText, bug, priorityTypeString);
                 }
 
-                List anList = DetailsView.getDetailsView().annotationList;
-                anList.removeAll();
+				List anList = DetailsView.getDetailsView().annotationList;
+				anList.removeAll();
 
-                // bug may be null, but if so then the error has already been
-                // logged.
-                if (bug != null) {
+				// bug may be null, but if so then the error has already been
+				// logged.
+				if (bug != null) {
                     Iterator<BugAnnotation> it = bug.annotationIterator();
-                    while (it.hasNext()) {
-                        BugAnnotation ba = it.next();
-                        anList.add(ba.toString());
+					while (it.hasNext()) {
+						BugAnnotation ba = it.next();
+						anList.add(ba.toString());
                     }
-                }
+				}
 
-            } catch (PartInitException e) {
-                FindbugsPlugin.getDefault().logException(e, "Could not update bug details view");
-            }
+			} catch (PartInitException e) {
+				FindbugsPlugin.getDefault().logException(e, "Could not update bug details view");
+			}
         }
-    }
+	}
 
-    /**
-     * Accessor for the details view associated with this plugin.
-     *
+	/**
+	 * Accessor for the details view associated with this plugin.
+	 *
      * @return the details view, or null if it has not been initialized yet
-     */
-    public static DetailsView getDetailsView() {
-        return detailsView;
+	 */
+	public static DetailsView getDetailsView() {
+		return detailsView;
     }
 
-    /**
-     * Set the details view for the rest of the plugin. Details view should call
-     * this when it has been initialized.
+	/**
+	 * Set the details view for the rest of the plugin. Details view should call
+	 * this when it has been initialized.
      *
-     * @param view
-     *            the details view
-     */
+	 * @param view
+	 *            the details view
+	 */
     public static void setDetailsView(DetailsView view) {
-        detailsView = view;
-    }
+		detailsView = view;
+	}
 
 }

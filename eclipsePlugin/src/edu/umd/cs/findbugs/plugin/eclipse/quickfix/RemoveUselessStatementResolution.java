@@ -43,26 +43,26 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  */
 public class RemoveUselessStatementResolution extends BugResolution {
 
-    @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
+	@Override
+	protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+		assert rewrite != null;
         assert workingUnit != null;
-        assert bug != null;
+		assert bug != null;
 
-        Statement statement = findUselessStatement(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
-        rewrite.remove(statement, null);
-    }
+		Statement statement = findUselessStatement(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
+		rewrite.remove(statement, null);
+	}
 
-    private Statement findUselessStatement(ASTNode node) {
-        if (node instanceof Statement) {
-            return (Statement) node;
+	private Statement findUselessStatement(ASTNode node) {
+		if (node instanceof Statement) {
+			return (Statement) node;
         }
-        return null;
-    }
+		return null;
+	}
 
-    @Override
-    protected boolean resolveBindings() {
-        return false;
+	@Override
+	protected boolean resolveBindings() {
+		return false;
     }
 
 }

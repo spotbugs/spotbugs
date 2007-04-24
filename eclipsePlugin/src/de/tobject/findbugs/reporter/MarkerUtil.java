@@ -82,24 +82,24 @@ public abstract class MarkerUtil {
 	 * @param bug     the BugInstance
 	 * @param project the project
 	 */
-    public static void createMarker(BugInstance bug, IProject project, BugCollection theCollection) {
-        if (bug == null) {
-            FindbugsPlugin.getDefault().logException(new NullPointerException(), "bug is null");
+	public static void createMarker(BugInstance bug, IProject project, BugCollection theCollection) {
+		if (bug == null) {
+			FindbugsPlugin.getDefault().logException(new NullPointerException(), "bug is null");
             return;
-        }
-        if (project == null) {
-            FindbugsPlugin.getDefault().logException(new NullPointerException(), "project is null");
+		}
+		if (project == null) {
+			FindbugsPlugin.getDefault().logException(new NullPointerException(), "project is null");
             return;
-        }
-        try {
-            if (!project.hasNature(JavaCore.NATURE_ID)) {
+		}
+		try {
+			if (!project.hasNature(JavaCore.NATURE_ID)) {
                 FindbugsPlugin.getDefault().logException(new IllegalArgumentException(), "project isn't Java");
-                return;
-            }
-        } catch (CoreException e) {
+				return;
+			}
+		} catch (CoreException e) {
             FindbugsPlugin.getDefault().logException(e, "couldn't determine project nature");
-        }
-        String className = null;
+		}
+		String className = null;
 		String packageName = null;
 		if (bug.getPrimaryClass() != null) {
 			className = bug.getPrimaryClass().getClassName();
@@ -190,7 +190,7 @@ public abstract class MarkerUtil {
 	public static @CheckForNull IResource getUnderlyingResource(BugInstance bug, IProject project, SourceLineAnnotation sla) throws JavaModelException
 		 {
 
-        if (!FindbugsPlugin.isJavaProject(project)) return null;
+		if (!FindbugsPlugin.isJavaProject(project)) return null;
 
 		SourceLineAnnotation primarySourceLineAnnotation;
 		if(sla == null)
@@ -226,7 +226,7 @@ public abstract class MarkerUtil {
 		IType type;
 		String innerName = null;
 		IJavaProject javaProject = Reporter.getJavaProject(project);
-        if (m.matches() && m.group(2).length() > 0) {
+		if (m.matches() && m.group(2).length() > 0) {
 			String outerQualifiedClassName = m.group(1).replace('$','.');
 			innerName  = m.group(2).substring(1);
 			type = javaProject.findType(outerQualifiedClassName);
@@ -483,21 +483,21 @@ public abstract class MarkerUtil {
 		return -1;
 	}
 
-    /**
-     * Remove all FindBugs problem markers for given resource.
-     *
+	/**
+	 * Remove all FindBugs problem markers for given resource.
+	 *
      * @param res the resource
-     * @throws CoreException
-     */
-    public static void removeMarkers(IResource res) throws CoreException {
+	 * @throws CoreException
+	 */
+	public static void removeMarkers(IResource res) throws CoreException {
         // remove any markers added by our builder
-        res.deleteMarkers(
-            FindBugsMarker.NAME,
-            true,
+		res.deleteMarkers(
+			FindBugsMarker.NAME,
+			true,
             IResource.DEPTH_INFINITE);
 		BugTreeView bugTreeView = BugTreeView.getBugTreeView();
-        if (bugTreeView != null && res instanceof IProject)
-            bugTreeView.clearTree((IProject) res);
+		if (bugTreeView != null && res instanceof IProject)
+			bugTreeView.clearTree((IProject) res);
 	}
 
 	/**
@@ -524,7 +524,7 @@ public abstract class MarkerUtil {
 	 * @param shell   Shell the progress dialog should be tied to
 	 */
 	public static void redisplayMarkers(final IProject project, Shell shell) {
-        if (!FindbugsPlugin.isJavaProject(project)) throw new IllegalArgumentException("Not a Java project");
+		if (!FindbugsPlugin.isJavaProject(project)) throw new IllegalArgumentException("Not a Java project");
 
 		ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(shell);
 
@@ -575,7 +575,7 @@ public abstract class MarkerUtil {
 
 	public static void redisplayMarkersWithoutProgressDialog(final IProject project) {
 		try {
-            if (!FindbugsPlugin.isJavaProject(project)) throw new IllegalArgumentException("Not a Java project");
+			if (!FindbugsPlugin.isJavaProject(project)) throw new IllegalArgumentException("Not a Java project");
 
 			// Get user preferences for project,
 			// so we know what to diplay
@@ -624,8 +624,8 @@ public abstract class MarkerUtil {
 		}
 		try {
 			if (!marker.isSubtypeOf(FindBugsMarker.NAME)) {
-                // log disabled because otherwise each selection in problems view generates
-                // 6 new errors (we need refactor all bug views to get rid of this).
+				// log disabled because otherwise each selection in problems view generates
+				// 6 new errors (we need refactor all bug views to get rid of this).
 //				FindbugsPlugin.getDefault().logError("Selected marker is not a FindBugs marker");
 //				FindbugsPlugin.getDefault().logError(marker.getType());
 //				FindbugsPlugin.getDefault().logError(FindBugsMarker.NAME);
@@ -652,24 +652,24 @@ public abstract class MarkerUtil {
 			catch(Exception e){
 				System.out.println(e.getMessage());
 			}
- 			*/
+			 */
 
 			String bugId = (String) marker.getAttribute(FindBugsMarker.UNIQUE_ID);
-            String bugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
-            Integer lineNumber = (Integer)marker.getAttribute(FindBugsMarker.BUG_LINE_NUMBER);
-            if (bugId == null || bugType == null || lineNumber == null) {
+			String bugType = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
+			Integer lineNumber = (Integer)marker.getAttribute(FindBugsMarker.BUG_LINE_NUMBER);
+			if (bugId == null || bugType == null || lineNumber == null) {
                 FindbugsPlugin.getDefault().logError("Could not get find attributes for marker " + marker + ": (" + bugId + ", " + bugType +", " + lineNumber+")");
-                return null;
-            }
-             BugInstance bug = bugCollection.findBug(
+				return null;
+			}
+			 BugInstance bug = bugCollection.findBug(
 					bugId,
 					bugType,
 					lineNumber);
 
 			return bug;
 		} catch (RuntimeException e) {
-            FindbugsPlugin.getDefault().logException(e, "Could not get BugInstance for FindBugs marker");
-            return null;
+			FindbugsPlugin.getDefault().logException(e, "Could not get BugInstance for FindBugs marker");
+			return null;
 		} catch (Exception e) {
 			// Multiple exception types caught here
 			FindbugsPlugin.getDefault().logException(e, "Could not get BugInstance for FindBugs marker");
@@ -704,9 +704,9 @@ public abstract class MarkerUtil {
 		}
 		try {
 			IResource resource = getUnderlyingResource(warning, project, null);
-            if (resource == null) {
-                FindbugsPlugin.getDefault().logError("Could not find resource for " + warning);
-                return null;
+			if (resource == null) {
+				FindbugsPlugin.getDefault().logError("Could not find resource for " + warning);
+				return null;
             }
 			IMarker[] markerList =
 				resource.findMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE);

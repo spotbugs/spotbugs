@@ -33,31 +33,31 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
  */
 public class StatementNotFoundException extends ASTNodeNotFoundException {
 
-    private static final long serialVersionUID = 7026886679289568547L;
+	private static final long serialVersionUID = 7026886679289568547L;
 
-    private final CompilationUnit compilationUnit;
+	private final CompilationUnit compilationUnit;
 
-    private final int startLine;
+	private final int startLine;
 
-    private final int endLine;
+	private final int endLine;
 
-    public StatementNotFoundException(CompilationUnit compilationUnit, int startLine, int endLine) {
-        super("Statement at source line '" + startLine + "-" + endLine + "' not found in the compilation unit.");
-        this.compilationUnit = compilationUnit;
+	public StatementNotFoundException(CompilationUnit compilationUnit, int startLine, int endLine) {
+		super("Statement at source line '" + startLine + "-" + endLine + "' not found in the compilation unit.");
+		this.compilationUnit = compilationUnit;
         this.startLine = startLine;
-        this.endLine = endLine;
-    }
+		this.endLine = endLine;
+	}
 
-    public CompilationUnit getCompilationUnit() {
-        return compilationUnit;
-    }
+	public CompilationUnit getCompilationUnit() {
+		return compilationUnit;
+	}
 
-    public int getStartLine() {
-        return startLine;
-    }
+	public int getStartLine() {
+		return startLine;
+	}
 
-    public int getEndLine() {
-        return endLine;
-    }
+	public int getEndLine() {
+		return endLine;
+	}
 
 }

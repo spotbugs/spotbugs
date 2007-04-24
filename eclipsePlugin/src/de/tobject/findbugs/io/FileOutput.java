@@ -40,7 +40,7 @@ public interface FileOutput {
 	 * @throws IOException
 	 */
 	public void writeFile(OutputStream os) throws IOException;
-	
+
 	/**
 	 * Get a description of the task.
 	 * E.g., "writing saved XML bug data".

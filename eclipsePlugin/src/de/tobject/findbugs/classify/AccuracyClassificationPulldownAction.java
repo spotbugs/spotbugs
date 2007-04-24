@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.config.UserPreferences;
  */
 public class AccuracyClassificationPulldownAction
 		implements IWorkbenchWindowPulldownDelegate2 {
-	
+
 	private Menu menu;
 	private MenuItem isBugItem;
 	private MenuItem notBugItem;
@@ -85,7 +85,7 @@ public class AccuracyClassificationPulldownAction
 		isBugItem.setText("Bug");
 		notBugItem = new MenuItem(menu, SWT.RADIO);
 		notBugItem.setText("Not Bug");
-		
+
 		isBugItem.addSelectionListener(new SelectionAdapter() {
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
@@ -97,7 +97,7 @@ public class AccuracyClassificationPulldownAction
 				}
 			}
 		});
-		
+
 		notBugItem.addSelectionListener(new SelectionAdapter() {
 			/* (non-Javadoc)
 			 * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
@@ -109,7 +109,7 @@ public class AccuracyClassificationPulldownAction
 				}
 			}
 		});
-		
+
 		menu.addMenuListener(new MenuAdapter() {
 			@Override
 			public void menuShown(MenuEvent e) {
@@ -120,10 +120,10 @@ public class AccuracyClassificationPulldownAction
 			}
 		});
 	}
-	
+
 	private void classifyWarning(BugInstance warning, boolean isBug) {
-		
-		
+
+
 		BugProperty isBugProp = warning.lookupProperty(BugProperty.IS_BUG);
 		if (isBugProp != null) {
 			// Warning was previously classified
@@ -132,7 +132,7 @@ public class AccuracyClassificationPulldownAction
 				return;
 			}
 		}
-		
+
 		// Warning is being classified for the first time,
 		// or the classification is being changed
 		warning.setProperty(BugProperty.IS_BUG, isBug ? "true" : "false");
@@ -190,15 +190,15 @@ public class AccuracyClassificationPulldownAction
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
 		System.out.println("Selection is " + selection.getClass().getName());
-		
+
 		bugInstance = null;
 		marker = MarkerUtil.getMarkerFromSelection(selection);
-		
+
 		if (marker == null) {
 			// No marker selected. 
 			return;
 		}
-		
+
 		System.out.println("Found a marker!");
 
 		bugInstance = MarkerUtil.findBugInstanceForMarker(marker);
@@ -214,7 +214,7 @@ public class AccuracyClassificationPulldownAction
 		if (bugInstance != null) {
 			isBugItem.setEnabled(true);
 			notBugItem.setEnabled(true);
-			
+
 			BugProperty isBugProperty = bugInstance.lookupProperty(BugProperty.IS_BUG);
 			if (isBugProperty == null) {
 				// Unclassified

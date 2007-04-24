@@ -10,9 +10,9 @@ import org.eclipse.jdt.core.dom.Modifier;
  */
 public class MakeFieldStaticResolution extends FieldModifierResolution {
 
-    @Override
-    public Modifier.ModifierKeyword getModifierToAdd() {
-        return Modifier.ModifierKeyword.STATIC_KEYWORD;
+	@Override
+	public Modifier.ModifierKeyword getModifierToAdd() {
+		return Modifier.ModifierKeyword.STATIC_KEYWORD;
     }
 
 }

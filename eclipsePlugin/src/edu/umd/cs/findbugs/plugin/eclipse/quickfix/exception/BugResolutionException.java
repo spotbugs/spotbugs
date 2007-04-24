@@ -31,22 +31,22 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception;
  */
 public class BugResolutionException extends Exception {
 
-    private static final long serialVersionUID = 31960356606821514L;
+	private static final long serialVersionUID = 31960356606821514L;
 
-    public BugResolutionException() {
-        super();
-    }
+	public BugResolutionException() {
+		super();
+	}
 
-    public BugResolutionException(String message) {
-        super(message);
-    }
+	public BugResolutionException(String message) {
+		super(message);
+	}
 
-    public BugResolutionException(Throwable cause) {
-        super(cause);
-    }
+	public BugResolutionException(Throwable cause) {
+		super(cause);
+	}
 
-    public BugResolutionException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	public BugResolutionException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
 }

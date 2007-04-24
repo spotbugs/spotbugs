@@ -34,34 +34,34 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
  */
 public class SourceLineVisitor extends ASTVisitor {
 
-    private final CompilationUnit compilationUnit;
+	private final CompilationUnit compilationUnit;
 
-    private final int startLine;
+	private final int startLine;
 
-    private final int endLine;
+	private final int endLine;
 
-    private ASTNode node = null;
+	private ASTNode node = null;
 
-    public SourceLineVisitor(CompilationUnit compilationUnit, int startLine, int endLine) {
-        super();
-        checkForNull(compilationUnit, "compilation unit");
+	public SourceLineVisitor(CompilationUnit compilationUnit, int startLine, int endLine) {
+		super();
+		checkForNull(compilationUnit, "compilation unit");
         this.compilationUnit = compilationUnit;
-        this.startLine = startLine;
-        this.endLine = endLine;
-    }
+		this.startLine = startLine;
+		this.endLine = endLine;
+	}
 
-    @Override
-    public void preVisit(ASTNode node) {
-        if (this.node == null) {
+	@Override
+	public void preVisit(ASTNode node) {
+		if (this.node == null) {
             int lineNumber = compilationUnit.getLineNumber(node.getStartPosition());
-            if (lineNumber >= startLine && lineNumber <= endLine) {
-                this.node = node;
-            }
+			if (lineNumber >= startLine && lineNumber <= endLine) {
+				this.node = node;
+			}
         }
-    }
+	}
 
-    public ASTNode getASTNode() {
-        return node;
-    }
+	public ASTNode getASTNode() {
+		return node;
+	}
 
 }

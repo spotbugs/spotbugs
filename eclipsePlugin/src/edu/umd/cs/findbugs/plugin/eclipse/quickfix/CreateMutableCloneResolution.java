@@ -31,70 +31,70 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  */
 public class CreateMutableCloneResolution extends BugResolution {
 
-    @Override
-    public boolean resolveBindings() {
-        return true;
+	@Override
+	public boolean resolveBindings() {
+		return true;
     }
 
-    @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
+	@Override
+	protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+		assert rewrite != null;
         assert workingUnit != null;
-        assert bug != null;
+		assert bug != null;
 
-        TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
-        MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
+		TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
+		MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
 
-        String fieldName = bug.getPrimaryField().getFieldName();
+		String fieldName = bug.getPrimaryField().getFieldName();
 
-        Expression retEx = null;
-        CastExpression castRet = null;
-        Expression original = null;
+		Expression retEx = null;
+		CastExpression castRet = null;
+		Expression original = null;
         Expression cloneField;
-        MethodInvocation cloneInvoke;
-        SimpleName cloneName;
+		MethodInvocation cloneInvoke;
+		SimpleName cloneName;
 
-        Iterator<?> itr = method.getBody().statements().iterator();
+		Iterator<?> itr = method.getBody().statements().iterator();
 
-        while (itr.hasNext() && original == null) {
-            Statement stmt = (Statement) itr.next();
-            if (!(stmt instanceof ReturnStatement)) {
+		while (itr.hasNext() && original == null) {
+			Statement stmt = (Statement) itr.next();
+			if (!(stmt instanceof ReturnStatement)) {
                 continue;
-            }
-            retEx = ((ReturnStatement) stmt).getExpression();
+			}
+			retEx = ((ReturnStatement) stmt).getExpression();
 
-            if (retEx instanceof SimpleName && ((SimpleName) retEx).getIdentifier().equals(fieldName)) {
-                original = retEx;
-            } else if (retEx instanceof FieldAccess && isThisFieldAccess((FieldAccess) retEx, fieldName)) {
+			if (retEx instanceof SimpleName && ((SimpleName) retEx).getIdentifier().equals(fieldName)) {
+				original = retEx;
+			} else if (retEx instanceof FieldAccess && isThisFieldAccess((FieldAccess) retEx, fieldName)) {
                 original = ((FieldAccess) retEx).getName();
-            }
-        }
+			}
+		}
 
-        if (original == null) {
-            throw new BugResolutionException("No original field found.");
-        }
+		if (original == null) {
+			throw new BugResolutionException("No original field found.");
+		}
 
-        // set up the clone part
-        cloneInvoke = workingUnit.getAST().newMethodInvocation();
-        cloneField = (SimpleName) ASTNode.copySubtree(cloneInvoke.getAST(), original);
+		// set up the clone part
+		cloneInvoke = workingUnit.getAST().newMethodInvocation();
+		cloneField = (SimpleName) ASTNode.copySubtree(cloneInvoke.getAST(), original);
         cloneName = workingUnit.getAST().newSimpleName("clone");
 
-        cloneInvoke.setExpression(cloneField);
-        cloneInvoke.setName(cloneName);
+		cloneInvoke.setExpression(cloneField);
+		cloneInvoke.setName(cloneName);
 
-        // cast the result to the right type
-        Type retType;
-        castRet = workingUnit.getAST().newCastExpression();
+		// cast the result to the right type
+		Type retType;
+		castRet = workingUnit.getAST().newCastExpression();
         retType = (Type) ASTNode.copySubtree(castRet.getAST(), method.getReturnType2());
-        castRet.setExpression(cloneInvoke);
-        castRet.setType(retType);
+		castRet.setExpression(cloneInvoke);
+		castRet.setType(retType);
 
-        rewrite.replace(original, castRet, null);
+		rewrite.replace(original, castRet, null);
 
-    }
+	}
 
-    private boolean isThisFieldAccess(FieldAccess access, String fieldName) {
-        return (access.getExpression() instanceof ThisExpression) && access.getName().getIdentifier().equals(fieldName);
-    }
+	private boolean isThisFieldAccess(FieldAccess access, String fieldName) {
+		return (access.getExpression() instanceof ThisExpression) && access.getName().getIdentifier().equals(fieldName);
+	}
 
 }

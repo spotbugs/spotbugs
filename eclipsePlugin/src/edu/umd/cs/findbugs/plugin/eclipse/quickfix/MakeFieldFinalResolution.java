@@ -9,9 +9,9 @@ import org.eclipse.jdt.core.dom.Modifier;
  */
 public class MakeFieldFinalResolution extends FieldModifierResolution {
 
-    @Override
-    public Modifier.ModifierKeyword getModifierToAdd() {
-        return Modifier.ModifierKeyword.FINAL_KEYWORD;
+	@Override
+	public Modifier.ModifierKeyword getModifierToAdd() {
+		return Modifier.ModifierKeyword.FINAL_KEYWORD;
     }
 
 }

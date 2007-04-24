@@ -52,124 +52,124 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  */
 public abstract class CorrectOddnessCheckResolution extends BugResolution {
 
-    @Override
-    protected boolean resolveBindings() {
-        return false;
+	@Override
+	protected boolean resolveBindings() {
+		return false;
     }
 
-    @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
+	@Override
+	protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+		assert rewrite != null;
         assert workingUnit != null;
-        assert bug != null;
+		assert bug != null;
 
-        InfixExpression oddnessCheck = findOddnessCheck(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
-        if (oddnessCheck == null) {
-            throw new BugResolutionException("No matching oddness check found at the specified source line.");
+		InfixExpression oddnessCheck = findOddnessCheck(getASTNode(workingUnit, bug.getPrimarySourceLineAnnotation()));
+		if (oddnessCheck == null) {
+			throw new BugResolutionException("No matching oddness check found at the specified source line.");
         }
-        Expression numberExpression = findNumberExpression(oddnessCheck);
-        if (numberExpression == null) {
-            throw new BugResolutionException();
+		Expression numberExpression = findNumberExpression(oddnessCheck);
+		if (numberExpression == null) {
+			throw new BugResolutionException();
         }
-        InfixExpression correctOddnessCheck = createCorrectOddnessCheck(rewrite, numberExpression);
-        rewrite.replace(oddnessCheck, correctOddnessCheck, null);
-    }
+		InfixExpression correctOddnessCheck = createCorrectOddnessCheck(rewrite, numberExpression);
+		rewrite.replace(oddnessCheck, correctOddnessCheck, null);
+	}
 
-    @CheckForNull
-    protected InfixExpression findOddnessCheck(ASTNode node) {
-        OddnessCheckFinder finder = new OddnessCheckFinder();
+	@CheckForNull
+	protected InfixExpression findOddnessCheck(ASTNode node) {
+		OddnessCheckFinder finder = new OddnessCheckFinder();
         node.accept(finder);
-        return finder.getOddnessCheck();
-    }
+		return finder.getOddnessCheck();
+	}
 
-    @CheckForNull
-    protected Expression findNumberExpression(InfixExpression oddnessCheck) {
-        NumberExpressionFinder finder = new NumberExpressionFinder();
+	@CheckForNull
+	protected Expression findNumberExpression(InfixExpression oddnessCheck) {
+		NumberExpressionFinder finder = new NumberExpressionFinder();
         oddnessCheck.accept(finder);
-        return finder.getNumberExpression();
-    }
+		return finder.getNumberExpression();
+	}
 
-    /**
-     * Creates and returns a correct <CODE>expression</CODE> that checks if a
-     * value is odd or not.
+	/**
+	 * Creates and returns a correct <CODE>expression</CODE> that checks if a
+	 * value is odd or not.
      * 
-     * @param ast
-     *            the <CODE>AST</CODE> instance under which the created <CODE>InfixExpression</CODE>
-     *            will be created.
+	 * @param ast
+	 *            the <CODE>AST</CODE> instance under which the created <CODE>InfixExpression</CODE>
+	 *            will be created.
      * @param replaceField
-     *            the field name of the bad oddness-check which will be used for
-     *            the new <CODE>InfixExpression</CODE>.
-     * @return the correct <CODE>InfixExpression</CODE>.
+	 *            the field name of the bad oddness-check which will be used for
+	 *            the new <CODE>InfixExpression</CODE>.
+	 * @return the correct <CODE>InfixExpression</CODE>.
      */
-    protected abstract InfixExpression createCorrectOddnessCheck(ASTRewrite rewrite, Expression numberExpression);
+	protected abstract InfixExpression createCorrectOddnessCheck(ASTRewrite rewrite, Expression numberExpression);
 
-    protected static boolean isOddnessCheck(InfixExpression oddnessCheck) {
-        if (EQUALS.equals(oddnessCheck.getOperator())) {
-            if (isRemainderExp(oddnessCheck.getLeftOperand())) {
+	protected static boolean isOddnessCheck(InfixExpression oddnessCheck) {
+		if (EQUALS.equals(oddnessCheck.getOperator())) {
+			if (isRemainderExp(oddnessCheck.getLeftOperand())) {
                 return isNumber(oddnessCheck.getRightOperand(), 1);
+			}
+			if (isRemainderExp(oddnessCheck.getRightOperand())) {
+				return isNumber(oddnessCheck.getLeftOperand(), 1);
             }
-            if (isRemainderExp(oddnessCheck.getRightOperand())) {
-                return isNumber(oddnessCheck.getLeftOperand(), 1);
-            }
+		}
+		return false;
+	}
+
+	protected static boolean isRemainderExp(Expression remainderExp) {
+		while (remainderExp instanceof ParenthesizedExpression) {
+			remainderExp = ((ParenthesizedExpression) remainderExp).getExpression();
         }
-        return false;
-    }
-
-    protected static boolean isRemainderExp(Expression remainderExp) {
-        while (remainderExp instanceof ParenthesizedExpression) {
-            remainderExp = ((ParenthesizedExpression) remainderExp).getExpression();
+		if (remainderExp instanceof InfixExpression) {
+			InfixExpression exp = ((InfixExpression) remainderExp);
+			return REMAINDER.equals(exp.getOperator()) && isNumber(exp.getRightOperand(), 2);
         }
-        if (remainderExp instanceof InfixExpression) {
-            InfixExpression exp = ((InfixExpression) remainderExp);
-            return REMAINDER.equals(exp.getOperator()) && isNumber(exp.getRightOperand(), 2);
-        }
-        return false;
-    }
+		return false;
+	}
 
-    protected static boolean isNumber(Expression exp, int number) {
-        return exp instanceof NumberLiteral && parseInt(((NumberLiteral) exp).getToken()) == number;
-    }
+	protected static boolean isNumber(Expression exp, int number) {
+		return exp instanceof NumberLiteral && parseInt(((NumberLiteral) exp).getToken()) == number;
+	}
 
-    protected static class OddnessCheckFinder extends ASTVisitor {
+	protected static class OddnessCheckFinder extends ASTVisitor {
 
-        private InfixExpression oddnessCheck = null;
+		private InfixExpression oddnessCheck = null;
 
-        @Override
-        public boolean visit(InfixExpression node) {
-            if (oddnessCheck == null) {
+		@Override
+		public boolean visit(InfixExpression node) {
+			if (oddnessCheck == null) {
                 if (!isOddnessCheck(node)) {
-                    return true;
-                }
-                oddnessCheck = node;
+					return true;
+				}
+				oddnessCheck = node;
             }
-            return false;
-        }
+			return false;
+		}
 
-        public InfixExpression getOddnessCheck() {
-            return oddnessCheck;
-        }
+		public InfixExpression getOddnessCheck() {
+			return oddnessCheck;
+		}
 
-    }
+	}
 
-    protected static class NumberExpressionFinder extends ASTVisitor {
+	protected static class NumberExpressionFinder extends ASTVisitor {
 
-        private Expression numberExpression = null;
+		private Expression numberExpression = null;
 
-        @Override
-        public boolean visit(InfixExpression node) {
-            if (numberExpression == null) {
+		@Override
+		public boolean visit(InfixExpression node) {
+			if (numberExpression == null) {
                 if (!isRemainderExp(node)) {
-                    return true;
-                }
-                numberExpression = node.getLeftOperand();
+					return true;
+				}
+				numberExpression = node.getLeftOperand();
             }
-            return false;
-        }
+			return false;
+		}
 
-        public Expression getNumberExpression() {
-            return numberExpression;
-        }
+		public Expression getNumberExpression() {
+			return numberExpression;
+		}
 
-    }
+	}
 
 }

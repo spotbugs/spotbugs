@@ -51,38 +51,38 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  */
 public class ChangePublicToProtectedResolution extends BugResolution {
 
-    @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
+	@Override
+	protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+		assert rewrite != null;
         assert workingUnit != null;
-        assert bug != null;
+		assert bug != null;
 
-        TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
-        MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
-        Modifier originalModifier = getPublicModifier(method);
+		TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
+		MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
+		Modifier originalModifier = getPublicModifier(method);
 
-        ListRewrite listRewrite = rewrite.getListRewrite(method, MethodDeclaration.MODIFIERS2_PROPERTY);
-        Modifier protectedModifier = workingUnit.getAST().newModifier(PROTECTED_KEYWORD);
-        listRewrite.replace(originalModifier, protectedModifier, null);
+		ListRewrite listRewrite = rewrite.getListRewrite(method, MethodDeclaration.MODIFIERS2_PROPERTY);
+		Modifier protectedModifier = workingUnit.getAST().newModifier(PROTECTED_KEYWORD);
+		listRewrite.replace(originalModifier, protectedModifier, null);
     }
 
-    private Modifier getPublicModifier(MethodDeclaration method) {
-        List<?> list = method.modifiers();
-        for (Object o : list) {
+	private Modifier getPublicModifier(MethodDeclaration method) {
+		List<?> list = method.modifiers();
+		for (Object o : list) {
             if (o.getClass().equals(Modifier.class)) {
-                Modifier mdf = (Modifier) o;
-                if (mdf.getKeyword().equals(PUBLIC_KEYWORD)) {
-                    return mdf;
+				Modifier mdf = (Modifier) o;
+				if (mdf.getKeyword().equals(PUBLIC_KEYWORD)) {
+					return mdf;
                 }
-            }
+			}
 
-        }
-        return null;
-    }
+		}
+		return null;
+	}
 
-    @Override
-    protected boolean resolveBindings() {
-        return true;
+	@Override
+	protected boolean resolveBindings() {
+		return true;
     }
 
 }

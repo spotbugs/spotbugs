@@ -33,26 +33,26 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
  */
 public class TypeDeclarationNotFoundException extends BodyDeclarationNotFoundException {
 
-    private final CompilationUnit compilationUnit;
+	private final CompilationUnit compilationUnit;
 
-    private final String className;
+	private final String className;
 
-    public TypeDeclarationNotFoundException(CompilationUnit compilationUnit, String className, String message) {
-        super("Type declaration '" + className + "' not found in the specified compilation unit: " + message);
-        this.compilationUnit = compilationUnit;
+	public TypeDeclarationNotFoundException(CompilationUnit compilationUnit, String className, String message) {
+		super("Type declaration '" + className + "' not found in the specified compilation unit: " + message);
+		this.compilationUnit = compilationUnit;
         this.className = className;
-    }
+	}
 
-    public TypeDeclarationNotFoundException(CompilationUnit compilationUnit, String className) {
-        this(compilationUnit, className, "");
-    }
+	public TypeDeclarationNotFoundException(CompilationUnit compilationUnit, String className) {
+		this(compilationUnit, className, "");
+	}
 
-    public CompilationUnit getCompilationUnit() {
-        return compilationUnit;
-    }
+	public CompilationUnit getCompilationUnit() {
+		return compilationUnit;
+	}
 
-    public String getClassName() {
-        return className;
-    }
+	public String getClassName() {
+		return className;
+	}
 
 }

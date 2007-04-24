@@ -41,27 +41,27 @@ import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
  */
 public class CreateRemainderOddnessCheckResolution extends CorrectOddnessCheckResolution {
 
-    /**
-     * Creates the new <CODE>InfixExpression</CODE> <CODE>x % 2 != 0</CODE>
-     */
+	/**
+	 * Creates the new <CODE>InfixExpression</CODE> <CODE>x % 2 != 0</CODE>
+	 */
     @Override
-    protected InfixExpression createCorrectOddnessCheck(ASTRewrite rewrite, Expression numberExpression) {
-        assert rewrite != null;
-        assert numberExpression != null;
+	protected InfixExpression createCorrectOddnessCheck(ASTRewrite rewrite, Expression numberExpression) {
+		assert rewrite != null;
+		assert numberExpression != null;
 
-        final AST ast = rewrite.getAST();
-        InfixExpression correctOddnessCheck = ast.newInfixExpression();
-        InfixExpression remainderExp = ast.newInfixExpression();
+		final AST ast = rewrite.getAST();
+		InfixExpression correctOddnessCheck = ast.newInfixExpression();
+		InfixExpression remainderExp = ast.newInfixExpression();
 
-        correctOddnessCheck.setLeftOperand(remainderExp);
-        correctOddnessCheck.setOperator(NOT_EQUALS);
-        correctOddnessCheck.setRightOperand(ast.newNumberLiteral("0"));
+		correctOddnessCheck.setLeftOperand(remainderExp);
+		correctOddnessCheck.setOperator(NOT_EQUALS);
+		correctOddnessCheck.setRightOperand(ast.newNumberLiteral("0"));
 
-        remainderExp.setLeftOperand((Expression) rewrite.createMoveTarget(numberExpression));
-        remainderExp.setOperator(REMAINDER);
-        remainderExp.setRightOperand(ast.newNumberLiteral("2"));
+		remainderExp.setLeftOperand((Expression) rewrite.createMoveTarget(numberExpression));
+		remainderExp.setOperator(REMAINDER);
+		remainderExp.setRightOperand(ast.newNumberLiteral("2"));
 
-        return correctOddnessCheck;
-    }
+		return correctOddnessCheck;
+	}
 
 }

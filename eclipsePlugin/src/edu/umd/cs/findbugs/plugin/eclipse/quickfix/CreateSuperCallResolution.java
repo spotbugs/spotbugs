@@ -53,70 +53,70 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  */
 public class CreateSuperCallResolution extends BugResolution {
 
-    private boolean insertFirst = true;
+	private boolean insertFirst = true;
 
-    public CreateSuperCallResolution() {
-        super();
+	public CreateSuperCallResolution() {
+		super();
+	}
+
+	public CreateSuperCallResolution(boolean insertFirst) {
+		this();
+		setInsertFirst(insertFirst);
     }
 
-    public CreateSuperCallResolution(boolean insertFirst) {
-        this();
-        setInsertFirst(insertFirst);
-    }
+	public boolean isInsertFirst() {
+		return insertFirst;
+	}
 
-    public boolean isInsertFirst() {
-        return insertFirst;
-    }
+	public void setInsertFirst(boolean insertFirst) {
+		this.insertFirst = insertFirst;
+	}
 
-    public void setInsertFirst(boolean insertFirst) {
-        this.insertFirst = insertFirst;
-    }
+	public boolean isInsertLast() {
+		return !isInsertFirst();
+	}
 
-    public boolean isInsertLast() {
-        return !isInsertFirst();
-    }
+	public void setInsertLast(boolean insertLast) {
+		setInsertFirst(!insertLast);
+	}
 
-    public void setInsertLast(boolean insertLast) {
-        setInsertFirst(!insertLast);
-    }
-
-    @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
+	@Override
+	protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+		assert rewrite != null;
         assert workingUnit != null;
-        assert bug != null;
+		assert bug != null;
 
-        TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
-        MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
+		TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
+		MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
 
-        AST ast = rewrite.getAST();
+		AST ast = rewrite.getAST();
 
-        SuperMethodInvocation superCall = createSuperMethodInvocation(rewrite, method);
-        ExpressionStatement statement = ast.newExpressionStatement(superCall);
-        Block methodBody = method.getBody();
+		SuperMethodInvocation superCall = createSuperMethodInvocation(rewrite, method);
+		ExpressionStatement statement = ast.newExpressionStatement(superCall);
+		Block methodBody = method.getBody();
         ListRewrite listRewrite = rewrite.getListRewrite(methodBody, Block.STATEMENTS_PROPERTY);
-        if (isInsertFirst()) {
-            listRewrite.insertFirst(statement, null);
-        } else {
+		if (isInsertFirst()) {
+			listRewrite.insertFirst(statement, null);
+		} else {
             listRewrite.insertLast(statement, null);
-        }
-    }
+		}
+	}
 
-    protected SuperMethodInvocation createSuperMethodInvocation(ASTRewrite rewrite, MethodDeclaration method) {
-        assert rewrite != null;
-        assert method != null;
+	protected SuperMethodInvocation createSuperMethodInvocation(ASTRewrite rewrite, MethodDeclaration method) {
+		assert rewrite != null;
+		assert method != null;
 
-        AST ast = rewrite.getAST();
-        SuperMethodInvocation invocation = ast.newSuperMethodInvocation();
+		AST ast = rewrite.getAST();
+		SuperMethodInvocation invocation = ast.newSuperMethodInvocation();
 
-        invocation.setName((SimpleName) rewrite.createCopyTarget(method.getName()));
+		invocation.setName((SimpleName) rewrite.createCopyTarget(method.getName()));
 
-        return invocation;
-    }
+		return invocation;
+	}
 
-    @Override
-    protected boolean resolveBindings() {
-        return true;
+	@Override
+	protected boolean resolveBindings() {
+		return true;
     }
 
 }

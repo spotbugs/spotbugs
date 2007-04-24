@@ -45,20 +45,20 @@ import edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception.BugResolutionExcept
  */
 public class RemoveUselessMethodResolution extends BugResolution {
 
-    @Override
-    protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
-        assert rewrite != null;
+	@Override
+	protected void repairBug(ASTRewrite rewrite, CompilationUnit workingUnit, BugInstance bug) throws BugResolutionException {
+		assert rewrite != null;
         assert workingUnit != null;
-        assert bug != null;
+		assert bug != null;
 
-        TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
-        MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
-        rewrite.remove(method, null);
+		TypeDeclaration type = getTypeDeclaration(workingUnit, bug.getPrimaryClass());
+		MethodDeclaration method = getMethodDeclaration(type, bug.getPrimaryMethod());
+		rewrite.remove(method, null);
     }
 
-    @Override
-    protected boolean resolveBindings() {
-        return true;
+	@Override
+	protected boolean resolveBindings() {
+		return true;
     }
 
 }

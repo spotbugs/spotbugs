@@ -30,22 +30,22 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception;
  */
 public class BodyDeclarationNotFoundException extends ASTNodeNotFoundException {
 
-    private static final long serialVersionUID = -7189712292132817821L;
+	private static final long serialVersionUID = -7189712292132817821L;
 
-    public BodyDeclarationNotFoundException() {
-        super();
-    }
+	public BodyDeclarationNotFoundException() {
+		super();
+	}
 
-    public BodyDeclarationNotFoundException(String message) {
-        super(message);
-    }
+	public BodyDeclarationNotFoundException(String message) {
+		super(message);
+	}
 
-    public BodyDeclarationNotFoundException(Throwable cause) {
-        super(cause);
-    }
+	public BodyDeclarationNotFoundException(Throwable cause) {
+		super(cause);
+	}
 
-    public BodyDeclarationNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	public BodyDeclarationNotFoundException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
 }

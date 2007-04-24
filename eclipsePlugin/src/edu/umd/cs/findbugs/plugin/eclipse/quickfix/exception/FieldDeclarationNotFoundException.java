@@ -33,14 +33,14 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
  */
 public class FieldDeclarationNotFoundException extends BodyDeclarationNotFoundException {
 
-    private static final long serialVersionUID = 6991240441738825723L;
+	private static final long serialVersionUID = 6991240441738825723L;
 
-    public FieldDeclarationNotFoundException(String message) {
-        super(message);
-    }
+	public FieldDeclarationNotFoundException(String message) {
+		super(message);
+	}
 
-    public FieldDeclarationNotFoundException(TypeDeclaration typeDeclaration, String fieldName) {
-        this("Field declaration '" + fieldName + "' not found in type declaration '" + typeDeclaration.getName() + "'.");
-    }
+	public FieldDeclarationNotFoundException(TypeDeclaration typeDeclaration, String fieldName) {
+		this("Field declaration '" + fieldName + "' not found in type declaration '" + typeDeclaration.getName() + "'.");
+	}
 
 }

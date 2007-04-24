@@ -81,9 +81,9 @@ public class UserAnnotationsView extends ViewPart {
 
 	private Composite visibilityTester;
 
-    private ISelectionListener selectionListener;
+	private ISelectionListener selectionListener;
 
-    private Composite main;
+	private Composite main;
 
 	/*
 	 * (non-Javadoc)
@@ -92,7 +92,7 @@ public class UserAnnotationsView extends ViewPart {
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
-        main = new Composite(parent, SWT.VERTICAL);
+		main = new Composite(parent, SWT.VERTICAL);
 		main.setLayout(new GridLayout(2, false));
 		designationComboBox = new Combo(main, SWT.LEFT|SWT.DROP_DOWN|SWT.READ_ONLY);
 		designationComboBox.setToolTipText("User-specified bug designation");
@@ -125,45 +125,45 @@ public class UserAnnotationsView extends ViewPart {
 		userAnnotationTextField.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e)
 			{
-                if(theBug != null)
+				if(theBug != null)
 				theBug.getUserDesignation().setAnnotationText(userAnnotationTextField.getText());
 			}
 		});
 		//	Add selection listener to detect click in problems view or bug tree view
 		ISelectionService theService = this.getSite().getWorkbenchWindow().getSelectionService();
 
-        selectionListener = new ISelectionListener(){
+		selectionListener = new ISelectionListener(){
 			public void selectionChanged(IWorkbenchPart thePart, ISelection theSelection) {
 				if(theSelection instanceof IStructuredSelection) {
 					Object elt = ((IStructuredSelection)theSelection).getFirstElement();
 					if(elt instanceof IMarker) {
-                        UserAnnotationsView.showMarker((IMarker)elt, false);
-                    }
+						UserAnnotationsView.showMarker((IMarker)elt, false);
+					}
 					if(elt instanceof TreeItem)	{
 						IMarker theMarker = BugTreeView.getMarkerForTreeItem((TreeItem)elt);
 						if(theMarker != null) {
-                            UserAnnotationsView.showMarker(theMarker, false);
-                        }
+							UserAnnotationsView.showMarker(theMarker, false);
+						}
 					}
 				}
 			}
 		};
-        theService.addSelectionListener(selectionListener);
+		theService.addSelectionListener(selectionListener);
 		visibilityTester = main;
 		UserAnnotationsView.userAnnotationsView = this;
 
 	}
 
 	@Override
-    public void dispose() {
-        if(selectionListener != null){
-            getSite().getWorkbenchWindow().getSelectionService().removeSelectionListener(
+	public void dispose() {
+		if(selectionListener != null){
+			getSite().getWorkbenchWindow().getSelectionService().removeSelectionListener(
                     selectionListener);
-            selectionListener = null;
-        }
-        main.dispose();
+			selectionListener = null;
+		}
+		main.dispose();
 		userAnnotationsView = null;
-        super.dispose();
+		super.dispose();
 	}
 
 	/**
@@ -173,10 +173,10 @@ public class UserAnnotationsView extends ViewPart {
 	private void updateDisplay() {
 		userAnnotationTextField.setText(userAnnotation);
 		firstVersionLabel.setText(firstVersionText);
-        if (theBug == null) return;
+		if (theBug == null) return;
 		int comboIndex = I18N.instance().getUserDesignationKeys(true).indexOf(theBug.getNonnullUserDesignation().getDesignationKey());
 		if(comboIndex == -1)
-            FindbugsPlugin.getDefault().logError("Cannot find user designation");
+			FindbugsPlugin.getDefault().logError("Cannot find user designation");
 		else
 			designationComboBox.select(comboIndex);
 	}
@@ -291,10 +291,10 @@ public class UserAnnotationsView extends ViewPart {
 
 
 
-    @Override
-    public void setFocus() {
-        designationComboBox.setFocus();
+	@Override
+	public void setFocus() {
+		designationComboBox.setFocus();
 
-    }
+	}
 
 }

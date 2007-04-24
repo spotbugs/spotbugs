@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
- 
+
 package de.tobject.findbugs.builder;
 
 import java.util.Collection;
@@ -41,7 +41,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 
 	/** Controls debugging. */
 	public static boolean DEBUG;
-	
+
 	/**
 	 * Run the builder.
 	 * 
@@ -78,7 +78,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Performs the build process. This method gets all files in the current project
 	 * and has a <code>FindBugsVisitor</code> run on them.
@@ -94,5 +94,5 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 		FindBugsWorker worker = new FindBugsWorker(this.getProject(), monitor);
 		worker.work(files, kind != IncrementalProjectBuilder.FULL_BUILD);
 	}
-	
+
 }

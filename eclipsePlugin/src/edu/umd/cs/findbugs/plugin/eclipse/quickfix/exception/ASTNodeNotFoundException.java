@@ -31,22 +31,22 @@ package edu.umd.cs.findbugs.plugin.eclipse.quickfix.exception;
  */
 public class ASTNodeNotFoundException extends BugResolutionException {
 
-    private static final long serialVersionUID = 4194023525569593130L;
+	private static final long serialVersionUID = 4194023525569593130L;
 
-    public ASTNodeNotFoundException() {
-        super();
-    }
+	public ASTNodeNotFoundException() {
+		super();
+	}
 
-    public ASTNodeNotFoundException(String message) {
-        super(message);
-    }
+	public ASTNodeNotFoundException(String message) {
+		super(message);
+	}
 
-    public ASTNodeNotFoundException(Throwable cause) {
-        super(cause);
-    }
+	public ASTNodeNotFoundException(Throwable cause) {
+		super(cause);
+	}
 
-    public ASTNodeNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	public ASTNodeNotFoundException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
 }

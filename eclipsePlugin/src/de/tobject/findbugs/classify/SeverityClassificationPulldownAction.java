@@ -34,10 +34,10 @@ public class SeverityClassificationPulldownAction implements
 	private Menu menu;
 	private MenuItem[] severityItemList;
 	private BugInstance bugInstance;
-	
+
 	private static final String[] SEVERITY_LABEL_LIST =
 			{"1 (Least Severe)", "2", "3", "4", "5 (Most Severe)"};
-	
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchWindowPulldownDelegate2#getMenu(org.eclipse.swt.widgets.Menu)
 	 */
@@ -76,7 +76,7 @@ public class SeverityClassificationPulldownAction implements
 					if (w == severityItemList[index])
 						break;
 				}
-				
+
 				if (index < severityItemList.length) {
 					if (bugInstance != null) {
 						bugInstance.setProperty(BugProperty.SEVERITY, String.valueOf(index + 1));
@@ -84,16 +84,16 @@ public class SeverityClassificationPulldownAction implements
 				}
 			}
 		};
-		
+
 		severityItemList = new MenuItem[SEVERITY_LABEL_LIST.length];
 		for (int i = 0; i < SEVERITY_LABEL_LIST.length; ++i) {
 			MenuItem menuItem= new MenuItem(menu, SWT.RADIO);
 			menuItem.setText(SEVERITY_LABEL_LIST[i]);
 			menuItem.addSelectionListener(menuItemSelectionListener);
-			
+
 			severityItemList[i] = menuItem;
 		}
-		
+
 		// Keep menu in sync with current BugInstance.
 		menu.addMenuListener(new MenuAdapter() {
 			/* (non-Javadoc)
@@ -123,7 +123,7 @@ public class SeverityClassificationPulldownAction implements
 					// Ignore: we'll allow the user to select a valid severity
 				}
 			}
-			
+
 			// We didn't get a valid severity from the BugInstance.
 			// So, leave the menu items enabled but cleared, so
 			// the user can select a severity.
@@ -133,7 +133,7 @@ public class SeverityClassificationPulldownAction implements
 			resetMenuItems(false);
 		}
 	}
-	
+
 	/**
 	 * Set the menu to given severity level.
 	 * 
@@ -142,7 +142,7 @@ public class SeverityClassificationPulldownAction implements
 	private void selectSeverity(int severity) {
 		// Severity is 1-based, but the menu item list is 0-based
 		int index = severity - 1;
-		
+
 		for (int i = 0; i < severityItemList.length; ++i) {
 			MenuItem menuItem = severityItemList[i];
 			menuItem.setEnabled(true);

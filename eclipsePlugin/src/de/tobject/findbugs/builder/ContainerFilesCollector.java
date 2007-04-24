@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
- 
+
 package de.tobject.findbugs.builder;
 
 import java.util.ArrayList;
@@ -39,10 +39,10 @@ import de.tobject.findbugs.util.Util;
  * @since 25.09.2003
  */
 public class ContainerFilesCollector extends AbstractFilesCollector {
-	
+
 	/** The container we will be working on */
 	private IContainer container;
-	
+
 	/**
 	 * Creates a new {@link ContainerFilesCollector}.
 	 * 
@@ -52,7 +52,7 @@ public class ContainerFilesCollector extends AbstractFilesCollector {
 		super();
 		this.container = container;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.tobject.findbugs.builder.AbstractFilesCollector#getFiles()
 	 */
@@ -60,7 +60,7 @@ public class ContainerFilesCollector extends AbstractFilesCollector {
 	public Collection getFiles() throws CoreException {
 		return collectFiles(this.container);
 	}
-	
+
 	/**
 	 * Returns a list of all files in a container. This is of help when performing 
 	 * a full or automatic build.
@@ -89,13 +89,13 @@ public class ContainerFilesCollector extends AbstractFilesCollector {
 				folders.add(child);
 			}
 		}
-		
+
 		for (Iterator iter = folders.iterator();
 			iter.hasNext();
 			)
 			files.addAll(collectFiles((IContainer) iter.next()));
-			
+
 		return files;
 	}
-	
+
 }

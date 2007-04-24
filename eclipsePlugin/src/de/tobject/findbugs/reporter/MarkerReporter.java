@@ -76,8 +76,8 @@ public class MarkerReporter implements IWorkspaceRunnable {
 				markerName = FindBugsMarker.NAME_IGNORE;
 				break;
 			default:
-			    FindbugsPlugin.getDefault().logError("Bug with unknown priority " + priority);
-            return;
+				FindbugsPlugin.getDefault().logError("Bug with unknown priority " + priority);
+			return;
 
 		}
 		IMarker marker = resource.createMarker(markerName);
@@ -104,7 +104,7 @@ public class MarkerReporter implements IWorkspaceRunnable {
 		else if (bug.getPriority() == Detector.NORMAL_PRIORITY)
 			marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_NORMAL);
 		else marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_LOW);
-		
+
 		// Set unique id of warning, so we can easily refer back
 		// to it later: for example, when the user classifies the warning.
 		String uniqueId = bug.getInstanceHash();

@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
- 
+
 package de.tobject.findbugs.builder;
 
 import java.util.ArrayList;
@@ -44,5 +44,5 @@ public class NullFilesCollector extends AbstractFilesCollector {
 	public Collection getFiles() throws CoreException {
 		return new ArrayList();
 	}
-	
+
 }

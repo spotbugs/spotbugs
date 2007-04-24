@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
- 
+
 package de.tobject.findbugs.builder;
 
 import java.util.ArrayList;
@@ -38,10 +38,10 @@ import de.tobject.findbugs.util.Util;
  * @author Phil Crosby
  */
 public class NonRecursiveContainerFilesCollector extends AbstractFilesCollector {
-	
+
 	/** The container we will be working on */
 	private IContainer container;
-	
+
 	/**
 	 * Creates a new {@link NonRecursiveContainerFilesCollector}.
 	 * 
@@ -51,7 +51,7 @@ public class NonRecursiveContainerFilesCollector extends AbstractFilesCollector 
 		super();
 		this.container = container;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see de.tobject.findbugs.builder.AbstractFilesCollector#getFiles()
 	 */
@@ -59,7 +59,7 @@ public class NonRecursiveContainerFilesCollector extends AbstractFilesCollector 
 	public Collection getFiles() throws CoreException {
 		return collectFiles(this.container);
 	}
-	
+
 	/**
 	 * Returns a list of all files in the top level of a container; does not descend recursively
 	 * into subfolders.
@@ -87,5 +87,5 @@ public class NonRecursiveContainerFilesCollector extends AbstractFilesCollector 
 		}			
 		return files;
 	}
-	
+
 }

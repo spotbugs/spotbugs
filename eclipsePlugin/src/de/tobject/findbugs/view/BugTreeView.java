@@ -45,14 +45,14 @@ public class BugTreeView extends ViewPart{
 		public void widgetSelected(SelectionEvent e)
 		{
 			IMarker myMarker = instanceMap.get(theTree.getSelection()[0]);
-            if(myMarker == null) return;
+			if(myMarker == null) return;
 			if(!(myMarker.getResource().getProject().isOpen()))
 			{
 				System.out.println("Project not open");
 				return;
 			}
 
-            FindbugsPlugin.showMarker(myMarker, false, false);
+			FindbugsPlugin.showMarker(myMarker, false, false);
 			try{IDE.openEditor(getSite().getPage(), myMarker, false);}
 			catch(PartInitException ex){ex.printStackTrace();}
 		}
@@ -61,15 +61,15 @@ public class BugTreeView extends ViewPart{
 		{
 			TreeItem theItem = theTree.getSelection()[0];
 			IMarker myMarker = instanceMap.get(theItem);
-            if(myMarker == null)
-                theItem.setExpanded(!theItem.getExpanded());
-            else if(!(myMarker.getResource().getProject().isOpen()))
+			if(myMarker == null)
+				theItem.setExpanded(!theItem.getExpanded());
+			else if(!(myMarker.getResource().getProject().isOpen()))
 			{
 				System.out.println("Project not open");
 				return;
 			} else
 			{
-                FindbugsPlugin.showMarker(myMarker, false, false);
+				FindbugsPlugin.showMarker(myMarker, false, false);
 
 				try{IDE.openEditor(getSite().getPage(), myMarker, false);}
 				catch(PartInitException ex){ex.printStackTrace();}
@@ -78,22 +78,22 @@ public class BugTreeView extends ViewPart{
 	}
 
 	/**
-     *
-     * @return opened bug tree instance or null if it is not opened
+	 *
+	 * @return opened bug tree instance or null if it is not opened
 	 */
 	public static BugTreeView getBugTreeView() {
 		return bugTreeView;
 	}
 
-    /**
-     *
-     * @param theItem
+	/**
+	 *
+	 * @param theItem
      * @return null if nothing found
-     */
+	 */
 	public static IMarker getMarkerForTreeItem(TreeItem theItem) {
-        if(bugTreeView != null && theItem != null) {
-            return bugTreeView.instanceMap.get(theItem);
-        }
+		if(bugTreeView != null && theItem != null) {
+			return bugTreeView.instanceMap.get(theItem);
+		}
         return null;
 	}
 
@@ -109,7 +109,7 @@ public class BugTreeView extends ViewPart{
 		// initialize views with marker data
 		IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		for(IProject proj : projectList)
-            if(proj.isAccessible() && FindbugsPlugin.isJavaProject(proj)) {
+			if(proj.isAccessible() && FindbugsPlugin.isJavaProject(proj)) {
 			try{
 					for(IMarker marker : proj.findMarkers(FindBugsMarker.NAME, true, IResource.DEPTH_INFINITE))
 						addMarker(proj, marker);
@@ -144,16 +144,16 @@ public class BugTreeView extends ViewPart{
 		workspace.addResourceChangeListener(listener);*/
 	}
 
-    @Override
-    public void dispose() {
-        projectTrees.clear();
+	@Override
+	public void dispose() {
+		projectTrees.clear();
         patternMap.clear();
-        instanceMap.clear();
-        theFolder.dispose();
-        // TODO we should get rid of static "bugTreeView" instance after 1.2.0 release
+		instanceMap.clear();
+		theFolder.dispose();
+		// TODO we should get rid of static "bugTreeView" instance after 1.2.0 release
         bugTreeView = null;
-        super.dispose();
-    }
+		super.dispose();
+	}
 
 	public void clearTree(final IProject currProject)
 	{
@@ -161,7 +161,7 @@ public class BugTreeView extends ViewPart{
 			public void run(){
 				Tree treeToRemove = projectTrees.get(currProject.getName());
 				if(treeToRemove == null) return;
-                if (treeToRemove.isDisposed()) return;
+				if (treeToRemove.isDisposed()) return;
 				for(TreeItem x : treeToRemove.getItems())
 					instanceMap.remove(x);
 				patternMap.get(currProject.getName()).clear();
@@ -174,25 +174,25 @@ public class BugTreeView extends ViewPart{
 		Display.getDefault().syncExec(new Runnable(){
 			public void run(){
 				try{
-                    BugInstance bug = MarkerUtil.findBugInstanceForMarker(theMarker);
-                    if (bug == null) {
-                         FindbugsPlugin.getDefault().logWarning("Couldn't find bug for " + theMarker);
+					BugInstance bug = MarkerUtil.findBugInstanceForMarker(theMarker);
+					if (bug == null) {
+						 FindbugsPlugin.getDefault().logWarning("Couldn't find bug for " + theMarker);
                         return;
-                    }
+					}
 
-                    Tree theTree = projectTrees.get(theProject.getName());
-                    if (theTree == null || theTree.isDisposed()) {
+					Tree theTree = projectTrees.get(theProject.getName());
+					if (theTree == null || theTree.isDisposed()) {
 
 						TabItem newTab = new TabItem(theFolder, SWT.LEFT);
 						theTree = new Tree(theFolder, SWT.LEFT);
-                        theTree.addSelectionListener(new BugTreeSelectionListener(theTree));
+						theTree.addSelectionListener(new BugTreeSelectionListener(theTree));
 						newTab.setControl(theTree);
 						newTab.setText(theProject.getName());
 						projectTrees.put(theProject.getName(), theTree);
 						patternMap.put(theProject.getName(), new HashMap<String, TreeItem>());
 					}
 
-                    HashMap<String, TreeItem> theMap = patternMap.get(theProject.getName());
+					HashMap<String, TreeItem> theMap = patternMap.get(theProject.getName());
 					String pattern = bug.getBugPattern().getShortDescription();
 					if(!theMap.containsKey(pattern))
 					{

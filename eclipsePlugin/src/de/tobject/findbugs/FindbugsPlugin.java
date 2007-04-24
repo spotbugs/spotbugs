@@ -662,7 +662,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 
 		IFile userPrefsFile = getUserPreferencesFile(project);
 
-        ensureReadWrite(userPrefsFile);
+		ensureReadWrite(userPrefsFile);
 
 		FileOutput userPrefsOutput = new FileOutput() {
 			public void writeFile(OutputStream os) throws IOException {
@@ -684,17 +684,17 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 	 * @param file - file that should be made writable
 	 * @throws CoreException
 	 */
-    public static void ensureReadWrite(IFile file) throws CoreException {
-        /*
-         * fix for bug 1683264: we should checkout file before writing to it
+	public static void ensureReadWrite(IFile file) throws CoreException {
+		/*
+		 * fix for bug 1683264: we should checkout file before writing to it
          */
-        if(file.isReadOnly()){
-            IStatus checkOutStatus =
-                ResourcesPlugin.getWorkspace().validateEdit(new IFile[]{file}, null);
+		if(file.isReadOnly()){
+			IStatus checkOutStatus =
+				ResourcesPlugin.getWorkspace().validateEdit(new IFile[]{file}, null);
             if(! checkOutStatus.isOK()){
-                throw new CoreException(checkOutStatus);
-            }
-        }
+				throw new CoreException(checkOutStatus);
+			}
+		}
     }
 
 	/**
@@ -714,7 +714,7 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 			throw new IOException("User preferences file not present yet. Save UserPreferences first.");
 		}
 
-        ensureReadWrite(userPrefsFile);
+		ensureReadWrite(userPrefsFile);
 
 		File prefsFile = userPrefsFile.getLocation().toFile();
 
@@ -792,73 +792,73 @@ public class FindbugsPlugin extends AbstractUIPlugin {
 		return userPrefs;
 	}
 
-    public BugResolutionAssociations getBugResolutions() {
-        if (bugResolutions == null)
-            bugResolutions = loadBugResolutions();
+	public BugResolutionAssociations getBugResolutions() {
+		if (bugResolutions == null)
+			bugResolutions = loadBugResolutions();
         return bugResolutions;
-    }
+	}
 
-    private BugResolutionAssociations loadBugResolutions() {
-        BugResolutionLoader loader = new BugResolutionLoader();
-        File xmlFile = new File(FindBugs.getHome() + File.separator + "plugin" + File.separator + "findbugs-resolutions.xml");
+	private BugResolutionAssociations loadBugResolutions() {
+		BugResolutionLoader loader = new BugResolutionLoader();
+		File xmlFile = new File(FindBugs.getHome() + File.separator + "plugin" + File.separator + "findbugs-resolutions.xml");
         return loader.loadBugResolutions(xmlFile);
-    }
+	}
 
-    public static boolean isJavaProject(IProject project) {
-        try {
-            return project.hasNature(JavaCore.NATURE_ID);
+	public static boolean isJavaProject(IProject project) {
+		try {
+			return project.hasNature(JavaCore.NATURE_ID);
 
-        } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "couldn't determine project nature");
-            return false;
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "couldn't determine project nature");
+			return false;
         }
 
 
-    }
+	}
 
-    public static void showDetailsAndUserAnnotationView() {
+	public static void showDetailsAndUserAnnotationView() {
 
-        boolean showUserLast = UserAnnotationsView.isVisible();
+		boolean showUserLast = UserAnnotationsView.isVisible();
 
-        if (!showUserLast)
-            showUserAnnotationView();
-        showDetailsView();
+		if (!showUserLast)
+			showUserAnnotationView();
+		showDetailsView();
         if (showUserLast)
-            showUserAnnotationView();
-    }
+			showUserAnnotationView();
+	}
 
-    public static void showMarker(IMarker marker, boolean preferAnnotationView, boolean focus) {
-        if (preferAnnotationView) {
-            showDetailsView();
+	public static void showMarker(IMarker marker, boolean preferAnnotationView, boolean focus) {
+		if (preferAnnotationView) {
+			showDetailsView();
             DetailsView.showMarker(marker, false);
+			showUserAnnotationView();
+			UserAnnotationsView.showMarker(marker, focus);
+		} else {
             showUserAnnotationView();
-            UserAnnotationsView.showMarker(marker, focus);
-        } else {
-            showUserAnnotationView();
-            UserAnnotationsView.showMarker(marker, false);
-            showDetailsView();
-            DetailsView.showMarker(marker, focus);
+			UserAnnotationsView.showMarker(marker, false);
+			showDetailsView();
+			DetailsView.showMarker(marker, focus);
         }
-    }
+	}
 
-    public static void showDetailsView() {
-        IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
-        if (pages.length > 0)
+	public static void showDetailsView() {
+		IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
+		if (pages.length > 0)
             try {
-                pages[0].showView("de.tobject.findbugs.view.detailsview");
-            } catch (PartInitException e) {
-                FindbugsPlugin.getDefault().logException(e, "Could not show bug details view");
+				pages[0].showView("de.tobject.findbugs.view.detailsview");
+			} catch (PartInitException e) {
+				FindbugsPlugin.getDefault().logException(e, "Could not show bug details view");
             }
-    }
+	}
 
-    public static void showUserAnnotationView() {
-        IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
-        if (pages.length > 0)
+	public static void showUserAnnotationView() {
+		IWorkbenchPage[] pages = FindbugsPlugin.getActiveWorkbenchWindow().getPages();
+		if (pages.length > 0)
             try {
-                pages[0].showView("de.tobject.findbugs.view.userannotationsview");
-            } catch (PartInitException e) {
-                FindbugsPlugin.getDefault().logException(e, "Could not show bug details view");
+				pages[0].showView("de.tobject.findbugs.view.userannotationsview");
+			} catch (PartInitException e) {
+				FindbugsPlugin.getDefault().logException(e, "Could not show bug details view");
             }
-    }
+	}
 }
 

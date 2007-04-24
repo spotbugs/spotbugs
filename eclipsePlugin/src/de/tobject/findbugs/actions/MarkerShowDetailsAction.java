@@ -78,7 +78,7 @@ public class MarkerShowDetailsAction implements IObjectActionDelegate {
 						IMarker marker = (IMarker) iter.next();
 						if (!marker.getType().equals(FindBugsMarker.NAME))
 							continue;
-                        FindbugsPlugin.showMarker(marker, false, true);
+						FindbugsPlugin.showMarker(marker, false, true);
 					}
 				}
 			}

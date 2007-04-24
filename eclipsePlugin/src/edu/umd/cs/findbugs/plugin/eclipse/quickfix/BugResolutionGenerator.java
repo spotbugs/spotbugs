@@ -39,26 +39,26 @@ import de.tobject.findbugs.marker.FindBugsMarker;
  */
 public class BugResolutionGenerator implements IMarkerResolutionGenerator2 {
 
-    public IMarkerResolution[] getResolutions(IMarker marker) {
-        try {
-            String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
+	public IMarkerResolution[] getResolutions(IMarker marker) {
+		try {
+			String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
             BugResolutionAssociations resolutions = FindbugsPlugin.getDefault().getBugResolutions();
-            return resolutions.getBugResolutions(type);
-        } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Marker has no FindBugs bug-type.");
+			return resolutions.getBugResolutions(type);
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "Marker has no FindBugs bug-type.");
             return null;
-        }
-    }
+		}
+	}
 
-    public boolean hasResolutions(IMarker marker) {
-        try {
-            String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
+	public boolean hasResolutions(IMarker marker) {
+		try {
+			String type = (String) marker.getAttribute(FindBugsMarker.BUG_TYPE);
             BugResolutionAssociations resolutions = FindbugsPlugin.getDefault().getBugResolutions();
-            return resolutions.containsBugResolution(type);
-        } catch (CoreException e) {
-            FindbugsPlugin.getDefault().logException(e, "Marker has no FindBugs bug-type.");
+			return resolutions.containsBugResolution(type);
+		} catch (CoreException e) {
+			FindbugsPlugin.getDefault().logException(e, "Marker has no FindBugs bug-type.");
             return false;
-        }
-    }
+		}
+	}
 
 }

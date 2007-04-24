@@ -52,7 +52,7 @@ public abstract class IO {
 			throws IOException, CoreException {
 		PipedInputStream pin = new PipedInputStream();
 		final PipedOutputStream pout = new PipedOutputStream();
-		
+
 		// Create a thread to write bug collection to output stream
 		Thread worker = new Thread() {
 			@Override
@@ -72,16 +72,16 @@ public abstract class IO {
 				}
 			}
 		};		
-		
+
 		try {
 			pin.connect(pout);
 			worker.start();			
-			
+
 			if (!file.exists())
 				file.create(pin, true, monitor);
 			else
 				file.setContents(pin, true, false, monitor);
-			
+
 			// Need to refresh here?
 			file.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		} finally {
@@ -91,7 +91,7 @@ public abstract class IO {
 				// ignore
 			}
 		}
-		
+
 	}
 
 	/**

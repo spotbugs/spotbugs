@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
- 
+
 package de.tobject.findbugs.builder;
 
 import org.eclipse.core.resources.IContainer;
@@ -38,7 +38,7 @@ public class FilesCollectorFactory {
 
 	/** Controls debugging. */
 	public  static boolean DEBUG = false;
-	
+
 	/**
 	 * Produces a file collector for the given container.
 	 * 
@@ -53,7 +53,7 @@ public class FilesCollectorFactory {
 			return new NullFilesCollector();
 		}
 	}
-	
+
 	/**
 	 * Produces a file collector for the given builder.
 	 * 
@@ -88,5 +88,5 @@ public class FilesCollectorFactory {
 		}
 		return new NullFilesCollector();
 	}
-	
+
 }
