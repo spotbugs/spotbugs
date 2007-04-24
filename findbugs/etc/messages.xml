@@ -1793,7 +1793,7 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
 
   <BugPattern type="BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR">
     <ShortDescription>Primitive value is unboxed and coerced for ternary operator</ShortDescription>
-    <LongDescription>Primitive value is unboxed and coerced for ternary operator</LongDescription>
+    <LongDescription>Primitive value is unboxed and coerced for ternary operator in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p>A wrapped primative value is unboxed and converted to another primative type as part of the
@@ -1809,7 +1809,7 @@ converted to a floating point value, and boxed. See JLS Section 15.25.
   </BugPattern>
   <BugPattern type="BX_BOXING_IMMEDIATELY_UNBOXED">
     <ShortDescription>Primitive value is boxed and then immediately unboxed</ShortDescription>
-    <LongDescription>Primitive value is boxed and then immediately unboxed</LongDescription>
+    <LongDescription>Primitive value is boxed and then immediately unboxed in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p>A primitive is boxed, and then immediately unboxed. This probably is due to a manual
@@ -1824,7 +1824,7 @@ to immediately undue the work of the boxing.
 
   <BugPattern type="BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION">
     <ShortDescription>Primitive value is boxed then unboxed to perform primative coercion</ShortDescription>
-    <LongDescription>Primitive value is boxed then unboxed to perform primative coercion</LongDescription>
+    <LongDescription>Primitive value is boxed then unboxed to perform primative coercion in {1}</LongDescription>
     <Details>
 <![CDATA[
   <p>A primitive boxed value constructed and  then immediately converted into a different primitive type
