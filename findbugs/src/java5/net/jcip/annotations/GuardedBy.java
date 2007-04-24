@@ -33,5 +33,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.CLASS)
 public @interface GuardedBy {
-    String value();
+	String value();
 }

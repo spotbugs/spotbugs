@@ -206,19 +206,19 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	/**
 	 * @param annotationClass
 	 * @return
-     */
+	 */
 	private boolean isInjectionAttribute(String annotationClass) {
 		if ( annotationClass.startsWith("javax.annotation.") 
 				|| annotationClass.startsWith("javax.ejb")|| annotationClass.equals("org.jboss.seam.annotations.In")  
-                || annotationClass.startsWith("javax.persistence")
+				|| annotationClass.startsWith("javax.persistence")
 				|| annotationClass.endsWith("SpringBean")
 				|| annotationClass.equals("com.google.inject.Inject"))
 			return true;
-        int lastDot = annotationClass.lastIndexOf('.');
+		int lastDot = annotationClass.lastIndexOf('.');
 		String lastPart = annotationClass.substring(lastDot+1);
 		if (lastPart.startsWith("Inject")) return true;
 		return false;
-    }
+	}
 	@Override
 		 public void visit(ConstantValue obj) {
 		// ConstantValue is an attribute of a field, so the instance variables
@@ -275,70 +275,70 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		 public void sawOpcode(int seen) {
 		if (DEBUG) System.out.println(getPC() + ": " + OPCODE_NAMES[seen] + " " + saState);
 		switch(saState) {
-        case 0:
+		case 0:
 			if (seen == ALOAD_0)
 				saState = 1;
 			break;
-        case 1:
+		case 1:
 			if (seen == ALOAD_0)
 				saState = 2;
 			else
-                saState = 0;
+				saState = 0;
 			break;
 		case 2:
 			if (seen == GETFIELD)
-                saState = 3;
+				saState = 3;
 			else
 				saState = 0;
 			break;
-        case 3:
+		case 3:
 			if (seen == PUTFIELD)
 				saState = 4;
 			else
-                saState = 0;
+				saState = 0;
 			break;
 		}
 		boolean selfAssignment = false;
-        if (pendingGetField != null) {
+		if (pendingGetField != null) {
 			if (seen != PUTFIELD && seen != PUTSTATIC) 
 			readFields.add(pendingGetField);
 			else if ( XFactory.createReferencedXField(this).equals(pendingGetField) && (saState == 4 || seen == PUTSTATIC) ) 
-                selfAssignment = true;
+				selfAssignment = true;
 			else 
 				readFields.add(pendingGetField);
 			pendingGetField = null;
-        }
+		}
 		if (saState == 4) saState = 0;
 
 		opcodeStack.mergeJumps(this);
 		if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicReferenceFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
 		   String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
 		   String fieldSignature = (String) opcodeStack.getStackItem(1).getConstant();
-            String  fieldClass = (String) opcodeStack.getStackItem(2).getConstant();
+			String  fieldClass = (String) opcodeStack.getStackItem(2).getConstant();
 			if (fieldName != null && fieldSignature != null && fieldClass != null) {
 			   XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "L"+fieldSignature+";", false);
 			   reflectiveFields.add(f);
-             }
+			 }
 
 		}
 		if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicIntegerFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
-            String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
-			 String  fieldClass = (String) opcodeStack.getStackItem(1).getConstant();
-			 if (fieldName != null && fieldClass != null) {
-				XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "I", false);
-                reflectiveFields.add(f);
-			  }
-
-		 }
-        if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicLongFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
 			String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
 			 String  fieldClass = (String) opcodeStack.getStackItem(1).getConstant();
 			 if (fieldName != null && fieldClass != null) {
-                XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "J", false);
+				XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "I", false);
 				reflectiveFields.add(f);
 			  }
 
-         }
+		 }
+		if (seen == INVOKESTATIC && getClassConstantOperand().equals("java/util/concurrent/atomic/AtomicLongFieldUpdater") && getNameConstantOperand().equals("newUpdater")) {
+			String fieldName = (String) opcodeStack.getStackItem(0).getConstant();
+			 String  fieldClass = (String) opcodeStack.getStackItem(1).getConstant();
+			 if (fieldName != null && fieldClass != null) {
+				XField f = XFactory.createXField(fieldClass.replace('/','.'), fieldName, "J", false);
+				reflectiveFields.add(f);
+			  }
+
+		 }
 
 
 		if (seen == GETSTATIC) {
@@ -489,7 +489,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			pendingGetField = f;
 			if (getMethodName().equals("readResolve") 
 					&& seen == GETFIELD ) {
-                writtenFields.add(f);
+				writtenFields.add(f);
 				writtenNonNullFields.add(f);
 			}
 			if (DEBUG) System.out.println("get: " + f);
@@ -558,7 +558,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 			if (!reflectiveFields.isEmpty()) {
 				System.out.println("reflective fields:" );
 				for(XField f : reflectiveFields) 
-                    System.out.println("  " + f);
+					System.out.println("  " + f);
 			}
 
 

@@ -183,18 +183,18 @@ public class UnconditionalValueDerefSet {
 				if (factDerefLocationSet != null && !factDerefLocationSet.isEmpty()) {
 					// Compute the union of the dereference locations for
 					// this value number.
-			        Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
+					Set<Location> derefLocationSet = derefLocationSetMap.get(vn);
 					if (derefLocationSet == null) {
 						derefLocationSet = new HashSet<Location>();
 						derefLocationSetMap.put(vn, derefLocationSet);
-			        }
+					}
 					derefLocationSet.addAll(fact.derefLocationSetMap.get(vn));
 				}
 			} else {
 				Set<Location> removed = derefLocationSetMap.remove(vn);
 				// The value number is not in the fact:
 				// remove its location set
-			    if (removed != null) {
+				if (removed != null) {
 						if (UnconditionalValueDerefAnalysis.DEBUG) System.out.println("Goodbye: " + removed);
 				}
 			}
@@ -409,11 +409,11 @@ public class UnconditionalValueDerefSet {
 			for(ValueNumber v : getValueNumbersThatAreUnconditionallyDereferenced())
 				if (!valueNumbers.contains(v)) {
 					System.out.println("\nWhy is " + v + " unconditionally dereferenced in #" + System.identityHashCode(this));
-		            System.out.println("VN: " + vnaFrame);
+					System.out.println("VN: " + vnaFrame);
 					System.out.println("UD: " + this);
 					System.out.println("Location: " + location);
 					System.out.println();
-		        }
+				}
 
 		}
 		retainOnlyTheseValueNumbers(valueNumbers);
@@ -436,7 +436,7 @@ public class UnconditionalValueDerefSet {
 	/**
 	 * @return
 	 */
-    public boolean isEmpty() {
+	public boolean isEmpty() {
 		return valueNumbersUnconditionallyDereferenced.isEmpty();
 	}
 }

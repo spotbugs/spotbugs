@@ -138,7 +138,7 @@ public class StandardTypeMerger implements TypeMerger, Constants, ExtendedTypes 
 		if (aRef.equals(bRef)) return aRef;
 		byte aType = aRef.getType();
 		byte bType = bRef.getType();
-        try {
+		try {
 			// Special case: ExceptionObjectTypes.
 			// We want to preserve the ExceptionSets associated,
 			// in order to track the exact set of exceptions

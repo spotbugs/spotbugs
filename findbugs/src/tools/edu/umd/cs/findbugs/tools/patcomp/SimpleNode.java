@@ -28,7 +28,7 @@ public class SimpleNode implements Node {
 	/** Set first token. */
 	public void setFirstToken(Token t) {
 	if (t == null) throw new IllegalStateException();
-    this.firstToken = t;
+	this.firstToken = t;
 	}
 
 	/** Get the first token. */
@@ -39,7 +39,7 @@ public class SimpleNode implements Node {
 	/** Set last token. */
 	public void setLastToken(Token t) {
 	if (t == null) throw new IllegalStateException();
-    this.lastToken = t;
+	this.lastToken = t;
 	}
 
 	/** Get the last token. */
@@ -50,11 +50,11 @@ public class SimpleNode implements Node {
 	/** Get number of tokens. */
 	public int getNumTokens() {
 	int count = 0;
-    Token cur = firstToken;
+	Token cur = firstToken;
 	while (cur != lastToken) {
 		++count;
 		cur = cur.next;
-    }
+	}
 	return count;
 	}
 
@@ -65,11 +65,11 @@ public class SimpleNode implements Node {
 	public Token getToken(int n) {
 	Token t = firstToken;
 	int count = 0;
-    while (t != null) {
+	while (t != null) {
 		if (count == n)
 		break;
 		++count;
-      t = t.next;
+	  t = t.next;
 	}
 	return t;
 	}
@@ -86,11 +86,11 @@ public class SimpleNode implements Node {
 	public void jjtAddChild(Node n, int i) {
 	if (children == null) {
 		children = new Node[i + 1];
-    } else if (i >= children.length) {
+	} else if (i >= children.length) {
 		Node c[] = new Node[i + 1];
 		System.arraycopy(children, 0, c, 0, children.length);
 		children = c;
-    }
+	}
 	children[i] = n;
 	}
 
@@ -105,7 +105,7 @@ public class SimpleNode implements Node {
 	/* You can override these two methods in subclasses of SimpleNode to
 	 customize the way the node appears when the tree is dumped.  If
 	 your output uses more than one line you should override
-     toString(String), otherwise overriding toString() is probably all
+	 toString(String), otherwise overriding toString() is probably all
 	 you need to do. */
 
 	public String toString() { return PatternCompilerTreeConstants.jjtNodeName[id]; }
@@ -117,11 +117,11 @@ public class SimpleNode implements Node {
 	public void dump(String prefix) {
 	System.out.println(toString(prefix));
 	if (children != null) {
-	    for (Node aChildren : children) {
+		for (Node aChildren : children) {
 			SimpleNode n = (SimpleNode) aChildren;
 			if (n != null) {
 				n.dump(prefix + " ");
-		    }
+			}
 		}
 	}
 	}

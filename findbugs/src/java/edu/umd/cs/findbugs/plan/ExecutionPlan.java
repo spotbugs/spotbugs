@@ -122,27 +122,27 @@ public class ExecutionPlan {
 		ArrayList<DetectorOrderingConstraint> allConstraints = new ArrayList<DetectorOrderingConstraint>(interPassConstraintList.size() + intraPassConstraintList.size());
 		allConstraints.addAll(interPassConstraintList);
 		allConstraints.addAll(intraPassConstraintList);
-        
+
 		Map<String, DetectorNode> nodeMapAll = new HashMap<String, DetectorNode>();
 		ConstraintGraph allPassConstraintGraph = buildConstraintGraph(
 			nodeMapAll,
-            new HashSet<DetectorFactory>(factoryMap.values()),
+			new HashSet<DetectorFactory>(factoryMap.values()),
 			allConstraints);
 		boolean change;
 		do {
-            change = false;
+			change = false;
 			for(Iterator<DetectorNode> i = allPassConstraintGraph.vertexIterator(); i.hasNext(); ) {
 				DetectorNode end = i.next();
 				if (factoryChooser.choose(end.getFactory())) {
-                    for(Iterator<ConstraintEdge> j = allPassConstraintGraph.incomingEdgeIterator(end); j.hasNext(); ) {
+					for(Iterator<ConstraintEdge> j = allPassConstraintGraph.incomingEdgeIterator(end); j.hasNext(); ) {
 						DetectorNode start = j.next().getSource();
 						DetectorFactory startFactory = start.getFactory();
 						if (!factoryChooser.choose(startFactory)) {
-                            factoryChooser.enable(startFactory);
+							factoryChooser.enable(startFactory);
 							change = true;
 							if (DEBUG || FindBugs2.DEBUG)
 								System.out.println("Dependences force enabling of " + startFactory.getFullName());
-                        }
+						}
 
 					}
 				}
@@ -150,11 +150,11 @@ public class ExecutionPlan {
 			}
 		} while (change);
 
-        for(Iterator<Map.Entry<String,DetectorFactory>> i = factoryMap.entrySet().iterator(); i.hasNext(); ) {
+		for(Iterator<Map.Entry<String,DetectorFactory>> i = factoryMap.entrySet().iterator(); i.hasNext(); ) {
 			Map.Entry<String,DetectorFactory> e = i.next();
 			if (!factoryChooser.choose(e.getValue()))
 					i.remove();
-        }
+		}
 
 		// Build inter-pass constraint graph
 		Map<String, DetectorNode> nodeMap = new HashMap<String, DetectorNode>();

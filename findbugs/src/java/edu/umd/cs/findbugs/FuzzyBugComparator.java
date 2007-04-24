@@ -316,11 +316,11 @@ public class FuzzyBugComparator implements WarningComparator {
 		significantDescriptionSet.add("FIELD_STORED");
 		significantDescriptionSet.add("TYPE_DEFAULT");
 		significantDescriptionSet.add("TYPE_EXPECTED");
-        significantDescriptionSet.add("TYPE_FOUND");
+		significantDescriptionSet.add("TYPE_FOUND");
 
 		significantDescriptionSet.add("LOCAL_VARIABLE_NAMED");
 
-       
+
 		// Many int annotations are NOT significant: e.g., sync %, biased locked %, bytecode offset, etc.
 		// The null parameter annotations, however, are definitely significant.
 		significantDescriptionSet.add("INT_NULL_ARG");

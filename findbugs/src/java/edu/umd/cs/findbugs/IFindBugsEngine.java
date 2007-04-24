@@ -152,13 +152,13 @@ public interface IFindBugsEngine {
 
 	/**
 	 * @return Returns the projectName.
-     */
+	 */
 	public String getProjectName();
 
 	/**
 	 * @param projectName The project name to set.
 	 */
-    public void setProjectName(String projectName);
+	public void setProjectName(String projectName);
 
 
 	/**
@@ -257,5 +257,5 @@ public interface IFindBugsEngine {
 	/**
 	 * @param xmlWithAbridgedMessages
 	 */
-    public void setAbridgedMessages(boolean xmlWithAbridgedMessages);
+	public void setAbridgedMessages(boolean xmlWithAbridgedMessages);
 }

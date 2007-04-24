@@ -12,8 +12,8 @@ public class SplitCamelCaseIdentifierTest extends TestCase {
 	SplitCamelCaseIdentifier allLower;
 	SplitCamelCaseIdentifier allUpper;
 	SplitCamelCaseIdentifier capitalized;
-	
-	
+
+
 	@Override
 	protected void setUp() throws Exception {
 		splitter = new SplitCamelCaseIdentifier("displayGUIWindow");
@@ -23,32 +23,32 @@ public class SplitCamelCaseIdentifierTest extends TestCase {
 		allUpper = new SplitCamelCaseIdentifier("NSA");
 		capitalized = new SplitCamelCaseIdentifier("Maryland");
 	}
-	
+
 	public void testSplit() {
 		Collection<String> words = splitter.split();
 		checkContents(words, new String[]{"display","gui","window"});
 	}
-	
+
 	public void testSplit2() {
 		Collection<String> words = splitter2.split();
 		checkContents(words, new String[]{"display","gui","window"});
 	}
-	
+
 	public void testSplitLong() {
 		Collection<String> words = splitterLong.split();
 		checkContents(words, new String[]{"now","is","the","winter","of","our","discontent"});
 	}
-	
+
 	public void testAllLower() {
 		Collection<String> words = allLower.split();
 		checkContents(words, new String[]{"foobar"});
 	}
-	
+
 	public void testAllUpper() {
 		Collection<String> words = allUpper.split();
 		checkContents(words, new String[]{"nsa"});
 	}
-	
+
 	public void testCapitalized() {
 		Collection<String> words = capitalized.split();
 		checkContents(words, new String[]{"maryland"});

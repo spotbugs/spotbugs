@@ -174,7 +174,7 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 
 		public boolean isFieldValue() {
 			return (kind & FIELD_VAL) != 0;
-        }
+		}
 	/**
 	 * Was this value marked as a possibly null parameter?
 	 */
@@ -220,11 +220,11 @@ public class IsNullValue implements IsNullValueAnalysisFeatures, Debug {
 	/**
 	 * Convert to a value known because it was returned from a method
 	 * in a method property database.
-     * @param methodInvoked TODO
+	 * @param methodInvoked TODO
 	 */
 	public IsNullValue markInformationAsComingFromFieldValue(XField field) {
 		if (getBaseKind() == NO_KABOOM_NN) return new IsNullValue(kind | FIELD_VAL, locationOfKaBoom);
-        return instanceByFlagsList[(getFlags() | FIELD_VAL) >> FLAG_SHIFT][getBaseKind()];
+		return instanceByFlagsList[(getFlags() | FIELD_VAL) >> FLAG_SHIFT][getBaseKind()];
 	}
 
 	/**

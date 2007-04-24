@@ -85,7 +85,7 @@ public class OpcodeStack implements Constants2
 	private boolean useIterativeAnalysis 
 	= AnalysisContext.currentAnalysisContext().getBoolProperty(AnalysisFeatures.INTERATIVE_OPCODE_STACK_ANALYSIS);
 
-	
+
 	public static class Item
 	{ 		
 		public static final int SIGNED_BYTE = 1;
@@ -101,7 +101,7 @@ public class OpcodeStack implements Constants2
 		public static final int MATH_ABS = 11;
 		public static final int MASKED_NON_NEGATIVE = 12;
 		public static final int NASTY_FLOAT_MATH = 13;
-		
+
 		private static final int IS_INITIAL_PARAMETER_FLAG=1;
 		private static final int COULD_BE_ZERO_FLAG = 2;
 		private static final int IS_NULL_FLAG = 4;
@@ -206,7 +206,7 @@ public class OpcodeStack implements Constants2
 			case  MATH_ABS:
 				buf.append(", Math.abs");
 				break;
-            case  MASKED_NON_NEGATIVE:
+			case  MASKED_NON_NEGATIVE:
 				buf.append(", masked_non_negative");
 				break;
 			case 0 :
@@ -278,7 +278,7 @@ public class OpcodeStack implements Constants2
 		 public Item(String signature) {
 			 this(signature, UNKNOWN);
 		 }
-  		public Item(Item it) {
+		  public Item(Item it) {
 			this.signature = it.signature;
 			this.constValue = it.constValue;
 			this.xfield = it.xfield;
@@ -289,7 +289,7 @@ public class OpcodeStack implements Constants2
 		 }
 		 public Item(Item it, int reg) {
 			 this(it);
- 			this.registerNumber = reg;
+			 this.registerNumber = reg;
 		 }
 		 public Item(String signature, FieldAnnotation f) {
 			this.signature = signature;
@@ -311,97 +311,97 @@ public class OpcodeStack implements Constants2
 		 public Item(String signature, Object constantValue) {
 			 this.signature = signature;
 			 constValue = constantValue;
- 			if (constantValue instanceof Integer) {
+			 if (constantValue instanceof Integer) {
 				 int value = (Integer) constantValue;
 				 if (value != 0 && (value & 0xff) == 0)
 					 specialKind = LOW_8_BITS_CLEAR;
- 				if (value == 0) setCouldBeZero(true);
+				 if (value == 0) setCouldBeZero(true);
 
 			 }
 			 else if (constantValue instanceof Long) {
- 				long value = (Long) constantValue;
+				 long value = (Long) constantValue;
 				 if (value != 0 && (value & 0xff) == 0)
 					 specialKind = LOW_8_BITS_CLEAR;
 				 if (value == 0) setCouldBeZero(true);
- 			}
+			 }
 
 		 }
 
- 		public Item() {
+		 public Item() {
 			 signature = "Ljava/lang/Object;";
 			 constValue = null;
 			 setNull(true);
- 		}
+		 }
 
 		 public JavaClass getJavaClass() throws ClassNotFoundException {
 			 String baseSig;
- 			
+
 			 if (isPrimitive())
 				 return null;
 
- 			if (isArray()) {
+			 if (isArray()) {
 				 baseSig = getElementSignature();
 			 } else {
 				 baseSig = signature;
- 			}
+			 }
 
 			 if (baseSig.length() == 0)
 				 return null;
- 			baseSig = baseSig.substring(1, baseSig.length() - 1);
+			 baseSig = baseSig.substring(1, baseSig.length() - 1);
 			 baseSig = baseSig.replace('/', '.');
 			 return Repository.lookupClass(baseSig);
 		 }
- 		 		
+
 		 public boolean isArray() {
 			 return signature.startsWith("[");
 		 }
- 				
+
 		 public String getElementSignature() {
 			 if (!isArray())
 				 return signature;
- 			else {
+			 else {
 				 int pos = 0;
 				 int len = signature.length();
 				 while (pos < len) {
- 					if (signature.charAt(pos) != '[')
+					 if (signature.charAt(pos) != '[')
 						 break;
 					 pos++;
 				 }
- 				return signature.substring(pos);
+				 return signature.substring(pos);
 			 }
 		 }
 
-        public boolean isNonNegative() {
+		public boolean isNonNegative() {
 			if (specialKind == MASKED_NON_NEGATIVE) return true;
 			if (constValue instanceof Number) {
 				double value = ((Number) constValue).doubleValue();
-                return value >= 0;
+				return value >= 0;
 			}
 			return false;
 		}
- 		public boolean isPrimitive() {
+		 public boolean isPrimitive() {
 			 return !signature.startsWith("L");
 		 }
 
- 		public int getRegisterNumber() {
+		 public int getRegisterNumber() {
 			 return registerNumber;
 		 }
 		 public String getSignature() {
- 			return signature;
+			 return signature;
 		 }
 
 		 public Object getConstant() {
- 			return constValue;
+			 return constValue;
 		 }
 
 		 /** Use getXField instead */
 		 @Deprecated
 		 public FieldAnnotation getFieldAnnotation() {
- 			return FieldAnnotation.fromXField(xfield);
+			 return FieldAnnotation.fromXField(xfield);
 		 }
 		 public XField getXField() {
 			 return xfield;
- 		}
+		 }
 		/**
 		 * @param specialKind The specialKind to set.
 		 */
@@ -516,7 +516,7 @@ public class OpcodeStack implements Constants2
 		if (e.getCatchType() == 0) return "Ljava/lang/Throwable;";
 		Constant c = dbc.getConstantPool().getConstant(e.getCatchType());
 		if (c instanceof ConstantClass)
-            return "L"+((ConstantClass)c).getBytes(dbc.getConstantPool())+";";
+			return "L"+((ConstantClass)c).getBytes(dbc.getConstantPool())+";";
 		return "Ljava/lang/Throwable;";
 	}
 	public void mergeJumps(DismantleBytecode dbc) {
@@ -528,11 +528,11 @@ public class OpcodeStack implements Constants2
 			 pop();
 			 Item top = new Item("I"); 
 			 top.setCouldBeZero(true);
- 			push(top);
+			 push(top);
 			 convertJumpToOneZeroState = convertJumpToZeroOneState = 0;
 			stackUpdated = true;
 		 }
-        
+
 
 		List<Item> jumpEntry = null;
 		 if (jumpEntryLocations.get(dbc.getPC())) 
@@ -541,36 +541,36 @@ public class OpcodeStack implements Constants2
 			if (DEBUG) {
 				System.out.println("XXXXXXX " + reachOnlyByBranch);
 				System.out.println("merging lvValues at jump target " + dbc.getPC() + " -> " + Integer.toString(System.identityHashCode(jumpEntry),16) + " " + jumpEntry);
-		        System.out.println(" current lvValues " + lvValues);
+				System.out.println(" current lvValues " + lvValues);
 			}
 			List<Item> jumpStackEntry = jumpStackEntries.get(dbc.getPC());
 			if (reachOnlyByBranch) {
-		        lvValues = new ArrayList<Item>(jumpEntry);
+				lvValues = new ArrayList<Item>(jumpEntry);
 				if (!stackUpdated) {
 					if (jumpStackEntry != null) stack = new ArrayList<Item>(jumpStackEntry);
 					else stack.clear();
-                    }
+					}
 
 			}
 			else {
-		        mergeLists(lvValues, jumpEntry, false);
+				mergeLists(lvValues, jumpEntry, false);
 				if (!stackUpdated && jumpStackEntry != null) mergeLists(stack, jumpStackEntry, false);
 			}
 			if (DEBUG)
-		        System.out.println(" merged lvValues " + lvValues);
+				System.out.println(" merged lvValues " + lvValues);
 		}
 		else if (reachOnlyByBranch && !stackUpdated) {
 			stack.clear();
 
-            boolean foundException = false;
+			boolean foundException = false;
 			for(CodeException e : dbc.getCode().getExceptionTable()) {
 				if (e.getHandlerPC() == dbc.getPC()) {
 					push(new Item(getExceptionSig(dbc, e)));
-                    foundException = true;
+					foundException = true;
 				}
 			}
 			if (!foundException)
-                push(new Item("Ljava/lang/Throwable;"));
+				push(new Item("Ljava/lang/Throwable;"));
 		}
 		reachOnlyByBranch = false;
 	}
@@ -594,114 +594,114 @@ public class OpcodeStack implements Constants2
 	 public void sawOpcode(DismantleBytecode dbc, int seen) {
 		 int register;
 		 String signature;
- 		Item it, it2, it3;
+		 Item it, it2, it3;
 		 Constant cons;
 		 if (dbc.isRegisterStore()) 
 			 setLastUpdate(dbc.getRegisterOperand(), dbc.getPC());
- 		mergeJumps(dbc);
+		 mergeJumps(dbc);
 		 needToMerge = true;
 		 switch (seen) {
 		 case ICONST_1:
- 			convertJumpToOneZeroState = 1;
+			 convertJumpToOneZeroState = 1;
 			 break;
 		 case GOTO:
 			 if (convertJumpToOneZeroState == 1 && dbc.getBranchOffset() == 4) 
- 				convertJumpToOneZeroState = 2;
+				 convertJumpToOneZeroState = 2;
 			 else 
 				 convertJumpToOneZeroState = 0;
 			 break;
- 		case ICONST_0:
+		 case ICONST_0:
 			 if (convertJumpToOneZeroState == 2)
 				 convertJumpToOneZeroState = 3;
 			 else convertJumpToOneZeroState = 0;
- 			break;
+			 break;
 			 default:convertJumpToOneZeroState = 0;
 
 		 }
- 		switch (seen) {
+		 switch (seen) {
 		 case ICONST_0:
 			 convertJumpToZeroOneState = 1;
 			 break;
- 		case GOTO:
+		 case GOTO:
 			 if (convertJumpToZeroOneState == 1 && dbc.getBranchOffset() == 4) 
 				 convertJumpToZeroOneState = 2;
 			 else 
- 				convertJumpToZeroOneState = 0;
+				 convertJumpToZeroOneState = 0;
 			 break;
 		 case ICONST_1:
 			 if (convertJumpToZeroOneState == 2)
- 				convertJumpToZeroOneState = 3;
+				 convertJumpToZeroOneState = 3;
 			 else convertJumpToZeroOneState = 0;
 			 break;
 		 default:convertJumpToZeroOneState = 0;
- 		}
+		 }
 
 		 try
 		 {
 			 switch (seen) {
-	 			case ALOAD:
+				 case ALOAD:
 					 pushByLocalObjectLoad(dbc, dbc.getRegisterOperand());
 				 break;
 
-	 			case ALOAD_0:
+				 case ALOAD_0:
 				 case ALOAD_1:
 				 case ALOAD_2:
 				 case ALOAD_3:
-	 				pushByLocalObjectLoad(dbc, seen - ALOAD_0);
+					 pushByLocalObjectLoad(dbc, seen - ALOAD_0);
 				 break;
 
 				 case DLOAD:
-	 				pushByLocalLoad("D", dbc.getRegisterOperand());
+					 pushByLocalLoad("D", dbc.getRegisterOperand());
 				 break;
 
 				 case DLOAD_0:
-	 			case DLOAD_1:
+				 case DLOAD_1:
 				 case DLOAD_2:
 				 case DLOAD_3:
 					 pushByLocalLoad("D", seen - DLOAD_0);
-	 			break;
+				 break;
 
 				 case FLOAD:
 					 pushByLocalLoad("F", dbc.getRegisterOperand());
 				 break;
-	 			
+
 				 case FLOAD_0:
 				 case FLOAD_1:
 				 case FLOAD_2:
-	 			case FLOAD_3:
+				 case FLOAD_3:
 					 pushByLocalLoad("F", seen - FLOAD_0);
 				 break;
 
 				 case ILOAD:
 					 pushByLocalLoad("I", dbc.getRegisterOperand());
 				 break;
-	 			
+
 				 case ILOAD_0:
 				 case ILOAD_1:
 				 case ILOAD_2:
-	 			case ILOAD_3:
+				 case ILOAD_3:
 					 pushByLocalLoad("I", seen - ILOAD_0);
 				 break;
 
 				 case LLOAD:
 					 pushByLocalLoad("J", dbc.getRegisterOperand());
 				 break;
-	 			
+
 				 case LLOAD_0:
 				 case LLOAD_1:
 				 case LLOAD_2:
-	 			case LLOAD_3:
+				 case LLOAD_3:
 					 pushByLocalLoad("J", seen - LLOAD_0);
 				 break;
 
-	 			
+
 				 case GETSTATIC:
 					{
 					FieldAnnotation field = FieldAnnotation.fromReferencedField(dbc);
 					 Item i = new Item(dbc.getSigConstantOperand(), field, Integer.MAX_VALUE);
 					 if (field.getFieldName().equals("separator") && field.getClassName().equals("java.io.File")) {
 						 i.setSpecialKind(Item.FILE_SEPARATOR_STRING);
-	 				}
+					 }
 
 					 push(i);
 					break;
@@ -722,7 +722,7 @@ public class OpcodeStack implements Constants2
 				 case IFNE:
 				 case IFLT:
 				 case IFLE:
-	 			case IFGT:
+				 case IFGT:
 				 case IFGE:
 				 case IFNONNULL:
 				 case IFNULL:
@@ -730,7 +730,7 @@ public class OpcodeStack implements Constants2
 				 {
 					 Item top = pop();
 
- 					// if we see a test comparing a special negative value with 0,
+					 // if we see a test comparing a special negative value with 0,
 					 // reset all other such values on the opcode stack
 					if (top.valueCouldBeNegative() 
 							&& (seen == IFLT || seen == IFLE || seen == IFGT || seen == IFGE)) {
@@ -742,7 +742,7 @@ public class OpcodeStack implements Constants2
 				 }
 				 addJumpValue(dbc.getBranchTarget());
 
- 			break;
+			 break;
 				 case LOOKUPSWITCH:
 
 				 case TABLESWITCH:
@@ -750,34 +750,34 @@ public class OpcodeStack implements Constants2
 					 pop();
 					 addJumpValue(dbc.getBranchTarget());
 					 int pc = dbc.getBranchTarget() - dbc.getBranchOffset();
-	 				for(int offset : dbc.getSwitchOffsets())
+					 for(int offset : dbc.getSwitchOffsets())
 						 addJumpValue(offset+pc);
 
 				 break;
-	 			case ARETURN:
+				 case ARETURN:
 				 case DRETURN:
 				 case FRETURN:
 
-	 			case IRETURN:
+				 case IRETURN:
 				 case LRETURN:
 
 					seenTransferOfControl = true;
 					reachOnlyByBranch = true;
 					 pop();
 				 break;
-	 			case MONITORENTER:
+				 case MONITORENTER:
 				 case MONITOREXIT:
 				 case POP:
 				 case PUTSTATIC:
-	 				pop();
+					 pop();
 				 break;
 
 				 case IF_ACMPEQ:
-	 			case IF_ACMPNE:
+				 case IF_ACMPNE:
 				 case IF_ICMPEQ:
 				 case IF_ICMPNE:
 				 case IF_ICMPLT:
-	 			case IF_ICMPLE:
+				 case IF_ICMPLE:
 				 case IF_ICMPGT:
 				 case IF_ICMPGE:
 
@@ -788,31 +788,31 @@ public class OpcodeStack implements Constants2
 
 
 				 case POP2:
-	 				it = pop();
+					 it = pop();
 					 if (it.getSize() == 1) pop();
 					 break;
 				 case PUTFIELD:
-	 				pop(2);
+					 pop(2);
 				 break;
 
 				 case IALOAD:
-	 			case SALOAD:
+				 case SALOAD:
 					 pop(2);
 					 push(new Item("I"));
 				 break;
-	 			
+
 				 case DUP: 
 					 handleDup();
 				 break;
-	 			
+
 				 case DUP2:
 					 handleDup2();
 				 break;
-	 			
+
 				 case DUP_X1:
 				 handleDupX1();
 				 break;
-	 			
+
 				 case DUP_X2:
 
 					 handleDupX2();
@@ -825,11 +825,11 @@ public class OpcodeStack implements Constants2
 
 				 case IINC:
 					 register = dbc.getRegisterOperand();
-	 				it = getLVValue( register );
+					 it = getLVValue( register );
 					 it2 = new Item("I", dbc.getIntConstant());
 					 pushByIntMath( IADD, it2, it);
 					 pushByLocalStore(register);
-	 			break;
+				 break;
 
 				 case ATHROW:
 					pop();
@@ -840,15 +840,15 @@ public class OpcodeStack implements Constants2
 				 case CHECKCAST:
 				 {
 					 String castTo = dbc.getClassConstantOperand();
-	 				
+
 					 if (castTo.charAt(0) != '[') castTo = "L" + castTo + ";";
 					 it = new Item(pop());
 					 it.signature = castTo;
-	 				push(it);
+					 push(it);
 
 					 break;
 
-	 					
+
 				 }
 				 case NOP:
 					break;
@@ -867,27 +867,27 @@ public class OpcodeStack implements Constants2
 
 				 break;
 
-	 			
+
 				 case SWAP:
 					 handleSwap();
 				 break;
-	 			
+
 				 case ICONST_M1:
 				 case ICONST_0:
 				 case ICONST_1:
-	 			case ICONST_2:
+				 case ICONST_2:
 				 case ICONST_3:
 				 case ICONST_4:
 				 case ICONST_5:
-	 				push(new Item("I", (seen-ICONST_0)));
+					 push(new Item("I", (seen-ICONST_0)));
 				 break;
 
 				 case LCONST_0:
-	 			case LCONST_1:
+				 case LCONST_1:
 					 push(new Item("J", (long)(seen-LCONST_0)));
 				 break;
 
-	 			case DCONST_0:
+				 case DCONST_0:
 				 case DCONST_1:
 					 push(new Item("D", (double)(seen-DCONST_0)));
 				 break;
@@ -895,32 +895,32 @@ public class OpcodeStack implements Constants2
 				 case FCONST_0:
 				 case FCONST_1:
 				 case FCONST_2:
-	 				push(new Item("F", (float)(seen-FCONST_0)));
+					 push(new Item("F", (float)(seen-FCONST_0)));
 				 break;
 
 				 case ACONST_NULL:
 					 push(new Item());
 				 break;
-	 				 				 			
+
 				 case ASTORE:
 				 case DSTORE:
 				 case FSTORE:
-	 			case ISTORE:
+				 case ISTORE:
 				 case LSTORE:
 					 pushByLocalStore(dbc.getRegisterOperand());
 				 break;
-	 			
+
 				 case ASTORE_0:
 				 case ASTORE_1:
 				 case ASTORE_2:
-	 			case ASTORE_3:
+				 case ASTORE_3:
 					 pushByLocalStore(seen - ASTORE_0);
 				 break;
 
 				 case DSTORE_0:
 				 case DSTORE_1:
 				 case DSTORE_2:
-	 			case DSTORE_3:
+				 case DSTORE_3:
 					 pushByLocalStore(seen - DSTORE_0);
 				 break;
 
@@ -928,261 +928,261 @@ public class OpcodeStack implements Constants2
 				 case FSTORE_0:
 				 case FSTORE_1:
 				 case FSTORE_2:
-	 			case FSTORE_3:
+				 case FSTORE_3:
 					 pushByLocalStore(seen - FSTORE_0);
 				 break;
 
 				 case ISTORE_0:
 				 case ISTORE_1:
 				 case ISTORE_2:
-	 			case ISTORE_3:
+				 case ISTORE_3:
 					 pushByLocalStore(seen - ISTORE_0);
 				 break;
 
-	 			case LSTORE_0:
+				 case LSTORE_0:
 				 case LSTORE_1:
 				 case LSTORE_2:
 				 case LSTORE_3:
-	 				pushByLocalStore(seen - LSTORE_0);
+					 pushByLocalStore(seen - LSTORE_0);
 				 break;
 
 				 case GETFIELD:
 					 {
 						 Item item = pop();
-	 					int reg = item.getRegisterNumber();
+						 int reg = item.getRegisterNumber();
 					 push(new Item(dbc.getSigConstantOperand(), 
 						FieldAnnotation.fromReferencedField(dbc), reg));
 					 }
 				 break;
 
-	 			case ARRAYLENGTH:
+				 case ARRAYLENGTH:
 					 pop();
 					 push(new Item("I"));
 				 break;
-	 			
+
 				 case BALOAD:
 				 {
 					 pop(2);
-	 				Item v =  new Item("I");
+					 Item v =  new Item("I");
 					 v.setSpecialKind(Item.SIGNED_BYTE);
 					 push(v);
 					 break;
-	 			}
+				 }
 				 case CALOAD:
 					 pop(2);
 					 push(new Item("I"));
-	 			break;
+				 break;
 
 				 case DALOAD:
 					 pop(2);
-	 				push(new Item("D"));
+					 push(new Item("D"));
 				 break;
 
 				 case FALOAD:
-	 				pop(2);
+					 pop(2);
 					 push(new Item("F"));
 				 break;
 
-	 			case LALOAD:
+				 case LALOAD:
 					 pop(2);
 					 push(new Item("J"));
 				 break;
-	 			
+
 				 case AASTORE:
 				 case BASTORE:
 				 case CASTORE:
-	 			case DASTORE:
+				 case DASTORE:
 				 case FASTORE:
 				 case IASTORE:
 				 case LASTORE:
-	 			case SASTORE:
+				 case SASTORE:
 					 pop(3);
 				 break;
 
-	 			case BIPUSH:
+				 case BIPUSH:
 				 case SIPUSH:
 					 push(new Item("I", (Integer)dbc.getIntConstant()));
 				 break;
-	 			
+
 				 case IADD:
 				 case ISUB:
 				 case IMUL:
-	 			case IDIV:
+				 case IDIV:
 				 case IAND:
 				 case IOR:
 				 case IXOR:
-	 			case ISHL:
+				 case ISHL:
 				 case ISHR:
 				 case IREM:
 				 case IUSHR:
-	 				it = pop();
+					 it = pop();
 					 it2 = pop();
 					 pushByIntMath(seen, it2, it);
 				 break;
-	 			
+
 				 case INEG:
 					 it = pop();
 					 if (it.getConstant() != null) {
-	 					push(new Item("I", ( Integer)(-(Integer) it.getConstant())));
+						 push(new Item("I", ( Integer)(-(Integer) it.getConstant())));
 					 } else {
 						 push(new Item("I"));
 					 }
-	 			break;
+				 break;
 
 				 case LNEG:
 					 it = pop();
-	 				if (it.getConstant() != null) {
+					 if (it.getConstant() != null) {
 						 push(new Item("J", ( Long)(-(Long) it.getConstant())));
 					 } else {
 						 push(new Item("J"));
-	 				}
+					 }
 				 break;
 
 				 case DNEG:
 					 it = pop();
 					 if (it.getConstant() != null) {
-	 					push(new Item("D", ( Double)(-(Double) it.getConstant())));
+						 push(new Item("D", ( Double)(-(Double) it.getConstant())));
 					 } else {
 						 push(new Item("D"));
 					 }
-	 			break;
+				 break;
 
 				 case LADD:
 				 case LSUB:
 				 case LMUL:
-	 			case LDIV:
+				 case LDIV:
 				 case LAND:
 				 case LOR:
 				 case LXOR:
-	 			case LSHL:
+				 case LSHL:
 				 case LSHR:
 				 case LREM:
 				 case LUSHR:
-	 				
+
 					 it = pop();
 					 it2 = pop();
 					 pushByLongMath(seen, it2, it);	 				
-	 			break;
+				 break;
 
 				 case LCMP:
 				 handleLcmp();
-	 			break;
+				 break;
 
 				 case FCMPG:
 				 case FCMPL: handleFcmp(seen);
-	 			break;
+				 break;
 
 				 case DCMPG:
 				 case DCMPL:
 					 handleDcmp(seen);
-	 			break;
+				 break;
 
 				 case FADD:
 				 case FSUB:
-	 			case FMUL:
+				 case FMUL:
 				 case FDIV:
 					 it = pop();
 					 it2 = pop();
-	 				pushByFloatMath(seen, it, it2);
+					 pushByFloatMath(seen, it, it2);
 				 break;
 
 				 case DADD:
 				 case DSUB:
 				 case DMUL:
-	 			case DDIV:
+				 case DDIV:
 				 case DREM:
 					 it = pop();
 					 it2 = pop();
-	 				pushByDoubleMath(seen, it, it2);
+					 pushByDoubleMath(seen, it, it2);
 				 break;
 
 				 case I2B:
-	 				it = pop();
+					 it = pop();
 					 if (it.getConstant() != null) {
 						 it =new Item("I", (byte)constantToInt(it));
 					 } else {
-	 					it = new Item("I");
+						 it = new Item("I");
 					 }
 					 it.setSpecialKind(Item.SIGNED_BYTE);
 					 push(it);
-	 			break;
+				 break;
 
 				 case I2C:
 					 it = pop();
 					 if (it.getConstant() != null) {
-                        it = new Item("I", (char)constantToInt(it));
+						it = new Item("I", (char)constantToInt(it));
 					 } else {
 						it = new Item("I");
 					 }
-                    it.setSpecialKind(Item.MASKED_NON_NEGATIVE);
+					it.setSpecialKind(Item.MASKED_NON_NEGATIVE);
 					push(it);
 				 break;
 
-	 			case I2L:
+				 case I2L:
 				 case D2L:{
 					 it = pop();
 					 Item newValue;
-	 				if (it.getConstant() != null) {
+					 if (it.getConstant() != null) {
 						 newValue = new Item("J", constantToLong(it));
 					 } else {
 						 newValue = new Item("J");
-	 				}
+					 }
 					 newValue.setSpecialKind(it.getSpecialKind());
 					 push(newValue);
 				 }
-	 			break;
+				 break;
 
 				 case I2S:
 					 it = pop();
 					 if (it.getConstant() != null) {
-	 					push(new Item("I", (short)constantToInt(it)));
+						 push(new Item("I", (short)constantToInt(it)));
 					 } else {
 						 push(new Item("I"));
 					 }
-	 			break;
+				 break;
 
 				 case L2I:
 				 case D2I:
 				 case F2I:
-	 				it = pop();
+					 it = pop();
 					 if (it.getConstant() != null) {
 						 push(new Item("I",constantToInt(it)));
 					 } else {
-	 					push(new Item("I"));
+						 push(new Item("I"));
 					 }
 				 break;
 
-	 			case L2F:
+				 case L2F:
 				 case D2F:
 				 case I2F:
 					 it = pop();
-	 				if (it.getConstant() != null) {
+					 if (it.getConstant() != null) {
 						 push(new Item("F", (Float)(constantToFloat(it))));
 					 } else {
 						 push(new Item("F"));
-	 				}
+					 }
 				 break;
 
 				 case F2D:
 				 case I2D:
 				 case L2D:
-	 				it = pop();
+					 it = pop();
 					 if (it.getConstant() != null) {
 						 push(new Item("D", constantToDouble(it)));
 					 } else {
-	 					push(new Item("D"));
+						 push(new Item("D"));
 					 }
 				 break;
 
-	 			case NEW:
+				 case NEW:
 					 pushBySignature("L" + dbc.getClassConstantOperand() + ";");
 				 break;
 
-	 			case NEWARRAY:
+				 case NEWARRAY:
 					 pop();
 					 signature = "[" + BasicType.getType((byte)dbc.getIntConstant()).getSignature();
 					 pushBySignature(signature);
-	 			break;
+				 break;
 
 				// According to the VM Spec 4.4.1, anewarray and multianewarray
 				// can refer to normal class/interface types (encoded in
@@ -1198,11 +1198,11 @@ public class OpcodeStack implements Constants2
 					 pushBySignature(signature);
 				 break;
 
-	 			case MULTIANEWARRAY:
+				 case MULTIANEWARRAY:
 					 int dims = dbc.getIntConstant();
 					 while ((dims--) > 0) {
 						 pop();
-	 				}
+					 }
 					signature = dbc.getClassConstantOperand();
 					if (!signature.startsWith("[")) {
 						dims = dbc.getIntConstant();
@@ -1215,43 +1215,43 @@ public class OpcodeStack implements Constants2
 				 break;
 
 				 case AALOAD:
-	 				pop();
+					 pop();
 					 it = pop();
 					 pushBySignature(it.getElementSignature());
 				 break;
-	 				 			
+
 				 case JSR:
 					 push(new Item("")); //?
 				 break;
-	 			
+
 				case INVOKEINTERFACE:
 				 case INVOKESPECIAL:
 				 case INVOKESTATIC:
 				 case INVOKEVIRTUAL:
-	 				processMethodCall(dbc, seen);
+					 processMethodCall(dbc, seen);
 				 break;
 
 				 default:
-	 				throw new UnsupportedOperationException("OpCode " + OPCODE_NAMES[seen] + " not supported " );
+					 throw new UnsupportedOperationException("OpCode " + OPCODE_NAMES[seen] + " not supported " );
 			 }
 		 }
 
 		 catch (RuntimeException e) {
 			 //If an error occurs, we clear the stack and locals. one of two things will occur. 
 			 //Either the client will expect more stack items than really exist, and so they're condition check will fail, 
-	 		//or the stack will resync with the code. But hopefully not false positives
+			 //or the stack will resync with the code. But hopefully not false positives
 			 // TODO: log this
 			 if (DEBUG) 
 				 e.printStackTrace();
-	 		clear();
+			 clear();
 		 }
 		 finally {
 			 if (exceptionHandlers.get(dbc.getNextPC()))
-	 			push(new Item());
+				 push(new Item());
 			 if (DEBUG) {
 				 System.out.println(dbc.getNextPC() + "pc : " + OPCODE_NAMES[seen] + "  stack depth: " + getStackDepth());
 				 System.out.println(this);
-	 		}
+			 }
 		 }
 	 }
 
@@ -1479,51 +1479,51 @@ public class OpcodeStack implements Constants2
 		 String clsName = dbc.getClassConstantOperand();
 		 String methodName = dbc.getNameConstantOperand();
 		 String signature = dbc.getSigConstantOperand();
- 		String appenderValue = null;
+		 String appenderValue = null;
 		 Item sbItem = null;
 
 		 //TODO: stack merging for trinaries kills the constant.. would be nice to maintain.
- 		if ("java/lang/StringBuffer".equals(clsName)
+		 if ("java/lang/StringBuffer".equals(clsName)
 		 ||  "java/lang/StringBuilder".equals(clsName)) {
 			 if ("<init>".equals(methodName)) {
 				 if ("(Ljava/lang/String;)V".equals(signature)) {
- 					Item i = getStackItem(0);
+					 Item i = getStackItem(0);
 					 appenderValue = (String)i.getConstant();
 				 } else if ("()V".equals(signature)) {
 					 appenderValue = "";
- 				}
+				 }
 			 } else if ("toString".equals(methodName)) {
 				 Item i = getStackItem(0);
 				 appenderValue = (String)i.getConstant();
- 			} else if ("append".equals(methodName) && signature.indexOf("II)") == -1) {
+			 } else if ("append".equals(methodName) && signature.indexOf("II)") == -1) {
 				 sbItem = getStackItem(1);
 				 Item i = getStackItem(0);
 				 Object sbVal = sbItem.getConstant();
- 				Object sVal = i.getConstant();
+				 Object sVal = i.getConstant();
 				 if ((sbVal != null) && (sVal != null)) {
 					 appenderValue = sbVal + sVal.toString();
 				 } else if (sbItem.registerNumber >= 0) {
-                    OpcodeStack.Item item = getLVValue(sbItem.registerNumber);
+					OpcodeStack.Item item = getLVValue(sbItem.registerNumber);
 					if (item != null)
 						item.constValue = null;
 				}
- 			}
+			 }
 		 }
 
 		 pushByInvoke(dbc, seen != INVOKESTATIC);
- 		
+
 		 if (appenderValue != null) {
 			 Item i = this.getStackItem(0);
 			 i.constValue = appenderValue;
- 			if (sbItem != null) {
+			 if (sbItem != null) {
 				  i.registerNumber = sbItem.registerNumber;
 				  i.xfield = sbItem.xfield;
 				  i.userValue = sbItem.userValue;
- 				 if (sbItem.registerNumber >= 0)
+				  if (sbItem.registerNumber >= 0)
 					  setLVValue(sbItem.registerNumber, i );
 			 }
 			 return;
- 		}
+		 }
 
 		if ((clsName.equals("java/util/Random") || clsName.equals("java/security/SecureRandom")) && methodName.equals("nextInt") && signature.equals("()I")) {
 			Item i = pop();
@@ -1533,7 +1533,7 @@ public class OpcodeStack implements Constants2
 		if (clsName.equals("java/lang/Math") && methodName.equals("abs")) {
 			Item i = pop();
 			i.setSpecialKind(Item.MATH_ABS);
-            push(i);
+			push(i);
 		}
 		else if (seen == INVOKEVIRTUAL && methodName.equals("hashCode") && signature.equals("()I")
 				|| seen == INVOKESTATIC && clsName.equals("java/lang/System") && methodName.equals("identityHashCode") && signature.equals("(Ljava/lang/Object;)I")) {
@@ -1571,31 +1571,31 @@ public class OpcodeStack implements Constants2
 
 	 public void clear() {
 		 stack.clear();
- 		lvValues.clear();
+		 lvValues.clear();
 	 }
 	 BitSet exceptionHandlers = new BitSet();
 	 private Map<Integer, List<Item>> jumpEntries = new HashMap<Integer, List<Item>>();
- 	private Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
+	 private Map<Integer, List<Item>> jumpStackEntries = new HashMap<Integer, List<Item>>();
 	private BitSet jumpEntryLocations = new BitSet();
 
 	 private void addJumpValue(int target) {
- 		if (DEBUG)
+		 if (DEBUG)
 			 System.out.println("Set jump entry at " + methodName + ":" + target + "pc to " + stack + " : " +  lvValues );
 
 		 List<Item> atTarget = jumpEntries.get(target);
- 		if (atTarget == null) {
+		 if (atTarget == null) {
 			 if (DEBUG)
 				  System.out.println("Was null");
 
- 			jumpEntries.put(target, new ArrayList<Item>(lvValues));
+			 jumpEntries.put(target, new ArrayList<Item>(lvValues));
 			jumpEntryLocations.set(target);
 
 			 if (stack.size() > 0) {
-               jumpStackEntries.put(target, new ArrayList<Item>(stack));
+			   jumpStackEntries.put(target, new ArrayList<Item>(stack));
 			}
 			 return;
 		 }
- 		mergeLists(atTarget, lvValues, false);
+		 mergeLists(atTarget, lvValues, false);
 		 List<Item> stackAtTarget = jumpStackEntries.get(target);
 		 if (stack.size() > 0 && stackAtTarget != null) 
 			 mergeLists(stackAtTarget, stack, false);
@@ -1603,7 +1603,7 @@ public class OpcodeStack implements Constants2
 				  System.out.println("merge target for " + methodName + ":" + target + "pc is " + atTarget);
 	 }
 	 private String methodName;
- 	public int resetForMethodEntry(final DismantleBytecode v) {
+	 public int resetForMethodEntry(final DismantleBytecode v) {
 		 methodName = v.getMethodName();
 		jumpEntries.clear();
 		jumpStackEntries.clear();
@@ -1695,7 +1695,7 @@ public class OpcodeStack implements Constants2
 
 	 public int getStackDepth() {
 		 return stack.size();
- 	}
+	 }
 
 	 public Item getStackItem(int stackOffset) {
 		if (stackOffset < 0 || stackOffset >= stack.size()) {
@@ -1706,27 +1706,27 @@ public class OpcodeStack implements Constants2
 		 int tos = stack.size() - 1;
 		 int pos = tos - stackOffset;
 		 try {
- 		return stack.get(pos);
+		 return stack.get(pos);
 		 } catch (ArrayIndexOutOfBoundsException e) {
 			 throw new ArrayIndexOutOfBoundsException(
 				 "Requested item at offset " + stackOffset + " in a stack of size " + stack.size()
- 				+", made request for position " + pos);
+				 +", made request for position " + pos);
 		 }
 	 } 
 
- 	 private Item pop() {
+	  private Item pop() {
 		 return stack.remove(stack.size()-1);
 	 }
 
- 	private void pop(int count)
+	 private void pop(int count)
 	 {
 		 while ((count--) > 0)
 			 pop();
- 	}
+	 }
 
 	 private void push(Item i) {
 		 stack.add(i);
- 	}
+	 }
 
 	 private void pushByConstant(DismantleBytecode dbc, Constant c) {
 
@@ -1800,23 +1800,23 @@ public class OpcodeStack implements Constants2
 			} else if (rhs.getConstant() != null && seen == ISHL && (Integer) rhs.getConstant() >= 8)
 				newValue.specialKind = Item.LOW_8_BITS_CLEAR;
 			else if (lhs.getConstant() != null && seen == IAND) {
-                int value = (Integer) lhs.getConstant();
+				int value = (Integer) lhs.getConstant();
 				if (value == 0)
 					newValue = new Item("I", 0);
 				else if ((value & 0xff) == 0)
-                    newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+					newValue.specialKind = Item.LOW_8_BITS_CLEAR;
 				else if (value >= 0)
 					newValue.specialKind = Item.MASKED_NON_NEGATIVE;
 			} else if (rhs.getConstant() != null && seen == IAND) {
-                int value = (Integer) rhs.getConstant();
+				int value = (Integer) rhs.getConstant();
 				if (value == 0)
 					newValue = new Item("I", 0);
 				else if ((value & 0xff) == 0)
-                    newValue.specialKind = Item.LOW_8_BITS_CLEAR;
+					newValue.specialKind = Item.LOW_8_BITS_CLEAR;
 				else if (value >= 0)
 					newValue.specialKind = Item.MASKED_NON_NEGATIVE;
 			}
-        } catch (RuntimeException e) {
+		} catch (RuntimeException e) {
 			 // ignore it
 		 }
 		if (lhs.specialKind == Item.INTEGER_SUM && rhs.getConstant() != null ) {
@@ -1945,18 +1945,18 @@ public class OpcodeStack implements Constants2
 		 if ("V".equals(s))
 			 return;
 		  push(new Item(s, (Object) null));
- 	}
+	 }
 
 	 private void pushByLocalStore(int register) {
 		Item it = pop();
 		if (it.getRegisterNumber() != register) {
 		for(Item i : lvValues) if (i != null) {
 			if (i.registerNumber == register) i.registerNumber = -1;
-            if (i.fieldLoadedFromRegister == register) i.fieldLoadedFromRegister  = -1;
+			if (i.fieldLoadedFromRegister == register) i.fieldLoadedFromRegister  = -1;
 		}
 		for(Item i : stack) if (i != null) {
 			if (i.registerNumber == register) i.registerNumber = -1;
-            if (i.fieldLoadedFromRegister == register) i.fieldLoadedFromRegister  = -1;
+			if (i.fieldLoadedFromRegister == register) i.fieldLoadedFromRegister  = -1;
 		}
 		}
 		setLVValue( register, it );
@@ -1978,7 +1978,7 @@ public class OpcodeStack implements Constants2
 	 }
 
 	 private void setLVValue(int index, Item value ) {
- 		int addCount = index - lvValues.size() + 1;
+		 int addCount = index - lvValues.size() + 1;
 		 while ((addCount--) > 0)
 			 lvValues.add(null);
 		if (!useIterativeAnalysis && seenTransferOfControl) 
@@ -1986,11 +1986,11 @@ public class OpcodeStack implements Constants2
 		 lvValues.set(index, value);
 	 }
 
- 	private Item getLVValue(int index) {
+	 private Item getLVValue(int index) {
 		 if (index >= lvValues.size())
 			 return null;
 
- 		return lvValues.get(index);
+		 return lvValues.get(index);
 	 }
 }
 

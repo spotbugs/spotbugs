@@ -205,7 +205,7 @@ public class FindBadCast2 implements Detector {
 			if (lineNumberTable != null) {
 				int line = lineNumberTable.getSourceLine(handle.getPosition());
 				if (line > 0 && linesMentionedMultipleTimes.get(line)) split=true;
-            }
+			}
 
 			IsNullValueFrame nullFrame = isNullDataflow.getFactAtLocation(location);
 			if (!nullFrame.isValid()) continue;
@@ -362,11 +362,11 @@ public class FindBadCast2 implements Detector {
 						String msg = "java.lang.Class and java.lang.reflect.Type are incompatible\n" + castJavaClass + "\n"+refJavaClass;
 						AnalysisContext.logError(msg);
 						BugInstance bug = new BugInstance(this, "TESTING", HIGH_PRIORITY).addClassAndMethod(methodGen, sourceFile)
-                        .addString(msg);
+						.addString(msg);
 						bugReporter.reportBug(bug);
 						downcast = true;
 						rank = 0.99;
-                    }
+					}
 
 					if (false)
 						System.out.println("Rank:\t" + rank + "\t" + refName

@@ -259,7 +259,7 @@ public class Naming extends PreorderVisitor implements Detector {
 	private static @CheckForNull Method findVoidConstructor(JavaClass clazz) {
 		for(Method m : clazz.getMethods()) 
 			if (m.getName().equals("<init>") && m.getSignature().equals("()V")) return m;
-        return null;
+		return null;
 
 	}
 	@Override
@@ -351,7 +351,7 @@ public class Naming extends PreorderVisitor implements Detector {
 	private boolean codeDoesSomething(Code code) {
 		byte [] codeBytes = code.getCode();
 		return codeBytes.length > 1;
-    }
+	}
 
 	private static String removePackageNamesFromSignature(String sig) {
 		int end = sig.indexOf(")");

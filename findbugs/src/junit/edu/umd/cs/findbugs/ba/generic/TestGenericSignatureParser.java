@@ -31,14 +31,14 @@ public class TestGenericSignatureParser extends TestCase {
 	public void processTest(String genericSignature, String... substrings) {
 		GenericSignatureParser parser = new GenericSignatureParser(genericSignature);
 		Iterator<String> iter = parser.parameterSignatureIterator();
-		
+
 		for (String s : substrings) {
 			assertTrue(iter.hasNext());
 			assertEquals(s, iter.next());
 		}
 		assertFalse(iter.hasNext());
 	}
-	
+
 	public void testSignatures() {
 		processTest(
 				"(Ljava/lang/Comparable;)V",

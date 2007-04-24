@@ -364,7 +364,7 @@ public class ObligationAnalysis
 		 case Constants.IFACMP_EQ:
 		 case Constants.IFACMP_NE:
 			 // ...
- 			break;
+			 break;
 
  */
 

@@ -76,38 +76,38 @@ public class ConfusionBetweenInheritedAndOuterMethod extends BytecodeScanningDet
 		 if (seen != INVOKEVIRTUAL) return;
 		 if (!getClassName().equals(getClassConstantOperand())) return;
 		 XMethod invokedMethod = XFactory.createXMethod(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false);
-         if (invokedMethod.isResolved() && invokedMethod.getClassName().equals(getDottedClassConstantOperand())) {
+		 if (invokedMethod.isResolved() && invokedMethod.getClassName().equals(getDottedClassConstantOperand())) {
 			 // method is not inherited
 			 return;
 		 }
-         // method is inherited
+		 // method is inherited
 		 String possibleTargetClass = getDottedClassName();
 		 String superClassName = getDottedSuperclassName();
 		 while(true) {
-        	 int i = possibleTargetClass.lastIndexOf('$');
+			 int i = possibleTargetClass.lastIndexOf('$');
 			if (i == -1) break;
 			possibleTargetClass = possibleTargetClass.substring(0,i);
 			if (possibleTargetClass.equals(superClassName)) break;
 			 XMethod alternativeMethod = XFactory.createXMethod(possibleTargetClass, getNameConstantOperand(), getSigConstantOperand(), false);
 			 if (alternativeMethod.isResolved() && alternativeMethod.getClassName().equals(possibleTargetClass)) 	{
 				 String targetPackage = invokedMethod.getPackageName();
-        		 String alternativePackage = alternativeMethod.getPackageName();
+				 String alternativePackage = alternativeMethod.getPackageName();
 				 int priority = HIGH_PRIORITY;
 				 if (targetPackage.equals(alternativePackage)) priority++;
 				 if (targetPackage.startsWith("javax.swing") || targetPackage.startsWith("java.awt"))
-        			 priority+=2;
+					 priority+=2;
 				 if (invokedMethod.getName().equals(getMethodName())) priority++;
 
 				 bugReporter.reportBug(new BugInstance(this, "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD", priority)
-				        .addClassAndMethod(this)
+						.addClassAndMethod(this)
 						  .addMethod(invokedMethod).describe("METHOD_INHERITED")
 						.addMethod(alternativeMethod).describe("METHOD_ALTERNATIVE_TARGET")
 						.addSourceLine(this, getPC()));
-        		 break;
+				 break;
 			 }
 		 }
 
-         
+
 		} finally {
 		stack.sawOpcode(this, seen);
 		}

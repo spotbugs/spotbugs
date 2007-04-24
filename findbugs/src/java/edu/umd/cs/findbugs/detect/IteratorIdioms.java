@@ -43,11 +43,11 @@ public class IteratorIdioms extends BytecodeScanningDetector implements  Statele
 		if (iteratorClass == null)
 			return;
 		try {
-		    JavaClass cls = classContext.getJavaClass();
+			JavaClass cls = classContext.getJavaClass();
 			if (cls.implementationOf(iteratorClass))
 				super.visitClassContext(classContext); 
 		}
-	    catch (ClassNotFoundException cnfe) {
+		catch (ClassNotFoundException cnfe) {
 			//Already logged
 		}
 	}

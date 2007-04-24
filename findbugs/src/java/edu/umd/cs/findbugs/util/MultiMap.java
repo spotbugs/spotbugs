@@ -30,15 +30,15 @@ public class MultiMap<K,  V> {
 		containerClass = c;
 	}
 	@SuppressWarnings("unchecked")
-    private Collection<V> makeCollection() {
+	private Collection<V> makeCollection() {
 		try {
 			return containerClass.newInstance();
 		} catch (InstantiationException e) {
-          throw new RuntimeException(e);
+		  throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
-    }
+	}
 	Map<K,  Collection<V>> map = new HashMap<K,  Collection<V>>();
 	public Collection<? extends K> keySet() {
 		return map.keySet();

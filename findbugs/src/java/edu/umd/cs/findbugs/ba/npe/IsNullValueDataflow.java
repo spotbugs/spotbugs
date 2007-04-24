@@ -37,7 +37,7 @@ public class IsNullValueDataflow extends AbstractDataflow<IsNullValueFrame, IsNu
 
 	public IsNullValueFrame getFactAtMidEdge(Edge edge) throws DataflowAnalysisException {
 		return getAnalysis().getFactAtMidEdge(edge);
-    }
+	}
 
 }
 

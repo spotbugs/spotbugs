@@ -223,22 +223,22 @@ public class DuplicateBranches extends PreorderVisitor implements Detector
 	private void updateMap(HashMap<BigInteger, Collection<Integer>> map, int i, BigInteger clauseAsInt) {
 		Collection<Integer> values = map.get(clauseAsInt);
 
-        if (values == null) {
+		if (values == null) {
 			values = new LinkedList<Integer>();
 			map.put(clauseAsInt,values);
 		}
-        values.add((Integer)i); // index into the sorted array
+		values.add((Integer)i); // index into the sorted array
 	}
 
 
 	private BigInteger getCodeBytesAsBigInt(Method method, int[] switchPos, int i, int endPos) {
 		byte[] clause = getCodeBytes(method, switchPos[i], endPos);
 
-        BigInteger clauseAsInt;
+		BigInteger clauseAsInt;
 		if (clause.length == 0) clauseAsInt = BigInteger.ZERO;
 		else clauseAsInt = new BigInteger(clause);
 		return clauseAsInt;
-    }
+	}
 
 	/** determine the end position (exclusive) of the final case
 	 *  by looking at the gotos at the ends of the other cases */

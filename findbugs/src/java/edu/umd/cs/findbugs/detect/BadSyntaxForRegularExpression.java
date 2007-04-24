@@ -61,23 +61,23 @@ extends BytecodeScanningDetector {
 	private void singleDotPatternWouldBeSilly(int stackDepth, boolean ignorePasswordMasking) {
 		if (ignorePasswordMasking && stackDepth != 1) 
 			throw new IllegalArgumentException("Password masking requires stack depth 1, but is " + stackDepth);
-        if (stack.getStackDepth() < stackDepth) return;
+		if (stack.getStackDepth() < stackDepth) return;
 		OpcodeStack.Item it = stack.getStackItem(stackDepth);
 		Object value = it.getConstant();
 		if (value == null || !(value instanceof String)) return;
-        String regex = (String) value;
+		String regex = (String) value;
 		if (!regex.equals(".")) return;
 		if (ignorePasswordMasking) {
 			  OpcodeStack.Item top = stack.getStackItem(0);
-        	  Object topValue = top.getConstant();
+			  Object topValue = top.getConstant();
 			  if (topValue instanceof String) {
 				  String replacementString = (String) topValue;
 				  if (replacementString.length() == 1 &&  replacementString.toLowerCase().equals("x") || replacementString.equals("*") || replacementString.equals("\\*")) return;
-              }
+			  }
 
 		}
 
-        
+
 	   bugReporter.reportBug(new BugInstance(this, "RE_POSSIBLE_UNINTENDED_PATTERN", 
 				NORMAL_PRIORITY)
 								.addClassAndMethod(this)
@@ -88,23 +88,23 @@ extends BytecodeScanningDetector {
 	private void sawRegExPattern(int stackDepth) {
 		sawRegExPattern(stackDepth, 0);
 	}
-    private void sawRegExPattern(int stackDepth, int flags) {
+	private void sawRegExPattern(int stackDepth, int flags) {
 		if (stack.getStackDepth() < stackDepth) return;
 		OpcodeStack.Item it = stack.getStackItem(stackDepth);
 		if (it.getSpecialKind() == OpcodeStack.Item.FILE_SEPARATOR_STRING && (flags & Pattern.LITERAL) == 0) {
-        	  bugReporter.reportBug(new BugInstance(this, "RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION", 
+			  bugReporter.reportBug(new BugInstance(this, "RE_CANT_USE_FILE_SEPARATOR_AS_REGULAR_EXPRESSION", 
 					  HIGH_PRIORITY)
 									  .addClassAndMethod(this)
 									  .addSourceLine(this)
-      				);
+					  );
 			  return;
 		}
 		Object value = it.getConstant();
-        if (value == null || !(value instanceof String)) return;
+		if (value == null || !(value instanceof String)) return;
 		String regex = (String) value;
 		try {
 			Pattern.compile(regex, flags);
-        } catch (PatternSyntaxException e) {
+		} catch (PatternSyntaxException e) {
 		  bugReporter.reportBug(new BugInstance(this, "RE_BAD_SYNTAX_FOR_REGULAR_EXPRESSION", 
 				HIGH_PRIORITY)
 								.addClassAndMethod(this)
@@ -116,60 +116,60 @@ extends BytecodeScanningDetector {
 	/** return an int on the stack, or 'defaultValue' if can't determine */
 	private int getIntValue(int stackDepth, int defaultValue) {
 		if (stack.getStackDepth() < stackDepth) return defaultValue;
-        OpcodeStack.Item it = stack.getStackItem(stackDepth);
+		OpcodeStack.Item it = stack.getStackItem(stackDepth);
 		Object value = it.getConstant();
 		if (value == null || !(value instanceof Integer)) return defaultValue;
 		return ((Number)value).intValue();
-    }
+	}
 
 	@Override
 	public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
-        if (seen == INVOKESTATIC 
+		if (seen == INVOKESTATIC 
 			&& getClassConstantOperand().equals("java/util/regex/Pattern")
 			&& getNameConstantOperand().equals("compile")
 			&& getSigConstantOperand().startsWith("(Ljava/lang/String;I)")
-            ) 
+			) 
 			sawRegExPattern(1, getIntValue(0, 0));
 		else if (seen == INVOKESTATIC 
 			&& getClassConstantOperand().equals("java/util/regex/Pattern")
-            && getNameConstantOperand().equals("compile")
+			&& getNameConstantOperand().equals("compile")
 			&& getSigConstantOperand().startsWith("(Ljava/lang/String;)")
 			) 
 			sawRegExPattern(0);
-        else if (seen == INVOKESTATIC 
+		else if (seen == INVOKESTATIC 
 			&& getClassConstantOperand().equals("java/util/regex/Pattern")
 			&& getNameConstantOperand().equals("matches")
 			) 
-            sawRegExPattern(1);
+			sawRegExPattern(1);
 		else if (seen == INVOKEVIRTUAL 
 			&& getClassConstantOperand().equals("java/lang/String")
 			&& getNameConstantOperand().equals("replaceAll")
-            ) {
+			) {
 			sawRegExPattern(1);
 			singleDotPatternWouldBeSilly(1, true);
 			}
-        else if (seen == INVOKEVIRTUAL 
+		else if (seen == INVOKEVIRTUAL 
 			&& getClassConstantOperand().equals("java/lang/String")
 			&& getNameConstantOperand().equals("replaceFirst")
 			) 
-        {
+		{
 			sawRegExPattern(1);
 			singleDotPatternWouldBeSilly(1, false);
 			}
-        else if (seen == INVOKEVIRTUAL 
+		else if (seen == INVOKEVIRTUAL 
 			&& getClassConstantOperand().equals("java/lang/String")
 			&& getNameConstantOperand().equals("matches")
 			) 
-        {
+		{
 			sawRegExPattern(0);
 			singleDotPatternWouldBeSilly(0, false);
 			}
-        else if (seen == INVOKEVIRTUAL 
+		else if (seen == INVOKEVIRTUAL 
 			&& getClassConstantOperand().equals("java/lang/String")
 			&& getNameConstantOperand().equals("split")
 			) 
-        {
+		{
 			sawRegExPattern(0);
 			singleDotPatternWouldBeSilly(0, false);
 			}

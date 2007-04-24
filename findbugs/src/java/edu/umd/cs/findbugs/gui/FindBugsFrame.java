@@ -528,111 +528,111 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		priorityButtonGroup = new javax.swing.ButtonGroup();
 		effortButtonGroup = new javax.swing.ButtonGroup();
 		//consoleSplitter = new javax.swing.JSplitPane();
-        viewPanel = new javax.swing.JPanel();
+		viewPanel = new javax.swing.JPanel();
 		emptyPanel = new javax.swing.JPanel();
 		reportPanel = new javax.swing.JPanel();
 		editProjectPanel = new javax.swing.JPanel();
-        jarFileLabel = new javax.swing.JLabel();
+		jarFileLabel = new javax.swing.JLabel();
 		jarNameTextField = new javax.swing.JTextField();
 		addJarButton = new javax.swing.JButton();
 		jarFileListLabel = new javax.swing.JLabel();
-        sourceDirLabel = new javax.swing.JLabel();
+		sourceDirLabel = new javax.swing.JLabel();
 		srcDirTextField = new javax.swing.JTextField();
 		addSourceDirButton = new javax.swing.JButton();
 		sourceDirListLabel = new javax.swing.JLabel();
-        removeJarButton = new javax.swing.JButton();
+		removeJarButton = new javax.swing.JButton();
 		removeSrcDirButton = new javax.swing.JButton();
 		jSeparator1 = new javax.swing.JSeparator();
 		browseJarButton = new javax.swing.JButton();
-        browseSrcDirButton = new javax.swing.JButton();
+		browseSrcDirButton = new javax.swing.JButton();
 		editProjectLabel = new javax.swing.JLabel();
 		jSeparator2 = new javax.swing.JSeparator();
 		findBugsButton = new javax.swing.JButton();
-        jSeparator4 = new javax.swing.JSeparator();
+		jSeparator4 = new javax.swing.JSeparator();
 		jarFileListScrollPane = new javax.swing.JScrollPane();
 		jarFileList = new javax.swing.JList();
 		sourceDirListScrollPane = new javax.swing.JScrollPane();
-        sourceDirList = new javax.swing.JList();
+		sourceDirList = new javax.swing.JList();
 		classpathEntryLabel = new javax.swing.JLabel();
 		classpathEntryListLabel = new javax.swing.JLabel();
 		classpathEntryTextField = new javax.swing.JTextField();
-        browseClasspathEntryButton = new javax.swing.JButton();
+		browseClasspathEntryButton = new javax.swing.JButton();
 		addClasspathEntryButton = new javax.swing.JButton();
 		removeClasspathEntryButton = new javax.swing.JButton();
 		classpathEntryListScrollPane = new javax.swing.JScrollPane();
-        classpathEntryList = new javax.swing.JList();
+		classpathEntryList = new javax.swing.JList();
 		jSeparator5 = new javax.swing.JSeparator();
 		sourceUpButton = new javax.swing.JButton();
 		sourceDownButton = new javax.swing.JButton();
-        classpathUpButton = new javax.swing.JButton();
+		classpathUpButton = new javax.swing.JButton();
 		classpathDownButton = new javax.swing.JButton();
 		bugTreePanel = new javax.swing.JPanel();
 		bugTreeBugDetailsSplitter = new javax.swing.JSplitPane();
-        groupByTabbedPane = new javax.swing.JTabbedPane();
+		groupByTabbedPane = new javax.swing.JTabbedPane();
 		byClassScrollPane = new javax.swing.JScrollPane();
 		byClassBugTree = new javax.swing.JTree();
 		byClassBugTree.setFont(JTREE_FONT);
-        byPackageScrollPane = new javax.swing.JScrollPane();
+		byPackageScrollPane = new javax.swing.JScrollPane();
 		byPackageBugTree = new javax.swing.JTree();
 		byPackageBugTree.setFont(JTREE_FONT);
 		byBugTypeScrollPane = new javax.swing.JScrollPane();
-        byBugTypeBugTree = new javax.swing.JTree();
+		byBugTypeBugTree = new javax.swing.JTree();
 		byBugTypeBugTree.setFont(JTREE_FONT);
 		byBugCategoryScrollPane = new javax.swing.JScrollPane();
 		byBugCategoryBugTree = new javax.swing.JTree();
-        byBugCategoryBugTree.setFont(JTREE_FONT);
+		byBugCategoryBugTree.setFont(JTREE_FONT);
 		bySummary = new javax.swing.JScrollPane();
 		bugSummaryEditorPane = new javax.swing.JEditorPane();
 		bugDetailsTabbedPane = new javax.swing.JTabbedPane();
-        bugDescriptionScrollPane = new javax.swing.JScrollPane();
+		bugDescriptionScrollPane = new javax.swing.JScrollPane();
 		bugDescriptionEditorPane = new javax.swing.JEditorPane();
 		sourceTextAreaScrollPane = new javax.swing.JScrollPane();
 		sourceTextArea = new javax.swing.JTextArea();
-        annotationTextAreaScrollPane = new javax.swing.JScrollPane();
+		annotationTextAreaScrollPane = new javax.swing.JScrollPane();
 		annotationTextArea = new javax.swing.JTextArea();
 		urlLabel = new javax.swing.JLabel();
 		jPanel1 = new javax.swing.JPanel();
-        logoLabel = new javax.swing.JLabel();
+		logoLabel = new javax.swing.JLabel();
 		growBoxSpacer = new javax.swing.JLabel();
 		theMenuBar = new javax.swing.JMenuBar();
 		fileMenu = new javax.swing.JMenu();
-        newProjectItem = new javax.swing.JMenuItem();
+		newProjectItem = new javax.swing.JMenuItem();
 		openProjectItem = new javax.swing.JMenuItem();
 		recentProjectsMenu = new javax.swing.JMenu();
 		jSeparator9 = new javax.swing.JSeparator();
-        closeProjectItem = new javax.swing.JMenuItem();
+		closeProjectItem = new javax.swing.JMenuItem();
 		saveProjectItem = new javax.swing.JMenuItem();
 		saveProjectAsItem = new javax.swing.JMenuItem();
 		reloadProjectItem = new javax.swing.JMenuItem();
-        jSeparator3 = new javax.swing.JSeparator();
+		jSeparator3 = new javax.swing.JSeparator();
 		loadBugsItem = new javax.swing.JMenuItem();
 		saveBugsItem = new javax.swing.JMenuItem();
 		jSeparator6 = new javax.swing.JSeparator();
-        exitItem = new javax.swing.JMenuItem();
+		exitItem = new javax.swing.JMenuItem();
 		editMenu = new javax.swing.JMenu();
 		cutItem = new javax.swing.JMenuItem();
 		copyItem = new javax.swing.JMenuItem();
-        pasteItem = new javax.swing.JMenuItem();
+		pasteItem = new javax.swing.JMenuItem();
 		jSeparator10 = new javax.swing.JSeparator();
 		selectAllItem = new javax.swing.JMenuItem();
 		viewMenu = new javax.swing.JMenu();
-        viewBugDetailsItem = new javax.swing.JCheckBoxMenuItem();
+		viewBugDetailsItem = new javax.swing.JCheckBoxMenuItem();
 		fullDescriptionsItem = new javax.swing.JCheckBoxMenuItem();
 		jSeparator7 = new javax.swing.JSeparator();
 		filterWarningsMenu = new javax.swing.JMenu();
-        expPriorityButton = new javax.swing.JRadioButtonMenuItem();
+		expPriorityButton = new javax.swing.JRadioButtonMenuItem();
 		lowPriorityButton = new javax.swing.JRadioButtonMenuItem();
 		mediumPriorityButton = new javax.swing.JRadioButtonMenuItem();
 		highPriorityButton = new javax.swing.JRadioButtonMenuItem();
-        jSeparator11 = new javax.swing.JSeparator();
+		jSeparator11 = new javax.swing.JSeparator();
 		jSeparator8 = new javax.swing.JSeparator();
 		viewProjectItem = new javax.swing.JRadioButtonMenuItem();
 		viewBugsItem = new javax.swing.JRadioButtonMenuItem();
-        settingsMenu = new javax.swing.JMenu();
+		settingsMenu = new javax.swing.JMenu();
 		configureDetectorsItem = new javax.swing.JMenuItem();
 		effortMenu = new javax.swing.JMenu();
 		minEffortItem = new javax.swing.JCheckBoxMenuItem();
-        normalEffortItem = new javax.swing.JCheckBoxMenuItem();
+		normalEffortItem = new javax.swing.JCheckBoxMenuItem();
 		maxEffortItem = new javax.swing.JCheckBoxMenuItem();
 		helpMenu = new javax.swing.JMenu();
 		aboutItem = new javax.swing.JMenuItem();
@@ -661,17 +661,17 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		jarFileLabel.setFont(BUTTON_FONT);
 		jarFileLabel.setText("Archive or directory:");
 		jarFileLabel.setText(L10N.getLocalString("dlg.jarfile_lbl", "Archive or Directory:"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 2;
 		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		editProjectPanel.add(jarFileLabel, gridBagConstraints);
 
 		jarNameTextField.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jarNameTextFieldActionPerformed(evt);
-            }
+			}
 		});
 		jarNameTextField.addFocusListener(new java.awt.event.FocusAdapter() {
 			@Override
@@ -683,7 +683,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 1;
 		gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
 		editProjectPanel.add(jarNameTextField, gridBagConstraints);
@@ -691,11 +691,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		addJarButton.setFont(BUTTON_FONT);
 		addJarButton.setText("Add");
 		addJarButton.setMaximumSize(new java.awt.Dimension(90, 25));
-        addJarButton.setMinimumSize(new java.awt.Dimension(90, 25));
+		addJarButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		addJarButton.setPreferredSize(new java.awt.Dimension(90, 25));
 		addJarButton.setText(L10N.getLocalString("dlg.add_btn", "Add"));
 		addJarButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				addJarButtonActionPerformed(evt);
 			}
 		});
@@ -703,34 +703,34 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 3;
 		gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		editProjectPanel.add(addJarButton, gridBagConstraints);
 
 		jarFileListLabel.setFont(BUTTON_FONT);
 		jarFileListLabel.setText("Archives/directories:");
 		jarFileListLabel.setText(L10N.getLocalString("dlg.jarlist_lbl", "Archives/Directories:"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 3;
 		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		editProjectPanel.add(jarFileListLabel, gridBagConstraints);
 
 		sourceDirLabel.setFont(BUTTON_FONT);
 		sourceDirLabel.setText("Source directory:");
 		sourceDirLabel.setText(L10N.getLocalString("dlg.srcfile_lbl", "Source directory:"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 8;
 		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		editProjectPanel.add(sourceDirLabel, gridBagConstraints);
 
 		srcDirTextField.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				srcDirTextFieldActionPerformed(evt);
-            }
+			}
 		});
 		srcDirTextField.addFocusListener(new java.awt.event.FocusAdapter() {
 			@Override
@@ -742,7 +742,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 1;
 		gridBagConstraints.gridy = 8;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
 		editProjectPanel.add(srcDirTextField, gridBagConstraints);
@@ -750,11 +750,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		addSourceDirButton.setFont(BUTTON_FONT);
 		addSourceDirButton.setText("Add");
 		addSourceDirButton.setMaximumSize(new java.awt.Dimension(90, 25));
-        addSourceDirButton.setMinimumSize(new java.awt.Dimension(90, 25));
+		addSourceDirButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		addSourceDirButton.setPreferredSize(new java.awt.Dimension(90, 25));
 		addSourceDirButton.setText(L10N.getLocalString("dlg.add_btn", "Add"));
 		addSourceDirButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				addSourceDirButtonActionPerformed(evt);
 			}
 		});
@@ -762,28 +762,28 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 3;
 		gridBagConstraints.gridy = 8;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		editProjectPanel.add(addSourceDirButton, gridBagConstraints);
 
 		sourceDirListLabel.setFont(BUTTON_FONT);
 		sourceDirListLabel.setText("Source directories:");
 		sourceDirListLabel.setText(L10N.getLocalString("dlg.srclist_lbl", "Source directories:"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 9;
 		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		editProjectPanel.add(sourceDirListLabel, gridBagConstraints);
 
 		removeJarButton.setFont(BUTTON_FONT);
 		removeJarButton.setText("Remove");
 		removeJarButton.setMaximumSize(new java.awt.Dimension(90, 25));
-        removeJarButton.setMinimumSize(new java.awt.Dimension(90, 25));
+		removeJarButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		removeJarButton.setPreferredSize(new java.awt.Dimension(90, 25));
 		removeJarButton.setText(L10N.getLocalString("dlg.remove_btn", "Remove"));
 		removeJarButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				removeJarButtonActionPerformed(evt);
 			}
 		});
@@ -791,18 +791,18 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 3;
 		gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		editProjectPanel.add(removeJarButton, gridBagConstraints);
 
 		removeSrcDirButton.setFont(BUTTON_FONT);
 		removeSrcDirButton.setText("Remove");
 		removeSrcDirButton.setMaximumSize(new java.awt.Dimension(90, 25));
-        removeSrcDirButton.setMinimumSize(new java.awt.Dimension(90, 25));
+		removeSrcDirButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		removeSrcDirButton.setPreferredSize(new java.awt.Dimension(90, 25));
 		removeSrcDirButton.setText(L10N.getLocalString("dlg.remove_btn", "Remove"));
 		removeSrcDirButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				removeSrcDirButtonActionPerformed(evt);
 			}
 		});
@@ -810,14 +810,14 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 3;
 		gridBagConstraints.gridy = 9;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		editProjectPanel.add(removeSrcDirButton, gridBagConstraints);
 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 4;
+		gridBagConstraints.gridwidth = 4;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
 		gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
 		editProjectPanel.add(jSeparator1, gridBagConstraints);
@@ -825,11 +825,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		browseJarButton.setFont(BUTTON_FONT);
 		browseJarButton.setText("Browse");
 		browseJarButton.setMaximumSize(new java.awt.Dimension(90, 25));
-        browseJarButton.setMinimumSize(new java.awt.Dimension(90, 25));
+		browseJarButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		browseJarButton.setPreferredSize(new java.awt.Dimension(90, 25));
 		browseJarButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse..."));
 		browseJarButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				browseJarButtonActionPerformed(evt);
 			}
 		});
@@ -837,17 +837,17 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 2;
 		gridBagConstraints.gridy = 2;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		editProjectPanel.add(browseJarButton, gridBagConstraints);
 
 		browseSrcDirButton.setFont(BUTTON_FONT);
 		browseSrcDirButton.setText("Browse");
 		browseSrcDirButton.setMaximumSize(new java.awt.Dimension(90, 25));
-        browseSrcDirButton.setMinimumSize(new java.awt.Dimension(90, 25));
+		browseSrcDirButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		browseSrcDirButton.setPreferredSize(new java.awt.Dimension(90, 25));
 		browseSrcDirButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse..."));
 		browseSrcDirButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				browseSrcDirButtonActionPerformed(evt);
 			}
 		});
@@ -855,26 +855,26 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 2;
 		gridBagConstraints.gridy = 8;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		editProjectPanel.add(browseSrcDirButton, gridBagConstraints);
 
 		editProjectLabel.setBackground(new java.awt.Color(0, 0, 204));
 		editProjectLabel.setFont(LABEL_FONT);
 		editProjectLabel.setForeground(new java.awt.Color(255, 255, 255));
-        editProjectLabel.setText("Project");
+		editProjectLabel.setText("Project");
 		editProjectLabel.setOpaque(true);
 		editProjectLabel.setText(L10N.getLocalString("dlg.project_lbl", "Project"));
 		gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 0;
 		gridBagConstraints.gridwidth = 4;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        editProjectPanel.add(editProjectLabel, gridBagConstraints);
+		editProjectPanel.add(editProjectLabel, gridBagConstraints);
 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 7;
-        gridBagConstraints.gridwidth = 4;
+		gridBagConstraints.gridwidth = 4;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
 		gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
 		editProjectPanel.add(jSeparator2, gridBagConstraints);
@@ -882,7 +882,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		findBugsButton.setMnemonic('B');
 		findBugsButton.setText("Find Bugs!");
 		findBugsButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				findBugsButtonActionPerformed(evt);
 			}
 		});
@@ -890,14 +890,14 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 21;
-        gridBagConstraints.gridwidth = 4;
+		gridBagConstraints.gridwidth = 4;
 		gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
 		editProjectPanel.add(findBugsButton, gridBagConstraints);
 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 14;
-        gridBagConstraints.gridwidth = 4;
+		gridBagConstraints.gridwidth = 4;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
 		gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
 		editProjectPanel.add(jSeparator4, gridBagConstraints);
@@ -905,7 +905,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		jarFileListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
 		jarFileList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
 		jarFileList.setFont(BUTTON_FONT);
-        disableEditKeyBindings(jarFileList);
+		disableEditKeyBindings(jarFileList);
 
 		jarFileList.addFocusListener(new java.awt.event.FocusAdapter() {
 			@Override
@@ -919,16 +919,16 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 1;
 		gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 2;
+		gridBagConstraints.gridwidth = 2;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
 		gridBagConstraints.weighty = 0.4;
 		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
-        editProjectPanel.add(jarFileListScrollPane, gridBagConstraints);
+		editProjectPanel.add(jarFileListScrollPane, gridBagConstraints);
 
 		sourceDirListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
 		sourceDirList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
 		sourceDirList.setFont(BUTTON_FONT);
-        disableEditKeyBindings(sourceDirList);
+		disableEditKeyBindings(sourceDirList);
 		sourceDirList.addFocusListener(new java.awt.event.FocusAdapter() {
 			@Override
 			public void focusGained(java.awt.event.FocusEvent evt) {
@@ -941,31 +941,31 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 1;
 		gridBagConstraints.gridy = 9;
-        gridBagConstraints.gridwidth = 2;
+		gridBagConstraints.gridwidth = 2;
 		gridBagConstraints.gridheight = 3;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
 		gridBagConstraints.weighty = 0.1;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		editProjectPanel.add(sourceDirListScrollPane, gridBagConstraints);
 
 		classpathEntryLabel.setFont(BUTTON_FONT);
 		classpathEntryLabel.setText("Classpath entry:");
 		classpathEntryLabel.setText(L10N.getLocalString("dlg.classpathfile_lbl", "Classpath entry:"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 15;
 		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
+		gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
 		editProjectPanel.add(classpathEntryLabel, gridBagConstraints);
 
 		classpathEntryListLabel.setFont(BUTTON_FONT);
 		classpathEntryListLabel.setText("Classpath entries:");
 		classpathEntryListLabel.setText(L10N.getLocalString("dlg.classpathlist_lbl", "Classpath entries:"));
-        gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 16;
 		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
+		gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 3);
 		editProjectPanel.add(classpathEntryListLabel, gridBagConstraints);
 
 		classpathEntryTextField.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -978,18 +978,18 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 1;
 		gridBagConstraints.gridy = 15;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
 		editProjectPanel.add(classpathEntryTextField, gridBagConstraints);
 
 		browseClasspathEntryButton.setFont(BUTTON_FONT);
 		browseClasspathEntryButton.setText("Browse");
 		browseClasspathEntryButton.setMaximumSize(new java.awt.Dimension(90, 25));
-        browseClasspathEntryButton.setMinimumSize(new java.awt.Dimension(90, 25));
+		browseClasspathEntryButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		browseClasspathEntryButton.setPreferredSize(new java.awt.Dimension(90, 25));
 		browseClasspathEntryButton.setText(L10N.getLocalString("dlg.browse_btn", "Browse..."));
 		browseClasspathEntryButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				browseClasspathEntryButtonActionPerformed(evt);
 			}
 		});
@@ -997,16 +997,16 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 2;
 		gridBagConstraints.gridy = 15;
-        editProjectPanel.add(browseClasspathEntryButton, gridBagConstraints);
+		editProjectPanel.add(browseClasspathEntryButton, gridBagConstraints);
 
 		addClasspathEntryButton.setFont(BUTTON_FONT);
 		addClasspathEntryButton.setText("Add");
 		addClasspathEntryButton.setMaximumSize(new java.awt.Dimension(90, 25));
-        addClasspathEntryButton.setMinimumSize(new java.awt.Dimension(90, 25));
+		addClasspathEntryButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		addClasspathEntryButton.setPreferredSize(new java.awt.Dimension(90, 25));
 		addClasspathEntryButton.setText(L10N.getLocalString("dlg.add_btn", "Add"));
 		addClasspathEntryButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				addClasspathEntryButtonActionPerformed(evt);
 			}
 		});
@@ -1014,18 +1014,18 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 3;
 		gridBagConstraints.gridy = 15;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
 		editProjectPanel.add(addClasspathEntryButton, gridBagConstraints);
 
 		removeClasspathEntryButton.setFont(BUTTON_FONT);
 		removeClasspathEntryButton.setText("Remove");
 		removeClasspathEntryButton.setMaximumSize(new java.awt.Dimension(90, 25));
-        removeClasspathEntryButton.setMinimumSize(new java.awt.Dimension(90, 25));
+		removeClasspathEntryButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		removeClasspathEntryButton.setPreferredSize(new java.awt.Dimension(90, 25));
 		removeClasspathEntryButton.setText(L10N.getLocalString("dlg.remove_btn", "Remove"));
 		removeClasspathEntryButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				removeClasspathEntryButtonActionPerformed(evt);
 			}
 		});
@@ -1033,14 +1033,14 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 3;
 		gridBagConstraints.gridy = 16;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
 		editProjectPanel.add(removeClasspathEntryButton, gridBagConstraints);
 
 		classpathEntryListScrollPane.setPreferredSize(new java.awt.Dimension(259, 1));
 		classpathEntryList.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
 		classpathEntryList.setFont(BUTTON_FONT);
-        disableEditKeyBindings(classpathEntryList);
+		disableEditKeyBindings(classpathEntryList);
 		classpathEntryList.addFocusListener(new java.awt.event.FocusAdapter() {
 			@Override
 			public void focusGained(java.awt.event.FocusEvent evt) {
@@ -1053,17 +1053,17 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 1;
 		gridBagConstraints.gridy = 16;
-        gridBagConstraints.gridwidth = 2;
+		gridBagConstraints.gridwidth = 2;
 		gridBagConstraints.gridheight = 3;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
 		gridBagConstraints.weighty = 0.1;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
+		gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
 		editProjectPanel.add(classpathEntryListScrollPane, gridBagConstraints);
 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 20;
-        gridBagConstraints.gridwidth = 4;
+		gridBagConstraints.gridwidth = 4;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
 		gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
 		editProjectPanel.add(jSeparator5, gridBagConstraints);
@@ -1071,11 +1071,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		sourceUpButton.setFont(BUTTON_FONT);
 		sourceUpButton.setText("Up");
 		sourceUpButton.setMaximumSize(new java.awt.Dimension(90, 25));
-        sourceUpButton.setMinimumSize(new java.awt.Dimension(90, 25));
+		sourceUpButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		sourceUpButton.setPreferredSize(new java.awt.Dimension(90, 25));
 		sourceUpButton.setText(L10N.getLocalString("dlg.up_btn", "Up"));
 		sourceUpButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				sourceUpButtonActionPerformed(evt);
 			}
 		});
@@ -1083,17 +1083,17 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 3;
 		gridBagConstraints.gridy = 10;
-        gridBagConstraints.weighty = 0.2;
+		gridBagConstraints.weighty = 0.2;
 		editProjectPanel.add(sourceUpButton, gridBagConstraints);
 
 		sourceDownButton.setFont(BUTTON_FONT);
 		sourceDownButton.setText("Down");
 		sourceDownButton.setMaximumSize(new java.awt.Dimension(90, 25));
-        sourceDownButton.setMinimumSize(new java.awt.Dimension(90, 25));
+		sourceDownButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		sourceDownButton.setPreferredSize(new java.awt.Dimension(90, 25));
 		sourceDownButton.setText(L10N.getLocalString("dlg.down_btn", "Down"));
 		sourceDownButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				sourceDownButtonActionPerformed(evt);
 			}
 		});
@@ -1105,11 +1105,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		classpathUpButton.setFont(BUTTON_FONT);
 		classpathUpButton.setText("Up");
 		classpathUpButton.setMaximumSize(new java.awt.Dimension(90, 25));
-        classpathUpButton.setMinimumSize(new java.awt.Dimension(90, 25));
+		classpathUpButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		classpathUpButton.setPreferredSize(new java.awt.Dimension(90, 25));
 		classpathUpButton.setText(L10N.getLocalString("dlg.up_btn", "Up"));
 		classpathUpButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				classpathUpButtonActionPerformed(evt);
 			}
 		});
@@ -1117,17 +1117,17 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 3;
 		gridBagConstraints.gridy = 17;
-        gridBagConstraints.weighty = 0.2;
+		gridBagConstraints.weighty = 0.2;
 		editProjectPanel.add(classpathUpButton, gridBagConstraints);
 
 		classpathDownButton.setFont(BUTTON_FONT);
 		classpathDownButton.setText("Down");
 		classpathDownButton.setMaximumSize(new java.awt.Dimension(90, 25));
-        classpathDownButton.setMinimumSize(new java.awt.Dimension(90, 25));
+		classpathDownButton.setMinimumSize(new java.awt.Dimension(90, 25));
 		classpathDownButton.setPreferredSize(new java.awt.Dimension(90, 25));
 		classpathDownButton.setText(L10N.getLocalString("dlg.down_btn", "Down"));
 		classpathDownButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				classpathDownButtonActionPerformed(evt);
 			}
 		});
@@ -1135,7 +1135,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 3;
 		gridBagConstraints.gridy = 18;
-        editProjectPanel.add(classpathDownButton, gridBagConstraints);
+		editProjectPanel.add(classpathDownButton, gridBagConstraints);
 
 		viewPanel.add(editProjectPanel, "EditProjectPanel");
 
@@ -1144,11 +1144,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		bugTreeBugDetailsSplitter.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 		bugTreeBugDetailsSplitter.setResizeWeight(1.0);
 		bugTreeBugDetailsSplitter.setOneTouchExpandable(true);
-        bugTreeBugDetailsSplitter.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+		bugTreeBugDetailsSplitter.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
 			public void propertyChange(java.beans.PropertyChangeEvent evt) {
 				bugTreeBugDetailsSplitterPropertyChange(evt);
 			}
-        });
+		});
 
 		byClassBugTree.addFocusListener(new java.awt.event.FocusAdapter() {
 			@Override
@@ -1222,7 +1222,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		sourceTextAreaScrollPane.setMinimumSize(new java.awt.Dimension(22, 180));
 		sourceTextAreaScrollPane.setPreferredSize(new java.awt.Dimension(0, 100));
 		sourceTextArea.setEditable(false);
-        sourceTextArea.setFont(SOURCE_FONT);
+		sourceTextArea.setFont(SOURCE_FONT);
 		sourceTextArea.setEnabled(false);
 		sourceTextArea.addFocusListener(new java.awt.event.FocusAdapter() {
 			@Override
@@ -1235,7 +1235,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		sourceTextAreaScrollPane.setViewportView(sourceTextArea);
 		sourceLineNumberer = new LineNumberer(sourceTextArea);
 		sourceLineNumberer.setBackground(Color.WHITE);
-        sourceTextAreaScrollPane.setRowHeaderView(sourceLineNumberer);
+		sourceTextAreaScrollPane.setRowHeaderView(sourceLineNumberer);
 
 		bugDetailsTabbedPane.addTab("Source code", sourceTextAreaScrollPane);
 
@@ -1255,59 +1255,59 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
+		gridBagConstraints.gridwidth = 2;
 		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.weighty = 1.0;
-        bugTreePanel.add(bugTreeBugDetailsSplitter, gridBagConstraints);
+		bugTreePanel.add(bugTreeBugDetailsSplitter, gridBagConstraints);
 
 		viewPanel.add(bugTreePanel, "BugTree");
 
 		{
 			equalizeControls( new JComponent[]
 				{
-                    addJarButton,
+					addJarButton,
 					addSourceDirButton,
 					addClasspathEntryButton,
 					removeJarButton,
-                    removeSrcDirButton,
+					removeSrcDirButton,
 					removeClasspathEntryButton,
 					browseJarButton,
 					browseSrcDirButton,
-                    browseClasspathEntryButton,
+					browseClasspathEntryButton,
 					sourceUpButton,
 					sourceDownButton,
 					classpathUpButton,
-                    classpathDownButton
+					classpathDownButton
 				});
 
 				groupByTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.byclass_tab", "By Class"));
 				groupByTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.bypackage_tab", "By Package"));
 				groupByTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.bybugtype_tab", "By Bug Type"));
-                groupByTabbedPane.setTitleAt(3, L10N.getLocalString( "dlg.bybugcategory_tab", "By Bug Category"));
+				groupByTabbedPane.setTitleAt(3, L10N.getLocalString( "dlg.bybugcategory_tab", "By Bug Category"));
 				groupByTabbedPane.setTitleAt(4, L10N.getLocalString( "dlg.summary_tab", "Summary"));
 				bugDetailsTabbedPane.setTitleAt(0, L10N.getLocalString( "dlg.details_tab", "Details"));
 				bugDetailsTabbedPane.setTitleAt(1, L10N.getLocalString( "dlg.sourcecode_tab", "Source Code"));
-                bugDetailsTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.annotations_tab", "Annotations"));
+				bugDetailsTabbedPane.setTitleAt(2, L10N.getLocalString( "dlg.annotations_tab", "Annotations"));
 			}
 
 			gridBagConstraints = new java.awt.GridBagConstraints();
 			gridBagConstraints.gridx = 0;
 			gridBagConstraints.gridy = 0;
-            gridBagConstraints.gridwidth = 2;
+			gridBagConstraints.gridwidth = 2;
 			gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
 			gridBagConstraints.weightx = 1.0;
 			gridBagConstraints.weighty = 1.0;
-            getContentPane().add(viewPanel, gridBagConstraints);
+			getContentPane().add(viewPanel, gridBagConstraints);
 
 			urlLabel.setFont(BUTTON_FONT);
 			urlLabel.setText("FindBugs - http://findbugs.sourceforge.net/");
 			gridBagConstraints = new java.awt.GridBagConstraints();
-            gridBagConstraints.gridx = 0;
+			gridBagConstraints.gridx = 0;
 			gridBagConstraints.gridy = 1;
 			gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
 			gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 0);
-            getContentPane().add(urlLabel, gridBagConstraints);
+			getContentPane().add(urlLabel, gridBagConstraints);
 
 			jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.X_AXIS));
 
@@ -1319,50 +1319,50 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			gridBagConstraints = new java.awt.GridBagConstraints();
 			gridBagConstraints.gridx = 1;
 			gridBagConstraints.gridy = 1;
-            gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+			gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
 			gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 2);
 			getContentPane().add(jPanel1, gridBagConstraints);
 
 			theMenuBar.setFont(BUTTON_FONT);
 			fileMenu.setText("File");
 			fileMenu.setFont(BUTTON_FONT);
-            localiseButton(fileMenu, "menu.file_menu", "&File", true);
+			localiseButton(fileMenu, "menu.file_menu", "&File", true);
 			fileMenu.addMenuListener(new javax.swing.event.MenuListener() {
 				public void menuCanceled(javax.swing.event.MenuEvent evt) {
 				}
-                public void menuDeselected(javax.swing.event.MenuEvent evt) {
+				public void menuDeselected(javax.swing.event.MenuEvent evt) {
 				}
 				public void menuSelected(javax.swing.event.MenuEvent evt) {
 					fileMenuMenuSelected(evt);
-                }
+				}
 			});
 
 			newProjectItem.setFont(BUTTON_FONT);
 			newProjectItem.setText("New Project");
 			localiseButton(newProjectItem, "menu.new_item", "&New Project", true);
-            newProjectItem.addActionListener(new java.awt.event.ActionListener() {
+			newProjectItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					newProjectItemActionPerformed(evt);
 				}
-            });
+			});
 
 			fileMenu.add(newProjectItem);
 
 			openProjectItem.setFont(BUTTON_FONT);
 			openProjectItem.setText("Open Project...");
 			localiseButton(openProjectItem, "menu.open_item", "&Open Project...", true);
-            openProjectItem.addActionListener(new java.awt.event.ActionListener() {
+			openProjectItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					openProjectItemActionPerformed(evt);
 				}
-            });
+			});
 
 			fileMenu.add(openProjectItem);
 
 			recentProjectsMenu.setText("Recent Projects");
 			recentProjectsMenu.setFont(BUTTON_FONT);
 			localiseButton(recentProjectsMenu, "menu.recent_menu", "R&ecent Projects", true);
-            rebuildRecentProjectsMenu();
+			rebuildRecentProjectsMenu();
 			fileMenu.add(recentProjectsMenu);
 
 			fileMenu.add(jSeparator9);
@@ -1370,44 +1370,44 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			closeProjectItem.setFont(BUTTON_FONT);
 			closeProjectItem.setText("Close Project");
 			localiseButton(closeProjectItem, "menu.close_item", "&Close Project", true);
-            closeProjectItem.addActionListener(new java.awt.event.ActionListener() {
+			closeProjectItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					closeProjectItemActionPerformed(evt);
 				}
-            });
+			});
 
 			fileMenu.add(closeProjectItem);
 
 			saveProjectItem.setFont(BUTTON_FONT);
 			saveProjectItem.setText("Save Project");
 			localiseButton(saveProjectItem, "menu.save_item", "&Save Project", true);
-            saveProjectItem.addActionListener(new java.awt.event.ActionListener() {
+			saveProjectItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					saveProjectItemActionPerformed(evt);
 				}
-            });
+			});
 
 			fileMenu.add(saveProjectItem);
 
 			saveProjectAsItem.setFont(BUTTON_FONT);
 			saveProjectAsItem.setText("Save Project As...");
 			localiseButton(saveProjectAsItem, "menu.saveas_item", "Save Project &As...", true);
-            saveProjectAsItem.addActionListener(new java.awt.event.ActionListener() {
+			saveProjectAsItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					saveProjectAsItemActionPerformed(evt);
 				}
-            });
+			});
 
 			fileMenu.add(saveProjectAsItem);
 
 			reloadProjectItem.setFont(BUTTON_FONT);
 			reloadProjectItem.setText("Reload Project");
 			localiseButton(reloadProjectItem, "menu.reload_item", "&Reload Project", true);
-            reloadProjectItem.addActionListener(new java.awt.event.ActionListener() {
+			reloadProjectItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					reloadProjectItemActionPerformed(evt);
 				}
-            });
+			});
 
 			fileMenu.add(reloadProjectItem);
 
@@ -1416,22 +1416,22 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			loadBugsItem.setFont(BUTTON_FONT);
 			loadBugsItem.setText("Load Bugs...");
 			localiseButton(loadBugsItem, "menu.loadbugs_item", "&Load Bugs...", true);
-            loadBugsItem.addActionListener(new java.awt.event.ActionListener() {
+			loadBugsItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					loadBugsItemActionPerformed(evt);
 				}
-            });
+			});
 
 			fileMenu.add(loadBugsItem);
 
 			saveBugsItem.setFont(BUTTON_FONT);
 			saveBugsItem.setText("Save Bugs");
 			localiseButton(saveBugsItem, "menu.savebugs_item", "Save &Bugs...", true);
-            saveBugsItem.addActionListener(new java.awt.event.ActionListener() {
+			saveBugsItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					saveBugsItemActionPerformed(evt);
 				}
-            });
+			});
 
 			fileMenu.add(saveBugsItem);
 
@@ -1440,11 +1440,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			exitItem.setFont(BUTTON_FONT);
 			exitItem.setText("Exit");
 			localiseButton(exitItem, "menu.exit_item", "E&xit", true);
-            exitItem.addActionListener(new java.awt.event.ActionListener() {
+			exitItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					exitItemActionPerformed(evt);
 				}
-            });
+			});
 
 			fileMenu.add(exitItem);
 
@@ -1453,37 +1453,37 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			editMenu.setText("Edit");
 			editMenu.setFont(BUTTON_FONT);
 			editMenu.setEnabled(false);
-            localiseButton(editMenu, "menu.edit_menu", "&Edit", true);
+			localiseButton(editMenu, "menu.edit_menu", "&Edit", true);
 			cutItem.setFont(BUTTON_FONT);
 			cutItem.setText("Cut");
 			localiseButton(cutItem, "menu.cut_item", "Cut", true);
-            cutItem.addActionListener(new java.awt.event.ActionListener() {
+			cutItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					cutActionPerformed(evt);
 				}
-            });
+			});
 
 			editMenu.add(cutItem);
 
 			copyItem.setFont(BUTTON_FONT);
 			copyItem.setText("Copy");
 			localiseButton(copyItem, "menu.copy_item", "Copy", true);
-            copyItem.addActionListener(new java.awt.event.ActionListener() {
+			copyItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					copyActionPerformed(evt);
 				}
-            });
+			});
 
 			editMenu.add(copyItem);
 
 			pasteItem.setFont(BUTTON_FONT);
 			pasteItem.setText("Paste");
 			localiseButton(pasteItem, "menu.paste_item", "Paste", true);
-            pasteItem.addActionListener(new java.awt.event.ActionListener() {
+			pasteItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					pasteActionPerformed(evt);
 				}
-            });
+			});
 
 			editMenu.add(pasteItem);
 
@@ -1492,11 +1492,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			selectAllItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
 			selectAllItem.setFont(BUTTON_FONT);
 			selectAllItem.setText("Select All");
-            localiseButton(selectAllItem, "menu.selectall_item", "Select &All", true);
+			localiseButton(selectAllItem, "menu.selectall_item", "Select &All", true);
 			selectAllItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					selectAllActionPerformed(evt);
-                }
+				}
 			});
 
 			editMenu.add(selectAllItem);
@@ -1510,21 +1510,21 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			viewMenu.addMenuListener(new javax.swing.event.MenuListener() {
 				public void menuCanceled(javax.swing.event.MenuEvent evt) {
 				}
-                public void menuDeselected(javax.swing.event.MenuEvent evt) {
+				public void menuDeselected(javax.swing.event.MenuEvent evt) {
 				}
 				public void menuSelected(javax.swing.event.MenuEvent evt) {
 					viewMenuMenuSelected(evt);
-                }
+				}
 			});
 
 			viewBugDetailsItem.setFont(BUTTON_FONT);
 			viewBugDetailsItem.setSelected(true);
 			viewBugDetailsItem.setText("Bug Details");
-            localiseButton(viewBugDetailsItem, "menu.bugdetails_item", "Bug &Details", true);
+			localiseButton(viewBugDetailsItem, "menu.bugdetails_item", "Bug &Details", true);
 			viewBugDetailsItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					viewBugDetailsItemActionPerformed(evt);
-                }
+				}
 			});
 
 			viewMenu.add(viewBugDetailsItem);
@@ -1532,11 +1532,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			fullDescriptionsItem.setFont(BUTTON_FONT);
 			fullDescriptionsItem.setSelected(true);
 			fullDescriptionsItem.setText("Full Descriptions");
-            localiseButton(fullDescriptionsItem, "menu.fulldescriptions_item", "&Full Descriptions", true);
+			localiseButton(fullDescriptionsItem, "menu.fulldescriptions_item", "&Full Descriptions", true);
 			fullDescriptionsItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					fullDescriptionsItemActionPerformed(evt);
-                }
+				}
 			});
 
 			viewMenu.add(fullDescriptionsItem);
@@ -1546,15 +1546,15 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			filterWarningsMenu.setText("Filter Warnings");
 			filterWarningsMenu.setFont(BUTTON_FONT);
 			localiseButton(filterWarningsMenu, "menu.filterwarnings_menu", "Filter &Warnings", true);
-            expPriorityButton.setFont(BUTTON_FONT);
+			expPriorityButton.setFont(BUTTON_FONT);
 			expPriorityButton.setText("Experimental Priority");
 			priorityButtonGroup.add(expPriorityButton);
 			localiseButton(expPriorityButton, "menu.exppriority_item", "&Experimental Priority", true);
-            expPriorityButton.setSelected(getPriorityThreshold() == Detector.EXP_PRIORITY);
+			expPriorityButton.setSelected(getPriorityThreshold() == Detector.EXP_PRIORITY);
 			expPriorityButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					expPriorityButtonActionPerformed(evt);
-                }
+				}
 			});
 
 			filterWarningsMenu.add(expPriorityButton);
@@ -1562,11 +1562,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			lowPriorityButton.setFont(BUTTON_FONT);
 			lowPriorityButton.setText("Low Priority");
 			priorityButtonGroup.add(lowPriorityButton);
-            localiseButton(lowPriorityButton, "menu.lowpriority_item", "&Low Priority", true);
+			localiseButton(lowPriorityButton, "menu.lowpriority_item", "&Low Priority", true);
 			lowPriorityButton.setSelected(getPriorityThreshold() == Detector.LOW_PRIORITY);
 			lowPriorityButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    lowPriorityButtonActionPerformed(evt);
+					lowPriorityButtonActionPerformed(evt);
 				}
 			});
 
@@ -1575,11 +1575,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			mediumPriorityButton.setFont(BUTTON_FONT);
 			mediumPriorityButton.setText("Medium Priority");
 			priorityButtonGroup.add(mediumPriorityButton);
-            localiseButton(mediumPriorityButton, "menu.mediumpriority_item", "&Medium Priority", true);
+			localiseButton(mediumPriorityButton, "menu.mediumpriority_item", "&Medium Priority", true);
 			mediumPriorityButton.setSelected(getPriorityThreshold() == Detector.NORMAL_PRIORITY);
 			mediumPriorityButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    mediumPriorityButtonActionPerformed(evt);
+					mediumPriorityButtonActionPerformed(evt);
 				}
 			});
 
@@ -1588,11 +1588,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			highPriorityButton.setFont(BUTTON_FONT);
 			highPriorityButton.setText("High Priority");
 			priorityButtonGroup.add(highPriorityButton);
-            localiseButton(highPriorityButton, "menu.highpriority_item", "&High Priority", true);
+			localiseButton(highPriorityButton, "menu.highpriority_item", "&High Priority", true);
 			highPriorityButton.setSelected(getPriorityThreshold() == Detector.HIGH_PRIORITY);
 			highPriorityButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    highPriorityButtonActionPerformed(evt);
+					highPriorityButtonActionPerformed(evt);
 				}
 			});
 
@@ -1605,7 +1605,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			ButtonGroup bg = new ButtonGroup();
 			bg.add(expPriorityButton);
 			bg.add(lowPriorityButton);
-            bg.add(mediumPriorityButton);
+			bg.add(mediumPriorityButton);
 			bg.add(highPriorityButton);
 
 			viewMenu.add(jSeparator8);
@@ -1613,11 +1613,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			viewProjectItem.setFont(BUTTON_FONT);
 			viewProjectItem.setText("View Project Details");
 			viewProjectItem.setEnabled(false);
-            localiseButton(viewProjectItem, "menu.viewprojectdetails_item", "View Project Details", true);
+			localiseButton(viewProjectItem, "menu.viewprojectdetails_item", "View Project Details", true);
 			viewProjectItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					viewProjectItemActionPerformed(evt);
-                }
+				}
 			});
 
 			viewMenu.add(viewProjectItem);
@@ -1625,11 +1625,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			viewBugsItem.setFont(BUTTON_FONT);
 			viewBugsItem.setText("View Bugs");
 			viewBugsItem.setEnabled(false);
-            localiseButton(viewBugsItem, "menu.viewbugs_item", "View Bugs", true);
+			localiseButton(viewBugsItem, "menu.viewbugs_item", "View Bugs", true);
 			viewBugsItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					viewBugsItemActionPerformed(evt);
-                }
+				}
 			});
 
 			viewMenu.add(viewBugsItem);
@@ -1639,46 +1639,46 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			settingsMenu.setText("Settings");
 			settingsMenu.setFont(BUTTON_FONT);
 			localiseButton(settingsMenu, "menu.settings_menu", "&Settings", true);
-            settingsMenu.addActionListener(new java.awt.event.ActionListener() {
+			settingsMenu.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					settingsMenuActionPerformed(evt);
 				}
-            });
+			});
 
 			configureDetectorsItem.setFont(BUTTON_FONT);
 			configureDetectorsItem.setText("Configure Detectors...");
 			localiseButton(configureDetectorsItem, "menu.configure_item", "&Configure Detectors...", true);
-            configureDetectorsItem.addActionListener(new java.awt.event.ActionListener() {
+			configureDetectorsItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					configureDetectorsItemActionPerformed(evt);
 				}
-            });
+			});
 
 			settingsMenu.add(configureDetectorsItem);
 
 			effortMenu.setText("Effort");
 			effortMenu.setFont(BUTTON_FONT);
 			localiseButton(effortMenu, "menu.effort_menu", "Effort", true);
-            minEffortItem.setFont(BUTTON_FONT);
+			minEffortItem.setFont(BUTTON_FONT);
 			minEffortItem.setText("Minimum");
 			effortButtonGroup.add(minEffortItem);
 			localiseButton(minEffortItem, "menu.mineffort_item", "&Minimum", true);
-            minEffortItem.addActionListener(new java.awt.event.ActionListener() {
+			minEffortItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					minEffortItemActionPerformed(evt);
 				}
-            });
+			});
 
 			effortMenu.add(minEffortItem);
 
 			normalEffortItem.setFont(BUTTON_FONT);
 			normalEffortItem.setSelected(true);
 			normalEffortItem.setText("Normal");
-            effortButtonGroup.add(normalEffortItem);
+			effortButtonGroup.add(normalEffortItem);
 			localiseButton(normalEffortItem, "menu.normaleffort_item", "&Normal", true);
 			normalEffortItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    normalEffortItemActionPerformed(evt);
+					normalEffortItemActionPerformed(evt);
 				}
 			});
 
@@ -1687,11 +1687,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			maxEffortItem.setFont(BUTTON_FONT);
 			maxEffortItem.setText("Maximum");
 			effortButtonGroup.add(maxEffortItem);
-            localiseButton(maxEffortItem, "menu.maxeffort_item", "&Maximum", true);
+			localiseButton(maxEffortItem, "menu.maxeffort_item", "&Maximum", true);
 			maxEffortItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					maxEffortItemActionPerformed(evt);
-                }
+				}
 			});
 
 			effortMenu.add(maxEffortItem);
@@ -1703,11 +1703,11 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 			helpMenu.setText("Help");
 			helpMenu.setFont(BUTTON_FONT);
 			localiseButton(helpMenu, "menu.help_menu", "&Help", true);
-            aboutItem.setFont(BUTTON_FONT);
+			aboutItem.setFont(BUTTON_FONT);
 			aboutItem.setText("About...");
 			localiseButton(aboutItem, "menu.about_item", "&About", true);
 			aboutItem.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
+				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					aboutItemActionPerformed(evt);
 				}
 			});
@@ -1740,7 +1740,7 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 	private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
 		if (SystemProperties.getBoolean("findbugs.noSummary")) {
 			groupByTabbedPane.remove(bySummary);
-        }
+		}
 	}//GEN-LAST:event_formWindowOpened
 
 	private void selectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllActionPerformed
@@ -3810,111 +3810,111 @@ public final class  FindBugsFrame extends javax.swing.JFrame implements LogSync 
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JMenuItem aboutItem;
-    private javax.swing.JButton addClasspathEntryButton;
+	private javax.swing.JButton addClasspathEntryButton;
 	private javax.swing.JButton addJarButton;
 	private javax.swing.JButton addSourceDirButton;
 	private javax.swing.JTextArea annotationTextArea;
-    private javax.swing.JScrollPane annotationTextAreaScrollPane;
+	private javax.swing.JScrollPane annotationTextAreaScrollPane;
 	private javax.swing.JButton browseClasspathEntryButton;
 	private javax.swing.JButton browseJarButton;
 	private javax.swing.JButton browseSrcDirButton;
-    private javax.swing.JEditorPane bugDescriptionEditorPane;
+	private javax.swing.JEditorPane bugDescriptionEditorPane;
 	private javax.swing.JScrollPane bugDescriptionScrollPane;
 	private javax.swing.JTabbedPane bugDetailsTabbedPane;
 	private javax.swing.JEditorPane bugSummaryEditorPane;
-    private javax.swing.JSplitPane bugTreeBugDetailsSplitter;
+	private javax.swing.JSplitPane bugTreeBugDetailsSplitter;
 	private javax.swing.JPanel bugTreePanel;
 	private javax.swing.JTree byBugCategoryBugTree;
 	private javax.swing.JScrollPane byBugCategoryScrollPane;
-    private javax.swing.JTree byBugTypeBugTree;
+	private javax.swing.JTree byBugTypeBugTree;
 	private javax.swing.JScrollPane byBugTypeScrollPane;
 	private javax.swing.JTree byClassBugTree;
 	private javax.swing.JScrollPane byClassScrollPane;
-    private javax.swing.JTree byPackageBugTree;
+	private javax.swing.JTree byPackageBugTree;
 	private javax.swing.JScrollPane byPackageScrollPane;
 	private javax.swing.JScrollPane bySummary;
 	private javax.swing.JButton classpathDownButton;
-    private javax.swing.JLabel classpathEntryLabel;
+	private javax.swing.JLabel classpathEntryLabel;
 	private javax.swing.JList classpathEntryList;
 	private javax.swing.JLabel classpathEntryListLabel;
 	private javax.swing.JScrollPane classpathEntryListScrollPane;
-    private javax.swing.JTextField classpathEntryTextField;
+	private javax.swing.JTextField classpathEntryTextField;
 	private javax.swing.JButton classpathUpButton;
 	private javax.swing.JMenuItem closeProjectItem;
 	private javax.swing.JMenuItem configureDetectorsItem;
-    private javax.swing.JMenuItem copyItem;
+	private javax.swing.JMenuItem copyItem;
 	private javax.swing.JMenuItem cutItem;
 	private javax.swing.JMenu editMenu;
 	private javax.swing.JLabel editProjectLabel;
-    private javax.swing.JPanel editProjectPanel;
+	private javax.swing.JPanel editProjectPanel;
 	private javax.swing.ButtonGroup effortButtonGroup;
 	private javax.swing.JMenu effortMenu;
 	private javax.swing.JPanel emptyPanel;
-    private javax.swing.JMenuItem exitItem;
+	private javax.swing.JMenuItem exitItem;
 	private javax.swing.JRadioButtonMenuItem expPriorityButton;
 	private javax.swing.JMenu fileMenu;
 	private javax.swing.JMenu filterWarningsMenu;
-    private javax.swing.JButton findBugsButton;
+	private javax.swing.JButton findBugsButton;
 	private javax.swing.JCheckBoxMenuItem fullDescriptionsItem;
 	private javax.swing.JTabbedPane groupByTabbedPane;
 	private javax.swing.JLabel growBoxSpacer;
-    private javax.swing.JMenu helpMenu;
+	private javax.swing.JMenu helpMenu;
 	private javax.swing.JRadioButtonMenuItem highPriorityButton;
 	private javax.swing.JPanel jPanel1;
 	private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator10;
+	private javax.swing.JSeparator jSeparator10;
 	private javax.swing.JSeparator jSeparator11;
 	private javax.swing.JSeparator jSeparator2;
 	private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JSeparator jSeparator4;
+	private javax.swing.JSeparator jSeparator4;
 	private javax.swing.JSeparator jSeparator5;
 	private javax.swing.JSeparator jSeparator6;
 	private javax.swing.JSeparator jSeparator7;
-    private javax.swing.JSeparator jSeparator8;
+	private javax.swing.JSeparator jSeparator8;
 	private javax.swing.JSeparator jSeparator9;
 	private javax.swing.JLabel jarFileLabel;
 	private javax.swing.JList jarFileList;
-    private javax.swing.JLabel jarFileListLabel;
+	private javax.swing.JLabel jarFileListLabel;
 	private javax.swing.JScrollPane jarFileListScrollPane;
 	private javax.swing.JTextField jarNameTextField;
 	private javax.swing.JMenuItem loadBugsItem;
-    private javax.swing.JLabel logoLabel;
+	private javax.swing.JLabel logoLabel;
 	private javax.swing.JRadioButtonMenuItem lowPriorityButton;
 	private javax.swing.JCheckBoxMenuItem maxEffortItem;
 	private javax.swing.JRadioButtonMenuItem mediumPriorityButton;
-    private javax.swing.JCheckBoxMenuItem minEffortItem;
+	private javax.swing.JCheckBoxMenuItem minEffortItem;
 	private javax.swing.JMenuItem newProjectItem;
 	private javax.swing.JCheckBoxMenuItem normalEffortItem;
 	private javax.swing.JMenuItem openProjectItem;
-    private javax.swing.JMenuItem pasteItem;
+	private javax.swing.JMenuItem pasteItem;
 	private javax.swing.ButtonGroup priorityButtonGroup;
 	private javax.swing.JMenu recentProjectsMenu;
 	private javax.swing.JMenuItem reloadProjectItem;
-    private javax.swing.JButton removeClasspathEntryButton;
+	private javax.swing.JButton removeClasspathEntryButton;
 	private javax.swing.JButton removeJarButton;
 	private javax.swing.JButton removeSrcDirButton;
 	private javax.swing.JPanel reportPanel;
-    private javax.swing.JMenuItem saveBugsItem;
+	private javax.swing.JMenuItem saveBugsItem;
 	private javax.swing.JMenuItem saveProjectAsItem;
 	private javax.swing.JMenuItem saveProjectItem;
 	private javax.swing.JMenuItem selectAllItem;
-    private javax.swing.JMenu settingsMenu;
+	private javax.swing.JMenu settingsMenu;
 	private javax.swing.JLabel sourceDirLabel;
 	private javax.swing.JList sourceDirList;
 	private javax.swing.JLabel sourceDirListLabel;
-    private javax.swing.JScrollPane sourceDirListScrollPane;
+	private javax.swing.JScrollPane sourceDirListScrollPane;
 	private javax.swing.JButton sourceDownButton;
 	private javax.swing.JTextArea sourceTextArea;
 	private LineNumberer sourceLineNumberer;
-    private javax.swing.JScrollPane sourceTextAreaScrollPane;
+	private javax.swing.JScrollPane sourceTextAreaScrollPane;
 	private javax.swing.JButton sourceUpButton;
 	private javax.swing.JTextField srcDirTextField;
 	private javax.swing.JMenuBar theMenuBar;
-    private javax.swing.JLabel urlLabel;
+	private javax.swing.JLabel urlLabel;
 	private javax.swing.JCheckBoxMenuItem viewBugDetailsItem;
 	private javax.swing.JRadioButtonMenuItem viewBugsItem;
 	private javax.swing.JMenu viewMenu;
-    private javax.swing.JPanel viewPanel;
+	private javax.swing.JPanel viewPanel;
 	private javax.swing.JRadioButtonMenuItem viewProjectItem;
 	// End of variables declaration//GEN-END:variables
 

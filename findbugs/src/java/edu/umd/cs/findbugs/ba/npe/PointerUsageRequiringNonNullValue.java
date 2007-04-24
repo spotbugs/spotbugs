@@ -43,35 +43,35 @@ public abstract class PointerUsageRequiringNonNullValue {
 	public @CheckForNull
 	XMethodParameter getNonNullParameter() {
 		return null;
-    }
+	}
 
 	public @CheckForNull
 	XField getNonNullField() {
 		return null;
-    }
+	}
 
 	private static final PointerUsageRequiringNonNullValue instance = new PointerUsageRequiringNonNullValue() {
 		@Override
 		public boolean isDirect() {
-            return true;
+			return true;
 		}
 
 		@Override
 		public String getDescription() {
 			return  "SOURCE_LINE_DEREF";
-        }
+		}
 	};
 
 	private static final PointerUsageRequiringNonNullValue nonNullReturnInstance = new PointerUsageRequiringNonNullValue() {
 		@Override
 		public boolean getReturnFromNonNullMethod() {
-            return true;
+			return true;
 		}
 
 		@Override
 		public String getDescription() {
 			return  "SOURCE_LINE_RETURNED";
-        }
+		}
 	};
 
 	public static PointerUsageRequiringNonNullValue getPointerDereference() {
@@ -85,7 +85,7 @@ public abstract class PointerUsageRequiringNonNullValue {
 	public static PointerUsageRequiringNonNullValue getPassedAsNonNullParameter(final XMethod m, final int param) {
 		return new PointerUsageRequiringNonNullValue() {
 			@Override
-            public @CheckForNull
+			public @CheckForNull
 			XMethodParameter getNonNullParameter() {
 				return new XMethodParameter(m, param);
 			}
@@ -93,7 +93,7 @@ public abstract class PointerUsageRequiringNonNullValue {
 			@Override
 			public String getDescription() {
 				return  "SOURCE_LINE_INVOKED";
-            }
+			}
 
 		};
 	}
@@ -101,7 +101,7 @@ public abstract class PointerUsageRequiringNonNullValue {
 	public static PointerUsageRequiringNonNullValue getStoredIntoNonNullField(final XField f) {
 		return new PointerUsageRequiringNonNullValue() {
 			@Override
-            public @CheckForNull
+			public @CheckForNull
 			XField getNonNullField() {
 				return f;
 			}
@@ -109,7 +109,7 @@ public abstract class PointerUsageRequiringNonNullValue {
 			@Override
 			public String getDescription() {
 				return  "SOURCE_LINE_STORED";
-            }
+			}
 
 		};
 	}

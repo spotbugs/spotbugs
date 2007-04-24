@@ -63,34 +63,34 @@ public class StringAnnotation implements BugAnnotation {
 			StringBuffer result = null;
 			for(int i = 0, max = s.length(), delta = 0; i < max; i++) {
 				char c = s.charAt(i);
-	            String replacement = null;
+				String replacement = null;
 
 				if (c == '&') {
 					replacement = "&amp;";
 				} else if (c == '<') {
-	                replacement = "&lt;";
+					replacement = "&lt;";
 				} else if (c == '\r') {
 					replacement = "&#13;";
 				} else if (c == '>') {
-	                replacement = "&gt;";
+					replacement = "&gt;";
 				} else if (c == '"') {
 					replacement = "&quot;";
 				} else if (c == '\'') {
-	                replacement = "&apos;";
+					replacement = "&apos;";
 				}
 
 				if (replacement != null) {
 					if (result == null) {
 						result = new StringBuffer(s);
-	                }
+					}
 					result.replace(i + delta, i + delta + 1, replacement);
 					delta += (replacement.length() - 1);
 				}
-	        }
+			}
 			if (result == null) {
 				return s;
 			}
-	        return result.toString();
+			return result.toString();
 		}
 
 

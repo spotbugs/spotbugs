@@ -19,7 +19,7 @@ public class FindSeqNumTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		
+
 		versionNames = new HashMap<String, AppVersion>();
 		timeStamps = new TreeMap<Long, AppVersion>();
 		Set<AppVersion> versions = new HashSet<AppVersion>();
@@ -27,13 +27,13 @@ public class FindSeqNumTest extends TestCase {
 		versions.add(new AppVersion(0, format.parse("June 1, 2005"), "v1.0"));
 		versions.add(new AppVersion(1, format.parse("June 10, 2005"), "v1.1"));
 		versions.add(new AppVersion(2, format.parse("June 20, 2005"), "v2.0"));
-		
+
 		for(AppVersion v : versions) {
 			versionNames.put(v.getReleaseName(), v);
 			timeStamps.put(v.getTimestamp(), v);
 		}
 	}
-	
+
 	public void test0() {
 		assertEquals(0,Filter.FilterCommandLine.getVersionNum(versionNames, timeStamps, "0", true, 3));
 	}

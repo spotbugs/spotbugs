@@ -181,20 +181,20 @@ public class SortedBugCollection implements BugCollection {
 	/**
 	 * Read XML data from given input stream into this
 	 * object, populating the Project as a side effect.
-     * An attempt will be made to close the input stream
+	 * An attempt will be made to close the input stream
 	 * (even if an exception is thrown).
 	 *
 	 * @param in      the InputStream
-     * @param project the Project
+	 * @param project the Project
 	 */
 	public void readXML(InputStream in, Project project, File base)
 			throws IOException, DocumentException {
-        if (in == null) throw new IllegalArgumentException();
+		if (in == null) throw new IllegalArgumentException();
 
 		try {
 			if (project == null) throw new IllegalArgumentException();
 			doReadXML(in, project, base);
-        } finally {
+		} finally {
 			in.close();
 		}
 	}
@@ -216,11 +216,11 @@ public class SortedBugCollection implements BugCollection {
 			if (true) try { // FIXME: try this in 1.1.4
 				xr = XMLReaderFactory.createXMLReader();
 			  } catch (SAXException e) {
-                AnalysisContext.logError("Couldn't create XMLReaderFactory", e);   
+				AnalysisContext.logError("Couldn't create XMLReaderFactory", e);   
 			  }
 
 			if (xr == null) {
-               //  FIXME: for now, use dom4j's XML parser
+			   //  FIXME: for now, use dom4j's XML parser
 				xr = new org.dom4j.io.aelfred.SAXDriver();
 				}
 			xr.setContentHandler(handler);
@@ -1021,7 +1021,7 @@ public class SortedBugCollection implements BugCollection {
 	 * @param version
 	 */
 	public void setAnalysisVersion(String version) {
-	    this.analysisVersion = version;
+		this.analysisVersion = version;
 
 	}
 }

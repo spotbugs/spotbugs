@@ -287,7 +287,7 @@ public class IsNullValueAnalysis
 	public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result)
 	throws DataflowAnalysisException {
 		meetInto(fact,edge,result,true);
-    }
+	}
 	public void meetInto(IsNullValueFrame fact, Edge edge, IsNullValueFrame result, boolean propagatePhiNodeInformation)
 			throws DataflowAnalysisException {
 
@@ -742,15 +742,15 @@ public class IsNullValueAnalysis
 
 	public IsNullValueFrame getFactAtMidEdge(Edge edge) throws DataflowAnalysisException {
 		BasicBlock block = isForwards() ? edge.getSource() : edge.getTarget();
-        
+
 		IsNullValueFrame predFact = createFact();
 		copy(getResultFact(block), predFact);
 
-        edgeTransfer(edge, predFact);
+		edgeTransfer(edge, predFact);
 
 		IsNullValueFrame result = createFact();
 		makeFactTop(result);
-        meetInto(predFact, edge, result, false);
+		meetInto(predFact, edge, result, false);
 
 		return result;
 	}

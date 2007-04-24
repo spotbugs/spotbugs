@@ -35,7 +35,7 @@ public interface DetectorFactoryChooser {
 
 
 	/**
-     * Enable the factory due to ordering constraints with other enabled detectors
+	 * Enable the factory due to ordering constraints with other enabled detectors
 	 * @param factory
 	 */
 	public void enable(DetectorFactory factory) ;

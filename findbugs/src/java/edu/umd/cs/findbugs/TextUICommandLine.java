@@ -194,7 +194,7 @@ public class TextUICommandLine extends FindBugsCommandLine {
 				else if (optionExtraPart.equals("withAbridgedMessages")) {
 					xmlWithMessages = true;
 					xmlWithAbridgedMessages = true;
-                } else
+				} else
 					throw new IllegalArgumentException("Unknown option: -xml:" + optionExtraPart);
 			}
 		} else if (option.equals("-emacs")) {
@@ -480,16 +480,16 @@ public class TextUICommandLine extends FindBugsCommandLine {
 	/**
 	 * @param userPreferences The userPreferences to set.
 	 */
-    private void setUserPreferences(UserPreferences userPreferences) {
+	private void setUserPreferences(UserPreferences userPreferences) {
 		this.userPreferences = userPreferences;
 	}
 
 	/**
 	 * @return Returns the userPreferences.
 	 */
-    private UserPreferences getUserPreferences() {
+	private UserPreferences getUserPreferences() {
 		if (userPreferences == null) 
 			userPreferences = UserPreferences.createDefaultUserPreferences();
 		return userPreferences;
-    }
+	}
 }

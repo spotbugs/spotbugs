@@ -41,7 +41,7 @@ public class Util {
 	public static final boolean LOGGING = SystemProperties.getBoolean("findbugs.shutdownLogging");
 
 	public static void runLogAtShutdown(Runnable r) {
-        if (LOGGING) Runtime.getRuntime().addShutdownHook(new Thread(r));
+		if (LOGGING) Runtime.getRuntime().addShutdownHook(new Thread(r));
 
 	}
 
@@ -57,15 +57,15 @@ public class Util {
 
 	public static Reader getReader(InputStream in) throws UnsupportedEncodingException {
 		return new InputStreamReader(in, "UTF-8");
-    }
+	}
 	public static Reader getFileReader(String filename) throws UnsupportedEncodingException, FileNotFoundException {
 		return getReader(new FileInputStream(filename));
 	}
-    public static Reader getFileReader(File filename) throws UnsupportedEncodingException, FileNotFoundException {
+	public static Reader getFileReader(File filename) throws UnsupportedEncodingException, FileNotFoundException {
 		return getReader(new FileInputStream(filename));
 	}
 	public static Writer getWriter(OutputStream out) throws UnsupportedEncodingException, FileNotFoundException {
-        return new OutputStreamWriter(out, "UTF-8");
+		return new OutputStreamWriter(out, "UTF-8");
 	}
 
 	public static Writer getFileWriter(String filename) throws UnsupportedEncodingException, FileNotFoundException {

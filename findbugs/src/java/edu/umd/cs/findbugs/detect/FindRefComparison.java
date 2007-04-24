@@ -731,15 +731,15 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 		boolean looksLikeTestCase = method.getName().startsWith("test") && method.isPublic() && method.getSignature().equals("()V")
 				|| testLikeName(jclass.getClassName())|| testLikeName(jclass.getSuperclassName());
 		int priorityModifier = 0;
-        if (looksLikeTestCase) priorityModifier = 1;
+		if (looksLikeTestCase) priorityModifier = 1;
 		if (methodGen.getName().startsWith("test") && methodGen.getSignature().equals("()V")) {
 			try {
 				if (jclass.getSuperclassName().equals("junit.framework.TestCase") || Hierarchy.isSubtype(methodGen.getClassName(), "junit.framework.TestCase"))
-                    priorityModifier=2;
+					priorityModifier=2;
 			} catch (ClassNotFoundException e) { 
 				AnalysisContext.reportMissingClass(e);
 			}
-        }
+		}
 
 		if (!(lhsType_ instanceof ReferenceType) || !(rhsType_ instanceof ReferenceType)) {
 			if (rhsType_.getType() == T_NULL) {	
@@ -779,7 +779,7 @@ public class FindRefComparison implements Detector, ExtendedTypes {
 			String lhsSig = lhsType_.getSignature();
 			String rhsSig = rhsType_.getSignature();
 			boolean core = lhsSig.startsWith("Ljava") && rhsSig.startsWith("Ljava");
-            if (core) {
+			if (core) {
 				looksLikeTestCase = false;
 				priorityModifier = 0;
 			}

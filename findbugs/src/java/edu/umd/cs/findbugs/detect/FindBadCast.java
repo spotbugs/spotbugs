@@ -69,7 +69,7 @@ public @java.lang.Deprecated class FindBadCast extends BytecodeScanningDetector 
 		public boolean prescreen(ClassContext classContext, Method method) {
 				BitSet bytecodeSet = classContext.getBytecodeSet(method);
 				return bytecodeSet.get(Constants.CHECKCAST) || bytecodeSet.get(Constants.INSTANCEOF);
-        }
+		}
 	*/
 	private int parameters;
 	OpcodeStack stack = new OpcodeStack();

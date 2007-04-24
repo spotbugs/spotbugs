@@ -165,7 +165,7 @@ public class UnconditionalValueDerefAnalysis extends
 
 		Instruction instruction = handle.getInstruction();
 		if (false && DEBUG) {
-            System.out.println("XXX: " + handle.getPosition() + " " + instruction);
+			System.out.println("XXX: " + handle.getPosition() + " " + instruction);
 		}
 		   if (fact.isTop()) return;
 		Location location = new Location(handle, basicBlock);
@@ -210,7 +210,7 @@ public class UnconditionalValueDerefAnalysis extends
 		if (CHECK_ANNOTATIONS && instruction instanceof ARETURN) {
 			XMethod thisMethod = XFactory.createXMethod(methodGen);
 			checkNonNullReturnValue(thisMethod, location, vnaFrame, fact);
-        }
+		}
 
 
 		if (CHECK_ANNOTATIONS && (instruction instanceof PUTFIELD || instruction instanceof PUTSTATIC)) {
@@ -243,7 +243,7 @@ public class UnconditionalValueDerefAnalysis extends
 		InvokeInstruction inv = (InvokeInstruction) location.getHandle().getInstruction();
 
 		SignatureParser sigParser = new SignatureParser(inv.getSignature(methodGen.getConstantPool()));
-        int numParams = sigParser.getNumParameters();
+		int numParams = sigParser.getNumParameters();
 		if (numParams == 0) return;
 		ParameterNullnessPropertyDatabase database =
 			AnalysisContext.currentAnalysisContext().getUnconditionalDerefParamDatabase();
@@ -329,63 +329,63 @@ public class UnconditionalValueDerefAnalysis extends
 
 	/**
 	 * If this is a method call instruction,
-     * check to see if any of the parameters are @NonNull,
+	 * check to see if any of the parameters are @NonNull,
 	 * and treat them as dereferences.
 	 * @param thisMethod TODO
 	 * @param location  the Location of the instruction
-     * @param vnaFrame  the ValueNumberFrame at the Location of the instruction
+	 * @param vnaFrame  the ValueNumberFrame at the Location of the instruction
 	 * @param fact      the dataflow value to modify
 	 * 
 	 * @throws DataflowAnalysisException
-     */
+	 */
 	private void checkNonNullReturnValue(XMethod thisMethod, Location location, ValueNumberFrame vnaFrame, UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
 		NullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
 		if (database == null) {
-            return;
+			return;
 		}
 		IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
 		if (!invFrame.isValid()) return;
-       
+
 		if (database.getResolvedAnnotation(thisMethod, true) !=  NullnessAnnotation.NONNULL)
 			return;
 		IsNullValue value = invFrame.getTopValue();
-        if (value.isDefinitelyNotNull()) return;
+		if (value.isDefinitelyNotNull()) return;
 		if (value.isDefinitelyNull()) return;
 		ValueNumber vn = vnaFrame.getTopValue();
 		if (true)  fact.addDeref(vn, location);
-    }
+	}
 
 
 	/**
 	 * If this is a putfield or putstatic instruction,
-     * check to see if the field is @NonNull,
+	 * check to see if the field is @NonNull,
 	 * and treat it as dereferences.
 	 * 
 	 * @param location  the Location of the instruction
-     * @param vnaFrame  the ValueNumberFrame at the Location of the instruction
+	 * @param vnaFrame  the ValueNumberFrame at the Location of the instruction
 	 * @param fact      the dataflow value to modify
 	 * @throws DataflowAnalysisException
 	 */
-    private void checkNonNullPutField(Location location, ValueNumberFrame vnaFrame, UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
+	private void checkNonNullPutField(Location location, ValueNumberFrame vnaFrame, UnconditionalValueDerefSet fact) throws DataflowAnalysisException {
 		NullnessAnnotationDatabase database = AnalysisContext.currentAnalysisContext().getNullnessAnnotationDatabase();
 		if (database == null) {
 			return;
-        }
+		}
 
 		FieldInstruction fieldIns = (FieldInstruction) location.getHandle().getInstruction(); 
 
 		XField field = XFactory.createXField(fieldIns, methodGen.getConstantPool());
 		char firstChar = field.getSignature().charAt(0);
 		if (firstChar != 'L' && firstChar != '[') return;
-        NullnessAnnotation resolvedAnnotation = database.getResolvedAnnotation(field, true);
+		NullnessAnnotation resolvedAnnotation = database.getResolvedAnnotation(field, true);
 		if (resolvedAnnotation == NullnessAnnotation.NONNULL) {
 			IsNullValueFrame invFrame = invDataflow.getFactAtLocation(location);
 
-            IsNullValue value = invFrame.getTopValue();
+			IsNullValue value = invFrame.getTopValue();
 			if (reportDereference(value) ) {
 				ValueNumber vn = vnaFrame.getTopValue();
 				fact.addDeref(vn, location);
-            }      
+			}      
 		}
 	}
 
@@ -497,11 +497,11 @@ public class UnconditionalValueDerefAnalysis extends
 
 	private boolean reportDereference(IsNullValue value) {
 		if (value.isDefinitelyNotNull()) return false;
-        if (value.isDefinitelyNull()) return false;
+		if (value.isDefinitelyNull()) return false;
 		if (IGNORE_DEREF_OF_NCP
 				&& value.isNullOnComplicatedPath()) return false;
 		return true;
-    }
+	}
 
 	/**
 	 * Return whether or not given instruction is an assertion.
@@ -558,7 +558,7 @@ public class UnconditionalValueDerefAnalysis extends
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.DataflowAnalysis#meetInto(java.lang.Object, edu.umd.cs.findbugs.ba.Edge, java.lang.Object)
 	 */
-    public void meetInto(UnconditionalValueDerefSet fact, Edge edge,
+	public void meetInto(UnconditionalValueDerefSet fact, Edge edge,
 			UnconditionalValueDerefSet result) throws DataflowAnalysisException {
 		meetInto(fact, edge, result, false);
 	}
@@ -570,7 +570,7 @@ public class UnconditionalValueDerefAnalysis extends
 
 		if (isExceptionEdge(edge) && !onlyEdge) {
 			if (DEBUG) System.out.println("Skipping exception edge");
-            return;
+			return;
 		}
 
 		ValueNumber knownNonnullOnBranch = null;
@@ -598,7 +598,7 @@ public class UnconditionalValueDerefAnalysis extends
 			System.out.println("  Backedge according to bytecode: " + isBackEdge);
 			System.out.println("  Fact hashCode: " + System.identityHashCode(result));
 			System.out.println("  Initial fact: " + result);
-		    System.out.println("  Edge fact: " + fact);
+			System.out.println("  Edge fact: " + fact);
 		}
 		if (result.isTop() || fact.isBottom()) {
 			// Make result identical to other fact

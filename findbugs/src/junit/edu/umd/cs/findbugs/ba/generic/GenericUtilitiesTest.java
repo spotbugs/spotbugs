@@ -35,7 +35,7 @@ public class GenericUtilitiesTest extends TestCase {
 	public void testUnmatchedRightAngleBracket() {
 		assertEquals(3,GenericUtilities.nextUnmatchedRightAngleBracket("<I>>", 0));
 		assertEquals(1,GenericUtilities.nextUnmatchedRightAngleBracket("I><I>", 0));
-    }
+	}
 	public void testNestedSignature() {
 		GenericObjectType t = (GenericObjectType) GenericUtilities.getType(SAMPLE_SIGNATURE);
 		String s = t.getSignature();

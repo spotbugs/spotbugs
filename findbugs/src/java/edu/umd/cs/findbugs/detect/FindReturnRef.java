@@ -98,7 +98,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 					.addClassAndMethod(this)
 					.addField(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
 							true)
-			        .addSourceLine(this));
+					.addSourceLine(this));
 		}
 		if (!staticMethod && dangerousToStoreIntoField && seen == PUTFIELD
 				&& MutableStaticFields.mutableSignature(getSigConstantOperand())) {
@@ -106,7 +106,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 					.addClassAndMethod(this)
 					.addField(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(),
 							true)
-			        .addSourceLine(this));
+					.addSourceLine(this));
 			/*
 			System.out.println("Store of parameter "
 					+ r +"/" + parameterCount
@@ -203,7 +203,7 @@ public class FindReturnRef extends BytecodeScanningDetector {
 				/*
 				&& !sigOnStack.equals("Ljava/lang/String;")
 				&& sigOnStack.indexOf("Exception") == -1
-		        && sigOnStack.indexOf("[") >= 0
+				&& sigOnStack.indexOf("[") >= 0
 				*/
 				&& nameOnStack.indexOf("EMPTY") == -1
 				&& MutableStaticFields.mutableSignature(sigOnStack)

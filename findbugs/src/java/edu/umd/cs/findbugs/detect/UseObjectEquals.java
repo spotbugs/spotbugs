@@ -66,7 +66,7 @@ public class UseObjectEquals extends BytecodeScanningDetector implements Statele
 									.addClassAndMethod(this)
 									.addSourceLine(this));	
 							}
-				    	}
+						}
 					} catch (ClassNotFoundException cnfe) {
 						//cnfe.printStackTrace();
 						bugReporter.reportMissingClass(cnfe);

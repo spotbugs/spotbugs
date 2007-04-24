@@ -33,7 +33,7 @@ public class MergeVertices
 		<
 		GraphType extends Graph<EdgeType, VertexType>,
 		EdgeType extends GraphEdge<EdgeType, VertexType>,
-        VertexType extends GraphVertex<VertexType>
+		VertexType extends GraphVertex<VertexType>
 		> {
 
 	/**

@@ -141,15 +141,15 @@ public class UserPreferences implements Cloneable {
 			String key = (String) e.getKey();
 			if(!key.startsWith("detector") || key.startsWith("detector_")){
 				// it is not a detector enablement property
-                continue;
+				continue;
 			}
 			String detectorState = (String) e.getValue();
 			int pipePos = detectorState.indexOf("|");
-            if (pipePos >= 0) {
+			if (pipePos >= 0) {
 				String name = detectorState.substring(0, pipePos);
 				String enabled = detectorState.substring(pipePos + 1);
 				detectorEnablementMap.put(name, Boolean.valueOf(enabled));
-            }
+			}
 		}
 
 		if (props.get(FILTER_SETTINGS_KEY) != null) {
@@ -209,7 +209,7 @@ public class UserPreferences implements Cloneable {
 		Iterator<Entry<String, Boolean>> it = detectorEnablementMap.entrySet().iterator();
 		while (it.hasNext()) {
 			Entry<String, Boolean> entry = it.next();
-            props.put("detector" + entry.getKey(), entry.getKey() + "|" + String.valueOf(entry.getValue().booleanValue()));
+			props.put("detector" + entry.getKey(), entry.getKey() + "|" + String.valueOf(entry.getValue().booleanValue()));
 		}
 
 		// Save ProjectFilterSettings

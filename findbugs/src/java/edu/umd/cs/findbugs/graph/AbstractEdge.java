@@ -31,7 +31,7 @@ public class AbstractEdge
 		<
 		ActualEdgeType extends AbstractEdge<ActualEdgeType, VertexType>,
 		VertexType extends AbstractVertex<ActualEdgeType, VertexType>
-        > implements GraphEdge<ActualEdgeType, VertexType> {
+		> implements GraphEdge<ActualEdgeType, VertexType> {
 
 	private VertexType source;
 	private VertexType target;

@@ -105,15 +105,15 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 		if (reportUserDesignations) {
 			outputStream.print(bugInstance.getUserDesignationKey());
 			outputStream.print(" ");
-            }
+			}
 
 		if (reportHistory) {
 			long first = bugInstance.getFirstVersion();
-            long last = bugInstance.getLastVersion();
+			long last = bugInstance.getLastVersion();
 			outputStream.print(first);
 			outputStream.print(" ");
 			outputStream.print(last);
-            outputStream.print(" ");
+			outputStream.print(" ");
 		}
 		SourceLineAnnotation line =
 				bugInstance.getPrimarySourceLineAnnotation();
@@ -183,14 +183,14 @@ public abstract class TextUIBugReporter extends AbstractBugReporter {
 	public void setReportHistory(boolean reportHistory) {
 		this.reportHistory = reportHistory;
 	}
-    
+
 	public void setUseLongBugCodes(boolean useLongBugCodes) {
 		this.useLongBugCodes = useLongBugCodes;
 	}
 
 	public void setReportUserDesignations(boolean reportUserDesignations) {
 		this.reportUserDesignations = reportUserDesignations;
-    }
+	}
 
 
 	/* (non-Javadoc)

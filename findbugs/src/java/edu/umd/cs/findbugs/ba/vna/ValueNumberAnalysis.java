@@ -368,7 +368,7 @@ public class ValueNumberAnalysis extends FrameDataflowAnalysis<ValueNumber, Valu
 					new DataflowTestDriver<ValueNumberFrame, ValueNumberAnalysis>() {
 						@Override
 										 public Dataflow<ValueNumberFrame, ValueNumberAnalysis> createDataflow(ClassContext classContext, Method method)
-				                throws CFGBuilderException, DataflowAnalysisException {
+								throws CFGBuilderException, DataflowAnalysisException {
 							return classContext.getValueNumberDataflow(method);
 						}
 					};

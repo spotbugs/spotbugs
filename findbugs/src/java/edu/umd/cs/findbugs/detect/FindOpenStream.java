@@ -51,11 +51,11 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 			{ObjectTypeFactory.getInstance("java.io.InputStream"),
 			 ObjectTypeFactory.getInstance("java.io.OutputStream"),
 			 ObjectTypeFactory.getInstance("java.io.Reader"),
-	         ObjectTypeFactory.getInstance("java.io.Writer"),
+			 ObjectTypeFactory.getInstance("java.io.Writer"),
 			 ObjectTypeFactory.getInstance("java.sql.Connection"),
 			 ObjectTypeFactory.getInstance("java.sql.PreparedStatement"),
 			 ObjectTypeFactory.getInstance("java.sql.Statement"),
-	         ObjectTypeFactory.getInstance("java.sql.ResultSet")};
+			 ObjectTypeFactory.getInstance("java.sql.ResultSet")};
 
 	/**
 	 * StreamFactory objects used to detect resources
@@ -171,11 +171,11 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 				"createStatement", "(III)Ljava/sql/Statement;",
 				"ODR_OPEN_DATABASE_RESOURCE"));
 		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
-                "createStatement", "(Ljava/lang/String;)Ljava/sql/PreparedStatement;",
+				"createStatement", "(Ljava/lang/String;)Ljava/sql/PreparedStatement;",
 				"ODR_OPEN_DATABASE_RESOURCE"));
 		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 				"createStatement", "(Ljava/lang/String;I)Ljava/sql/PreparedStatement;",
-		        "ODR_OPEN_DATABASE_RESOURCE"));
+				"ODR_OPEN_DATABASE_RESOURCE"));
 		streamFactoryCollection.add(new MethodReturnValueStreamFactory("java.sql.Connection",
 				"createStatement", "(Ljava/lang/String;II)Ljava/sql/PreparedStatement;",
 				"ODR_OPEN_DATABASE_RESOURCE"));
@@ -263,18 +263,18 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 			} else if (constant instanceof ConstantInterfaceMethodref) {
 				ConstantInterfaceMethodref cmr = (ConstantInterfaceMethodref) constant;
 
-                int classIndex = cmr.getClassIndex();
+				int classIndex = cmr.getClassIndex();
 				className = jclass.getConstantPool().getConstantString(
 						classIndex, Constants.CONSTANT_Class);
 			}
-				
+
 			if (className != null) {
 				if (DEBUG) System.out.println("FindOpenStream: saw class " + className);
 
 				for (String aPRESCREEN_CLASS_LIST : PRESCREEN_CLASS_LIST) {
 					if (className.indexOf(aPRESCREEN_CLASS_LIST) >= 0) {
 						sawResourceClass = true;
-			            break;
+						break;
 					}
 				}
 			}
@@ -294,7 +294,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 				|| bytecodeSet.get(Constants.INVOKEINTERFACE)
 				|| bytecodeSet.get(Constants.INVOKESPECIAL)
 				|| bytecodeSet.get(Constants.INVOKESTATIC)
-		        || bytecodeSet.get(Constants.INVOKEVIRTUAL);
+				|| bytecodeSet.get(Constants.INVOKEVIRTUAL);
 	}
 
 	@Override
@@ -312,7 +312,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 		 public void analyzeMethod(ClassContext classContext, Method method,
 							  StreamResourceTracker resourceTracker,
 							  ResourceCollection<Stream> resourceCollection)
-	        throws CFGBuilderException, DataflowAnalysisException {
+			throws CFGBuilderException, DataflowAnalysisException {
 
 		if (isMainMethod(method)) return;
 
@@ -468,7 +468,7 @@ public final class FindOpenStream extends ResourceTrackingDetector<Stream, Strea
 				new ResourceValueAnalysisTestDriver<Stream, StreamResourceTracker>() {
 					@Override
 								 public StreamResourceTracker createResourceTracker(ClassContext classContext, Method method) {
-				        return new StreamResourceTracker(streamFactoryList, classContext.getLookupFailureCallback());
+						return new StreamResourceTracker(streamFactoryList, classContext.getLookupFailureCallback());
 					}
 				};
 

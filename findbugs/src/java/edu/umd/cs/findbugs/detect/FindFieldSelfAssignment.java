@@ -108,19 +108,19 @@ public class FindFieldSelfAssignment extends BytecodeScanningDetector implements
 			break;
 		 case 6:
 			if (isRegisterStore()) {
-                state = 7;
+				state = 7;
 				register = getRegisterOperand();
 			} else state = 0;
 			break;
-        case 7:
+		case 7:
 			if (isRegisterStore() && register ==  getRegisterOperand()) {
 				bugReporter.reportBug(new BugInstance(this, "SA_LOCAL_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
-                .add( LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC(), getPC()-1))
+				.add( LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), register, getPC(), getPC()-1))
 				.addSourceLine(this));
 			} 
 			state = 0;
-            break;
+			break;
 		}
 
 		if (seen == PUTFIELD  && getClassConstantOperand().equals(className))

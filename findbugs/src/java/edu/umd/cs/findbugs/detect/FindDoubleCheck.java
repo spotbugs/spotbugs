@@ -88,7 +88,7 @@ public class FindDoubleCheck extends BytecodeScanningDetector {
 						&& !(seen == IFNULL && b > 9)
 						&& !(seen == IFEQ && (b > 9 && b < 34))
 						&& !(seen == IFNE && (b > 9 && b < 34))
-				        && (!sawMonitorEnter)) {
+						&& (!sawMonitorEnter)) {
 					fields.add(pendingFieldLoad);
 					startPC = getPC();
 					stage = 1;

@@ -75,7 +75,7 @@ public class MutableLock extends BytecodeScanningDetector implements  StatelessD
 					&& setFields.contains(getNameConstantOperand())
 					&& asUnsignedByte(codeBytes[getPC() + 3]) == DUP
 					&& asUnsignedByte(codeBytes[getPC() + 5]) == MONITORENTER
-			        
+
 					&& !finalFields.contains(getNameConstantOperand())
 			)
 				bugReporter.reportBug(new BugInstance(this, "ML_SYNC_ON_UPDATED_FIELD", NORMAL_PRIORITY)

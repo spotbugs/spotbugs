@@ -202,7 +202,7 @@ public class Subtypes {
 		if (name.length() == 0 || name.charAt(0) == '[') {
 			AnalysisContext.logError("Bad class name: " + name);
 			return;
-	    }
+		}
 
 		name = name.replace('/', '.');
 

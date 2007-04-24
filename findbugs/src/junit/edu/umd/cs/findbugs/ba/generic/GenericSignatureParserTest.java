@@ -25,7 +25,7 @@ import junit.framework.TestCase;
  * @author pugh
  */
 public class GenericSignatureParserTest extends TestCase {
-	
+
 	public void test1() {
 		GenericSignatureParser parser = new GenericSignatureParser("(Lcom/sleepycat/persist/EntityJoin<TPK;TE;>.JoinForwardCursor<TV;>;)V");
 		assertEquals(1,parser.getNumParameters());

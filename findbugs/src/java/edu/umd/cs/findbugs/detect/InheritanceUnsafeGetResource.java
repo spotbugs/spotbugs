@@ -111,7 +111,7 @@ public class InheritanceUnsafeGetResource extends BytecodeScanningDetector imple
 					&& !methodIsStatic
 					&& !classIsFinal
 					&& classIsVisibleToOtherPackages
-			        && getNameConstantOperand().equals("getClass")
+					&& getNameConstantOperand().equals("getClass")
 					&& getSigConstantOperand().equals("()Ljava/lang/Class;")) {
 				sawGetClass = getPC();
 			}

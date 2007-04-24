@@ -52,7 +52,7 @@ public class TrainUnconditionalDerefParams
 		AnalysisContext.currentAnalysisContext().storePropertyDatabase(
 				AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase(),
 				AnalysisContext.NONNULL_RETURN_DB_FILENAME,
-                "nonnull return database");
+				"nonnull return database");
 	}
 
 }

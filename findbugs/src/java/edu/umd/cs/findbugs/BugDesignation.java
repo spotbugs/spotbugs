@@ -86,14 +86,14 @@ public class BugDesignation implements XMLWriteable, Serializable {
 	public long getTimestamp() {
 			return timestamp;
 	}
-    public void setTimestamp(long ts) {
+	public void setTimestamp(long ts) {
 			timestamp = ts;
 	}
 
 	@CheckForNull public String getAnnotationText() {
 			return annotationText;
 	}
-    public void setAnnotationText(String s) {
+	public void setAnnotationText(String s) {
 			annotationText = s;
 	}
 

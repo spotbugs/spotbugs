@@ -172,7 +172,7 @@ public class SetBugDatabaseInfo {
 
 
 
-			
+
 
 		if (argCount < args.length) 
 			origCollection.writeXML(args[argCount++], project);

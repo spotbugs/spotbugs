@@ -36,7 +36,7 @@ public class TigerSubstitutes {
 
 	@SuppressWarnings("unchecked")
 	public static final <T> List<T> emptyList() {
-         return (List<T>) Collections.EMPTY_LIST;
+		 return (List<T>) Collections.EMPTY_LIST;
 	 }
    @SuppressWarnings("unchecked")
    public static final <T> Set<T> emptySet() {
@@ -54,11 +54,11 @@ public class TigerSubstitutes {
 
 	/**
 	 * Copied from java.util.Arrays;
-     * 
+	 * 
 	 */
 	  public static int hashCode(Object a[]) {
 			if (a == null)
-                return 0;
+				return 0;
 
 			int result = 1;
 
@@ -71,35 +71,35 @@ public class TigerSubstitutes {
 	  public static <U> Class<? extends U> asSubclass(Class base, Class<U> clazz) {
 		  if (clazz.isAssignableFrom(base))
 			  return (Class<? extends U>) base;
-          else
+		  else
 			  throw new ClassCastException(base.toString());
 	  }
 
-      public static String getSimpleName(Class c) {
+	  public static String getSimpleName(Class c) {
 			  if (c.isArray())
 				  return getSimpleName(c.getComponentType())+"[]";
 			  String name = c.getName();
-             name =  name.substring(name.lastIndexOf(".")+1);
+			 name =  name.substring(name.lastIndexOf(".")+1);
 			 int index = name.lastIndexOf("$");
 			 if (index == -1) return name;
 			 if (index +1 ==name.length() )
-                 throw new InternalError("Malformed class name");
+				 throw new InternalError("Malformed class name");
 			 if (isAsciiDigit(name.charAt(index+1))) return "";
 			 return name.substring(index+1);
 	  }
-      private static boolean isAsciiDigit(char c) {
+	  private static boolean isAsciiDigit(char c) {
 		  return '0' <= c && c <= '9';
 	  }
 
-      public static String getTextContent(Node n) {
+	  public static String getTextContent(Node n) {
 		  NodeList nodeList= n.getChildNodes();
 		  StringBuffer buf = new StringBuffer();
 		  for (int j=0; j < nodeList.getLength(); j++) {
-              Node k = nodeList.item(j);
+			  Node k = nodeList.item(j);
 			  buf.append( k.getNodeValue()); 
 		  }
 		  return buf.toString();
-      }
+	  }
 
 
 }

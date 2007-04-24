@@ -165,11 +165,11 @@ public class SourceLineAnnotation implements BugAnnotation {
 	 * Factory method for creating a source line annotation describing an entire
 	 * method.
 	 * 
-     * @param methodGen
+	 * @param methodGen
 	 *            the method being visited
 	 * @return the SourceLineAnnotation, or null if we do not have line number
 	 *         information for the method
-     */
+	 */
 	public static SourceLineAnnotation fromVisitedMethod(MethodGen methodGen, String sourceFile) {
 		LineNumberTable lineNumberTable = methodGen.getLineNumberTable(methodGen.getConstantPool());
 		String className = methodGen.getClassName();
@@ -458,7 +458,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 	/**
 	 * Get the simple class name (the part of the name after the dot)
 	 */
-    public String getSimpleClassName() {
+	public String getSimpleClassName() {
 		int lastDot = className.lastIndexOf('.');
 		return className.substring(lastDot+1);
 	}
@@ -691,7 +691,7 @@ public class SourceLineAnnotation implements BugAnnotation {
 			if (targetMethod != null) {
 				Method method = targetMethod.getMethod();
 				if (method != null) code = method.getCode();
-		    }
+			}
 
 		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);

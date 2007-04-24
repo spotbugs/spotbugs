@@ -31,49 +31,49 @@ public class TigerSubstitutesTest extends TestCase {
 	static class Foo {};
 	static Object bar;
 	static Object test = new Object() {
-        class Bar { };
+		class Bar { };
 		{ 
 			bar = new Bar();
 		}
-        @Override
+		@Override
 		public String toString() {
 			return new Bar().toString();
 		}
-    };
+	};
 
 	public void testGetSimpleName() {
 	main(new String[0]);
 		check("a");
 		check(new int[1]);
 		check(new Object[1]);
-        check(new String[1]);
+		check(new String[1]);
 		check(new Foo[1]);
 		check(Void.TYPE);
 		check(Integer.TYPE);
-        check(Foo.class);
+		check(Foo.class);
 		check(Map.Entry.class);
 		// check(test);
 		check(bar);
-    }
+	}
 	public void check(Object o) {
 		check(o.getClass());
 	}
-    public void check(Class c) {
+	public void check(Class c) {
 	String sn = c.getSimpleName();
 	String ts = TigerSubstitutes.getSimpleName(c);
 	System.out.println( sn + " " + ts);
 		assertEquals(sn, ts);
 	}
-	
-    public static void main(String args[]) {
+
+	public static void main(String args[]) {
 		Class c = test.getClass();
 		System.out.println(c.getName());
 		System.out.println(c.getCanonicalName());
-        System.out.println(c.getSimpleName());
+		System.out.println(c.getSimpleName());
 		System.out.println(TigerSubstitutes.getSimpleName(c));
 		System.out.println(System.getProperty("java.version"));
 		System.out.println(System.getProperty("java.vendor"));
-        
+
 	}
 
 }

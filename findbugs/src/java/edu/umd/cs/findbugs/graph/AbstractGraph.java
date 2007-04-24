@@ -40,7 +40,7 @@ public abstract class AbstractGraph
 		<
 		EdgeType extends AbstractEdge<EdgeType, VertexType>,
 		VertexType extends AbstractVertex<EdgeType, VertexType>
-        > implements Graph<EdgeType, VertexType> {
+		> implements Graph<EdgeType, VertexType> {
 
 	/* ----------------------------------------------------------------------
 	 * Helper classes
@@ -53,7 +53,7 @@ public abstract class AbstractGraph
 			<
 			EdgeType extends AbstractEdge<EdgeType, VertexType>,
 			VertexType extends AbstractVertex<EdgeType, VertexType>
-	        > implements Iterator<EdgeType> {
+			> implements Iterator<EdgeType> {
 
 		private EdgeType edge;
 
@@ -85,7 +85,7 @@ public abstract class AbstractGraph
 			<
 			EdgeType extends AbstractEdge<EdgeType, VertexType>,
 			VertexType extends AbstractVertex<EdgeType, VertexType>
-	        > implements Iterator<EdgeType> {
+			> implements Iterator<EdgeType> {
 
 		private EdgeType edge;
 

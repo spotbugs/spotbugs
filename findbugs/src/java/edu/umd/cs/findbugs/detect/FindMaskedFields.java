@@ -227,7 +227,7 @@ public class FindMaskedFields extends BytecodeScanningDetector {
 			int score = score1+score2;
 			if (score1 == 0 || score2 == 0)
 				bug.setPriority(priority+1);
-            else if (score >= 5) 
+			else if (score >= 5) 
 				bug.setPriority(priority-1);
 			else if (score < 3) 
 				bug.setPriority(priority+1);

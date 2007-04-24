@@ -61,7 +61,7 @@ public class JavaClassAnalysisEngine implements IClassAnalysisEngine {
 				char jVersion = JVM_VERSION.charAt(2);
 				if (jVersion < '5' && javaClass.getMajor() >= 49 || jVersion < '6' && javaClass.getMajor() >= 50)
 					throw new CheckedAnalysisException(descriptor.toResourceName() + " is version " 
-                            + javaClass.getMajor() + "." + javaClass.getMinor() + " but FindBugs is being run in a " + JVM_VERSION + " JVM");
+							+ javaClass.getMajor() + "." + javaClass.getMinor() + " but FindBugs is being run in a " + JVM_VERSION + " JVM");
 
 
 			}

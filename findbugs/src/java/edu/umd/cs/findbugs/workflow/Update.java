@@ -229,20 +229,20 @@ public class Update {
 					ClassAnnotation classBugFoundIn = bug.getPrimaryClass();
 					String className = classBugFoundIn.getClassName();
 					if (newCollection.getProjectStats().getClassStats(className) != null) {
-                        if (!copyDeadBugs)
+						if (!copyDeadBugs)
 							continue;
 						newBug.setRemovedByChangeOfPersistingClass(true);
 						newBug.setLastVersion(lastSequence);
-                    } else {
+					} else {
 						deadBugInDeadCode++;
 						if (!incrementalAnalysis)
 							newBug.setLastVersion(lastSequence);
-                    }
+					}
 
 					if (newBug.getLastVersion() != -1 && newBug.getFirstVersion() > newBug.getLastVersion())
 						throw new IllegalStateException("Illegal Version range: " + newBug.getFirstVersion() + ".."
 								+ newBug.getLastVersion());
-                    resultCollection.add(newBug, false);
+					resultCollection.add(newBug, false);
 				}
 		// Copy matched bugs
 		for (BugInstance bug : newCollection.getCollection()) {

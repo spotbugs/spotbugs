@@ -79,49 +79,49 @@ public class FindSelfComparison2 implements Detector {
 			switch(ins.getOpcode()) {
 			case INVOKEVIRTUAL:
 			case INVOKEINTERFACE:
-                InvokeInstruction iins = (InvokeInstruction) ins;
+				InvokeInstruction iins = (InvokeInstruction) ins;
 				String invoking = iins.getName(cpg);
 				if (invoking.equals("equals") || invoking.equals("compareTo")) {
 				if (methodGen.getName().toLowerCase().indexOf("test") >= 0) break;
-                if (methodGen.getClassName().toLowerCase().indexOf("test") >= 0) break;
+				if (methodGen.getClassName().toLowerCase().indexOf("test") >= 0) break;
 				if (classContext.getJavaClass().getSuperclassName().toLowerCase().indexOf("test") >= 0) break;
 
 			   String sig = iins.getSignature(cpg);
-               
+
 			   SignatureParser parser = new SignatureParser(sig);
 			   if (parser.getNumParameters() == 1 && 
 					   (invoking.equals("equals") && sig.endsWith(";)Z")
-                       || invoking.equals("compareTo")  && sig.endsWith(";)I")))
+					   || invoking.equals("compareTo")  && sig.endsWith(";)I")))
 				   checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPARISON", method, methodGen, sourceFile);
 
 
 				}
 				break;
-               
+
 			case LOR:
 			case LAND:
 			case LXOR:
-            case LSUB:
+			case LSUB:
 			case IOR:
 			case IAND:
 			case IXOR:
-            case ISUB:
+			case ISUB:
 				checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPUTATION", method, methodGen, sourceFile);
 				break;
 			case FCMPG:
-            case DCMPG:
+			case DCMPG:
 			case DCMPL:
 			case FCMPL:
 				break;
-            case LCMP:
+			case LCMP:
 			case IF_ACMPEQ:
 			case IF_ACMPNE:
 			case IF_ICMPNE:
-            case IF_ICMPEQ:
+			case IF_ICMPEQ:
 			case IF_ICMPGT:
 			case IF_ICMPLE:
 			case IF_ICMPLT:
-            case IF_ICMPGE: 
+			case IF_ICMPGE: 
 				checkForSelfOperation(classContext, location, valueNumberDataflow, "COMPARISON", method, methodGen, sourceFile);
 
 			}
@@ -141,40 +141,40 @@ public class FindSelfComparison2 implements Detector {
 	 */
 	private void checkForSelfOperation(ClassContext classContext, Location location, ValueNumberDataflow valueNumberDataflow, String op, Method method, MethodGen methodGen, String sourceFile) throws DataflowAnalysisException {
 		ValueNumberFrame frame = valueNumberDataflow.getFactAtLocation(location);
-        if (!frame.isValid())  return;
+		if (!frame.isValid())  return;
 		Instruction ins = location.getHandle().getInstruction();
 		int opcode = ins.getOpcode();
 		int offset = 1;
-        if (opcode == LCMP || opcode == LXOR || opcode == LAND || opcode == LOR || opcode == LSUB)
+		if (opcode == LCMP || opcode == LXOR || opcode == LAND || opcode == LOR || opcode == LSUB)
 			offset = 2;
 		ValueNumber v0 = frame.getStackValue(0);
 		ValueNumber v1 = frame.getStackValue(offset);
-        if (!v1.equals(v0)) return;
+		if (!v1.equals(v0)) return;
 
 		int priority = HIGH_PRIORITY;
 		if (opcode == ISUB || opcode == LSUB || opcode == INVOKEINTERFACE || opcode == INVOKEVIRTUAL)
 			priority = NORMAL_PRIORITY;
-        XField field = NullDerefAndRedundantComparisonFinder.findXFieldFromValueNumber(method, location, v0, frame);
+		XField field = NullDerefAndRedundantComparisonFinder.findXFieldFromValueNumber(method, location, v0, frame);
 		BugAnnotation annotation;
 		String prefix;
 		if (field != null) {
-            if (field.isVolatile()) return;
+			if (field.isVolatile()) return;
 			if (true) return; // don't report these; too many false positives
 			annotation = FieldAnnotation.fromXField(field);
 			prefix = "SA_FIELD_SELF_";
-        } else {
+		} else {
 			annotation  = NullDerefAndRedundantComparisonFinder.findLocalAnnotationFromValueNumber(method, location, v0, frame);
 			prefix = "SA_LOCAL_SELF_" ;
 			if (opcode == ISUB) return; // only report this if simple detector reports it
-        }
+		}
 		if (annotation == null) return;
 		SourceLineAnnotation sourceLine = SourceLineAnnotation.fromVisitedInstruction(classContext, methodGen, sourceFile, location.getHandle());
 		int line = sourceLine.getStartLine();
-        BitSet occursMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
+		BitSet occursMultipleTimes = ClassContext.linesMentionedMultipleTimes(method);
 		if (line > 0 && occursMultipleTimes.get(line)) return;
 		BugInstance bug = new BugInstance(this, prefix + op, priority).addClassAndMethod(methodGen, sourceFile)
 		.add(annotation).addSourceLine(classContext, methodGen, sourceFile, location.getHandle());
-        bugReporter.reportBug(bug);
+		bugReporter.reportBug(bug);
 	}
 
 	public void report() {

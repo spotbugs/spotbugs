@@ -209,7 +209,7 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 		else if (key.equals("givenClass")) {
 			if (className.equals(primaryClass.getClassName())) return getNameInClass(primaryClass);
 			else return shorten(primaryClass.getPackageName(), className) + "." + getNameInClass(primaryClass);
-        }
+		}
 		else if (key.equals("name"))
 			return fieldName;
 		else if (key.equals("fullField")) {
@@ -231,15 +231,15 @@ public class FieldAnnotation extends PackageMemberAnnotation {
 	 * @param primaryClass
 	 * @return
 	 */
-    private String getNameInClass(ClassAnnotation primaryClass) {
+	private String getNameInClass(ClassAnnotation primaryClass) {
 		if (primaryClass == null)
 			return   className + "." + fieldName;
 		String givenPackageName = primaryClass.getPackageName();
-        String thisPackageName = this.getPackageName();
+		String thisPackageName = this.getPackageName();
 		if (thisPackageName.equals(givenPackageName))
 			if (thisPackageName.length() == 0) return fieldName;
 			else return className.substring(thisPackageName.length() + 1) +"." + fieldName;
-        return   className + "." + fieldName;
+		return   className + "." + fieldName;
 	}
 
 	@Override

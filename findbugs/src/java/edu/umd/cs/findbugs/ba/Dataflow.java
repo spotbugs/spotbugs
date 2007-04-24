@@ -247,7 +247,7 @@ public class Dataflow <Fact, AnalysisType extends DataflowAnalysis<Fact>> {
 
 							if (analysis instanceof UnconditionalValueDerefAnalysis) {
 								((UnconditionalValueDerefAnalysis)analysis).meetInto((UnconditionalValueDerefSet)edgeFact, edge, (UnconditionalValueDerefSet) start, rawPredCount==1);
-                            }
+							}
 							else analysis.meetInto(edgeFact, edge, start);
 							analysis.setLastUpdateTimestamp(start, timestamp);
 

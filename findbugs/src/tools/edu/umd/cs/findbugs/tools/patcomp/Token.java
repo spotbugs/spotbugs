@@ -73,7 +73,7 @@ public class Token {
 	public static Token newToken(int ofKind)
 	{
 	 switch(ofKind)
-     {
+	 {
 		default : return new Token();
 	 }
 	}

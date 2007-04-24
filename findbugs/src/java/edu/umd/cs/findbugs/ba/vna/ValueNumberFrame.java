@@ -164,15 +164,15 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	public void killLoadsWithSimilarName(String className, String methodName) {
 		String packageName = extractPackageName(className);
 		if (REDUNDANT_LOAD_ELIMINATION) {
-            for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
+			for(Iterator<AvailableLoad> i = getAvailableLoadMap().keySet().iterator(); i.hasNext(); ) {
 				AvailableLoad availableLoad = i.next();
 
 				XField field = availableLoad.getField();
-                String fieldPackageName = extractPackageName(field.getClassName());
+				String fieldPackageName = extractPackageName(field.getClassName());
 				if (packageName.equals(fieldPackageName) && field.isStatic() 
 						&& methodName.toLowerCase().indexOf(field.getName().toLowerCase()) >= 0)
 					i.remove();
-                
+
 			}
 		}
 	}
@@ -180,7 +180,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	/**
 	 * @param className
 	 * @return
-     */
+	 */
 	private String extractPackageName(String className) {
 		return className.substring(className.lastIndexOf('.')+1);
 	}
@@ -243,7 +243,7 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 					&& previouslyKnownAsOther.size() != 0) {
 				if (getPreviouslyKnownAs().size() == 0) 
 					assignPreviouslyKnownAs(other);
-                else getUpdateablePreviouslyKnownAs().putAll(previouslyKnownAsOther);
+				else getUpdateablePreviouslyKnownAs().putAll(previouslyKnownAsOther);
 			}
 			if (changed)
 				this.phiNodeForLoads = true;
@@ -294,15 +294,15 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	private void assignPreviouslyKnownAs(Frame<ValueNumber> other) {
 		Map<ValueNumber, AvailableLoad> previouslyKnownAsOther = ((ValueNumberFrame) other).getPreviouslyKnownAs();
 		if (previouslyKnownAsOther instanceof HashMap) {
-            previouslyKnownAsOther = Collections.unmodifiableMap(previouslyKnownAsOther);
+			previouslyKnownAsOther = Collections.unmodifiableMap(previouslyKnownAsOther);
 			((ValueNumberFrame) other).setPreviouslyKnownAs(previouslyKnownAsOther);
 			setPreviouslyKnownAs(previouslyKnownAsOther);   
 			constructedUnmodifiableMap++;
-        } else {
+		} else {
 			setPreviouslyKnownAs(previouslyKnownAsOther);
 			reusedMap++;
 		}
-    }
+	}
 
 
 
@@ -445,38 +445,38 @@ public class ValueNumberFrame extends Frame<ValueNumber> implements ValueNumberA
 	static int createdEmptyMap;
 	static int madeImmutableMutable;
 	static int reusedMutableMap;
-    static {
+	static {
 		Util.runLogAtShutdown(new Runnable() {
 
 			public void run() {
 			   System.err.println("Getting updatable previously known as:");
 			   System.err.println("  " + createdEmptyMap + " created empty map");
-               System.err.println("  " + madeImmutableMutable + " made immutable map mutable");
+			   System.err.println("  " + madeImmutableMutable + " made immutable map mutable");
 			   System.err.println("  " + reusedMutableMap + " reused mutable map");
 			   System.err.println("Copying map:");
 			   System.err.println("  " + constructedUnmodifiableMap + " made mutable map unmodifiable");
-               System.err.println("  " + reusedMap + " reused immutable map");
+			   System.err.println("  " + reusedMap + " reused immutable map");
 			   System.err.println();
 
 			}});
-    }
+	}
 	private Map<ValueNumber, AvailableLoad> getUpdateablePreviouslyKnownAs() {
 		if (previouslyKnownAs.size() == 0) {
 			previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(4);
 			createdEmptyMap++;
-        }
+		}
 		else if (!(previouslyKnownAs instanceof HashMap)) {
 			previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(previouslyKnownAs);
 			madeImmutableMutable++;
 		} else
 			reusedMutableMap++;
-		
+
 		return previouslyKnownAs;
 	}
 	private  void assignPreviouslyKnownAs(Map<ValueNumber, AvailableLoad> newValue) {
 		previouslyKnownAs = new HashMap<ValueNumber, AvailableLoad>(newValue);
 	}
-	
+
 }
 
 // vim:ts=4

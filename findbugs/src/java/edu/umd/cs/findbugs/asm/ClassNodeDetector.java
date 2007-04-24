@@ -56,7 +56,7 @@ abstract public class ClassNodeDetector extends ClassNode implements Detector2 {
 
 		ClassReader cr = Global.getAnalysisCache().getClassAnalysis(ClassReader.class, classDescriptor);
 		cr.accept(this, 0);
-    }
+	}
 
 	public void finishPass() {
 		// do nothing

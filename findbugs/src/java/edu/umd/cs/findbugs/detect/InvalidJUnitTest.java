@@ -72,7 +72,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 	private boolean isJunit3TestCase(JavaClass jClass) throws ClassNotFoundException {
 		String sName = jClass.getSuperclassName();
 		if (sName == null) return false;
-        if (sName.equals("junit.framework.TestCase")) return true;
+		if (sName.equals("junit.framework.TestCase")) return true;
 		if (sName.equals("java.lang.Object")) return false;
 
 
@@ -82,19 +82,19 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 	}
 	private boolean hasTestMethods(JavaClass jClass) {
 		boolean foundTest = false;
-        Method[] methods = jClass.getMethods();
+		Method[] methods = jClass.getMethods();
 		for (Method m : methods) {
 			if (m.isPublic() && m.getName().startsWith("test") && m.getSignature().equals("()V")) 
 				return true;
-            if (m.getName().startsWith("runTest") && m.getSignature().endsWith("()V")) 
+			if (m.getName().startsWith("runTest") && m.getSignature().endsWith("()V")) 
 				return true;
 		}
 		if (hasSuite(methods)) return true;
-        
+
 		try {
 			JavaClass sClass = jClass.getSuperClass();
 			if (sClass != null) return hasTestMethods(sClass);
-        } catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			AnalysisContext.reportMissingClass(e);
 		}
 
@@ -137,7 +137,7 @@ public class InvalidJUnitTest extends BytecodeScanningDetector {
 		if (getMethodName().equals("suite") && obj.getSignature().startsWith("()") && obj.isStatic())  {
 			if ((!obj.getSignature().equals("()Ljunit/framework/Test;") 
 					&& !obj.getSignature().equals("()Ljunit/framework/TestSuite;"))
-                    || !obj.isPublic())
+					|| !obj.isPublic())
 				bugReporter.reportBug( new BugInstance( this, "IJU_BAD_SUITE_METHOD", NORMAL_PRIORITY)
 				.addClassAndMethod(this));
 

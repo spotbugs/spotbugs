@@ -156,7 +156,7 @@ public abstract class ResourceTrackingDetector <Resource, ResourceTrackerType ex
 		} catch (RuntimeException e) {
 			System.out.println("Exception while analyzing " + methodGen.getClassName() + "." + methodGen.getName() + ":" + methodGen.getSignature());
 			e.printStackTrace();
-            throw e;
+			throw e;
 		}
 	}
 

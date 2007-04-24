@@ -76,7 +76,7 @@ public class FindLocalSelfAssignment2 extends BytecodeScanningDetector implement
 											.addClassAndMethod(this)
 											.add(LocalVariableAnnotation.getLocalVariableAnnotation(getMethod(), getRegisterOperand(), getPC(), getPC()))
 
-	                                        .addSourceLine(this));
+											.addSourceLine(this));
 					}
 					previousStores.set(getRegisterOperand());
 				}

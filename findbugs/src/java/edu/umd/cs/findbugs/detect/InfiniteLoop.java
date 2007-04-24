@@ -46,23 +46,23 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 	ArrayList<BitSet> regModifiedAt = new ArrayList<BitSet>();
 	@NonNull BitSet getModifiedBitSet(int reg) {
 		while (regModifiedAt.size() <= reg)
-            regModifiedAt.add(new BitSet());
+			regModifiedAt.add(new BitSet());
 		return regModifiedAt.get(reg);
 	}
 	private void regModifiedAt(int reg, int pc) {
-        BitSet b = getModifiedBitSet(reg);
+		BitSet b = getModifiedBitSet(reg);
 		b.set(pc);
 	}
 	private void clearRegModified() {
-        for(BitSet b : regModifiedAt )
+		for(BitSet b : regModifiedAt )
 			b.clear();
 	}
 	private boolean isRegModified(int reg, int firstPC, int lastPC) {
-        if (reg < 0) return false;
+		if (reg < 0) return false;
 		BitSet b = getModifiedBitSet(reg);
 		int modified = b.nextSetBit(firstPC);
 		return (modified >= firstPC && modified <= lastPC);
-    }
+	}
 	static class Jump {
 		final int from, to;
 		Jump(int from, int to) {
@@ -179,7 +179,7 @@ public class InfiniteLoop extends BytecodeScanningDetector {
 				  boolean reg1Invariant = true;
 				if (reg1 >= 0) 
 					reg1Invariant = !isRegModified(reg1, backwardsReach, bb.from);
-                if (reg0Invariant && reg1Invariant)
+				if (reg0Invariant && reg1Invariant)
 					bugReporter.reportBug(bug);
 			}
 

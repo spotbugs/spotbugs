@@ -66,7 +66,7 @@ public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
 							.addClassAndMethod(this)
 							.addCalledMethod(this)
 							.addSourceLine(this)
-					        );
+							);
 		}
 		if (seen == NEW) {
 			String classOfConstructedClass = getClassConstantOperand();
@@ -78,7 +78,7 @@ public class DoInsideDoPrivileged  extends BytecodeScanningDetector {
 						.addClassAndMethod(this)
 						.addClass(constructedClass)
 						.addSourceLine(this)
-				        );
+						);
 		}
 		} catch (ClassNotFoundException e) {
 			// ignore this

@@ -45,15 +45,15 @@ public class SourceSearcher {
 		String cName = srcLine.getClassName();
 		if (sourceFound.contains(cName)) return true;
 		if (sourceNotFound.contains(cName)) return false;
-    
+
 		try {
 			InputStream in = sourceFinder.openSource(srcLine);
 			in.close();
-            sourceFound.add(cName);
+			sourceFound.add(cName);
 			return true;
 		} catch (IOException e1) {
 			sourceNotFound.add(cName);
-            return false;
+			return false;
 		}
 	}
 

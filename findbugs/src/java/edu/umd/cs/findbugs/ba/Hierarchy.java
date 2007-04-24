@@ -424,11 +424,11 @@ public class Hierarchy {
 				&& method.getSignature().equals(methodSig)) {
 			JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
 			if (chooser.choose(m)) {
-		        if (DEBUG_METHOD_LOOKUP) {
+				if (DEBUG_METHOD_LOOKUP) {
 					System.out.println("\t==> FOUND: " + method);
 				}
 				return m;
-		    }
+			}
 		}
 		if (DEBUG_METHOD_LOOKUP) {
 			System.out.println("\t==> NOT FOUND");
@@ -438,31 +438,31 @@ public class Hierarchy {
 
 	/**
 	 * Find a method in given class.
-     *
+	 *
 	 * @param javaClass  the class
 	 * @param methodName the name of the method
 	 * @param methodSig  the signature of the method
-     * @return the JavaClassAndMethod, or null if no such method exists in the class
+	 * @return the JavaClassAndMethod, or null if no such method exists in the class
 	 */
 	public static  @CheckForNull  JavaClassAndMethod findConcreteMethod(
 			JavaClass javaClass,
-            String methodName,
+			String methodName,
 			String methodSig) {
 
 		if (DEBUG_METHOD_LOOKUP) {
-            System.out.println("Check " + javaClass.getClassName());
+			System.out.println("Check " + javaClass.getClassName());
 		}
 		Method[] methodList = javaClass.getMethods();
 		for (Method method : methodList)  if (method.getName().equals(methodName)
-                && method.getSignature().equals(methodSig)
+				&& method.getSignature().equals(methodSig)
 				&& accessFlagsAreConcrete(method.getAccessFlags())) {
 			JavaClassAndMethod m = new JavaClassAndMethod(javaClass, method);
 
-            return m;
+			return m;
 
 		}
 		if (DEBUG_METHOD_LOOKUP) {
-            System.out.println("\t==> NOT FOUND");
+			System.out.println("\t==> NOT FOUND");
 		}
 		return null;
 	}
@@ -492,7 +492,7 @@ public class Hierarchy {
 
 
 	// FIXME: perhaps native methods should be concrete.
-    public static boolean accessFlagsAreConcrete(int accessFlags) {
+	public static boolean accessFlagsAreConcrete(int accessFlags) {
 		return (accessFlags & Constants.ACC_ABSTRACT) == 0
 			&& (accessFlags & Constants.ACC_NATIVE) == 0;
 	}

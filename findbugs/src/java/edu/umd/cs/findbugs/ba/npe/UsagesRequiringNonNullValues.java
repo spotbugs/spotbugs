@@ -40,32 +40,32 @@ public class UsagesRequiringNonNullValues {
 		Pair(ValueNumber vn, PointerUsageRequiringNonNullValue pu) {
 			this.vn = vn;
 			this.pu = pu;
-        }
+		}
 
 		@Override
 		public String toString() {
 			return vn.toString();
-        }
+		}
 	}
 
 	MultiMap<Location, Pair> map = new MultiMap<Location, Pair>(LinkedList.class);
 
 	@Override
-    public String toString() {
+	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		for(Location loc : map.keySet()) {
 			buf.append(loc.getHandle().getPosition() + ":" + loc.getHandle().getInstruction() +"\n");
-            for(Pair p : getPairs(loc)) {
+			for(Pair p : getPairs(loc)) {
 				buf.append("  ").append(p.vn).append("\n");
 			}
 		}
-        return buf.toString();
+		return buf.toString();
 	}
 
 	public void add(Location loc, ValueNumber vn, PointerUsageRequiringNonNullValue usage) {
 		Pair p = new Pair(vn, usage);
 		if (DerefFinder.DEBUG)
-            System.out.println("At " + loc + " adding dereference " + p);
+			System.out.println("At " + loc + " adding dereference " + p);
 
 		map.add(loc, p);
 	}
@@ -73,11 +73,11 @@ public class UsagesRequiringNonNullValues {
 	public @CheckForNull
 	PointerUsageRequiringNonNullValue get(Location loc, ValueNumber vn) {
 		PointerUsageRequiringNonNullValue secondBest = null;
-        for (Pair p : map.get(loc)) {
+		for (Pair p : map.get(loc)) {
 			if (p.vn.equals(vn))
 				return p.pu;
 			else secondBest = p.pu;
-        }
+		}
 		return secondBest;
 	}
 

@@ -194,7 +194,7 @@ public class SourceInfoMap {
 
 	public boolean fallBackToClassfile() {
 		return isEmpty();
-    }
+	}
 	public boolean isEmpty() {
 		return fieldLineMap.isEmpty() && methodLineMap.isEmpty() && classLineMap.isEmpty();
 	}

@@ -51,7 +51,7 @@ public class URLProblems extends BytecodeScanningDetector {
 	@Override
 	public void visitAfter(JavaClass obj) {
 		accumulator.reportAccumulatedBugs();
-    }
+	}
 	@Override
 	public void visit(Signature obj) {
 		String sig = obj.getSignature();
@@ -72,19 +72,19 @@ public class URLProblems extends BytecodeScanningDetector {
 	OpcodeStack stack = new OpcodeStack();
 	@Override
 	public void visit(Method method) {
-     stack.resetForMethodEntry(this);
+	 stack.resetForMethodEntry(this);
 	}
 
 
-    void check(String className, Pattern name, int target, int url) {
+	void check(String className, Pattern name, int target, int url) {
 		if ( !name.matcher(getNameConstantOperand()).matches() ) return;
 		if (stack.getStackDepth() <= target) return;
 		OpcodeStack.Item targetItem = stack.getStackItem(target);
-        OpcodeStack.Item urlItem = stack.getStackItem(url);
+		OpcodeStack.Item urlItem = stack.getStackItem(url);
 		if (!urlItem.getSignature().equals("Ljava/net/URL;")) return;
 		if (!targetItem.getSignature().equals(className)) return;
 		accumulator.accumulateBug(new BugInstance(this, "DMI_COLLECTION_OF_URLS",
-                HIGH_PRIORITY).addClassAndMethod(this)
+				HIGH_PRIORITY).addClassAndMethod(this)
 				.addCalledMethod(this), this);
 	}
 	@Override
@@ -94,7 +94,7 @@ public class URLProblems extends BytecodeScanningDetector {
 		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + stack);
 		if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
 			check("Ljava/util/HashSet;", Pattern.compile("add|remove|contains"), 1, 0);
-            check("Ljava/util/HashMap;", Pattern.compile("remove|containsKey|get"), 1, 0);
+			check("Ljava/util/HashMap;", Pattern.compile("remove|containsKey|get"), 1, 0);
 			check("Ljava/util/HashMap;", Pattern.compile("put"), 2, 1);
 
 		}

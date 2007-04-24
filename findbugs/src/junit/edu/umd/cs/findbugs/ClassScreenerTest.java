@@ -39,7 +39,7 @@ public class ClassScreenerTest extends TestCase {
 	private static final String FOOBAR_PACKAGE = "com.foobar";
 	private static final String FOOBAR_PACKAGE_WITH_TRAILING_DOT = "com.foobar.";
 	private static final String FURRYLEMUR_PACKAGE = "org.furrylemur";
-	
+
 	private static final String SOME_CLASS = FOOBAR_PACKAGE + ".SomeClass";
 	private static final String SOME_OTHER_CLASS = FOOBAR_PACKAGE + ".SomeOtherClass";
 	private static final String UNRELATED_THING_CLASS = FURRYLEMUR_PACKAGE + ".UnrelatedThing";
@@ -61,7 +61,7 @@ public class ClassScreenerTest extends TestCase {
 
 		particularPackageScreener = new ClassScreener();
 		particularPackageScreener.addAllowedPackage(FOOBAR_PACKAGE);
-		
+
 		particularPackageScreener2 = new ClassScreener();
 		particularPackageScreener2.addAllowedPackage(FOOBAR_PACKAGE_WITH_TRAILING_DOT);
 	}

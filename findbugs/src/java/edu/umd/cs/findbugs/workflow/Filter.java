@@ -84,7 +84,7 @@ public class Filter {
 
 		public boolean hasField = false;
 		public boolean hasFieldSpecified = false;
-        
+
 		public boolean hasLocal = false;
 		public boolean hasLocalSpecified = false;
 
@@ -145,7 +145,7 @@ public class Filter {
 			addSwitchWithOptionalExtraPart("-hasField", "truth", "allow only warnings that are annotated with a field");
 			addSwitchWithOptionalExtraPart("-hasLocal", "truth", "allow only warnings that are annotated with a local variable");
 			addSwitchWithOptionalExtraPart("-active", "truth", "allow only warnings alive in the last sequence number");
-			
+
 			addSwitchWithOptionalExtraPart("-introducedByChange", "truth",
 					"allow only warnings introduced by a change of an existing class");
 			addSwitchWithOptionalExtraPart("-removedByChange", "truth",
@@ -258,7 +258,7 @@ public class Filter {
 
 			if (hasFieldSpecified && (hasField != (bug.getPrimaryField() != null)))
 					return false;
-            if (hasLocalSpecified && (hasLocal != (bug.getPrimaryLocalVariableAnnotation() != null)))
+			if (hasLocalSpecified && (hasLocal != (bug.getPrimaryLocalVariableAnnotation() != null)))
 					return false;
 
 

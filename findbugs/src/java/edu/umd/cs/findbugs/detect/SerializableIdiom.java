@@ -193,7 +193,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 											if (!m.isPrivate())
 											System.out.println("Supercase of " + className
 												+ " has an accessible method named " + m.getName()
-						                        + " with sig " + m.getSignature());
+												+ " with sig " + m.getSignature());
 											*/
 					if (m.getName().equals("<init>")
 							&& m.getSignature().equals("()V")
@@ -264,7 +264,7 @@ public class SerializableIdiom extends BytecodeScanningDetector
 							priority )
 							.addClass(getThisClass())
 							.addField(fieldX));
-				
+
 			}
 
 		}

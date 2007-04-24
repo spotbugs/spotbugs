@@ -91,7 +91,7 @@ public class BugCollectionBugReporter extends TextUIBugReporter implements Debug
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.BugReporter#finish()
 	 */
-    public void finish() {
+	public void finish() {
 		assert true; // nothing to do.
 	}
 }

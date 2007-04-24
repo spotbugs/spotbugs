@@ -86,11 +86,11 @@ public class BugPattern implements Comparable<BugPattern> {
 	public String getCategoryAbbrev() {
 		String categoryAbbrev = null;
 		BugCategory bcat = I18N.instance().getBugCategory(getCategory());
-        if (bcat != null)
+		if (bcat != null)
 			categoryAbbrev = bcat.getAbbrev();
 		if (categoryAbbrev == null)
 			categoryAbbrev = TextUIBugReporter.OTHER_CATEGORY_ABBREV;
-        return categoryAbbrev;
+		return categoryAbbrev;
 	}
 
 	/**

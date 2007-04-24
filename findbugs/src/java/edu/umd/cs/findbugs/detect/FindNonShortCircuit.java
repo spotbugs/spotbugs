@@ -58,11 +58,11 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 	private void clearAll() {
 		stage1 = 0;
 		stage2 = 0;
-        distance = 1000000;
+		distance = 1000000;
 		sawArrayDanger = sawArrayDangerOld = false;
 		sawDanger = sawDangerOld = false;
 		sawMethodCall = sawMethodCallOld = false;
-        sawNullTest = sawNullTestOld = sawNullTestVeryOld = false;
+		sawNullTest = sawNullTestOld = sawNullTestVeryOld = false;
 		sawNumericTest = sawNumericTestOld = sawNumericTestVeryOld = false;
 	}
 	int prevOpcode;
@@ -96,7 +96,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 
 		case INVOKEVIRTUAL:
 			if (getNameConstantOperand().equals("length") && getClassConstantOperand().equals("java/lang/String")) break;
-            sawDanger = true;
+			sawDanger = true;
 			sawMethodCall = true;
 			break;
 		case INVOKEINTERFACE:
@@ -114,7 +114,7 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 
 		case ARRAYLENGTH:
 		case GETFIELD:
-            // null pointer detector will handle these
+			// null pointer detector will handle these
 			break;
 		default:
 			break;
@@ -168,11 +168,11 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		if (sawDangerOld) {
 			if (sawNullTestVeryOld) priority = HIGH_PRIORITY;
 			if (sawMethodCallOld || sawNumericTestVeryOld && sawArrayDangerOld)  {
-	            priority = HIGH_PRIORITY;
+				priority = HIGH_PRIORITY;
 				pattern = "NS_DANGEROUS_NON_SHORT_CIRCUIT";
 			}
 			else priority = NORMAL_PRIORITY;
-	    }
+		}
 
 		bugReporter.reportBug(new BugInstance(this, pattern,
 				priority)
@@ -186,11 +186,11 @@ public class FindNonShortCircuit extends BytecodeScanningDetector implements
 		case IAND:
 		case IOR:
 			switch(prevOpcode) {
-            case ILOAD:
+			case ILOAD:
 			case ILOAD_0:
 			case ILOAD_1:
 			case ILOAD_2:
-            case ILOAD_3:
+			case ILOAD_3:
 				clearAll();
 			}
 			break;

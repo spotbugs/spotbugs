@@ -39,12 +39,12 @@ public class TestGenericObjectType extends TestCase {
 	String javaSignature;
 	String underlyingClass;
 	GenericUtilities.TypeCategory typeCategory;
-	
+
 	String variable;
 	Type extension;
 	List<ReferenceType> parameters;
-	
-	
+
+
 	public void initTest(
 			String bytecodeSignature, 
 			String javaSignature, 
@@ -66,7 +66,7 @@ public class TestGenericObjectType extends TestCase {
 		assertEquals(obj.toString(true), javaSignature);
 		assertEquals(obj.getClassName(), underlyingClass);
 		assertEquals(obj.getTypeCategory(), typeCategory);
-		
+
 		if (typeCategory == TypeCategory.PARAMETERS) {
 			assertTrue(obj.hasParameters());
 			assertTrue(obj.getNumParameters() == parameters.size());
@@ -93,7 +93,7 @@ public class TestGenericObjectType extends TestCase {
 		}
 	}
 
-	
+
 	private void compareTypes(Type a, Type b) {
 		assertEquals(a, b);
 		if (a instanceof GenericObjectType || b instanceof GenericObjectType) {
@@ -104,7 +104,7 @@ public class TestGenericObjectType extends TestCase {
 					);
 		}		
 	}
-	
+
 	public void testParameterizedList() {
 		initTest(
 				"Ljava/util/List<Ljava/lang/Comparable;>;", 
@@ -117,7 +117,7 @@ public class TestGenericObjectType extends TestCase {
 			);
 		processTest();
 	}
-	
+
 	public void testCreateTypes() {
 		initTest(
 				"LDummyClass<Ljava/lang/Comparable;TE;>;", 
@@ -133,7 +133,7 @@ public class TestGenericObjectType extends TestCase {
 			);
 		processTest();
 	}
-	
+
 	public void testTypeVariables() {
 		initTest(
 				"TE;", 
@@ -145,7 +145,7 @@ public class TestGenericObjectType extends TestCase {
 				null
 			);
 		processTest();
-		
+
 		initTest(
 				"*", 
 				"?", 

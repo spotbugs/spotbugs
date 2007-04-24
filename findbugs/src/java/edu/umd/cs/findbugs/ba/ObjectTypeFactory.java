@@ -34,14 +34,14 @@ public class ObjectTypeFactory {
 
 	public static ObjectType getInstance(String s) {
 		if (s.indexOf("/") >= 0) {
-    		s = s.replace('/','.');
+			s = s.replace('/','.');
 		}
 
 		ObjectType result = map.get(s);
-    	if (result != null) return result;
+		if (result != null) return result;
 		result = new ObjectType(s);
 		map.put(s, result);
 		return result;
-    }
+	}
 
 }

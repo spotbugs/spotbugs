@@ -186,7 +186,7 @@ public class MutableStaticFields extends BytecodeScanningDetector {
 						  System.out.println(className + "."  + fieldName
 									  + " : " + fieldSig
 								  + "	" + isHashtable
-					              + "	" + isArray
+								  + "	" + isArray
 									  );
 
 

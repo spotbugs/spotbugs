@@ -173,23 +173,23 @@ public class AssertionMethods implements Constants {
 
 	public boolean isAssertionInstruction(Instruction ins, ConstantPoolGen cpg) {
 
-        if (ins instanceof InvokeInstruction)
+		if (ins instanceof InvokeInstruction)
 			return isAssertionCall((InvokeInstruction)ins);
 		if (ins instanceof GETSTATIC) {
 			GETSTATIC getStatic = (GETSTATIC) ins;
-            String className = getStatic.getClassName(cpg);
+			String className = getStatic.getClassName(cpg);
 			String fieldName = getStatic.getFieldName(cpg);
 			if (className.equals("java.util.logging.Level")
 					&& fieldName.equals("SEVERE")) return true;
-            if (className.equals("org.apache.log4j.Level") 
+			if (className.equals("org.apache.log4j.Level") 
 					&& (fieldName.equals("ERROR") || fieldName.equals("FATAL")))
 					return true;
 			return false;
-      
+
 		}
 		return false;
 	}
-        
+
 
 	public boolean isAssertionCall(InvokeInstruction inv) {
 //		if (DEBUG) {

@@ -364,11 +364,11 @@ public class FindInconsistentSync2 implements Detector {
 				|| methodName.equals("<clinit>")
 				|| methodName.equals("readObject")
 				|| methodName.equals("clone")
-		        || methodName.equals("close")
+				|| methodName.equals("close")
 				|| methodName.equals("writeObject")
 				|| methodName.equals("toString")
 				|| methodName.equals("init")
-		        || methodName.equals("initialize")
+				|| methodName.equals("initialize")
 				|| methodName.equals("dispose")
 				|| methodName.equals("finalize")
 				|| methodName.equals("this");

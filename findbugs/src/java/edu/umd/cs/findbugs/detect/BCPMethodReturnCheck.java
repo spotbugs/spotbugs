@@ -144,72 +144,72 @@ public @Deprecated class BCPMethodReturnCheck extends ByteCodePatternDetector  {
 					"readLock",
 					"()Ljava/util/concurrent/locks/Lock;",
 					Invoke.INSTANCE,
-			        null));
+					null));
 			list.add(new Invoke("+java.util.concurrent.locks.ReadWriteLock",
 					"writeLock",
 					"()Ljava/util/concurrent/locks/Lock;",
 					Invoke.INSTANCE,
-			        null));
+					null));
 			list.add(new Invoke("+java.util.concurrent.locks.Condition",
 					"await",
 					"(JLjava/util/concurrent/TimeUnit;)Z",
 					Invoke.INSTANCE,
-			        null));
+					null));
 			list.add(new Invoke("+java.util.concurrent.locks.Condition",
 					"awaitUtil",
 					"(Ljava/util/Date;)Z",
 					Invoke.INSTANCE,
-			        null));
+					null));
 			list.add(new Invoke("+java.util.concurrent.locks.Condition",
 					"awaitNanos",
 					"(J)Z",
 					Invoke.INSTANCE,
-			        null));
+					null));
 			list.add(new Invoke("+java.util.concurrent.Semaphore",
 					"tryAcquire",
 					"(JLjava/util/concurrent/TimeUnit;)Z",
 					Invoke.INSTANCE,
-			        null));
+					null));
 			list.add(new Invoke("+java.util.concurrent.Semaphore",
 					"tryAcquire",
 					"()Z",
 					Invoke.INSTANCE,
-			        null));
+					null));
 			list.add(new Invoke("+java.util.concurrent.locks.Lock",
 					"tryLock",
 					"(JLjava/util/concurrent/TimeUnit;)Z",
 					Invoke.INSTANCE,
-			        null));
+					null));
 			list.add(new Invoke("+java.util.concurrent.locks.Lock",
 					"newCondition",
 					"()Ljava/util/concurrent/locks/Condition;",
 					Invoke.INSTANCE,
-			        null));
+					null));
 			list.add(new Invoke("+java.util.concurrent.locks.Lock",
 					"tryLock",
 					"()Z",
 					Invoke.INSTANCE,
-			        null));
+					null));
 			list.add(new Invoke("+java.util.Queue",
 					"offer",
 					"(Ljava/lang/Object;)Z",
 					Invoke.INSTANCE,
-			        null));
+					null));
 			list.add(new Invoke("+java.util.concurrent.BlockingQueue",
 					"offer",
 					"(Ljava/lang/Object;JLjava/util/concurrent/TimeUnit;)Z",
 					Invoke.INSTANCE,
-			        null));
+					null));
 			list.add(new Invoke("+java.util.concurrent.BlockingQueue",
 					"poll",
 					"(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;",
 					Invoke.INSTANCE,
-			        null));
+					null));
 			list.add(new Invoke("+java.util.Queue",
 					"poll",
 					"()Ljava/lang/Object;",
 					Invoke.INSTANCE,
-			        null));
+					null));
 		}
 
 
@@ -312,7 +312,7 @@ public @Deprecated class BCPMethodReturnCheck extends ByteCodePatternDetector  {
 				priority)
 				.addClassAndMethod(methodGen, sourceFile)
 				.addCalledMethod(methodGen, inv)
-		        .addSourceLine(classContext, methodGen, sourceFile, call));
+				.addSourceLine(classContext, methodGen, sourceFile, call));
 	}
 
 	public static String extractPackageName(String className) {

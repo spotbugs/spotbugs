@@ -442,7 +442,7 @@ import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
 
 
 
-		
+
 		void openPreviouslySelected(List<BugLeafNode> selected)
 		{
 			BugInstance bug=null;

@@ -51,7 +51,7 @@ public final class LazyInit extends ByteCodePatternDetector implements Stateless
 				.add(new Load("f", "val").label("start"))
 				.add(new IfNull("val"))
 				.add(new Wild(1, 1).label("createObject"))
-		        .add(new Store("f", pattern.dummyVariable()).label("end").dominatedBy("createObject"));
+				.add(new Store("f", pattern.dummyVariable()).label("end").dominatedBy("createObject"));
 	}
 
 	public LazyInit(BugReporter bugReporter) {

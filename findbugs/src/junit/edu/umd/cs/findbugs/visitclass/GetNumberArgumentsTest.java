@@ -26,13 +26,13 @@ import junit.framework.TestCase;
  */
 
 public class GetNumberArgumentsTest extends TestCase {
-	
+
 	static String [] simpleTypes = "I J B C D F I S Z".split(" ");
 	public void testSimpleWithVoidReturnType() {
 		for(String s : simpleTypes)
 			assertEquals(1,  PreorderVisitor.getNumberArguments("(" +s+ ")V") );
 	}
-	
+
 	public void testSimpleWithVoidIntegerType() {
 		for(String s : simpleTypes)
 			assertEquals(1,  PreorderVisitor.getNumberArguments("(" +s+ ")I") );
@@ -43,14 +43,14 @@ public class GetNumberArgumentsTest extends TestCase {
 			assertEquals(1, PreorderVisitor.getNumberArguments("([[" + s + ")I"));
 		}
 	}
-	
+
 	public void testStringArguments() {
 		for(String s : simpleTypes) {
 			assertEquals(2, PreorderVisitor.getNumberArguments("([Ljava/lang/String;" + s + ")V"));
 			assertEquals(2, PreorderVisitor.getNumberArguments("([[" + s + "Ljava/lang/String;)I"));
 		}
 	}
-	
+
 	public void testSimpleObjectArgument() {
 		assertEquals(1, PreorderVisitor.getNumberArguments("(Ledu/umd/cs/findbugs/ba/ClassContext;)V"));
 	}

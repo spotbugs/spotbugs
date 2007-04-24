@@ -31,7 +31,7 @@ public interface Graph
 		<
 		EdgeType extends GraphEdge<EdgeType, VertexType>,
 		VertexType extends GraphVertex<VertexType>
-        > {
+		> {
 
 	/**
 	 * Get number of edges in the graph.

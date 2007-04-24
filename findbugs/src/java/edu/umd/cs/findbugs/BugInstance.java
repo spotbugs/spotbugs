@@ -142,7 +142,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	private void boundPriority() {
 		priority = boundedPriority(priority);
-    }
+	}
 
 	@Override
 	public Object clone() {
@@ -257,7 +257,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public String getPriorityTypeAbbreviation()
 	{
 		String priorityString = getPriorityAbbreviation();
-         return priorityString + " " + getBugPattern().getCategoryAbbrev();
+		 return priorityString + " " + getBugPattern().getCategoryAbbrev();
 
 	}
 
@@ -278,7 +278,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 		return priorityString;
 	}
 
-    public String getPriorityAbbreviation() {
+	public String getPriorityAbbreviation() {
 		return getPriorityString().substring(0,1);
 	}
 	/**
@@ -291,11 +291,11 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	private int boundedPriority(int p) {
 		return Math.max(Detector.HIGH_PRIORITY, Math.min(Detector.IGNORE_PRIORITY, p));
 	}
-    public void raisePriority() {
+	public void raisePriority() {
 		priority = boundedPriority(priority-1);
 
 	}
-    public void lowerPriority() {
+	public void lowerPriority() {
 		priority = boundedPriority(priority+1);
 	}
 
@@ -913,7 +913,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 
 	public BugInstance addFoundAndExpectedType(String foundType, String expectedType) {
 		add( new TypeAnnotation(foundType)).describe(TypeAnnotation.FOUND_ROLE);
-        add( new TypeAnnotation(expectedType)).describe(TypeAnnotation.EXPECTED_ROLE);
+		add( new TypeAnnotation(expectedType)).describe(TypeAnnotation.EXPECTED_ROLE);
 		return this;
 	}
 
@@ -1454,19 +1454,19 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public String getAbridgedMessage() {
 		BugPattern bugPattern = I18N.instance().lookupBugPattern(type);
 		String pattern, shortPattern;
-        if (bugPattern == null) 
+		if (bugPattern == null) 
 			shortPattern = pattern = "Error: missing bug pattern for key " + type;
 		else {
 			pattern = bugPattern.getLongDescription().replaceAll(" in \\{1\\}", "");
-            shortPattern = bugPattern.getShortDescription();
+			shortPattern = bugPattern.getShortDescription();
 		}
 		try {
 			FindBugsMessageFormat format = new FindBugsMessageFormat(pattern);
-            return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
+			return format.format(annotationList.toArray(new BugAnnotation[annotationList.size()]), getPrimaryClass());
 		} catch (RuntimeException e) {
 			AnalysisContext.logError("Error generating bug msg ", e);
 			return shortPattern + " [Error generating customized description]";
-        }
+		}
 	}
 	/**
 	 * Format a string describing this bug instance.
@@ -1619,7 +1619,7 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public BugInstance addOptionalAnnotation(@CheckForNull BugAnnotation annotation) {
 		if (annotation == null) return this;
 		return add(annotation);
-    }
+	}
 	public BugInstance add(BugAnnotation annotation) {
 		if (annotation == null)
 			throw new IllegalStateException("Missing BugAnnotation!");

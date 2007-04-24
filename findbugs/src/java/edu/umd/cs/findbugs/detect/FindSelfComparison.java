@@ -44,7 +44,7 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 	String f;
 	String className;
 	int state;
-    int putFieldRegister;
+	int putFieldRegister;
 	@Override
 	public void visit(JavaClass obj) {
 	}
@@ -68,55 +68,55 @@ public class FindSelfComparison extends BytecodeScanningDetector {
 
 		switch (state) {
 		case 0:
-            if (seen == DUP_X1) state = 4;
+			if (seen == DUP_X1) state = 4;
 			break;
 
 		case 4:
-            if (seen == PUTFIELD) {
+			if (seen == PUTFIELD) {
 
 				f = getRefConstantOperand();
 				className = getClassConstantOperand();
-                OpcodeStack.Item item1 = stack.getStackItem(1);
+				OpcodeStack.Item item1 = stack.getStackItem(1);
 				putFieldRegister = item1.getRegisterNumber();
 				if (putFieldRegister >= 0)
 					state = 5;
-                else state = 0;
+				else state = 0;
 			} else
 				state = 0;
 			break;
-        case 5:
+		case 5:
 			if (seen == PUTFIELD && getRefConstantOperand().equals(f) && getClassConstantOperand().equals(className)) {
 				OpcodeStack.Item item1 = stack.getStackItem(1);
 				if (putFieldRegister == item1.getRegisterNumber())
-                bugReporter.reportBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "SA_FIELD_DOUBLE_ASSIGNMENT", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
 				.addReferencedField(this)
 				.addSourceLine(this));
-            }
+			}
 			state = 0;
 			break;
 		}
-        switch (seen) {
+		switch (seen) {
 		case INVOKEVIRTUAL:
 		case INVOKEINTERFACE:
 			if (getClassName().toLowerCase().indexOf("test") >= 0) break;
-            if (getMethodName().toLowerCase().indexOf("test") >= 0) break;
+			if (getMethodName().toLowerCase().indexOf("test") >= 0) break;
 			if (getSuperclassName().toLowerCase().indexOf("test") >= 0) break;
 
 			String name = getNameConstantOperand();
-            if (name.equals("equals") || 
+			if (name.equals("equals") || 
 					name.equals("compareTo")) {
 			String sig = getSigConstantOperand();
 			SignatureParser parser = new SignatureParser(sig);
-            if (parser.getNumParameters() == 1 && 
+			if (parser.getNumParameters() == 1 && 
 					(name.equals("equals") && sig.endsWith(";)Z")
 					|| name.equals("compareTo")  && sig.endsWith(";)I")))
 				checkForSelfOperation(seen, "COMPARISON");
-            }
+			}
 			break;
 
 		case LOR:
-        case LAND:
+		case LAND:
 		case LXOR:
 		case LSUB:
 		case IOR:

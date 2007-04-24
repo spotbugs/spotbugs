@@ -1781,7 +1781,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 
 
-		
+
 	/**
 	 * Returns the SorterTableColumnModel of the MainFrame.
 	 * @return

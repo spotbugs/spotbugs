@@ -328,11 +328,11 @@ public class AnalysisCacheToAnalysisContextAdapter extends AnalysisContext {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getReturnValueNullnessPropertyDatabase()
 	 */
-    @Override
+	@Override
 	public ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase() {
 			return getDatabase(ReturnValueNullnessPropertyDatabase.class);
 
-    }
+	}
 
 
 

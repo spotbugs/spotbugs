@@ -30,23 +30,23 @@ public class XMLFactoryBypass extends BytecodeScanningDetector  {
 	private BugReporter bugReporter;
 	private static final Set<String> xmlInterfaces = new HashSet<String>()
 	{
-    	static final long serialVersionUID = -9117982073509840017L;
+		static final long serialVersionUID = -9117982073509840017L;
 		{
 		add("javax.xml.parsers.DocumentBuilder");
 		add("org.w3c.dom.Document");
-        add("javax.xml.parsers.SAXParser");
+		add("javax.xml.parsers.SAXParser");
 		add("org.xml.sax.XMLReader");
 		add("org.xml.sax.XMLFilter");
 		add("javax.xml.transform.Transformer");
-        add("org.w3c.dom.Attr");
+		add("org.w3c.dom.Attr");
 		add("org.w3c.dom.CDATASection");
 		add("org.w3c.dom.Comment");
 		add("org.w3c.dom.Element");
-        add("org.w3c.dom.Text");
+		add("org.w3c.dom.Text");
 		}
 	};
 	private final Set<String> rejectedXMLClasses = new HashSet<String>();
-    private JavaClass curClass;
+	private JavaClass curClass;
 
 	public XMLFactoryBypass(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -54,7 +54,7 @@ public class XMLFactoryBypass extends BytecodeScanningDetector  {
 
 	@Override
 	public void visitClassContext(ClassContext classContext) {
-    	curClass = classContext.getJavaClass();
+		curClass = classContext.getJavaClass();
 		super.visitClassContext(classContext);
 	}
 
@@ -62,43 +62,43 @@ public class XMLFactoryBypass extends BytecodeScanningDetector  {
 		 public void sawOpcode(int seen) {
 		try {
 			if (seen == INVOKESPECIAL) {
-		        String newClsName = getClassConstantOperand();
+				String newClsName = getClassConstantOperand();
 				if (rejectedXMLClasses.contains(newClsName))
 					return;
 				rejectedXMLClasses.add(newClsName);
-		        
+
 				if (newClsName.startsWith("java/") || newClsName.startsWith("javax/"))
 					return;
 
-		        if (newClsName.endsWith("Adapter"))
+				if (newClsName.endsWith("Adapter"))
 					return;
 
 				if (!getNameConstantOperand().equals("<init>"))
-		            return;
+					return;
 
 				String invokerClsName = this.getClassName();
 				if (samePackageBase(invokerClsName, newClsName))
-		            return;
+					return;
 
 				JavaClass newCls = Repository.lookupClass(getDottedClassConstantOperand());
 
-		        JavaClass superCls = curClass.getSuperClass();
+				JavaClass superCls = curClass.getSuperClass();
 				if (superCls.getClassName().equals(newClsName.replace('/', '.')))
 					return;
 
-		        JavaClass[] infs = newCls.getAllInterfaces();
+				JavaClass[] infs = newCls.getAllInterfaces();
 				for (JavaClass inf : infs) {
 					if (xmlInterfaces.contains(inf.getClassName())) {
 						bugReporter.reportBug(new BugInstance(this, "XFB_XML_FACTORY_BYPASS", LOW_PRIORITY)
-							    .addClassAndMethod(this)
+								.addClassAndMethod(this)
 								.addSourceLine(this));
 						rejectedXMLClasses.remove(newClsName);
 					}
-			    }
+				}
 			}
 		} catch (ClassNotFoundException cnfe) {
 			bugReporter.reportMissingClass(cnfe);
-	    }
+		}
 	}
 
 	public boolean samePackageBase(String invokerClsName, String newClsName)
@@ -106,14 +106,14 @@ public class XMLFactoryBypass extends BytecodeScanningDetector  {
 		String[] invokerParts = invokerClsName.split("/");
 		String[] newClsParts = newClsName.split("/");
 
-	    if (newClsParts.length < 3)
+		if (newClsParts.length < 3)
 			return false;
 		if (invokerParts.length < 3)
 			return false;
-	    
+
 		if (!invokerParts[0].equals(newClsParts[0]))
 			return false;
 
-	    return invokerParts[1].equals(newClsParts[1]);
+		return invokerParts[1].equals(newClsParts[1]);
 	}
 }

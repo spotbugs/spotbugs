@@ -81,23 +81,23 @@ public class HTMLBugReporter extends BugCollectionBugReporter {
 	public Exception getFatalException() {
 		return fatalException;
 	}
-    private static InputStream getStylesheetStream(String stylesheet) throws IOException {
+	private static InputStream getStylesheetStream(String stylesheet) throws IOException {
 		if (FindBugs.DEBUG) System.out.println("Attempting to load stylesheet " + stylesheet);
 		try {
 			URL u = new URL(stylesheet);
-            return u.openStream();
+			return u.openStream();
 		} catch (Exception e) {
 			assert true; // ignore it
 		}
-        try {
+		try {
 			return  new BufferedInputStream(new FileInputStream(stylesheet));
 		} catch (Exception fnfe) {
 			assert true; // ignore it
-        }
+		}
 		InputStream xslInputStream = HTMLBugReporter.class.getResourceAsStream("/"+stylesheet);
 		if (xslInputStream == null) {
 			throw new IOException("Could not load HTML generation stylesheet " +  stylesheet);
-        }
+		}
 		return xslInputStream;
 	}
 }

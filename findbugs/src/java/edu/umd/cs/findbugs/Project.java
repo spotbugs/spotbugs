@@ -648,11 +648,11 @@ public class Project implements XMLWriteable {
 
 	public String projectNameFromProjectFileName() {
 		String name = projectFileName;
-        int lastSep = name.lastIndexOf(File.separatorChar);
+		int lastSep = name.lastIndexOf(File.separatorChar);
 		if (lastSep >= 0)
 			name = name.substring(lastSep + 1);
 		int dot = name.lastIndexOf('.');
-        if (dot >= 0)
+		if (dot >= 0)
 			name = name.substring(0, dot);
 		return name;
 
@@ -892,14 +892,14 @@ public class Project implements XMLWriteable {
 	/**
 	 * @param projectName The projectName to set.
 	 */
-    public void setProjectName(String projectName) {
+	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
 
 	/**
 	 * @return Returns the projectName.
 	 */
-    public String getProjectName() {
+	public String getProjectName() {
 		return projectName;
 	}
 }

@@ -60,7 +60,7 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 					if (first) first = false;
 					else bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
 				}
-                
+
 				bugReporter.reportBug(bug);
 
 				found.clear();
@@ -69,7 +69,7 @@ public class FindFloatEquality extends BytecodeScanningDetector implements State
 
 	public boolean isZero(Number n) {
 		if (n == null) return false;
-        double v = n.doubleValue();
+		double v = n.doubleValue();
 		return v == 0.0;
 	}
 

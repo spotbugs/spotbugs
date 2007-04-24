@@ -279,11 +279,11 @@ public class LegacyAnalysisContext extends AnalysisContext {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.ba.AnalysisContext#getReturnValueNullnessPropertyDatabase()
 	 */
-    @Override
+	@Override
 	public ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase() {
 		if (returnValueNullnessDatabase  == null) {
 			returnValueNullnessDatabase = new ReturnValueNullnessPropertyDatabase();
-        }
+		}
 		return returnValueNullnessDatabase;
 	}
 

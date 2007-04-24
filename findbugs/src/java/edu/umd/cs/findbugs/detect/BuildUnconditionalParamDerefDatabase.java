@@ -74,16 +74,16 @@ public class BuildUnconditionalParamDerefDatabase {
 
 	private void considerMethod(ClassContext classContext, Method method) {
 		boolean hasReferenceParameters = false;
-        for (Type argument : method.getArgumentTypes())
+		for (Type argument : method.getArgumentTypes())
 			if (argument instanceof ReferenceType) {
 				hasReferenceParameters = true;
 				referenceParameters++;
-            }
+			}
 
 		if (hasReferenceParameters && classContext.getMethodGen(method) != null) {
 			if (VERBOSE_DEBUG) System.out.println("Check " + method);
 			analyzeMethod(classContext, method);
-        }
+		}
 	}
 
 	protected int referenceParameters;

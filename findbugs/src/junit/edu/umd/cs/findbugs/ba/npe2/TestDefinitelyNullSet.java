@@ -27,7 +27,7 @@ import junit.framework.TestCase;
  */
 public class TestDefinitelyNullSet extends TestCase {
 	DefinitelyNullSet s;
-	
+
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
@@ -35,7 +35,7 @@ public class TestDefinitelyNullSet extends TestCase {
 	protected void setUp() throws Exception {
 		s = new DefinitelyNullSet(10);
 	}
-	
+
 	public void testEmptyToString() {
 		Assert.assertEquals("{}", s.toString());
 	}

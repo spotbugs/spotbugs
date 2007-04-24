@@ -273,11 +273,11 @@ public class FindBugs2 implements IFindBugsEngine {
 
 	public String getProjectName() {
 		return projectName;
-    }
+	}
 	public void setProjectName(String name) {
 		projectName = name;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setAnalysisFeatureSettings(edu.umd.cs.findbugs.config.AnalysisFeatureSetting[])
 	 */
@@ -514,15 +514,15 @@ public class FindBugs2 implements IFindBugsEngine {
 			public Collection<ClassDescriptor> getOutEdges(ClassDescriptor e) {
 				try {
 				ClassInfo classInfo = Global.getAnalysisCache().getClassAnalysis(ClassInfo.class, e);
-                return Arrays.asList( classInfo.getReferencedClassDescriptorList());
+				return Arrays.asList( classInfo.getReferencedClassDescriptorList());
 				} catch  (CheckedAnalysisException e2) {
 					AnalysisContext.logError("error while analyzing " + e.getClassName(), e2);
 					return TigerSubstitutes.emptyList();
-                    
+
 				}
 			}});
 
-        }
+		}
 
 	/**
 	 * Create the AnalysisContext that will serve as the BCEL-compatibility
@@ -578,7 +578,7 @@ public class FindBugs2 implements IFindBugsEngine {
 			public void enable(DetectorFactory factory) {
 				forcedEnabled.add(factory);
 				factory.setPriorityAdjustment(100);        
-            }
+			}
 
 		};
 		executionPlan.setDetectorFactoryChooser(detectorFactoryChooser);
@@ -734,7 +734,7 @@ public class FindBugs2 implements IFindBugsEngine {
 	/* (non-Javadoc)
 	 * @see edu.umd.cs.findbugs.IFindBugsEngine#setAbridgedMessages(boolean)
 	 */
-    public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
+	public void setAbridgedMessages(boolean xmlWithAbridgedMessages) {
 		abridgedMessages = xmlWithAbridgedMessages;
 
 	}

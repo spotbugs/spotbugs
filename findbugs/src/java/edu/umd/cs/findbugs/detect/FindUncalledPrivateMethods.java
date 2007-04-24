@@ -47,11 +47,11 @@ public class FindUncalledPrivateMethods extends BytecodeScanningDetector impleme
 				&& !getMethodName().equals("writeReplace")
 				&& !getMethodName().equals("readResolve")
 				&& !getMethodName().equals("readObject")
-		        && !getMethodName().equals("readObjectNoData")
+				&& !getMethodName().equals("readObjectNoData")
 				&& !getMethodName().equals("writeObject")
 				&& getMethodName().indexOf("debug") == -1
 				&& getMethodName().indexOf("Debug") == -1
-		        && getMethodName().indexOf("trace") == -1
+				&& getMethodName().indexOf("trace") == -1
 				&& getMethodName().indexOf("Trace") == -1
 				&& !getMethodName().equals("<init>")
 				&& !getMethodName().equals("<clinit>")

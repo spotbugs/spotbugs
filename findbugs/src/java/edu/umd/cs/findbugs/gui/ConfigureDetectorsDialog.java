@@ -74,11 +74,11 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 		detectorTableScrollPane = new javax.swing.JScrollPane();
 		detectorTable = new javax.swing.JTable();
 		detectorDescriptionScrollPane = new javax.swing.JScrollPane();
-        detectorDescription = new javax.swing.JEditorPane();
+		detectorDescription = new javax.swing.JEditorPane();
 		jSeparator1 = new javax.swing.JSeparator();
 		okButton = new javax.swing.JButton();
 		cancelButton = new javax.swing.JButton();
-        spacer = new javax.swing.JLabel();
+		spacer = new javax.swing.JLabel();
 		restoreDefaultsButton = new javax.swing.JButton();
 
 		getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -102,14 +102,14 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 			},
 			new String [] {
 				"Bug Detector", "Speed", "Enabled"
-            }
+			}
 		) {
 			private static final long serialVersionUID = 1L;
 			Class[] types = new Class [] {
 				java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
 			};
 			boolean[] canEdit = new boolean [] {
-                false, false, true
+				false, false, true
 			};
 
 			@Override
@@ -122,7 +122,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 				return canEdit [columnIndex];
 			}
 		});
-        populateTable();
+		populateTable();
 		detectorTable.getColumnModel().getColumn(ENABLED_COLUMN).setMaxWidth(60);
 		detectorTable.getColumnModel().getColumn(SPEED_COLUMN).setMaxWidth(60);
 		detectorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -130,11 +130,11 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 		{
 			DefaultTableModel m = (DefaultTableModel)detectorTable.getModel();
 			m.setColumnIdentifiers( new String[]
-                {
+				{
 					L10N.getLocalString("dlg.bugdetector_lbl", "Bug Detector"),
 					L10N.getLocalString("dlg.speed_lbl", "Speed"),
 					L10N.getLocalString("dlg.enabled_lbl", "Enabled"),
-                });
+				});
 
 				DefaultSortedTableModel sortedModel = new DefaultSortedTableModel(m, detectorTable.getTableHeader());
 				detectorTable.setModel(sortedModel);
@@ -145,7 +145,7 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 			gridBagConstraints = new java.awt.GridBagConstraints();
 			gridBagConstraints.gridwidth = 4;
 			gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-            gridBagConstraints.weightx = 1.0;
+			gridBagConstraints.weightx = 1.0;
 			gridBagConstraints.weighty = 0.8;
 			gridBagConstraints.insets = new java.awt.Insets(6, 6, 2, 6);
 			getContentPane().add(detectorTableScrollPane, gridBagConstraints);
@@ -157,16 +157,16 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 			gridBagConstraints = new java.awt.GridBagConstraints();
 			gridBagConstraints.gridx = 0;
 			gridBagConstraints.gridy = 1;
-            gridBagConstraints.gridwidth = 4;
+			gridBagConstraints.gridwidth = 4;
 			gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
 			gridBagConstraints.weighty = 0.3;
 			gridBagConstraints.insets = new java.awt.Insets(2, 6, 2, 6);
-            getContentPane().add(detectorDescriptionScrollPane, gridBagConstraints);
+			getContentPane().add(detectorDescriptionScrollPane, gridBagConstraints);
 
 			gridBagConstraints = new java.awt.GridBagConstraints();
 			gridBagConstraints.gridx = 0;
 			gridBagConstraints.gridy = 2;
-            gridBagConstraints.gridwidth = 4;
+			gridBagConstraints.gridwidth = 4;
 			gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
 			getContentPane().add(jSeparator1, gridBagConstraints);
@@ -174,53 +174,53 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 			okButton.setMnemonic('O');
 			okButton.setText("OK");
 			okButton.setText(L10N.getLocalString("dlg.ok_btn","OK"));
-            okButton.addActionListener(new java.awt.event.ActionListener() {
+			okButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					okButtonActionPerformed(evt);
 				}
-            });
+			});
 
 			gridBagConstraints = new java.awt.GridBagConstraints();
 			gridBagConstraints.gridx = 2;
 			gridBagConstraints.gridy = 3;
-            gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 2);
+			gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 2);
 			getContentPane().add(okButton, gridBagConstraints);
 
 			cancelButton.setMnemonic('C');
 			cancelButton.setText("Cancel");
 			cancelButton.setText(L10N.getLocalString("dlg.cancel_btn", "Cancel"));
-            cancelButton.addActionListener(new java.awt.event.ActionListener() {
+			cancelButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					cancelButtonActionPerformed(evt);
 				}
-            });
+			});
 
 			gridBagConstraints = new java.awt.GridBagConstraints();
 			gridBagConstraints.gridx = 3;
 			gridBagConstraints.gridy = 3;
-            gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 6);
+			gridBagConstraints.insets = new java.awt.Insets(0, 2, 4, 6);
 			getContentPane().add(cancelButton, gridBagConstraints);
 
 			gridBagConstraints = new java.awt.GridBagConstraints();
 			gridBagConstraints.gridx = 1;
 			gridBagConstraints.gridy = 3;
-            gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			gridBagConstraints.weightx = 1.0;
 			getContentPane().add(spacer, gridBagConstraints);
 
 			restoreDefaultsButton.setText("Restore Defaults");
 			restoreDefaultsButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
 			restoreDefaultsButton.setText(L10N.getLocalString("dlg.restoredefaults_btn", "Restore Defaults"));
-            restoreDefaultsButton.addActionListener(new java.awt.event.ActionListener() {
+			restoreDefaultsButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					restoreDefaultsButtonActionPerformed(evt);
 				}
-            });
+			});
 
 			gridBagConstraints = new java.awt.GridBagConstraints();
 			gridBagConstraints.gridx = 0;
 			gridBagConstraints.gridy = 3;
-            gridBagConstraints.insets = new java.awt.Insets(0, 6, 4, 0);
+			gridBagConstraints.insets = new java.awt.Insets(0, 6, 4, 0);
 			getContentPane().add(restoreDefaultsButton, gridBagConstraints);
 
 			pack();
@@ -368,11 +368,11 @@ public class ConfigureDetectorsDialog extends javax.swing.JDialog {
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JButton cancelButton;
 	private javax.swing.JEditorPane detectorDescription;
-    private javax.swing.JScrollPane detectorDescriptionScrollPane;
+	private javax.swing.JScrollPane detectorDescriptionScrollPane;
 	private javax.swing.JTable detectorTable;
 	private javax.swing.JScrollPane detectorTableScrollPane;
 	private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JButton okButton;
+	private javax.swing.JButton okButton;
 	private javax.swing.JButton restoreDefaultsButton;
 	private javax.swing.JLabel spacer;
 	// End of variables declaration//GEN-END:variables

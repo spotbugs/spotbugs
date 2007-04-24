@@ -339,11 +339,11 @@ public class FindBugsTask extends Task {
 	/**
 	 * Set project name
 	 * 
-     * @param projectName the project name
+	 * @param projectName the project name
 	 */
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
-    }
+	}
 
 	/**
 	 * Set the conserveSpace flag.
@@ -416,40 +416,40 @@ public class FindBugsTask extends Task {
 	/**
 	 * the auxAnalyzepath to use.
 	 */
-    public void setAuxAnalyzepath(Path src) {
+	public void setAuxAnalyzepath(Path src) {
 		boolean nonEmpty = false;
 
 		String[] elementList = src.list();
-        for (String anElementList : elementList) {
+		for (String anElementList : elementList) {
 			if (!anElementList.equals("")) {
 				nonEmpty = true;
 				break;
-            }
+			}
 		}
 
 		if (nonEmpty) {
-            if (auxAnalyzepath == null) {
+			if (auxAnalyzepath == null) {
 				auxAnalyzepath = src;
 			} else {
 				auxAnalyzepath.append(src);
-            }
+			}
 		}
 	}
 
 	/**
 	 * Path to use for auxAnalyzepath.
 	 */
-    public Path createAuxAnalyzepath() {
+	public Path createAuxAnalyzepath() {
 		if (auxAnalyzepath == null) {
 			auxAnalyzepath = new Path(getProject());
 		}
-        return auxAnalyzepath.createPath();
+		return auxAnalyzepath.createPath();
 	}
 
 	/**
 	 * Adds a reference to a sourcepath defined elsewhere.
 	 */
-    public void setAuxAnalyzepathRef(Reference r) {
+	public void setAuxAnalyzepathRef(Reference r) {
 		createAuxAnalyzepath().setRefid(r);
 	}
 
@@ -501,7 +501,7 @@ public class FindBugsTask extends Task {
 		/**
 		 * Set the packages or classes to analyze
 		 */
-        public void setOnlyAnalyze(String filter) {
+		public void setOnlyAnalyze(String filter) {
 				this.onlyAnalyze = filter;
 		}
 
@@ -596,7 +596,7 @@ public class FindBugsTask extends Task {
 	/**
 	 * Check that all required attributes have been set
 	 *
-     * @since Ant 1.5
+	 * @since Ant 1.5
 	 */
 	private void checkParameters() {
 		if ( homeDir == null && (classpath == null || pluginList == null) ) {
@@ -659,7 +659,7 @@ public class FindBugsTask extends Task {
 		for (SystemProperty aSystemPropertyList : systemPropertyList) {
 			SystemProperty systemProperty = (SystemProperty) aSystemPropertyList;
 			if (systemProperty.getName() == null || systemProperty.getValue() == null)
-			    throw new BuildException("systemProperty elements must have name and value attributes");
+				throw new BuildException("systemProperty elements must have name and value attributes");
 		}
 
 		if (effort != null && !effort.equals("min") && !effort.equals("default") && !effort.equals("max")) {
@@ -678,7 +678,7 @@ public class FindBugsTask extends Task {
 	/**
 	 * Create a new JVM to do the work.
 	 *
-     * @since Ant 1.5
+	 * @since Ant 1.5
 	 */
 	private void execFindbugs() throws BuildException {
 		findbugsEngine = (Java) getProject().createTask("java");
@@ -697,7 +697,7 @@ public class FindBugsTask extends Task {
 		for (SystemProperty aSystemPropertyList : systemPropertyList) {
 			SystemProperty systemProperty = (SystemProperty) aSystemPropertyList;
 			String jvmArg = "-D" + systemProperty.getName() + "=" + systemProperty.getValue();
-		    findbugsEngine.createJvmarg().setValue(jvmArg);
+			findbugsEngine.createJvmarg().setValue(jvmArg);
 		}
 
 		if (homeDir != null) {
@@ -723,7 +723,7 @@ public class FindBugsTask extends Task {
 
 		if (projectName != null) {
 			addArg("-projectName");
-            addArg(projectName);
+			addArg(projectName);
 		}
 		if (adjustExperimental) {
 			addArg("-adjustExperimental");
@@ -799,7 +799,7 @@ public class FindBugsTask extends Task {
 				if ( onlyAnalyze != null ) {
 						addArg("-onlyAnalyze");
 						addArg(onlyAnalyze);
-                }
+				}
 
 		addArg("-exitcode");
 		for (ClassLocation classLocation : classLocations) {

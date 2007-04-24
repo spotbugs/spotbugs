@@ -321,7 +321,7 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 					.append(".")
 					.append(methodName)
 					.append(" : ")
-			        .append(dottedMethodSig);
+					.append(dottedMethodSig);
 			fullyQualifiedMethodName = ref.toString();
 		}
 		return fullyQualifiedMethodName;
@@ -368,23 +368,23 @@ public abstract class PreorderVisitor extends BetterVisitor implements Constants
 		int count = 0;
 		int pos = 1;
 		boolean inArray = false;
-        
+
 		while (true) {
 			switch (signature.charAt(pos++)) {
 			case ')' : return count;
-            case '[' :
+			case '[' :
 				if (!inArray) count++;
 				inArray = true;
 				break;
-            case 'L' :
+			case 'L' :
 				if (!inArray) count++;
 				while (signature.charAt(pos) != ';') pos++;
 				pos++;
-                inArray = false;
+				inArray = false;
 				break;
 			default: 
 				if (!inArray) count++;
-            inArray = false;
+			inArray = false;
 			break;
 			}
 		}

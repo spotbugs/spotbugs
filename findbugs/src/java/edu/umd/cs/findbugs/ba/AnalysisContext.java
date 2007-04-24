@@ -381,7 +381,7 @@ public abstract class AnalysisContext {
 		loadPropertyDatabase(
 				getReturnValueNullnessPropertyDatabase(),
 				NONNULL_RETURN_DB_FILENAME,
-                "nonnull return db database");
+				"nonnull return db database");
 	}
 
 	/**
@@ -398,7 +398,7 @@ public abstract class AnalysisContext {
 		loadPropertyDatabaseFromResource(
 				getReturnValueNullnessPropertyDatabase(),
 				NONNULL_RETURN_DB_RESOURCE,
-                "nonnull return db database");
+				"nonnull return db database");
 	}
 
 	/**
@@ -484,7 +484,7 @@ public abstract class AnalysisContext {
 	/**
 	 * Get the property database recording which methods always return nonnull values
 	 * 
-     * @return the database, or null if there is no database available
+	 * @return the database, or null if there is no database available
 	 */
 	public abstract ReturnValueNullnessPropertyDatabase getReturnValueNullnessPropertyDatabase();
 

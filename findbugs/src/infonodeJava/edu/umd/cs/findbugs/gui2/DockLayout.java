@@ -68,7 +68,7 @@ public class DockLayout implements FindBugsLayoutManager {
 	private class ViewMenuItem extends JCheckBoxMenuItem implements ItemListener
 	{
 		private View view;
-		
+
 		public ViewMenuItem(View view, String title)
 		{
 			super(title, true);
@@ -85,7 +85,7 @@ public class DockLayout implements FindBugsLayoutManager {
 			if (evt.getStateChange() == ItemEvent.DESELECTED)
 				view.close();
 		}
-		
+
 //		private class Listener extends DockingWindowAdapter
 //		{
 //			@Override
@@ -122,12 +122,12 @@ public class DockLayout implements FindBugsLayoutManager {
 	 * @see edu.umd.cs.findbugs.gui2.LayoutManager#createWindowMenu()
 	 */
 	public JMenu createWindowMenu() {
-		
+
 		viewMenuItems = new HashMap<View, ViewMenuItem>();
 		viewMenuItems.put(summaryView, new ViewMenuItem(summaryView, "Bug summary"));
 		viewMenuItems.put(commentsView, new ViewMenuItem(commentsView, "Comments"));
 		viewMenuItems.put(sourceView, new ViewMenuItem(sourceView, "Source code"));
-		
+
 		JMenu windowMenu = new JMenu("Window");
 		windowMenu.setMnemonic(KeyEvent.VK_W);
 		windowMenu.add(viewMenuItems.get(summaryView));
@@ -150,46 +150,46 @@ public class DockLayout implements FindBugsLayoutManager {
 		viewMap.addView(2, commentsView);
 		sourceView = new View(L10N.getLocalString("view.source", "Source"), null, frame.createSourceCodePanel());
 		viewMap.addView(3, sourceView);
-		
+
 		rootWindow = DockingUtil.createRootWindow(viewMap, true);
 
 		tabs = new TabWindow(new DockingWindow[]{summaryView, commentsView, sourceView});
 		tabs.addListener(new DockParentListener());
 		tabs.setSelectedTab(0);
 //		tabs.getWindowProperties().setCloseEnabled(false);
-		
+
 		rootWindow.setWindow(new SplitWindow(false, 0.4f, topView, tabs));
-		
+
 		DockingWindowsTheme theme = new ShapedGradientDockingTheme();
 		rootWindow.getRootWindowProperties().addSuperObject(theme.getRootWindowProperties());
-		
+
 		try
 		{
 			rootWindow.read(new ObjectInputStream(new ByteArrayInputStream(GUISaveState.getInstance().getDockingLayout())), true);
 		}
 		catch (IOException e) {}
-		
+
 		DockingWindowListener listener = new DockingWindowAdapter()
 		{
 			@Override
 			public void windowAdded(DockingWindow addedToWindow, DockingWindow addedWindow)
 			{
 				viewMenuItems.get(addedWindow).setSelected(true);
-				
+
 				addedToWindow.addListener(new DockParentListener());
 			}
-			
+
 			@Override
 			public void windowClosed(DockingWindow window)
 			{
 				viewMenuItems.get(window).setSelected(false);
 			}
 		};
-		
+
 		summaryView.addListener(listener);
 		commentsView.addListener(listener);
 		sourceView.addListener(listener);
-		
+
 		frame.setLayout(new BorderLayout());
 		frame.add(rootWindow, BorderLayout.CENTER);
 		frame.add(frame.statusBar(), BorderLayout.SOUTH);
@@ -200,7 +200,7 @@ public class DockLayout implements FindBugsLayoutManager {
 	 */
 	public void makeCommentsVisible() {
 		commentsView.makeVisible();
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -208,7 +208,7 @@ public class DockLayout implements FindBugsLayoutManager {
 	 */
 	public void makeSourceVisible() {
 		sourceView.makeVisible();
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -225,7 +225,7 @@ public class DockLayout implements FindBugsLayoutManager {
 			GUISaveState.getInstance().setDockingLayout(dockingLayout.toByteArray());
 		}
 		catch (IOException e) {}
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -238,6 +238,6 @@ public class DockLayout implements FindBugsLayoutManager {
 		}				
 	});
 	}
-	
-	
+
+
 }

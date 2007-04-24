@@ -27,16 +27,16 @@ import junit.framework.TestCase;
  */
 public class TestNullnessValue extends TestCase {
 	NullnessValue definitelyNull;
-	
+
 	@Override
 	protected void setUp() {
 		definitelyNull = NullnessValue.definitelyNullValue();
 	}
-	
+
 	public void testDefinitelyNullToString() {
 		Assert.assertEquals("n", definitelyNull.toString());
 	}
-	
+
 	public void testDefinitelyNullToCheckedString() {
 		Assert.assertEquals("cn", definitelyNull.toCheckedValue().toString());
 	}

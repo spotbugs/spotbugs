@@ -229,7 +229,7 @@ public class DetectorFactoryCollection {
 			URL[] plugins = new URL[1];
 			if (u != null) {
 				String path = u.toString();
-		    	path = path.substring(0, path.length() - "findbugs.xml".length());
+				path = path.substring(0, path.length() - "findbugs.xml".length());
 				if (FindBugs.DEBUG) System.out.println("Jaws uses plugin: " + path);
 				try {
 					plugins[0] = new URL(path);

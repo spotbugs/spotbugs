@@ -32,7 +32,7 @@ public class ReturnPathTypeTest extends TestCase {
 	ReturnPathType top;
 	ReturnPathType normal;
 	ReturnPathType abnormal;
-	
+
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
@@ -44,7 +44,7 @@ public class ReturnPathTypeTest extends TestCase {
 		abnormal = new ReturnPathType();
 		abnormal.setCanReturnNormally(false);
 	}
-	
+
 	public void testTop() throws Exception {
 		Assert.assertFalse(top.isValid());
 		Assert.assertTrue(top.isTop());
@@ -55,56 +55,56 @@ public class ReturnPathTypeTest extends TestCase {
 			// Good
 		}
 	}
-	
+
 	public void testCanReturnNormally() throws Exception {
 		Assert.assertTrue(normal.isValid());
 		Assert.assertTrue(normal.canReturnNormally());
 	}
-	
+
 	public void testCannotReturnNormally() throws Exception {
 		Assert.assertTrue(abnormal.isValid());
 		Assert.assertFalse(abnormal.canReturnNormally());
 	}
-	
+
 	public void testMergeWithTop() throws Exception {
 		normal.mergeWith(top);
 		Assert.assertTrue(normal.canReturnNormally());
 		abnormal.mergeWith(top);
 		Assert.assertFalse(abnormal.canReturnNormally());
 	}
-	
+
 	public void testTopMergeWithNormalReturn() throws Exception {
 		top.mergeWith(normal);
 		Assert.assertTrue(top.canReturnNormally());
 	}
-	
+
 	public void testTopMergeWithAbnormalReturn() throws Exception {
 		top.mergeWith(abnormal);
 		Assert.assertFalse(top.canReturnNormally());
 	}
-	
+
 	public void testNormalMergeWIthAbnormal() throws Exception {
 		normal.mergeWith(abnormal);
 		Assert.assertTrue(normal.canReturnNormally());
 	}
-	
+
 	public void testAbnormalMergeWithNormal() throws Exception {
 		abnormal.mergeWith(normal);
 		Assert.assertTrue(abnormal.canReturnNormally());
 	}
-	
+
 	public void testNormalMergeWithNormal() throws Exception {
 		ReturnPathType otherNormal = new ReturnPathType();
 		otherNormal.setCanReturnNormally(true);
-		
+
 		normal.mergeWith(otherNormal);
 		Assert.assertTrue(normal.canReturnNormally());
 	}
-	
+
 	public void testAbnormalMergeWithAbnormal() throws Exception {
 		ReturnPathType otherAbnormal = new ReturnPathType();
 		otherAbnormal.setCanReturnNormally(false);
-		
+
 		abnormal.mergeWith(otherAbnormal);
 		Assert.assertFalse(abnormal.canReturnNormally());
 	}

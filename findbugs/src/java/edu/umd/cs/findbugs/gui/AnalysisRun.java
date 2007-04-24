@@ -134,7 +134,7 @@ public class AnalysisRun {
 			"<html><head><title>Could not format summary</title></head>" +
 			"<body><h1>Could not format summary</h1>" +
 			"<p> Please report this failure to <a href=\"findbugs-discuss@cs.umd.edu\">" +
-	        "findbugs-discuss@cs.umd.edu</a>.</body></html>";
+			"findbugs-discuss@cs.umd.edu</a>.</body></html>";
 
 	private void createSummary(ProjectStats stats) throws IOException {
 		StringWriter html = new StringWriter();

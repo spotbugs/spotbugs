@@ -199,11 +199,11 @@ public class TypeAnalysis extends FrameDataflowAnalysis<Type, TypeFrame>
 		this.method = method;
 		Code code = method.getCode();
 		if (code == null) throw new IllegalArgumentException(method.getName() + " has no code");
-        for(Attribute a : code.getAttributes()) {
+		for(Attribute a : code.getAttributes()) {
 			if (a instanceof LocalVariableTypeTable) {
 				typeTable = (LocalVariableTypeTable) a;
 				for (LocalVariable v : typeTable.getLocalVariableTable()) {
-        			int startPC = v.getStartPC();
+					int startPC = v.getStartPC();
 					if (startPC >= 0) startOfLocalTypedVariables.set(startPC);
 				}
 			}

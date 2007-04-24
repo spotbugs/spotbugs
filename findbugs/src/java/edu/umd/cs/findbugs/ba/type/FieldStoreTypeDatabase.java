@@ -42,19 +42,19 @@ public class FieldStoreTypeDatabase
 	public void purgeBoringEntries() {
 		Collection<XField> keys = new ArrayList<XField>(getKeys());
 		for(XField f : keys) {
-            String s = f.getSignature();
+			String s = f.getSignature();
 			FieldStoreType type = getProperty(f);
 			Type fieldType = Type.getType(f.getSignature());
 			if (!(fieldType instanceof ReferenceType)) {
-                removeProperty(f);
+				removeProperty(f);
 				continue;
 			}
 			ReferenceType storeType = type.getLoadType((ReferenceType)fieldType);
-            if (storeType.equals(fieldType)) 
+			if (storeType.equals(fieldType)) 
 				removeProperty(f);
 		}
 	}
-	
+
 	@Override
 		 protected FieldStoreType decodeProperty(String propStr) throws PropertyDatabaseFormatException {
 		FieldStoreType property = new FieldStoreType();

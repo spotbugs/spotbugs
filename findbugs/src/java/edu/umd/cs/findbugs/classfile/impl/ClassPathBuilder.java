@@ -193,15 +193,15 @@ public class ClassPathBuilder implements IClassPathBuilder {
 
 		boolean foundJavaLangObject = false;
 
-        for (DiscoveredCodeBase discoveredCodeBase : discoveredCodeBaseList) {
+		for (DiscoveredCodeBase discoveredCodeBase : discoveredCodeBaseList) {
 			try {
 			ICodeBaseEntry entry = discoveredCodeBase.getCodeBase().lookupResource("java/lang/Object.class");
 			foundJavaLangObject = true;
-            } catch (ResourceNotFoundException e) {
+			} catch (ResourceNotFoundException e) {
 				assert true;
 			}
 		}
-        
+
 		if (!foundJavaLangObject) 
 			processWorkList(classPath, buildSystemCodebaseList(), progress);
 

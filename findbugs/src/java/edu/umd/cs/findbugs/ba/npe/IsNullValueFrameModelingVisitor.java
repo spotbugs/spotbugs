@@ -305,7 +305,7 @@ public class IsNullValueFrameModelingVisitor extends AbstractFrameModelingVisito
 		if (field.getClassName().equals("java.util.logging.Level")
 				&& field.getName().equals("SEVERE")
 				|| field.getClassName().equals("org.apache.log4j.Level") 
-                && (field.getName().equals("ERROR") || field.getName().equals("FATAL")))
+				&& (field.getName().equals("ERROR") || field.getName().equals("FATAL")))
 			getFrame().toExceptionValues();
 
 		if (field.getName().startsWith("class$")) {

@@ -31,7 +31,7 @@ public class VolatileUsage extends BytecodeScanningDetector  {
 	public VolatileUsage(BugReporter bugReporter) {
 			this.bugReporter = bugReporter;
 	}
-    	
+
 	@Override
 		 public void visitClassContext(ClassContext classContext) {
 				classContext.getJavaClass().accept(this);
@@ -41,7 +41,7 @@ static class FieldRecord {
 				String className;
 				String name;
 				String signature;
-                boolean isStatic;
+				boolean isStatic;
 		}
 
 
@@ -69,7 +69,7 @@ static class FieldRecord {
 	@Override
 	public void sawOpcode(int seen) {
 				switch (seen) {
-                case PUTSTATIC:
+				case PUTSTATIC:
 			{
 						String name = (getClassConstantOperand() 
 					+ "." + getNameConstantOperand())

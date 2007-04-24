@@ -125,7 +125,7 @@ public class LockedFields extends BytecodeScanningDetector {
 				|| getMethodName().equals("<clinit>")
 				|| getMethodName().equals("readObject")
 				|| getMethodName().equals("clone")
-		        || getMethodName().equals("close")
+				|| getMethodName().equals("close")
 				|| getMethodName().equals("finalize");
 		/*
 		privateMethod = (flags & ACC_PRIVATE) != 0

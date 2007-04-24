@@ -51,7 +51,7 @@ public class ProjectFilterSettingsTest extends TestCase {
 		changed4.setMinPriority("High");
 		changed4.removeCategory("MALICIOUS_CODE");
 		changed4.addCategory("FAKE_CATEGORY");
-		
+
 	}
 
 	public void testPlainPrio() {
@@ -121,18 +121,18 @@ public class ProjectFilterSettingsTest extends TestCase {
 		ProjectFilterSettings.hiddenFromEncodedString(copyOfChanged4, changed4.hiddenToEncodedString());
 		Assert.assertEquals(changed4, copyOfChanged4);
 	}
-	
+
 	public void testDisplayFalseWarnings() {
 		Assert.assertEquals(plain, otherPlain);
 
 		Assert.assertFalse(plain.displayFalseWarnings());
 		plain.setDisplayFalseWarnings(true);
-		
+
 		Assert.assertFalse(plain.equals(otherPlain));
-		
+
 		ProjectFilterSettings copyOfPlain =
 			ProjectFilterSettings.fromEncodedString(plain.toEncodedString());
-		
+
 		Assert.assertTrue(copyOfPlain.displayFalseWarnings());
 		Assert.assertEquals(copyOfPlain, plain);
 		Assert.assertEquals(plain, copyOfPlain);

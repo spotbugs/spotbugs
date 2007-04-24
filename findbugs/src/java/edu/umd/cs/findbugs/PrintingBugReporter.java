@@ -78,7 +78,7 @@ public class PrintingBugReporter extends TextUIBugReporter {
 			else if (option.equals("-history"))
 				setReportHistory(true);
 		   else if (option.equals("-annotationUpload"))
-                annotationUploadFormat = true;
+				annotationUploadFormat = true;
 			else if (option.equals("-html")) {
 				if (!optionExtraPart.equals("")) {
 					stylesheet = optionExtraPart;

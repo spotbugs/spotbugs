@@ -87,7 +87,7 @@ public  class XFactory {
 
 	public boolean isInterned(XMethod m) {
 		return methods.containsKey(m);
-    }
+	}
 
 	public @CheckReturnValue @NonNull XMethod intern(XMethod m) {
 		XMethod m2 = methods.get(m);
@@ -185,31 +185,31 @@ public  class XFactory {
 	   private static final int MAX_DEPTH = 50;
 	 private int depth = 0;
 	 ArrayList<Object> list = new ArrayList<Object>();
-     @Override
+	 @Override
 	public String toString() {
 		 return list.toString();
 	 }
-     public void dump() {
+	 public void dump() {
 		 System.out.println("Recursive calls" );
 		 for(Object o : list) 
 			 System.out.println("  resolve " + o);
-     }
+	 }
 	 public boolean enter(Object value) {
 		 if (depth > MAX_DEPTH) 
 			 return false;
-         if (DEBUG_CIRCULARITY) list.add(value);
+		 if (DEBUG_CIRCULARITY) list.add(value);
 		 depth++;
 		 return true;
 	 }
-     public void exit() {
+	 public void exit() {
 		depth--;
 		if (DEBUG_CIRCULARITY) list.remove(list.size()-1);
 		assert depth >= 0;
-     }
+	 }
 	}
 	static ThreadLocal<RecursionDepth> recursionDepth = new  ThreadLocal<RecursionDepth>() {
 		@Override
-        public RecursionDepth initialValue() {
+		public RecursionDepth initialValue() {
 			return new RecursionDepth();
 		}
 	};
@@ -250,53 +250,53 @@ public  class XFactory {
 	private @NonNull XField resolve(XField f) {
 		if (f.isResolved()) return f;
 		if (f.isStatic()) return f;
-        if (f.getName().startsWith("this$")) return f;
+		if (f.getName().startsWith("this$")) return f;
 		try {
 			if (!recursionDepth.get().enter(f)) {
 				fail("recursive cycle trying to resolve " + f, null, null);
-                return f;
+				return f;
 			}
 
 			XField f2 = f;
 			String classname = f.getClassName();
 			try {
-                JavaClass superClass = Repository.lookupClass(classname).getSuperClass();
+				JavaClass superClass = Repository.lookupClass(classname).getSuperClass();
 				if (superClass == null) return f;
 
 				if (classname.equals(superClass.getClassName())) return f;
-                f2 = createXField(superClass.getClassName(), f.getName(), f.getSignature(), f.isStatic());
+				f2 = createXField(superClass.getClassName(), f.getName(), f.getSignature(), f.isStatic());
 				f2 = intern(f2);
 				if (f2.isResolved()) {
 					fields.put(f, f2);
-                    return f2;	
+					return f2;	
 				}
 
 
 			} catch (ClassNotFoundException e) {
 				AnalysisContext.reportMissingClass(e);
 			}
-            return f;
+			return f;
 		} finally {
 			recursionDepth.get().exit();
 		}
-    }
+	}
 
 	private static void fail(String s, @CheckForNull JavaClass jClass, @CheckForNull JavaClass superClass) {
 		 AnalysisContext.logError(s);
 		if (DEBUG_CIRCULARITY) {
-            System.out.println(s);
+			System.out.println(s);
 			recursionDepth.get().dump();
 
 		}
-        if (jClass != null)
+		if (jClass != null)
 			System.out.println(jClass);
 		if (superClass != null)
 			System.out.println(superClass);
-        System.exit(1);
+		System.exit(1);
 	}
 	/**
 	 * If a method is not marked as resolved, look in superclasses to see if the method can be found there.
-     * Return whatever method is found. 
+	 * Return whatever method is found. 
 	 * @param m
 	 * @return
 	 */
@@ -304,7 +304,7 @@ public  class XFactory {
 		if (m.isResolved()) return m;
 		// if (m.isStatic()) return m;
 		try {
-	        if (!recursionDepth.get().enter(m)) {
+			if (!recursionDepth.get().enter(m)) {
 				fail("recursive cycle trying to resolve " + m, null, null);
 				return m;
 			}
@@ -314,35 +314,35 @@ public  class XFactory {
 			String methodName = m.getName();
 			if (className.charAt(0)=='[' || methodName.equals("<init>") || methodName.equals("<clinit>") || methodName.startsWith("access$")) {
 				((AbstractMethod)m).markAsResolved();
-	            return m;
+				return m;
 			}
 			try {
 				JavaClass javaClass = Repository.lookupClass(className);
-                if (!javaClass.getClassName().equals(className)) {
+				if (!javaClass.getClassName().equals(className)) {
 					fail("Looked up " + className + ", got a class named " + javaClass.getClassName(), javaClass, null);
 					return m;
 				}
-                JavaClass superClass = javaClass.getSuperClass();
+				JavaClass superClass = javaClass.getSuperClass();
 				if (superClass == null) return m;
 				String superClassName = superClass.getClassName();
 				if (!javaClass.getSuperclassName().equals(superClassName))
-                    fail("requested superclass of " + className + ", expecting to get " + javaClass.getSuperclassName()  
+					fail("requested superclass of " + className + ", expecting to get " + javaClass.getSuperclassName()  
 							+ ", instead got " + superClassName, javaClass, superClass);
 				if (superClass.getSuperclassName().equals(className)
 						|| className.equals(superClassName)) {
-                    fail("superclass of  " + className + " is " + superClassName, javaClass, superClass);
+					fail("superclass of  " + className + " is " + superClassName, javaClass, superClass);
 					return m;
 				}
 				XMethod m2 = createXMethod(superClassName, methodName, m.getSignature(), m.isStatic());
-	            if (m2.isResolved()) {
+				if (m2.isResolved()) {
 					methods.put(m, m2);
 					return m2;
 				}
-	        } catch (ClassNotFoundException e) {
+			} catch (ClassNotFoundException e) {
 				AnalysisContext.reportMissingClass(e);
 			}
 			// ((AbstractMethod)m).markAsResolved();
-	        return m;
+			return m;
 		} finally {
 			recursionDepth.get().exit();
 		}
@@ -453,7 +453,7 @@ public  class XFactory {
 		String methodName = methodGen.getName();
 		String methodSig = methodGen.getSignature();
 		int accessFlags = methodGen.getAccessFlags();
-        return createXMethod(className, methodName, methodSig, accessFlags);
+		return createXMethod(className, methodName, methodSig, accessFlags);
 
 
 	}

@@ -158,7 +158,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 		 if (seen >= IALOAD && seen <= SALOAD || seen >= IASTORE && seen <= SASTORE ) {
 			 Item index  = stack.getStackItem(0);
 			 if (index.getSpecialKind() == Item.AVERAGE_COMPUTED_USING_DIVISION)
-        		 bugReporter.reportBug(new BugInstance(this, "IM_AVERAGE_COMPUTATION_COULD_OVERFLOW", NORMAL_PRIORITY)
+				 bugReporter.reportBug(new BugInstance(this, "IM_AVERAGE_COMPUTATION_COULD_OVERFLOW", NORMAL_PRIORITY)
 				 .addClassAndMethod(this)
 				 .addSourceLine(this));
 		 }
@@ -178,7 +178,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 				(!constantArgumentToShift || valueOfConstantArgumentToShift % 16 != 0)
 				|| seen == I2B && getPrevOpcode(1) == IUSHR && !shiftOfNonnegativeValue
 				&& (!constantArgumentToShift || valueOfConstantArgumentToShift % 8 != 0)) 
-            
+
 				bugReporter.reportBug(new BugInstance(this, "ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT", NORMAL_PRIORITY)
 						.addClassAndMethod(this).addSourceLine(this));
 
@@ -250,24 +250,24 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 		   seen == INVOKESPECIAL && stack.getStackDepth() > 1
 						&& getClassConstantOperand().equals("java/util/GregorianCalendar")
 						&& getNameConstantOperand().equals("<init>")
-                     
+
 		) {
 		   String sig = getSigConstantOperand();
 		   if (sig.startsWith("(III")) {
 			   int pos = sig.length() - 5;
-	           OpcodeStack.Item item = stack.getStackItem(pos);
+			   OpcodeStack.Item item = stack.getStackItem(pos);
 			   Object o = item.getConstant();
 			   if (o != null && o instanceof Integer) {
 				   int v = (Integer) o;
-	               if (v < 0 || v > 11)
+				   if (v < 0 || v > 11)
 					   bugReporter.reportBug(new BugInstance(this, "DMI_BAD_MONTH", NORMAL_PRIORITY)
 					   .addClassAndMethod(this)
 					   .addInt(v).describe(IntAnnotation.INT_VALUE)
-	                   .addCalledMethod(this)
+					   .addCalledMethod(this)
 					   .addSourceLine(this)
 					   );
 			   }
-	       }
+		   }
 		}
 
 
@@ -302,7 +302,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 				OpcodeStack.Item item = stack.getStackItem(1);
 				if (item.getSpecialKind() != OpcodeStack.Item.MATH_ABS)
 					badlyComputingOddState++;
-                else  badlyComputingOddState = 0;
+				else  badlyComputingOddState = 0;
 			}
 			else badlyComputingOddState = 0;
 			break;
@@ -315,7 +315,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 				   bugReporter.reportBug(new BugInstance(this, "IM_BAD_CHECK_FOR_ODD", NORMAL_PRIORITY)
 						 .addClassAndMethod(this)
 						 .addSourceLine(this));
-            }
+			}
 				badlyComputingOddState = 0;
 			break;
 		}
@@ -325,11 +325,11 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 				  && (getNameConstantOperand().equals("toString")
 					  && getSigConstantOperand().equals("()Ljava/lang/String;")
 					  || getNameConstantOperand().equals("append")
-                      && getSigConstantOperand().equals("(Ljava/lang/Object;)Ljava/lang/StringBuilder;") && getClassConstantOperand().equals("java/lang/StringBuilder")
+					  && getSigConstantOperand().equals("(Ljava/lang/Object;)Ljava/lang/StringBuilder;") && getClassConstantOperand().equals("java/lang/StringBuilder")
 					  || getNameConstantOperand().equals("append")
 					  && getSigConstantOperand().equals("(Ljava/lang/Object;)Ljava/lang/StringBuffer;") && getClassConstantOperand().equals("java/lang/StringBuffer")
 					  )
-                  ) {
+				  ) {
 			  String classConstants = getClassConstantOperand();
 			  OpcodeStack.Item item = stack.getStackItem(0);
 			  String signature = item.getSignature();
@@ -341,48 +341,48 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 
 		  if (previousMethodInvocation != null && prevOpCode == INVOKESPECIAL && seen == INVOKEVIRTUAL) {
 			String classNameForPreviousMethod = previousMethodInvocation.getClassName();
-            String classNameForThisMethod = getClassConstantOperand();
+			String classNameForThisMethod = getClassConstantOperand();
 			if (classNameForPreviousMethod.startsWith("java.lang.") 
 					  && classNameForPreviousMethod.equals(classNameForThisMethod.replace('/','.'))
 					  && getNameConstantOperand().endsWith("Value")
-                      && getSigConstantOperand().length() == 3) {
+					  && getSigConstantOperand().length() == 3) {
 				if (getSigConstantOperand().charAt(2) == previousMethodInvocation.getSignature().charAt(1))
 				 bugReporter.reportBug(new BugInstance(this, "BX_BOXING_IMMEDIATELY_UNBOXED", NORMAL_PRIORITY)
 				 .addClassAndMethod(this)
-                 .addSourceLine(this));
+				 .addSourceLine(this));
 				else 
 				bugReporter.reportBug(new BugInstance(this, "BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION", NORMAL_PRIORITY)
 				.addClassAndMethod(this)
-                .addSourceLine(this));
+				.addSourceLine(this));
 					}
 
 		  }
-	
+
 		  if (seen == INVOKESTATIC)
 			  if ((getNameConstantOperand().startsWith("assert") || getNameConstantOperand().startsWith("fail"))&& getMethodName().equals("run")
 				  && implementsRunnable(getThisClass())) {
-              try {
+			  try {
 				  JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(getClassConstantOperand().replace('/', '.'));
 				  if (targetClass.getSuperclassName().startsWith("junit")) {
 					  bugReporter.reportBug(new BugInstance(this, "IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD", NORMAL_PRIORITY)
-                      .addClassAndMethod(this)
+					  .addClassAndMethod(this)
 					  .addSourceLine(this));
 
 				  }
-              } catch (ClassNotFoundException e) {
+			  } catch (ClassNotFoundException e) {
 				 AnalysisContext.reportMissingClass(e);
 			  }
 
-          }
+		  }
 		stack.sawOpcode(this,seen);
 		if (seen == INVOKESPECIAL && getClassConstantOperand().startsWith("java/lang/")  && getNameConstantOperand().equals("<init>")
 				&& getSigConstantOperand().length() == 4
 				) 
-            
+
 			previousMethodInvocation = XFactory.createReferencedXMethod(this);
 		else if (seen == INVOKESTATIC && getClassConstantOperand().startsWith("java/lang/")  
 				&& getNameConstantOperand().equals("valueOf")
-                && getSigConstantOperand().length() == 4) 
+				&& getSigConstantOperand().length() == 4) 
 				previousMethodInvocation = XFactory.createReferencedXMethod(this);
 		else previousMethodInvocation = null;
 		prevOpCode = seen;
@@ -390,7 +390,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	   boolean implementsRunnable(JavaClass obj) {
 		   if (obj.getSuperclassName().equals("java.lang.Thread")) return true;
 			for(String s : obj.getInterfaceNames())
-                if (s.equals("java.lang.Runnable")) return true;
+				if (s.equals("java.lang.Runnable")) return true;
 			return false;
 		}
 

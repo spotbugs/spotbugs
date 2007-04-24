@@ -59,7 +59,7 @@ public class BugAccumulator {
 					bug.addSourceLine(source);
 					if (first) first = false;
 					else bug.describe(SourceLineAnnotation.ROLE_ANOTHER_INSTANCE);
-                }
+				}
 			reporter.reportBug(bug);
 		}
 		map.clear();

@@ -78,11 +78,11 @@ public class BuildNonnullReturnDatabase {
 
 	private void considerMethod(ClassContext classContext, Method method) {
 		if ((method.getReturnType() instanceof ReferenceType)  && classContext.getMethodGen(method) != null) {
-            if (VERBOSE_DEBUG) System.out.println("Check " + method);
+			if (VERBOSE_DEBUG) System.out.println("Check " + method);
 			analyzeMethod(classContext, method);
 		}
 	}
-    protected int returnsReference;
+	protected int returnsReference;
 	protected int returnsNonNull;
 
 	private void analyzeMethod(ClassContext classContext, Method method) {
@@ -93,18 +93,18 @@ public class BuildNonnullReturnDatabase {
 			IsNullValueDataflow inv = classContext.getIsNullValueDataflow(method);
 			boolean guaranteedNonNull = true;
 			for (Iterator<Location> i = cfg.locationIterator(); i.hasNext();) {
-                Location location = i.next();
+				Location location = i.next();
 				InstructionHandle handle = location.getHandle();
 				Instruction ins = handle.getInstruction();
 
 				if (!(ins instanceof ARETURN)) continue;
 				IsNullValueFrame frame = inv.getFactAtLocation(location);
 				if (!frame.isValid()) continue;
-                IsNullValue value = frame.getTopValue();
+				IsNullValue value = frame.getTopValue();
 				if (!value.isDefinitelyNotNull()) {
 					guaranteedNonNull = false;
 					break;
-                }
+				}
 
 			}
 
@@ -113,7 +113,7 @@ public class BuildNonnullReturnDatabase {
 				returnsNonNull++;
 				AnalysisContext.currentAnalysisContext().getReturnValueNullnessPropertyDatabase().setProperty(xmethod, guaranteedNonNull);
 				if (DEBUG) 
-                    System.out.println("Unconditional deref: " + xmethod + "=" + guaranteedNonNull);
+					System.out.println("Unconditional deref: " + xmethod + "=" + guaranteedNonNull);
 
 				}
 

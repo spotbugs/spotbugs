@@ -92,17 +92,17 @@ public class UncallableMethodOfAnonymousClass extends BytecodeScanningDetector {
 		if (obj.isSynthetic())
 			return true;
 		if (obj.isPrivate())
-	        return true;
+			return true;
 		if (obj.isAbstract()) return true;
 
 		String methodName = obj.getName();
 		String sig = obj.getSignature();
 		if (methodName.equals("<init>"))
-	        return true;
+			return true;
 		if (sig.equals("()Ljava/lang/Object;") 
 				&& (methodName.equals("readResolve") 
 						|| methodName.equals("writeReplace")))
-	        return true;
+			return true;
 		if (methodName.startsWith("access$"))
 			return true;
 		return false;
