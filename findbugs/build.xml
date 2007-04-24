@@ -39,7 +39,7 @@
 	<property name="jnlp.dir" value="jnlp"/>
 	<property name="pkg.base" value="edu/umd/cs/findbugs"/>
 	<property name="engine.jar" value="${jar.dir}/findbugs.jar"/>
-	<property name="oneFourCompatibility.jar" value="${jar.dir}/oneFourCompatibility.jar"/>
+	<property name="oneFourCompatibility.jar" value="${build.dir}/oneFourCompatibility.jar"/>
 	<property name="annotations.jar" value="${jar.dir}/annotations.jar"/>
 	<property name="coreplugin.jar" value="${plugin.dir}/coreplugin.jar"/>
 	<property name="gui.jar" value="${jar.dir}/findbugsGUI.jar"/>
@@ -105,7 +105,7 @@
 						destdir="${classes.dir}"
 						source="1.5"
 						target="jsr14"
-						deprecation="on"
+						deprecation="off"
 						debug="on">
 					<classpath refid="findbugs.classpath"/>
 				</javac>
@@ -115,7 +115,7 @@
 						destdir="${classes.dir}"
 						source="1.5"
 						target="1.5"
-						deprecation="on"
+						deprecation="off"
 						debug="on">
 					<classpath refid="findbugs.classpath"/>
 				</javac>
@@ -134,7 +134,7 @@
 						destdir="${classes.dir}"
 						source="1.5"
 						target="1.5"
-						deprecation="on"
+						deprecation="off"
 						debug="on">
 					<classpath refid="findbugs.classpath"/>
 				</javac>
@@ -156,7 +156,7 @@
 				destdir="${classes.dir}"
 				source="1.5"
 				target="1.5"
-				deprecation="on"
+				deprecation="off"
 				debug="on">
 			<classpath refid="tools.classpath"/>
 		</javac>
@@ -166,7 +166,7 @@
 				source="1.5"
 				target="jsr14"
 				debug="on"
-				deprecation="on"
+				deprecation="off"
 				excludes="${pkg.base}/tools/patcomp/**">
 			<classpath refid="tools.classpath"/>
 		</javac>
@@ -175,7 +175,7 @@
 			destdir="${classes.dir}"
 			source="1.5"
 			target="jsr14"
-			deprecation="on"
+			deprecation="off"
 			debug="on">
 			<classpath refid="tools.classpath"/>
 		</javac>
@@ -212,6 +212,7 @@
 		<jar destfile="${oneFourCompatibility.jar}" >
 			<!-- Compiled classes, properties files. -->
 			<fileset dir="${classes.dir}">
+				<exclude name="${pkg.base}/tools/**"/>
 				<exclude name="${pkg.base}/gui2/**"/>
 				<exclude name="${pkg.base}/sourceViewer/**"/>
 				<exclude name="${pkg.base}/annotations/**"/>
@@ -233,6 +234,7 @@
 			  visitors="ResolveAllReferences"
 			  jvmargs="-Xmx600m" >
 		<class location="${oneFourCompatibility.jar}" />
+		<auxClasspath path="${jdk14.jar}"/>
 		</findbugs>
 	<fail if="warningsFound" message="Not compatible with Java 1.4"/>
 	</target>
@@ -661,10 +663,10 @@
 
 
 	<!-- Generate binary and source distributions. -->
-	<target name="dist" depends="bindist,srcdist,jnlp"/>
+	<target name="dist" depends="bindist,srcdist,jnlp,web" description="Complete distribution"/>
 	
 	<!-- Generate binary distribution (both .zip and .tar.gz) -->
-	<target name="bindist" depends="rebuild,docs">
+	<target name="bindist" depends="rebuild,docs" description="Binary distribution">
 		<patternset id="bindist.miscfile.pats">
 			<include name="README.txt"/>
 			<include name="LICENSE*.txt"/>
@@ -722,7 +724,7 @@
 	</target>
 
 	<!-- Build source distribution. -->
-	<target name="srcdist" depends="docs">
+	<target name="srcdist" depends="docs" description="Source distribution">
 		<mkdir dir="${build.dir}/src"/>
 		<delete dir="${build.dir}/src/findbugs-${release.number}"/>
 
