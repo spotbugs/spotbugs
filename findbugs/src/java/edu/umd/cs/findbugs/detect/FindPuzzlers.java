@@ -54,6 +54,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 		badlyComputingOddState = 0;
 		resetIMulCastLong();
 		imul_distance = 10000;
+		ternaryConversionState = 0;
 		super.visit(obj);
 	}
 
@@ -65,6 +66,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 	int best_priority_for_ICAST_INTEGER_MULTIPLY_CAST_TO_LONG ;
 	boolean constantArgumentToShift;
 	boolean shiftOfNonnegativeValue;
+	int ternaryConversionState = 0;
 
 	int badlyComputingOddState;
 	int prevOpCode;
@@ -90,6 +92,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 		 public void sawOpcode(int seen) {
 		stack.mergeJumps(this);
 
+		// System.out.println(getPC() + " " + OPCODE_NAMES[seen] + " " + ternaryConversionState);
 		if (seen == IMUL) {
 			if (imul_distance != 1) resetIMulCastLong();
 			imul_distance = 0;
@@ -340,22 +343,38 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 		  }
 
 		  if (previousMethodInvocation != null && prevOpCode == INVOKESPECIAL && seen == INVOKEVIRTUAL) {
-			String classNameForPreviousMethod = previousMethodInvocation.getClassName();
-			String classNameForThisMethod = getClassConstantOperand();
-			if (classNameForPreviousMethod.startsWith("java.lang.") 
+			  String classNameForPreviousMethod = previousMethodInvocation.getClassName();
+			  String classNameForThisMethod = getClassConstantOperand();
+			  if (classNameForPreviousMethod.startsWith("java.lang.") 
 					  && classNameForPreviousMethod.equals(classNameForThisMethod.replace('/','.'))
 					  && getNameConstantOperand().endsWith("Value")
 					  && getSigConstantOperand().length() == 3) {
-				if (getSigConstantOperand().charAt(2) == previousMethodInvocation.getSignature().charAt(1))
-				 bugReporter.reportBug(new BugInstance(this, "BX_BOXING_IMMEDIATELY_UNBOXED", NORMAL_PRIORITY)
-				 .addClassAndMethod(this)
-				 .addSourceLine(this));
-				else 
-				bugReporter.reportBug(new BugInstance(this, "BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION", NORMAL_PRIORITY)
-				.addClassAndMethod(this)
-				.addSourceLine(this));
-					}
+				  if (getSigConstantOperand().charAt(2) == previousMethodInvocation.getSignature().charAt(1))
+					  bugReporter.reportBug(new BugInstance(this, "BX_BOXING_IMMEDIATELY_UNBOXED", NORMAL_PRIORITY)
+					  .addClassAndMethod(this)
+					  .addSourceLine(this));
+				  else 
+					  bugReporter.reportBug(new BugInstance(this, "BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION", NORMAL_PRIORITY)
+					  .addClassAndMethod(this)
+					  .addSourceLine(this));
+				  ternaryConversionState = 1;
+			  } else ternaryConversionState = 0;
 
+		  } else if (seen == INVOKEVIRTUAL) {
+			  if (getClassConstantOperand().startsWith("java/lang") && getNameConstantOperand().endsWith("Value") && getSigConstantOperand().length() == 3)
+				  ternaryConversionState = 1;
+			  else ternaryConversionState = 0;
+		  }else if (ternaryConversionState == 1) {
+			  if (I2L <= seen && seen <= I2S) 
+				  ternaryConversionState = 2;
+			  else ternaryConversionState = 0;
+			  }
+		  else if (ternaryConversionState == 2) {
+			  ternaryConversionState = 0;
+			  if (seen == GOTO) 
+				  bugReporter.reportBug(new BugInstance(this, "BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR", NORMAL_PRIORITY)
+				  .addClassAndMethod(this)
+				  .addSourceLine(this));
 		  }
 
 		  if (seen == INVOKESTATIC)

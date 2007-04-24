@@ -1791,6 +1791,22 @@ dangerous methods in the Java libraries.</em> -- Joshua Bloch</p>
   </BugPattern>
 
 
+  <BugPattern type="BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR">
+    <ShortDescription>Primitive value is unboxed and coerced for ternary operator</ShortDescription>
+    <LongDescription>Primitive value is unboxed and coerced for ternary operator</LongDescription>
+    <Details>
+<![CDATA[
+  <p>A wrapped primative value is unboxed and converted to another primative type as part of the
+evaluation of a conditional ternary operator (the <code> b ? e1 : e2</code> operator). The
+semantics of Java mandate that if <code>e1</code> and <code>e2</code> are wrapped
+numeric values, the values are unboxed and converted/coerced to their common  type (e.g,
+if <code>e1</code> is of type <code>Integer</code> 
+and <code>e2</code> is of type <code>Float</code>, then <code>e1</code> is unboxed,
+converted to a floating point value, and boxed. See JLS Section 15.25.
+</p>
+]]>
+    </Details>
+  </BugPattern>
   <BugPattern type="BX_BOXING_IMMEDIATELY_UNBOXED">
     <ShortDescription>Primitive value is boxed and then immediately unboxed</ShortDescription>
     <LongDescription>Primitive value is boxed and then immediately unboxed</LongDescription>
@@ -1803,6 +1819,9 @@ to immediately undue the work of the boxing.
 ]]>
     </Details>
   </BugPattern>
+
+
+
   <BugPattern type="BX_BOXING_IMMEDIATELY_UNBOXED_TO_PERFORM_COERCION">
     <ShortDescription>Primitive value is boxed then unboxed to perform primative coercion</ShortDescription>
     <LongDescription>Primitive value is boxed then unboxed to perform primative coercion</LongDescription>
