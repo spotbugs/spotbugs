@@ -91,7 +91,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 		AbstractFilesCollector collector = FilesCollectorFactory.getFilesCollector(this);
 		Collection files = collector.getFiles();
 		FindBugsWorker worker = new FindBugsWorker(this.getProject(), monitor);
-		worker.work(files, false);
+		worker.work(files, true);
 	}
 	
 }
