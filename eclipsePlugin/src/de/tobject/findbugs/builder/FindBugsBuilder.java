@@ -56,7 +56,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 					if (DEBUG) {
 						System.out.println("FULL BUILD");
 					}
-					doBuild(args, monitor);
+					doBuild(args, monitor, kind);
 					break;
 				}
 			case IncrementalProjectBuilder.INCREMENTAL_BUILD :
@@ -64,7 +64,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 					if (DEBUG) {
 						System.out.println("INCREMENTAL BUILD");
 					}
-					doBuild(args, monitor);
+					doBuild(args, monitor, kind);
 					break;
 				}
 			case IncrementalProjectBuilder.AUTO_BUILD :
@@ -72,7 +72,7 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 					if (DEBUG) {
 						System.out.println("AUTO BUILD");
 					}
-					doBuild(args, monitor);
+					doBuild(args, monitor, kind);
 					break;
 				}
 		}
@@ -85,13 +85,14 @@ public class FindBugsBuilder extends IncrementalProjectBuilder {
 	 * 
 	 * @param args A <code>Map</code> containing additional build parameters.
 	 * @param monitor The <code>IProgressMonitor</code> displaying the build progress.
+	 * @param kind TODO
 	 * @throws CoreException
 	 */
-	private void doBuild(final Map args, final IProgressMonitor monitor) throws CoreException {
+	private void doBuild(final Map args, final IProgressMonitor monitor, int kind) throws CoreException {
 		AbstractFilesCollector collector = FilesCollectorFactory.getFilesCollector(this);
 		Collection files = collector.getFiles();
 		FindBugsWorker worker = new FindBugsWorker(this.getProject(), monitor);
-		worker.work(files, true);
+		worker.work(files, kind != IncrementalProjectBuilder.FULL_BUILD);
 	}
 	
 }
