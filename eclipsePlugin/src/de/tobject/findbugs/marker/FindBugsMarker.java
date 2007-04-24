@@ -37,7 +37,6 @@ public class FindBugsMarker {
 	public static final String NAME_NORMAL = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerNormal";
 	public static final String NAME_LOW = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerLow";
 	public static final String NAME_EXPERIMENTAL = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental";
-	public static final String NAME_IGNORE = "edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerIgnore";
 	/**
 	 * Marker attribute recording the bug type.
 	 */

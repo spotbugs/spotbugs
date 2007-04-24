@@ -54,9 +54,11 @@ public class MarkerReporter implements IWorkspaceRunnable {
 		this.project=project;
 	}
 
+    static final boolean EXPERIMENTAL_BUGS = false;
 	public void run(IProgressMonitor monitor) throws CoreException {
 
 		int priority = this.bug.getPriority();
+        
 		String markerName;
 		switch(priority)
 		{
@@ -70,11 +72,12 @@ public class MarkerReporter implements IWorkspaceRunnable {
 				markerName = FindBugsMarker.NAME_LOW;
 				break;
 			case Priorities.EXP_PRIORITY:
+                if (!EXPERIMENTAL_BUGS) return;
 				markerName = FindBugsMarker.NAME_EXPERIMENTAL;
 				break;
 			case Priorities.IGNORE_PRIORITY:
-				markerName = FindBugsMarker.NAME_IGNORE;
-				break;
+                FindbugsPlugin.getDefault().logError("Bug with ignore priority ");
+                return;
 			default:
 				FindbugsPlugin.getDefault().logError("Bug with unknown priority " + priority);
 			return;

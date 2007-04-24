@@ -127,15 +127,7 @@
       <persistent value="true"/>
       <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
    </extension>
-   <extension
-         id="findbugsMarkerIgnore"
-         name="FindBugs Problem (Ignore)"
-         point="org.eclipse.core.resources.markers">
-      <super type="org.eclipse.core.resources.problemmarker"/>
-      <super type="org.eclipse.core.resources.textmarker"/>
-      <persistent value="true"/>
-      <super type="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarker"/>
-   </extension>
+  
 
    <!-- specify custom icon for findbugsMarker -->
    <extension point="org.eclipse.ui.editors.annotationTypes">
@@ -154,10 +146,6 @@
       <type
             markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerExperimental"
             name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationExperimental"
-            super="org.eclipse.ui.workbench.texteditor.warning"/>
-      <type
-            markerType="edu.umd.cs.findbugs.plugin.eclipse.findbugsMarkerIgnore"
-            name="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationIgnore"
             super="org.eclipse.ui.workbench.texteditor.warning"/>
   </extension> 
   <extension point="org.eclipse.ui.editors.markerAnnotationSpecification">
@@ -182,15 +170,9 @@
       <specification
             annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationExperimental"
             icon="icons/buggy-tiny-green.png"
-            includeOnPreferencePage="true"
+            includeOnPreferencePage="false"
             label="fbWarningExperimental"
             quickFixIcon="icons/buggy-tiny-green.png"/>
-      <specification
-            annotationType="edu.umd.cs.findbugs.plugin.eclipse.findbugsWarningAnnotationIgnore"
-            icon="icons/buggy-tiny-blue.png"
-            includeOnPreferencePage="true"
-            label="fbWarningIgnore"
-            quickFixIcon="icons/buggy-tiny-blue.png"/>
    </extension>
 
    <extension
