@@ -20,8 +20,12 @@
 package edu.umd.cs.findbugs.filter;
 
 
+import java.io.IOException;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class MethodMatcher implements Matcher {
 	private NameMatch name;
@@ -45,6 +49,9 @@ public class MethodMatcher implements Matcher {
 		if (signature != null && !signature.equals(methodAnnotation.getMethodSignature()))
 			return false;
 		return true;
+	}
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		xmlOutput.openCloseTag("Method", new XMLAttributeList().addAttribute("name", name.getSpec()).addAttribute("signature",signature));
 	}
 }
 

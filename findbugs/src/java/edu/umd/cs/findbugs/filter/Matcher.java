@@ -19,7 +19,10 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import java.io.IOException;
+
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Match BugInstances for some feature.
@@ -35,6 +38,8 @@ public interface Matcher {
 	 * @return true if the BugInstance matches, false if not
 	 */
 	public boolean match(BugInstance bugInstance);
+	
+	public void writeXML(XMLOutput xmlOutput)  throws IOException;
 }
 
 // vim:ts=4

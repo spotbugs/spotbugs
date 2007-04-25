@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
@@ -109,6 +110,18 @@ public class XMLAttributeList {
 			throw new NullPointerException("value must be nonnull");
 		nameValuePairList.add(new NameValuePair(name, value));
 		return this;
+	}
+
+	/**
+	 * Add a single attribute name and value.
+	 *
+	 * @param name  the attribute name
+	 * @param value the attribute value
+	 * @return this object (so calls to addAttribute() can be chained)
+	 */
+	public XMLAttributeList addOptionalAttribute(@NonNull String name, @CheckForNull String value) {
+		if (value == null) return this;
+		return addAttribute(name,value);
 	}
 
 	/**

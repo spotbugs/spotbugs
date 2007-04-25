@@ -19,10 +19,13 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * @author rafal@caltha.pl
@@ -51,5 +54,8 @@ public class FieldMatcher implements Matcher {
 		if (signature != null && !signature.equals(fieldAnnotation.getFieldSignature()))
 			return false;
 		return true;
+	}
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		xmlOutput.openCloseTag("Field", new XMLAttributeList().addAttribute("name", name.getSpec()).addAttribute("signature",signature));
 	}
 }

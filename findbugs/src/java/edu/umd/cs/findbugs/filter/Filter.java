@@ -20,10 +20,11 @@
 package edu.umd.cs.findbugs.filter;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.Iterator;
 
 import org.dom4j.Attribute;
@@ -34,6 +35,8 @@ import org.dom4j.io.SAXReader;
 
 import edu.umd.cs.findbugs.SystemProperties;
 import edu.umd.cs.findbugs.util.Strings;
+import edu.umd.cs.findbugs.xml.OutputStreamXMLOutput;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Filter to match a subset of BugInstances.
@@ -56,6 +59,7 @@ public class Filter extends OrMatcher {
 		parse(fileName);
 	}
 
+	
 	/**
 	 * Parse and load the given filter file.
 	 * 
@@ -206,13 +210,25 @@ public class Filter extends OrMatcher {
 				System.exit(1);
 			}
 
-			new Filter(argv[0]);
+			Filter filter = new Filter(argv[0]);
+			filter.writeAsXML(System.out);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
 	}
 
+	public void writeAsXML(OutputStream out) throws IOException{
+
+			XMLOutput xmlOutput = new OutputStreamXMLOutput(out);
+			
+			xmlOutput.beginDocument();
+			xmlOutput.openTag("FindBugsFilter");
+			writeXML(xmlOutput);
+			xmlOutput.closeTag("FindBugsFilter");
+			xmlOutput.finish();
+		}
+		
 }
 
 // vim:ts=4

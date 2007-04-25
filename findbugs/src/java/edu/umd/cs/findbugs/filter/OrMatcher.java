@@ -19,9 +19,11 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 
 public class OrMatcher extends CompoundMatcher {
@@ -36,6 +38,11 @@ public class OrMatcher extends CompoundMatcher {
 		return false;
 	}
 
+	public void writeXML(XMLOutput xmlOutput)  throws IOException {
+		xmlOutput.openTag("Or");
+		super.writeXML(xmlOutput);
+		xmlOutput.closeTag("Or");
+	}
 }
 
 // vim:ts=4

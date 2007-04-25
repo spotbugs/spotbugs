@@ -19,11 +19,14 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.LocalVariableAnnotation;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 
 public class LocalMatcher implements Matcher {
@@ -46,5 +49,8 @@ public class LocalMatcher implements Matcher {
 			return false;
 		}
 		return true;
+	}
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		xmlOutput.openCloseTag("Local", new XMLAttributeList().addAttribute("name", name.getSpec()));
 	}
 }

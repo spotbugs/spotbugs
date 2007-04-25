@@ -19,9 +19,12 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public abstract class CompoundMatcher implements Matcher {
 	private List<Matcher> childList = new LinkedList<Matcher>();
@@ -49,6 +52,10 @@ public abstract class CompoundMatcher implements Matcher {
 
 	public Iterator<Matcher> childIterator() {
 		return childList.iterator();
+	}
+	public void writeXML(XMLOutput xmlOutput)  throws IOException {
+		for(Matcher m : childList) 
+			m.writeXML(xmlOutput);
 	}
 }
 

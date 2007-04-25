@@ -149,7 +149,7 @@ public class OutputStreamXMLOutput implements XMLOutput {
 	}
 
 	public void writeCDATA(String cdata) throws IOException {
-		// We just trust fate that the characters being written
+		// FIXME: We just trust fate that the characters being written
 		// don't contain the string "]]>"
 		out.write("<![CDATA[");
 		out.write(cdata);

@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
  */
 public class NameMatch {
 
+	private String spec;
 	private String exact;
 
 	private Pattern pattern;
@@ -47,6 +48,7 @@ public class NameMatch {
 		return pattern.toString();
 	}
 	public NameMatch(String matchSpec) {
+		spec = matchSpec;
 		if (matchSpec != null) {			
 			if (matchSpec.startsWith("~")) {
 				pattern = Pattern.compile(matchSpec.substring(1));
@@ -71,5 +73,8 @@ public class NameMatch {
 		if (pattern != null) 
 			return "regex(" + pattern.toString() + ")";
 		return "any()";
+	}
+	public String getSpec() {
+		return spec;
 	}
 }

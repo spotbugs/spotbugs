@@ -19,9 +19,11 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Match bug instances having one of given codes or patterns.
@@ -30,15 +32,20 @@ import edu.umd.cs.findbugs.BugInstance;
  */
 public class BugMatcher implements Matcher {
 	private StringSetMatch codes;
+
 	private StringSetMatch patterns;
+
 	private StringSetMatch categories;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param codes comma-separated list of bug codes
-	 * @param patterns coma-separated list of bug patterns.
-	 * @param categories coma-separated list of bug categories.
+	 * @param codes
+	 *            comma-separated list of bug codes
+	 * @param patterns
+	 *            coma-separated list of bug patterns.
+	 * @param categories
+	 *            coma-separated list of bug categories.
 	 */
 	public BugMatcher(String codes, String patterns, String categories) {
 		this.codes = new StringSetMatch(codes);
@@ -47,9 +54,22 @@ public class BugMatcher implements Matcher {
 	}
 
 	public boolean match(BugInstance bugInstance) {
-		return codes.match(bugInstance.getAbbrev())
-				|| patterns.match(bugInstance.getType())
-				|| categories.match(bugInstance.getBugPattern().getCategory());
+		return codes.match(bugInstance.getAbbrev()) || patterns.match(bugInstance.getType())
+		        || categories.match(bugInstance.getBugPattern().getCategory());
+	}
+
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		xmlOutput.startTag("Bug");
+		addAttribute(xmlOutput, "code", codes);
+		addAttribute(xmlOutput, "pattern", patterns);
+		addAttribute(xmlOutput, "category", categories);
+		xmlOutput.stopTag(true);
+	}
+
+	public void addAttribute(XMLOutput xmlOutput, String name, StringSetMatch matches) throws IOException {
+		String value = matches.toString();
+		if (value.length() != 0)
+			xmlOutput.addAttribute(name, value);
 	}
 
 }

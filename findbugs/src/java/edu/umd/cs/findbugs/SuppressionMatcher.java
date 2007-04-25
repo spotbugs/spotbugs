@@ -19,12 +19,14 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class SuppressionMatcher implements Matcher {
 	private Map <ClassAnnotation, Collection<WarningSuppressor>> suppressedWarnings
@@ -74,7 +76,9 @@ public class SuppressionMatcher implements Matcher {
 			}
 		return false;
 		}
-
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		  // no-op; these aren't saved to XML
+		}
 
 }
 

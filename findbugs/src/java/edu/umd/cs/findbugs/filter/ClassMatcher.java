@@ -19,9 +19,13 @@
 
 package edu.umd.cs.findbugs.filter;
 
+import java.io.IOException;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.ClassAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.xml.XMLAttributeList;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class ClassMatcher implements Matcher {
 	private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
@@ -42,6 +46,9 @@ public class ClassMatcher implements Matcher {
 		String bugClassName = primaryClassAnnotation.getClassName();
 		if (DEBUG) System.out.println("Matching " + bugClassName + " with " + className);
 		return className.match(bugClassName);
+	}
+	public void writeXML(XMLOutput xmlOutput) throws IOException {
+		xmlOutput.openCloseTag("Class", new XMLAttributeList().addAttribute("name", className.getSpec()));
 	}
 }
 
