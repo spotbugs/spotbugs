@@ -91,6 +91,7 @@ import edu.umd.cs.findbugs.ExitCodes;
  * <li>outputFile         (name of output file to create)
  * <li>pluginList         (list of plugin Jar files to load)
  * <li>projectFile        (project filename)
+ * <li>projectName        (project name, for display in generated HTML)
  * <li>quietErrors        (boolean - default false)
  * <li>relaxed            (boolean - default false)
  * <li>reportLevel        (enum experimental|low|medium|high)
