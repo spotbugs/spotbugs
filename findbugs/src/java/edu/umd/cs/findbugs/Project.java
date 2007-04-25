@@ -43,6 +43,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import edu.umd.cs.findbugs.ba.URLClassPath;
+import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.util.Util;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
@@ -106,6 +107,8 @@ public class Project implements XMLWriteable {
 	public static final String UNNAMED_PROJECT = "<<unnamed project>>";
 
 	private long timestamp = 0L;
+	
+	private Filter exclusionFilter;
 
 	/**
 	 * Create an anonymous project.
@@ -703,6 +706,8 @@ public class Project implements XMLWriteable {
 		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
 		XMLOutputUtil.writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, srcDirList);
 
+		if (exclusionFilter != null)
+			exclusionFilter.writeXML(xmlOutput);
 		xmlOutput.closeTag(BugCollection.PROJECT_ELEMENT_NAME);
 	}
 
@@ -902,6 +907,20 @@ public class Project implements XMLWriteable {
 	public String getProjectName() {
 		return projectName;
 	}
+
+	/**
+     * @param exclusionFilter The exclusionFilter to set.
+     */
+    public void setExclusionFilter(Filter exclusionFilter) {
+	    this.exclusionFilter = exclusionFilter;
+    }
+
+	/**
+     * @return Returns the exclusionFilter.
+     */
+    public Filter getExclusionFilter() {
+	    return exclusionFilter;
+    }
 }
 
 // vim:ts=4
