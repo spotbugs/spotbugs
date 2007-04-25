@@ -39,8 +39,12 @@ public class OrMatcher extends CompoundMatcher {
 	}
 
 	public void writeXML(XMLOutput xmlOutput)  throws IOException {
+		if (numberChildren() == 1) {
+			childIterator().next().writeXML(xmlOutput);
+			return;
+		}
 		xmlOutput.openTag("Or");
-		super.writeXML(xmlOutput);
+		writeChildrenXML(xmlOutput);
 		xmlOutput.closeTag("Or");
 	}
 }

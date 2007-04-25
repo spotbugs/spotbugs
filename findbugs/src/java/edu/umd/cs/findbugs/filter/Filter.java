@@ -224,7 +224,13 @@ public class Filter extends OrMatcher {
 			
 			xmlOutput.beginDocument();
 			xmlOutput.openTag("FindBugsFilter");
-			writeXML(xmlOutput);
+			Iterator<Matcher> i = childIterator();
+			while (i.hasNext()) {
+				AndMatcher child = (AndMatcher) i.next();
+				xmlOutput.openTag("Match");
+				child.writeChildrenXML(xmlOutput);
+				xmlOutput.closeTag("Match");
+			}
 			xmlOutput.closeTag("FindBugsFilter");
 			xmlOutput.finish();
 		}

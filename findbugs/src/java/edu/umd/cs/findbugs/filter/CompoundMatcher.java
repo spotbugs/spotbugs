@@ -53,7 +53,7 @@ public abstract class CompoundMatcher implements Matcher {
 	public Iterator<Matcher> childIterator() {
 		return childList.iterator();
 	}
-	public void writeXML(XMLOutput xmlOutput)  throws IOException {
+	public void writeChildrenXML(XMLOutput xmlOutput)  throws IOException {
 		for(Matcher m : childList) 
 			m.writeXML(xmlOutput);
 	}
