@@ -1,13 +1,13 @@
 
 class FinalizerGuardian {
-    public void free() {
-        // free some JNI native resources
-    }
+	public void free() {
+		// free some JNI native resources
+	}
 
-    private final Object finalizerGuardian = new Object() {
-        @Override
-        protected void finalize() {
+	private final Object finalizerGuardian = new Object() {
+		@Override
+		protected void finalize() {
             free();
-        }
-    };
+		}
+	};
 }

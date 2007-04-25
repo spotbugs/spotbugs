@@ -3,12 +3,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class ShouldDoInDoPriviledged  implements Cloneable {
-	
+
 	static AtomicInteger id = new AtomicInteger();
 	final int x = id.getAndIncrement();
-	
+
 	@Override
-    public ShouldDoInDoPriviledged clone() throws CloneNotSupportedException {
+	public ShouldDoInDoPriviledged clone() throws CloneNotSupportedException {
 		try {
 		ShouldDoInDoPriviledged c = (ShouldDoInDoPriviledged) super.clone();
 		Field xField = ShouldDoInDoPriviledged.class.getField("x");

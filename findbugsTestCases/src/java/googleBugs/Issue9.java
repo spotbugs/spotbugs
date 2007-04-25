@@ -16,7 +16,7 @@ public class Issue9 {
 				}
 			}
 		}
-		
+
 		private void testAnonymousClass() {
 			Thread t = new Thread(new Runnable (){
 				public void run() {

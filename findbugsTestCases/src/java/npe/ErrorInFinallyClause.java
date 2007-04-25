@@ -19,11 +19,11 @@ public class ErrorInFinallyClause {
 				if (sz < 0) break;
 				out.write(buf,0,sz);
 			}
-			
+
 		} finally {
 			in.close(); // TODO: we should report a medium priority NP warning here
 			out.close(); // TODO: we should report a medium priority NP warning here
-			
+
 		}
 	}
 

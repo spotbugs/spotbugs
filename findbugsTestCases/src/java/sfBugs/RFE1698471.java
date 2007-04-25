@@ -7,23 +7,23 @@ import java.util.LinkedHashSet;
  *
  */
 public class RFE1698471 {
-    private static LinkedHashSet<String> files = new LinkedHashSet<String>();
+	private static LinkedHashSet<String> files = new LinkedHashSet<String>();
 
-    static void add(String file) {
-        synchronized(files) {
-            if(files == null)
+	static void add(String file) {
+		synchronized(files) {
+			if(files == null)
                 throw new IllegalStateException();
 
-            files.add(file);
-        }
-    }
+			files.add(file);
+		}
+	}
     public LinkedHashSet<String> getFiles() {
-        LinkedHashSet<String> myFiles;
-        synchronized(files) {
-            myFiles = files;
+		LinkedHashSet<String> myFiles;
+		synchronized(files) {
+			myFiles = files;
             files = null;
-        }
-        return myFiles;
-    }
+		}
+		return myFiles;
+	}
 
 }

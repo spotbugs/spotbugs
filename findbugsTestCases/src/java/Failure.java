@@ -8,7 +8,7 @@ public class Failure {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-	
+
 		Random x=new Random();
 //		for (int y=0; y<50;y++)
 //		{

@@ -1,7 +1,7 @@
 package npe;
 
 public class HandleAssert {
-	
+
 	int f(int x) {
 		Object y = null;
 		if (x == 1) 

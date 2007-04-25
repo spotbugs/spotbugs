@@ -1,7 +1,7 @@
 public abstract class Hashcode implements Comparable {
 
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		return foo + bar;
 	}
 

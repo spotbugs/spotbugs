@@ -23,7 +23,7 @@ public class JXPathMetaModuleExample {
 		Object[] obj = values.toArray();  // guaranteed dereference here
 		return obj;
 	}
-	
+
 	// A variation, in which the NPE only occurs if value == null
 	// and !i.hasNext(). So don't report it.
 	public Object[] addCollectionToListDoNotReport(Collection c, List values) {
@@ -39,7 +39,7 @@ public class JXPathMetaModuleExample {
 		Object[] obj = values.toArray(); // guaranteed dereference here
 		return obj;
 	}
-	
+
 	//	 A variation,which we should  report.
 	// if the test x == null succeeds, we are guaranteed to dereference the
 	// value in x

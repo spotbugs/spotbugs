@@ -28,6 +28,6 @@ public class InnerClassInTestCaseFalsePositive extends TestCase {
 
 	private void doSomething(Object object) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

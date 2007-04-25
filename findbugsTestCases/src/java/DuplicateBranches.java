@@ -66,9 +66,9 @@ public class DuplicateBranches {
 		//int a = 1;
 		switch(a) {
 		  case 1:
-		    return 1;
+			return 1;
 		  case 2:
-		    return 2;
+			return 2;
 		}
 		return -1;
 	}

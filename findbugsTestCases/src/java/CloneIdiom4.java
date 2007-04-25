@@ -6,7 +6,7 @@
  */
 public class CloneIdiom4 implements Cloneable {
 	@Override
-    final public Object clone() throws CloneNotSupportedException {
+	final public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 }

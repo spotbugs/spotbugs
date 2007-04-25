@@ -6,20 +6,20 @@
 		{
 			return false;
 		}		
-		
+
 		public static void main(String[] args)
 		{
 			new Child1().blargh();
 		}
-		
+
 		@Override
-        public void blargh()
+		public void blargh()
 		{
-			
+
 		}
 
 		public void Blargh() {
 			// TODO Auto-generated method stub
-			
+
 		}
 	}

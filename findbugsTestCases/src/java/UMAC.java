@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class UMAC {
-	
-    Serializable x = new Serializable() {
-        private static final long serialVersionUID = 1L;
+
+	Serializable x = new Serializable() {
+		private static final long serialVersionUID = 1L;
         Object writeReplace() throws ObjectStreamException { return this; }
-        Object readResolve() throws ObjectStreamException { return this; }
-    };
+		Object readResolve() throws ObjectStreamException { return this; }
+	};
 	Iterator<Integer> emptyIterator() {
 		return new Iterator<Integer>() {
 
@@ -32,11 +32,11 @@ public class UMAC {
 
 			public void remove() {
 				throw new UnsupportedOperationException();
-				
+
 			}};
 	}
 
-	
+
 	public static Map<String,String> getLoggingMap() {
 		return new HashMap<String, String>() {
 			public String get(String key) {
@@ -45,14 +45,14 @@ public class UMAC {
 				return result;
 			}
 			@Override
-            public String put(String key, String value) {
+			public String put(String key, String value) {
 				String result = super.put(key, value);
 				System.out.println("Map.put("+key+", " + value + ") = " + result);
 				return result;
 			}
 		};
 	}
-	
+
 	private static ClassLoader s_classLoader;
 
 	/**
@@ -60,31 +60,31 @@ public class UMAC {
 	 * false positive UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS due to bridge method?
 	 * @author Dave Brosius
 	 */
-    public static void brosius()
-    {
-        try
+	public static void brosius()
+	{
+		try
         {
-            String primahome = System.getProperty("HOME");
+			String primahome = System.getProperty("HOME");
 
-            if (primahome != null)
-            {
-                final URL[] url = new URL[] {new URL("http://localhost/foo")};
+			if (primahome != null)
+			{
+				final URL[] url = new URL[] {new URL("http://localhost/foo")};
                 AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
-                    {
-                        public ClassLoader run()
-                        {
+					{
+						public ClassLoader run()
+						{
                             s_classLoader = new URLClassLoader(url);
 
-                            return s_classLoader;
-                        }
-                    });
+							return s_classLoader;
+						}
+					});
             }
-        }
-        catch (Exception e)
-        {
+		}
+		catch (Exception e)
+		{
             s_classLoader = null;
-        }
-    }
+		}
+	}
 
 
 }

@@ -12,13 +12,13 @@ public class MessWithOtherPackage extends DumbPublicClass //Hoohoo!
 		System.out.println(MessWithOtherPackage.CreditCardNumbers[2]);
 		System.out.println(MessWithOtherPackage.CreditCardNumbers[3]);
 		System.out.println(MessWithOtherPackage.CreditCardNumbers[4]);
-	
+
 		//TODO?  If Only Findbugs Could Catch This...
 	/* Although the CreditCardNumbers array is package, 
 	 * and the interface it is in is also package, 
 	 * there was a public class that implemented that 
 	 * interface and gave access to this evil program*/
-		
-	
+
+
 	}
 }

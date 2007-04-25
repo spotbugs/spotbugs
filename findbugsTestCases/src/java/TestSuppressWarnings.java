@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 public class TestSuppressWarnings {
 
 	@Override
-    public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		return this == o;
 	}
 }

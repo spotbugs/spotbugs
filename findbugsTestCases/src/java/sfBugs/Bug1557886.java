@@ -16,8 +16,8 @@ import javax.swing.SwingUtilities;
 
  */
 public class Bug1557886 {
-    public void actionPerformed(ActionEvent e) {
-        Component c = (Component) e.getSource();
-        JPopupMenu jpm = (JPopupMenu) SwingUtilities.getAncestorOfClass(JPopupMenu.class, c);
+	public void actionPerformed(ActionEvent e) {
+		Component c = (Component) e.getSource();
+		JPopupMenu jpm = (JPopupMenu) SwingUtilities.getAncestorOfClass(JPopupMenu.class, c);
     }
 }

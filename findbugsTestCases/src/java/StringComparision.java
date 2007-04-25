@@ -4,7 +4,7 @@ class StringComparision {
 	int x, y;
 
 	@Override
-    public String toString() {
+	public String toString() {
 		return x + "," + y;
 	}
 

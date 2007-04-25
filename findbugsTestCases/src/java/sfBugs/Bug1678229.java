@@ -2,34 +2,34 @@ package sfBugs;
 
 public class Bug1678229 {
 
-    private static String staticDevice;
-    private static StringBuffer staticDeviceFactory;
+	private static String staticDevice;
+	private static StringBuffer staticDeviceFactory;
 
-    public void registerDeviceFactory(StringBuffer factory) {
-        staticDeviceFactory = factory;
-    }
+	public void registerDeviceFactory(StringBuffer factory) {
+		staticDeviceFactory = factory;
+	}
 
-    public int open() {
-        if (staticDevice == null) {
-            staticDevice = staticDeviceFactory.toString();
+	public int open() {
+		if (staticDevice == null) {
+			staticDevice = staticDeviceFactory.toString();
         }
-        return staticDevice.hashCode();
-    }
+		return staticDevice.hashCode();
+	}
 
-    private  String device;
-    private  StringBuffer deviceFactory;
+	private  String device;
+	private  StringBuffer deviceFactory;
 
-    public  void registerDeviceFactory2(StringBuffer factory) {
-        deviceFactory = factory;
-    }
+	public  void registerDeviceFactory2(StringBuffer factory) {
+		deviceFactory = factory;
+	}
 
-    public int open2() {
-        if (device == null) {
-            device = deviceFactory.toString();
+	public int open2() {
+		if (device == null) {
+			device = deviceFactory.toString();
         }
-        return device.hashCode();
-    }
+		return device.hashCode();
+	}
 
 
-    
+
 }

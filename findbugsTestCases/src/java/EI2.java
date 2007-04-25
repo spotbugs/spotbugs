@@ -11,7 +11,7 @@ public class EI2 {
 		if (myArray.length > 0)
 			this.myArray = myArray;
 	}
-	
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 

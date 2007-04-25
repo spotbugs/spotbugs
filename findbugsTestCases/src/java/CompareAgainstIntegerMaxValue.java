@@ -4,7 +4,7 @@
  * @author pugh
  */
 public class CompareAgainstIntegerMaxValue {
-	
+
 	int report(int x) {
 		for(int i = 0; i <= Integer.MAX_VALUE; i++)
 			if (i*i == x) return i;

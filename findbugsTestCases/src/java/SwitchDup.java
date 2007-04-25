@@ -4,12 +4,12 @@ public class SwitchDup {
 	public int simpleIf(boolean b) {
 		int n = 5;
 		if (b)
-		       n = n*n + 3;
+			   n = n*n + 3;
 		  else n = n*n + 3;
 
 		return n;
 	}
-	
+
 	public int nestedIf(boolean b) {
 		int n = 5;
 		if (b) {
@@ -21,7 +21,7 @@ public class SwitchDup {
 		}
 		return n;
 	}
-	
+
 	public int simpleCase(int which) {
 		int n = 5;
 		switch (which) {
@@ -35,7 +35,7 @@ public class SwitchDup {
 		}
 		return n;
 	}
-	
+
 	/** Because the cases fall through, there should be
 	 *  no warnings for duplicate switch cases here. */
 	public int casesFallThrough(int which) {
@@ -48,7 +48,7 @@ public class SwitchDup {
 		}
 		return n;
 	}
-	
+
 	public int returnCase(int which) {
 		int n = 5;
 		switch (which) {
@@ -111,13 +111,13 @@ public class SwitchDup {
 		switch(a)
 		{
 		  case 1:
-		    return 1;
+			return 1;
 		  case 2:
-		    return 2;
+			return 2;
 		}
 		throw new IllegalArgumentException();
 	}
-	
+
 
 	enum Code {
 		A, B
@@ -138,5 +138,5 @@ public class SwitchDup {
 			break;
 		}
 	}
-	
+
 }

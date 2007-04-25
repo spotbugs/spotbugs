@@ -63,15 +63,15 @@ public class MapTests {
 		map.get(5.0);
 		map.remove('r');
 	}
-	
+
 	ConcurrentHashMap<String, String> fieldMap;
-	
+
 	public String test5NoBugs() {
 		return fieldMap.get("Hello");
 	}
-	
+
 	public String test5Bugs() {
 		return fieldMap.get(new StringBuffer("Get"));
 	}
-	
+
 }

@@ -8,19 +8,19 @@ import java.util.Stack;
 import java.util.Vector;
 
 class BadCast {
-    
-    Object myField;
-    
+
+	Object myField;
+
     int fieldCheck() {
-        if (myField instanceof String) 
-            return ((String)myField).length();
-        return myField.hashCode();
+		if (myField instanceof String) 
+			return ((String)myField).length();
+		return myField.hashCode();
     }
-	
+
 	public static <C extends Collection<?>> C smallest(Iterable<C> collections) {
 		return null;
 	}
-	
+
 	public static int sizeOfSmallest(Iterable<? extends Set<?>> sets) {
 		// TODO: False positive BC here
 		Set<?> s = smallest(sets);
@@ -101,7 +101,7 @@ class BadCast {
 	static Object f(boolean b, Integer i, String s) {
 		return b ? (Integer) i : (String) s;
 	}
-	
+
 	public static int first(Object o) {
 		if (o instanceof Byte[]) {
 			byte b[] = (byte[])o;
@@ -109,7 +109,7 @@ class BadCast {
 		}
 		return 0;
 	}
-	
+
 	public static Serializable getSerializable() {
 		return new String[0];
 	}
@@ -142,7 +142,7 @@ class BadCast {
 			return (String[]) tmp[0];
 		return null;
 	}
-	
+
 	public static String doNotReport(Object o) {
 		if (o == null || o instanceof String)
 			return ((String) o);

@@ -26,7 +26,7 @@ public class GuaranteedFieldDereference {
 		else result -= x.hashCode();
 		return result;
 	}
-	
+
 	String test3Report() {
 		String value = null;
 		StringBuffer result = new StringBuffer();
@@ -43,21 +43,21 @@ public class GuaranteedFieldDereference {
 		result.append(xAsString.trim());
 		return result.toString();
 	}
-	
+
 	void assertTrue(boolean b) {
 		if (!b) throw new RuntimeException("Failed");
 	}
-	
+
 	int test4DoNotReport() {
 		if (x == null) assertTrue(false);
 		return x.hashCode();
 	}
-	
+
 	int test5DoNotReport() {
 		assertTrue(x!=null);
 		return x.hashCode();
 	}
-	
+
 	int test6aReport() {
 		Object y = null;
 		if (x == null) throw new NullPointerException();
@@ -68,14 +68,14 @@ public class GuaranteedFieldDereference {
 		if (x == null) throw new NullPointerException();
 		else return y.hashCode();
 	}
-	
+
 	int test7Report() {
 		Object y = null;
 		if (x == null) assertTrue(false);
 		return y.hashCode();
 	}
-	
-	
+
+
 	int test8ReportMaybe( boolean b1, boolean b2) {
 		int result = 0;
 		Object y = null;
@@ -85,7 +85,7 @@ public class GuaranteedFieldDereference {
 		if (b2) result = 1;
 		else result = 2;
 		// At this point y is null on a complex path
-		
+
 		// at this point, regardless of whether assertTrue is a thrower
 		// or not, we are guaranteed to either dereference y or terminate
 		// abnormally
@@ -93,7 +93,7 @@ public class GuaranteedFieldDereference {
 		result += y.hashCode();
 		return result;
 	}
-	
+
 	int test9Report( boolean b1, boolean b2) {
 		int result = 0;
 		Object y = null;
@@ -103,14 +103,14 @@ public class GuaranteedFieldDereference {
 		if (b2) result = 1;
 		else result = 2;
 		// At this point y is null on a complex path
-		
+
 		// at this point, we will either dereference y or
 		// terminate abnormally
 		if (x == null) throw new IllegalArgumentException("x should not be null");
 		result += y.hashCode();
 		return result;
 	}
-	
+
 	int test10IDontKnow(boolean b1, boolean b2, boolean b3) {
 		int result = 0;
 		Object y = null;
@@ -120,7 +120,7 @@ public class GuaranteedFieldDereference {
 		if (b2) result = 1;
 		else result = 2;
 		// At this point y is null on a complex path
-		
+
 		assertTrue(b1);
 		result += y.hashCode();
 		return result;
@@ -132,10 +132,10 @@ public class GuaranteedFieldDereference {
 		if (b1)
 			System.out.println("b is true");
 		if (b2) throw new IllegalArgumentException("b2 must be false");
-		
+
 		return x.hashCode();
 	}
-	
+
 	int test12DoNotReport() {
 		if (x == null) 
 			System.out.println("x is null");

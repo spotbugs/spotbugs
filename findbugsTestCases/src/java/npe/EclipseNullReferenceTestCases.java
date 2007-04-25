@@ -4067,7 +4067,7 @@ public class EclipseNullReferenceTestCases {
 					o = null;
 				}
 				o/*
-         NN  comment  */.toString();
+		 NN  comment  */.toString();
 				if (b) {
 					o = null;
 				}

@@ -10,7 +10,7 @@ public class OpenDatabase {
 	public void openConnection() throws SQLException {
 		Connection conn = DriverManager.getConnection("jdbc url");
 	}
-	
+
 	public void openDSConnection(DataSource ds) throws SQLException {
 		Connection conn1 = ds.getConnection();
 		Connection conn2 = ds.getConnection("scott", "tiger");

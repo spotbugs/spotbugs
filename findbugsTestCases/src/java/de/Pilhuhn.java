@@ -6,7 +6,7 @@ import java.io.FileOutputStream;
 public abstract class Pilhuhn {
 
 	public abstract void somethingDangerous() throws Exception;
-	
+
 	/** bug 1441505, but i am unable to reproduce */
 	void closem(FileInputStream fis, FileOutputStream fos) {
 		try { somethingDangerous(); }

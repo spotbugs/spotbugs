@@ -15,12 +15,12 @@ class InfiniteRecursiveLoop {
 	}
 
 	@Override
-    public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		return equals(o);
 	}
 
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		int i = System.identityHashCode(this);
 		return i + hashCode();
 	}

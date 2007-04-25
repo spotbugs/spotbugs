@@ -20,7 +20,7 @@ public class DeadStore {
 			set = null;
 		}	
 	}
-	
+
 	public int finalLocalDNR(int a) {
 		final int SCAN = 0; // <<---- complains about this line
 		final int STAR = 1;
@@ -87,7 +87,7 @@ public class DeadStore {
 		return e;
 	}
 
-	
+
 	public enum StateEnum { OK, TIMEDOUT, KILLED, FAILED, OTHER }
 	public StateEnum mutateStatusDoNotReport(StateEnum st) {
 		return st;
@@ -103,9 +103,9 @@ public class DeadStore {
 			default:
 					System.out.println(orig); //setState(status, new StateID(StateEnum.FAILED));
 					break;
-	        }
-	    }
+			}
+		}
 
-	
+
 
 }

@@ -4,7 +4,7 @@ package nullnessAnnotations;
 public class TestNonNull4 extends TestNonNull3 {
 
 	@Override
-    Object f(Object o) {
+	Object f(Object o) {
 		return o;
 	}
 

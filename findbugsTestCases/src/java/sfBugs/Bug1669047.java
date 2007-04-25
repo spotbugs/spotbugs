@@ -4,24 +4,24 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class Bug1669047 {
-    public interface ISessionProvider {
-        public @CheckForNull Object getSession();
-    }
+	public interface ISessionProvider {
+		public @CheckForNull Object getSession();
+	}
 
-    @NonNull
-    private ISessionProvider fProvider;
+	@NonNull
+	private ISessionProvider fProvider;
 
-    public Bug1669047(@NonNull ISessionProvider provider) {
-        fProvider = provider;
-    }
+	public Bug1669047(@NonNull ISessionProvider provider) {
+		fProvider = provider;
+	}
 
-    public void test() {
-        verify(fProvider.getSession());
-        Object checkForNullResult = fProvider.getSession();
+	public void test() {
+		verify(fProvider.getSession());
+		Object checkForNullResult = fProvider.getSession();
         verify(checkForNullResult);
-    }
+	}
 
-    private void verify(@NonNull Object obj) {
-        obj.getClass();
-    }
+	private void verify(@NonNull Object obj) {
+		obj.getClass();
+	}
 }

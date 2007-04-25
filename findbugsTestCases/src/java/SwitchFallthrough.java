@@ -17,7 +17,7 @@ class SwitchFallthrough {
 		default: break;
 		}
 		return result;
-		
+
 	}
 	int notSoBad(int i) {
 		int result = 0;
@@ -86,20 +86,20 @@ class SwitchFallthrough {
 			break;
 		}
 	}
-	
+
 	void test4(int i) {
 		switch (i) {
 			case 0:
 				System.out.println("Leaving ok");
 				System.exit(0);
-				
+
 			case 1:
 				System.out.println("Leaving with error");
 				System.exit(1);
-			
+
 			default:
 		}
-		
+
 		System.out.println("Things seem ok");
 	}
 

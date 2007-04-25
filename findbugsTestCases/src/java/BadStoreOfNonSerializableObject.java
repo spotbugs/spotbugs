@@ -6,7 +6,7 @@ public class BadStoreOfNonSerializableObject implements Serializable{
 	Object x;
 	NotSerializable y;
 	static final class NotSerializable {}
-	
+
 	BadStoreOfNonSerializableObject() {
 		x = new NotSerializable();
 		y = new NotSerializable();

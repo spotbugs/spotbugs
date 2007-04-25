@@ -1,12 +1,12 @@
 
 public class DoNotRunAThread {
-    
-    void f(Runnable r) {
-        r.run();
+
+	void f(Runnable r) {
+		r.run();
     }
-    
-    void g(Thread t) {
-        f(t);
+
+	void g(Thread t) {
+		f(t);
     }
 
 }

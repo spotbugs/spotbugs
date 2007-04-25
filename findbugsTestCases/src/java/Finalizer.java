@@ -14,9 +14,9 @@ public class Finalizer {
 	class Parent
 	{
 		InputStream f;
-		
+
 		@Override
-        protected void finalize()
+		protected void finalize()
 		{
 			//System.out.println("I'M MEEELLLLTTTTINNNNGGGGG");
 			try {
@@ -27,20 +27,20 @@ public class Finalizer {
 			}
 		}
 	}
-	
+
 	class Child extends Parent
 	{
 		@Override
-        protected void finalize()
+		protected void finalize()
 		{
 			System.out.println("nooooooooo");
 		}
 	}
-	
+
 	class Deviant extends Parent
 	{
 		@Override
-        protected void finalize()
+		protected void finalize()
 		{
 		}
 	}

@@ -26,7 +26,7 @@ public class BadResultSetAccessTest {
 		}
 	}
 
-	
+
 	public void test0noloop(ResultSet rs) throws SQLException {
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int numCols = rsmd.getColumnCount();

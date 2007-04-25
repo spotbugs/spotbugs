@@ -1,7 +1,7 @@
 package npe;
 
 public class GuaranteedDereference {
-	
+
 	int test1Report(Object x, boolean b) {
 		int result = 0;
 		if (x == null) result = 42;
@@ -17,7 +17,7 @@ public class GuaranteedDereference {
 		else result -= x.hashCode();
 		return result;
 	}
-	
+
 	String test3Report(Object x) {
 		String value = null;
 		StringBuffer result = new StringBuffer();
@@ -34,21 +34,21 @@ public class GuaranteedDereference {
 		result.append(xAsString.trim());
 		return result.toString();
 	}
-	
+
 	void assertTrue(boolean b) {
 		if (!b) throw new RuntimeException("Failed");
 	}
-	
+
 	int test4DoNotReport(Object x) {
 		if (x == null) assertTrue(false);
 		return x.hashCode();
 	}
-	
+
 	int test5DoNotReport(Object x) {
 		assertTrue(x!=null);
 		return x.hashCode();
 	}
-	
+
 	int test6aReport(Object x) {
 		Object y = null;
 		if (x == null) throw new NullPointerException();
@@ -59,14 +59,14 @@ public class GuaranteedDereference {
 		if (x == null) throw new NullPointerException();
 		else return y.hashCode();
 	}
-	
+
 	int test7Report(Object x) {
 		Object y = null;
 		if (x == null) assertTrue(false);
 		return y.hashCode();
 	}
-	
-	
+
+
 	int test8ReportMaybe(Object x, boolean b1, boolean b2) {
 		int result = 0;
 		Object y = null;
@@ -76,7 +76,7 @@ public class GuaranteedDereference {
 		if (b2) result = 1;
 		else result = 2;
 		// At this point y is null on a complex path
-		
+
 		// at this point, regardless of whether assertTrue is a thrower
 		// or not, we are guaranteed to either dereference y or terminate
 		// abnormally
@@ -84,7 +84,7 @@ public class GuaranteedDereference {
 		result += y.hashCode();
 		return result;
 	}
-	
+
 	int test9Report(Object x, boolean b1, boolean b2) {
 		int result = 0;
 		Object y = null;
@@ -94,14 +94,14 @@ public class GuaranteedDereference {
 		if (b2) result = 1;
 		else result = 2;
 		// At this point y is null on a complex path
-		
+
 		// at this point, we will either dereference y or
 		// terminate abnormally
 		if (x == null) throw new IllegalArgumentException("x should not be null");
 		result += y.hashCode();
 		return result;
 	}
-	
+
 	int test10IDontKnow(Object x, boolean b1, boolean b2, boolean b3) {
 		int result = 0;
 		Object y = null;
@@ -111,7 +111,7 @@ public class GuaranteedDereference {
 		if (b2) result = 1;
 		else result = 2;
 		// At this point y is null on a complex path
-		
+
 		assertTrue(b1);
 		result += y.hashCode();
 		return result;
@@ -123,10 +123,10 @@ public class GuaranteedDereference {
 		if (b1)
 			System.out.println("b is true");
 		if (b2) throw new IllegalArgumentException("b2 must be false");
-		
+
 		return x.hashCode();
 	}
-	
+
 	int test12DoNotReport(Object x) {
 		if (x == null) 
 			System.out.println("x is null");

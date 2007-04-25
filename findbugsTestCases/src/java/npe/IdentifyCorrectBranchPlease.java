@@ -1,7 +1,7 @@
 package npe;
 
 public class IdentifyCorrectBranchPlease {
-	
+
 	int f(boolean b) {
 		Object x = null;
 		if (b) {

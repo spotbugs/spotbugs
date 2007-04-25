@@ -25,16 +25,16 @@ class DumbMethodInvocations implements Iterator {
 
 	public void remove() {
 	}
-	
+
 	public void falsePositive() {
 		Date today = Calendar.getInstance().getTime();
 		System.out.println(today);
 		today.setDate(16);
 		System.out.println(today);
 	}
-    
-    double convertToDouble(int i) {
-        return Double.longBitsToDouble(i);
+
+	double convertToDouble(int i) {
+		return Double.longBitsToDouble(i);
     }
 
 }

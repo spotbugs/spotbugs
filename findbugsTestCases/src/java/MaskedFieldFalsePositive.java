@@ -9,6 +9,6 @@ public class MaskedFieldFalsePositive extends FilterInputStream {
 		super(in);
 		this.in = in;
 	}
-	
+
 
 }

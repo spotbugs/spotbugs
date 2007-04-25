@@ -12,7 +12,7 @@ public class InfiniteRecursiveLoopFalsePositive {
 	static class Inner extends InfiniteRecursiveLoopFalsePositive {
 
 		@Override
-        double f(double y) {
+		double f(double y) {
 			return y * y;
 		}
 	}

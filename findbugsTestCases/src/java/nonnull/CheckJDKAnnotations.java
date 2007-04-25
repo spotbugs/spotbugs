@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 public class CheckJDKAnnotations {
-	
+
 	Future falsePositive(ExecutorService e, Runnable r) {
 		return e.submit(r, null);
 	}

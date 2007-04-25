@@ -31,7 +31,7 @@ class Mwn {
 			done.notifyAll();
 		}
 	}
-	
+
 	public static final String DOMAINCFG = "Hi";
 	boolean b;
 	public void falsePositive() throws InterruptedException {

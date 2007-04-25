@@ -9,7 +9,7 @@ public class January2006 {
 	public static boolean isOdd2(int i) {
 		return i % 2 == 2;
 	}
-	
+
 	public static List<Integer> oddInts(int min, int max) {
 		List<Integer> lst = new LinkedList<Integer>();
 		for(int i = min; i <= max; i++)
@@ -18,7 +18,7 @@ public class January2006 {
 			lst.remove(i);
 		return lst;
 	}
-	
+
 	public static void print(int a[]) {
 		System.out.println(Arrays.asList(a));
 	}

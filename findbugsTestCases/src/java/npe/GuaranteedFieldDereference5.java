@@ -6,7 +6,7 @@ public class GuaranteedFieldDereference5 {
 	// We should generate a warning that if the if test fails,
 	// we are guaranteed to get a dereference when we compute
 	// the hashCode
-	
+
 	public int doNotReport(int b) {
 		if (x == null)
 			x = new Object();

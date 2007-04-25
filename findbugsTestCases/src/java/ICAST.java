@@ -13,16 +13,16 @@ public class ICAST {
 		q=(byte)(q>>>16);
 		x=x>>>37;
 		x=x<<37;
-		
+
 		double y=(double)x;
 		y=Math.ceil(y);
 		double z=Math.ceil((double)x);	
 	}
-	
+
 	public int roundUp(int a, int b) {
 		return (int) Math.ceil(a/b);
 	}
-	
+
 	public double doubleDivision(int a, int b) {
 		return (double) (a/b);
 	}
@@ -36,7 +36,7 @@ public class ICAST {
 	public long convertDaysToMilliseconds2(int days) {
 		return 24*60*60*1000*days;
 	}
-	
+
 	public long falsePositive(byte[] value, int offset, long c) {
 		c += ((long)value[offset+22]) << 56;
 		return c;

@@ -6,7 +6,7 @@ public class GuaranteedFieldDereference4 {
 		public Node next;
 	}
 	public Node propertyListTail, propertyListHead;
-	
+
 		 void falsePositive(Node prop) {
 			if (propertyListTail != null) {
 				propertyListTail.next = prop;

@@ -13,14 +13,14 @@ public class ConcurrentModificationBug  extends TestCase {
 				map.remove(s);
 
 	}
-	
+
 	public void testRemoveFoo() {
 		HashMap<String,Object> s = new HashMap<String,Object>();
 		s.put("foo1", "foo1");
 		s.put("foo2", "foo1");
 		s.put("bar", "foo1");
 		removeFoo(s);
-		
+
 	}
 
 }

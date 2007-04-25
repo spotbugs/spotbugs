@@ -9,7 +9,7 @@ public class UnconditionalDerefFalsePositive {
 	}
 
 	@Override
-    public Object clone() {
+	public Object clone() {
 		UnconditionalDerefFalsePositive e = null;
 		try {
 			e = (UnconditionalDerefFalsePositive) super.clone();

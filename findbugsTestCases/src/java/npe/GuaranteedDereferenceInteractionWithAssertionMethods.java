@@ -23,8 +23,8 @@ public class GuaranteedDereferenceInteractionWithAssertionMethods {
 		if (x == null) 
 			reportError();
 		return x.hashCode();
-		
-		
+
+
 	}
 	public void checkForError() {
 
@@ -39,16 +39,16 @@ public class GuaranteedDereferenceInteractionWithAssertionMethods {
 	public int report(Object x, Object y, Object z) {
 		if (x == null && y == null) 
 			reportError();
-			
+
 		if (z == null)
 			z = new Object();
 		return x.hashCode() + z.hashCode();
 	}
-	
+
 	public int report2(Object x, Object y, Object z) {
 		if (x == null && y == null) 
 			reportError();
-			
+
 		if (z == null)
 			z = new Object();
 		int result = x.hashCode() + z.hashCode();

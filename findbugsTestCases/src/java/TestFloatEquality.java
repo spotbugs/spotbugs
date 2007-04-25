@@ -1,9 +1,9 @@
 public class TestFloatEquality {
-    public static final double COIN_100_WEIGHT = 4.8;
+	public static final double COIN_100_WEIGHT = 4.8;
 
-    public boolean validCoin100(double weight) {
-        return weight == COIN_100_WEIGHT;
-    }
+	public boolean validCoin100(double weight) {
+		return weight == COIN_100_WEIGHT;
+	}
 
 	public static void main(String[] args) {
 		final float fConst = 1.0f;
@@ -67,17 +67,17 @@ public class TestFloatEquality {
 			}
 		}
 	}
-    
-    double sum(double n) {
-        double result = 0;
-        for(double count = 0.0; count != n; count += 0.1)
-            result += count;
-        return result;
-    }
 
-    public static final double MY_DOUBLE = 4.5;
-    
-    boolean isMyDouble(double d) {
+	double sum(double n) {
+		double result = 0;
+        for(double count = 0.0; count != n; count += 0.1)
+			result += count;
+		return result;
+	}
+
+	public static final double MY_DOUBLE = 4.5;
+
+	boolean isMyDouble(double d) {
         return d == MY_DOUBLE;
-    }
+	}
 }

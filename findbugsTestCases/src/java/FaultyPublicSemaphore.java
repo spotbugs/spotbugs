@@ -15,7 +15,7 @@ public class FaultyPublicSemaphore extends Thread {
 		final FaultyPublicSemaphore fps = new FaultyPublicSemaphore();
 		Thread t1 = new Thread() {
 			@Override
-            public void run() {
+			public void run() {
 				while (!Thread.interrupted()) {
 					try {
 						Thread.sleep(1000);
@@ -36,7 +36,7 @@ public class FaultyPublicSemaphore extends Thread {
 
 		Thread t2 = new Thread() {
 			@Override
-            public void run() {
+			public void run() {
 				while (!Thread.interrupted()) {
 					try {
 						Thread.sleep(2000);
@@ -81,7 +81,7 @@ public class FaultyPublicSemaphore extends Thread {
 	}
 
 	@Override
-    public void run() {
+	public void run() {
 		try {
 			while (!Thread.interrupted()) {
 				String s;

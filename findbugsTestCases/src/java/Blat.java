@@ -13,7 +13,7 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
 
 	private static class Y extends Thread {
 		@Override
-        public void run() {
+		public void run() {
 		}
 	}
 
@@ -45,7 +45,7 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
 		}
 
 		@Override
-        protected void finalize() {
+		protected void finalize() {
 		}
 	}
 
@@ -54,7 +54,7 @@ public class Blat implements Runnable, java.util.Iterator, Serializable {
 	}
 
 	@Override
-    public void finalize() {
+	public void finalize() {
 		System.out.println("This is dumb");
 	}
 

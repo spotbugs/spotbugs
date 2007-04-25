@@ -3,7 +3,7 @@ import java.io.IOException;
 
 
 public class UseInitCause {
-	
+
 	public String firstLine(BufferedReader r) {
 		try {
 			return r.readLine();

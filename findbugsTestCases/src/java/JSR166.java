@@ -20,9 +20,9 @@ class JSR166 {
 		if (x >= 0)
 			l.unlock();
 	}
-	
+
 	ReadWriteLock rwLock =  new ReentrantReadWriteLock();
-	
+
 	int counter;
 	int readWriteLockTestReadLock() {
 		rwLock.readLock().lock();
@@ -31,8 +31,8 @@ class JSR166 {
 		} finally {
 			rwLock.readLock().unlock();
 		}
-		
-		
+
+
 	}
 
 	int readWriteLockTestWriteLock() {
@@ -42,8 +42,8 @@ class JSR166 {
 		} finally {
 			rwLock.writeLock().unlock();
 		}
-		
-		
+
+
 	}
 	void increment() {
 		l.lock();
@@ -109,9 +109,9 @@ class JSR166 {
 	void awaitNotInLoop(Condition cond) throws InterruptedException {
 		cond.await();
 	}
-	
+
 	final Lock fieldLock = new ReentrantLock();
-	
+
 	int y;
 	int lockOnFieldDoNotReport(Object f) {
 		fieldLock.lock();
@@ -129,5 +129,5 @@ class JSR166 {
 		fieldLock.unlock();
 		return result;
 	}
-	
+
 }

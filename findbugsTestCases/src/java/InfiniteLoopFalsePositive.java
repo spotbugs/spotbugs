@@ -3,7 +3,7 @@ import java.util.Set;
 
 
 public class InfiniteLoopFalsePositive {
-	
+
 	private int f() {
 		if (this instanceof InnerClass) 
 			return ((InnerClass)this).f();
@@ -23,7 +23,7 @@ public class InfiniteLoopFalsePositive {
 			return 42;
 		}
 		@Override
-        public int g() {
+		public int g() {
 			return 42;
 		}
 	}

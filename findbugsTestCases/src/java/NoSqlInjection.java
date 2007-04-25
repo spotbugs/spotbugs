@@ -44,7 +44,7 @@ public class NoSqlInjection {
 			}
 		}
 	}
-	
+
 	public void beSafeSimple() throws SQLException {
 		Statement query = connection.createStatement();
 		query.executeQuery("select * from ANIMAL");

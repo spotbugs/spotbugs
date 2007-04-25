@@ -24,12 +24,12 @@ public class ExternalizableTest2 implements Externalizable {
 		}
 
 		@Override
-        public void readExternal(ObjectInput in) {
+		public void readExternal(ObjectInput in) {
 			x = 42;
 		}
 
 		@Override
-        public void writeExternal(ObjectOutput out) {
+		public void writeExternal(ObjectOutput out) {
 		}
 	}
 

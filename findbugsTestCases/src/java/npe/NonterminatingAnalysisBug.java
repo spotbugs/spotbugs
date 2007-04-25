@@ -11,7 +11,7 @@ public class NonterminatingAnalysisBug implements Cloneable {
 	Field[] fields = new Field[5];
 
 	@Override
-    public NonterminatingAnalysisBug clone() throws CloneNotSupportedException {
+	public NonterminatingAnalysisBug clone() throws CloneNotSupportedException {
 
 			NonterminatingAnalysisBug newObject = (NonterminatingAnalysisBug) super
 					.clone();
@@ -24,7 +24,7 @@ public class NonterminatingAnalysisBug implements Cloneable {
 				}
 
 			return newObject;
-	
+
 	}
 
 }

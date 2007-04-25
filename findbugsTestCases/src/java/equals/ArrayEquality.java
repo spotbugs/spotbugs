@@ -26,6 +26,6 @@ public class ArrayEquality {
 	boolean reportProblemsWithArrayEquality8(StringBuffer[] a, String []b) {
 		return a.equals(b);
 	}
-	
+
 
 }

@@ -2,9 +2,9 @@ package tomcat;
 
 // Inspired by false positive in org.apache.coyote.http11.InternalInputBuffer
 public class InternalInputBuffer {
-	
+
 	byte [] buf = new byte[100];
-	
+
 	Object foo() {
 		return new Object();
 	}

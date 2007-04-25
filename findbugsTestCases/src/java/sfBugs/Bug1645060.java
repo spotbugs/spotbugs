@@ -22,15 +22,15 @@ public class Bug1645060 {
 	 * 
 	 * They seem to have a valid agruement.
 	 */
-	
+
 	/**
 	 * @param args
 	 */
 	public String checkForEven(int myint) {
-		
+
 		if (Math.abs(myint) % 2 == 1)
 			return null;
-		
+
 		return "even";
 	}
 

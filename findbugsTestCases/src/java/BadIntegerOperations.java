@@ -3,11 +3,11 @@ import java.util.Random;
 
 class BadIntegerOperations {
 
-	
+
 	boolean lessThanOrEqualToMaxInt(int i) {
 		return i <= Integer.MAX_VALUE;
 	}
-	
+
 	boolean maxIntGreaterThanOrEqualTo(int i) {
 		return Integer.MAX_VALUE >= i;
 	}
@@ -15,18 +15,18 @@ class BadIntegerOperations {
 	boolean lessThanMaxInt(int i) {
 		return i < Integer.MAX_VALUE;
 	}
-	
+
 	boolean greaterThanMinInt(int i) {
 		return i > Integer.MIN_VALUE;
 	}
-	
+
 	boolean greaterThanOrEqualToMinInt(int i) {
 		return i >= Integer.MIN_VALUE;
 	}
 	boolean minIntLessThanOrEqualTo(int i) {
 		return Integer.MIN_VALUE <= i;
 	}
-	
+
 	int getBytesAsInt(byte b[]) {
 		int l = 0;
 		for (int i = 0; i < b.length; i++)
@@ -58,31 +58,31 @@ class BadIntegerOperations {
 	int shiftInByte(int partialResult, byte b[], int i) {
 		return  partialResult << 8 | b[i];
 	}
-	
+
 	int shiftInByte2(int partialResult, byte b[], int i) {
 		return  b[i] | partialResult << 8;
 	}
-	
+
 	int orInByte(int partialResult, byte b[], int i) {
 		return  (partialResult &0xffffff00) | b[i];
 	}
-	
+
 	int orInByte2(int partialResult, byte b[], int i) {
 		return  b[i] | (partialResult &0xffffff00) ;
 	}
-	
+
 	long shiftInByte(long partialResult, byte b[], int i) {
 		return  partialResult << 8 | b[i];
 	}
-	
+
 	long shiftInByte2(long partialResult, byte b[], int i) {
 		return  b[i] | partialResult << 8;
 	}
-	
+
 	long orInByte(long partialResult, byte b[], int i) {
 		return  (partialResult &0xffffffffffffff00L) | b[i];
 	}
-	
+
 	long orInByte2(long partialResult, byte b[], int i) {
 		return  b[i] | (partialResult & 0xffffffffffffff00L) ;
 	}
@@ -103,7 +103,7 @@ class BadIntegerOperations {
 		values[0] |= len;
 	}
 
-	
+
 	Random r = new Random();
 	SecureRandom sr = new SecureRandom();
 	public int getRandomElement(int a[]) {
@@ -149,7 +149,7 @@ class BadIntegerOperations {
 	public int getRandomIntFalsePositive(int n) {
 		return Math.abs(r.nextInt() % n);
 	}
-	
+
 	/** This method is OK */
 	public static int getHashBucketFalsePositive(Object x, int n) {
 		return Math.abs(x.hashCode() % n);
@@ -160,13 +160,13 @@ class BadIntegerOperations {
 		int i = r.nextInt() % n;
 		return Math.abs(i);
 	}
-	
+
 	/** This method is OK */
 	public static int getHashBucketFalsePositive2(Object x, int n) {
 		int i = x.hashCode() % n;
 		return Math.abs(i);
 	}
-	
+
 	public BadIntegerOperations() {
 	}
 }

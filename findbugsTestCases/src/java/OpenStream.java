@@ -11,7 +11,7 @@ import java.nio.channels.FileChannel;
 public class OpenStream {
 	public OutputStream os;
 
-	
+
 	int simpleObviousBug(String f) throws IOException {
 		FileInputStream in = new FileInputStream(f);
 		return in.read();
@@ -84,7 +84,7 @@ public class OpenStream {
 		FileChannel ch = fis.getChannel();
 		return ch; // stream escapes via FileChannel
 	}
-	
+
 	public static long sizeViaChannel(String fname) throws IOException {
 		FileInputStream fis = new FileInputStream(fname);
 		FileChannel ch = fis.getChannel();

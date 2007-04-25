@@ -8,32 +8,32 @@ import java.io.InputStream;
 
 public class ExpandWar {
 
-    /**
-     * Expand the specified input stream into the specified directory, creating
-     * a file named from the specified relative path.
+	/**
+	 * Expand the specified input stream into the specified directory, creating
+	 * a file named from the specified relative path.
      *
-     * @param input InputStream to be copied
-     * @param docBase Document base directory into which we are expanding
-     * @param name Relative pathname of the file to be created
+	 * @param input InputStream to be copied
+	 * @param docBase Document base directory into which we are expanding
+	 * @param name Relative pathname of the file to be created
      *
-     * @exception IOException if an input/output error occurs
-     */
-    protected static void expand(InputStream input, File docBase, String name)
+	 * @exception IOException if an input/output error occurs
+	 */
+	protected static void expand(InputStream input, File docBase, String name)
         throws IOException {
 
-        File file = new File(docBase, name);
-        // TODO: generate an OS warning for the output stream
-        BufferedOutputStream output =
+		File file = new File(docBase, name);
+		// TODO: generate an OS warning for the output stream
+		BufferedOutputStream output =
             new BufferedOutputStream(new FileOutputStream(file));
-        byte buffer[] = new byte[2048];
-        while (true) {
-            int n = input.read(buffer);
+		byte buffer[] = new byte[2048];
+		while (true) {
+			int n = input.read(buffer);
             if (n <= 0)
-                break;
-            output.write(buffer, 0, n);
-        }
+				break;
+			output.write(buffer, 0, n);
+		}
         output.close();
 
-    }
+	}
 
 }

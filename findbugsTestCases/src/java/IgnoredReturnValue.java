@@ -34,7 +34,7 @@ public class IgnoredReturnValue {
 
 		q.poll();
 	}
-	
+
 	// This method shows one way to check to see if a string encoding name is legal.
 	// Under earlier versions of the JVM, this may have been the best way to do this.
 	// So we shouldn't signal a RV warning here
@@ -45,7 +45,7 @@ public class IgnoredReturnValue {
 		} catch (UnsupportedEncodingException e) {
 			return false;
 		}
-		
+
 	}
 
 }

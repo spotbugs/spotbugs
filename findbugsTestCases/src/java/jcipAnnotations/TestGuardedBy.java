@@ -2,12 +2,12 @@ package jcipAnnotations;
 
 import net.jcip.annotations.GuardedBy;
 public class TestGuardedBy {
-	
+
 	@GuardedBy("this")
 	int x;
 	int y;
 	int z;
-	
+
 	public void setX(int v) {
 		x = v;
 	}

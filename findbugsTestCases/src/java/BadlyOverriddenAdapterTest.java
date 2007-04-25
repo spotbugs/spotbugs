@@ -31,7 +31,7 @@ class GoodlyOverridenAdapterTest extends JFrame {
 			}
 
 			@Override
-            public void windowClosing(WindowEvent we) {
+			public void windowClosing(WindowEvent we) {
 				windowClosing();
 			}
 		});

@@ -34,14 +34,14 @@ public class UnconditionalDeref {
 
 	// @Override
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		return 0;
 	}
 
 	// We report equals() methods which unconditionally dereference the
 	// parameter
 	@Override
-    public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		return o.hashCode() == this.hashCode() && o == this;
 	}
 

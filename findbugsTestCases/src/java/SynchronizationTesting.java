@@ -8,7 +8,7 @@ public class SynchronizationTesting {
 	public static void main(String[] args) {
 		Object o=new Object();
 		synchronized(o) {
-		
+
 		}
 	}
 

@@ -5,7 +5,7 @@ public class InvokeGC {
 	}
 
 	@Override
-    protected void finalize() {
+	protected void finalize() {
 		System.gc();
 	}
 
@@ -30,7 +30,7 @@ public class InvokeGC {
 
 		System.gc();
 	}
-	
+
 	public void tricky2() {
 		try {
 			System.out.println("tricky()");
@@ -42,5 +42,5 @@ public class InvokeGC {
 			System.out.println(i);
 		System.gc();
 	}
-	
+
 }
