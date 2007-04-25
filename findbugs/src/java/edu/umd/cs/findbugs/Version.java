@@ -72,10 +72,6 @@ public class Version {
 		(RELEASE_CANDIDATE > 0
 				? "rc" + RELEASE_CANDIDATE
 				: (PREVIEW > 0 ? "preview" + PREVIEW : "dev-" + ECLIPSE_DATE));
-	private static final String SHORT_ELEASE_SUFFIX_WORD =
-		(RELEASE_CANDIDATE > 0
-				? "rc" + RELEASE_CANDIDATE
-				: (PREVIEW > 0 ? "preview" + PREVIEW : "dev"));
 
 	/**
 	 * Release version string.
@@ -87,7 +83,7 @@ public class Version {
 	 * Version of Eclipse plugin.
 	 */
 	public static final String ECLIPSE_UI_VERSION = 
-		MAJOR + "." + MINOR + "." + PATCHLEVEL + "." + ECLIPSE_DATE + (IS_DEVELOPMENT ? "-" + SHORT_ELEASE_SUFFIX_WORD : "");
+		MAJOR + "." + MINOR + "." + PATCHLEVEL + "." + ECLIPSE_DATE;
 
 	/**
 	 * FindBugs website.
