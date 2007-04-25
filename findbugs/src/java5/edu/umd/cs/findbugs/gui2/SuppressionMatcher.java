@@ -19,11 +19,13 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * A list of all bugs to filter out, only we call it suppressing them
@@ -44,4 +46,7 @@ public class SuppressionMatcher extends ArrayList<BugInstance> implements Matche
 			return false;
 		return super.add(bugInstance);
 	}
+	 public void writeXML(XMLOutput xmlOutput) throws IOException {
+		    throw new UnsupportedOperationException(); 
+	    }
 }

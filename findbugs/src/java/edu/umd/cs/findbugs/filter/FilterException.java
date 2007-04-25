@@ -19,7 +19,7 @@
 
 package edu.umd.cs.findbugs.filter;
 
-public class FilterException extends Exception {
+public class FilterException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public FilterException(String msg) {

@@ -49,6 +49,13 @@ public class Filter extends OrMatcher {
 	private static final boolean DEBUG = SystemProperties.getBoolean("filter.debug");
 
 	/**
+	 * Constructor for empty filter
+	 * 
+	 */
+	public Filter() {
+
+	}
+	/**
 	 * Constructor.
 	 * 
 	 * @param fileName name of the filter file

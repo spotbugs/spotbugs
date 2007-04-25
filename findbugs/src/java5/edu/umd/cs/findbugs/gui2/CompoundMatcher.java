@@ -19,10 +19,12 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import java.io.IOException;
 import java.util.HashSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 
 /**
@@ -40,4 +42,8 @@ public class CompoundMatcher extends HashSet<Matcher> implements Matcher
 				return false;
 		return true;
 	}
+
+    public void writeXML(XMLOutput xmlOutput) throws IOException {
+	    throw new UnsupportedOperationException(); 
+    }
 }

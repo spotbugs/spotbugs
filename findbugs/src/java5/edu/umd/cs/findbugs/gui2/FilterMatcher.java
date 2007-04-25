@@ -19,6 +19,7 @@
 
 package edu.umd.cs.findbugs.gui2;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.lang.RuntimeException;
@@ -27,6 +28,7 @@ import javax.swing.tree.TreePath;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.gui2.BugAspects.StringPair;
+import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
  * Why this wasn't just called Filter is still somewhat of a mystery.
@@ -174,4 +176,8 @@ public class FilterMatcher implements Matcher, Serializable, Comparable<FilterMa
 
 		return this.value.compareTo(that.value);
 	}
+	
+	 public void writeXML(XMLOutput xmlOutput) throws IOException {
+		    throw new UnsupportedOperationException(); 
+	    }
 }

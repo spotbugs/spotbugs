@@ -1,6 +1,6 @@
 /*
- * FindBugs - Find bugs in Java programs
- * Copyright (C) 2005, University of Maryland
+ * FindBugs - Find Bugs in Java programs
+ * Copyright (C) 2006, University of Maryland
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,36 +16,53 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 package edu.umd.cs.findbugs.filter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import edu.umd.cs.findbugs.BugInstance;
-import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 /**
- * Matcher to select BugInstances with a particular priority.
+ * Match bug instances having one of given codes or patterns.
  * 
- * @author David Hovemeyer
+ * @author rafal@caltha.pl
  */
-public class PriorityMatcher implements Matcher {
-	private int priority;
+public class DesignationMatcher implements Matcher {
+	private StringSetMatch designations;
+
+
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param priorityAsString the priority, as a String
-	 * @throws FilterException
+	 * @param designations
+	 *            comma-separated list of designations
+	 * @param patterns
+	 *            coma-separated list of bug patterns.
+	 * @param categories
+	 *            coma-separated list of bug categories.
 	 */
-	public PriorityMatcher(String priorityAsString) {
-			this.priority = Integer.parseInt(priorityAsString);
+	public DesignationMatcher(String designations) {
+		this.designations = new StringSetMatch(designations);
 	}
 
 	public boolean match(BugInstance bugInstance) {
-		return bugInstance.getPriority() == priority;
+		return designations.match(bugInstance.getUserDesignationKey());
 	}
+
 	public void writeXML(XMLOutput xmlOutput) throws IOException {
-		xmlOutput.openCloseTag("Priority", new XMLAttributeList().addAttribute("value", Integer.toString(priority)));
+		xmlOutput.startTag("Designation");
+		addAttribute(xmlOutput, "designations", designations);
+		xmlOutput.stopTag(true);
 	}
+
+	public void addAttribute(XMLOutput xmlOutput, String name, StringSetMatch matches) throws IOException {
+		String value = matches.toString();
+		if (value.length() != 0)
+			xmlOutput.addAttribute(name, value);
+	}
+
 }

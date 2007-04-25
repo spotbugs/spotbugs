@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.URLClassPath;
 import edu.umd.cs.findbugs.filter.Filter;
 import edu.umd.cs.findbugs.util.Util;
@@ -108,7 +109,7 @@ public class Project implements XMLWriteable {
 
 	private long timestamp = 0L;
 	
-	private Filter exclusionFilter;
+	@NonNull private Filter suppressionFilter = new Filter();
 
 	/**
 	 * Create an anonymous project.
@@ -706,8 +707,11 @@ public class Project implements XMLWriteable {
 		XMLOutputUtil.writeElementList(xmlOutput, AUX_CLASSPATH_ENTRY_ELEMENT_NAME, auxClasspathEntryList);
 		XMLOutputUtil.writeElementList(xmlOutput, SRC_DIR_ELEMENT_NAME, srcDirList);
 
-		if (exclusionFilter != null)
-			exclusionFilter.writeXML(xmlOutput);
+		if (suppressionFilter.numberChildren() > 0) {
+			xmlOutput.openTag("SuppressionFilter");
+			suppressionFilter.writeXML(xmlOutput);
+			xmlOutput.closeTag("SuppressionFilter");
+		}
 		xmlOutput.closeTag(BugCollection.PROJECT_ELEMENT_NAME);
 	}
 
@@ -909,17 +913,17 @@ public class Project implements XMLWriteable {
 	}
 
 	/**
-     * @param exclusionFilter The exclusionFilter to set.
+     * @param suppressionFilter The suppressionFilter to set.
      */
-    public void setExclusionFilter(Filter exclusionFilter) {
-	    this.exclusionFilter = exclusionFilter;
+    public void setSuppressionFilter(Filter suppressionFilter) {
+	    this.suppressionFilter = suppressionFilter;
     }
 
 	/**
-     * @return Returns the exclusionFilter.
+     * @return Returns the suppressionFilter.
      */
-    public Filter getExclusionFilter() {
-	    return exclusionFilter;
+    public Filter getSuppressionFilter() {
+	    return suppressionFilter;
     }
 }
 

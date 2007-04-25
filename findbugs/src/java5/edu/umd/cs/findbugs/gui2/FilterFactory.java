@@ -26,48 +26,55 @@ import edu.umd.cs.findbugs.filter.AndMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
 import edu.umd.cs.findbugs.filter.ClassMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.filter.PriorityMatcher;
 
 /**
  * @author pugh
  */
 public class FilterFactory {
-	
+
 	public static AndMatcher makeMatcher(Collection<Sortables> sortables, BugInstance bug) {
 		AndMatcher matcher = new AndMatcher();
-		for(Sortables s : sortables) 
+		for (Sortables s : sortables)
 			matcher.addChild(makeMatcher(s, bug));
 		return matcher;
 	}
 
 	/**
-     * @param s
-     * @param bug
-     * @return
-     */
-    private static Matcher makeMatcher(Sortables s, BugInstance bug) {
-    	switch(s) {
-    	case BUGCODE:
-    		return new BugMatcher(s.getFrom(bug), null, null);
-    	case CATEGORY:
-    		return new BugMatcher(null, null, s.getFrom(bug));
-    	case CLASS:
-    		return new ClassMatcher(s.getFrom(bug));
-    	case DESIGNATION:
-    	case FIRSTVERSION:
-    	case LASTVERSION:
-    	case PACKAGE:
-    	case PRIORITY:
-    		 throw new UnsupportedOperationException();
-    	case TYPE:
-    		return new BugMatcher(null, s.getFrom(bug), null);
-    		
-    	case DIVIDER:
-		default:
-    		throw new IllegalArgumentException();
+	 * @param s
+	 * @param bug
+	 * @return
+	 */
+	private static Matcher makeMatcher(Sortables s, BugInstance bug) {
+		switch (s) {
+		case BUGCODE:
+			return new BugMatcher(s.getFrom(bug), null, null);
+		case CATEGORY:
+			return new BugMatcher(null, null, s.getFrom(bug));
+		case CLASS:
+			return new ClassMatcher(s.getFrom(bug));
+		case DESIGNATION:
+		case FIRSTVERSION:
+		case LASTVERSION:
+			throw new UnsupportedOperationException();
+		case PACKAGE:
+			String p = Sortables.CLASS.getFrom(bug);
+			int lastDot = p.lastIndexOf('.');
+			if (lastDot > 0)
+				p = p.substring(0, lastDot);
+			return new ClassMatcher("~" + p + "\\..*");
+		case PRIORITY:
+			return new PriorityMatcher(Integer.toString(bug.getPriority()));
+			
+		case TYPE:
+			return new BugMatcher(null, s.getFrom(bug), null);
 
-    			 
-    	}
-	  
-    }
+		case DIVIDER:
+		default:
+			throw new IllegalArgumentException();
+
+		}
+
+	}
 
 }
