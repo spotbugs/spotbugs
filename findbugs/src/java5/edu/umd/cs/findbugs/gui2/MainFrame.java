@@ -213,6 +213,9 @@ public class MainFrame extends FBFrame implements LogSync
 	private Object lock = new Object();
 	private boolean newProject = false;
 
+	private Class osxAdapter;
+	private Method osxPrefsEnableMethod;
+
 	private Logger logger = new ConsoleLogger(this);
 	SourceCodeDisplay displayer = new SourceCodeDisplay(this);
 
@@ -259,6 +262,33 @@ public class MainFrame extends FBFrame implements LogSync
 		dialog.setSize(600, 554);
 		dialog.setLocationRelativeTo(this);
 		dialog.setVisible(true);
+	}
+
+	/**
+	 * Show Preferences
+	 */
+	void preferences() {
+		saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
+		PreferencesFrame.getInstance().setLocationRelativeTo(MainFrame.this);
+		PreferencesFrame.getInstance().setVisible(true);
+	}
+
+	/**
+	 * enable/disable preferences menu
+	 */
+	void enablePreferences(boolean b) {
+		preferencesMenuItem.setEnabled(b);
+		if (MAC_OS_X) {
+			if (osxPrefsEnableMethod != null) {
+				Object args[] = {Boolean.valueOf(b)};
+				try {
+					osxPrefsEnableMethod.invoke(osxAdapter, args);
+				}
+				catch (Exception e) {
+					System.err.println("Exception while enabling Preferences menu: " + e);
+				}
+			} 
+		}
 	}
 
 	/**
@@ -701,9 +731,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 		preferencesMenuItem.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
-				saveComments(currentSelectedBugLeaf, currentSelectedBugAspects);
-				PreferencesFrame.getInstance().setLocationRelativeTo(MainFrame.this);
-				PreferencesFrame.getInstance().setVisible(true);
+				preferences();
 			}
 		});
 
@@ -734,7 +762,10 @@ public class MainFrame extends FBFrame implements LogSync
 		editMenu.addSeparator();
 		//editMenu.add(selectAllMenuItem);
 //		editMenu.addSeparator();
-		editMenu.add(preferencesMenuItem);
+		if (!MAC_OS_X) {
+			// Preferences goes in Findbugs menu and is handled by OSXAdapter
+			editMenu.add(preferencesMenuItem);
+		}
 		editMenu.add(sortMenuItem);
 
 		menuBar.add(editMenu);
@@ -1552,11 +1583,15 @@ public class MainFrame extends FBFrame implements LogSync
 			if (MAC_OS_X)
 			{
 				 try {
-					Class osxAdapter = Class.forName("edu.umd.cs.findbugs.gui2.OSXAdapter");
-					Method registerMethod = osxAdapter.getDeclaredMethod("registerMacOSXApplication", MainFrame.class);
+					osxAdapter = Class.forName("edu.umd.cs.findbugs.gui2.OSXAdapter");
+					Class[] defArgs = {MainFrame.class};
+					Method registerMethod = osxAdapter.getDeclaredMethod("registerMacOSXApplication", defArgs);
 					if (registerMethod != null) {
 						registerMethod.invoke(osxAdapter, MainFrame.this);
 					}
+					defArgs[0] = boolean.class;
+					osxPrefsEnableMethod = osxAdapter.getDeclaredMethod("enablePrefs", defArgs);
+					enablePreferences(true);
 				} catch (NoClassDefFoundError e) {
 					// This will be thrown first if the OSXAdapter is loaded on a system without the EAWT
 					// because OSXAdapter extends ApplicationAdapter in its def
@@ -1886,7 +1921,7 @@ public class MainFrame extends FBFrame implements LogSync
 	public void setRebuilding(boolean b)
 	{
 		tableheader.setReorderingAllowed(!b);
-		preferencesMenuItem.setEnabled(!b);
+		enablePreferences(!b);
 		if (b) {
 			SorterDialog.getInstance().freeze();
 			showWaitCard();

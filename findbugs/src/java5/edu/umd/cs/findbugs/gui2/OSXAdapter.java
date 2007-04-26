@@ -70,7 +70,7 @@ public class OSXAdapter extends ApplicationAdapter {
 	@Override
 	public void handlePreferences(ApplicationEvent ae) {
 		if (mainApp != null) {
-//			mainApp.preferences();
+			mainApp.preferences();
 			ae.setHandled(true);
 		} else {
 			throw new IllegalStateException("handlePreferences: MyApp instance " +
@@ -114,6 +114,8 @@ public class OSXAdapter extends ApplicationAdapter {
 			theAdapter = new OSXAdapter(inApp);
 		}
 		theApplication.addApplicationListener(theAdapter);
+
+		theApplication.addPreferencesMenuItem();
 	}
 
 	// Another static entry point for EAWT functionality.  Enables the 
