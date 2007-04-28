@@ -62,7 +62,7 @@ public class FilterFactory {
 			int lastDot = p.lastIndexOf('.');
 			if (lastDot > 0)
 				p = p.substring(0, lastDot);
-			return new ClassMatcher("~" + p + "\\..*");
+			return new ClassMatcher("~" + p + "\\.[^.]+");
 		case PRIORITY:
 			return new PriorityMatcher(Integer.toString(bug.getPriority()));
 			
