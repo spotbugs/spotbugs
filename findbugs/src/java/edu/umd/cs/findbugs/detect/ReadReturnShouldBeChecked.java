@@ -86,6 +86,16 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 		return false;
 	}
 	}
+	private boolean isImageIOInputStream() {
+		try {
+		if (lastCallClass.startsWith("[")) return false;
+		return Repository.instanceOf(
+				lastCallClass,"javax.imageio.stream.ImageInputStream");
+	} catch (ClassNotFoundException e) {
+		return false;
+	}
+	}
+
 	@Override
 	public void sawOpcode(int seen) {
 
@@ -126,7 +136,8 @@ public class ReadReturnShouldBeChecked extends BytecodeScanningDetector
 				&& getSigConstantOperand().equals("(J)J")
 				||  getNameConstantOperand().equals("skipBytes")
 				&& getSigConstantOperand().equals("(I)I"))
-				&& isInputStream() ) {
+				&& isInputStream() 
+				&& !isImageIOInputStream()) {
 			// if not ByteArrayInput Stream
 			// and either no recent calls to length
 			// or it is a BufferedInputStream
