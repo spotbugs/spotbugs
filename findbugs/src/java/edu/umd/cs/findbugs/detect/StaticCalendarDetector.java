@@ -31,8 +31,12 @@ import org.apache.bcel.generic.ObjectType;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
+import edu.umd.cs.findbugs.ba.XFactory;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 
 /**
@@ -44,7 +48,7 @@ import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
  * 
  * @author Daniel Schneller
  */
-public class StaticCalendarDetector extends BytecodeScanningDetector {
+public class StaticCalendarDetector extends OpcodeStackDetector {
 
 	/** External Debug flag set? */
 	private static final boolean DEBUG = Boolean.getBoolean("debug.staticcal");
@@ -223,12 +227,13 @@ public class StaticCalendarDetector extends BytecodeScanningDetector {
 	 * <code>false</code> if further analysis is recommended.
 	 */
 	private boolean simpleCase(int seen) {
+		try {
 		if (seen == GETSTATIC) {
 			String tClassName = getSigConstantOperand();
 			if (tClassName != null && tClassName.startsWith("L") && tClassName.endsWith(";")) {
 				tClassName = tClassName.substring(1, tClassName.length() - 1);
 				ObjectType tType = ObjectTypeFactory.getInstance(tClassName);
-				try {
+
 					if (tType.subclassOf(calendarType)) {
 						seenStaticGetCalendarAt = getPC();
 						return true;
@@ -236,23 +241,37 @@ public class StaticCalendarDetector extends BytecodeScanningDetector {
 						seenStaticGetDateFormatAt = getPC();
 						return true;
 					}
-				} catch (ClassNotFoundException e) {
-					; // ignore
-				}
+			
 			}
 			return false;
 		}
 		if (seen == INVOKEVIRTUAL) {
+			ObjectType tType = ObjectTypeFactory.getInstance(getClassConstantOperand());
+			if (!tType.subclassOf(calendarType) && !tType.subclassOf(dateFormatType)) return false;
+			int numArguments = getNumberArguments(getSigConstantOperand());
+			OpcodeStack.Item invokedOn = stack.getStackItem(numArguments);
+			XField field = invokedOn.getXField();
+			boolean isStatic = field != null && field.isStatic();
+			if (!isStatic && getNameConstantOperand().equals("equals") && numArguments == 1) {
+				OpcodeStack.Item passedAsArgument = stack.getStackItem(0);
+				field = passedAsArgument.getXField();
+				isStatic = field != null && field.isStatic();
+			}
+			if (!isStatic) return false;
 			int tPC = getPC();
-			if (tPC >= seenStaticGetCalendarAt + 3 && tPC < seenStaticGetCalendarAt + 4) {
+			
+			if (tType.subclassOf(calendarType)) {
 				reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE", NORMAL_PRIORITY)
-						.addClassAndMethod(this).addSourceLine(this, tPC));
+						.addClassAndMethod(this).addCalledMethod(this).addOptionalField(field).addSourceLine(this, tPC));
 				return true;
-			} else if (tPC >= seenStaticGetDateFormatAt + 3 && tPC < seenStaticGetDateFormatAt + 4) {
-				reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE", NORMAL_PRIORITY)
-						.addClassAndMethod(this).addSourceLine(this, tPC));
+			} else if (tType.subclassOf(dateFormatType)) {
+				reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE",  NORMAL_PRIORITY)
+						.addClassAndMethod(this).addCalledMethod(this).addOptionalField(field).addSourceLine(this, tPC));
 				return true;
 			}
+		}
+		} catch (ClassNotFoundException e) {
+			AnalysisContext.reportMissingClass(e);
 		}
 		return false;
 	}

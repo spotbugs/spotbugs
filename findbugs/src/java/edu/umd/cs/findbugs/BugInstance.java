@@ -984,10 +984,19 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	 * @param xfield the XField
 	 * @return this object
 	 */
+	public BugInstance addOptionalField(@CheckForNull XField xfield) {
+		if (xfield == null) return this;
+		return addField(xfield.getClassName(), xfield.getName(), xfield.getSignature(), xfield.isStatic());
+	}
+	/**
+	 * Add a field annotation for an XField.
+	 *
+	 * @param xfield the XField
+	 * @return this object
+	 */
 	public BugInstance addField(XField xfield) {
 		return addField(xfield.getClassName(), xfield.getName(), xfield.getSignature(), xfield.isStatic());
 	}
-
 	/**
 	 * Add a field annotation for a FieldDescriptor.
 	 * 
