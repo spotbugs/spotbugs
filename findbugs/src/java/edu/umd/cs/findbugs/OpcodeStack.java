@@ -25,7 +25,6 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -45,10 +44,12 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.visitclass.Constants2;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
@@ -108,9 +109,10 @@ public class OpcodeStack implements Constants2
 
 		public static final Object UNKNOWN = null;
 		private int specialKind;
-		 private String signature;
-		 private Object constValue = UNKNOWN;
+		private String signature;
+		private Object constValue = UNKNOWN;
 		private XField xfield;
+		private XMethod returnValueOf;
 		private int flags;
 		 // private boolean isNull = false;
 		private int registerNumber = -1;
@@ -425,6 +427,14 @@ public class OpcodeStack implements Constants2
 			userValue = value;
 		}
 
+		/**
+		 * 
+		 * @return if this value is the return value of a method, give the method
+		 * invoked
+		 */
+		public @CheckForNull XMethod getReturnValueOf() {
+			return returnValueOf;
+		}
 		public boolean couldBeZero() {
 			return isCouldBeZero();
 		}
@@ -1528,17 +1538,24 @@ public class OpcodeStack implements Constants2
 		if ((clsName.equals("java/util/Random") || clsName.equals("java/security/SecureRandom")) && methodName.equals("nextInt") && signature.equals("()I")) {
 			Item i = pop();
 			i.setSpecialKind(Item.RANDOM_INT);
+			i.returnValueOf = XFactory.createReferencedXMethod(dbc);
 			push(i);
 		}
 		if (clsName.equals("java/lang/Math") && methodName.equals("abs")) {
 			Item i = pop();
 			i.setSpecialKind(Item.MATH_ABS);
+			i.returnValueOf = XFactory.createReferencedXMethod(dbc);
 			push(i);
 		}
 		else if (seen == INVOKEVIRTUAL && methodName.equals("hashCode") && signature.equals("()I")
 				|| seen == INVOKESTATIC && clsName.equals("java/lang/System") && methodName.equals("identityHashCode") && signature.equals("(Ljava/lang/Object;)I")) {
 			Item i = pop();
 			i.setSpecialKind(Item.HASHCODE_INT);
+			i.returnValueOf = XFactory.createReferencedXMethod(dbc);
+			push(i);
+		} else {
+			Item i = pop();
+			i.returnValueOf = XFactory.createReferencedXMethod(dbc);
 			push(i);
 		}
 
