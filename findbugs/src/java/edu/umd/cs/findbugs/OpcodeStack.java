@@ -111,8 +111,8 @@ public class OpcodeStack implements Constants2
 		private int specialKind;
 		private String signature;
 		private Object constValue = UNKNOWN;
-		private XField xfield;
-		private XMethod returnValueOf;
+		private @CheckForNull XField xfield;
+		private @CheckForNull XMethod returnValueOf;
 		private int flags;
 		 // private boolean isNull = false;
 		private int registerNumber = -1;
@@ -145,6 +145,9 @@ public class OpcodeStack implements Constants2
 			if (xfield != null)
 				r+= xfield.hashCode();
 			r *= 31;
+			if (returnValueOf != null)
+				r+= returnValueOf.hashCode();
+			r *= 31;
 			r += flags;
 			r *= 31;
 			r += registerNumber;
@@ -159,6 +162,7 @@ public class OpcodeStack implements Constants2
 			return equals(this.signature, that.signature)
 				&& equals(this.constValue, that.constValue)
 				&& equals(this.xfield, that.xfield)
+				&& equals(this.returnValueOf, that.returnValueOf)
 				&& this.specialKind == that.specialKind
 				&& this.registerNumber == that.registerNumber
 				&& this.flags == that.flags
@@ -228,6 +232,10 @@ public class OpcodeStack implements Constants2
 					buf.append(fieldLoadedFromRegister).append(':');
 				buf.append(xfield);
 				}
+			if (returnValueOf!= null) {
+				buf.append(", loaded from ");
+				buf.append(returnValueOf);
+				}
 			if (isInitialParameter()) {
 				buf.append(", IP");
 				}
@@ -259,6 +267,9 @@ public class OpcodeStack implements Constants2
 			if (equals(i1.xfield,i2.xfield)) {
 				m.xfield = i1.xfield;
 			}
+			if (equals(i1.returnValueOf,i2.returnValueOf)) {
+				m.returnValueOf = i1.returnValueOf;
+			}
 				if (i1.registerNumber == i2.registerNumber)
 				m.registerNumber = i1.registerNumber;
 			if (i1.fieldLoadedFromRegister == i2.fieldLoadedFromRegister)
@@ -284,6 +295,7 @@ public class OpcodeStack implements Constants2
 			this.signature = it.signature;
 			this.constValue = it.constValue;
 			this.xfield = it.xfield;
+			this.returnValueOf = it.returnValueOf;
 			this.registerNumber = it.registerNumber;
 			this.userValue = it.userValue;
 			this.flags = it.flags;
