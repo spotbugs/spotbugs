@@ -47,6 +47,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.AnalysisFeatures;
+import edu.umd.cs.findbugs.ba.ClassMember;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -111,8 +112,7 @@ public class OpcodeStack implements Constants2
 		private int specialKind;
 		private String signature;
 		private Object constValue = UNKNOWN;
-		private @CheckForNull XField xfield;
-		private @CheckForNull XMethod returnValueOf;
+		private @CheckForNull ClassMember source;
 		private int flags;
 		 // private boolean isNull = false;
 		private int registerNumber = -1;
@@ -142,11 +142,8 @@ public class OpcodeStack implements Constants2
 			if (constValue != null)
 				r+= constValue.hashCode();
 			r *= 31;
-			if (xfield != null)
-				r+= xfield.hashCode();
-			r *= 31;
-			if (returnValueOf != null)
-				r+= returnValueOf.hashCode();
+			if (source != null)
+				r+= source.hashCode();
 			r *= 31;
 			r += flags;
 			r *= 31;
@@ -161,8 +158,7 @@ public class OpcodeStack implements Constants2
 
 			return equals(this.signature, that.signature)
 				&& equals(this.constValue, that.constValue)
-				&& equals(this.xfield, that.xfield)
-				&& equals(this.returnValueOf, that.returnValueOf)
+				&& equals(this.source, that.source)
 				&& this.specialKind == that.specialKind
 				&& this.registerNumber == that.registerNumber
 				&& this.flags == that.flags
@@ -226,15 +222,15 @@ public class OpcodeStack implements Constants2
 				buf.append(", ");
 				buf.append(constValue);
 				}
-			if (xfield!= UNKNOWN) {
+			if (source instanceof XField) {
 				buf.append(", ");
 				if (fieldLoadedFromRegister != -1)
 					buf.append(fieldLoadedFromRegister).append(':');
-				buf.append(xfield);
+				buf.append(source);
 				}
-			if (returnValueOf!= null) {
-				buf.append(", loaded from ");
-				buf.append(returnValueOf);
+			if (source instanceof XMethod) {
+				buf.append(", return value from ");
+				buf.append(source);
 				}
 			if (isInitialParameter()) {
 				buf.append(", IP");
@@ -264,13 +260,11 @@ public class OpcodeStack implements Constants2
 				m.signature = i1.signature;
 			if (equals(i1.constValue,i2.constValue))
 				m.constValue = i1.constValue;
-			if (equals(i1.xfield,i2.xfield)) {
-				m.xfield = i1.xfield;
+			if (equals(i1.source,i2.source)) {
+				m.source = i1.source;
 			}
-			if (equals(i1.returnValueOf,i2.returnValueOf)) {
-				m.returnValueOf = i1.returnValueOf;
-			}
-				if (i1.registerNumber == i2.registerNumber)
+
+			if (i1.registerNumber == i2.registerNumber)
 				m.registerNumber = i1.registerNumber;
 			if (i1.fieldLoadedFromRegister == i2.fieldLoadedFromRegister)
 				m.fieldLoadedFromRegister = i1.fieldLoadedFromRegister;
@@ -294,8 +288,7 @@ public class OpcodeStack implements Constants2
 		  public Item(Item it) {
 			this.signature = it.signature;
 			this.constValue = it.constValue;
-			this.xfield = it.xfield;
-			this.returnValueOf = it.returnValueOf;
+			this.source = it.source;
 			this.registerNumber = it.registerNumber;
 			this.userValue = it.userValue;
 			this.flags = it.flags;
@@ -308,13 +301,13 @@ public class OpcodeStack implements Constants2
 		 public Item(String signature, FieldAnnotation f) {
 			this.signature = signature;
 			if (f != null)
-				xfield = XFactory.createXField(f);
+				source = XFactory.createXField(f);
 			fieldLoadedFromRegister = -1;
 		 }
 		public Item(String signature, FieldAnnotation f, int fieldLoadedFromRegister) {
 			this.signature = signature;
 			if (f != null)
-				xfield = XFactory.createXField(f);
+				source = XFactory.createXField(f);
 			this.fieldLoadedFromRegister = fieldLoadedFromRegister;
 		 }
 
@@ -411,10 +404,11 @@ public class OpcodeStack implements Constants2
 		 /** Use getXField instead */
 		 @Deprecated
 		 public FieldAnnotation getFieldAnnotation() {
-			 return FieldAnnotation.fromXField(xfield);
+			 return FieldAnnotation.fromXField(getXField());
 		 }
 		 public XField getXField() {
-			 return xfield;
+			 if (source instanceof XField) return (XField) source;
+			 return null;
 		 }
 		/**
 		 * @param specialKind The specialKind to set.
@@ -445,7 +439,8 @@ public class OpcodeStack implements Constants2
 		 * invoked
 		 */
 		public @CheckForNull XMethod getReturnValueOf() {
-			return returnValueOf;
+			if (source instanceof XMethod) return (XMethod) source;
+			return null;
 		}
 		public boolean couldBeZero() {
 			return isCouldBeZero();
@@ -1539,7 +1534,7 @@ public class OpcodeStack implements Constants2
 			 i.constValue = appenderValue;
 			 if (sbItem != null) {
 				  i.registerNumber = sbItem.registerNumber;
-				  i.xfield = sbItem.xfield;
+				  i.source = sbItem.source;
 				  i.userValue = sbItem.userValue;
 				  if (sbItem.registerNumber >= 0)
 					  setLVValue(sbItem.registerNumber, i );
@@ -1550,24 +1545,24 @@ public class OpcodeStack implements Constants2
 		if ((clsName.equals("java/util/Random") || clsName.equals("java/security/SecureRandom")) && methodName.equals("nextInt") && signature.equals("()I")) {
 			Item i = pop();
 			i.setSpecialKind(Item.RANDOM_INT);
-			i.returnValueOf = XFactory.createReferencedXMethod(dbc);
+			i.source = XFactory.createReferencedXMethod(dbc);
 			push(i);
 		}
 		if (clsName.equals("java/lang/Math") && methodName.equals("abs")) {
 			Item i = pop();
 			i.setSpecialKind(Item.MATH_ABS);
-			i.returnValueOf = XFactory.createReferencedXMethod(dbc);
+			i.source = XFactory.createReferencedXMethod(dbc);
 			push(i);
 		}
 		else if (seen == INVOKEVIRTUAL && methodName.equals("hashCode") && signature.equals("()I")
 				|| seen == INVOKESTATIC && clsName.equals("java/lang/System") && methodName.equals("identityHashCode") && signature.equals("(Ljava/lang/Object;)I")) {
 			Item i = pop();
 			i.setSpecialKind(Item.HASHCODE_INT);
-			i.returnValueOf = XFactory.createReferencedXMethod(dbc);
+			i.source = XFactory.createReferencedXMethod(dbc);
 			push(i);
 		} else {
 			Item i = pop();
-			i.returnValueOf = XFactory.createReferencedXMethod(dbc);
+			i.source = XFactory.createReferencedXMethod(dbc);
 			push(i);
 		}
 
