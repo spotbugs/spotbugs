@@ -25,6 +25,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.filter.AndMatcher;
 import edu.umd.cs.findbugs.filter.BugMatcher;
 import edu.umd.cs.findbugs.filter.ClassMatcher;
+import edu.umd.cs.findbugs.filter.DesignationMatcher;
 import edu.umd.cs.findbugs.filter.Matcher;
 import edu.umd.cs.findbugs.filter.PriorityMatcher;
 
@@ -54,6 +55,8 @@ public class FilterFactory {
 		case CLASS:
 			return new ClassMatcher(s.getFrom(bug));
 		case DESIGNATION:
+			return new DesignationMatcher(s.getFrom(bug));
+			
 		case FIRSTVERSION:
 		case LASTVERSION:
 			throw new UnsupportedOperationException();
