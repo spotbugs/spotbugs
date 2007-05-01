@@ -34,7 +34,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ObjectTypeFactory;
-import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
@@ -258,15 +257,14 @@ public class StaticCalendarDetector extends OpcodeStackDetector {
 				isStatic = field != null && field.isStatic();
 			}
 			if (!isStatic) return false;
-			int tPC = getPC();
 			
 			if (tType.subclassOf(calendarType)) {
 				reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE", NORMAL_PRIORITY)
-						.addClassAndMethod(this).addCalledMethod(this).addOptionalField(field).addSourceLine(this, tPC));
+						.addClassAndMethod(this).addCalledMethod(this).addOptionalField(field).addSourceLine(this));
 				return true;
 			} else if (tType.subclassOf(dateFormatType)) {
 				reporter.reportBug(new BugInstance(this, "STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE",  NORMAL_PRIORITY)
-						.addClassAndMethod(this).addCalledMethod(this).addOptionalField(field).addSourceLine(this, tPC));
+						.addClassAndMethod(this).addCalledMethod(this).addOptionalField(field).addSourceLine(this));
 				return true;
 			}
 		}
