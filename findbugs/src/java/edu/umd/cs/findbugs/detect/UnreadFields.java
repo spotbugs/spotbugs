@@ -24,6 +24,7 @@ import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.util.MultiMap;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 import java.util.*;
@@ -51,6 +52,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	Set<XField> staticFields = new HashSet<XField>();
 	Set<XField> declaredFields = new TreeSet<XField>();
 	Set<XField> containerFields = new TreeSet<XField>();
+	MultiMap<XField,String> unknownAnnotation = new MultiMap<XField,String>(LinkedList.class);
+	
 	Set<String> abstractClasses = new HashSet<String>();
 	Set<String> hasNonAbstractSubClass = new HashSet<String>();
 	Set<String> classesScanned = new HashSet<String>();
@@ -200,7 +203,8 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		if (isInjectionAttribute(annotationClass)) {
 			containerFields.add(XFactory.createXField(this));
 		}
-
+		if (!annotationClass.startsWith("edu.umd.cs.findbugs") && !annotationClass.startsWith("javax.lang"))
+			unknownAnnotation.add(XFactory.createXField(this), annotationClass);
 
 	}
 	/**
@@ -209,10 +213,12 @@ public class UnreadFields extends BytecodeScanningDetector  {
 	 */
 	private boolean isInjectionAttribute(String annotationClass) {
 		if ( annotationClass.startsWith("javax.annotation.") 
-				|| annotationClass.startsWith("javax.ejb")|| annotationClass.equals("org.jboss.seam.annotations.In")  
+				|| annotationClass.startsWith("javax.ejb")
+				|| annotationClass.equals("org.jboss.seam.annotations.In")  
 				|| annotationClass.startsWith("javax.persistence")
 				|| annotationClass.endsWith("SpringBean")
-				|| annotationClass.equals("com.google.inject.Inject"))
+				|| annotationClass.equals("com.google.inject.Inject")
+				|| annotationClass.startsWith("org.nuxeo.common.xmap.annotation"))
 			return true;
 		int lastDot = annotationClass.lastIndexOf('.');
 		String lastPart = annotationClass.substring(lastDot+1);
@@ -601,7 +607,37 @@ public class UnreadFields extends BytecodeScanningDetector  {
 		Set<XField> writeOnlyFields = declaredFields;
 		writeOnlyFields.removeAll(readFields);
 
-
+		Map<String, Integer> count = new HashMap<String, Integer>();
+		for (XField f : nullOnlyFields) {
+			int increment = 3;
+			Collection<ProgramPoint> assumedNonNullAt = assumedNonNull.get(f);
+			if (assumedNonNullAt != null)
+				increment += assumedNonNullAt.size();
+			for(String s : unknownAnnotation.get(f)) {
+				Integer value = count.get(s);
+				if (value == null) 
+					count.put(s,increment);
+				else count.put(s,value+increment);
+			}	
+		}
+		Map<XField, Integer> maxCount = new HashMap<XField, Integer>();
+		
+		LinkedList<XField> assumeReflective = new LinkedList<XField>();
+		for (XField f : nullOnlyFields) {
+			int myMaxCount = 0;
+			for(String s : unknownAnnotation.get(f)) {
+				Integer value = count.get(s);
+				if (value != null && myMaxCount < value) myMaxCount = value;
+			}
+			if (myMaxCount > 0)
+				maxCount.put(f, myMaxCount);
+			if (myMaxCount > 15)
+				assumeReflective.add(f);
+		}
+				
+		readOnlyFields.removeAll(assumeReflective);
+		nullOnlyFields.removeAll(assumeReflective);
+				
 		for (XField f : notInitializedInConstructors) {
 			String fieldName = f.getName();
 			String className = f.getClassName();
@@ -612,6 +648,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 					) {
 				int priority = LOW_PRIORITY;
 				if (assumedNonNull.containsKey(f)) 
+					priority--;
 				bugReporter.reportBug(new BugInstance(this,
 						"UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR",
 						priority)
@@ -630,7 +667,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				int priority = NORMAL_PRIORITY;
 				if (!(fieldSignature.charAt(0) == 'L' || fieldSignature.charAt(0) == '['))
 					priority++;
-
+				if (maxCount.containsKey(f)) priority++;
 				bugReporter.reportBug(addClassFieldAndAccess(new BugInstance(this,
 						"UWF_UNWRITTEN_FIELD",
 						priority),f));
@@ -656,17 +693,27 @@ public class UnreadFields extends BytecodeScanningDetector  {
 				System.out.println("Ready to report");
 			}
 			int priority = NORMAL_PRIORITY;
+			if (maxCount.containsKey(f)) priority++;
 			if (abstractClasses.contains(f.getClassName())) {
 				priority++;
 				if (! hasNonAbstractSubClass.contains(f.getClassName())) priority++;
 			}
 			// if (fieldNamesSet.contains(f.getName())) priority++;
 			if (assumedNonNull.containsKey(f)) {
-				priority--;
-				for (ProgramPoint p : assumedNonNull.get(f))
+				int npPriority = priority;
+			
+				HashSet<ProgramPoint> assumedNonNullAt = assumedNonNull.get(f);
+				if (assumedNonNullAt.size() > 14) {
+					npPriority+=2;
+				} else if (assumedNonNullAt.size() > 6) {
+					npPriority++;
+				} else {
+					priority--;
+				}
+				for (ProgramPoint p : assumedNonNullAt)
 					bugReporter.reportBug(new BugInstance(this,
 							"NP_UNWRITTEN_FIELD",
-							NORMAL_PRIORITY)
+							npPriority)
 							.addClassAndMethod(p.method)
 							.addField(f)
 							.addSourceLine(p.sourceLine)
