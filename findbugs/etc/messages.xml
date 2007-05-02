@@ -295,6 +295,16 @@ detector looks for places where those methods might be invoked.
     </Details>
   </Detector>
 
+  <Detector class="edu.umd.cs.findbugs.detect.FinalizerNullsFields">
+  	<Details>
+<![CDATA[
+<p> This detector looks for finalizers that null out fields of a class.  
+This does not help the garbage collector in any way, the nulling out of fields has no effect.
+</p>
+]]>
+    </Details>
+  </Detector>
+
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround">
     <Details>
 <![CDATA[
@@ -1978,6 +1988,17 @@ be used to make the prepared statement do something unexpected and undesirable.
 ]]>
     </Details>
   </BugPattern>
+
+  <BugPattern type="FI_FINALIZER_NULLS_FIELDS">
+    <ShortDescription>Finalizer nulls fields</ShortDescription>
+    <LongDescription>{3} is set to null inside a finalize method </LongDescription>
+	<Details>
+<![CDATA[
+  <p> This finalizer nulls out fields.  This is usually an error, as it does not aid garbage collection,
+  and the object is going to be garbage collected anyway.  
+]]>
+	</Details>
+   </BugPattern>
 
   <BugPattern type="FI_PUBLIC_SHOULD_BE_PROTECTED">
     <ShortDescription>Finalizer should be protected, not public</ShortDescription>
