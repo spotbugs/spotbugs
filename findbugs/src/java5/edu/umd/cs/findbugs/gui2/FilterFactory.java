@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.filter.PriorityMatcher;
  */
 public class FilterFactory {
 
-	public static AndMatcher makeMatcher(Collection<Sortables> sortables, BugInstance bug) {
+	public static Matcher makeMatcher(Collection<Sortables> sortables, BugInstance bug) {
 		AndMatcher matcher = new AndMatcher();
 		for (Sortables s : sortables)
 			matcher.addChild(makeMatcher(s, bug));
