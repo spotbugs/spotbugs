@@ -275,6 +275,14 @@ that are probably intended to but do not override methods in a superclass.
 ]]>
     </Details>
   </Detector>
+  
+  <Detector class="edu.umd.cs.findbugs.detect.DontUseEnum">
+    <Details>
+<![CDATA[
+<p>Checks that fields and methods don't use the name assert or enum as they are keywords in Java 5.</p>
+]]>
+    </Details>
+  </Detector>
 
   <Detector class="edu.umd.cs.findbugs.detect.URLProblems">
     <Details>
@@ -1497,6 +1505,18 @@ which violates the standard contract for clone().</p>
 
 <p> If all clone() methods call super.clone(), then they are guaranteed
 to use Object.clone(), which always returns an object of the correct type.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+
+  <BugPattern type="Nm_DONT_USE_ENUM">
+    <ShortDescription>Don't use variable names that are keywords in other versions in Java like enum and assert.</ShortDescription>
+    <LongDescription>{1} is a keyword in Java 5 and above and therefore should not be used as a variable name.</LongDescription>
+    <Details>
+<![CDATA[
+<p>General html text</p>
+
 ]]>
     </Details>
   </BugPattern>
