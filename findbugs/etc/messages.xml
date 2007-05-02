@@ -5882,6 +5882,7 @@ and <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6178997">Sun Bug
   <BugCode abbrev="TEST" >Testing prototype and incomplete bug pattern</BugCode>
   <BugCode abbrev="IMSE" >Dubious catching of IllegalMonitorStateException</BugCode>
   <BugCode abbrev="CN" >Bad implementation of cloneable idiom</BugCode>
+  <BugCode abbrev="AT" >Possible atomicity violation</BugCode>
   <BugCode abbrev="FI" >Incorrect use of finalizers</BugCode>
   <BugCode abbrev="ES" >Checking String equality using == or !=</BugCode>
   <BugCode abbrev="ML" >Synchronization on updated field (Mutable Lock)</BugCode>
