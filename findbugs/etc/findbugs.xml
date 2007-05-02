@@ -181,6 +181,11 @@
   <Detector class="edu.umd.cs.findbugs.detect.HugeSharedStringConstants" 
             speed="fast"
             reports="HSC_HUGE_SHARED_STRING_CONSTANT" />
+            
+  <Detector class="edu.umd.cs.findbugs.detect.FinalizerNullsFields"
+  			speed="fast"
+  			reports="FI_FINALIZER_NULLS_FIELDS" />
+  			
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
@@ -644,7 +649,7 @@
   <BugPattern abbrev="IL" type="IL_INFINITE_LOOP" category="CORRECTNESS" />
 
   <BugPattern abbrev="IL" type="IL_INFINITE_RECURSIVE_LOOP" category="CORRECTNESS" />
-
+  <BugPattern abbrev="FI" type="FI_FINALIZER_NULLS_FIELDS" category="BAD_PRACTICE"/>
   <BugPattern abbrev="IL" type="IL_CONTAINER_ADDED_TO_ITSELF" category="CORRECTNESS"/>
   <BugPattern abbrev="VO" type="VO_VOLATILE_REFERENCE_TO_ARRAY" category="MT_CORRECTNESS"/>
   <BugPattern abbrev="UI" type="UI_INHERITANCE_UNSAFE_GETRESOURCE" category="BAD_PRACTICE"/>
