@@ -107,6 +107,7 @@ import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 import edu.umd.cs.findbugs.gui.ConsoleLogger;
@@ -222,7 +223,7 @@ public class MainFrame extends FBFrame implements LogSync
 	enum SaveType {NOT_KNOWN, PROJECT, XML_ANALYSIS};
 	SaveType saveType = SaveType.NOT_KNOWN;
 	FBFileChooser saveOpenFileChooser;
-	private File saveFile = null;
+	@CheckForNull private File saveFile = null;
 	enum SaveReturn {SAVE_SUCCESSFUL, SAVE_IO_EXCEPTION, SAVE_ERROR};
 	JMenuItem saveMenuItem = newJMenuItem("menu.save_item", "Save", KeyEvent.VK_S);
 
@@ -490,7 +491,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 */	
 	public void changeTitle(){
 		String name = curProject.getProjectName();
-		if(name == null)
+		if(name == null && saveFile != null)
 			name = saveFile.getAbsolutePath();
 		if(name == null)
 			name = Project.UNNAMED_PROJECT;
