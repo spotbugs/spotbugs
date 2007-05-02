@@ -101,6 +101,11 @@
 	        speed="fast"
 	        reports=""
 			hidden="true" /> 
+	      
+  <Detector class="edu.umd.cs.findbugs.detect.SynchronizeAndNullCheckField"
+			speed="moderate"
+			reports="NP_SYNC_AND_NULL_CHECK_FIELD" 
+			hidden="false"/>
 	       
   <Detector class="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation"
                 speed="fast"
@@ -189,7 +194,7 @@
   <Detector class="edu.umd.cs.findbugs.detect.TestingGround" 
             speed="fast"
             reports="TESTING"
-            disabled="true"
+            disabled="false"
             hidden="true" />
   <Detector class="edu.umd.cs.findbugs.detect.ResolveAllReferences" 
             speed="fast"
@@ -641,6 +646,8 @@
        <BugPattern abbrev="STCAL" type="STCAL_STATIC_SIMPLE_DATA_FORMAT_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_CALENDAR_INSTANCE" category="MT_CORRECTNESS" />
        <BugPattern abbrev="STCAL" type="STCAL_INVOKE_ON_STATIC_DATE_FORMAT_INSTANCE" category="MT_CORRECTNESS" />
+
+	<BugPattern abbrev="NP" type="NP_SYNC_AND_NULL_CHECK_FIELD" category="MT_CORRECTNESS" />
 
   <BugPattern abbrev="VR" type="VR_UNRESOLVABLE_REFERENCE" category="CORRECTNESS"
     experimental="true"/>

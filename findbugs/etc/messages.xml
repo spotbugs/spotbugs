@@ -90,6 +90,14 @@ This plugin contains all of the standard FindBugs detectors.
   **********************************************************************
    -->
 
+	<Detector class="edu.umd.cs.findbugs.detect.SynchronizeAndNullCheckField">
+     <Details>
+<![CDATA[
+<p> This detector looks for a field that is synchronized on and then null checked.</p>
+]]>
+     </Details>
+   </Detector>
+
 
   <Detector class="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation">
     <Details>
@@ -1420,6 +1428,20 @@ another package.</p>
 ]]>
     </Details>
   </BugPattern>
+
+   <BugPattern type="NP_SYNC_AND_NULL_CHECK_FIELD">
+     <ShortDescription>Synchronize and null check on the same field.</ShortDescription>
+     <LongDescription>In {1} the field {2.givenClass} is synchronized on and then checked if null.</LongDescription>
+     <Details>
+<![CDATA[
+<p>The fact field is synchronized on it makes it seem not likely to be null.
+If it is null and then synchronized on a NullPointerException will be
+thrown and the check would be pointless. Better to synchronize on 
+another field.</p>
+
+]]>
+     </Details>
+   </BugPattern>
 
 
   <BugPattern type="TESTING">
