@@ -1994,7 +1994,7 @@ public class OpcodeStack implements Constants2
 			item.registerNumber = register;
 			push(item);
 		}
-		else if (it.getRegisterNumber() >= 0)
+		else if (false && it.getRegisterNumber() >= 0)
 			push(it);
 		else  {
 			push(new Item(it, register));
