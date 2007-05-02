@@ -673,7 +673,7 @@
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="BAD_PRACTICE" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="BAD_PRACTICE" />
   <BugPattern abbrev="Dm" type="DM_EXIT" category="BAD_PRACTICE" />
-  <BugPattern abbrev="NP" type="Nm_DONT_USE_ENUM" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Nm" type="Nm_DONT_USE_ENUM" category="BAD_PRACTICE" />
   <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED" category="STYLE" />
   <BugPattern abbrev="Dm" type="DMI_BLOCKING_METHODS_ON_URL" category="PERFORMANCE" />
