@@ -66,8 +66,8 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
 			state++;
 		else if (state==2 && seen==PUTFIELD)
 		{
-			BugInstance bug = new BugInstance(this, "FINALIZERNULLSFIELDS", NORMAL_PRIORITY)
-		.addClass(this).addMethod(this).addString("Finalizers should not null out fields.").addSourceLine(this).addReferencedField(this);
+			BugInstance bug = new BugInstance(this, "FI_FINALIZER_NULLS_FIELDS", NORMAL_PRIORITY)
+		.addClass(this).addMethod(this).addSourceLine(this).addReferencedField(this);
 		bugReporter.reportBug(bug);
 		state=0;
 		}
