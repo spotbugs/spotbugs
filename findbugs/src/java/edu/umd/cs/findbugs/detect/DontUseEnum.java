@@ -37,7 +37,7 @@ public class DontUseEnum extends BytecodeScanningDetector {
 	//@Override
 	public void visit(Method obj) {
 		if (obj.getName().equals("enum") || obj.getName().equals("assert")) {
-			BugInstance bug = new BugInstance(this, "TESTING", NORMAL_PRIORITY)
+			BugInstance bug = new BugInstance(this, "Nm_DONT_USE_ENUM", NORMAL_PRIORITY)
 			.addClass(this).addMethod(this);
 			bugReporter.reportBug(bug);
 		}
@@ -46,7 +46,7 @@ public class DontUseEnum extends BytecodeScanningDetector {
 	@Override
 	public void visit(Field obj) {
 		if (obj.getName().equals("enum") || obj.getName().equals("assert")) {
-			BugInstance bug = new BugInstance(this, "TESTING", NORMAL_PRIORITY)
+			BugInstance bug = new BugInstance(this, "Nm_DONT_USE_ENUM", NORMAL_PRIORITY)
 			.addClass(this).addField(this);
 			bugReporter.reportBug(bug);
 		}
