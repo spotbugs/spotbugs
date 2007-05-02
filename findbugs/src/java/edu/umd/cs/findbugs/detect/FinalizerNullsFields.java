@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.*;
 public class FinalizerNullsFields extends BytecodeScanningDetector {
 
 	BugReporter bugReporter;
+	int state=0;
 
 	public FinalizerNullsFields(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -56,11 +57,11 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
 	
 	@Override
 	public void visit(Code obj) {
+		state=0;
 		if (inFinalize) // do we want to dismantle the bytecode?
 			super.visit(obj);
 	}
 
-	int state=0;
 	@Override
 	public void sawOpcode(int seen) {
 		if (state==0 && seen==ALOAD_0)
