@@ -2013,11 +2013,22 @@ be used to make the prepared statement do something unexpected and undesirable.
 
   <BugPattern type="FI_FINALIZER_NULLS_FIELDS">
     <ShortDescription>Finalizer nulls fields</ShortDescription>
-    <LongDescription>{3} is set to null inside a finalize method </LongDescription>
+    <LongDescription>{3} is set to null inside finalize method</LongDescription>
 	<Details>
 <![CDATA[
   <p> This finalizer nulls out fields.  This is usually an error, as it does not aid garbage collection,
   and the object is going to be garbage collected anyway.  
+]]>
+	</Details>
+   </BugPattern>
+  <BugPattern type="FI_FINALIZER_ONLY_NULLS_FIELDS">
+    <ShortDescription>Finalizer only nulls fields</ShortDescription>
+    <LongDescription>{1} only nulls fields</LongDescription>
+	<Details>
+<![CDATA[
+  <p> This finalizer does nothing except null out fields. This is completely pointless, and requires that
+the object be garbage collected, finalized, and then garbage collected again. You should just remove the finalize
+method.
 ]]>
 	</Details>
    </BugPattern>

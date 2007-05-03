@@ -32,6 +32,7 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
 
 	BugReporter bugReporter;
 	int state=0;
+	boolean sawAnythingElse;
 
 	public FinalizerNullsFields(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -39,6 +40,7 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
 
 
 	boolean inFinalize;
+	boolean sawFieldNulling;
 	@Override
 	public void visit(Method obj) 
 	{
@@ -58,8 +60,16 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
 	@Override
 	public void visit(Code obj) {
 		state=0;
-		if (inFinalize) // do we want to dismantle the bytecode?
+		sawAnythingElse = false;
+		sawFieldNulling = false;
+		if (inFinalize) {
 			super.visit(obj);
+			if (!sawAnythingElse && sawFieldNulling) {
+				BugInstance bug = new BugInstance(this, "FI_FINALIZER_ONLY_NULLS_FIELDS", HIGH_PRIORITY)
+				.addClass(this).addMethod(this);
+				bugReporter.reportBug(bug);
+			}
+		}
 	}
 
 	@Override
@@ -73,9 +83,14 @@ public class FinalizerNullsFields extends BytecodeScanningDetector {
 			BugInstance bug = new BugInstance(this, "FI_FINALIZER_NULLS_FIELDS", NORMAL_PRIORITY)
 		.addClass(this).addMethod(this).addSourceLine(this).addReferencedField(this);
 		bugReporter.reportBug(bug);
+		sawFieldNulling = true;
 		state=0;
+		} else if (seen == RETURN) {
+			state = 0;
 		}
-		else
+		else {
 			state=0;
+			sawAnythingElse = true;
+		}
 	}
 }
