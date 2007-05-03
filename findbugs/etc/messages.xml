@@ -1544,7 +1544,7 @@ to use Object.clone(), which always returns an object of the correct type.</p>
 
   <BugPattern type="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER">
     <ShortDescription>Use of identifier that is a keyword in later versions of Java</ShortDescription>
-    <LongDescription>{1} uses {2} for a variable name, which is a keyword in later versions of Java<</LongDescription>
+    <LongDescription>{1} uses {2} for a variable name, which is a keyword in later versions of Java</LongDescription>
     <Details>
 <![CDATA[
 <p>The identifier is a word that is reserversed as a keyword in later versions of Java, and your code will need to be changed
