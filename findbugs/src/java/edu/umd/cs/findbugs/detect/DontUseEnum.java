@@ -21,11 +21,12 @@ package edu.umd.cs.findbugs.detect;
 
 import edu.umd.cs.findbugs.*;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
+import edu.umd.cs.findbugs.bcel.PreorderDetector;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.*;
 
-public class DontUseEnum extends BytecodeScanningDetector {
+public class DontUseEnum extends PreorderDetector {
 
 	BugReporter bugReporter;
 
@@ -52,23 +53,5 @@ public class DontUseEnum extends BytecodeScanningDetector {
 		}
 	}
 
-	@Override
-	public void visit(Code obj) {
-		if (true) // do we want to dismantle the bytecode?
-			super.visit(obj);
-	}
-
-	int prevOpcode;
-	@Override
-	public void sawOpcode(int seen) {
-
-		if (prevOpcode == I2D && seen == INVOKESTATIC
-				&& getNameConstantOperand().equals("ceil")
-				&& getClassConstantOperand().equals("java.lang.Math"))
-			bugReporter.reportBug(new BugInstance(this, "TESTING", HIGH_PRIORITY)
-			.addClassAndMethod(this).addCalledMethod(this).addSourceLine(this));
-
-
-		prevOpcode = seen;
-	}
+	
 }
