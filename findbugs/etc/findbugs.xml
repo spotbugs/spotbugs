@@ -314,8 +314,8 @@
             reports="UR_UNINIT_READ" />
             
   <Detector class="edu.umd.cs.findbugs.detect.DontUseEnum"
-            speed="moderate"
-            reports="Nm_DONT_USE_ENUM" />
+            speed="fast"
+            reports="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER,NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER" />
             
   <Detector class="edu.umd.cs.findbugs.detect.FindUnsyncGet" 
             speed="fast"
@@ -681,7 +681,7 @@
   <BugPattern abbrev="DE" type="DE_MIGHT_DROP" category="BAD_PRACTICE" />
   <BugPattern abbrev="DE" type="DE_MIGHT_IGNORE" category="BAD_PRACTICE" />
   <BugPattern abbrev="Dm" type="DM_EXIT" category="BAD_PRACTICE" />
-  <BugPattern abbrev="Nm" type="Nm_DONT_USE_ENUM" category="BAD_PRACTICE" />
+  <BugPattern abbrev="Nm" type="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER" category="BAD_PRACTICE" />
   <BugPattern abbrev="JCIP" type="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS" category="CORRECTNESS" />
   <BugPattern abbrev="Dm" type="DMI_THREAD_PASSED_WHERE_RUNNABLE_EXPECTED" category="STYLE" />
   <BugPattern abbrev="Dm" type="DMI_BLOCKING_METHODS_ON_URL" category="PERFORMANCE" />

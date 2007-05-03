@@ -1542,16 +1542,30 @@ to use Object.clone(), which always returns an object of the correct type.</p>
   </BugPattern>
 
 
-  <BugPattern type="Nm_DONT_USE_ENUM">
-    <ShortDescription>Don't use variable names that are keywords in other versions in Java like enum and assert.</ShortDescription>
-    <LongDescription>{1} is a keyword in a more recent version of Java</LongDescription>
+  <BugPattern type="NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER">
+    <ShortDescription>Use of identifier that is a keyword in later versions of Java</ShortDescription>
+    <LongDescription>{1} uses {2} for a variable name, which is a keyword in later versions of Java<</LongDescription>
     <Details>
 <![CDATA[
-<p>These names are reserved words in more recent versions of Java and should not be used as a field name or a method name.</p>
+<p>The identifier is a word that is reserversed as a keyword in later versions of Java, and your code will need to be changed
+in order to compile it in later versions of Java.</p>
 
 ]]>
     </Details>
   </BugPattern>
+   <BugPattern type="NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER">
+    <ShortDescription>Use of identifier that is a keyword in later versions of Java</ShortDescription>
+    <LongDescription>{1} conflicts with a keyword in a more recent version of Java</LongDescription>
+    <Details>
+<![CDATA[
+<p>This identifier is used as a keyword in later versions of Java. This code, and 
+any code that references this API, 
+will need to be changed  in order to compile it in later versions of Java.</p>
+
+]]>
+    </Details>
+  </BugPattern>
+  
 
   <BugPattern type="DE_MIGHT_DROP">
     <ShortDescription>Method might drop exception</ShortDescription>
