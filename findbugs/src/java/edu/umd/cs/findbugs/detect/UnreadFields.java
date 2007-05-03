@@ -648,8 +648,7 @@ public class UnreadFields extends BytecodeScanningDetector  {
 					) {
 				int priority = LOW_PRIORITY;
 				if (assumedNonNull.containsKey(f)) 
-					priority--;
-				bugReporter.reportBug(new BugInstance(this,
+				  bugReporter.reportBug(new BugInstance(this,
 						"UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR",
 						priority)
 						.addClass(className)
