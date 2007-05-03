@@ -598,7 +598,7 @@ public class FindNullDeref implements Detector,
 		addParamAnnotations(location,
 				definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
 
-		if (false) {
+		if (DEBUG_NULLARG) {
 		// Add annotations for dangerous method call targets
 		for (JavaClassAndMethod dangerousCallTarget : veryDangerousCallTargetList) {
 			warning.addMethod(dangerousCallTarget).describe(
