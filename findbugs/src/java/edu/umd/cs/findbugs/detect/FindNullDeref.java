@@ -599,26 +599,26 @@ public class FindNullDeref implements Detector,
 				definitelyNullArgSet, unconditionallyDereferencedNullArgSet, propertySet, warning);
 
 		if (bugType.equals("NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS")) {
-		// Add annotations for dangerous method call targets
-		for (JavaClassAndMethod dangerousCallTarget : veryDangerousCallTargetList) {
-			warning.addMethod(dangerousCallTarget).describe(
-					"METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL");
-		}
-		dangerousCallTargetList.removeAll(veryDangerousCallTargetList);
-		if (DEBUG_NULLARG) {
-		// Add annotations for dangerous method call targets
-		for (JavaClassAndMethod dangerousCallTarget : dangerousCallTargetList) {
-			warning.addMethod(dangerousCallTarget).describe(
+			// Add annotations for dangerous method call targets
+			for (JavaClassAndMethod dangerousCallTarget : veryDangerousCallTargetList) {
+				warning.addMethod(dangerousCallTarget).describe(
+				"METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL");
+			}
+			dangerousCallTargetList.removeAll(veryDangerousCallTargetList);
+			if (DEBUG_NULLARG) {
+				// Add annotations for dangerous method call targets
+				for (JavaClassAndMethod dangerousCallTarget : dangerousCallTargetList) {
+					warning.addMethod(dangerousCallTarget).describe(
 					"METHOD_DANGEROUS_TARGET");
-		}
+				}
 
-		// Add safe method call targets.
-		// This is useful to see which other call targets the analysis
-		// considered.
-		for (JavaClassAndMethod safeMethod : safeCallTargetSet) {
-			warning.addMethod(safeMethod).describe("METHOD_SAFE_TARGET");
-		}
-		}
+				// Add safe method call targets.
+				// This is useful to see which other call targets the analysis
+				// considered.
+				for (JavaClassAndMethod safeMethod : safeCallTargetSet) {
+					warning.addMethod(safeMethod).describe("METHOD_SAFE_TARGET");
+				}
+			}}
 
 		decorateWarning(location, propertySet, warning);
 		bugReporter.reportBug(warning);
