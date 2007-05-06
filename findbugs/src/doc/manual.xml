@@ -3204,8 +3204,7 @@ You can find the latest version of FindBugs, along with its source code, from th
 
 <para>&FindBugs; was originally written by Bill Pugh (<email>pugh@cs.umd.edu</email>).
 David Hovemeyer (<email>daveho@cs.umd.edu</email>) implemented some of the
-detectors, added the Swing GUI, and is a co-maintainer.
-Brian Cole (<email>bassclar@sourceforge.net</email>) is a co-maintainer.</para>
+detectors, added the Swing GUI, and is a co-maintainer.</para>
 
 <para>Mike Fagan (<email>mfagan@tde.com</email>) contributed the &Ant; build script,
 the &Ant; task, and several enhancements and bug fixes to the GUI.</para>
