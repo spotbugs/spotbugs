@@ -394,7 +394,9 @@ public class BugInstance implements Comparable<BugInstance>, XMLWriteableWithMes
 	public String getInstanceKey() {
 		StringBuffer buf = new StringBuffer(type);
 		for (BugAnnotation annotation : annotationList) {
-			if (annotation.isSignificant()) {
+			if (annotation instanceof SourceLineAnnotation || annotation instanceof MethodAnnotation && !annotation.isSignificant()) {
+				// do nothing
+			} else {
 				buf.append(":");
 				buf.append(annotation.format("hash", null));
 			}
