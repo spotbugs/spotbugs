@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.visitclass.Util;
 
 public class FindPuzzlers extends BytecodeScanningDetector {
 
@@ -386,9 +387,17 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 		}
 
 		if (seen == INVOKESTATIC)
-			if ((getNameConstantOperand().startsWith("assert") || getNameConstantOperand().startsWith("fail"))&& getMethodName().equals("run")
+			if ((getNameConstantOperand().startsWith("assert") || getNameConstantOperand().startsWith("fail")) && getMethodName().equals("run")
 					&& implementsRunnable(getThisClass())) {
 				try {
+					 int size1 = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getMethod().getCode(),
+                    								"java/lang/Throwable", getPC());
+					int size2 = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getMethod().getCode(),
+                    										"java/lang/Error", getPC());
+					int size3 = Util.getSizeOfSurroundingTryBlock(getConstantPool(), getMethod().getCode(),
+                    												"java/lang/AssertionFailureError", getPC());
+					int size = Math.min(Math.min( size1, size2), size3);
+					 if (size == Integer.MAX_VALUE) {
 					JavaClass targetClass = AnalysisContext.currentAnalysisContext().lookupClass(getClassConstantOperand().replace('/', '.'));
 					if (targetClass.getSuperclassName().startsWith("junit")) {
 						bugReporter.reportBug(new BugInstance(this, "IJU_ASSERT_METHOD_INVOKED_FROM_RUN_METHOD", NORMAL_PRIORITY)
@@ -396,6 +405,7 @@ public class FindPuzzlers extends BytecodeScanningDetector {
 						.addSourceLine(this));
 
 					}
+					 }
 				} catch (ClassNotFoundException e) {
 					AnalysisContext.reportMissingClass(e);
 				}
