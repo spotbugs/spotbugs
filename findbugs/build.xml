@@ -240,7 +240,7 @@
 	</target>
 		
 	<!-- Build jar files. -->
-	<target name="jars" depends="classes, validate">
+	<target name="jars" depends="classes, validate,version">
 		<!-- Main engine and command line jar file. -->
 		<jar destfile="${engine.jar}"
 				manifest="etc/MANIFEST-findbugs.MF">
