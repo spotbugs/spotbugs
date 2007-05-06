@@ -213,14 +213,13 @@ public class SortedBugCollection implements BugCollection {
 
 
 			XMLReader xr = null;
-			if (true) try { // FIXME: try this in 1.1.4
+			if (true) try { 
 				xr = XMLReaderFactory.createXMLReader();
 			  } catch (SAXException e) {
 				AnalysisContext.logError("Couldn't create XMLReaderFactory", e);   
 			  }
 
 			if (xr == null) {
-			   //  FIXME: for now, use dom4j's XML parser
 				xr = new org.dom4j.io.aelfred.SAXDriver();
 				}
 			xr.setContentHandler(handler);

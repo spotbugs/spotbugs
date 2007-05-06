@@ -20,19 +20,28 @@
 package edu.umd.cs.findbugs;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import edu.umd.cs.findbugs.ba.ClassHash;
+import edu.umd.cs.findbugs.filter.AndMatcher;
+import edu.umd.cs.findbugs.filter.BugMatcher;
+import edu.umd.cs.findbugs.filter.ClassMatcher;
+import edu.umd.cs.findbugs.filter.CompoundMatcher;
+import edu.umd.cs.findbugs.filter.FieldMatcher;
+import edu.umd.cs.findbugs.filter.Filter;
+import edu.umd.cs.findbugs.filter.LocalMatcher;
+import edu.umd.cs.findbugs.filter.Matcher;
+import edu.umd.cs.findbugs.filter.MethodMatcher;
+import edu.umd.cs.findbugs.filter.OrMatcher;
+import edu.umd.cs.findbugs.filter.PriorityMatcher;
 import edu.umd.cs.findbugs.model.ClassFeatureSet;
+import edu.umd.cs.findbugs.util.Strings;
 
 /**
  * Build a BugCollection based on SAX events.
@@ -44,6 +53,8 @@ import edu.umd.cs.findbugs.model.ClassFeatureSet;
 public class SAXBugCollectionHandler extends DefaultHandler {
 	private BugCollection bugCollection;
 	private Project project;
+	private Stack<CompoundMatcher> matcherStack = new Stack<CompoundMatcher>();
+	private Filter filter;
 
 	private ArrayList<String> elementStack;
 	private StringBuffer textBuffer;
@@ -111,149 +122,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 			String outerElement = elementStack.get(elementStack.size() - 1);
 
 			if (outerElement.equals("BugCollection")) {
-				// Parsing a top-level element of the BugCollection
-				if (qName.equals("Project")) {
-					// Project element
-					String filename = attributes.getValue(Project.FILENAME_ATTRIBUTE_NAME);
-					if (filename != null)
-						project.setProjectFileName(filename);
-					String projectName = attributes.getValue(Project.PROJECTNAME_ATTRIBUTE_NAME);
-					if (projectName != null)
-						project.setProjectName(projectName);
-				} else if (qName.equals("BugInstance")) {
-					// BugInstance element - get required type and priority attributes
-					String type = getRequiredAttribute(attributes, "type", qName);
-					String priority = getRequiredAttribute(attributes, "priority", qName);
-
-					try {
-						int prio = Integer.parseInt(priority);
-						bugInstance = new BugInstance(type, prio);
-					} catch (NumberFormatException e) {
-						throw new SAXException("BugInstance with invalid priority value \"" +
-							priority + "\"", e);
-					}
-
-					String uniqueId = attributes.getValue("uid");
-					if (uniqueId != null) {
-						bugInstance.setUniqueId(uniqueId);
-					}
-
-					String firstVersion = attributes.getValue("first");
-					if (firstVersion != null) {
-						bugInstance.setFirstVersion(Long.parseLong(firstVersion));
-					}
-					String lastVersion = attributes.getValue("last");
-					if (lastVersion != null) {
-						bugInstance.setLastVersion(Long.parseLong(lastVersion));
-					}
-
-					if (bugInstance.getLastVersion() >= 0 &&
-							bugInstance.getFirstVersion() > bugInstance.getLastVersion())
-						throw new IllegalStateException("huh");
-
-					String introducedByChange = attributes.getValue("introducedByChange");
-					if (introducedByChange != null) {
-						bugInstance.setIntroducedByChangeOfExistingClass(TigerSubstitutes.parseBoolean(introducedByChange));
-					}
-					String removedByChange = attributes.getValue("removedByChange");
-					if (removedByChange != null) {
-						bugInstance.setRemovedByChangeOfPersistingClass(TigerSubstitutes.parseBoolean(removedByChange));
-					}
-					String oldInstanceHash = attributes.getValue("instanceHash");
-					if (oldInstanceHash != null) {
-						bugInstance.setOldInstanceHash(oldInstanceHash);
-						}
-
-
-				} else if (qName.equals("FindBugsSummary")) {
-					String timestamp = getRequiredAttribute(attributes, "timestamp", qName);
-					try {
-						bugCollection.getProjectStats().setTimestamp(timestamp);
-					} catch (java.text.ParseException e) {
-						throw new SAXException("Unparseable sequence number: '" + timestamp + "'", e);
-					}
-				}
+				parseBugCollectionContents(qName, attributes);
 			} else if (outerElement.equals("BugInstance")) {
-				// Parsing an attribute or property of a BugInstance
-				BugAnnotation bugAnnotation = null;
-				if (qName.equals("Class")) {
-					String className = getRequiredAttribute(attributes, "classname", qName);
-					bugAnnotation = packageMemberAnnotation = new ClassAnnotation(className);
-				} else if (qName.equals("Type")) {
-					String typeDescriptor = getRequiredAttribute(attributes, "descriptor", qName);
-					bugAnnotation = new TypeAnnotation(typeDescriptor);
-				} else if (qName.equals("Method") || qName.equals("Field")) {
-					String classname = getRequiredAttribute(attributes, "classname", qName);
-					String fieldOrMethodName = getRequiredAttribute(attributes, "name", qName);
-					String signature = getRequiredAttribute(attributes, "signature", qName);
-					if (qName.equals("Method")) {
-						String isStatic = attributes.getValue("isStatic");
-						if (isStatic == null) {
-							isStatic = "false"; // Hack for old data
-						}
-
-						bugAnnotation = packageMemberAnnotation = 
-							new MethodAnnotation(classname, fieldOrMethodName, signature, Boolean.valueOf(isStatic));
-
-					} else {
-						String isStatic = getRequiredAttribute(attributes, "isStatic", qName);
-						bugAnnotation = packageMemberAnnotation = 
-							new FieldAnnotation(classname, fieldOrMethodName, signature, Boolean.valueOf(isStatic));
-					}
-
-				} else if (qName.equals("SourceLine")) {
-					SourceLineAnnotation sourceAnnotation = createSourceLineAnnotation(qName, attributes);
-					if (!sourceAnnotation.isSynthetic())
-						bugAnnotation = sourceAnnotation;
-				} else if (qName.equals("Int")) {
-					try {
-						String value = getRequiredAttribute(attributes, "value", qName);
-						bugAnnotation = new IntAnnotation(Integer.parseInt(value));
-					} catch (NumberFormatException e) {
-						throw new SAXException("Bad integer value in Int");
-					}
-				} else if (qName.equals("String")) {
-						String value = getRequiredAttribute(attributes, "value", qName);
-						bugAnnotation = new StringAnnotation(value);
-				} else if (qName.equals("LocalVariable")) {
-					try {
-						String varName = getRequiredAttribute(attributes, "name", qName);
-						int register = Integer.parseInt(getRequiredAttribute(attributes, "register", qName));
-						int pc = Integer.parseInt(getRequiredAttribute(attributes, "pc", qName));
-						bugAnnotation = new LocalVariableAnnotation(varName, register, pc);
-					} catch (NumberFormatException e) {
-						throw new SAXException("Invalid integer value in attribute of LocalVariable element");
-					}
-				} else if (qName.equals("Property")) {
-					// A BugProperty.
-					String propName = getRequiredAttribute(attributes, "name", qName);
-					String propValue = getRequiredAttribute(attributes, "value", qName);
-					bugInstance.setProperty(propName, propValue);
-				} else if (qName.equals("UserAnnotation")) {
-					// ignore AnnotationText for now; will handle in endElement
-					String s = attributes.getValue("designation"); // optional
-					BugDesignation userDesignation = bugInstance.getNonnullUserDesignation();
-					if (s != null) userDesignation.setDesignationKey(s);
-					s = attributes.getValue("user"); // optional
-					if (s != null) userDesignation.setUser(s);
-					s = attributes.getValue("timestamp"); // optional
-					if (s != null) try {
-						long timestamp = Long.valueOf(s);
-						userDesignation.setTimestamp(timestamp);
-					}
-					catch (NumberFormatException nfe) {
-						// ok to contine -- just won't set a timestamp for the user designation.
-						// but is there anyplace to report this?
-					}
-				} else throw new SAXException("Unknown bug annotation named " + qName);
-
-				if (bugAnnotation != null) {
-					String role = attributes.getValue("role");
-					if (role != null)
-						bugAnnotation.setDescription(role);
-					setAnnotationRole(attributes, bugAnnotation);
-					bugInstance.add(bugAnnotation);
-				}
+				parseBugInstanceContents(qName, attributes);
 			} else if (outerElement.equals("Method") || outerElement.equals("Field") || outerElement.equals("Class")) {
 				if (qName.equals("SourceLine")) {
 					// package member elements can contain nested SourceLine elements.
@@ -274,6 +145,18 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 						getRequiredAttribute(attributes, "size", qName));
 					bugCollection.getProjectStats().addClass(className, isInterface, size);
 				}
+			} else if (outerElement.equals("Project")) {
+				if (qName.equals("FindBugsFilter")) 
+					filter = new Filter();
+					matcherStack.clear();
+					matcherStack.push(filter);
+					project.setSuppressionFilter(filter);
+			} else if (outerElement.equals("FindBugsFilter")) {
+				 if (qName.equals("Match")) {
+						matcherStack.push(new AndMatcher());
+				 }
+			} else if (outerElement.equals("Match") || outerElement.equals("And") || outerElement.equals("Or")) {
+				parseMatcher(qName, attributes);
 			} else if (outerElement.equals("ClassFeatures")) {
 				if (qName.equals(ClassFeatureSet.ELEMENT_NAME)) {
 					String className = getRequiredAttribute(attributes, "class", qName);
@@ -314,6 +197,197 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		textBuffer.delete(0, textBuffer.length());
 		elementStack.add(qName);
 	}
+
+	private void addMatcher(Matcher m) {
+		matcherStack.peek().addChild(m);
+	}
+	private void parseMatcher(String qName, Attributes attributes) {
+	    if (qName.equals("Bug")) {
+	    	addMatcher(new BugMatcher(attributes.getValue("code"),
+	    			attributes.getValue("pattern"),
+	    			attributes.getValue("category")));
+	    } else if (qName.equals("Class")) {
+	    	addMatcher(new ClassMatcher(attributes.getValue("name")));
+	    } else if (qName.equals("BugCode")) {
+	    	addMatcher(new BugMatcher(attributes.getValue("name"),"",""));
+	    } else if (qName.equals("Local")) {
+	    	addMatcher(new LocalMatcher(attributes.getValue("name")));
+	    } else if (qName.equals("BugPattern")) {
+	    	addMatcher(new BugMatcher("",attributes.getValue("name"),""));
+	    } else if (qName.equals("Priority")) {
+	    	addMatcher(new PriorityMatcher(attributes.getValue("value")));
+	    } else if (qName.equals("Package")) {
+	    	String pName = attributes.getValue("name");
+	    	pName = pName.startsWith("~") ? pName : "~" + Strings.replace(pName, ".", "\\.");			
+			addMatcher( new ClassMatcher(pName + "\\.[^.]+"));
+	    } else if (qName.equals("Method")) {
+	    	String name = attributes.getValue("name");
+	    	String params = attributes.getValue("params");
+	    	String returns = attributes.getValue("returns");
+	    	addMatcher(new MethodMatcher(name, params, returns));
+
+	    } else if (qName.equals("Field")) {
+	    	String name = attributes.getValue("name");
+			String type = attributes.getValue("type");
+			addMatcher(new FieldMatcher(name, type));
+	    } else if (qName.equals("Or")) {
+	    	OrMatcher matcher = new OrMatcher();
+	    	addMatcher(matcher);
+	    	matcherStack.push(matcher);
+	    } else if (qName.equals("And")) {
+	    	AndMatcher matcher = new AndMatcher();
+	    	addMatcher(matcher);
+	    	matcherStack.push(matcher);
+	    }
+    }
+
+	private void parseBugInstanceContents(String qName, Attributes attributes) throws SAXException {
+	    // Parsing an attribute or property of a BugInstance
+	    BugAnnotation bugAnnotation = null;
+	    if (qName.equals("Class")) {
+	    	String className = getRequiredAttribute(attributes, "classname", qName);
+	    	bugAnnotation = packageMemberAnnotation = new ClassAnnotation(className);
+	    } else if (qName.equals("Type")) {
+	    	String typeDescriptor = getRequiredAttribute(attributes, "descriptor", qName);
+	    	bugAnnotation = new TypeAnnotation(typeDescriptor);
+	    } else if (qName.equals("Method") || qName.equals("Field")) {
+	    	String classname = getRequiredAttribute(attributes, "classname", qName);
+	    	String fieldOrMethodName = getRequiredAttribute(attributes, "name", qName);
+	    	String signature = getRequiredAttribute(attributes, "signature", qName);
+	    	if (qName.equals("Method")) {
+	    		String isStatic = attributes.getValue("isStatic");
+	    		if (isStatic == null) {
+	    			isStatic = "false"; // Hack for old data
+	    		}
+
+	    		bugAnnotation = packageMemberAnnotation = 
+	    			new MethodAnnotation(classname, fieldOrMethodName, signature, Boolean.valueOf(isStatic));
+
+	    	} else {
+	    		String isStatic = getRequiredAttribute(attributes, "isStatic", qName);
+	    		bugAnnotation = packageMemberAnnotation = 
+	    			new FieldAnnotation(classname, fieldOrMethodName, signature, Boolean.valueOf(isStatic));
+	    	}
+
+	    } else if (qName.equals("SourceLine")) {
+	    	SourceLineAnnotation sourceAnnotation = createSourceLineAnnotation(qName, attributes);
+	    	if (!sourceAnnotation.isSynthetic())
+	    		bugAnnotation = sourceAnnotation;
+	    } else if (qName.equals("Int")) {
+	    	try {
+	    		String value = getRequiredAttribute(attributes, "value", qName);
+	    		bugAnnotation = new IntAnnotation(Integer.parseInt(value));
+	    	} catch (NumberFormatException e) {
+	    		throw new SAXException("Bad integer value in Int");
+	    	}
+	    } else if (qName.equals("String")) {
+	    		String value = getRequiredAttribute(attributes, "value", qName);
+	    		bugAnnotation = new StringAnnotation(value);
+	    } else if (qName.equals("LocalVariable")) {
+	    	try {
+	    		String varName = getRequiredAttribute(attributes, "name", qName);
+	    		int register = Integer.parseInt(getRequiredAttribute(attributes, "register", qName));
+	    		int pc = Integer.parseInt(getRequiredAttribute(attributes, "pc", qName));
+	    		bugAnnotation = new LocalVariableAnnotation(varName, register, pc);
+	    	} catch (NumberFormatException e) {
+	    		throw new SAXException("Invalid integer value in attribute of LocalVariable element");
+	    	}
+	    } else if (qName.equals("Property")) {
+	    	// A BugProperty.
+	    	String propName = getRequiredAttribute(attributes, "name", qName);
+	    	String propValue = getRequiredAttribute(attributes, "value", qName);
+	    	bugInstance.setProperty(propName, propValue);
+	    } else if (qName.equals("UserAnnotation")) {
+	    	// ignore AnnotationText for now; will handle in endElement
+	    	String s = attributes.getValue("designation"); // optional
+	    	BugDesignation userDesignation = bugInstance.getNonnullUserDesignation();
+	    	if (s != null) userDesignation.setDesignationKey(s);
+	    	s = attributes.getValue("user"); // optional
+	    	if (s != null) userDesignation.setUser(s);
+	    	s = attributes.getValue("timestamp"); // optional
+	    	if (s != null) try {
+	    		long timestamp = Long.valueOf(s);
+	    		userDesignation.setTimestamp(timestamp);
+	    	}
+	    	catch (NumberFormatException nfe) {
+	    		// ok to contine -- just won't set a timestamp for the user designation.
+	    		// but is there anyplace to report this?
+	    	}
+	    } else throw new SAXException("Unknown bug annotation named " + qName);
+
+	    if (bugAnnotation != null) {
+	    	String role = attributes.getValue("role");
+	    	if (role != null)
+	    		bugAnnotation.setDescription(role);
+	    	setAnnotationRole(attributes, bugAnnotation);
+	    	bugInstance.add(bugAnnotation);
+	    }
+    }
+
+	private void parseBugCollectionContents(String qName, Attributes attributes) throws SAXException {
+	    // Parsing a top-level element of the BugCollection
+	    if (qName.equals("Project")) {
+	    	// Project element
+	    	String filename = attributes.getValue(Project.FILENAME_ATTRIBUTE_NAME);
+	    	if (filename != null)
+	    		project.setProjectFileName(filename);
+	    	String projectName = attributes.getValue(Project.PROJECTNAME_ATTRIBUTE_NAME);
+	    	if (projectName != null)
+	    		project.setProjectName(projectName);
+	    } else if (qName.equals("BugInstance")) {
+	    	// BugInstance element - get required type and priority attributes
+	    	String type = getRequiredAttribute(attributes, "type", qName);
+	    	String priority = getRequiredAttribute(attributes, "priority", qName);
+
+	    	try {
+	    		int prio = Integer.parseInt(priority);
+	    		bugInstance = new BugInstance(type, prio);
+	    	} catch (NumberFormatException e) {
+	    		throw new SAXException("BugInstance with invalid priority value \"" +
+	    			priority + "\"", e);
+	    	}
+
+	    	String uniqueId = attributes.getValue("uid");
+	    	if (uniqueId != null) {
+	    		bugInstance.setUniqueId(uniqueId);
+	    	}
+
+	    	String firstVersion = attributes.getValue("first");
+	    	if (firstVersion != null) {
+	    		bugInstance.setFirstVersion(Long.parseLong(firstVersion));
+	    	}
+	    	String lastVersion = attributes.getValue("last");
+	    	if (lastVersion != null) {
+	    		bugInstance.setLastVersion(Long.parseLong(lastVersion));
+	    	}
+
+	    	if (bugInstance.getLastVersion() >= 0 &&
+	    			bugInstance.getFirstVersion() > bugInstance.getLastVersion())
+	    		throw new IllegalStateException("huh");
+
+	    	String introducedByChange = attributes.getValue("introducedByChange");
+	    	if (introducedByChange != null) {
+	    		bugInstance.setIntroducedByChangeOfExistingClass(TigerSubstitutes.parseBoolean(introducedByChange));
+	    	}
+	    	String removedByChange = attributes.getValue("removedByChange");
+	    	if (removedByChange != null) {
+	    		bugInstance.setRemovedByChangeOfPersistingClass(TigerSubstitutes.parseBoolean(removedByChange));
+	    	}
+	    	String oldInstanceHash = attributes.getValue("instanceHash");
+	    	if (oldInstanceHash != null) {
+	    		bugInstance.setOldInstanceHash(oldInstanceHash);
+	    		}
+
+
+	    } else if (qName.equals("FindBugsSummary")) {
+	    	String timestamp = getRequiredAttribute(attributes, "timestamp", qName);
+	    	try {
+	    		bugCollection.getProjectStats().setTimestamp(timestamp);
+	    	} catch (java.text.ParseException e) {
+	    		throw new SAXException("Unparseable sequence number: '" + timestamp + "'", e);
+	    	}
+	    }
+    }
 
 	private long parseLong(String s, long defaultValue) {
 		long value;
@@ -390,7 +464,9 @@ public class SAXBugCollectionHandler extends DefaultHandler {
 		} else if (elementStack.size() > 1) {
 			String outerElement = elementStack.get(elementStack.size() - 2);
 
-			if (outerElement.equals("BugCollection")) {
+			if (qName.equals("Or") || qName.equals("And") || qName.equals("Match") || qName.equals("FindBugsFilter"))
+				matcherStack.pop();
+			else if (outerElement.equals("BugCollection")) {
 				if (qName.equals("BugInstance")) {
 					bugCollection.add(bugInstance, false);
 				   // TODO: check this
