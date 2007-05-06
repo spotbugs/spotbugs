@@ -24,20 +24,33 @@ import java.io.IOException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.MethodAnnotation;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
 public class MethodMatcher implements Matcher {
-	private NameMatch name;
-	private String signature;
+	final private NameMatch name;
+	@CheckForNull final private String signature;
 
 	public MethodMatcher(String name) {
 		this.name = new NameMatch(name);
+		this.signature = null;
 	}
 
 	public MethodMatcher(String name, String params, String returns) {
+		if (name == null)
+			if(params == null || returns == null)
+				throw new FilterException("Method element must have eiter name or params and returnss attributes");
+			else
+				name = "~.*"; // any name
+		if ((params == null) != (returns == null))
+			throw new FilterException("Method element must have both params and returns attributes if either is used");
+
 		this.name = new NameMatch(name);
-		this.signature = SignatureUtil.createMethodSignature(params, returns);
+		if (params != null && returns != null) 
+			this.signature = SignatureUtil.createMethodSignature(params, returns);
+		else 
+			this.signature = null;
 	}
 
 	public boolean match(BugInstance bugInstance) {

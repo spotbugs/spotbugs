@@ -20,10 +20,10 @@
 package edu.umd.cs.findbugs.filter;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.xml.XMLAttributeList;
 import edu.umd.cs.findbugs.xml.XMLOutput;
 
@@ -31,16 +31,26 @@ import edu.umd.cs.findbugs.xml.XMLOutput;
  * @author rafal@caltha.pl
  */
 public class FieldMatcher implements Matcher {
-	private NameMatch name;
-	private String signature;
+	final private NameMatch name;
+	@CheckForNull final private String signature;
 
 	public FieldMatcher(String name) {
 		this.name = new NameMatch(name);
+		this.signature = null;
 	}
 
 	public FieldMatcher(String name, String type) {
+		if (name == null) {
+			if (type == null)
+				throw new FilterException("Field element must have either name or type attribute");
+			else
+				name = "~.*"; // any name
+		
+		}
 		this.name = new NameMatch(name);
-		this.signature = SignatureUtil.createFieldSignature(type);
+		if (type != null)
+			this.signature = SignatureUtil.createFieldSignature(type);
+		else this.signature = null;
 	}
 
 	public boolean match(BugInstance bugInstance) {
