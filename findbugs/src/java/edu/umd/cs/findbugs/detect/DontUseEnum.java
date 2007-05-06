@@ -38,7 +38,7 @@ public class DontUseEnum extends PreorderDetector {
 	@Override
 	public void visit(Method obj) {
 		if (isReservedName(obj.getName())) {
-			BugInstance bug = new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER", isVisible(obj) ? HIGH_PRIORITY : NORMAL_PRIORITY)
+			BugInstance bug = new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER", isVisible(obj) ? HIGH_PRIORITY : NORMAL_PRIORITY)
 			.addClassAndMethod(this);
 			bugReporter.reportBug(bug);
 		}
@@ -57,7 +57,7 @@ public class DontUseEnum extends PreorderDetector {
 	@Override
 	public void visit(Field obj) {
 		if (isReservedName(obj.getName())) {
-			BugInstance bug = new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_IDENTIFIER", isVisible(obj) ? HIGH_PRIORITY : NORMAL_PRIORITY)
+			BugInstance bug = new BugInstance(this, "NM_FUTURE_KEYWORD_USED_AS_MEMBER_IDENTIFIER", isVisible(obj) ? HIGH_PRIORITY : NORMAL_PRIORITY)
 			.addClass(this).addField(this);
 			bugReporter.reportBug(bug);
 		}
