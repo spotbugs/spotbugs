@@ -439,7 +439,7 @@ public class MainFrame extends FBFrame implements LogSync
 
 	BugCollection bugCollection;
 	void setProjectAndBugCollection(Project project, BugCollection bugCollection) {
-		setRebuilding(false);
+		// setRebuilding(false);
 		if (bugCollection == null) {
 			showTreeCard();
 		} else {
@@ -2092,7 +2092,7 @@ public class MainFrame extends FBFrame implements LogSync
 	 * @return
 	 */
 	private void loadAnalysisFromInputStream(final InputStream in) {
-		showWaitCard();
+		// showWaitCard();
 
 		new Thread(new Runnable(){
 			public void run()
