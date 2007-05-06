@@ -25,10 +25,10 @@
 	<property name="src.dir" value="src/java"/>
 	<property name="src5.dir" value="src/java5"/>
 	<property name="toolsrc.dir" value="src/tools"/>
+	<property name="anttasksrc.dir" value="src/antTask"/>
 	<property name="scriptsrc.dir" value="src/scripts"/>
 	<property name="xslsrc.dir" value="src/xsl"/>
 	<property name="junitsrc.dir" value="src/junit"/>
-	<property name="anttasksrc.dir" value="src/antTask"/>
 	<property name="docsrc.dir" value="src/doc"/>
 	<property name="etc.dir" value="etc"/>
 	<property name="test.dir" value="test"/>
@@ -468,6 +468,7 @@
 		</java>
 		
 		<loadproperties srcfile="${version.props.file}"/>
+		<copy todir="${classes.dir}" file="${version.props.file}"/>
 	</target>
 
 	<target name="checkdocs">

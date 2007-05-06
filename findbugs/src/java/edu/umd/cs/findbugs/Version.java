@@ -19,8 +19,11 @@
 
 package edu.umd.cs.findbugs;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 
 /**
  * Version number and release date information.
@@ -57,9 +60,11 @@ public class Version {
 	/**
 	 * Release date.
 	 */
-	public static final String DATE = dateFormat.format(new Date());
+	public static final String COMPUTED_DATE = dateFormat.format(new Date());
+	public static final String DATE;
 
-	public static final String ECLIPSE_DATE = eclipseDateFormat.format(new Date()) ;
+	public static final String COMPUTED_ECLIPSE_DATE = eclipseDateFormat.format(new Date()) ;
+
 
 
 	/**
@@ -71,20 +76,53 @@ public class Version {
 	private static final String RELEASE_SUFFIX_WORD =
 		(RELEASE_CANDIDATE > 0
 				? "rc" + RELEASE_CANDIDATE
-				: (PREVIEW > 0 ? "preview" + PREVIEW : "dev-" + ECLIPSE_DATE));
+				: (PREVIEW > 0 ? "preview" + PREVIEW : "dev-" + COMPUTED_ECLIPSE_DATE));
+
+	public static final String RELEASE_BASE = MAJOR + "." + MINOR + "." + PATCHLEVEL ;
+	/**
+	 * Release version string.
+	 */
+	public static final String COMPUTED_RELEASE =
+		RELEASE_BASE + (IS_DEVELOPMENT ? "-" + RELEASE_SUFFIX_WORD : "");
 
 	/**
 	 * Release version string.
 	 */
-	public static final String RELEASE =
-		MAJOR + "." + MINOR + "." + PATCHLEVEL + (IS_DEVELOPMENT ? "-" + RELEASE_SUFFIX_WORD : "");
-
-		/**
+	public static final String RELEASE;
+	
+	/**
 	 * Version of Eclipse plugin.
 	 */
-	public static final String ECLIPSE_UI_VERSION = 
-		MAJOR + "." + MINOR + "." + PATCHLEVEL + "." + ECLIPSE_DATE;
+	public static final String COMPUTED_ECLIPSE_UI_VERSION = 
+		MAJOR + "." + MINOR + "." + PATCHLEVEL + "." + COMPUTED_ECLIPSE_DATE;
+	public static final String ECLIPSE_UI_VERSION;
 
+	
+	static {
+		InputStream in = null;
+		String release, eclipse_ui_version, date;
+		try {
+			Properties versionProperties = new Properties();
+			 in = Version.class.getResourceAsStream("/version.properties");
+			 versionProperties.load(in);
+			 release = (String) versionProperties.get("release.number");
+			 eclipse_ui_version = (String) versionProperties.get("eclipse.ui.version");
+			 date = (String) versionProperties.get("release.date");
+		} catch (IOException e) {
+			release = COMPUTED_RELEASE;
+			eclipse_ui_version = COMPUTED_ECLIPSE_UI_VERSION;
+			date = COMPUTED_DATE;
+		} finally {
+			try {
+			if (in != null) in.close();
+			} catch (IOException e) { }
+		}
+		RELEASE = release;
+		ECLIPSE_UI_VERSION = eclipse_ui_version;
+		DATE = date;
+	}
+
+	
 	/**
 	 * FindBugs website.
 	 */
@@ -113,9 +151,9 @@ public class Version {
 		else if (arg.equals("-date"))
 			System.out.println(DATE);
 		else if (arg.equals("-props")) {
-			System.out.println("release.number=" + RELEASE);
-			System.out.println("release.date=" + DATE);
-			System.out.println("eclipse.ui.version=" + ECLIPSE_UI_VERSION);
+			System.out.println("release.number=" + COMPUTED_RELEASE);
+			System.out.println("release.date=" + COMPUTED_DATE);
+			System.out.println("eclipse.ui.version=" + COMPUTED_ECLIPSE_UI_VERSION);
 			System.out.println("findbugs.website=" + WEBSITE);
 			System.out.println("findbugs.downloads.website=" + DOWNLOADS_WEBSITE);
 		} else {
