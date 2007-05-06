@@ -108,6 +108,10 @@ public class Version {
 			 release = (String) versionProperties.get("release.number");
 			 eclipse_ui_version = (String) versionProperties.get("eclipse.ui.version");
 			 date = (String) versionProperties.get("release.date");
+		} catch (RuntimeException e) {
+			release = COMPUTED_RELEASE;
+			eclipse_ui_version = COMPUTED_ECLIPSE_UI_VERSION;
+			date = COMPUTED_DATE;
 		} catch (IOException e) {
 			release = COMPUTED_RELEASE;
 			eclipse_ui_version = COMPUTED_ECLIPSE_UI_VERSION;
