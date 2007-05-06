@@ -54,6 +54,12 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 	private String fullMethod;
 	private boolean isStatic;
 
+	public static final String METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL = "METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL";
+
+	public static final String METHOD_DANGEROUS_TARGET = "METHOD_DANGEROUS_TARGET";
+
+	public static final String METHOD_SAFE_TARGET = "METHOD_SAFE_TARGET";
+
 
 	/**
 	 * Constructor.
@@ -435,6 +441,15 @@ public class MethodAnnotation extends PackageMemberAnnotation {
 			}
 			xmlOutput.closeTag(ELEMENT_NAME);
 		}
+	}
+	
+	@Override
+	public boolean isSignificant() {
+		String role = getDescription();
+		if (METHOD_DANGEROUS_TARGET.equals(role) 
+				|| METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL.equals(role) 
+				|| METHOD_SAFE_TARGET.equals(role)) return false;
+		return true;
 	}
 }
 
