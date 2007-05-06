@@ -110,7 +110,8 @@ import edu.umd.cs.findbugs.visitclass.Util;
 public class FindNullDeref implements Detector,
 		NullDerefAndRedundantComparisonCollector {
 
-	public static final boolean DEBUG = SystemProperties
+
+    public static final boolean DEBUG = SystemProperties
 			.getBoolean("fnd.debug");
 
 	private static final boolean DEBUG_NULLARG = SystemProperties
@@ -602,21 +603,21 @@ public class FindNullDeref implements Detector,
 			// Add annotations for dangerous method call targets
 			for (JavaClassAndMethod dangerousCallTarget : veryDangerousCallTargetList) {
 				warning.addMethod(dangerousCallTarget).describe(
-				"METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL");
+				MethodAnnotation.METHOD_DANGEROUS_TARGET_ACTUAL_GUARANTEED_NULL);
 			}
 			dangerousCallTargetList.removeAll(veryDangerousCallTargetList);
 			if (DEBUG_NULLARG) {
 				// Add annotations for dangerous method call targets
 				for (JavaClassAndMethod dangerousCallTarget : dangerousCallTargetList) {
 					warning.addMethod(dangerousCallTarget).describe(
-					"METHOD_DANGEROUS_TARGET");
+					MethodAnnotation.METHOD_DANGEROUS_TARGET);
 				}
 
 				// Add safe method call targets.
 				// This is useful to see which other call targets the analysis
 				// considered.
 				for (JavaClassAndMethod safeMethod : safeCallTargetSet) {
-					warning.addMethod(safeMethod).describe("METHOD_SAFE_TARGET");
+					warning.addMethod(safeMethod).describe(MethodAnnotation.METHOD_SAFE_TARGET);
 				}
 			}}
 
@@ -1322,23 +1323,19 @@ public class FindNullDeref implements Detector,
 	}
 	boolean inCatchNullBlock(Location loc) {
 		int pc = loc.getHandle().getPosition();
-		int catchSize = Util.getSizeOfSurroundingTryBlock(classContext
-				.getConstantPoolGen().getConstantPool(), method.getCode(),
+		int catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
 				"java/lang/NullPointerException", pc);
 		if (catchSize < Integer.MAX_VALUE)
 			return true;
-		catchSize = Util.getSizeOfSurroundingTryBlock(classContext
-				.getConstantPoolGen().getConstantPool(), method.getCode(),
+		catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
 				"java/lang/Exception", pc);
 		if (catchSize < 5)
 			return true;
-		catchSize = Util.getSizeOfSurroundingTryBlock(classContext
-				.getConstantPoolGen().getConstantPool(), method.getCode(),
+		catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
 				"java/lang/RuntimeException", pc);
 		if (catchSize < 5)
 			return true;
-		catchSize = Util.getSizeOfSurroundingTryBlock(classContext
-				.getConstantPoolGen().getConstantPool(), method.getCode(),
+		catchSize = Util.getSizeOfSurroundingTryBlock(classContext.getJavaClass().getConstantPool(), method.getCode(),
 				"java/lang/Throwable", pc);
 		if (catchSize < 5)
 			return true;
