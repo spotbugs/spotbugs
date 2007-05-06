@@ -423,8 +423,6 @@ public class FindBugsWorker {
 				findBugs.addFilter(filterName, true);
 				} catch (RuntimeException e) {
 					FindbugsPlugin.getDefault().logException(e, "Error while loading filter \"" + filterName + "\".");
-				} catch (FilterException e) {
-					FindbugsPlugin.getDefault().logException(e, "Error while loading filter \"" + filterName + "\".");
 				} catch (IOException e) {
 					FindbugsPlugin.getDefault().logException(e, "Error while reading filter \"" + filterName + "\".");
 				}
