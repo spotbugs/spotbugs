@@ -968,7 +968,7 @@
    </head>
    <body>
       <h3>
-         FindBugs (<xsl:value-of select="/BugCollection/@version" />) 
+         <a href="http://findbugs.sourceforge.net">FindBugs</a> (<xsl:value-of select="/BugCollection/@version" />) 
          Analysis for 
          <xsl:choose>
             <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'><xsl:value-of select="/BugCollection/Project/@projectName" /></xsl:when>

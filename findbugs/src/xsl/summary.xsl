@@ -44,7 +44,7 @@
 	 -->
    <head><title><xsl:value-of select="$PAGE.TITLE" /></title></head>
   <body>
-  <h1 align="center"><xsl:value-of select="$SUMMARY.HEADER" /></h1>
+    <h1 align="center"><a href="http://findbugs.sourceforge.net"><xsl:value-of select="$SUMMARY.HEADER" /></a></h1>
     <h2 align="center"> Analysis for 
     <xsl:choose>
       <xsl:when test='string-length(/BugCollection/Project/@projectName)>0'>

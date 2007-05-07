@@ -137,7 +137,7 @@
 
 	<body>
 
-	<h1>FindBugs Report</h1>
+		<h1><a href="http://findbugs.sourceforge.net">FindBugs</a> Report</h1>
 
 	<h2>Project Information</h2>	
 	<xsl:apply-templates select="/BugCollection/Project"/>
