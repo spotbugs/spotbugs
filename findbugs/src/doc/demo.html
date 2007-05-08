@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>FindBugs&trade; 1.1 Demo and Results</title>
+<title>FindBugs&trade; 1.2 Demo and Results</title>
 <link rel="stylesheet" type="text/css" href="findbugs.css" />
 @GOOGLE_ANALYTICS@
 </head>
@@ -13,17 +13,17 @@
 
 <td align="left" valign="top">
 <h1>
-FindBugs 1.1 demo and results
+FindBugs 1.2 demo and results
 </h1>
 
 <p>If you just want to try running FindBugs against your
 own code, you can
 <a href="http://findbugs.cs.umd.edu/demo/jnlp/findbugs.jnlp">run FindBugs</a> using Java Webstart.
 This will use our new gui under Java 1.5+ and our old gui under Java 1.4.
-The new gui provides a number of new features, but hasn't received as much testing as the old one and it requires Java 1.5+.
+The new gui provides a number of new features, but requires Java 1.5+.
 Both use exactly the same analysis engine.
 
-</p><p>This web page provides results of running FindBugs 1.1.0
+</p><p>This web page provides results of running FindBugs 1.2.0
 against several open source applications. We provide a summary
 of the number of bugs we found, as well as a generated HTML listing
 of the bugs and 
@@ -43,18 +43,16 @@ what I've observed in open source code bases.
 
 
 </p><p><em>Experimental details</em>: These results are from running
-FindBugs 1.1.0 at standard effort level (earlier versions of this table
-reported numbers from earlier release candidates). Our results do not include
+FindBugs 1.2.0 at standard effort level. Our results do not include
 any low priority warnings or any warnings about vulnerabilities to 
 malicious code. Although we have (repeatedly) manually audited the results,
 we haven't manually filtered out false positives from these warnings,
 so that you can get a feeling for the quality of the warnings generated
 by FindBugs.
+</p><p>Some of the bugs contain audit comments: they are marked as to whether
+we thought the warning indicated a bug that should or must be fixed, or whether it was not, in fact, a bug.
 </p><p>In the webstart versions, we've only included the bugs for which
-we were able to identify source files. In some cases, the bug counts displayed
-on this page and in the HTML pages may reflect compiled classes included in
-the binary distribution of the application for which no source is included
-in the source distribution. The number of lines of non-commenting source
+we were able to identify source files. The number of lines of non-commenting source
 statements in the table below (KNCSS) is derived from the same files
 that we analyzed and in which we report bugs; we actually compute
 KNCSS from the classfiles, not the source files.
@@ -70,9 +68,7 @@ these results available constitutes a reckless disclosure.
 
 
 </p><p><em>Recommendations</em>: First, review the correctness warnings.
-Those are the warnings we are most confident in, and we put a <em>lot</em>
-of effort in FindBugs 1.1 into finding new real correctness bugs
-and reducing the number of false positives. We feel confident that developers
+ We feel confident that developers
 would want to fix most of the high and medium priority correctness warnings we report.
 Once you've reviewed those,
 you might want to look at some of the other categories.  
@@ -98,51 +94,40 @@ convince you to change your code.
 </p><table border="2">
 <tr><th rowspan="2">Application</th><th colspan="2">Details</th><th colspan="2">Correctness bugs</th><th rowspan="2">Bad Practice</th><th rowspan="2">Dodgy</th><th rowspan="2">KNCSS
 </th></tr><tr><th>HTML</th><th>WebStart</th><th>NP bugs</th><th>Other
-</th></tr><tr><td align="right">Sun JDK 1.6.0-b51</td><td align="right">
-					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/b51.html">All</a> 
+</th></tr><tr><td align="right">Sun JDK 1.7.0-b12</td><td align="right">
+					<a href="http://findbugs.cs.umd.edu/demo/jdk7/index.html">All</a> 
 			</td><td align="right">
-					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/b51.jnlp">All</a> (no Src)
-	</td><td align="right">190</td><td align="right">342</td><td align="right">1,774</td><td align="right">1,244</td><td align="right">979
+					<a href="http://findbugs.cs.umd.edu/demo/jdk7/index.jnlp">All</a> 
+						<a href="http://findbugs.cs.umd.edu/demo/jdk7/small.jnlp">Small</a> 
+	</td><td align="right">68</td><td align="right">180</td><td align="right">954</td><td align="right">654</td><td align="right">597
 
-</th></tr><tr><td align="right">Sun JDK 1.6.0-b99</td><td align="right">
-					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/b99.html">All</a> 
-			</td><td align="right">
-					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/b99.jnlp">All</a> (no Src)
-	</td><td align="right">187</td><td align="right">330</td><td align="right">1,623</td><td align="right">1,191</td><td align="right">960
-
-</th></tr><tr><td align="right">  Warnings in b99 introduced by a change to existing code since b51</td><td align="right">
-					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/new.html">All</a> 
-			</td><td align="right">
-					<a href="http://findbugs.cs.umd.edu/demo/jdk1.6.0/new.jnlp">All</a> (no Src)
-	</td><td align="right">14</td><td align="right">16</td><td align="right">68</td><td align="right">30</td><td align="right"><em>n/a</em>
-
-</td></tr><tr><td align="right">eclipse-SDK-3.2-solaris-gtk</td><td align="right">
+</td></tr><tr><td align="right">eclipse-SDK-3.3M7-solaris-gtk</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/eclipse/index.html">All</a>
 			</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/eclipse/index.jnlp">All</a>
 					<a href="http://findbugs.cs.umd.edu/demo/eclipse/small.jnlp">Small</a>
-	</td><td align="right">236</td><td align="right">355</td><td align="right">1,592</td><td align="right">972</td><td align="right">1,577
+	</td><td align="right">146</td><td align="right">259</td><td align="right">1,079</td><td align="right">643</td><td align="right">1,447
 
-</td></tr><tr><td align="right">netbeans-6_0-daily-bin-200607191800</td><td align="right">
+</td></tr><tr><td align="right">netbeans-6_0-m8</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/netbeans/index.html">All</a>
 			</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/netbeans/index.jnlp">All</a>
 					<a href="http://findbugs.cs.umd.edu/demo/netbeans/small.jnlp">Small</a>
-	</td><td align="right">201</td><td align="right">339</td><td align="right">2,771</td><td align="right">1,262</td><td align="right">1,066
+	</td><td align="right">189</td><td align="right">305</td><td align="right">3,010</td><td align="right">1,112</td><td align="right">1,022
 
-</td></tr><tr><td align="right">glassfish-v2-b09-appserv</td><td align="right">
+</td></tr><tr><td align="right">glassfish-v2-b43/td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/glassfish/index.html">All</a>
 			</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/glassfish/index.jnlp">All</a>
 					<a href="http://findbugs.cs.umd.edu/demo/glassfish/small.jnlp">Small</a>
-	</td><td align="right">297</td><td align="right">316</td><td align="right">1,946</td><td align="right">1,876</td><td align="right">958
+	</td><td align="right">146</td><td align="right">154</td><td align="right">964</td><td align="right">1,222</td><td align="right">2,176
 
-</td></tr><tr><td align="right">jboss-4.0.2</td><td align="right">
+</td></tr><tr><td align="right">jboss-4.0.5</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/jboss/index.html">All</a>
 			</td><td align="right">
 					<a href="http://findbugs.cs.umd.edu/demo/jboss/index.jnlp">All</a>
 					<a href="http://findbugs.cs.umd.edu/demo/jboss/small.jnlp">Small</a>
-	</td><td align="right">104</td><td align="right">140</td><td align="right">1,234</td><td align="right">483</td><td align="right">516
+	</td><td align="right">30</td><td align="right">57</td><td align="right">263</td><td align="right">214</td><td align="right">178
 
 </td></tr></table>
 <p><em>KNCSS</em>  - Thousands of lines of non-commenting source statements
