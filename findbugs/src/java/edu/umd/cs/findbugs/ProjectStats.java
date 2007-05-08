@@ -170,6 +170,19 @@ public class ProjectStats implements XMLWriteable, Cloneable {
 			stats.clearBugCounts();
 		}
 	}
+	
+	public void recomputeFromClassStats() {
+		for(int i = 0; i < totalErrors.length; i++)
+			totalErrors[i] = 0;
+		totalSize = 0;
+		for (PackageStats stats : packageStatsMap.values()) {
+			stats.recomputeFromClassStats();
+			totalSize += stats.size();
+			for(int i = 0; i < totalErrors.length; i++)
+				totalErrors[i] += stats.getBugsAtPriority(i);
+		}
+		
+	}
 	/**
 	 * Output as XML.
 	 */

@@ -206,6 +206,16 @@ public class PackageStats implements XMLWriteable {
 		}
 	}
 
+	public void recomputeFromClassStats() {
+		for(int i = 0; i < nBugs.length; i++)
+			nBugs[i] = 0;
+		size = 0;
+		for(ClassStats classStats :  packageMembers.values()) {
+			for(int i = 0; i < nBugs.length; i++)
+				nBugs[i] += classStats.getBugsAtPriority(i);
+			size += classStats.size;
+		}
+	}
 	/**
 	 * 
 	 */

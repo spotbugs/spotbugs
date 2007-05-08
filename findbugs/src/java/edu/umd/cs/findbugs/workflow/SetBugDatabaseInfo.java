@@ -66,6 +66,7 @@ public class SetBugDatabaseInfo {
 		SetInfoCommandLine() {
 			addOption("-name", "name", "set name for (last) revision");
 			addOption("-timestamp", "when", "set timestamp for (last) revision");
+			addSwitch("-resetSource", "remove all source search paths");
 			addOption("-source", "directory", "Add this directory to the source search path");
 			addOption("-findSource", "directory", "Find and add all relevant source directions contained within this directory");
 			addSwitch("-withMessages", "Add bug descriptions");
@@ -76,6 +77,8 @@ public class SetBugDatabaseInfo {
 				throws IOException {
 			if (option.equals("-withMessages"))
 				withMessages = true;
+			else if (option.equals("-resetSource"))
+				sourcePaths.clear();
 		else
 		   throw new IllegalArgumentException("no option " + option);
 
@@ -88,8 +91,9 @@ public class SetBugDatabaseInfo {
 				revisionName = argument;
 			else if (option.equals("-timestamp"))
 				revisionTimestamp = Date.parse(argument);
+
 			else if (option.equals("-source"))
-					sourcePaths.add(argument);
+				sourcePaths.add(argument);
 			else if (option.equals("-findSource"))
 				searchSourcePaths.add(argument);
 			else

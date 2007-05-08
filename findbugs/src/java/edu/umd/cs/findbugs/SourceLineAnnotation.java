@@ -131,6 +131,20 @@ public class SourceLineAnnotation implements BugAnnotation {
 				-1,
 				-1);
 	}
+	/**
+	 * Factory method to create an unknown source line annotation.
+	 * This doesn't use the analysis context.
+	 *
+	 * @param className the class name
+	 * @return the SourceLineAnnotation
+	 */
+	public static SourceLineAnnotation createReallyUnknown(String className) {
+		return createUnknown(
+				className,
+				SourceLineAnnotation.UNKNOWN_SOURCE_FILE,
+				-1,
+				-1);
+	}
 
 	/**
 	 * Factory method to create an unknown source line annotation.

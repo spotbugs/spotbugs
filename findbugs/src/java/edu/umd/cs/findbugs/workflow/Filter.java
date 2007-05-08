@@ -18,13 +18,10 @@
 
 package edu.umd.cs.findbugs.workflow;
 
-import java.beans.DesignMode;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -38,13 +35,13 @@ import edu.umd.cs.findbugs.BugCollection;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugPattern;
 import edu.umd.cs.findbugs.DetectorFactoryCollection;
-import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.I18N;
+import edu.umd.cs.findbugs.PackageStats;
 import edu.umd.cs.findbugs.Project;
 import edu.umd.cs.findbugs.SortedBugCollection;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.TigerSubstitutes;
-import edu.umd.cs.findbugs.ba.SourceFinder;
+import edu.umd.cs.findbugs.PackageStats.ClassStats;
 import edu.umd.cs.findbugs.config.CommandLine;
 import edu.umd.cs.findbugs.filter.FilterException;
 import edu.umd.cs.findbugs.filter.Matcher;
@@ -448,7 +445,9 @@ public class Filter {
 
 			}
 		}
+		
 		SortedBugCollection resultCollection = origCollection.createEmptyCollectionWithMetadata();
+
 		int passed = 0;
 		int dropped = 0;
 		resultCollection.setWithMessages(commandLine.withMessages);
@@ -466,9 +465,24 @@ public class Filter {
 			} else
 				dropped++;
 
+		
+		
 		if (verbose)
 			System.out.println(passed + " warnings passed through, " + dropped
 				+ " warnings dropped");
+		if (commandLine.withSourceSpecified && commandLine.withSource) {
+			for(PackageStats stats : resultCollection.getProjectStats().getPackageStats()) {
+				Iterator<ClassStats> i = stats.getClassStats().iterator();
+				while (i.hasNext()) {
+					String className = i.next().getName();
+					if (sourceSearcher.sourceNotFound.contains(className) || !sourceSearcher.sourceFound.contains(className) 
+							&& !sourceSearcher.findSource(SourceLineAnnotation.createReallyUnknown(className)
+									)) 
+						i.remove();
+				}
+			}
+			resultCollection.getProjectStats().recomputeFromClassStats();
+		}
 		if (argCount == args.length) {
 			assert !verbose;
 			resultCollection.writeXML(System.out, project);
